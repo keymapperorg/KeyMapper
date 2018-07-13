@@ -5,8 +5,10 @@ package io.github.sds100.keymapper
  */
 
 /**
+ *
  * [id] the unique identifier for this keymap
  */
+
 data class KeyMap(
         val id: Long
 )
