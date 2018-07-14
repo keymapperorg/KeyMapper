@@ -3,6 +3,5 @@
     <color name="colorPrimary">#1565c0</color>
     <color name="colorPrimaryDark">#003c8f</color>
     <color name="colorAccent">#f44336</color>
-    <color name="colorRecordButtonBackground">#FFFFFF</color>
     <color name="divider">#E0E0E0</color>
 </resources>

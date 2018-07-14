@@ -22,9 +22,8 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Open Settings App" />
 
-    <ImageButton
+    <Button
         android:id="@+id/buttonRecordTrigger"
-        style="@style/Base.Widget.AppCompat.Button.Colored"
         android:layout_width="0dp"
         android:layout_height="64dp"
         android:layout_marginStart="16dp"
@@ -32,12 +31,11 @@
         android:layout_marginBottom="16dp"
         android:contentDescription="@string/content_description_record_trigger_key_combination"
         android:scaleType="fitCenter"
-        app:backgroundTint="@color/colorRecordButtonBackground"
+        android:text="@string/button_record_trigger"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/ic_record_red_24dp" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/buttonChooseAction"
