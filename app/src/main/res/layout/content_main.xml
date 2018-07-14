@@ -8,7 +8,6 @@
     tools:context=".MainActivity"
     tools:showIn="@layout/activity_main">
 
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewKeyMaps"
         android:layout_width="0dp"
