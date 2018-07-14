@@ -12,7 +12,21 @@
     <string name="button_choose_action">Choose Action</string>
     <!-- Button titles -->
 
-    <!-- Content Descriptions -->
+    <!-- Content descriptions -->
     <string name="content_description_record_trigger_key_combination">Record trigger key combination</string>
-    <!-- Content Descriptions -->
+    <!-- Content descriptions -->
+
+    <!-- Dialog titles -->
+    <string name="dialog_title_are_you_sure">Are you sure?</string>
+    <!-- Dialog titles -->
+
+    <!-- Dialog messages -->
+    <string name="dialog_message_are_you_sure_cancel_new_key_map">Are you sure you want to cancel creating a new keymap?</string>
+    <!-- Dialog messages -->
+
+    <!-- Dialog buttons -->
+    <string name="pos_yes">Yes</string>
+    <string name="neg_no">No</string>
+    <!-- Dialog buttons -->
+
 </resources>
