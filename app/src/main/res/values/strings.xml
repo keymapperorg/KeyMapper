@@ -1,5 +1,18 @@
 <resources>
     <string name="app_name">KeyMapper</string>
-    <string name="action_settings">Settings</string>
     <string name="title_activity_new_key_map">New Keymap</string>
+    <string name="no_action_specified">No Action Specified</string>
+    <string name="triggers_header">Triggers</string>
+
+    <!-- Menu action titles-->
+    <string name="action_settings">Settings</string>
+    <!-- Menu action titles-->
+
+    <!-- Button titles -->
+    <string name="button_choose_action">Choose Action</string>
+    <!-- Button titles -->
+
+    <!-- Content Descriptions -->
+    <string name="content_description_record_trigger_key_combination">Record trigger key combination</string>
+    <!-- Content Descriptions -->
 </resources>
