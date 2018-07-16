@@ -87,6 +87,7 @@
     <io.github.sds100.keymapper.TriggerChipGroup
         android:id="@+id/chipGroupTriggerPreview"
         android:layout_width="0dp"
+        app:singleLine="true"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
