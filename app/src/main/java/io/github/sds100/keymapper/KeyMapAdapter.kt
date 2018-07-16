@@ -8,8 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 /**
  * Created by sds100 on 12/07/2018.
  */
-class KeyMapRecyclerViewAdapter(private val keyMapList: List<KeyMap>
-) : RecyclerView.Adapter<KeyMapRecyclerViewAdapter.ViewHolder>() {
+class KeyMapAdapter(private val keyMapList: List<KeyMap>
+) : RecyclerView.Adapter<KeyMapAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)

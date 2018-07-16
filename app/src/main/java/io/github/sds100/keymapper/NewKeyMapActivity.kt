@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_new_key_map.*
 import kotlinx.android.synthetic.main.content_new_key_map.*
 import org.jetbrains.anko.alert
@@ -31,6 +32,8 @@ class NewKeyMapActivity : AppCompatActivity() {
             }
         }
     }
+
+    private val mTriggerAdapter = TriggerAdapter()
 
     private var mRecordingTrigger = false
 
@@ -56,6 +59,9 @@ class NewKeyMapActivity : AppCompatActivity() {
             sendBroadcast(Intent(MyAccessibilityService.ACTION_CLEAR_PRESSED_KEYS))
             chipGroupTriggerPreview.removeAllChips()
         }
+
+        recyclerViewTriggers.layoutManager = LinearLayoutManager(this)
+        recyclerViewTriggers.adapter = mTriggerAdapter
     }
 
     override fun onBackPressed() {
@@ -89,6 +95,12 @@ class NewKeyMapActivity : AppCompatActivity() {
     }
 
     private fun addTrigger() {
+        val trigger = chipGroupTriggerPreview.createTriggerFromChips()
+
+        if (trigger.keys.isNotEmpty()) {
+            mTriggerAdapter.addTrigger(trigger)
+        }
+
         stopRecordingTrigger()
     }
 
@@ -105,7 +117,6 @@ class NewKeyMapActivity : AppCompatActivity() {
         //listen for key events so they can be shown as chips
         val intentFilter = IntentFilter()
         intentFilter.addAction(ACTION_ADD_KEY_CHIP)
-        intentFilter.addAction(ACTION_REMOVE_KEY_CHIP)
 
         registerReceiver(mAddKeyChipBroadcastReceiver, intentFilter)
     }

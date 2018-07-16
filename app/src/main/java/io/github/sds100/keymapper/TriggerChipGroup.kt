@@ -74,6 +74,24 @@ class TriggerChipGroup(
     }
 
     /**
+     * Show chips for each item in a trigger
+     * @see [Trigger]
+     */
+    fun addChipsFromTrigger(trigger: Trigger) {
+        removeAllChips()
+        trigger.keys.forEach { addChip(KeyEvent(KeyEvent.ACTION_UP, it)) }
+    }
+
+    /**
+     * @return a [Trigger] whose keys will be the chips in this chip group
+     */
+    fun createTriggerFromChips(): Trigger {
+        val keys = mChips.map { it.keyCode }
+
+        return Trigger(keys)
+    }
+
+    /**
      * Create a text representation of a key event. E.g if the control key was pressed,
      * "Ctrl" will be returned
      */
