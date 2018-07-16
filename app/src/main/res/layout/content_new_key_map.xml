@@ -55,8 +55,9 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/chipGroupTriggerPreview"
+        app:layout_constraintBottom_toTopOf="@+id/textViewExplanation"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewTriggerHeading" />
 
@@ -84,16 +85,45 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view2" />
 
-    <io.github.sds100.keymapper.TriggerChipGroup
-        android:id="@+id/chipGroupTriggerPreview"
+    <HorizontalScrollView
         android:layout_width="0dp"
-        app:singleLine="true"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/buttonRecordTrigger"
+        app:layout_constraintEnd_toStartOf="@+id/buttonClearKeys"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewExplanation">
+
+        <io.github.sds100.keymapper.TriggerChipGroup
+            android:id="@+id/chipGroupTriggerPreview"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:singleLine="true"
+            tools:layout_height="30dp" />
+    </HorizontalScrollView>
+
+    <TextView
+        android:id="@+id/textViewExplanation"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/buttonRecordTrigger"
+        android:text="@string/record_trigger_help"
+        app:layout_constraintBottom_toTopOf="@+id/buttonClearKeys"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/buttonClearKeys"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:text="@string/button_clear"
+        app:layout_constraintBottom_toTopOf="@+id/buttonRecordTrigger"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
