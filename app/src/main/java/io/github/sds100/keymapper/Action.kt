@@ -21,14 +21,14 @@ package io.github.sds100.keymapper
 data class Action(
         val type: Int,
         val data: String
-){
+) {
     companion object {
         const val TYPE_APP = 0
         const val TYPE_APP_SHORTCUT = 1
         const val TYPE_KEY_CODE = 2
-        const val TYPE_TEXT_BLOCK = 3
-        const val TYPE_SYSTEM_SETTING = 4
-        const val TYPE_ROOT_SYSTEM_SETTING = 5
+        const val TYPE_KEY = 3
+        const val TYPE_TEXT_BLOCK = 4
+        const val TYPE_SYSTEM_SETTING = 5
         const val TYPE_GLOBAL_ACTION = 6
     }
 }
