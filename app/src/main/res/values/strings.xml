@@ -4,8 +4,7 @@
     <string name="no_action_specified">No Action Specified</string>
     <string name="triggers_header">Triggers</string>
     <string name="accessibility_service_description">This is required so KeyMapper can listen for user defined triggers then act upon them.
-    The accessibility service only listens for key events and nothing else. Absolutely no key logging takes place and it doesn\'t
-    look at the contents of your screen. Look in the source code, which is in the About section inside the app, if you are paranoid.</string>
+    The accessibility service only listens for key events and nothing else. Key loggin will never take place. Look in the source code, which is in the About section inside the app, if you are paranoid. :)</string>
     <string name="record_trigger_help">Type the keys which will be the trigger keys then click \"Stop recording trigger\" to add it to the trigger list. Press \"clear\" to clear the keys you have already typed.</string>
 
     <!-- Menu action titles-->
