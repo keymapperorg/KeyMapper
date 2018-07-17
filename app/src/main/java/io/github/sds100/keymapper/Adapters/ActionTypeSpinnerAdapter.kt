@@ -1,7 +1,8 @@
-package io.github.sds100.keymapper
+package io.github.sds100.keymapper.Adapters
 
 import android.content.Context
 import android.widget.ArrayAdapter
+import io.github.sds100.keymapper.R
 
 /**
  * Created by sds100 on 16/07/2018.

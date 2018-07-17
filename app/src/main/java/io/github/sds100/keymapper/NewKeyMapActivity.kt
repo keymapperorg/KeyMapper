@@ -9,6 +9,7 @@ import android.view.KeyEvent
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import io.github.sds100.keymapper.Adapters.TriggerAdapter
 import kotlinx.android.synthetic.main.activity_new_key_map.*
 import kotlinx.android.synthetic.main.content_new_key_map.*
 import org.jetbrains.anko.alert

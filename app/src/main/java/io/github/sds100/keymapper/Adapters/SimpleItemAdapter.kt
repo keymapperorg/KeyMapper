@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper
+package io.github.sds100.keymapper.Adapters
 
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import io.github.sds100.keymapper.R
 
 /**
  * Created by sds100 on 17/07/2018.

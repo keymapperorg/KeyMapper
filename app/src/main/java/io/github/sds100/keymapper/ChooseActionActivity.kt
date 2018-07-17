@@ -9,6 +9,8 @@ import android.view.View
 import android.widget.AdapterView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import io.github.sds100.keymapper.Adapters.ActionTypeSpinnerAdapter
+import io.github.sds100.keymapper.Adapters.AppListAdapter
 import kotlinx.android.synthetic.main.activity_choose_action.*
 import kotlinx.android.synthetic.main.content_choose_action.*
 import kotlinx.coroutines.experimental.launch

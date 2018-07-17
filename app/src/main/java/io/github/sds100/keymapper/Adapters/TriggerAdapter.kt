@@ -1,9 +1,13 @@
-package io.github.sds100.keymapper
+package io.github.sds100.keymapper.Adapters
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.SquareImageButton
+import io.github.sds100.keymapper.Trigger
+import io.github.sds100.keymapper.TriggerChipGroup
 
 /**
  * Created by sds100 on 16/07/2018.

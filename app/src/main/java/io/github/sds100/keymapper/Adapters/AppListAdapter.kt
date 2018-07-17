@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper
+package io.github.sds100.keymapper.Adapters
 
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
