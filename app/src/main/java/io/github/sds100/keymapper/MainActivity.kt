@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
         /*if the app is a debug build then enable the accessibility service in settings
         / automatically so I don't have to :)*/
         if (BuildConfig.DEBUG) {
-            MyAccessibilityService.enableInSettings()
+            MyAccessibilityService.enableServiceInSettings()
         }
     }
 
