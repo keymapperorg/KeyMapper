@@ -1,10 +1,13 @@
 package io.github.sds100.keymapper
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -14,7 +17,9 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         fabNewKeyMap.setOnClickListener {
-            
+            val intent = Intent(this, NewKeyMapActivity::class.java)
+            startActivity(intent)
+        }
 
         /*if the app is a debug build then enable the accessibility service in settings
         / automatically so I don't have to :)*/
