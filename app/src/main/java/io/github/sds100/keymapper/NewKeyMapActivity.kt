@@ -60,6 +60,11 @@ class NewKeyMapActivity : AppCompatActivity() {
             chipGroupTriggerPreview.removeAllChips()
         }
 
+        buttonChooseAction.setOnClickListener {
+            val intent = Intent(this, ChooseActionActivity::class.java)
+            startActivity(intent)
+        }
+
         recyclerViewTriggers.layoutManager = LinearLayoutManager(this)
         recyclerViewTriggers.adapter = mTriggerAdapter
     }

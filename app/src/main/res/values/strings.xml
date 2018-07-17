@@ -1,11 +1,22 @@
 <resources>
     <string name="app_name">KeyMapper</string>
     <string name="title_activity_new_key_map">New Keymap</string>
+    <string name="title_choose_action">Choose Action</string>
     <string name="no_action_specified">No Action Specified</string>
     <string name="triggers_header">Triggers</string>
     <string name="accessibility_service_description">This is required so KeyMapper can listen for user defined triggers then act upon them.
     The accessibility service only listens for key events and nothing else. Key loggin will never take place. Look in the source code, which is in the About section inside the app, if you are paranoid. :)</string>
     <string name="record_trigger_help">Type the keys which will be the trigger keys then click \"Stop recording trigger\" to add it to the trigger list. Press \"clear\" to clear the keys you have already typed.</string>
+
+    <string-array name="spinner_action_type_array">
+        <item>App</item>
+        <item>App Shortcut</item>
+        <item>Key</item>
+        <item>Action</item>
+        <item>Setting</item>
+        <item>Text</item>
+        <item>Custom Keycode</item>
+    </string-array>
 
     <!-- Menu action titles-->
     <string name="action_settings">Settings</string>
@@ -35,6 +46,18 @@
     <!-- Dialog buttons -->
     <string name="pos_yes">Yes</string>
     <string name="neg_no">No</string>
+    <string name="neg_cancel">Cancel</string>
     <!-- Dialog buttons -->
+
+    <!--Action Types-->
+    <string name="action_type_application">Application</string>
+    <string name="action_type_application_shortcut">App shortcut</string>
+    <string name="action_type_key">Key</string>
+    <string name="action_type_keycode">Key code</string>
+    <string name="action_type_action">Action</string>
+    <string name="action_type_setting">Setting</string>
+    <string name="action_type_text_block">Text Block</string>
+    <string name="title_activity_choose_action">ChooseActionActivity</string>
+    <!--Action Types-->
 
 </resources>
