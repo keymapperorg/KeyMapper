@@ -23,7 +23,7 @@ abstract class SimpleItemAdapter<T>(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
 
-        return ViewHolder(inflater.inflate(R.layout.simple_item, parent, false))
+        return ViewHolder(inflater.inflate(R.layout.simple_recyclerview_item, parent, false))
     }
 
     override fun getItemCount() = itemList.size
