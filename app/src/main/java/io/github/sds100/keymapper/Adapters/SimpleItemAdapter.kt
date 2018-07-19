@@ -38,7 +38,7 @@ abstract class SimpleItemAdapter<T>(
     }
 
     abstract fun getItemText(item: T): String
-    abstract fun getItemImage(item: T): Drawable
+    abstract fun getItemImage(item: T): Drawable?
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.imageView)

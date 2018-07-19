@@ -9,7 +9,7 @@ import androidx.annotation.RequiresApi
  */
 
 object KeycodeHelper {
-    val KEYCODES = arrayOf(
+    private val KEYCODES = listOf(
             KeyEvent.KEYCODE_SOFT_LEFT,
             KeyEvent.KEYCODE_SOFT_RIGHT,
             KeyEvent.KEYCODE_HOME,
@@ -242,7 +242,7 @@ object KeycodeHelper {
             KeyEvent.KEYCODE_POWER)
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    val KEYCODES_API_21 = arrayOf(
+    private val KEYCODES_API_21 = listOf(
             KeyEvent.KEYCODE_PAIRING,
             KeyEvent.KEYCODE_MEDIA_TOP_MENU,
             KeyEvent.KEYCODE_11,
@@ -281,7 +281,7 @@ object KeycodeHelper {
     )
 
     @RequiresApi(Build.VERSION_CODES.M)
-    val KEYCODES_API_23 = arrayOf(
+    private val KEYCODES_API_23 = listOf(
             KeyEvent.KEYCODE_NAVIGATE_PREVIOUS,
             KeyEvent.KEYCODE_NAVIGATE_NEXT,
             KeyEvent.KEYCODE_NAVIGATE_IN,
@@ -293,7 +293,7 @@ object KeycodeHelper {
     )
 
     @RequiresApi(Build.VERSION_CODES.N)
-    val KEYCODES_API_24 = arrayOf(
+    private val KEYCODES_API_24 = listOf(
             KeyEvent.KEYCODE_STEM_PRIMARY,
             KeyEvent.KEYCODE_STEM_1,
             KeyEvent.KEYCODE_STEM_2,
@@ -309,7 +309,7 @@ object KeycodeHelper {
     )
 
     @RequiresApi(Build.VERSION_CODES.N_MR1)
-    val KEYCODES_API_25 = arrayOf(
+    private val KEYCODES_API_25 = listOf(
             KeyEvent.KEYCODE_SYSTEM_NAVIGATION_UP,
             KeyEvent.KEYCODE_SYSTEM_NAVIGATION_DOWN,
             KeyEvent.KEYCODE_SYSTEM_NAVIGATION_LEFT,
@@ -317,7 +317,36 @@ object KeycodeHelper {
     )
 
     @RequiresApi(Build.VERSION_CODES.P)
-    val KEYCODES_API_28 = arrayOf(
+    private val KEYCODES_API_28 = listOf(
             KeyEvent.KEYCODE_ALL_APPS
     )
+
+    /**
+     * Get all the valid key codes which work on the Android version for the device.
+     */
+    fun getKeyCodes(): List<Int> {
+        val keyCodes = KEYCODES.toMutableList()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            keyCodes.addAll(KEYCODES_API_21)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            keyCodes.addAll(KEYCODES_API_23)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            keyCodes.addAll(KEYCODES_API_24)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            keyCodes.addAll(KEYCODES_API_25)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            keyCodes.addAll(KEYCODES_API_28)
+        }
+
+        return keyCodes
+    }
 }

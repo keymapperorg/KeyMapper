@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.sds100.keymapper.Adapters.ActionTypeSpinnerAdapter
 import io.github.sds100.keymapper.Adapters.AppListAdapter
+import io.github.sds100.keymapper.Adapters.KeycodeAdapter
 import kotlinx.android.synthetic.main.activity_choose_action.*
 import kotlinx.android.synthetic.main.content_choose_action.*
 import kotlinx.coroutines.experimental.launch
@@ -20,6 +21,7 @@ class ChooseActionActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
 
     //The adapters for the RecyclerView
     private var mAppListAdapter: AppListAdapter? = null
+    private val mKeycodeAdapter: KeycodeAdapter = KeycodeAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +55,7 @@ class ChooseActionActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
         when (ActionTypeSpinnerAdapter.getItemTypeFromPosition(position)) {
             ActionTypeSpinnerAdapter.Item.APP -> {
                 editText.visibility = View.GONE
+                recyclerView.visibility = View.VISIBLE
                 populateRecyclerViewWithApps()
             }
             ActionTypeSpinnerAdapter.Item.APP_SHORTCUT -> TODO()
@@ -60,7 +63,12 @@ class ChooseActionActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
             ActionTypeSpinnerAdapter.Item.ACTION -> TODO()
             ActionTypeSpinnerAdapter.Item.SETTING -> TODO()
             ActionTypeSpinnerAdapter.Item.TEXT_BLOCK -> TODO()
-            ActionTypeSpinnerAdapter.Item.KEYCODE -> TODO()
+
+            ActionTypeSpinnerAdapter.Item.KEYCODE -> {
+                editText.visibility = View.GONE
+                recyclerView.visibility = View.VISIBLE
+                recyclerView.adapter = mKeycodeAdapter
+            }
         }
     }
 
