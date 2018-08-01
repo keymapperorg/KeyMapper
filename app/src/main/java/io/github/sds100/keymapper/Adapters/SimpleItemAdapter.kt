@@ -17,7 +17,8 @@ import io.github.sds100.keymapper.R
  * Display an icon and text in a RecyclerView
  */
 abstract class SimpleItemAdapter<T>(
-        private val itemList: List<T>
+        private val itemList: List<T>,
+        private val onItemClickListener: OnItemClickListener<T>
 ) : RecyclerView.Adapter<SimpleItemAdapter<T>.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -43,5 +44,15 @@ abstract class SimpleItemAdapter<T>(
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.imageView)
         val textView: TextView = itemView.findViewById(R.id.textView)
+
+        init {
+            itemView.setOnClickListener {
+                onItemClickListener.onItemClick(itemList[adapterPosition])
+            }
+        }
+    }
+
+    interface OnItemClickListener<T> {
+        fun onItemClick(item: T)
     }
 }

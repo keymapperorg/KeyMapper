@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.Adapters
 
 import android.content.Context
 import android.widget.ArrayAdapter
+import io.github.sds100.keymapper.Action
 import io.github.sds100.keymapper.R
 
 /**
@@ -19,29 +20,21 @@ class ActionTypeSpinnerAdapter(
         /**
          * Must be the same order as [R.array.spinner_action_type_array]
          */
-        private val ORDERED_ITEM_TYPE_LIST = listOf(
-                Item.APP,
-                Item.APP_SHORTCUT,
-                Item.KEY,
-                Item.ACTION,
-                Item.SETTING,
-                Item.TEXT_BLOCK,
-                Item.KEYCODE
-        )
+        private val ORDERED_ACTION_TYPE_LIST = listOf(
+                Action.TYPE_APP,
+                Action.TYPE_APP_SHORTCUT,
+                Action.TYPE_KEY,
+                Action.TYPE_KEYCODE,
+                Action.TYPE_SYSTEM_ACTION,
+                Action.TYPE_TEXT_BLOCK
+                )
 
-        fun getItemTypeFromPosition(position: Int): Item {
-            return ORDERED_ITEM_TYPE_LIST[position]
+        fun getActionTypeFromPosition(position: Int): Int {
+            return ORDERED_ACTION_TYPE_LIST[position]
         }
     }
 
     init {
         setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-    }
-
-    /**
-     *
-     */
-    enum class Item {
-        APP, APP_SHORTCUT, KEY, ACTION, SETTING, TEXT_BLOCK, KEYCODE
     }
 }

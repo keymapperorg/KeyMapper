@@ -8,7 +8,9 @@ import io.github.sds100.keymapper.KeycodeHelper
  * Created by sds100 on 17/07/2018.
  */
 
-class KeycodeAdapter() : SimpleItemAdapter<Int>(KeycodeHelper.getKeyCodes()) {
+class KeycodeAdapter(onItemClickListener: OnItemClickListener<Int>
+) : SimpleItemAdapter<Int>(KeycodeHelper.getKeyCodes(), onItemClickListener) {
+
     override fun getItemText(item: Int): String {
         return KeyEvent.keyCodeToString(item)
     }

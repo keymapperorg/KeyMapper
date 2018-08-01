@@ -24,7 +24,7 @@ class TriggerAdapter(val triggerList: MutableList<Trigger> = mutableListOf()
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.apply {
-            chipGroupTrigger.addChipsFromTrigger(triggerList[position])
+            triggerChipGroup.addChipsFromTrigger(triggerList[position])
         }
     }
 
@@ -39,7 +39,7 @@ class TriggerAdapter(val triggerList: MutableList<Trigger> = mutableListOf()
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val chipGroupTrigger: TriggerChipGroup = itemView.findViewById(R.id.chipGroupTrigger)
+        val triggerChipGroup: TriggerChipGroup = itemView.findViewById(R.id.triggerChipGroup)
 
         init {
             itemView.findViewById<SquareImageButton>(R.id.buttonRemove).setOnClickListener {

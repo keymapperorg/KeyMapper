@@ -13,9 +13,8 @@ package io.github.sds100.keymapper
  * - Application shortcuts
  * - Keycode
  * - Insert a block of text
- * - System settings
- * - Root system settings
- * - Global actions (performGlobalAction)
+ * - System actions/settings
+ * - Root actions
  */
 
 data class Action(
@@ -23,12 +22,12 @@ data class Action(
         val data: String
 ) {
     companion object {
+        //DON'T CHANGE
         const val TYPE_APP = 0
         const val TYPE_APP_SHORTCUT = 1
-        const val TYPE_KEY_CODE = 2
+        const val TYPE_KEYCODE = 2
         const val TYPE_KEY = 3
         const val TYPE_TEXT_BLOCK = 4
-        const val TYPE_SYSTEM_SETTING = 5
-        const val TYPE_GLOBAL_ACTION = 6
+        const val TYPE_SYSTEM_ACTION = 6
     }
 }

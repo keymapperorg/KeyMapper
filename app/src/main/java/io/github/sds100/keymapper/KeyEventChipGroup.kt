@@ -41,7 +41,7 @@ open class KeyEventChipGroup(
     /**
      * The chips currently being shown in the chip group
      */
-    protected val chips = mutableListOf<KeyChip>()
+    val chips = mutableListOf<KeyChip>()
 
     /**
      * Create a new chip view and show it in the group

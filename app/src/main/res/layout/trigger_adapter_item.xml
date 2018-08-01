@@ -6,7 +6,7 @@
     android:layout_height="48dp">
 
     <io.github.sds100.keymapper.TriggerChipGroup
-        android:id="@+id/chipGroupTrigger"
+        android:id="@+id/triggerChipGroup"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"

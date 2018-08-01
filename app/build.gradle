@@ -36,6 +36,8 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.0.0-beta01'
     implementation 'androidx.recyclerview:recyclerview:1.0.0-beta01'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.2'
+
+    implementation 'com.github.salomonbrys.kotson:kotson:2.5.0'
 }
 
 kotlin {

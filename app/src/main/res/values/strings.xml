@@ -12,10 +12,9 @@
         <item>App</item>
         <item>App Shortcut</item>
         <item>Key</item>
-        <item>Action</item>
-        <item>Setting</item>
-        <item>Text</item>
         <item>Custom Keycode</item>
+        <item>Action</item>
+        <item>Text</item>
     </string-array>
 
     <!-- Menu action titles-->
@@ -27,7 +26,7 @@
     <string name="button_record_trigger">Record Trigger</string>
     <string name="button_clear">Clear</string>
     <string name="button_add_trigger">Add Trigger</string>
-
+    <string name="button_done">Done</string>
     <string name="button_stop_recording_trigger">Stop Recording Trigger…</string>
     <!-- Button titles -->
 
@@ -57,7 +56,15 @@
     <string name="action_type_action">Action</string>
     <string name="action_type_setting">Setting</string>
     <string name="action_type_text_block">Text Block</string>
-    <string name="title_activity_choose_action">ChooseActionActivity</string>
+    <string name="caption_action_type_key">Click the key on the keyboard which you want to be clicked when your trigger is triggered.</string>
     <!--Action Types-->
 
+    <!-- Error messages -->
+    <string name="error_must_type_a_key">Must type a key!</string>
+    <!-- Error messages -->
+
+    <!-- System actions -->
+    <string name="action_toggle_wifi">Toggle WiFi</string>
+    <string name="action_toggle_bluetooth">Toggle Bluetooth</string>
+    <!-- System actions -->
 </resources>

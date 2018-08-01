@@ -45,7 +45,6 @@ class MyAccessibilityService : AccessibilityService() {
     }
 
     private val mNewKeyMapActivityBroadcastReceiver = object : BroadcastReceiver() {
-
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent!!.action) {
                 ACTION_RECORD_TRIGGER -> {

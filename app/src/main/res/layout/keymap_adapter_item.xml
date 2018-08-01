@@ -16,7 +16,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewTitle">
 
-        <io.github.sds100.keymapper.TriggerChipGroup
+        <io.github.sds100.keymapper.KeyEventChipGroup
             android:id="@+id/chipGroupTriggers"
             android:layout_width="0dp"
             android:layout_height="20dp"

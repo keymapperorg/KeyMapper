@@ -19,6 +19,7 @@ class NewKeyMapActivity : AppCompatActivity() {
     companion object {
         const val ACTION_ADD_KEY_CHIP = "io.github.sds100.keymapper.ADD_KEY_CHIP"
         const val EXTRA_KEY_EVENT = "extra_key_event"
+        const val REQUEST_CODE_ACTION = 821
     }
 
     private val mAddKeyChipBroadcastReceiver = object : BroadcastReceiver() {
@@ -63,7 +64,7 @@ class NewKeyMapActivity : AppCompatActivity() {
 
         buttonChooseAction.setOnClickListener {
             val intent = Intent(this, ChooseActionActivity::class.java)
-            startActivity(intent)
+            startActivityForResult(intent, REQUEST_CODE_ACTION)
         }
 
         recyclerViewTriggers.layoutManager = LinearLayoutManager(this)
@@ -98,6 +99,11 @@ class NewKeyMapActivity : AppCompatActivity() {
         if (mRecordingTrigger) stopRecordingTrigger()
 
         super.onStop()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
     }
 
     private fun addTrigger() {
