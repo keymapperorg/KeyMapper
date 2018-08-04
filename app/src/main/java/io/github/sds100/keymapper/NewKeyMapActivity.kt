@@ -101,9 +101,15 @@ class NewKeyMapActivity : AppCompatActivity() {
         super.onStop()
     }
 
+    //When the user chooses an action in ChooseActionActivity, the result is returned here
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
+        if (requestCode == REQUEST_CODE_ACTION) {
+            if (data != null) {
+                mChosenAction = Gson().fromJson(data.getStringExtra(Action.EXTRA_ACTION))
+            }
+        }
     }
 
     private fun addTrigger() {
