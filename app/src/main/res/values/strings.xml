@@ -56,7 +56,7 @@
     <string name="action_type_action">Action</string>
     <string name="action_type_setting">Setting</string>
     <string name="action_type_text_block">Text Block</string>
-    <string name="caption_action_type_key">Click the key on the keyboard which you want to be clicked when your trigger is triggered.</string>
+    <string name="caption_action_type_key">Click the key on the keyboard which you want to be entered.</string>
     <!--Action Types-->
 
     <!-- Error messages -->
