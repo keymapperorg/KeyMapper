@@ -7,5 +7,4 @@ import com.google.android.material.chip.Chip
  * Created by sds100 on 15/07/2018.
  */
 
-class KeyChip(context: Context?,
-              val keyCode: Int) : Chip(context)
+class KeyChip(context: Context?, val keyCode: Int) : Chip(context)

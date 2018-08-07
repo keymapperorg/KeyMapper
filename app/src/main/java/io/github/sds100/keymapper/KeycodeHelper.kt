@@ -9,6 +9,22 @@ import androidx.annotation.RequiresApi
  */
 
 object KeycodeHelper {
+    /**
+     * Maps keys which aren't single characters like the Control keys to a string representation
+     */
+    val NON_CHARACTER_KEY_MAP = mapOf(
+            Pair(KeyEvent.KEYCODE_VOLUME_DOWN, "Vol Down"),
+            Pair(KeyEvent.KEYCODE_VOLUME_UP, "Vol Up"),
+
+            Pair(KeyEvent.KEYCODE_CTRL_LEFT, "Ctrl"),
+            Pair(KeyEvent.KEYCODE_CTRL_RIGHT, "Ctrl"),
+
+            Pair(KeyEvent.KEYCODE_SHIFT_LEFT, "Shift"),
+            Pair(KeyEvent.KEYCODE_SHIFT_RIGHT, "Shift"),
+
+            Pair(KeyEvent.KEYCODE_DPAD_LEFT, "Left")
+    )
+
     private val KEYCODES = listOf(
             KeyEvent.KEYCODE_SOFT_LEFT,
             KeyEvent.KEYCODE_SOFT_RIGHT,
@@ -320,6 +336,22 @@ object KeycodeHelper {
     private val KEYCODES_API_28 = listOf(
             KeyEvent.KEYCODE_ALL_APPS
     )
+
+    /**
+     * Create a text representation of a key event. E.g if the control key was pressed,
+     * "Ctrl" will be returned
+     */
+    fun keycodeToString(keyCode: Int): String {
+        return if (KeycodeHelper.NON_CHARACTER_KEY_MAP.containsKey(keyCode)) {
+            KeycodeHelper.NON_CHARACTER_KEY_MAP.getValue(keyCode)
+        } else {
+            KeyEvent(KeyEvent.ACTION_UP, keyCode).displayLabel.toString()
+        }
+    }
+
+    fun keyEventToString(event: KeyEvent): String {
+        return keycodeToString(event.keyCode)
+    }
 
     /**
      * Get all the valid key codes which work on the Android version for the device.

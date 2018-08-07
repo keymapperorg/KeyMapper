@@ -9,6 +9,9 @@ import io.github.sds100.keymapper.AppShortcutHelper
  * Created by sds100 on 17/07/2018.
  */
 
+/**
+ * Display app shortcuts in a RecyclerView
+ */
 class AppShortcutAdapter(
         private val packageManager: PackageManager,
         onItemClickListener: OnItemClickListener<ResolveInfo>
@@ -17,7 +20,7 @@ class AppShortcutAdapter(
         onItemClickListener) {
 
     override fun getItemText(item: ResolveInfo): String {
-        return item.activityInfo.name
+        return item.loadLabel(packageManager).toString()
     }
 
     override fun getItemImage(item: ResolveInfo): Drawable? {

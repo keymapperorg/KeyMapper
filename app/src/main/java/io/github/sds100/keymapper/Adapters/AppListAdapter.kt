@@ -7,14 +7,24 @@ import android.graphics.drawable.Drawable
 /**
  * Created by sds100 on 17/07/2018.
  */
+
+/**
+ * Display apps in a RecyclerView
+ */
 class AppListAdapter(appList: List<ApplicationInfo>,
                      private val packageManager: PackageManager,
                      private val onItemClickListener: OnItemClickListener<ApplicationInfo>
 ) : SimpleItemAdapter<ApplicationInfo>(appList, onItemClickListener) {
 
+    /**
+     * Get the app icon
+     */
     private val ApplicationInfo.iconDrawable: Drawable
         get() = loadIcon(packageManager)
 
+    /**
+     * Get the app name
+     */
     private val ApplicationInfo.appName: String
         get() = loadLabel(packageManager).toString()
 

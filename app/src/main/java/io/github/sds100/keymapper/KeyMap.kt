@@ -8,4 +8,17 @@ data class KeyMap(
         val id: Long,
         val triggerList: MutableList<Trigger> = mutableListOf(),
         val action: Action
-)
+) {
+    override fun hashCode() = id.toInt()
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as KeyMap
+
+        if (id != other.id) return false
+
+        return true
+    }
+
+}

@@ -8,14 +8,10 @@
     The accessibility service only listens for key events and nothing else. Key loggin will never take place. Look in the source code, which is in the About section inside the app, if you are paranoid. :)</string>
     <string name="record_trigger_help">Type the keys which will be the trigger keys then click \"Stop recording trigger\" to add it to the trigger list. Press \"clear\" to clear the keys you have already typed.</string>
 
-    <string-array name="spinner_action_type_array">
-        <item>App</item>
-        <item>App Shortcut</item>
-        <item>Key</item>
-        <item>Custom Keycode</item>
-        <item>Action</item>
-        <item>Text</item>
-    </string-array>
+    <string name="description_open_app">Open %s</string>
+    <string name="description_key">Press \'%s\' key</string>
+    <string name="description_text_block">Insert \'%s\'</string>
+    <string name="description_keycode">%s</string>
 
     <!-- Menu action titles-->
     <string name="action_settings">Settings</string>
@@ -49,7 +45,7 @@
     <!-- Dialog buttons -->
 
     <!--Action Types-->
-    <string name="action_type_application">Application</string>
+    <string name="action_type_application">Apps</string>
     <string name="action_type_application_shortcut">App shortcut</string>
     <string name="action_type_key">Key</string>
     <string name="action_type_keycode">Key code</string>

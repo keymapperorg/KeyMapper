@@ -10,6 +10,10 @@ import io.github.sds100.keymapper.R
 /**
  * Created by sds100 on 12/07/2018.
  */
+
+/**
+ * Display a list of [KeyMap]s in a RecyclerView
+ */
 class KeyMapAdapter(private val keyMapList: List<KeyMap>
 ) : RecyclerView.Adapter<KeyMapAdapter.ViewHolder>() {
 

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.sds100.keymapper.Action
+import io.github.sds100.keymapper.ActionType
 import io.github.sds100.keymapper.Adapters.SimpleItemAdapter
 import io.github.sds100.keymapper.Adapters.SystemActionAdapter
 import io.github.sds100.keymapper.R
@@ -14,6 +15,10 @@ import kotlinx.android.synthetic.main.action_type_recyclerview.*
 
 /**
  * Created by sds100 on 29/07/2018.
+ */
+
+/**
+ * A Fragment which displays a list of all actions that can be performed on the system
  */
 class SystemActionTypeFragment : ActionTypeFragment(),
         SimpleItemAdapter.OnItemClickListener<SystemActionListItem> {
@@ -41,7 +46,7 @@ class SystemActionTypeFragment : ActionTypeFragment(),
     }
 
     override fun onItemClick(item: SystemActionListItem) {
-        val action = Action(Action.TYPE_SYSTEM_ACTION, item.actionId)
+        val action = Action(ActionType.SYSTEM_ACTION, item.action.toString())
         chooseSelectedAction(action)
     }
 }

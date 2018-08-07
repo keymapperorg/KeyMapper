@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.sds100.keymapper.Action
+import io.github.sds100.keymapper.ActionType
 import io.github.sds100.keymapper.Adapters.AppListAdapter
 import io.github.sds100.keymapper.Adapters.SimpleItemAdapter
 import io.github.sds100.keymapper.R
@@ -18,6 +19,9 @@ import kotlin.coroutines.experimental.buildSequence
  * Created by sds100 on 29/07/2018.
  */
 
+/**
+ * A Fragment which shows a list of all the installed apps
+ */
 class AppActionTypeFragment : ActionTypeFragment(),
         SimpleItemAdapter.OnItemClickListener<ApplicationInfo> {
 
@@ -47,10 +51,13 @@ class AppActionTypeFragment : ActionTypeFragment(),
     }
 
     override fun onItemClick(item: ApplicationInfo) {
-        val action = Action(Action.TYPE_APP, item.packageName)
+        val action = Action(ActionType.APP, item.packageName)
         chooseSelectedAction(action)
     }
 
+    /**
+     * Get a list of apps sorted by name
+     */
     private fun getApps(): List<ApplicationInfo> {
         val packageManager = context!!.packageManager
 

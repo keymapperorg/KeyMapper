@@ -7,8 +7,11 @@ import android.content.IntentFilter
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.github.salomonbrys.kotson.fromJson
+import com.google.gson.Gson
 import io.github.sds100.keymapper.Adapters.TriggerAdapter
 import kotlinx.android.synthetic.main.activity_new_key_map.*
 import kotlinx.android.synthetic.main.content_new_key_map.*
@@ -19,6 +22,7 @@ class NewKeyMapActivity : AppCompatActivity() {
     companion object {
         const val ACTION_ADD_KEY_CHIP = "io.github.sds100.keymapper.ADD_KEY_CHIP"
         const val EXTRA_KEY_EVENT = "extra_key_event"
+
         const val REQUEST_CODE_ACTION = 821
     }
 
@@ -36,6 +40,23 @@ class NewKeyMapActivity : AppCompatActivity() {
     }
 
     private val mTriggerAdapter = TriggerAdapter()
+
+    private var mChosenAction: Action? = null
+        set(value) {
+            textViewAction.text = Action.getDescription(ctx = this, action = value!!)
+
+            val drawable = Action.getIcon(ctx = this, action = value)
+
+            if (drawable == null) {
+                imageView.setImageDrawable(null)
+                imageView.visibility = View.GONE
+            } else {
+                imageView.setImageDrawable(drawable)
+                imageView.visibility = View.VISIBLE
+            }
+
+            field = value
+        }
 
     private var mRecordingTrigger = false
 

@@ -14,7 +14,7 @@ import io.github.sds100.keymapper.R
  */
 
 /**
- * Display an icon and text in a RecyclerView
+ * Display a simple layout with an icon and text in a RecyclerView
  */
 abstract class SimpleItemAdapter<T>(
         private val itemList: List<T>,
@@ -33,12 +33,30 @@ abstract class SimpleItemAdapter<T>(
         val item = itemList[position]
 
         holder.apply {
-            imageView.setImageDrawable(getItemImage(item))
+            val drawable = getItemImage(item)
+
+            /*if no icon should be shown then hide the ImageView so there isn't whitespace next to
+            the text*/
+            if (drawable == null) {
+                imageView.setImageDrawable(null)
+                imageView.visibility = View.GONE
+            } else {
+                imageView.setImageDrawable(drawable)
+                imageView.visibility = View.VISIBLE
+            }
+
             textView.text = getItemText(item)
         }
     }
 
+    /**
+     * The text that will be shown in the list item's TextView
+     */
     abstract fun getItemText(item: T): String
+
+    /**
+     * The drawable that will be shown in the list item's ImageView
+     */
     abstract fun getItemImage(item: T): Drawable?
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

@@ -7,12 +7,6 @@ import android.view.View
 import android.widget.AdapterView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import io.github.sds100.keymapper.Action.Companion.TYPE_APP
-import io.github.sds100.keymapper.Action.Companion.TYPE_APP_SHORTCUT
-import io.github.sds100.keymapper.Action.Companion.TYPE_KEY
-import io.github.sds100.keymapper.Action.Companion.TYPE_KEYCODE
-import io.github.sds100.keymapper.Action.Companion.TYPE_SYSTEM_ACTION
-import io.github.sds100.keymapper.Action.Companion.TYPE_TEXT_BLOCK
 import io.github.sds100.keymapper.ActionTypeFragments.*
 import io.github.sds100.keymapper.Adapters.ActionTypeSpinnerAdapter
 import kotlinx.android.synthetic.main.activity_choose_action.*
@@ -43,7 +37,7 @@ class ChooseActionActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
         if (mKeyActionTypeFragment.isVisible) {
-            mKeyActionTypeFragment.onKeyPress(event!!)
+            mKeyActionTypeFragment.showKeyEventChip(event!!)
         }
 
         return super.onKeyUp(keyCode, event)
@@ -64,15 +58,18 @@ class ChooseActionActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
     override fun onNothingSelected(parent: AdapterView<*>?) {}
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        val actionType = ActionTypeSpinnerAdapter.getActionTypeFromPosition(position)
+        val actionType = ActionTypeSpinnerAdapter.getActionTypeFromPosition(
+                ctx = this,
+                position = position
+        )
 
         when (actionType) {
-            TYPE_APP -> showFragmentInFrameLayout(mAppActionTypeFragment)
-            TYPE_KEYCODE -> showFragmentInFrameLayout(mKeycodeActionTypeFragment)
-            TYPE_APP_SHORTCUT -> showFragmentInFrameLayout(mAppShortcutActionTypeFragment)
-            TYPE_KEY -> showFragmentInFrameLayout(mKeyActionTypeFragment)
-            TYPE_SYSTEM_ACTION -> showFragmentInFrameLayout(mSystemActionTypeFragment)
-            TYPE_TEXT_BLOCK -> showFragmentInFrameLayout(mTextActionTypeFragment)
+            ActionType.APP -> showFragmentInFrameLayout(mAppActionTypeFragment)
+            ActionType.KEYCODE -> showFragmentInFrameLayout(mKeycodeActionTypeFragment)
+            ActionType.APP_SHORTCUT -> showFragmentInFrameLayout(mAppShortcutActionTypeFragment)
+            ActionType.KEY -> showFragmentInFrameLayout(mKeyActionTypeFragment)
+            ActionType.SYSTEM_ACTION -> showFragmentInFrameLayout(mSystemActionTypeFragment)
+            ActionType.TEXT_BLOCK -> showFragmentInFrameLayout(mTextActionTypeFragment)
         }
     }
 

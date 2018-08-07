@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.sds100.keymapper.Action
+import io.github.sds100.keymapper.ActionType
 import io.github.sds100.keymapper.Adapters.AppShortcutAdapter
 import io.github.sds100.keymapper.Adapters.SimpleItemAdapter
 import io.github.sds100.keymapper.R
@@ -16,6 +17,9 @@ import kotlinx.android.synthetic.main.action_type_recyclerview.*
  * Created by sds100 on 31/07/2018.
  */
 
+/**
+ * A Fragment which shows all the available shortcut widgets for each installed app which has them
+ */
 class AppShortcutActionTypeFragment : ActionTypeFragment(),
         SimpleItemAdapter.OnItemClickListener<ResolveInfo> {
 
@@ -40,7 +44,7 @@ class AppShortcutActionTypeFragment : ActionTypeFragment(),
     }
 
     override fun onItemClick(item: ResolveInfo) {
-        val action = Action(Action.TYPE_APP_SHORTCUT, item.activityInfo.name)
+        val action = Action(ActionType.APP_SHORTCUT, item.activityInfo.name)
         chooseSelectedAction(action)
     }
 }

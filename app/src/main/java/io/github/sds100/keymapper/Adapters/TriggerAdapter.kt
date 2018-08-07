@@ -13,6 +13,9 @@ import io.github.sds100.keymapper.TriggerChipGroup
  * Created by sds100 on 16/07/2018.
  */
 
+/**
+ * Display a list of [Trigger]s as Chips in a RecyclerView
+ */
 class TriggerAdapter(val triggerList: MutableList<Trigger> = mutableListOf()
 ) : RecyclerView.Adapter<TriggerAdapter.ViewHolder>() {
 

@@ -8,6 +8,9 @@ import io.github.sds100.keymapper.KeycodeHelper
  * Created by sds100 on 17/07/2018.
  */
 
+/**
+ * Display all keycodes in a RecyclerView
+ */
 class KeycodeAdapter(onItemClickListener: OnItemClickListener<Int>
 ) : SimpleItemAdapter<Int>(KeycodeHelper.getKeyCodes(), onItemClickListener) {
 

@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.ActionTypeFragments
 import android.app.Activity
 import android.content.Intent
 import androidx.fragment.app.Fragment
+import com.google.gson.Gson
 import io.github.sds100.keymapper.Action
 
 /**
@@ -16,6 +17,7 @@ abstract class ActionTypeFragment : Fragment() {
      */
     fun chooseSelectedAction(action: Action) {
         val intent = Intent()
+        intent.putExtra(Action.EXTRA_ACTION, Gson().toJson(action))
 
         activity!!.setResult(Activity.RESULT_OK, intent)
         activity!!.finish()
