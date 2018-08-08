@@ -78,8 +78,6 @@ data class Action(
                     val text = action.data
                     ctx.getString(R.string.description_text_block, text)
                 }
-
-                else -> null
             }
         }
 
