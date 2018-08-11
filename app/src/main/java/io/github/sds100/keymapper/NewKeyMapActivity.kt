@@ -1,13 +1,17 @@
 package io.github.sds100.keymapper
 
+import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
+import android.widget.Toast.LENGTH_SHORT
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.salomonbrys.kotson.fromJson
@@ -23,6 +27,7 @@ class NewKeyMapActivity : AppCompatActivity() {
         const val ACTION_ADD_KEY_CHIP = "io.github.sds100.keymapper.ADD_KEY_CHIP"
         const val EXTRA_KEY_EVENT = "extra_key_event"
 
+        const val REQUEST_CODE_NEW_KEY_MAP = 432
         const val REQUEST_CODE_ACTION = 821
     }
 
@@ -40,6 +45,7 @@ class NewKeyMapActivity : AppCompatActivity() {
     }
 
     private val mTriggerAdapter = TriggerAdapter()
+    private val mKeymapRepository by lazy { KeyMapRepository.getInstance(this) }
 
     private var mChosenAction: Action? = null
         set(value) {
@@ -92,6 +98,12 @@ class NewKeyMapActivity : AppCompatActivity() {
         recyclerViewTriggers.adapter = mTriggerAdapter
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(R.menu.menu_new_key_map, menu)
+        return true
+    }
+
     override fun onBackPressed() {
         //ask the user whether they are sure they want to leave the activity
         alert {
@@ -108,6 +120,29 @@ class NewKeyMapActivity : AppCompatActivity() {
         hardware back button */
             android.R.id.home -> {
                 onBackPressed()
+                true
+            }
+            R.id.action_done -> {
+                if (mChosenAction == null) {
+                    Toast.makeText(this, R.string.error_must_choose_action, LENGTH_SHORT).show()
+                    return true
+                }
+
+                val keyMap = KeyMap(
+                        mKeymapRepository.createUniqueId(),
+                        mTriggerAdapter.triggerList,
+                        mChosenAction!!
+                )
+
+                if (!keyMap.isValid(this)) {
+                    return true
+                }
+
+                mKeymapRepository.saveKeyMap(keyMap)
+
+                //tell MainActivity to refresh the list of key maps since a new one was just created
+                setResult(Activity.RESULT_OK, Intent(MainActivity.ACTION_REFRESH_KEY_MAP_LIST))
+                finish()
                 true
             }
             else -> super.onOptionsItemSelected(item)

@@ -23,7 +23,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/C:/Users/sethd/Desktop/android-studio-3.3canary/plugins/android/lib/android.jar!/images/material_design_icons/device/ic_bluetooth_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/C:/Users/sethd/Desktop/android-studio-3.3canary/plugins/android/lib/android.jar!/images/material_design_icons/action/ic_done_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -33,7 +33,7 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputName" value="ic_bluetooth_black_24dp" />
+                            <entry key="outputName" value="ic_done_white_24dp" />
                             <entry key="sourceFile" value="C:\Users\sethd" />
                           </map>
                         </option>
