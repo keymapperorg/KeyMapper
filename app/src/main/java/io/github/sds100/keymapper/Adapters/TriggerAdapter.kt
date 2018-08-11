@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.SquareImageButton
 import io.github.sds100.keymapper.Trigger
-import io.github.sds100.keymapper.TriggerChipGroup
+import kotlinx.android.synthetic.main.trigger_adapter_item.view.*
 
 /**
  * Created by sds100 on 16/07/2018.
@@ -16,7 +16,9 @@ import io.github.sds100.keymapper.TriggerChipGroup
 /**
  * Display a list of [Trigger]s as Chips in a RecyclerView
  */
-class TriggerAdapter(val triggerList: MutableList<Trigger> = mutableListOf()
+class TriggerAdapter(
+        val triggerList: MutableList<Trigger> = mutableListOf(),
+        val showRemoveButton: Boolean = true
 ) : RecyclerView.Adapter<TriggerAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -26,8 +28,12 @@ class TriggerAdapter(val triggerList: MutableList<Trigger> = mutableListOf()
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.apply {
+        holder.itemView.apply {
             triggerChipGroup.addChipsFromTrigger(triggerList[position])
+
+            if (!showRemoveButton) {
+                buttonRemove.visibility = View.GONE
+            }
         }
     }
 
@@ -42,8 +48,6 @@ class TriggerAdapter(val triggerList: MutableList<Trigger> = mutableListOf()
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val triggerChipGroup: TriggerChipGroup = itemView.findViewById(R.id.triggerChipGroup)
-
         init {
             itemView.findViewById<SquareImageButton>(R.id.buttonRemove).setOnClickListener {
                 triggerList.removeAt(adapterPosition)
