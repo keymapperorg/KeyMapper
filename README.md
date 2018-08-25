@@ -1,2 +1,2 @@
 # KeyMapper
-An Android app that maps any keyboard key combination to a custom action.
+An Android app that maps any key event combination to a custom action.
