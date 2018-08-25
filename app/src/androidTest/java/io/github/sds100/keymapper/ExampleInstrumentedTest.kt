@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper
 
-import androidx.test.InstrumentationRegistry
-import androidx.test.runner.AndroidJUnit4
+import android.support.test.InstrumentationRegistry
+import android.support.test.runner.AndroidJUnit4
 
 import org.junit.Test
 import org.junit.runner.RunWith
