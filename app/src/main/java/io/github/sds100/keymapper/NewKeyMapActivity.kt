@@ -122,6 +122,7 @@ class NewKeyMapActivity : AppCompatActivity() {
                 onBackPressed()
                 true
             }
+            
             R.id.action_done -> {
                 if (mChosenAction == null) {
                     Toast.makeText(this, R.string.error_must_choose_action, LENGTH_SHORT).show()
