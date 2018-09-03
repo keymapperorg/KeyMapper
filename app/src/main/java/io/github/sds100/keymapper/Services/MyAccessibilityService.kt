@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper
+package io.github.sds100.keymapper.Services
 
 import android.accessibilityservice.AccessibilityService
 import android.content.BroadcastReceiver
@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
+import io.github.sds100.keymapper.Activities.NewKeyMapActivity
 
 /**
  * Created by sds100 on 16/07/2018.

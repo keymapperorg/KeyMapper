@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper
+package io.github.sds100.keymapper.Activities
 
 import android.os.Bundle
 import android.view.KeyEvent
@@ -7,8 +7,10 @@ import android.view.View
 import android.widget.AdapterView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import io.github.sds100.keymapper.ActionType
 import io.github.sds100.keymapper.ActionTypeFragments.*
 import io.github.sds100.keymapper.Adapters.ActionTypeSpinnerAdapter
+import io.github.sds100.keymapper.R
 import kotlinx.android.synthetic.main.activity_choose_action.*
 import kotlinx.android.synthetic.main.content_choose_action.*
 

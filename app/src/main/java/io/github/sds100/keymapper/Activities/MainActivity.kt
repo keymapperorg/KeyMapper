@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper
+package io.github.sds100.keymapper.Activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,11 +6,15 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Adapters.KeymapAdapter
+import io.github.sds100.keymapper.Selection.SelectableActionMode
+import io.github.sds100.keymapper.Selection.SelectionCallback
+import io.github.sds100.keymapper.Services.MyAccessibilityService
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), SelectionCallback {
 
     companion object {
         const val ACTION_REFRESH_KEY_MAP_LIST = "action_refresh_key_map_list"
@@ -37,6 +41,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         populateKeyMapRecyclerView()
+        mKeymapAdapter.iSelectionProvider.subscribeToSelectionEvents(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -60,11 +65,19 @@ class MainActivity : AppCompatActivity() {
 
         if (requestCode == NewKeyMapActivity.REQUEST_CODE_NEW_KEY_MAP && resultCode == RESULT_OK) {
             if (data?.action == ACTION_REFRESH_KEY_MAP_LIST) {
-                mKeymapAdapter.keyMapList = mKeymapRepository.getKeyMapList()
+                mKeymapAdapter.itemList = mKeymapRepository.getKeyMapList()
                 mKeymapAdapter.notifyDataSetChanged()
             }
         }
     }
+
+    override fun onStartMultiSelect() {
+        startSupportActionMode(SelectableActionMode(this, mKeymapAdapter.iSelectionProvider))
+    }
+
+    override fun onStopMultiSelect() {}
+    override fun onItemSelected(id: Long) {}
+    override fun onItemUnselected(id: Long) {}
 
     /**
      * Populate [recyclerViewKeyMaps] with a list of key maps.

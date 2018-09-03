@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.Adapters
 import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
-import io.github.sds100.keymapper.SystemActionHelper
+import io.github.sds100.keymapper.Utils.SystemActionUtils
 import io.github.sds100.keymapper.SystemActionListItem
 
 /**
@@ -14,7 +14,7 @@ class SystemActionAdapter(
         private val ctx: Context,
         onItemClickListener: OnItemClickListener<SystemActionListItem>
 ) : SimpleItemAdapter<SystemActionListItem>(
-        SystemActionHelper.SYSTEM_ACTION_LIST_ITEMS,
+        SystemActionUtils.SYSTEM_ACTION_LIST_ITEMS,
         onItemClickListener
 ) {
     override fun getItemText(item: SystemActionListItem): String {

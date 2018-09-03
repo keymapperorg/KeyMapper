@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".NewKeyMapActivity"
+    tools:context=".Activities.NewKeyMapActivity"
     tools:showIn="@layout/activity_new_key_map">
 
     <TextView
@@ -120,7 +120,7 @@
 
     <Button
         android:id="@+id/buttonClearKeys"
-        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"

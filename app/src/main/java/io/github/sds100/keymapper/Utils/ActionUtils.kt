@@ -13,6 +13,10 @@ import io.github.sds100.keymapper.SystemAction
 /**
  * Created by sds100 on 03/09/2018.
  */
+
+/**
+ * Provides functions commonly used with [Action]s
+ */
 object ActionUtils {
     /**
      * Get a description for an action. E.g if the user chose an app, then the description will

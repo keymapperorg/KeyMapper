@@ -1,10 +1,10 @@
 package io.github.sds100.keymapper
 
 import android.content.Context
+import android.preference.PreferenceManager
 import androidx.core.content.edit
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
-import org.jetbrains.anko.defaultSharedPreferences
 import java.lang.ref.WeakReference
 
 /**
@@ -31,6 +31,9 @@ class KeyMapRepository private constructor(ctx: Context) {
 
     private var mKeyMapList: MutableList<KeyMap>
     private val mCtx: WeakReference<Context> = WeakReference(ctx.applicationContext)
+
+    private val mSharedPreferences
+        get() = PreferenceManager.getDefaultSharedPreferences(mCtx.get())
 
     init {
         //must be application context
@@ -60,14 +63,16 @@ class KeyMapRepository private constructor(ctx: Context) {
     }
 
     private fun saveKeyMapListToSharedPrefs() {
-        mCtx.get()!!.defaultSharedPreferences.edit {
+        /*I would use the anko library to get the default shared preferences from context
+         but it stopped working */
+        mSharedPreferences.edit {
             val json = Gson().toJson(mKeyMapList)
             putString(KEY_KEY_MAP_LIST, json)
         }
     }
 
     private fun getKeyMapListFromSharedPrefs(): MutableList<KeyMap> {
-        val json = mCtx.get()!!.defaultSharedPreferences.getString(KEY_KEY_MAP_LIST, null)
+        val json = mSharedPreferences.getString(KEY_KEY_MAP_LIST, null)
 
         if (json == null) {
             return mutableListOf()

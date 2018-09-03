@@ -1,10 +1,14 @@
-package io.github.sds100.keymapper
+package io.github.sds100.keymapper.Utils
+
+import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.SystemAction
+import io.github.sds100.keymapper.SystemActionListItem
 
 /**
  * Created by sds100 on 01/08/2018.
  */
 
-object SystemActionHelper {
+object SystemActionUtils {
 
     val SYSTEM_ACTION_LIST_ITEMS = listOf(
             SystemActionListItem(SystemAction.ACTION_TOGGLE_WIFI),
@@ -12,7 +16,7 @@ object SystemActionHelper {
     )
 
     /**
-     * Get a string resource id, which describes a particular [SystemActionHelper].
+     * Get a string resource id for a string which describes a specified [SystemAction].
      */
     fun getDescription(systemAction: SystemAction): Int {
         return when (systemAction) {
@@ -23,7 +27,7 @@ object SystemActionHelper {
     }
 
     /**
-     *
+     * Get a drawable resource id for a specified [SystemAction]
      */
     fun getIconResource(systemAction: SystemAction): Int {
         return when (systemAction) {

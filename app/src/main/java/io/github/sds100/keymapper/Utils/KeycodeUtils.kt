@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper
+package io.github.sds100.keymapper.Utils
 
 import android.os.Build
 import android.view.KeyEvent
@@ -8,7 +8,7 @@ import androidx.annotation.RequiresApi
  * Created by sds100 on 17/07/2018.
  */
 
-object KeycodeHelper {
+object KeycodeUtils {
     /**
      * Maps keys which aren't single characters like the Control keys to a string representation
      */
@@ -342,8 +342,8 @@ object KeycodeHelper {
      * "Ctrl" will be returned
      */
     fun keycodeToString(keyCode: Int): String {
-        return if (KeycodeHelper.NON_CHARACTER_KEY_MAP.containsKey(keyCode)) {
-            KeycodeHelper.NON_CHARACTER_KEY_MAP.getValue(keyCode)
+        return if (NON_CHARACTER_KEY_MAP.containsKey(keyCode)) {
+            NON_CHARACTER_KEY_MAP.getValue(keyCode)
         } else {
             KeyEvent(KeyEvent.ACTION_UP, keyCode).displayLabel.toString()
         }

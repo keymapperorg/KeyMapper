@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.KeyEvent
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import io.github.sds100.keymapper.Utils.KeycodeUtils
 
 /**
  * Created by sds100 on 13/07/2018.
@@ -29,7 +30,7 @@ open class KeyEventChipGroup(
      */
     fun addChip(event: KeyEvent) {
         val chip = KeyChip(context, event.keyCode)
-        val text = KeycodeHelper.keyEventToString(event)
+        val text = KeycodeUtils.keyEventToString(event)
 
         chip.text = text
 
