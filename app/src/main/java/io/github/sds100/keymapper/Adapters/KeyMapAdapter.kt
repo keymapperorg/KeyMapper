@@ -17,8 +17,8 @@ import kotlinx.android.synthetic.main.keymap_adapter_item.view.*
 /**
  * Display a list of [KeyMap]s in a RecyclerView
  */
-class KeymapAdapter(keymapList: List<KeyMap>
-) : SelectableAdapter<KeyMap, KeymapAdapter.ViewHolder>(keymapList) {
+class KeyMapAdapter(keymapList: List<KeyMap>
+) : SelectableAdapter<KeyMap, KeyMapAdapter.ViewHolder>(keymapList) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
