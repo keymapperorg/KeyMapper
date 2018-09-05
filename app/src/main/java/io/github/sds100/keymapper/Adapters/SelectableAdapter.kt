@@ -14,8 +14,9 @@ import io.github.sds100.keymapper.Selection.SelectionProvider
  * A RecyclerView Adapter which allows items to be selected when long pressed
  * @param T The object type for the items
  */
-abstract class SelectableAdapter<T, VH : SelectableAdapter<T, VH>.ViewHolder>(var itemList: List<T>)
-    : RecyclerView.Adapter<VH>(), SelectionCallback {
+abstract class SelectableAdapter<T, VH : SelectableAdapter<T, VH>.ViewHolder>(
+        var itemList: List<T> = listOf()
+) : RecyclerView.Adapter<VH>(), SelectionCallback {
 
     val iSelectionProvider: ISelectionProvider = SelectionProvider()
 

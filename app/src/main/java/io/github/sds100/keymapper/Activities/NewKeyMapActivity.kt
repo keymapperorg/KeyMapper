@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.Activities
 
-import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -13,16 +12,17 @@ import android.view.View
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import io.github.sds100.keymapper.Action
 import io.github.sds100.keymapper.Adapters.TriggerAdapter
 import io.github.sds100.keymapper.KeyMap
-import io.github.sds100.keymapper.KeyMapRepository
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Services.MyAccessibilityService
 import io.github.sds100.keymapper.Utils.ActionUtils
+import io.github.sds100.keymapper.ViewModels.NewKeyMapViewModel
 import kotlinx.android.synthetic.main.activity_new_key_map.*
 import kotlinx.android.synthetic.main.content_new_key_map.*
 import org.jetbrains.anko.alert
@@ -33,7 +33,6 @@ class NewKeyMapActivity : AppCompatActivity() {
         const val ACTION_ADD_KEY_CHIP = "io.github.sds100.keymapper.ADD_KEY_CHIP"
         const val EXTRA_KEY_EVENT = "extra_key_event"
 
-        const val REQUEST_CODE_NEW_KEY_MAP = 432
         const val REQUEST_CODE_ACTION = 821
     }
 
@@ -51,7 +50,6 @@ class NewKeyMapActivity : AppCompatActivity() {
     }
 
     private val mTriggerAdapter = TriggerAdapter()
-    private val mKeymapRepository by lazy { KeyMapRepository.getInstance(this) }
 
     private var mChosenAction: Action? = null
         set(value) {
@@ -70,7 +68,9 @@ class NewKeyMapActivity : AppCompatActivity() {
             field = value
         }
 
-    private var mRecordingTrigger = false
+    private var mIsRecordingTrigger = false
+
+    private lateinit var mViewModel: NewKeyMapViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,8 +80,10 @@ class NewKeyMapActivity : AppCompatActivity() {
         //show the back button in the toolbar
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
+        mViewModel = ViewModelProviders.of(this).get(NewKeyMapViewModel::class.java)
+
         buttonRecordTrigger.setOnClickListener {
-            if (mRecordingTrigger) {
+            if (mIsRecordingTrigger) {
                 addTrigger()
                 buttonRecordTrigger.text = getString(R.string.button_record_trigger)
             } else {
@@ -136,19 +138,17 @@ class NewKeyMapActivity : AppCompatActivity() {
                 }
 
                 val keyMap = KeyMap(
-                        mKeymapRepository.createUniqueId(),
-                        mTriggerAdapter.triggerList,
-                        mChosenAction!!
+                        triggerList = mTriggerAdapter.triggerList,
+                        action = mChosenAction!!
                 )
 
+                //if the key map isn't valid, return.
                 if (!keyMap.isValid(this)) {
                     return true
                 }
 
-                mKeymapRepository.saveKeyMap(keyMap)
+                mViewModel.saveKeyMap(keyMap)
 
-                //tell MainActivity to refresh the list of key maps since a new one was just created
-                setResult(Activity.RESULT_OK, Intent(MainActivity.ACTION_REFRESH_KEY_MAP_LIST))
                 finish()
                 true
             }
@@ -159,7 +159,7 @@ class NewKeyMapActivity : AppCompatActivity() {
     override fun onStop() {
         //If the user manages to leave the app, allow the accessibility service to accept key events
         //so they can use the device
-        if (mRecordingTrigger) stopRecordingTrigger()
+        if (mIsRecordingTrigger) stopRecordingTrigger()
 
         super.onStop()
     }
@@ -189,7 +189,7 @@ class NewKeyMapActivity : AppCompatActivity() {
      * Start recording a new trigger
      */
     private fun recordTrigger() {
-        mRecordingTrigger = true
+        mIsRecordingTrigger = true
 
         //tell the accessibility service to record key events
         val intent = Intent(MyAccessibilityService.ACTION_RECORD_TRIGGER)
@@ -206,7 +206,7 @@ class NewKeyMapActivity : AppCompatActivity() {
      * Stop recording a new trigger
      */
     private fun stopRecordingTrigger() {
-        mRecordingTrigger = false
+        mIsRecordingTrigger = false
         chipGroupTriggerPreview.removeAllChips()
 
         //tell the accessibility service to stop recording key events
