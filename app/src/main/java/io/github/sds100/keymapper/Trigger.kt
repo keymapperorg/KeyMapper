@@ -5,6 +5,6 @@ package io.github.sds100.keymapper
  */
 
 /**
- * @property [keys] The key codes which trigger the action
+ * @property [keys] The key codes which will trigger the action
  */
 data class Trigger(val keys: List<Int>)
