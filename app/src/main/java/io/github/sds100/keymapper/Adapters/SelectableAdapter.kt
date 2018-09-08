@@ -42,6 +42,8 @@ abstract class SelectableAdapter<T, VH : SelectableAdapter<T, VH>.ViewHolder>(
 
     override fun getItemCount() = itemList.size
 
+    override fun onStartMultiSelect() {}
+
     override fun onStopMultiSelect() {
         //call onBindViewHolder so the background for each item reverts to the original
         notifyDataSetChanged()
