@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">KeyMapper</string>
+    <string name="app_name">Key Mapper</string>
     <string name="title_activity_new_key_map">New Keymap</string>
     <string name="title_choose_action">Choose Action</string>
     <string name="no_action_specified">No Action Specified</string>
