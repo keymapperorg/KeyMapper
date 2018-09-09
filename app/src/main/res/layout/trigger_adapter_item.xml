@@ -5,18 +5,27 @@
     android:layout_width="match_parent"
     android:layout_height="48dp">
 
-    <io.github.sds100.keymapper.TriggerChipGroup
-        android:id="@+id/triggerChipGroup"
+    <HorizontalScrollView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/buttonRemove"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_height="20dp" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <io.github.sds100.keymapper.TriggerChipGroup
+            android:id="@+id/triggerChipGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            tools:layout_height="20dp" />
+    </HorizontalScrollView>
 
     <io.github.sds100.keymapper.SquareImageButton
         android:id="@+id/buttonRemove"
