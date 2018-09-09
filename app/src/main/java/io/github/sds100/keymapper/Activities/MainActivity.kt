@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.BuildConfig
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Selection.SelectableActionMode
 import io.github.sds100.keymapper.Selection.SelectionCallback
+import io.github.sds100.keymapper.Selection.SelectionProvider
 import io.github.sds100.keymapper.Services.MyAccessibilityService
 import io.github.sds100.keymapper.ViewModels.KeyMapListViewModel
 import kotlinx.android.synthetic.main.activity_main.*
@@ -51,6 +52,25 @@ class MainActivity : AppCompatActivity(), SelectionCallback {
 
         recyclerViewKeyMaps.layoutManager = LinearLayoutManager(this)
         recyclerViewKeyMaps.adapter = mKeyMapAdapter
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        outState!!.putBundle(
+                SelectionProvider.KEY_SELECTION_PROVIDER_STATE,
+                mKeyMapAdapter.iSelectionProvider.saveInstanceState())
+
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        if (savedInstanceState!!.containsKey(SelectionProvider.KEY_SELECTION_PROVIDER_STATE)) {
+            val selectionProviderState =
+                    savedInstanceState.getBundle(SelectionProvider.KEY_SELECTION_PROVIDER_STATE)!!
+
+            mKeyMapAdapter.iSelectionProvider.restoreInstanceState(selectionProviderState)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

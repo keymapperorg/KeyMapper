@@ -1,5 +1,7 @@
 package io.github.sds100.keymapper.Selection
 
+import android.os.Bundle
+
 /**
  * Created by sds100 on 13/08/2018.
  */
@@ -31,4 +33,7 @@ interface ISelectionProvider {
      * Unsubscribe a [SelectionCallback] from receiving selection events
      */
     fun unsubscribeToSelectionEvents(callback: SelectionCallback)
+
+    fun saveInstanceState(): Bundle
+    fun restoreInstanceState(bundle: Bundle)
 }

@@ -1,5 +1,7 @@
 package io.github.sds100.keymapper.Selection
 
+import android.os.Bundle
+
 /**
  * Created by sds100 on 12/07/2018.
  */
@@ -12,6 +14,12 @@ package io.github.sds100.keymapper.Selection
  */
 class SelectionProvider : ISelectionProvider {
 
+    companion object {
+        const val KEY_SELECTION_PROVIDER_STATE = "selection_provider_state"
+
+        private const val KEY_SELECTED_ITEMS = "selected_items"
+    }
+
     override val selectionCount: Int
         get() = mSelectedItems.size
 
@@ -23,7 +31,7 @@ class SelectionProvider : ISelectionProvider {
     /**
      * Stores the ids of the selected items
      */
-    private val mSelectedItems: MutableList<Long> = mutableListOf()
+    private var mSelectedItems: MutableList<Long> = mutableListOf()
 
     /**
      * All the classes which have subscribed to receive selection events. Such as when an item
@@ -68,5 +76,23 @@ class SelectionProvider : ISelectionProvider {
         mSelectionCallbacks.remove(callback)
     }
 
-    //TODO onSaveInstanceState and onRestoreInstanceState
+    override fun saveInstanceState(): Bundle {
+        return Bundle().apply {
+            //only save state if the user is selecting items
+            if (inSelectingMode) {
+                putLongArray(KEY_SELECTED_ITEMS, mSelectedItems.toLongArray())
+            }
+        }
+    }
+
+    override fun restoreInstanceState(bundle: Bundle) {
+        if (bundle.containsKey(KEY_SELECTED_ITEMS)) {
+            mIsSelecting = true
+            mSelectedItems = bundle.getLongArray(KEY_SELECTED_ITEMS)!!.toMutableList()
+
+            mSelectionCallbacks.forEach {
+                it.onStartMultiSelect()
+            }
+        }
+    }
 }
