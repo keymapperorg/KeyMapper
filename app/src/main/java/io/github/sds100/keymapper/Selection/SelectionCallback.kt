@@ -9,4 +9,5 @@ interface SelectionCallback {
     fun onStopMultiSelect()
     fun onItemSelected(id: Long)
     fun onItemUnselected(id: Long)
+    fun onSelectAll()
 }

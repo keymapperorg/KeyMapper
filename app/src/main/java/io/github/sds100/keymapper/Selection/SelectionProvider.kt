@@ -10,9 +10,10 @@ import android.os.Bundle
  * Controls multi-selecting items in a list. Classes can subscribe to selection events with
  * [SelectionCallback]
  *
+ *
  * @see [SelectionCallback]
  */
-class SelectionProvider : ISelectionProvider {
+class SelectionProvider(override var allItemIds: List<Long>) : ISelectionProvider {
 
     companion object {
         const val KEY_SELECTION_PROVIDER_STATE = "selection_provider_state"
@@ -21,7 +22,7 @@ class SelectionProvider : ISelectionProvider {
     }
 
     override val selectionCount: Int
-        get() = mSelectedItems.size
+        get() = mSelectedItemIds.size
 
     override val inSelectingMode: Boolean
         get() = mIsSelecting
@@ -31,7 +32,7 @@ class SelectionProvider : ISelectionProvider {
     /**
      * Stores the ids of the selected items
      */
-    private var mSelectedItems: MutableList<Long> = mutableListOf()
+    private var mSelectedItemIds: MutableList<Long> = mutableListOf()
 
     /**
      * All the classes which have subscribed to receive selection events. Such as when an item
@@ -41,8 +42,8 @@ class SelectionProvider : ISelectionProvider {
     private val mSelectionCallbacks: MutableList<SelectionCallback> = mutableListOf()
 
     override fun toggleSelection(itemId: Long) {
-        if (mSelectedItems.contains(itemId)) {
-            mSelectedItems.remove(itemId)
+        if (mSelectedItemIds.contains(itemId)) {
+            mSelectedItemIds.remove(itemId)
             mSelectionCallbacks.forEach { it.onItemUnselected(itemId) }
         } else {
 
@@ -52,20 +53,28 @@ class SelectionProvider : ISelectionProvider {
                 mSelectionCallbacks.forEach { it.onStartMultiSelect() }
             }
 
-            mSelectedItems.add(itemId)
+            mSelectedItemIds.add(itemId)
             mSelectionCallbacks.forEach { it.onItemSelected(itemId) }
+        }
+    }
+
+    override fun selectAll() {
+        if (mIsSelecting) {
+            mSelectedItemIds = allItemIds.toMutableList()
+
+            mSelectionCallbacks.forEach { it.onSelectAll() }
         }
     }
 
     override fun stopSelecting() {
         mIsSelecting = false
-        mSelectedItems.clear()
+        mSelectedItemIds.clear()
 
         mSelectionCallbacks.forEach { it.onStopMultiSelect() }
     }
 
     override fun isSelected(itemId: Long): Boolean {
-        return mSelectedItems.any { it == itemId }
+        return mSelectedItemIds.any { it == itemId }
     }
 
     override fun subscribeToSelectionEvents(callback: SelectionCallback) {
@@ -80,7 +89,7 @@ class SelectionProvider : ISelectionProvider {
         return Bundle().apply {
             //only save state if the user is selecting items
             if (inSelectingMode) {
-                putLongArray(KEY_SELECTED_ITEMS, mSelectedItems.toLongArray())
+                putLongArray(KEY_SELECTED_ITEMS, mSelectedItemIds.toLongArray())
             }
         }
     }
@@ -88,7 +97,7 @@ class SelectionProvider : ISelectionProvider {
     override fun restoreInstanceState(bundle: Bundle) {
         if (bundle.containsKey(KEY_SELECTED_ITEMS)) {
             mIsSelecting = true
-            mSelectedItems = bundle.getLongArray(KEY_SELECTED_ITEMS)!!.toMutableList()
+            mSelectedItemIds = bundle.getLongArray(KEY_SELECTED_ITEMS)!!.toMutableList()
 
             mSelectionCallbacks.forEach {
                 it.onStartMultiSelect()

@@ -17,6 +17,7 @@
     <!-- Menu action titles-->
     <string name="action_settings">Settings</string>
     <string name="action_done">Done</string>
+    <string name="action_select_all">Select All</string>
     <!-- Menu action titles-->
 
     <!-- Button titles -->

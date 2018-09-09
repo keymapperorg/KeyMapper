@@ -94,6 +94,7 @@ class MainActivity : AppCompatActivity(), SelectionCallback {
     }
 
     override fun onStopMultiSelect() {}
+    override fun onSelectAll() {}
     override fun onItemSelected(id: Long) {}
     override fun onItemUnselected(id: Long) {}
 }

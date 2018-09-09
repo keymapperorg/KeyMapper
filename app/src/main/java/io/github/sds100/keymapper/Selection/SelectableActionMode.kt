@@ -31,12 +31,17 @@ class SelectableActionMode(
                 mISelectionProvider.stopSelecting()
                 mISelectionProvider.unsubscribeToSelectionEvents(this)
             }
+
+            R.id.action_select_all -> {
+                mISelectionProvider.selectAll()
+                return true
+            }
         }
         return true
     }
 
     override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean {
-        //set the title to the number of items selected. E.g 10 Selected
+        //set the title to the number of items selected. E.g "10 Selected"
         mode!!.title = mCtx.getString(
                 R.string.selection_count,
                 mISelectionProvider.selectionCount)
@@ -54,6 +59,10 @@ class SelectableActionMode(
     }
 
     override fun onItemUnselected(id: Long) {
+        mActionMode?.invalidate()
+    }
+
+    override fun onSelectAll() {
         mActionMode?.invalidate()
     }
 

@@ -10,6 +10,11 @@ interface ISelectionProvider {
     val selectionCount: Int
 
     /**
+     * A list of all the ids for all the items which can be selected
+     */
+    var allItemIds: List<Long>
+
+    /**
      * @return whether the item is selected.
      */
     fun isSelected(itemId: Long): Boolean
@@ -33,6 +38,8 @@ interface ISelectionProvider {
      * Unsubscribe a [SelectionCallback] from receiving selection events
      */
     fun unsubscribeToSelectionEvents(callback: SelectionCallback)
+
+    fun selectAll()
 
     fun saveInstanceState(): Bundle
     fun restoreInstanceState(bundle: Bundle)

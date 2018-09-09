@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.Adapters
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import io.github.sds100.keymapper.Selection.ISelectionProvider
+import io.github.sds100.keymapper.Selection.SelectableItem
 import io.github.sds100.keymapper.Selection.SelectionCallback
 import io.github.sds100.keymapper.Selection.SelectionProvider
 
@@ -14,14 +15,24 @@ import io.github.sds100.keymapper.Selection.SelectionProvider
  * A RecyclerView Adapter which allows items to be selected when long pressed
  * @param T The object type for the items
  */
-abstract class SelectableAdapter<T, VH : SelectableAdapter<T, VH>.ViewHolder>(
-        var itemList: List<T> = listOf()
+abstract class SelectableAdapter<T : SelectableItem, VH : SelectableAdapter<T, VH>.ViewHolder>(
+        itemList: List<T> = listOf()
 ) : RecyclerView.Adapter<VH>(), SelectionCallback {
 
-    val iSelectionProvider: ISelectionProvider = SelectionProvider()
+    val iSelectionProvider: ISelectionProvider = SelectionProvider(
+            allItemIds = itemList.map { it.id }
+    )
+
+    var itemList: List<T> = listOf()
+        set(value) {
+            iSelectionProvider.allItemIds = value.map { it.id }
+            field = value
+        }
 
     init {
         iSelectionProvider.subscribeToSelectionEvents(this)
+
+        this.itemList = itemList
     }
 
     override fun onBindViewHolder(holder: VH, position: Int) {
@@ -42,12 +53,16 @@ abstract class SelectableAdapter<T, VH : SelectableAdapter<T, VH>.ViewHolder>(
 
     override fun getItemCount() = itemList.size
 
-    override fun onStartMultiSelect() {}
+    override fun onSelectAll() {
+        notifyDataSetChanged()
+    }
 
     override fun onStopMultiSelect() {
         //call onBindViewHolder so the background for each item reverts to the original
         notifyDataSetChanged()
     }
+
+    override fun onStartMultiSelect() {}
 
     open inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         init {
