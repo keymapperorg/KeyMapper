@@ -15,7 +15,7 @@ class SelectionProvider : ISelectionProvider {
     override val selectionCount: Int
         get() = mSelectedItems.size
 
-    override val isSelecting: Boolean
+    override val inSelectingMode: Boolean
         get() = mIsSelecting
 
     private var mIsSelecting = false

@@ -4,7 +4,7 @@ package io.github.sds100.keymapper.Selection
  * Created by sds100 on 13/08/2018.
  */
 interface ISelectionProvider {
-    val isSelecting: Boolean
+    val inSelectingMode: Boolean
     val selectionCount: Int
 
     /**

@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.sds100.keymapper.KeyMap
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.Selection.SelectableBackground
 import io.github.sds100.keymapper.Utils.ActionUtils
 import kotlinx.android.synthetic.main.keymap_adapter_item.view.*
 
@@ -31,9 +30,19 @@ class KeyMapAdapter : SelectableAdapter<KeyMap, KeyMapAdapter.ViewHolder>() {
         val keyMap = itemList[position]
 
         holder.itemView.apply {
-            val triggerAdapter = TriggerAdapter(keyMap.triggerList, showRemoveButton = false)
+            if (iSelectionProvider.inSelectingMode) {
+                checkBox.visibility = View.VISIBLE
+            } else {
+                checkBox.isChecked = false
+                checkBox.visibility = View.GONE
+            }
+
+            checkBox.isChecked = isSelected
 
             textViewTitle.text = ActionUtils.getDescription(context, keyMap.action)
+
+            //show all the triggers in a list
+            val triggerAdapter = TriggerAdapter(keyMap.triggerList, showRemoveButton = false)
 
             recyclerViewTriggers.layoutManager = LinearLayoutManager(context)
             recyclerViewTriggers.adapter = triggerAdapter
@@ -41,6 +50,7 @@ class KeyMapAdapter : SelectableAdapter<KeyMap, KeyMapAdapter.ViewHolder>() {
             /*if no icon should be shown then hide the ImageView so there isn't whitespace next to
             the text*/
             val drawable = ActionUtils.getIcon(context, keyMap.action)
+
             if (drawable == null) {
                 imageView.setImageDrawable(null)
                 imageView.visibility = View.GONE
@@ -55,11 +65,28 @@ class KeyMapAdapter : SelectableAdapter<KeyMap, KeyMapAdapter.ViewHolder>() {
         return itemList[position].id
     }
 
+    override fun onStartMultiSelect() {
+        super.onStartMultiSelect()
+
+        notifyDataSetChanged()
+    }
+
     inner class ViewHolder(itemView: View)
         : SelectableAdapter<KeyMap, ViewHolder>.ViewHolder(itemView) {
         init {
-            //set the background of the item so it shows an animation when long pressed
-            itemView.background = SelectableBackground(itemView.context)
+            itemView.apply {
+                checkBox.setOnClickListener {
+                    if (iSelectionProvider.inSelectingMode) {
+                        iSelectionProvider.toggleSelection(getItemId(adapterPosition))
+                    }
+                }
+
+                /*since the recyclerview essentially "blocks" touch events to the whole itemView,
+                relay the touch event to the itemView*/
+                recyclerViewTriggers.setOnTouchListener { v, event ->
+                    itemView.onTouchEvent(event)
+                }
+            }
         }
     }
 }

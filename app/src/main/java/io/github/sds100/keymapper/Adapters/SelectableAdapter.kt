@@ -52,7 +52,7 @@ abstract class SelectableAdapter<T, VH : SelectableAdapter<T, VH>.ViewHolder>(
     open inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         init {
             itemView.setOnLongClickListener {
-                if (!iSelectionProvider.isSelecting) {
+                if (!iSelectionProvider.inSelectingMode) {
                     iSelectionProvider.toggleSelection(getItemId(adapterPosition))
                 }
 
@@ -60,7 +60,7 @@ abstract class SelectableAdapter<T, VH : SelectableAdapter<T, VH>.ViewHolder>(
             }
 
             itemView.setOnClickListener {
-                if (iSelectionProvider.isSelecting) {
+                if (iSelectionProvider.inSelectingMode) {
                     iSelectionProvider.toggleSelection(getItemId(adapterPosition))
                 }
             }
