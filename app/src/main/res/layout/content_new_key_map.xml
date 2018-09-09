@@ -63,7 +63,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textViewTriggerHeading" />
 
     <View
-        android:id="@+id/divider"
+        android:id="@+id/bottom_divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="8dp"
@@ -84,7 +84,7 @@
         android:text="@string/triggers_header"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider" />
+        app:layout_constraintTop_toBottomOf="@+id/bottom_divider" />
 
     <HorizontalScrollView
         android:layout_width="0dp"

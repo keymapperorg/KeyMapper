@@ -30,6 +30,8 @@ class KeyMapAdapter : SelectableAdapter<KeyMap, KeyMapAdapter.ViewHolder>() {
         val keyMap = itemList[position]
 
         holder.itemView.apply {
+
+            //only show the chechbox if the user is selecting items
             if (iSelectionProvider.inSelectingMode) {
                 checkBox.visibility = View.VISIBLE
             } else {
@@ -79,12 +81,6 @@ class KeyMapAdapter : SelectableAdapter<KeyMap, KeyMapAdapter.ViewHolder>() {
                     if (iSelectionProvider.inSelectingMode) {
                         iSelectionProvider.toggleSelection(getItemId(adapterPosition))
                     }
-                }
-
-                /*since the recyclerview essentially "blocks" touch events to the whole itemView,
-                relay the touch event to the itemView*/
-                recyclerViewTriggers.setOnTouchListener { v, event ->
-                    itemView.onTouchEvent(event)
                 }
             }
         }
