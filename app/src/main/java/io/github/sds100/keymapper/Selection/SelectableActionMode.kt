@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.view.ActionMode
+import io.github.sds100.keymapper.OnDeleteMenuItemClickListener
 import io.github.sds100.keymapper.R
 
 /**
@@ -11,7 +12,8 @@ import io.github.sds100.keymapper.R
  */
 class SelectableActionMode(
         private val mCtx: Context,
-        private val mISelectionProvider: ISelectionProvider
+        private val mISelectionProvider: ISelectionProvider,
+        private val mOnDeleteMenuItemClickListener: OnDeleteMenuItemClickListener
 ) : ActionMode.Callback, SelectionCallback {
 
     private var mActionMode: ActionMode? = null
@@ -26,14 +28,18 @@ class SelectableActionMode(
 
     override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
         when (item!!.itemId) {
-            android.R.id.home -> {
-                mode!!.finish()
-                mISelectionProvider.stopSelecting()
-                mISelectionProvider.unsubscribeToSelectionEvents(this)
-            }
+            //when back button is pressed
+            android.R.id.home -> onBackPressed(mode!!)
 
             R.id.action_select_all -> {
                 mISelectionProvider.selectAll()
+                return true
+            }
+
+            R.id.action_delete -> {
+                mOnDeleteMenuItemClickListener.onDeleteMenuButtonClick()
+                //when the user clicks delete, leave the action mode and stop selecting items
+                onBackPressed(mode!!)
                 return true
             }
         }
@@ -68,4 +74,10 @@ class SelectableActionMode(
 
     override fun onStopMultiSelect() {}
     override fun onStartMultiSelect() {}
+
+    private fun onBackPressed(mode: ActionMode) {
+        mode.finish()
+        mISelectionProvider.stopSelecting()
+        mISelectionProvider.unsubscribeToSelectionEvents(this)
+    }
 }

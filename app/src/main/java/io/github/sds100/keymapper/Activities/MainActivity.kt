@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.sds100.keymapper.Adapters.KeyMapAdapter
 import io.github.sds100.keymapper.BuildConfig
+import io.github.sds100.keymapper.OnDeleteMenuItemClickListener
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Selection.SelectableActionMode
 import io.github.sds100.keymapper.Selection.SelectionCallback
@@ -19,7 +20,7 @@ import io.github.sds100.keymapper.ViewModels.KeyMapListViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
-class MainActivity : AppCompatActivity(), SelectionCallback {
+class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemClickListener {
 
     private val mKeyMapAdapter: KeyMapAdapter = KeyMapAdapter()
     private lateinit var mViewModel: KeyMapListViewModel
@@ -89,8 +90,12 @@ class MainActivity : AppCompatActivity(), SelectionCallback {
         }
     }
 
+    override fun onDeleteMenuButtonClick() {
+        mViewModel.deleteKeyMapsById(*mKeyMapAdapter.iSelectionProvider.selectedItemIds)
+    }
+
     override fun onStartMultiSelect() {
-        startSupportActionMode(SelectableActionMode(this, mKeyMapAdapter.iSelectionProvider))
+        startSupportActionMode(SelectableActionMode(this, mKeyMapAdapter.iSelectionProvider, this))
     }
 
     override fun onStopMultiSelect() {}

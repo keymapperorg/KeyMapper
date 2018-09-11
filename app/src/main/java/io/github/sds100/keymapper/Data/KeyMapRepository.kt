@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.Data
 import android.content.Context
 import androidx.lifecycle.LiveData
 import io.github.sds100.keymapper.DatabaseAsyncTasks.DeleteKeyMapAsync
+import io.github.sds100.keymapper.DatabaseAsyncTasks.DeleteKeyMapByIdAsync
 import io.github.sds100.keymapper.DatabaseAsyncTasks.InsertKeyMapAsync
 import io.github.sds100.keymapper.DatabaseAsyncTasks.UpdateKeyMapAsync
 import io.github.sds100.keymapper.KeyMap
@@ -37,6 +38,10 @@ class KeyMapRepository private constructor(ctx: Context) {
 
     fun deleteKeyMap(vararg keyMap: KeyMap) {
         DeleteKeyMapAsync(mDb).execute(*keyMap)
+    }
+
+    fun deleteKeyMapById(vararg id: Long) {
+        DeleteKeyMapByIdAsync(mDb).execute(*id.toList().toTypedArray())
     }
 
     fun addKeyMap(vararg keyMap: KeyMap) {

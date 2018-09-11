@@ -15,4 +15,8 @@ class KeyMapListViewModel(application: Application) : AndroidViewModel(applicati
 
     val keyMapList: LiveData<List<KeyMap>>
         get() = mKeyMapRepository.keyMapList
+
+    fun deleteKeyMapsById(vararg id: Long) {
+        mKeyMapRepository.deleteKeyMapById(*id)
+    }
 }

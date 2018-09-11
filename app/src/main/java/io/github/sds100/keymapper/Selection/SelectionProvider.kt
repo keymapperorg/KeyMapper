@@ -27,6 +27,9 @@ class SelectionProvider(override var allItemIds: List<Long>) : ISelectionProvide
     override val inSelectingMode: Boolean
         get() = mIsSelecting
 
+    override val selectedItemIds: LongArray
+        get() = mSelectedItemIds.toLongArray()
+
     private var mIsSelecting = false
 
     /**

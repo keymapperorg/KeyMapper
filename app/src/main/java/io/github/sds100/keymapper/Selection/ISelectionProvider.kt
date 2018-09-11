@@ -8,6 +8,7 @@ import android.os.Bundle
 interface ISelectionProvider {
     val inSelectingMode: Boolean
     val selectionCount: Int
+    val selectedItemIds: LongArray
 
     /**
      * A list of all the ids for all the items which can be selected
