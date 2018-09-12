@@ -117,8 +117,8 @@ class NewKeyMapActivity : AppCompatActivity() {
         alert {
             title = getString(R.string.dialog_title_are_you_sure)
             message = getString(R.string.dialog_message_are_you_sure_cancel_new_key_map)
-            positiveButton(R.string.pos_yes, onClicked = { super.onBackPressed() })
-            negativeButton(R.string.neg_no, onClicked = { dialog -> dialog.cancel() })
+            positiveButton(android.R.string.yes, onClicked = { super.onBackPressed() })
+            negativeButton(android.R.string.no, onClicked = { dialog -> dialog.cancel() })
         }.show()
     }
 
