@@ -3,9 +3,12 @@ package io.github.sds100.keymapper.Adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.sds100.keymapper.KeyMap
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.Selection.SelectionEvent
+import io.github.sds100.keymapper.Selection.SelectionEvent.*
 import io.github.sds100.keymapper.Utils.ActionUtils
 import kotlinx.android.synthetic.main.keymap_adapter_item.view.*
 
@@ -25,12 +28,9 @@ class KeyMapAdapter : SelectableAdapter<KeyMap, KeyMapAdapter.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        super.onBindViewHolder(holder, position)
-
         val keyMap = itemList[position]
 
         holder.itemView.apply {
-
             //only show the chechbox if the user is selecting items
             if (iSelectionProvider.inSelectingMode) {
                 checkBox.visibility = View.VISIBLE
@@ -67,22 +67,41 @@ class KeyMapAdapter : SelectableAdapter<KeyMap, KeyMapAdapter.ViewHolder>() {
         return itemList[position].id
     }
 
-    override fun onStartMultiSelect() {
-        super.onStartMultiSelect()
-
-        notifyDataSetChanged()
-    }
-
     inner class ViewHolder(itemView: View)
         : SelectableAdapter<KeyMap, ViewHolder>.ViewHolder(itemView) {
+        private val mCheckBox = itemView.findViewById<CheckBox>(R.id.checkBox)!!
+
         init {
-            itemView.apply {
-                checkBox.setOnClickListener {
-                    if (iSelectionProvider.inSelectingMode) {
-                        iSelectionProvider.toggleSelection(getItemId(adapterPosition))
-                    }
+            mCheckBox.setOnClickListener {
+                if (iSelectionProvider.inSelectingMode) {
+                    iSelectionProvider.toggleSelection(getItemId(adapterPosition))
                 }
             }
         }
+
+        override fun onSelectionEvent(event: SelectionEvent) {
+            when (event) {
+                START -> {
+                    mCheckBox.visibility = View.VISIBLE
+                }
+
+                STOP -> {
+                    mCheckBox.visibility = View.GONE
+                }
+
+                SELECTED -> {
+                    mCheckBox.isChecked = true
+                }
+
+                UNSELECTED -> {
+                    mCheckBox.isChecked = false
+                }
+
+                SELECT_ALL -> {
+                    mCheckBox.isChecked = true
+                }
+            }
+        }
+
     }
 }

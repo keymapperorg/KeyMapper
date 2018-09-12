@@ -2,10 +2,7 @@ package io.github.sds100.keymapper.Adapters
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import io.github.sds100.keymapper.Selection.ISelectionProvider
-import io.github.sds100.keymapper.Selection.SelectableItem
-import io.github.sds100.keymapper.Selection.SelectionCallback
-import io.github.sds100.keymapper.Selection.SelectionProvider
+import io.github.sds100.keymapper.Selection.*
 
 /**
  * Created by sds100 on 12/08/2018.
@@ -29,42 +26,59 @@ abstract class SelectableAdapter<T : SelectableItem, VH : SelectableAdapter<T, V
             field = value
         }
 
+    private var mRecyclerView: RecyclerView? = null
+
     init {
         iSelectionProvider.subscribeToSelectionEvents(this)
+
+        //improves performance by allowing the adapter to find viewholders by their ids
+        this.setHasStableIds(true)
 
         this.itemList = itemList
     }
 
-    override fun onBindViewHolder(holder: VH, position: Int) {
-        //if the item is selected, highlight it by changing the state of the background Drawable
-        val isSelected = iSelectionProvider.isSelected(getItemId(position))
-        holder.itemView.isSelected = isSelected
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+
+        mRecyclerView = recyclerView
     }
 
-    override fun onItemSelected(id: Long) {
-        val item = itemList.indexOfFirst { getItemId(itemList.indexOf(it)) == id }
-        notifyItemChanged(item)
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView)
+
+        mRecyclerView = null
     }
 
-    override fun onItemUnselected(id: Long) {
-        val item = itemList.indexOfFirst { getItemId(itemList.indexOf(it)) == id }
-        notifyItemChanged(item)
+    override fun onSelectionEvent(id: Long?, event: SelectionEvent) {
+        //if the event affects only a single viewholder.
+        if (id != null) {
+            if (mRecyclerView != null) {
+                val viewHolder = mRecyclerView!!.findViewHolderForItemId(id)
+
+                if (viewHolder != null) {
+                    @Suppress("UNCHECKED_CAST")
+                    (viewHolder as VH).onSelectionEvent(event)
+                }
+            }
+
+        //if the event affects all viewholders
+        } else {
+            iSelectionProvider.allItemIds.forEach {
+                if (mRecyclerView != null) {
+                    val viewHolder = mRecyclerView!!.findViewHolderForItemId(it)
+
+                    if (viewHolder != null) {
+                        @Suppress("UNCHECKED_CAST")
+                        (viewHolder as VH).onSelectionEvent(event)
+                    }
+                }
+            }
+        }
     }
 
     override fun getItemCount() = itemList.size
 
-    override fun onSelectAll() {
-        notifyDataSetChanged()
-    }
-
-    override fun onStopMultiSelect() {
-        //call onBindViewHolder so the background for each item reverts to the original
-        notifyDataSetChanged()
-    }
-
-    override fun onStartMultiSelect() {}
-
-    open inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    abstract inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         init {
             itemView.setOnLongClickListener {
                 if (!iSelectionProvider.inSelectingMode) {
@@ -80,5 +94,10 @@ abstract class SelectableAdapter<T : SelectableItem, VH : SelectableAdapter<T, V
                 }
             }
         }
+
+        /**
+         * Called when an item's selection state is toggled
+         */
+        abstract fun onSelectionEvent(event: SelectionEvent)
     }
 }

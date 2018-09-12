@@ -47,17 +47,17 @@ class SelectionProvider(override var allItemIds: List<Long>) : ISelectionProvide
     override fun toggleSelection(itemId: Long) {
         if (mSelectedItemIds.contains(itemId)) {
             mSelectedItemIds.remove(itemId)
-            mSelectionCallbacks.forEach { it.onItemUnselected(itemId) }
+            mSelectionCallbacks.forEach { it.onSelectionEvent(itemId, SelectionEvent.UNSELECTED) }
         } else {
 
             //if it is the first item to be selected send onStartMultiSelect event
             if (!mIsSelecting) {
                 mIsSelecting = true
-                mSelectionCallbacks.forEach { it.onStartMultiSelect() }
+                mSelectionCallbacks.forEach { it.onSelectionEvent(event = SelectionEvent.START) }
             }
 
             mSelectedItemIds.add(itemId)
-            mSelectionCallbacks.forEach { it.onItemSelected(itemId) }
+            mSelectionCallbacks.forEach { it.onSelectionEvent(itemId, SelectionEvent.SELECTED) }
         }
     }
 
@@ -65,7 +65,7 @@ class SelectionProvider(override var allItemIds: List<Long>) : ISelectionProvide
         if (mIsSelecting) {
             mSelectedItemIds = allItemIds.toMutableList()
 
-            mSelectionCallbacks.forEach { it.onSelectAll() }
+            mSelectionCallbacks.forEach { it.onSelectionEvent(event = SelectionEvent.SELECT_ALL) }
         }
     }
 
@@ -73,7 +73,7 @@ class SelectionProvider(override var allItemIds: List<Long>) : ISelectionProvide
         mIsSelecting = false
         mSelectedItemIds.clear()
 
-        mSelectionCallbacks.forEach { it.onStopMultiSelect() }
+        mSelectionCallbacks.forEach { it.onSelectionEvent(event = SelectionEvent.STOP) }
     }
 
     override fun isSelected(itemId: Long): Boolean {
@@ -103,7 +103,7 @@ class SelectionProvider(override var allItemIds: List<Long>) : ISelectionProvide
             mSelectedItemIds = bundle.getLongArray(KEY_SELECTED_ITEMS)!!.toMutableList()
 
             mSelectionCallbacks.forEach {
-                it.onStartMultiSelect()
+                it.onSelectionEvent(event = SelectionEvent.START)
             }
         }
     }

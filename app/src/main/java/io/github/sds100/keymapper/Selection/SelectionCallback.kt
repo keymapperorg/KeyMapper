@@ -5,9 +5,9 @@ package io.github.sds100.keymapper.Selection
  */
 
 interface SelectionCallback {
-    fun onStartMultiSelect()
-    fun onStopMultiSelect()
-    fun onItemSelected(id: Long)
-    fun onItemUnselected(id: Long)
-    fun onSelectAll()
+    /**
+     * @param id the id of the item affected by the selection event. It's null if all items are
+     * affected
+     */
+    fun onSelectionEvent(id: Long? = null, event: SelectionEvent)
 }

@@ -14,6 +14,7 @@ import io.github.sds100.keymapper.OnDeleteMenuItemClickListener
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Selection.SelectableActionMode
 import io.github.sds100.keymapper.Selection.SelectionCallback
+import io.github.sds100.keymapper.Selection.SelectionEvent
 import io.github.sds100.keymapper.Selection.SelectionProvider
 import io.github.sds100.keymapper.Services.MyAccessibilityService
 import io.github.sds100.keymapper.ViewModels.KeyMapListViewModel
@@ -94,12 +95,9 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
         mViewModel.deleteKeyMapsById(*mKeyMapAdapter.iSelectionProvider.selectedItemIds)
     }
 
-    override fun onStartMultiSelect() {
-        startSupportActionMode(SelectableActionMode(this, mKeyMapAdapter.iSelectionProvider, this))
+    override fun onSelectionEvent(id: Long?, event: SelectionEvent) {
+        if (event == SelectionEvent.START) {
+            startSupportActionMode(SelectableActionMode(this, mKeyMapAdapter.iSelectionProvider, this))
+        }
     }
-
-    override fun onStopMultiSelect() {}
-    override fun onSelectAll() {}
-    override fun onItemSelected(id: Long) {}
-    override fun onItemUnselected(id: Long) {}
 }

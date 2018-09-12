@@ -60,20 +60,9 @@ class SelectableActionMode(
         mISelectionProvider.stopSelecting()
     }
 
-    override fun onItemSelected(id: Long) {
+    override fun onSelectionEvent(id: Long?, event: SelectionEvent) {
         mActionMode?.invalidate()
     }
-
-    override fun onItemUnselected(id: Long) {
-        mActionMode?.invalidate()
-    }
-
-    override fun onSelectAll() {
-        mActionMode?.invalidate()
-    }
-
-    override fun onStopMultiSelect() {}
-    override fun onStartMultiSelect() {}
 
     private fun onBackPressed(mode: ActionMode) {
         mode.finish()
