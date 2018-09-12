@@ -45,3 +45,9 @@ dependencies {
     kapt "android.arch.lifecycle:compiler:1.1.1"
     kapt "androidx.room:room-compiler:$room_version"
 }
+
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
+}
