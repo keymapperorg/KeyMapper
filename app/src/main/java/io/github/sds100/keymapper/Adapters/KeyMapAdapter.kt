@@ -84,10 +84,12 @@ class KeyMapAdapter : SelectableAdapter<KeyMap, KeyMapAdapter.ViewHolder>() {
         override fun onSelectionEvent(event: SelectionEvent) {
             when (event) {
                 START -> {
+                    mCheckBox.isChecked = false
                     mCheckBox.visibility = View.VISIBLE
                 }
 
                 STOP -> {
+                    mCheckBox.isChecked = false
                     mCheckBox.visibility = View.GONE
                 }
 
