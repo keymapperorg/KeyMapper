@@ -41,33 +41,7 @@ class KeyMapRepository private constructor(ctx: Context) {
         keyMapList = mDb.keyMapDao().getAllKeyMaps()
 
         if (BuildConfig.DEBUG) {
-            val observer = Observer<List<KeyMap>> { list ->
-                val minimumId: Long = list.maxBy { it.id }!!.id
-                val size = list!!.size
-
-                if (size < DEBUG_LIST_COUNT) {
-                    val sizeDifference = DEBUG_LIST_COUNT - size
-
-                    val testKeyMapList = buildSequence {
-                        for (i in 1..sizeDifference) {
-                            //ensure the id doesn't already exist
-                            val id = minimumId + i
-
-                            val triggerList = mutableListOf(
-                                    Trigger(listOf(KeyEvent.KEYCODE_VOLUME_UP))
-                            )
-
-                            yield(KeyMap(id,
-                                    triggerList,
-                                    Action(ActionType.APP, "io.github.sds100.keymapper")))
-                        }
-                    }.toList()
-
-                    addKeyMap(*testKeyMapList.toTypedArray())
-                }
-            }
-
-            keyMapList.observeForever(observer)
+            addDebugItems()
         }
     }
 
@@ -85,5 +59,40 @@ class KeyMapRepository private constructor(ctx: Context) {
 
     fun updateKeyMap(vararg keyMap: KeyMap) {
         UpdateKeyMapAsync(mDb).execute(*keyMap)
+    }
+
+    private fun addDebugItems() {
+        val observer = Observer<List<KeyMap>> { list ->
+            val minimumId: Long = if (list.maxBy { it.id } == null) {
+                0
+            } else {
+                list.maxBy { it.id }!!.id
+            }
+
+            val size = list!!.size
+
+            if (size < DEBUG_LIST_COUNT) {
+                val sizeDifference = DEBUG_LIST_COUNT - size
+
+                val testKeyMapList = buildSequence {
+                    for (i in 1..sizeDifference) {
+                        //ensure the id doesn't already exist
+                        val id = minimumId + i
+
+                        val triggerList = mutableListOf(
+                                Trigger(listOf(KeyEvent.KEYCODE_VOLUME_UP))
+                        )
+
+                        yield(KeyMap(id,
+                                triggerList,
+                                Action(ActionType.APP, "io.github.sds100.keymapper")))
+                    }
+                }.toList()
+
+                addKeyMap(*testKeyMapList.toTypedArray())
+            }
+        }
+
+        keyMapList.observeForever(observer)
     }
 }
