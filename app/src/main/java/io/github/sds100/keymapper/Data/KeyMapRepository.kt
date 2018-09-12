@@ -42,6 +42,7 @@ class KeyMapRepository private constructor(ctx: Context) {
 
         if (BuildConfig.DEBUG) {
             val observer = Observer<List<KeyMap>> { list ->
+                val minimumId: Long = list.maxBy { it.id }!!.id
                 val size = list!!.size
 
                 if (size < DEBUG_LIST_COUNT) {
@@ -49,11 +50,14 @@ class KeyMapRepository private constructor(ctx: Context) {
 
                     val testKeyMapList = buildSequence {
                         for (i in 1..sizeDifference) {
+                            //ensure the id doesn't already exist
+                            val id = minimumId + i
+
                             val triggerList = mutableListOf(
                                     Trigger(listOf(KeyEvent.KEYCODE_VOLUME_UP))
                             )
 
-                            yield(KeyMap(i.toLong(),
+                            yield(KeyMap(id,
                                     triggerList,
                                     Action(ActionType.APP, "io.github.sds100.keymapper")))
                         }
