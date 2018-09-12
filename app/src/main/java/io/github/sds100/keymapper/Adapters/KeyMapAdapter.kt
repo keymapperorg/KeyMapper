@@ -28,6 +28,8 @@ class KeyMapAdapter : SelectableAdapter<KeyMap, KeyMapAdapter.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        super.onBindViewHolder(holder, position)
+
         val keyMap = itemList[position]
 
         holder.itemView.apply {
@@ -39,7 +41,7 @@ class KeyMapAdapter : SelectableAdapter<KeyMap, KeyMapAdapter.ViewHolder>() {
                 checkBox.visibility = View.GONE
             }
 
-            checkBox.isChecked = isSelected
+            checkBox.isChecked = iSelectionProvider.isSelected(holder.itemId)
 
             textViewTitle.text = ActionUtils.getDescription(context, keyMap.action)
 

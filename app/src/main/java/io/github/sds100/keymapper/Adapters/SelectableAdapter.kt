@@ -26,7 +26,7 @@ abstract class SelectableAdapter<T : SelectableItem, VH : SelectableAdapter<T, V
             field = value
         }
 
-    private var mRecyclerView: RecyclerView? = null
+    private val mBoundViewHolders: MutableList<VH> = mutableListOf()
 
     init {
         iSelectionProvider.subscribeToSelectionEvents(this)
@@ -37,41 +37,23 @@ abstract class SelectableAdapter<T : SelectableItem, VH : SelectableAdapter<T, V
         this.itemList = itemList
     }
 
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        super.onAttachedToRecyclerView(recyclerView)
-
-        mRecyclerView = recyclerView
+    override fun onBindViewHolder(holder: VH, position: Int) {
+        mBoundViewHolders.add(holder)
     }
 
-    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
-        super.onDetachedFromRecyclerView(recyclerView)
+    override fun onViewRecycled(holder: VH) {
+        super.onViewRecycled(holder)
 
-        mRecyclerView = null
+        mBoundViewHolders.remove(holder)
     }
 
     override fun onSelectionEvent(id: Long?, event: SelectionEvent) {
         //if the event affects only a single viewholder.
         if (id != null) {
-            if (mRecyclerView != null) {
-                val viewHolder = mRecyclerView!!.findViewHolderForItemId(id)
-
-                if (viewHolder != null) {
-                    @Suppress("UNCHECKED_CAST")
-                    (viewHolder as VH).onSelectionEvent(event)
-                }
-            }
-
-        //if the event affects all viewholders
+            mBoundViewHolders.find { it.itemId == id }!!.onSelectionEvent(event)
         } else {
-            iSelectionProvider.allItemIds.forEach {
-                if (mRecyclerView != null) {
-                    val viewHolder = mRecyclerView!!.findViewHolderForItemId(it)
-
-                    if (viewHolder != null) {
-                        @Suppress("UNCHECKED_CAST")
-                        (viewHolder as VH).onSelectionEvent(event)
-                    }
-                }
+            mBoundViewHolders.forEach { viewHolder ->
+                viewHolder.onSelectionEvent(event)
             }
         }
     }
