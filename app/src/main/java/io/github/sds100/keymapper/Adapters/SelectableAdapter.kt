@@ -26,6 +26,9 @@ abstract class SelectableAdapter<T : SelectableItem, VH : SelectableAdapter<T, V
             field = value
         }
 
+    /**
+     * Where viewholders are cached
+     */
     private val mBoundViewHolders: MutableList<VH> = mutableListOf()
 
     init {
