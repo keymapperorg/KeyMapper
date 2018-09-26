@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
-import androidx.lifecycle.Observer
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import io.github.sds100.keymapper.Activities.NewKeyMapActivity
@@ -93,6 +92,12 @@ class MyAccessibilityService : AccessibilityService() {
      */
     private val mPressedKeys = mutableListOf<Int>()
 
+    /**
+     * When all the keys that map to a specific trigger are pressed, they are put in here.
+     * E.g when Ctrl + J is pressed, the contents of this list will be the keycodes for Ctrl + J
+     */
+    private var mPressedTriggerKeys = mutableListOf<Int>()
+
     private var mRecordingTrigger = false
 
     override fun onServiceConnected() {
@@ -143,6 +148,30 @@ class MyAccessibilityService : AccessibilityService() {
 
                 //Don't allow the key to do anything when recording a trigger
                 return true
+
+            } else {
+
+                //when a key is pressed down
+                if (event.action == KeyEvent.ACTION_DOWN) {
+                    mPressedKeys.add(event.keyCode)
+
+                    //when a key is lifted
+                } else if (event.action == KeyEvent.ACTION_UP) {
+                    mPressedKeys.remove(event.keyCode)
+
+                    if (mPressedTriggerKeys.isNotEmpty()) {
+                        if (mPressedTriggerKeys.contains(event.keyCode)) {
+                            mPressedTriggerKeys.remove(event.keyCode)
+                            return true
+                        }
+                    }
+                }
+
+                if (isTrigger(mPressedKeys)) {
+                    mPressedTriggerKeys = mPressedKeys.toMutableList()
+
+                    return true
+                }
             }
         }
 
@@ -150,17 +179,25 @@ class MyAccessibilityService : AccessibilityService() {
     }
 
     private fun getKeyMapListFromRepository() {
+        val list = KeyMapRepository.getInstance(baseContext).keyMapList.value
 
-        KeyMapRepository.getInstance(baseContext).keyMapList.observeForever(
+        if (list != null) {
+            mKeyMapListCache = list
+        }
+    }
 
-                object : Observer<List<KeyMap>> {
-                    override fun onChanged(list: List<KeyMap>?) {
-                        if (list != null) {
-                            mKeyMapListCache = list
-                        }
+    /**
+     * @param keys the combination of keycodes being pressed to check.
+     * @return whether a key combination is registered as a trigger in the keymap cache
+     */
+    private fun isTrigger(keys: MutableList<Int>): Boolean {
+        return mKeyMapListCache.any { keyMap ->
 
-                        KeyMapRepository.getInstance(baseContext).keyMapList.removeObserver(this)
-                    }
-                })
+            /* do any of the trigger lists for each keymap contain a trigger which matches the
+             * keys being pressed?*/
+            keyMap.triggerList.any { trigger ->
+                trigger.keys.toTypedArray().contentEquals(keys.toTypedArray())
+            }
+        }
     }
 }
