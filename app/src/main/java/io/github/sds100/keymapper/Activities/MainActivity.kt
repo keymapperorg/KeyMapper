@@ -8,8 +8,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.gson.Gson
 import io.github.sds100.keymapper.Adapters.KeyMapAdapter
 import io.github.sds100.keymapper.BuildConfig
+import io.github.sds100.keymapper.KeyMap
 import io.github.sds100.keymapper.OnDeleteMenuItemClickListener
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Selection.SelectableActionMode
@@ -31,23 +33,25 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
+        /*if the app is a debug build then enable the accessibility service in settings
+        / automatically so I don't have to! :)*/
+        if (BuildConfig.DEBUG) {
+            MyAccessibilityService.enableServiceInSettings()
+        }
+
         mViewModel = ViewModelProviders.of(this).get(KeyMapListViewModel::class.java)
 
         mViewModel.keyMapList.observe(this, Observer { keyMapList ->
             mKeyMapAdapter.itemList = keyMapList
             mKeyMapAdapter.notifyDataSetChanged()
+
+            updateAccessibilityServiceKeymapCache(keyMapList)
         })
 
         //start NewKeyMapActivity when the fab is pressed
         fabNewKeyMap.setOnClickListener {
             val intent = Intent(this, NewKeyMapActivity::class.java)
             startActivity(intent)
-        }
-
-        /*if the app is a debug build then enable the accessibility service in settings
-        / automatically so I don't have to! :)*/
-        if (BuildConfig.DEBUG) {
-            MyAccessibilityService.enableServiceInSettings()
         }
 
         mKeyMapAdapter.iSelectionProvider.subscribeToSelectionEvents(this)
@@ -99,5 +103,14 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
         if (event == SelectionEvent.START) {
             startSupportActionMode(SelectableActionMode(this, mKeyMapAdapter.iSelectionProvider, this))
         }
+    }
+
+    private fun updateAccessibilityServiceKeymapCache(keyMapList: List<KeyMap>) {
+        val intent = Intent(MyAccessibilityService.ACTION_UPDATE_KEYMAP_CACHE)
+        val jsonString = Gson().toJson(keyMapList)
+
+        intent.putExtra(MyAccessibilityService.EXTRA_KEYMAP_CACHE_JSON, jsonString)
+
+        sendBroadcast(intent)
     }
 }
