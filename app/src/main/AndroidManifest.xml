@@ -25,6 +25,13 @@
             android:label="@string/title_activity_new_key_map"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <activity
+            android:name=".Activities.ChooseActionActivity"
+            android:label="@string/title_choose_action"
+            android:theme="@style/AppTheme.NoActionBar" >
+        </activity>
+
+        <!-- Services -->
         <service
             android:name=".Services.MyAccessibilityService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
@@ -37,11 +44,17 @@
                 android:resource="@xml/config_accessibility_service" />
         </service>
 
-        <activity
-            android:name=".Activities.ChooseActionActivity"
-            android:label="@string/title_choose_action"
-            android:theme="@style/AppTheme.NoActionBar" >
-        </activity>
+        <service
+            android:name=".Services.MyIMEService"
+            android:label="@string/ime_service_label"
+            android:permission="android.permission.BIND_INPUT_METHOD">
+            <intent-filter>
+                <action android:name="android.view.InputMethod" />
+            </intent-filter>
+            <meta-data
+                android:name="android.view.im"
+                android:resource="@xml/method" />
+        </service>
     </application>
 
 </manifest>
