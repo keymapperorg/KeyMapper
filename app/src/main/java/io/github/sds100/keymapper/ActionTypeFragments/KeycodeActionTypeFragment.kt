@@ -34,6 +34,8 @@ class KeycodeActionTypeFragment : ActionTypeFragment(), SimpleItemAdapter.OnItem
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        textViewCaption.text = getString(R.string.caption_action_type_keycode)
+
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = mKeycodeAdapter
     }

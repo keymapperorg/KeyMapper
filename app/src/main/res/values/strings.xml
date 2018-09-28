@@ -56,7 +56,11 @@
     <string name="action_type_action">Action</string>
     <string name="action_type_setting">Setting</string>
     <string name="action_type_text_block">Text Block</string>
-    <string name="caption_action_type_key">Click the key on the keyboard which you want to be entered.</string>
+    <string name="caption_action_type_key">Click the key on the keyboard which you want to be entered.
+        \n\nIMPORTANT!
+        This will only work if you have selected this app as the input method, which means it is best used with a hardware keyboard.</string>
+    <string name="caption_action_type_keycode">IMPORTANT!
+        This will only work if you have selected this app as the input method, which means it is best used with a hardware keyboard.</string>
     <!--Action Types-->
 
     <!-- Error messages -->
