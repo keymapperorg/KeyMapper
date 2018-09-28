@@ -9,6 +9,8 @@ import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
+import io.github.sds100.keymapper.Action
+import io.github.sds100.keymapper.ActionType
 import io.github.sds100.keymapper.Activities.NewKeyMapActivity
 import io.github.sds100.keymapper.Data.KeyMapRepository
 import io.github.sds100.keymapper.KeyMap
@@ -178,6 +180,15 @@ class MyAccessibilityService : AccessibilityService() {
                 if (isTrigger(mPressedKeys)) {
                     mPressedTriggerKeys = mPressedKeys.toMutableList()
 
+                    //find the keymap associated with the trigger being pressed
+                    val keyMap = mKeyMapListCache.find { keyMap ->
+                        keyMap.triggerList.any { trigger -> trigger.keys == mPressedTriggerKeys }
+                    }
+
+                    if (keyMap != null) {
+                        performAction(keyMap.action)
+                    }
+
                     return true
                 }
             }
@@ -206,6 +217,21 @@ class MyAccessibilityService : AccessibilityService() {
             keyMap.triggerList.any { trigger ->
                 trigger.keys.toTypedArray().contentEquals(keys.toTypedArray())
             }
+        }
+    }
+
+    private fun performAction(action: Action) {
+        when (action.type) {
+            ActionType.APP -> {
+                val intent = packageManager.getLaunchIntentForPackage(action.data)
+                startActivity(intent)
+            }
+
+            ActionType.APP_SHORTCUT -> TODO()
+            ActionType.KEYCODE -> TODO()
+            ActionType.KEY -> TODO()
+            ActionType.TEXT_BLOCK -> TODO()
+            ActionType.SYSTEM_ACTION -> TODO()
         }
     }
 
