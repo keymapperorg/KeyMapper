@@ -12,7 +12,10 @@ import android.inputmethodservice.InputMethodService
 class MyIMEService : InputMethodService() {
     companion object {
         const val ACTION_INPUT_KEYCODE = "io.github.sds100.keymapper.INPUT_KEYCODE"
+        const val ACTION_INPUT_TEXT = "io.github.sds100.keymapper.INPUT_TEXT"
+
         const val EXTRA_KEYCODE = "extra_keycode"
+        const val EXTRA_TEXT = "extra_text"
     }
 
     private val mBroadcastReceiver = object : BroadcastReceiver() {
@@ -24,6 +27,12 @@ class MyIMEService : InputMethodService() {
 
                         sendDownUpKeyEvents(keyCode)
                     }
+
+                    ACTION_INPUT_TEXT -> {
+                        val text = intent.getStringExtra(EXTRA_TEXT)
+
+                        currentInputConnection.commitText(text, 1)
+                    }
                 }
             }
         }
@@ -34,6 +43,7 @@ class MyIMEService : InputMethodService() {
 
         val intentFilter = IntentFilter()
         intentFilter.addAction(ACTION_INPUT_KEYCODE)
+        intentFilter.addAction(ACTION_INPUT_TEXT)
 
         registerReceiver(mBroadcastReceiver, intentFilter)
     }

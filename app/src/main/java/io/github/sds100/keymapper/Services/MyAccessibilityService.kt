@@ -226,7 +226,15 @@ class MyAccessibilityService : AccessibilityService() {
             }
 
             ActionType.APP_SHORTCUT -> TODO()
-            ActionType.TEXT_BLOCK -> TODO()
+
+            ActionType.TEXT_BLOCK -> {
+                val intent = Intent(MyIMEService.ACTION_INPUT_TEXT)
+                //put the text in the intent
+                intent.putExtra(MyIMEService.EXTRA_TEXT, action.data)
+
+                sendBroadcast(intent)
+            }
+
             ActionType.SYSTEM_ACTION -> TODO()
 
             else -> {
