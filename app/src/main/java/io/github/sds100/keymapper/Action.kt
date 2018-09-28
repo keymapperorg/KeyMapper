@@ -12,17 +12,27 @@ import io.github.sds100.keymapper.Data.KeyMapDao
  * then the data will be the package name of the application
  *
  * Different Types of actions:
- * - Applications
- * - Application shortcuts
+ * - Apps
+ * - App shortcuts
  * - Keycode
+ * - Key
  * - Insert a block of text
  * - System actions/settings
- * - Root actions
  */
 data class Action(
         @ColumnInfo(name = KeyMapDao.KEY_ACTION_TYPE)
         val type: ActionType,
 
+        /**
+         * How each action type saves data:
+         *
+         * - Apps: package name
+         * - App shortcuts: the name of the activity to launch
+         * - Keycode: the keycode
+         * - Key: the keycode of the key
+         * - Block of text: text to insert
+         * - System action: string representation of the [SystemAction] enum
+         */
         @ColumnInfo(name = KeyMapDao.KEY_ACTION_DATA)
         val data: String
 ) {
