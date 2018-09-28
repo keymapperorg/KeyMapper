@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.wifi.WifiManager
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import com.github.salomonbrys.kotson.fromJson
@@ -14,6 +15,7 @@ import io.github.sds100.keymapper.ActionType
 import io.github.sds100.keymapper.Activities.NewKeyMapActivity
 import io.github.sds100.keymapper.Data.KeyMapRepository
 import io.github.sds100.keymapper.KeyMap
+import io.github.sds100.keymapper.SystemAction
 
 /**
  * Created by sds100 on 16/07/2018.
@@ -235,7 +237,7 @@ class MyAccessibilityService : AccessibilityService() {
                 sendBroadcast(intent)
             }
 
-            ActionType.SYSTEM_ACTION -> TODO()
+            ActionType.SYSTEM_ACTION -> performSystemAction(SystemAction.valueOf(action.data))
 
             else -> {
                 if (action.type == ActionType.KEYCODE || action.type == ActionType.KEY) {
@@ -245,6 +247,29 @@ class MyAccessibilityService : AccessibilityService() {
 
                     sendBroadcast(intent)
                 }
+            }
+        }
+    }
+
+    private fun performSystemAction(action: SystemAction) {
+        when (action) {
+            SystemAction.ACTION_ENABLE_WIFI -> {
+                val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE)
+                        as WifiManager
+                wifiManager.isWifiEnabled = true
+            }
+
+            SystemAction.ACTION_DISABLE_WIFI -> {
+                val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE)
+                        as WifiManager
+                wifiManager.isWifiEnabled = false
+            }
+
+            SystemAction.ACTION_TOGGLE_WIFI -> {
+                val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE)
+                        as WifiManager
+                //toggle wifi
+                wifiManager.isWifiEnabled = !wifiManager.isWifiEnabled
             }
         }
     }
