@@ -55,7 +55,7 @@ class MyAccessibilityService : AccessibilityService() {
     /**
      * Broadcast receiver for all intents sent from within the app.
      */
-    private val mAppBroadcastReceiver = object : BroadcastReceiver() {
+    private val mBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent!!.action) {
                 ACTION_RECORD_TRIGGER -> {
@@ -112,20 +112,18 @@ class MyAccessibilityService : AccessibilityService() {
         intentFilter.addAction(ACTION_CLEAR_PRESSED_KEYS)
         intentFilter.addAction(ACTION_UPDATE_KEYMAP_CACHE)
 
-        registerReceiver(mAppBroadcastReceiver, intentFilter)
+        registerReceiver(mBroadcastReceiver, intentFilter)
 
         //when the accessibility service starts
         getKeyMapListFromRepository()
     }
 
-    override fun onInterrupt() {
-
-    }
+    override fun onInterrupt() {}
 
     override fun onDestroy() {
         super.onDestroy()
 
-        unregisterReceiver(mAppBroadcastReceiver)
+        unregisterReceiver(mBroadcastReceiver)
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
@@ -228,7 +226,15 @@ class MyAccessibilityService : AccessibilityService() {
             }
 
             ActionType.APP_SHORTCUT -> TODO()
-            ActionType.KEYCODE -> TODO()
+
+            ActionType.KEYCODE -> {
+                val intent = Intent(MyIMEService.ACTION_INPUT_KEYCODE)
+                //put the keycode in the intent
+                intent.putExtra(MyIMEService.EXTRA_KEYCODE, action.data.toInt())
+
+                sendBroadcast(intent)
+            }
+
             ActionType.KEY -> TODO()
             ActionType.TEXT_BLOCK -> TODO()
             ActionType.SYSTEM_ACTION -> TODO()
