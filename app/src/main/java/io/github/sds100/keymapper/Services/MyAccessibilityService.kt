@@ -162,6 +162,14 @@ class MyAccessibilityService : AccessibilityService() {
                     if (mPressedTriggerKeys.isNotEmpty()) {
                         if (mPressedTriggerKeys.contains(event.keyCode)) {
                             mPressedTriggerKeys.remove(event.keyCode)
+
+                            /* pass the volume key event to the system otherwise strange behaviour
+                            * happens where the volume key is constantly being pressed */
+
+                            if (event.isVolumeKey) {
+                                return super.onKeyEvent(event)
+                            }
+
                             return true
                         }
                     }
@@ -200,4 +208,9 @@ class MyAccessibilityService : AccessibilityService() {
             }
         }
     }
+
+    private val KeyEvent.isVolumeKey: Boolean
+        get() = keyCode == KeyEvent.KEYCODE_VOLUME_DOWN
+                || keyCode == KeyEvent.KEYCODE_VOLUME_UP
+                || keyCode == KeyEvent.KEYCODE_VOLUME_MUTE
 }
