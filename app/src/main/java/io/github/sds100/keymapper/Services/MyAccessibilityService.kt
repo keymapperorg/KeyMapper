@@ -226,18 +226,18 @@ class MyAccessibilityService : AccessibilityService() {
             }
 
             ActionType.APP_SHORTCUT -> TODO()
-
-            ActionType.KEYCODE -> {
-                val intent = Intent(MyIMEService.ACTION_INPUT_KEYCODE)
-                //put the keycode in the intent
-                intent.putExtra(MyIMEService.EXTRA_KEYCODE, action.data.toInt())
-
-                sendBroadcast(intent)
-            }
-
-            ActionType.KEY -> TODO()
             ActionType.TEXT_BLOCK -> TODO()
             ActionType.SYSTEM_ACTION -> TODO()
+
+            else -> {
+                if (action.type == ActionType.KEYCODE || action.type == ActionType.KEY) {
+                    val intent = Intent(MyIMEService.ACTION_INPUT_KEYCODE)
+                    //put the keycode in the intent
+                    intent.putExtra(MyIMEService.EXTRA_KEYCODE, action.data.toInt())
+
+                    sendBroadcast(intent)
+                }
+            }
         }
     }
 
