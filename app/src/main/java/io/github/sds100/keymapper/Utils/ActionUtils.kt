@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.Utils
 
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.view.KeyEvent
@@ -36,18 +37,19 @@ object ActionUtils {
             }
 
             ActionType.APP_SHORTCUT -> {
-                val appShortcutList = AppShortcutUtils.getAppShortcuts(ctx.packageManager)
-                val appShortcut = appShortcutList.find { it.activityInfo.name == action.data }
+                val intent = Intent.parseUri(action.data, 0)
 
-                return if (appShortcut == null) {
-                    null
-                } else {
-                    appShortcut.loadLabel(ctx.packageManager).toString()
+                //get the title for the shortcut
+                if (intent.extras != null &&
+                        intent.extras!!.containsKey(AppShortcutUtils.EXTRA_SHORTCUT_TITLE)) {
+                    return intent.extras!!.getString(AppShortcutUtils.EXTRA_SHORTCUT_TITLE)
                 }
+
+                null
             }
 
             ActionType.SYSTEM_ACTION -> {
-                //convert the string representation of the enum entry into an enum object
+                //convert the string representation into an enum
                 val systemActionEnum = SystemAction.valueOf(action.data)
                 ctx.getString(SystemActionUtils.getDescription(systemActionEnum))
             }
@@ -82,17 +84,6 @@ object ActionUtils {
                 val systemActionEnum = SystemAction.valueOf(action.data)
                 val resId = SystemActionUtils.getIconResource(systemActionEnum)
                 ContextCompat.getDrawable(ctx, resId)
-            }
-
-            ActionType.APP_SHORTCUT -> {
-                val appShortcutList = AppShortcutUtils.getAppShortcuts(ctx.packageManager)
-                val appShortcut = appShortcutList.find { it.activityInfo.name == action.data }
-
-                return if (appShortcut == null) {
-                    null
-                } else {
-                    appShortcut.loadIcon(ctx.packageManager)
-                }
             }
 
             //return null if no icon should be used

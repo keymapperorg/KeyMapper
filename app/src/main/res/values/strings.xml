@@ -2,12 +2,13 @@
     <string name="app_name">Key Mapper</string>
     <string name="title_activity_new_key_map">New Keymap</string>
     <string name="title_choose_action">Choose Action</string>
-    <string name="no_action_specified">No Action Specified</string>
+    <string name="no_action_chosen">No Action Chosen</string>
     <string name="triggers_header">Triggers</string>
     <string name="accessibility_service_description">This is required so KeyMapper can listen for user defined triggers then act upon them.
     The accessibility service only listens for key events and nothing else. Key logging will never take place. Look in the source code, which is in the About section inside the app, if you are paranoid. :)</string>
     <string name="record_trigger_help">Press the keys/buttons which will trigger the action then click \"Stop recording trigger\". Press \"clear\" to clear the keys you have already typed.</string>
     <string name="selection_count">%d selected</string>
+    <string name="ime_service_label">Key Mapper Input Method</string>
 
     <string name="description_open_app">Open %s</string>
     <string name="description_key">Press \'%s\' key</string>
@@ -36,6 +37,7 @@
 
     <!-- Dialog titles -->
     <string name="dialog_title_are_you_sure">Are you sure?</string>
+    <string name="dialog_title_create_shortcut_title">Create Shortcut Title</string>
     <!-- Dialog titles -->
 
     <!-- Dialog messages -->
@@ -44,6 +46,8 @@
 
     <!-- Dialog buttons -->
     <string name="pos_yes">Yes</string>
+    <string name="pos_done">Done</string>
+
     <string name="neg_no">No</string>
     <string name="neg_cancel">Cancel</string>
     <!-- Dialog buttons -->
@@ -56,13 +60,18 @@
     <string name="action_type_action">Action</string>
     <string name="action_type_setting">Setting</string>
     <string name="action_type_text_block">Text Block</string>
-    <string name="caption_action_type_key">Click the key on the keyboard which you want to be entered.</string>
+    <string name="caption_action_type_key">Click the key on the keyboard which you want to be entered.
+        \n\nIMPORTANT!
+        This will only work if you have selected this app as the input method, which means it is best used with a hardware keyboard.</string>
+    <string name="caption_action_type_keycode">IMPORTANT!
+        This will only work if you have selected this app as the input method, which means it is best used with a hardware keyboard.</string>
     <!--Action Types-->
 
     <!-- Error messages -->
-    <string name="error_must_type_a_key">Must type a key!</string>
-    <string name="error_must_have_atleast_one_trigger">Must have atleast one trigger</string>
-    <string name="error_must_choose_action">Must choose an action!</string>
+    <string name="error_must_type_a_key">You must type a key!</string>
+    <string name="error_must_have_atleast_one_trigger">You must have at least one trigger</string>
+    <string name="error_must_choose_action">You must choose an action!</string>
+    <string name="error_must_have_a_title">The shortcut must have a title!</string>
     <!-- Error messages -->
 
     <!-- System action labels -->

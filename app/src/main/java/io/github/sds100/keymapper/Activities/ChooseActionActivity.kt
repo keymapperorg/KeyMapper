@@ -14,7 +14,6 @@ import io.github.sds100.keymapper.R
 import kotlinx.android.synthetic.main.activity_choose_action.*
 import kotlinx.android.synthetic.main.content_choose_action.*
 
-
 class ChooseActionActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     //The fragments which will each be shown when their corresponding item in the spinner is pressed
