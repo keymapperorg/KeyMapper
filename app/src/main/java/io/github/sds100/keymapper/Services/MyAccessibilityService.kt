@@ -227,7 +227,11 @@ class MyAccessibilityService : AccessibilityService() {
                 startActivity(intent)
             }
 
-            ActionType.APP_SHORTCUT -> TODO()
+            ActionType.APP_SHORTCUT -> {
+                val intent = Intent.parseUri(action.data, 0)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
+            }
 
             ActionType.TEXT_BLOCK -> {
                 val intent = Intent(MyIMEService.ACTION_INPUT_TEXT)
