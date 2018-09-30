@@ -54,7 +54,7 @@
 
     <!-- Notification strings -->
     <string name="notification_channel_persistent">Persistent Notifications</string>
-    <string name="notification_persistent_text">Listening for bluetooth devices to connect/disconnect</string>
+    <string name="notification_persistent_text">Will automatically show the input method dialog when a bluetooth device you\'ve chosen has connected or disconnected</string>
     <string name="notification_persistent_title">Click to choose input method</string>
     <!-- Notification strings -->
 
