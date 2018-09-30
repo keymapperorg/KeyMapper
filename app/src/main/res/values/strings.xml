@@ -37,6 +37,7 @@
 
     <!-- Dialog titles -->
     <string name="dialog_title_are_you_sure">Are you sure?</string>
+    <string name="dialog_title_create_shortcut_title">Create Shortcut Title</string>
     <!-- Dialog titles -->
 
     <!-- Dialog messages -->
@@ -70,6 +71,7 @@
     <string name="error_must_type_a_key">You must type a key!</string>
     <string name="error_must_have_atleast_one_trigger">You must have at least one trigger</string>
     <string name="error_must_choose_action">You must choose an action!</string>
+    <string name="error_must_have_a_title">The shortcut must have a title!</string>
     <!-- Error messages -->
 
     <!-- System action labels -->

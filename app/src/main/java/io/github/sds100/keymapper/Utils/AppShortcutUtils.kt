@@ -9,6 +9,8 @@ import android.content.pm.ResolveInfo
  */
 
 object AppShortcutUtils {
+    const val EXTRA_SHORTCUT_TITLE = "extra_title"
+
     fun getAppShortcuts(packageManager: PackageManager): MutableList<ResolveInfo> {
         val shortcutIntent = Intent(Intent.ACTION_CREATE_SHORTCUT)
         return packageManager.queryIntentActivities(shortcutIntent, 0)

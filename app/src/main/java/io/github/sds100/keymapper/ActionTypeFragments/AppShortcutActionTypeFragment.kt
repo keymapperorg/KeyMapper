@@ -13,6 +13,8 @@ import io.github.sds100.keymapper.ActionType
 import io.github.sds100.keymapper.Adapters.AppShortcutAdapter
 import io.github.sds100.keymapper.Adapters.SimpleItemAdapter
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.ShortcutTitleDialog
+import io.github.sds100.keymapper.Utils.AppShortcutUtils
 import kotlinx.android.synthetic.main.action_type_recyclerview.*
 
 /**
@@ -62,13 +64,23 @@ class AppShortcutActionTypeFragment : ActionTypeFragment(),
                     //get intent from selected shortcut
                     val shortcutIntent = data.extras!!.get(Intent.EXTRA_SHORTCUT_INTENT) as Intent
 
-                    //save the shortcut intent as a URI
-                    val action = Action(ActionType.APP_SHORTCUT, shortcutIntent.toUri(0))
-                    chooseSelectedAction(action)
+                    //show a dialog to prompt for a title.
+                    ShortcutTitleDialog.show(context!!) { title ->
+                        shortcutIntent.putExtra(AppShortcutUtils.EXTRA_SHORTCUT_TITLE, title)
+
+                        //save the shortcut intent as a URI
+                        val action = Action(ActionType.APP_SHORTCUT, shortcutIntent.toUri(0))
+                        chooseSelectedAction(action)
+                    }
 
                 } else {
-                    val action = Action(ActionType.APP_SHORTCUT, data.toUri(0))
-                    chooseSelectedAction(action)
+                    ShortcutTitleDialog.show(context!!) { title ->
+                        data.putExtra(AppShortcutUtils.EXTRA_SHORTCUT_TITLE, title)
+
+                        //save the shortcut intent as a URI
+                        val action = Action(ActionType.APP_SHORTCUT, data.toUri(0))
+                        chooseSelectedAction(action)
+                    }
                 }
             }
         }
