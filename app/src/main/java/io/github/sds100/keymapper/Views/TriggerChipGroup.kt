@@ -1,8 +1,9 @@
-package io.github.sds100.keymapper
+package io.github.sds100.keymapper.Views
 
 import android.content.Context
 import android.util.AttributeSet
 import android.view.KeyEvent
+import io.github.sds100.keymapper.Trigger
 
 /**
  * Created by sds100 on 31/07/2018.

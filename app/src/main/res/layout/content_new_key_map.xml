@@ -98,7 +98,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewExplanation">
 
-        <io.github.sds100.keymapper.TriggerChipGroup
+        <io.github.sds100.keymapper.Views.TriggerChipGroup
             android:id="@+id/chipGroupTriggerPreview"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"

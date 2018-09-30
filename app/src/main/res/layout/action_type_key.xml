@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <io.github.sds100.keymapper.KeyEventChipGroup
+    <io.github.sds100.keymapper.Views.KeyEventChipGroup
         android:id="@+id/keyEventChipGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
