@@ -2,7 +2,7 @@
     <string name="app_name">Key Mapper</string>
     <string name="title_activity_new_key_map">New Keymap</string>
     <string name="title_choose_action">Choose Action</string>
-    <string name="no_action_specified">No Action Specified</string>
+    <string name="no_action_chosen">No Action Chosen</string>
     <string name="triggers_header">Triggers</string>
     <string name="accessibility_service_description">This is required so KeyMapper can listen for user defined triggers then act upon them.
     The accessibility service only listens for key events and nothing else. Key logging will never take place. Look in the source code, which is in the About section inside the app, if you are paranoid. :)</string>
