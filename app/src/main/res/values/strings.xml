@@ -45,6 +45,8 @@
 
     <!-- Dialog buttons -->
     <string name="pos_yes">Yes</string>
+    <string name="pos_done">Done</string>
+
     <string name="neg_no">No</string>
     <string name="neg_cancel">Cancel</string>
     <!-- Dialog buttons -->
@@ -65,9 +67,9 @@
     <!--Action Types-->
 
     <!-- Error messages -->
-    <string name="error_must_type_a_key">Must type a key!</string>
-    <string name="error_must_have_atleast_one_trigger">Must have atleast one trigger</string>
-    <string name="error_must_choose_action">Must choose an action!</string>
+    <string name="error_must_type_a_key">You must type a key!</string>
+    <string name="error_must_have_atleast_one_trigger">You must have at least one trigger</string>
+    <string name="error_must_choose_action">You must choose an action!</string>
     <!-- Error messages -->
 
     <!-- System action labels -->
