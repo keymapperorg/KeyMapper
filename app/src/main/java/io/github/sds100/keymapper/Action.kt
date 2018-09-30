@@ -27,7 +27,7 @@ data class Action(
          * How each action type saves data:
          *
          * - Apps: package name
-         * - App shortcuts: the name of the activity to launch
+         * - App shortcuts: the intent for the shortcut as a parsed URI
          * - Keycode: the keycode
          * - Key: the keycode of the key
          * - Block of text: text to insert

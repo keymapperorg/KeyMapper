@@ -47,7 +47,7 @@ object ActionUtils {
             }
 
             ActionType.SYSTEM_ACTION -> {
-                //convert the string representation of the enum entry into an enum object
+                //convert the string representation into an enum
                 val systemActionEnum = SystemAction.valueOf(action.data)
                 ctx.getString(SystemActionUtils.getDescription(systemActionEnum))
             }
