@@ -1,9 +1,10 @@
-package io.github.sds100.keymapper
+package io.github.sds100.keymapper.Views
 
 import android.content.Context
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
 import com.google.android.material.chip.ChipDrawable
+import io.github.sds100.keymapper.R
 
 /**
  * Created by sds100 on 15/07/2018.

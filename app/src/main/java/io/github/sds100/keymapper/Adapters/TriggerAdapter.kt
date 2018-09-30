@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.SquareImageButton
+import io.github.sds100.keymapper.Views.SquareImageButton
 import io.github.sds100.keymapper.Trigger
 import kotlinx.android.synthetic.main.trigger_adapter_item.view.*
 
