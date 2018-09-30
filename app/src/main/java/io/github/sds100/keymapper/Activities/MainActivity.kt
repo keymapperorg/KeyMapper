@@ -1,24 +1,27 @@
 package io.github.sds100.keymapper.Activities
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
+import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Adapters.KeyMapAdapter
-import io.github.sds100.keymapper.BuildConfig
-import io.github.sds100.keymapper.KeyMap
-import io.github.sds100.keymapper.OnDeleteMenuItemClickListener
-import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Selection.SelectableActionMode
 import io.github.sds100.keymapper.Selection.SelectionCallback
 import io.github.sds100.keymapper.Selection.SelectionEvent
 import io.github.sds100.keymapper.Selection.SelectionProvider
-import io.github.sds100.keymapper.Services.BluetoothConnectionService
 import io.github.sds100.keymapper.Services.MyAccessibilityService
 import io.github.sds100.keymapper.ViewModels.KeyMapListViewModel
 import kotlinx.android.synthetic.main.activity_main.*
@@ -33,8 +36,6 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-
-        startService(Intent(this, BluetoothConnectionService::class.java))
 
         /*if the app is a debug build then enable the accessibility service in settings
         / automatically so I don't have to! :)*/

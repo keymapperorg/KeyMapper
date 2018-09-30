@@ -52,6 +52,12 @@
     <string name="neg_cancel">Cancel</string>
     <!-- Dialog buttons -->
 
+    <!-- Notification strings -->
+    <string name="notification_channel_persistent">Persistent Notifications</string>
+    <string name="notification_persistent_text">Listening for bluetooth devices to connect/disconnect</string>
+    <string name="notification_persistent_title">Click to choose input method</string>
+    <!-- Notification strings -->
+
     <!--Action Types-->
     <string name="action_type_application">Apps</string>
     <string name="action_type_application_shortcut">App shortcut</string>
