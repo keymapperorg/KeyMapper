@@ -13,4 +13,20 @@
             android:summary="@string/summary_pref_show_notification_on_boot"
             android:title="@string/title_pref_show_notification_on_boot" />
     </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/title_pref_category_ime_picker">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/key_pref_auto_show_ime_picker"
+            android:summary="@string/summary_pref_auto_show_ime_picker"
+            android:title="@string/title_pref_auto_show_ime_picker" />
+
+        <MultiSelectListPreference
+            android:key="@string/key_pref_bluetooth_devices"
+            android:title="@string/title_pref_bluetooth_devices" />
+
+        <MultiSelectListPreference
+            android:key="@string/key_pref_usb_devices"
+            android:title="@string/title_pref_usb_devices" />
+    </PreferenceCategory>
 </PreferenceScreen>
