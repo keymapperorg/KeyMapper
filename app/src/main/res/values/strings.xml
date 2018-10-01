@@ -58,6 +58,18 @@
     <string name="notification_persistent_title">Click to choose input method</string>
     <!-- Notification strings -->
 
+    <!-- Preferences -->
+    <string name="key_pref_show_notification">pref_show_notification</string>
+    <string name="key_pref_show_notification_on_boot">Show Notification On Boot</string>
+
+    <string name="title_pref_show_notification">Show Notification</string>
+    <string name="title_pref_category_notifications">Notifications</string>
+    <string name="title_pref_show_notification_on_boot">Show Notification On Boot</string>
+
+    <string name="summary_pref_show_notification">Show a persistent notification to allow you to pick an input method.</string>
+    <string name="summary_pref_show_notification_on_boot">Automatically start showing the notification when your device starts up.</string>
+    <!-- Preferences -->
+
     <!--Action Types-->
     <string name="action_type_application">Apps</string>
     <string name="action_type_application_shortcut">App shortcut</string>
