@@ -14,8 +14,9 @@ import io.github.sds100.keymapper.Action
 import io.github.sds100.keymapper.ActionType
 import io.github.sds100.keymapper.Activities.NewKeyMapActivity
 import io.github.sds100.keymapper.Data.KeyMapRepository
-import io.github.sds100.keymapper.Utils.RootUtils
+import io.github.sds100.keymapper.KeyMap
 import io.github.sds100.keymapper.SystemAction
+import io.github.sds100.keymapper.Utils.RootUtils
 
 /**
  * Created by sds100 on 16/07/2018.

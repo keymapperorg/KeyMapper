@@ -26,6 +26,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".Activities.NewKeyMapActivity"
             android:label="@string/title_activity_new_key_map"
@@ -34,7 +35,7 @@
         <activity
             android:name=".Activities.ChooseActionActivity"
             android:label="@string/title_choose_action"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <receiver
             android:name=".BootReceiver"
@@ -42,6 +43,13 @@
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".OpenIMEPickerBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
+                <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
             </intent-filter>
         </receiver>
 
@@ -69,10 +77,5 @@
                 android:name="android.view.im"
                 android:resource="@xml/method" />
         </service>
-
-        <service
-            android:name=".Services.BluetoothConnectionService"
-            android:enabled="true" />
     </application>
-
 </manifest>
