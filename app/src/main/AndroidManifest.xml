@@ -35,7 +35,12 @@
         <activity
             android:name=".Activities.ChooseActionActivity"
             android:label="@string/title_choose_action"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name=".Activities.SettingsActivity"
+            android:label="@string/title_settings"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <receiver
             android:name=".BootReceiver"
@@ -45,8 +50,7 @@
             </intent-filter>
         </receiver>
 
-        <receiver
-            android:name=".OpenIMEPickerBroadcastReceiver">
+        <receiver android:name=".OpenIMEPickerBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
                 <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
