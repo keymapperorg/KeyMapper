@@ -2,6 +2,7 @@
     <string name="app_name">Key Mapper</string>
     <string name="title_activity_new_key_map">New Keymap</string>
     <string name="title_choose_action">Choose Action</string>
+    <string name="title_settings">Settings</string>
     <string name="no_action_chosen">No Action Chosen</string>
     <string name="triggers_header">Triggers</string>
     <string name="accessibility_service_description">This is required so KeyMapper can listen for user defined triggers then act upon them.

@@ -39,8 +39,7 @@
 
         <activity
             android:name=".Activities.SettingsActivity"
-            android:label="@string/title_settings"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:label="@string/title_settings" />
 
         <receiver
             android:name=".BootReceiver"
