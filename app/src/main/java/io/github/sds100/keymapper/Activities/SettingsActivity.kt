@@ -4,11 +4,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.transaction
-import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.SwitchPreference
-import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.Utils.NotificationUtils
+import io.github.sds100.keymapper.SettingsFragment
 
 /**
  * Created by sds100 on 01/10/2018.
@@ -41,44 +37,4 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener {
-
-        private val mShowNotificationPreference by lazy {
-            findPreference(getString(R.string.key_pref_show_notification)) as SwitchPreference
-        }
-
-        private val mShowNotificationOnBootPreference by lazy {
-            findPreference(getString(R.string.key_pref_show_notification_on_boot))
-                    as SwitchPreference
-        }
-
-        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-            addPreferencesFromResource(R.xml.preferences)
-
-            mShowNotificationPreference.onPreferenceChangeListener = this
-
-            /*only allow the user to toggle whether the notification shows on boot if they want
-            * to see the notification at all. */
-            mShowNotificationOnBootPreference.isEnabled = mShowNotificationPreference.isChecked
-        }
-
-        override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
-            when (preference) {
-                mShowNotificationPreference -> {
-                    /* if the user doesn't want to see the notification, don't allow them
-                     * to toggle whether it is shown on boot on and off */
-                    mShowNotificationOnBootPreference.isEnabled = newValue as Boolean
-
-                    //show/hide the notification when the preference is toggled
-                    if (newValue) {
-                        NotificationUtils.showIMEPickerNotification(context!!)
-                    } else {
-                        NotificationUtils.hideImePickerNotification(context!!)
-                    }
-                }
-            }
-
-            return true
-        }
-    }
 }
