@@ -8,6 +8,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.Utils.NotificationUtils
 
 /**
  * Created by sds100 on 01/10/2018.
@@ -67,6 +68,13 @@ class SettingsActivity : AppCompatActivity() {
                     /* if the user doesn't want to see the notification, don't allow them
                      * to toggle whether it is shown on boot on and off */
                     mShowNotificationOnBootPreference.isEnabled = newValue as Boolean
+
+                    //show/hide the notification when the preference is toggled
+                    if (newValue) {
+                        NotificationUtils.showIMEPickerNotification(context!!)
+                    } else {
+                        NotificationUtils.hideImePickerNotification(context!!)
+                    }
                 }
             }
 

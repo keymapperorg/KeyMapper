@@ -55,4 +55,9 @@ object NotificationUtils {
             notify(NotificationUtils.NOTIFICATION_ID_PERSISTENT, notification)
         }
     }
+
+    fun hideImePickerNotification(ctx: Context) {
+        val manager = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        manager.cancel(NOTIFICATION_ID_PERSISTENT)
+    }
 }

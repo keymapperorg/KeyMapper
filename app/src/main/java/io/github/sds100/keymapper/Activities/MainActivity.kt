@@ -23,6 +23,7 @@ import io.github.sds100.keymapper.Utils.NotificationUtils
 import io.github.sds100.keymapper.ViewModels.KeyMapListViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import org.jetbrains.anko.defaultSharedPreferences
 
 class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemClickListener {
 
@@ -34,7 +35,11 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        NotificationUtils.showIMEPickerNotification(this)
+        if (defaultSharedPreferences.getBoolean(getString(R.string.key_pref_show_notification), true)) {
+            NotificationUtils.showIMEPickerNotification(this)
+        } else {
+            NotificationUtils.hideImePickerNotification(this)
+        }
 
         /*if the app is a debug build then enable the accessibility service in settings
         / automatically so I don't have to! :)*/
