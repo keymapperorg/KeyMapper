@@ -24,9 +24,5 @@
         <androidx.preference.MultiSelectListPreference
             android:key="@string/key_pref_bluetooth_devices"
             android:title="@string/title_pref_bluetooth_devices" />
-
-        <androidx.preference.MultiSelectListPreference
-            android:key="@string/key_pref_usb_devices"
-            android:title="@string/title_pref_usb_devices" />
     </androidx.preference.PreferenceCategory>
 </androidx.preference.PreferenceScreen>
