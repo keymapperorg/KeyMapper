@@ -11,6 +11,9 @@
     <string name="selection_count">%d selected</string>
     <string name="ime_service_label">Key Mapper Input Method</string>
 
+    <string name="shrug">¯\\_(ツ)_/¯</string>
+    <string name="no_key_maps">You haven\'t created any keymaps!</string>
+
     <string name="description_open_app">Open %s</string>
     <string name="description_key">Press \'%s\' key</string>
     <string name="description_text_block">Insert \'%s\'</string>

@@ -2,8 +2,11 @@ package io.github.sds100.keymapper.Activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.SpannableStringBuilder
+import android.text.style.RelativeSizeSpan
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -23,6 +26,7 @@ import io.github.sds100.keymapper.Utils.NotificationUtils
 import io.github.sds100.keymapper.ViewModels.KeyMapListViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import org.jetbrains.anko.append
 import org.jetbrains.anko.defaultSharedPreferences
 
 class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemClickListener {
@@ -54,6 +58,8 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
             mKeyMapAdapter.notifyDataSetChanged()
 
             updateAccessibilityServiceKeymapCache(keyMapList)
+
+            setCaption()
         })
 
         //start NewKeyMapActivity when the fab is pressed
@@ -124,5 +130,23 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
         intent.putExtra(MyAccessibilityService.EXTRA_KEYMAP_CACHE_JSON, jsonString)
 
         sendBroadcast(intent)
+    }
+
+    /**
+     * Controls what message is displayed to the user on the homescreen
+     */
+    private fun setCaption() {
+        if (mKeyMapAdapter.itemCount == 0) {
+            val spannableBuilder = SpannableStringBuilder()
+
+            spannableBuilder.append(getString(R.string.shrug), RelativeSizeSpan(2f))
+            spannableBuilder.append("\n\n")
+            spannableBuilder.append(getString(R.string.no_key_maps))
+
+            textViewCaption.visibility = View.VISIBLE
+            textViewCaption.text = spannableBuilder
+        } else {
+            textViewCaption.visibility = View.GONE
+        }
     }
 }
