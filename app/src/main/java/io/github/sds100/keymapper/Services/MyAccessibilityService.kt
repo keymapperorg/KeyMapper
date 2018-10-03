@@ -16,6 +16,7 @@ import io.github.sds100.keymapper.Activities.NewKeyMapActivity
 import io.github.sds100.keymapper.Data.KeyMapRepository
 import io.github.sds100.keymapper.KeyMap
 import io.github.sds100.keymapper.SystemAction
+import io.github.sds100.keymapper.Utils.RootUtils
 
 /**
  * Created by sds100 on 16/07/2018.
@@ -36,21 +37,15 @@ class MyAccessibilityService : AccessibilityService() {
         fun enableServiceInSettings() {
             val className = MyAccessibilityService::class.java.name
 
-            executeRootCommand("settings put secure enabled_accessibility_services io.github.sds100.keymapper/$className")
+            RootUtils.executeRootCommand(
+                    "settings put secure enabled_accessibility_services io.github.sds100.keymapper/$className")
         }
 
         /**
          * Disable this accessibility service. REQUIRES ROOT
          */
         fun disableServiceInSettings() {
-            executeRootCommand("settings put secure enabled_accessibility_services \"\"")
-        }
-
-        private fun executeRootCommand(command: String) {
-            try {
-                Runtime.getRuntime().exec(arrayOf("su", "-c", command))
-            } catch (e: Exception) {
-            }
+            RootUtils.executeRootCommand("settings put secure enabled_accessibility_services \"\"")
         }
     }
 

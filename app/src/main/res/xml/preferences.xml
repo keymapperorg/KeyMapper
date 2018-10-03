@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <androidx.preference.PreferenceCategory android:title="@string/title_pref_category_notifications">
+        <androidx.preference.SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/key_pref_show_notification"
+            android:summary="@string/summary_pref_show_notification"
+            android:title="@string/title_pref_show_notification" />
+
+        <androidx.preference.SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/key_pref_show_notification_on_boot"
+            android:summary="@string/summary_pref_show_notification_on_boot"
+            android:title="@string/title_pref_show_notification_on_boot" />
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory android:title="@string/title_pref_category_ime_picker">
+        <androidx.preference.SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/key_pref_auto_show_ime_picker"
+            android:summary="@string/summary_pref_auto_show_ime_picker"
+            android:title="@string/title_pref_auto_show_ime_picker" />
+
+        <io.github.sds100.keymapper.CancellableMultiSelectListPreference
+            android:key="@string/key_pref_bluetooth_devices"
+            android:title="@string/title_pref_bluetooth_devices" />
+    </androidx.preference.PreferenceCategory>
+</androidx.preference.PreferenceScreen>

@@ -2,6 +2,7 @@
     <string name="app_name">Key Mapper</string>
     <string name="title_activity_new_key_map">New Keymap</string>
     <string name="title_choose_action">Choose Action</string>
+    <string name="title_settings">Settings</string>
     <string name="no_action_chosen">No Action Chosen</string>
     <string name="triggers_header">Triggers</string>
     <string name="accessibility_service_description">This is required so KeyMapper can listen for user defined triggers then act upon them.
@@ -38,10 +39,12 @@
     <!-- Dialog titles -->
     <string name="dialog_title_are_you_sure">Are you sure?</string>
     <string name="dialog_title_create_shortcut_title">Create Shortcut Title</string>
+    <string name="dialog_title_cant_find_paired_devices">Can\'t find any paired devices</string>
     <!-- Dialog titles -->
 
     <!-- Dialog messages -->
     <string name="dialog_message_are_you_sure_cancel_new_key_map">Are you sure you want to cancel creating a new keymap?</string>
+    <string name="dialog_message_cant_find_paired_devices">Make sure Bluetooth is turned on and you have paired devices. Then try again.</string>
     <!-- Dialog messages -->
 
     <!-- Dialog buttons -->
@@ -51,6 +54,30 @@
     <string name="neg_no">No</string>
     <string name="neg_cancel">Cancel</string>
     <!-- Dialog buttons -->
+
+    <!-- Notification strings -->
+    <string name="notification_channel_persistent">Persistent Notifications</string>
+    <string name="notification_persistent_text">Will automatically show the input method dialog when a bluetooth device you\'ve chosen has connected or disconnected</string>
+    <string name="notification_persistent_title">Click to choose input method</string>
+    <!-- Notification strings -->
+
+    <!-- Preferences -->
+    <string name="key_pref_show_notification">pref_show_notification</string>
+    <string name="key_pref_show_notification_on_boot">pref_show_notification_on_boot</string>
+    <string name="key_pref_bluetooth_devices">pref_bluetooth_devices</string>
+    <string name="key_pref_auto_show_ime_picker">pref_auto_show_ime_picker</string>
+
+    <string name="title_pref_show_notification">Show Notification</string>
+    <string name="title_pref_category_notifications">Notifications</string>
+    <string name="title_pref_show_notification_on_boot">Show Notification On Boot</string>
+    <string name="title_pref_category_ime_picker">Input Method Picker</string>
+    <string name="title_pref_bluetooth_devices">Bluetooth devices</string>
+    <string name="title_pref_auto_show_ime_picker">Automatically show input method picker</string>
+
+    <string name="summary_pref_auto_show_ime_picker">When a Bluetooth  device you have chosen connects or disconnects, show the input method picker automatically. Choose the devices below.</string>
+    <string name="summary_pref_show_notification">Show a persistent notification to allow you to pick an input method.</string>
+    <string name="summary_pref_show_notification_on_boot">Automatically start showing the notification when your device starts up.</string>
+    <!-- Preferences -->
 
     <!--Action Types-->
     <string name="action_type_application">Apps</string>

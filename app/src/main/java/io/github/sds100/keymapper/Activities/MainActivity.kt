@@ -19,9 +19,11 @@ import io.github.sds100.keymapper.Selection.SelectionCallback
 import io.github.sds100.keymapper.Selection.SelectionEvent
 import io.github.sds100.keymapper.Selection.SelectionProvider
 import io.github.sds100.keymapper.Services.MyAccessibilityService
+import io.github.sds100.keymapper.Utils.NotificationUtils
 import io.github.sds100.keymapper.ViewModels.KeyMapListViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import org.jetbrains.anko.defaultSharedPreferences
 
 class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemClickListener {
 
@@ -32,6 +34,12 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+
+        if (defaultSharedPreferences.getBoolean(getString(R.string.key_pref_show_notification), true)) {
+            NotificationUtils.showIMEPickerNotification(this)
+        } else {
+            NotificationUtils.hideImePickerNotification(this)
+        }
 
         /*if the app is a debug build then enable the accessibility service in settings
         / automatically so I don't have to! :)*/
@@ -90,7 +98,11 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.action_settings -> {
+                val intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
