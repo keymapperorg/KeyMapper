@@ -13,7 +13,7 @@ import android.graphics.drawable.Drawable
  */
 class AppListAdapter(appList: List<ApplicationInfo>,
                      private val packageManager: PackageManager,
-                     private val onItemClickListener: OnItemClickListener<ApplicationInfo>
+                     onItemClickListener: OnItemClickListener<ApplicationInfo>
 ) : SimpleItemAdapter<ApplicationInfo>(appList, onItemClickListener) {
 
     /**
