@@ -46,8 +46,8 @@ class ChooseActionActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item!!.itemId) {
-        /*when the back button in the toolbar is pressed, call onBackPressed so it acts like the
-        hardware back button */
+            /*when the back button in the toolbar is pressed, call onBackPressed so it acts like the
+            hardware back button */
             android.R.id.home -> {
                 onBackPressed()
                 true

@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.ActionTypeFragments
 
 import android.content.pm.ApplicationInfo
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,9 +10,9 @@ import io.github.sds100.keymapper.Action
 import io.github.sds100.keymapper.ActionType
 import io.github.sds100.keymapper.Adapters.AppListAdapter
 import io.github.sds100.keymapper.Adapters.SimpleItemAdapter
+import io.github.sds100.keymapper.LoadAppListAsyncTask
 import io.github.sds100.keymapper.R
 import kotlinx.android.synthetic.main.action_type_recyclerview.*
-import kotlin.coroutines.experimental.buildSequence
 
 /**
  * Created by sds100 on 29/07/2018.
@@ -25,9 +24,8 @@ import kotlin.coroutines.experimental.buildSequence
 class AppActionTypeFragment : ActionTypeFragment(),
         SimpleItemAdapter.OnItemClickListener<ApplicationInfo> {
 
-    private val mApps by lazy { getApps() }
-
-    private lateinit var mAppListAdapter: AppListAdapter
+    private lateinit var mApps: List<ApplicationInfo>
+    private var mAppListAdapter: AppListAdapter? = null
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -40,43 +38,36 @@ class AppActionTypeFragment : ActionTypeFragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mAppListAdapter = AppListAdapter(
-                mApps,
-                packageManager = this@AppActionTypeFragment.context!!.packageManager,
-                onItemClickListener = this@AppActionTypeFragment
-        )
+        val packageManager = context!!.packageManager
 
+        LoadAppListAsyncTask(
+                packageManager,
+                onResult = { result ->
+                    mApps = result
+                    if (mAppListAdapter == null) {
+                        mAppListAdapter = AppListAdapter(
+                                mApps,
+                                packageManager = packageManager,
+                                onItemClickListener = this@AppActionTypeFragment
+                        )
+                    }
+
+                    //the task may be finished even if the fragment isn't showing
+                    if (recyclerView != null) {
+                        recyclerView.adapter = mAppListAdapter
+                    }
+
+                    if (progressBar != null) {
+                        progressBar.visibility = View.GONE
+                    }
+                }).execute()
+
+        progressBar.visibility = View.VISIBLE
         recyclerView.layoutManager = LinearLayoutManager(context!!)
-        recyclerView.adapter = mAppListAdapter
     }
 
     override fun onItemClick(item: ApplicationInfo) {
         val action = Action(ActionType.APP, item.packageName)
         chooseSelectedAction(action)
-    }
-
-    /**
-     * Get a list of apps sorted by name
-     */
-    private fun getApps(): List<ApplicationInfo> {
-        val packageManager = context!!.packageManager
-
-        val userApps: List<ApplicationInfo> = buildSequence {
-
-            //get all the installed apps
-            val installedApps = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
-
-            installedApps.forEach { app ->
-                //only allow apps which can be launched by the user
-                if (packageManager.getLaunchIntentForPackage(app.packageName) != null) yield(app)
-            }
-        }.toList()
-
-        //sort the apps in name order
-        return userApps.sortedWith(Comparator { app1, app2 ->
-            fun getAppName(app: ApplicationInfo) = app.loadLabel(packageManager).toString()
-
-            getAppName(app1).compareTo(getAppName(app2), ignoreCase = true)
-        })
     }
 }
