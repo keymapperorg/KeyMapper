@@ -85,10 +85,8 @@ class NewKeyMapActivity : AppCompatActivity() {
         buttonRecordTrigger.setOnClickListener {
             if (mIsRecordingTrigger) {
                 addTrigger()
-                buttonRecordTrigger.text = getString(R.string.button_record_trigger)
             } else {
                 recordTrigger()
-                buttonRecordTrigger.text = getString(R.string.button_stop_recording_trigger)
             }
         }
 
@@ -156,6 +154,12 @@ class NewKeyMapActivity : AppCompatActivity() {
         }
     }
 
+    override fun onPause() {
+        if (mIsRecordingTrigger) stopRecordingTrigger()
+
+        super.onPause()
+    }
+
     override fun onStop() {
         //If the user manages to leave the app, allow the accessibility service to accept key events
         //so they can use the device
@@ -190,6 +194,7 @@ class NewKeyMapActivity : AppCompatActivity() {
      */
     private fun recordTrigger() {
         mIsRecordingTrigger = true
+        buttonRecordTrigger.text = getString(R.string.button_stop_recording_trigger)
 
         //tell the accessibility service to record key events
         val intent = Intent(MyAccessibilityService.ACTION_RECORD_TRIGGER)
@@ -207,6 +212,9 @@ class NewKeyMapActivity : AppCompatActivity() {
      */
     private fun stopRecordingTrigger() {
         mIsRecordingTrigger = false
+
+        buttonRecordTrigger.text = getString(R.string.button_record_trigger)
+
         chipGroupTriggerPreview.removeAllChips()
 
         //tell the accessibility service to stop recording key events
