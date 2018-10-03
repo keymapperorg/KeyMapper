@@ -2,6 +2,7 @@ package io.github.sds100.keymapper
 
 import androidx.room.ColumnInfo
 import io.github.sds100.keymapper.Data.KeyMapDao
+import java.io.Serializable
 
 /**
  * Created by sds100 on 16/07/2018.
@@ -35,7 +36,7 @@ data class Action(
          */
         @ColumnInfo(name = KeyMapDao.KEY_ACTION_DATA)
         val data: String
-) {
+) : Serializable {
     companion object {
         const val EXTRA_ACTION = "extra_action"
     }
