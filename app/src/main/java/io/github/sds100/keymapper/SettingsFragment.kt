@@ -25,11 +25,16 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
         findPreference(getString(R.string.key_pref_bluetooth_devices)) as MultiSelectListPreference
     }
 
+    private val mAutoShowIMEDialogPreference by lazy {
+        findPreference(getString(R.string.key_pref_auto_show_ime_picker)) as SwitchPreference
+    }
+
     private var mShowingNoPairedDevicesDialog = false
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.preferences)
 
+        mAutoShowIMEDialogPreference.onPreferenceChangeListener = this
         mShowNotificationPreference.onPreferenceChangeListener = this
 
         /*only allow the user to toggle whether the notification shows on boot if they want
@@ -69,9 +74,10 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
 
     override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
         when (preference) {
+
+            /* if the user doesn't want to see the notification, don't allow them
+             * to toggle whether it is shown on boot on and off */
             mShowNotificationPreference -> {
-                /* if the user doesn't want to see the notification, don't allow them
-                 * to toggle whether it is shown on boot on and off */
                 mShowNotificationOnBootPreference.isEnabled = newValue as Boolean
 
                 //show/hide the notification when the preference is toggled
@@ -80,6 +86,12 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
                 } else {
                     NotificationUtils.hideImePickerNotification(context!!)
                 }
+            }
+
+            /* If the user doesn't want the IME picker to automatically show, they don't need
+            * to choose bluetooth devices*/
+            mAutoShowIMEDialogPreference -> {
+                mBluetoothDevicesPreferences.isEnabled = newValue as Boolean
             }
         }
 
