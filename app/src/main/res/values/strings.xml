@@ -39,10 +39,12 @@
     <!-- Dialog titles -->
     <string name="dialog_title_are_you_sure">Are you sure?</string>
     <string name="dialog_title_create_shortcut_title">Create Shortcut Title</string>
+    <string name="dialog_title_cant_find_paired_devices">Can\'t find any paired devices</string>
     <!-- Dialog titles -->
 
     <!-- Dialog messages -->
     <string name="dialog_message_are_you_sure_cancel_new_key_map">Are you sure you want to cancel creating a new keymap?</string>
+    <string name="dialog_message_cant_find_paired_devices">Make sure Bluetooth is turned on and you have paired devices. Then try again.</string>
     <!-- Dialog messages -->
 
     <!-- Dialog buttons -->
