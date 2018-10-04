@@ -268,7 +268,11 @@ class MyAccessibilityService : AccessibilityService() {
         when (action.type) {
             ActionType.APP -> {
                 val intent = packageManager.getLaunchIntentForPackage(action.data)
-                startActivity(intent)
+
+                //intent = null if the app doesn't exist
+                if (intent != null) {
+                    startActivity(intent)
+                }
             }
 
             ActionType.APP_SHORTCUT -> {
