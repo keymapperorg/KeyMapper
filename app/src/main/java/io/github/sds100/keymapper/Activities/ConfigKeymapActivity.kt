@@ -83,6 +83,10 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
                     imageView.setImageDrawable(drawable)
                     imageView.visibility = View.VISIBLE
                 }
+
+                buttonTestAction.visibility = View.VISIBLE
+            } else {
+                buttonTestAction.visibility = View.GONE
             }
 
             mTriggerAdapter.triggerList = keyMap.triggerList
@@ -93,6 +97,17 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
                 addTrigger()
             } else {
                 recordTrigger()
+            }
+        }
+
+        buttonTestAction.setOnClickListener {
+            val action = viewModel.keyMap.action
+
+            if (action != null) {
+                val intent = Intent(MyAccessibilityService.ACTION_TEST_ACTION)
+                intent.putExtra(MyAccessibilityService.EXTRA_ACTION, action)
+
+                sendBroadcast(intent)
             }
         }
 

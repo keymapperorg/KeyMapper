@@ -33,6 +33,7 @@
     <string name="button_record_trigger">Record Trigger</string>
     <string name="button_clear">Clear</string>
     <string name="button_add_trigger">Add Trigger</string>
+    <string name="button_test">Test</string>
     <string name="button_done">Done</string>
     <string name="button_stop_recording_trigger">Stop Recording Trigger…</string>
     <!-- Button titles -->
@@ -104,12 +105,12 @@
     <string name="error_must_have_atleast_one_trigger">You must have at least one trigger</string>
     <string name="error_must_choose_action">You must choose an action!</string>
     <string name="error_must_have_a_title">The shortcut must have a title!</string>
+    <string name="error_ime_must_be_chosen">You must choose the Key Mapper input method for this action to work!</string>
     <string name="error_accessibility_service_disabled">Accessibility service disabled! It must be enabled for this app to work. </string>
     <!-- Error messages -->
 
     <!-- System action labels -->
     <string name="action_toggle_wifi">Toggle WiFi</string>
     <string name="action_toggle_bluetooth">Toggle Bluetooth</string>
-    <string name="error_ime_must_be_chosen">You must choose the Key Mapper input method for this action to work!</string>
     <!-- System action labels -->
 </resources>

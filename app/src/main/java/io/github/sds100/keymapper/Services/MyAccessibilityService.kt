@@ -26,11 +26,13 @@ import io.github.sds100.keymapper.Utils.RootUtils
 class MyAccessibilityService : AccessibilityService() {
     companion object {
         const val EXTRA_KEYMAP_CACHE_JSON = "extra_keymap_cache_json"
+        const val EXTRA_ACTION = "action"
 
         const val ACTION_RECORD_TRIGGER = "io.github.sds100.keymapper.RECORD_TRIGGER"
         const val ACTION_STOP_RECORDING_TRIGGER = "io.github.sds100.keymapper.STOP_RECORDING_TRIGGER"
         const val ACTION_CLEAR_PRESSED_KEYS = "io.github.sds100.keymapper.CLEAR_PRESSED_KEYS"
         const val ACTION_UPDATE_KEYMAP_CACHE = "io.github.sds100.keymapper.UPDATE_KEYMAP_CACHE"
+        const val ACTION_TEST_ACTION = "io.github.sds100.keymapper.TEST_ACTION"
 
         /**
          * Enable this accessibility service. REQUIRES ROOT
@@ -113,6 +115,10 @@ class MyAccessibilityService : AccessibilityService() {
                         mKeyMapListCache = Gson().fromJson(jsonString)
                     }
                 }
+
+                ACTION_TEST_ACTION -> {
+                    performAction(intent.getSerializableExtra(EXTRA_ACTION) as Action)
+                }
             }
         }
     }
@@ -144,6 +150,7 @@ class MyAccessibilityService : AccessibilityService() {
         intentFilter.addAction(ACTION_STOP_RECORDING_TRIGGER)
         intentFilter.addAction(ACTION_CLEAR_PRESSED_KEYS)
         intentFilter.addAction(ACTION_UPDATE_KEYMAP_CACHE)
+        intentFilter.addAction(ACTION_TEST_ACTION)
 
         registerReceiver(mBroadcastReceiver, intentFilter)
 
@@ -216,7 +223,6 @@ class MyAccessibilityService : AccessibilityService() {
                     }
 
                     mPressedTriggerKeys = mPressedKeys.toMutableList()
-
 
                     //find the keymap associated with the trigger being pressed
                     val keyMap = mKeyMapListCache.find { keyMap ->
