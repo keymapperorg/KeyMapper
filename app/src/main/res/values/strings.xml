@@ -11,6 +11,7 @@
     <string name="record_trigger_help">Press the keys/buttons which will trigger the action then click \"Stop recording trigger\". Press \"clear\" to clear the keys you have already typed.</string>
     <string name="selection_count">%d selected</string>
     <string name="ime_service_label">Key Mapper Input Method</string>
+    <string name="enable">Enable</string>
 
     <string name="shrug">¯\\_(ツ)_/¯</string>
     <string name="no_key_maps">You haven\'t created any keymaps!</string>
@@ -103,6 +104,7 @@
     <string name="error_must_have_atleast_one_trigger">You must have at least one trigger</string>
     <string name="error_must_choose_action">You must choose an action!</string>
     <string name="error_must_have_a_title">The shortcut must have a title!</string>
+    <string name="error_accessibility_service_disabled">Accessibility service disabled!</string>
     <!-- Error messages -->
 
     <!-- System action labels -->

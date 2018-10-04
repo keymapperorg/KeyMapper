@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.Activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.text.SpannableStringBuilder
 import android.text.style.RelativeSizeSpan
 import android.view.Menu
@@ -11,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Adapters.KeymapAdapter
@@ -25,6 +27,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import org.jetbrains.anko.append
 import org.jetbrains.anko.defaultSharedPreferences
+
 
 class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemClickListener,
         OnItemClickListener<KeyMap> {
@@ -70,6 +73,27 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
 
         recyclerViewKeyMaps.layoutManager = LinearLayoutManager(this)
         recyclerViewKeyMaps.adapter = mKeymapAdapter
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val isAccessibilityServiceEnabled = isAccessibilityServiceEnabled()
+
+        if (!isAccessibilityServiceEnabled) {
+            val snackBar = Snackbar.make(
+                    coordinaterLayout,
+                    R.string.error_accessibility_service_disabled,
+                    Snackbar.LENGTH_INDEFINITE
+            )
+
+            snackBar.setAction(R.string.enable) {
+                val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                startActivity(intent)
+            }
+
+            snackBar.show()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
@@ -124,8 +148,19 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
     override fun onItemClick(item: KeyMap) {
         val intent = Intent(this, EditKeymapActivity::class.java)
         intent.putExtra(EditKeymapActivity.EXTRA_KEYMAP_ID, item.id)
-        
+
         startActivity(intent)
+    }
+
+    private fun isAccessibilityServiceEnabled(): Boolean {
+        /* get a list of all the enabled accessibility services.
+         * The AccessibilityManager.getEnabledAccessibilityServices() method just returns an empty
+         * list. :(*/
+        val settingValue = Settings.Secure.getString(
+                applicationContext.contentResolver,
+                Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
+
+        return settingValue.contains(this.packageName)
     }
 
     private fun updateAccessibilityServiceKeymapCache(keyMapList: List<KeyMap>) {
