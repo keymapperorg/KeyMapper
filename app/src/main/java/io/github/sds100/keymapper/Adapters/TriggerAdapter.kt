@@ -17,9 +17,19 @@ import kotlinx.android.synthetic.main.trigger_adapter_item.view.*
  * Display a list of [Trigger]s as Chips in a RecyclerView
  */
 class TriggerAdapter(
-        private val mTriggerList: MutableList<Trigger> = mutableListOf(),
+        triggerList: MutableList<Trigger> = mutableListOf(),
         val showRemoveButton: Boolean = true
 ) : RecyclerView.Adapter<TriggerAdapter.ViewHolder>() {
+
+    var triggerList: MutableList<Trigger> = mutableListOf()
+        set(value) {
+            notifyDataSetChanged()
+            field = value
+        }
+
+    init {
+        this.triggerList = triggerList
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -29,7 +39,7 @@ class TriggerAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.itemView.apply {
-            triggerChipGroup.addChipsFromTrigger(mTriggerList[position])
+            triggerChipGroup.addChipsFromTrigger(triggerList[position])
 
             if (!showRemoveButton) {
                 buttonRemove.visibility = View.GONE
@@ -37,20 +47,12 @@ class TriggerAdapter(
         }
     }
 
-    override fun getItemCount() = mTriggerList.size
-
-    /**
-     * Add a new trigger to the list
-     */
-    fun addTrigger(vararg trigger: Trigger) {
-        mTriggerList.addAll(trigger)
-        notifyDataSetChanged()
-    }
+    override fun getItemCount() = triggerList.size
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         init {
             itemView.findViewById<SquareImageButton>(R.id.buttonRemove).setOnClickListener {
-                mTriggerList.removeAt(adapterPosition)
+                triggerList.removeAt(adapterPosition)
                 notifyItemRemoved(adapterPosition)
             }
         }

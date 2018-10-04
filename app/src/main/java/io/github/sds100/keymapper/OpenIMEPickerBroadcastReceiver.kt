@@ -27,35 +27,39 @@ class OpenIMEPickerBroadcastReceiver : BroadcastReceiver() {
                         intent.action == BluetoothDevice.ACTION_ACL_DISCONNECTED ||
                         intent.action == ACTION_SHOW_IME_PICKER)) {
 
-            with(context!!.defaultSharedPreferences) {
-                val showIMEPickerAutomatically =
-                        getBoolean(context.getString(R.string.key_pref_auto_show_ime_picker), true)
+            //get the properties of the device which just connected/disconnected
+            val device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
 
-                //only show the dialog automatically if the user wants it to.
-                if (!showIMEPickerAutomatically) return
+            if (device != null) {
+                with(context!!.defaultSharedPreferences) {
 
-                //get the bluetooth devices chosen by the user
-                val selectedDevices =
-                        getStringSet(context.getString(R.string.key_pref_bluetooth_devices), null)
+                    val showIMEPickerAutomatically =
+                            getBoolean(context.getString(R.string.key_pref_auto_show_ime_picker), true)
 
-                if (selectedDevices == null) return
+                    //only show the dialog automatically if the user wants it to.
+                    if (!showIMEPickerAutomatically) return
 
-                //get the properties of the device which just connected/disconnected
-                val device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
+                    //get the bluetooth devices chosen by the user
+                    val selectedDevices =
+                            getStringSet(context.getString(R.string.key_pref_bluetooth_devices), null)
 
-                //don't show the dialog if the user hasn't selected this device
-                if (!selectedDevices.contains(device.address)) return
+                    //if the user hasn't chosen any devices
+                    if (selectedDevices == null) return
 
-                /* Android Pie doesn't seem to allow you to open the input method picker dialog
+                    //don't show the dialog if the user hasn't selected this device
+                    if (!selectedDevices.contains(device.address)) return
+                }
+            }
+
+            /* Android Pie doesn't seem to allow you to open the input method picker dialog
                  * from outside the app :( but it can be achieved by sending a broadcast with a
                  * system process id (requires root) */
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-                    showInputMethodPickerDialog(context)
-                } else {
-                    val command =
-                            "am broadcast -a com.android.server.InputMethodManagerService.SHOW_INPUT_METHOD_PICKER"
-                    RootUtils.executeRootCommand(command)
-                }
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+                showInputMethodPickerDialog(context!!)
+            } else {
+                val command =
+                        "am broadcast -a com.android.server.InputMethodManagerService.SHOW_INPUT_METHOD_PICKER"
+                RootUtils.executeRootCommand(command)
             }
         }
     }

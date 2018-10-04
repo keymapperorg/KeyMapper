@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Key Mapper</string>
+    <string name="title_activity_edit_key_map">Edit Keymap</string>
     <string name="title_activity_new_key_map">New Keymap</string>
     <string name="title_choose_action">Choose Action</string>
     <string name="title_settings">Settings</string>
@@ -46,7 +47,7 @@
     <!-- Dialog titles -->
 
     <!-- Dialog messages -->
-    <string name="dialog_message_are_you_sure_cancel_new_key_map">Are you sure you want to cancel creating a new keymap?</string>
+    <string name="dialog_message_are_you_sure_want_to_leave">Are you sure you want to leave?</string>
     <string name="dialog_message_cant_find_paired_devices">Make sure Bluetooth is turned on and you have paired devices. Then try again.</string>
     <!-- Dialog messages -->
 

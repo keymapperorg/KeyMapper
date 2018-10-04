@@ -12,11 +12,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
-import io.github.sds100.keymapper.Adapters.KeyMapAdapter
-import io.github.sds100.keymapper.BuildConfig
-import io.github.sds100.keymapper.KeyMap
-import io.github.sds100.keymapper.OnDeleteMenuItemClickListener
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.*
+import io.github.sds100.keymapper.Adapters.KeymapAdapter
 import io.github.sds100.keymapper.Selection.SelectableActionMode
 import io.github.sds100.keymapper.Selection.SelectionCallback
 import io.github.sds100.keymapper.Selection.SelectionEvent
@@ -29,9 +26,10 @@ import kotlinx.android.synthetic.main.content_main.*
 import org.jetbrains.anko.append
 import org.jetbrains.anko.defaultSharedPreferences
 
-class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemClickListener {
+class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemClickListener,
+        OnItemClickListener<KeyMap> {
 
-    private val mKeyMapAdapter: KeyMapAdapter = KeyMapAdapter()
+    private val mKeymapAdapter: KeymapAdapter = KeymapAdapter(this)
     private lateinit var mViewModel: KeyMapListViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,30 +52,30 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
         mViewModel = ViewModelProviders.of(this).get(KeyMapListViewModel::class.java)
 
         mViewModel.keyMapList.observe(this, Observer { keyMapList ->
-            mKeyMapAdapter.itemList = keyMapList
-            mKeyMapAdapter.notifyDataSetChanged()
+            mKeymapAdapter.itemList = keyMapList
+            mKeymapAdapter.notifyDataSetChanged()
 
             updateAccessibilityServiceKeymapCache(keyMapList)
 
             setCaption()
         })
 
-        //start NewKeyMapActivity when the fab is pressed
+        //start NewKeymapActivity when the fab is pressed
         fabNewKeyMap.setOnClickListener {
-            val intent = Intent(this, NewKeyMapActivity::class.java)
+            val intent = Intent(this, NewKeymapActivity::class.java)
             startActivity(intent)
         }
 
-        mKeyMapAdapter.iSelectionProvider.subscribeToSelectionEvents(this)
+        mKeymapAdapter.iSelectionProvider.subscribeToSelectionEvents(this)
 
         recyclerViewKeyMaps.layoutManager = LinearLayoutManager(this)
-        recyclerViewKeyMaps.adapter = mKeyMapAdapter
+        recyclerViewKeyMaps.adapter = mKeymapAdapter
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
         outState!!.putBundle(
                 SelectionProvider.KEY_SELECTION_PROVIDER_STATE,
-                mKeyMapAdapter.iSelectionProvider.saveInstanceState())
+                mKeymapAdapter.iSelectionProvider.saveInstanceState())
 
         super.onSaveInstanceState(outState)
     }
@@ -89,7 +87,7 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
             val selectionProviderState =
                     savedInstanceState.getBundle(SelectionProvider.KEY_SELECTION_PROVIDER_STATE)!!
 
-            mKeyMapAdapter.iSelectionProvider.restoreInstanceState(selectionProviderState)
+            mKeymapAdapter.iSelectionProvider.restoreInstanceState(selectionProviderState)
         }
     }
 
@@ -114,13 +112,20 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
     }
 
     override fun onDeleteMenuButtonClick() {
-        mViewModel.deleteKeyMapsById(*mKeyMapAdapter.iSelectionProvider.selectedItemIds)
+        mViewModel.deleteKeyMapsById(*mKeymapAdapter.iSelectionProvider.selectedItemIds)
     }
 
     override fun onSelectionEvent(id: Long?, event: SelectionEvent) {
         if (event == SelectionEvent.START) {
-            startSupportActionMode(SelectableActionMode(this, mKeyMapAdapter.iSelectionProvider, this))
+            startSupportActionMode(SelectableActionMode(this, mKeymapAdapter.iSelectionProvider, this))
         }
+    }
+
+    override fun onItemClick(item: KeyMap) {
+        val intent = Intent(this, EditKeymapActivity::class.java)
+        intent.putExtra(EditKeymapActivity.EXTRA_KEYMAP_ID, item.id)
+        
+        startActivity(intent)
     }
 
     private fun updateAccessibilityServiceKeymapCache(keyMapList: List<KeyMap>) {
@@ -136,7 +141,8 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
      * Controls what message is displayed to the user on the homescreen
      */
     private fun setCaption() {
-        if (mKeyMapAdapter.itemCount == 0) {
+        //tell the user if they haven't created any KeyMaps
+        if (mKeymapAdapter.itemCount == 0) {
             val spannableBuilder = SpannableStringBuilder()
 
             spannableBuilder.append(getString(R.string.shrug), RelativeSizeSpan(2f))

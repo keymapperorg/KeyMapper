@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.sds100.keymapper.KeyMap
+import io.github.sds100.keymapper.OnItemClickListener
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Selection.SelectionEvent
 import io.github.sds100.keymapper.Selection.SelectionEvent.*
@@ -19,7 +20,8 @@ import kotlinx.android.synthetic.main.keymap_adapter_item.view.*
 /**
  * Display a list of [KeyMap]s in a RecyclerView
  */
-class KeyMapAdapter : SelectableAdapter<KeyMap, KeyMapAdapter.ViewHolder>() {
+class KeymapAdapter(private val mOnItemClickListener: OnItemClickListener<KeyMap>
+) : SelectableAdapter<KeyMap, KeymapAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -43,25 +45,27 @@ class KeyMapAdapter : SelectableAdapter<KeyMap, KeyMapAdapter.ViewHolder>() {
 
             checkBox.isChecked = iSelectionProvider.isSelected(holder.itemId)
 
-            textViewTitle.text = ActionUtils.getDescription(context, keyMap.action)
+            if (keyMap.action != null) {
+                textViewTitle.text = ActionUtils.getDescription(context, keyMap.action!!)
+
+                /*if no icon should be shown then hide the ImageView so there isn't whitespace next to
+                the text*/
+                val drawable = ActionUtils.getIcon(context, keyMap.action!!)
+
+                if (drawable == null) {
+                    imageView.setImageDrawable(null)
+                    imageView.visibility = View.GONE
+                } else {
+                    imageView.setImageDrawable(drawable)
+                    imageView.visibility = View.VISIBLE
+                }
+            }
 
             //show all the triggers in a list
             val triggerAdapter = TriggerAdapter(keyMap.triggerList, showRemoveButton = false)
 
             recyclerViewTriggers.layoutManager = LinearLayoutManager(context)
             recyclerViewTriggers.adapter = triggerAdapter
-
-            /*if no icon should be shown then hide the ImageView so there isn't whitespace next to
-            the text*/
-            val drawable = ActionUtils.getIcon(context, keyMap.action)
-
-            if (drawable == null) {
-                imageView.setImageDrawable(null)
-                imageView.visibility = View.GONE
-            } else {
-                imageView.setImageDrawable(drawable)
-                imageView.visibility = View.VISIBLE
-            }
         }
     }
 
@@ -78,6 +82,10 @@ class KeyMapAdapter : SelectableAdapter<KeyMap, KeyMapAdapter.ViewHolder>() {
                 if (iSelectionProvider.inSelectingMode) {
                     iSelectionProvider.toggleSelection(getItemId(adapterPosition))
                 }
+            }
+
+            itemView.setOnClickListener {
+                mOnItemClickListener.onItemClick(itemList[adapterPosition])
             }
         }
 

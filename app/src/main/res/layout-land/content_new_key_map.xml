@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".Activities.NewKeyMapActivity"
+    tools:context=".Activities.NewKeymapActivity"
     tools:showIn="@layout/activity_new_key_map">
 
     <TextView

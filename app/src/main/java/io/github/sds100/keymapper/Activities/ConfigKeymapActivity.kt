@@ -9,26 +9,26 @@ import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
-import android.widget.Toast.LENGTH_SHORT
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import io.github.sds100.keymapper.Action
 import io.github.sds100.keymapper.Adapters.TriggerAdapter
-import io.github.sds100.keymapper.KeyMap
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Services.MyAccessibilityService
 import io.github.sds100.keymapper.Utils.ActionUtils
-import io.github.sds100.keymapper.ViewModels.NewKeyMapViewModel
+import io.github.sds100.keymapper.ViewModels.ConfigKeyMapViewModel
 import kotlinx.android.synthetic.main.activity_new_key_map.*
 import kotlinx.android.synthetic.main.content_new_key_map.*
 import org.jetbrains.anko.alert
 
-class NewKeyMapActivity : AppCompatActivity() {
+/**
+ * Created by sds100 on 04/10/2018.
+ */
+
+abstract class ConfigKeymapActivity : AppCompatActivity() {
 
     companion object {
         const val ACTION_ADD_KEY_CHIP = "io.github.sds100.keymapper.ADD_KEY_CHIP"
@@ -37,6 +37,9 @@ class NewKeyMapActivity : AppCompatActivity() {
         const val REQUEST_CODE_ACTION = 821
     }
 
+    /**
+     * Listens for key events from the accessibility service
+     */
     private val mAddKeyChipBroadcastReceiver = object : BroadcastReceiver() {
 
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -54,7 +57,7 @@ class NewKeyMapActivity : AppCompatActivity() {
 
     private var mIsRecordingTrigger = false
 
-    private lateinit var mViewModel: NewKeyMapViewModel
+    abstract val viewModel: ConfigKeyMapViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,24 +67,25 @@ class NewKeyMapActivity : AppCompatActivity() {
         //show the back button in the toolbar
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-        mViewModel = ViewModelProviders.of(this).get(NewKeyMapViewModel::class.java)
+        viewModel.keyMap.observe(this, Observer { keyMap ->
 
-        mViewModel.chosenAction.observe(this, Observer<Action> {
-            textViewAction.text = ActionUtils.getDescription(ctx = this, action = it)
+            if (keyMap.action != null) {
+                val action = keyMap.action!!
 
-            val drawable = ActionUtils.getIcon(ctx = this, action = it)
+                textViewAction.text = ActionUtils.getDescription(ctx = this, action = action)
 
-            if (drawable == null) {
-                imageView.setImageDrawable(null)
-                imageView.visibility = View.GONE
-            } else {
-                imageView.setImageDrawable(drawable)
-                imageView.visibility = View.VISIBLE
+                val drawable = ActionUtils.getIcon(ctx = this, action = action)
+
+                if (drawable == null) {
+                    imageView.setImageDrawable(null)
+                    imageView.visibility = View.GONE
+                } else {
+                    imageView.setImageDrawable(drawable)
+                    imageView.visibility = View.VISIBLE
+                }
             }
-        })
 
-        mViewModel.triggerList.observe(this, Observer {
-            mTriggerAdapter.addTrigger(*it.toTypedArray())
+            mTriggerAdapter.triggerList = keyMap.triggerList
         })
 
         buttonRecordTrigger.setOnClickListener {
@@ -108,7 +112,7 @@ class NewKeyMapActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_new_key_map, menu)
+        menuInflater.inflate(R.menu.menu_config_key_map, menu)
         return true
     }
 
@@ -116,7 +120,7 @@ class NewKeyMapActivity : AppCompatActivity() {
         //ask the user whether they are sure they want to leave the activity
         alert {
             title = getString(R.string.dialog_title_are_you_sure)
-            message = getString(R.string.dialog_message_are_you_sure_cancel_new_key_map)
+            message = getString(R.string.dialog_message_are_you_sure_want_to_leave)
             positiveButton(android.R.string.yes, onClicked = { super.onBackPressed() })
             negativeButton(android.R.string.no, onClicked = { dialog -> dialog.cancel() })
         }.show()
@@ -132,22 +136,12 @@ class NewKeyMapActivity : AppCompatActivity() {
             }
 
             R.id.action_done -> {
-                if (mViewModel.chosenAction.value == null) {
-                    Toast.makeText(this, R.string.error_must_choose_action, LENGTH_SHORT).show()
-                    return true
-                }
-
-                val keyMap = KeyMap(
-                        triggerList = mViewModel.triggerList.value!!.toMutableList(),
-                        action = mViewModel.chosenAction.value!!
-                )
-
                 //if the key map isn't valid, return.
-                if (!keyMap.isValid(this)) {
+                if (!viewModel.keyMap.value!!.isValid(this)) {
                     return true
                 }
 
-                mViewModel.saveKeyMap(keyMap)
+                viewModel.saveKeymap()
 
                 finish()
                 true
@@ -155,6 +149,7 @@ class NewKeyMapActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
 
     override fun onPause() {
         if (mIsRecordingTrigger) stopRecordingTrigger()
@@ -176,7 +171,7 @@ class NewKeyMapActivity : AppCompatActivity() {
 
         if (requestCode == REQUEST_CODE_ACTION) {
             if (data != null) {
-                mViewModel.chosenAction.value =
+                viewModel.keyMap.action =
                         Gson().fromJson(data.getStringExtra(Action.EXTRA_ACTION))
             }
         }
@@ -186,8 +181,7 @@ class NewKeyMapActivity : AppCompatActivity() {
         val trigger = chipGroupTriggerPreview.createTriggerFromChips()
 
         if (trigger.keys.isNotEmpty()) {
-            mViewModel.triggerList.value!!.add(trigger)
-            mTriggerAdapter.addTrigger(trigger)
+            viewModel.keyMap.addTrigger(trigger)
         }
 
         stopRecordingTrigger()

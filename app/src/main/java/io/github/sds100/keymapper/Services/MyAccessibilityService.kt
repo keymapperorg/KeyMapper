@@ -12,7 +12,7 @@ import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import io.github.sds100.keymapper.Action
 import io.github.sds100.keymapper.ActionType
-import io.github.sds100.keymapper.Activities.NewKeyMapActivity
+import io.github.sds100.keymapper.Activities.ConfigKeymapActivity
 import io.github.sds100.keymapper.Data.KeyMapRepository
 import io.github.sds100.keymapper.KeyMap
 import io.github.sds100.keymapper.SystemAction
@@ -102,7 +102,7 @@ class MyAccessibilityService : AccessibilityService() {
     override fun onServiceConnected() {
         super.onServiceConnected()
 
-        //listen for events from NewKeyMapActivity
+        //listen for events from NewKeymapActivity
         val intentFilter = IntentFilter()
         intentFilter.addAction(ACTION_RECORD_TRIGGER)
         intentFilter.addAction(ACTION_STOP_RECORDING_TRIGGER)
@@ -133,9 +133,9 @@ class MyAccessibilityService : AccessibilityService() {
                 if (event.action == KeyEvent.ACTION_DOWN) {
                     //only add the key to the trigger if it isn't already a part of the trigger
                     if (!mPressedKeys.contains(event.keyCode)) {
-                        //tell NewKeyMapActivity to add the chip
-                        val intent = Intent(NewKeyMapActivity.ACTION_ADD_KEY_CHIP)
-                        intent.putExtra(NewKeyMapActivity.EXTRA_KEY_EVENT, event)
+                        //tell NewKeymapActivity to add the chip
+                        val intent = Intent(ConfigKeymapActivity.ACTION_ADD_KEY_CHIP)
+                        intent.putExtra(ConfigKeymapActivity.EXTRA_KEY_EVENT, event)
 
                         sendBroadcast(intent)
 
@@ -180,8 +180,8 @@ class MyAccessibilityService : AccessibilityService() {
                         keyMap.triggerList.any { trigger -> trigger.keys == mPressedTriggerKeys }
                     }
 
-                    if (keyMap != null) {
-                        performAction(keyMap.action)
+                    if (keyMap?.action != null) {
+                        performAction(keyMap.action!!)
                     }
 
                     return true
