@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.sds100.keymapper.KeyMap
+import io.github.sds100.keymapper.OnItemClickListener
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Selection.SelectionEvent
 import io.github.sds100.keymapper.Selection.SelectionEvent.*
@@ -19,7 +20,8 @@ import kotlinx.android.synthetic.main.keymap_adapter_item.view.*
 /**
  * Display a list of [KeyMap]s in a RecyclerView
  */
-class KeyMapAdapter : SelectableAdapter<KeyMap, KeyMapAdapter.ViewHolder>() {
+class KeymapAdapter(private val mOnItemClickListener: OnItemClickListener<KeyMap>
+) : SelectableAdapter<KeyMap, KeymapAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -78,6 +80,10 @@ class KeyMapAdapter : SelectableAdapter<KeyMap, KeyMapAdapter.ViewHolder>() {
                 if (iSelectionProvider.inSelectingMode) {
                     iSelectionProvider.toggleSelection(getItemId(adapterPosition))
                 }
+            }
+
+            itemView.setOnClickListener {
+                mOnItemClickListener.onItemClick(itemList[adapterPosition])
             }
         }
 
