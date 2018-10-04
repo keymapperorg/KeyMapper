@@ -17,14 +17,13 @@ import io.github.sds100.keymapper.Selection.SelectableItem
 @Entity(tableName = KeyMapDao.TABLE_NAME)
 class KeyMap(
         @PrimaryKey(autoGenerate = true)
-        override val id: Long = 0,
+        override val id: Long,
 
         @ColumnInfo(name = KeyMapDao.KEY_TRIGGER_LIST)
         val triggerList: MutableList<Trigger> = mutableListOf(),
 
         @Embedded
-        val action: Action
-
+        var action: Action? = null
 ) : SelectableItem() {
 
     override fun hashCode() = id.toInt()
@@ -46,6 +45,10 @@ class KeyMap(
         if (triggerList.isEmpty()) {
             Toast.makeText(ctx, R.string.error_must_have_atleast_one_trigger, LENGTH_SHORT).show()
             return false
+        }
+
+        if (action == null) {
+            Toast.makeText(ctx, R.string.error_must_choose_action, LENGTH_SHORT).show()
         }
 
         return true

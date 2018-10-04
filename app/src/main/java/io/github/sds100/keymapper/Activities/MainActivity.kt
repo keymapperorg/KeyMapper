@@ -121,6 +121,13 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
         }
     }
 
+    override fun onItemClick(item: KeyMap) {
+        val intent = Intent(this, EditKeymapActivity::class.java)
+        intent.putExtra(EditKeymapActivity.EXTRA_KEYMAP_ID, item.id)
+        
+        startActivity(intent)
+    }
+
     private fun updateAccessibilityServiceKeymapCache(keyMapList: List<KeyMap>) {
         val intent = Intent(MyAccessibilityService.ACTION_UPDATE_KEYMAP_CACHE)
         val jsonString = Gson().toJson(keyMapList)

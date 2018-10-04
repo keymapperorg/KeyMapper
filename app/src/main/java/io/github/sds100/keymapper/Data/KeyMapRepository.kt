@@ -45,6 +45,10 @@ class KeyMapRepository private constructor(ctx: Context) {
         }
     }
 
+    fun getKeyMap(id: Long): KeyMap {
+        return keyMapList.value!!.find { it.id == id }!!
+    }
+
     fun deleteKeyMap(vararg keyMap: KeyMap) {
         DeleteKeyMapAsync(mDb).execute(*keyMap)
     }
@@ -53,7 +57,7 @@ class KeyMapRepository private constructor(ctx: Context) {
         DeleteKeyMapByIdAsync(mDb).execute(*id.toList().toTypedArray())
     }
 
-    fun addKeyMap(vararg keyMap: KeyMap) {
+    fun putKeyMap(vararg keyMap: KeyMap) {
         InsertKeyMapAsync(mDb).execute(*keyMap)
     }
 
@@ -89,7 +93,7 @@ class KeyMapRepository private constructor(ctx: Context) {
                     }
                 }.toList()
 
-                addKeyMap(*testKeyMapList.toTypedArray())
+                putKeyMap(*testKeyMapList.toTypedArray())
             }
         }
 

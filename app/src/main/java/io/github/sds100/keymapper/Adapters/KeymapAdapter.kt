@@ -45,25 +45,27 @@ class KeymapAdapter(private val mOnItemClickListener: OnItemClickListener<KeyMap
 
             checkBox.isChecked = iSelectionProvider.isSelected(holder.itemId)
 
-            textViewTitle.text = ActionUtils.getDescription(context, keyMap.action)
+            if (keyMap.action != null) {
+                textViewTitle.text = ActionUtils.getDescription(context, keyMap.action!!)
+
+                /*if no icon should be shown then hide the ImageView so there isn't whitespace next to
+                the text*/
+                val drawable = ActionUtils.getIcon(context, keyMap.action!!)
+
+                if (drawable == null) {
+                    imageView.setImageDrawable(null)
+                    imageView.visibility = View.GONE
+                } else {
+                    imageView.setImageDrawable(drawable)
+                    imageView.visibility = View.VISIBLE
+                }
+            }
 
             //show all the triggers in a list
             val triggerAdapter = TriggerAdapter(keyMap.triggerList, showRemoveButton = false)
 
             recyclerViewTriggers.layoutManager = LinearLayoutManager(context)
             recyclerViewTriggers.adapter = triggerAdapter
-
-            /*if no icon should be shown then hide the ImageView so there isn't whitespace next to
-            the text*/
-            val drawable = ActionUtils.getIcon(context, keyMap.action)
-
-            if (drawable == null) {
-                imageView.setImageDrawable(null)
-                imageView.visibility = View.GONE
-            } else {
-                imageView.setImageDrawable(drawable)
-                imageView.visibility = View.VISIBLE
-            }
         }
     }
 

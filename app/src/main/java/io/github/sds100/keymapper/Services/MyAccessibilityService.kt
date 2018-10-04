@@ -12,7 +12,7 @@ import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import io.github.sds100.keymapper.Action
 import io.github.sds100.keymapper.ActionType
-import io.github.sds100.keymapper.Activities.NewKeymapActivity
+import io.github.sds100.keymapper.Activities.ConfigKeymapActivity
 import io.github.sds100.keymapper.Data.KeyMapRepository
 import io.github.sds100.keymapper.KeyMap
 import io.github.sds100.keymapper.SystemAction
@@ -134,8 +134,8 @@ class MyAccessibilityService : AccessibilityService() {
                     //only add the key to the trigger if it isn't already a part of the trigger
                     if (!mPressedKeys.contains(event.keyCode)) {
                         //tell NewKeymapActivity to add the chip
-                        val intent = Intent(NewKeymapActivity.ACTION_ADD_KEY_CHIP)
-                        intent.putExtra(NewKeymapActivity.EXTRA_KEY_EVENT, event)
+                        val intent = Intent(ConfigKeymapActivity.ACTION_ADD_KEY_CHIP)
+                        intent.putExtra(ConfigKeymapActivity.EXTRA_KEY_EVENT, event)
 
                         sendBroadcast(intent)
 
@@ -180,8 +180,8 @@ class MyAccessibilityService : AccessibilityService() {
                         keyMap.triggerList.any { trigger -> trigger.keys == mPressedTriggerKeys }
                     }
 
-                    if (keyMap != null) {
-                        performAction(keyMap.action)
+                    if (keyMap?.action != null) {
+                        performAction(keyMap.action!!)
                     }
 
                     return true

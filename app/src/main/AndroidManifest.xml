@@ -33,6 +33,11 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
+            android:name=".Activities.EditKeymapActivity"
+            android:label="@string/title_activity_edit_key_map"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
             android:name=".Activities.ChooseActionActivity"
             android:label="@string/title_choose_action"
             android:theme="@style/AppTheme.NoActionBar" />
