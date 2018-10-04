@@ -40,7 +40,7 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
     /**
      * Listens for key events from the accessibility service
      */
-    private val mAddKeyChipBroadcastReceiver = object : BroadcastReceiver() {
+    private val mBroadcastReceiver = object : BroadcastReceiver() {
 
         override fun onReceive(context: Context?, intent: Intent?) {
             val keyEvent = intent!!.getParcelableExtra<KeyEvent>(EXTRA_KEY_EVENT)
@@ -48,6 +48,9 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
             when (intent.action) {
                 ACTION_ADD_KEY_CHIP -> {
                     chipGroupTriggerPreview.addChip(keyEvent)
+                }
+                MyAccessibilityService.ACTION_RECORD_TRIGGER_TIMER_STOPPED -> {
+                    stopRecordingTrigger()
                 }
             }
         }
@@ -66,6 +69,13 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
 
         //show the back button in the toolbar
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+
+        //listen for key events so they can be shown as chips
+        val intentFilter = IntentFilter()
+        intentFilter.addAction(ACTION_ADD_KEY_CHIP)
+        intentFilter.addAction(MyAccessibilityService.ACTION_RECORD_TRIGGER_TIMER_STOPPED)
+
+        registerReceiver(mBroadcastReceiver, intentFilter)
 
         viewModel.keyMap.observe(this, Observer { keyMap ->
 
@@ -176,7 +186,6 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
         }
     }
 
-
     override fun onPause() {
         if (mIsRecordingTrigger) stopRecordingTrigger()
 
@@ -189,6 +198,12 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
         if (mIsRecordingTrigger) stopRecordingTrigger()
 
         super.onStop()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        unregisterReceiver(mBroadcastReceiver)
     }
 
     //When the user chooses an action in ChooseActionActivity, the result is returned here
@@ -223,12 +238,6 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
         //tell the accessibility service to record key events
         val intent = Intent(MyAccessibilityService.ACTION_RECORD_TRIGGER)
         sendBroadcast(intent)
-
-        //listen for key events so they can be shown as chips
-        val intentFilter = IntentFilter()
-        intentFilter.addAction(ACTION_ADD_KEY_CHIP)
-
-        registerReceiver(mAddKeyChipBroadcastReceiver, intentFilter)
     }
 
     /**
@@ -244,8 +253,5 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
         //tell the accessibility service to stop recording key events
         val intent = Intent(MyAccessibilityService.ACTION_STOP_RECORDING_TRIGGER)
         sendBroadcast(intent)
-
-        //stop listening for key events from the accessibility service
-        unregisterReceiver(mAddKeyChipBroadcastReceiver)
     }
 }

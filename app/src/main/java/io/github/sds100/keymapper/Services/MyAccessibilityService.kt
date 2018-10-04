@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.wifi.WifiManager
+import android.os.Handler
 import android.provider.Settings
 import android.view.KeyEvent
 import android.view.View
@@ -33,6 +34,13 @@ class MyAccessibilityService : AccessibilityService() {
         const val ACTION_CLEAR_PRESSED_KEYS = "io.github.sds100.keymapper.CLEAR_PRESSED_KEYS"
         const val ACTION_UPDATE_KEYMAP_CACHE = "io.github.sds100.keymapper.UPDATE_KEYMAP_CACHE"
         const val ACTION_TEST_ACTION = "io.github.sds100.keymapper.TEST_ACTION"
+        const val ACTION_RECORD_TRIGGER_TIMER_STOPPED =
+                "io.github.sds100.keymapper.RECORD_TRIGGER_TIMER_STOPPED"
+
+        /**
+         * How long should the accessibility service record a trigger. In milliseconds.
+         */
+        private const val RECORD_TRIGGER_TIMER_LENGTH = 5000L
 
         /**
          * Enable this accessibility service. REQUIRES ROOT
@@ -87,6 +95,8 @@ class MyAccessibilityService : AccessibilityService() {
         }
     }
 
+    private val mStopRecordingHandler = Handler()
+
     /**
      * Broadcast receiver for all intents sent from within the app.
      */
@@ -95,6 +105,14 @@ class MyAccessibilityService : AccessibilityService() {
             when (intent!!.action) {
                 ACTION_RECORD_TRIGGER -> {
                     mRecordingTrigger = true
+
+                    //stop recording a trigger after a set amount of time.
+                    mStopRecordingHandler.postDelayed({
+                        mRecordingTrigger = false
+                        mPressedKeys.clear()
+
+                        sendBroadcast(Intent(ACTION_RECORD_TRIGGER_TIMER_STOPPED))
+                    }, RECORD_TRIGGER_TIMER_LENGTH)
                 }
 
                 ACTION_STOP_RECORDING_TRIGGER -> {
