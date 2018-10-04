@@ -6,16 +6,16 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.wifi.WifiManager
+import android.provider.Settings
 import android.view.KeyEvent
+import android.view.View
 import android.view.accessibility.AccessibilityEvent
 import com.github.salomonbrys.kotson.fromJson
+import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
-import io.github.sds100.keymapper.Action
-import io.github.sds100.keymapper.ActionType
+import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Activities.ConfigKeymapActivity
 import io.github.sds100.keymapper.Data.KeyMapRepository
-import io.github.sds100.keymapper.KeyMap
-import io.github.sds100.keymapper.SystemAction
 import io.github.sds100.keymapper.Utils.RootUtils
 
 /**
@@ -46,6 +46,41 @@ class MyAccessibilityService : AccessibilityService() {
          */
         fun disableServiceInSettings() {
             RootUtils.executeRootCommand("settings put secure enabled_accessibility_services \"\"")
+        }
+
+        /**
+         * If the accessibility service is disabled, show a snackbar with a button
+         * to enable it in settings
+         *
+         * @return whether the accessibility service is enabled
+         */
+        fun isAccessibilityServiceEnabled(ctx: Context, view: View): Boolean {
+            /* get a list of all the enabled accessibility services.
+         * The AccessibilityManager.getEnabledAccessibilityServices() method just returns an empty
+         * list. :(*/
+            val settingValue = Settings.Secure.getString(
+                    ctx.contentResolver,
+                    Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
+
+            val isEnabled = settingValue.contains(ctx.packageName)
+
+            //show a snackbar if disabled
+            if (!isEnabled) {
+                val snackBar = Snackbar.make(
+                        view,
+                        R.string.error_accessibility_service_disabled,
+                        Snackbar.LENGTH_INDEFINITE
+                )
+
+                snackBar.setAction(R.string.enable) {
+                    val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                    ctx.startActivity(intent)
+                }
+
+                snackBar.show()
+            }
+
+            return isEnabled
         }
     }
 

@@ -20,8 +20,8 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Services.MyAccessibilityService
 import io.github.sds100.keymapper.Utils.ActionUtils
 import io.github.sds100.keymapper.ViewModels.ConfigKeyMapViewModel
-import kotlinx.android.synthetic.main.activity_new_key_map.*
-import kotlinx.android.synthetic.main.content_new_key_map.*
+import kotlinx.android.synthetic.main.activity_config_key_map.*
+import kotlinx.android.synthetic.main.content_config_key_map.*
 import org.jetbrains.anko.alert
 
 /**
@@ -61,7 +61,7 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_new_key_map)
+        setContentView(R.layout.activity_config_key_map)
         setSupportActionBar(toolbar)
 
         //show the back button in the toolbar
@@ -108,6 +108,17 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
 
         recyclerViewTriggers.layoutManager = LinearLayoutManager(this)
         recyclerViewTriggers.adapter = mTriggerAdapter
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        /* disable "Record Trigger" button if the service is disabled because otherwise the button
+         * wouldn't do anything*/
+        val isAccessibilityServiceEnabled =
+                MyAccessibilityService.isAccessibilityServiceEnabled(this, coordinatorLayout)
+
+        buttonRecordTrigger.isEnabled = isAccessibilityServiceEnabled
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

@@ -104,7 +104,7 @@
     <string name="error_must_have_atleast_one_trigger">You must have at least one trigger</string>
     <string name="error_must_choose_action">You must choose an action!</string>
     <string name="error_must_have_a_title">The shortcut must have a title!</string>
-    <string name="error_accessibility_service_disabled">Accessibility service disabled!</string>
+    <string name="error_accessibility_service_disabled">Accessibility service disabled! It must be enabled for this app to work. </string>
     <!-- Error messages -->
 
     <!-- System action labels -->
