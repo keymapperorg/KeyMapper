@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.Adapters
 import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
+import io.github.sds100.keymapper.OnItemClickListener
 import io.github.sds100.keymapper.Utils.SystemActionUtils
 import io.github.sds100.keymapper.SystemActionListItem
 

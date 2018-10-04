@@ -6,12 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import io.github.sds100.keymapper.Action
-import io.github.sds100.keymapper.ActionType
+import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Adapters.AppListAdapter
-import io.github.sds100.keymapper.Adapters.SimpleItemAdapter
-import io.github.sds100.keymapper.LoadAppListAsyncTask
-import io.github.sds100.keymapper.R
 import kotlinx.android.synthetic.main.action_type_recyclerview.*
 
 /**
@@ -22,7 +18,7 @@ import kotlinx.android.synthetic.main.action_type_recyclerview.*
  * A Fragment which shows a list of all the installed apps
  */
 class AppActionTypeFragment : ActionTypeFragment(),
-        SimpleItemAdapter.OnItemClickListener<ApplicationInfo> {
+        OnItemClickListener<ApplicationInfo> {
 
     private lateinit var mApps: List<ApplicationInfo>
     private var mAppListAdapter: AppListAdapter? = null

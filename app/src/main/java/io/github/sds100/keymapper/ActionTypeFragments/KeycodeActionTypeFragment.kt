@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.sds100.keymapper.Action
 import io.github.sds100.keymapper.ActionType
 import io.github.sds100.keymapper.Adapters.KeycodeAdapter
-import io.github.sds100.keymapper.Adapters.SimpleItemAdapter
+import io.github.sds100.keymapper.OnItemClickListener
 import io.github.sds100.keymapper.R
 import kotlinx.android.synthetic.main.action_type_recyclerview.*
 
@@ -19,7 +19,7 @@ import kotlinx.android.synthetic.main.action_type_recyclerview.*
 /**
  * A Fragment which displays all keycodes which can be used
  */
-class KeycodeActionTypeFragment : ActionTypeFragment(), SimpleItemAdapter.OnItemClickListener<Int> {
+class KeycodeActionTypeFragment : ActionTypeFragment(), OnItemClickListener<Int> {
 
     private val mKeycodeAdapter = KeycodeAdapter(onItemClickListener = this)
 

@@ -5,12 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import io.github.sds100.keymapper.Action
-import io.github.sds100.keymapper.ActionType
-import io.github.sds100.keymapper.Adapters.SimpleItemAdapter
+import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Adapters.SystemActionAdapter
-import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.SystemActionListItem
 import kotlinx.android.synthetic.main.action_type_recyclerview.*
 
 /**
@@ -21,7 +17,7 @@ import kotlinx.android.synthetic.main.action_type_recyclerview.*
  * A Fragment which displays a list of all actions that can be performed on the system
  */
 class SystemActionTypeFragment : ActionTypeFragment(),
-        SimpleItemAdapter.OnItemClickListener<SystemActionListItem> {
+        OnItemClickListener<SystemActionListItem> {
 
     private val mSystemActionAdapter by lazy {
         SystemActionAdapter(

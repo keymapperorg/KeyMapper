@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.Adapters
 
 import android.graphics.drawable.Drawable
 import android.view.KeyEvent
+import io.github.sds100.keymapper.OnItemClickListener
 import io.github.sds100.keymapper.Utils.KeycodeUtils
 
 /**

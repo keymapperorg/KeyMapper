@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import io.github.sds100.keymapper.OnItemClickListener
 import io.github.sds100.keymapper.R
 
 /**
@@ -70,7 +71,4 @@ abstract class SimpleItemAdapter<T>(
         }
     }
 
-    interface OnItemClickListener<T> {
-        fun onItemClick(item: T)
-    }
 }
