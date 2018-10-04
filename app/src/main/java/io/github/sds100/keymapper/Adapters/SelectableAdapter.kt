@@ -63,21 +63,26 @@ abstract class SelectableAdapter<T : SelectableItem, VH : SelectableAdapter<T, V
 
     override fun getItemCount() = itemList.size
 
-    abstract inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    abstract inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
+            View.OnLongClickListener, View.OnClickListener {
+
         init {
-            itemView.setOnLongClickListener {
-                if (!iSelectionProvider.inSelectingMode) {
-                    iSelectionProvider.toggleSelection(getItemId(adapterPosition))
-                }
+            itemView.setOnLongClickListener(this)
+            itemView.setOnClickListener(this)
+        }
 
-                true
+        override fun onClick(v: View?) {
+            if (iSelectionProvider.inSelectingMode) {
+                iSelectionProvider.toggleSelection(getItemId(adapterPosition))
+            }
+        }
+
+        override fun onLongClick(v: View?): Boolean {
+            if (!iSelectionProvider.inSelectingMode) {
+                iSelectionProvider.toggleSelection(getItemId(adapterPosition))
             }
 
-            itemView.setOnClickListener {
-                if (iSelectionProvider.inSelectingMode) {
-                    iSelectionProvider.toggleSelection(getItemId(adapterPosition))
-                }
-            }
+            return true
         }
 
         /**

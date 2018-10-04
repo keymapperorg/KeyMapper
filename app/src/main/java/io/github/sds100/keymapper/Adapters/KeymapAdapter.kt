@@ -83,8 +83,12 @@ class KeymapAdapter(private val mOnItemClickListener: OnItemClickListener<KeyMap
                     iSelectionProvider.toggleSelection(getItemId(adapterPosition))
                 }
             }
+        }
 
-            itemView.setOnClickListener {
+        override fun onClick(v: View?) {
+            super.onClick(v)
+
+            if (!iSelectionProvider.inSelectingMode) {
                 mOnItemClickListener.onItemClick(itemList[adapterPosition])
             }
         }
