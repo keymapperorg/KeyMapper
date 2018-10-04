@@ -110,5 +110,6 @@
     <!-- System action labels -->
     <string name="action_toggle_wifi">Toggle WiFi</string>
     <string name="action_toggle_bluetooth">Toggle Bluetooth</string>
+    <string name="error_ime_must_be_chosen">You must choose the Key Mapper input method for this action to work!</string>
     <!-- System action labels -->
 </resources>

@@ -10,6 +10,7 @@ import android.provider.Settings
 import android.view.KeyEvent
 import android.view.View
 import android.view.accessibility.AccessibilityEvent
+import android.widget.Toast
 import com.github.salomonbrys.kotson.fromJson
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
@@ -208,7 +209,14 @@ class MyAccessibilityService : AccessibilityService() {
                 }
 
                 if (isTrigger(mPressedKeys)) {
+                    //if the Key Mapper input method isn't chosen, pass the key event to the system.
+                    if (!isInputMethodChosen()) {
+                        Toast.makeText(this, R.string.error_ime_must_be_chosen, Toast.LENGTH_SHORT).show()
+                        return super.onKeyEvent(event)
+                    }
+
                     mPressedTriggerKeys = mPressedKeys.toMutableList()
+
 
                     //find the keymap associated with the trigger being pressed
                     val keyMap = mKeyMapListCache.find { keyMap ->
@@ -274,6 +282,7 @@ class MyAccessibilityService : AccessibilityService() {
             ActionType.SYSTEM_ACTION -> performSystemAction(SystemAction.valueOf(action.data))
 
             else -> {
+                //for actions which require the IME service
                 if (action.type == ActionType.KEYCODE || action.type == ActionType.KEY) {
                     val intent = Intent(MyIMEService.ACTION_INPUT_KEYCODE)
                     //put the keycode in the intent
@@ -283,6 +292,19 @@ class MyAccessibilityService : AccessibilityService() {
                 }
             }
         }
+    }
+
+    /**
+     * @return whether the Key Mapper input method is chosen
+     */
+    private fun isInputMethodChosen(): Boolean {
+        //get the current input method
+        val id = Settings.Secure.getString(
+                contentResolver,
+                Settings.Secure.DEFAULT_INPUT_METHOD
+        )
+
+        return id.contains(packageName)
     }
 
     private fun performSystemAction(action: SystemAction) {
