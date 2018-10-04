@@ -28,7 +28,7 @@
         </activity>
 
         <activity
-            android:name=".Activities.NewKeyMapActivity"
+            android:name=".Activities.NewKeymapActivity"
             android:label="@string/title_activity_new_key_map"
             android:theme="@style/AppTheme.NoActionBar" />
 

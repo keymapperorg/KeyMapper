@@ -28,7 +28,7 @@ import kotlinx.android.synthetic.main.activity_new_key_map.*
 import kotlinx.android.synthetic.main.content_new_key_map.*
 import org.jetbrains.anko.alert
 
-class NewKeyMapActivity : AppCompatActivity() {
+open class NewKeymapActivity : AppCompatActivity() {
 
     companion object {
         const val ACTION_ADD_KEY_CHIP = "io.github.sds100.keymapper.ADD_KEY_CHIP"

@@ -62,9 +62,9 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
             setCaption()
         })
 
-        //start NewKeyMapActivity when the fab is pressed
+        //start NewKeymapActivity when the fab is pressed
         fabNewKeyMap.setOnClickListener {
-            val intent = Intent(this, NewKeyMapActivity::class.java)
+            val intent = Intent(this, NewKeymapActivity::class.java)
             startActivity(intent)
         }
 
