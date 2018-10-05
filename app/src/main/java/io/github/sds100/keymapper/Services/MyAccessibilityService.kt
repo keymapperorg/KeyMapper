@@ -234,11 +234,6 @@ class MyAccessibilityService : AccessibilityService() {
                 }
 
                 if (isTrigger(mPressedKeys)) {
-                    //if the Key Mapper input method isn't chosen, pass the key event to the system.
-                    if (!isInputMethodChosen()) {
-                        Toast.makeText(this, R.string.error_ime_must_be_chosen, Toast.LENGTH_SHORT).show()
-                        return super.onKeyEvent(event)
-                    }
 
                     mPressedTriggerKeys = mPressedKeys.toMutableList()
 
@@ -248,6 +243,17 @@ class MyAccessibilityService : AccessibilityService() {
                     }
 
                     if (keyMap?.action != null) {
+                        //if the Key Mapper input method isn't chosen, pass the key event to the system.
+                        if (keyMap.action!!.requiresIME && !isInputMethodChosen()) {
+                            Toast.makeText(
+                                    this,
+                                    R.string.error_ime_must_be_chosen,
+                                    Toast.LENGTH_SHORT
+                            ).show()
+                            return super.onKeyEvent(event)
+                        }
+
+
                         performAction(keyMap.action!!)
                     }
 

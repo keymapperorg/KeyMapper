@@ -40,4 +40,10 @@ data class Action(
     companion object {
         const val EXTRA_ACTION = "extra_action"
     }
+
+    val requiresIME: Boolean
+        get() = type == ActionType.KEY ||
+                type == ActionType.KEYCODE ||
+                type == ActionType.TEXT_BLOCK
+
 }
