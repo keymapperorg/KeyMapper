@@ -16,6 +16,7 @@ import com.google.gson.Gson
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Activities.ConfigKeymapActivity
 import io.github.sds100.keymapper.Data.KeyMapRepository
+import io.github.sds100.keymapper.SystemAction.*
 import io.github.sds100.keymapper.Utils.RootUtils
 
 /**
@@ -316,7 +317,7 @@ class MyAccessibilityService : AccessibilityService() {
                 sendBroadcast(intent)
             }
 
-            ActionType.SYSTEM_ACTION -> performSystemAction(SystemAction.valueOf(action.data))
+            ActionType.SYSTEM_ACTION -> performSystemAction(valueOf(action.data))
 
             else -> {
                 //for actions which require the IME service
@@ -346,24 +347,37 @@ class MyAccessibilityService : AccessibilityService() {
 
     private fun performSystemAction(action: SystemAction) {
         when (action) {
-            SystemAction.ACTION_ENABLE_WIFI -> {
+            ACTION_ENABLE_WIFI -> {
                 val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE)
                         as WifiManager
                 wifiManager.isWifiEnabled = true
             }
 
-            SystemAction.ACTION_DISABLE_WIFI -> {
+            ACTION_DISABLE_WIFI -> {
                 val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE)
                         as WifiManager
                 wifiManager.isWifiEnabled = false
             }
 
-            SystemAction.ACTION_TOGGLE_WIFI -> {
+            ACTION_TOGGLE_WIFI -> {
                 val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE)
                         as WifiManager
                 //toggle wifi
                 wifiManager.isWifiEnabled = !wifiManager.isWifiEnabled
             }
+
+            ACTION_TOGGLE_BLUETOOTH -> TODO()
+            ACTION_ENABLE_BLUETOOTH -> TODO()
+            ACTION_DISABLE_BLUETOOTH -> TODO()
+            ACTION_TOGGLE_MOBILE_DATA -> TODO()
+            ACTION_ENABLE_MOBILE_DATA -> TODO()
+            ACTION_DISABLE_MOBILE_DATA -> TODO()
+            ACTION_TOGGLE_AUTO_BRIGHTNESS -> TODO()
+            ACTION_TOGGLE_AUTO_ROTATE -> TODO()
+            ACTION_ENABLE_AUTO_ROTATE -> TODO()
+            ACTION_DISABLE_AUTO_ROTATE -> TODO()
+            ACTION_PORTRAIT_MODE -> TODO()
+            ACTION_LANDSCAPE_MODE -> TODO()
         }
     }
 
