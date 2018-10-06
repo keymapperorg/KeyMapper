@@ -1,13 +1,17 @@
 package io.github.sds100.keymapper.Activities
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.style.RelativeSizeSpan
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.annotation.ColorRes
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -124,7 +128,16 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
 
     override fun onSelectionEvent(id: Long?, event: SelectionEvent) {
         if (event == SelectionEvent.START) {
-            startSupportActionMode(SelectableActionMode(this, mKeymapAdapter.iSelectionProvider, this))
+            val actionMode = SelectableActionMode(this, mKeymapAdapter.iSelectionProvider, this)
+            startSupportActionMode(actionMode)
+            
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                setStatusBarColor(R.color.actionModeStatusBar)
+            }
+        } else if (event == SelectionEvent.STOP) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                setStatusBarColor(R.color.colorPrimaryDark)
+            }
         }
     }
 
@@ -161,5 +174,10 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
         } else {
             textViewCaption.visibility = View.GONE
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    private fun setStatusBarColor(@ColorRes colorId: Int) {
+        window.statusBarColor = ContextCompat.getColor(this, colorId)
     }
 }

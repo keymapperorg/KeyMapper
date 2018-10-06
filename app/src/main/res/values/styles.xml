@@ -5,7 +5,6 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:alertDialogTheme">@style/AnkoSupportAlertDialog</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -16,7 +15,9 @@
 
     <!--Fix bug where dialog buttons from the anko library don't style correctly.-->
     <style name="AnkoSupportAlertDialog" parent="Theme.MaterialComponents.Light.Dialog">
-        <item name="android:buttonBarButtonStyle">@style/Widget.MaterialComponents.Button.TextButton.Dialog</item>
+        <item name="android:buttonBarButtonStyle">
+            @style/Widget.MaterialComponents.Button.TextButton.Dialog
+        </item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 

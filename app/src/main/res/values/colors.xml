@@ -5,4 +5,7 @@
     <color name="colorAccent">#f44336</color>
     <color name="divider">#E0E0E0</color>
     <color name="background_selected">#e0e0e0</color>
+    <color name="error">#FFB00020</color>
+    <color name="actionModeBackground">#424242</color>
+    <color name="actionModeStatusBar">#212121</color>
 </resources>
