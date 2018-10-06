@@ -112,5 +112,6 @@
     <!-- System action labels -->
     <string name="action_toggle_wifi">Toggle WiFi</string>
     <string name="action_toggle_bluetooth">Toggle Bluetooth</string>
+    <string name="error_shortcut_not_found">Can\'t find that shortcut. Is the app installed?</string>
     <!-- System action labels -->
 </resources>

@@ -1,10 +1,7 @@
 package io.github.sds100.keymapper.Services
 
 import android.accessibilityservice.AccessibilityService
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.net.wifi.WifiManager
 import android.os.Handler
 import android.provider.Settings
@@ -12,6 +9,7 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.accessibility.AccessibilityEvent
 import android.widget.Toast
+import android.widget.Toast.LENGTH_SHORT
 import com.github.salomonbrys.kotson.fromJson
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
@@ -302,7 +300,12 @@ class MyAccessibilityService : AccessibilityService() {
             ActionType.APP_SHORTCUT -> {
                 val intent = Intent.parseUri(action.data, 0)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                startActivity(intent)
+
+                try {
+                    startActivity(intent)
+                } catch (exception: ActivityNotFoundException) {
+                    Toast.makeText(this, R.string.error_shortcut_not_found, LENGTH_SHORT).show()
+                }
             }
 
             ActionType.TEXT_BLOCK -> {
