@@ -94,7 +94,13 @@ class MyAccessibilityService : AccessibilityService() {
         }
     }
 
-    private val mStopRecordingHandler = Handler()
+    private val mRecordingTimerHandler = Handler()
+    private val mRecordingTimerRunnable = Runnable {
+        mRecordingTrigger = false
+        mPressedKeys.clear()
+
+        sendBroadcast(Intent(ACTION_RECORD_TRIGGER_TIMER_STOPPED))
+    }
 
     /**
      * Broadcast receiver for all intents sent from within the app.
@@ -106,16 +112,17 @@ class MyAccessibilityService : AccessibilityService() {
                     mRecordingTrigger = true
 
                     //stop recording a trigger after a set amount of time.
-                    mStopRecordingHandler.postDelayed({
-                        mRecordingTrigger = false
-                        mPressedKeys.clear()
-
-                        sendBroadcast(Intent(ACTION_RECORD_TRIGGER_TIMER_STOPPED))
-                    }, RECORD_TRIGGER_TIMER_LENGTH)
+                    mRecordingTimerHandler.postDelayed(
+                            mRecordingTimerRunnable,
+                            RECORD_TRIGGER_TIMER_LENGTH
+                    )
                 }
 
                 ACTION_STOP_RECORDING_TRIGGER -> {
                     mRecordingTrigger = false
+
+                    //stop the timer since the user cancelled it before the time ran out
+                    mRecordingTimerHandler.removeCallbacks(mRecordingTimerRunnable)
 
                     mPressedKeys.clear()
                 }
