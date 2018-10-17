@@ -72,25 +72,30 @@ class MyAccessibilityService : AccessibilityService() {
                     ctx.contentResolver,
                     Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
 
-            val isEnabled = settingValue.contains(ctx.packageName)
+            //it can be null if the user never interacted with accessibility settings (it seems)
+            if (settingValue != null) {
+                val isEnabled = settingValue.contains(ctx.packageName)
 
-            //show a snackbar if disabled
-            if (!isEnabled) {
-                val snackBar = Snackbar.make(
-                        view,
-                        R.string.error_accessibility_service_disabled,
-                        Snackbar.LENGTH_INDEFINITE
-                )
+                //show a snackbar if disabled
+                if (!isEnabled) {
+                    val snackBar = Snackbar.make(
+                            view,
+                            R.string.error_accessibility_service_disabled,
+                            Snackbar.LENGTH_INDEFINITE
+                    )
 
-                snackBar.setAction(R.string.enable) {
-                    val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-                    ctx.startActivity(intent)
+                    snackBar.setAction(R.string.enable) {
+                        val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                        ctx.startActivity(intent)
+                    }
+
+                    snackBar.show()
                 }
 
-                snackBar.show()
+                return isEnabled
             }
 
-            return isEnabled
+            return false
         }
     }
 
