@@ -365,6 +365,9 @@ class MyAccessibilityService : AccessibilityService() {
             SystemAction.DISABLE_WIFI -> WifiUtils.changeWifiState(this, DISABLE)
             SystemAction.TOGGLE_WIFI -> WifiUtils.changeWifiState(this, TOGGLE)
 
+            SystemAction.TOGGLE_BLUETOOTH -> BluetoothUtils.changeBluetoothState(TOGGLE)
+            SystemAction.ENABLE_BLUETOOTH -> BluetoothUtils.changeBluetoothState(ENABLE)
+            SystemAction.DISABLE_BLUETOOTH -> BluetoothUtils.changeBluetoothState(DISABLE)
 
             SystemAction.TOGGLE_MOBILE_DATA -> TODO()
             SystemAction.ENABLE_MOBILE_DATA -> TODO()
