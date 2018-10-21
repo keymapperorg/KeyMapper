@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.Services
 
 import android.accessibilityservice.AccessibilityService
 import android.content.*
-import android.net.wifi.WifiManager
 import android.os.Handler
 import android.provider.Settings
 import android.view.KeyEvent
@@ -16,8 +15,11 @@ import com.google.gson.Gson
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Activities.ConfigKeymapActivity
 import io.github.sds100.keymapper.Data.KeyMapRepository
-import io.github.sds100.keymapper.SystemAction.*
+import io.github.sds100.keymapper.StateChange.*
+import io.github.sds100.keymapper.SystemAction.valueOf
+import io.github.sds100.keymapper.Utils.BluetoothUtils
 import io.github.sds100.keymapper.Utils.RootUtils
+import io.github.sds100.keymapper.Utils.WifiUtils
 
 /**
  * Created by sds100 on 16/07/2018.
@@ -359,37 +361,24 @@ class MyAccessibilityService : AccessibilityService() {
 
     private fun performSystemAction(action: SystemAction) {
         when (action) {
-            ACTION_ENABLE_WIFI -> {
-                val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE)
-                        as WifiManager
-                wifiManager.isWifiEnabled = true
-            }
+            SystemAction.ENABLE_WIFI -> WifiUtils.changeWifiState(this, ENABLE)
+            SystemAction.DISABLE_WIFI -> WifiUtils.changeWifiState(this, DISABLE)
+            SystemAction.TOGGLE_WIFI -> WifiUtils.changeWifiState(this, TOGGLE)
 
-            ACTION_DISABLE_WIFI -> {
-                val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE)
-                        as WifiManager
-                wifiManager.isWifiEnabled = false
-            }
 
-            ACTION_TOGGLE_WIFI -> {
-                val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE)
-                        as WifiManager
-                //toggle wifi
-                wifiManager.isWifiEnabled = !wifiManager.isWifiEnabled
-            }
+            SystemAction.TOGGLE_MOBILE_DATA -> TODO()
+            SystemAction.ENABLE_MOBILE_DATA -> TODO()
+            SystemAction.DISABLE_MOBILE_DATA -> TODO()
+            SystemAction.TOGGLE_AUTO_BRIGHTNESS -> TODO()
+            SystemAction.TOGGLE_AUTO_ROTATE -> TODO()
+            SystemAction.ENABLE_AUTO_ROTATE -> TODO()
+            SystemAction.DISABLE_AUTO_ROTATE -> TODO()
+            SystemAction.PORTRAIT_MODE -> TODO()
+            SystemAction.LANDSCAPE_MODE -> TODO()
 
-            ACTION_TOGGLE_BLUETOOTH -> TODO()
-            ACTION_ENABLE_BLUETOOTH -> TODO()
-            ACTION_DISABLE_BLUETOOTH -> TODO()
-            ACTION_TOGGLE_MOBILE_DATA -> TODO()
-            ACTION_ENABLE_MOBILE_DATA -> TODO()
-            ACTION_DISABLE_MOBILE_DATA -> TODO()
-            ACTION_TOGGLE_AUTO_BRIGHTNESS -> TODO()
-            ACTION_TOGGLE_AUTO_ROTATE -> TODO()
-            ACTION_ENABLE_AUTO_ROTATE -> TODO()
-            ACTION_DISABLE_AUTO_ROTATE -> TODO()
-            ACTION_PORTRAIT_MODE -> TODO()
-            ACTION_LANDSCAPE_MODE -> TODO()
+            SystemAction.VOLUME_UP -> TODO()
+            SystemAction.VOLUME_DOWN -> TODO()
+            SystemAction.VOLUME_MUTE -> TODO()
         }
     }
 
