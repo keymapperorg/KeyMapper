@@ -305,6 +305,8 @@ class MyAccessibilityService : AccessibilityService() {
                 //intent = null if the app doesn't exist
                 if (intent != null) {
                     startActivity(intent)
+                } else {
+                    Toast.makeText(this, R.string.error_app_isnt_installed, LENGTH_SHORT).show()
                 }
             }
 

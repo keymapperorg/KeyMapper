@@ -1,9 +1,6 @@
 <resources>
     <string name="app_name">Key Mapper</string>
-    <string name="title_activity_edit_key_map">Edit Keymap</string>
-    <string name="title_activity_new_key_map">New Keymap</string>
-    <string name="title_choose_action">Choose Action</string>
-    <string name="title_settings">Settings</string>
+
     <string name="no_action_chosen">No Action Chosen</string>
     <string name="triggers_header">Triggers</string>
     <string name="accessibility_service_description">This is required so KeyMapper can listen for user defined triggers then act upon them.
@@ -12,7 +9,6 @@
     <string name="selection_count">%d selected</string>
     <string name="ime_service_label">Key Mapper Input Method</string>
     <string name="enable">Enable</string>
-
     <string name="shrug">¯\\_(ツ)_/¯</string>
     <string name="no_key_maps">You haven\'t created any keymaps!</string>
 
@@ -20,6 +16,13 @@
     <string name="description_key">Press \'%s\' key</string>
     <string name="description_text_block">Insert \'%s\'</string>
     <string name="description_keycode">%s</string>
+
+    <!-- Activity titles -->
+    <string name="title_activity_edit_key_map">Edit Keymap</string>
+    <string name="title_activity_new_key_map">New Keymap</string>
+    <string name="title_choose_action">Choose Action</string>
+    <string name="title_settings">Settings</string>
+    <!-- Activity titles -->
 
     <!-- Menu action titles-->
     <string name="action_settings">Settings</string>
@@ -107,11 +110,12 @@
     <string name="error_must_have_a_title">The shortcut must have a title!</string>
     <string name="error_ime_must_be_chosen">You must choose the Key Mapper input method for this action to work!</string>
     <string name="error_accessibility_service_disabled">Accessibility service is disabled! It must be enabled for this app to work. </string>
+    <string name="error_shortcut_not_found">Can\'t find the shortcut. Is the app installed?</string>
+    <string name="error_app_isnt_installed">App isn\'t installed!</string>
     <!-- Error messages -->
 
     <!-- System action labels -->
     <string name="action_toggle_wifi">Toggle WiFi</string>
     <string name="action_toggle_bluetooth">Toggle Bluetooth</string>
-    <string name="error_shortcut_not_found">Can\'t find that shortcut. Is the app installed?</string>
     <!-- System action labels -->
 </resources>

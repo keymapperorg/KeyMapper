@@ -79,24 +79,13 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
 
         viewModel.keyMap.observe(this, Observer { keyMap ->
 
-            if (keyMap.action != null) {
-                val action = keyMap.action!!
+            val actionDescription = ActionUtils.getDescription(this, keyMap.action)
+            actionDescriptionLayout.setDescription(actionDescription)
 
-                textViewAction.text = ActionUtils.getDescription(ctx = this, action = action)
-
-                val drawable = ActionUtils.getIcon(ctx = this, action = action)
-
-                if (drawable == null) {
-                    imageView.setImageDrawable(null)
-                    imageView.visibility = View.GONE
-                } else {
-                    imageView.setImageDrawable(drawable)
-                    imageView.visibility = View.VISIBLE
-                }
-
-                buttonTestAction.visibility = View.VISIBLE
-            } else {
+            if (actionDescription.showErrorMessage) {
                 buttonTestAction.visibility = View.GONE
+            } else {
+                buttonTestAction.visibility = View.VISIBLE
             }
 
             mTriggerAdapter.triggerList = keyMap.triggerList

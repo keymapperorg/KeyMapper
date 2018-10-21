@@ -8,20 +8,15 @@
     tools:context=".Activities.NewKeymapActivity"
     tools:showIn="@layout/activity_config_key_map">
 
-    <TextView
-        android:id="@+id/textViewAction"
+    <io.github.sds100.keymapper.Views.ActionDescriptionLayout
+        android:id="@+id/actionDescriptionLayout"
         android:layout_width="0dp"
-        android:layout_height="32dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="8dp"
-        android:text="@string/no_action_chosen"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toStartOf="@+id/buttonChooseAction"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Open Settings App" />
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/buttonRecordTrigger"
@@ -41,11 +36,14 @@
         android:id="@+id/buttonChooseAction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
         android:text="@string/button_choose_action"
+        app:layout_constraintBottom_toBottomOf="@+id/actionDescriptionLayout"
         app:layout_constraintEnd_toStartOf="@+id/buttonTestAction"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/textViewAction"
+        app:layout_constraintStart_toEndOf="@+id/actionDescriptionLayout"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -65,12 +63,11 @@
         android:id="@+id/bottom_divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="8dp"
         android:background="@color/divider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonChooseAction" />
+        app:layout_constraintTop_toBottomOf="@+id/actionDescriptionLayout" />
 
     <TextView
         android:id="@+id/textViewTriggerHeading"
@@ -131,31 +128,16 @@
         app:layout_constraintTop_toBottomOf="@+id/textViewExplanation"
         app:layout_constraintVertical_bias="0.0" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/buttonChooseAction"
-        app:layout_constraintEnd_toStartOf="@+id/textViewAction"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintHorizontal_chainStyle="spread_inside"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        tools:srcCompat="@tools:sample/avatars[1]" />
-
     <Button
         android:id="@+id/buttonTestAction"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:text="@string/button_test"
+        app:layout_constraintBottom_toBottomOf="@+id/actionDescriptionLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/buttonChooseAction"
