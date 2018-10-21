@@ -75,6 +75,7 @@ class KeyMapRepository private constructor(ctx: Context) {
 
             val size = list!!.size
 
+            //only create more debug items if the list is smaller than 100
             if (size < DEBUG_LIST_COUNT) {
                 val sizeDifference = DEBUG_LIST_COUNT - size
 
