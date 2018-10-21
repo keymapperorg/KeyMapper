@@ -131,7 +131,12 @@ object ActionUtils {
         when (action!!.type) {
             ActionType.APP -> {
                 try {
-                    ctx.packageManager.getPackageInfo(action.data, PackageManager.GET_ACTIVITIES)
+                    val appInfo = ctx.packageManager.getApplicationInfo(action.data, 0)
+
+                    //if the app is disabled, show an error message because it won't open
+                    if (!appInfo.enabled) {
+                        return R.string.error_app_is_disabled
+                    }
                     return null
                 } catch (e: Exception) {
                     return R.string.error_app_isnt_installed
