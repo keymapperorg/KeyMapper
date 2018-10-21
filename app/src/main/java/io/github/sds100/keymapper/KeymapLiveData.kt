@@ -27,7 +27,7 @@ class KeymapLiveData(keyMap: KeyMap = KeyMap(0L)) : LiveData<KeyMap>() {
         notifyObservers()
     }
 
-    private fun notifyObservers() {
+    fun notifyObservers() {
         this.postValue(this.value)
     }
 }

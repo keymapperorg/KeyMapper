@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.ViewModels
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import io.github.sds100.keymapper.KeymapLiveData
@@ -12,6 +13,10 @@ import io.github.sds100.keymapper.KeymapLiveData
 class EditKeyMapViewModel(id: Long,
                           application: Application) : ConfigKeyMapViewModel(application) {
     override val keyMap: KeymapLiveData = KeymapLiveData(keyMapRepository.getKeyMap(id))
+
+    init {
+        keyMap.notifyObservers()
+    }
 
     override fun saveKeymap() {
         keyMapRepository.updateKeyMap(keyMap.value!!)

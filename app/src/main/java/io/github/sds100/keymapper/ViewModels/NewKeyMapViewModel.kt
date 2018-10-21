@@ -10,7 +10,11 @@ import io.github.sds100.keymapper.KeymapLiveData
 class NewKeyMapViewModel(application: Application) : ConfigKeyMapViewModel(application) {
     override val keyMap: KeymapLiveData = KeymapLiveData()
 
+    init {
+        keyMap.notifyObservers()
+    }
+
     override fun saveKeymap() {
-        keyMapRepository.putKeyMap(keyMap.value!!)
+        keyMapRepository.insertKeyMap(keyMap.value!!)
     }
 }
