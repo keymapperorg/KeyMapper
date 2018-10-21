@@ -2,6 +2,8 @@ package io.github.sds100.keymapper.Utils
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import io.github.sds100.keymapper.StateChange
+import io.github.sds100.keymapper.StateChange.*
 
 /**
  * Created by sds100 on 02/10/2018.
@@ -20,5 +22,23 @@ object BluetoothUtils {
         }
 
         return bluetoothAdapter.bondedDevices.toList()
+    }
+
+    fun changeBluetoothState(stateChange: StateChange) {
+        val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+
+        when (stateChange) {
+            ENABLE -> bluetoothAdapter.enable()
+            DISABLE -> bluetoothAdapter.disable()
+            TOGGLE -> {
+                val isEnabled = bluetoothAdapter.isEnabled
+
+                if (isEnabled) {
+                    bluetoothAdapter.disable()
+                } else {
+                    bluetoothAdapter.enable()
+                }
+            }
+        }
     }
 }

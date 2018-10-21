@@ -11,8 +11,14 @@ import io.github.sds100.keymapper.SystemActionListItem
 object SystemActionUtils {
 
     val SYSTEM_ACTION_LIST_ITEMS = listOf(
+            SystemActionListItem(SystemAction.ENABLE_WIFI),
+            SystemActionListItem(SystemAction.DISABLE_WIFI),
             SystemActionListItem(SystemAction.TOGGLE_WIFI),
-            SystemActionListItem(SystemAction.TOGGLE_BLUETOOTH)
+
+            SystemActionListItem(SystemAction.ENABLE_BLUETOOTH),
+            SystemActionListItem(SystemAction.DISABLE_BLUETOOTH),
+            SystemActionListItem(SystemAction.TOGGLE_BLUETOOTH),
+
     )
 
     /**
