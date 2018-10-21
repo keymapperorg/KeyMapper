@@ -41,7 +41,7 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
         * to see the notification at all. */
         mShowNotificationOnBootPreference.isEnabled = mShowNotificationPreference.isChecked
 
-        mBluetoothDevicesPreferences.setOnPreferenceClickListener { it ->
+        mBluetoothDevicesPreferences.setOnPreferenceClickListener { _ ->
             populateBluetoothDevicesPreference()
 
             //if there are no entries, explain to the user why
@@ -60,6 +60,7 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
                             mShowingNoPairedDevicesDialog = false
                             dialog.dismiss()
                         }
+
                         //if the dialog is closed by clicking outside the dialog
                         onCancelled { mShowingNoPairedDevicesDialog = false }
                     }.show()

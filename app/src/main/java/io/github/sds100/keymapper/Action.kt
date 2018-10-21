@@ -45,5 +45,4 @@ data class Action(
         get() = type == ActionType.KEY ||
                 type == ActionType.KEYCODE ||
                 type == ActionType.TEXT_BLOCK
-
 }

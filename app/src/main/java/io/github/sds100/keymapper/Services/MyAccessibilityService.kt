@@ -195,9 +195,7 @@ class MyAccessibilityService : AccessibilityService() {
         unregisterReceiver(mBroadcastReceiver)
     }
 
-    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-
-    }
+    override fun onAccessibilityEvent(event: AccessibilityEvent?) {}
 
     override fun onKeyEvent(event: KeyEvent?): Boolean {
         if (event != null) {

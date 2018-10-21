@@ -30,7 +30,6 @@ import kotlinx.android.synthetic.main.content_main.*
 import org.jetbrains.anko.append
 import org.jetbrains.anko.defaultSharedPreferences
 
-
 class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemClickListener,
         OnItemClickListener<KeyMap> {
 
@@ -130,10 +129,11 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
         if (event == SelectionEvent.START) {
             val actionMode = SelectableActionMode(this, mKeymapAdapter.iSelectionProvider, this)
             startSupportActionMode(actionMode)
-            
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 setStatusBarColor(R.color.actionModeStatusBar)
             }
+
         } else if (event == SelectionEvent.STOP) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 setStatusBarColor(R.color.colorPrimaryDark)
@@ -158,7 +158,7 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
     }
 
     /**
-     * Controls what message is displayed to the user on the homescreen
+     * Controls what message is displayed to the user on the home-screen
      */
     private fun setCaption() {
         //tell the user if they haven't created any KeyMaps
