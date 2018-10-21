@@ -80,6 +80,11 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
         super.onResume()
 
         MyAccessibilityService.isAccessibilityServiceEnabled(this, coordinatorLayout)
+
+        /* update any keymap list items which are showing since, for example, the user could have
+        left the app and uninstalled an app which is a keymap action so an error message should now
+        be displayed */
+        mKeymapAdapter.invalidateBoundViewHolders()
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {

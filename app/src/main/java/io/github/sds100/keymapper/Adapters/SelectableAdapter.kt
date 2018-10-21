@@ -14,7 +14,7 @@ import io.github.sds100.keymapper.Selection.*
  */
 abstract class SelectableAdapter<T : SelectableItem, VH : SelectableAdapter<T, VH>.ViewHolder>(
         itemList: List<T> = listOf()
-) : RecyclerView.Adapter<VH>(), SelectionCallback {
+) : BaseRecyclerViewAdapter<VH>(), SelectionCallback {
 
     val iSelectionProvider: ISelectionProvider = SelectionProvider(
             allItemIds = itemList.map { it.id }
@@ -26,11 +26,6 @@ abstract class SelectableAdapter<T : SelectableItem, VH : SelectableAdapter<T, V
             field = value
         }
 
-    /**
-     * Where viewholders are cached
-     */
-    private val mBoundViewHolders: MutableList<VH> = mutableListOf()
-
     init {
         iSelectionProvider.subscribeToSelectionEvents(this)
 
@@ -40,22 +35,12 @@ abstract class SelectableAdapter<T : SelectableItem, VH : SelectableAdapter<T, V
         this.itemList = itemList
     }
 
-    override fun onBindViewHolder(holder: VH, position: Int) {
-        mBoundViewHolders.add(holder)
-    }
-
-    override fun onViewRecycled(holder: VH) {
-        super.onViewRecycled(holder)
-
-        mBoundViewHolders.remove(holder)
-    }
-
     override fun onSelectionEvent(id: Long?, event: SelectionEvent) {
         //if the event affects only a single viewholder.
         if (id != null) {
-            mBoundViewHolders.find { it.itemId == id }!!.onSelectionEvent(event)
+            boundViewHolders.find { it.itemId == id }!!.onSelectionEvent(event)
         } else {
-            mBoundViewHolders.forEach { viewHolder ->
+            boundViewHolders.forEach { viewHolder ->
                 viewHolder.onSelectionEvent(event)
             }
         }

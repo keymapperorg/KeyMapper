@@ -78,7 +78,6 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
         registerReceiver(mBroadcastReceiver, intentFilter)
 
         viewModel.keyMap.observe(this, Observer { keyMap ->
-
             val actionDescription = ActionUtils.getDescription(this, keyMap.action)
             actionDescriptionLayout.setDescription(actionDescription)
 
@@ -133,6 +132,10 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
                 MyAccessibilityService.isAccessibilityServiceEnabled(this, coordinatorLayout)
 
         buttonRecordTrigger.isEnabled = isAccessibilityServiceEnabled
+
+        /* reload the action description since the user could have left the app and uninstalled
+        the app chosen as the action so an error message should now be displayed */
+        viewModel.keyMap.notifyObservers()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
