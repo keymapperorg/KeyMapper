@@ -57,7 +57,7 @@ class KeyMapRepository private constructor(ctx: Context) {
         DeleteKeyMapByIdAsync(mDb).execute(*id.toList().toTypedArray())
     }
 
-    fun putKeyMap(vararg keyMap: KeyMap) {
+    fun insertKeyMap(vararg keyMap: KeyMap) {
         InsertKeyMapAsync(mDb).execute(*keyMap)
     }
 
@@ -93,7 +93,7 @@ class KeyMapRepository private constructor(ctx: Context) {
                     }
                 }.toList()
 
-                putKeyMap(*testKeyMapList.toTypedArray())
+                insertKeyMap(*testKeyMapList.toTypedArray())
             }
         }
 
