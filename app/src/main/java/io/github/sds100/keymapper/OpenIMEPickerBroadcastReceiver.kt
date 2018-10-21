@@ -51,10 +51,10 @@ class OpenIMEPickerBroadcastReceiver : BroadcastReceiver() {
                 }
             }
 
-            /* Android Pie doesn't seem to allow you to open the input method picker dialog
+            /* Android 8.1 and higher don't seem to allow you to open the input method picker dialog
                  * from outside the app :( but it can be achieved by sending a broadcast with a
                  * system process id (requires root) */
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1) {
                 showInputMethodPickerDialog(context!!)
             } else {
                 val command =
