@@ -117,7 +117,13 @@
 
     <!-- System action labels -->
     <string name="action_toggle_wifi">Toggle WiFi</string>
+    <string name="action_enable_wifi">Enable WiFi</string>
+    <string name="action_disable_wifi">Disable WiFi</string>
+
     <string name="action_toggle_bluetooth">Toggle Bluetooth</string>
+    <string name="action_enable_bluetooth">Enable Bluetooth</string>
+    <string name="action_disable_bluetooth">Disable Bluetooth</string>
+
     <string name="action_volume_up">Volume Up</string>
     <string name="action_volume_down">Volume Down</string>
     <string name="action_volume_mute">Mute Volume</string>
