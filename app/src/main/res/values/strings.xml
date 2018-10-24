@@ -118,5 +118,11 @@
     <!-- System action labels -->
     <string name="action_toggle_wifi">Toggle WiFi</string>
     <string name="action_toggle_bluetooth">Toggle Bluetooth</string>
+    <string name="action_volume_up">Volume Up</string>
+    <string name="action_volume_down">Volume Down</string>
+    <string name="action_volume_mute">Mute Volume</string>
+    <string name="action_toggle_mute">Toggle Mute</string>
+    <string name="action_volume_unmute">Unmute Volume</string>
+    <string name="action_volume_show_dialog">Show Volume Dialog</string>
     <!-- System action labels -->
 </resources>

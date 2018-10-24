@@ -30,7 +30,16 @@ enum class SystemAction {
     LANDSCAPE_MODE,
 
     //volume
-    VOLUME_UP,
-    VOLUME_DOWN,
-    VOLUME_MUTE
+    const val VOLUME_UP = "volume_up"
+    const val VOLUME_DOWN = "volume_down"
+    const val VOLUME_SHOW_DIALOG = "volume_show_dialog"
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    const val VOLUME_UNMUTE = "volume_unmute"
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    const val VOLUME_MUTE = "volume_mute"
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    const val VOLUME_TOGGLE_MUTE = "volume_toggle_mute"
 }

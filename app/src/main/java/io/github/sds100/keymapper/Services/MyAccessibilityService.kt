@@ -382,6 +382,20 @@ class MyAccessibilityService : AccessibilityService() {
             SystemAction.VOLUME_UP -> TODO()
             SystemAction.VOLUME_DOWN -> TODO()
             SystemAction.VOLUME_MUTE -> TODO()
+            VOLUME_UP -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_RAISE)
+            VOLUME_DOWN -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_LOWER)
+            VOLUME_SHOW_DIALOG -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_SAME)
+
+            else -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    when (action) {
+                        VOLUME_UNMUTE -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_UNMUTE)
+                        VOLUME_MUTE -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_MUTE)
+                        VOLUME_TOGGLE_MUTE ->
+                            VolumeUtils.adjustVolume(this, AudioManager.ADJUST_TOGGLE_MUTE)
+                    }
+                }
+            }
         }
     }
 
