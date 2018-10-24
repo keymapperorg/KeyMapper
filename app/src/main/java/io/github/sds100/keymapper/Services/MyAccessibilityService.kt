@@ -2,6 +2,8 @@ package io.github.sds100.keymapper.Services
 
 import android.accessibilityservice.AccessibilityService
 import android.content.*
+import android.media.AudioManager
+import android.os.Build
 import android.os.Handler
 import android.provider.Settings
 import android.view.KeyEvent
@@ -16,10 +18,32 @@ import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Activities.ConfigKeymapActivity
 import io.github.sds100.keymapper.Data.KeyMapRepository
 import io.github.sds100.keymapper.StateChange.*
-import io.github.sds100.keymapper.SystemAction.valueOf
+import io.github.sds100.keymapper.SystemAction.DISABLE_AUTO_ROTATE
+import io.github.sds100.keymapper.SystemAction.DISABLE_BLUETOOTH
+import io.github.sds100.keymapper.SystemAction.DISABLE_MOBILE_DATA
+import io.github.sds100.keymapper.SystemAction.DISABLE_WIFI
+import io.github.sds100.keymapper.SystemAction.ENABLE_AUTO_ROTATE
+import io.github.sds100.keymapper.SystemAction.ENABLE_BLUETOOTH
+import io.github.sds100.keymapper.SystemAction.ENABLE_MOBILE_DATA
+import io.github.sds100.keymapper.SystemAction.ENABLE_WIFI
+import io.github.sds100.keymapper.SystemAction.LANDSCAPE_MODE
+import io.github.sds100.keymapper.SystemAction.PORTRAIT_MODE
+import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_BRIGHTNESS
+import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_ROTATE
+import io.github.sds100.keymapper.SystemAction.TOGGLE_BLUETOOTH
+import io.github.sds100.keymapper.SystemAction.TOGGLE_MOBILE_DATA
+import io.github.sds100.keymapper.SystemAction.TOGGLE_WIFI
+import io.github.sds100.keymapper.SystemAction.VOLUME_DOWN
+import io.github.sds100.keymapper.SystemAction.VOLUME_MUTE
+import io.github.sds100.keymapper.SystemAction.VOLUME_SHOW_DIALOG
+import io.github.sds100.keymapper.SystemAction.VOLUME_TOGGLE_MUTE
+import io.github.sds100.keymapper.SystemAction.VOLUME_UNMUTE
+import io.github.sds100.keymapper.SystemAction.VOLUME_UP
 import io.github.sds100.keymapper.Utils.BluetoothUtils
 import io.github.sds100.keymapper.Utils.RootUtils
+import io.github.sds100.keymapper.Utils.VolumeUtils
 import io.github.sds100.keymapper.Utils.WifiUtils
+
 
 /**
  * Created by sds100 on 16/07/2018.
@@ -331,7 +355,7 @@ class MyAccessibilityService : AccessibilityService() {
                 sendBroadcast(intent)
             }
 
-            ActionType.SYSTEM_ACTION -> performSystemAction(valueOf(action.data))
+            ActionType.SYSTEM_ACTION -> performSystemAction(action.data)
 
             else -> {
                 //for actions which require the IME service
@@ -359,29 +383,30 @@ class MyAccessibilityService : AccessibilityService() {
         return id.contains(packageName)
     }
 
-    private fun performSystemAction(action: SystemAction) {
+    @Suppress("NON_EXHAUSTIVE_WHEN")
+    private fun performSystemAction(@SystemAction.SystemActionId action: String) {
         when (action) {
-            SystemAction.ENABLE_WIFI -> WifiUtils.changeWifiState(this, ENABLE)
-            SystemAction.DISABLE_WIFI -> WifiUtils.changeWifiState(this, DISABLE)
-            SystemAction.TOGGLE_WIFI -> WifiUtils.changeWifiState(this, TOGGLE)
+            ENABLE_WIFI -> WifiUtils.changeWifiState(this, ENABLE)
+            DISABLE_WIFI -> WifiUtils.changeWifiState(this, DISABLE)
+            TOGGLE_WIFI -> WifiUtils.changeWifiState(this, TOGGLE)
 
-            SystemAction.TOGGLE_BLUETOOTH -> BluetoothUtils.changeBluetoothState(TOGGLE)
-            SystemAction.ENABLE_BLUETOOTH -> BluetoothUtils.changeBluetoothState(ENABLE)
-            SystemAction.DISABLE_BLUETOOTH -> BluetoothUtils.changeBluetoothState(DISABLE)
+            TOGGLE_BLUETOOTH -> BluetoothUtils.changeBluetoothState(TOGGLE)
+            ENABLE_BLUETOOTH -> BluetoothUtils.changeBluetoothState(ENABLE)
+            DISABLE_BLUETOOTH -> BluetoothUtils.changeBluetoothState(DISABLE)
 
-            SystemAction.TOGGLE_MOBILE_DATA -> TODO()
-            SystemAction.ENABLE_MOBILE_DATA -> TODO()
-            SystemAction.DISABLE_MOBILE_DATA -> TODO()
-            SystemAction.TOGGLE_AUTO_BRIGHTNESS -> TODO()
-            SystemAction.TOGGLE_AUTO_ROTATE -> TODO()
-            SystemAction.ENABLE_AUTO_ROTATE -> TODO()
-            SystemAction.DISABLE_AUTO_ROTATE -> TODO()
-            SystemAction.PORTRAIT_MODE -> TODO()
-            SystemAction.LANDSCAPE_MODE -> TODO()
+            TOGGLE_MOBILE_DATA -> TODO()
+            ENABLE_MOBILE_DATA -> TODO()
+            DISABLE_MOBILE_DATA -> TODO()
 
-            SystemAction.VOLUME_UP -> TODO()
-            SystemAction.VOLUME_DOWN -> TODO()
-            SystemAction.VOLUME_MUTE -> TODO()
+            TOGGLE_AUTO_BRIGHTNESS -> TODO()
+
+            TOGGLE_AUTO_ROTATE -> TODO()
+            ENABLE_AUTO_ROTATE -> TODO()
+            DISABLE_AUTO_ROTATE -> TODO()
+
+            PORTRAIT_MODE -> TODO()
+            LANDSCAPE_MODE -> TODO()
+
             VOLUME_UP -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_RAISE)
             VOLUME_DOWN -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_LOWER)
             VOLUME_SHOW_DIALOG -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_SAME)
@@ -397,6 +422,7 @@ class MyAccessibilityService : AccessibilityService() {
                 }
             }
         }
+
     }
 
     private val KeyEvent.isVolumeKey: Boolean

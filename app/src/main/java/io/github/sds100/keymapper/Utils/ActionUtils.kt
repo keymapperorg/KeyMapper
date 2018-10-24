@@ -7,7 +7,10 @@ import android.graphics.drawable.Drawable
 import android.view.KeyEvent
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-import io.github.sds100.keymapper.*
+import io.github.sds100.keymapper.Action
+import io.github.sds100.keymapper.ActionDescription
+import io.github.sds100.keymapper.ActionType
+import io.github.sds100.keymapper.R
 
 /**
  * Created by sds100 on 03/09/2018.
@@ -70,8 +73,8 @@ object ActionUtils {
 
             ActionType.SYSTEM_ACTION -> {
                 //convert the string representation into an enum
-                val systemActionEnum = SystemAction.valueOf(action.data)
-                return ctx.getString(SystemActionUtils.getDescription(systemActionEnum))
+                val systemActionId = action.data
+                return ctx.getString(SystemActionUtils.getDescription(systemActionId))
             }
 
             ActionType.KEYCODE -> {
@@ -109,8 +112,11 @@ object ActionUtils {
 
             ActionType.SYSTEM_ACTION -> {
                 //convert the string representation of the enum entry into an enum object
-                val systemActionEnum = SystemAction.valueOf(action.data)
-                val resId = SystemActionUtils.getIconResource(systemActionEnum)
+                val systemActionId = action.data
+                val resId = SystemActionUtils.getIconResource(systemActionId)
+
+                if (resId == null) return null
+
                 ContextCompat.getDrawable(ctx, resId)
             }
 
