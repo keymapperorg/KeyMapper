@@ -4,8 +4,8 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
 import io.github.sds100.keymapper.OnItemClickListener
-import io.github.sds100.keymapper.Utils.SystemActionUtils
 import io.github.sds100.keymapper.SystemActionListItem
+import io.github.sds100.keymapper.Utils.SystemActionUtils
 
 /**
  * Created by sds100 on 17/07/2018.
@@ -15,7 +15,7 @@ class SystemActionAdapter(
         private val ctx: Context,
         onItemClickListener: OnItemClickListener<SystemActionListItem>
 ) : SimpleItemAdapter<SystemActionListItem>(
-        SystemActionUtils.SYSTEM_ACTION_LIST_ITEMS,
+        SystemActionUtils.getSystemActionListItems(),
         onItemClickListener
 ) {
     override fun getItemText(item: SystemActionListItem): String {
@@ -23,6 +23,8 @@ class SystemActionAdapter(
     }
 
     override fun getItemImage(item: SystemActionListItem): Drawable? {
+        if (item.iconId == null) return null
+
         return ContextCompat.getDrawable(ctx, item.iconId)
     }
 }
