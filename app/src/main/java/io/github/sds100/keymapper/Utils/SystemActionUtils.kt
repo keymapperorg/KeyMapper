@@ -71,8 +71,26 @@ object SystemActionUtils {
     fun getIconResource(@SystemAction.SystemActionId systemAction: String): Int? {
         return when (systemAction) {
             SystemAction.TOGGLE_WIFI -> R.drawable.ic_network_wifi_black_24dp
+            SystemAction.ENABLE_WIFI -> R.drawable.ic_network_wifi_black_24dp
+            SystemAction.DISABLE_WIFI -> R.drawable.ic_signal_wifi_off_black_24dp
+
             SystemAction.TOGGLE_BLUETOOTH -> R.drawable.ic_bluetooth_black_24dp
-            else -> null
+            SystemAction.ENABLE_BLUETOOTH -> R.drawable.ic_bluetooth_black_24dp
+            SystemAction.DISABLE_BLUETOOTH -> R.drawable.ic_bluetooth_disabled_black_24dp
+
+            SystemAction.VOLUME_UP -> R.drawable.ic_volume_up_black_24dp
+            SystemAction.VOLUME_DOWN -> R.drawable.ic_volume_down_black_24dp
+            else -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    when (systemAction) {
+                        SystemAction.VOLUME_MUTE -> return R.drawable.ic_volume_mute_black_24dp
+                        SystemAction.VOLUME_TOGGLE_MUTE -> return R.drawable.ic_volume_mute_black_24dp
+                        SystemAction.VOLUME_UNMUTE -> return R.drawable.ic_volume_up_black_24dp
+                    }
+                }
+
+                return null
+            }
         }
     }
 }
