@@ -10,6 +10,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.salomonbrys.kotson.fromJson
@@ -66,6 +67,9 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_config_key_map)
         setSupportActionBar(toolbar)
+
+        //this needs to be enabled for vector drawables from resources to work on kitkat
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
         //show the back button in the toolbar
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
