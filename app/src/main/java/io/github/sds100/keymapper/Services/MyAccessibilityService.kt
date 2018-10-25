@@ -39,10 +39,7 @@ import io.github.sds100.keymapper.SystemAction.VOLUME_SHOW_DIALOG
 import io.github.sds100.keymapper.SystemAction.VOLUME_TOGGLE_MUTE
 import io.github.sds100.keymapper.SystemAction.VOLUME_UNMUTE
 import io.github.sds100.keymapper.SystemAction.VOLUME_UP
-import io.github.sds100.keymapper.Utils.BluetoothUtils
-import io.github.sds100.keymapper.Utils.RootUtils
-import io.github.sds100.keymapper.Utils.VolumeUtils
-import io.github.sds100.keymapper.Utils.WifiUtils
+import io.github.sds100.keymapper.Utils.*
 
 
 /**
@@ -400,10 +397,9 @@ class MyAccessibilityService : AccessibilityService() {
 
             TOGGLE_AUTO_BRIGHTNESS -> TODO()
 
-            TOGGLE_AUTO_ROTATE -> TODO()
-            ENABLE_AUTO_ROTATE -> TODO()
-            DISABLE_AUTO_ROTATE -> TODO()
-
+            TOGGLE_AUTO_ROTATE -> ScreenRotationUtils.toggleAutoRotate(this)
+            ENABLE_AUTO_ROTATE -> ScreenRotationUtils.enableAutoRotate(this)
+            DISABLE_AUTO_ROTATE -> ScreenRotationUtils.disableAutoRotate(this)
             PORTRAIT_MODE -> TODO()
             LANDSCAPE_MODE -> TODO()
 

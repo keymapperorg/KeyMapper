@@ -26,6 +26,10 @@ object SystemActionUtils {
             yield(SystemActionListItem(SystemAction.VOLUME_DOWN))
             yield(SystemActionListItem(SystemAction.VOLUME_SHOW_DIALOG))
 
+            yield(SystemActionListItem(SystemAction.ENABLE_AUTO_ROTATE))
+            yield(SystemActionListItem(SystemAction.DISABLE_AUTO_ROTATE))
+            yield(SystemActionListItem(SystemAction.TOGGLE_AUTO_ROTATE))
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 yield(SystemActionListItem(SystemAction.VOLUME_MUTE))
                 yield(SystemActionListItem(SystemAction.VOLUME_UNMUTE))
@@ -50,6 +54,10 @@ object SystemActionUtils {
             SystemAction.VOLUME_UP -> R.string.action_volume_up
             SystemAction.VOLUME_DOWN -> R.string.action_volume_down
             SystemAction.VOLUME_SHOW_DIALOG -> R.string.action_volume_show_dialog
+
+            SystemAction.ENABLE_AUTO_ROTATE -> R.string.action_enable_auto_rotate
+            SystemAction.DISABLE_AUTO_ROTATE -> R.string.action_disable_auto_rotate
+            SystemAction.TOGGLE_AUTO_ROTATE -> R.string.action_toggle_auto_rotate
 
             else -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -80,6 +88,10 @@ object SystemActionUtils {
 
             SystemAction.VOLUME_UP -> R.drawable.ic_volume_up_black_24dp
             SystemAction.VOLUME_DOWN -> R.drawable.ic_volume_down_black_24dp
+
+            SystemAction.ENABLE_AUTO_ROTATE -> R.drawable.ic_screen_rotation_black_24dp
+            SystemAction.DISABLE_AUTO_ROTATE -> R.drawable.ic_screen_lock_rotation_black_24dp
+            SystemAction.TOGGLE_AUTO_ROTATE -> R.drawable.ic_screen_rotation_black_24dp
             else -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     when (systemAction) {
