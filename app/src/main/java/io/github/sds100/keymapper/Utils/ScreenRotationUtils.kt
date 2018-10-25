@@ -28,9 +28,9 @@ object ScreenRotationUtils {
                 Settings.System.ACCELEROMETER_ROTATION)
 
         if (autoRotateState == 0) {
-            disableAutoRotate(ctx)
-        } else {
             enableAutoRotate(ctx)
+        } else {
+            disableAutoRotate(ctx)
         }
     }
 }
