@@ -4,8 +4,10 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import androidx.annotation.RequiresApi
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -27,17 +29,22 @@ object PermissionUtils {
         ActivityCompat.requestPermissions(activity, permission, requestCode)
     }
 
+    /**
+     * Prompt the user with a snackbar to grant permission to the app to modify system settings.
+     */
+    @RequiresApi(Build.VERSION_CODES.M)
     fun requestWriteSettingsPermission(layout: CoordinatorLayout) {
         Snackbar.make(layout,
                 R.string.error_action_requires_write_settings_permission,
                 Snackbar.LENGTH_INDEFINITE).apply {
 
+            //open settings to grant permission
             setAction(R.string.open) {
-                val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
-                } else {
-                    TODO("VERSION.SDK_INT < M")
-                }
+                val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
+                intent.data = Uri.parse("package:io.github.sds100.keymapper")
+                intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+
+                layout.context.startActivity(intent)
             }
 
             show()

@@ -107,10 +107,10 @@ class MyAccessibilityService : AccessibilityService() {
             ).apply {
                 setAction(R.string.enable) {
                     val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                    intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+
                     ctx.startActivity(intent)
                 }
-
-                this.
 
                 show()
             }
