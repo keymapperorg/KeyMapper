@@ -9,6 +9,7 @@ import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,7 +30,7 @@ import org.jetbrains.anko.alert
  * Created by sds100 on 04/10/2018.
  */
 
-abstract class ConfigKeymapActivity : BaseActivity() {
+abstract class ConfigKeymapActivity : AppCompatActivity() {
 
     companion object {
         const val ACTION_ADD_KEY_CHIP = "io.github.sds100.keymapper.ADD_KEY_CHIP"
@@ -37,9 +38,6 @@ abstract class ConfigKeymapActivity : BaseActivity() {
 
         const val REQUEST_CODE_ACTION = 821
     }
-
-    override val layoutForSnackBar: View
-        get() = coordinatorLayout
 
     /**
      * Listens for key events from the accessibility service
@@ -107,14 +105,6 @@ abstract class ConfigKeymapActivity : BaseActivity() {
             }
 
             mTriggerAdapter.triggerList = keyMap.triggerList
-
-            if (keyMap.action != null) {
-                PermissionUtils.showPermissionWarningsForAction(
-                        this,
-                        keyMap.action!!,
-                        REQUEST_CODE_PERMISSIONS
-                )
-            }
         })
 
         //button stuff
@@ -127,13 +117,14 @@ abstract class ConfigKeymapActivity : BaseActivity() {
         }
 
         buttonSecondary.setOnClickListener {
-            val action = viewModel.keyMap.action
+            val action = viewModel.keyMap.action!!
 
-            if (action != null) {
-                val intent = Intent(MyAccessibilityService.ACTION_TEST_ACTION)
-                intent.putExtra(MyAccessibilityService.EXTRA_ACTION, action)
+            if (!ActionUtils.isRequiredPermissionGranted(this, action)) {
+                val requiredPermission = ActionUtils.getRequiredPermissionForAction(action)
+                PermissionUtils.requestPermission(this, requiredPermission!!)
 
-                sendBroadcast(intent)
+            } else {
+                testAction()
             }
         }
 
@@ -157,7 +148,7 @@ abstract class ConfigKeymapActivity : BaseActivity() {
         /* disable "Record Trigger" button if the service is disabled because otherwise the button
          * wouldn't do anything*/
         val isAccessibilityServiceEnabled =
-                MyAccessibilityService.isAccessibilityServiceEnabled(this, layoutForSnackBar)
+                MyAccessibilityService.isAccessibilityServiceEnabled(this, coordinatorLayout)
 
         buttonRecordTrigger.isEnabled = isAccessibilityServiceEnabled
 
@@ -273,5 +264,16 @@ abstract class ConfigKeymapActivity : BaseActivity() {
         //tell the accessibility service to stop recording key events
         val intent = Intent(MyAccessibilityService.ACTION_STOP_RECORDING_TRIGGER)
         sendBroadcast(intent)
+    }
+
+    private fun testAction() {
+        val action = viewModel.keyMap.action
+
+        if (action != null) {
+            val intent = Intent(MyAccessibilityService.ACTION_TEST_ACTION)
+            intent.putExtra(MyAccessibilityService.EXTRA_ACTION, action)
+
+            sendBroadcast(intent)
+        }
     }
 }

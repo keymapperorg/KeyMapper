@@ -11,9 +11,7 @@ import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-import com.google.android.material.snackbar.Snackbar
 import io.github.sds100.keymapper.Action
-import io.github.sds100.keymapper.Activities.BaseActivity
 import io.github.sds100.keymapper.R
 
 /**
@@ -40,7 +38,12 @@ object PermissionUtils {
      * @return whether a toast was shown.
      */
     fun showPermissionWarningsForAction(ctx: Context, action: Action): Boolean {
+        //if the action doesn't require any special permissions, don't bother showing a toast
         val requiredPermission = ActionUtils.getRequiredPermissionForAction(action) ?: return false
+        val isPermissionGranted = isPermissionGranted(ctx, requiredPermission)
+
+        //if permission is granted, don't bother showing a toast message
+        if (isPermissionGranted) return false
 
         //show toast message if the action requires WRITE_SETTINGS permission
         if (requiredPermission == Manifest.permission.WRITE_SETTINGS &&
@@ -57,41 +60,17 @@ object PermissionUtils {
         return true
     }
 
-    /**
-     * If the action requires a permission which the user hasn't granted, then a snackbar will
-     * prompt the user to give permission.
-     *
-     * @return whether a snackbar was shown.
-     */
-    fun showPermissionWarningsForAction(
-            activity: BaseActivity,
-            action: Action,
-            requestCode: Int
-    ): Boolean {
-        val requiredPermission = ActionUtils.getRequiredPermissionForAction(action) ?: return false
-
-        if (requiredPermission == Manifest.permission.WRITE_SETTINGS &&
+    fun requestPermission(ctx: Context, permission: String, requestCode: Int = 0) {
+        if (permission == Manifest.permission.WRITE_SETTINGS &&
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Snackbar.make(activity.layoutForSnackBar,
-                    getPermissionWarningStringRes(requiredPermission),
-                    Snackbar.LENGTH_INDEFINITE).apply {
 
-                //open settings to grant permission
-                setAction(R.string.open) {
-                    val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
-                    intent.data = Uri.parse("package:io.github.sds100.keymapper")
-                    intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+            //open settings to grant permission{
+            val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
+            intent.data = Uri.parse("package:io.github.sds100.keymapper")
+            intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
 
-                    activity.startActivity(intent)
-                }
-
-                show()
-            }
-        } else {
-            //other permissions will go here
+            ctx.startActivity(intent)
         }
-
-        return true
     }
 
     @StringRes

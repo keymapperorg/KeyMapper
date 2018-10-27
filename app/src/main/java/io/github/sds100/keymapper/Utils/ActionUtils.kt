@@ -139,10 +139,10 @@ object ActionUtils {
         action ?: return R.string.error_must_choose_action
         if (action.data.isEmpty()) return R.string.error_must_choose_action
 
-        val requiredPermission = getRequiredPermissionForAction(action)
-
-        if (requiredPermission != null) {
-            return PermissionUtils.getPermissionWarningStringRes(requiredPermission)
+        if (!isRequiredPermissionGranted(ctx, action)) {
+            return PermissionUtils.getPermissionWarningStringRes(
+                    getRequiredPermissionForAction(action)!!
+            )
         }
 
         when (action.type) {

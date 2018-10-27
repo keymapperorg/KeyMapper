@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.annotation.ColorRes
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -29,11 +30,8 @@ import kotlinx.android.synthetic.main.content_main.*
 import org.jetbrains.anko.append
 import org.jetbrains.anko.defaultSharedPreferences
 
-class MainActivity : BaseActivity(), SelectionCallback, OnDeleteMenuItemClickListener,
+class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemClickListener,
         OnItemClickListener<KeyMap> {
-
-    override val layoutForSnackBar: View
-        get() = coordinatorLayout
 
     private val mKeymapAdapter: KeymapAdapter = KeymapAdapter(this)
     private lateinit var mViewModel: KeyMapListViewModel
