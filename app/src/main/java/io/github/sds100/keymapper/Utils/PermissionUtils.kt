@@ -1,18 +1,18 @@
 package io.github.sds100.keymapper.Utils
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import androidx.annotation.RequiresApi
-import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.app.ActivityCompat
+import android.widget.Toast
+import android.widget.Toast.LENGTH_SHORT
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
+import io.github.sds100.keymapper.Action
+import io.github.sds100.keymapper.Activities.BaseActivity
 import io.github.sds100.keymapper.R
 
 /**
@@ -32,29 +32,64 @@ object PermissionUtils {
                 PackageManager.PERMISSION_GRANTED
     }
 
-    fun requestPermission(activity: Activity, vararg permission: String, requestCode: Int) {
-        ActivityCompat.requestPermissions(activity, permission, requestCode)
+    /**
+     * If the action requires a permission which the user hasn't granted, a toast message will
+     * tell the user they need to grant permission.
+     *
+     * @return whether a toast was shown.
+     */
+    fun showPermissionWarningsForAction(ctx: Context, action: Action): Boolean {
+        val requiredPermission = ActionUtils.getRequiredPermission(action) ?: return false
+
+        //show toast message if the action requires WRITE_SETTINGS permission
+        if (requiredPermission == Manifest.permission.WRITE_SETTINGS &&
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Toast.makeText(
+                    ctx,
+                    R.string.error_action_requires_write_settings_permission,
+                    LENGTH_SHORT
+            ).show()
+        } else {
+            //other permissions will go here
+        }
+
+        return true
     }
 
     /**
-     * Prompt the user with a snackbar to grant permission to the app to modify system settings.
+     * If the action requires a permission which the user hasn't granted, then a snackbar will
+     * prompt the user to give permission.
+     *
+     * @return whether a snackbar was shown.
      */
-    @RequiresApi(Build.VERSION_CODES.M)
-    fun requestWriteSettingsPermission(layout: CoordinatorLayout) {
-        Snackbar.make(layout,
-                R.string.error_action_requires_write_settings_permission,
-                Snackbar.LENGTH_INDEFINITE).apply {
+    fun showPermissionWarningsForAction(
+            activity: BaseActivity,
+            action: Action,
+            requestCode: Int
+    ): Boolean {
+        val requiredPermission = ActionUtils.getRequiredPermission(action) ?: return false
 
-            //open settings to grant permission
-            setAction(R.string.open) {
-                val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
-                intent.data = Uri.parse("package:io.github.sds100.keymapper")
-                intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+        if (requiredPermission == Manifest.permission.WRITE_SETTINGS &&
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Snackbar.make(activity.layoutForSnackBar,
+                    R.string.error_action_requires_write_settings_permission,
+                    Snackbar.LENGTH_INDEFINITE).apply {
 
-                layout.context.startActivity(intent)
+                //open settings to grant permission
+                setAction(R.string.open) {
+                    val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
+                    intent.data = Uri.parse("package:io.github.sds100.keymapper")
+                    intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+
+                    activity.startActivity(intent)
+                }
+
+                show()
             }
-
-            show()
+        } else {
+            //other permissions will go here
         }
+
+        return true
     }
 }

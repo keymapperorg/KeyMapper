@@ -318,6 +318,9 @@ class MyAccessibilityService : AccessibilityService() {
     }
 
     private fun performAction(action: Action) {
+        //if a toast message was shown that the action needs permission
+        if (PermissionUtils.showPermissionWarningsForAction(this, action)) return
+
         when (action.type) {
             ActionType.APP -> {
                 val intent = packageManager.getLaunchIntentForPackage(action.data)

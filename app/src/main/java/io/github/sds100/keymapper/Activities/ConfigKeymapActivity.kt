@@ -1,28 +1,23 @@
 package io.github.sds100.keymapper.Activities
 
-import android.Manifest
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import io.github.sds100.keymapper.Action
-import io.github.sds100.keymapper.ActionType
 import io.github.sds100.keymapper.Adapters.TriggerAdapter
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Services.MyAccessibilityService
-import io.github.sds100.keymapper.SystemAction
 import io.github.sds100.keymapper.Utils.ActionUtils
 import io.github.sds100.keymapper.Utils.PermissionUtils
 import io.github.sds100.keymapper.ViewModels.ConfigKeyMapViewModel
@@ -34,7 +29,7 @@ import org.jetbrains.anko.alert
  * Created by sds100 on 04/10/2018.
  */
 
-abstract class ConfigKeymapActivity : AppCompatActivity() {
+abstract class ConfigKeymapActivity : BaseActivity() {
 
     companion object {
         const val ACTION_ADD_KEY_CHIP = "io.github.sds100.keymapper.ADD_KEY_CHIP"
@@ -42,6 +37,9 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
 
         const val REQUEST_CODE_ACTION = 821
     }
+
+    override val layoutForSnackBar: View
+        get() = coordinatorLayout
 
     /**
      * Listens for key events from the accessibility service
@@ -98,13 +96,12 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
 
             mTriggerAdapter.triggerList = keyMap.triggerList
 
-            if (keyMap.action != null && keyMap.action!!.type == ActionType.SYSTEM_ACTION) {
-                val requiredPermission = SystemAction.getRequiredPermission(keyMap.action!!.data)
-
-                if (requiredPermission != null &&
-                        !PermissionUtils.isPermissionGranted(this, requiredPermission)) {
-                    requestPermission(requiredPermission)
-                }
+            if (keyMap.action != null) {
+                PermissionUtils.showPermissionWarningsForAction(
+                        this,
+                        keyMap.action!!,
+                        REQUEST_CODE_PERMISSIONS
+                )
             }
         })
 
@@ -147,7 +144,7 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
         /* disable "Record Trigger" button if the service is disabled because otherwise the button
          * wouldn't do anything*/
         val isAccessibilityServiceEnabled =
-                MyAccessibilityService.isAccessibilityServiceEnabled(this, coordinatorLayout)
+                MyAccessibilityService.isAccessibilityServiceEnabled(this, layoutForSnackBar)
 
         buttonRecordTrigger.isEnabled = isAccessibilityServiceEnabled
 
@@ -263,15 +260,5 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
         //tell the accessibility service to stop recording key events
         val intent = Intent(MyAccessibilityService.ACTION_STOP_RECORDING_TRIGGER)
         sendBroadcast(intent)
-    }
-
-    private fun requestPermission(permission: String) {
-        when (permission) {
-            Manifest.permission.WRITE_SETTINGS -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    PermissionUtils.requestWriteSettingsPermission(coordinatorLayout)
-                }
-            }
-        }
     }
 }

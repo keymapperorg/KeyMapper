@@ -1,16 +1,15 @@
 package io.github.sds100.keymapper.Utils
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.view.KeyEvent
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-import io.github.sds100.keymapper.Action
-import io.github.sds100.keymapper.ActionDescription
-import io.github.sds100.keymapper.ActionType
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.*
 
 /**
  * Created by sds100 on 03/09/2018.
@@ -162,5 +161,23 @@ object ActionUtils {
 
             else -> return null
         }
+    }
+
+    /**
+     * if the action requires a permission, which needs user approval, this function
+     * returns the permission required. Null is returned if the action doesn't need any permission
+     */
+    fun getRequiredPermission(action: Action): String? {
+        if (action.type == ActionType.SYSTEM_ACTION) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                return when (action.data) {
+                    SystemAction.TOGGLE_AUTO_ROTATE -> Manifest.permission.WRITE_SETTINGS
+                    SystemAction.ENABLE_AUTO_ROTATE -> Manifest.permission.WRITE_SETTINGS
+                    SystemAction.DISABLE_AUTO_ROTATE -> Manifest.permission.WRITE_SETTINGS
+                    else -> null
+                }
+        }
+
+        return null
     }
 }
