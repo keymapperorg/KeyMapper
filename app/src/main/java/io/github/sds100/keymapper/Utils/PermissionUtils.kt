@@ -40,7 +40,7 @@ object PermissionUtils {
      * @return whether a toast was shown.
      */
     fun showPermissionWarningsForAction(ctx: Context, action: Action): Boolean {
-        val requiredPermission = ActionUtils.getRequiredPermission(action) ?: return false
+        val requiredPermission = ActionUtils.getRequiredPermissionForAction(action) ?: return false
 
         //show toast message if the action requires WRITE_SETTINGS permission
         if (requiredPermission == Manifest.permission.WRITE_SETTINGS &&
@@ -68,7 +68,7 @@ object PermissionUtils {
             action: Action,
             requestCode: Int
     ): Boolean {
-        val requiredPermission = ActionUtils.getRequiredPermission(action) ?: return false
+        val requiredPermission = ActionUtils.getRequiredPermissionForAction(action) ?: return false
 
         if (requiredPermission == Manifest.permission.WRITE_SETTINGS &&
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

@@ -139,7 +139,7 @@ object ActionUtils {
         action ?: return R.string.error_must_choose_action
         if (action.data.isEmpty()) return R.string.error_must_choose_action
 
-        val requiredPermission = getRequiredPermission(action)
+        val requiredPermission = getRequiredPermissionForAction(action)
 
         if (requiredPermission != null) {
             return PermissionUtils.getPermissionWarningStringRes(requiredPermission)
@@ -177,11 +177,18 @@ object ActionUtils {
         }
     }
 
+    fun isRequiredPermissionGranted(ctx: Context, action: Action): Boolean {
+        //if the action doesn't need any special permissions
+        val requiredPermission = getRequiredPermissionForAction(action) ?: return true
+
+        return PermissionUtils.isPermissionGranted(ctx, requiredPermission)
+    }
+
     /**
      * if the action requires a permission, which needs user approval, this function
      * returns the permission required. Null is returned if the action doesn't need any permission
      */
-    fun getRequiredPermission(action: Action): String? {
+    fun getRequiredPermissionForAction(action: Action): String? {
         if (action.type == ActionType.SYSTEM_ACTION) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
                 return when (action.data) {

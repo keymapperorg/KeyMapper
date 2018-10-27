@@ -91,10 +91,19 @@ abstract class ConfigKeymapActivity : BaseActivity() {
             val actionDescription = ActionUtils.getDescription(this, keyMap.action)
             actionDescriptionLayout.setDescription(actionDescription)
 
+            //custom button stuff.
             if (keyMap.action == null) {
-                buttonTestAction.visibility = View.GONE
+                buttonSecondary.visibility = View.GONE
             } else {
-                buttonTestAction.visibility = View.VISIBLE
+                buttonSecondary.visibility = View.VISIBLE
+
+                /* if there is no error message, when the button is pressed the user can test the
+                action */
+                if (actionDescription.errorMessage == null) {
+                    buttonSecondary.text = getString(R.string.button_test)
+                } else {
+                    buttonSecondary.text = getString(R.string.button_fix)
+                }
             }
 
             mTriggerAdapter.triggerList = keyMap.triggerList
@@ -117,7 +126,7 @@ abstract class ConfigKeymapActivity : BaseActivity() {
             }
         }
 
-        buttonTestAction.setOnClickListener {
+        buttonSecondary.setOnClickListener {
             val action = viewModel.keyMap.action
 
             if (action != null) {

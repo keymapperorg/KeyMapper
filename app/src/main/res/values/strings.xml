@@ -39,6 +39,7 @@
     <string name="button_add_trigger">Add Trigger</string>
     <string name="button_test">Test</string>
     <string name="button_done">Done</string>
+    <string name="button_fix">Fix</string>
     <string name="button_stop_recording_trigger">Stop Recording Trigger…</string>
     <!-- Button titles -->
 

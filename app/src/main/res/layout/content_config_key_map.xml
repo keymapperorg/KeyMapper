@@ -124,15 +124,15 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
-        android:id="@+id/buttonTestAction"
+        android:id="@+id/buttonSecondary"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
-        android:text="@string/button_test"
         app:layout_constraintBottom_toTopOf="@+id/bottom_divider"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:visibility="gone" />
+        tools:text="@string/button_test"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
