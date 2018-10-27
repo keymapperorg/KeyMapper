@@ -32,6 +32,8 @@ class AppShortcutActionTypeFragment : ActionTypeFragment(),
                 context!!.packageManager, onItemClickListener = this)
     }
 
+    private var mTempShortcutPackageName: String? = null
+
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -53,39 +55,49 @@ class AppShortcutActionTypeFragment : ActionTypeFragment(),
         if (requestCode == REQUEST_CODE_SHORTCUT_CONFIGURATION &&
                 resultCode == Activity.RESULT_OK) {
 
-            if (data != null) {
-                //the shortcut intents seem to be returned in 2 different formats.
-                if (data.extras != null &&
-                        data.extras!!.containsKey(Intent.EXTRA_SHORTCUT_INTENT)) {
-                    //get intent from selected shortcut
-                    val shortcutIntent = data.extras!!.get(Intent.EXTRA_SHORTCUT_INTENT) as Intent
+            data ?: return
 
-                    //show a dialog to prompt for a title.
-                    ShortcutTitleDialog.show(context!!) { title ->
-                        shortcutIntent.putExtra(AppShortcutUtils.EXTRA_SHORTCUT_TITLE, title)
+            //the shortcut intents seem to be returned in 2 different formats.
+            if (data.extras != null &&
+                    data.extras!!.containsKey(Intent.EXTRA_SHORTCUT_INTENT)) {
+                //get intent from selected shortcut
+                val shortcutIntent = data.extras!!.get(Intent.EXTRA_SHORTCUT_INTENT) as Intent
 
-                        //save the shortcut intent as a URI
-                        val action = Action(ActionType.APP_SHORTCUT, shortcutIntent.toUri(0))
-                        chooseSelectedAction(action)
-                    }
+                //show a dialog to prompt for a title.
+                ShortcutTitleDialog.show(context!!) { title ->
+                    shortcutIntent.putExtra(AppShortcutUtils.EXTRA_SHORTCUT_TITLE, title)
+                    shortcutIntent.putExtra(AppShortcutUtils.EXTRA_PACKAGE_NAME,
+                            mTempShortcutPackageName)
 
-                } else {
-                    ShortcutTitleDialog.show(context!!) { title ->
-                        data.putExtra(AppShortcutUtils.EXTRA_SHORTCUT_TITLE, title)
+                    //save the shortcut intent as a URI
+                    val action = Action(ActionType.APP_SHORTCUT, shortcutIntent.toUri(0))
+                    chooseSelectedAction(action)
 
-                        //save the shortcut intent as a URI
-                        val action = Action(ActionType.APP_SHORTCUT, data.toUri(0))
-                        chooseSelectedAction(action)
-                    }
+                    mTempShortcutPackageName = null
+                }
+
+            } else {
+                ShortcutTitleDialog.show(context!!) { title ->
+                    data.putExtra(AppShortcutUtils.EXTRA_SHORTCUT_TITLE, title)
+                    data.putExtra(AppShortcutUtils.EXTRA_PACKAGE_NAME, mTempShortcutPackageName)
+
+                    //save the shortcut intent as a URI
+                    val action = Action(ActionType.APP_SHORTCUT, data.toUri(0))
+                    chooseSelectedAction(action)
+
+                    mTempShortcutPackageName = null
                 }
             }
         }
     }
 
     override fun onItemClick(item: ResolveInfo) {
+        val packageName = item.activityInfo.applicationInfo.packageName
+        mTempShortcutPackageName = packageName
+
         //open the shortcut configuration screen when the user taps a shortcut
         val intent = Intent()
-        intent.setClassName(item.activityInfo.applicationInfo.packageName, item.activityInfo.name)
+        intent.setClassName(packageName, item.activityInfo.name)
         startActivityForResult(intent, REQUEST_CODE_SHORTCUT_CONFIGURATION)
     }
 }

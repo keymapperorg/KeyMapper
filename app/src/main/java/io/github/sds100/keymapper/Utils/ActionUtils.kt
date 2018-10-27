@@ -5,11 +5,14 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Build
+import android.provider.Settings
 import android.view.KeyEvent
-import androidx.annotation.StringRes
+import androidx.annotation.IntDef
 import androidx.core.content.ContextCompat
 import io.github.sds100.keymapper.*
+
 
 /**
  * Created by sds100 on 03/09/2018.
@@ -19,25 +22,44 @@ import io.github.sds100.keymapper.*
  * Provides functions commonly used with [Action]s
  */
 object ActionUtils {
+
+    @IntDef(value = [
+        ERROR_CODE_NO_ACTION_DATA,
+        ERROR_CODE_ACTION_IS_NULL,
+        ERROR_CODE_APP_DISABLED,
+        ERROR_CODE_APP_UNINSTALLED,
+        ERROR_CODE_PERMISSION_DENIED,
+        ERROR_CODE_SHORTCUT_NOT_FOUND]
+    )
+    @Retention(AnnotationRetention.SOURCE)
+    annotation class ActionErrorCode
+
+    const val ERROR_CODE_NO_ACTION_DATA = 345
+    const val ERROR_CODE_ACTION_IS_NULL = 123
+    const val ERROR_CODE_PERMISSION_DENIED = 763
+    const val ERROR_CODE_APP_DISABLED = 323
+    const val ERROR_CODE_APP_UNINSTALLED = 452
+    const val ERROR_CODE_SHORTCUT_NOT_FOUND = 329
+
     /**
      * Get a description for an action. E.g if the user chose an app, then the description will
      * be 'Open <app>'
      */
     fun getDescription(ctx: Context, action: Action?): ActionDescription {
 
-        val errorMessageStringRes = getErrorMessageStringRes(ctx, action)
+        val errorCode = getErrorCode(ctx, action)
 
-        val errorMessage = if (errorMessageStringRes == null) {
+        val errorMessage = if (errorCode == null) {
             null
         } else {
-            ctx.getString(errorMessageStringRes)
+            getMessageForErrorCode(ctx, errorCode, action)
         }
 
         val title = getTitle(ctx, action)
         val icon = getIcon(ctx, action)
 
         return ActionDescription(
-                icon, title, errorMessage
+                icon, title, errorMessage, errorCode
         )
     }
 
@@ -130,61 +152,6 @@ object ActionUtils {
     }
 
     /**
-     * @return if the action can't be performed, it returns the string id of the error message to
-     * explain why to the user. returns null if their if the action can be performed and there
-     * is nothing wrong with it.
-     */
-    @StringRes
-    private fun getErrorMessageStringRes(ctx: Context, action: Action?): Int? {
-        action ?: return R.string.error_must_choose_action
-        if (action.data.isEmpty()) return R.string.error_must_choose_action
-
-        if (!isRequiredPermissionGranted(ctx, action)) {
-            return PermissionUtils.getPermissionWarningStringRes(
-                    getRequiredPermissionForAction(action)!!
-            )
-        }
-
-        when (action.type) {
-
-            ActionType.APP -> {
-                try {
-                    val appInfo = ctx.packageManager.getApplicationInfo(action.data, 0)
-
-                    //if the app is disabled, show an error message because it won't open
-                    if (!appInfo.enabled) {
-                        return R.string.error_app_is_disabled
-                    }
-
-                    return null
-                } catch (e: Exception) {
-                    return R.string.error_app_isnt_installed
-                }
-            }
-
-            ActionType.APP_SHORTCUT -> {
-                val intent = Intent.parseUri(action.data, 0)
-                val activityExists = intent.resolveActivityInfo(ctx.packageManager, 0) != null
-
-                if (!activityExists) {
-                    return R.string.error_shortcut_not_found
-                }
-
-                return null
-            }
-
-            else -> return null
-        }
-    }
-
-    fun isRequiredPermissionGranted(ctx: Context, action: Action): Boolean {
-        //if the action doesn't need any special permissions
-        val requiredPermission = getRequiredPermissionForAction(action) ?: return true
-
-        return PermissionUtils.isPermissionGranted(ctx, requiredPermission)
-    }
-
-    /**
      * if the action requires a permission, which needs user approval, this function
      * returns the permission required. Null is returned if the action doesn't need any permission
      */
@@ -200,5 +167,111 @@ object ActionUtils {
         }
 
         return null
+    }
+
+    fun fixActionError(ctx: Context, @ActionErrorCode errorCode: Int, action: Action) {
+        when (errorCode) {
+            ERROR_CODE_PERMISSION_DENIED -> {
+                val requiredPermission = ActionUtils.getRequiredPermissionForAction(action)
+                PermissionUtils.requestPermission(ctx, requiredPermission!!)
+            }
+
+            ERROR_CODE_APP_DISABLED -> {
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                intent.data = Uri.parse("package:${action.data}")
+                intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+
+                ctx.startActivity(intent)
+            }
+
+            ERROR_CODE_APP_UNINSTALLED -> {
+                val packageName = action.data
+                PackageUtils.viewAppOnline(ctx, packageName)
+            }
+
+            ERROR_CODE_SHORTCUT_NOT_FOUND -> {
+                val intent = Intent.parseUri(action.data, 0)
+                val packageName = intent.getStringExtra(AppShortcutUtils.EXTRA_PACKAGE_NAME)
+
+                if (packageName != null) {
+                    PackageUtils.viewAppOnline(ctx, packageName)
+                }
+            }
+        }
+    }
+
+    /**
+     * @return if the action can't be performed, it returns the string id of the error message to
+     * explain why to the user. returns null if their if the action can be performed and there
+     * is nothing wrong with it.
+     */
+    @ActionErrorCode
+    private fun getErrorCode(ctx: Context, action: Action?): Int? {
+        action ?: return ERROR_CODE_ACTION_IS_NULL
+        if (action.data.isEmpty()) return ERROR_CODE_NO_ACTION_DATA
+
+        if (!isRequiredPermissionGranted(ctx, action)) {
+            return ERROR_CODE_PERMISSION_DENIED
+        }
+
+        when (action.type) {
+
+            ActionType.APP -> {
+                try {
+                    val appInfo = ctx.packageManager.getApplicationInfo(action.data, 0)
+
+                    //if the app is disabled, show an error message because it won't open
+                    if (!appInfo.enabled) {
+                        return ERROR_CODE_APP_DISABLED
+                    }
+
+                    return null
+                } catch (e: Exception) {
+                    return ERROR_CODE_APP_UNINSTALLED
+                }
+            }
+
+            ActionType.APP_SHORTCUT -> {
+                val intent = Intent.parseUri(action.data, 0)
+                val activityExists = intent.resolveActivityInfo(ctx.packageManager, 0) != null
+
+                if (!activityExists) {
+                    return ERROR_CODE_SHORTCUT_NOT_FOUND
+                }
+
+                return null
+            }
+
+            else -> return null
+        }
+    }
+
+    private fun isRequiredPermissionGranted(ctx: Context, action: Action): Boolean {
+        //if the action doesn't need any special permissions
+        val requiredPermission = getRequiredPermissionForAction(action) ?: return true
+
+        return PermissionUtils.isPermissionGranted(ctx, requiredPermission)
+    }
+
+    private fun getMessageForErrorCode(ctx: Context,
+                                       @ActionErrorCode errorCode: Int,
+                                       action: Action?): String? {
+        return when (errorCode) {
+            ERROR_CODE_ACTION_IS_NULL -> ctx.getString(R.string.error_must_choose_action)
+            ERROR_CODE_NO_ACTION_DATA -> ctx.getString(R.string.error_must_choose_action)
+            ERROR_CODE_APP_DISABLED -> ctx.getString(R.string.error_app_is_disabled)
+            ERROR_CODE_APP_UNINSTALLED -> ctx.getString(R.string.error_app_isnt_installed)
+            ERROR_CODE_SHORTCUT_NOT_FOUND -> ctx.getString(R.string.error_shortcut_not_found)
+            ERROR_CODE_PERMISSION_DENIED -> {
+                val requiredPermission = getRequiredPermissionForAction(action!!)!!
+
+                val permissionWarningMessage =
+                        PermissionUtils.getPermissionWarningStringRes(requiredPermission)
+
+                return ctx.getString(permissionWarningMessage)
+            }
+
+            else -> null
+        }
     }
 }

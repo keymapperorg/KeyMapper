@@ -20,7 +20,6 @@ import io.github.sds100.keymapper.Adapters.TriggerAdapter
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Services.MyAccessibilityService
 import io.github.sds100.keymapper.Utils.ActionUtils
-import io.github.sds100.keymapper.Utils.PermissionUtils
 import io.github.sds100.keymapper.ViewModels.ConfigKeyMapViewModel
 import kotlinx.android.synthetic.main.activity_config_key_map.*
 import kotlinx.android.synthetic.main.content_config_key_map.*
@@ -90,7 +89,8 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
             actionDescriptionLayout.setDescription(actionDescription)
 
             //custom button stuff.
-            if (keyMap.action == null) {
+            if (actionDescription.errorCode == ActionUtils.ERROR_CODE_ACTION_IS_NULL ||
+                    actionDescription.errorCode == ActionUtils.ERROR_CODE_NO_ACTION_DATA) {
                 buttonSecondary.visibility = View.GONE
             } else {
                 buttonSecondary.visibility = View.VISIBLE
@@ -105,6 +105,14 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
             }
 
             mTriggerAdapter.triggerList = keyMap.triggerList
+
+            buttonSecondary.setOnClickListener {
+                if (actionDescription.errorCode != null) {
+                    ActionUtils.fixActionError(this, actionDescription.errorCode, keyMap.action!!)
+                } else {
+                    testAction()
+                }
+            }
         })
 
         //button stuff
@@ -113,18 +121,6 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
                 addTrigger()
             } else {
                 recordTrigger()
-            }
-        }
-
-        buttonSecondary.setOnClickListener {
-            val action = viewModel.keyMap.action!!
-
-            if (!ActionUtils.isRequiredPermissionGranted(this, action)) {
-                val requiredPermission = ActionUtils.getRequiredPermissionForAction(action)
-                PermissionUtils.requestPermission(this, requiredPermission!!)
-
-            } else {
-                testAction()
             }
         }
 
