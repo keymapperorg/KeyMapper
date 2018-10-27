@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <androidx.preference.SwitchPreference
+        android:defaultValue="false"
+        android:key="@string/key_pref_show_toast_when_action_performed"
+        android:summary="@string/summary_pref_show_toast_when_action_performed"
+        android:title="@string/title_pref_show_toast_when_action_performed" />>
+
     <androidx.preference.PreferenceCategory android:title="@string/title_pref_category_notifications">
         <androidx.preference.SwitchPreference
             android:defaultValue="true"

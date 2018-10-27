@@ -40,6 +40,7 @@ import io.github.sds100.keymapper.SystemAction.VOLUME_TOGGLE_MUTE
 import io.github.sds100.keymapper.SystemAction.VOLUME_UNMUTE
 import io.github.sds100.keymapper.SystemAction.VOLUME_UP
 import io.github.sds100.keymapper.Utils.*
+import org.jetbrains.anko.defaultSharedPreferences
 
 
 /**
@@ -318,6 +319,11 @@ class MyAccessibilityService : AccessibilityService() {
     }
 
     private fun performAction(action: Action) {
+        val key = getString(R.string.key_pref_show_toast_when_action_performed)
+        if (defaultSharedPreferences.getBoolean(key, false)) {
+            Toast.makeText(this, R.string.performing_action, LENGTH_SHORT).show()
+        }
+
         //if a toast message was shown that the action needs permission
         if (PermissionUtils.showPermissionWarningsForAction(this, action)) return
 
