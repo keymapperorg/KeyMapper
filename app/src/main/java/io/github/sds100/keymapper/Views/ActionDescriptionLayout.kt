@@ -39,25 +39,21 @@ class ActionDescriptionLayout(
     fun setDescription(description: ActionDescription) {
         description.apply {
 
-            if (showErrorMessage) {
-                textViewTitle.visibility = View.GONE
-                textViewError.visibility = View.VISIBLE
+            textViewTitle.setVisible(title != null)
+            textViewError.setVisible(errorMessage != null)
+            imageViewAction.setVisible(iconDrawable != null)
 
-                textViewError.text = errorMessage
-            } else {
-                textViewTitle.visibility = View.VISIBLE
-                textViewError.visibility = View.GONE
-
-                textViewTitle.text = title
-            }
-
-            if (iconDrawable == null) {
-                imageViewAction.visibility = View.GONE
-            } else {
-                imageViewAction.setImageDrawable(iconDrawable)
-                imageViewAction.visibility = View.VISIBLE
-            }
+            textViewTitle.text = title
+            textViewError.text = errorMessage
+            imageViewAction.setImageDrawable(iconDrawable)
         }
+    }
 
+    private fun View.setVisible(visible: Boolean) {
+        if (visible) {
+            visibility = View.VISIBLE
+        } else {
+            visibility = View.GONE
+        }
     }
 }

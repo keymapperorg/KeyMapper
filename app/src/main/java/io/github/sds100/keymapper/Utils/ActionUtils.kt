@@ -25,22 +25,25 @@ object ActionUtils {
      */
     fun getDescription(ctx: Context, action: Action?): ActionDescription {
 
-        val errorMessage = getActionErrorMessage(ctx, action)
+        val errorMessageStringRes = getErrorMessageStringRes(ctx, action)
 
-        //if there is no error message
-        if (errorMessage == null) {
-            return ActionDescription(
-                    title = getTitle(ctx, action!!),
-                    iconDrawable = getIcon(ctx, action)
-            )
+        val errorMessage = if (errorMessageStringRes == null) {
+            null
         } else {
-            return ActionDescription(
-                    errorMessage = ctx.getString(errorMessage)
-            )
+            ctx.getString(errorMessageStringRes)
         }
+
+        val title = getTitle(ctx, action)
+        val icon = getIcon(ctx, action)
+
+        return ActionDescription(
+                icon, title, errorMessage
+        )
     }
 
-    private fun getTitle(ctx: Context, action: Action): String? {
+    private fun getTitle(ctx: Context, action: Action?): String? {
+        action ?: return null
+
         when (action.type) {
             ActionType.APP -> {
                 try {
@@ -99,7 +102,9 @@ object ActionUtils {
      * Get the icon for any Action
      */
     private fun getIcon(ctx: Context, action: Action?): Drawable? {
-        return when (action?.type) {
+        action ?: return null
+
+        return when (action.type) {
             ActionType.APP -> {
                 try {
                     return ctx.packageManager.getApplicationIcon(action.data)
@@ -130,10 +135,18 @@ object ActionUtils {
      * is nothing wrong with it.
      */
     @StringRes
-    private fun getActionErrorMessage(ctx: Context, action: Action?): Int? {
-        if (action?.data.isNullOrEmpty()) return R.string.error_must_choose_action
+    private fun getErrorMessageStringRes(ctx: Context, action: Action?): Int? {
+        action ?: return R.string.error_must_choose_action
+        if (action.data.isEmpty()) return R.string.error_must_choose_action
 
-        when (action!!.type) {
+        val requiredPermission = getRequiredPermission(action)
+
+        if (requiredPermission != null) {
+            return PermissionUtils.getPermissionWarningStringRes(requiredPermission)
+        }
+
+        when (action.type) {
+
             ActionType.APP -> {
                 try {
                     val appInfo = ctx.packageManager.getApplicationInfo(action.data, 0)
@@ -142,6 +155,7 @@ object ActionUtils {
                     if (!appInfo.enabled) {
                         return R.string.error_app_is_disabled
                     }
+
                     return null
                 } catch (e: Exception) {
                     return R.string.error_app_isnt_installed

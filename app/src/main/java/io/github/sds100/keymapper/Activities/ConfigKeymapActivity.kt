@@ -77,18 +77,21 @@ abstract class ConfigKeymapActivity : BaseActivity() {
         //show the back button in the toolbar
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-        //listen for key events so they can be shown as chips
+        /*listen for broadcasts from the accessibility service to show chips and
+         to stop recording a trigger */
+
         val intentFilter = IntentFilter()
         intentFilter.addAction(ACTION_ADD_KEY_CHIP)
         intentFilter.addAction(MyAccessibilityService.ACTION_RECORD_TRIGGER_TIMER_STOPPED)
 
         registerReceiver(mBroadcastReceiver, intentFilter)
 
+        //observing stuff
         viewModel.keyMap.observe(this, Observer { keyMap ->
             val actionDescription = ActionUtils.getDescription(this, keyMap.action)
             actionDescriptionLayout.setDescription(actionDescription)
 
-            if (actionDescription.showErrorMessage) {
+            if (keyMap.action == null) {
                 buttonTestAction.visibility = View.GONE
             } else {
                 buttonTestAction.visibility = View.VISIBLE
@@ -105,6 +108,7 @@ abstract class ConfigKeymapActivity : BaseActivity() {
             }
         })
 
+        //button stuff
         buttonRecordTrigger.setOnClickListener {
             if (mIsRecordingTrigger) {
                 addTrigger()

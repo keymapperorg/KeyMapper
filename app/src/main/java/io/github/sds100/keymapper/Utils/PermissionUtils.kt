@@ -9,6 +9,7 @@ import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
+import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import io.github.sds100.keymapper.Action
@@ -46,7 +47,7 @@ object PermissionUtils {
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Toast.makeText(
                     ctx,
-                    R.string.error_action_requires_write_settings_permission,
+                    getPermissionWarningStringRes(requiredPermission),
                     LENGTH_SHORT
             ).show()
         } else {
@@ -72,7 +73,7 @@ object PermissionUtils {
         if (requiredPermission == Manifest.permission.WRITE_SETTINGS &&
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Snackbar.make(activity.layoutForSnackBar,
-                    R.string.error_action_requires_write_settings_permission,
+                    getPermissionWarningStringRes(requiredPermission),
                     Snackbar.LENGTH_INDEFINITE).apply {
 
                 //open settings to grant permission
@@ -91,5 +92,14 @@ object PermissionUtils {
         }
 
         return true
+    }
+
+    @StringRes
+    fun getPermissionWarningStringRes(permission: String): Int {
+        return when (permission) {
+            Manifest.permission.WRITE_SETTINGS ->
+                R.string.error_action_requires_write_settings_permission
+            else -> throw Exception("No error message string resource for that permission!")
+        }
     }
 }

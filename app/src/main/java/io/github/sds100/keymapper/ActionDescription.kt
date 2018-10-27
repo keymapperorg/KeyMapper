@@ -12,8 +12,4 @@ import android.graphics.drawable.Drawable
 data class ActionDescription(
         val iconDrawable: Drawable? = null,
         val title: String? = null,
-        val errorMessage: String? = null) {
-
-    val showErrorMessage
-        get() = errorMessage != null
-}
+        val errorMessage: String? = null)
