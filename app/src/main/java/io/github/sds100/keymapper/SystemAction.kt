@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -80,4 +81,17 @@ object SystemAction {
 
     @RequiresApi(Build.VERSION_CODES.M)
     const val VOLUME_TOGGLE_MUTE = "volume_toggle_mute"
+
+    /**
+     * if the action requires a permission, which requires user approval, this function
+     * returns the permission required. Otherwise null is returned
+     */
+    fun getRequiredPermission(@SystemActionId systemAction: String): String? {
+        return when (systemAction) {
+            TOGGLE_AUTO_ROTATE -> Manifest.permission.WRITE_SETTINGS
+            ENABLE_AUTO_ROTATE -> Manifest.permission.WRITE_SETTINGS
+            DISABLE_AUTO_ROTATE -> Manifest.permission.WRITE_SETTINGS
+            else -> null
+        }
+    }
 }

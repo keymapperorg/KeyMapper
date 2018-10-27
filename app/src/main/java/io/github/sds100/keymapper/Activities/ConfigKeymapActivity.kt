@@ -1,9 +1,11 @@
 package io.github.sds100.keymapper.Activities
 
+import android.Manifest
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.Menu
@@ -16,10 +18,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import io.github.sds100.keymapper.Action
+import io.github.sds100.keymapper.ActionType
 import io.github.sds100.keymapper.Adapters.TriggerAdapter
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Services.MyAccessibilityService
+import io.github.sds100.keymapper.SystemAction
 import io.github.sds100.keymapper.Utils.ActionUtils
+import io.github.sds100.keymapper.Utils.PermissionUtils
 import io.github.sds100.keymapper.ViewModels.ConfigKeyMapViewModel
 import kotlinx.android.synthetic.main.activity_config_key_map.*
 import kotlinx.android.synthetic.main.content_config_key_map.*
@@ -92,6 +97,15 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
             }
 
             mTriggerAdapter.triggerList = keyMap.triggerList
+
+            if (keyMap.action != null && keyMap.action!!.type == ActionType.SYSTEM_ACTION) {
+                val requiredPermission = SystemAction.getRequiredPermission(keyMap.action!!.data)
+
+                if (requiredPermission != null &&
+                        !PermissionUtils.isPermissionGranted(this, requiredPermission)) {
+                    requestPermission(requiredPermission)
+                }
+            }
         })
 
         buttonRecordTrigger.setOnClickListener {
@@ -249,5 +263,15 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
         //tell the accessibility service to stop recording key events
         val intent = Intent(MyAccessibilityService.ACTION_STOP_RECORDING_TRIGGER)
         sendBroadcast(intent)
+    }
+
+    private fun requestPermission(permission: String) {
+        when (permission) {
+            Manifest.permission.WRITE_SETTINGS -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    PermissionUtils.requestWriteSettingsPermission(coordinatorLayout)
+                }
+            }
+        }
     }
 }

@@ -10,6 +10,7 @@ import android.provider.Settings
 object ScreenRotationUtils {
 
     fun enableAutoRotate(ctx: Context) {
+        //don't attempt to enable auto rotate if they app doesn't have permission
         if (!PermissionUtils.isPermissionGranted(ctx, Manifest.permission.WRITE_SETTINGS)) return
 
         Settings.System.putInt(ctx.contentResolver,
@@ -17,6 +18,7 @@ object ScreenRotationUtils {
     }
 
     fun disableAutoRotate(ctx: Context) {
+        //don't attempt to enable auto rotate if they app doesn't have permission
         if (!PermissionUtils.isPermissionGranted(ctx, Manifest.permission.WRITE_SETTINGS)) return
 
         Settings.System.putInt(ctx.contentResolver,

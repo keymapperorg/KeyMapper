@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.Utils
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -21,6 +22,12 @@ import io.github.sds100.keymapper.R
 object PermissionUtils {
 
     fun isPermissionGranted(ctx: Context, permission: String): Boolean {
+        //a different method must be used for WRITE_SETTINGS permission
+        if (permission == Manifest.permission.WRITE_SETTINGS &&
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return Settings.System.canWrite(ctx)
+        }
+
         return ContextCompat.checkSelfPermission(ctx, permission) ==
                 PackageManager.PERMISSION_GRANTED
     }
