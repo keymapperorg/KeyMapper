@@ -143,5 +143,7 @@
     <string name="action_toggle_mobile_data">Toggle Mobile Data</string>
     <string name="action_enable_mobile_data">Enable Mobile Data</string>
     <string name="action_disable_mobile_data">Disable Mobile Data</string>
+    <string name="action_portrait_mode">Portrait Mode</string>
+    <string name="action_landscape_mode">Landscape Mode</string>
     <!-- System action labels -->
 </resources>

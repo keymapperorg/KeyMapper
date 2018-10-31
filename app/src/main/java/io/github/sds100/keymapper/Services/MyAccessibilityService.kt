@@ -407,8 +407,8 @@ class MyAccessibilityService : AccessibilityService() {
             TOGGLE_AUTO_ROTATE -> ScreenRotationUtils.toggleAutoRotate(this)
             ENABLE_AUTO_ROTATE -> ScreenRotationUtils.enableAutoRotate(this)
             DISABLE_AUTO_ROTATE -> ScreenRotationUtils.disableAutoRotate(this)
-            PORTRAIT_MODE -> TODO()
-            LANDSCAPE_MODE -> TODO()
+            PORTRAIT_MODE -> ScreenRotationUtils.forcePortraitMode(this)
+            LANDSCAPE_MODE -> ScreenRotationUtils.forceLandscapeMode(this)
 
             VOLUME_UP -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_RAISE)
             VOLUME_DOWN -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_LOWER)

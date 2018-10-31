@@ -162,6 +162,8 @@ object ActionUtils {
                     SystemAction.TOGGLE_AUTO_ROTATE -> Manifest.permission.WRITE_SETTINGS
                     SystemAction.ENABLE_AUTO_ROTATE -> Manifest.permission.WRITE_SETTINGS
                     SystemAction.DISABLE_AUTO_ROTATE -> Manifest.permission.WRITE_SETTINGS
+                    SystemAction.PORTRAIT_MODE -> Manifest.permission.WRITE_SETTINGS
+                    SystemAction.LANDSCAPE_MODE -> Manifest.permission.WRITE_SETTINGS
                     else -> null
                 }
         }
