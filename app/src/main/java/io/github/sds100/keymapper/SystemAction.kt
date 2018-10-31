@@ -53,8 +53,19 @@ object SystemAction {
     const val DISABLE_BLUETOOTH = "disable_bluetooth"
 
     //mobile data
+    /**
+     * REQUIRES ROOT
+     */
     const val TOGGLE_MOBILE_DATA = "toggle_mobile_data"
+
+    /**
+     * REQUIRES ROOT
+     */
     const val ENABLE_MOBILE_DATA = "enable_mobile_data"
+
+    /**
+     * REQUIRES ROOT
+     */
     const val DISABLE_MOBILE_DATA = "disable_mobile_data"
 
     //brightness
@@ -64,7 +75,10 @@ object SystemAction {
     const val TOGGLE_AUTO_ROTATE = "toggle_auto_rotate"
     const val ENABLE_AUTO_ROTATE = "enable_auto_rotate"
     const val DISABLE_AUTO_ROTATE = "disable_auto_rotate"
+
+    //TODO portrait mode
     const val PORTRAIT_MODE = "portrait_mode"
+    //TODO landscape mode
     const val LANDSCAPE_MODE = "landscape_mode"
 
     //volume

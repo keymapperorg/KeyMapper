@@ -40,6 +40,7 @@ import io.github.sds100.keymapper.SystemAction.VOLUME_TOGGLE_MUTE
 import io.github.sds100.keymapper.SystemAction.VOLUME_UNMUTE
 import io.github.sds100.keymapper.SystemAction.VOLUME_UP
 import io.github.sds100.keymapper.Utils.*
+import org.jetbrains.anko.ctx
 import org.jetbrains.anko.defaultSharedPreferences
 
 
@@ -397,9 +398,9 @@ class MyAccessibilityService : AccessibilityService() {
             ENABLE_BLUETOOTH -> BluetoothUtils.changeBluetoothState(ENABLE)
             DISABLE_BLUETOOTH -> BluetoothUtils.changeBluetoothState(DISABLE)
 
-            TOGGLE_MOBILE_DATA -> TODO()
-            ENABLE_MOBILE_DATA -> TODO()
-            DISABLE_MOBILE_DATA -> TODO()
+            TOGGLE_MOBILE_DATA -> MobileDataUtils.toggleMobileData(ctx)
+            ENABLE_MOBILE_DATA -> MobileDataUtils.enableMobileData()
+            DISABLE_MOBILE_DATA -> MobileDataUtils.disableMobileData()
 
             TOGGLE_AUTO_BRIGHTNESS -> TODO()
 

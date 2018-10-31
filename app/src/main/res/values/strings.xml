@@ -140,5 +140,8 @@
     <string name="action_enable_auto_rotate">Enable Auto Rotate</string>
     <string name="action_disable_auto_rotate">Disable Auto Rotate</string>
     <string name="action_toggle_auto_rotate">Toggle Auto Rotate</string>
+    <string name="action_toggle_mobile_data">Toggle Mobile Data</string>
+    <string name="action_enable_mobile_data">Enable Mobile Data</string>
+    <string name="action_disable_mobile_data">Disable Mobile Data</string>
     <!-- System action labels -->
 </resources>

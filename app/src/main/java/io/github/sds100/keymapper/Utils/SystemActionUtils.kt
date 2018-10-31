@@ -1,6 +1,9 @@
 package io.github.sds100.keymapper.Utils
 
+import android.annotation.SuppressLint
 import android.os.Build
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.SystemAction
 import io.github.sds100.keymapper.SystemActionListItem
@@ -17,6 +20,12 @@ object SystemActionUtils {
             yield(SystemActionListItem(SystemAction.ENABLE_WIFI))
             yield(SystemActionListItem(SystemAction.DISABLE_WIFI))
             yield(SystemActionListItem(SystemAction.TOGGLE_WIFI))
+
+            if (RootUtils.isRooted()) {
+                yield(SystemActionListItem(SystemAction.TOGGLE_MOBILE_DATA))
+                yield(SystemActionListItem(SystemAction.ENABLE_MOBILE_DATA))
+                yield(SystemActionListItem(SystemAction.DISABLE_MOBILE_DATA))
+            }
 
             yield(SystemActionListItem(SystemAction.ENABLE_BLUETOOTH))
             yield(SystemActionListItem(SystemAction.DISABLE_BLUETOOTH))
@@ -35,12 +44,15 @@ object SystemActionUtils {
                 yield(SystemActionListItem(SystemAction.VOLUME_UNMUTE))
                 yield(SystemActionListItem(SystemAction.VOLUME_TOGGLE_MUTE))
             }
+
         }.toList()
     }
 
     /**
      * Get a string resource id for a string which describes a specified [SystemAction].
      */
+    @SuppressLint("NewApi")
+    @StringRes
     fun getDescription(@SystemAction.SystemActionId systemAction: String): Int {
         return when (systemAction) {
             SystemAction.ENABLE_WIFI -> R.string.action_enable_wifi
@@ -59,23 +71,23 @@ object SystemActionUtils {
             SystemAction.DISABLE_AUTO_ROTATE -> R.string.action_disable_auto_rotate
             SystemAction.TOGGLE_AUTO_ROTATE -> R.string.action_toggle_auto_rotate
 
-            else -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    when (systemAction) {
-                        SystemAction.VOLUME_MUTE -> return R.string.action_volume_mute
-                        SystemAction.VOLUME_TOGGLE_MUTE -> return R.string.action_toggle_mute
-                        SystemAction.VOLUME_UNMUTE -> return R.string.action_volume_unmute
-                    }
-                }
+            SystemAction.VOLUME_MUTE -> return R.string.action_volume_mute
+            SystemAction.VOLUME_TOGGLE_MUTE -> return R.string.action_toggle_mute
+            SystemAction.VOLUME_UNMUTE -> return R.string.action_volume_unmute
 
-                throw Exception("Can't find string for system action: $systemAction!")
-            }
+            SystemAction.TOGGLE_MOBILE_DATA -> return R.string.action_toggle_mobile_data
+            SystemAction.ENABLE_MOBILE_DATA -> return R.string.action_enable_mobile_data
+            SystemAction.DISABLE_MOBILE_DATA -> return R.string.action_disable_mobile_data
+
+            else -> throw Exception("Can't find a description for $systemAction")
         }
     }
 
     /**
      * Get a drawable resource id for a specified [SystemAction]
      */
+    @SuppressLint("NewApi")
+    @DrawableRes
     fun getIconResource(@SystemAction.SystemActionId systemAction: String): Int? {
         return when (systemAction) {
             SystemAction.TOGGLE_WIFI -> R.drawable.ic_network_wifi_black_24dp
@@ -92,17 +104,16 @@ object SystemActionUtils {
             SystemAction.ENABLE_AUTO_ROTATE -> R.drawable.ic_screen_rotation_black_24dp
             SystemAction.DISABLE_AUTO_ROTATE -> R.drawable.ic_screen_lock_rotation_black_24dp
             SystemAction.TOGGLE_AUTO_ROTATE -> R.drawable.ic_screen_rotation_black_24dp
-            else -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    when (systemAction) {
-                        SystemAction.VOLUME_MUTE -> return R.drawable.ic_volume_mute_black_24dp
-                        SystemAction.VOLUME_TOGGLE_MUTE -> return R.drawable.ic_volume_mute_black_24dp
-                        SystemAction.VOLUME_UNMUTE -> return R.drawable.ic_volume_up_black_24dp
-                    }
-                }
 
-                return null
-            }
+            SystemAction.TOGGLE_MOBILE_DATA -> R.drawable.ic_signal
+            SystemAction.ENABLE_MOBILE_DATA -> R.drawable.ic_signal
+            SystemAction.DISABLE_MOBILE_DATA -> R.drawable.ic_signal_off
+
+            SystemAction.VOLUME_MUTE -> R.drawable.ic_volume_mute_black_24dp
+            SystemAction.VOLUME_TOGGLE_MUTE -> R.drawable.ic_volume_mute_black_24dp
+            SystemAction.VOLUME_UNMUTE -> R.drawable.ic_volume_up_black_24dp
+
+            else -> null
         }
     }
 }
