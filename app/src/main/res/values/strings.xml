@@ -145,5 +145,6 @@
     <string name="action_disable_mobile_data">Disable Mobile Data</string>
     <string name="action_portrait_mode">Portrait Mode</string>
     <string name="action_landscape_mode">Landscape Mode</string>
+    <string name="action_toggle_auto_brightness">Toggle Auto-Brightness</string>
     <!-- System action labels -->
 </resources>

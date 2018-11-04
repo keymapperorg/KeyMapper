@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.SystemAction
 import io.github.sds100.keymapper.SystemActionListItem
 
@@ -14,6 +15,7 @@ import io.github.sds100.keymapper.SystemActionListItem
 object SystemActionUtils {
 
     fun getSystemActionListItems(): List<SystemActionListItem> {
+        //must be in the order the items should be shown to the user
         return sequence {
             yield(SystemActionListItem(SystemAction.ENABLE_WIFI))
             yield(SystemActionListItem(SystemAction.DISABLE_WIFI))
@@ -44,6 +46,8 @@ object SystemActionUtils {
                 yield(SystemActionListItem(SystemAction.VOLUME_UNMUTE))
                 yield(SystemActionListItem(SystemAction.VOLUME_TOGGLE_MUTE))
             }
+
+            yield(SystemActionListItem(SystemAction.TOGGLE_AUTO_BRIGHTNESS))
 
         }.toList()
     }
@@ -81,6 +85,8 @@ object SystemActionUtils {
             SystemAction.ENABLE_MOBILE_DATA -> return R.string.action_enable_mobile_data
             SystemAction.DISABLE_MOBILE_DATA -> return R.string.action_disable_mobile_data
 
+            SystemAction.TOGGLE_AUTO_BRIGHTNESS -> return R.string.action_toggle_auto_brightness
+
             else -> throw Exception("Can't find a description for $systemAction")
         }
     }
@@ -116,6 +122,8 @@ object SystemActionUtils {
             SystemAction.VOLUME_MUTE -> R.drawable.ic_volume_mute_black_24dp
             SystemAction.VOLUME_TOGGLE_MUTE -> R.drawable.ic_volume_mute_black_24dp
             SystemAction.VOLUME_UNMUTE -> R.drawable.ic_volume_up_black_24dp
+
+            SystemAction.TOGGLE_AUTO_BRIGHTNESS -> R.drawable.ic_brightness_auto_black_24dp
 
             else -> null
         }
