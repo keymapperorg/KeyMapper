@@ -13,7 +13,6 @@ import androidx.annotation.IntDef
 import androidx.core.content.ContextCompat
 import io.github.sds100.keymapper.*
 
-
 /**
  * Created by sds100 on 03/09/2018.
  */

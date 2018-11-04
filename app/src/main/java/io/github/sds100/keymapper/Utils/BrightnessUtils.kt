@@ -16,6 +16,38 @@ object BrightnessUtils {
     @Retention(AnnotationRetention.SOURCE)
     annotation class BrightnessMode
 
+    /**
+     * How much to change the brightness by.
+     */
+    private const val BRIGHTNESS_CHANGE_STEP = 20
+
+    fun increaseBrightness(ctx: Context) {
+        //auto-brightness must be disabled
+        setBrightnessMode(ctx, SCREEN_BRIGHTNESS_MODE_MANUAL)
+
+        val currentBrightness = Settings.System.getInt(ctx.contentResolver, SCREEN_BRIGHTNESS)
+        var newBrightness = currentBrightness + BRIGHTNESS_CHANGE_STEP
+
+        //the brightness must be between 0 and 255
+        if (newBrightness > 255) newBrightness = 255
+
+        Settings.System.putInt(ctx.contentResolver, SCREEN_BRIGHTNESS, newBrightness)
+    }
+
+    fun decreaseBrightness(ctx: Context) {
+        //auto-brightness must be disabled
+        setBrightnessMode(ctx, SCREEN_BRIGHTNESS_MODE_MANUAL)
+
+        val currentBrightness = Settings.System.getInt(ctx.contentResolver, SCREEN_BRIGHTNESS)
+
+        var newBrightness = currentBrightness - BRIGHTNESS_CHANGE_STEP
+
+        //the brightness must be between 0 and 255
+        if (newBrightness < 0) newBrightness = 0
+
+        Settings.System.putInt(ctx.contentResolver, SCREEN_BRIGHTNESS, newBrightness)
+    }
+
     fun setBrightnessMode(ctx: Context, @BrightnessMode mode: Int) {
         if (!PermissionUtils.hasWriteSettingsPermission(ctx)) return
 

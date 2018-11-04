@@ -151,5 +151,7 @@
     <string name="action_toggle_auto_brightness">Toggle Auto-Brightness</string>
     <string name="action_disable_auto_brightness">Disable Auto-Brightness</string>
     <string name="action_enable_auto_brightness">Enable Auto-Brightness</string>
+    <string name="action_increase_brightness">Increase Brightness</string>
+    <string name="action_decrease_brightness">Decrease Brightness</string>
     <!-- System action labels -->
 </resources>
