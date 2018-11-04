@@ -24,12 +24,10 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:0.27.0-eap13"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:0.27.0-eap13"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.27.0-eap13'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.27.0-eap13'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "org.jetbrains.anko:anko-commons:$anko_version"
 
     implementation 'com.github.salomonbrys.kotson:kotson:2.5.0'
@@ -45,6 +43,6 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     implementation "androidx.room:room-runtime:$room_version"
 
-    kapt "android.arch.lifecycle:compiler:1.1.1"
+    kapt "android.arch.lifecycle:compiler:$lifecycle_version"
     kapt "androidx.room:room-compiler:$room_version"
 }
