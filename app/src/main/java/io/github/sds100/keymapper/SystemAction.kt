@@ -75,10 +75,7 @@ object SystemAction {
     const val TOGGLE_AUTO_ROTATE = "toggle_auto_rotate"
     const val ENABLE_AUTO_ROTATE = "enable_auto_rotate"
     const val DISABLE_AUTO_ROTATE = "disable_auto_rotate"
-
-    //TODO portrait mode
     const val PORTRAIT_MODE = "portrait_mode"
-    //TODO landscape mode
     const val LANDSCAPE_MODE = "landscape_mode"
 
     //volume
