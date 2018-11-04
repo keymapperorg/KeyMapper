@@ -79,7 +79,7 @@ class KeyMapRepository private constructor(ctx: Context) {
             if (size < DEBUG_LIST_COUNT) {
                 val sizeDifference = DEBUG_LIST_COUNT - size
 
-                val testKeyMapList = buildSequence {
+                val testKeyMapList = sequence {
                     for (i in 1..sizeDifference) {
                         //ensure the id doesn't already exist
                         val id = minimumId + i

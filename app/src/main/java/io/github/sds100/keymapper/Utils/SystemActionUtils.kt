@@ -4,10 +4,8 @@ import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.SystemAction
 import io.github.sds100.keymapper.SystemActionListItem
-import kotlin.coroutines.experimental.buildSequence
 
 /**
  * Created by sds100 on 01/08/2018.
@@ -16,7 +14,7 @@ import kotlin.coroutines.experimental.buildSequence
 object SystemActionUtils {
 
     fun getSystemActionListItems(): List<SystemActionListItem> {
-        return buildSequence {
+        return sequence {
             yield(SystemActionListItem(SystemAction.ENABLE_WIFI))
             yield(SystemActionListItem(SystemAction.DISABLE_WIFI))
             yield(SystemActionListItem(SystemAction.TOGGLE_WIFI))

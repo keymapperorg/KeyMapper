@@ -3,7 +3,6 @@ package io.github.sds100.keymapper
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.AsyncTask
-import kotlin.coroutines.experimental.buildSequence
 
 /**
  * Created by sds100 on 03/10/2018.
@@ -16,7 +15,7 @@ class LoadAppListAsyncTask(
 
     override fun doInBackground(vararg params: Unit?): List<ApplicationInfo> {
 
-        val userApps: List<ApplicationInfo> = buildSequence {
+        val userApps: List<ApplicationInfo> = sequence {
 
             //get all the installed apps
             val installedApps = mPackageManager.getInstalledApplications(PackageManager.GET_META_DATA)
