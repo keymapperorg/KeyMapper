@@ -18,10 +18,12 @@ import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Activities.ConfigKeymapActivity
 import io.github.sds100.keymapper.Data.KeyMapRepository
 import io.github.sds100.keymapper.StateChange.*
+import io.github.sds100.keymapper.SystemAction.DISABLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.DISABLE_AUTO_ROTATE
 import io.github.sds100.keymapper.SystemAction.DISABLE_BLUETOOTH
 import io.github.sds100.keymapper.SystemAction.DISABLE_MOBILE_DATA
 import io.github.sds100.keymapper.SystemAction.DISABLE_WIFI
+import io.github.sds100.keymapper.SystemAction.ENABLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.ENABLE_AUTO_ROTATE
 import io.github.sds100.keymapper.SystemAction.ENABLE_BLUETOOTH
 import io.github.sds100.keymapper.SystemAction.ENABLE_MOBILE_DATA
@@ -402,6 +404,11 @@ class MyAccessibilityService : AccessibilityService() {
             DISABLE_MOBILE_DATA -> MobileDataUtils.disableMobileData()
 
             TOGGLE_AUTO_BRIGHTNESS -> BrightnessUtils.toggleAutoBrightness(this)
+            ENABLE_AUTO_BRIGHTNESS ->
+                BrightnessUtils.setBrightnessMode(this, Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC)
+
+            DISABLE_AUTO_BRIGHTNESS ->
+                BrightnessUtils.setBrightnessMode(this, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL)
 
             TOGGLE_AUTO_ROTATE -> ScreenRotationUtils.toggleAutoRotate(this)
             ENABLE_AUTO_ROTATE -> ScreenRotationUtils.enableAutoRotate(this)
@@ -418,8 +425,7 @@ class MyAccessibilityService : AccessibilityService() {
                     when (action) {
                         VOLUME_UNMUTE -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_UNMUTE)
                         VOLUME_MUTE -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_MUTE)
-                        VOLUME_TOGGLE_MUTE ->
-                            VolumeUtils.adjustVolume(this, AudioManager.ADJUST_TOGGLE_MUTE)
+                        VOLUME_TOGGLE_MUTE -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_TOGGLE_MUTE)
                     }
                 }
             }
