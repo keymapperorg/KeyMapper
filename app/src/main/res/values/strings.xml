@@ -137,14 +137,19 @@
     <string name="action_toggle_mute">Toggle Mute</string>
     <string name="action_volume_unmute">Unmute Volume</string>
     <string name="action_volume_show_dialog">Show Volume Dialog</string>
+
     <string name="action_enable_auto_rotate">Enable Auto Rotate</string>
     <string name="action_disable_auto_rotate">Disable Auto Rotate</string>
     <string name="action_toggle_auto_rotate">Toggle Auto Rotate</string>
+    <string name="action_portrait_mode">Portrait Mode</string>
+    <string name="action_landscape_mode">Landscape Mode</string>
+
     <string name="action_toggle_mobile_data">Toggle Mobile Data</string>
     <string name="action_enable_mobile_data">Enable Mobile Data</string>
     <string name="action_disable_mobile_data">Disable Mobile Data</string>
-    <string name="action_portrait_mode">Portrait Mode</string>
-    <string name="action_landscape_mode">Landscape Mode</string>
+
     <string name="action_toggle_auto_brightness">Toggle Auto-Brightness</string>
+    <string name="action_disable_auto_brightness">Disable Auto-Brightness</string>
+    <string name="action_enable_auto_brightness">Enable Auto-Brightness</string>
     <!-- System action labels -->
 </resources>

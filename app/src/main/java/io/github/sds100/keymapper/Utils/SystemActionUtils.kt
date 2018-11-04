@@ -17,9 +17,9 @@ object SystemActionUtils {
     fun getSystemActionListItems(): List<SystemActionListItem> {
         //must be in the order the items should be shown to the user
         return sequence {
+            yield(SystemActionListItem(SystemAction.TOGGLE_WIFI))
             yield(SystemActionListItem(SystemAction.ENABLE_WIFI))
             yield(SystemActionListItem(SystemAction.DISABLE_WIFI))
-            yield(SystemActionListItem(SystemAction.TOGGLE_WIFI))
 
             if (RootUtils.isRooted()) {
                 yield(SystemActionListItem(SystemAction.TOGGLE_MOBILE_DATA))
@@ -27,17 +27,17 @@ object SystemActionUtils {
                 yield(SystemActionListItem(SystemAction.DISABLE_MOBILE_DATA))
             }
 
+            yield(SystemActionListItem(SystemAction.TOGGLE_BLUETOOTH))
             yield(SystemActionListItem(SystemAction.ENABLE_BLUETOOTH))
             yield(SystemActionListItem(SystemAction.DISABLE_BLUETOOTH))
-            yield(SystemActionListItem(SystemAction.TOGGLE_BLUETOOTH))
 
             yield(SystemActionListItem(SystemAction.VOLUME_UP))
             yield(SystemActionListItem(SystemAction.VOLUME_DOWN))
             yield(SystemActionListItem(SystemAction.VOLUME_SHOW_DIALOG))
 
+            yield(SystemActionListItem(SystemAction.TOGGLE_AUTO_ROTATE))
             yield(SystemActionListItem(SystemAction.ENABLE_AUTO_ROTATE))
             yield(SystemActionListItem(SystemAction.DISABLE_AUTO_ROTATE))
-            yield(SystemActionListItem(SystemAction.TOGGLE_AUTO_ROTATE))
             yield(SystemActionListItem(SystemAction.PORTRAIT_MODE))
             yield(SystemActionListItem(SystemAction.LANDSCAPE_MODE))
 
@@ -48,6 +48,8 @@ object SystemActionUtils {
             }
 
             yield(SystemActionListItem(SystemAction.TOGGLE_AUTO_BRIGHTNESS))
+            yield(SystemActionListItem(SystemAction.ENABLE_AUTO_BRIGHTNESS))
+            yield(SystemActionListItem(SystemAction.DISABLE_AUTO_BRIGHTNESS))
 
         }.toList()
     }
@@ -86,6 +88,8 @@ object SystemActionUtils {
             SystemAction.DISABLE_MOBILE_DATA -> return R.string.action_disable_mobile_data
 
             SystemAction.TOGGLE_AUTO_BRIGHTNESS -> return R.string.action_toggle_auto_brightness
+            SystemAction.DISABLE_AUTO_BRIGHTNESS -> return R.string.action_disable_auto_brightness
+            SystemAction.ENABLE_AUTO_BRIGHTNESS -> return R.string.action_enable_auto_brightness
 
             else -> throw Exception("Can't find a description for $systemAction")
         }
@@ -124,6 +128,8 @@ object SystemActionUtils {
             SystemAction.VOLUME_UNMUTE -> R.drawable.ic_volume_up_black_24dp
 
             SystemAction.TOGGLE_AUTO_BRIGHTNESS -> R.drawable.ic_brightness_auto_black_24dp
+            SystemAction.DISABLE_AUTO_BRIGHTNESS -> R.drawable.ic_disable_brightness_auto_24dp
+            SystemAction.ENABLE_AUTO_BRIGHTNESS -> R.drawable.ic_brightness_auto_black_24dp
 
             else -> null
         }
