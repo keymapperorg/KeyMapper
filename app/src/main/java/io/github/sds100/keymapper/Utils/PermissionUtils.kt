@@ -31,6 +31,9 @@ object PermissionUtils {
                 PackageManager.PERMISSION_GRANTED
     }
 
+    fun hasWriteSettingsPermission(ctx: Context) =
+            isPermissionGranted(ctx, Manifest.permission.WRITE_SETTINGS)
+
     /**
      * If the action requires a permission which the user hasn't granted, a toast message will
      * tell the user they need to grant permission.

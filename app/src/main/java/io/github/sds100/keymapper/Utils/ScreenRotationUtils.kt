@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.Utils
 
-import android.Manifest
 import android.content.Context
 import android.provider.Settings
 
@@ -9,7 +8,7 @@ import android.provider.Settings
  */
 object ScreenRotationUtils {
     fun forcePortraitMode(ctx: Context) {
-        if (!hasPermission(ctx)) return
+        if (!PermissionUtils.hasWriteSettingsPermission(ctx)) return
 
         //auto rotate must be disabled for this to work
         disableAutoRotate(ctx)
@@ -17,7 +16,7 @@ object ScreenRotationUtils {
     }
 
     fun forceLandscapeMode(ctx: Context) {
-        if (!hasPermission(ctx)) return
+        if (!PermissionUtils.hasWriteSettingsPermission(ctx)) return
 
         //auto rotate must be disabled for this to work
         disableAutoRotate(ctx)
@@ -26,7 +25,7 @@ object ScreenRotationUtils {
 
     fun enableAutoRotate(ctx: Context) {
         //don't attempt to enable auto rotate if they app doesn't have permission
-        if (!hasPermission(ctx)) return
+        if (!PermissionUtils.hasWriteSettingsPermission(ctx)) return
 
         Settings.System.putInt(ctx.contentResolver,
                 Settings.System.ACCELEROMETER_ROTATION, 1)
@@ -34,7 +33,7 @@ object ScreenRotationUtils {
 
     fun disableAutoRotate(ctx: Context) {
         //don't attempt to enable auto rotate if they app doesn't have permission
-        if (!hasPermission(ctx)) return
+        if (!PermissionUtils.hasWriteSettingsPermission(ctx)) return
 
         Settings.System.putInt(ctx.contentResolver,
                 Settings.System.ACCELEROMETER_ROTATION, 0)
@@ -49,9 +48,5 @@ object ScreenRotationUtils {
         } else {
             disableAutoRotate(ctx)
         }
-    }
-
-    private fun hasPermission(ctx: Context): Boolean {
-        return PermissionUtils.isPermissionGranted(ctx, Manifest.permission.WRITE_SETTINGS)
     }
 }
