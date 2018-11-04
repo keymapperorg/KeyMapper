@@ -50,6 +50,8 @@ object SystemActionUtils {
             yield(SystemActionListItem(SystemAction.TOGGLE_AUTO_BRIGHTNESS))
             yield(SystemActionListItem(SystemAction.ENABLE_AUTO_BRIGHTNESS))
             yield(SystemActionListItem(SystemAction.DISABLE_AUTO_BRIGHTNESS))
+            yield(SystemActionListItem(SystemAction.INCREASE_BRIGHTNESS))
+            yield(SystemActionListItem(SystemAction.DECREASE_BRIGHTNESS))
 
         }.toList()
     }
@@ -90,6 +92,8 @@ object SystemActionUtils {
             SystemAction.TOGGLE_AUTO_BRIGHTNESS -> return R.string.action_toggle_auto_brightness
             SystemAction.DISABLE_AUTO_BRIGHTNESS -> return R.string.action_disable_auto_brightness
             SystemAction.ENABLE_AUTO_BRIGHTNESS -> return R.string.action_enable_auto_brightness
+            SystemAction.INCREASE_BRIGHTNESS -> return R.string.action_increase_brightness
+            SystemAction.DECREASE_BRIGHTNESS -> return R.string.action_decrease_brightness
 
             else -> throw Exception("Can't find a description for $systemAction")
         }
@@ -130,6 +134,8 @@ object SystemActionUtils {
             SystemAction.TOGGLE_AUTO_BRIGHTNESS -> R.drawable.ic_brightness_auto_black_24dp
             SystemAction.DISABLE_AUTO_BRIGHTNESS -> R.drawable.ic_disable_brightness_auto_24dp
             SystemAction.ENABLE_AUTO_BRIGHTNESS -> R.drawable.ic_brightness_auto_black_24dp
+            SystemAction.INCREASE_BRIGHTNESS -> R.drawable.ic_brightness_high_black_24dp
+            SystemAction.DECREASE_BRIGHTNESS -> R.drawable.ic_brightness_low_black_24dp
 
             else -> null
         }

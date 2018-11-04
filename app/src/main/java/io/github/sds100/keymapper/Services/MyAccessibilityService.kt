@@ -18,6 +18,7 @@ import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Activities.ConfigKeymapActivity
 import io.github.sds100.keymapper.Data.KeyMapRepository
 import io.github.sds100.keymapper.StateChange.*
+import io.github.sds100.keymapper.SystemAction.DECREASE_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.DISABLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.DISABLE_AUTO_ROTATE
 import io.github.sds100.keymapper.SystemAction.DISABLE_BLUETOOTH
@@ -28,6 +29,7 @@ import io.github.sds100.keymapper.SystemAction.ENABLE_AUTO_ROTATE
 import io.github.sds100.keymapper.SystemAction.ENABLE_BLUETOOTH
 import io.github.sds100.keymapper.SystemAction.ENABLE_MOBILE_DATA
 import io.github.sds100.keymapper.SystemAction.ENABLE_WIFI
+import io.github.sds100.keymapper.SystemAction.INCREASE_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.LANDSCAPE_MODE
 import io.github.sds100.keymapper.SystemAction.PORTRAIT_MODE
 import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_BRIGHTNESS
@@ -409,6 +411,9 @@ class MyAccessibilityService : AccessibilityService() {
 
             DISABLE_AUTO_BRIGHTNESS ->
                 BrightnessUtils.setBrightnessMode(this, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL)
+
+            INCREASE_BRIGHTNESS -> BrightnessUtils.increaseBrightness(this)
+            DECREASE_BRIGHTNESS -> BrightnessUtils.decreaseBrightness(this)
 
             TOGGLE_AUTO_ROTATE -> ScreenRotationUtils.toggleAutoRotate(this)
             ENABLE_AUTO_ROTATE -> ScreenRotationUtils.enableAutoRotate(this)

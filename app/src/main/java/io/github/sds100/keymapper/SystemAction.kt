@@ -27,6 +27,8 @@ object SystemAction {
         TOGGLE_AUTO_BRIGHTNESS,
         ENABLE_AUTO_BRIGHTNESS,
         DISABLE_AUTO_BRIGHTNESS,
+        INCREASE_BRIGHTNESS,
+        DECREASE_BRIGHTNESS,
 
         TOGGLE_AUTO_ROTATE,
         ENABLE_AUTO_ROTATE,
@@ -74,6 +76,8 @@ object SystemAction {
     const val TOGGLE_AUTO_BRIGHTNESS = "toggle_auto_brightness"
     const val DISABLE_AUTO_BRIGHTNESS = "disable_auto_brightness"
     const val ENABLE_AUTO_BRIGHTNESS = "enable_auto_brightness"
+    const val INCREASE_BRIGHTNESS = "increase_brightness"
+    const val DECREASE_BRIGHTNESS = "decrease_brightness"
 
     //auto-rotate
     const val TOGGLE_AUTO_ROTATE = "toggle_auto_rotate"
