@@ -155,5 +155,6 @@
     <string name="action_decrease_brightness">Decrease Brightness</string>
     <string name="action_expand_notification_drawer">Expand Notification Drawer</string>
     <string name="action_expand_quick_settings">Expand Quick Settings</string>
+    <string name="action_collapse_status_bar">Collapse Status Bar</string>
     <!-- System action labels -->
 </resources>

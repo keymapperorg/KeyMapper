@@ -18,6 +18,7 @@ import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Activities.ConfigKeymapActivity
 import io.github.sds100.keymapper.Data.KeyMapRepository
 import io.github.sds100.keymapper.StateChange.*
+import io.github.sds100.keymapper.SystemAction.COLLAPSE_STATUS_BAR
 import io.github.sds100.keymapper.SystemAction.DECREASE_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.DISABLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.DISABLE_AUTO_ROTATE
@@ -427,8 +428,9 @@ class MyAccessibilityService : AccessibilityService() {
             VOLUME_DOWN -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_LOWER)
             VOLUME_SHOW_DIALOG -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_SAME)
 
-            EXPAND_NOTIFICATION_DRAWER -> ExpandStatusBarUtils.expandNotificationDrawer()
-            EXPAND_QUICK_SETTINGS -> ExpandStatusBarUtils.expandQuickSettings()
+            EXPAND_NOTIFICATION_DRAWER -> StatusBarUtils.expandNotificationDrawer()
+            EXPAND_QUICK_SETTINGS -> StatusBarUtils.expandQuickSettings()
+            COLLAPSE_STATUS_BAR -> StatusBarUtils.collapseStatusBar()
 
             else -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

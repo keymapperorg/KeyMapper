@@ -55,6 +55,7 @@ object SystemActionUtils {
 
             yield(SystemActionListItem(SystemAction.EXPAND_NOTIFICATION_DRAWER))
             yield(SystemActionListItem(SystemAction.EXPAND_QUICK_SETTINGS))
+            yield(SystemActionListItem(SystemAction.COLLAPSE_STATUS_BAR))
 
         }.toList()
     }
@@ -100,6 +101,7 @@ object SystemActionUtils {
 
             SystemAction.EXPAND_NOTIFICATION_DRAWER -> return R.string.action_expand_notification_drawer
             SystemAction.EXPAND_QUICK_SETTINGS -> return R.string.action_expand_quick_settings
+            SystemAction.COLLAPSE_STATUS_BAR -> return R.string.action_collapse_status_bar
 
             else -> throw Exception("Can't find a description for $systemAction")
         }
