@@ -15,7 +15,7 @@ import io.github.sds100.keymapper.Selection.SelectableItem
  */
 
 @Entity(tableName = KeyMapDao.TABLE_NAME)
-class KeyMap(
+data class KeyMap(
         @PrimaryKey(autoGenerate = true)
         override val id: Long,
 

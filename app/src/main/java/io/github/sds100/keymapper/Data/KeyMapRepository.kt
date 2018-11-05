@@ -9,7 +9,6 @@ import io.github.sds100.keymapper.DatabaseAsyncTasks.DeleteKeyMapAsync
 import io.github.sds100.keymapper.DatabaseAsyncTasks.DeleteKeyMapByIdAsync
 import io.github.sds100.keymapper.DatabaseAsyncTasks.InsertKeyMapAsync
 import io.github.sds100.keymapper.DatabaseAsyncTasks.UpdateKeyMapAsync
-import kotlin.coroutines.experimental.buildSequence
 
 /**
  * Created by sds100 on 08/08/2018.
@@ -46,7 +45,9 @@ class KeyMapRepository private constructor(ctx: Context) {
     }
 
     fun getKeyMap(id: Long): KeyMap {
-        return keyMapList.value!!.find { it.id == id }!!
+        /*must be copied otherwise any changes made to it (even without updating it in the database)
+        will appear in the list */
+        return keyMapList.value!!.find { it.id == id }!!.copy()
     }
 
     fun deleteKeyMap(vararg keyMap: KeyMap) {
