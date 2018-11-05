@@ -6,4 +6,5 @@ package io.github.sds100.keymapper.Utils
 
 object ExpandStatusBarUtils {
     fun expandNotificationDrawer() = ShellUtils.executeCommand("cmd", "statusbar", "expand-notifications")
+    fun expandQuickSettings() = ShellUtils.executeCommand("cmd", "statusbar", "expand-settings")
 }
