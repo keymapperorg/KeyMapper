@@ -29,6 +29,7 @@ import io.github.sds100.keymapper.SystemAction.ENABLE_AUTO_ROTATE
 import io.github.sds100.keymapper.SystemAction.ENABLE_BLUETOOTH
 import io.github.sds100.keymapper.SystemAction.ENABLE_MOBILE_DATA
 import io.github.sds100.keymapper.SystemAction.ENABLE_WIFI
+import io.github.sds100.keymapper.SystemAction.EXPAND_NOTIFICATION_DRAWER
 import io.github.sds100.keymapper.SystemAction.INCREASE_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.LANDSCAPE_MODE
 import io.github.sds100.keymapper.SystemAction.PORTRAIT_MODE
@@ -425,6 +426,8 @@ class MyAccessibilityService : AccessibilityService() {
             VOLUME_DOWN -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_LOWER)
             VOLUME_SHOW_DIALOG -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_SAME)
 
+            EXPAND_NOTIFICATION_DRAWER -> ExpandStatusBarUtils.expandNotificationDrawer()
+
             else -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     when (action) {
@@ -435,7 +438,6 @@ class MyAccessibilityService : AccessibilityService() {
                 }
             }
         }
-
     }
 
     private val KeyEvent.isVolumeKey: Boolean

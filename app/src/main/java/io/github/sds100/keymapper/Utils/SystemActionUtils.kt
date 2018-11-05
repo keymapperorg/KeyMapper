@@ -53,6 +53,8 @@ object SystemActionUtils {
             yield(SystemActionListItem(SystemAction.INCREASE_BRIGHTNESS))
             yield(SystemActionListItem(SystemAction.DECREASE_BRIGHTNESS))
 
+            yield(SystemActionListItem(SystemAction.EXPAND_NOTIFICATION_DRAWER))
+
         }.toList()
     }
 
@@ -94,6 +96,8 @@ object SystemActionUtils {
             SystemAction.ENABLE_AUTO_BRIGHTNESS -> return R.string.action_enable_auto_brightness
             SystemAction.INCREASE_BRIGHTNESS -> return R.string.action_increase_brightness
             SystemAction.DECREASE_BRIGHTNESS -> return R.string.action_decrease_brightness
+
+            SystemAction.EXPAND_NOTIFICATION_DRAWER -> return R.string.action_expand_notification_drawer
 
             else -> throw Exception("Can't find a description for $systemAction")
         }

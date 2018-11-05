@@ -41,7 +41,9 @@ object SystemAction {
         VOLUME_SHOW_DIALOG,
         VOLUME_TOGGLE_MUTE,
         VOLUME_UNMUTE,
-        VOLUME_MUTE
+        VOLUME_MUTE,
+
+        EXPAND_NOTIFICATION_DRAWER
     ])
     @Retention(AnnotationRetention.SOURCE)
     annotation class SystemActionId
@@ -90,6 +92,8 @@ object SystemAction {
     const val VOLUME_UP = "volume_up"
     const val VOLUME_DOWN = "volume_down"
     const val VOLUME_SHOW_DIALOG = "volume_show_dialog"
+
+    const val EXPAND_NOTIFICATION_DRAWER = "expand_notification_drawer"
 
     @RequiresApi(Build.VERSION_CODES.M)
     const val VOLUME_UNMUTE = "volume_unmute"

@@ -9,7 +9,7 @@ object RootUtils {
      */
     fun executeRootCommand(command: String): Boolean {
         try {
-            Runtime.getRuntime().exec(arrayOf("su", "-c", command))
+            ShellUtils.executeCommand("su", "-c", command)
             return true
         } catch (e: Exception) {
             return false
