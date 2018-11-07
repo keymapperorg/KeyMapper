@@ -39,6 +39,7 @@ import io.github.sds100.keymapper.SystemAction.PAUSE_MEDIA
 import io.github.sds100.keymapper.SystemAction.PLAY_MEDIA
 import io.github.sds100.keymapper.SystemAction.PLAY_PAUSE_MEDIA
 import io.github.sds100.keymapper.SystemAction.PORTRAIT_MODE
+import io.github.sds100.keymapper.SystemAction.PREVIOUS_TRACK
 import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_ROTATE
 import io.github.sds100.keymapper.SystemAction.TOGGLE_BLUETOOTH
@@ -440,6 +441,7 @@ class MyAccessibilityService : AccessibilityService() {
             PLAY_MEDIA -> MediaUtils.playMedia(this)
             PLAY_PAUSE_MEDIA -> MediaUtils.playPauseMediaPlayback(this)
             NEXT_TRACK -> MediaUtils.nextTrack(this)
+            PREVIOUS_TRACK -> MediaUtils.previousTrack(this)
 
             else -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

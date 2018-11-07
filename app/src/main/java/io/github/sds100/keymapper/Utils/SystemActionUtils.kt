@@ -61,6 +61,7 @@ object SystemActionUtils {
             yield(SystemActionListItem(SystemAction.PLAY_MEDIA))
             yield(SystemActionListItem(SystemAction.PLAY_PAUSE_MEDIA))
             yield(SystemActionListItem(SystemAction.NEXT_TRACK))
+            yield(SystemActionListItem(SystemAction.PREVIOUS_TRACK))
 
         }.toList()
     }
@@ -112,6 +113,7 @@ object SystemActionUtils {
             SystemAction.PLAY_MEDIA -> return R.string.action_play_media
             SystemAction.PLAY_PAUSE_MEDIA -> return R.string.action_play_pause_media
             SystemAction.NEXT_TRACK -> return R.string.action_next_track
+            SystemAction.PREVIOUS_TRACK -> return R.string.action_previous_track
 
             else -> throw Exception("Can't find a description for $systemAction")
         }
@@ -134,6 +136,9 @@ object SystemActionUtils {
 
             SystemAction.VOLUME_UP -> R.drawable.ic_volume_up_black_24dp
             SystemAction.VOLUME_DOWN -> R.drawable.ic_volume_down_black_24dp
+            SystemAction.VOLUME_MUTE -> R.drawable.ic_volume_mute_black_24dp
+            SystemAction.VOLUME_TOGGLE_MUTE -> R.drawable.ic_volume_mute_black_24dp
+            SystemAction.VOLUME_UNMUTE -> R.drawable.ic_volume_up_black_24dp
 
             SystemAction.ENABLE_AUTO_ROTATE -> R.drawable.ic_screen_rotation_black_24dp
             SystemAction.DISABLE_AUTO_ROTATE -> R.drawable.ic_screen_lock_rotation_black_24dp
@@ -145,10 +150,6 @@ object SystemActionUtils {
             SystemAction.ENABLE_MOBILE_DATA -> R.drawable.ic_signal
             SystemAction.DISABLE_MOBILE_DATA -> R.drawable.ic_signal_off
 
-            SystemAction.VOLUME_MUTE -> R.drawable.ic_volume_mute_black_24dp
-            SystemAction.VOLUME_TOGGLE_MUTE -> R.drawable.ic_volume_mute_black_24dp
-            SystemAction.VOLUME_UNMUTE -> R.drawable.ic_volume_up_black_24dp
-
             SystemAction.TOGGLE_AUTO_BRIGHTNESS -> R.drawable.ic_brightness_auto_black_24dp
             SystemAction.DISABLE_AUTO_BRIGHTNESS -> R.drawable.ic_disable_brightness_auto_24dp
             SystemAction.ENABLE_AUTO_BRIGHTNESS -> R.drawable.ic_brightness_auto_black_24dp
@@ -159,6 +160,7 @@ object SystemActionUtils {
             SystemAction.PLAY_MEDIA -> R.drawable.ic_play_arrow_black_24dp
             SystemAction.PLAY_PAUSE_MEDIA -> R.drawable.ic_play_pause_24dp
             SystemAction.NEXT_TRACK -> R.drawable.ic_skip_next_black_24dp
+            SystemAction.PREVIOUS_TRACK -> R.drawable.ic_skip_previous_black_24dp
 
             else -> null
         }
