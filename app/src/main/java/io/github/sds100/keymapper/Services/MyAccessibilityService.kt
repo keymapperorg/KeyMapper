@@ -34,6 +34,7 @@ import io.github.sds100.keymapper.SystemAction.EXPAND_NOTIFICATION_DRAWER
 import io.github.sds100.keymapper.SystemAction.EXPAND_QUICK_SETTINGS
 import io.github.sds100.keymapper.SystemAction.INCREASE_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.LANDSCAPE_MODE
+import io.github.sds100.keymapper.SystemAction.NEXT_TRACK
 import io.github.sds100.keymapper.SystemAction.PAUSE_MEDIA
 import io.github.sds100.keymapper.SystemAction.PLAY_MEDIA
 import io.github.sds100.keymapper.SystemAction.PLAY_PAUSE_MEDIA
@@ -438,6 +439,7 @@ class MyAccessibilityService : AccessibilityService() {
             PAUSE_MEDIA -> MediaUtils.pauseMediaPlayback(this)
             PLAY_MEDIA -> MediaUtils.playMedia(this)
             PLAY_PAUSE_MEDIA -> MediaUtils.playPauseMediaPlayback(this)
+            NEXT_TRACK -> MediaUtils.nextTrack(this)
 
             else -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

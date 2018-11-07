@@ -159,5 +159,6 @@
     <string name="action_pause_media">Pause Media Playback</string>
     <string name="action_play_media">Play Media</string>
     <string name="action_play_pause_media">Play/Pause Media</string>
+    <string name="action_next_track">Next Track</string>
     <!-- System action labels -->
 </resources>
