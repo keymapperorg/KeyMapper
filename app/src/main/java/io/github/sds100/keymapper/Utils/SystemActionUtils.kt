@@ -17,6 +17,8 @@ object SystemActionUtils {
     fun getSystemActionListItems(): List<SystemActionListItem> {
         //must be in the order the items should be shown to the user
         return sequence {
+            yield(SystemActionListItem(SystemAction.GO_BACK))
+
             yield(SystemActionListItem(SystemAction.TOGGLE_WIFI))
             yield(SystemActionListItem(SystemAction.ENABLE_WIFI))
             yield(SystemActionListItem(SystemAction.DISABLE_WIFI))
@@ -62,7 +64,6 @@ object SystemActionUtils {
             yield(SystemActionListItem(SystemAction.PLAY_PAUSE_MEDIA))
             yield(SystemActionListItem(SystemAction.NEXT_TRACK))
             yield(SystemActionListItem(SystemAction.PREVIOUS_TRACK))
-
         }.toList()
     }
 
@@ -114,6 +115,7 @@ object SystemActionUtils {
             SystemAction.PLAY_PAUSE_MEDIA -> return R.string.action_play_pause_media
             SystemAction.NEXT_TRACK -> return R.string.action_next_track
             SystemAction.PREVIOUS_TRACK -> return R.string.action_previous_track
+            SystemAction.GO_BACK -> return R.string.action_go_back
 
             else -> throw Exception("Can't find a description for $systemAction")
         }
@@ -161,6 +163,8 @@ object SystemActionUtils {
             SystemAction.PLAY_PAUSE_MEDIA -> R.drawable.ic_play_pause_24dp
             SystemAction.NEXT_TRACK -> R.drawable.ic_skip_next_black_24dp
             SystemAction.PREVIOUS_TRACK -> R.drawable.ic_skip_previous_black_24dp
+
+            SystemAction.GO_BACK -> R.drawable.ic_arrow_back_black_24dp
 
             else -> null
         }

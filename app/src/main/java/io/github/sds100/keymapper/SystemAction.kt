@@ -51,7 +51,9 @@ object SystemAction {
         PLAY_MEDIA,
         PLAY_PAUSE_MEDIA,
         NEXT_TRACK,
-        PREVIOUS_TRACK
+        PREVIOUS_TRACK,
+
+        GO_BACK
     ])
     @Retention(AnnotationRetention.SOURCE)
     annotation class SystemActionId
@@ -120,4 +122,6 @@ object SystemAction {
     const val PLAY_PAUSE_MEDIA = "play_pause_media"
     const val NEXT_TRACK = "next_track"
     const val PREVIOUS_TRACK = "previous_track"
+
+    const val GO_BACK = "go_fback"
 }

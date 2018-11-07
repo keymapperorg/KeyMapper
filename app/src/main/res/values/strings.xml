@@ -163,5 +163,6 @@
     <string name="action_play_pause_media">Play/Pause Media</string>
     <string name="action_next_track">Next Track</string>
     <string name="action_previous_track">Previous Track</string>
+    <string name="action_go_back">Go Back</string>
     <!-- System action labels -->
 </resources>
