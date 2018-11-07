@@ -35,6 +35,7 @@ import io.github.sds100.keymapper.SystemAction.EXPAND_QUICK_SETTINGS
 import io.github.sds100.keymapper.SystemAction.INCREASE_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.LANDSCAPE_MODE
 import io.github.sds100.keymapper.SystemAction.PAUSE_MEDIA
+import io.github.sds100.keymapper.SystemAction.PLAY_MEDIA
 import io.github.sds100.keymapper.SystemAction.PORTRAIT_MODE
 import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_ROTATE
@@ -434,6 +435,7 @@ class MyAccessibilityService : AccessibilityService() {
             COLLAPSE_STATUS_BAR -> StatusBarUtils.collapseStatusBar()
 
             PAUSE_MEDIA -> MediaUtils.pauseMediaPlayback(this)
+            PLAY_MEDIA -> MediaUtils.playMedia(this)
 
             else -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

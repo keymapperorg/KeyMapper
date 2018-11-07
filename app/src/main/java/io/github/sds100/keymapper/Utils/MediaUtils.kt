@@ -8,6 +8,7 @@ import android.view.KeyEvent
  * Created by sds100 on 05/11/2018.
  */
 object MediaUtils {
+    fun playMedia(ctx: Context) = sendMediaKeyEvent(ctx, KeyEvent.KEYCODE_MEDIA_PLAY)
     fun pauseMediaPlayback(ctx: Context) = sendMediaKeyEvent(ctx, KeyEvent.KEYCODE_MEDIA_PAUSE)
 
     private fun sendMediaKeyEvent(ctx: Context, keyEvent: Int) {

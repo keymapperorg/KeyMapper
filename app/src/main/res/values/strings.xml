@@ -157,5 +157,6 @@
     <string name="action_expand_quick_settings">Expand Quick Settings</string>
     <string name="action_collapse_status_bar">Collapse Status Bar</string>
     <string name="action_pause_media">Pause Media Playback</string>
+    <string name="action_play_media">Play Media</string>
     <!-- System action labels -->
 </resources>

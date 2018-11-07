@@ -56,8 +56,9 @@ object SystemActionUtils {
             yield(SystemActionListItem(SystemAction.EXPAND_NOTIFICATION_DRAWER))
             yield(SystemActionListItem(SystemAction.EXPAND_QUICK_SETTINGS))
             yield(SystemActionListItem(SystemAction.COLLAPSE_STATUS_BAR))
-            yield(SystemActionListItem(SystemAction.PAUSE_MEDIA))
 
+            yield(SystemActionListItem(SystemAction.PAUSE_MEDIA))
+            yield(SystemActionListItem(SystemAction.PLAY_MEDIA))
         }.toList()
     }
 
@@ -105,6 +106,7 @@ object SystemActionUtils {
             SystemAction.COLLAPSE_STATUS_BAR -> return R.string.action_collapse_status_bar
 
             SystemAction.PAUSE_MEDIA -> return R.string.action_pause_media
+            SystemAction.PLAY_MEDIA -> return R.string.action_play_media
 
             else -> throw Exception("Can't find a description for $systemAction")
         }
@@ -149,6 +151,7 @@ object SystemActionUtils {
             SystemAction.DECREASE_BRIGHTNESS -> R.drawable.ic_brightness_low_black_24dp
 
             SystemAction.PAUSE_MEDIA -> R.drawable.ic_pause_black_24dp
+            SystemAction.PLAY_MEDIA -> R.drawable.ic_play_arrow_black_24dp
 
             else -> null
         }

@@ -47,7 +47,8 @@ object SystemAction {
         EXPAND_QUICK_SETTINGS,
         COLLAPSE_STATUS_BAR,
 
-        PAUSE_MEDIA
+        PAUSE_MEDIA,
+        PLAY_MEDIA
     ])
     @Retention(AnnotationRetention.SOURCE)
     annotation class SystemActionId
@@ -102,6 +103,7 @@ object SystemAction {
     const val COLLAPSE_STATUS_BAR = "collapse_status_bar"
 
     const val PAUSE_MEDIA = "pause_media"
+    const val PLAY_MEDIA = "play_media"
 
     @RequiresApi(Build.VERSION_CODES.M)
     const val VOLUME_UNMUTE = "volume_unmute"
