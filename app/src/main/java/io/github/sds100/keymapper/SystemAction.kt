@@ -45,7 +45,9 @@ object SystemAction {
 
         EXPAND_NOTIFICATION_DRAWER,
         EXPAND_QUICK_SETTINGS,
-        COLLAPSE_STATUS_BAR
+        COLLAPSE_STATUS_BAR,
+
+        PAUSE_MEDIA
     ])
     @Retention(AnnotationRetention.SOURCE)
     annotation class SystemActionId
@@ -98,6 +100,8 @@ object SystemAction {
     const val EXPAND_NOTIFICATION_DRAWER = "expand_notification_drawer"
     const val EXPAND_QUICK_SETTINGS = "expand_quick_settings"
     const val COLLAPSE_STATUS_BAR = "collapse_status_bar"
+
+    const val PAUSE_MEDIA = "pause_media"
 
     @RequiresApi(Build.VERSION_CODES.M)
     const val VOLUME_UNMUTE = "volume_unmute"
