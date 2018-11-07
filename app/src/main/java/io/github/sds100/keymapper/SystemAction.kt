@@ -48,7 +48,8 @@ object SystemAction {
         COLLAPSE_STATUS_BAR,
 
         PAUSE_MEDIA,
-        PLAY_MEDIA
+        PLAY_MEDIA,
+        PLAY_PAUSE_MEDIA
     ])
     @Retention(AnnotationRetention.SOURCE)
     annotation class SystemActionId
@@ -104,6 +105,7 @@ object SystemAction {
 
     const val PAUSE_MEDIA = "pause_media"
     const val PLAY_MEDIA = "play_media"
+    const val PLAY_PAUSE_MEDIA = "play_pause_media"
 
     @RequiresApi(Build.VERSION_CODES.M)
     const val VOLUME_UNMUTE = "volume_unmute"

@@ -59,6 +59,7 @@ object SystemActionUtils {
 
             yield(SystemActionListItem(SystemAction.PAUSE_MEDIA))
             yield(SystemActionListItem(SystemAction.PLAY_MEDIA))
+            yield(SystemActionListItem(SystemAction.PLAY_PAUSE_MEDIA))
         }.toList()
     }
 
@@ -107,6 +108,7 @@ object SystemActionUtils {
 
             SystemAction.PAUSE_MEDIA -> return R.string.action_pause_media
             SystemAction.PLAY_MEDIA -> return R.string.action_play_media
+            SystemAction.PLAY_PAUSE_MEDIA -> return R.string.action_play_pause_media
 
             else -> throw Exception("Can't find a description for $systemAction")
         }
@@ -152,6 +154,7 @@ object SystemActionUtils {
 
             SystemAction.PAUSE_MEDIA -> R.drawable.ic_pause_black_24dp
             SystemAction.PLAY_MEDIA -> R.drawable.ic_play_arrow_black_24dp
+            SystemAction.PLAY_PAUSE_MEDIA -> R.drawable.ic_play_pause_24dp
 
             else -> null
         }

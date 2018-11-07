@@ -158,5 +158,6 @@
     <string name="action_collapse_status_bar">Collapse Status Bar</string>
     <string name="action_pause_media">Pause Media Playback</string>
     <string name="action_play_media">Play Media</string>
+    <string name="action_play_pause_media">Play/Pause Media</string>
     <!-- System action labels -->
 </resources>
