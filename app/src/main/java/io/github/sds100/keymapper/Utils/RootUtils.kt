@@ -8,13 +8,6 @@ object RootUtils {
      * @return whether the command was executed successfully
      */
     fun executeRootCommand(command: String): Boolean {
-        try {
-            ShellUtils.executeCommand("su", "-c", command)
-            return true
-        } catch (e: Exception) {
-            return false
-        }
+        return ShellUtils.executeCommand("su", "-c", command)
     }
-
-    fun isRooted() = executeRootCommand("ls")
 }

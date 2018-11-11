@@ -145,9 +145,9 @@
     <string name="action_portrait_mode">Portrait Mode</string>
     <string name="action_landscape_mode">Landscape Mode</string>
 
-    <string name="action_toggle_mobile_data">Toggle Mobile Data</string>
-    <string name="action_enable_mobile_data">Enable Mobile Data</string>
-    <string name="action_disable_mobile_data">Disable Mobile Data</string>
+    <string name="action_toggle_mobile_data">Toggle Mobile Data. REQUIRES ROOT!</string>
+    <string name="action_enable_mobile_data">Enable Mobile Data. REQUIRES ROOT!</string>
+    <string name="action_disable_mobile_data">Disable Mobile Data. REQUIRES ROOT!</string>
 
     <string name="action_toggle_auto_brightness">Toggle Auto-Brightness</string>
     <string name="action_disable_auto_brightness">Disable Auto-Brightness</string>
@@ -168,6 +168,6 @@
     <string name="action_go_back">Go Back</string>
     <string name="action_go_home">Go Home</string>
     <string name="action_open_recents">Open Recents</string>
-    <string name="action_open_menu">Open Menu</string>
+    <string name="action_open_menu">Open Menu. REQUIRES ROOT!</string>
     <!-- System action labels -->
 </resources>

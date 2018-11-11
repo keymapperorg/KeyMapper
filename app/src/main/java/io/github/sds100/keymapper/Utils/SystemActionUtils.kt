@@ -13,27 +13,21 @@ import io.github.sds100.keymapper.SystemActionListItem
  */
 
 object SystemActionUtils {
-
     fun getSystemActionListItems(): List<SystemActionListItem> {
         //must be in the order the items should be shown to the user
         return sequence {
             yield(SystemActionListItem(SystemAction.GO_BACK))
             yield(SystemActionListItem(SystemAction.GO_HOME))
             yield(SystemActionListItem(SystemAction.OPEN_RECENTS))
-
-            if (RootUtils.isRooted()) {
-                yield(SystemActionListItem(SystemAction.OPEN_MENU))
-            }
+            yield(SystemActionListItem(SystemAction.OPEN_MENU))
 
             yield(SystemActionListItem(SystemAction.TOGGLE_WIFI))
             yield(SystemActionListItem(SystemAction.ENABLE_WIFI))
             yield(SystemActionListItem(SystemAction.DISABLE_WIFI))
 
-            if (RootUtils.isRooted()) {
-                yield(SystemActionListItem(SystemAction.TOGGLE_MOBILE_DATA))
-                yield(SystemActionListItem(SystemAction.ENABLE_MOBILE_DATA))
-                yield(SystemActionListItem(SystemAction.DISABLE_MOBILE_DATA))
-            }
+            yield(SystemActionListItem(SystemAction.TOGGLE_MOBILE_DATA))
+            yield(SystemActionListItem(SystemAction.ENABLE_MOBILE_DATA))
+            yield(SystemActionListItem(SystemAction.DISABLE_MOBILE_DATA))
 
             yield(SystemActionListItem(SystemAction.TOGGLE_BLUETOOTH))
             yield(SystemActionListItem(SystemAction.ENABLE_BLUETOOTH))
