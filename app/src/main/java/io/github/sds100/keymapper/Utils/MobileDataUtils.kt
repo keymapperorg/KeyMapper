@@ -8,10 +8,16 @@ import android.telephony.TelephonyManager
  * Created by sds100 on 31/10/2018.
  */
 object MobileDataUtils {
+    /**
+     * REQUIRES ROOT!!
+     */
     fun enableMobileData() {
         RootUtils.executeRootCommand("svc data enable")
     }
 
+    /**
+     * REQUIRES ROOT!!!
+     */
     fun disableMobileData() {
         RootUtils.executeRootCommand("svc data disable")
     }

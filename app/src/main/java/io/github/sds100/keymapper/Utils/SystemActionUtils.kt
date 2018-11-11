@@ -21,6 +21,10 @@ object SystemActionUtils {
             yield(SystemActionListItem(SystemAction.GO_HOME))
             yield(SystemActionListItem(SystemAction.OPEN_RECENTS))
 
+            if (RootUtils.isRooted()) {
+                yield(SystemActionListItem(SystemAction.OPEN_MENU))
+            }
+
             yield(SystemActionListItem(SystemAction.TOGGLE_WIFI))
             yield(SystemActionListItem(SystemAction.ENABLE_WIFI))
             yield(SystemActionListItem(SystemAction.DISABLE_WIFI))
@@ -120,6 +124,7 @@ object SystemActionUtils {
             SystemAction.GO_BACK -> return R.string.action_go_back
             SystemAction.GO_HOME -> return R.string.action_go_home
             SystemAction.OPEN_RECENTS -> return R.string.action_open_recents
+            SystemAction.OPEN_MENU -> return R.string.action_open_menu
 
             else -> throw Exception("Can't find a description for $systemAction")
         }
@@ -171,6 +176,7 @@ object SystemActionUtils {
             SystemAction.GO_BACK -> R.drawable.ic_arrow_back_black_24dp
             SystemAction.GO_HOME -> R.drawable.ic_home_black_24dp
             SystemAction.OPEN_RECENTS -> R.drawable.crop_square
+            SystemAction.OPEN_MENU -> R.drawable.ic_more_vert_black_24dp
 
             else -> null
         }

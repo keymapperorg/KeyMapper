@@ -37,6 +37,7 @@ import io.github.sds100.keymapper.SystemAction.GO_HOME
 import io.github.sds100.keymapper.SystemAction.INCREASE_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.LANDSCAPE_MODE
 import io.github.sds100.keymapper.SystemAction.NEXT_TRACK
+import io.github.sds100.keymapper.SystemAction.OPEN_MENU
 import io.github.sds100.keymapper.SystemAction.OPEN_RECENTS
 import io.github.sds100.keymapper.SystemAction.PAUSE_MEDIA
 import io.github.sds100.keymapper.SystemAction.PLAY_MEDIA
@@ -450,8 +451,12 @@ class MyAccessibilityService : AccessibilityService() {
             GO_HOME -> performGlobalAction(GLOBAL_ACTION_HOME)
             OPEN_RECENTS -> performGlobalAction(GLOBAL_ACTION_RECENTS)
 
+            //there must be a way to do this without root
+            OPEN_MENU -> RootUtils.executeRootCommand("input keyevent 82")
+
             else -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    KeyEvent.KEYCODE_MENU
                     when (action) {
                         VOLUME_UNMUTE -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_UNMUTE)
                         VOLUME_MUTE -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_MUTE)

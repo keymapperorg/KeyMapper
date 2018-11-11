@@ -55,7 +55,8 @@ object SystemAction {
 
         GO_BACK,
         GO_HOME,
-        OPEN_RECENTS
+        OPEN_RECENTS,
+        OPEN_MENU
     ])
     @Retention(AnnotationRetention.SOURCE)
     annotation class SystemActionId
@@ -127,4 +128,5 @@ object SystemAction {
     const val GO_BACK = "go_back"
     const val GO_HOME = "go_home"
     const val OPEN_RECENTS = "open_recents"
+    const val OPEN_MENU = "open_menu"
 }
