@@ -123,5 +123,5 @@ object SystemAction {
     const val NEXT_TRACK = "next_track"
     const val PREVIOUS_TRACK = "previous_track"
 
-    const val GO_BACK = "go_fback"
+    const val GO_BACK = "go_back"
 }
