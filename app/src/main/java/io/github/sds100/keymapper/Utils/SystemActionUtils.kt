@@ -19,6 +19,7 @@ object SystemActionUtils {
         return sequence {
             yield(SystemActionListItem(SystemAction.GO_BACK))
             yield(SystemActionListItem(SystemAction.GO_HOME))
+            yield(SystemActionListItem(SystemAction.OPEN_RECENTS))
 
             yield(SystemActionListItem(SystemAction.TOGGLE_WIFI))
             yield(SystemActionListItem(SystemAction.ENABLE_WIFI))
@@ -118,6 +119,7 @@ object SystemActionUtils {
             SystemAction.PREVIOUS_TRACK -> return R.string.action_previous_track
             SystemAction.GO_BACK -> return R.string.action_go_back
             SystemAction.GO_HOME -> return R.string.action_go_home
+            SystemAction.OPEN_RECENTS -> return R.string.action_open_recents
 
             else -> throw Exception("Can't find a description for $systemAction")
         }
@@ -168,6 +170,7 @@ object SystemActionUtils {
 
             SystemAction.GO_BACK -> R.drawable.ic_arrow_back_black_24dp
             SystemAction.GO_HOME -> R.drawable.ic_home_black_24dp
+            SystemAction.OPEN_RECENTS -> R.drawable.crop_square
 
             else -> null
         }

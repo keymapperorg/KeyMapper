@@ -37,6 +37,7 @@ import io.github.sds100.keymapper.SystemAction.GO_HOME
 import io.github.sds100.keymapper.SystemAction.INCREASE_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.LANDSCAPE_MODE
 import io.github.sds100.keymapper.SystemAction.NEXT_TRACK
+import io.github.sds100.keymapper.SystemAction.OPEN_RECENTS
 import io.github.sds100.keymapper.SystemAction.PAUSE_MEDIA
 import io.github.sds100.keymapper.SystemAction.PLAY_MEDIA
 import io.github.sds100.keymapper.SystemAction.PLAY_PAUSE_MEDIA
@@ -447,6 +448,7 @@ class MyAccessibilityService : AccessibilityService() {
 
             GO_BACK -> performGlobalAction(GLOBAL_ACTION_BACK)
             GO_HOME -> performGlobalAction(GLOBAL_ACTION_HOME)
+            OPEN_RECENTS -> performGlobalAction(GLOBAL_ACTION_RECENTS)
 
             else -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

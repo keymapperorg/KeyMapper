@@ -54,7 +54,8 @@ object SystemAction {
         PREVIOUS_TRACK,
 
         GO_BACK,
-        GO_HOME
+        GO_HOME,
+        OPEN_RECENTS
     ])
     @Retention(AnnotationRetention.SOURCE)
     annotation class SystemActionId
@@ -113,7 +114,6 @@ object SystemAction {
     @RequiresApi(Build.VERSION_CODES.M)
     const val VOLUME_TOGGLE_MUTE = "volume_toggle_mute"
 
-
     const val EXPAND_NOTIFICATION_DRAWER = "expand_notification_drawer"
     const val EXPAND_QUICK_SETTINGS = "expand_quick_settings"
     const val COLLAPSE_STATUS_BAR = "collapse_status_bar"
@@ -126,4 +126,5 @@ object SystemAction {
 
     const val GO_BACK = "go_back"
     const val GO_HOME = "go_home"
+    const val OPEN_RECENTS = "open_recents"
 }

@@ -166,5 +166,6 @@
 
     <string name="action_go_back">Go Back</string>
     <string name="action_go_home">Go Home</string>
+    <string name="action_open_recents">Open Recents</string>
     <!-- System action labels -->
 </resources>
