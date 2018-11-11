@@ -53,7 +53,8 @@ object SystemAction {
         NEXT_TRACK,
         PREVIOUS_TRACK,
 
-        GO_BACK
+        GO_BACK,
+        GO_HOME
     ])
     @Retention(AnnotationRetention.SOURCE)
     annotation class SystemActionId
@@ -124,4 +125,5 @@ object SystemAction {
     const val PREVIOUS_TRACK = "previous_track"
 
     const val GO_BACK = "go_back"
+    const val GO_HOME = "go_home"
 }

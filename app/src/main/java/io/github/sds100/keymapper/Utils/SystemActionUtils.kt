@@ -18,6 +18,7 @@ object SystemActionUtils {
         //must be in the order the items should be shown to the user
         return sequence {
             yield(SystemActionListItem(SystemAction.GO_BACK))
+            yield(SystemActionListItem(SystemAction.GO_HOME))
 
             yield(SystemActionListItem(SystemAction.TOGGLE_WIFI))
             yield(SystemActionListItem(SystemAction.ENABLE_WIFI))
@@ -116,6 +117,7 @@ object SystemActionUtils {
             SystemAction.NEXT_TRACK -> return R.string.action_next_track
             SystemAction.PREVIOUS_TRACK -> return R.string.action_previous_track
             SystemAction.GO_BACK -> return R.string.action_go_back
+            SystemAction.GO_HOME -> return R.string.action_go_home
 
             else -> throw Exception("Can't find a description for $systemAction")
         }
@@ -165,6 +167,7 @@ object SystemActionUtils {
             SystemAction.PREVIOUS_TRACK -> R.drawable.ic_skip_previous_black_24dp
 
             SystemAction.GO_BACK -> R.drawable.ic_arrow_back_black_24dp
+            SystemAction.GO_HOME -> R.drawable.ic_home_black_24dp
 
             else -> null
         }

@@ -33,6 +33,7 @@ import io.github.sds100.keymapper.SystemAction.ENABLE_WIFI
 import io.github.sds100.keymapper.SystemAction.EXPAND_NOTIFICATION_DRAWER
 import io.github.sds100.keymapper.SystemAction.EXPAND_QUICK_SETTINGS
 import io.github.sds100.keymapper.SystemAction.GO_BACK
+import io.github.sds100.keymapper.SystemAction.GO_HOME
 import io.github.sds100.keymapper.SystemAction.INCREASE_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.LANDSCAPE_MODE
 import io.github.sds100.keymapper.SystemAction.NEXT_TRACK
@@ -444,7 +445,8 @@ class MyAccessibilityService : AccessibilityService() {
             NEXT_TRACK -> MediaUtils.nextTrack(this)
             PREVIOUS_TRACK -> MediaUtils.previousTrack(this)
 
-            GO_BACK -> this.performGlobalAction(GLOBAL_ACTION_BACK)
+            GO_BACK -> performGlobalAction(GLOBAL_ACTION_BACK)
+            GO_HOME -> performGlobalAction(GLOBAL_ACTION_HOME)
 
             else -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
