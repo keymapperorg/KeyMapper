@@ -7,7 +7,7 @@ import android.widget.FrameLayout
 import androidx.appcompat.content.res.AppCompatResources
 import io.github.sds100.keymapper.ActionDescription
 import io.github.sds100.keymapper.R
-import kotlinx.android.synthetic.main.action_description.view.*
+import kotlinx.android.synthetic.main.layout_action_description.view.*
 
 /**
  * Created by sds100 on 15/10/2018.
@@ -22,7 +22,7 @@ class ActionDescriptionLayout(
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
 
     init {
-        View.inflate(context, R.layout.action_description, this)
+        View.inflate(context, R.layout.layout_action_description, this)
 
         /* on pre-lollipop devices, vector drawables can't be used with drawableStart,
          * drawableEnd etc. otherwise the app crashes. */
