@@ -20,6 +20,8 @@
     <string name="caption_action_type_keycode">IMPORTANT!
         This will only work if you have selected this app as the input method. It is best used with a hardware keyboard.</string>
 
+    <string name="switch_enabled">Enabled</string>
+
     <string name="description_open_app">Open %s</string>
     <string name="description_key">Press \'%s\' key</string>
     <string name="description_text_block">Insert \'%s\'</string>
