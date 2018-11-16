@@ -81,18 +81,18 @@
         app:layout_constraintTop_toBottomOf="@+id/bottom_divider" />
 
     <HorizontalScrollView
+        android:id="@+id/horizontalScrollView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toTopOf="@+id/buttonRecordTrigger"
         app:layout_constraintEnd_toStartOf="@+id/buttonClearKeys"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/recyclerViewTriggers"
-        app:layout_constraintTop_toBottomOf="@+id/textViewExplanation"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintTop_toTopOf="@+id/buttonClearKeys">
 
         <io.github.sds100.keymapper.Views.TriggerChipGroup
             android:id="@+id/chipGroupTriggerPreview"
@@ -105,28 +105,27 @@
     <TextView
         android:id="@+id/textViewExplanation"
         android:layout_width="0dp"
-        android:layout_height="52dp"
+        android:layout_height="0dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp"
+        android:gravity="center_vertical|bottom"
         android:text="@string/record_trigger_help"
+        app:layout_constraintBottom_toTopOf="@+id/buttonClearKeys"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/recyclerViewTriggers"
-        app:layout_constraintTop_toTopOf="@+id/recyclerViewTriggers" />
+        app:layout_constraintTop_toBottomOf="@+id/bottom_divider" />
 
     <Button
         android:id="@+id/buttonClearKeys"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:text="@string/button_clear"
         app:layout_constraintBottom_toTopOf="@+id/buttonRecordTrigger"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewExplanation"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/buttonSecondary"
