@@ -268,7 +268,10 @@ class MyAccessibilityService : AccessibilityService() {
                         keyMap.triggerList.any { trigger -> trigger.keys == mPressedTriggerKeys }
                     }
 
-                    if (keyMap?.action != null) {
+                    //if the keymap is null or disabled, pass the keyevent to the system
+                    if (keyMap == null || !keyMap.isEnabled) return true
+
+                    if (keyMap.action != null) {
                         //if the Key Mapper input method isn't chosen, pass the key event to the system.
                         if (keyMap.action!!.requiresIME && !isInputMethodChosen()) {
                             Toast.makeText(

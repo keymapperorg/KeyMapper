@@ -113,6 +113,8 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
                     testAction()
                 }
             }
+
+            switchEnabled.isChecked = keyMap.isEnabled
         })
 
         //button stuff
@@ -132,6 +134,10 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
         buttonChooseAction.setOnClickListener {
             val intent = Intent(this, ChooseActionActivity::class.java)
             startActivityForResult(intent, REQUEST_CODE_ACTION)
+        }
+
+        switchEnabled.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.keyMap.value!!.isEnabled = isChecked
         }
 
         recyclerViewTriggers.layoutManager = LinearLayoutManager(this)
