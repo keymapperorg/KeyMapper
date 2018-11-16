@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ServiceStatusLayout">
+        <!--The text to show if the service is enabled-->
+        <attr name="enabledText" format="string" />
+
+        <!--The text to show if the service is disabled-->
+        <attr name="disabledText" format="string" />
+    </declare-styleable>
+</resources>

@@ -8,4 +8,5 @@
     <color name="error">#FFB00020</color>
     <color name="actionModeBackground">#424242</color>
     <color name="actionModeStatusBar">#212121</color>
+    <color name="green">#4CAF50</color>
 </resources>
