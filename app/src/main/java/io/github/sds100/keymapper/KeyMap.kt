@@ -23,7 +23,9 @@ data class KeyMap(
         val triggerList: MutableList<Trigger> = mutableListOf(),
 
         @Embedded
-        var action: Action? = null
+        var action: Action? = null,
+
+        var isEnabled: Boolean = true
 ) : SelectableItem() {
 
     override fun hashCode() = id.toInt()
