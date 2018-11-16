@@ -116,8 +116,13 @@
     <string name="error_must_choose_action">You must choose an action!</string>
     <string name="error_must_have_a_title">The shortcut must have a title!</string>
     <string name="error_ime_must_be_chosen">You must choose the Key Mapper input method for this action to work!</string>
+
     <string name="error_accessibility_service_disabled">The accessibility service must be enabled for this app to work!</string>
     <string name="error_accessibility_service_enabled">Accessibility Service is enabled!</string>
+
+    <string name="error_ime_service_disabled">The Input Method Service must be enabled for this app to be an input method!</string>
+    <string name="error_ime_service_enabled">Input Method Service is enabled!</string>
+
     <string name="error_shortcut_not_found">Can\'t find the shortcut. Is the app installed or enabled?</string>
     <string name="error_app_isnt_installed">App isn\'t installed!</string>
     <string name="error_app_is_disabled">App is disabled!</string>

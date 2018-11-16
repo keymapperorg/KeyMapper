@@ -99,7 +99,7 @@ class MyAccessibilityService : AccessibilityService() {
         /**
          * @return whether the accessibility service is enabled
          */
-        fun isAccessibilityServiceEnabled(ctx: Context): Boolean {
+        fun isServiceEnabled(ctx: Context): Boolean {
             /* get a list of all the enabled accessibility services.
              * The AccessibilityManager.getEnabledAccessibilityServices() method just returns an empty
              * list. :(*/

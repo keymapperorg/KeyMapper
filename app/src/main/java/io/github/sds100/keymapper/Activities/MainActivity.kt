@@ -24,6 +24,7 @@ import io.github.sds100.keymapper.Selection.SelectionCallback
 import io.github.sds100.keymapper.Selection.SelectionEvent
 import io.github.sds100.keymapper.Selection.SelectionProvider
 import io.github.sds100.keymapper.Services.MyAccessibilityService
+import io.github.sds100.keymapper.Services.MyIMEService
 import io.github.sds100.keymapper.Utils.NotificationUtils
 import io.github.sds100.keymapper.ViewModels.KeyMapListViewModel
 import kotlinx.android.synthetic.main.activity_main.*
@@ -78,6 +79,13 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
             startActivity(intent)
         })
 
+        imeServiceStatusLayout.setOnFixClickListener(View.OnClickListener {
+            val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)
+            intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+
+            startActivity(intent)
+        })
+
         mKeymapAdapter.iSelectionProvider.subscribeToSelectionEvents(this)
 
         //recyclerview stuff
@@ -88,10 +96,16 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
     override fun onResume() {
         super.onResume()
 
-        if (MyAccessibilityService.isAccessibilityServiceEnabled(this)) {
+        if (MyAccessibilityService.isServiceEnabled(this)) {
             accessibilityServiceStatusLayout.changeToServiceEnabledState()
         } else {
             accessibilityServiceStatusLayout.changeToServiceDisabledState()
+        }
+
+        if (MyIMEService.isServiceEnabled(this)) {
+            imeServiceStatusLayout.changeToServiceEnabledState()
+        } else {
+            imeServiceStatusLayout.changeToServiceDisabledState()
         }
 
         /* update any keymap list items which are showing since, for example, the user could have

@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.inputmethodservice.InputMethodService
+import android.view.inputmethod.InputMethodManager
 
 /**
  * Created by sds100 on 28/09/2018.
@@ -16,6 +17,14 @@ class MyIMEService : InputMethodService() {
 
         const val EXTRA_KEYCODE = "extra_keycode"
         const val EXTRA_TEXT = "extra_text"
+
+        fun isServiceEnabled(ctx: Context): Boolean {
+            val imeService = ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+            val enabledMethods = imeService.enabledInputMethodList
+
+            return enabledMethods.any { it.packageName == "io.github.sds100.keymapper" }
+        }
     }
 
     private val mBroadcastReceiver = object : BroadcastReceiver() {
