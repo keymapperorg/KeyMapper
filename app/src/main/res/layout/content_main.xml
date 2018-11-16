@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:disabledText="@string/error_accessibility_service_disabled"
-        app:enabledText="@string/error_accessibility_service_disabled"
+        app:enabledText="@string/error_accessibility_service_enabled"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

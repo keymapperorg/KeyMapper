@@ -48,6 +48,10 @@ class ServiceStatusLayout(
         buttonFix.visibility = View.VISIBLE
     }
 
+    fun setOnFixClickListener(onClickListener: OnClickListener) {
+        buttonFix.setOnClickListener(onClickListener)
+    }
+
     private fun getCustomStringAttrValue(attrs: AttributeSet, attrId: Int): String? {
         val typedArray = context.theme.obtainStyledAttributes(attrs, R.styleable.ServiceStatusLayout, 0, 0)
 

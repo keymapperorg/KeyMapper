@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.Activities
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.text.SpannableStringBuilder
 import android.text.style.RelativeSizeSpan
 import android.view.Menu
@@ -70,8 +71,16 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
             startActivity(intent)
         }
 
+        accessibilityServiceStatusLayout.setOnFixClickListener(View.OnClickListener {
+            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+            intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+
+            startActivity(intent)
+        })
+
         mKeymapAdapter.iSelectionProvider.subscribeToSelectionEvents(this)
 
+        //recyclerview stuff
         recyclerViewKeyMaps.layoutManager = LinearLayoutManager(this)
         recyclerViewKeyMaps.adapter = mKeymapAdapter
     }
@@ -79,7 +88,11 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
     override fun onResume() {
         super.onResume()
 
-        MyAccessibilityService.isAccessibilityServiceEnabled(this, coordinatorLayout)
+        if (MyAccessibilityService.isAccessibilityServiceEnabled(this)) {
+            accessibilityServiceStatusLayout.changeToServiceEnabledState()
+        } else {
+            accessibilityServiceStatusLayout.changeToServiceDisabledState()
+        }
 
         /* update any keymap list items which are showing since, for example, the user could have
         left the app and uninstalled an app which is a keymap action so an error message should now

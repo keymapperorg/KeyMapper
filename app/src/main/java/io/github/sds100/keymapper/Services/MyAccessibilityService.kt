@@ -7,12 +7,10 @@ import android.os.Build
 import android.os.Handler
 import android.provider.Settings
 import android.view.KeyEvent
-import android.view.View
 import android.view.accessibility.AccessibilityEvent
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import com.github.salomonbrys.kotson.fromJson
-import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Activities.ConfigKeymapActivity
@@ -99,37 +97,19 @@ class MyAccessibilityService : AccessibilityService() {
         }
 
         /**
-         * If the accessibility service is disabled, show a snackbar with a button
-         * to enable it in settings
-         *
          * @return whether the accessibility service is enabled
          */
-        fun isAccessibilityServiceEnabled(ctx: Context, view: View): Boolean {
+        fun isAccessibilityServiceEnabled(ctx: Context): Boolean {
             /* get a list of all the enabled accessibility services.
-         * The AccessibilityManager.getEnabledAccessibilityServices() method just returns an empty
-         * list. :(*/
+             * The AccessibilityManager.getEnabledAccessibilityServices() method just returns an empty
+             * list. :(*/
             val settingValue = Settings.Secure.getString(
                     ctx.contentResolver,
                     Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
 
             //it can be null if the user has never interacted with accessibility settings before
             if (settingValue != null) {
-                if (settingValue.contains(ctx.packageName)) return true
-            }
-
-            Snackbar.make(
-                    view,
-                    R.string.error_accessibility_service_disabled,
-                    Snackbar.LENGTH_INDEFINITE
-            ).apply {
-                setAction(R.string.enable) {
-                    val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-                    intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
-
-                    ctx.startActivity(intent)
-                }
-
-                show()
+                return settingValue.contains(ctx.packageName)
             }
 
             return false
