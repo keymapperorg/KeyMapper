@@ -215,79 +215,78 @@ class MyAccessibilityService : AccessibilityService() {
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {}
 
     override fun onKeyEvent(event: KeyEvent?): Boolean {
-        if (event != null) {
-            if (mRecordingTrigger) {
-                if (event.action == KeyEvent.ACTION_DOWN) {
-                    //only add the key to the trigger if it isn't already a part of the trigger
-                    if (!mPressedKeys.contains(event.keyCode)) {
-                        //tell NewKeymapActivity to add the chip
-                        val intent = Intent(ConfigKeymapActivity.ACTION_ADD_KEY_CHIP)
-                        intent.putExtra(ConfigKeymapActivity.EXTRA_KEY_EVENT, event)
+        if (event == null) return super.onKeyEvent(event)
 
-                        sendBroadcast(intent)
+        if (mRecordingTrigger) {
+            if (event.action == KeyEvent.ACTION_DOWN) {
+                //only add the key to the trigger if it isn't already a part of the trigger
+                if (!mPressedKeys.contains(event.keyCode)) {
+                    //tell NewKeymapActivity to add the chip
+                    val intent = Intent(ConfigKeymapActivity.ACTION_ADD_KEY_CHIP)
+                    intent.putExtra(ConfigKeymapActivity.EXTRA_KEY_EVENT, event)
 
-                        mPressedKeys.add(event.keyCode)
-                    }
-                }
+                    sendBroadcast(intent)
 
-                //Don't allow the key to do anything when recording a trigger
-                return true
-
-            } else {
-
-                //when a key is pressed down
-                if (event.action == KeyEvent.ACTION_DOWN) {
                     mPressedKeys.add(event.keyCode)
-
-                    //when a key is lifted
-                } else if (event.action == KeyEvent.ACTION_UP) {
-                    mPressedKeys.remove(event.keyCode)
-
-                    if (mPressedTriggerKeys.isNotEmpty()) {
-                        if (mPressedTriggerKeys.contains(event.keyCode)) {
-                            mPressedTriggerKeys.remove(event.keyCode)
-
-                            /* pass the volume key event to the system otherwise strange behaviour
-                            * happens where the volume key is constantly being pressed */
-
-                            if (event.isVolumeKey) {
-                                return super.onKeyEvent(event)
-                            }
-
-                            return true
-                        }
-                    }
                 }
+            }
 
-                if (isTrigger(mPressedKeys)) {
+            //Don't allow the key to do anything when recording a trigger
+            return true
 
-                    mPressedTriggerKeys = mPressedKeys.toMutableList()
+        } else {
 
-                    //find the keymap associated with the trigger being pressed
-                    val keyMap = mKeyMapListCache.find { keyMap ->
-                        keyMap.triggerList.any { trigger -> trigger.keys == mPressedTriggerKeys }
-                    }
+            //when a key is pressed down
+            if (event.action == KeyEvent.ACTION_DOWN) {
+                mPressedKeys.add(event.keyCode)
 
-                    //if the keymap is null or disabled, pass the keyevent to the system
-                    if (keyMap == null || !keyMap.isEnabled) return true
+                //when a key is lifted
+            } else if (event.action == KeyEvent.ACTION_UP) {
+                mPressedKeys.remove(event.keyCode)
 
-                    if (keyMap.action != null) {
-                        //if the Key Mapper input method isn't chosen, pass the key event to the system.
-                        if (keyMap.action!!.requiresIME && !isInputMethodChosen()) {
-                            Toast.makeText(
-                                    this,
-                                    R.string.error_ime_must_be_chosen,
-                                    Toast.LENGTH_SHORT
-                            ).show()
+                if (mPressedTriggerKeys.isNotEmpty()) {
+                    if (mPressedTriggerKeys.contains(event.keyCode)) {
+                        mPressedTriggerKeys.remove(event.keyCode)
+
+                        /* pass the volume key event to the system otherwise strange behaviour
+                        * happens where the volume key is constantly being pressed */
+                        if (event.isVolumeKey) {
                             return super.onKeyEvent(event)
                         }
 
+                        return true
+                    }
+                }
+            }
 
-                        performAction(keyMap.action!!)
+            //are the pressed keys are trigger and if they are, is the keymap enabled
+            if (isEnabledTrigger(mPressedKeys)) {
+
+                mPressedTriggerKeys = mPressedKeys.toMutableList()
+
+                //find the keymap associated with the trigger being pressed
+                val keyMap = mKeyMapListCache.find { keyMap ->
+                    keyMap.triggerList.any { trigger -> trigger.keys == mPressedTriggerKeys }
+                }
+
+                //if the keymap can't be found, pass the keyevent to the system
+                if (keyMap == null) return super.onKeyEvent(event)
+
+                if (keyMap.action != null) {
+                    //if the Key Mapper input method isn't chosen, pass the key event to the system.
+                    if (keyMap.action!!.requiresIME && !isInputMethodChosen()) {
+                        Toast.makeText(
+                                this,
+                                R.string.error_ime_must_be_chosen,
+                                Toast.LENGTH_SHORT
+                        ).show()
+                        return super.onKeyEvent(event)
                     }
 
-                    return true
+                    performAction(keyMap.action!!)
                 }
+
+                return true
             }
         }
 
@@ -304,15 +303,15 @@ class MyAccessibilityService : AccessibilityService() {
 
     /**
      * @param keys the combination of keycodes being pressed to check.
-     * @return whether a key combination is registered as a trigger in the keymap cache
+     * @return whether a key combination is registered as a trigger in the keymap cache and the keymap is enabled
      */
-    private fun isTrigger(keys: MutableList<Int>): Boolean {
+    private fun isEnabledTrigger(keys: MutableList<Int>): Boolean {
         return mKeyMapListCache.any { keyMap ->
 
             /* do any of the trigger lists for each keymap contain a trigger which matches the
              * keys being pressed?*/
             keyMap.triggerList.any { trigger ->
-                trigger.keys.toTypedArray().contentEquals(keys.toTypedArray())
+                trigger.keys.toTypedArray().contentEquals(keys.toTypedArray()) && keyMap.isEnabled
             }
         }
     }
@@ -439,7 +438,6 @@ class MyAccessibilityService : AccessibilityService() {
 
             else -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    KeyEvent.KEYCODE_MENU
                     when (action) {
                         VOLUME_UNMUTE -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_UNMUTE)
                         VOLUME_MUTE -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_MUTE)
