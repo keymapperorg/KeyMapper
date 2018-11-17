@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.Activities
 
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
@@ -42,6 +43,12 @@ class ChooseActionActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
         }
 
         return super.onKeyUp(keyCode, event)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_choose_action, menu);
+
+        return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
