@@ -54,6 +54,12 @@ class KeymapAdapter(private val mOnItemClickListener: OnItemClickListener<KeyMap
 
             recyclerViewTriggers.layoutManager = LinearLayoutManager(context)
             recyclerViewTriggers.adapter = triggerAdapter
+
+            if (keyMap.isEnabled) {
+                textViewDisabled.visibility = View.GONE
+            } else {
+                textViewDisabled.visibility = View.VISIBLE
+            }
         }
     }
 

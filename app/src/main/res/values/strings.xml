@@ -177,5 +177,6 @@
     <string name="action_go_home">Go Home</string>
     <string name="action_open_recents">Open Recents</string>
     <string name="action_open_menu">Open Menu. REQUIRES ROOT!</string>
+    <string name="disabled">Disabled</string>
     <!-- System action labels -->
 </resources>
