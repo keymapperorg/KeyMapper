@@ -25,6 +25,11 @@ class ChooseActionActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
     private val mTextActionTypeFragment = TextActionTypeFragment()
     private val mSystemActionTypeFragment = SystemActionTypeFragment()
 
+    private lateinit var mSearchViewMenuItem: MenuItem
+
+    private val mSearchView
+        get() = mSearchViewMenuItem.actionView as SearchView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choose_action)
@@ -46,7 +51,10 @@ class ChooseActionActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_choose_action, menu);
+        menuInflater.inflate(R.menu.menu_choose_action, menu)
+
+        mSearchViewMenuItem = menu!!.findItem(R.id.action_search)
+        mSearchView.queryHint = getString(R.string.action_search)
 
         return super.onCreateOptionsMenu(menu)
     }
@@ -72,12 +80,35 @@ class ChooseActionActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
         )
 
         when (actionType) {
-            ActionType.APP -> showFragmentInFrameLayout(mAppActionTypeFragment)
-            ActionType.KEYCODE -> showFragmentInFrameLayout(mKeycodeActionTypeFragment)
-            ActionType.APP_SHORTCUT -> showFragmentInFrameLayout(mAppShortcutActionTypeFragment)
-            ActionType.KEY -> showFragmentInFrameLayout(mKeyActionTypeFragment)
-            ActionType.SYSTEM_ACTION -> showFragmentInFrameLayout(mSystemActionTypeFragment)
-            ActionType.TEXT_BLOCK -> showFragmentInFrameLayout(mTextActionTypeFragment)
+            ActionType.APP -> {
+                changeSelectedActionTypeFragment(mAppActionTypeFragment)
+                mSearchViewMenuItem.isVisible = true
+            }
+
+            ActionType.KEYCODE -> {
+                changeSelectedActionTypeFragment(mKeycodeActionTypeFragment)
+                mSearchViewMenuItem.isVisible = true
+            }
+
+            ActionType.APP_SHORTCUT -> {
+                changeSelectedActionTypeFragment(mAppShortcutActionTypeFragment)
+                mSearchViewMenuItem.isVisible = true
+            }
+
+            ActionType.KEY -> {
+                changeSelectedActionTypeFragment(mKeyActionTypeFragment)
+                mSearchViewMenuItem.isVisible = false
+            }
+
+            ActionType.SYSTEM_ACTION -> {
+                changeSelectedActionTypeFragment(mSystemActionTypeFragment)
+                mSearchViewMenuItem.isVisible = true
+            }
+
+            ActionType.TEXT_BLOCK -> {
+                changeSelectedActionTypeFragment(mTextActionTypeFragment)
+                mSearchViewMenuItem.isVisible = false
+            }
         }
     }
 
