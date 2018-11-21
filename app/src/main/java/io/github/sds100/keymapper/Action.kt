@@ -32,7 +32,7 @@ data class Action(
          * - Keycode: the keycode
          * - Key: the keycode of the key
          * - Block of text: text to insert
-         * - System action: string representation of the [SystemAction] enum
+         * - System action: the system action id
          */
         @ColumnInfo(name = KeyMapDao.KEY_ACTION_DATA)
         val data: String
