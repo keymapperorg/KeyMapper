@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filterable
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.sds100.keymapper.Action
 import io.github.sds100.keymapper.ActionType
@@ -19,9 +20,12 @@ import kotlinx.android.synthetic.main.action_type_recyclerview.*
 /**
  * A Fragment which displays all keycodes which can be used
  */
-class KeycodeActionTypeFragment : ActionTypeFragment(), OnItemClickListener<Int> {
+class KeycodeActionTypeFragment : FilterableActionTypeFragment(), OnItemClickListener<Int> {
 
     private val mKeycodeAdapter = KeycodeAdapter(onItemClickListener = this)
+
+    override val filterable: Filterable?
+        get() = mKeycodeAdapter
 
     override fun onCreateView(
             inflater: LayoutInflater,

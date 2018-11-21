@@ -17,11 +17,13 @@ import kotlinx.android.synthetic.main.action_type_recyclerview.*
 /**
  * A Fragment which shows a list of all the installed apps
  */
-class AppActionTypeFragment : ActionTypeFragment(),
-        OnItemClickListener<ApplicationInfo> {
+class AppActionTypeFragment : FilterableActionTypeFragment(), OnItemClickListener<ApplicationInfo> {
 
-    private lateinit var mApps: List<ApplicationInfo>
+    private lateinit var mAppList: List<ApplicationInfo>
     private var mAppListAdapter: AppListAdapter? = null
+
+    override val filterable
+        get() = mAppListAdapter
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -39,12 +41,12 @@ class AppActionTypeFragment : ActionTypeFragment(),
         LoadAppListAsyncTask(
                 packageManager,
                 onResult = { result ->
-                    mApps = result
+                    mAppList = result
                     if (mAppListAdapter == null) {
                         mAppListAdapter = AppListAdapter(
-                                mApps,
-                                packageManager = packageManager,
-                                onItemClickListener = this@AppActionTypeFragment
+                                onItemClickListener = this@AppActionTypeFragment,
+                                appList = mAppList,
+                                mPackageManager = packageManager
                         )
                     }
 

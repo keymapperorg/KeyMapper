@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filterable
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Adapters.SystemActionAdapter
@@ -16,7 +17,7 @@ import kotlinx.android.synthetic.main.action_type_recyclerview.*
 /**
  * A Fragment which displays a list of all actions that can be performed on the system
  */
-class SystemActionTypeFragment : ActionTypeFragment(),
+class SystemActionTypeFragment : FilterableActionTypeFragment(),
         OnItemClickListener<SystemActionListItem> {
 
     private val mSystemActionAdapter by lazy {
@@ -25,6 +26,9 @@ class SystemActionTypeFragment : ActionTypeFragment(),
                 onItemClickListener = this
         )
     }
+
+    override val filterable: Filterable?
+        get() = mSystemActionAdapter
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -42,7 +46,7 @@ class SystemActionTypeFragment : ActionTypeFragment(),
     }
 
     override fun onItemClick(item: SystemActionListItem) {
-        val action = Action(ActionType.SYSTEM_ACTION, item.action.toString())
+        val action = Action(ActionType.SYSTEM_ACTION, item.action)
         chooseSelectedAction(action)
     }
 }

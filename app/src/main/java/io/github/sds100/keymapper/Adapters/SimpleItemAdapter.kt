@@ -4,9 +4,11 @@ import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import io.github.sds100.keymapper.AlphabeticalFilter
 import io.github.sds100.keymapper.OnItemClickListener
 import io.github.sds100.keymapper.R
 
@@ -18,9 +20,20 @@ import io.github.sds100.keymapper.R
  * Display a simple layout with an icon and text in a RecyclerView
  */
 abstract class SimpleItemAdapter<T>(
-        private val itemList: List<T>,
+        var itemList: List<T>,
         private val onItemClickListener: OnItemClickListener<T>
-) : RecyclerView.Adapter<SimpleItemAdapter<T>.ViewHolder>() {
+) : RecyclerView.Adapter<SimpleItemAdapter<T>.ViewHolder>(), Filterable {
+
+    private val mAlphabeticalFilter = AlphabeticalFilter(
+            mOriginalList = itemList,
+            onFilter = { filteredList ->
+                itemList = filteredList
+                notifyDataSetChanged()
+            },
+            getItemText = { getItemText(it) }
+    )
+
+    override fun getFilter() = mAlphabeticalFilter
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)

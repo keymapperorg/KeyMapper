@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.Adapters
 
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import android.graphics.drawable.Drawable
 import io.github.sds100.keymapper.OnItemClickListener
 
 /**
@@ -12,24 +11,12 @@ import io.github.sds100.keymapper.OnItemClickListener
 /**
  * Display apps in a RecyclerView
  */
-class AppListAdapter(appList: List<ApplicationInfo>,
-                     private val packageManager: PackageManager,
-                     onItemClickListener: OnItemClickListener<ApplicationInfo>
+class AppListAdapter(
+        onItemClickListener: OnItemClickListener<ApplicationInfo>,
+        appList: List<ApplicationInfo>,
+        private val mPackageManager: PackageManager
 ) : SimpleItemAdapter<ApplicationInfo>(appList, onItemClickListener) {
 
-    /**
-     * Get the app icon
-     */
-    private val ApplicationInfo.iconDrawable: Drawable
-        get() = loadIcon(packageManager)
-
-    /**
-     * Get the app name
-     */
-    private val ApplicationInfo.appName: String
-        get() = loadLabel(packageManager).toString()
-
-    override fun getItemText(item: ApplicationInfo) = item.appName
-
-    override fun getItemImage(item: ApplicationInfo) = item.iconDrawable
+    override fun getItemText(item: ApplicationInfo) = item.loadLabel(mPackageManager).toString()
+    override fun getItemImage(item: ApplicationInfo) = item.loadIcon(mPackageManager)!!
 }

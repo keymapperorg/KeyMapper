@@ -13,9 +13,10 @@ import io.github.sds100.keymapper.Utils.SystemActionUtils
 
 class SystemActionAdapter(
         private val ctx: Context,
+        systemActionList: List<SystemActionListItem> = SystemActionUtils.getSystemActionListItems(),
         onItemClickListener: OnItemClickListener<SystemActionListItem>
 ) : SimpleItemAdapter<SystemActionListItem>(
-        SystemActionUtils.getSystemActionListItems(),
+        systemActionList,
         onItemClickListener
 ) {
     override fun getItemText(item: SystemActionListItem): String {

@@ -20,8 +20,7 @@ import kotlinx.android.synthetic.main.action_type_recyclerview.*
 /**
  * A Fragment which shows all the available shortcut widgets for each installed app which has them
  */
-class AppShortcutActionTypeFragment : ActionTypeFragment(),
-        OnItemClickListener<ResolveInfo> {
+class AppShortcutActionTypeFragment : FilterableActionTypeFragment(), OnItemClickListener<ResolveInfo> {
 
     companion object {
         private const val REQUEST_CODE_SHORTCUT_CONFIGURATION = 837
@@ -29,10 +28,15 @@ class AppShortcutActionTypeFragment : ActionTypeFragment(),
 
     private val mAppShortcutAdapter by lazy {
         AppShortcutAdapter(
-                context!!.packageManager, onItemClickListener = this)
+                onItemClickListener = this,
+                appShortcutList = AppShortcutUtils.getAppShortcuts(context!!.packageManager),
+                mPackageManager = context!!.packageManager)
     }
 
     private var mTempShortcutPackageName: String? = null
+
+    override val filterable
+        get() = mAppShortcutAdapter
 
     override fun onCreateView(
             inflater: LayoutInflater,

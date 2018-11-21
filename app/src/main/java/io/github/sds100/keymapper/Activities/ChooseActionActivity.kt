@@ -7,7 +7,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
+import androidx.appcompat.widget.SearchView
 import io.github.sds100.keymapper.ActionType
 import io.github.sds100.keymapper.ActionTypeFragments.*
 import io.github.sds100.keymapper.Adapters.ActionTypeSpinnerAdapter
@@ -55,6 +55,19 @@ class ChooseActionActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
 
         mSearchViewMenuItem = menu!!.findItem(R.id.action_search)
         mSearchView.queryHint = getString(R.string.action_search)
+
+        //hide the action type spinner when the user opens the SearchView
+        mSearchViewMenuItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+            override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+                spinnerActionTypes.visibility = View.GONE
+                return true
+            }
+
+            override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+                spinnerActionTypes.visibility = View.VISIBLE
+                return true
+            }
+        })
 
         return super.onCreateOptionsMenu(menu)
     }
@@ -112,7 +125,11 @@ class ChooseActionActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
         }
     }
 
-    private fun showFragmentInFrameLayout(fragment: Fragment) {
+    private fun changeSelectedActionTypeFragment(fragment: ActionTypeFragment) {
         supportFragmentManager.beginTransaction().replace(R.id.frameLayout, fragment).commit()
+
+        if (fragment is FilterableActionTypeFragment) {
+            mSearchView.setOnQueryTextListener(fragment)
+        }
     }
 }

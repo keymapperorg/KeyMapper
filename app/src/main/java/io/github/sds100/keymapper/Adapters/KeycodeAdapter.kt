@@ -12,8 +12,10 @@ import io.github.sds100.keymapper.Utils.KeycodeUtils
 /**
  * Display all keycodes in a RecyclerView
  */
-class KeycodeAdapter(onItemClickListener: OnItemClickListener<Int>
-) : SimpleItemAdapter<Int>(KeycodeUtils.getKeyCodes(), onItemClickListener) {
+class KeycodeAdapter(
+        keyCodeList: List<Int> = KeycodeUtils.getKeyCodes(),
+        onItemClickListener: OnItemClickListener<Int>
+) : SimpleItemAdapter<Int>(keyCodeList, onItemClickListener) {
 
     override fun getItemText(item: Int): String {
         return KeyEvent.keyCodeToString(item)
