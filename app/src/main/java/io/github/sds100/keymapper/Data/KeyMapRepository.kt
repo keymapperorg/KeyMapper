@@ -91,7 +91,7 @@ class KeyMapRepository private constructor(ctx: Context) {
 
                         yield(KeyMap(id,
                                 triggerList,
-                                Action(ActionType.APP, "io.github.sds100.keymapper")))
+                                Action(ActionType.APP, Constants.PACKAGE_NAME)))
                     }
                 }.toList()
 

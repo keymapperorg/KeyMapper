@@ -66,13 +66,12 @@ class MyAccessibilityService : AccessibilityService() {
         const val EXTRA_KEYMAP_CACHE_JSON = "extra_keymap_cache_json"
         const val EXTRA_ACTION = "action"
 
-        const val ACTION_RECORD_TRIGGER = "io.github.sds100.keymapper.RECORD_TRIGGER"
-        const val ACTION_STOP_RECORDING_TRIGGER = "io.github.sds100.keymapper.STOP_RECORDING_TRIGGER"
-        const val ACTION_CLEAR_PRESSED_KEYS = "io.github.sds100.keymapper.CLEAR_PRESSED_KEYS"
-        const val ACTION_UPDATE_KEYMAP_CACHE = "io.github.sds100.keymapper.UPDATE_KEYMAP_CACHE"
-        const val ACTION_TEST_ACTION = "io.github.sds100.keymapper.TEST_ACTION"
-        const val ACTION_RECORD_TRIGGER_TIMER_STOPPED =
-                "io.github.sds100.keymapper.RECORD_TRIGGER_TIMER_STOPPED"
+        const val ACTION_RECORD_TRIGGER = "${Constants.PACKAGE_NAME}.RECORD_TRIGGER"
+        const val ACTION_STOP_RECORDING_TRIGGER = "${Constants.PACKAGE_NAME}.STOP_RECORDING_TRIGGER"
+        const val ACTION_CLEAR_PRESSED_KEYS = "${Constants.PACKAGE_NAME}.CLEAR_PRESSED_KEYS"
+        const val ACTION_UPDATE_KEYMAP_CACHE = "${Constants.PACKAGE_NAME}.UPDATE_KEYMAP_CACHE"
+        const val ACTION_TEST_ACTION = "${Constants.PACKAGE_NAME}.TEST_ACTION"
+        const val ACTION_RECORD_TRIGGER_TIMER_STOPPED = "${Constants.PACKAGE_NAME}.RECORD_TRIGGER_TIMER_STOPPED"
 
         /**
          * How long should the accessibility service record a trigger. In milliseconds.
@@ -86,7 +85,7 @@ class MyAccessibilityService : AccessibilityService() {
             val className = MyAccessibilityService::class.java.name
 
             RootUtils.executeRootCommand(
-                    "settings put secure enabled_accessibility_services io.github.sds100.keymapper/$className")
+                    "settings put secure enabled_accessibility_services ${Constants.PACKAGE_NAME}/$className")
         }
 
         /**

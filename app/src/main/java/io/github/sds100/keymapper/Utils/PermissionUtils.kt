@@ -12,6 +12,7 @@ import android.widget.Toast.LENGTH_SHORT
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import io.github.sds100.keymapper.Action
+import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 
 /**
@@ -69,7 +70,7 @@ object PermissionUtils {
 
             //open settings to grant permission{
             val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
-            intent.data = Uri.parse("package:io.github.sds100.keymapper")
+            intent.data = Uri.parse("package:${Constants.PACKAGE_NAME}")
             intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
 
             ctx.startActivity(intent)

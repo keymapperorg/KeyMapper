@@ -17,6 +17,7 @@ import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import io.github.sds100.keymapper.Action
 import io.github.sds100.keymapper.Adapters.TriggerAdapter
+import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Services.MyAccessibilityService
 import io.github.sds100.keymapper.Utils.ActionUtils
@@ -32,7 +33,7 @@ import org.jetbrains.anko.alert
 abstract class ConfigKeymapActivity : AppCompatActivity() {
 
     companion object {
-        const val ACTION_ADD_KEY_CHIP = "io.github.sds100.keymapper.ADD_KEY_CHIP"
+        const val ACTION_ADD_KEY_CHIP = "${Constants.PACKAGE_NAME}.ADD_KEY_CHIP"
         const val EXTRA_KEY_EVENT = "extra_key_event"
 
         const val REQUEST_CODE_ACTION = 821
