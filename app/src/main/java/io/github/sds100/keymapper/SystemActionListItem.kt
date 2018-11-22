@@ -8,11 +8,13 @@ import io.github.sds100.keymapper.Utils.SystemActionUtils
 
 data class SystemActionListItem(@SystemAction.SystemActionId val action: String,
                                 val stringId: Int,
-                                val iconId: Int?) {
+                                val iconId: Int?,
+                                val isValid: Boolean = true) {
 
-    constructor(@SystemAction.SystemActionId action: String) : this(
+    constructor(@SystemAction.SystemActionId action: String, isValid: Boolean = true) : this(
             action,
             SystemActionUtils.getDescription(action),
-            SystemActionUtils.getIconResource(action)
+            SystemActionUtils.getIconResource(action),
+            isValid
     )
 }

@@ -179,5 +179,6 @@
     <string name="action_open_recents">Open Recents</string>
     <string name="action_open_menu">Open Menu. REQUIRES ROOT!</string>
     <string name="disabled">Disabled</string>
+    <string name="show_hidden_system_actions">Show hidden items</string>
     <!-- System action labels -->
 </resources>

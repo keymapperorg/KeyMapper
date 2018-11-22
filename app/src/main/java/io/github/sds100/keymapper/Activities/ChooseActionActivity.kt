@@ -26,6 +26,7 @@ class ChooseActionActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
     private val mSystemActionTypeFragment = SystemActionTypeFragment()
 
     private lateinit var mSearchViewMenuItem: MenuItem
+    private lateinit var mShowHiddenSystemActionsMenuItem: MenuItem
 
     private val mSearchView
         get() = mSearchViewMenuItem.actionView as SearchView
@@ -55,6 +56,8 @@ class ChooseActionActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
 
         mSearchViewMenuItem = menu!!.findItem(R.id.action_search)
         mSearchView.queryHint = getString(R.string.action_search)
+
+        mShowHiddenSystemActionsMenuItem = menu!!.findItem(R.id.action_show_hidden_system_actions)
 
         //hide the action type spinner when the user opens the SearchView
         mSearchViewMenuItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
@@ -91,6 +94,8 @@ class ChooseActionActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
                 ctx = this,
                 position = position
         )
+
+        mShowHiddenSystemActionsMenuItem.isVisible = actionType == ActionType.SYSTEM_ACTION
 
         when (actionType) {
             ActionType.APP -> {
