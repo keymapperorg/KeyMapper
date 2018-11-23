@@ -31,7 +31,7 @@ object ActionUtils {
         ERROR_CODE_SHORTCUT_NOT_FOUND]
     )
     @Retention(AnnotationRetention.SOURCE)
-    annotation class ActionErrorCode
+    annotation class ErrorCode
 
     const val ERROR_CODE_NO_ACTION_DATA = 345
     const val ERROR_CODE_ACTION_IS_NULL = 123
@@ -170,7 +170,7 @@ object ActionUtils {
         return null
     }
 
-    fun fixActionError(ctx: Context, @ActionErrorCode errorCode: Int, action: Action) {
+    fun fixActionError(ctx: Context, @ErrorCode errorCode: Int, action: Action) {
         when (errorCode) {
             ERROR_CODE_PERMISSION_DENIED -> {
                 val requiredPermission = ActionUtils.getRequiredPermissionForAction(action)
@@ -206,9 +206,10 @@ object ActionUtils {
      * explain why to the user. returns null if their if the action can be performed and there
      * is nothing wrong with it.
      */
-    @ActionErrorCode
+    @ErrorCode
     private fun getErrorCode(ctx: Context, action: Action?): Int? {
         action ?: return ERROR_CODE_ACTION_IS_NULL
+
         if (action.data.isEmpty()) return ERROR_CODE_NO_ACTION_DATA
 
         if (!isRequiredPermissionGranted(ctx, action)) {
@@ -255,7 +256,7 @@ object ActionUtils {
     }
 
     private fun getMessageForErrorCode(ctx: Context,
-                                       @ActionErrorCode errorCode: Int,
+                                       @ErrorCode errorCode: Int,
                                        action: Action?): String? {
         return when (errorCode) {
             ERROR_CODE_ACTION_IS_NULL -> ctx.getString(R.string.error_must_choose_action)

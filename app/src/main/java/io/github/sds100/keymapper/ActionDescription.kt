@@ -14,4 +14,4 @@ data class ActionDescription(
         val iconDrawable: Drawable? = null,
         val title: String? = null,
         val errorMessage: String? = null,
-        @ActionUtils.ActionErrorCode val errorCode: Int? = null)
+        @ActionUtils.ErrorCode val errorCode: Int? = null)
