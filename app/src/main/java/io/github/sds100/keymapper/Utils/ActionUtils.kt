@@ -248,7 +248,7 @@ object ActionUtils {
     }
 
     private fun isRequiredPermissionGranted(ctx: Context, action: Action): Boolean {
-        //if the action doesn't need any special permissions
+        //if the action doesn't need any special permissions return true
         val requiredPermission = getRequiredPermissionForAction(action) ?: return true
 
         return PermissionUtils.isPermissionGranted(ctx, requiredPermission)

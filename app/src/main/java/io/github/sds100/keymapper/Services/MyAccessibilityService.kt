@@ -316,7 +316,9 @@ class MyAccessibilityService : AccessibilityService() {
     }
 
     private fun performAction(action: Action) {
+        //Only show a toast message that Key Mapper is performing an action if the user has enabled it
         val key = getString(R.string.key_pref_show_toast_when_action_performed)
+
         if (defaultSharedPreferences.getBoolean(key, false)) {
             Toast.makeText(this, R.string.performing_action, LENGTH_SHORT).show()
         }
