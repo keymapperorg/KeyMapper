@@ -68,7 +68,7 @@ object SystemActionUtils {
     }
 
     /**
-     * Get a string resource id for a string which describes a specified [SystemAction].
+     * Get resource id for a string which describes a specified [SystemAction].
      */
     @SuppressLint("NewApi")
     @StringRes
