@@ -23,7 +23,7 @@ class ChooseActionActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
     private val mKeycodeActionTypeFragment = KeycodeActionTypeFragment()
     private val mKeyActionTypeFragment = KeyActionTypeFragment()
     private val mTextActionTypeFragment = TextActionTypeFragment()
-    private val mSystemActionTypeFragment = SystemActionTypeFragment()
+    private val mSystemActionTypeFragment = SystemActionFragment()
 
     private lateinit var mSearchViewMenuItem: MenuItem
     private lateinit var mShowHiddenSystemActionsMenuItem: MenuItem

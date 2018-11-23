@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.action_type_recyclerview.*
 /**
  * A Fragment which displays a list of all actions that can be performed on the system
  */
-class SystemActionTypeFragment : FilterableActionTypeFragment(),
+class SystemActionFragment : FilterableActionTypeFragment(),
         OnItemClickListener<SystemActionListItem> {
 
     private val mSystemActionAdapter by lazy {
@@ -48,5 +48,9 @@ class SystemActionTypeFragment : FilterableActionTypeFragment(),
     override fun onItemClick(item: SystemActionListItem) {
         val action = Action(ActionType.SYSTEM_ACTION, item.action)
         chooseSelectedAction(action)
+    }
+
+    fun showHiddenSystemActions() {
+
     }
 }
