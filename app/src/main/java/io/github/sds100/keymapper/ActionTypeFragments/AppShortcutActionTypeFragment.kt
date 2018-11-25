@@ -53,6 +53,7 @@ class AppShortcutActionTypeFragment : FilterableActionTypeFragment(), OnItemClic
         recyclerView.adapter = mAppShortcutAdapter
     }
 
+    @Suppress("DEPRECATION")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
