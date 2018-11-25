@@ -55,7 +55,7 @@ object PermissionUtils {
     fun getPermissionWarningStringRes(permission: String): Int {
         return when (permission) {
             Manifest.permission.WRITE_SETTINGS -> R.string.error_action_requires_write_settings_permission
-            Constants.PERMISSION_ROOT -> R.string.error_requires_root
+            Constants.PERMISSION_ROOT -> R.string.error_action_requires_root
             else -> throw Exception("No error message string resource for that permission!")
         }
     }

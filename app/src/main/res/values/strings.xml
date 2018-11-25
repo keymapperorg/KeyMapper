@@ -125,7 +125,7 @@
     <string name="error_app_isnt_installed">App isn\'t installed!</string>
     <string name="error_app_is_disabled">App is disabled!</string>
     <string name="error_action_requires_write_settings_permission">You need to grant Key Mapper permission to modify system settings to use this action.</string>
-    <string name="error_requires_root">Key Mapper requires root permission!</string>
+    <string name="error_action_requires_root">This action requires root permission!</string>
 
     <string name="error_accessibility_service_disabled">The accessibility service must be enabled for this app to work!</string>
     <string name="error_accessibility_service_enabled">Accessibility Service is enabled!</string>
