@@ -6,11 +6,11 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.sds100.keymapper.KeyMap
+import io.github.sds100.keymapper.KeymapAdapterModel
 import io.github.sds100.keymapper.OnItemClickListener
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Selection.SelectionEvent
 import io.github.sds100.keymapper.Selection.SelectionEvent.*
-import io.github.sds100.keymapper.Utils.ActionUtils
 import kotlinx.android.synthetic.main.keymap_adapter_item.view.*
 
 /**
@@ -20,8 +20,8 @@ import kotlinx.android.synthetic.main.keymap_adapter_item.view.*
 /**
  * Display a list of [KeyMap]s in a RecyclerView
  */
-class KeymapAdapter(private val mOnItemClickListener: OnItemClickListener<KeyMap>
-) : SelectableAdapter<KeyMap, KeymapAdapter.ViewHolder>() {
+class KeymapAdapter(private val mOnItemClickListener: OnItemClickListener<KeymapAdapterModel>
+) : SelectableAdapter<KeymapAdapterModel, KeymapAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -32,7 +32,7 @@ class KeymapAdapter(private val mOnItemClickListener: OnItemClickListener<KeyMap
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         super.onBindViewHolder(holder, position)
 
-        val keyMap = itemList[position]
+        val model = itemList[position]
 
         holder.itemView.apply {
             //only show the chechbox if the user is selecting items
@@ -45,17 +45,15 @@ class KeymapAdapter(private val mOnItemClickListener: OnItemClickListener<KeyMap
 
             checkBox.isChecked = iSelectionProvider.isSelected(holder.itemId)
 
-            //display information about the action to the user
-            val actionDescription = ActionUtils.getDescription(context, keyMap.action)
-            actionDescriptionLayout.setDescription(actionDescription)
+            actionDescriptionLayout.setDescription(model.actionDescription)
 
             //show all the triggers in a list
-            val triggerAdapter = TriggerAdapter(keyMap.triggerList, showRemoveButton = false)
+            val triggerAdapter = TriggerAdapter(model.triggerList.toMutableList(), showRemoveButton = false)
 
             recyclerViewTriggers.layoutManager = LinearLayoutManager(context)
             recyclerViewTriggers.adapter = triggerAdapter
 
-            if (keyMap.isEnabled) {
+            if (model.isEnabled) {
                 textViewDisabled.visibility = View.GONE
             } else {
                 textViewDisabled.visibility = View.VISIBLE
@@ -68,7 +66,7 @@ class KeymapAdapter(private val mOnItemClickListener: OnItemClickListener<KeyMap
     }
 
     inner class ViewHolder(itemView: View)
-        : SelectableAdapter<KeyMap, ViewHolder>.ViewHolder(itemView) {
+        : SelectableAdapter<KeymapAdapterModel, ViewHolder>.ViewHolder(itemView) {
         private val mCheckBox = itemView.findViewById<CheckBox>(R.id.checkBox)!!
 
         init {

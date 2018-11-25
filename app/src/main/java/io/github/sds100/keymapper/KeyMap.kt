@@ -8,7 +8,6 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import io.github.sds100.keymapper.Data.KeyMapDao
-import io.github.sds100.keymapper.Selection.SelectableItem
 
 /**
  * Created by sds100 on 12/07/2018.
@@ -17,7 +16,7 @@ import io.github.sds100.keymapper.Selection.SelectableItem
 @Entity(tableName = KeyMapDao.TABLE_NAME)
 data class KeyMap(
         @PrimaryKey(autoGenerate = true)
-        override val id: Long,
+        val id: Long,
 
         @ColumnInfo(name = KeyMapDao.KEY_TRIGGER_LIST)
         val triggerList: MutableList<Trigger> = mutableListOf(),
@@ -26,7 +25,7 @@ data class KeyMap(
         var action: Action? = null,
 
         var isEnabled: Boolean = true
-) : SelectableItem() {
+) {
 
     override fun hashCode() = id.toInt()
     override fun equals(other: Any?): Boolean {

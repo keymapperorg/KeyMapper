@@ -36,7 +36,7 @@ import org.jetbrains.anko.append
 import org.jetbrains.anko.defaultSharedPreferences
 
 class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemClickListener,
-        OnItemClickListener<KeyMap> {
+        OnItemClickListener<KeymapAdapterModel> {
 
     private val mBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -69,7 +69,8 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
         mViewModel = ViewModelProviders.of(this).get(KeyMapListViewModel::class.java)
 
         mViewModel.keyMapList.observe(this, Observer { keyMapList ->
-            mKeymapAdapter.itemList = keyMapList
+
+            mKeymapAdapter.itemList = KeymapAdapterModel.createModelsFromKeymaps(this, keyMapList)
             mKeymapAdapter.notifyDataSetChanged()
 
             updateAccessibilityServiceKeymapCache(keyMapList)
@@ -123,9 +124,6 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
             imeServiceStatusLayout.changeToServiceDisabledState()
         }
 
-        /* update any keymap list items which are showing since, for example, the user could have
-        left the app and uninstalled an app which is a keymap action so an error message should now
-        be displayed */
         mKeymapAdapter.invalidateBoundViewHolders()
     }
 
@@ -188,7 +186,7 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
         }
     }
 
-    override fun onItemClick(item: KeyMap) {
+    override fun onItemClick(item: KeymapAdapterModel) {
         val intent = Intent(this, EditKeymapActivity::class.java)
         intent.putExtra(EditKeymapActivity.EXTRA_KEYMAP_ID, item.id)
 
