@@ -99,7 +99,7 @@
     <string name="title_pref_auto_show_ime_picker">Automatically show input method picker</string>
     <string name="title_pref_show_toast_when_action_performed">Show a toast message when you perform an action</string>
 
-    <string name="summary_pref_auto_show_ime_picker">When a Bluetooth  device you have chosen connects or disconnects, show the input method picker automatically. Choose the devices below.</string>
+    <string name="summary_pref_auto_show_ime_picker">When a Bluetooth device you have chosen connects or disconnects, the input method picker will show automatically. Choose the devices below.</string>
     <string name="summary_pref_show_notification">Show a persistent notification to allow you to pick an input method. (The app requires ROOT permission for it to work on Android 8.1 and higher).</string>
     <string name="summary_pref_show_notification_on_boot">Automatically start showing the notification when your device starts up.</string>
     <string name="summary_pref_show_toast_when_action_performed">Whenever an action is performed, a little message will popup on the screen telling you Key Mapper is performing an action.</string>
