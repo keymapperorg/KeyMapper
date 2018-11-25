@@ -28,12 +28,15 @@ import io.github.sds100.keymapper.Selection.SelectionEvent
 import io.github.sds100.keymapper.Selection.SelectionProvider
 import io.github.sds100.keymapper.Services.MyAccessibilityService
 import io.github.sds100.keymapper.Services.MyIMEService
+import io.github.sds100.keymapper.Utils.ActionUtils
 import io.github.sds100.keymapper.Utils.NotificationUtils
 import io.github.sds100.keymapper.ViewModels.KeyMapListViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import org.jetbrains.anko.append
 import org.jetbrains.anko.defaultSharedPreferences
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
 
 class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemClickListener,
         OnItemClickListener<KeymapAdapterModel> {
@@ -41,12 +44,13 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
     private val mBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent!!.action) {
-                Intent.ACTION_INPUT_METHOD_CHANGED -> mKeymapAdapter.invalidateBoundViewHolders()
+                Intent.ACTION_INPUT_METHOD_CHANGED -> populateKeymapsAsync(mViewModel.keyMapList.value!!)
             }
         }
     }
 
     private val mKeymapAdapter: KeymapAdapter = KeymapAdapter(this)
+
     private lateinit var mViewModel: KeyMapListViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,13 +73,9 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
         mViewModel = ViewModelProviders.of(this).get(KeyMapListViewModel::class.java)
 
         mViewModel.keyMapList.observe(this, Observer { keyMapList ->
-
-            mKeymapAdapter.itemList = KeymapAdapterModel.createModelsFromKeymaps(this, keyMapList)
-            mKeymapAdapter.notifyDataSetChanged()
+            populateKeymapsAsync(keyMapList)
 
             updateAccessibilityServiceKeymapCache(keyMapList)
-
-            setCaption()
         })
 
         //start NewKeymapActivity when the fab is pressed
@@ -124,7 +124,11 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
             imeServiceStatusLayout.changeToServiceDisabledState()
         }
 
-        mKeymapAdapter.invalidateBoundViewHolders()
+        val keyMapList = mViewModel.keyMapList.value
+
+        if (keyMapList != null) {
+            populateKeymapsAsync(keyMapList)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
@@ -200,6 +204,27 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
         intent.putExtra(MyAccessibilityService.EXTRA_KEYMAP_CACHE_JSON, jsonString)
 
         sendBroadcast(intent)
+    }
+
+    private fun populateKeymapsAsync(keyMapList: List<KeyMap>) {
+        doAsync {
+            val adapterModels = mutableListOf<KeymapAdapterModel>()
+
+            keyMapList.forEach { keyMap ->
+
+                val actionDescription = ActionUtils.getDescription(this@MainActivity, keyMap.action)
+
+                adapterModels.add(KeymapAdapterModel(keyMap, actionDescription))
+            }
+
+            mKeymapAdapter.itemList = adapterModels
+
+            uiThread {
+                mKeymapAdapter.notifyDataSetChanged()
+                progressBar.visibility = View.GONE
+                setCaption()
+            }
+        }
     }
 
     /**
