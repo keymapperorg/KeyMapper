@@ -21,11 +21,9 @@ object ErrorCodeUtils {
     const val ERROR_CODE_IME_SERVICE_NOT_CHOSEN = 6
 
     fun fixError(ctx: Context, errorCodeResult: ErrorCodeResult) {
-        if (errorCodeResult.data == null) return
-
         when (errorCodeResult.errorCode) {
             ERROR_CODE_PERMISSION_DENIED -> {
-                PermissionUtils.requestPermission(ctx, errorCodeResult.data)
+                PermissionUtils.requestPermission(ctx, errorCodeResult.data!!)
             }
 
             ERROR_CODE_APP_DISABLED -> {
@@ -37,11 +35,11 @@ object ErrorCodeUtils {
             }
 
             ERROR_CODE_APP_UNINSTALLED -> {
-                PackageUtils.viewAppOnline(ctx, errorCodeResult.data)
+                PackageUtils.viewAppOnline(ctx, errorCodeResult.data!!)
             }
 
             ERROR_CODE_SHORTCUT_NOT_FOUND -> {
-                PackageUtils.viewAppOnline(ctx, errorCodeResult.data)
+                PackageUtils.viewAppOnline(ctx, errorCodeResult.data!!)
             }
 
             ERROR_CODE_IME_SERVICE_NOT_CHOSEN -> {
