@@ -23,7 +23,9 @@ object ErrorCodeUtils {
     fun fixError(ctx: Context, errorCodeResult: ErrorCodeResult) {
         when (errorCodeResult.errorCode) {
             ERROR_CODE_PERMISSION_DENIED -> {
-                PermissionUtils.requestPermission(ctx, errorCodeResult.data!!)
+                val permission = errorCodeResult.data!!
+
+                PermissionUtils.requestPermission(ctx, permission)
             }
 
             ERROR_CODE_APP_DISABLED -> {

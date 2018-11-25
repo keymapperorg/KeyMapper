@@ -23,6 +23,9 @@ object PermissionUtils {
         if (permission.contains(Manifest.permission.WRITE_SETTINGS) &&
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return Settings.System.canWrite(ctx)
+
+        } else if (permission.contains(Constants.PERMISSION_ROOT)) {
+            return RootUtils.checkAppHasRootPermission()
         }
 
         return ContextCompat.checkSelfPermission(ctx, permission) ==
@@ -42,6 +45,9 @@ object PermissionUtils {
             intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
 
             ctx.startActivity(intent)
+
+        } else if (permission.contains(Constants.PERMISSION_ROOT)) {
+            RootUtils.checkAppHasRootPermission()
         }
     }
 
