@@ -5,7 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.inputmethodservice.InputMethodService
+import android.provider.Settings
 import android.view.inputmethod.InputMethodManager
+import io.github.sds100.keymapper.Constants
 
 /**
  * Created by sds100 on 28/09/2018.
@@ -25,6 +27,20 @@ class MyIMEService : InputMethodService() {
 
             return enabledMethods.any { it.packageName == "io.github.sds100.keymapper" }
         }
+
+        /**
+         * @return whether the Key Mapper input method is chosen
+         */
+        fun isInputMethodChosen(ctx: Context): Boolean {
+            //get the current input method
+            val chosenImeId = Settings.Secure.getString(
+                    ctx.contentResolver,
+                    Settings.Secure.DEFAULT_INPUT_METHOD
+            )
+
+            return chosenImeId.contains(Constants.PACKAGE_NAME)
+        }
+
     }
 
     private val mBroadcastReceiver = object : BroadcastReceiver() {

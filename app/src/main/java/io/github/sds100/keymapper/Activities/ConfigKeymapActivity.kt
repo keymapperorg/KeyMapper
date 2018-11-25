@@ -18,6 +18,9 @@ import com.google.gson.Gson
 import io.github.sds100.keymapper.Action
 import io.github.sds100.keymapper.Adapters.TriggerAdapter
 import io.github.sds100.keymapper.Constants
+import io.github.sds100.keymapper.ErrorCodeUtils
+import io.github.sds100.keymapper.ErrorCodeUtils.ERROR_CODE_ACTION_IS_NULL
+import io.github.sds100.keymapper.ErrorCodeUtils.ERROR_CODE_NO_ACTION_DATA
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Services.MyAccessibilityService
 import io.github.sds100.keymapper.Utils.ActionUtils
@@ -51,8 +54,13 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
                 ACTION_ADD_KEY_CHIP -> {
                     chipGroupTriggerPreview.addChip(keyEvent)
                 }
+
                 MyAccessibilityService.ACTION_RECORD_TRIGGER_TIMER_STOPPED -> {
                     stopRecordingTrigger()
+                }
+
+                Intent.ACTION_INPUT_METHOD_CHANGED -> {
+                    viewModel.keyMap.notifyObservers()
                 }
             }
         }
@@ -81,6 +89,7 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
         val intentFilter = IntentFilter()
         intentFilter.addAction(ACTION_ADD_KEY_CHIP)
         intentFilter.addAction(MyAccessibilityService.ACTION_RECORD_TRIGGER_TIMER_STOPPED)
+        intentFilter.addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
 
         registerReceiver(mBroadcastReceiver, intentFilter)
 
@@ -89,18 +98,18 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
             val actionDescription = ActionUtils.getDescription(this, keyMap.action)
             actionDescriptionLayout.setDescription(actionDescription)
 
-            //custom button stuff.
-            if (actionDescription.errorCode == ActionUtils.ERROR_CODE_ACTION_IS_NULL ||
-                    actionDescription.errorCode == ActionUtils.ERROR_CODE_NO_ACTION_DATA) {
-                buttonSecondary.visibility = View.GONE
-            } else {
-                buttonSecondary.visibility = View.VISIBLE
-
-                /* if there is no error message, when the button is pressed the user can test the
+            /* if there is no error message, when the button is pressed, the user can test the
                 action */
-                if (actionDescription.errorMessage == null) {
-                    buttonSecondary.text = getString(R.string.button_test)
+            if (actionDescription.errorCode == null) {
+                buttonSecondary.text = getString(R.string.button_test)
+            } else {
+                //secondary button stuff.
+                if (actionDescription.errorCode == ERROR_CODE_ACTION_IS_NULL ||
+                        actionDescription.errorCode == ERROR_CODE_NO_ACTION_DATA) {
+
+                    buttonSecondary.visibility = View.GONE
                 } else {
+                    buttonSecondary.visibility = View.VISIBLE
                     buttonSecondary.text = getString(R.string.button_fix)
                 }
             }
@@ -109,7 +118,7 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
 
             buttonSecondary.setOnClickListener {
                 if (actionDescription.errorCode != null) {
-                    ActionUtils.fixActionError(this, actionDescription.errorCode, keyMap.action!!)
+                    ErrorCodeUtils.fixError(this, actionDescription.errorCodeResult!!)
                 } else {
                     testAction()
                 }

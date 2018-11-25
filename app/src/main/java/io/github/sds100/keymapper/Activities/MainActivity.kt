@@ -1,6 +1,9 @@
 package io.github.sds100.keymapper.Activities
 
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -34,6 +37,14 @@ import org.jetbrains.anko.defaultSharedPreferences
 
 class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemClickListener,
         OnItemClickListener<KeyMap> {
+
+    private val mBroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            when (intent!!.action) {
+                Intent.ACTION_INPUT_METHOD_CHANGED -> mKeymapAdapter.invalidateBoundViewHolders()
+            }
+        }
+    }
 
     private val mKeymapAdapter: KeymapAdapter = KeymapAdapter(this)
     private lateinit var mViewModel: KeyMapListViewModel
@@ -91,6 +102,10 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
         //recyclerview stuff
         recyclerViewKeyMaps.layoutManager = LinearLayoutManager(this)
         recyclerViewKeyMaps.adapter = mKeymapAdapter
+
+        val intentFilter = IntentFilter()
+        intentFilter.addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
+        registerReceiver(mBroadcastReceiver, intentFilter)
     }
 
     override fun onResume() {

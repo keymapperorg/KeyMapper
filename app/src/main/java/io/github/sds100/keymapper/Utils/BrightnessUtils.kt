@@ -49,13 +49,13 @@ object BrightnessUtils {
     }
 
     fun setBrightnessMode(ctx: Context, @BrightnessMode mode: Int) {
-        if (!PermissionUtils.hasWriteSettingsPermission(ctx)) return
+        if (!PermissionUtils.haveWriteSettingsPermission(ctx)) return
 
         Settings.System.putInt(ctx.contentResolver, SCREEN_BRIGHTNESS_MODE, mode)
     }
 
     fun toggleAutoBrightness(ctx: Context) {
-        if (!PermissionUtils.hasWriteSettingsPermission(ctx)) return
+        if (!PermissionUtils.haveWriteSettingsPermission(ctx)) return
 
         val currentBrightnessMode =
                 Settings.System.getInt(ctx.contentResolver, SCREEN_BRIGHTNESS_MODE)

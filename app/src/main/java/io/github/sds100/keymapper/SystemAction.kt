@@ -1,66 +1,12 @@
 package io.github.sds100.keymapper
 
-import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.annotation.StringDef
 
 /**
  * Created by sds100 on 04/08/2018.
  */
 object SystemAction {
-
-    @SuppressLint("NewApi")
-    @StringDef(value = [
-        TOGGLE_WIFI,
-        ENABLE_WIFI,
-        DISABLE_WIFI,
-
-        TOGGLE_BLUETOOTH,
-        ENABLE_BLUETOOTH,
-        DISABLE_BLUETOOTH,
-
-        TOGGLE_MOBILE_DATA,
-        ENABLE_MOBILE_DATA,
-        DISABLE_MOBILE_DATA,
-
-        TOGGLE_AUTO_BRIGHTNESS,
-        ENABLE_AUTO_BRIGHTNESS,
-        DISABLE_AUTO_BRIGHTNESS,
-        INCREASE_BRIGHTNESS,
-        DECREASE_BRIGHTNESS,
-
-        TOGGLE_AUTO_ROTATE,
-        ENABLE_AUTO_ROTATE,
-        DISABLE_AUTO_ROTATE,
-        PORTRAIT_MODE,
-        LANDSCAPE_MODE,
-
-        VOLUME_UP,
-        VOLUME_DOWN,
-        VOLUME_SHOW_DIALOG,
-        VOLUME_TOGGLE_MUTE,
-        VOLUME_UNMUTE,
-        VOLUME_MUTE,
-
-        EXPAND_NOTIFICATION_DRAWER,
-        EXPAND_QUICK_SETTINGS,
-        COLLAPSE_STATUS_BAR,
-
-        PAUSE_MEDIA,
-        PLAY_MEDIA,
-        PLAY_PAUSE_MEDIA,
-        NEXT_TRACK,
-        PREVIOUS_TRACK,
-
-        GO_BACK,
-        GO_HOME,
-        OPEN_RECENTS,
-        OPEN_MENU
-    ])
-    @Retention(AnnotationRetention.SOURCE)
-    annotation class SystemActionId
-
     //wifi
     const val TOGGLE_WIFI = "toggle_wifi"
     const val ENABLE_WIFI = "enable_wifi"
@@ -128,5 +74,16 @@ object SystemAction {
     const val GO_BACK = "go_back"
     const val GO_HOME = "go_home"
     const val OPEN_RECENTS = "open_recents"
+
+    /**
+     * REQUIRES ROOT
+     */
     const val OPEN_MENU = "open_menu"
+
+    const val CATEGORY_WIFI = "wifi"
+    const val CATEGORY_BLUETOOTH = "bluetooth"
+    const val CATEGORY_MOBILE_DATA = "mobile_data"
+    const val CATEGORY_NAVIGATION = "navigation"
+    const val CATEGORY_VOLUME = "volume"
+    const val CATEGORY_SCREEN_ROTATION = "screen_rotation"
 }

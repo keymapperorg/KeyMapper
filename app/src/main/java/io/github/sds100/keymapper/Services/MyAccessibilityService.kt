@@ -1,9 +1,10 @@
 package io.github.sds100.keymapper.Services
 
 import android.accessibilityservice.AccessibilityService
-import android.content.*
-import android.media.AudioManager
-import android.os.Build
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Handler
 import android.provider.Settings
 import android.view.KeyEvent
@@ -15,53 +16,14 @@ import com.google.gson.Gson
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Activities.ConfigKeymapActivity
 import io.github.sds100.keymapper.Data.KeyMapRepository
-import io.github.sds100.keymapper.StateChange.*
-import io.github.sds100.keymapper.SystemAction.COLLAPSE_STATUS_BAR
-import io.github.sds100.keymapper.SystemAction.DECREASE_BRIGHTNESS
-import io.github.sds100.keymapper.SystemAction.DISABLE_AUTO_BRIGHTNESS
-import io.github.sds100.keymapper.SystemAction.DISABLE_AUTO_ROTATE
-import io.github.sds100.keymapper.SystemAction.DISABLE_BLUETOOTH
-import io.github.sds100.keymapper.SystemAction.DISABLE_MOBILE_DATA
-import io.github.sds100.keymapper.SystemAction.DISABLE_WIFI
-import io.github.sds100.keymapper.SystemAction.ENABLE_AUTO_BRIGHTNESS
-import io.github.sds100.keymapper.SystemAction.ENABLE_AUTO_ROTATE
-import io.github.sds100.keymapper.SystemAction.ENABLE_BLUETOOTH
-import io.github.sds100.keymapper.SystemAction.ENABLE_MOBILE_DATA
-import io.github.sds100.keymapper.SystemAction.ENABLE_WIFI
-import io.github.sds100.keymapper.SystemAction.EXPAND_NOTIFICATION_DRAWER
-import io.github.sds100.keymapper.SystemAction.EXPAND_QUICK_SETTINGS
-import io.github.sds100.keymapper.SystemAction.GO_BACK
-import io.github.sds100.keymapper.SystemAction.GO_HOME
-import io.github.sds100.keymapper.SystemAction.INCREASE_BRIGHTNESS
-import io.github.sds100.keymapper.SystemAction.LANDSCAPE_MODE
-import io.github.sds100.keymapper.SystemAction.NEXT_TRACK
-import io.github.sds100.keymapper.SystemAction.OPEN_MENU
-import io.github.sds100.keymapper.SystemAction.OPEN_RECENTS
-import io.github.sds100.keymapper.SystemAction.PAUSE_MEDIA
-import io.github.sds100.keymapper.SystemAction.PLAY_MEDIA
-import io.github.sds100.keymapper.SystemAction.PLAY_PAUSE_MEDIA
-import io.github.sds100.keymapper.SystemAction.PORTRAIT_MODE
-import io.github.sds100.keymapper.SystemAction.PREVIOUS_TRACK
-import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_BRIGHTNESS
-import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_ROTATE
-import io.github.sds100.keymapper.SystemAction.TOGGLE_BLUETOOTH
-import io.github.sds100.keymapper.SystemAction.TOGGLE_MOBILE_DATA
-import io.github.sds100.keymapper.SystemAction.TOGGLE_WIFI
-import io.github.sds100.keymapper.SystemAction.VOLUME_DOWN
-import io.github.sds100.keymapper.SystemAction.VOLUME_MUTE
-import io.github.sds100.keymapper.SystemAction.VOLUME_SHOW_DIALOG
-import io.github.sds100.keymapper.SystemAction.VOLUME_TOGGLE_MUTE
-import io.github.sds100.keymapper.SystemAction.VOLUME_UNMUTE
-import io.github.sds100.keymapper.SystemAction.VOLUME_UP
-import io.github.sds100.keymapper.Utils.*
-import org.jetbrains.anko.defaultSharedPreferences
-
+import io.github.sds100.keymapper.Utils.ActionUtils
+import io.github.sds100.keymapper.Utils.RootUtils
 
 /**
  * Created by sds100 on 16/07/2018.
  */
 
-class MyAccessibilityService : AccessibilityService() {
+class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalAction {
     companion object {
         const val EXTRA_KEYMAP_CACHE_JSON = "extra_keymap_cache_json"
         const val EXTRA_ACTION = "action"
@@ -115,6 +77,9 @@ class MyAccessibilityService : AccessibilityService() {
         }
     }
 
+    override val context
+        get() = this
+
     private val mRecordingTimerHandler = Handler()
     private val mRecordingTimerRunnable = Runnable {
         mRecordingTrigger = false
@@ -162,7 +127,7 @@ class MyAccessibilityService : AccessibilityService() {
                 }
 
                 ACTION_TEST_ACTION -> {
-                    performAction(intent.getSerializableExtra(EXTRA_ACTION) as Action)
+                    mPerformActionDelegate.performAction(intent.getSerializableExtra(EXTRA_ACTION) as Action)
                 }
             }
         }
@@ -185,6 +150,8 @@ class MyAccessibilityService : AccessibilityService() {
     private var mPressedTriggerKeys = mutableListOf<Int>()
 
     private var mRecordingTrigger = false
+
+    private val mPerformActionDelegate = PerformActionDelegate(this, this)
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -271,21 +238,18 @@ class MyAccessibilityService : AccessibilityService() {
                 //if the keymap can't be found, pass the keyevent to the system
                 if (keyMap == null) return super.onKeyEvent(event)
 
-                if (keyMap.action != null) {
-                    //if the Key Mapper input method isn't chosen, pass the key event to the system.
-                    if (keyMap.action!!.requiresIME && !isInputMethodChosen()) {
-                        Toast.makeText(
-                                this,
-                                R.string.error_ime_must_be_chosen,
-                                Toast.LENGTH_SHORT
-                        ).show()
-                        return super.onKeyEvent(event)
-                    }
+                val errorCodeResult = ActionUtils.getPotentialErrorCode(this, keyMap.action)
 
-                    performAction(keyMap.action!!)
+                //if there is no error
+                if (errorCodeResult == null) {
+                    mPerformActionDelegate.performAction(keyMap.action!!)
+                    return true
+
+                } else {
+                    val errorDescription = ErrorCodeUtils.getErrorCodeResultDescription(this, errorCodeResult)
+
+                    Toast.makeText(this, errorDescription, LENGTH_SHORT).show()
                 }
-
-                return true
             }
         }
 
@@ -315,139 +279,7 @@ class MyAccessibilityService : AccessibilityService() {
         }
     }
 
-    private fun performAction(action: Action) {
-        //Only show a toast message that Key Mapper is performing an action if the user has enabled it
-        val key = getString(R.string.key_pref_show_toast_when_action_performed)
-
-        if (defaultSharedPreferences.getBoolean(key, false)) {
-            Toast.makeText(this, R.string.performing_action, LENGTH_SHORT).show()
-        }
-
-        //if a toast message was shown that the action needs permission
-        if (PermissionUtils.showPermissionWarningsForAction(this, action)) return
-
-        when (action.type) {
-            ActionType.APP -> {
-                val intent = packageManager.getLaunchIntentForPackage(action.data)
-
-                //intent = null if the app doesn't exist
-                if (intent != null) {
-                    startActivity(intent)
-                } else {
-                    Toast.makeText(this, R.string.error_app_isnt_installed, LENGTH_SHORT).show()
-                }
-            }
-
-            ActionType.APP_SHORTCUT -> {
-                val intent = Intent.parseUri(action.data, 0)
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-
-                try {
-                    startActivity(intent)
-                } catch (exception: ActivityNotFoundException) {
-                    Toast.makeText(this, R.string.error_shortcut_not_found, LENGTH_SHORT).show()
-                }
-            }
-
-            ActionType.TEXT_BLOCK -> {
-                val intent = Intent(MyIMEService.ACTION_INPUT_TEXT)
-                //put the text in the intent
-                intent.putExtra(MyIMEService.EXTRA_TEXT, action.data)
-
-                sendBroadcast(intent)
-            }
-
-            ActionType.SYSTEM_ACTION -> performSystemAction(action.data)
-
-            else -> {
-                //for actions which require the IME service
-                if (action.type == ActionType.KEYCODE || action.type == ActionType.KEY) {
-                    val intent = Intent(MyIMEService.ACTION_INPUT_KEYCODE)
-                    //put the keycode in the intent
-                    intent.putExtra(MyIMEService.EXTRA_KEYCODE, action.data.toInt())
-
-                    sendBroadcast(intent)
-                }
-            }
-        }
-    }
-
-    /**
-     * @return whether the Key Mapper input method is chosen
-     */
-    private fun isInputMethodChosen(): Boolean {
-        //get the current input method
-        val id = Settings.Secure.getString(
-                contentResolver,
-                Settings.Secure.DEFAULT_INPUT_METHOD
-        )
-
-        return id.contains(packageName)
-    }
-
     @Suppress("NON_EXHAUSTIVE_WHEN")
-    private fun performSystemAction(@SystemAction.SystemActionId action: String) {
-        when (action) {
-            ENABLE_WIFI -> WifiUtils.changeWifiState(this, ENABLE)
-            DISABLE_WIFI -> WifiUtils.changeWifiState(this, DISABLE)
-            TOGGLE_WIFI -> WifiUtils.changeWifiState(this, TOGGLE)
-
-            TOGGLE_BLUETOOTH -> BluetoothUtils.changeBluetoothState(TOGGLE)
-            ENABLE_BLUETOOTH -> BluetoothUtils.changeBluetoothState(ENABLE)
-            DISABLE_BLUETOOTH -> BluetoothUtils.changeBluetoothState(DISABLE)
-
-            TOGGLE_MOBILE_DATA -> MobileDataUtils.toggleMobileData(this)
-            ENABLE_MOBILE_DATA -> MobileDataUtils.enableMobileData()
-            DISABLE_MOBILE_DATA -> MobileDataUtils.disableMobileData()
-
-            TOGGLE_AUTO_BRIGHTNESS -> BrightnessUtils.toggleAutoBrightness(this)
-            ENABLE_AUTO_BRIGHTNESS ->
-                BrightnessUtils.setBrightnessMode(this, Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC)
-
-            DISABLE_AUTO_BRIGHTNESS ->
-                BrightnessUtils.setBrightnessMode(this, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL)
-
-            INCREASE_BRIGHTNESS -> BrightnessUtils.increaseBrightness(this)
-            DECREASE_BRIGHTNESS -> BrightnessUtils.decreaseBrightness(this)
-
-            TOGGLE_AUTO_ROTATE -> ScreenRotationUtils.toggleAutoRotate(this)
-            ENABLE_AUTO_ROTATE -> ScreenRotationUtils.enableAutoRotate(this)
-            DISABLE_AUTO_ROTATE -> ScreenRotationUtils.disableAutoRotate(this)
-            PORTRAIT_MODE -> ScreenRotationUtils.forcePortraitMode(this)
-            LANDSCAPE_MODE -> ScreenRotationUtils.forceLandscapeMode(this)
-
-            VOLUME_UP -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_RAISE)
-            VOLUME_DOWN -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_LOWER)
-            VOLUME_SHOW_DIALOG -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_SAME)
-
-            EXPAND_NOTIFICATION_DRAWER -> StatusBarUtils.expandNotificationDrawer()
-            EXPAND_QUICK_SETTINGS -> StatusBarUtils.expandQuickSettings()
-            COLLAPSE_STATUS_BAR -> StatusBarUtils.collapseStatusBar()
-
-            PAUSE_MEDIA -> MediaUtils.pauseMediaPlayback(this)
-            PLAY_MEDIA -> MediaUtils.playMedia(this)
-            PLAY_PAUSE_MEDIA -> MediaUtils.playPauseMediaPlayback(this)
-            NEXT_TRACK -> MediaUtils.nextTrack(this)
-            PREVIOUS_TRACK -> MediaUtils.previousTrack(this)
-
-            GO_BACK -> performGlobalAction(GLOBAL_ACTION_BACK)
-            GO_HOME -> performGlobalAction(GLOBAL_ACTION_HOME)
-            OPEN_RECENTS -> performGlobalAction(GLOBAL_ACTION_RECENTS)
-
-            //there must be a way to do this without root
-            OPEN_MENU -> RootUtils.executeRootCommand("input keyevent 82")
-
-            else -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    when (action) {
-                        VOLUME_UNMUTE -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_UNMUTE)
-                        VOLUME_MUTE -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_MUTE)
-                        VOLUME_TOGGLE_MUTE -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_TOGGLE_MUTE)
-                    }
-                }
-            }
-        }
-    }
 
     private val KeyEvent.isVolumeKey: Boolean
         get() = keyCode == KeyEvent.KEYCODE_VOLUME_DOWN

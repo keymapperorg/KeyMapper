@@ -7,11 +7,8 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import android.widget.Toast
-import android.widget.Toast.LENGTH_SHORT
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-import io.github.sds100.keymapper.Action
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 
@@ -23,7 +20,7 @@ object PermissionUtils {
 
     fun isPermissionGranted(ctx: Context, permission: String): Boolean {
         //a different method must be used for WRITE_SETTINGS permission
-        if (permission == Manifest.permission.WRITE_SETTINGS &&
+        if (permission.contains(Manifest.permission.WRITE_SETTINGS) &&
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return Settings.System.canWrite(ctx)
         }
@@ -32,40 +29,11 @@ object PermissionUtils {
                 PackageManager.PERMISSION_GRANTED
     }
 
-    fun hasWriteSettingsPermission(ctx: Context) =
-            isPermissionGranted(ctx, Manifest.permission.WRITE_SETTINGS)
+    fun haveWriteSettingsPermission(ctx: Context) = isPermissionGranted(ctx, Manifest.permission.WRITE_SETTINGS)
 
-    /**
-     * If the action requires a permission which the user hasn't granted, a toast message will
-     * tell the user they need to grant permission.
-     *
-     * @return whether a toast was shown.
-     */
-    fun showPermissionWarningsForAction(ctx: Context, action: Action): Boolean {
-        //if the action doesn't require any special permissions, don't bother showing a toast
-        val requiredPermission = ActionUtils.getRequiredPermissionForAction(action) ?: return false
-        val isPermissionGranted = isPermissionGranted(ctx, requiredPermission)
-
-        //if permission is granted, don't bother showing a toast message
-        if (isPermissionGranted) return false
-
-        //show toast message if the action requires WRITE_SETTINGS permission
-        if (requiredPermission == Manifest.permission.WRITE_SETTINGS &&
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Toast.makeText(
-                    ctx,
-                    getPermissionWarningStringRes(requiredPermission),
-                    LENGTH_SHORT
-            ).show()
-        } else {
-            //other permissions will go here
-        }
-
-        return true
-    }
-
-    fun requestPermission(ctx: Context, permission: String, requestCode: Int = 0) {
-        if (permission == Manifest.permission.WRITE_SETTINGS &&
+    fun requestPermission(ctx: Context, vararg permission: String, requestCode: Int = 0) {
+        //WRITE_SETTINGS permission only has to be granted on Marshmallow or higher
+        if (permission.contains(Manifest.permission.WRITE_SETTINGS) &&
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
             //open settings to grant permission{
@@ -80,8 +48,8 @@ object PermissionUtils {
     @StringRes
     fun getPermissionWarningStringRes(permission: String): Int {
         return when (permission) {
-            Manifest.permission.WRITE_SETTINGS ->
-                R.string.error_action_requires_write_settings_permission
+            Manifest.permission.WRITE_SETTINGS -> R.string.error_action_requires_write_settings_permission
+            Constants.PERMISSION_ROOT -> R.string.error_requires_root
             else -> throw Exception("No error message string resource for that permission!")
         }
     }

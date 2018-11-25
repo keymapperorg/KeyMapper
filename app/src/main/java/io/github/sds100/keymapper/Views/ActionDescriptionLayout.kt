@@ -38,14 +38,13 @@ class ActionDescriptionLayout(
 
     fun setDescription(description: ActionDescription) {
         description.apply {
-
-            textViewTitle.setVisible(title != null)
-            textViewError.setVisible(errorMessage != null)
-            imageViewAction.setVisible(iconDrawable != null)
-
             textViewTitle.text = title
-            textViewError.text = errorMessage
             imageViewAction.setImageDrawable(iconDrawable)
+            textViewError.text = errorDescription
+
+            imageViewAction.setVisible(iconDrawable != null)
+            textViewTitle.setVisible(title != null)
+            textViewError.setVisible(errorCodeResult != null)
         }
     }
 

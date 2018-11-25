@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper
 
 import android.graphics.drawable.Drawable
-import io.github.sds100.keymapper.Utils.ActionUtils
 
 /**
  * Created by sds100 on 07/10/2018.
@@ -13,5 +12,9 @@ import io.github.sds100.keymapper.Utils.ActionUtils
 data class ActionDescription(
         val iconDrawable: Drawable? = null,
         val title: String? = null,
-        val errorMessage: String? = null,
-        @ActionUtils.ErrorCode val errorCode: Int? = null)
+        val errorDescription: String? = null,
+        val errorCodeResult: ErrorCodeResult? = null) {
+
+    val errorCode: Int?
+        get() = errorCodeResult?.errorCode
+}
