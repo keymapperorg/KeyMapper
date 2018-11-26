@@ -178,8 +178,8 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
     override fun onBackPressed() {
         //ask the user whether they are sure they want to leave the activity
         alert {
-            title = getString(R.string.dialog_title_are_you_sure)
-            message = getString(R.string.dialog_message_are_you_sure_want_to_leave)
+            titleResource = R.string.dialog_title_are_you_sure
+            messageResource = R.string.dialog_message_are_you_sure_want_to_leave
             positiveButton(android.R.string.yes, onClicked = { super.onBackPressed() })
             negativeButton(android.R.string.no, onClicked = { dialog -> dialog.cancel() })
         }.show()
