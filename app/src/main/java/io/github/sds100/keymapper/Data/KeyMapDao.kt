@@ -2,9 +2,7 @@ package io.github.sds100.keymapper.Data
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import io.github.sds100.keymapper.ActionTypeTypeConverter
 import io.github.sds100.keymapper.KeyMap
-import io.github.sds100.keymapper.TypeConverters.TriggerListTypeConverter
 
 /**
  * Created by sds100 on 05/09/2018.

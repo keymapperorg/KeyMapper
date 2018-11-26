@@ -4,7 +4,7 @@ import android.content.Context
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.view.ActionMode
-import io.github.sds100.keymapper.OnDeleteMenuItemClickListener
+import io.github.sds100.keymapper.Interfaces.OnDeleteMenuItemClickListener
 import io.github.sds100.keymapper.R
 
 /**

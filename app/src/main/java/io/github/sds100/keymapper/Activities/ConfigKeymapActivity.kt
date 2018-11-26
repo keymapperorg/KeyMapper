@@ -18,9 +18,9 @@ import com.google.gson.Gson
 import io.github.sds100.keymapper.Action
 import io.github.sds100.keymapper.Adapters.TriggerAdapter
 import io.github.sds100.keymapper.Constants
-import io.github.sds100.keymapper.ErrorCodeUtils
-import io.github.sds100.keymapper.ErrorCodeUtils.ERROR_CODE_ACTION_IS_NULL
-import io.github.sds100.keymapper.ErrorCodeUtils.ERROR_CODE_NO_ACTION_DATA
+import io.github.sds100.keymapper.Utils.ErrorCodeUtils
+import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_ACTION_IS_NULL
+import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_NO_ACTION_DATA
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Services.MyAccessibilityService
 import io.github.sds100.keymapper.Utils.ActionUtils

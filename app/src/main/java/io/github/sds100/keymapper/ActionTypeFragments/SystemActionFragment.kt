@@ -8,6 +8,7 @@ import android.widget.Filterable
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Adapters.SystemActionAdapter
+import io.github.sds100.keymapper.Interfaces.OnItemClickListener
 import kotlinx.android.synthetic.main.action_type_recyclerview.*
 
 /**

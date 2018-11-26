@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.Adapters
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.graphics.drawable.Drawable
-import io.github.sds100.keymapper.OnItemClickListener
+import io.github.sds100.keymapper.Interfaces.OnItemClickListener
 
 /**
  * Created by sds100 on 17/07/2018.

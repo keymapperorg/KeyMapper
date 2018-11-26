@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Adapters.AppShortcutAdapter
+import io.github.sds100.keymapper.Interfaces.OnItemClickListener
 import io.github.sds100.keymapper.Utils.AppShortcutUtils
 import kotlinx.android.synthetic.main.action_type_recyclerview.*
 

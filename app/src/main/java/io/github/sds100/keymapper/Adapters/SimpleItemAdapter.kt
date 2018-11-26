@@ -9,7 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import io.github.sds100.keymapper.AlphabeticalFilter
-import io.github.sds100.keymapper.OnItemClickListener
+import io.github.sds100.keymapper.Interfaces.OnItemClickListener
 import io.github.sds100.keymapper.R
 
 /**

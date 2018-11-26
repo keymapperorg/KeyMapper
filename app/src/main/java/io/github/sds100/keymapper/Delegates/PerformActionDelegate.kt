@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper
+package io.github.sds100.keymapper.Delegates
 
 import android.accessibilityservice.AccessibilityService
 import android.content.ActivityNotFoundException
@@ -7,6 +7,9 @@ import android.media.AudioManager
 import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
+import io.github.sds100.keymapper.*
+import io.github.sds100.keymapper.Interfaces.IContext
+import io.github.sds100.keymapper.Interfaces.IPerformGlobalAction
 import io.github.sds100.keymapper.Services.MyIMEService
 import io.github.sds100.keymapper.Utils.*
 import org.jetbrains.anko.defaultSharedPreferences

@@ -7,7 +7,7 @@ import android.widget.CheckBox
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.sds100.keymapper.KeyMap
 import io.github.sds100.keymapper.KeymapAdapterModel
-import io.github.sds100.keymapper.OnItemClickListener
+import io.github.sds100.keymapper.Interfaces.OnItemClickListener
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Selection.SelectionEvent
 import io.github.sds100.keymapper.Selection.SelectionEvent.*

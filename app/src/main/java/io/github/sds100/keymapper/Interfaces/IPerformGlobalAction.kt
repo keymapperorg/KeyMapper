@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper
+package io.github.sds100.keymapper.Interfaces
 
 /**
  * Created by sds100 on 25/11/2018.

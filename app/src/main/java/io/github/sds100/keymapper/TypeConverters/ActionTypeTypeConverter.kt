@@ -1,6 +1,7 @@
-package io.github.sds100.keymapper
+package io.github.sds100.keymapper.TypeConverters
 
 import androidx.room.TypeConverter
+import io.github.sds100.keymapper.ActionType
 
 /**
  * Created by sds100 on 05/09/2018.

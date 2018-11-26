@@ -1,11 +1,12 @@
-package io.github.sds100.keymapper
+package io.github.sds100.keymapper.Utils
 
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
-import io.github.sds100.keymapper.Utils.PackageUtils
-import io.github.sds100.keymapper.Utils.PermissionUtils
+import io.github.sds100.keymapper.ErrorCodeResult
+import io.github.sds100.keymapper.OpenIMEPickerBroadcastReceiver
+import io.github.sds100.keymapper.R
 
 /**
  * Created by sds100 on 25/11/2018.
