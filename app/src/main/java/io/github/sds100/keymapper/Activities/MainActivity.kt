@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
     private val mBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent!!.action) {
-                Intent.ACTION_INPUT_METHOD_CHANGED -> populateKeymapsAsync(mViewModel.keyMapList.value!!)
+                Intent.ACTION_INPUT_METHOD_CHANGED -> updateActionDescriptions()
             }
         }
     }
@@ -124,11 +124,7 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
             imeServiceStatusLayout.changeToServiceDisabledState()
         }
 
-        val keyMapList = mViewModel.keyMapList.value
-
-        if (keyMapList != null) {
-            populateKeymapsAsync(keyMapList)
-        }
+        updateActionDescriptions()
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
@@ -223,6 +219,24 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
                 mKeymapAdapter.notifyDataSetChanged()
                 progressBar.visibility = View.GONE
                 setCaption()
+            }
+        }
+    }
+
+    private fun updateActionDescriptions() {
+        doAsync {
+            mKeymapAdapter.itemList.forEach { model ->
+                val keyMapId = model.id
+                val keyMap = mViewModel.keyMapList.value!!.find { it.id == keyMapId }
+
+                if (keyMap != null) {
+                    val actionDescription = ActionUtils.getDescription(this.weakRef.get()!!.baseContext, keyMap.action)
+                    model.actionDescription = actionDescription
+                }
+            }
+
+            uiThread {
+                mKeymapAdapter.invalidateBoundViewHolders()
             }
         }
     }

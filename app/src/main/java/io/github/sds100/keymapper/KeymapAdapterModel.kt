@@ -9,7 +9,7 @@ import io.github.sds100.keymapper.Selection.SelectableItem
 class KeymapAdapterModel(override val id: Long,
                          val isEnabled: Boolean,
                          val triggerList: List<Trigger>,
-                         val actionDescription: ActionDescription) : SelectableItem() {
+                         var actionDescription: ActionDescription) : SelectableItem() {
 
     constructor(keyMap: KeyMap, actionDescription: ActionDescription)
             : this(keyMap.id, keyMap.isEnabled, keyMap.triggerList, actionDescription)
