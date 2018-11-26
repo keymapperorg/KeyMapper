@@ -28,6 +28,8 @@ import io.github.sds100.keymapper.ViewModels.ConfigKeyMapViewModel
 import kotlinx.android.synthetic.main.activity_config_key_map.*
 import kotlinx.android.synthetic.main.content_config_key_map.*
 import org.jetbrains.anko.alert
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
 
 /**
  * Created by sds100 on 04/10/2018.
@@ -95,32 +97,37 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
 
         //observing stuff
         viewModel.keyMap.observe(this, Observer { keyMap ->
-            val actionDescription = ActionUtils.getDescription(this, keyMap.action)
-            actionDescriptionLayout.setDescription(actionDescription)
+            doAsync {
+                val actionDescription = ActionUtils.getDescription(this@ConfigKeymapActivity, keyMap.action)
 
-            /* if there is no error message, when the button is pressed, the user can test the
-                action */
-            if (actionDescription.errorCode == null) {
-                buttonSecondary.text = getString(R.string.button_test)
-            } else {
-                //secondary button stuff.
-                if (actionDescription.errorCode == ERROR_CODE_ACTION_IS_NULL ||
-                        actionDescription.errorCode == ERROR_CODE_NO_ACTION_DATA) {
+                uiThread {
+                    actionDescriptionLayout.setDescription(actionDescription)
 
-                    buttonSecondary.visibility = View.GONE
-                } else {
-                    buttonSecondary.visibility = View.VISIBLE
-                    buttonSecondary.text = getString(R.string.button_fix)
-                }
-            }
+                    /* if there is no error message, when the button is pressed, the user can test the
+                    action */
+                    if (actionDescription.errorCode == null) {
+                        buttonSecondary.text = getString(R.string.button_test)
+                    } else {
+                        //secondary button stuff.
+                        if (actionDescription.errorCode == ERROR_CODE_ACTION_IS_NULL ||
+                                actionDescription.errorCode == ERROR_CODE_NO_ACTION_DATA) {
 
-            mTriggerAdapter.triggerList = keyMap.triggerList
+                            buttonSecondary.visibility = View.GONE
+                        } else {
+                            buttonSecondary.visibility = View.VISIBLE
+                            buttonSecondary.text = getString(R.string.button_fix)
+                        }
+                    }
 
-            buttonSecondary.setOnClickListener {
-                if (actionDescription.errorCode != null) {
-                    ErrorCodeUtils.fixError(this, actionDescription.errorCodeResult!!)
-                } else {
-                    testAction()
+                    mTriggerAdapter.triggerList = keyMap.triggerList
+
+                    buttonSecondary.setOnClickListener {
+                        if (actionDescription.errorCode != null) {
+                            ErrorCodeUtils.fixError(this@ConfigKeymapActivity, actionDescription.errorCodeResult!!)
+                        } else {
+                            testAction()
+                        }
+                    }
                 }
             }
 
