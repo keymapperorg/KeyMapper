@@ -47,7 +47,7 @@ object PermissionUtils {
             ctx.startActivity(intent)
 
         } else if (permission.contains(Constants.PERMISSION_ROOT)) {
-            RootUtils.checkAppHasRootPermission()
+            RootUtils.promptForRootPermission(ctx)
         }
     }
 
