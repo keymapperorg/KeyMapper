@@ -20,10 +20,13 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
-import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Adapters.KeymapAdapter
+import io.github.sds100.keymapper.BuildConfig
 import io.github.sds100.keymapper.Interfaces.OnDeleteMenuItemClickListener
 import io.github.sds100.keymapper.Interfaces.OnItemClickListener
+import io.github.sds100.keymapper.KeyMap
+import io.github.sds100.keymapper.KeymapAdapterModel
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Selection.SelectableActionMode
 import io.github.sds100.keymapper.Selection.SelectionCallback
 import io.github.sds100.keymapper.Selection.SelectionEvent
@@ -146,6 +149,12 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
 
             mKeymapAdapter.iSelectionProvider.restoreInstanceState(selectionProviderState)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        unregisterReceiver(mBroadcastReceiver)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
