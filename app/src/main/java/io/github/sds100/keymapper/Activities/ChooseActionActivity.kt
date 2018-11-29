@@ -5,17 +5,19 @@ import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.AdapterView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import io.github.sds100.keymapper.ActionType
+import androidx.fragment.app.FragmentStatePagerAdapter
+import com.google.android.material.tabs.TabLayout
 import io.github.sds100.keymapper.ActionTypeFragments.*
-import io.github.sds100.keymapper.Adapters.ActionTypeSpinnerAdapter
 import io.github.sds100.keymapper.R
 import kotlinx.android.synthetic.main.activity_choose_action.*
-import kotlinx.android.synthetic.main.content_choose_action.*
 
-class ChooseActionActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+class ChooseActionActivity : AppCompatActivity(), TabLayout.OnTabSelectedListener {
+
+    companion object {
+        private const val OFFSCREEN_PAGE_LIMIT = 6
+    }
 
     //The fragments which will each be shown when their corresponding item in the spinner is pressed
     private val mAppActionTypeFragment = AppActionTypeFragment()
@@ -31,6 +33,24 @@ class ChooseActionActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
     private val mSearchView
         get() = mSearchViewMenuItem.actionView as SearchView
 
+    val fragmentsAndTitles by lazy {
+        mapOf<ActionTypeFragment, String>(
+                mAppActionTypeFragment to getString(R.string.action_type_title_application),
+                mAppShortcutActionTypeFragment to getString(R.string.action_type_title_application_shortcut),
+                mKeycodeActionTypeFragment to getString(R.string.action_type_title_keycode),
+                mKeyActionTypeFragment to getString(R.string.action_type_title_key),
+                mTextActionTypeFragment to getString(R.string.action_type_title_text_block),
+                mSystemActionTypeFragment to getString(R.string.action_type_title_system_action)
+
+        ).toList()
+    }
+
+    private val mFragmentPagerAdapter = object : FragmentStatePagerAdapter(supportFragmentManager) {
+        override fun getItem(position: Int) = fragmentsAndTitles[position].first
+        override fun getPageTitle(position: Int) = fragmentsAndTitles[position].second
+        override fun getCount() = fragmentsAndTitles.size
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choose_action)
@@ -39,8 +59,19 @@ class ChooseActionActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
         //show the back button in the toolbar
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-        spinnerActionTypes.adapter = ActionTypeSpinnerAdapter(this)
-        spinnerActionTypes.onItemSelectedListener = this
+        //tab stuff
+        //improves performance when switching tabs since the fragment's onViewCreated isn't called
+        viewPager.offscreenPageLimit = OFFSCREEN_PAGE_LIMIT
+        viewPager.adapter = mFragmentPagerAdapter
+
+        tabLayout.setupWithViewPager(viewPager)
+        //the OnTabSelectedListener has been set in onCreateOptionsMenu
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        tabLayout.removeOnTabSelectedListener(this)
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
@@ -57,20 +88,25 @@ class ChooseActionActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
         mSearchViewMenuItem = menu!!.findItem(R.id.action_search)
         mSearchView.queryHint = getString(R.string.action_search)
 
-        mShowHiddenSystemActionsMenuItem = menu!!.findItem(R.id.action_show_hidden_system_actions)
+        mShowHiddenSystemActionsMenuItem = menu.findItem(R.id.action_show_hidden_system_actions)
 
-        //hide the action type spinner when the user opens the SearchView
+        //hide the tabs when the user opens the SearchView
         mSearchViewMenuItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
-                spinnerActionTypes.visibility = View.GONE
+                tabLayout.visibility = View.GONE
+                viewPager.isPagingEnabled = false
                 return true
             }
 
             override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
-                spinnerActionTypes.visibility = View.VISIBLE
+                tabLayout.visibility = View.VISIBLE
+                viewPager.isPagingEnabled = true
                 return true
             }
         })
+
+        //set AFTER the menu items have been initialised to avoid not-initialised error
+        tabLayout.addOnTabSelectedListener(this)
 
         return super.onCreateOptionsMenu(menu)
     }
@@ -87,54 +123,20 @@ class ChooseActionActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
         }
     }
 
-    override fun onNothingSelected(parent: AdapterView<*>?) {}
+    override fun onTabSelected(tab: TabLayout.Tab?) {
+        val fragment = fragmentsAndTitles[tab!!.position].first
 
-    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        val actionType = ActionTypeSpinnerAdapter.getActionTypeFromPosition(
-                ctx = this,
-                position = position
-        )
+        mShowHiddenSystemActionsMenuItem.isVisible = fragment is SystemActionFragment
 
-        mShowHiddenSystemActionsMenuItem.isVisible = actionType == ActionType.SYSTEM_ACTION
+        val isFilterableFragment = fragment is FilterableActionTypeFragment
 
-        when (actionType) {
-            ActionType.APP -> {
-                changeSelectedActionTypeFragment(mAppActionTypeFragment)
-                mSearchViewMenuItem.isVisible = true
-            }
+        mSearchViewMenuItem.isVisible = isFilterableFragment
 
-            ActionType.KEYCODE -> {
-                changeSelectedActionTypeFragment(mKeycodeActionTypeFragment)
-                mSearchViewMenuItem.isVisible = true
-            }
-
-            ActionType.APP_SHORTCUT -> {
-                changeSelectedActionTypeFragment(mAppShortcutActionTypeFragment)
-                mSearchViewMenuItem.isVisible = true
-            }
-
-            ActionType.KEY -> {
-                changeSelectedActionTypeFragment(mKeyActionTypeFragment)
-                mSearchViewMenuItem.isVisible = false
-            }
-
-            ActionType.SYSTEM_ACTION -> {
-                changeSelectedActionTypeFragment(mSystemActionTypeFragment)
-                mSearchViewMenuItem.isVisible = true
-            }
-
-            ActionType.TEXT_BLOCK -> {
-                changeSelectedActionTypeFragment(mTextActionTypeFragment)
-                mSearchViewMenuItem.isVisible = false
-            }
+        if (isFilterableFragment) {
+            mSearchView.setOnQueryTextListener(fragment as FilterableActionTypeFragment)
         }
     }
 
-    private fun changeSelectedActionTypeFragment(fragment: ActionTypeFragment) {
-        supportFragmentManager.beginTransaction().replace(R.id.frameLayout, fragment).commit()
-
-        if (fragment is FilterableActionTypeFragment) {
-            mSearchView.setOnQueryTextListener(fragment)
-        }
-    }
+    override fun onTabReselected(p0: TabLayout.Tab?) {}
+    override fun onTabUnselected(p0: TabLayout.Tab?) {}
 }

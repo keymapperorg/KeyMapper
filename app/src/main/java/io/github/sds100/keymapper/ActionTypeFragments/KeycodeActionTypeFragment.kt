@@ -38,6 +38,7 @@ class KeycodeActionTypeFragment : FilterableActionTypeFragment(), OnItemClickLis
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        textViewCaption.visibility = View.VISIBLE
         textViewCaption.text = getString(R.string.caption_action_type_keycode)
 
         recyclerView.layoutManager = LinearLayoutManager(context)

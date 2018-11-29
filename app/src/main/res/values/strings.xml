@@ -107,15 +107,14 @@
     <string name="summary_pref_show_toast_when_action_performed">Whenever an action is performed, a little message will popup on the screen telling you Key Mapper is performing an action.</string>
     <!-- Preferences -->
 
-    <!--Action Types-->
-    <string name="action_type_application">Apps</string>
-    <string name="action_type_application_shortcut">App shortcut</string>
-    <string name="action_type_key">Key</string>
-    <string name="action_type_keycode">Key code</string>
-    <string name="action_type_action">Action</string>
-    <string name="action_type_setting">Setting</string>
-    <string name="action_type_text_block">Text Block</string>
-    <!--Action Types-->
+    <!--Action Types Titles-->
+    <string name="action_type_title_application">App</string>
+    <string name="action_type_title_application_shortcut">App shortcut</string>
+    <string name="action_type_title_key">Key</string>
+    <string name="action_type_title_keycode">Key code</string>
+    <string name="action_type_title_system_action">Other</string>
+    <string name="action_type_title_text_block">Text Block</string>
+    <!--Action Types Titles-->
 
     <!-- Error messages -->
     <string name="error_must_type_a_key">You must type a key!</string>
