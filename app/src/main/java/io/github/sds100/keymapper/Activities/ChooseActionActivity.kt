@@ -110,6 +110,12 @@ class ChooseActionActivity : AppCompatActivity(), ITabDelegate, TabLayout.OnTabS
         //set AFTER the menu items have been initialised to avoid not-initialised error
         tabLayout.addOnTabSelectedListener(this)
 
+        //The first fragment shown needs to be initially attached to the SearchView otherwise it won't be
+        if (tabFragments[tabLayout.selectedTabPosition] is FilterableActionTypeFragment) {
+            mSearchView.setOnQueryTextListener(tabFragments[tabLayout.selectedTabPosition]
+                    as FilterableActionTypeFragment)
+        }
+
         return super.onCreateOptionsMenu(menu)
     }
 
