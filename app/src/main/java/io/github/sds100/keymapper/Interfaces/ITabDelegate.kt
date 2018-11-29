@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.Delegates
+package io.github.sds100.keymapper.Interfaces
 
 import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayout

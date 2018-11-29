@@ -13,7 +13,7 @@ import io.github.sds100.keymapper.ActionTypeFragments.*
 import io.github.sds100.keymapper.ActionTypeFragments.KeyActionTypeFragment.Companion.ACTION_ON_KEY_EVENT
 import io.github.sds100.keymapper.Activities.ConfigKeymapActivity.Companion.EXTRA_KEY_EVENT
 import io.github.sds100.keymapper.CustomViewPager
-import io.github.sds100.keymapper.Delegates.ITabDelegate
+import io.github.sds100.keymapper.Interfaces.ITabDelegate
 import io.github.sds100.keymapper.Delegates.TabDelegate
 import io.github.sds100.keymapper.R
 import kotlinx.android.synthetic.main.activity_choose_action.*
