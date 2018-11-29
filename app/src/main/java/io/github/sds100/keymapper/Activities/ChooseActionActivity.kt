@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.Activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.Menu
@@ -9,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import com.google.android.material.tabs.TabLayout
 import io.github.sds100.keymapper.ActionTypeFragments.*
+import io.github.sds100.keymapper.ActionTypeFragments.KeyActionTypeFragment.Companion.ACTION_ON_KEY_EVENT
+import io.github.sds100.keymapper.Activities.ConfigKeymapActivity.Companion.EXTRA_KEY_EVENT
 import io.github.sds100.keymapper.CustomViewPager
 import io.github.sds100.keymapper.Delegates.ITabDelegate
 import io.github.sds100.keymapper.Delegates.TabDelegate
@@ -22,15 +25,14 @@ class ChooseActionActivity : AppCompatActivity(), ITabDelegate, TabLayout.OnTabS
     override val viewPager: CustomViewPager
         get() = findViewById(R.id.viewPager)
 
-    override val tabFragments
-        get() = listOf(
-                mAppActionTypeFragment,
-                mAppShortcutActionTypeFragment,
-                mKeycodeActionTypeFragment,
-                mKeyActionTypeFragment,
-                mSystemActionTypeFragment,
-                mTextActionTypeFragment
-        )
+    override val tabFragments = listOf(
+            AppActionTypeFragment(),
+            AppShortcutActionTypeFragment(),
+            KeycodeActionTypeFragment(),
+            KeyActionTypeFragment(),
+            TextActionTypeFragment(),
+            SystemActionFragment()
+    )
 
     override val tabTitles by lazy {
         listOf(
@@ -38,8 +40,8 @@ class ChooseActionActivity : AppCompatActivity(), ITabDelegate, TabLayout.OnTabS
                 getString(R.string.action_type_title_application_shortcut),
                 getString(R.string.action_type_title_keycode),
                 getString(R.string.action_type_title_key),
-                getString(R.string.action_type_title_system_action),
-                getString(R.string.action_type_title_text_block)
+                getString(R.string.action_type_title_text_block),
+                getString(R.string.action_type_title_system_action)
         )
     }
 
@@ -48,14 +50,6 @@ class ChooseActionActivity : AppCompatActivity(), ITabDelegate, TabLayout.OnTabS
             iTabDelegate = this,
             onTabSelectedListener = this,
             mOffScreenLimit = 6)
-
-    //The fragments which will each be shown when their corresponding item in the spinner is pressed
-    private val mAppActionTypeFragment = AppActionTypeFragment()
-    private val mAppShortcutActionTypeFragment = AppShortcutActionTypeFragment()
-    private val mKeycodeActionTypeFragment = KeycodeActionTypeFragment()
-    private val mKeyActionTypeFragment = KeyActionTypeFragment()
-    private val mTextActionTypeFragment = TextActionTypeFragment()
-    private val mSystemActionTypeFragment = SystemActionFragment()
 
     private lateinit var mSearchViewMenuItem: MenuItem
     private lateinit var mShowHiddenSystemActionsMenuItem: MenuItem
@@ -82,9 +76,10 @@ class ChooseActionActivity : AppCompatActivity(), ITabDelegate, TabLayout.OnTabS
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
-        if (mKeyActionTypeFragment.isVisible) {
-            mKeyActionTypeFragment.showKeyEventChip(event!!)
-        }
+        //tell KeyActionTypeFragment to show a new key event chip
+        val intent = Intent(ACTION_ON_KEY_EVENT)
+        intent.putExtra(EXTRA_KEY_EVENT, event)
+        sendBroadcast(intent)
 
         return super.onKeyUp(keyCode, event)
     }
