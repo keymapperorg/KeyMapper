@@ -25,14 +25,7 @@ class ChooseActionActivity : AppCompatActivity(), ITabDelegate, TabLayout.OnTabS
     override val viewPager: CustomViewPager
         get() = findViewById(R.id.viewPager)
 
-    override val tabFragments = listOf(
-            AppActionTypeFragment(),
-            AppShortcutActionTypeFragment(),
-            KeycodeActionTypeFragment(),
-            KeyActionTypeFragment(),
-            TextActionTypeFragment(),
-            SystemActionFragment()
-    )
+    override lateinit var tabFragments: List<ActionTypeFragment>
 
     override val tabTitles by lazy {
         listOf(
@@ -64,6 +57,27 @@ class ChooseActionActivity : AppCompatActivity(), ITabDelegate, TabLayout.OnTabS
 
         //show the back button in the toolbar
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+
+        /* when the activity is destroyed, the FragmentStatePagerAdapter doesn't destroy the old fragments so the
+        * fragments being shown will not be the ones created again, which is why they have to be retrieved from the
+        * fragment manager. */
+        if (savedInstanceState == null) {
+            tabFragments = listOf(
+                    AppActionTypeFragment(),
+                    AppShortcutActionTypeFragment(),
+                    KeycodeActionTypeFragment(),
+                    KeyActionTypeFragment(),
+                    TextActionTypeFragment(),
+                    SystemActionFragment()
+            )
+        } else {
+            val oldActionTypeFragments = supportFragmentManager.fragments.filter { it is ActionTypeFragment }
+
+            @Suppress("UNCHECKED_CAST")
+            if (oldActionTypeFragments.all { it != null }) {
+                tabFragments = oldActionTypeFragments as List<ActionTypeFragment>
+            }
+        }
 
         mTabDelegate.configureTabs()
         //the OnTabSelectedListener has been set in onCreateOptionsMenu
