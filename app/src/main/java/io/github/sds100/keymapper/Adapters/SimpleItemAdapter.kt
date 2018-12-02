@@ -22,7 +22,7 @@ import io.github.sds100.keymapper.R
 abstract class SimpleItemAdapter<T>(
         var itemList: List<T>,
         private val onItemClickListener: OnItemClickListener<T>
-) : RecyclerView.Adapter<SimpleItemAdapter<T>.ViewHolder>(), Filterable {
+) : BaseRecyclerViewAdapter<SimpleItemAdapter<T>.ViewHolder>(), Filterable {
 
     private val mAlphabeticalFilter = AlphabeticalFilter(
             mOriginalList = itemList,
@@ -43,10 +43,12 @@ abstract class SimpleItemAdapter<T>(
 
     override fun getItemCount() = itemList.size
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: SimpleItemAdapter<T>.ViewHolder, position: Int) {
+        super.onBindViewHolder(holder, position)
+
         val item = itemList[position]
 
-        holder.apply {
+        (holder as SimpleItemAdapter<*>.ViewHolder).apply {
             val drawable = getItemImage(item)
 
             /*if no icon should be shown then hide the ImageView so there isn't whitespace next to

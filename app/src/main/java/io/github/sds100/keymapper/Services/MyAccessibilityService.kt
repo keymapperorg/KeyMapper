@@ -81,7 +81,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         }
     }
 
-    override val context
+    override val ctx
         get() = this
 
     private val mRecordingTimerHandler = Handler()

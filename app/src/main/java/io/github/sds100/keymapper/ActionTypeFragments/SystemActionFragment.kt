@@ -1,14 +1,19 @@
 package io.github.sds100.keymapper.ActionTypeFragments
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Filterable
 import androidx.recyclerview.widget.LinearLayoutManager
-import io.github.sds100.keymapper.*
+import io.github.sds100.keymapper.Action
+import io.github.sds100.keymapper.ActionType
 import io.github.sds100.keymapper.Adapters.SystemActionAdapter
+import io.github.sds100.keymapper.Interfaces.IContext
 import io.github.sds100.keymapper.Interfaces.OnItemClickListener
+import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.SystemActionDef
 import kotlinx.android.synthetic.main.action_type_recyclerview.*
 
 /**
@@ -19,14 +24,17 @@ import kotlinx.android.synthetic.main.action_type_recyclerview.*
  * A Fragment which displays a list of all actions that can be performed on the system
  */
 class SystemActionFragment : FilterableActionTypeFragment(),
-        OnItemClickListener<SystemActionDef> {
+        OnItemClickListener<SystemActionDef>, IContext {
 
     private val mSystemActionAdapter by lazy {
         SystemActionAdapter(
-                ctx = context!!,
+                iContext = this,
                 onItemClickListener = this
         )
     }
+
+    override val ctx: Context
+        get() = context!!
 
     override val filterable: Filterable?
         get() = mSystemActionAdapter
@@ -42,7 +50,7 @@ class SystemActionFragment : FilterableActionTypeFragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        recyclerView.layoutManager = LinearLayoutManager(context)
+        recyclerView.layoutManager = LinearLayoutManager(ctx)
         recyclerView.adapter = mSystemActionAdapter
     }
 
