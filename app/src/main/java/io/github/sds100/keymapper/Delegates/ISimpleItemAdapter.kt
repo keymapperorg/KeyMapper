@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import io.github.sds100.keymapper.Interfaces.OnItemClickListener
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ViewHolders.SimpleItemViewHolder
 
@@ -12,19 +13,20 @@ import io.github.sds100.keymapper.ViewHolders.SimpleItemViewHolder
  * Created by sds100 on 29/11/2018.
  */
 
-interface ISimpleItemAdapter<T> : AdapterDelegate{
+interface ISimpleItemAdapter<T> : AdapterDelegate {
 
-    fun onItemClick(position: Int)
+    val onItemClickListener: OnItemClickListener<T>
+
     fun getItem(position: Int): T
     fun getItemText(item: T): String
     fun getItemDrawable(item: T): Drawable?
 
-   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
 
         return SimpleItemViewHolder(inflater.inflate(R.layout.simple_recyclerview_item, parent, false))
         { position ->
-            onItemClick(position)
+            onItemClickListener.onItemClick(getItem(position))
         }
     }
 

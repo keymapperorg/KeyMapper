@@ -8,9 +8,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import io.github.sds100.keymapper.*
+import io.github.sds100.keymapper.Action
+import io.github.sds100.keymapper.ActionType
 import io.github.sds100.keymapper.Adapters.AppShortcutAdapter
 import io.github.sds100.keymapper.Interfaces.OnItemClickListener
+import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.ShortcutTitleDialog
 import io.github.sds100.keymapper.Utils.AppShortcutUtils
 import kotlinx.android.synthetic.main.action_type_recyclerview.*
 
@@ -30,7 +33,7 @@ class AppShortcutActionTypeFragment : FilterableActionTypeFragment(), OnItemClic
     private val mAppShortcutAdapter by lazy {
         AppShortcutAdapter(
                 onItemClickListener = this,
-                appShortcutList = AppShortcutUtils.getAppShortcuts(context!!.packageManager),
+                mAppShortcutList = AppShortcutUtils.getAppShortcuts(context!!.packageManager),
                 mPackageManager = context!!.packageManager)
     }
 

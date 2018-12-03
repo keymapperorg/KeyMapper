@@ -24,7 +24,7 @@ import io.github.sds100.keymapper.Utils.SystemActionUtils.SYSTEM_ACTION_DEFINITI
 
 class SystemActionAdapter(
         iContext: IContext,
-        private val onItemClickListener: OnItemClickListener<SystemActionDef>
+        override val onItemClickListener: OnItemClickListener<SystemActionDef>
 ) : BaseRecyclerViewAdapter<RecyclerView.ViewHolder>(),
         ISectionedAdapter<SystemActionDef>, ISimpleItemAdapter<SystemActionDef>, Filterable, IContext by iContext {
 
@@ -109,10 +109,6 @@ class SystemActionAdapter(
         } else {
             return VIEW_TYPE_DEFAULT
         }
-    }
-
-    override fun onItemClick(position: Int) {
-        onItemClickListener.onItemClick(getItem(position))
     }
 
     override fun getFilter() = mAlphabeticalFilter
