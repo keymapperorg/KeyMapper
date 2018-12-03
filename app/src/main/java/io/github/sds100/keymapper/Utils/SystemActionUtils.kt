@@ -32,6 +32,21 @@ import io.github.sds100.keymapper.SystemActionDef
 
 object SystemActionUtils {
 
+    /**
+     * Maps system action category ids to the string resource of their label
+     */
+    val CATEGORY_LABEL_MAP = mapOf(
+            CATEGORY_WIFI to R.string.system_action_cat_wifi,
+            CATEGORY_BLUETOOTH to R.string.system_action_cat_bluetooth,
+            CATEGORY_MOBILE_DATA to R.string.system_action_cat_mobile_data,
+            CATEGORY_NAVIGATION to R.string.system_action_cat_navigation,
+            CATEGORY_SCREEN_ROTATION to R.string.system_action_cat_screen_rotation,
+            CATEGORY_VOLUME to R.string.system_action_cat_volume
+    )
+
+    /**
+     * A sorted list of system action definitions
+     */
     @SuppressLint("NewApi")
     val SYSTEM_ACTION_DEFINITIONS = listOf(
 

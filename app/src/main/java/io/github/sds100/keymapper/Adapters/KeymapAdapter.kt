@@ -5,12 +5,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import androidx.recyclerview.widget.LinearLayoutManager
+import io.github.sds100.keymapper.Interfaces.OnItemClickListener
 import io.github.sds100.keymapper.KeyMap
 import io.github.sds100.keymapper.KeymapAdapterModel
-import io.github.sds100.keymapper.Interfaces.OnItemClickListener
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.Selection.SelectionCallback
 import io.github.sds100.keymapper.Selection.SelectionEvent
-import io.github.sds100.keymapper.Selection.SelectionEvent.*
+import io.github.sds100.keymapper.Selection.SelectionProvider
+import io.github.sds100.keymapper.ViewHolders.SelectableViewHolder
 import kotlinx.android.synthetic.main.keymap_adapter_item.view.*
 
 /**
@@ -21,15 +23,29 @@ import kotlinx.android.synthetic.main.keymap_adapter_item.view.*
  * Display a list of [KeyMap]s in a RecyclerView
  */
 class KeymapAdapter(private val mOnItemClickListener: OnItemClickListener<KeymapAdapterModel>
-) : SelectableAdapter<KeymapAdapterModel, KeymapAdapter.ViewHolder>() {
+) : BaseRecyclerViewAdapter<KeymapAdapter.ViewHolder>(), SelectionCallback {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    val iSelectionProvider = SelectionProvider()
+
+    var itemList: List<KeymapAdapterModel> = listOf()
+        set(value) {
+            iSelectionProvider.allItemIds = value.map { it.id }
+            field = value
+        }
+
+    init {
+        setHasStableIds(true)
+
+        iSelectionProvider.subscribeToSelectionEvents(this)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): KeymapAdapter.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
 
         return ViewHolder(inflater.inflate(R.layout.keymap_adapter_item, parent, false))
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: KeymapAdapter.ViewHolder, position: Int) {
         super.onBindViewHolder(holder, position)
 
         val model = itemList[position]
@@ -65,14 +81,27 @@ class KeymapAdapter(private val mOnItemClickListener: OnItemClickListener<Keymap
         return itemList[position].id
     }
 
-    inner class ViewHolder(itemView: View)
-        : SelectableAdapter<KeymapAdapterModel, ViewHolder>.ViewHolder(itemView) {
+    override fun getItemCount() = itemList.size
+
+    override fun onSelectionEvent(id: Long?, event: SelectionEvent) {
+        //if the event affects only a single viewholder.
+        if (id != null) {
+            boundViewHolders.find { it.itemId == id }!!.onSelectionEvent(event)
+        } else {
+            boundViewHolders.forEach { viewHolder ->
+                viewHolder.onSelectionEvent(event)
+            }
+        }
+    }
+
+    inner class ViewHolder(itemView: View) : SelectableViewHolder(iSelectionProvider, itemView) {
+
         private val mCheckBox = itemView.findViewById<CheckBox>(R.id.checkBox)!!
 
         init {
             mCheckBox.setOnClickListener {
                 if (iSelectionProvider.inSelectingMode) {
-                    iSelectionProvider.toggleSelection(getItemId(adapterPosition))
+                    iSelectionProvider.toggleSelection(itemId)
                 }
             }
         }
@@ -80,36 +109,35 @@ class KeymapAdapter(private val mOnItemClickListener: OnItemClickListener<Keymap
         override fun onClick(v: View?) {
             super.onClick(v)
 
-            if (!iSelectionProvider.inSelectingMode) {
+            if (!inSelectingMode) {
                 mOnItemClickListener.onItemClick(itemList[adapterPosition])
             }
         }
 
         override fun onSelectionEvent(event: SelectionEvent) {
             when (event) {
-                START -> {
+                SelectionEvent.START -> {
                     mCheckBox.isChecked = false
                     mCheckBox.visibility = View.VISIBLE
                 }
 
-                STOP -> {
+                SelectionEvent.STOP -> {
                     mCheckBox.isChecked = false
                     mCheckBox.visibility = View.GONE
                 }
 
-                SELECTED -> {
+                SelectionEvent.SELECTED -> {
                     mCheckBox.isChecked = true
                 }
 
-                UNSELECTED -> {
+                SelectionEvent.UNSELECTED -> {
                     mCheckBox.isChecked = false
                 }
 
-                SELECT_ALL -> {
+                SelectionEvent.SELECT_ALL -> {
                     mCheckBox.isChecked = true
                 }
             }
         }
-
     }
 }

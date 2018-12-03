@@ -22,7 +22,7 @@ class PerformActionDelegate(iContext: IContext, iPerformGlobalAction: IPerformGl
 ) : IContext by iContext, IPerformGlobalAction by iPerformGlobalAction {
 
     fun performAction(action: Action) {
-        context.apply {
+        ctx.apply {
             //Only show a toast message that Key Mapper is performing an action if the user has enabled it
             val key = getString(R.string.key_pref_show_toast_when_action_performed)
 
@@ -78,7 +78,7 @@ class PerformActionDelegate(iContext: IContext, iPerformGlobalAction: IPerformGl
     }
 
     private fun performSystemAction(id: String) {
-        context.apply {
+        ctx.apply {
             when (id) {
                 SystemAction.ENABLE_WIFI -> WifiUtils.changeWifiState(this, StateChange.ENABLE)
                 SystemAction.DISABLE_WIFI -> WifiUtils.changeWifiState(this, StateChange.DISABLE)

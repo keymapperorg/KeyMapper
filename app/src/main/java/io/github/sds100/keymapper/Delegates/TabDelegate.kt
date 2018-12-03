@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.Delegates
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import com.google.android.material.tabs.TabLayout
+import io.github.sds100.keymapper.Interfaces.ITabDelegate
 
 /**
  * Created by sds100 on 29/11/2018.

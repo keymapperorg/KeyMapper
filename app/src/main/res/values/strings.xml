@@ -182,4 +182,13 @@
     <string name="action_open_recents">Open Recents</string>
     <string name="action_open_menu">Open Menu.</string>
     <!-- System action labels -->
+
+    <!-- System action category labels -->
+    <string name="system_action_cat_wifi">WiFi</string>
+    <string name="system_action_cat_bluetooth">Bluetooth</string>
+    <string name="system_action_cat_mobile_data">Mobile Data</string>
+    <string name="system_action_cat_navigation">Navigation</string>
+    <string name="system_action_cat_volume">Volume</string>
+    <string name="system_action_cat_screen_rotation">Screen Rotation</string>
+    <!-- System action category labels -->
 </resources>

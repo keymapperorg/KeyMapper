@@ -1,4 +1,5 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="text_size_keymap_adapter_error">18sp</dimen>
+    <dimen name="left_margin_subheading">16dp</dimen>
 </resources>

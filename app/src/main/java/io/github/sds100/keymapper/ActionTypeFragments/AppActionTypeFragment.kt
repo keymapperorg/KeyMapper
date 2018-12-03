@@ -6,9 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import io.github.sds100.keymapper.*
+import io.github.sds100.keymapper.Action
+import io.github.sds100.keymapper.ActionType
 import io.github.sds100.keymapper.Adapters.AppListAdapter
 import io.github.sds100.keymapper.Interfaces.OnItemClickListener
+import io.github.sds100.keymapper.LoadAppListAsyncTask
+import io.github.sds100.keymapper.R
 import kotlinx.android.synthetic.main.action_type_recyclerview.*
 
 /**
@@ -46,7 +49,7 @@ class AppActionTypeFragment : FilterableActionTypeFragment(), OnItemClickListene
                     if (mAppListAdapter == null) {
                         mAppListAdapter = AppListAdapter(
                                 onItemClickListener = this@AppActionTypeFragment,
-                                appList = mAppList,
+                                mAppList = mAppList,
                                 mPackageManager = packageManager
                         )
                     }

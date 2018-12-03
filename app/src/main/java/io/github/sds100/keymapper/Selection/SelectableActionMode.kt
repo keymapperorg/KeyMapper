@@ -56,7 +56,7 @@ class SelectableActionMode(
 
     override fun onDestroyActionMode(mode: ActionMode?) {
         mActionMode = null
-        mISelectionProvider.unsubscribeToSelectionEvents(this)
+        mISelectionProvider.unsubscribeFromSelectionEvents(this)
         mISelectionProvider.stopSelecting()
     }
 
@@ -67,6 +67,6 @@ class SelectableActionMode(
     private fun onBackPressed(mode: ActionMode) {
         mode.finish()
         mISelectionProvider.stopSelecting()
-        mISelectionProvider.unsubscribeToSelectionEvents(this)
+        mISelectionProvider.unsubscribeFromSelectionEvents(this)
     }
 }
