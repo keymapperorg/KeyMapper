@@ -84,7 +84,7 @@ class SelectionProvider(override var allItemIds: List<Long> = listOf()) : ISelec
         mSelectionCallbacks.add(callback)
     }
 
-    override fun unsubscribeToSelectionEvents(callback: SelectionCallback) {
+    override fun unsubscribeFromSelectionEvents(callback: SelectionCallback) {
         mSelectionCallbacks.remove(callback)
     }
 

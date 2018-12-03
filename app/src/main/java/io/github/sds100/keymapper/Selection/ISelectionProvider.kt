@@ -38,7 +38,7 @@ interface ISelectionProvider {
     /**
      * Unsubscribe a [SelectionCallback] from receiving selection events
      */
-    fun unsubscribeToSelectionEvents(callback: SelectionCallback)
+    fun unsubscribeFromSelectionEvents(callback: SelectionCallback)
 
     fun selectAll()
 
