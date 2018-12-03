@@ -2,11 +2,11 @@ package io.github.sds100.keymapper.Adapters
 
 import android.graphics.drawable.Drawable
 import android.view.KeyEvent
-import android.view.ViewGroup
 import android.widget.Filterable
-import androidx.recyclerview.widget.RecyclerView
+import com.hannesdorfmann.adapterdelegates4.AbsDelegationAdapter
 import io.github.sds100.keymapper.AlphabeticalFilter
-import io.github.sds100.keymapper.Delegates.ISimpleItemAdapter
+import io.github.sds100.keymapper.Delegates.SimpleItemAdapterDelegate
+import io.github.sds100.keymapper.Interfaces.ISimpleItemAdapter
 import io.github.sds100.keymapper.Interfaces.OnItemClickListener
 import io.github.sds100.keymapper.Utils.KeycodeUtils
 
@@ -20,7 +20,7 @@ import io.github.sds100.keymapper.Utils.KeycodeUtils
 class KeycodeAdapter(
         override val onItemClickListener: OnItemClickListener<Int>,
         private var mKeyCodeList: List<Int> = KeycodeUtils.getKeyCodes()
-) : BaseRecyclerViewAdapter<RecyclerView.ViewHolder>(), ISimpleItemAdapter<Int>, Filterable {
+) : AbsDelegationAdapter<List<Int>>(), ISimpleItemAdapter<Int>, Filterable {
 
     private val mAlphabeticalFilter = AlphabeticalFilter(
             mOriginalList = mKeyCodeList,
@@ -31,14 +31,12 @@ class KeycodeAdapter(
             getItemText = { getItemText(it) }
     )
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return super.onCreateViewHolder(parent, viewType)
-    }
+    init {
+        val simpleItemDelegate = SimpleItemAdapterDelegate(this)
+        delegatesManager.addDelegate(simpleItemDelegate)
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        super<ISimpleItemAdapter>.onBindViewHolder(holder, position)
+        setItems(mKeyCodeList)
     }
-
     override fun getFilter() = mAlphabeticalFilter
 
     override fun getItemCount() = mKeyCodeList.size

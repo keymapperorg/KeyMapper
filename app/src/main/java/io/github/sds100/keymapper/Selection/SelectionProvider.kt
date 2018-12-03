@@ -13,7 +13,7 @@ import android.os.Bundle
  *
  * @see [SelectionCallback]
  */
-class SelectionProvider(override var allItemIds: List<Long>) : ISelectionProvider {
+class SelectionProvider(override var allItemIds: List<Long> = listOf()) : ISelectionProvider {
 
     companion object {
         const val KEY_SELECTION_PROVIDER_STATE = "selection_provider_state"

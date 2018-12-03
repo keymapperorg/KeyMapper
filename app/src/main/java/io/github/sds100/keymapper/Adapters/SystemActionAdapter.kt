@@ -1,19 +1,17 @@
 package io.github.sds100.keymapper.Adapters
 
 import android.graphics.drawable.Drawable
-import android.view.ViewGroup
 import android.widget.Filterable
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.RecyclerView
+import com.hannesdorfmann.adapterdelegates4.AbsDelegationAdapter
 import io.github.sds100.keymapper.AlphabeticalFilter
-import io.github.sds100.keymapper.Delegates.ISectionedAdapter
-import io.github.sds100.keymapper.Delegates.ISectionedAdapter.Companion.VIEW_TYPE_DEFAULT
-import io.github.sds100.keymapper.Delegates.ISectionedAdapter.Companion.VIEW_TYPE_SECTION
-import io.github.sds100.keymapper.Delegates.ISimpleItemAdapter
+import io.github.sds100.keymapper.Delegates.SectionedAdapterDelegate
+import io.github.sds100.keymapper.Delegates.SectionedAdapterDelegate.Companion.VIEW_TYPE_SECTION
+import io.github.sds100.keymapper.Delegates.SimpleItemAdapterDelegate
 import io.github.sds100.keymapper.Interfaces.IContext
+import io.github.sds100.keymapper.Interfaces.ISimpleItemAdapter
 import io.github.sds100.keymapper.Interfaces.OnItemClickListener
 import io.github.sds100.keymapper.SectionItem
-import io.github.sds100.keymapper.SectionedItemList
 import io.github.sds100.keymapper.SystemActionDef
 import io.github.sds100.keymapper.Utils.SystemActionUtils
 import io.github.sds100.keymapper.Utils.SystemActionUtils.SYSTEM_ACTION_DEFINITIONS
@@ -24,40 +22,21 @@ import io.github.sds100.keymapper.Utils.SystemActionUtils.SYSTEM_ACTION_DEFINITI
 
 class SystemActionAdapter(
         iContext: IContext,
-        override val onItemClickListener: OnItemClickListener<SystemActionDef>
-) : BaseRecyclerViewAdapter<RecyclerView.ViewHolder>(),
-        ISectionedAdapter<SystemActionDef>, ISimpleItemAdapter<SystemActionDef>, Filterable, IContext by iContext {
+        onItemClickListener: OnItemClickListener<SystemActionDef>
+) : AbsDelegationAdapter<List<Any>>(),
+        ISimpleItemAdapter<Any>,
+        Filterable,
+        IContext by iContext {
 
-    override val sectionedItemList: SectionedItemList<SystemActionDef> by lazy {
-        val list = SectionedItemList<SystemActionDef>()
-
-        SYSTEM_ACTION_DEFINITIONS.forEachIndexed { i, systemAction ->
-            fun getCategoryLabel(): String {
-                val resId = SystemActionUtils.CATEGORY_LABEL_MAP[systemAction.category]
-                        ?: throw Exception("That system action category id isn't mapped to a label")
-
-                return ctx.getString(resId)
-            }
-
-            //if at the end of the list, the next item can't be compared
-            if (i == 0 || systemAction.category != SYSTEM_ACTION_DEFINITIONS[i - 1].category) {
-                val section = SectionItem(getCategoryLabel())
-
-                list.addSection(section)
-            }
-
-            list.addItem(systemAction)
-        }
-
-        return@lazy list
-    }
+    @Suppress("UNCHECKED_CAST")
+    override val onItemClickListener = onItemClickListener as OnItemClickListener<Any>
 
     private val mAlphabeticalFilter = AlphabeticalFilter(
-            mOriginalList = sectionedItemList.itemList,
+            mOriginalList = SYSTEM_ACTION_DEFINITIONS,
 
             onFilter = { filteredList ->
                 filtering = true
-                mFilteredList = filteredList
+                setItems(filteredList)
                 notifyDataSetChanged()
             },
 
@@ -65,60 +44,61 @@ class SystemActionAdapter(
     )
 
     private var filtering = false
-    private var mFilteredList: List<SystemActionDef> = listOf()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return when (viewType) {
-            VIEW_TYPE_SECTION -> super<ISectionedAdapter>.onCreateViewHolder(parent, viewType)
-            VIEW_TYPE_DEFAULT -> super<ISimpleItemAdapter>.onCreateViewHolder(parent, viewType)
+    init {
+        val sectionedDelegate = SectionedAdapterDelegate()
+        val simpleItemDelegate = SimpleItemAdapterDelegate(this)
 
-            else -> throw Exception("This view type's delegate has no delegate")
-        }
-    }
+        delegatesManager
+                .addDelegate(VIEW_TYPE_SECTION, sectionedDelegate)
+                .addDelegate(simpleItemDelegate)
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        super<BaseRecyclerViewAdapter>.onBindViewHolder(holder, position)
-
-        when (holder.itemViewType) {
-            VIEW_TYPE_SECTION -> super<ISectionedAdapter>.onBindViewHolder(holder, position)
-            VIEW_TYPE_DEFAULT -> super<ISimpleItemAdapter>.onBindViewHolder(holder, position)
-        }
-    }
-
-    override fun getItemCount(): Int {
-        if (filtering) {
-            return mFilteredList.size
-        } else {
-            return sectionedItemList.size
-        }
-    }
-
-    override fun getItem(position: Int): SystemActionDef {
-        if (filtering) {
-            return mFilteredList[position]
-        } else {
-            return sectionedItemList.getItem(position)
-        }
-    }
-
-    override fun getItemViewType(position: Int): Int {
-        if (filtering) return VIEW_TYPE_DEFAULT
-
-        if (sectionedItemList.isSectionAtIndex(position)) {
-            return VIEW_TYPE_SECTION
-        } else {
-            return VIEW_TYPE_DEFAULT
-        }
+        setItems(createSystemActionDefListWithCategories())
     }
 
     override fun getFilter() = mAlphabeticalFilter
 
-    override fun getItemText(item: SystemActionDef): String {
-        return ctx.getString(item.descriptionRes)
+    override fun getItem(position: Int): Any? {
+        val item = items[position]
+
+        if (item is SectionItem) {
+            return null
+        } else {
+            return item
+        }
     }
 
-    override fun getItemDrawable(item: SystemActionDef): Drawable? {
-        if (item.iconRes == null) return null
-        return ContextCompat.getDrawable(ctx, item.iconRes)
+    override fun getItemText(item: Any): String {
+        return ctx.getString((item as SystemActionDef).descriptionRes)
+    }
+
+    override fun getItemCount() = items.size
+
+    override fun getItemDrawable(item: Any): Drawable? {
+        if ((item as SystemActionDef).iconRes == null) return null
+
+        return ContextCompat.getDrawable(ctx, item.iconRes!!)
+    }
+
+    private fun createSystemActionDefListWithCategories(): List<Any> {
+        return sequence {
+            SYSTEM_ACTION_DEFINITIONS.forEachIndexed { i, systemAction ->
+                fun getCategoryLabel(): String {
+                    val resId = SystemActionUtils.CATEGORY_LABEL_MAP[systemAction.category]
+                            ?: throw Exception("That system action category id isn't mapped to a label")
+
+                    return ctx.getString(resId)
+                }
+
+                //if at the end of the list, the next item can't be compared
+                if (i == 0 || systemAction.category != SYSTEM_ACTION_DEFINITIONS[i - 1].category) {
+                    val section = SectionItem(getCategoryLabel())
+
+                    yield(section)
+                }
+
+                yield(systemAction)
+            }
+        }.toList()
     }
 }

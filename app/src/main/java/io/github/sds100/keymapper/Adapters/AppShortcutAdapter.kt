@@ -3,11 +3,11 @@ package io.github.sds100.keymapper.Adapters
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.graphics.drawable.Drawable
-import android.view.ViewGroup
 import android.widget.Filterable
-import androidx.recyclerview.widget.RecyclerView
+import com.hannesdorfmann.adapterdelegates4.AbsDelegationAdapter
 import io.github.sds100.keymapper.AlphabeticalFilter
-import io.github.sds100.keymapper.Delegates.ISimpleItemAdapter
+import io.github.sds100.keymapper.Delegates.SimpleItemAdapterDelegate
+import io.github.sds100.keymapper.Interfaces.ISimpleItemAdapter
 import io.github.sds100.keymapper.Interfaces.OnItemClickListener
 
 /**
@@ -21,7 +21,7 @@ class AppShortcutAdapter(
         override val onItemClickListener: OnItemClickListener<ResolveInfo>,
         private var mAppShortcutList: List<ResolveInfo>,
         private val mPackageManager: PackageManager
-) : BaseRecyclerViewAdapter<RecyclerView.ViewHolder>(), ISimpleItemAdapter<ResolveInfo>, Filterable {
+) : AbsDelegationAdapter<List<ResolveInfo>>(), ISimpleItemAdapter<ResolveInfo>, Filterable {
 
     private val mAlphabeticalFilter = AlphabeticalFilter(
             mOriginalList = mAppShortcutList,
@@ -32,12 +32,11 @@ class AppShortcutAdapter(
             getItemText = { getItemText(it) }
     )
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return super.onCreateViewHolder(parent, viewType)
-    }
+    init {
+        val simpleItemDelegate = SimpleItemAdapterDelegate(this)
+        delegatesManager.addDelegate(simpleItemDelegate)
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        super<ISimpleItemAdapter>.onBindViewHolder(holder, position)
+        setItems(mAppShortcutList)
     }
 
     override fun getFilter() = mAlphabeticalFilter
