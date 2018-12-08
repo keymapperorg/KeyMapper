@@ -9,7 +9,7 @@ import org.jetbrains.anko.defaultSharedPreferences
 /**
  * Created by sds100 on 30/09/2018.
  */
-class BootReceiver : BroadcastReceiver() {
+class BootBroadcastReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if (intent!!.action == Intent.ACTION_BOOT_COMPLETED) {
