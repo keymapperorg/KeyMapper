@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.Utils
 import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Build
-import io.github.sds100.keymapper.CantFindSystemActionException
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.SystemAction.CATEGORY_BLUETOOTH
@@ -140,9 +139,10 @@ object SystemActionUtils {
             )
     )
 
-    @Throws(CantFindSystemActionException::class)
+    @Throws(Exception::class)
     fun getSystemActionDef(id: String): SystemActionDef {
-        return SYSTEM_ACTION_DEFINITIONS.find { it.id == id } ?: throw CantFindSystemActionException(id)
+        return SYSTEM_ACTION_DEFINITIONS.find { it.id == id }
+                ?: throw Exception("Can't find that system action definition. $id")
     }
 
 //    fun getSystemActionListItems(): List<SystemActionListItem> {
