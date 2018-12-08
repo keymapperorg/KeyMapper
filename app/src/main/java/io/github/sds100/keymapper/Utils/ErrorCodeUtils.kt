@@ -5,7 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import io.github.sds100.keymapper.ErrorCodeResult
-import io.github.sds100.keymapper.OpenIMEPickerBroadcastReceiver
+import io.github.sds100.keymapper.BroadcastReceiver.OpenIMEPickerBroadcastReceiver
 import io.github.sds100.keymapper.R
 
 /**

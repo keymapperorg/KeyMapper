@@ -8,7 +8,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import io.github.sds100.keymapper.OpenIMEPickerBroadcastReceiver
+import io.github.sds100.keymapper.BroadcastReceiver.OpenIMEPickerBroadcastReceiver
 import io.github.sds100.keymapper.R
 
 /**

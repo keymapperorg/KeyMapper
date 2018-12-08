@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper
+package io.github.sds100.keymapper.BroadcastReceiver
 
 import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.view.inputmethod.InputMethodManager
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Utils.RootUtils
 import org.jetbrains.anko.defaultSharedPreferences
 

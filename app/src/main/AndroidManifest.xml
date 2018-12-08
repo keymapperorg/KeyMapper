@@ -53,14 +53,14 @@
             android:label="@string/title_settings" />
 
         <receiver
-            android:name=".BootBroadcastReceiver"
+            android:name=".BroadcastReceiver.BootBroadcastReceiver"
             android:enabled="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".OpenIMEPickerBroadcastReceiver">
+        <receiver android:name=".BroadcastReceiver.OpenIMEPickerBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
                 <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />

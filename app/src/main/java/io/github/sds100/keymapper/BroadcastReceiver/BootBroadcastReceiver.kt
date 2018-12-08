@@ -1,8 +1,9 @@
-package io.github.sds100.keymapper
+package io.github.sds100.keymapper.BroadcastReceiver
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Utils.NotificationUtils
 import org.jetbrains.anko.defaultSharedPreferences
 
