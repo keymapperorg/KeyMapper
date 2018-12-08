@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.transaction
-import io.github.sds100.keymapper.SettingsFragment
+import io.github.sds100.keymapper.Fragment.SettingsFragment
 
 /**
  * Created by sds100 on 01/10/2018.

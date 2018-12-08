@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.ActionTypeFragments
+package io.github.sds100.keymapper.Fragment.ActionTypeFragments
 
 import android.os.Bundle
 import android.view.LayoutInflater

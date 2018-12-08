@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.ActionTypeFragments
+package io.github.sds100.keymapper.Fragment.ActionTypeFragments
 
 import android.content.Context
 import android.os.Bundle

@@ -9,8 +9,8 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import com.google.android.material.tabs.TabLayout
-import io.github.sds100.keymapper.ActionTypeFragments.*
-import io.github.sds100.keymapper.ActionTypeFragments.KeyActionTypeFragment.Companion.ACTION_ON_KEY_EVENT
+import io.github.sds100.keymapper.Fragment.ActionTypeFragments.*
+import io.github.sds100.keymapper.Fragment.ActionTypeFragments.KeyActionTypeFragment.Companion.ACTION_ON_KEY_EVENT
 import io.github.sds100.keymapper.Activities.ConfigKeymapActivity.Companion.EXTRA_KEY_EVENT
 import io.github.sds100.keymapper.CustomViewPager
 import io.github.sds100.keymapper.Interfaces.ITabDelegate

@@ -1,10 +1,11 @@
-package io.github.sds100.keymapper
+package io.github.sds100.keymapper.Fragment
 
 import android.os.Bundle
 import androidx.preference.MultiSelectListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Utils.BluetoothUtils
 import io.github.sds100.keymapper.Utils.NotificationUtils
 import org.jetbrains.anko.alert
