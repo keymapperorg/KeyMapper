@@ -42,15 +42,16 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
         * to see the notification at all. */
         mShowNotificationOnBootPreference.isEnabled = mShowNotificationPreference.isChecked
 
-        mBluetoothDevicesPreferences.setOnPreferenceClickListener { _ ->
+        mBluetoothDevicesPreferences.setOnPreferenceClickListener {
             populateBluetoothDevicesPreference()
 
-            //if there are no entries, explain to the user why
+            //if there are no bluetooth device entries, explain to the user why
             if (mBluetoothDevicesPreferences.entries.isEmpty()) {
 
                 /* This awkward way of showing the "can't find any paired devices" dialog
                  * with a CancellableMultiSelectPreference is necessary since you can't
                  * cancel showing the dialog when once the preference has been clicked.*/
+
                 if (!mShowingNoPairedDevicesDialog) {
                     mShowingNoPairedDevicesDialog = true
 
@@ -78,7 +79,7 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
         when (preference) {
 
             /* if the user doesn't want to see the notification, don't allow them
-             * to toggle whether it is shown on boot on and off */
+             * to toggle whether it is shown on boot */
             mShowNotificationPreference -> {
                 mShowNotificationOnBootPreference.isEnabled = newValue as Boolean
 
