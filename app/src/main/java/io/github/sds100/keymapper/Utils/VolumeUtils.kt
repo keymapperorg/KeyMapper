@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.media.AudioManager
 import androidx.annotation.IntDef
+import io.github.sds100.keymapper.R
+import org.jetbrains.anko.defaultSharedPreferences
 
 /**
  * Created by sds100 on 21/10/2018.
@@ -30,7 +32,18 @@ object VolumeUtils {
         val audioManager = ctx.applicationContext.getSystemService(Context.AUDIO_SERVICE)
                 as AudioManager
 
-        //TODO add flag to show ui if the user has chosen it in settings
-        audioManager.adjustVolume(adjustMode, AudioManager.FLAG_SHOW_UI)
+        val flag = if (automaticallyShowVolumeUI(ctx)) {
+            AudioManager.FLAG_SHOW_UI
+        } else {
+            0
+        }
+
+        audioManager.adjustVolume(adjustMode, flag)
+    }
+
+    private fun automaticallyShowVolumeUI(ctx: Context): Boolean {
+        ctx.apply {
+            return defaultSharedPreferences.getBoolean(getString(R.string.key_pref_show_volume_dialog_on_adjust), true)
+        }
     }
 }
