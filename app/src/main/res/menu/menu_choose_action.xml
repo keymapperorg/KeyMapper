@@ -8,8 +8,8 @@
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="ifRoom|collapseActionView" />
 
-    <item
-        android:id="@+id/action_show_hidden_system_actions"
-        android:title="@string/show_hidden_system_actions"
-        app:showAsAction="never" />
+    <!--<item-->
+        <!--android:id="@+id/action_show_hidden_system_actions"-->
+        <!--android:title="@string/show_hidden_system_actions"-->
+        <!--app:showAsAction="never" />-->
 </menu>
