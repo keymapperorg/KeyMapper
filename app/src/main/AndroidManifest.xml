@@ -52,6 +52,10 @@
             android:name=".Activities.SettingsActivity"
             android:label="@string/title_settings" />
 
+        <activity
+            android:name=".Activities.AboutActivity"
+            android:label="@string/title_about" />
+
         <receiver
             android:name=".BroadcastReceiver.BootBroadcastReceiver"
             android:enabled="true">

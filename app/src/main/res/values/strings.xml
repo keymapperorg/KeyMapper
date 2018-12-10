@@ -34,6 +34,7 @@
     <string name="title_activity_new_key_map">New Keymap</string>
     <string name="title_choose_action">Choose Action</string>
     <string name="title_settings">Settings</string>
+    <string name="title_about">About</string>
     <!-- Activity titles -->
 
     <!-- Menu action titles-->
@@ -41,6 +42,7 @@
     <string name="action_done">Done</string>
     <string name="action_select_all">Select All</string>
     <string name="action_delete">Delete</string>
+    <string name="action_about">About</string>
     <string name="action_search">Search</string>
     <!-- Menu action titles-->
 
@@ -86,7 +88,7 @@
     <string name="notification_persistent_title">Click to choose input method</string>
     <!-- Notification strings -->
 
-    <!-- Preferences -->
+    <!-- Settings Activity -->
     <string name="key_pref_show_notification">pref_show_notification</string>
     <string name="key_pref_show_notification_on_boot">pref_show_notification_on_boot</string>
     <string name="key_pref_bluetooth_devices">pref_bluetooth_devices</string>
@@ -108,7 +110,13 @@
     <string name="summary_pref_show_notification_on_boot">Automatically start showing the notification when your device starts up.</string>
     <string name="summary_pref_show_volume_dialog_on_adjust">Show the volume dialog when performing any volume related action.</string>
     <string name="summary_pref_show_toast_when_action_performed">Whenever an action is performed, a little message will popup on the screen telling you Key Mapper is performing an action.</string>
-    <!-- Preferences -->
+    <!-- Settings Activity -->
+
+    <!-- About activity-->
+    <string name="pref_title_changelog">Changelog</string>
+
+    <string name="action_changelog">action_changelog</string>
+    <!-- About activity-->
 
     <!--Action Types Titles-->
     <string name="action_type_title_application">App</string>
