@@ -1,13 +1,30 @@
 package io.github.sds100.keymapper.Utils
 
 import android.content.Context
+import android.net.wifi.WifiManager
 import android.os.Build
 import android.telephony.TelephonyManager
+import io.github.sds100.keymapper.StateChange
 
 /**
- * Created by sds100 on 31/10/2018.
+ * Created by sds100 on 12/12/2018.
  */
-object MobileDataUtils {
+
+object NetworkUtils {
+    //WiFi stuff
+    fun changeWifiState(ctx: Context, stateChange: StateChange) {
+        val wifiManager = ctx.applicationContext
+                .getSystemService(Context.WIFI_SERVICE) as WifiManager
+
+        when (stateChange) {
+            StateChange.ENABLE -> wifiManager.isWifiEnabled = true
+            StateChange.DISABLE -> wifiManager.isWifiEnabled = false
+            StateChange.TOGGLE -> wifiManager.isWifiEnabled = !wifiManager.isWifiEnabled
+        }
+    }
+
+    //Mobile data stuff
+
     /**
      * REQUIRES ROOT!!
      */
