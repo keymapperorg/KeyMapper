@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.Utils
 
 import android.content.Context
+import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.telephony.TelephonyManager
@@ -11,6 +12,14 @@ import io.github.sds100.keymapper.StateChange
  */
 
 object NetworkUtils {
+
+    fun isNetworkAvailable(ctx: Context): Boolean {
+        val connectivityManager = ctx.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetworkInfo = connectivityManager.activeNetworkInfo ?: return false
+
+        return activeNetworkInfo.isConnected
+    }
+
     //WiFi stuff
     fun changeWifiState(ctx: Context, stateChange: StateChange) {
         val wifiManager = ctx.applicationContext

@@ -72,6 +72,7 @@
     <string name="dialog_message_are_you_sure_want_to_leave">Are you sure you want to leave?</string>
     <string name="dialog_message_cant_find_paired_devices">Make sure Bluetooth is turned on and you have paired devices. Then try again.</string>
     <string name="dialog_message_root_prompt">When you click \"OK\", Key Mapper will try to ask for root permission. If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use that action.</string>
+    <string name="dialog_message_downloading_changelog">Downloading changelog…</string>
     <!-- Dialog messages -->
 
     <!-- Dialog buttons -->
