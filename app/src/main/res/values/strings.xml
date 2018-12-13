@@ -116,12 +116,14 @@
     <!-- About activity-->
     <string name="pref_title_changelog">Changelog</string>
     <string name="pref_title_source_code">Source code</string>
+    <string name="pref_title_developer_github">Developer\'s GitHub profile</string>
 
     <string name="action_changelog">action_changelog</string>
     <!-- About activity-->
 
     <!-- URLs -->
     <string name="url_source_code">https://github.com/sds100/KeyMapper</string>
+    <string name="url_developer_github">https://github.com/sds100</string>
     <!-- URLs -->
 
     <!--Action Types Titles-->
