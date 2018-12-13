@@ -7,6 +7,10 @@
         android:title="@string/pref_title_changelog" />
 
     <io.github.sds100.keymapper.Views.UrlLinkPreference
+        android:title="@string/pref_title_rate_review"
+        app:linkUrl="@string/url_play_store_listing" />
+
+    <io.github.sds100.keymapper.Views.UrlLinkPreference
         android:title="@string/pref_title_developer_github"
         app:linkUrl="@string/url_developer_github" />
 
