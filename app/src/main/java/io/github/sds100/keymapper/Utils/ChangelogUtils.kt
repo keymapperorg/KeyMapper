@@ -2,17 +2,15 @@ package io.github.sds100.keymapper.Utils
 
 import android.content.Context
 import android.os.Build
-import android.view.LayoutInflater
-import android.widget.TextView
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
+import com.mittsu.markedview.MarkedView
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Views.ProgressDialog
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.uiThread
-import ru.noties.markwon.Markwon
 import java.io.BufferedInputStream
 import java.io.FileOutputStream
 import java.io.IOException
@@ -38,14 +36,11 @@ object ChangelogUtils {
 
         doAsync {
             val changelogText = getChangelogText(ctx)
-            val changelogMarkdown = Markwon.markdown(ctx, changelogText)
-
-            val view = LayoutInflater.from(ctx).inflate(R.layout.dialog_textview, null)
-            val textView = view.findViewById<TextView>(R.id.textView)
-
-            textView.text = changelogMarkdown
 
             uiThread {
+                val view = MarkedView(ctx)
+                view.setMDText(changelogText)
+                
                 //dismiss the progress dialog once the changelog has been received
                 progressDialog.dismiss()
 
