@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
-import com.mittsu.markedview.MarkedView
+import com.mukesh.MarkdownView
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Views.ProgressDialog
 import org.jetbrains.anko.alert
@@ -18,6 +18,7 @@ import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
+
 
 /**
  * Created by sds100 on 10/12/2018.
@@ -38,15 +39,18 @@ object ChangelogUtils {
             val changelogText = getChangelogText(ctx)
 
             uiThread {
-                val view = MarkedView(ctx)
-                view.setMDText(changelogText)
-                
+                val markdownView = MarkdownView(ctx)
+                markdownView.setMarkDownText(changelogText)
+
+                //open links in the default browser/app rather than in the WebView inside the dialog
+                markdownView.isOpenUrlInBrowser = true
+
                 //dismiss the progress dialog once the changelog has been received
                 progressDialog.dismiss()
 
                 //show a dialog displaying the changelog in a textview
                 ctx.alert {
-                    customView = view
+                    customView = markdownView
                     okButton { dialog -> dialog.dismiss() }
                 }.show()
 
