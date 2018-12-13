@@ -27,8 +27,19 @@ class ServiceStatusLayout(
         View.inflate(context, R.layout.layout_service_status, this)
 
         if (attrs != null) {
-            mEnabledText = getCustomStringAttrValue(context, attrs, R.styleable.ServiceStatusLayout_enabledText)!!
-            mDisabledText = getCustomStringAttrValue(context, attrs, R.styleable.ServiceStatusLayout_disabledText)!!
+            mEnabledText = getCustomStringAttrValue(
+                    context,
+                    attrs,
+                    R.styleable.ServiceStatusLayout,
+                    R.styleable.ServiceStatusLayout_enabledText
+            )!!
+
+            mDisabledText = getCustomStringAttrValue(
+                    context,
+                    attrs,
+                    R.styleable.ServiceStatusLayout,
+                    R.styleable.ServiceStatusLayout_disabledText
+            )!!
         }
 
         //set to disabled state by default

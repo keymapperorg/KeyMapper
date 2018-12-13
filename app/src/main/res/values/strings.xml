@@ -115,9 +115,14 @@
 
     <!-- About activity-->
     <string name="pref_title_changelog">Changelog</string>
+    <string name="pref_title_source_code">Source code</string>
 
     <string name="action_changelog">action_changelog</string>
     <!-- About activity-->
+
+    <!-- URLs -->
+    <string name="url_source_code">https://github.com/sds100/KeyMapper</string>
+    <!-- URLs -->
 
     <!--Action Types Titles-->
     <string name="action_type_title_application">App</string>

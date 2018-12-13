@@ -17,11 +17,15 @@ import io.github.sds100.keymapper.Utils.AttrUtils
  */
 class UrlLinkPreference(
         context: Context?,
-        attrs: AttributeSet,
-        defStyleAttr: Int = 0
-) : Preference(context, attrs, defStyleAttr) {
+        attrs: AttributeSet
+) : Preference(context, attrs) {
 
-    private val mUrlLink: String = AttrUtils.getCustomStringAttrValue(context!!, attrs, R.attr.linkUrl)!!
+    private val mUrlLink: String = AttrUtils.getCustomStringAttrValue(
+            context!!,
+            attrs,
+            R.styleable.UrlLinkPreference,
+            R.styleable.UrlLinkPreference_linkUrl
+    )!!
 
     override fun onClick() {
         super.onClick()
