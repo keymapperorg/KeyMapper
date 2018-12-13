@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Key Mapper</string>
+    <string name="version">1.0.0-alpha1</string>
 
     <string name="no_action_chosen">No Action Chosen</string>
     <string name="triggers_header">Triggers</string>
@@ -118,6 +119,7 @@
     <string name="pref_title_source_code">Source Code</string>
     <string name="pref_title_developer_github">Developer\'s GitHub Profile</string>
     <string name="pref_title_rate_review">Rate and Review</string>
+    <string name="pref_title_version">Version</string>
 
     <string name="action_changelog">action_changelog</string>
     <!-- About activity-->
