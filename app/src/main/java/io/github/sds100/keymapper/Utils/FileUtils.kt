@@ -13,4 +13,6 @@ object FileUtils {
             return it.readText()
         }
     }
+
+    fun getPathToFileInAppData(ctx: Context, fileName: String) = "${ctx.filesDir.path}/$fileName"
 }

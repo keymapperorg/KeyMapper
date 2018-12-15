@@ -22,4 +22,8 @@
         android:title="@string/pref_title_source_code"
         app:linkUrl="@string/url_source_code" />
 
+    <androidx.preference.Preference
+        android:key="@string/action_license"
+        android:title="@string/pref_title_license" />
+
 </androidx.preference.PreferenceScreen>

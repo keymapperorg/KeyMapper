@@ -33,10 +33,9 @@ object ChangelogUtils {
     }
 
     private fun getChangelogText(ctx: Context): String {
-        NetworkUtils.downloadFile(ctx, CHANGELOG_URL, buildPathToChangelog(ctx))
+        val path = FileUtils.getPathToFileInAppData(ctx, CHANGELOG_FILE_NAME)
+        NetworkUtils.downloadFile(ctx, CHANGELOG_URL, path)
 
         return FileUtils.getTextFromFile(ctx, CHANGELOG_FILE_NAME)
     }
-
-    private fun buildPathToChangelog(ctx: Context) = "${ctx.filesDir.path}/$CHANGELOG_FILE_NAME"
 }
