@@ -5,7 +5,16 @@ import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.telephony.TelephonyManager
+import android.util.Log
+import android.widget.Toast
 import io.github.sds100.keymapper.StateChange
+import java.io.BufferedInputStream
+import java.io.FileOutputStream
+import java.io.IOException
+import java.net.URL
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
 
 /**
  * Created by sds100 on 12/12/2018.
@@ -18,6 +27,52 @@ object NetworkUtils {
         val activeNetworkInfo = connectivityManager.activeNetworkInfo ?: return false
 
         return activeNetworkInfo.isConnected
+    }
+
+    /**
+     * Download a file from a specified [url] to a specified path.
+     * @return whether the file was downloaded successfully
+     */
+    fun downloadFile(ctx: Context, url: String, downloadPath: String): Boolean {
+        if (!NetworkUtils.isNetworkAvailable(ctx)) return false
+
+        val inputStream = URL(url).openStream()
+
+        inputStream.use {
+            //only available in Java 7 and higher
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Files.copy(inputStream, Paths.get(downloadPath), StandardCopyOption.REPLACE_EXISTING)
+            } else {
+
+                try {
+                    val bufferedInputStream = BufferedInputStream(inputStream)
+                    val fileOutputStream = FileOutputStream(downloadPath)
+
+                    bufferedInputStream.use {
+                        fileOutputStream.use {
+                            val dataBuffer = ByteArray(1024)
+                            var bytesRead: Int
+
+                            while (true) {
+                                bytesRead = bufferedInputStream.read(dataBuffer, 0, 1024)
+
+                                //if at the end of the file, break out of the loop
+                                if (bytesRead == -1) break
+
+                                fileOutputStream.write(dataBuffer, 0, bytesRead)
+                            }
+                        }
+                    }
+
+                } catch (e: IOException) {
+                    Log.e(this::class.java.simpleName, e.toString())
+                    Toast.makeText(ctx, "IO Exception when downloading file", Toast.LENGTH_SHORT).show()
+                    return false
+                }
+            }
+        }
+
+        return true
     }
 
     //WiFi stuff

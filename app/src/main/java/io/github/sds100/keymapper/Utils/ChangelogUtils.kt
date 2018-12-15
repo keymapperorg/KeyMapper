@@ -1,24 +1,10 @@
 package io.github.sds100.keymapper.Utils
 
 import android.content.Context
-import android.os.Build
-import android.widget.Toast
-import android.widget.Toast.LENGTH_SHORT
-import com.mukesh.MarkdownView
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Views.ProgressDialog
-import org.jetbrains.anko.alert
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.okButton
 import org.jetbrains.anko.uiThread
-import java.io.BufferedInputStream
-import java.io.FileOutputStream
-import java.io.IOException
-import java.net.URL
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.nio.file.StandardCopyOption
-
 
 /**
  * Created by sds100 on 10/12/2018.
@@ -39,75 +25,18 @@ object ChangelogUtils {
             val changelogText = getChangelogText(ctx)
 
             uiThread {
-                val markdownView = MarkdownView(ctx)
-                markdownView.setMarkDownText(changelogText)
-
-                //open links in the default browser/app rather than in the WebView inside the dialog
-                markdownView.isOpenUrlInBrowser = true
-
                 //dismiss the progress dialog once the changelog has been received
                 progressDialog.dismiss()
-
-                //show a dialog displaying the changelog in a textview
-                ctx.alert {
-                    customView = markdownView
-                    okButton { dialog -> dialog.dismiss() }
-                }.show()
-
+                MarkdownUtils.showDialog(ctx, changelogText)
             }
         }
     }
 
     private fun getChangelogText(ctx: Context): String {
-        if (NetworkUtils.isNetworkAvailable(ctx)) {
-            downloadChangelogFromServer(ctx)
-        }
+        NetworkUtils.downloadFile(ctx, CHANGELOG_URL, buildPathToChangelog(ctx))
 
-        ctx.openFileInput(CHANGELOG_FILE_NAME).bufferedReader().use {
-            return it.readText()
-        }
+        return FileUtils.getTextFromFile(ctx, CHANGELOG_FILE_NAME)
     }
 
-    private fun downloadChangelogFromServer(ctx: Context) {
-        val directory = getChangelogDirectory(ctx)
-
-        val inputStream = URL(CHANGELOG_URL).openStream()
-
-        inputStream.use {
-            //only available in Java 7 and higher
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                Files.copy(inputStream,
-                        Paths.get("$directory/$CHANGELOG_FILE_NAME"), StandardCopyOption.REPLACE_EXISTING)
-            } else {
-
-                try {
-                    val bufferedInputStream = BufferedInputStream(inputStream)
-                    val fileOutputStream = FileOutputStream("$directory/$CHANGELOG_FILE_NAME")
-
-                    bufferedInputStream.use {
-                        fileOutputStream.use {
-                            val dataBuffer = ByteArray(1024)
-                            var bytesRead: Int
-
-                            while (true) {
-                                bytesRead = bufferedInputStream.read(dataBuffer, 0, 1024)
-
-                                //if at the end of the file, break out of the loop
-                                if (bytesRead == -1) break
-
-                                fileOutputStream.write(dataBuffer, 0, bytesRead)
-                            }
-                        }
-                    }
-
-                } catch (e: IOException) {
-                    Toast.makeText(ctx, "IO Exception when downloading changelog", LENGTH_SHORT).show()
-                }
-            }
-        }
-    }
-
-    private fun getChangelogDirectory(ctx: Context): String {
-        return ctx.filesDir.path
-    }
+    private fun buildPathToChangelog(ctx: Context) = "${ctx.filesDir.path}/$CHANGELOG_FILE_NAME"
 }
