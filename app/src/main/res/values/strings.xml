@@ -30,6 +30,14 @@
     <string name="description_text_block">Insert \'%s\'</string>
     <string name="description_keycode">%s</string>
 
+    <!-- URLs -->
+    <string name="url_source_code">https://github.com/sds100/KeyMapper</string>
+    <string name="url_developer_github">https://github.com/sds100</string>
+    <string name="url_play_store_listing">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper</string>
+    <string name="url_license">https://raw.githubusercontent.com/sds100/KeyMapper/master/LICENSE.md</string>
+    <string name="url_changelog">https://raw.githubusercontent.com/sds100/KeyMapper/master/CHANGELOG.md</string>
+    <!-- URLs -->
+
     <!-- Activity titles -->
     <string name="title_activity_edit_key_map">Edit Keymap</string>
     <string name="title_activity_new_key_map">New Keymap</string>
@@ -73,8 +81,7 @@
     <string name="dialog_message_are_you_sure_want_to_leave">Are you sure you want to leave?</string>
     <string name="dialog_message_cant_find_paired_devices">Make sure Bluetooth is turned on and you have paired devices. Then try again.</string>
     <string name="dialog_message_root_prompt">When you click \"OK\", Key Mapper will try to ask for root permission. If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use that action.</string>
-    <string name="dialog_message_downloading_changelog">Downloading changelog…</string>
-    <string name="dialog_message_downloading_license">Downloading license…</string>
+    <string name="dialog_message_downloading">Downloading…</string>
     <!-- Dialog messages -->
 
     <!-- Dialog buttons -->
@@ -126,12 +133,6 @@
     <string name="action_changelog">action_changelog</string>
     <string name="action_license">action_license</string>
     <!-- About activity-->
-
-    <!-- URLs -->
-    <string name="url_source_code">https://github.com/sds100/KeyMapper</string>
-    <string name="url_developer_github">https://github.com/sds100</string>
-    <string name="url_play_store_listing">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper</string>
-    <!-- URLs -->
 
     <!--Action Types Titles-->
     <string name="action_type_title_application">App</string>

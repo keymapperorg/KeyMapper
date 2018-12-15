@@ -6,9 +6,10 @@
         android:summary="@string/version"
         android:title="@string/pref_title_version" />
 
-    <androidx.preference.Preference
+    <io.github.sds100.keymapper.Views.MarkdownDialogPreference
         android:key="@string/action_changelog"
-        android:title="@string/pref_title_changelog" />
+        android:title="@string/pref_title_changelog"
+        app:fileUrl="@string/url_changelog" />
 
     <io.github.sds100.keymapper.Views.UrlLinkPreference
         android:title="@string/pref_title_rate_review"
@@ -22,8 +23,9 @@
         android:title="@string/pref_title_source_code"
         app:linkUrl="@string/url_source_code" />
 
-    <androidx.preference.Preference
+    <io.github.sds100.keymapper.Views.MarkdownDialogPreference
         android:key="@string/action_license"
-        android:title="@string/pref_title_license" />
+        android:title="@string/pref_title_license"
+        app:fileUrl="@string/url_license" />
 
 </androidx.preference.PreferenceScreen>

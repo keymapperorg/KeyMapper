@@ -12,4 +12,9 @@
         <!--The url to open-->
         <attr name="linkUrl" format="string" />
     </declare-styleable>
+
+    <declare-styleable name="MarkdownDialogPreference">
+        <!--The url to open-->
+        <attr name="fileUrl" format="string" />
+    </declare-styleable>
 </resources>
