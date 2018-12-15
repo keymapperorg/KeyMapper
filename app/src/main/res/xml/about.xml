@@ -7,7 +7,6 @@
         android:title="@string/pref_title_version" />
 
     <io.github.sds100.keymapper.Views.MarkdownDialogPreference
-        android:key="@string/action_changelog"
         android:title="@string/pref_title_changelog"
         app:fileUrl="@string/url_changelog" />
 
@@ -24,7 +23,10 @@
         app:linkUrl="@string/url_source_code" />
 
     <io.github.sds100.keymapper.Views.MarkdownDialogPreference
-        android:key="@string/action_license"
+        android:title="@string/pref_title_credits"
+        app:fileUrl="@string/url_credits" />
+
+    <io.github.sds100.keymapper.Views.MarkdownDialogPreference
         android:title="@string/pref_title_license"
         app:fileUrl="@string/url_license" />
 

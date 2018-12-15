@@ -36,6 +36,7 @@
     <string name="url_play_store_listing">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper</string>
     <string name="url_license">https://raw.githubusercontent.com/sds100/KeyMapper/master/LICENSE.md</string>
     <string name="url_changelog">https://raw.githubusercontent.com/sds100/KeyMapper/master/CHANGELOG.md</string>
+    <string name="url_credits">https://raw.githubusercontent.com/sds100/KeyMapper/master/CREDITS.md</string>
     <!-- URLs -->
 
     <!-- Activity titles -->
@@ -125,13 +126,11 @@
     <!-- About activity-->
     <string name="pref_title_changelog">Changelog</string>
     <string name="pref_title_license">License</string>
+    <string name="pref_title_credits">Credits</string>
     <string name="pref_title_source_code">Source Code</string>
     <string name="pref_title_developer_github">Developer\'s GitHub Profile</string>
     <string name="pref_title_rate_review">Rate and Review</string>
     <string name="pref_title_version">Version</string>
-
-    <string name="action_changelog">action_changelog</string>
-    <string name="action_license">action_license</string>
     <!-- About activity-->
 
     <!--Action Types Titles-->
