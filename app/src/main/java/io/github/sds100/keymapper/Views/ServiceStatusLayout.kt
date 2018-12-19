@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.Utils.AttrUtils.getCustomStringAttrValue
 import kotlinx.android.synthetic.main.layout_service_status.view.*
 
 /**
@@ -26,8 +27,19 @@ class ServiceStatusLayout(
         View.inflate(context, R.layout.layout_service_status, this)
 
         if (attrs != null) {
-            mEnabledText = getCustomStringAttrValue(attrs, R.styleable.ServiceStatusLayout_enabledText)!!
-            mDisabledText = getCustomStringAttrValue(attrs, R.styleable.ServiceStatusLayout_disabledText)!!
+            mEnabledText = getCustomStringAttrValue(
+                    context,
+                    attrs,
+                    R.styleable.ServiceStatusLayout,
+                    R.styleable.ServiceStatusLayout_enabledText
+            )!!
+
+            mDisabledText = getCustomStringAttrValue(
+                    context,
+                    attrs,
+                    R.styleable.ServiceStatusLayout,
+                    R.styleable.ServiceStatusLayout_disabledText
+            )!!
         }
 
         //set to disabled state by default
@@ -50,19 +62,5 @@ class ServiceStatusLayout(
 
     fun setOnFixClickListener(onClickListener: OnClickListener) {
         buttonFix.setOnClickListener(onClickListener)
-    }
-
-    private fun getCustomStringAttrValue(attrs: AttributeSet, attrId: Int): String? {
-        val typedArray = context.theme.obtainStyledAttributes(attrs, R.styleable.ServiceStatusLayout, 0, 0)
-
-        val attrValue: String?
-
-        try {
-            attrValue = typedArray.getString(attrId)
-        } finally {
-            typedArray.recycle()
-        }
-
-        return attrValue
     }
 }

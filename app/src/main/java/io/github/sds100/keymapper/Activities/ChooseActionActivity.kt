@@ -9,12 +9,12 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import com.google.android.material.tabs.TabLayout
-import io.github.sds100.keymapper.Fragment.ActionTypeFragments.*
-import io.github.sds100.keymapper.Fragment.ActionTypeFragments.KeyActionTypeFragment.Companion.ACTION_ON_KEY_EVENT
 import io.github.sds100.keymapper.Activities.ConfigKeymapActivity.Companion.EXTRA_KEY_EVENT
 import io.github.sds100.keymapper.CustomViewPager
-import io.github.sds100.keymapper.Interfaces.ITabDelegate
 import io.github.sds100.keymapper.Delegates.TabDelegate
+import io.github.sds100.keymapper.Fragment.ActionTypeFragments.*
+import io.github.sds100.keymapper.Fragment.ActionTypeFragments.KeyActionTypeFragment.Companion.ACTION_ON_KEY_EVENT
+import io.github.sds100.keymapper.Interfaces.ITabDelegate
 import io.github.sds100.keymapper.R
 import kotlinx.android.synthetic.main.activity_choose_action.*
 
@@ -45,7 +45,6 @@ class ChooseActionActivity : AppCompatActivity(), ITabDelegate, TabLayout.OnTabS
             mOffScreenLimit = 6)
 
     private lateinit var mSearchViewMenuItem: MenuItem
-    private lateinit var mShowHiddenSystemActionsMenuItem: MenuItem
 
     private val mSearchView
         get() = mSearchViewMenuItem.actionView as SearchView
@@ -104,8 +103,6 @@ class ChooseActionActivity : AppCompatActivity(), ITabDelegate, TabLayout.OnTabS
         mSearchViewMenuItem = menu!!.findItem(R.id.action_search)
         mSearchView.queryHint = getString(R.string.action_search)
 
-        mShowHiddenSystemActionsMenuItem = menu.findItem(R.id.action_show_hidden_system_actions)
-
         //hide the tabs when the user opens the SearchView
         mSearchViewMenuItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
@@ -148,9 +145,7 @@ class ChooseActionActivity : AppCompatActivity(), ITabDelegate, TabLayout.OnTabS
 
     override fun onTabSelected(tab: TabLayout.Tab) {
         val fragment = tabFragments[tab.position]
-
-        mShowHiddenSystemActionsMenuItem.isVisible = fragment is SystemActionFragment
-
+        
         val isFilterableFragment = fragment is FilterableActionTypeFragment
 
         mSearchViewMenuItem.isVisible = isFilterableFragment

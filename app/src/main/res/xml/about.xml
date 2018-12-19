@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.preference.Preference
+        android:summary="@string/version"
+        android:title="@string/pref_title_version" />
+
+    <io.github.sds100.keymapper.Views.MarkdownDialogPreference
+        android:title="@string/pref_title_changelog"
+        app:fileUrl="@string/url_changelog" />
+
+    <io.github.sds100.keymapper.Views.UrlLinkPreference
+        android:title="@string/pref_title_rate_review"
+        app:linkUrl="@string/url_play_store_listing" />
+
+    <io.github.sds100.keymapper.Views.UrlLinkPreference
+        android:title="@string/pref_title_developer_github"
+        app:linkUrl="@string/url_developer_github" />
+
+    <io.github.sds100.keymapper.Views.UrlLinkPreference
+        android:title="@string/pref_title_source_code"
+        app:linkUrl="@string/url_source_code" />
+
+    <io.github.sds100.keymapper.Views.MarkdownDialogPreference
+        android:title="@string/pref_title_credits"
+        app:fileUrl="@string/url_credits" />
+
+    <io.github.sds100.keymapper.Views.MarkdownDialogPreference
+        android:title="@string/pref_title_license"
+        app:fileUrl="@string/url_license" />
+
+</androidx.preference.PreferenceScreen>
