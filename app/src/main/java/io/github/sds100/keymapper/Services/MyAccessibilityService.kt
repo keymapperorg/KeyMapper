@@ -13,12 +13,14 @@ import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
-import io.github.sds100.keymapper.*
+import io.github.sds100.keymapper.Action
 import io.github.sds100.keymapper.Activities.ConfigKeymapActivity
+import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.Data.KeyMapRepository
-import io.github.sds100.keymapper.Delegates.PerformActionDelegate
+import io.github.sds100.keymapper.Delegates.ActionPerformerDelegate
 import io.github.sds100.keymapper.Interfaces.IContext
 import io.github.sds100.keymapper.Interfaces.IPerformGlobalAction
+import io.github.sds100.keymapper.KeyMap
 import io.github.sds100.keymapper.Utils.ActionUtils
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils
 import io.github.sds100.keymapper.Utils.RootUtils
@@ -131,7 +133,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                 }
 
                 ACTION_TEST_ACTION -> {
-                    mPerformActionDelegate.performAction(intent.getSerializableExtra(EXTRA_ACTION) as Action)
+                    mActionPerformerDelegate.performAction(intent.getSerializableExtra(EXTRA_ACTION) as Action)
                 }
             }
         }
@@ -155,7 +157,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
     private var mRecordingTrigger = false
 
-    private val mPerformActionDelegate = PerformActionDelegate(this, this)
+    private val mActionPerformerDelegate = ActionPerformerDelegate(this, this)
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -246,7 +248,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
                 //if there is no error
                 if (errorCodeResult == null) {
-                    mPerformActionDelegate.performAction(keyMap.action!!)
+                    mActionPerformerDelegate.performAction(keyMap.action!!)
                     return true
 
                 } else {

@@ -18,7 +18,7 @@ import org.jetbrains.anko.defaultSharedPreferences
  * Created by sds100 on 25/11/2018.
  */
 
-class PerformActionDelegate(iContext: IContext, iPerformGlobalAction: IPerformGlobalAction
+class ActionPerformerDelegate(iContext: IContext, iPerformGlobalAction: IPerformGlobalAction
 ) : IContext by iContext, IPerformGlobalAction by iPerformGlobalAction {
 
     fun performAction(action: Action) {
