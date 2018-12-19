@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-permission
         android:name="android.permission.WRITE_SETTINGS"
@@ -51,6 +52,10 @@
         <activity
             android:name=".Activities.SettingsActivity"
             android:label="@string/title_settings" />
+
+        <activity
+            android:name=".Activities.AboutActivity"
+            android:label="@string/title_about" />
 
         <receiver
             android:name=".BroadcastReceiver.BootBroadcastReceiver"

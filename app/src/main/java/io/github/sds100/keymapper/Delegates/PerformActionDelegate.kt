@@ -80,17 +80,17 @@ class PerformActionDelegate(iContext: IContext, iPerformGlobalAction: IPerformGl
     private fun performSystemAction(id: String) {
         ctx.apply {
             when (id) {
-                SystemAction.ENABLE_WIFI -> WifiUtils.changeWifiState(this, StateChange.ENABLE)
-                SystemAction.DISABLE_WIFI -> WifiUtils.changeWifiState(this, StateChange.DISABLE)
-                SystemAction.TOGGLE_WIFI -> WifiUtils.changeWifiState(this, StateChange.TOGGLE)
+                SystemAction.ENABLE_WIFI -> NetworkUtils.changeWifiState(this, StateChange.ENABLE)
+                SystemAction.DISABLE_WIFI -> NetworkUtils.changeWifiState(this, StateChange.DISABLE)
+                SystemAction.TOGGLE_WIFI -> NetworkUtils.changeWifiState(this, StateChange.TOGGLE)
 
                 SystemAction.TOGGLE_BLUETOOTH -> BluetoothUtils.changeBluetoothState(StateChange.TOGGLE)
                 SystemAction.ENABLE_BLUETOOTH -> BluetoothUtils.changeBluetoothState(StateChange.ENABLE)
                 SystemAction.DISABLE_BLUETOOTH -> BluetoothUtils.changeBluetoothState(StateChange.DISABLE)
 
-                SystemAction.TOGGLE_MOBILE_DATA -> MobileDataUtils.toggleMobileData(this)
-                SystemAction.ENABLE_MOBILE_DATA -> MobileDataUtils.enableMobileData()
-                SystemAction.DISABLE_MOBILE_DATA -> MobileDataUtils.disableMobileData()
+                SystemAction.TOGGLE_MOBILE_DATA -> NetworkUtils.toggleMobileData(this)
+                SystemAction.ENABLE_MOBILE_DATA -> NetworkUtils.enableMobileData()
+                SystemAction.DISABLE_MOBILE_DATA -> NetworkUtils.disableMobileData()
 
                 SystemAction.TOGGLE_AUTO_BRIGHTNESS -> BrightnessUtils.toggleAutoBrightness(this)
                 SystemAction.ENABLE_AUTO_BRIGHTNESS ->

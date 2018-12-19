@@ -7,4 +7,14 @@
         <!--The text to show if the service is disabled-->
         <attr name="disabledText" format="string" />
     </declare-styleable>
+
+    <declare-styleable name="UrlLinkPreference">
+        <!--The url to open-->
+        <attr name="linkUrl" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="MarkdownDialogPreference">
+        <!--The url to open-->
+        <attr name="fileUrl" format="string" />
+    </declare-styleable>
 </resources>
