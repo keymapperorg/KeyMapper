@@ -178,6 +178,11 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
                 startActivity(intent)
                 true
             }
+            R.id.action_help -> {
+                val intent = Intent(this, HelpActivity::class.java)
+                startActivity(intent)
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
