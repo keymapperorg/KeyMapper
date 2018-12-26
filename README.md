@@ -1,5 +1,5 @@
 # KeyMapper
-An Android app that maps a single or multiple key event combination to a custom action.
+An Android app that maps a single or multiple key events to a custom action.
 
 ### Branches
  - master: Everything in the latest stable release.
