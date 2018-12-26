@@ -1,6 +1,9 @@
 # KeyMapper
 An Android app that maps a single or multiple key events to a custom action.
 
+### Help
+Look at the help page in the wiki.
+
 ### Branches
  - master: Everything in the latest stable release.
  - develop: The most recent changes. The app is potentially unstable but it can be successfully compiled. Merges into master when in a stable state.
