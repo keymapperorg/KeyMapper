@@ -2,16 +2,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="io.github.sds100.keymapper.Activities.MainActivity">
-    <item
-        android:id="@+id/action_about"
-        android:title="@string/action_about"
-        app:showAsAction="never" />
+
     <item
         android:id="@+id/action_settings"
         android:title="@string/action_settings"
         app:showAsAction="never" />
+
     <item
         android:id="@+id/action_help"
         android:title="@string/action_help"
+        app:showAsAction="never" />
+    
+    <item
+        android:id="@+id/action_about"
+        android:title="@string/action_about"
         app:showAsAction="never" />
 </menu>
