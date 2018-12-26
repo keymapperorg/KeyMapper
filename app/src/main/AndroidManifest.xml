@@ -57,6 +57,11 @@
             android:name=".Activities.AboutActivity"
             android:label="@string/title_about" />
 
+        <activity
+            android:name=".Activities.HelpActivity"
+            android:label="@string/title_help"
+            android:theme="@style/AppTheme.NoActionBar" />
+
         <receiver
             android:name=".BroadcastReceiver.BootBroadcastReceiver"
             android:enabled="true">
