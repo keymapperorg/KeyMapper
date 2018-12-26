@@ -37,6 +37,7 @@
     <string name="url_license">https://raw.githubusercontent.com/sds100/KeyMapper/master/LICENSE.md</string>
     <string name="url_changelog">https://raw.githubusercontent.com/sds100/KeyMapper/master/CHANGELOG.md</string>
     <string name="url_credits">https://raw.githubusercontent.com/sds100/KeyMapper/master/CREDITS.md</string>
+    <string name="url_help">https://github.com/sds100/KeyMapper/wiki/Help.md</string>
     <!-- URLs -->
 
     <!-- Activity titles -->
