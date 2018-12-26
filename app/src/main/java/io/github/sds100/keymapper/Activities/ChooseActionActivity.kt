@@ -142,7 +142,6 @@ class ChooseActionActivity : AppCompatActivity(), ITabDelegate, TabLayout.OnTabS
         }
     }
 
-
     override fun onTabSelected(tab: TabLayout.Tab) {
         val fragment = tabFragments[tab.position]
         
