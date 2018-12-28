@@ -4,9 +4,10 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import android.view.inputmethod.InputMethodManager
 import io.github.sds100.keymapper.ErrorCodeResult
-import io.github.sds100.keymapper.BroadcastReceiver.OpenIMEPickerBroadcastReceiver
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.Services.MyIMEService
 
 /**
  * Created by sds100 on 25/11/2018.
@@ -46,11 +47,16 @@ object ErrorCodeUtils {
             }
 
             ERROR_CODE_IME_SERVICE_NOT_CHOSEN -> {
-                val intent = Intent(ctx, OpenIMEPickerBroadcastReceiver::class.java).apply {
-                    action = OpenIMEPickerBroadcastReceiver.ACTION_SHOW_IME_PICKER
-                }
+                val hasRootPermission = RootUtils.checkAppHasRootPermission()
 
-                ctx.sendBroadcast(intent)
+                if (hasRootPermission) {
+                    ImeUtils.switchIme(MyIMEService.getImeId(ctx))
+                } else {
+                    /* don't send broadcast to OpenIMEPickerBroadcastReceiver because it is only used
+                       when outside of the app */
+                    val imeManager = ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imeManager.showInputMethodPicker()
+                }
             }
         }
     }

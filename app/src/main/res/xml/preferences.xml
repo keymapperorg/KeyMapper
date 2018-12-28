@@ -33,6 +33,12 @@
             android:summary="@string/summary_pref_auto_show_ime_picker"
             android:title="@string/title_pref_auto_show_ime_picker" />
 
+        <androidx.preference.SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/key_pref_auto_change_ime_on_connect_disconnect"
+            android:summary="@string/summary_pref_auto_change_ime_on_connect_disconnect"
+            android:title="@string/title_pref_auto_change_ime_on_connect_disconnect" />
+
         <io.github.sds100.keymapper.CancellableMultiSelectListPreference
             android:key="@string/key_pref_bluetooth_devices"
             android:title="@string/title_pref_bluetooth_devices" />

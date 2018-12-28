@@ -70,7 +70,9 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".BroadcastReceiver.OpenIMEPickerBroadcastReceiver">
+        <receiver android:name=".BroadcastReceiver.OpenIMEPickerBroadcastReceiver" />
+
+        <receiver android:name=".BroadcastReceiver.BluetoothConnectionBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
                 <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />

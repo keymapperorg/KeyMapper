@@ -90,12 +90,6 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
                     NotificationUtils.hideImePickerNotification(context!!)
                 }
             }
-
-            /* If the user doesn't want the IME picker to automatically show, they don't need
-            * to choose bluetooth devices*/
-            mAutoShowIMEDialogPreference -> {
-                mBluetoothDevicesPreferences.isEnabled = newValue as Boolean
-            }
         }
 
         return true

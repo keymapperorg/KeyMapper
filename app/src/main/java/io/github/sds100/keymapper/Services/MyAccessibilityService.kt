@@ -52,8 +52,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         fun enableServiceInSettings() {
             val className = MyAccessibilityService::class.java.name
 
-            RootUtils.executeRootCommand(
-                    "settings put secure enabled_accessibility_services ${Constants.PACKAGE_NAME}/$className")
+            RootUtils.changeSecureSetting("enabled_accessibility_services", "${Constants.PACKAGE_NAME}/$className")
         }
 
         /**
