@@ -14,7 +14,6 @@ import io.github.sds100.keymapper.Interfaces.OnItemClickListener
 import io.github.sds100.keymapper.SectionItem
 import io.github.sds100.keymapper.SystemActionDef
 import io.github.sds100.keymapper.Utils.SystemActionUtils
-import io.github.sds100.keymapper.Utils.SystemActionUtils.SYSTEM_ACTION_DEFINITIONS
 
 /**
  * Created by sds100 on 17/07/2018.
@@ -31,8 +30,10 @@ class SystemActionAdapter(
     @Suppress("UNCHECKED_CAST")
     override val onItemClickListener = onItemClickListener as OnItemClickListener<Any>
 
+    private val mSystemActionDefinitions = SystemActionUtils.getSystemActionDefinitions()
+
     private val mAlphabeticalFilter = AlphabeticalFilter(
-            mOriginalList = SYSTEM_ACTION_DEFINITIONS,
+            mOriginalList = mSystemActionDefinitions,
 
             onFilter = { filteredList ->
                 filtering = true
@@ -82,7 +83,7 @@ class SystemActionAdapter(
 
     private fun createSystemActionDefListWithCategories(): List<Any> {
         return sequence {
-            SYSTEM_ACTION_DEFINITIONS.forEachIndexed { i, systemAction ->
+            mSystemActionDefinitions.forEachIndexed { i, systemAction ->
                 fun getCategoryLabel(): String {
                     val resId = SystemActionUtils.CATEGORY_LABEL_MAP[systemAction.category]
                             ?: throw Exception("That system action category id isn't mapped to a label")
@@ -91,7 +92,7 @@ class SystemActionAdapter(
                 }
 
                 //if at the end of the list, the next item can't be compared
-                if (i == 0 || systemAction.category != SYSTEM_ACTION_DEFINITIONS[i - 1].category) {
+                if (i == 0 || systemAction.category != mSystemActionDefinitions[i - 1].category) {
                     val section = SectionItem(getCategoryLabel())
 
                     yield(section)

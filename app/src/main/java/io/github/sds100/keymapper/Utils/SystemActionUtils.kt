@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.os.Build
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.SystemAction
 import io.github.sds100.keymapper.SystemAction.CATEGORY_BLUETOOTH
 import io.github.sds100.keymapper.SystemAction.CATEGORY_MOBILE_DATA
 import io.github.sds100.keymapper.SystemAction.CATEGORY_NAVIGATION
@@ -49,7 +50,7 @@ object SystemActionUtils {
      * A sorted list of system action definitions
      */
     @SuppressLint("NewApi")
-    val SYSTEM_ACTION_DEFINITIONS = listOf(
+    private val SYSTEM_ACTION_DEFINITIONS = listOf(
 
             //navigation
             SystemActionDef(
@@ -178,6 +179,17 @@ object SystemActionUtils {
             )
             //SCREEN ORIENTATION
     )
+
+    /**
+     * Get all the system actions which meet the system's api level.
+     */
+    fun getSystemActionDefinitions(): List<SystemActionDef> {
+        return sequence {
+            SYSTEM_ACTION_DEFINITIONS.forEach {
+                if (it.minApi <= Build.VERSION.SDK_INT) yield(it)
+            }
+        }.toList()
+    }
 
     @Throws(Exception::class)
     fun getSystemActionDef(id: String): SystemActionDef {
