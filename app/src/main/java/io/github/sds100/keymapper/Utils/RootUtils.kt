@@ -5,6 +5,7 @@ import io.github.sds100.keymapper.R
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.cancelButton
 import org.jetbrains.anko.okButton
+import java.io.IOException
 
 /**
  * Created by sds100 on 01/10/2018.
@@ -20,15 +21,19 @@ object RootUtils {
     }
 
     fun checkAppHasRootPermission(): Boolean {
-        val output = ShellUtils.getCommandOutput(*ROOT_CHECK_COMMAND)
+        var hasRootPermission = true
 
-        if (output.contains("Permission denied")) {
-            return false
-        } else if (output.isNullOrEmpty()) {
-            return true
+        try {
+            val output = ShellUtils.getCommandOutput(*ROOT_CHECK_COMMAND)
+
+            if (output.contains("Permission denied")) {
+                hasRootPermission = false
+            }
+        } catch (e: IOException) {
+            hasRootPermission = false
         }
 
-        return false
+        return hasRootPermission
     }
 
     fun promptForRootPermission(ctx: Context) {
@@ -39,5 +44,9 @@ object RootUtils {
             okButton { ShellUtils.executeCommand("su") }
             cancelButton { dialog -> dialog.cancel() }
         }.show()
+    }
+
+    fun changeSecureSetting(name: String, value: String) {
+        RootUtils.executeRootCommand("settings put secure $name $value")
     }
 }

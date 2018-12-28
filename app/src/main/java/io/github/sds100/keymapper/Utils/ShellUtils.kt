@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.Utils
 
-import android.util.Log
 import java.io.BufferedReader
+import java.io.IOException
 import java.io.InputStreamReader
 
 
@@ -13,30 +13,25 @@ object ShellUtils {
      * @return whether the command was executed successfully
      */
     fun executeCommand(vararg command: String): Boolean {
-        try {
+        return try {
             Runtime.getRuntime().exec(command)
-
-            return true
-        } catch (e: Exception) {
-            return false
+            true
+        } catch (e: IOException) {
+            false
         }
     }
 
+    @Throws(IOException::class)
     fun getCommandOutput(vararg command: String): List<String> {
-        try {
-            val process = Runtime.getRuntime().exec(command)
+        val process = Runtime.getRuntime().exec(command)
 
-            val bufferedReader = BufferedReader(InputStreamReader(process.errorStream))
-            val line = bufferedReader.readLines()
+        val bufferedReader = BufferedReader(InputStreamReader(process.errorStream))
+        val line = bufferedReader.readLines()
 
-            process.waitFor()
+        process.waitFor()
 
-            bufferedReader.close()
+        bufferedReader.close()
 
-            return line
-        } catch (e: Exception) {
-            Log.e(this::class.java.simpleName, e.toString())
-            return listOf()
-        }
+        return line
     }
 }
