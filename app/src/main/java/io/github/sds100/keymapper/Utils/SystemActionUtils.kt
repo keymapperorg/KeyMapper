@@ -23,6 +23,8 @@ import io.github.sds100.keymapper.SystemAction.TOGGLE_BLUETOOTH
 import io.github.sds100.keymapper.SystemAction.TOGGLE_MOBILE_DATA
 import io.github.sds100.keymapper.SystemAction.TOGGLE_WIFI
 import io.github.sds100.keymapper.SystemAction.VOLUME_MUTE
+import io.github.sds100.keymapper.SystemAction.VOLUME_TOGGLE_MUTE
+import io.github.sds100.keymapper.SystemAction.VOLUME_UNMUTE
 import io.github.sds100.keymapper.SystemActionDef
 
 /**
@@ -57,7 +59,7 @@ object SystemActionUtils {
                     descriptionRes = R.string.action_go_back
             ),
 
-            //wifi
+            //WIFI
             SystemActionDef(
                     id = TOGGLE_WIFI,
                     category = CATEGORY_WIFI,
@@ -76,8 +78,9 @@ object SystemActionUtils {
                     iconRes = R.drawable.ic_signal_wifi_off_black_24dp,
                     descriptionRes = R.string.action_disable_wifi
             ),
+            //WIFI
 
-            //bluetooth
+            //BLUETOOTH
             SystemActionDef(
                     id = TOGGLE_BLUETOOTH,
                     category = CATEGORY_BLUETOOTH,
@@ -96,8 +99,9 @@ object SystemActionUtils {
                     iconRes = R.drawable.ic_bluetooth_disabled_black_24dp,
                     descriptionRes = R.string.action_disable_bluetooth
             ),
+            //BLUETOOTH
 
-            //mobile data REQUIRES ROOT!
+            //MOBILE DATA REQUIRES ROOT!
             SystemActionDef(
                     id = TOGGLE_MOBILE_DATA,
                     category = CATEGORY_MOBILE_DATA,
@@ -119,8 +123,28 @@ object SystemActionUtils {
                     permission = Constants.PERMISSION_ROOT,
                     descriptionRes = R.string.action_disable_mobile_data
             ),
+            //MOBILE DATA
 
-            //volume
+            //VOLUME
+            SystemActionDef(
+                    id = SystemAction.VOLUME_UP,
+                    category = CATEGORY_VOLUME,
+                    iconRes = R.drawable.ic_volume_up_black_24dp,
+                    descriptionRes = R.string.action_volume_up
+            ),
+            SystemActionDef(
+                    id = SystemAction.VOLUME_DOWN,
+                    category = CATEGORY_VOLUME,
+                    iconRes = R.drawable.ic_volume_down_black_24dp,
+                    descriptionRes = R.string.action_volume_down
+            ),
+            SystemActionDef(
+                    id = SystemAction.VOLUME_SHOW_DIALOG,
+                    category = CATEGORY_VOLUME,
+                    descriptionRes = R.string.action_volume_show_dialog
+            ),
+
+            //Require Marshmallow and higher
             SystemActionDef(
                     id = VOLUME_MUTE,
                     category = CATEGORY_VOLUME,
@@ -128,8 +152,23 @@ object SystemActionUtils {
                     iconRes = R.drawable.ic_volume_mute_black_24dp,
                     descriptionRes = R.string.action_volume_mute
             ),
+            SystemActionDef(
+                    id = VOLUME_UNMUTE,
+                    category = CATEGORY_VOLUME,
+                    minApi = Build.VERSION_CODES.M,
+                    iconRes = R.drawable.ic_volume_up_black_24dp,
+                    descriptionRes = R.string.action_volume_unmute
+            ),
+            SystemActionDef(
+                    id = VOLUME_TOGGLE_MUTE,
+                    category = CATEGORY_VOLUME,
+                    minApi = Build.VERSION_CODES.M,
+                    iconRes = R.drawable.ic_volume_mute_black_24dp,
+                    descriptionRes = R.string.action_toggle_mute
+            ),
+            //VOLUME
 
-            //screen orientation
+            //SCREEN ORIENTATION
             SystemActionDef(
                     id = TOGGLE_AUTO_ROTATE,
                     category = CATEGORY_SCREEN_ROTATION,
@@ -137,6 +176,7 @@ object SystemActionUtils {
                     iconRes = R.drawable.ic_screen_rotation_black_24dp,
                     descriptionRes = R.string.action_toggle_auto_rotate
             )
+            //SCREEN ORIENTATION
     )
 
     @Throws(Exception::class)
@@ -152,18 +192,6 @@ object SystemActionUtils {
 //            yield(SystemActionListItem(SystemAction.GO_HOME))
 //            yield(SystemActionListItem(SystemAction.OPEN_RECENTS))
 //            yield(SystemActionListItem(SystemAction.OPEN_MENU))
-//
-//            yield(SystemActionListItem(SystemAction.TOGGLE_WIFI))
-//            yield(SystemActionListItem(SystemAction.ENABLE_WIFI))
-//            yield(SystemActionListItem(SystemAction.DISABLE_WIFI))
-//
-//            yield(SystemActionListItem(SystemAction.TOGGLE_MOBILE_DATA))
-//            yield(SystemActionListItem(SystemAction.ENABLE_MOBILE_DATA))
-//            yield(SystemActionListItem(SystemAction.DISABLE_MOBILE_DATA))
-//
-//            yield(SystemActionListItem(SystemAction.TOGGLE_BLUETOOTH))
-//            yield(SystemActionListItem(SystemAction.ENABLE_BLUETOOTH))
-//            yield(SystemActionListItem(SystemAction.DISABLE_BLUETOOTH))
 //
 //            yield(SystemActionListItem(SystemAction.VOLUME_UP))
 //            yield(SystemActionListItem(SystemAction.VOLUME_DOWN))
