@@ -107,6 +107,7 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
                     action */
                     if (actionDescription.errorCode == null) {
                         buttonSecondary.text = getString(R.string.button_test)
+                        buttonSecondary.visibility = View.VISIBLE
                     } else {
                         //secondary button stuff.
                         if (actionDescription.errorCode == ERROR_CODE_ACTION_IS_NULL ||
