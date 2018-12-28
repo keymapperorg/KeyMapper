@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
+import androidx.appcompat.content.res.AppCompatResources
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Utils.AttrUtils.getCustomStringAttrValue
 import kotlinx.android.synthetic.main.layout_service_status.view.*
@@ -47,15 +48,25 @@ class ServiceStatusLayout(
     }
 
     fun changeToServiceEnabledState() {
+
+        /* on pre-lollipop devices, vector drawables can't be used with drawableStart,
+         * drawableEnd etc. otherwise the app crashes. */
+        val drawable = AppCompatResources.getDrawable(context, R.drawable.check_circle_green)
+
         textViewStatus.text = mEnabledText
-        textViewStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.check_circle_green, 0, 0, 0)
+        textViewStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, null, null, null)
 
         buttonFix.visibility = View.GONE
     }
 
     fun changeToServiceDisabledState() {
-        textViewStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.close_circle_red, 0, 0, 0)
+
+        /* on pre-lollipop devices, vector drawables can't be used with drawableStart,
+         * drawableEnd etc. otherwise the app crashes. */
+        val drawable = AppCompatResources.getDrawable(context, R.drawable.close_circle_red)
+
         textViewStatus.text = mDisabledText
+        textViewStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, null, null, null)
 
         buttonFix.visibility = View.VISIBLE
     }
