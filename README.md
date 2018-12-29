@@ -18,4 +18,4 @@ This project uses semantic versioning. e.g 1.2.3-alpha.1
 - 2nd digit: minor releases. Incremented when a new feature or a few are added.
 - 3rd digit: patches. Incrememtend after a hotfix or bug fix.
 
-Additional labels can be used as suffixes. e.g "alpha".
+Additional labels can be used as a suffix. e.g "alpha".
