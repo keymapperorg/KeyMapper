@@ -12,13 +12,17 @@ import io.github.sds100.keymapper.SystemAction.CATEGORY_NAVIGATION
 import io.github.sds100.keymapper.SystemAction.CATEGORY_SCREEN_ROTATION
 import io.github.sds100.keymapper.SystemAction.CATEGORY_VOLUME
 import io.github.sds100.keymapper.SystemAction.CATEGORY_WIFI
+import io.github.sds100.keymapper.SystemAction.DISABLE_AUTO_ROTATE
 import io.github.sds100.keymapper.SystemAction.DISABLE_BLUETOOTH
 import io.github.sds100.keymapper.SystemAction.DISABLE_MOBILE_DATA
 import io.github.sds100.keymapper.SystemAction.DISABLE_WIFI
+import io.github.sds100.keymapper.SystemAction.ENABLE_AUTO_ROTATE
 import io.github.sds100.keymapper.SystemAction.ENABLE_BLUETOOTH
 import io.github.sds100.keymapper.SystemAction.ENABLE_MOBILE_DATA
 import io.github.sds100.keymapper.SystemAction.ENABLE_WIFI
 import io.github.sds100.keymapper.SystemAction.GO_BACK
+import io.github.sds100.keymapper.SystemAction.LANDSCAPE_MODE
+import io.github.sds100.keymapper.SystemAction.PORTRAIT_MODE
 import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_ROTATE
 import io.github.sds100.keymapper.SystemAction.TOGGLE_BLUETOOTH
 import io.github.sds100.keymapper.SystemAction.TOGGLE_MOBILE_DATA
@@ -176,6 +180,34 @@ object SystemActionUtils {
                     permission = Manifest.permission.WRITE_SETTINGS,
                     iconRes = R.drawable.ic_screen_rotation_black_24dp,
                     descriptionRes = R.string.action_toggle_auto_rotate
+            ),
+            SystemActionDef(
+                    id = ENABLE_AUTO_ROTATE,
+                    category = CATEGORY_SCREEN_ROTATION,
+                    permission = Manifest.permission.WRITE_SETTINGS,
+                    iconRes = R.drawable.ic_screen_rotation_black_24dp,
+                    descriptionRes = R.string.action_enable_auto_rotate
+            ),
+            SystemActionDef(
+                    id = DISABLE_AUTO_ROTATE,
+                    category = CATEGORY_SCREEN_ROTATION,
+                    permission = Manifest.permission.WRITE_SETTINGS,
+                    iconRes = R.drawable.ic_screen_lock_rotation_black_24dp,
+                    descriptionRes = R.string.action_disable_auto_rotate
+            ),
+            SystemActionDef(
+                    id = PORTRAIT_MODE,
+                    category = CATEGORY_SCREEN_ROTATION,
+                    permission = Manifest.permission.WRITE_SETTINGS,
+                    iconRes = R.drawable.ic_stay_current_portrait_black_24dp,
+                    descriptionRes = R.string.action_portrait_mode
+            ),
+            SystemActionDef(
+                    id = LANDSCAPE_MODE,
+                    category = CATEGORY_SCREEN_ROTATION,
+                    permission = Manifest.permission.WRITE_SETTINGS,
+                    iconRes = R.drawable.ic_stay_current_landscape_black_24dp,
+                    descriptionRes = R.string.action_landscape_mode
             )
             //SCREEN ORIENTATION
     )
@@ -204,11 +236,7 @@ object SystemActionUtils {
 //            yield(SystemActionListItem(SystemAction.GO_HOME))
 //            yield(SystemActionListItem(SystemAction.OPEN_RECENTS))
 //            yield(SystemActionListItem(SystemAction.OPEN_MENU))
-//
-//            yield(SystemActionListItem(SystemAction.VOLUME_UP))
-//            yield(SystemActionListItem(SystemAction.VOLUME_DOWN))
-//            yield(SystemActionListItem(SystemAction.VOLUME_SHOW_DIALOG))
-//
+
 //            yield(SystemActionListItem(SystemAction.TOGGLE_AUTO_ROTATE))
 //            yield(SystemActionListItem(SystemAction.ENABLE_AUTO_ROTATE))
 //            yield(SystemActionListItem(SystemAction.DISABLE_AUTO_ROTATE))
