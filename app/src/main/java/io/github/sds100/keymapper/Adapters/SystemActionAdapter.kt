@@ -86,7 +86,8 @@ class SystemActionAdapter(
             mSystemActionDefinitions.forEachIndexed { i, systemAction ->
                 fun getCategoryLabel(): String {
                     val resId = SystemActionUtils.CATEGORY_LABEL_MAP[systemAction.category]
-                            ?: throw Exception("That system action category id isn't mapped to a label")
+                            ?: throw Exception("That system action category id isn't mapped to a label. " +
+                                    "id: ${systemAction.category}")
 
                     return ctx.getString(resId)
                 }
