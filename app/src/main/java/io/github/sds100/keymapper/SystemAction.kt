@@ -61,16 +61,19 @@ object SystemAction {
     @RequiresApi(Build.VERSION_CODES.M)
     const val VOLUME_TOGGLE_MUTE = "volume_toggle_mute"
 
+    //status bar
     const val EXPAND_NOTIFICATION_DRAWER = "expand_notification_drawer"
     const val EXPAND_QUICK_SETTINGS = "expand_quick_settings"
     const val COLLAPSE_STATUS_BAR = "collapse_status_bar"
 
+    //media
     const val PAUSE_MEDIA = "pause_media"
     const val PLAY_MEDIA = "play_media"
     const val PLAY_PAUSE_MEDIA = "play_pause_media"
     const val NEXT_TRACK = "next_track"
     const val PREVIOUS_TRACK = "previous_track"
 
+    //navigation
     const val GO_BACK = "go_back"
     const val GO_HOME = "go_home"
     const val OPEN_RECENTS = "open_recents"
@@ -87,4 +90,5 @@ object SystemAction {
     const val CATEGORY_VOLUME = "volume"
     const val CATEGORY_SCREEN_ROTATION = "screen_rotation"
     const val CATEGORY_BRIGHTNESS = "brightness"
+    const val CATEGORY_STATUS_BAR = "status_bar"
 }

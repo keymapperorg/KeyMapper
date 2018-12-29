@@ -11,8 +11,10 @@ import io.github.sds100.keymapper.SystemAction.CATEGORY_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.CATEGORY_MOBILE_DATA
 import io.github.sds100.keymapper.SystemAction.CATEGORY_NAVIGATION
 import io.github.sds100.keymapper.SystemAction.CATEGORY_SCREEN_ROTATION
+import io.github.sds100.keymapper.SystemAction.CATEGORY_STATUS_BAR
 import io.github.sds100.keymapper.SystemAction.CATEGORY_VOLUME
 import io.github.sds100.keymapper.SystemAction.CATEGORY_WIFI
+import io.github.sds100.keymapper.SystemAction.COLLAPSE_STATUS_BAR
 import io.github.sds100.keymapper.SystemAction.DECREASE_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.DISABLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.DISABLE_AUTO_ROTATE
@@ -24,6 +26,8 @@ import io.github.sds100.keymapper.SystemAction.ENABLE_AUTO_ROTATE
 import io.github.sds100.keymapper.SystemAction.ENABLE_BLUETOOTH
 import io.github.sds100.keymapper.SystemAction.ENABLE_MOBILE_DATA
 import io.github.sds100.keymapper.SystemAction.ENABLE_WIFI
+import io.github.sds100.keymapper.SystemAction.EXPAND_NOTIFICATION_DRAWER
+import io.github.sds100.keymapper.SystemAction.EXPAND_QUICK_SETTINGS
 import io.github.sds100.keymapper.SystemAction.GO_BACK
 import io.github.sds100.keymapper.SystemAction.GO_HOME
 import io.github.sds100.keymapper.SystemAction.INCREASE_BRIGHTNESS
@@ -57,7 +61,8 @@ object SystemActionUtils {
             CATEGORY_NAVIGATION to R.string.system_action_cat_navigation,
             CATEGORY_SCREEN_ROTATION to R.string.system_action_cat_screen_rotation,
             CATEGORY_VOLUME to R.string.system_action_cat_volume,
-            CATEGORY_BRIGHTNESS to R.string.system_action_cat_brightness
+            CATEGORY_BRIGHTNESS to R.string.system_action_cat_brightness,
+            CATEGORY_STATUS_BAR to R.string.system_action_cat_status_bar
     )
 
     /**
@@ -92,6 +97,24 @@ object SystemActionUtils {
                     descriptionRes = R.string.action_open_menu
             ),
             //NAVIGATION
+
+            //STATUS BAR
+            SystemActionDef(
+                    id = EXPAND_NOTIFICATION_DRAWER,
+                    category = CATEGORY_STATUS_BAR,
+                    descriptionRes = R.string.action_expand_notification_drawer
+            ),
+            SystemActionDef(
+                    id = EXPAND_QUICK_SETTINGS,
+                    category = CATEGORY_STATUS_BAR,
+                    descriptionRes = R.string.action_expand_quick_settings
+            ),
+            SystemActionDef(
+                    id = COLLAPSE_STATUS_BAR,
+                    category = CATEGORY_STATUS_BAR,
+                    descriptionRes = R.string.action_collapse_status_bar
+            ),
+            //STATUS BAR
 
             //WIFI
             SystemActionDef(
@@ -294,17 +317,7 @@ object SystemActionUtils {
 //    fun getSystemActionListItems(): List<SystemActionListItem> {
 //        //must be in the order the items should be shown to the user
 //        return sequence {
-
-//            yield(SystemActionListItem(SystemAction.TOGGLE_AUTO_BRIGHTNESS))
-//            yield(SystemActionListItem(SystemAction.ENABLE_AUTO_BRIGHTNESS))
-//            yield(SystemActionListItem(SystemAction.DISABLE_AUTO_BRIGHTNESS))
-//            yield(SystemActionListItem(SystemAction.INCREASE_BRIGHTNESS))
-//            yield(SystemActionListItem(SystemAction.DECREASE_BRIGHTNESS))
-//
-//            yield(SystemActionListItem(SystemAction.EXPAND_NOTIFICATION_DRAWER))
-//            yield(SystemActionListItem(SystemAction.EXPAND_QUICK_SETTINGS))
-//            yield(SystemActionListItem(SystemAction.COLLAPSE_STATUS_BAR))
-//
+    
 //            yield(SystemActionListItem(SystemAction.PAUSE_MEDIA))
 //            yield(SystemActionListItem(SystemAction.PLAY_MEDIA))
 //            yield(SystemActionListItem(SystemAction.PLAY_PAUSE_MEDIA))
