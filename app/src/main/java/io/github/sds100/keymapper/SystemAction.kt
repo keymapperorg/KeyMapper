@@ -91,4 +91,5 @@ object SystemAction {
     const val CATEGORY_SCREEN_ROTATION = "screen_rotation"
     const val CATEGORY_BRIGHTNESS = "brightness"
     const val CATEGORY_STATUS_BAR = "status_bar"
+    const val CATEGORY_MEDIA = "media"
 }
