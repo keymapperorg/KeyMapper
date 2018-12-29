@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Key Mapper</string>
-    <string name="version">1.0.0-alpha1</string>
 
     <string name="no_action_chosen">No Action Chosen</string>
     <string name="triggers_header">Triggers</string>
@@ -131,6 +130,8 @@
     <!-- Settings Activity -->
 
     <!-- About activity-->
+    <string name="key_pref_version">key_version</string>
+
     <string name="pref_title_changelog">Changelog</string>
     <string name="pref_title_license">License</string>
     <string name="pref_title_credits">Credits</string>

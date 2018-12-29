@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.Activities
 
 import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat
+import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 
 /**
@@ -11,5 +12,7 @@ import io.github.sds100.keymapper.R
 class AboutFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.about)
+
+        findPreference(getString(R.string.key_pref_version)).summary = Constants.VERSION
     }
 }

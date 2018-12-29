@@ -7,4 +7,5 @@ object Constants {
     const val MIN_API = 19
     const val PACKAGE_NAME = BuildConfig.APPLICATION_ID
     const val PERMISSION_ROOT = "$PACKAGE_NAME.ROOT"
+    const val VERSION = BuildConfig.VERSION_NAME
 }

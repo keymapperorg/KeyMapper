@@ -2,8 +2,9 @@
 <androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <!-- The summary is set in AboutFragment.-->
     <androidx.preference.Preference
-        android:summary="@string/version"
+        android:key="@string/key_pref_version"
         android:title="@string/pref_title_version" />
 
     <io.github.sds100.keymapper.Views.MarkdownDialogPreference
