@@ -5,6 +5,6 @@ package io.github.sds100.keymapper
  */
 object Constants {
     const val MIN_API = 19
-    const val PACKAGE_NAME = "io.github.sds100.keymapper"
+    const val PACKAGE_NAME = BuildConfig.APPLICATION_ID
     const val PERMISSION_ROOT = "$PACKAGE_NAME.ROOT"
 }

@@ -317,7 +317,7 @@ object SystemActionUtils {
 //    fun getSystemActionListItems(): List<SystemActionListItem> {
 //        //must be in the order the items should be shown to the user
 //        return sequence {
-    
+
 //            yield(SystemActionListItem(SystemAction.PAUSE_MEDIA))
 //            yield(SystemActionListItem(SystemAction.PLAY_MEDIA))
 //            yield(SystemActionListItem(SystemAction.PLAY_PAUSE_MEDIA))
