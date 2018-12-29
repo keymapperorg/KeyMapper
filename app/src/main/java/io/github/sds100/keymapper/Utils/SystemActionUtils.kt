@@ -7,25 +7,31 @@ import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.SystemAction
 import io.github.sds100.keymapper.SystemAction.CATEGORY_BLUETOOTH
+import io.github.sds100.keymapper.SystemAction.CATEGORY_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.CATEGORY_MOBILE_DATA
 import io.github.sds100.keymapper.SystemAction.CATEGORY_NAVIGATION
 import io.github.sds100.keymapper.SystemAction.CATEGORY_SCREEN_ROTATION
 import io.github.sds100.keymapper.SystemAction.CATEGORY_VOLUME
 import io.github.sds100.keymapper.SystemAction.CATEGORY_WIFI
+import io.github.sds100.keymapper.SystemAction.DECREASE_BRIGHTNESS
+import io.github.sds100.keymapper.SystemAction.DISABLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.DISABLE_AUTO_ROTATE
 import io.github.sds100.keymapper.SystemAction.DISABLE_BLUETOOTH
 import io.github.sds100.keymapper.SystemAction.DISABLE_MOBILE_DATA
 import io.github.sds100.keymapper.SystemAction.DISABLE_WIFI
+import io.github.sds100.keymapper.SystemAction.ENABLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.ENABLE_AUTO_ROTATE
 import io.github.sds100.keymapper.SystemAction.ENABLE_BLUETOOTH
 import io.github.sds100.keymapper.SystemAction.ENABLE_MOBILE_DATA
 import io.github.sds100.keymapper.SystemAction.ENABLE_WIFI
 import io.github.sds100.keymapper.SystemAction.GO_BACK
 import io.github.sds100.keymapper.SystemAction.GO_HOME
+import io.github.sds100.keymapper.SystemAction.INCREASE_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.LANDSCAPE_MODE
 import io.github.sds100.keymapper.SystemAction.OPEN_MENU
 import io.github.sds100.keymapper.SystemAction.OPEN_RECENTS
 import io.github.sds100.keymapper.SystemAction.PORTRAIT_MODE
+import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_ROTATE
 import io.github.sds100.keymapper.SystemAction.TOGGLE_BLUETOOTH
 import io.github.sds100.keymapper.SystemAction.TOGGLE_MOBILE_DATA
@@ -50,7 +56,8 @@ object SystemActionUtils {
             CATEGORY_MOBILE_DATA to R.string.system_action_cat_mobile_data,
             CATEGORY_NAVIGATION to R.string.system_action_cat_navigation,
             CATEGORY_SCREEN_ROTATION to R.string.system_action_cat_screen_rotation,
-            CATEGORY_VOLUME to R.string.system_action_cat_volume
+            CATEGORY_VOLUME to R.string.system_action_cat_volume,
+            CATEGORY_BRIGHTNESS to R.string.system_action_cat_brightness
     )
 
     /**
@@ -230,8 +237,41 @@ object SystemActionUtils {
                     permission = Manifest.permission.WRITE_SETTINGS,
                     iconRes = R.drawable.ic_stay_current_landscape_black_24dp,
                     descriptionRes = R.string.action_landscape_mode
-            )
+            ),
             //SCREEN ORIENTATION
+
+            //BRIGHTNESS
+            SystemActionDef(
+                    id = TOGGLE_AUTO_BRIGHTNESS,
+                    category = CATEGORY_BRIGHTNESS,
+                    iconRes = R.drawable.ic_brightness_auto_black_24dp,
+                    descriptionRes = R.string.action_toggle_auto_brightness
+            ),
+            SystemActionDef(
+                    id = ENABLE_AUTO_BRIGHTNESS,
+                    category = CATEGORY_BRIGHTNESS,
+                    iconRes = R.drawable.ic_brightness_auto_black_24dp,
+                    descriptionRes = R.string.action_enable_auto_brightness
+            ),
+            SystemActionDef(
+                    id = DISABLE_AUTO_BRIGHTNESS,
+                    category = CATEGORY_BRIGHTNESS,
+                    iconRes = R.drawable.ic_disable_brightness_auto_24dp,
+                    descriptionRes = R.string.action_disable_auto_brightness
+            ),
+            SystemActionDef(
+                    id = INCREASE_BRIGHTNESS,
+                    category = CATEGORY_BRIGHTNESS,
+                    iconRes = R.drawable.ic_brightness_high_black_24dp,
+                    descriptionRes = R.string.action_increase_brightness
+            ),
+            SystemActionDef(
+                    id = DECREASE_BRIGHTNESS,
+                    category = CATEGORY_BRIGHTNESS,
+                    iconRes = R.drawable.ic_brightness_low_black_24dp,
+                    descriptionRes = R.string.action_decrease_brightness
+            )
+            //BRIGHTNESS
     )
 
     /**
@@ -254,9 +294,6 @@ object SystemActionUtils {
 //    fun getSystemActionListItems(): List<SystemActionListItem> {
 //        //must be in the order the items should be shown to the user
 //        return sequence {
-//            yield(SystemActionListItem(SystemAction.GO_HOME))
-//            yield(SystemActionListItem(SystemAction.OPEN_RECENTS))
-//            yield(SystemActionListItem(SystemAction.OPEN_MENU))
 
 //            yield(SystemActionListItem(SystemAction.TOGGLE_AUTO_BRIGHTNESS))
 //            yield(SystemActionListItem(SystemAction.ENABLE_AUTO_BRIGHTNESS))

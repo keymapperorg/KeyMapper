@@ -86,4 +86,5 @@ object SystemAction {
     const val CATEGORY_NAVIGATION = "navigation"
     const val CATEGORY_VOLUME = "volume"
     const val CATEGORY_SCREEN_ROTATION = "screen_rotation"
+    const val CATEGORY_BRIGHTNESS = "brightness"
 }

@@ -223,5 +223,6 @@
     <string name="system_action_cat_navigation">Navigation</string>
     <string name="system_action_cat_volume">Volume</string>
     <string name="system_action_cat_screen_rotation">Screen Rotation</string>
+    <string name="system_action_cat_brightness">Brightness</string>
     <!-- System action category labels -->
 </resources>
