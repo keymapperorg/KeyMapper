@@ -21,7 +21,10 @@ import io.github.sds100.keymapper.SystemAction.ENABLE_BLUETOOTH
 import io.github.sds100.keymapper.SystemAction.ENABLE_MOBILE_DATA
 import io.github.sds100.keymapper.SystemAction.ENABLE_WIFI
 import io.github.sds100.keymapper.SystemAction.GO_BACK
+import io.github.sds100.keymapper.SystemAction.GO_HOME
 import io.github.sds100.keymapper.SystemAction.LANDSCAPE_MODE
+import io.github.sds100.keymapper.SystemAction.OPEN_MENU
+import io.github.sds100.keymapper.SystemAction.OPEN_RECENTS
 import io.github.sds100.keymapper.SystemAction.PORTRAIT_MODE
 import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_ROTATE
 import io.github.sds100.keymapper.SystemAction.TOGGLE_BLUETOOTH
@@ -56,13 +59,32 @@ object SystemActionUtils {
     @SuppressLint("NewApi")
     private val SYSTEM_ACTION_DEFINITIONS = listOf(
 
-            //navigation
+            //NAVIGATION
             SystemActionDef(
                     id = GO_BACK,
                     category = CATEGORY_NAVIGATION,
                     iconRes = R.drawable.ic_arrow_back_black_24dp,
                     descriptionRes = R.string.action_go_back
             ),
+            SystemActionDef(
+                    id = GO_HOME,
+                    category = CATEGORY_NAVIGATION,
+                    iconRes = R.drawable.ic_home_black_24dp,
+                    descriptionRes = R.string.action_go_home
+            ),
+            SystemActionDef(
+                    id = OPEN_RECENTS,
+                    category = CATEGORY_NAVIGATION,
+                    descriptionRes = R.string.action_open_recents
+            ),
+            SystemActionDef(
+                    id = OPEN_MENU,
+                    category = CATEGORY_NAVIGATION,
+                    iconRes = R.drawable.ic_more_vert_black_24dp,
+                    permission = Constants.PERMISSION_ROOT,
+                    descriptionRes = R.string.action_open_menu
+            ),
+            //NAVIGATION
 
             //WIFI
             SystemActionDef(
@@ -232,23 +254,10 @@ object SystemActionUtils {
 //    fun getSystemActionListItems(): List<SystemActionListItem> {
 //        //must be in the order the items should be shown to the user
 //        return sequence {
-//            yield(SystemActionListItem(SystemAction.GO_BACK))
 //            yield(SystemActionListItem(SystemAction.GO_HOME))
 //            yield(SystemActionListItem(SystemAction.OPEN_RECENTS))
 //            yield(SystemActionListItem(SystemAction.OPEN_MENU))
 
-//            yield(SystemActionListItem(SystemAction.TOGGLE_AUTO_ROTATE))
-//            yield(SystemActionListItem(SystemAction.ENABLE_AUTO_ROTATE))
-//            yield(SystemActionListItem(SystemAction.DISABLE_AUTO_ROTATE))
-//            yield(SystemActionListItem(SystemAction.PORTRAIT_MODE))
-//            yield(SystemActionListItem(SystemAction.LANDSCAPE_MODE))
-//
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//                yield(SystemActionListItem(SystemAction.VOLUME_MUTE))
-//                yield(SystemActionListItem(SystemAction.VOLUME_UNMUTE))
-//                yield(SystemActionListItem(SystemAction.VOLUME_TOGGLE_MUTE))
-//            }
-//
 //            yield(SystemActionListItem(SystemAction.TOGGLE_AUTO_BRIGHTNESS))
 //            yield(SystemActionListItem(SystemAction.ENABLE_AUTO_BRIGHTNESS))
 //            yield(SystemActionListItem(SystemAction.DISABLE_AUTO_BRIGHTNESS))
