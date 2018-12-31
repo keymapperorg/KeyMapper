@@ -4,9 +4,9 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
-import androidx.appcompat.content.res.AppCompatResources
 import io.github.sds100.keymapper.ActionDescription
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.Utils.drawable
 import kotlinx.android.synthetic.main.layout_action_description.view.*
 
 /**
@@ -26,7 +26,7 @@ class ActionDescriptionLayout(
 
         /* on pre-lollipop devices, vector drawables can't be used with drawableStart,
          * drawableEnd etc. otherwise the app crashes. */
-        val errorDrawable = AppCompatResources.getDrawable(context, R.drawable.ic_error_red_24dp)
+        val errorDrawable = drawable(R.drawable.ic_error_red_24dp)
 
         textViewError.setCompoundDrawablesWithIntrinsicBounds(
                 errorDrawable,

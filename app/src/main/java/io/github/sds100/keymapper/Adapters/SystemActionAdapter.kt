@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.Adapters
 
 import android.graphics.drawable.Drawable
 import android.widget.Filterable
-import androidx.core.content.ContextCompat
 import com.hannesdorfmann.adapterdelegates4.AbsDelegationAdapter
 import io.github.sds100.keymapper.AlphabeticalFilter
 import io.github.sds100.keymapper.Delegates.SectionedAdapterDelegate
@@ -14,6 +13,8 @@ import io.github.sds100.keymapper.Interfaces.OnItemClickListener
 import io.github.sds100.keymapper.SectionItem
 import io.github.sds100.keymapper.SystemActionDef
 import io.github.sds100.keymapper.Utils.SystemActionUtils
+import io.github.sds100.keymapper.Utils.drawable
+import io.github.sds100.keymapper.Utils.str
 
 /**
  * Created by sds100 on 17/07/2018.
@@ -70,7 +71,7 @@ class SystemActionAdapter(
     }
 
     override fun getItemText(item: Any): String {
-        return ctx.getString((item as SystemActionDef).descriptionRes)
+        return str((item as SystemActionDef).descriptionRes)
     }
 
     override fun getItemCount() = items.size
@@ -78,7 +79,7 @@ class SystemActionAdapter(
     override fun getItemDrawable(item: Any): Drawable? {
         if ((item as SystemActionDef).iconRes == null) return null
 
-        return ContextCompat.getDrawable(ctx, item.iconRes!!)
+        return drawable(item.iconRes!!)
     }
 
     private fun createSystemActionDefListWithCategories(): List<Any> {
@@ -89,7 +90,7 @@ class SystemActionAdapter(
                             ?: throw Exception("That system action category id isn't mapped to a label. " +
                                     "id: ${systemAction.category}")
 
-                    return ctx.getString(resId)
+                    return str(resId)
                 }
 
                 //if at the end of the list, the next item can't be compared

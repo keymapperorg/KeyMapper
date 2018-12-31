@@ -5,8 +5,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.view.KeyEvent
-import androidx.core.content.ContextCompat
 import io.github.sds100.keymapper.*
+import io.github.sds100.keymapper.Services.MyIMEService
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_ACTION_IS_NULL
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_APP_DISABLED
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_APP_UNINSTALLED
@@ -14,7 +14,6 @@ import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_IME_SERVICE_NO
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_NO_ACTION_DATA
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_PERMISSION_DENIED
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_SHORTCUT_NOT_FOUND
-import io.github.sds100.keymapper.Services.MyIMEService
 import io.github.sds100.keymapper.Utils.PermissionUtils.isPermissionGranted
 
 /**
@@ -83,24 +82,24 @@ object ActionUtils {
             ActionType.SYSTEM_ACTION -> {
                 //convert the string representation into an enum
                 val systemActionId = action.data
-                return ctx.getString(SystemActionUtils.getSystemActionDef(systemActionId).descriptionRes)
+                return ctx.str(SystemActionUtils.getSystemActionDef(systemActionId).descriptionRes)
             }
 
             ActionType.KEYCODE -> {
                 val key = KeyEvent.keyCodeToString(action.data.toInt())
-                return ctx.getString(R.string.description_keycode, key)
+                return ctx.str(R.string.description_keycode, key)
             }
 
             ActionType.KEY -> {
                 val keyCode = action.data.toInt()
                 val key = KeycodeUtils.keycodeToString(keyCode)
 
-                return ctx.getString(R.string.description_key, key)
+                return ctx.str(R.string.description_key, key)
             }
 
             ActionType.TEXT_BLOCK -> {
                 val text = action.data
-                return ctx.getString(R.string.description_text_block, text)
+                return ctx.str(R.string.description_text_block, text)
             }
         }
     }
@@ -126,7 +125,7 @@ object ActionUtils {
                 val systemActionId = action.data
                 val resId = SystemActionUtils.getSystemActionDef(systemActionId).iconRes ?: return null
 
-                ContextCompat.getDrawable(ctx, resId)
+                ctx.drawable(resId)
             }
 
             //return null if no icon should be used

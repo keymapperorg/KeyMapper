@@ -4,9 +4,9 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
-import androidx.appcompat.content.res.AppCompatResources
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.Utils.AttrUtils.getCustomStringAttrValue
+import io.github.sds100.keymapper.Utils.drawable
+import io.github.sds100.keymapper.Utils.str
 import kotlinx.android.synthetic.main.layout_service_status.view.*
 
 /**
@@ -28,19 +28,17 @@ class ServiceStatusLayout(
         View.inflate(context, R.layout.layout_service_status, this)
 
         if (attrs != null) {
-            mEnabledText = getCustomStringAttrValue(
-                    context,
+            mEnabledText = str(
                     attrs,
                     R.styleable.ServiceStatusLayout,
                     R.styleable.ServiceStatusLayout_enabledText
-            )!!
+            )
 
-            mDisabledText = getCustomStringAttrValue(
-                    context,
+            mDisabledText = str(
                     attrs,
                     R.styleable.ServiceStatusLayout,
                     R.styleable.ServiceStatusLayout_disabledText
-            )!!
+            )
         }
 
         //set to disabled state by default
@@ -49,9 +47,7 @@ class ServiceStatusLayout(
 
     fun changeToServiceEnabledState() {
 
-        /* on pre-lollipop devices, vector drawables can't be used with drawableStart,
-         * drawableEnd etc. otherwise the app crashes. */
-        val drawable = AppCompatResources.getDrawable(context, R.drawable.check_circle_green)
+        val drawable = drawable(R.drawable.check_circle_green)
 
         textViewStatus.text = mEnabledText
         textViewStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, null, null, null)
@@ -61,9 +57,7 @@ class ServiceStatusLayout(
 
     fun changeToServiceDisabledState() {
 
-        /* on pre-lollipop devices, vector drawables can't be used with drawableStart,
-         * drawableEnd etc. otherwise the app crashes. */
-        val drawable = AppCompatResources.getDrawable(context, R.drawable.close_circle_red)
+        val drawable = drawable(R.drawable.check_circle_green)
 
         textViewStatus.text = mDisabledText
         textViewStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, null, null, null)

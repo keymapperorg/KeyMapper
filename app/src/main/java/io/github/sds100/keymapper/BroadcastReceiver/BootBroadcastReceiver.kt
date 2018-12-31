@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Utils.NotificationUtils
+import io.github.sds100.keymapper.Utils.str
 import org.jetbrains.anko.defaultSharedPreferences
 
 /**
@@ -17,10 +18,10 @@ class BootBroadcastReceiver : BroadcastReceiver() {
             context!!.apply {
                 defaultSharedPreferences.apply {
                     val showNotification =
-                            getBoolean(getString(R.string.key_pref_show_notification), true)
+                            getBoolean(str(R.string.key_pref_show_notification), true)
 
                     val showNotificationOnBoot =
-                            getBoolean(getString(R.string.key_pref_show_notification_on_boot), true)
+                            getBoolean(str(R.string.key_pref_show_notification_on_boot), true)
 
                     if (showNotification && showNotificationOnBoot) {
                         NotificationUtils.showIMEPickerNotification(context)

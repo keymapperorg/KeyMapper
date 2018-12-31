@@ -15,7 +15,6 @@ import android.view.View
 import androidx.annotation.ColorRes
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -35,6 +34,7 @@ import io.github.sds100.keymapper.Services.MyAccessibilityService
 import io.github.sds100.keymapper.Services.MyIMEService
 import io.github.sds100.keymapper.Utils.ActionUtils
 import io.github.sds100.keymapper.Utils.NotificationUtils
+import io.github.sds100.keymapper.Utils.color
 import io.github.sds100.keymapper.ViewModels.KeyMapListViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -283,6 +283,6 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setStatusBarColor(@ColorRes colorId: Int) {
-        window.statusBarColor = ContextCompat.getColor(this, colorId)
+        window.statusBarColor = color(colorId)
     }
 }

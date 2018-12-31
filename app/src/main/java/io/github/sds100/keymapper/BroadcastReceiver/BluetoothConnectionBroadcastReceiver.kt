@@ -8,6 +8,7 @@ import android.provider.Settings
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Services.MyIMEService
 import io.github.sds100.keymapper.Utils.ImeUtils
+import io.github.sds100.keymapper.Utils.str
 import org.jetbrains.anko.defaultSharedPreferences
 
 /**
@@ -25,30 +26,32 @@ class BluetoothConnectionBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         if (intent == null) return
 
-        if (intent.action == BluetoothDevice.ACTION_ACL_CONNECTED ||
-                intent.action == BluetoothDevice.ACTION_ACL_DISCONNECTED) {
+        context!!.apply {
+            if (intent.action == BluetoothDevice.ACTION_ACL_CONNECTED ||
+                    intent.action == BluetoothDevice.ACTION_ACL_DISCONNECTED) {
 
-            //get the properties of the device which just connected/disconnected
-            val device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE) ?: return
+                //get the properties of the device which just connected/disconnected
+                val device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE) ?: return
 
-            with(context!!.defaultSharedPreferences) {
+                with(defaultSharedPreferences) {
 
-                //get the bluetooth devices chosen by the user. return if no bluetooth devices are chosen
-                val selectedDevices =
-                        getStringSet(context.getString(R.string.key_pref_bluetooth_devices), null) ?: return
+                    //get the bluetooth devices chosen by the user. return if no bluetooth devices are chosen
+                    val selectedDevices =
+                            getStringSet(str(R.string.key_pref_bluetooth_devices), null) ?: return
 
-                //don't show the dialog if the user hasn't selected this device
-                if (selectedDevices.contains(device.address)) {
-                    val automaticallySwitchIme =
-                            getBoolean(context.getString(R.string.key_pref_auto_change_ime_on_connect_disconnect), true)
+                    //don't show the dialog if the user hasn't selected this device
+                    if (selectedDevices.contains(device.address)) {
+                        val automaticallySwitchIme =
+                                getBoolean(str(R.string.key_pref_auto_change_ime_on_connect_disconnect), true)
 
-                    if (automaticallySwitchIme) automaticallySwitchIme(context, intent.action!!)
+                        if (automaticallySwitchIme) automaticallySwitchIme(context, intent.action!!)
 
-                    val showIMEPickerAutomatically =
-                            getBoolean(context.getString(R.string.key_pref_auto_show_ime_picker), true)
+                        val showIMEPickerAutomatically =
+                                getBoolean(str(R.string.key_pref_auto_show_ime_picker), true)
 
-                    //only show the dialog automatically if the user wants it to.
-                    if (showIMEPickerAutomatically) ImeUtils.showInputMethodPickerDialogOutsideApp(context)
+                        //only show the dialog automatically if the user wants it to.
+                        if (showIMEPickerAutomatically) ImeUtils.showInputMethodPickerDialogOutsideApp(context)
+                    }
                 }
             }
         }

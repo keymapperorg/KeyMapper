@@ -43,7 +43,7 @@ object VolumeUtils {
 
     private fun automaticallyShowVolumeUI(ctx: Context): Boolean {
         ctx.apply {
-            return defaultSharedPreferences.getBoolean(getString(R.string.key_pref_show_volume_dialog_on_adjust), true)
+            return defaultSharedPreferences.getBoolean(str(R.string.key_pref_show_volume_dialog_on_adjust), true)
         }
     }
 }

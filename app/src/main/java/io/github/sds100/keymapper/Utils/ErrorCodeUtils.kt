@@ -65,21 +65,23 @@ object ErrorCodeUtils {
      * @return the string id of the message describing an error code
      */
     fun getErrorCodeResultDescription(ctx: Context, errorCodeResult: ErrorCodeResult): String? {
-        return when (errorCodeResult.errorCode) {
-            ERROR_CODE_ACTION_IS_NULL -> ctx.getString(R.string.error_must_choose_action)
-            ERROR_CODE_NO_ACTION_DATA -> ctx.getString(R.string.error_must_choose_action)
-            ERROR_CODE_APP_DISABLED -> ctx.getString(R.string.error_app_is_disabled)
-            ERROR_CODE_APP_UNINSTALLED -> ctx.getString(R.string.error_app_isnt_installed)
-            ERROR_CODE_SHORTCUT_NOT_FOUND -> ctx.getString(R.string.error_shortcut_not_found)
-            ERROR_CODE_IME_SERVICE_NOT_CHOSEN -> ctx.getString(R.string.error_ime_must_be_chosen)
-            ERROR_CODE_PERMISSION_DENIED -> {
-                val permissionWarningMessage =
-                        PermissionUtils.getPermissionWarningStringRes(errorCodeResult.data!!)
+        ctx.apply {
+            return when (errorCodeResult.errorCode) {
+                ERROR_CODE_ACTION_IS_NULL -> str(R.string.error_must_choose_action)
+                ERROR_CODE_NO_ACTION_DATA -> str(R.string.error_must_choose_action)
+                ERROR_CODE_APP_DISABLED -> str(R.string.error_app_is_disabled)
+                ERROR_CODE_APP_UNINSTALLED -> str(R.string.error_app_isnt_installed)
+                ERROR_CODE_SHORTCUT_NOT_FOUND -> str(R.string.error_shortcut_not_found)
+                ERROR_CODE_IME_SERVICE_NOT_CHOSEN -> str(R.string.error_ime_must_be_chosen)
+                ERROR_CODE_PERMISSION_DENIED -> {
+                    val permissionWarningMessage =
+                            PermissionUtils.getPermissionWarningStringRes(errorCodeResult.data!!)
 
-                return ctx.getString(permissionWarningMessage)
+                    return str(permissionWarningMessage)
+                }
+
+                else -> null
             }
-
-            else -> null
         }
     }
 }
