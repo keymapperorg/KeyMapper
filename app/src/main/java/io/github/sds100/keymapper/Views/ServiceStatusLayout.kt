@@ -57,7 +57,7 @@ class ServiceStatusLayout(
 
     fun changeToServiceDisabledState() {
 
-        val drawable = drawable(R.drawable.check_circle_green)
+        val drawable = drawable(R.drawable.close_circle_red)
 
         textViewStatus.text = mDisabledText
         textViewStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, null, null, null)
