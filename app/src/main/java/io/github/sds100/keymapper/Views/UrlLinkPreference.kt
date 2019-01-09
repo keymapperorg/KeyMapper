@@ -6,7 +6,7 @@ import android.net.Uri
 import android.util.AttributeSet
 import androidx.preference.Preference
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.Utils.AttrUtils
+import io.github.sds100.keymapper.Utils.str
 
 /**
  * Created by sds100 on 13/12/2018.
@@ -20,12 +20,11 @@ class UrlLinkPreference(
         attrs: AttributeSet
 ) : Preference(context, attrs) {
 
-    private val mUrlLink: String = AttrUtils.getCustomStringAttrValue(
-            context!!,
+    private val mUrlLink: String = context!!.str(
             attrs,
             R.styleable.UrlLinkPreference,
             R.styleable.UrlLinkPreference_linkUrl
-    )!!
+    )
 
     override fun onClick() {
         super.onClick()

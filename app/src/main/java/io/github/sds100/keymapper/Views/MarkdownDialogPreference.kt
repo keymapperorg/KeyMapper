@@ -5,8 +5,8 @@ import android.util.AttributeSet
 import androidx.preference.Preference
 import io.github.sds100.keymapper.Delegates.ShowTextFromUrlDelegate
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.Utils.AttrUtils
 import io.github.sds100.keymapper.Utils.MarkdownUtils
+import io.github.sds100.keymapper.Utils.str
 
 /**
  * Created by sds100 on 15/12/2018.
@@ -15,12 +15,11 @@ import io.github.sds100.keymapper.Utils.MarkdownUtils
 class MarkdownDialogPreference(context: Context?, attrs: AttributeSet?) : Preference(context, attrs),
         ShowTextFromUrlDelegate {
 
-    private val mFileUrl = AttrUtils.getCustomStringAttrValue(
-            context!!,
+    private val mFileUrl = context!!.str(
             attrs!!,
             R.styleable.MarkdownDialogPreference,
             R.styleable.MarkdownDialogPreference_fileUrl
-    )!!
+    )
 
     override fun onClick() {
         super.onClick()
