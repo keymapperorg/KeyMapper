@@ -125,16 +125,24 @@ class ActionPerformerDelegate(iContext: IContext, iPerformGlobalAction: IPerform
                 SystemAction.GO_BACK -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
                 SystemAction.GO_HOME -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
                 SystemAction.OPEN_RECENTS -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
-
                 //there must be a way to do this without root
                 SystemAction.OPEN_MENU -> RootUtils.executeRootCommand("input keyevent 82")
+
 
                 else -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         when (id) {
                             SystemAction.VOLUME_UNMUTE -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_UNMUTE)
                             SystemAction.VOLUME_MUTE -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_MUTE)
-                            SystemAction.VOLUME_TOGGLE_MUTE -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_TOGGLE_MUTE)
+                            SystemAction.VOLUME_TOGGLE_MUTE ->
+                                VolumeUtils.adjustVolume(this, AudioManager.ADJUST_TOGGLE_MUTE)
+                        }
+                    }
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                        when (id) {
+                            SystemAction.SCREENSHOT ->
+                                performGlobalAction(AccessibilityService.GLOBAL_ACTION_TAKE_SCREENSHOT)
                         }
                     }
                 }

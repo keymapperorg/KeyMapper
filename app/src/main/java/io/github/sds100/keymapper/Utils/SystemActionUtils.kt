@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.SystemAction.CATEGORY_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.CATEGORY_MEDIA
 import io.github.sds100.keymapper.SystemAction.CATEGORY_MOBILE_DATA
 import io.github.sds100.keymapper.SystemAction.CATEGORY_NAVIGATION
+import io.github.sds100.keymapper.SystemAction.CATEGORY_OTHER
 import io.github.sds100.keymapper.SystemAction.CATEGORY_SCREEN_ROTATION
 import io.github.sds100.keymapper.SystemAction.CATEGORY_STATUS_BAR
 import io.github.sds100.keymapper.SystemAction.CATEGORY_VOLUME
@@ -38,6 +39,7 @@ import io.github.sds100.keymapper.SystemAction.PAUSE_MEDIA
 import io.github.sds100.keymapper.SystemAction.PLAY_PAUSE_MEDIA
 import io.github.sds100.keymapper.SystemAction.PORTRAIT_MODE
 import io.github.sds100.keymapper.SystemAction.PREVIOUS_TRACK
+import io.github.sds100.keymapper.SystemAction.SCREENSHOT
 import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_ROTATE
 import io.github.sds100.keymapper.SystemAction.TOGGLE_BLUETOOTH
@@ -66,7 +68,8 @@ object SystemActionUtils {
             CATEGORY_VOLUME to R.string.system_action_cat_volume,
             CATEGORY_BRIGHTNESS to R.string.system_action_cat_brightness,
             CATEGORY_STATUS_BAR to R.string.system_action_cat_status_bar,
-            CATEGORY_MEDIA to R.string.system_action_cat_media
+            CATEGORY_MEDIA to R.string.system_action_cat_media,
+            CATEGORY_OTHER to R.string.system_action_cat_other
     )
 
     /**
@@ -330,8 +333,15 @@ object SystemActionUtils {
                     category = CATEGORY_BRIGHTNESS,
                     iconRes = R.drawable.ic_brightness_low_black_24dp,
                     descriptionRes = R.string.action_decrease_brightness
-            )
+            ),
             //BRIGHTNESS
+            SystemActionDef(
+                    id = SCREENSHOT,
+                    category = CATEGORY_OTHER,
+                    minApi = Build.VERSION_CODES.P,
+                    iconRes = R.drawable.ic_screenshot_black_24dp,
+                    descriptionRes = R.string.action_screenshot
+                    )
     )
 
     /**

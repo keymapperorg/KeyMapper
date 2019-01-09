@@ -215,6 +215,8 @@
     <string name="action_go_home">Go Home</string>
     <string name="action_open_recents">Open Recents</string>
     <string name="action_open_menu">Open Menu</string>
+
+    <string name="action_screenshot">Screenshot</string>
     <!-- System action labels -->
 
     <!-- System action category labels -->
@@ -227,5 +229,6 @@
     <string name="system_action_cat_brightness">Brightness</string>
     <string name="system_action_cat_status_bar">Status Bar</string>
     <string name="system_action_cat_media">Media</string>
+    <string name="system_action_cat_other">Other</string>
     <!-- System action category labels -->
 </resources>

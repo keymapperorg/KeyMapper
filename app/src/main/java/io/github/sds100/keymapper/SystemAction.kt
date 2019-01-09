@@ -78,6 +78,9 @@ object SystemAction {
     const val GO_HOME = "go_home"
     const val OPEN_RECENTS = "open_recents"
 
+    //other
+    @RequiresApi(Build.VERSION_CODES.P)
+    const val SCREENSHOT = "screenshot"
     /**
      * REQUIRES ROOT
      */
@@ -92,4 +95,5 @@ object SystemAction {
     const val CATEGORY_BRIGHTNESS = "brightness"
     const val CATEGORY_STATUS_BAR = "status_bar"
     const val CATEGORY_MEDIA = "media"
+    const val CATEGORY_OTHER = "other"
 }
