@@ -7,10 +7,11 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.Result
+import io.github.sds100.keymapper.createResult
 
 /**
  * Created by sds100 on 25/10/2018.
@@ -54,12 +55,15 @@ object PermissionUtils {
     /**
      * @return a string resource describing the [permission]
      */
-    @StringRes
-    fun getPermissionDescriptionRes(permission: String): Int {
-        return when (permission) {
+    fun getPermissionDescriptionRes(permission: String): Result<Int> {
+        val resId = when (permission) {
             Manifest.permission.WRITE_SETTINGS -> R.string.error_action_requires_write_settings_permission
             Constants.PERMISSION_ROOT -> R.string.error_action_requires_root
-            else -> throw Exception("No error message string resource for that permission!")
+            else -> null
         }
+
+        return resId.createResult(
+                ErrorCodeUtils.ERROR_CODE_PERMISSION_DESCRIPTION_NOT_FOUND,
+                "$permission description not found!")
     }
 }

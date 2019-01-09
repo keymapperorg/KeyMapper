@@ -9,6 +9,7 @@ import androidx.annotation.IntDef
 import io.github.sds100.keymapper.ErrorResult
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Services.MyIMEService
+import io.github.sds100.keymapper.handle
 
 /**
  * Created by sds100 on 25/11/2018.
@@ -35,6 +36,7 @@ object ErrorCodeUtils {
     const val ERROR_CODE_SHORTCUT_NOT_FOUND = 5
     const val ERROR_CODE_IME_SERVICE_NOT_CHOSEN = 6
     const val ERROR_CODE_SYSTEM_ACTION_NOT_FOUND = 7
+    const val ERROR_CODE_PERMISSION_DESCRIPTION_NOT_FOUND = 8
 
     fun handleError(ctx: Context, errorResult: ErrorResult) {
         when (errorResult.errorCode) {
@@ -78,7 +80,7 @@ object ErrorCodeUtils {
     /**
      * @return the string id of the message describing an error code
      */
-    fun getErrorCodeDescription(ctx: Context, errorResult: ErrorResult): String? {
+    fun getErrorCodeDescription(ctx: Context, errorResult: ErrorResult): String {
         ctx.apply {
             return when (errorResult.errorCode) {
                 ERROR_CODE_ACTION_IS_NULL -> str(R.string.error_must_choose_action)
@@ -87,14 +89,18 @@ object ErrorCodeUtils {
                 ERROR_CODE_APP_UNINSTALLED -> str(R.string.error_app_isnt_installed)
                 ERROR_CODE_SHORTCUT_NOT_FOUND -> str(R.string.error_shortcut_not_found)
                 ERROR_CODE_IME_SERVICE_NOT_CHOSEN -> str(R.string.error_ime_must_be_chosen)
+
                 ERROR_CODE_PERMISSION_DENIED -> {
-                    val permissionWarningMessage =
+                    val permissionDescriptionResult =
                             PermissionUtils.getPermissionDescriptionRes(errorResult.data!!)
 
-                    return str(permissionWarningMessage)
+                    return permissionDescriptionResult.handle(
+                            onSuccess = { str(it) },
+                            onFailure = { "" }
+                    )
                 }
 
-                else -> null
+                else -> ""
             }
         }
     }

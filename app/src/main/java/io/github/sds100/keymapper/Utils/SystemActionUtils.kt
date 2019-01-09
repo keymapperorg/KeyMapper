@@ -3,9 +3,7 @@ package io.github.sds100.keymapper.Utils
 import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Build
-import io.github.sds100.keymapper.Constants
-import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.SystemAction
+import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.SystemAction.CATEGORY_BLUETOOTH
 import io.github.sds100.keymapper.SystemAction.CATEGORY_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.CATEGORY_MEDIA
@@ -48,7 +46,7 @@ import io.github.sds100.keymapper.SystemAction.TOGGLE_WIFI
 import io.github.sds100.keymapper.SystemAction.VOLUME_MUTE
 import io.github.sds100.keymapper.SystemAction.VOLUME_TOGGLE_MUTE
 import io.github.sds100.keymapper.SystemAction.VOLUME_UNMUTE
-import io.github.sds100.keymapper.SystemActionDef
+import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_SYSTEM_ACTION_NOT_FOUND
 
 /**
  * Created by sds100 on 01/08/2018.
@@ -347,9 +345,9 @@ object SystemActionUtils {
         }.toList()
     }
 
-    @Throws(Exception::class)
-    fun getSystemActionDef(id: String): SystemActionDef {
-        return SYSTEM_ACTION_DEFINITIONS.find { it.id == id }
-                ?: throw Exception("Can't find that system action definition. $id")
+    fun getSystemActionDef(id: String): Result<SystemActionDef> {
+        val systemActionDef = SYSTEM_ACTION_DEFINITIONS.find { it.id == id }
+
+        return systemActionDef.createResult(ERROR_CODE_SYSTEM_ACTION_NOT_FOUND, id)
     }
 }

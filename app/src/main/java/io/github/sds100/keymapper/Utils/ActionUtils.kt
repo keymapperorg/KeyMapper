@@ -82,7 +82,10 @@ object ActionUtils {
             ActionType.SYSTEM_ACTION -> {
                 //convert the string representation into an enum
                 val systemActionId = action.data
-                return ctx.str(SystemActionUtils.getSystemActionDef(systemActionId).descriptionRes)
+
+                return SystemActionUtils.getSystemActionDef(systemActionId).onSuccess {
+                    ctx.str(it.descriptionRes)
+                }
             }
 
             ActionType.KEYCODE -> {
@@ -123,9 +126,11 @@ object ActionUtils {
             ActionType.SYSTEM_ACTION -> {
                 //convert the string representation of the enum entry into an enum object
                 val systemActionId = action.data
-                val resId = SystemActionUtils.getSystemActionDef(systemActionId).iconRes ?: return null
 
-                ctx.drawable(resId)
+                return SystemActionUtils.getSystemActionDef(systemActionId).onSuccess {
+                    if (it.iconRes == null) return@onSuccess null
+                    ctx.drawable(it.iconRes)
+                }
             }
 
             //return null if no icon should be used
@@ -138,8 +143,9 @@ object ActionUtils {
      * returns the permission required. Null is returned if the action doesn't need any permission
      */
     private fun getRequiredPermissionForAction(action: Action): Array<String>? {
+
         if (action.type == ActionType.SYSTEM_ACTION) {
-            return SystemActionUtils.getSystemActionDef(action.data).permissions
+            return SystemActionUtils.getSystemActionDef(action.data).onSuccess { it.permissions }
         }
 
         return null
