@@ -89,7 +89,7 @@ object ErrorCodeUtils {
                 ERROR_CODE_IME_SERVICE_NOT_CHOSEN -> str(R.string.error_ime_must_be_chosen)
                 ERROR_CODE_PERMISSION_DENIED -> {
                     val permissionWarningMessage =
-                            PermissionUtils.getPermissionWarningStringRes(errorResult.data!!)
+                            PermissionUtils.getPermissionDescriptionRes(errorResult.data!!)
 
                     return str(permissionWarningMessage)
                 }

@@ -51,8 +51,11 @@ object PermissionUtils {
         }
     }
 
+    /**
+     * @return a string resource describing the [permission]
+     */
     @StringRes
-    fun getPermissionWarningStringRes(permission: String): Int {
+    fun getPermissionDescriptionRes(permission: String): Int {
         return when (permission) {
             Manifest.permission.WRITE_SETTINGS -> R.string.error_action_requires_write_settings_permission
             Constants.PERMISSION_ROOT -> R.string.error_action_requires_root
