@@ -5,15 +5,28 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import android.view.inputmethod.InputMethodManager
-import io.github.sds100.keymapper.ErrorCodeResult
+import androidx.annotation.IntDef
+import io.github.sds100.keymapper.ErrorResult
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Services.MyIMEService
 
 /**
  * Created by sds100 on 25/11/2018.
  */
-object ErrorCodeUtils {
 
+@IntDef(value = [
+    ErrorCodeUtils.ERROR_CODE_NO_ACTION_DATA,
+    ErrorCodeUtils.ERROR_CODE_ACTION_IS_NULL,
+    ErrorCodeUtils.ERROR_CODE_APP_DISABLED,
+    ErrorCodeUtils.ERROR_CODE_APP_UNINSTALLED,
+    ErrorCodeUtils.ERROR_CODE_PERMISSION_DENIED,
+    ErrorCodeUtils.ERROR_CODE_SHORTCUT_NOT_FOUND,
+    ErrorCodeUtils.ERROR_CODE_SYSTEM_ACTION_NOT_FOUND]
+)
+@Retention(AnnotationRetention.SOURCE)
+annotation class ErrorCode
+
+object ErrorCodeUtils {
     const val ERROR_CODE_NO_ACTION_DATA = 0
     const val ERROR_CODE_ACTION_IS_NULL = 1
     const val ERROR_CODE_PERMISSION_DENIED = 2
@@ -21,29 +34,30 @@ object ErrorCodeUtils {
     const val ERROR_CODE_APP_UNINSTALLED = 4
     const val ERROR_CODE_SHORTCUT_NOT_FOUND = 5
     const val ERROR_CODE_IME_SERVICE_NOT_CHOSEN = 6
+    const val ERROR_CODE_SYSTEM_ACTION_NOT_FOUND = 7
 
-    fun fixError(ctx: Context, errorCodeResult: ErrorCodeResult) {
-        when (errorCodeResult.errorCode) {
+    fun fixError(ctx: Context, errorResult: ErrorResult) {
+        when (errorResult.errorCode) {
             ERROR_CODE_PERMISSION_DENIED -> {
-                val permission = errorCodeResult.data!!
+                val permission = errorResult.data!!
 
                 PermissionUtils.requestPermission(ctx, permission)
             }
 
             ERROR_CODE_APP_DISABLED -> {
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                intent.data = Uri.parse("package:${errorCodeResult.data}")
+                intent.data = Uri.parse("package:${errorResult.data}")
                 intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
 
                 ctx.startActivity(intent)
             }
 
             ERROR_CODE_APP_UNINSTALLED -> {
-                PackageUtils.viewAppOnline(ctx, errorCodeResult.data!!)
+                PackageUtils.viewAppOnline(ctx, errorResult.data!!)
             }
 
             ERROR_CODE_SHORTCUT_NOT_FOUND -> {
-                PackageUtils.viewAppOnline(ctx, errorCodeResult.data!!)
+                PackageUtils.viewAppOnline(ctx, errorResult.data!!)
             }
 
             ERROR_CODE_IME_SERVICE_NOT_CHOSEN -> {
@@ -64,9 +78,9 @@ object ErrorCodeUtils {
     /**
      * @return the string id of the message describing an error code
      */
-    fun getErrorCodeResultDescription(ctx: Context, errorCodeResult: ErrorCodeResult): String? {
+    fun getErrorCodeDescription(ctx: Context, errorResult: ErrorResult): String? {
         ctx.apply {
-            return when (errorCodeResult.errorCode) {
+            return when (errorResult.errorCode) {
                 ERROR_CODE_ACTION_IS_NULL -> str(R.string.error_must_choose_action)
                 ERROR_CODE_NO_ACTION_DATA -> str(R.string.error_must_choose_action)
                 ERROR_CODE_APP_DISABLED -> str(R.string.error_app_is_disabled)
@@ -75,7 +89,7 @@ object ErrorCodeUtils {
                 ERROR_CODE_IME_SERVICE_NOT_CHOSEN -> str(R.string.error_ime_must_be_chosen)
                 ERROR_CODE_PERMISSION_DENIED -> {
                     val permissionWarningMessage =
-                            PermissionUtils.getPermissionWarningStringRes(errorCodeResult.data!!)
+                            PermissionUtils.getPermissionWarningStringRes(errorResult.data!!)
 
                     return str(permissionWarningMessage)
                 }

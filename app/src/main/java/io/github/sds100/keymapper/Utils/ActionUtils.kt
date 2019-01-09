@@ -36,7 +36,7 @@ object ActionUtils {
         val errorMessage = if (errorCodeResult == null) {
             null
         } else {
-            ErrorCodeUtils.getErrorCodeResultDescription(ctx, errorCodeResult)
+            ErrorCodeUtils.getErrorCodeDescription(ctx, errorCodeResult)
         }
 
         val title = getTitle(ctx, action)
@@ -149,22 +149,22 @@ object ActionUtils {
      * @return if the action can't be performed, it returns an error code.
      * returns null if their if the action can be performed.
      */
-    fun getPotentialErrorCode(ctx: Context, action: Action?): ErrorCodeResult? {
+    fun getPotentialErrorCode(ctx: Context, action: Action?): ErrorResult? {
         //action is null
-        action ?: return ErrorCodeResult(ERROR_CODE_ACTION_IS_NULL)
+        action ?: return ErrorResult(ERROR_CODE_ACTION_IS_NULL)
 
         //the action has not data
-        if (action.data.isEmpty()) return ErrorCodeResult(ERROR_CODE_NO_ACTION_DATA)
+        if (action.data.isEmpty()) return ErrorResult(ERROR_CODE_NO_ACTION_DATA)
 
         //action requires the IME service but it isn't chosen
         if (action.requiresIME && !MyIMEService.isInputMethodChosen(ctx)) {
-            return ErrorCodeResult(ERROR_CODE_IME_SERVICE_NOT_CHOSEN)
+            return ErrorResult(ERROR_CODE_IME_SERVICE_NOT_CHOSEN)
         }
 
         //a required permission isn't granted
         getRequiredPermissionForAction(action)?.forEach { permission ->
             if (!isPermissionGranted(ctx, permission)) {
-                return ErrorCodeResult(ERROR_CODE_PERMISSION_DENIED, permission)
+                return ErrorResult(ERROR_CODE_PERMISSION_DENIED, permission)
             }
         }
 
@@ -175,12 +175,12 @@ object ActionUtils {
 
                     //if the app is disabled, show an error message because it won't open
                     if (!appInfo.enabled) {
-                        return ErrorCodeResult(ERROR_CODE_APP_DISABLED, appInfo.packageName)
+                        return ErrorResult(ERROR_CODE_APP_DISABLED, appInfo.packageName)
                     }
 
                     return null
                 } catch (e: Exception) {
-                    return ErrorCodeResult(ERROR_CODE_APP_UNINSTALLED, action.data)
+                    return ErrorResult(ERROR_CODE_APP_UNINSTALLED, action.data)
                 }
             }
 
@@ -189,7 +189,7 @@ object ActionUtils {
                 val activityExists = intent.resolveActivityInfo(ctx.packageManager, 0) != null
 
                 if (!activityExists) {
-                    return ErrorCodeResult(ERROR_CODE_SHORTCUT_NOT_FOUND, action.data)
+                    return ErrorResult(ERROR_CODE_SHORTCUT_NOT_FOUND, action.data)
                 }
             }
 

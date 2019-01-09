@@ -251,7 +251,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                     return true
 
                 } else {
-                    val errorDescription = ErrorCodeUtils.getErrorCodeResultDescription(this, errorCodeResult)
+                    val errorDescription = ErrorCodeUtils.getErrorCodeDescription(this, errorCodeResult)
 
                     Toast.makeText(this, errorDescription, LENGTH_SHORT).show()
                 }

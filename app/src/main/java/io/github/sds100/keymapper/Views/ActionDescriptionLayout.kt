@@ -44,7 +44,7 @@ class ActionDescriptionLayout(
 
             imageViewAction.setVisible(iconDrawable != null)
             textViewTitle.setVisible(title != null)
-            textViewError.setVisible(errorCodeResult != null)
+            textViewError.setVisible(errorResult != null)
         }
     }
 

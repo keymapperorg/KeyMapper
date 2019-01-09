@@ -13,8 +13,8 @@ data class ActionDescription(
         val iconDrawable: Drawable? = null,
         val title: String? = null,
         val errorDescription: String? = null,
-        val errorCodeResult: ErrorCodeResult? = null) {
+        val errorResult: ErrorResult? = null) {
 
     val errorCode: Int?
-        get() = errorCodeResult?.errorCode
+        get() = errorResult?.errorCode
 }
