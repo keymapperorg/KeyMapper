@@ -36,7 +36,7 @@ object ErrorCodeUtils {
     const val ERROR_CODE_IME_SERVICE_NOT_CHOSEN = 6
     const val ERROR_CODE_SYSTEM_ACTION_NOT_FOUND = 7
 
-    fun fixError(ctx: Context, errorResult: ErrorResult) {
+    fun handleError(ctx: Context, errorResult: ErrorResult) {
         when (errorResult.errorCode) {
             ERROR_CODE_PERMISSION_DENIED -> {
                 val permission = errorResult.data!!
