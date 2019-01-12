@@ -336,14 +336,24 @@ object SystemActionUtils {
                     iconRes = R.drawable.ic_brightness_low_black_24dp,
                     descriptionRes = R.string.action_decrease_brightness
             ),
-            //BRIGHTNESS
+            //FLASHLIGHT
+            SystemActionDef(
+                    id = SystemAction.TOGGLE_FLASHLIGHT,
+                    category = CATEGORY_FLASHLIGHT,
+                    permission = Manifest.permission.CAMERA,
+                    feature = PackageManager.FEATURE_SENSOR_STEP_COUNTER,
+                    iconRes = R.drawable.ic_flashlight,
+                    descriptionRes = R.string.action_toggle_flashlight
+            ),
+
+            //OTHER
             SystemActionDef(
                     id = SCREENSHOT,
                     category = CATEGORY_OTHER,
                     minApi = Build.VERSION_CODES.P,
                     iconRes = R.drawable.ic_screenshot_black_24dp,
                     descriptionRes = R.string.action_screenshot
-                    )
+            )
     )
 
     /**

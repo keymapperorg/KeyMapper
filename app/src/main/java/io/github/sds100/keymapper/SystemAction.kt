@@ -78,6 +78,11 @@ object SystemAction {
     const val GO_HOME = "go_home"
     const val OPEN_RECENTS = "open_recents"
 
+    //flashlight
+    const val TOGGLE_FLASHLIGHT = "toggle_flashlight"
+    const val ENABLE_FLASHLIGHT = "enable_flashlight"
+    const val DISABLE_FLASHLIGHT = "disable_flashlight"
+
     //other
     @RequiresApi(Build.VERSION_CODES.P)
     const val SCREENSHOT = "screenshot"
