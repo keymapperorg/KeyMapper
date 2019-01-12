@@ -14,7 +14,6 @@ import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_IME_SERVICE_NO
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_NO_ACTION_DATA
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_PERMISSION_DENIED
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_SHORTCUT_NOT_FOUND
-import io.github.sds100.keymapper.Utils.PermissionUtils.isPermissionGranted
 
 /**
  * Created by sds100 on 03/09/2018.
@@ -139,19 +138,6 @@ object ActionUtils {
     }
 
     /**
-     * if the action requires a permission, which needs user approval, this function
-     * returns the permission required. Null is returned if the action doesn't need any permission
-     */
-    private fun getRequiredPermissionForAction(action: Action): Array<String>? {
-
-        if (action.type == ActionType.SYSTEM_ACTION) {
-            return SystemActionUtils.getSystemActionDef(action.data).onSuccess { it.permissions }
-        }
-
-        return null
-    }
-
-    /**
      * @return if the action can't be performed, it returns an error code.
      * returns null if their if the action can be performed.
      */
@@ -165,13 +151,6 @@ object ActionUtils {
         //action requires the IME service but it isn't chosen
         if (action.requiresIME && !MyIMEService.isInputMethodChosen(ctx)) {
             return ErrorResult(ERROR_CODE_IME_SERVICE_NOT_CHOSEN)
-        }
-
-        //a required permission isn't granted
-        getRequiredPermissionForAction(action)?.forEach { permission ->
-            if (!isPermissionGranted(ctx, permission)) {
-                return ErrorResult(ERROR_CODE_PERMISSION_DENIED, permission)
-            }
         }
 
         when (action.type) {
@@ -196,6 +175,17 @@ object ActionUtils {
 
                 if (!activityExists) {
                     return ErrorResult(ERROR_CODE_SHORTCUT_NOT_FOUND, action.data)
+                }
+            }
+
+            ActionType.SYSTEM_ACTION -> {
+                return SystemActionUtils.getSystemActionDef(action.data).onSuccess {
+                    it.permissions.forEach { permission ->
+                        if (!PermissionUtils.isPermissionGranted(ctx, permission)) {
+                            ErrorResult(ERROR_CODE_PERMISSION_DENIED, permission)
+                        }
+                    }
+                    null
                 }
             }
 
