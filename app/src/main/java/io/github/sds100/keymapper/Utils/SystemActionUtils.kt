@@ -2,6 +2,8 @@ package io.github.sds100.keymapper.Utils
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.SystemAction.CATEGORY_BLUETOOTH
@@ -341,7 +343,7 @@ object SystemActionUtils {
                     id = SystemAction.TOGGLE_FLASHLIGHT,
                     category = CATEGORY_FLASHLIGHT,
                     permission = Manifest.permission.CAMERA,
-                    feature = PackageManager.FEATURE_SENSOR_STEP_COUNTER,
+                    feature = PackageManager.FEATURE_CAMERA_FLASH,
                     iconRes = R.drawable.ic_flashlight,
                     descriptionRes = R.string.action_toggle_flashlight
             ),
@@ -357,12 +359,20 @@ object SystemActionUtils {
     )
 
     /**
-     * Get all the system actions which meet the system's api level.
+     * Get all the system actions which are supported by the system.
      */
-    fun getSystemActionDefinitions(): List<SystemActionDef> {
+    fun getSystemActionDefinitions(ctx: Context): List<SystemActionDef> {
         return sequence {
             SYSTEM_ACTION_DEFINITIONS.forEach {
-                if (it.minApi <= Build.VERSION.SDK_INT) yield(it)
+                if (Build.VERSION.SDK_INT < it.minApi) return@forEach
+
+                for (feature in it.features) {
+                    if (!ctx.packageManager.hasSystemFeature(feature)) {
+                        return@forEach
+                    }
+                }
+
+                yield(it)
             }
         }.toList()
     }
