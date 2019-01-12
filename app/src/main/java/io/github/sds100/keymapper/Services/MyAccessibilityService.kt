@@ -242,15 +242,15 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                     //if the keymap can't be found, don't consume the keyevent.
                 } ?: return super.onKeyEvent(event)
 
-                val errorCodeResult = ActionUtils.getPotentialErrorCode(this, keyMap.action)
+                val errorResult = ActionUtils.getPotentialErrorCode(this, keyMap.action)
 
                 //if there is no error
-                if (errorCodeResult == null) {
+                if (errorResult == null) {
                     mActionPerformerDelegate.performAction(keyMap.action!!)
                     return true
 
                 } else {
-                    val errorDescription = ErrorCodeUtils.getErrorCodeDescription(this, errorCodeResult)
+                    val errorDescription = ErrorCodeUtils.getErrorCodeDescription(this, errorResult)
 
                     Toast.makeText(this, errorDescription, LENGTH_SHORT).show()
                 }
