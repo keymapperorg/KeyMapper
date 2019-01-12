@@ -6,6 +6,7 @@ import android.os.Build
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.SystemAction.CATEGORY_BLUETOOTH
 import io.github.sds100.keymapper.SystemAction.CATEGORY_BRIGHTNESS
+import io.github.sds100.keymapper.SystemAction.CATEGORY_FLASHLIGHT
 import io.github.sds100.keymapper.SystemAction.CATEGORY_MEDIA
 import io.github.sds100.keymapper.SystemAction.CATEGORY_MOBILE_DATA
 import io.github.sds100.keymapper.SystemAction.CATEGORY_NAVIGATION
@@ -69,6 +70,7 @@ object SystemActionUtils {
             CATEGORY_BRIGHTNESS to R.string.system_action_cat_brightness,
             CATEGORY_STATUS_BAR to R.string.system_action_cat_status_bar,
             CATEGORY_MEDIA to R.string.system_action_cat_media,
+            CATEGORY_FLASHLIGHT to R.string.system_action_cat_flashlight,
             CATEGORY_OTHER to R.string.system_action_cat_other
     )
 

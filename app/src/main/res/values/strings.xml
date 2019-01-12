@@ -229,6 +229,7 @@
     <string name="system_action_cat_brightness">Brightness</string>
     <string name="system_action_cat_status_bar">Status Bar</string>
     <string name="system_action_cat_media">Media</string>
+    <string name="system_action_cat_flashlight">Flashlight</string>
     <string name="system_action_cat_other">Other</string>
     <!-- System action category labels -->
 </resources>
