@@ -95,5 +95,6 @@ object SystemAction {
     const val CATEGORY_BRIGHTNESS = "brightness"
     const val CATEGORY_STATUS_BAR = "status_bar"
     const val CATEGORY_MEDIA = "media"
+    const val CATEGORY_FLASHLIGHT = "flashlight"
     const val CATEGORY_OTHER = "other"
 }
