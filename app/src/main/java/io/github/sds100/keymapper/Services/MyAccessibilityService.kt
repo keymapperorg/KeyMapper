@@ -238,10 +238,9 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                 //find the keymap associated with the trigger being pressed
                 val keyMap = mKeyMapListCache.find { keyMap ->
                     keyMap.triggerList.any { trigger -> trigger.keys == mPressedTriggerKeys }
-                }
 
-                //if the keymap can't be found, pass the keyevent to the system
-                if (keyMap == null) return super.onKeyEvent(event)
+                    //if the keymap can't be found, don't consume the keyevent.
+                } ?: return super.onKeyEvent(event)
 
                 val errorCodeResult = ActionUtils.getPotentialErrorCode(this, keyMap.action)
 
