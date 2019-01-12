@@ -31,7 +31,7 @@ class SystemActionAdapter(
     @Suppress("UNCHECKED_CAST")
     override val onItemClickListener = onItemClickListener as OnItemClickListener<Any>
 
-    private val mSystemActionDefinitions = SystemActionUtils.getSystemActionDefinitions()
+    private val mSystemActionDefinitions = SystemActionUtils.getSystemActionDefinitions(ctx)
 
     private val mAlphabeticalFilter = AlphabeticalFilter(
             mOriginalList = mSystemActionDefinitions,

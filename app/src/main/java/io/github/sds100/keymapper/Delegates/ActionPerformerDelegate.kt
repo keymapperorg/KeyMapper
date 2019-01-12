@@ -128,6 +128,7 @@ class ActionPerformerDelegate(iContext: IContext, iPerformGlobalAction: IPerform
                 //there must be a way to do this without root
                 SystemAction.OPEN_MENU -> RootUtils.executeRootCommand("input keyevent 82")
 
+                SystemAction.TOGGLE_FLASHLIGHT -> FlashlightUtils.toggleFlashlight(ctx)
 
                 else -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
