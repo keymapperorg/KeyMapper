@@ -216,6 +216,8 @@
     <string name="action_open_recents">Open Recents</string>
     <string name="action_open_menu">Open Menu</string>
 
+    <string name="action_toggle_flashlight">Toggle Flashlight</string>
+
     <string name="action_screenshot">Screenshot</string>
     <!-- System action labels -->
 
