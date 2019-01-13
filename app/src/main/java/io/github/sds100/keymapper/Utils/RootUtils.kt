@@ -17,14 +17,14 @@ object RootUtils {
      * @return whether the command was executed successfully
      */
     fun executeRootCommand(command: String): Boolean {
-        return ShellUtils.executeCommand("su", "-c", command)
+        return Shell.run("su", "-c", command)
     }
 
     fun checkAppHasRootPermission(): Boolean {
         var hasRootPermission = true
 
         try {
-            val output = ShellUtils.getCommandOutput(*ROOT_CHECK_COMMAND)
+            val output = Shell.getCommandOutput(*ROOT_CHECK_COMMAND)
 
             if (output.contains("Permission denied")) {
                 hasRootPermission = false
@@ -41,7 +41,7 @@ object RootUtils {
             titleResource = R.string.dialog_title_root_prompt
             messageResource = R.string.dialog_message_root_prompt
             iconResource = R.drawable.ic_warning_black_24dp
-            okButton { ShellUtils.executeCommand("su") }
+            okButton { Shell.run("su") }
             cancelButton { dialog -> dialog.cancel() }
         }.show()
     }
