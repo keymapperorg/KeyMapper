@@ -124,7 +124,7 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
 
                     buttonSecondary.setOnClickListener {
                         if (actionDescription.errorCode != null) {
-                            ErrorCodeUtils.handleError(this@ConfigKeymapActivity, actionDescription.errorResult!!)
+                            ErrorCodeUtils.fixError(this@ConfigKeymapActivity, actionDescription.errorResult!!)
                         } else {
                             testAction()
                         }

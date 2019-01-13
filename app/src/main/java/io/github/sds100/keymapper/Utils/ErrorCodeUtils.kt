@@ -38,7 +38,10 @@ object ErrorCodeUtils {
     const val ERROR_CODE_SYSTEM_ACTION_NOT_FOUND = 7
     const val ERROR_CODE_PERMISSION_DESCRIPTION_NOT_FOUND = 8
 
-    fun handleError(ctx: Context, errorResult: ErrorResult) {
+    /**
+     * Attempts to fix a given [errorResult]
+     */
+    fun fixError(ctx: Context, errorResult: ErrorResult) {
         when (errorResult.errorCode) {
             ERROR_CODE_PERMISSION_DENIED -> {
                 val permission = errorResult.data!!
@@ -78,7 +81,7 @@ object ErrorCodeUtils {
     }
 
     /**
-     * @return the string id of the message describing an error code
+     * @return a message describing an error code.
      */
     fun getErrorCodeDescription(ctx: Context, errorResult: ErrorResult): String {
         ctx.apply {
