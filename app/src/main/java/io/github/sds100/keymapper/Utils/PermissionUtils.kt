@@ -10,8 +10,6 @@ import android.provider.Settings
 import androidx.core.content.ContextCompat
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.Result
-import io.github.sds100.keymapper.createResult
 
 /**
  * Created by sds100 on 25/10/2018.
@@ -55,15 +53,12 @@ object PermissionUtils {
     /**
      * @return a string resource describing the [permission]
      */
-    fun getPermissionDescriptionRes(permission: String): Result<Int> {
-        val resId = when (permission) {
+    fun getPermissionDescriptionRes(permission: String): Int {
+        return when (permission) {
             Manifest.permission.WRITE_SETTINGS -> R.string.error_action_requires_write_settings_permission
+            Manifest.permission.CAMERA -> R.string.error_action_requires_camera_permission
             Constants.PERMISSION_ROOT -> R.string.error_action_requires_root
-            else -> null
+            else -> throw Exception("Couldn't find permission description for $permission")
         }
-
-        return resId.createResult(
-                ErrorCodeUtils.ERROR_CODE_PERMISSION_DESCRIPTION_NOT_FOUND,
-                "$permission description not found!")
     }
 }
