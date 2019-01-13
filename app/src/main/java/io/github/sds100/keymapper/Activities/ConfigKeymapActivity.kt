@@ -11,19 +11,15 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
-import io.github.sds100.keymapper.Action
+import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Adapters.TriggerAdapter
-import io.github.sds100.keymapper.Constants
-import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Services.MyAccessibilityService
 import io.github.sds100.keymapper.Utils.ActionUtils
-import io.github.sds100.keymapper.Utils.ErrorCodeUtils
-import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_ACTION_IS_NULL
-import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_NO_ACTION_DATA
 import io.github.sds100.keymapper.ViewModels.ConfigKeyMapViewModel
 import kotlinx.android.synthetic.main.activity_config_key_map.*
 import kotlinx.android.synthetic.main.content_config_key_map.*
@@ -103,6 +99,8 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
                 uiThread {
                     actionDescriptionLayout.setDescription(actionDescription)
 
+                    val isFixable = actionDescription.errorResult.isFixable
+
                     /* if there is no error message, when the button is pressed, the user can test the
                     action */
                     if (actionDescription.errorCode == null) {
@@ -110,21 +108,19 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
                         buttonSecondary.visibility = View.VISIBLE
                     } else {
                         //secondary button stuff.
-                        if (actionDescription.errorCode == ERROR_CODE_ACTION_IS_NULL ||
-                                actionDescription.errorCode == ERROR_CODE_NO_ACTION_DATA) {
 
-                            buttonSecondary.visibility = View.GONE
-                        } else {
-                            buttonSecondary.visibility = View.VISIBLE
+                        if (isFixable) {
                             buttonSecondary.text = getString(R.string.button_fix)
                         }
+
+                        buttonSecondary.isVisible = isFixable
                     }
 
                     mTriggerAdapter.triggerList = keyMap.triggerList
 
                     buttonSecondary.setOnClickListener {
-                        if (actionDescription.errorCode != null) {
-                            ErrorCodeUtils.fixError(this@ConfigKeymapActivity, actionDescription.errorResult!!)
+                        if (isFixable) {
+                            actionDescription.errorResult!!.fix(this@ConfigKeymapActivity)
                         } else {
                             testAction()
                         }

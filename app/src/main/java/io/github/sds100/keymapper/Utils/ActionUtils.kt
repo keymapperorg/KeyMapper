@@ -33,19 +33,16 @@ object ActionUtils {
      */
     fun getDescription(ctx: Context, action: Action?): ActionDescription {
 
-        val errorCodeResult = getPotentialErrorCode(ctx, action)
+        val errorResult = getPotentialErrorCode(ctx, action)
 
-        val errorMessage = if (errorCodeResult == null) {
-            null
-        } else {
-            ErrorCodeUtils.getErrorCodeDescription(ctx, errorCodeResult)
-        }
+        //If the errorResult is null, errorMessage will be null
+        val errorMessage = errorResult?.let { ErrorCodeUtils.getErrorCodeDescription(ctx, it) }
 
         val title = getTitle(ctx, action)
         val icon = getIcon(ctx, action)
 
         return ActionDescription(
-                icon, title, errorMessage, errorCodeResult
+                icon, title, errorMessage, errorResult
         )
     }
 

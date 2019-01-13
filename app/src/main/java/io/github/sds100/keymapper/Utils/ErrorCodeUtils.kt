@@ -40,8 +40,16 @@ object ErrorCodeUtils {
     const val ERROR_CODE_SDK_VERSION_TOO_LOW = 8
     const val ERROR_CODE_FEATURE_NOT_AVAILABLE = 9
 
+    private val FIXABLE_ERRORS = arrayOf(
+            ERROR_CODE_APP_DISABLED,
+            ERROR_CODE_APP_UNINSTALLED,
+            ERROR_CODE_PERMISSION_DENIED,
+            ERROR_CODE_SHORTCUT_NOT_FOUND,
+            ERROR_CODE_IME_SERVICE_NOT_CHOSEN
+    )
+
     /**
-     * Attempts to fix a given [errorResult]
+     * Attempts to fix a given [errorResult].
      */
     fun fixError(ctx: Context, errorResult: ErrorResult) {
         when (errorResult.errorCode) {
@@ -82,6 +90,8 @@ object ErrorCodeUtils {
         }
     }
 
+    fun isErrorFixable(errorCode: Int) = FIXABLE_ERRORS.contains(errorCode)
+
     /**
      * @return a message describing an error code.
      */
@@ -108,7 +118,7 @@ object ErrorCodeUtils {
                     str(PermissionUtils.getPermissionDescriptionRes(errorResult.data!!))
                 }
 
-                else -> ""
+                else -> throw Exception("Can't find a description for this error code: ${errorResult.errorCode}")
             }
         }
     }
