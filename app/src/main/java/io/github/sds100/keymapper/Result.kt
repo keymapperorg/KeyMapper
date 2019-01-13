@@ -51,6 +51,25 @@ fun <T, E> Result<T>.handle(onSuccess: (data: T) -> E, onFailure: (errorResult: 
 }
 
 /**
+ * It is useful to use so you don't have to return null from a method or throw an exception if you can't find the item
+ * and then check whether the returned object is null or not at the caller.
+ *
+ * e.g instead of this...
+ *
+ * fun getFoo(): Foo?
+ *
+ * fun do() {
+ *  val foo = getFoo()
+ *
+ *  if (foo != null) doThis()
+ * }
+ *
+ * do this...
+ * 
+ * fun getFoo(): Foo
+ *
+ * getFoo().onSuccess { doThis() }
+ *
  * @return Performs the given action if the result is successful.
  */
 fun <T, E> Result<T>.onSuccess(action: (data: T) -> E): E? {
