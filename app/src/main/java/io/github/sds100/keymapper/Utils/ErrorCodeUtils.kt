@@ -9,7 +9,6 @@ import androidx.annotation.IntDef
 import io.github.sds100.keymapper.ErrorResult
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Services.MyIMEService
-import io.github.sds100.keymapper.handle
 
 /**
  * Created by sds100 on 25/11/2018.
@@ -22,7 +21,9 @@ import io.github.sds100.keymapper.handle
     ErrorCodeUtils.ERROR_CODE_APP_UNINSTALLED,
     ErrorCodeUtils.ERROR_CODE_PERMISSION_DENIED,
     ErrorCodeUtils.ERROR_CODE_SHORTCUT_NOT_FOUND,
-    ErrorCodeUtils.ERROR_CODE_SYSTEM_ACTION_NOT_FOUND]
+    ErrorCodeUtils.ERROR_CODE_SYSTEM_ACTION_NOT_FOUND,
+    ErrorCodeUtils.ERROR_CODE_FEATURE_NOT_AVAILABLE,
+    ErrorCodeUtils.ERROR_CODE_SDK_VERSION_TOO_LOW]
 )
 @Retention(AnnotationRetention.SOURCE)
 annotation class ErrorCode
@@ -36,7 +37,8 @@ object ErrorCodeUtils {
     const val ERROR_CODE_SHORTCUT_NOT_FOUND = 5
     const val ERROR_CODE_IME_SERVICE_NOT_CHOSEN = 6
     const val ERROR_CODE_SYSTEM_ACTION_NOT_FOUND = 7
-    const val ERROR_CODE_PERMISSION_DESCRIPTION_NOT_FOUND = 8
+    const val ERROR_CODE_SDK_VERSION_TOO_LOW = 8
+    const val ERROR_CODE_FEATURE_NOT_AVAILABLE = 9
 
     /**
      * Attempts to fix a given [errorResult]
@@ -93,14 +95,17 @@ object ErrorCodeUtils {
                 ERROR_CODE_SHORTCUT_NOT_FOUND -> str(R.string.error_shortcut_not_found)
                 ERROR_CODE_IME_SERVICE_NOT_CHOSEN -> str(R.string.error_ime_must_be_chosen)
 
-                ERROR_CODE_PERMISSION_DENIED -> {
-                    val permissionDescriptionResult =
-                            PermissionUtils.getPermissionDescriptionRes(errorResult.data!!)
+                ERROR_CODE_SDK_VERSION_TOO_LOW -> {
+                    val versionName = BuildUtils.getSdkVersionName(errorResult.data!!.toInt())
+                    str(R.string.error_sdk_version_too_low, versionName)
+                }
 
-                    return permissionDescriptionResult.handle(
-                            onSuccess = { str(it) },
-                            onFailure = { "" }
-                    )
+                ERROR_CODE_FEATURE_NOT_AVAILABLE -> {
+                    str(R.string.error_feature_not_available, errorResult.data)
+                }
+
+                ERROR_CODE_PERMISSION_DENIED -> {
+                    str(PermissionUtils.getPermissionDescriptionRes(errorResult.data!!))
                 }
 
                 else -> ""

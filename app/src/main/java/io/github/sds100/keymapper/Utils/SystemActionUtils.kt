@@ -338,6 +338,7 @@ object SystemActionUtils {
                     iconRes = R.drawable.ic_brightness_low_black_24dp,
                     descriptionRes = R.string.action_decrease_brightness
             ),
+
             //FLASHLIGHT
             SystemActionDef(
                     id = SystemAction.TOGGLE_FLASHLIGHT,
@@ -364,6 +365,8 @@ object SystemActionUtils {
     fun getSystemActionDefinitions(ctx: Context): List<SystemActionDef> {
         return sequence {
             SYSTEM_ACTION_DEFINITIONS.forEach {
+                /* If the device's Android version is less than the minimum version supported by the action,
+                   don't add it to the list.*/
                 if (Build.VERSION.SDK_INT < it.minApi) return@forEach
 
                 for (feature in it.features) {

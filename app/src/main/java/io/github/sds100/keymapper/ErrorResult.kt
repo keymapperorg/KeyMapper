@@ -3,7 +3,9 @@ package io.github.sds100.keymapper
 import io.github.sds100.keymapper.Utils.ErrorCode
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_APP_DISABLED
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_APP_UNINSTALLED
+import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_FEATURE_NOT_AVAILABLE
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_PERMISSION_DENIED
+import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_SDK_VERSION_TOO_LOW
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_SHORTCUT_NOT_FOUND
 
 /**
@@ -18,6 +20,10 @@ class ErrorResult(
          *
          * [ERROR_CODE_APP_DISABLED], [ERROR_CODE_APP_UNINSTALLED], [ERROR_CODE_SHORTCUT_NOT_FOUND]:
          * the package name of the app
+         *
+         * [ERROR_CODE_SDK_VERSION_TOO_LOW]: The version code.
+         *
+         * [ERROR_CODE_FEATURE_NOT_AVAILABLE]: The feature id.
          */
         val data: String? = null
 )
