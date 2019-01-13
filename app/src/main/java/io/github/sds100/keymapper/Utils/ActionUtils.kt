@@ -186,7 +186,7 @@ object ActionUtils {
                     }
 
                     it.permissions.forEach { permission ->
-                        if (!PermissionUtils.isPermissionGranted(ctx, permission)) {
+                        if (!ctx.isPermissionGranted(permission)) {
                             return@onSuccess ErrorResult(ERROR_CODE_PERMISSION_DENIED, permission)
                         }
                     }

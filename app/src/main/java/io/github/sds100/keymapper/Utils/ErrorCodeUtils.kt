@@ -56,7 +56,7 @@ object ErrorCodeUtils {
             ERROR_CODE_PERMISSION_DENIED -> {
                 val permission = errorResult.data!!
 
-                PermissionUtils.requestPermission(ctx, permission)
+                ctx.requestPermission(permission)
             }
 
             ERROR_CODE_APP_DISABLED -> {
