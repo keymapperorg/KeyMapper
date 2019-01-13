@@ -6,7 +6,7 @@ import android.content.Context
  * Created by sds100 on 12/01/2019.
  */
 
-object FlashlightUtils {
+object CameraUtils {
     fun toggleFlashlight(ctx: Context) {
 
     }
