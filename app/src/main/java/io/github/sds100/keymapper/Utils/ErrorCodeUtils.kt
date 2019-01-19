@@ -50,15 +50,11 @@ object ErrorCodeUtils {
 
     /**
      * Attempts to fix a given [errorResult].
+     *
+     * [ERROR_CODE_PERMISSION_DENIED] must be fixed by requesting for a permission in an activity.
      */
     fun fixError(ctx: Context, errorResult: ErrorResult) {
         when (errorResult.errorCode) {
-            ERROR_CODE_PERMISSION_DENIED -> {
-                val permission = errorResult.data!!
-
-                ctx.requestPermission(permission)
-            }
-
             ERROR_CODE_APP_DISABLED -> {
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                 intent.data = Uri.parse("package:${errorResult.data}")
