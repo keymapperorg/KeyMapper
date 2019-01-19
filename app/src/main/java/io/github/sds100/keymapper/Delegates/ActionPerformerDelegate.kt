@@ -2,14 +2,12 @@ package io.github.sds100.keymapper.Delegates
 
 import android.accessibilityservice.AccessibilityService
 import android.content.ActivityNotFoundException
-import android.content.Context
 import android.content.Intent
-import android.hardware.camera2.CameraManager
 import android.media.AudioManager
 import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
-import androidx.annotation.RequiresApi
+import androidx.lifecycle.Lifecycle
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Interfaces.IContext
 import io.github.sds100.keymapper.Interfaces.IPerformGlobalAction
@@ -21,34 +19,16 @@ import org.jetbrains.anko.defaultSharedPreferences
  * Created by sds100 on 25/11/2018.
  */
 
-class ActionPerformerDelegate(iContext: IContext, iPerformGlobalAction: IPerformGlobalAction
+class ActionPerformerDelegate(
+        iContext: IContext,
+        iPerformGlobalAction: IPerformGlobalAction,
+        lifecycle: Lifecycle
 ) : IContext by iContext, IPerformGlobalAction by iPerformGlobalAction {
 
-    private var mIsFlashEnabled = false
+    private val mFlashlightController = FlashlightController(this)
 
-    private val mTorchCallback = @RequiresApi(Build.VERSION_CODES.M)
-    object : CameraManager.TorchCallback() {
-        override fun onTorchModeChanged(cameraId: String, enabled: Boolean) {
-            super.onTorchModeChanged(cameraId, enabled)
-
-            if (!enabled) {
-                mIsFlashEnabled = false
-            }
-        }
-    }
-
-    fun onCreate() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val cameraManager = ctx.getSystemService(Context.CAMERA_SERVICE) as CameraManager
-            cameraManager.registerTorchCallback(mTorchCallback, null)
-        }
-    }
-
-    fun onDestroy() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val cameraManager = ctx.getSystemService(Context.CAMERA_SERVICE) as CameraManager
-            cameraManager.unregisterTorchCallback(mTorchCallback)
-        }
+    init {
+        lifecycle.addObserver(mFlashlightController)
     }
 
     fun performAction(action: Action) {
@@ -167,9 +147,7 @@ class ActionPerformerDelegate(iContext: IContext, iPerformGlobalAction: IPerform
                                 VolumeUtils.adjustVolume(this, AudioManager.ADJUST_TOGGLE_MUTE)
 
                             SystemAction.TOGGLE_FLASHLIGHT -> {
-                                mIsFlashEnabled = !mIsFlashEnabled
-
-                                CameraUtils.setFlashlightMode(ctx, mIsFlashEnabled)
+                                mFlashlightController.toggleFlashlight()
                             }
                         }
                     }

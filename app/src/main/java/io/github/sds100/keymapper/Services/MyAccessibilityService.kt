@@ -11,6 +11,9 @@ import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import io.github.sds100.keymapper.Action
@@ -29,7 +32,8 @@ import io.github.sds100.keymapper.Utils.RootUtils
  * Created by sds100 on 16/07/2018.
  */
 
-class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalAction {
+class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalAction, LifecycleOwner {
+
     companion object {
         const val EXTRA_KEYMAP_CACHE_JSON = "extra_keymap_cache_json"
         const val EXTRA_ACTION = "action"
@@ -156,10 +160,20 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
     private var mRecordingTrigger = false
 
-    private val mActionPerformerDelegate = ActionPerformerDelegate(this, this)
+    private lateinit var mActionPerformerDelegate: ActionPerformerDelegate
+
+    private lateinit var mLifecycleRegistry: LifecycleRegistry
+
+    override fun getLifecycle() = mLifecycleRegistry
 
     override fun onServiceConnected() {
         super.onServiceConnected()
+
+        mLifecycleRegistry = LifecycleRegistry(this)
+        mLifecycleRegistry.markState(Lifecycle.State.CREATED)
+
+        mActionPerformerDelegate = ActionPerformerDelegate(
+                iContext = this, iPerformGlobalAction = this, lifecycle = lifecycle)
 
         //listen for events from NewKeymapActivity
         val intentFilter = IntentFilter()
@@ -173,7 +187,6 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
         //when the accessibility service starts
         getKeyMapListFromRepository()
-        mActionPerformerDelegate.onCreate()
     }
 
     override fun onInterrupt() {}
@@ -181,7 +194,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
     override fun onDestroy() {
         super.onDestroy()
 
-        mActionPerformerDelegate.onDestroy()
+        mLifecycleRegistry.markState(Lifecycle.State.DESTROYED)
         unregisterReceiver(mBroadcastReceiver)
     }
 
