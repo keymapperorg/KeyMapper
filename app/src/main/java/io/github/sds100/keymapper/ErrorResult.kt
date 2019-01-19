@@ -1,9 +1,13 @@
 package io.github.sds100.keymapper
 
+import android.content.Context
 import io.github.sds100.keymapper.Utils.ErrorCode
+import io.github.sds100.keymapper.Utils.ErrorCodeUtils
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_APP_DISABLED
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_APP_UNINSTALLED
+import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_FEATURE_NOT_AVAILABLE
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_PERMISSION_DENIED
+import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_SDK_VERSION_TOO_LOW
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_SHORTCUT_NOT_FOUND
 
 /**
@@ -18,6 +22,21 @@ class ErrorResult(
          *
          * [ERROR_CODE_APP_DISABLED], [ERROR_CODE_APP_UNINSTALLED], [ERROR_CODE_SHORTCUT_NOT_FOUND]:
          * the package name of the app
+         *
+         * [ERROR_CODE_SDK_VERSION_TOO_LOW]: The version code.
+         *
+         * [ERROR_CODE_FEATURE_NOT_AVAILABLE]: The feature id.
          */
         val data: String? = null
 )
+
+/**
+ * @return The [ErrorResult] isn't null and it can be fixed.
+ */
+val ErrorResult?.isFixable: Boolean
+    get() = this != null && ErrorCodeUtils.isErrorFixable(errorCode)
+
+/**
+ * @see ErrorCodeUtils.fixError
+ */
+fun ErrorResult.fix(ctx: Context) = ErrorCodeUtils.fixError(ctx, this)

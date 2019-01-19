@@ -4,15 +4,18 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.view.KeyEvent
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Services.MyIMEService
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_ACTION_IS_NULL
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_APP_DISABLED
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_APP_UNINSTALLED
+import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_FEATURE_NOT_AVAILABLE
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_IME_SERVICE_NOT_CHOSEN
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_NO_ACTION_DATA
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_PERMISSION_DENIED
+import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_SDK_VERSION_TOO_LOW
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_SHORTCUT_NOT_FOUND
 
 /**
@@ -30,19 +33,16 @@ object ActionUtils {
      */
     fun getDescription(ctx: Context, action: Action?): ActionDescription {
 
-        val errorCodeResult = getPotentialErrorCode(ctx, action)
+        val errorResult = getPotentialErrorCode(ctx, action)
 
-        val errorMessage = if (errorCodeResult == null) {
-            null
-        } else {
-            ErrorCodeUtils.getErrorCodeDescription(ctx, errorCodeResult)
-        }
+        //If the errorResult is null, errorMessage will be null
+        val errorMessage = errorResult?.let { ErrorCodeUtils.getErrorCodeDescription(ctx, it) }
 
         val title = getTitle(ctx, action)
         val icon = getIcon(ctx, action)
 
         return ActionDescription(
-                icon, title, errorMessage, errorCodeResult
+                icon, title, errorMessage, errorResult
         )
     }
 
@@ -180,11 +180,23 @@ object ActionUtils {
 
             ActionType.SYSTEM_ACTION -> {
                 return SystemActionUtils.getSystemActionDef(action.data).onSuccess {
+
+                    if (Build.VERSION.SDK_INT < it.minApi) {
+                        return@onSuccess ErrorResult(ERROR_CODE_SDK_VERSION_TOO_LOW, it.minApi.toString())
+                    }
+
                     it.permissions.forEach { permission ->
-                        if (!PermissionUtils.isPermissionGranted(ctx, permission)) {
-                            ErrorResult(ERROR_CODE_PERMISSION_DENIED, permission)
+                        if (!ctx.isPermissionGranted(permission)) {
+                            return@onSuccess ErrorResult(ERROR_CODE_PERMISSION_DENIED, permission)
                         }
                     }
+
+                    for (feature in it.features) {
+                        if (!ctx.packageManager.hasSystemFeature(feature)) {
+                            return@onSuccess ErrorResult(ERROR_CODE_FEATURE_NOT_AVAILABLE, feature)
+                        }
+                    }
+
                     null
                 }
             }

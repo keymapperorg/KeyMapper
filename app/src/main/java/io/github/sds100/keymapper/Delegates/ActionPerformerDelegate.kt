@@ -7,6 +7,7 @@ import android.media.AudioManager
 import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
+import androidx.lifecycle.Lifecycle
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Interfaces.IContext
 import io.github.sds100.keymapper.Interfaces.IPerformGlobalAction
@@ -18,8 +19,17 @@ import org.jetbrains.anko.defaultSharedPreferences
  * Created by sds100 on 25/11/2018.
  */
 
-class ActionPerformerDelegate(iContext: IContext, iPerformGlobalAction: IPerformGlobalAction
+class ActionPerformerDelegate(
+        iContext: IContext,
+        iPerformGlobalAction: IPerformGlobalAction,
+        lifecycle: Lifecycle
 ) : IContext by iContext, IPerformGlobalAction by iPerformGlobalAction {
+
+    private val mFlashlightController = FlashlightController(this)
+
+    init {
+        lifecycle.addObserver(mFlashlightController)
+    }
 
     fun performAction(action: Action) {
         ctx.apply {
@@ -128,7 +138,6 @@ class ActionPerformerDelegate(iContext: IContext, iPerformGlobalAction: IPerform
                 //there must be a way to do this without root
                 SystemAction.OPEN_MENU -> RootUtils.executeRootCommand("input keyevent 82")
 
-
                 else -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         when (id) {
@@ -136,6 +145,10 @@ class ActionPerformerDelegate(iContext: IContext, iPerformGlobalAction: IPerform
                             SystemAction.VOLUME_MUTE -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_MUTE)
                             SystemAction.VOLUME_TOGGLE_MUTE ->
                                 VolumeUtils.adjustVolume(this, AudioManager.ADJUST_TOGGLE_MUTE)
+
+                            SystemAction.TOGGLE_FLASHLIGHT -> mFlashlightController.toggleFlashlight()
+                            SystemAction.ENABLE_FLASHLIGHT -> mFlashlightController.setFlashlightMode(true)
+                            SystemAction.DISABLE_FLASHLIGHT -> mFlashlightController.setFlashlightMode(false)
                         }
                     }
 

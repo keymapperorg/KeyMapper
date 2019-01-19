@@ -8,7 +8,7 @@ import android.provider.Settings
  */
 object ScreenRotationUtils {
     fun forcePortraitMode(ctx: Context) {
-        if (!PermissionUtils.haveWriteSettingsPermission(ctx)) return
+        if (!ctx.haveWriteSettingsPermission) return
 
         //auto rotate must be disabled for this to work
         disableAutoRotate(ctx)
@@ -16,7 +16,7 @@ object ScreenRotationUtils {
     }
 
     fun forceLandscapeMode(ctx: Context) {
-        if (!PermissionUtils.haveWriteSettingsPermission(ctx)) return
+        if (!ctx.haveWriteSettingsPermission) return
 
         //auto rotate must be disabled for this to work
         disableAutoRotate(ctx)
@@ -25,7 +25,7 @@ object ScreenRotationUtils {
 
     fun enableAutoRotate(ctx: Context) {
         //don't attempt to enable auto rotate if they app doesn't have permission
-        if (!PermissionUtils.haveWriteSettingsPermission(ctx)) return
+        if (!ctx.haveWriteSettingsPermission) return
 
         Settings.System.putInt(ctx.contentResolver,
                 Settings.System.ACCELEROMETER_ROTATION, 1)
@@ -33,7 +33,7 @@ object ScreenRotationUtils {
 
     fun disableAutoRotate(ctx: Context) {
         //don't attempt to enable auto rotate if they app doesn't have permission
-        if (!PermissionUtils.haveWriteSettingsPermission(ctx)) return
+        if (!ctx.haveWriteSettingsPermission) return
 
         Settings.System.putInt(ctx.contentResolver,
                 Settings.System.ACCELEROMETER_ROTATION, 0)

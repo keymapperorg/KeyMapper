@@ -11,11 +11,14 @@ import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import io.github.sds100.keymapper.Action
 import io.github.sds100.keymapper.Activities.ConfigKeymapActivity
-import io.github.sds100.keymapper.Constants
+import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.Data.KeyMapRepository
 import io.github.sds100.keymapper.Delegates.ActionPerformerDelegate
 import io.github.sds100.keymapper.Interfaces.IContext
@@ -29,17 +32,18 @@ import io.github.sds100.keymapper.Utils.RootUtils
  * Created by sds100 on 16/07/2018.
  */
 
-class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalAction {
+class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalAction, LifecycleOwner {
+
     companion object {
         const val EXTRA_KEYMAP_CACHE_JSON = "extra_keymap_cache_json"
         const val EXTRA_ACTION = "action"
 
-        const val ACTION_RECORD_TRIGGER = "${Constants.PACKAGE_NAME}.RECORD_TRIGGER"
-        const val ACTION_STOP_RECORDING_TRIGGER = "${Constants.PACKAGE_NAME}.STOP_RECORDING_TRIGGER"
-        const val ACTION_CLEAR_PRESSED_KEYS = "${Constants.PACKAGE_NAME}.CLEAR_PRESSED_KEYS"
-        const val ACTION_UPDATE_KEYMAP_CACHE = "${Constants.PACKAGE_NAME}.UPDATE_KEYMAP_CACHE"
-        const val ACTION_TEST_ACTION = "${Constants.PACKAGE_NAME}.TEST_ACTION"
-        const val ACTION_RECORD_TRIGGER_TIMER_STOPPED = "${Constants.PACKAGE_NAME}.RECORD_TRIGGER_TIMER_STOPPED"
+        const val ACTION_RECORD_TRIGGER = "$PACKAGE_NAME.RECORD_TRIGGER"
+        const val ACTION_STOP_RECORDING_TRIGGER = "$PACKAGE_NAME.STOP_RECORDING_TRIGGER"
+        const val ACTION_CLEAR_PRESSED_KEYS = "$PACKAGE_NAME.CLEAR_PRESSED_KEYS"
+        const val ACTION_UPDATE_KEYMAP_CACHE = "$PACKAGE_NAME.UPDATE_KEYMAP_CACHE"
+        const val ACTION_TEST_ACTION = "$PACKAGE_NAME.TEST_ACTION"
+        const val ACTION_RECORD_TRIGGER_TIMER_STOPPED = "$PACKAGE_NAME.RECORD_TRIGGER_TIMER_STOPPED"
 
         /**
          * How long should the accessibility service record a trigger. In milliseconds.
@@ -52,7 +56,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         fun enableServiceInSettings() {
             val className = MyAccessibilityService::class.java.name
 
-            RootUtils.changeSecureSetting("enabled_accessibility_services", "${Constants.PACKAGE_NAME}/$className")
+            RootUtils.changeSecureSetting("enabled_accessibility_services", "$PACKAGE_NAME/$className")
         }
 
         /**
@@ -156,10 +160,20 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
     private var mRecordingTrigger = false
 
-    private val mActionPerformerDelegate = ActionPerformerDelegate(this, this)
+    private lateinit var mActionPerformerDelegate: ActionPerformerDelegate
+
+    private lateinit var mLifecycleRegistry: LifecycleRegistry
+
+    override fun getLifecycle() = mLifecycleRegistry
 
     override fun onServiceConnected() {
         super.onServiceConnected()
+
+        mLifecycleRegistry = LifecycleRegistry(this)
+        mLifecycleRegistry.markState(Lifecycle.State.CREATED)
+
+        mActionPerformerDelegate = ActionPerformerDelegate(
+                iContext = this, iPerformGlobalAction = this, lifecycle = lifecycle)
 
         //listen for events from NewKeymapActivity
         val intentFilter = IntentFilter()
@@ -180,6 +194,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
     override fun onDestroy() {
         super.onDestroy()
 
+        mLifecycleRegistry.markState(Lifecycle.State.DESTROYED)
         unregisterReceiver(mBroadcastReceiver)
     }
 
@@ -242,15 +257,15 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                     //if the keymap can't be found, don't consume the keyevent.
                 } ?: return super.onKeyEvent(event)
 
-                val errorCodeResult = ActionUtils.getPotentialErrorCode(this, keyMap.action)
+                val errorResult = ActionUtils.getPotentialErrorCode(this, keyMap.action)
 
                 //if there is no error
-                if (errorCodeResult == null) {
+                if (errorResult == null) {
                     mActionPerformerDelegate.performAction(keyMap.action!!)
                     return true
 
                 } else {
-                    val errorDescription = ErrorCodeUtils.getErrorCodeDescription(this, errorCodeResult)
+                    val errorDescription = ErrorCodeUtils.getErrorCodeDescription(this, errorResult)
 
                     Toast.makeText(this, errorDescription, LENGTH_SHORT).show()
                 }

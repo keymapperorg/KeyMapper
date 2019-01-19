@@ -124,7 +124,7 @@
     <string name="summary_pref_show_notification">Show a persistent notification to allow you to pick an input method. (The app requires ROOT permission for it to work on Android 8.1 and higher).</string>
     <string name="summary_pref_show_notification_on_boot">Automatically start showing the notification when your device starts up.</string>
     <string name="summary_pref_show_volume_dialog_on_adjust">Show the volume dialog when performing any volume related action.</string>
-    <string name="summary_pref_show_toast_when_action_performed">Whenever an action is performed, a little message will popup on the screen telling you Key Mapper is performing an action.</string>
+    <string name="summary_pref_show_toast_when_action_performed">A little message will popup when you perform an action.</string>
     <string name="summary_pref_auto_change_ime_on_connect_disconnect">When a chosen bluetooth device is connected, automatically switch to the Key Mapper input method. When the device disconnects, automatically switch to your old input method.
         There may be a 5-10 second delay after disconnecting your device for the input method to change. THE APP NEEDS ROOT PERMISSION FOR THIS TO WORK!</string>
     <!-- Settings Activity -->
@@ -161,6 +161,9 @@
     <string name="error_app_is_disabled">App is disabled!</string>
     <string name="error_action_requires_write_settings_permission">You need to grant Key Mapper permission to modify system settings to use this action.</string>
     <string name="error_action_requires_root">This action requires root permission!</string>
+    <string name="error_action_requires_camera_permission">This action requires camera permission!</string>
+    <string name="error_sdk_version_too_low">This action requires Android %s</string>
+    <string name="error_feature_not_available">Your device doesn\'t support %s.</string>
 
     <string name="error_accessibility_service_disabled">The accessibility service must be enabled for this app to work!</string>
     <string name="error_accessibility_service_enabled">Accessibility service is enabled!</string>
@@ -216,6 +219,10 @@
     <string name="action_open_recents">Open Recents</string>
     <string name="action_open_menu">Open Menu</string>
 
+    <string name="action_toggle_flashlight">Toggle Flashlight</string>
+    <string name="action_enable_flashlight">Enable Flashlight</string>
+    <string name="action_disable_flashlight">Disable Flashlight</string>
+
     <string name="action_screenshot">Screenshot</string>
     <!-- System action labels -->
 
@@ -229,6 +236,7 @@
     <string name="system_action_cat_brightness">Brightness</string>
     <string name="system_action_cat_status_bar">Status Bar</string>
     <string name="system_action_cat_media">Media</string>
+    <string name="system_action_cat_flashlight">Flashlight</string>
     <string name="system_action_cat_other">Other</string>
     <!-- System action category labels -->
 </resources>

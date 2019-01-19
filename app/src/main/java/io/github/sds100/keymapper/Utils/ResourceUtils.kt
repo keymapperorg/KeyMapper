@@ -19,9 +19,11 @@ import io.github.sds100.keymapper.Interfaces.IContext
 /**
  * Get a resource string
  */
-fun Context.str(@StringRes resId: Int, vararg formatArgs: Any?): String = getString(resId, formatArgs)
-fun IContext.str(@StringRes resId: Int, vararg formatArgs: Any?): String = ctx.getString(resId, formatArgs)
-fun View.str(@StringRes resId: Int, vararg formatArgs: Any?): String = context.str(resId, formatArgs)
+// Using varargs doesn't work since prints [LJava.lang.object@32f...etc
+fun Context.str(@StringRes resId: Int, formatArgs: Any? = null): String = getString(resId, formatArgs)
+
+fun IContext.str(@StringRes resId: Int, formatArgs: Any? = null): String = ctx.getString(resId, formatArgs)
+fun View.str(@StringRes resId: Int, formatArgs: Any? = null): String = context.str(resId, formatArgs)
 
 /**
  * Get a string from an attribute
@@ -49,6 +51,7 @@ fun View.str(attributeSet: AttributeSet, @StyleableRes styleableId: IntArray, @S
 fun Context.drawable(@DrawableRes resId: Int): Drawable {
     return AppCompatResources.getDrawable(this, resId)!!
 }
+
 fun View.drawable(@DrawableRes resId: Int): Drawable = context.drawable(resId)
 fun IContext.drawable(@DrawableRes resId: Int): Drawable = ctx.drawable(resId)
 

@@ -9,7 +9,6 @@ import androidx.annotation.IntDef
 import io.github.sds100.keymapper.ErrorResult
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Services.MyIMEService
-import io.github.sds100.keymapper.handle
 
 /**
  * Created by sds100 on 25/11/2018.
@@ -22,7 +21,9 @@ import io.github.sds100.keymapper.handle
     ErrorCodeUtils.ERROR_CODE_APP_UNINSTALLED,
     ErrorCodeUtils.ERROR_CODE_PERMISSION_DENIED,
     ErrorCodeUtils.ERROR_CODE_SHORTCUT_NOT_FOUND,
-    ErrorCodeUtils.ERROR_CODE_SYSTEM_ACTION_NOT_FOUND]
+    ErrorCodeUtils.ERROR_CODE_SYSTEM_ACTION_NOT_FOUND,
+    ErrorCodeUtils.ERROR_CODE_FEATURE_NOT_AVAILABLE,
+    ErrorCodeUtils.ERROR_CODE_SDK_VERSION_TOO_LOW]
 )
 @Retention(AnnotationRetention.SOURCE)
 annotation class ErrorCode
@@ -36,16 +37,24 @@ object ErrorCodeUtils {
     const val ERROR_CODE_SHORTCUT_NOT_FOUND = 5
     const val ERROR_CODE_IME_SERVICE_NOT_CHOSEN = 6
     const val ERROR_CODE_SYSTEM_ACTION_NOT_FOUND = 7
-    const val ERROR_CODE_PERMISSION_DESCRIPTION_NOT_FOUND = 8
+    const val ERROR_CODE_SDK_VERSION_TOO_LOW = 8
+    const val ERROR_CODE_FEATURE_NOT_AVAILABLE = 9
 
-    fun handleError(ctx: Context, errorResult: ErrorResult) {
+    private val FIXABLE_ERRORS = arrayOf(
+            ERROR_CODE_APP_DISABLED,
+            ERROR_CODE_APP_UNINSTALLED,
+            ERROR_CODE_PERMISSION_DENIED,
+            ERROR_CODE_SHORTCUT_NOT_FOUND,
+            ERROR_CODE_IME_SERVICE_NOT_CHOSEN
+    )
+
+    /**
+     * Attempts to fix a given [errorResult].
+     *
+     * [ERROR_CODE_PERMISSION_DENIED] must be fixed by requesting for a permission in an activity.
+     */
+    fun fixError(ctx: Context, errorResult: ErrorResult) {
         when (errorResult.errorCode) {
-            ERROR_CODE_PERMISSION_DENIED -> {
-                val permission = errorResult.data!!
-
-                PermissionUtils.requestPermission(ctx, permission)
-            }
-
             ERROR_CODE_APP_DISABLED -> {
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                 intent.data = Uri.parse("package:${errorResult.data}")
@@ -77,8 +86,10 @@ object ErrorCodeUtils {
         }
     }
 
+    fun isErrorFixable(errorCode: Int) = FIXABLE_ERRORS.contains(errorCode)
+
     /**
-     * @return the string id of the message describing an error code
+     * @return a message describing an error code.
      */
     fun getErrorCodeDescription(ctx: Context, errorResult: ErrorResult): String {
         ctx.apply {
@@ -90,17 +101,20 @@ object ErrorCodeUtils {
                 ERROR_CODE_SHORTCUT_NOT_FOUND -> str(R.string.error_shortcut_not_found)
                 ERROR_CODE_IME_SERVICE_NOT_CHOSEN -> str(R.string.error_ime_must_be_chosen)
 
-                ERROR_CODE_PERMISSION_DENIED -> {
-                    val permissionDescriptionResult =
-                            PermissionUtils.getPermissionDescriptionRes(errorResult.data!!)
-
-                    return permissionDescriptionResult.handle(
-                            onSuccess = { str(it) },
-                            onFailure = { "" }
-                    )
+                ERROR_CODE_SDK_VERSION_TOO_LOW -> {
+                    val versionName = BuildUtils.getSdkVersionName(errorResult.data!!.toInt())
+                    str(R.string.error_sdk_version_too_low, versionName)
                 }
 
-                else -> ""
+                ERROR_CODE_FEATURE_NOT_AVAILABLE -> {
+                    str(R.string.error_feature_not_available, errorResult.data)
+                }
+
+                ERROR_CODE_PERMISSION_DENIED -> {
+                    str(PermissionUtils.getPermissionDescriptionRes(errorResult.data!!))
+                }
+
+                else -> throw Exception("Can't find a description for this error code: ${errorResult.errorCode}")
             }
         }
     }

@@ -2,10 +2,13 @@ package io.github.sds100.keymapper.Utils
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.SystemAction.CATEGORY_BLUETOOTH
 import io.github.sds100.keymapper.SystemAction.CATEGORY_BRIGHTNESS
+import io.github.sds100.keymapper.SystemAction.CATEGORY_FLASHLIGHT
 import io.github.sds100.keymapper.SystemAction.CATEGORY_MEDIA
 import io.github.sds100.keymapper.SystemAction.CATEGORY_MOBILE_DATA
 import io.github.sds100.keymapper.SystemAction.CATEGORY_NAVIGATION
@@ -69,6 +72,7 @@ object SystemActionUtils {
             CATEGORY_BRIGHTNESS to R.string.system_action_cat_brightness,
             CATEGORY_STATUS_BAR to R.string.system_action_cat_status_bar,
             CATEGORY_MEDIA to R.string.system_action_cat_media,
+            CATEGORY_FLASHLIGHT to R.string.system_action_cat_flashlight,
             CATEGORY_OTHER to R.string.system_action_cat_other
     )
 
@@ -334,23 +338,63 @@ object SystemActionUtils {
                     iconRes = R.drawable.ic_brightness_low_black_24dp,
                     descriptionRes = R.string.action_decrease_brightness
             ),
-            //BRIGHTNESS
+
+            //FLASHLIGHT
+            SystemActionDef(
+                    id = SystemAction.TOGGLE_FLASHLIGHT,
+                    category = CATEGORY_FLASHLIGHT,
+                    permission = Manifest.permission.CAMERA,
+                    feature = PackageManager.FEATURE_CAMERA_FLASH,
+                    minApi = Build.VERSION_CODES.M,
+                    iconRes = R.drawable.ic_flashlight,
+                    descriptionRes = R.string.action_toggle_flashlight
+            ),
+            SystemActionDef(
+                    id = SystemAction.ENABLE_FLASHLIGHT,
+                    category = CATEGORY_FLASHLIGHT,
+                    permission = Manifest.permission.CAMERA,
+                    feature = PackageManager.FEATURE_CAMERA_FLASH,
+                    minApi = Build.VERSION_CODES.M,
+                    iconRes = R.drawable.ic_flashlight,
+                    descriptionRes = R.string.action_enable_flashlight
+            ),
+            SystemActionDef(
+                    id = SystemAction.DISABLE_FLASHLIGHT,
+                    category = CATEGORY_FLASHLIGHT,
+                    permission = Manifest.permission.CAMERA,
+                    feature = PackageManager.FEATURE_CAMERA_FLASH,
+                    minApi = Build.VERSION_CODES.M,
+                    iconRes = R.drawable.ic_flashlight_off,
+                    descriptionRes = R.string.action_disable_flashlight
+            ),
+
+            //OTHER
             SystemActionDef(
                     id = SCREENSHOT,
                     category = CATEGORY_OTHER,
                     minApi = Build.VERSION_CODES.P,
                     iconRes = R.drawable.ic_screenshot_black_24dp,
                     descriptionRes = R.string.action_screenshot
-                    )
+            )
     )
 
     /**
-     * Get all the system actions which meet the system's api level.
+     * Get all the system actions which are supported by the system.
      */
-    fun getSystemActionDefinitions(): List<SystemActionDef> {
+    fun getSystemActionDefinitions(ctx: Context): List<SystemActionDef> {
         return sequence {
             SYSTEM_ACTION_DEFINITIONS.forEach {
-                if (it.minApi <= Build.VERSION.SDK_INT) yield(it)
+                /* If the device's Android version is less than the minimum version supported by the action,
+                   don't add it to the list.*/
+                if (Build.VERSION.SDK_INT < it.minApi) return@forEach
+
+                for (feature in it.features) {
+                    if (!ctx.packageManager.hasSystemFeature(feature)) {
+                        return@forEach
+                    }
+                }
+
+                yield(it)
             }
         }.toList()
     }

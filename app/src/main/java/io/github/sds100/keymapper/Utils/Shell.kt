@@ -8,11 +8,11 @@ import java.io.InputStreamReader
 /**
  * Created by sds100 on 05/11/2018.
  */
-object ShellUtils {
+object Shell {
     /**
      * @return whether the command was executed successfully
      */
-    fun executeCommand(vararg command: String): Boolean {
+    fun run(vararg command: String): Boolean {
         return try {
             Runtime.getRuntime().exec(command)
             true

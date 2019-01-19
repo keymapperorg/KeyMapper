@@ -1,29 +1,35 @@
 package io.github.sds100.keymapper.Activities
 
+import android.Manifest
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.app.ActivityCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
-import io.github.sds100.keymapper.Action
+import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Adapters.TriggerAdapter
-import io.github.sds100.keymapper.Constants
-import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Services.MyAccessibilityService
 import io.github.sds100.keymapper.Utils.ActionUtils
-import io.github.sds100.keymapper.Utils.ErrorCodeUtils
-import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_ACTION_IS_NULL
-import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_NO_ACTION_DATA
+import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_PERMISSION_DENIED
+import io.github.sds100.keymapper.Utils.PermissionUtils
+import io.github.sds100.keymapper.Utils.RootUtils
 import io.github.sds100.keymapper.ViewModels.ConfigKeyMapViewModel
 import kotlinx.android.synthetic.main.activity_config_key_map.*
 import kotlinx.android.synthetic.main.content_config_key_map.*
@@ -42,6 +48,7 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
         const val EXTRA_KEY_EVENT = "extra_key_event"
 
         const val REQUEST_CODE_ACTION = 821
+        const val PERMISSION_REQUEST_CODE = 344
     }
 
     /**
@@ -101,34 +108,9 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
                 val actionDescription = ActionUtils.getDescription(this@ConfigKeymapActivity, keyMap.action)
 
                 uiThread {
-                    actionDescriptionLayout.setDescription(actionDescription)
-
-                    /* if there is no error message, when the button is pressed, the user can test the
-                    action */
-                    if (actionDescription.errorCode == null) {
-                        buttonSecondary.text = getString(R.string.button_test)
-                        buttonSecondary.visibility = View.VISIBLE
-                    } else {
-                        //secondary button stuff.
-                        if (actionDescription.errorCode == ERROR_CODE_ACTION_IS_NULL ||
-                                actionDescription.errorCode == ERROR_CODE_NO_ACTION_DATA) {
-
-                            buttonSecondary.visibility = View.GONE
-                        } else {
-                            buttonSecondary.visibility = View.VISIBLE
-                            buttonSecondary.text = getString(R.string.button_fix)
-                        }
-                    }
+                    loadActionDescriptionLayout(actionDescription)
 
                     mTriggerAdapter.triggerList = keyMap.triggerList
-
-                    buttonSecondary.setOnClickListener {
-                        if (actionDescription.errorCode != null) {
-                            ErrorCodeUtils.handleError(this@ConfigKeymapActivity, actionDescription.errorResult!!)
-                        } else {
-                            testAction()
-                        }
-                    }
                 }
             }
 
@@ -249,6 +231,21 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
         }
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<out String>,
+                                            grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        when (requestCode) {
+            PERMISSION_REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED) {
+                    //reload the ActionDescriptionLayout so it stops saying the app needs permission.
+                    viewModel.keyMap.notifyObservers()
+                }
+            }
+        }
+    }
+
     private fun addTrigger() {
         val trigger = chipGroupTriggerPreview.createTriggerFromChips()
 
@@ -294,6 +291,66 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
             intent.putExtra(MyAccessibilityService.EXTRA_ACTION, action)
 
             sendBroadcast(intent)
+        }
+    }
+
+    @UiThread
+    private fun loadActionDescriptionLayout(actionDescription: ActionDescription) {
+        actionDescription.apply {
+            actionDescriptionLayout.setDescription(actionDescription)
+
+            val isFixable = errorResult.isFixable
+
+            /* if there is no error message, when the button is pressed, the user can test the
+                action */
+            if (errorCode == null) {
+                buttonSecondary.text = getString(R.string.button_test)
+                buttonSecondary.visibility = View.VISIBLE
+            } else {
+                //secondary button stuff.
+
+                if (isFixable) {
+                    buttonSecondary.text = getString(R.string.button_fix)
+                }
+
+                buttonSecondary.isVisible = isFixable
+            }
+
+            buttonSecondary.setOnClickListener {
+                if (isFixable) {
+                    if (errorCode == ERROR_CODE_PERMISSION_DENIED) {
+                        requestPermission(errorResult?.data!!)
+                    }
+
+                    errorResult?.fix(this@ConfigKeymapActivity)
+                } else {
+                    testAction()
+                }
+            }
+        }
+    }
+
+
+    private fun requestPermission(permission: String) {
+        if (PermissionUtils.requiresActivityToRequest(permission)) {
+
+            ActivityCompat.requestPermissions(this, arrayOf(permission), PERMISSION_REQUEST_CODE)
+
+        } else {
+            //WRITE_SETTINGS permission only has to be granted on Marshmallow or higher
+            if (permission == Manifest.permission.WRITE_SETTINGS &&
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+                //open settings to grant permission{
+                val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
+                intent.data = Uri.parse("package:${Constants.PACKAGE_NAME}")
+                intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+
+                startActivity(intent)
+
+            } else if (permission == Constants.PERMISSION_ROOT) {
+                RootUtils.promptForRootPermission(this)
+            }
         }
     }
 }
