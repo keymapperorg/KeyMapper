@@ -15,7 +15,7 @@ import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import io.github.sds100.keymapper.Action
 import io.github.sds100.keymapper.Activities.ConfigKeymapActivity
-import io.github.sds100.keymapper.Constants
+import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.Data.KeyMapRepository
 import io.github.sds100.keymapper.Delegates.ActionPerformerDelegate
 import io.github.sds100.keymapper.Interfaces.IContext
@@ -34,12 +34,12 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         const val EXTRA_KEYMAP_CACHE_JSON = "extra_keymap_cache_json"
         const val EXTRA_ACTION = "action"
 
-        const val ACTION_RECORD_TRIGGER = "${Constants.PACKAGE_NAME}.RECORD_TRIGGER"
-        const val ACTION_STOP_RECORDING_TRIGGER = "${Constants.PACKAGE_NAME}.STOP_RECORDING_TRIGGER"
-        const val ACTION_CLEAR_PRESSED_KEYS = "${Constants.PACKAGE_NAME}.CLEAR_PRESSED_KEYS"
-        const val ACTION_UPDATE_KEYMAP_CACHE = "${Constants.PACKAGE_NAME}.UPDATE_KEYMAP_CACHE"
-        const val ACTION_TEST_ACTION = "${Constants.PACKAGE_NAME}.TEST_ACTION"
-        const val ACTION_RECORD_TRIGGER_TIMER_STOPPED = "${Constants.PACKAGE_NAME}.RECORD_TRIGGER_TIMER_STOPPED"
+        const val ACTION_RECORD_TRIGGER = "$PACKAGE_NAME.RECORD_TRIGGER"
+        const val ACTION_STOP_RECORDING_TRIGGER = "$PACKAGE_NAME.STOP_RECORDING_TRIGGER"
+        const val ACTION_CLEAR_PRESSED_KEYS = "$PACKAGE_NAME.CLEAR_PRESSED_KEYS"
+        const val ACTION_UPDATE_KEYMAP_CACHE = "$PACKAGE_NAME.UPDATE_KEYMAP_CACHE"
+        const val ACTION_TEST_ACTION = "$PACKAGE_NAME.TEST_ACTION"
+        const val ACTION_RECORD_TRIGGER_TIMER_STOPPED = "$PACKAGE_NAME.RECORD_TRIGGER_TIMER_STOPPED"
 
         /**
          * How long should the accessibility service record a trigger. In milliseconds.
@@ -52,7 +52,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         fun enableServiceInSettings() {
             val className = MyAccessibilityService::class.java.name
 
-            RootUtils.changeSecureSetting("enabled_accessibility_services", "${Constants.PACKAGE_NAME}/$className")
+            RootUtils.changeSecureSetting("enabled_accessibility_services", "$PACKAGE_NAME/$className")
         }
 
         /**
@@ -173,6 +173,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
         //when the accessibility service starts
         getKeyMapListFromRepository()
+        mActionPerformerDelegate.onCreate()
     }
 
     override fun onInterrupt() {}
@@ -180,6 +181,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
     override fun onDestroy() {
         super.onDestroy()
 
+        mActionPerformerDelegate.onDestroy()
         unregisterReceiver(mBroadcastReceiver)
     }
 

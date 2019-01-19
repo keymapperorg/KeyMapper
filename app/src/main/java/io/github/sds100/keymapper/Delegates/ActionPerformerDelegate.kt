@@ -2,11 +2,14 @@ package io.github.sds100.keymapper.Delegates
 
 import android.accessibilityservice.AccessibilityService
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
+import android.hardware.camera2.CameraManager
 import android.media.AudioManager
 import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Interfaces.IContext
 import io.github.sds100.keymapper.Interfaces.IPerformGlobalAction
@@ -20,6 +23,33 @@ import org.jetbrains.anko.defaultSharedPreferences
 
 class ActionPerformerDelegate(iContext: IContext, iPerformGlobalAction: IPerformGlobalAction
 ) : IContext by iContext, IPerformGlobalAction by iPerformGlobalAction {
+
+    private var mIsFlashEnabled = false
+
+    private val mTorchCallback = @RequiresApi(Build.VERSION_CODES.M)
+    object : CameraManager.TorchCallback() {
+        override fun onTorchModeChanged(cameraId: String, enabled: Boolean) {
+            super.onTorchModeChanged(cameraId, enabled)
+
+            if (!enabled) {
+                mIsFlashEnabled = false
+            }
+        }
+    }
+
+    fun onCreate() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val cameraManager = ctx.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+            cameraManager.registerTorchCallback(mTorchCallback, null)
+        }
+    }
+
+    fun onDestroy() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val cameraManager = ctx.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+            cameraManager.unregisterTorchCallback(mTorchCallback)
+        }
+    }
 
     fun performAction(action: Action) {
         ctx.apply {
@@ -128,8 +158,6 @@ class ActionPerformerDelegate(iContext: IContext, iPerformGlobalAction: IPerform
                 //there must be a way to do this without root
                 SystemAction.OPEN_MENU -> RootUtils.executeRootCommand("input keyevent 82")
 
-                SystemAction.TOGGLE_FLASHLIGHT -> CameraUtils.toggleFlashlight(ctx)
-
                 else -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         when (id) {
@@ -137,6 +165,12 @@ class ActionPerformerDelegate(iContext: IContext, iPerformGlobalAction: IPerform
                             SystemAction.VOLUME_MUTE -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_MUTE)
                             SystemAction.VOLUME_TOGGLE_MUTE ->
                                 VolumeUtils.adjustVolume(this, AudioManager.ADJUST_TOGGLE_MUTE)
+
+                            SystemAction.TOGGLE_FLASHLIGHT -> {
+                                mIsFlashEnabled = !mIsFlashEnabled
+
+                                CameraUtils.setFlashlightMode(ctx, mIsFlashEnabled)
+                            }
                         }
                     }
 

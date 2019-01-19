@@ -345,6 +345,7 @@ object SystemActionUtils {
                     category = CATEGORY_FLASHLIGHT,
                     permission = Manifest.permission.CAMERA,
                     feature = PackageManager.FEATURE_CAMERA_FLASH,
+                    minApi = Build.VERSION_CODES.M,
                     iconRes = R.drawable.ic_flashlight,
                     descriptionRes = R.string.action_toggle_flashlight
             ),
