@@ -349,6 +349,24 @@ object SystemActionUtils {
                     iconRes = R.drawable.ic_flashlight,
                     descriptionRes = R.string.action_toggle_flashlight
             ),
+            SystemActionDef(
+                    id = SystemAction.ENABLE_FLASHLIGHT,
+                    category = CATEGORY_FLASHLIGHT,
+                    permission = Manifest.permission.CAMERA,
+                    feature = PackageManager.FEATURE_CAMERA_FLASH,
+                    minApi = Build.VERSION_CODES.M,
+                    iconRes = R.drawable.ic_flashlight,
+                    descriptionRes = R.string.action_enable_flashlight
+            ),
+            SystemActionDef(
+                    id = SystemAction.DISABLE_FLASHLIGHT,
+                    category = CATEGORY_FLASHLIGHT,
+                    permission = Manifest.permission.CAMERA,
+                    feature = PackageManager.FEATURE_CAMERA_FLASH,
+                    minApi = Build.VERSION_CODES.M,
+                    iconRes = R.drawable.ic_flashlight_off,
+                    descriptionRes = R.string.action_disable_flashlight
+            ),
 
             //OTHER
             SystemActionDef(

@@ -146,9 +146,9 @@ class ActionPerformerDelegate(
                             SystemAction.VOLUME_TOGGLE_MUTE ->
                                 VolumeUtils.adjustVolume(this, AudioManager.ADJUST_TOGGLE_MUTE)
 
-                            SystemAction.TOGGLE_FLASHLIGHT -> {
-                                mFlashlightController.toggleFlashlight()
-                            }
+                            SystemAction.TOGGLE_FLASHLIGHT -> mFlashlightController.toggleFlashlight()
+                            SystemAction.ENABLE_FLASHLIGHT -> mFlashlightController.setFlashlightMode(true)
+                            SystemAction.DISABLE_FLASHLIGHT -> mFlashlightController.setFlashlightMode(false)
                         }
                     }
 
