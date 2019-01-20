@@ -32,7 +32,13 @@
             android:key="@string/key_pref_auto_show_ime_picker"
             android:summary="@string/summary_pref_auto_show_ime_picker"
             android:title="@string/title_pref_auto_show_ime_picker" />
+    </androidx.preference.PreferenceCategory>
 
+    <androidx.preference.PreferenceCategory android:title="@string/title_pref_category_root">
+
+        <androidx.preference.Preference
+            android:selectable="false"
+            android:summary="@string/summary_pref_category_root" />
         <androidx.preference.SwitchPreference
             android:defaultValue="true"
             android:key="@string/key_pref_auto_change_ime_on_connect_disconnect"
