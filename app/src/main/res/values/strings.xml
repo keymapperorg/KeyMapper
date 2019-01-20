@@ -118,7 +118,7 @@
 
     <string name="title_pref_show_notification">Show Notification</string>
     <string name="title_pref_show_notification_on_boot">Show Notification On Boot</string>
-    <string name="title_pref_bluetooth_devices">Bluetooth devices</string>
+    <string name="title_pref_bluetooth_devices">Choose Bluetooth Devices…</string>
     <string name="title_pref_auto_show_ime_picker">Automatically show input method picker</string>
     <string name="title_pref_show_toast_when_action_performed">Show a toast message when you perform an action</string>
     <string name="title_pref_show_volume_dialog_on_adjust">Show the volume dialog</string>
