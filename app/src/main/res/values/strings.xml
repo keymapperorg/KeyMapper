@@ -125,8 +125,8 @@
     <string name="summary_pref_show_notification_on_boot">Automatically start showing the notification when your device starts up.</string>
     <string name="summary_pref_show_volume_dialog_on_adjust">Show the volume dialog when performing any volume related action.</string>
     <string name="summary_pref_show_toast_when_action_performed">A little message will popup when you perform an action.</string>
-    <string name="summary_pref_auto_change_ime_on_connect_disconnect">When a chosen bluetooth device is connected, automatically switch to the Key Mapper input method. When the device disconnects, automatically switch to your old input method.
-        There may be a 5-10 second delay after disconnecting your device for the input method to change. THE APP NEEDS ROOT PERMISSION FOR THIS TO WORK!</string>
+    <string name="summary_pref_auto_change_ime_on_connect_disconnect">The Key Mapper input method will be automatically selected when a chosen bluetooth device is connected. Your old input method will be automatically selected when the device disconnects.
+        There may be a 5-10 second delay after disconnecting your device for the input method to change.</string>
     <!-- Settings Activity -->
 
     <!-- About activity-->
