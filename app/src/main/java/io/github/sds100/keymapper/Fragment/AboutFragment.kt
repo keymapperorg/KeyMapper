@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.Activities
+package io.github.sds100.keymapper.Fragment
 
 import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat
