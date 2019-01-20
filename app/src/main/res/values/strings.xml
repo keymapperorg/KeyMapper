@@ -109,6 +109,8 @@
     <string name="key_pref_show_volume_dialog_on_adjust">pref_show_volume_dialog_on_adjust</string>
     <string name="key_pref_show_toast_when_action_performed">pref_show_toast_on_perform_action</string>
     <string name="key_pref_auto_change_ime_on_connect_disconnect">pref_auto_change_ime_on_connect_disconnect</string>
+    <string name="key_pref_category_root">pref_category_root</string>
+    <string name="key_pref_category_notifications">pref_category_notifications</string>
 
     <string name="title_pref_category_ime_picker">Input Method Picker</string>
     <string name="title_pref_category_notifications">Notifications</string>
