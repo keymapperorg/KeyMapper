@@ -1,10 +1,8 @@
 package io.github.sds100.keymapper.Fragment
 
+import android.os.Build
 import android.os.Bundle
-import androidx.preference.MultiSelectListPreference
-import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.SwitchPreference
+import androidx.preference.*
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Utils.BluetoothUtils
 import io.github.sds100.keymapper.Utils.NotificationUtils
@@ -30,6 +28,14 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
         findPreference(getString(R.string.key_pref_auto_show_ime_picker)) as SwitchPreference
     }
 
+    private val mRootPrefCategory by lazy {
+        findPreference(getString(R.string.key_pref_category_root)) as PreferenceCategory
+    }
+
+    private val mNotificationsPrefCategory by lazy {
+        findPreference(getString(R.string.key_pref_category_notifications)) as PreferenceCategory
+    }
+
     private var mShowingNoPairedDevicesDialog = false
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -37,6 +43,19 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
 
         mAutoShowIMEDialogPreference.onPreferenceChangeListener = this
         mShowNotificationPreference.onPreferenceChangeListener = this
+
+        //The notification preferences need root to work on 8.1+ so move them to the root category
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            mNotificationsPrefCategory.isVisible = false
+            mNotificationsPrefCategory.removePreference(mShowNotificationPreference)
+            mNotificationsPrefCategory.removePreference(mShowNotificationOnBootPreference)
+
+            mShowNotificationPreference.order = 4
+            mShowNotificationOnBootPreference.order = 5
+
+            mRootPrefCategory.addPreference(mShowNotificationPreference)
+            mRootPrefCategory.addPreference(mShowNotificationOnBootPreference)
+        }
 
         /*only allow the user to toggle whether the notification shows on boot if they want
         * to see the notification at all. */
@@ -50,7 +69,7 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
 
                 /* This awkward way of showing the "can't find any paired devices" dialog
                  * with a CancellableMultiSelectPreference is necessary since you can't
-                 * cancel showing the dialog when once the preference has been clicked.*/
+                 * cancel showing the dialog once the preference has been clicked.*/
 
                 if (!mShowingNoPairedDevicesDialog) {
                     mShowingNoPairedDevicesDialog = true

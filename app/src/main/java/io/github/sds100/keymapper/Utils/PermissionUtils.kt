@@ -42,12 +42,12 @@ object PermissionUtils {
 
 fun Context.isPermissionGranted(permission: String): Boolean {
     //a different method must be used for WRITE_SETTINGS permission
-    if (permission.contains(Manifest.permission.WRITE_SETTINGS) &&
+    if (permission == Manifest.permission.WRITE_SETTINGS &&
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         return Settings.System.canWrite(this)
 
-    } else if (permission.contains(Constants.PERMISSION_ROOT)) {
-        return RootUtils.checkAppHasRootPermission()
+    } else if (permission == Constants.PERMISSION_ROOT) {
+        return RootUtils.checkAppHasRootPermission(this)
     }
 
     return ContextCompat.checkSelfPermission(this, permission) ==
