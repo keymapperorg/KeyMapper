@@ -14,6 +14,7 @@ import io.github.sds100.keymapper.Action.Companion.EXTRA_SHORTCUT_TITLE
 import io.github.sds100.keymapper.Adapters.AppShortcutAdapter
 import io.github.sds100.keymapper.Interfaces.OnItemClickListener
 import io.github.sds100.keymapper.Utils.AppShortcutUtils
+import io.github.sds100.keymapper.Views.ShortcutTitleDialog
 import kotlinx.android.synthetic.main.action_type_recyclerview.*
 
 /**

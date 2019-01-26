@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper
+package io.github.sds100.keymapper.Views
 
 import android.content.Context
 import android.widget.EditText
@@ -6,6 +6,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import androidx.appcompat.app.AlertDialog
+import io.github.sds100.keymapper.R
 
 /**
  * Created by sds100 on 30/09/2018.
