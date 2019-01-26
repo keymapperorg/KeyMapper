@@ -72,7 +72,7 @@ object ErrorCodeUtils {
             }
 
             ERROR_CODE_IME_SERVICE_NOT_CHOSEN -> {
-                val hasRootPermission = RootUtils.checkAppHasRootPermission()
+                val hasRootPermission = RootUtils.checkAppHasRootPermission(ctx)
 
                 if (hasRootPermission) {
                     ImeUtils.switchIme(MyIMEService.getImeId(ctx))

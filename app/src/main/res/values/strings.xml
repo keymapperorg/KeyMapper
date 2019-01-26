@@ -83,7 +83,8 @@
     <!-- Dialog messages -->
     <string name="dialog_message_are_you_sure_want_to_leave">Are you sure you want to leave?</string>
     <string name="dialog_message_cant_find_paired_devices">Make sure Bluetooth is turned on and you have paired devices. Then try again.</string>
-    <string name="dialog_message_root_prompt">When you click \"OK\", Key Mapper will try to ask for root permission. If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use that action.</string>
+    <string name="dialog_message_root_prompt">When you click \"OK\", you will be taken to Settings.
+        In the Settings, scroll to the bottom and click "Enable Root Features" so you can use root features. If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use features which only work on rooted devices.</string>
     <string name="dialog_message_downloading">Downloading…</string>
     <!-- Dialog messages -->
 
@@ -111,6 +112,7 @@
     <string name="key_pref_auto_change_ime_on_connect_disconnect">pref_auto_change_ime_on_connect_disconnect</string>
     <string name="key_pref_category_root">pref_category_root</string>
     <string name="key_pref_category_notifications">pref_category_notifications</string>
+    <string name="key_pref_allow_root_features">pref_allow_root_features</string>
 
     <string name="title_pref_category_ime_picker">Input Method Picker</string>
     <string name="title_pref_category_notifications">Notifications</string>
@@ -125,6 +127,7 @@
     <string name="title_pref_show_toast_when_action_performed">Show a toast message when you perform an action</string>
     <string name="title_pref_show_volume_dialog_on_adjust">Show the volume dialog</string>
     <string name="title_pref_auto_change_ime_on_connect_disconnect">Automatically change input method</string>
+    <string name="title_pref_allow_root_features">Enable Root Features</string>
 
     <string name="summary_pref_auto_show_ime_picker">When a Bluetooth device you have chosen connects or disconnects, the input method picker will show automatically. Choose the devices below.</string>
     <string name="summary_pref_show_notification">Show a persistent notification to allow you to pick an input method. (The app requires ROOT permission for it to work on Android 8.1 and higher).</string>
@@ -133,6 +136,8 @@
     <string name="summary_pref_show_toast_when_action_performed">A little message will popup when you perform an action.</string>
     <string name="summary_pref_auto_change_ime_on_connect_disconnect">The Key Mapper input method will be automatically selected when a chosen bluetooth device is connected. Your old input method will be automatically selected when the device disconnects.
         There may be a 5-10 second delay after disconnecting your device for the input method to change.</string>
+    <string name="summary_pref_allow_root_features">This option tells Key Mapper it has root permission so it can use features which only work on rooted devices.
+        Only turn this on if you know your device is rooted and you have given Key Mapper root permission.</string>
     <!-- Settings Activity -->
 
     <!-- About activity-->
