@@ -43,7 +43,7 @@ import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 
-class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemClickListener,
+class HomeActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemClickListener,
         OnItemClickListener<KeymapAdapterModel> {
 
     private val mBroadcastReceiver = object : BroadcastReceiver() {
@@ -229,7 +229,7 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
 
             keyMapList.forEach { keyMap ->
 
-                val actionDescription = ActionUtils.getDescription(this@MainActivity, keyMap.action)
+                val actionDescription = ActionUtils.getDescription(this@HomeActivity, keyMap.action)
 
                 adapterModels.add(KeymapAdapterModel(keyMap, actionDescription))
             }
