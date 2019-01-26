@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper
 
+import androidx.annotation.StringDef
 import androidx.room.ColumnInfo
 import io.github.sds100.keymapper.Data.KeyMapDao
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils
@@ -9,9 +10,15 @@ import java.io.Serializable
  * Created by sds100 on 16/07/2018.
  */
 
+@StringDef(value = [
+    Action.EXTRA_PACKAGE_NAME,
+    Action.EXTRA_SHORTCUT_TITLE
+])
+annotation class ExtraId
+
 /**
- * @property [data] The information required to perform the action. E.g if the type is [ActionType.APP]
- * then the data will be the package name of the application
+ * @property [data] The information required to perform the action. E.g if the type is [ActionType.APP],
+ * the data will be the package name of the application
  *
  * Different Types of actions:
  * - Apps
@@ -39,7 +46,11 @@ data class Action(
         val data: String,
 
         @ColumnInfo(name = KeyMapDao.KEY_ACTION_EXTRAS)
-        val extras: MutableList<Extra> = mutableListOf()
+        val extras: MutableList<Extra> = mutableListOf(),
+
+        @ColumnInfo(name = KeyMapDao.KEY_ACTION_FLAGS)
+        val flags: MutableList<Int> = mutableListOf()
+
 ) : Serializable {
     companion object {
         const val EXTRA_ACTION = "extra_action"
@@ -47,6 +58,10 @@ data class Action(
         //DON'T CHANGE THESE IDs!!!!
         const val EXTRA_SHORTCUT_TITLE = "extra_title"
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
+
+        //DON't CHANGE THESE IDs!!!
+        const val FLAG_LONG_PRESS = 0
+        const val FLAG_SHOW_VOLUME_DIALOG = 1
     }
 
     val requiresIME: Boolean

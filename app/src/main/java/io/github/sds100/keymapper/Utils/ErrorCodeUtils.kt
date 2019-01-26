@@ -26,7 +26,6 @@ import io.github.sds100.keymapper.Services.MyIMEService
     ErrorCodeUtils.ERROR_CODE_SDK_VERSION_TOO_LOW,
     ErrorCodeUtils.ERROR_CODE_ACTION_EXTRA_NOT_FOUND]
 )
-@Retention(AnnotationRetention.SOURCE)
 annotation class ErrorCode
 
 object ErrorCodeUtils {
