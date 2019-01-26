@@ -8,13 +8,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import io.github.sds100.keymapper.*
+import io.github.sds100.keymapper.Action
 import io.github.sds100.keymapper.Action.Companion.EXTRA_PACKAGE_NAME
 import io.github.sds100.keymapper.Action.Companion.EXTRA_SHORTCUT_TITLE
+import io.github.sds100.keymapper.ActionType
 import io.github.sds100.keymapper.Adapters.AppShortcutAdapter
+import io.github.sds100.keymapper.Extra
 import io.github.sds100.keymapper.Interfaces.OnItemClickListener
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Utils.AppShortcutUtils
-import io.github.sds100.keymapper.Views.ShortcutTitleDialog
+import io.github.sds100.keymapper.Views.editTextDialog
 import kotlinx.android.synthetic.main.action_type_recyclerview.*
 
 /**
@@ -79,9 +82,10 @@ class AppShortcutActionTypeFragment : FilterableActionTypeFragment(), OnItemClic
                 shortcutUri = data.toUri(0)
             }
 
-
             //show a dialog to prompt for a title.
-            ShortcutTitleDialog.show(context!!) { title ->
+            context!!.editTextDialog(
+                    titleRes = R.string.dialog_title_create_shortcut_title
+            ) { title ->
                 val extras = mutableListOf(
                         Extra(EXTRA_SHORTCUT_TITLE, title),
                         Extra(EXTRA_PACKAGE_NAME, mTempShortcutPackageName!!)

@@ -5,6 +5,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import io.github.sds100.keymapper.R
 
@@ -12,40 +13,43 @@ import io.github.sds100.keymapper.R
  * Created by sds100 on 30/09/2018.
  */
 
-object ShortcutTitleDialog {
-    /**
-     * Show a dialog which asks the user to input a shortcut title.
-     *
-     * @param onCreateTitle what to do when the user successfully creates a title
-     */
-    fun show(ctx: Context, onCreateTitle: (title: String) -> Unit) {
-        val builder = AlertDialog.Builder(ctx)
+/**
+ * Show a dialog which asks the user to input a shortcut title.
+ *
+ * @param onSuccess what to do when the user successfully enters some text.
+ * @param allowEmpty whether the EditText can be blank when the user clicks on the positive button.
+ */
+fun Context.editTextDialog(
+        @StringRes titleRes: Int,
+        @StringRes posButtonRes: Int = R.string.pos_done,
+        allowEmpty: Boolean = false,
+        onSuccess: (text: String) -> Unit) {
+    val builder = AlertDialog.Builder(this)
 
-        builder.setTitle(R.string.dialog_title_create_shortcut_title)
+    builder.setTitle(titleRes)
 
-        val editText = EditText(ctx)
+    val editText = EditText(this)
 
-        val layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        )
+    val layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+    )
 
-        editText.layoutParams = layoutParams
-        editText.setSingleLine()
+    editText.layoutParams = layoutParams
+    editText.setSingleLine()
 
-        builder.setView(editText)
+    builder.setView(editText)
 
-        builder.setPositiveButton(R.string.pos_done) { dialog, _ ->
-            if (editText.text.isNotEmpty()) {
-                onCreateTitle(editText.text.toString())
-                dialog.dismiss()
-            } else {
-                Toast.makeText(ctx, R.string.error_must_have_a_title, LENGTH_SHORT).show()
-            }
+    builder.setPositiveButton(posButtonRes) { dialog, _ ->
+        if (allowEmpty || editText.text.isNotEmpty()) {
+            onSuccess(editText.text.toString())
+            dialog.dismiss()
+        } else {
+            Toast.makeText(this, R.string.error_must_have_a_title, LENGTH_SHORT).show()
         }
-
-        builder.setNegativeButton(R.string.neg_cancel) { dialog, _ -> dialog.cancel() }
-
-        builder.show()
     }
+
+    builder.setNegativeButton(R.string.neg_cancel) { dialog, _ -> dialog.cancel() }
+
+    builder.show()
 }
