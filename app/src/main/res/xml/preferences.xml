@@ -54,7 +54,7 @@
             android:summary="@string/summary_pref_auto_change_ime_on_connect_disconnect"
             android:title="@string/title_pref_auto_change_ime_on_connect_disconnect" />
 
-        <io.github.sds100.keymapper.CancellableMultiSelectListPreference
+        <io.github.sds100.keymapper.Views.CancellableMultiSelectListPreference
             android:key="@string/key_pref_bluetooth_devices"
             android:order="3"
             android:title="@string/title_pref_bluetooth_devices" />
