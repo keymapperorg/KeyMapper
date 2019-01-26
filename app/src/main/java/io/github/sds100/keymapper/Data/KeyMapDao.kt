@@ -16,6 +16,7 @@ abstract class KeyMapDao {
         const val KEY_TRIGGER_LIST = "trigger_list"
         const val KEY_ACTION_TYPE = "action_type"
         const val KEY_ACTION_DATA = "action_data"
+        const val KEY_ACTION_EXTRAS = "action_extras"
     }
 
     @Query("SELECT * FROM $TABLE_NAME")

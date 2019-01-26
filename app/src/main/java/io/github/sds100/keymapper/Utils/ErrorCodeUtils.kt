@@ -23,7 +23,8 @@ import io.github.sds100.keymapper.Services.MyIMEService
     ErrorCodeUtils.ERROR_CODE_SHORTCUT_NOT_FOUND,
     ErrorCodeUtils.ERROR_CODE_SYSTEM_ACTION_NOT_FOUND,
     ErrorCodeUtils.ERROR_CODE_FEATURE_NOT_AVAILABLE,
-    ErrorCodeUtils.ERROR_CODE_SDK_VERSION_TOO_LOW]
+    ErrorCodeUtils.ERROR_CODE_SDK_VERSION_TOO_LOW,
+    ErrorCodeUtils.ERROR_CODE_ACTION_EXTRA_NOT_FOUND]
 )
 @Retention(AnnotationRetention.SOURCE)
 annotation class ErrorCode
@@ -39,6 +40,7 @@ object ErrorCodeUtils {
     const val ERROR_CODE_SYSTEM_ACTION_NOT_FOUND = 7
     const val ERROR_CODE_SDK_VERSION_TOO_LOW = 8
     const val ERROR_CODE_FEATURE_NOT_AVAILABLE = 9
+    const val ERROR_CODE_ACTION_EXTRA_NOT_FOUND = 10
 
     private val FIXABLE_ERRORS = arrayOf(
             ERROR_CODE_APP_DISABLED,

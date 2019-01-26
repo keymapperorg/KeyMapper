@@ -89,9 +89,12 @@ class KeyMapRepository private constructor(ctx: Context) {
                                 Trigger(listOf(KeyEvent.KEYCODE_VOLUME_UP))
                         )
 
-                        yield(KeyMap(id,
+                        val keyMap = KeyMap(id,
                                 triggerList,
-                                Action(ActionType.APP, Constants.PACKAGE_NAME)))
+                                Action(ActionType.APP, Constants.PACKAGE_NAME)
+                        )
+
+                        yield(keyMap)
                     }
                 }.toList()
 

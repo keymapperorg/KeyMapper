@@ -31,12 +31,12 @@ data class Result<T>(val data: T? = null, val errorResult: ErrorResult? = null) 
 
 /**
  * Get the result from any object. If the object isn't null, a [Result] is returned with the object as the [Result.data].
- * If the object is null, the [Result.data] will be null and the specified [errorCode] and [errorDescription] will be
+ * If the object is null, the [Result.data] will be null and the specified [errorCode] and [errorData] will be
  * used.
  */
-fun <T> T?.createResult(@ErrorCode errorCode: Int, errorDescription: String? = null): Result<T> {
+fun <T> T?.createResult(@ErrorCode errorCode: Int, errorData: String? = null): Result<T> {
     return if (this == null) {
-        Result(ErrorResult(errorCode, errorDescription))
+        Result(ErrorResult(errorCode, errorData))
     } else {
         Result(this)
     }

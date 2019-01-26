@@ -67,15 +67,7 @@ object ActionUtils {
             }
 
             ActionType.APP_SHORTCUT -> {
-                val intent = Intent.parseUri(action.data, 0)
-
-                //get the title for the shortcut
-                if (intent.extras != null &&
-                        intent.extras!!.containsKey(AppShortcutUtils.EXTRA_SHORTCUT_TITLE)) {
-                    return intent.extras!!.getString(AppShortcutUtils.EXTRA_SHORTCUT_TITLE)
-                }
-
-                return null
+                return action.getExtraData(Action.EXTRA_SHORTCUT_TITLE).onSuccess { it }
             }
 
             ActionType.SYSTEM_ACTION -> {

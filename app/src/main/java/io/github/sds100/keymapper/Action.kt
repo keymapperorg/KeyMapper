@@ -2,6 +2,7 @@ package io.github.sds100.keymapper
 
 import androidx.room.ColumnInfo
 import io.github.sds100.keymapper.Data.KeyMapDao
+import io.github.sds100.keymapper.Utils.ErrorCodeUtils
 import java.io.Serializable
 
 /**
@@ -35,14 +36,25 @@ data class Action(
          * - System action: the system action id
          */
         @ColumnInfo(name = KeyMapDao.KEY_ACTION_DATA)
-        val data: String
+        val data: String,
+
+        @ColumnInfo(name = KeyMapDao.KEY_ACTION_EXTRAS)
+        val extras: MutableList<Extra> = mutableListOf()
 ) : Serializable {
     companion object {
         const val EXTRA_ACTION = "extra_action"
+
+        //DON'T CHANGE THESE IDs!!!!
+        const val EXTRA_SHORTCUT_TITLE = "extra_title"
+        const val EXTRA_PACKAGE_NAME = "extra_package_name"
     }
 
     val requiresIME: Boolean
         get() = type == ActionType.KEY ||
                 type == ActionType.KEYCODE ||
                 type == ActionType.TEXT_BLOCK
+
+    fun getExtraData(extraId: String) = extras.find { it.id == extraId }?.data.createResult(
+            ErrorCodeUtils.ERROR_CODE_ACTION_EXTRA_NOT_FOUND, extraId
+    )
 }

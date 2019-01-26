@@ -12,6 +12,11 @@ import androidx.appcompat.app.AlertDialog
  */
 
 object ShortcutTitleDialog {
+    /**
+     * Show a dialog which asks the user to input a shortcut title.
+     *
+     * @param onCreateTitle what to do when the user successfully creates a title
+     */
     fun show(ctx: Context, onCreateTitle: (title: String) -> Unit) {
         val builder = AlertDialog.Builder(ctx)
 
