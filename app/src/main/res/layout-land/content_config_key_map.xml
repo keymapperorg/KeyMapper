@@ -37,11 +37,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
         android:text="@string/button_choose_action"
         app:layout_constraintBottom_toBottomOf="@+id/actionDescriptionLayout"
-        app:layout_constraintEnd_toStartOf="@+id/buttonSecondary"
+        app:layout_constraintEnd_toStartOf="@+id/buttonFlags"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/actionDescriptionLayout"
         app:layout_constraintTop_toTopOf="parent" />
@@ -128,6 +127,20 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
+        android:id="@+id/buttonFlags"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/button_flags"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonChooseAction"
+        app:layout_constraintEnd_toStartOf="@+id/buttonSecondary"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/buttonChooseAction"
+        app:layout_constraintTop_toTopOf="@+id/buttonChooseAction" />
+
+    <Button
         android:id="@+id/buttonSecondary"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="wrap_content"
@@ -138,7 +151,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/actionDescriptionLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/buttonChooseAction"
+        app:layout_constraintStart_toEndOf="@+id/buttonFlags"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/button_test" />
 
