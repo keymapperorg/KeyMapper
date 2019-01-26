@@ -5,10 +5,10 @@ import android.view.KeyEvent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import io.github.sds100.keymapper.*
-import io.github.sds100.keymapper.DatabaseAsyncTasks.DeleteKeyMapAsync
-import io.github.sds100.keymapper.DatabaseAsyncTasks.DeleteKeyMapByIdAsync
-import io.github.sds100.keymapper.DatabaseAsyncTasks.InsertKeyMapAsync
-import io.github.sds100.keymapper.DatabaseAsyncTasks.UpdateKeyMapAsync
+import io.github.sds100.keymapper.AsyncTasks.DeleteKeyMapAsync
+import io.github.sds100.keymapper.AsyncTasks.DeleteKeyMapByIdAsync
+import io.github.sds100.keymapper.AsyncTasks.InsertKeyMapAsync
+import io.github.sds100.keymapper.AsyncTasks.UpdateKeyMapAsync
 
 /**
  * Created by sds100 on 08/08/2018.
