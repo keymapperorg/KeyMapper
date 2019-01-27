@@ -6,6 +6,7 @@ import androidx.preference.*
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Utils.BluetoothUtils
 import io.github.sds100.keymapper.Utils.NotificationUtils
+import io.github.sds100.keymapper.Utils.str
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.okButton
 
@@ -34,6 +35,10 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
 
     private val mNotificationsPrefCategory by lazy {
         findPreference(getString(R.string.key_pref_category_notifications)) as PreferenceCategory
+    }
+
+    private val mEnableRootFeaturesPreference by lazy {
+        findPreference(context!!.str(R.string.key_pref_allow_root_features)) as SwitchPreference
     }
 
     private var mShowingNoPairedDevicesDialog = false
@@ -92,6 +97,14 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
 
             true
         }
+
+        enableRootPreferences(mEnableRootFeaturesPreference.isChecked)
+
+        //Only enable the root preferences if the user has enabled root features
+        mEnableRootFeaturesPreference.setOnPreferenceChangeListener { _, newValue ->
+            enableRootPreferences(newValue as Boolean)
+            true
+        }
     }
 
     override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
@@ -124,6 +137,16 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
             //the unique addresses of the device will be saved to shared preferences
             mBluetoothDevicesPreferences.entryValues =
                     pairedDevices.map { it.address }.toTypedArray()
+        }
+    }
+
+    private fun enableRootPreferences(enabled: Boolean) {
+        for (i in 0 until mRootPrefCategory.preferenceCount) {
+            val preference = mRootPrefCategory.getPreference(i)
+
+            if (preference == mEnableRootFeaturesPreference) continue
+
+            preference.isEnabled = enabled
         }
     }
 }

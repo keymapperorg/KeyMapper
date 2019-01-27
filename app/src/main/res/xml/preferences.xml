@@ -50,7 +50,7 @@
         <androidx.preference.SwitchPreference
             android:defaultValue="true"
             android:key="@string/key_pref_auto_change_ime_on_connect_disconnect"
-            android:order="2"
+            android:order="3"
             android:summary="@string/summary_pref_auto_change_ime_on_connect_disconnect"
             android:title="@string/title_pref_auto_change_ime_on_connect_disconnect" />
 
@@ -62,7 +62,7 @@
         <androidx.preference.SwitchPreference
             android:defaultValue="false"
             android:key="@string/key_pref_allow_root_features"
-            android:order="6"
+            android:order="2"
             android:summary="@string/summary_pref_allow_root_features"
             android:title="@string/title_pref_allow_root_features" />
 
