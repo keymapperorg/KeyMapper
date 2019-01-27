@@ -26,6 +26,7 @@ import io.github.sds100.keymapper.Interfaces.IPerformGlobalAction
 import io.github.sds100.keymapper.KeyMap
 import io.github.sds100.keymapper.Utils.ActionUtils
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils
+import io.github.sds100.keymapper.Utils.FlagUtils.FLAG_LONG_PRESS
 import io.github.sds100.keymapper.Utils.RootUtils
 import io.github.sds100.keymapper.Utils.isVolumeKey
 
@@ -50,6 +51,11 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
          * How long should the accessibility service record a trigger. In milliseconds.
          */
         private const val RECORD_TRIGGER_TIMER_LENGTH = 5000L
+
+        /**
+         * How long a long-press is.
+         */
+        private const val LONG_PRESS_DELAY = 500L
 
         /**
          * Enable this accessibility service. REQUIRES ROOT
@@ -90,7 +96,6 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
     override val ctx
         get() = this
 
-    private val mRecordingTimerHandler = Handler()
     private val mRecordingTimerRunnable = Runnable {
         mRecordingTrigger = false
         mPressedKeys.clear()
@@ -108,7 +113,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                     mRecordingTrigger = true
 
                     //stop recording a trigger after a set amount of time.
-                    mRecordingTimerHandler.postDelayed(
+                    mHandler.postDelayed(
                             mRecordingTimerRunnable,
                             RECORD_TRIGGER_TIMER_LENGTH
                     )
@@ -118,7 +123,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                     mRecordingTrigger = false
 
                     //stop the timer since the user cancelled it before the time ran out
-                    mRecordingTimerHandler.removeCallbacks(mRecordingTimerRunnable)
+                    mHandler.removeCallbacks(mRecordingTimerRunnable)
 
                     mPressedKeys.clear()
                 }
@@ -160,6 +165,26 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
      * E.g when Ctrl + J is pressed, the contents of this list will be the keycodes for Ctrl + J
      */
     private var mPressedTriggerKeys = mutableListOf<Int>()
+
+    private val mHandler = Handler()
+
+    /* How does long pressing work?
+       - When a trigger is detected, a Runnable is created which, when executed will perform the action.
+       - The runnable will be queued in the Handler
+       - After 500ms the runnable will be executed if it is still queued in the Handler.
+       - If the user releases one of the keys which is assigned to a Runnable in the mRunnableTriggerMap, the Runnable
+       will be removed from the Runnable list and removed from the Handler. This stops it being executed after the user
+       has stopped long-pressing the trigger.
+    * */
+    private val mLongPressRunnables = mutableListOf<Runnable>()
+
+    private val mRunnableTriggerMap = mutableMapOf<Int, List<Int>>()
+
+    private var Runnable.trigger: List<Int>
+        get() = mRunnableTriggerMap.getValue(hashCode())
+        set(value) {
+            mRunnableTriggerMap[hashCode()] = value
+        }
 
     private var mRecordingTrigger = false
 
@@ -233,6 +258,11 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
             } else if (event.action == KeyEvent.ACTION_UP) {
                 mPressedKeys.remove(event.keyCode)
 
+                mLongPressRunnables.filter { it.trigger.contains(event.keyCode) }.forEach {
+                    mHandler.removeCallbacks(it)
+                    mLongPressRunnables.remove(it)
+                }
+
                 if (mPressedTriggerKeys.isNotEmpty()) {
                     if (mPressedTriggerKeys.contains(event.keyCode)) {
                         mPressedTriggerKeys.remove(event.keyCode)
@@ -264,6 +294,19 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
                 //if there is no error
                 if (errorResult == null) {
+
+                    if (keyMap.flags.contains(FLAG_LONG_PRESS)) {
+                        val runnable = Runnable {
+                            mActionPerformerDelegate.performAction(keyMap.action!!, keyMap.flags)
+                        }
+                        runnable.trigger = mPressedTriggerKeys
+                        mLongPressRunnables.add(runnable)
+
+                        mHandler.postDelayed(runnable, LONG_PRESS_DELAY)
+
+                        return super.onKeyEvent(event)
+                    }
+
                     mActionPerformerDelegate.performAction(keyMap.action!!, keyMap.flags)
                     return true
 

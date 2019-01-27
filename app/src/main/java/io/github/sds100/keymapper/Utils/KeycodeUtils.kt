@@ -12,12 +12,13 @@ val KeyEvent.isVolumeKey: Boolean
     get() = keyCode == KeyEvent.KEYCODE_VOLUME_DOWN
             || keyCode == KeyEvent.KEYCODE_VOLUME_UP
             || keyCode == KeyEvent.KEYCODE_VOLUME_MUTE
+            || keyCode == KeyEvent.KEYCODE_MUTE
 
 object KeycodeUtils {
     /**
      * Maps keys which aren't single characters like the Control keys to a string representation
      */
-    val NON_CHARACTER_KEY_MAP = mapOf(
+    private val NON_CHARACTER_KEY_MAP = mapOf(
             Pair(KeyEvent.KEYCODE_VOLUME_DOWN, "Vol Down"),
             Pair(KeyEvent.KEYCODE_VOLUME_UP, "Vol Up"),
 
