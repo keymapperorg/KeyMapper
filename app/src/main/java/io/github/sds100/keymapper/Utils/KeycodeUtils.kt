@@ -8,6 +8,11 @@ import androidx.annotation.RequiresApi
  * Created by sds100 on 17/07/2018.
  */
 
+val KeyEvent.isVolumeKey: Boolean
+    get() = keyCode == KeyEvent.KEYCODE_VOLUME_DOWN
+            || keyCode == KeyEvent.KEYCODE_VOLUME_UP
+            || keyCode == KeyEvent.KEYCODE_VOLUME_MUTE
+
 object KeycodeUtils {
     /**
      * Maps keys which aren't single characters like the Control keys to a string representation

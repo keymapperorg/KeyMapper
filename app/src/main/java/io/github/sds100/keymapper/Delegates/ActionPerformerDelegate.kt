@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.Interfaces.IContext
 import io.github.sds100.keymapper.Interfaces.IPerformGlobalAction
 import io.github.sds100.keymapper.Services.MyIMEService
 import io.github.sds100.keymapper.Utils.*
+import io.github.sds100.keymapper.Utils.FlagUtils.FLAG_SHOW_VOLUME_UI
 import org.jetbrains.anko.defaultSharedPreferences
 
 /**
@@ -31,7 +32,7 @@ class ActionPerformerDelegate(
         lifecycle.addObserver(mFlashlightController)
     }
 
-    fun performAction(action: Action) {
+    fun performAction(action: Action, flags: List<Int>) {
         ctx.apply {
             //Only show a toast message that Key Mapper is performing an action if the user has enabled it
             val key = str(R.string.key_pref_show_toast_when_action_performed)
@@ -71,7 +72,7 @@ class ActionPerformerDelegate(
                     sendBroadcast(intent)
                 }
 
-                ActionType.SYSTEM_ACTION -> performSystemAction(action.data)
+                ActionType.SYSTEM_ACTION -> performSystemAction(action.data, flags)
 
                 else -> {
                     //for actions which require the IME service
@@ -87,7 +88,10 @@ class ActionPerformerDelegate(
         }
     }
 
-    private fun performSystemAction(id: String) {
+    private fun performSystemAction(id: String, flags: List<Int>) {
+
+        val showVolumeUi = flags.contains(FLAG_SHOW_VOLUME_UI)
+
         ctx.apply {
             when (id) {
                 SystemAction.ENABLE_WIFI -> NetworkUtils.changeWifiState(this, StateChange.ENABLE)
@@ -118,9 +122,9 @@ class ActionPerformerDelegate(
                 SystemAction.PORTRAIT_MODE -> ScreenRotationUtils.forcePortraitMode(this)
                 SystemAction.LANDSCAPE_MODE -> ScreenRotationUtils.forceLandscapeMode(this)
 
-                SystemAction.VOLUME_UP -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_RAISE)
-                SystemAction.VOLUME_DOWN -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_LOWER)
-                SystemAction.VOLUME_SHOW_DIALOG -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_SAME)
+                SystemAction.VOLUME_UP -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_RAISE, showVolumeUi)
+                SystemAction.VOLUME_DOWN -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_LOWER, showVolumeUi)
+                SystemAction.VOLUME_SHOW_DIALOG -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_SAME, showVolumeUi)
 
                 SystemAction.EXPAND_NOTIFICATION_DRAWER -> StatusBarUtils.expandNotificationDrawer()
                 SystemAction.EXPAND_QUICK_SETTINGS -> StatusBarUtils.expandQuickSettings()
@@ -141,10 +145,20 @@ class ActionPerformerDelegate(
                 else -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         when (id) {
-                            SystemAction.VOLUME_UNMUTE -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_UNMUTE)
-                            SystemAction.VOLUME_MUTE -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_MUTE)
+                            SystemAction.VOLUME_UNMUTE -> VolumeUtils.adjustVolume(
+                                    this,
+                                    AudioManager.ADJUST_UNMUTE,
+                                    showVolumeUi
+                            )
+
+                            SystemAction.VOLUME_MUTE -> VolumeUtils.adjustVolume(
+                                    this,
+                                    AudioManager.ADJUST_MUTE,
+                                    showVolumeUi
+                            )
+
                             SystemAction.VOLUME_TOGGLE_MUTE ->
-                                VolumeUtils.adjustVolume(this, AudioManager.ADJUST_TOGGLE_MUTE)
+                                VolumeUtils.adjustVolume(this, AudioManager.ADJUST_TOGGLE_MUTE, showVolumeUi)
 
                             SystemAction.TOGGLE_FLASHLIGHT -> mFlashlightController.toggleFlashlight()
                             SystemAction.ENABLE_FLASHLIGHT -> mFlashlightController.setFlashlightMode(true)

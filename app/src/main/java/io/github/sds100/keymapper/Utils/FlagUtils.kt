@@ -13,11 +13,11 @@ object FlagUtils {
 
     //DON't CHANGE THESE IDs!!!
     const val FLAG_LONG_PRESS = 0
-    const val FLAG_SHOW_VOLUME_DIALOG = 1
+    const val FLAG_SHOW_VOLUME_UI = 1
 
     private val FLAG_LABEL_MAP = mapOf(
             FLAG_LONG_PRESS to R.string.flag_long_press,
-            FLAG_SHOW_VOLUME_DIALOG to R.string.flag_show_volume_dialog
+            FLAG_SHOW_VOLUME_UI to R.string.flag_show_volume_dialog
     )
 
     fun showFlagDialog(ctx: Context,
@@ -27,6 +27,9 @@ object FlagUtils {
             for (item in FLAG_LABEL_MAP) {
                 val flag = item.key
                 val label = item.value
+
+                //only show the volume-ui flag if the action is volume-related
+                if (!keyMap.action!!.isVolumeAction && flag == FLAG_SHOW_VOLUME_UI) continue
 
                 yield(Triple(ctx.str(label), flag, keyMap.flags.contains(flag)))
             }

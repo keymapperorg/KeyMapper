@@ -123,10 +123,6 @@
     <string name="title_pref_auto_show_ime_picker">Automatically Show Input Method Picker</string>
     <string name="summary_pref_auto_show_ime_picker">When a Bluetooth device you have chosen connects or disconnects, the input method picker will show automatically. Choose the devices below. Requires root for Android 8.1+.</string>
 
-    <string name="key_pref_show_volume_dialog_on_adjust">pref_show_volume_dialog_on_adjust</string>
-    <string name="title_pref_show_volume_dialog_on_adjust">Show The Volume Dialog</string>
-    <string name="summary_pref_show_volume_dialog_on_adjust">Show the volume dialog when performing any volume related action.</string>
-
     <string name="key_pref_show_toast_when_action_performed">pref_show_toast_on_perform_action</string>
     <string name="title_pref_show_toast_when_action_performed">Show A Toast Message When You Perform An Action</string>
     <string name="summary_pref_show_toast_when_action_performed">A little message will popup when you perform an action.</string>

@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.media.AudioManager
 import androidx.annotation.IntDef
-import io.github.sds100.keymapper.R
-import org.jetbrains.anko.defaultSharedPreferences
 
 /**
  * Created by sds100 on 21/10/2018.
@@ -28,24 +26,18 @@ object VolumeUtils {
     /**
      * @param adjustMode must be one of the AudioManager.ADJUST... values
      */
-    fun adjustVolume(ctx: Context, @AdjustMode adjustMode: Int) {
+    fun adjustVolume(ctx: Context,
+                     @AdjustMode adjustMode: Int,
+                     showVolumeUi: Boolean = false) {
         val audioManager = ctx.applicationContext.getSystemService(Context.AUDIO_SERVICE)
                 as AudioManager
 
-        val flag = if (automaticallyShowVolumeUI(ctx)) {
+        val flag = if (showVolumeUi) {
             AudioManager.FLAG_SHOW_UI
         } else {
             0
         }
 
         audioManager.adjustVolume(adjustMode, flag)
-    }
-
-    private fun automaticallyShowVolumeUI(ctx: Context): Boolean {
-        ctx.apply {
-            return defaultSharedPreferences.getBoolean(
-                    str(R.string.key_pref_show_volume_dialog_on_adjust),
-                    bool(R.bool.default_value_show_volume_dialog_on_adjust))
-        }
     }
 }

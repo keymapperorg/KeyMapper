@@ -27,6 +27,7 @@ import io.github.sds100.keymapper.KeyMap
 import io.github.sds100.keymapper.Utils.ActionUtils
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils
 import io.github.sds100.keymapper.Utils.RootUtils
+import io.github.sds100.keymapper.Utils.isVolumeKey
 
 /**
  * Created by sds100 on 16/07/2018.
@@ -136,7 +137,9 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                 }
 
                 ACTION_TEST_ACTION -> {
-                    mActionPerformerDelegate.performAction(intent.getSerializableExtra(EXTRA_ACTION) as Action)
+                    mActionPerformerDelegate.performAction(
+                            intent.getSerializableExtra(EXTRA_ACTION) as Action,
+                            listOf())
                 }
             }
         }
@@ -261,7 +264,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
                 //if there is no error
                 if (errorResult == null) {
-                    mActionPerformerDelegate.performAction(keyMap.action!!)
+                    mActionPerformerDelegate.performAction(keyMap.action!!, keyMap.flags)
                     return true
 
                 } else {
@@ -297,11 +300,4 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
             }
         }
     }
-
-    @Suppress("NON_EXHAUSTIVE_WHEN")
-
-    private val KeyEvent.isVolumeKey: Boolean
-        get() = keyCode == KeyEvent.KEYCODE_VOLUME_DOWN
-                || keyCode == KeyEvent.KEYCODE_VOLUME_UP
-                || keyCode == KeyEvent.KEYCODE_VOLUME_MUTE
 }
