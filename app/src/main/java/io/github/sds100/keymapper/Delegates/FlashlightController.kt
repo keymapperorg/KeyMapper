@@ -14,7 +14,7 @@ import io.github.sds100.keymapper.Interfaces.IContext
  * Created by sds100 on 19/01/2019.
  */
 
-
+@RequiresApi(Build.VERSION_CODES.M)
 class FlashlightController(iContext: IContext) : IContext by iContext, LifecycleObserver {
 
     private var mIsFlashEnabled = false

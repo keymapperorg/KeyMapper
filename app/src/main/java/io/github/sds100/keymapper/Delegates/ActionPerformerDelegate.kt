@@ -26,10 +26,13 @@ class ActionPerformerDelegate(
         lifecycle: Lifecycle
 ) : IContext by iContext, IPerformGlobalAction by iPerformGlobalAction {
 
-    private val mFlashlightController = FlashlightController(this)
+    private lateinit var mFlashlightController: FlashlightController
 
     init {
-        lifecycle.addObserver(mFlashlightController)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mFlashlightController = FlashlightController(this)
+            lifecycle.addObserver(mFlashlightController)
+        }
     }
 
     fun performAction(action: Action, flags: List<Int>) {
