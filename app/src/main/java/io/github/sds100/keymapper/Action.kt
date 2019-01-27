@@ -46,11 +46,7 @@ data class Action(
         val data: String,
 
         @ColumnInfo(name = KeyMapDao.KEY_ACTION_EXTRAS)
-        val extras: MutableList<Extra> = mutableListOf(),
-
-        @ColumnInfo(name = KeyMapDao.KEY_ACTION_FLAGS)
-        val flags: MutableList<Int> = mutableListOf()
-
+        val extras: MutableList<Extra> = mutableListOf()
 ) : Serializable {
     companion object {
         const val EXTRA_ACTION = "extra_action"
@@ -58,10 +54,6 @@ data class Action(
         //DON'T CHANGE THESE IDs!!!!
         const val EXTRA_SHORTCUT_TITLE = "extra_title"
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
-
-        //DON't CHANGE THESE IDs!!!
-        const val FLAG_LONG_PRESS = 0
-        const val FLAG_SHOW_VOLUME_DIALOG = 1
     }
 
     val requiresIME: Boolean

@@ -79,6 +79,7 @@
     <string name="dialog_title_create_shortcut_title">Create Shortcut Title</string>
     <string name="dialog_title_cant_find_paired_devices">Can\'t find any paired devices</string>
     <string name="dialog_title_root_prompt">Root permission needed!</string>
+    <string name="dialog_title_flags">More</string>
     <!-- Dialog titles -->
 
     <!-- Dialog messages -->
@@ -173,6 +174,11 @@
     <string name="action_type_title_system_action">Other</string>
     <string name="action_type_title_text_block">Text Block</string>
     <!--Action Types Titles-->
+
+    <!--flags-->
+    <string name="flag_show_volume_dialog">Show volume dialog</string>
+    <string name="flag_long_press">Long press</string>
+    <!--flags-->
 
     <!-- Error messages -->
     <string name="error_must_type_a_key">You must type a key!</string>

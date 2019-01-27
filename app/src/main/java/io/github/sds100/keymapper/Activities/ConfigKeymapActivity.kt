@@ -28,6 +28,7 @@ import io.github.sds100.keymapper.Adapters.TriggerAdapter
 import io.github.sds100.keymapper.Services.MyAccessibilityService
 import io.github.sds100.keymapper.Utils.ActionUtils
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_PERMISSION_DENIED
+import io.github.sds100.keymapper.Utils.FlagUtils
 import io.github.sds100.keymapper.Utils.PermissionUtils
 import io.github.sds100.keymapper.Utils.RootUtils
 import io.github.sds100.keymapper.ViewModels.ConfigKeyMapViewModel
@@ -134,6 +135,23 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
         buttonChooseAction.setOnClickListener {
             val intent = Intent(this, ChooseActionActivity::class.java)
             startActivityForResult(intent, REQUEST_CODE_ACTION)
+        }
+
+        buttonFlags.setOnClickListener {
+            viewModel.keyMap.value!!.let { keyMap ->
+                FlagUtils.showFlagDialog(this, keyMap) { newItems ->
+                    keyMap.flags.clear()
+
+                    newItems.forEach {
+                        val flag = it.second
+                        val isChecked = it.third
+
+                        if (isChecked) {
+                            keyMap.flags.add(flag)
+                        }
+                    }
+                }
+            }
         }
 
         switchEnabled.setOnCheckedChangeListener { _, isChecked ->
