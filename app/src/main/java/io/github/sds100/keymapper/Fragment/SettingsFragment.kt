@@ -1,14 +1,18 @@
 package io.github.sds100.keymapper.Fragment
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.preference.*
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Utils.BluetoothUtils
 import io.github.sds100.keymapper.Utils.NotificationUtils
 import org.jetbrains.anko.alert
+import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.okButton
 
-class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener {
+class SettingsFragment : PreferenceFragmentCompat(),
+        Preference.OnPreferenceChangeListener,
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val mShowNotificationPreference by lazy {
         findPreference(getString(R.string.key_pref_show_notification)) as SwitchPreference
@@ -77,6 +81,16 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
         mAutoShowIMEDialogPreference.onPreferenceChangeListener = this
         mShowNotificationPreference.onPreferenceChangeListener = this
         mEnableRootFeaturesPreference.onPreferenceChangeListener = this
+
+        context!!.defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        onPreferenceChange(
+                findPreference(key),
+                //Use .all[index] because we don't know the data type
+                sharedPreferences!!.all[key]
+        )
     }
 
     override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
@@ -94,9 +108,20 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
                     NotificationUtils.hideImePickerNotification(context!!)
                 }
             }
+
+            //Only enable the root preferences if the user has enabled root features
+            mEnableRootFeaturesPreference -> {
+                enableRootPreferences(newValue as Boolean)
+            }
         }
 
         return true
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        context!!.defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
     }
 
     private fun populateBluetoothDevicesPreference() {
@@ -113,12 +138,25 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
     }
 
     private fun enableRootPreferences(enabled: Boolean) {
-        for (i in 0 until mRootPrefCategory.preferenceCount) {
+        loop@ for (i in 0 until mRootPrefCategory.preferenceCount) {
             val preference = mRootPrefCategory.getPreference(i)
 
-            if (preference == mEnableRootFeaturesPreference) continue
+            when (preference) {
+                mEnableRootFeaturesPreference -> continue@loop
+
+                else -> {
+                    //If disabling the preferences, turn them off.
+                    if (!enabled && preference is SwitchPreference) {
+                        preference.isChecked = false
+                    }
+                }
+            }
 
             preference.isEnabled = enabled
         }
+
+        /*only allow the user to toggle whether the notification shows on boot if they want
+        * to see the notification at all.*/
+        mShowNotificationOnBootPreference.isEnabled = mShowNotificationPreference.isChecked
     }
 }
