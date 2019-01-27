@@ -1,12 +1,10 @@
 package io.github.sds100.keymapper.Fragment
 
-import android.os.Build
 import android.os.Bundle
 import androidx.preference.*
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Utils.BluetoothUtils
 import io.github.sds100.keymapper.Utils.NotificationUtils
-import io.github.sds100.keymapper.Utils.str
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.okButton
 
@@ -33,38 +31,14 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
         findPreference(getString(R.string.key_pref_category_root)) as PreferenceCategory
     }
 
-    private val mNotificationsPrefCategory by lazy {
-        findPreference(getString(R.string.key_pref_category_notifications)) as PreferenceCategory
-    }
-
     private val mEnableRootFeaturesPreference by lazy {
-        findPreference(context!!.str(R.string.key_pref_allow_root_features)) as SwitchPreference
+        findPreference(getString(R.string.key_pref_allow_root_features)) as SwitchPreference
     }
 
     private var mShowingNoPairedDevicesDialog = false
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.preferences)
-
-        mAutoShowIMEDialogPreference.onPreferenceChangeListener = this
-        mShowNotificationPreference.onPreferenceChangeListener = this
-
-        //The notification preferences need root to work on 8.1+ so move them to the root category
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-            mNotificationsPrefCategory.isVisible = false
-            mNotificationsPrefCategory.removePreference(mShowNotificationPreference)
-            mNotificationsPrefCategory.removePreference(mShowNotificationOnBootPreference)
-
-            mShowNotificationPreference.order = 4
-            mShowNotificationOnBootPreference.order = 5
-
-            mRootPrefCategory.addPreference(mShowNotificationPreference)
-            mRootPrefCategory.addPreference(mShowNotificationOnBootPreference)
-        }
-
-        /*only allow the user to toggle whether the notification shows on boot if they want
-        * to see the notification at all. */
-        mShowNotificationOnBootPreference.isEnabled = mShowNotificationPreference.isChecked
 
         mBluetoothDevicesPreferences.setOnPreferenceClickListener {
             populateBluetoothDevicesPreference()
@@ -100,11 +74,9 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
 
         enableRootPreferences(mEnableRootFeaturesPreference.isChecked)
 
-        //Only enable the root preferences if the user has enabled root features
-        mEnableRootFeaturesPreference.setOnPreferenceChangeListener { _, newValue ->
-            enableRootPreferences(newValue as Boolean)
-            true
-        }
+        mAutoShowIMEDialogPreference.onPreferenceChangeListener = this
+        mShowNotificationPreference.onPreferenceChangeListener = this
+        mEnableRootFeaturesPreference.onPreferenceChangeListener = this
     }
 
     override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {

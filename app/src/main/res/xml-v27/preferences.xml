@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?><!--Android 8.1+ is much more strict so a lot of stuff only works on rooted devices. :( -->
 <androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <androidx.preference.SwitchPreference
         android:defaultValue="@bool/default_value_show_toast"
@@ -11,41 +11,6 @@
         android:key="@string/key_pref_show_volume_dialog_on_adjust"
         android:summary="@string/summary_pref_show_volume_dialog_on_adjust"
         android:title="@string/title_pref_show_volume_dialog_on_adjust" />
-
-    <androidx.preference.PreferenceCategory
-        android:key="@string/key_pref_category_notifications"
-        android:title="@string/title_pref_category_notifications">
-
-        <androidx.preference.SwitchPreference
-            android:defaultValue="@bool/default_value_show_notifications"
-            android:key="@string/key_pref_show_notification"
-            android:summary="@string/summary_pref_show_notification"
-            android:title="@string/title_pref_show_notification" />
-
-        <androidx.preference.SwitchPreference
-            android:defaultValue="@bool/default_value_show_notification_on_boot"
-            android:key="@string/key_pref_show_notification_on_boot"
-            android:summary="@string/summary_pref_show_notification_on_boot"
-            android:title="@string/title_pref_show_notification_on_boot" />
-    </androidx.preference.PreferenceCategory>
-
-    <androidx.preference.PreferenceCategory android:title="@string/title_pref_category_ime_picker">
-        <androidx.preference.SwitchPreference
-            android:defaultValue="@bool/default_value_auto_change_ime_on_connection"
-            android:key="@string/key_pref_auto_change_ime_on_connection"
-            android:summary="@string/summary_pref_auto_change_ime_on_connection"
-            android:title="@string/title_pref_auto_change_ime_on_connection" />
-
-        <androidx.preference.SwitchPreference
-            android:defaultValue="@bool/default_value_auto_show_ime_picker"
-            android:key="@string/key_pref_auto_show_ime_picker"
-            android:summary="@string/summary_pref_auto_show_ime_picker"
-            android:title="@string/title_pref_auto_show_ime_picker" />
-
-        <io.github.sds100.keymapper.Views.CancellableMultiSelectListPreference
-            android:key="@string/key_pref_bluetooth_devices"
-            android:title="@string/title_pref_bluetooth_devices" />
-    </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory
         android:key="@string/key_pref_category_root"
@@ -62,5 +27,32 @@
             android:summary="@string/summary_pref_allow_root_features"
             android:title="@string/title_pref_allow_root_features" />
 
+        <androidx.preference.SwitchPreference
+            android:defaultValue="@bool/default_value_auto_change_ime_on_connection"
+            android:key="@string/key_pref_auto_change_ime_on_connection"
+            android:summary="@string/summary_pref_auto_change_ime_on_connection"
+            android:title="@string/title_pref_auto_change_ime_on_connection" />
+
+        <androidx.preference.SwitchPreference
+            android:defaultValue="@bool/default_value_auto_show_ime_picker"
+            android:key="@string/key_pref_auto_show_ime_picker"
+            android:summary="@string/summary_pref_auto_show_ime_picker"
+            android:title="@string/title_pref_auto_show_ime_picker" />
+
+        <io.github.sds100.keymapper.Views.CancellableMultiSelectListPreference
+            android:key="@string/key_pref_bluetooth_devices"
+            android:title="@string/title_pref_bluetooth_devices" />
+
+        <androidx.preference.SwitchPreference
+            android:defaultValue="@bool/default_value_show_notifications"
+            android:key="@string/key_pref_show_notification"
+            android:summary="@string/summary_pref_show_notification"
+            android:title="@string/title_pref_show_notification" />
+
+        <androidx.preference.SwitchPreference
+            android:defaultValue="@bool/default_value_show_notification_on_boot"
+            android:key="@string/key_pref_show_notification_on_boot"
+            android:summary="@string/summary_pref_show_notification_on_boot"
+            android:title="@string/title_pref_show_notification_on_boot" />
     </androidx.preference.PreferenceCategory>
 </androidx.preference.PreferenceScreen>
