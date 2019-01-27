@@ -8,6 +8,7 @@ import android.provider.Settings
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Services.MyIMEService
 import io.github.sds100.keymapper.Utils.ImeUtils
+import io.github.sds100.keymapper.Utils.bool
 import io.github.sds100.keymapper.Utils.str
 import org.jetbrains.anko.defaultSharedPreferences
 
@@ -42,12 +43,14 @@ class BluetoothConnectionBroadcastReceiver : BroadcastReceiver() {
                     //don't show the dialog if the user hasn't selected this device
                     if (selectedDevices.contains(device.address)) {
                         val automaticallySwitchIme =
-                                getBoolean(str(R.string.key_pref_auto_change_ime_on_connect_disconnect), true)
+                                getBoolean(str(R.string.key_pref_auto_change_ime_on_connection),
+                                        bool(R.bool.default_value_auto_change_ime_on_connection))
 
                         if (automaticallySwitchIme) automaticallySwitchIme(context, intent.action!!)
 
                         val showIMEPickerAutomatically =
-                                getBoolean(str(R.string.key_pref_auto_show_ime_picker), true)
+                                getBoolean(str(R.string.key_pref_auto_show_ime_picker),
+                                        bool(R.bool.default_value_auto_show_ime_picker))
 
                         //only show the dialog automatically if the user wants it to.
                         if (showIMEPickerAutomatically) ImeUtils.showInputMethodPickerDialogOutsideApp(context)

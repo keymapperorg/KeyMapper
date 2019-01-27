@@ -32,9 +32,7 @@ import io.github.sds100.keymapper.Selection.SelectionEvent
 import io.github.sds100.keymapper.Selection.SelectionProvider
 import io.github.sds100.keymapper.Services.MyAccessibilityService
 import io.github.sds100.keymapper.Services.MyIMEService
-import io.github.sds100.keymapper.Utils.ActionUtils
-import io.github.sds100.keymapper.Utils.NotificationUtils
-import io.github.sds100.keymapper.Utils.color
+import io.github.sds100.keymapper.Utils.*
 import io.github.sds100.keymapper.ViewModels.KeyMapListViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -63,7 +61,9 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        if (defaultSharedPreferences.getBoolean(getString(R.string.key_pref_show_notification), true)) {
+        if (defaultSharedPreferences.getBoolean(
+                        str(R.string.key_pref_show_notification),
+                        bool(R.bool.default_value_show_notifications))) {
             NotificationUtils.showIMEPickerNotification(this)
         } else {
             NotificationUtils.hideImePickerNotification(this)

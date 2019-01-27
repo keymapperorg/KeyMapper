@@ -21,7 +21,9 @@ object RootUtils {
     }
 
     fun checkAppHasRootPermission(ctx: Context): Boolean {
-        return ctx.defaultSharedPreferences.getBoolean(ctx.str(R.string.key_pref_allow_root_features), false)
+        return ctx.defaultSharedPreferences.getBoolean(
+                ctx.str(R.string.key_pref_allow_root_features),
+                ctx.bool(R.bool.default_value_allow_root_features))
     }
 
     fun promptForRootPermission(ctx: Context) {

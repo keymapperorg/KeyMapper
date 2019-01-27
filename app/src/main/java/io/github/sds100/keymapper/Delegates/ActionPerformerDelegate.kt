@@ -36,7 +36,7 @@ class ActionPerformerDelegate(
             //Only show a toast message that Key Mapper is performing an action if the user has enabled it
             val key = str(R.string.key_pref_show_toast_when_action_performed)
 
-            if (defaultSharedPreferences.getBoolean(key, false)) {
+            if (defaultSharedPreferences.getBoolean(key, bool(R.bool.default_value_show_toast))) {
                 Toast.makeText(this, R.string.performing_action, Toast.LENGTH_SHORT).show()
             }
 

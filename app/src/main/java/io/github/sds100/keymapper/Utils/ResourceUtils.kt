@@ -4,10 +4,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.View
-import androidx.annotation.ColorRes
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
-import androidx.annotation.StyleableRes
+import androidx.annotation.*
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import io.github.sds100.keymapper.Interfaces.IContext
@@ -24,6 +21,8 @@ fun Context.str(@StringRes resId: Int, formatArgs: Any? = null): String = getStr
 
 fun IContext.str(@StringRes resId: Int, formatArgs: Any? = null): String = ctx.getString(resId, formatArgs)
 fun View.str(@StringRes resId: Int, formatArgs: Any? = null): String = context.str(resId, formatArgs)
+
+fun Context.bool(@BoolRes resId: Int): Boolean = resources.getBoolean(resId)
 
 /**
  * Get a string from an attribute
