@@ -120,7 +120,7 @@
 
     <string name="key_pref_auto_show_ime_picker">pref_auto_show_ime_picker</string>
     <string name="title_pref_auto_show_ime_picker">Automatically show input method picker</string>
-    <string name="summary_pref_auto_show_ime_picker">When a Bluetooth device you have chosen connects or disconnects, the input method picker will show automatically. Choose the devices below.</string>
+    <string name="summary_pref_auto_show_ime_picker">When a Bluetooth device you have chosen connects or disconnects, the input method picker will show automatically. Choose the devices below. Requires root for Android 8.1+.</string>
 
     <string name="key_pref_show_volume_dialog_on_adjust">pref_show_volume_dialog_on_adjust</string>
     <string name="title_pref_show_volume_dialog_on_adjust">Show the volume dialog</string>
