@@ -278,23 +278,24 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                 }
             }
 
-            //are the pressed keys are trigger and if they are, is the keymap enabled
-            if (isEnabledTrigger(mPressedKeys)) {
+            mPressedTriggerKeys = mPressedKeys.toMutableList()
 
-                mPressedTriggerKeys = mPressedKeys.toMutableList()
+            //find all the keymap which can be triggered with the keys being pressed
+            val keyMaps = mKeyMapListCache.filter { keyMap ->
+                keyMap.triggerList.any { trigger ->
+                    trigger.keys.toTypedArray().contentEquals(mPressedKeys.toTypedArray()) && keyMap.isEnabled
+                }
+            }
 
-                //find the keymap associated with the trigger being pressed
-                val keyMap = mKeyMapListCache.find { keyMap ->
-                    keyMap.triggerList.any { trigger -> trigger.keys == mPressedTriggerKeys }
+            //if no applicable keymaps are found the keyevent won't be consumed
+            if (keyMaps.isEmpty()) return super.onKeyEvent(event)
 
-                    //if the keymap can't be found, don't consume the keyevent.
-                } ?: return super.onKeyEvent(event)
-
+            //loop through each keymap and perform their action
+            keyMaps.forEach { keyMap ->
                 val errorResult = ActionUtils.getPotentialErrorCode(this, keyMap.action)
 
                 //if there is no error
                 if (errorResult == null) {
-
                     if (keyMap.flags.contains(FLAG_LONG_PRESS)) {
                         val runnable = Runnable {
                             mActionPerformerDelegate.performAction(keyMap.action!!, keyMap.flags)
@@ -304,21 +305,18 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
                         mHandler.postDelayed(runnable, LONG_PRESS_DELAY)
 
-                        return super.onKeyEvent(event)
+                    } else {
+                        mActionPerformerDelegate.performAction(keyMap.action!!, keyMap.flags)
                     }
-
-                    mActionPerformerDelegate.performAction(keyMap.action!!, keyMap.flags)
-                    return true
-
                 } else {
                     val errorDescription = ErrorCodeUtils.getErrorCodeDescription(this, errorResult)
 
                     Toast.makeText(this, errorDescription, LENGTH_SHORT).show()
                 }
             }
-        }
 
-        return super.onKeyEvent(event)
+            return true
+        }
     }
 
     private fun getKeyMapListFromRepository() {
@@ -326,21 +324,6 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
         if (list != null) {
             mKeyMapListCache = list
-        }
-    }
-
-    /**
-     * @param keys the combination of keycodes being pressed to check.
-     * @return whether a key combination is registered as a trigger in the keymap cache and the keymap is enabled
-     */
-    private fun isEnabledTrigger(keys: MutableList<Int>): Boolean {
-        return mKeyMapListCache.any { keyMap ->
-
-            /* do any of the trigger lists for each keymap contain a trigger which matches the
-             * keys being pressed?*/
-            keyMap.triggerList.any { trigger ->
-                trigger.keys.toTypedArray().contentEquals(keys.toTypedArray()) && keyMap.isEnabled
-            }
         }
     }
 }
