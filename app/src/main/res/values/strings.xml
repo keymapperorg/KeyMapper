@@ -135,9 +135,10 @@
     <string name="summary_pref_show_notification_on_boot">Automatically start showing the notification when your device starts up.</string>
     <string name="summary_pref_show_volume_dialog_on_adjust">Show the volume dialog when performing any volume related action.</string>
     <string name="summary_pref_show_toast_when_action_performed">A little message will popup when you perform an action.</string>
+    f
     <string name="summary_pref_auto_change_ime_on_connect_disconnect">The Key Mapper input method will be automatically selected when a chosen bluetooth device is connected. Your old input method will be automatically selected when the device disconnects.
         There may be a 5-10 second delay after disconnecting your device for the input method to change.</string>
-    <string name="summary_pref_allow_root_features">This option tells Key Mapper it has root permission so it can use features/actions which only work on rooted devices.
+    <string name="summary_pref_allow_root_features">Enable this if you want to use features/actions which only work on rooted devices. Key Mapper must have root permission from your root-access-management app (e.g Magisk, SuperSU) for these features to work.
         Only turn this on if you know your device is rooted and you have given Key Mapper root permission.</string>
     <!-- Settings Activity -->
 
