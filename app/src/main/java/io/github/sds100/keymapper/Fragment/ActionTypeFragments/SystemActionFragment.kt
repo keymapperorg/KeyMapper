@@ -53,7 +53,8 @@ class SystemActionFragment : FilterableActionTypeFragment(),
     }
 
     override fun onItemClick(item: SystemActionDef) {
-        if (item.id == SystemAction.VOLUME_DECREASE_STREAM) {
+        if (item.id == SystemAction.VOLUME_DECREASE_STREAM
+                || item.id == SystemAction.VOLUME_INCREASE_STREAM) {
 
             VolumeUtils.showStreamPickerDialog(context!!) { streamType ->
 

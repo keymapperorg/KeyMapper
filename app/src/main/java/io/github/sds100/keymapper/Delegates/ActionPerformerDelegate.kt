@@ -132,12 +132,25 @@ class ActionPerformerDelegate(
 
                 //the volume UI should always be shown for this action
                 SystemAction.VOLUME_SHOW_DIALOG -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_SAME, true)
+
                 SystemAction.VOLUME_DECREASE_STREAM -> {
 
                     action.getExtraData(Action.EXTRA_STREAM_TYPE).onSuccess { streamType ->
                         VolumeUtils.adjustSpecificStream(
                                 this,
                                 AudioManager.ADJUST_LOWER,
+                                showVolumeUi,
+                                streamType.toInt()
+                        )
+                    }
+                }
+
+                SystemAction.VOLUME_INCREASE_STREAM -> {
+
+                    action.getExtraData(Action.EXTRA_STREAM_TYPE).onSuccess { streamType ->
+                        VolumeUtils.adjustSpecificStream(
+                                this,
+                                AudioManager.ADJUST_RAISE,
                                 showVolumeUi,
                                 streamType.toInt()
                         )

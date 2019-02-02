@@ -76,14 +76,20 @@ object ActionUtils {
                 return SystemActionUtils.getSystemActionDef(systemActionId).onSuccess {
 
                     //The description for changing a specific stream requires formatting the string with the stream type.
-                    if (systemActionId == SystemAction.VOLUME_DECREASE_STREAM) {
+                    if (systemActionId == SystemAction.VOLUME_DECREASE_STREAM
+                            || systemActionId == SystemAction.VOLUME_INCREASE_STREAM) {
 
                         action.getExtraData(Action.EXTRA_STREAM_TYPE).handle(
                                 onSuccess = { streamType ->
                                     val streamLabel = ctx.str(VolumeUtils.getStreamLabel(streamType.toInt()))
 
-                                    ctx.str(R.string.action_decrease_stream_formatted,
-                                            streamLabel)
+                                    if (systemActionId == SystemAction.VOLUME_DECREASE_STREAM) {
+                                        ctx.str(R.string.action_decrease_stream_formatted,
+                                                streamLabel)
+                                    } else {
+                                        ctx.str(R.string.action_increase_stream_formatted,
+                                                streamLabel)
+                                    }
                                 },
 
                                 onFailure = { "" }

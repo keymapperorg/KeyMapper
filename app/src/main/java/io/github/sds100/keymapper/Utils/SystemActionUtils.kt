@@ -240,9 +240,15 @@ object SystemActionUtils {
                     descriptionRes = R.string.action_volume_down
             ),
             SystemActionDef(
+                    id = SystemAction.VOLUME_INCREASE_STREAM,
+                    category = CATEGORY_VOLUME,
+                    iconRes = R.drawable.ic_volume_up_black_24dp,
+                    descriptionRes = R.string.action_increase_stream
+            ),
+            SystemActionDef(
                     id = SystemAction.VOLUME_DECREASE_STREAM,
                     category = CATEGORY_VOLUME,
-                    iconRes = R.drawable.ic_volume_mute_black_24dp,
+                    iconRes = R.drawable.ic_volume_down_black_24dp,
                     descriptionRes = R.string.action_decrease_stream
             ),
             SystemActionDef(

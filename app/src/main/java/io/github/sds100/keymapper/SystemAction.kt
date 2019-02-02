@@ -52,6 +52,7 @@ object SystemAction {
     const val VOLUME_DOWN = "volume_down"
     const val VOLUME_SHOW_DIALOG = "volume_show_dialog"
     const val VOLUME_DECREASE_STREAM = "volume_decrease_stream"
+    const val VOLUME_INCREASE_STREAM = "volume_increase_stream"
 
     @RequiresApi(Build.VERSION_CODES.M)
     const val VOLUME_UNMUTE = "volume_unmute"

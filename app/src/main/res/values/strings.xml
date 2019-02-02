@@ -225,6 +225,8 @@
     <string name="action_toggle_mute">Toggle Mute</string>
     <string name="action_volume_unmute">Unmute Volume</string>
     <string name="action_volume_show_dialog">Show Volume Dialog</string>
+    <string name="action_increase_stream">Increase Stream</string>
+    <string name="action_increase_stream_formatted">Increase %s Stream</string>
     <string name="action_decrease_stream">Decrease Stream</string>
     <string name="action_decrease_stream_formatted">Decrease %s Stream</string>
 
