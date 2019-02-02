@@ -240,6 +240,12 @@ object SystemActionUtils {
                     descriptionRes = R.string.action_volume_down
             ),
             SystemActionDef(
+                    id = SystemAction.VOLUME_DECREASE_STREAM,
+                    category = CATEGORY_VOLUME,
+                    iconRes = R.drawable.ic_volume_mute_black_24dp,
+                    descriptionRes = R.string.action_decrease_stream
+            ),
+            SystemActionDef(
                     id = SystemAction.VOLUME_SHOW_DIALOG,
                     category = CATEGORY_VOLUME,
                     descriptionRes = R.string.action_volume_show_dialog

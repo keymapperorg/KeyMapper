@@ -14,7 +14,8 @@ import java.io.Serializable
 
 @StringDef(value = [
     Action.EXTRA_PACKAGE_NAME,
-    Action.EXTRA_SHORTCUT_TITLE
+    Action.EXTRA_SHORTCUT_TITLE,
+    Action.EXTRA_STREAM_TYPE
 ])
 annotation class ExtraId
 
@@ -56,7 +57,10 @@ data class Action(
         //DON'T CHANGE THESE IDs!!!!
         const val EXTRA_SHORTCUT_TITLE = "extra_title"
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
+        const val EXTRA_STREAM_TYPE = "extra_stream_type"
     }
+
+    constructor(type: ActionType, data: String, extra: Extra) : this(type, data, mutableListOf(extra))
 
     val requiresIME: Boolean
         get() = type == ActionType.KEY ||

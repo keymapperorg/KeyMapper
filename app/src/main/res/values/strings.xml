@@ -80,6 +80,7 @@
     <string name="dialog_title_cant_find_paired_devices">Can\'t find any paired devices</string>
     <string name="dialog_title_root_prompt">Root permission needed!</string>
     <string name="dialog_title_flags">More</string>
+    <string name="dialog_title_pick_stream">Pick stream</string>
     <!-- Dialog titles -->
 
     <!-- Dialog messages -->
@@ -176,6 +177,17 @@
     <string name="flag_long_press">Long press</string>
     <!--flags-->
 
+    <!-- streams -->
+    <string name="stream_accessibility">Accessibility</string>
+    <string name="stream_alarm">Alarm</string>
+    <string name="stream_dtmf">DTMF</string>
+    <string name="stream_music">Music</string>
+    <string name="stream_notification">Notifications</string>
+    <string name="stream_ring">Ring</string>
+    <string name="stream_system">System</string>
+    <string name="stream_voice_call">Voice call</string>
+    <!-- streams -->
+
     <!-- Error messages -->
     <string name="error_must_type_a_key">You must type a key!</string>
     <string name="error_must_have_atleast_one_trigger">You must have at least one trigger</string>
@@ -213,6 +225,8 @@
     <string name="action_toggle_mute">Toggle Mute</string>
     <string name="action_volume_unmute">Unmute Volume</string>
     <string name="action_volume_show_dialog">Show Volume Dialog</string>
+    <string name="action_decrease_stream">Decrease Stream</string>
+    <string name="action_decrease_stream_formatted">Decrease %s Stream</string>
 
     <string name="action_enable_auto_rotate">Enable Auto Rotate</string>
     <string name="action_disable_auto_rotate">Disable Auto Rotate</string>

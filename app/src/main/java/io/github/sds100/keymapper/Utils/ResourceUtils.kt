@@ -17,7 +17,7 @@ import io.github.sds100.keymapper.Interfaces.IContext
  * Get a resource string
  */
 // Using varargs doesn't work since prints [LJava.lang.object@32f...etc
-fun Context.str(@StringRes resId: Int, formatArgs: Any? = null): String = getString(resId, formatArgs)
+fun Context.str(@StringRes resId: Int, formatArg: Any? = null): String = getString(resId, formatArg)
 
 fun IContext.str(@StringRes resId: Int, formatArgs: Any? = null): String = ctx.getString(resId, formatArgs)
 fun View.str(@StringRes resId: Int, formatArgs: Any? = null): String = context.str(resId, formatArgs)
