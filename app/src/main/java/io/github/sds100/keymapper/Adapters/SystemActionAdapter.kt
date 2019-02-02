@@ -63,10 +63,10 @@ class SystemActionAdapter(
     override fun getItem(position: Int): Any? {
         val item = items[position]
 
-        if (item is SectionItem) {
-            return null
+        return if (item is SectionItem) {
+            null
         } else {
-            return item
+            item
         }
     }
 

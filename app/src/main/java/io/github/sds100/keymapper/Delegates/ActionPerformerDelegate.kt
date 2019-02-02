@@ -75,7 +75,7 @@ class ActionPerformerDelegate(
                     sendBroadcast(intent)
                 }
 
-                ActionType.SYSTEM_ACTION -> performSystemAction(action.data, flags)
+                ActionType.SYSTEM_ACTION -> performSystemAction(action, flags)
 
                 else -> {
                     //for actions which require the IME service
@@ -91,7 +91,9 @@ class ActionPerformerDelegate(
         }
     }
 
-    private fun performSystemAction(id: String, flags: List<Int>) {
+    private fun performSystemAction(action: Action, flags: List<Int>) {
+
+        val id = action.data
 
         val showVolumeUi = flags.contains(FLAG_SHOW_VOLUME_UI)
 
@@ -127,7 +129,33 @@ class ActionPerformerDelegate(
 
                 SystemAction.VOLUME_UP -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_RAISE, showVolumeUi)
                 SystemAction.VOLUME_DOWN -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_LOWER, showVolumeUi)
-                SystemAction.VOLUME_SHOW_DIALOG -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_SAME, showVolumeUi)
+
+                //the volume UI should always be shown for this action
+                SystemAction.VOLUME_SHOW_DIALOG -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_SAME, true)
+
+                SystemAction.VOLUME_DECREASE_STREAM -> {
+
+                    action.getExtraData(Action.EXTRA_STREAM_TYPE).onSuccess { streamType ->
+                        VolumeUtils.adjustSpecificStream(
+                                this,
+                                AudioManager.ADJUST_LOWER,
+                                showVolumeUi,
+                                streamType.toInt()
+                        )
+                    }
+                }
+
+                SystemAction.VOLUME_INCREASE_STREAM -> {
+
+                    action.getExtraData(Action.EXTRA_STREAM_TYPE).onSuccess { streamType ->
+                        VolumeUtils.adjustSpecificStream(
+                                this,
+                                AudioManager.ADJUST_RAISE,
+                                showVolumeUi,
+                                streamType.toInt()
+                        )
+                    }
+                }
 
                 SystemAction.EXPAND_NOTIFICATION_DRAWER -> StatusBarUtils.expandNotificationDrawer()
                 SystemAction.EXPAND_QUICK_SETTINGS -> StatusBarUtils.expandQuickSettings()

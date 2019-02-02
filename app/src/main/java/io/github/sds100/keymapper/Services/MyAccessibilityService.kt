@@ -169,8 +169,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
     private val mHandler = Handler()
 
     /* How does long pressing work?
-       - When a trigger is detected, a Runnable is created which, when executed will perform the action.
-       - The runnable will be queued in the Handler
+       - When a trigger is detected, a Runnable is created which when executed will perform the action.
+       - The runnable will be queued in the Handler.
        - After 500ms the runnable will be executed if it is still queued in the Handler.
        - If the user releases one of the keys which is assigned to a Runnable in the mRunnableTriggerMap, the Runnable
        will be removed from the Runnable list and removed from the Handler. This stops it being executed after the user
@@ -297,10 +297,13 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                 //if there is no error
                 if (errorResult == null) {
                     if (keyMap.flags.contains(FLAG_LONG_PRESS)) {
+
                         val runnable = Runnable {
                             mActionPerformerDelegate.performAction(keyMap.action!!, keyMap.flags)
                         }
+
                         runnable.trigger = mPressedTriggerKeys
+
                         mLongPressRunnables.add(runnable)
 
                         mHandler.postDelayed(runnable, LONG_PRESS_DELAY)
