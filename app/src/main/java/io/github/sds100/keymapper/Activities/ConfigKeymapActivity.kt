@@ -203,11 +203,6 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
             }
 
             R.id.action_done -> {
-                //if the key map isn't valid, return.
-                if (!viewModel.keyMap.value!!.isValid(this)) {
-                    return true
-                }
-
                 viewModel.saveKeymap()
 
                 finish()

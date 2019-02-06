@@ -40,20 +40,4 @@ data class KeyMap(
 
         return true
     }
-
-    /**
-     * [ctx] is required so toast messages can be displayed
-     */
-    fun isValid(ctx: Context): Boolean {
-        if (triggerList.isEmpty()) {
-            Toast.makeText(ctx, R.string.error_must_have_atleast_one_trigger, LENGTH_SHORT).show()
-            return false
-        }
-
-        if (action == null) {
-            Toast.makeText(ctx, R.string.error_must_choose_action, LENGTH_SHORT).show()
-        }
-
-        return true
-    }
 }

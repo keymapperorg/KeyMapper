@@ -44,7 +44,10 @@ class KeyMapRepository private constructor(ctx: Context) {
         }
     }
 
-    fun getKeyMap(id: Long): KeyMap {
+    /**
+     * Get a copy of a keymap so any changes made to it won't appear in the list.
+     */
+    fun getKeyMapCopy(id: Long): KeyMap {
         /*must be copied otherwise any changes made to it (even without updating it in the database)
         will appear in the list */
         return keyMapList.value!!.find { it.id == id }!!.copy()
