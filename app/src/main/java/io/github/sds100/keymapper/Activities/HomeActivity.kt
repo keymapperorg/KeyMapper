@@ -15,7 +15,6 @@ import android.view.View
 import androidx.annotation.ColorRes
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -33,8 +32,7 @@ import io.github.sds100.keymapper.Selection.SelectionEvent
 import io.github.sds100.keymapper.Selection.SelectionProvider
 import io.github.sds100.keymapper.Services.MyAccessibilityService
 import io.github.sds100.keymapper.Services.MyIMEService
-import io.github.sds100.keymapper.Utils.ActionUtils
-import io.github.sds100.keymapper.Utils.NotificationUtils
+import io.github.sds100.keymapper.Utils.*
 import io.github.sds100.keymapper.ViewModels.KeyMapListViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -43,7 +41,7 @@ import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 
-class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemClickListener,
+class HomeActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemClickListener,
         OnItemClickListener<KeymapAdapterModel> {
 
     private val mBroadcastReceiver = object : BroadcastReceiver() {
@@ -63,7 +61,9 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        if (defaultSharedPreferences.getBoolean(getString(R.string.key_pref_show_notification), true)) {
+        if (defaultSharedPreferences.getBoolean(
+                        str(R.string.key_pref_show_notification),
+                        bool(R.bool.default_value_show_notifications))) {
             NotificationUtils.showIMEPickerNotification(this)
         } else {
             NotificationUtils.hideImePickerNotification(this)
@@ -178,6 +178,11 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
                 startActivity(intent)
                 true
             }
+            R.id.action_help -> {
+                val intent = Intent(this, HelpActivity::class.java)
+                startActivity(intent)
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -224,7 +229,7 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
 
             keyMapList.forEach { keyMap ->
 
-                val actionDescription = ActionUtils.getDescription(this@MainActivity, keyMap.action)
+                val actionDescription = ActionUtils.getDescription(this@HomeActivity, keyMap.action)
 
                 adapterModels.add(KeymapAdapterModel(keyMap, actionDescription))
             }
@@ -278,6 +283,6 @@ class MainActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setStatusBarColor(@ColorRes colorId: Int) {
-        window.statusBarColor = ContextCompat.getColor(this, colorId)
+        window.statusBarColor = color(colorId)
     }
 }

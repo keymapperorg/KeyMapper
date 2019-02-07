@@ -16,6 +16,11 @@
 
     <!--Fix bug where dialog buttons from the anko library don't style correctly.-->
     <style name="AnkoSupportAlertDialog" parent="Theme.MaterialComponents.Light.Dialog">
+
+        <!-- Forces the dialog to fill up more of the screen-->
+        <item name="android:windowMinWidthMajor">90%</item>
+        <item name="android:windowMinWidthMinor">90%</item>
+
         <item name="android:buttonBarButtonStyle">
             @style/Widget.MaterialComponents.Button.TextButton.Dialog
         </item>

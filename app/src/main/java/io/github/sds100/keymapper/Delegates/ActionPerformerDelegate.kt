@@ -7,26 +7,40 @@ import android.media.AudioManager
 import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
+import androidx.lifecycle.Lifecycle
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Interfaces.IContext
 import io.github.sds100.keymapper.Interfaces.IPerformGlobalAction
 import io.github.sds100.keymapper.Services.MyIMEService
 import io.github.sds100.keymapper.Utils.*
+import io.github.sds100.keymapper.Utils.FlagUtils.FLAG_SHOW_VOLUME_UI
 import org.jetbrains.anko.defaultSharedPreferences
 
 /**
  * Created by sds100 on 25/11/2018.
  */
 
-class PerformActionDelegate(iContext: IContext, iPerformGlobalAction: IPerformGlobalAction
+class ActionPerformerDelegate(
+        iContext: IContext,
+        iPerformGlobalAction: IPerformGlobalAction,
+        lifecycle: Lifecycle
 ) : IContext by iContext, IPerformGlobalAction by iPerformGlobalAction {
 
-    fun performAction(action: Action) {
+    private lateinit var mFlashlightController: FlashlightController
+
+    init {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mFlashlightController = FlashlightController(this)
+            lifecycle.addObserver(mFlashlightController)
+        }
+    }
+
+    fun performAction(action: Action, flags: List<Int>) {
         ctx.apply {
             //Only show a toast message that Key Mapper is performing an action if the user has enabled it
-            val key = getString(R.string.key_pref_show_toast_when_action_performed)
+            val key = str(R.string.key_pref_show_toast_when_action_performed)
 
-            if (defaultSharedPreferences.getBoolean(key, false)) {
+            if (defaultSharedPreferences.getBoolean(key, bool(R.bool.default_value_show_toast))) {
                 Toast.makeText(this, R.string.performing_action, Toast.LENGTH_SHORT).show()
             }
 
@@ -61,7 +75,7 @@ class PerformActionDelegate(iContext: IContext, iPerformGlobalAction: IPerformGl
                     sendBroadcast(intent)
                 }
 
-                ActionType.SYSTEM_ACTION -> performSystemAction(action.data)
+                ActionType.SYSTEM_ACTION -> performSystemAction(action, flags)
 
                 else -> {
                     //for actions which require the IME service
@@ -77,20 +91,25 @@ class PerformActionDelegate(iContext: IContext, iPerformGlobalAction: IPerformGl
         }
     }
 
-    private fun performSystemAction(id: String) {
+    private fun performSystemAction(action: Action, flags: List<Int>) {
+
+        val id = action.data
+
+        val showVolumeUi = flags.contains(FLAG_SHOW_VOLUME_UI)
+
         ctx.apply {
             when (id) {
-                SystemAction.ENABLE_WIFI -> WifiUtils.changeWifiState(this, StateChange.ENABLE)
-                SystemAction.DISABLE_WIFI -> WifiUtils.changeWifiState(this, StateChange.DISABLE)
-                SystemAction.TOGGLE_WIFI -> WifiUtils.changeWifiState(this, StateChange.TOGGLE)
+                SystemAction.ENABLE_WIFI -> NetworkUtils.changeWifiState(this, StateChange.ENABLE)
+                SystemAction.DISABLE_WIFI -> NetworkUtils.changeWifiState(this, StateChange.DISABLE)
+                SystemAction.TOGGLE_WIFI -> NetworkUtils.changeWifiState(this, StateChange.TOGGLE)
 
                 SystemAction.TOGGLE_BLUETOOTH -> BluetoothUtils.changeBluetoothState(StateChange.TOGGLE)
                 SystemAction.ENABLE_BLUETOOTH -> BluetoothUtils.changeBluetoothState(StateChange.ENABLE)
                 SystemAction.DISABLE_BLUETOOTH -> BluetoothUtils.changeBluetoothState(StateChange.DISABLE)
 
-                SystemAction.TOGGLE_MOBILE_DATA -> MobileDataUtils.toggleMobileData(this)
-                SystemAction.ENABLE_MOBILE_DATA -> MobileDataUtils.enableMobileData()
-                SystemAction.DISABLE_MOBILE_DATA -> MobileDataUtils.disableMobileData()
+                SystemAction.TOGGLE_MOBILE_DATA -> NetworkUtils.toggleMobileData(this)
+                SystemAction.ENABLE_MOBILE_DATA -> NetworkUtils.enableMobileData()
+                SystemAction.DISABLE_MOBILE_DATA -> NetworkUtils.disableMobileData()
 
                 SystemAction.TOGGLE_AUTO_BRIGHTNESS -> BrightnessUtils.toggleAutoBrightness(this)
                 SystemAction.ENABLE_AUTO_BRIGHTNESS ->
@@ -108,9 +127,35 @@ class PerformActionDelegate(iContext: IContext, iPerformGlobalAction: IPerformGl
                 SystemAction.PORTRAIT_MODE -> ScreenRotationUtils.forcePortraitMode(this)
                 SystemAction.LANDSCAPE_MODE -> ScreenRotationUtils.forceLandscapeMode(this)
 
-                SystemAction.VOLUME_UP -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_RAISE)
-                SystemAction.VOLUME_DOWN -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_LOWER)
-                SystemAction.VOLUME_SHOW_DIALOG -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_SAME)
+                SystemAction.VOLUME_UP -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_RAISE, showVolumeUi)
+                SystemAction.VOLUME_DOWN -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_LOWER, showVolumeUi)
+
+                //the volume UI should always be shown for this action
+                SystemAction.VOLUME_SHOW_DIALOG -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_SAME, true)
+
+                SystemAction.VOLUME_DECREASE_STREAM -> {
+
+                    action.getExtraData(Action.EXTRA_STREAM_TYPE).onSuccess { streamType ->
+                        VolumeUtils.adjustSpecificStream(
+                                this,
+                                AudioManager.ADJUST_LOWER,
+                                showVolumeUi,
+                                streamType.toInt()
+                        )
+                    }
+                }
+
+                SystemAction.VOLUME_INCREASE_STREAM -> {
+
+                    action.getExtraData(Action.EXTRA_STREAM_TYPE).onSuccess { streamType ->
+                        VolumeUtils.adjustSpecificStream(
+                                this,
+                                AudioManager.ADJUST_RAISE,
+                                showVolumeUi,
+                                streamType.toInt()
+                        )
+                    }
+                }
 
                 SystemAction.EXPAND_NOTIFICATION_DRAWER -> StatusBarUtils.expandNotificationDrawer()
                 SystemAction.EXPAND_QUICK_SETTINGS -> StatusBarUtils.expandQuickSettings()
@@ -125,16 +170,37 @@ class PerformActionDelegate(iContext: IContext, iPerformGlobalAction: IPerformGl
                 SystemAction.GO_BACK -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
                 SystemAction.GO_HOME -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
                 SystemAction.OPEN_RECENTS -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
-
                 //there must be a way to do this without root
                 SystemAction.OPEN_MENU -> RootUtils.executeRootCommand("input keyevent 82")
 
                 else -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         when (id) {
-                            SystemAction.VOLUME_UNMUTE -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_UNMUTE)
-                            SystemAction.VOLUME_MUTE -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_MUTE)
-                            SystemAction.VOLUME_TOGGLE_MUTE -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_TOGGLE_MUTE)
+                            SystemAction.VOLUME_UNMUTE -> VolumeUtils.adjustVolume(
+                                    this,
+                                    AudioManager.ADJUST_UNMUTE,
+                                    showVolumeUi
+                            )
+
+                            SystemAction.VOLUME_MUTE -> VolumeUtils.adjustVolume(
+                                    this,
+                                    AudioManager.ADJUST_MUTE,
+                                    showVolumeUi
+                            )
+
+                            SystemAction.VOLUME_TOGGLE_MUTE ->
+                                VolumeUtils.adjustVolume(this, AudioManager.ADJUST_TOGGLE_MUTE, showVolumeUi)
+
+                            SystemAction.TOGGLE_FLASHLIGHT -> mFlashlightController.toggleFlashlight()
+                            SystemAction.ENABLE_FLASHLIGHT -> mFlashlightController.setFlashlightMode(true)
+                            SystemAction.DISABLE_FLASHLIGHT -> mFlashlightController.setFlashlightMode(false)
+                        }
+                    }
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                        when (id) {
+                            SystemAction.SCREENSHOT ->
+                                performGlobalAction(AccessibilityService.GLOBAL_ACTION_TAKE_SCREENSHOT)
                         }
                     }
                 }

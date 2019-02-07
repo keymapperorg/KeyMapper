@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.DatabaseAsyncTasks
+package io.github.sds100.keymapper.AsyncTasks
 
 import android.os.AsyncTask
 import io.github.sds100.keymapper.Data.AppDatabase

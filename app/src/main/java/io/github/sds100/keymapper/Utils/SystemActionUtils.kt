@@ -2,28 +2,56 @@ package io.github.sds100.keymapper.Utils
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
-import io.github.sds100.keymapper.Constants
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.SystemAction.CATEGORY_BLUETOOTH
+import io.github.sds100.keymapper.SystemAction.CATEGORY_BRIGHTNESS
+import io.github.sds100.keymapper.SystemAction.CATEGORY_FLASHLIGHT
+import io.github.sds100.keymapper.SystemAction.CATEGORY_MEDIA
 import io.github.sds100.keymapper.SystemAction.CATEGORY_MOBILE_DATA
 import io.github.sds100.keymapper.SystemAction.CATEGORY_NAVIGATION
+import io.github.sds100.keymapper.SystemAction.CATEGORY_OTHER
 import io.github.sds100.keymapper.SystemAction.CATEGORY_SCREEN_ROTATION
+import io.github.sds100.keymapper.SystemAction.CATEGORY_STATUS_BAR
 import io.github.sds100.keymapper.SystemAction.CATEGORY_VOLUME
 import io.github.sds100.keymapper.SystemAction.CATEGORY_WIFI
+import io.github.sds100.keymapper.SystemAction.COLLAPSE_STATUS_BAR
+import io.github.sds100.keymapper.SystemAction.DECREASE_BRIGHTNESS
+import io.github.sds100.keymapper.SystemAction.DISABLE_AUTO_BRIGHTNESS
+import io.github.sds100.keymapper.SystemAction.DISABLE_AUTO_ROTATE
 import io.github.sds100.keymapper.SystemAction.DISABLE_BLUETOOTH
 import io.github.sds100.keymapper.SystemAction.DISABLE_MOBILE_DATA
 import io.github.sds100.keymapper.SystemAction.DISABLE_WIFI
+import io.github.sds100.keymapper.SystemAction.ENABLE_AUTO_BRIGHTNESS
+import io.github.sds100.keymapper.SystemAction.ENABLE_AUTO_ROTATE
 import io.github.sds100.keymapper.SystemAction.ENABLE_BLUETOOTH
 import io.github.sds100.keymapper.SystemAction.ENABLE_MOBILE_DATA
 import io.github.sds100.keymapper.SystemAction.ENABLE_WIFI
+import io.github.sds100.keymapper.SystemAction.EXPAND_NOTIFICATION_DRAWER
+import io.github.sds100.keymapper.SystemAction.EXPAND_QUICK_SETTINGS
 import io.github.sds100.keymapper.SystemAction.GO_BACK
+import io.github.sds100.keymapper.SystemAction.GO_HOME
+import io.github.sds100.keymapper.SystemAction.INCREASE_BRIGHTNESS
+import io.github.sds100.keymapper.SystemAction.LANDSCAPE_MODE
+import io.github.sds100.keymapper.SystemAction.NEXT_TRACK
+import io.github.sds100.keymapper.SystemAction.OPEN_MENU
+import io.github.sds100.keymapper.SystemAction.OPEN_RECENTS
+import io.github.sds100.keymapper.SystemAction.PAUSE_MEDIA
+import io.github.sds100.keymapper.SystemAction.PLAY_PAUSE_MEDIA
+import io.github.sds100.keymapper.SystemAction.PORTRAIT_MODE
+import io.github.sds100.keymapper.SystemAction.PREVIOUS_TRACK
+import io.github.sds100.keymapper.SystemAction.SCREENSHOT
+import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_ROTATE
 import io.github.sds100.keymapper.SystemAction.TOGGLE_BLUETOOTH
 import io.github.sds100.keymapper.SystemAction.TOGGLE_MOBILE_DATA
 import io.github.sds100.keymapper.SystemAction.TOGGLE_WIFI
 import io.github.sds100.keymapper.SystemAction.VOLUME_MUTE
-import io.github.sds100.keymapper.SystemActionDef
+import io.github.sds100.keymapper.SystemAction.VOLUME_TOGGLE_MUTE
+import io.github.sds100.keymapper.SystemAction.VOLUME_UNMUTE
+import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_SYSTEM_ACTION_NOT_FOUND
 
 /**
  * Created by sds100 on 01/08/2018.
@@ -40,24 +68,66 @@ object SystemActionUtils {
             CATEGORY_MOBILE_DATA to R.string.system_action_cat_mobile_data,
             CATEGORY_NAVIGATION to R.string.system_action_cat_navigation,
             CATEGORY_SCREEN_ROTATION to R.string.system_action_cat_screen_rotation,
-            CATEGORY_VOLUME to R.string.system_action_cat_volume
+            CATEGORY_VOLUME to R.string.system_action_cat_volume,
+            CATEGORY_BRIGHTNESS to R.string.system_action_cat_brightness,
+            CATEGORY_STATUS_BAR to R.string.system_action_cat_status_bar,
+            CATEGORY_MEDIA to R.string.system_action_cat_media,
+            CATEGORY_FLASHLIGHT to R.string.system_action_cat_flashlight,
+            CATEGORY_OTHER to R.string.system_action_cat_other
     )
 
     /**
      * A sorted list of system action definitions
      */
     @SuppressLint("NewApi")
-    val SYSTEM_ACTION_DEFINITIONS = listOf(
+    private val SYSTEM_ACTION_DEFINITIONS = listOf(
 
-            //navigation
+            //NAVIGATION
             SystemActionDef(
                     id = GO_BACK,
                     category = CATEGORY_NAVIGATION,
                     iconRes = R.drawable.ic_arrow_back_black_24dp,
                     descriptionRes = R.string.action_go_back
             ),
+            SystemActionDef(
+                    id = GO_HOME,
+                    category = CATEGORY_NAVIGATION,
+                    iconRes = R.drawable.ic_home_black_24dp,
+                    descriptionRes = R.string.action_go_home
+            ),
+            SystemActionDef(
+                    id = OPEN_RECENTS,
+                    category = CATEGORY_NAVIGATION,
+                    descriptionRes = R.string.action_open_recents
+            ),
+            SystemActionDef(
+                    id = OPEN_MENU,
+                    category = CATEGORY_NAVIGATION,
+                    iconRes = R.drawable.ic_more_vert_black_24dp,
+                    permission = Constants.PERMISSION_ROOT,
+                    descriptionRes = R.string.action_open_menu
+            ),
+            //NAVIGATION
 
-            //wifi
+            //STATUS BAR
+            SystemActionDef(
+                    id = EXPAND_NOTIFICATION_DRAWER,
+                    category = CATEGORY_STATUS_BAR,
+                    descriptionRes = R.string.action_expand_notification_drawer
+            ),
+            SystemActionDef(
+                    id = EXPAND_QUICK_SETTINGS,
+                    category = CATEGORY_STATUS_BAR,
+                    descriptionRes = R.string.action_expand_quick_settings
+            ),
+            SystemActionDef(
+                    id = COLLAPSE_STATUS_BAR,
+                    category = CATEGORY_STATUS_BAR,
+                    descriptionRes = R.string.action_collapse_status_bar
+            ),
+            //STATUS BAR
+
+            //WIFI
             SystemActionDef(
                     id = TOGGLE_WIFI,
                     category = CATEGORY_WIFI,
@@ -76,8 +146,9 @@ object SystemActionUtils {
                     iconRes = R.drawable.ic_signal_wifi_off_black_24dp,
                     descriptionRes = R.string.action_disable_wifi
             ),
+            //WIFI
 
-            //bluetooth
+            //BLUETOOTH
             SystemActionDef(
                     id = TOGGLE_BLUETOOTH,
                     category = CATEGORY_BLUETOOTH,
@@ -96,8 +167,9 @@ object SystemActionUtils {
                     iconRes = R.drawable.ic_bluetooth_disabled_black_24dp,
                     descriptionRes = R.string.action_disable_bluetooth
             ),
+            //BLUETOOTH
 
-            //mobile data REQUIRES ROOT!
+            //MOBILE DATA REQUIRES ROOT!
             SystemActionDef(
                     id = TOGGLE_MOBILE_DATA,
                     category = CATEGORY_MOBILE_DATA,
@@ -119,8 +191,73 @@ object SystemActionUtils {
                     permission = Constants.PERMISSION_ROOT,
                     descriptionRes = R.string.action_disable_mobile_data
             ),
+            //MOBILE DATA
 
-            //volume
+            //MEDIA
+            SystemActionDef(
+                    id = PLAY_PAUSE_MEDIA,
+                    category = CATEGORY_MEDIA,
+                    iconRes = R.drawable.ic_play_pause_24dp,
+                    descriptionRes = R.string.action_play_pause_media
+            ),
+            SystemActionDef(
+                    id = PAUSE_MEDIA,
+                    category = CATEGORY_MEDIA,
+                    iconRes = R.drawable.ic_pause_black_24dp,
+                    descriptionRes = R.string.action_pause_media
+            ),
+            SystemActionDef(
+                    id = PLAY_PAUSE_MEDIA,
+                    category = CATEGORY_MEDIA,
+                    iconRes = R.drawable.ic_play_arrow_black_24dp,
+                    descriptionRes = R.string.action_play_media
+            ),
+            SystemActionDef(
+                    id = NEXT_TRACK,
+                    category = CATEGORY_MEDIA,
+                    iconRes = R.drawable.ic_skip_next_black_24dp,
+                    descriptionRes = R.string.action_next_track
+            ),
+            SystemActionDef(
+                    id = PREVIOUS_TRACK,
+                    category = CATEGORY_MEDIA,
+                    iconRes = R.drawable.ic_skip_previous_black_24dp,
+                    descriptionRes = R.string.action_previous_track
+            ),
+            //MEDIA
+
+            //VOLUME
+            SystemActionDef(
+                    id = SystemAction.VOLUME_UP,
+                    category = CATEGORY_VOLUME,
+                    iconRes = R.drawable.ic_volume_up_black_24dp,
+                    descriptionRes = R.string.action_volume_up
+            ),
+            SystemActionDef(
+                    id = SystemAction.VOLUME_DOWN,
+                    category = CATEGORY_VOLUME,
+                    iconRes = R.drawable.ic_volume_down_black_24dp,
+                    descriptionRes = R.string.action_volume_down
+            ),
+            SystemActionDef(
+                    id = SystemAction.VOLUME_INCREASE_STREAM,
+                    category = CATEGORY_VOLUME,
+                    iconRes = R.drawable.ic_volume_up_black_24dp,
+                    descriptionRes = R.string.action_increase_stream
+            ),
+            SystemActionDef(
+                    id = SystemAction.VOLUME_DECREASE_STREAM,
+                    category = CATEGORY_VOLUME,
+                    iconRes = R.drawable.ic_volume_down_black_24dp,
+                    descriptionRes = R.string.action_decrease_stream
+            ),
+            SystemActionDef(
+                    id = SystemAction.VOLUME_SHOW_DIALOG,
+                    category = CATEGORY_VOLUME,
+                    descriptionRes = R.string.action_volume_show_dialog
+            ),
+
+            //Require Marshmallow and higher
             SystemActionDef(
                     id = VOLUME_MUTE,
                     category = CATEGORY_VOLUME,
@@ -128,183 +265,155 @@ object SystemActionUtils {
                     iconRes = R.drawable.ic_volume_mute_black_24dp,
                     descriptionRes = R.string.action_volume_mute
             ),
+            SystemActionDef(
+                    id = VOLUME_UNMUTE,
+                    category = CATEGORY_VOLUME,
+                    minApi = Build.VERSION_CODES.M,
+                    iconRes = R.drawable.ic_volume_up_black_24dp,
+                    descriptionRes = R.string.action_volume_unmute
+            ),
+            SystemActionDef(
+                    id = VOLUME_TOGGLE_MUTE,
+                    category = CATEGORY_VOLUME,
+                    minApi = Build.VERSION_CODES.M,
+                    iconRes = R.drawable.ic_volume_mute_black_24dp,
+                    descriptionRes = R.string.action_toggle_mute
+            ),
+            //VOLUME
 
-            //screen orientation
+            //SCREEN ORIENTATION
             SystemActionDef(
                     id = TOGGLE_AUTO_ROTATE,
                     category = CATEGORY_SCREEN_ROTATION,
                     permission = Manifest.permission.WRITE_SETTINGS,
                     iconRes = R.drawable.ic_screen_rotation_black_24dp,
                     descriptionRes = R.string.action_toggle_auto_rotate
+            ),
+            SystemActionDef(
+                    id = ENABLE_AUTO_ROTATE,
+                    category = CATEGORY_SCREEN_ROTATION,
+                    permission = Manifest.permission.WRITE_SETTINGS,
+                    iconRes = R.drawable.ic_screen_rotation_black_24dp,
+                    descriptionRes = R.string.action_enable_auto_rotate
+            ),
+            SystemActionDef(
+                    id = DISABLE_AUTO_ROTATE,
+                    category = CATEGORY_SCREEN_ROTATION,
+                    permission = Manifest.permission.WRITE_SETTINGS,
+                    iconRes = R.drawable.ic_screen_lock_rotation_black_24dp,
+                    descriptionRes = R.string.action_disable_auto_rotate
+            ),
+            SystemActionDef(
+                    id = PORTRAIT_MODE,
+                    category = CATEGORY_SCREEN_ROTATION,
+                    permission = Manifest.permission.WRITE_SETTINGS,
+                    iconRes = R.drawable.ic_stay_current_portrait_black_24dp,
+                    descriptionRes = R.string.action_portrait_mode
+            ),
+            SystemActionDef(
+                    id = LANDSCAPE_MODE,
+                    category = CATEGORY_SCREEN_ROTATION,
+                    permission = Manifest.permission.WRITE_SETTINGS,
+                    iconRes = R.drawable.ic_stay_current_landscape_black_24dp,
+                    descriptionRes = R.string.action_landscape_mode
+            ),
+            //SCREEN ORIENTATION
+
+            //BRIGHTNESS
+            SystemActionDef(
+                    id = TOGGLE_AUTO_BRIGHTNESS,
+                    category = CATEGORY_BRIGHTNESS,
+                    iconRes = R.drawable.ic_brightness_auto_black_24dp,
+                    descriptionRes = R.string.action_toggle_auto_brightness
+            ),
+            SystemActionDef(
+                    id = ENABLE_AUTO_BRIGHTNESS,
+                    category = CATEGORY_BRIGHTNESS,
+                    iconRes = R.drawable.ic_brightness_auto_black_24dp,
+                    descriptionRes = R.string.action_enable_auto_brightness
+            ),
+            SystemActionDef(
+                    id = DISABLE_AUTO_BRIGHTNESS,
+                    category = CATEGORY_BRIGHTNESS,
+                    iconRes = R.drawable.ic_disable_brightness_auto_24dp,
+                    descriptionRes = R.string.action_disable_auto_brightness
+            ),
+            SystemActionDef(
+                    id = INCREASE_BRIGHTNESS,
+                    category = CATEGORY_BRIGHTNESS,
+                    iconRes = R.drawable.ic_brightness_high_black_24dp,
+                    descriptionRes = R.string.action_increase_brightness
+            ),
+            SystemActionDef(
+                    id = DECREASE_BRIGHTNESS,
+                    category = CATEGORY_BRIGHTNESS,
+                    iconRes = R.drawable.ic_brightness_low_black_24dp,
+                    descriptionRes = R.string.action_decrease_brightness
+            ),
+
+            //FLASHLIGHT
+            SystemActionDef(
+                    id = SystemAction.TOGGLE_FLASHLIGHT,
+                    category = CATEGORY_FLASHLIGHT,
+                    permission = Manifest.permission.CAMERA,
+                    feature = PackageManager.FEATURE_CAMERA_FLASH,
+                    minApi = Build.VERSION_CODES.M,
+                    iconRes = R.drawable.ic_flashlight,
+                    descriptionRes = R.string.action_toggle_flashlight
+            ),
+            SystemActionDef(
+                    id = SystemAction.ENABLE_FLASHLIGHT,
+                    category = CATEGORY_FLASHLIGHT,
+                    permission = Manifest.permission.CAMERA,
+                    feature = PackageManager.FEATURE_CAMERA_FLASH,
+                    minApi = Build.VERSION_CODES.M,
+                    iconRes = R.drawable.ic_flashlight,
+                    descriptionRes = R.string.action_enable_flashlight
+            ),
+            SystemActionDef(
+                    id = SystemAction.DISABLE_FLASHLIGHT,
+                    category = CATEGORY_FLASHLIGHT,
+                    permission = Manifest.permission.CAMERA,
+                    feature = PackageManager.FEATURE_CAMERA_FLASH,
+                    minApi = Build.VERSION_CODES.M,
+                    iconRes = R.drawable.ic_flashlight_off,
+                    descriptionRes = R.string.action_disable_flashlight
+            ),
+
+            //OTHER
+            SystemActionDef(
+                    id = SCREENSHOT,
+                    category = CATEGORY_OTHER,
+                    minApi = Build.VERSION_CODES.P,
+                    iconRes = R.drawable.ic_screenshot_black_24dp,
+                    descriptionRes = R.string.action_screenshot
             )
     )
 
-    @Throws(Exception::class)
-    fun getSystemActionDef(id: String): SystemActionDef {
-        return SYSTEM_ACTION_DEFINITIONS.find { it.id == id }
-                ?: throw Exception("Can't find that system action definition. $id")
+    /**
+     * Get all the system actions which are supported by the system.
+     */
+    fun getSystemActionDefinitions(ctx: Context): List<SystemActionDef> {
+        return sequence {
+            SYSTEM_ACTION_DEFINITIONS.forEach {
+                /* If the device's Android version is less than the minimum version supported by the action,
+                   don't add it to the list.*/
+                if (Build.VERSION.SDK_INT < it.minApi) return@forEach
+
+                for (feature in it.features) {
+                    if (!ctx.packageManager.hasSystemFeature(feature)) {
+                        return@forEach
+                    }
+                }
+
+                yield(it)
+            }
+        }.toList()
     }
 
-//    fun getSystemActionListItems(): List<SystemActionListItem> {
-//        //must be in the order the items should be shown to the user
-//        return sequence {
-//            yield(SystemActionListItem(SystemAction.GO_BACK))
-//            yield(SystemActionListItem(SystemAction.GO_HOME))
-//            yield(SystemActionListItem(SystemAction.OPEN_RECENTS))
-//            yield(SystemActionListItem(SystemAction.OPEN_MENU))
-//
-//            yield(SystemActionListItem(SystemAction.TOGGLE_WIFI))
-//            yield(SystemActionListItem(SystemAction.ENABLE_WIFI))
-//            yield(SystemActionListItem(SystemAction.DISABLE_WIFI))
-//
-//            yield(SystemActionListItem(SystemAction.TOGGLE_MOBILE_DATA))
-//            yield(SystemActionListItem(SystemAction.ENABLE_MOBILE_DATA))
-//            yield(SystemActionListItem(SystemAction.DISABLE_MOBILE_DATA))
-//
-//            yield(SystemActionListItem(SystemAction.TOGGLE_BLUETOOTH))
-//            yield(SystemActionListItem(SystemAction.ENABLE_BLUETOOTH))
-//            yield(SystemActionListItem(SystemAction.DISABLE_BLUETOOTH))
-//
-//            yield(SystemActionListItem(SystemAction.VOLUME_UP))
-//            yield(SystemActionListItem(SystemAction.VOLUME_DOWN))
-//            yield(SystemActionListItem(SystemAction.VOLUME_SHOW_DIALOG))
-//
-//            yield(SystemActionListItem(SystemAction.TOGGLE_AUTO_ROTATE))
-//            yield(SystemActionListItem(SystemAction.ENABLE_AUTO_ROTATE))
-//            yield(SystemActionListItem(SystemAction.DISABLE_AUTO_ROTATE))
-//            yield(SystemActionListItem(SystemAction.PORTRAIT_MODE))
-//            yield(SystemActionListItem(SystemAction.LANDSCAPE_MODE))
-//
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//                yield(SystemActionListItem(SystemAction.VOLUME_MUTE))
-//                yield(SystemActionListItem(SystemAction.VOLUME_UNMUTE))
-//                yield(SystemActionListItem(SystemAction.VOLUME_TOGGLE_MUTE))
-//            }
-//
-//            yield(SystemActionListItem(SystemAction.TOGGLE_AUTO_BRIGHTNESS))
-//            yield(SystemActionListItem(SystemAction.ENABLE_AUTO_BRIGHTNESS))
-//            yield(SystemActionListItem(SystemAction.DISABLE_AUTO_BRIGHTNESS))
-//            yield(SystemActionListItem(SystemAction.INCREASE_BRIGHTNESS))
-//            yield(SystemActionListItem(SystemAction.DECREASE_BRIGHTNESS))
-//
-//            yield(SystemActionListItem(SystemAction.EXPAND_NOTIFICATION_DRAWER))
-//            yield(SystemActionListItem(SystemAction.EXPAND_QUICK_SETTINGS))
-//            yield(SystemActionListItem(SystemAction.COLLAPSE_STATUS_BAR))
-//
-//            yield(SystemActionListItem(SystemAction.PAUSE_MEDIA))
-//            yield(SystemActionListItem(SystemAction.PLAY_MEDIA))
-//            yield(SystemActionListItem(SystemAction.PLAY_PAUSE_MEDIA))
-//            yield(SystemActionListItem(SystemAction.NEXT_TRACK))
-//            yield(SystemActionListItem(SystemAction.PREVIOUS_TRACK))
-//        }.toList()
-//    }
-//
-//    /**
-//     * Get resource id for a string which describes a specified [SystemAction].
-//     */
-//    @SuppressLint("NewApi")
-//    @StringRes
-//    fun getDescription(@SystemAction.SystemActionId systemAction: String): Int {
-//        return when (systemAction) {
-//            SystemAction.ENABLE_WIFI -> R.string.action_enable_wifi
-//            SystemAction.DISABLE_WIFI -> R.string.action_disable_wifi
-//            SystemAction.TOGGLE_WIFI -> R.string.action_toggle_wifi
-//
-//            SystemAction.ENABLE_BLUETOOTH -> R.string.action_enable_bluetooth
-//            SystemAction.DISABLE_BLUETOOTH -> R.string.action_disable_bluetooth
-//            SystemAction.TOGGLE_BLUETOOTH -> R.string.action_toggle_bluetooth
-//
-//            SystemAction.VOLUME_UP -> R.string.action_volume_up
-//            SystemAction.VOLUME_DOWN -> R.string.action_volume_down
-//            SystemAction.VOLUME_SHOW_DIALOG -> R.string.action_volume_show_dialog
-//
-//            SystemAction.ENABLE_AUTO_ROTATE -> R.string.action_enable_auto_rotate
-//            SystemAction.DISABLE_AUTO_ROTATE -> R.string.action_disable_auto_rotate
-//            SystemAction.TOGGLE_AUTO_ROTATE -> R.string.action_toggle_auto_rotate
-//            SystemAction.PORTRAIT_MODE -> R.string.action_portrait_mode
-//            SystemAction.LANDSCAPE_MODE -> R.string.action_landscape_mode
-//
-//            SystemAction.VOLUME_MUTE -> return R.string.action_volume_mute
-//            SystemAction.VOLUME_TOGGLE_MUTE -> return R.string.action_toggle_mute
-//            SystemAction.VOLUME_UNMUTE -> return R.string.action_volume_unmute
-//
-//            SystemAction.TOGGLE_MOBILE_DATA -> return R.string.action_toggle_mobile_data
-//            SystemAction.ENABLE_MOBILE_DATA -> return R.string.action_enable_mobile_data
-//            SystemAction.DISABLE_MOBILE_DATA -> return R.string.action_disable_mobile_data
-//
-//            SystemAction.TOGGLE_AUTO_BRIGHTNESS -> return R.string.action_toggle_auto_brightness
-//            SystemAction.DISABLE_AUTO_BRIGHTNESS -> return R.string.action_disable_auto_brightness
-//            SystemAction.ENABLE_AUTO_BRIGHTNESS -> return R.string.action_enable_auto_brightness
-//            SystemAction.INCREASE_BRIGHTNESS -> return R.string.action_increase_brightness
-//            SystemAction.DECREASE_BRIGHTNESS -> return R.string.action_decrease_brightness
-//
-//            SystemAction.EXPAND_NOTIFICATION_DRAWER -> return R.string.action_expand_notification_drawer
-//            SystemAction.EXPAND_QUICK_SETTINGS -> return R.string.action_expand_quick_settings
-//            SystemAction.COLLAPSE_STATUS_BAR -> return R.string.action_collapse_status_bar
-//
-//            SystemAction.PAUSE_MEDIA -> return R.string.action_pause_media
-//            SystemAction.PLAY_MEDIA -> return R.string.action_play_media
-//            SystemAction.PLAY_PAUSE_MEDIA -> return R.string.action_play_pause_media
-//            SystemAction.NEXT_TRACK -> return R.string.action_next_track
-//            SystemAction.PREVIOUS_TRACK -> return R.string.action_previous_track
-//            SystemAction.GO_BACK -> return R.string.action_go_back
-//            SystemAction.GO_HOME -> return R.string.action_go_home
-//            SystemAction.OPEN_RECENTS -> return R.string.action_open_recents
-//            SystemAction.OPEN_MENU -> return R.string.action_open_menu
-//
-//            else -> throw Exception("Can't find a description for $systemAction")
-//        }
-//    }
-//
-//    /**
-//     * Get a drawable resource id for a specified [SystemAction]
-//     */
-//    @SuppressLint("NewApi")
-//    @DrawableRes
-//    fun getIconResource(@SystemAction.SystemActionId systemAction: String): Int? {
-//        return when (systemAction) {
-//            SystemAction.TOGGLE_WIFI -> R.drawable.ic_network_wifi_black_24dp
-//            SystemAction.ENABLE_WIFI -> R.drawable.ic_network_wifi_black_24dp
-//            SystemAction.DISABLE_WIFI -> R.drawable.ic_signal_wifi_off_black_24dp
-//
-//            SystemAction.TOGGLE_BLUETOOTH -> R.drawable.ic_bluetooth_black_24dp
-//            SystemAction.ENABLE_BLUETOOTH -> R.drawable.ic_bluetooth_black_24dp
-//            SystemAction.DISABLE_BLUETOOTH -> R.drawable.ic_bluetooth_disabled_black_24dp
-//
-//            SystemAction.VOLUME_UP -> R.drawable.ic_volume_up_black_24dp
-//            SystemAction.VOLUME_DOWN -> R.drawable.ic_volume_down_black_24dp
-//            SystemAction.VOLUME_MUTE -> R.drawable.ic_volume_mute_black_24dp
-//            SystemAction.VOLUME_TOGGLE_MUTE -> R.drawable.ic_volume_mute_black_24dp
-//            SystemAction.VOLUME_UNMUTE -> R.drawable.ic_volume_up_black_24dp
-//
-//            SystemAction.ENABLE_AUTO_ROTATE -> R.drawable.ic_screen_rotation_black_24dp
-//            SystemAction.DISABLE_AUTO_ROTATE -> R.drawable.ic_screen_lock_rotation_black_24dp
-//            SystemAction.TOGGLE_AUTO_ROTATE -> R.drawable.ic_screen_rotation_black_24dp
-//            SystemAction.PORTRAIT_MODE -> R.drawable.ic_stay_current_portrait_black_24dp
-//            SystemAction.LANDSCAPE_MODE -> R.drawable.ic_stay_current_landscape_black_24dp
-//
-//            SystemAction.TOGGLE_MOBILE_DATA -> R.drawable.ic_signal
-//            SystemAction.ENABLE_MOBILE_DATA -> R.drawable.ic_signal
-//            SystemAction.DISABLE_MOBILE_DATA -> R.drawable.ic_signal_off
-//
-//            SystemAction.TOGGLE_AUTO_BRIGHTNESS -> R.drawable.ic_brightness_auto_black_24dp
-//            SystemAction.DISABLE_AUTO_BRIGHTNESS -> R.drawable.ic_disable_brightness_auto_24dp
-//            SystemAction.ENABLE_AUTO_BRIGHTNESS -> R.drawable.ic_brightness_auto_black_24dp
-//            SystemAction.INCREASE_BRIGHTNESS -> R.drawable.ic_brightness_high_black_24dp
-//            SystemAction.DECREASE_BRIGHTNESS -> R.drawable.ic_brightness_low_black_24dp
-//
-//            SystemAction.PAUSE_MEDIA -> R.drawable.ic_pause_black_24dp
-//            SystemAction.PLAY_MEDIA -> R.drawable.ic_play_arrow_black_24dp
-//            SystemAction.PLAY_PAUSE_MEDIA -> R.drawable.ic_play_pause_24dp
-//            SystemAction.NEXT_TRACK -> R.drawable.ic_skip_next_black_24dp
-//            SystemAction.PREVIOUS_TRACK -> R.drawable.ic_skip_previous_black_24dp
-//
-//            SystemAction.GO_BACK -> R.drawable.ic_arrow_back_black_24dp
-//            SystemAction.GO_HOME -> R.drawable.ic_home_black_24dp
-//            SystemAction.OPEN_RECENTS -> R.drawable.crop_square
-//            SystemAction.OPEN_MENU -> R.drawable.ic_more_vert_black_24dp
-//
-//            else -> null
-//        }
-//    }
+    fun getSystemActionDef(id: String): Result<SystemActionDef> {
+        val systemActionDef = SYSTEM_ACTION_DEFINITIONS.find { it.id == id }
+
+        return systemActionDef.createResult(ERROR_CODE_SYSTEM_ACTION_NOT_FOUND, id)
+    }
 }

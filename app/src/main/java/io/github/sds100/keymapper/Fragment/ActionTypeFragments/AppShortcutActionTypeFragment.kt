@@ -9,12 +9,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.sds100.keymapper.Action
+import io.github.sds100.keymapper.Action.Companion.EXTRA_PACKAGE_NAME
+import io.github.sds100.keymapper.Action.Companion.EXTRA_SHORTCUT_TITLE
 import io.github.sds100.keymapper.ActionType
 import io.github.sds100.keymapper.Adapters.AppShortcutAdapter
+import io.github.sds100.keymapper.Extra
 import io.github.sds100.keymapper.Interfaces.OnItemClickListener
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.ShortcutTitleDialog
 import io.github.sds100.keymapper.Utils.AppShortcutUtils
+import io.github.sds100.keymapper.Views.editTextDialog
 import kotlinx.android.synthetic.main.action_type_recyclerview.*
 
 /**
@@ -66,37 +69,35 @@ class AppShortcutActionTypeFragment : FilterableActionTypeFragment(), OnItemClic
 
             data ?: return
 
+            val shortcutUri: String
+
             //the shortcut intents seem to be returned in 2 different formats.
             if (data.extras != null &&
                     data.extras!!.containsKey(Intent.EXTRA_SHORTCUT_INTENT)) {
                 //get intent from selected shortcut
                 val shortcutIntent = data.extras!!.get(Intent.EXTRA_SHORTCUT_INTENT) as Intent
-
-                //show a dialog to prompt for a title.
-                ShortcutTitleDialog.show(context!!) { title ->
-                    shortcutIntent.putExtra(AppShortcutUtils.EXTRA_SHORTCUT_TITLE, title)
-                    shortcutIntent.putExtra(AppShortcutUtils.EXTRA_PACKAGE_NAME,
-                            mTempShortcutPackageName)
-
-                    //save the shortcut intent as a URI
-                    val action = Action(ActionType.APP_SHORTCUT, shortcutIntent.toUri(0))
-                    chooseSelectedAction(action)
-
-                    mTempShortcutPackageName = null
-                }
+                shortcutUri = shortcutIntent.toUri(0)
 
             } else {
-                ShortcutTitleDialog.show(context!!) { title ->
-                    data.putExtra(AppShortcutUtils.EXTRA_SHORTCUT_TITLE, title)
-                    data.putExtra(AppShortcutUtils.EXTRA_PACKAGE_NAME, mTempShortcutPackageName)
-
-                    //save the shortcut intent as a URI
-                    val action = Action(ActionType.APP_SHORTCUT, data.toUri(0))
-                    chooseSelectedAction(action)
-
-                    mTempShortcutPackageName = null
-                }
+                shortcutUri = data.toUri(0)
             }
+
+            //show a dialog to prompt for a title.
+            context!!.editTextDialog(
+                    titleRes = R.string.dialog_title_create_shortcut_title
+            ) { title ->
+                val extras = mutableListOf(
+                        Extra(EXTRA_SHORTCUT_TITLE, title),
+                        Extra(EXTRA_PACKAGE_NAME, mTempShortcutPackageName!!)
+                )
+
+                //save the shortcut intent as a URI
+                val action = Action(ActionType.APP_SHORTCUT, shortcutUri, extras)
+                chooseSelectedAction(action)
+
+                mTempShortcutPackageName = null
+            }
+
         }
     }
 

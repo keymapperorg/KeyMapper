@@ -5,6 +5,8 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.Utils.drawable
+import io.github.sds100.keymapper.Utils.str
 import kotlinx.android.synthetic.main.layout_service_status.view.*
 
 /**
@@ -26,8 +28,17 @@ class ServiceStatusLayout(
         View.inflate(context, R.layout.layout_service_status, this)
 
         if (attrs != null) {
-            mEnabledText = getCustomStringAttrValue(attrs, R.styleable.ServiceStatusLayout_enabledText)!!
-            mDisabledText = getCustomStringAttrValue(attrs, R.styleable.ServiceStatusLayout_disabledText)!!
+            mEnabledText = str(
+                    attrs,
+                    R.styleable.ServiceStatusLayout,
+                    R.styleable.ServiceStatusLayout_enabledText
+            )
+
+            mDisabledText = str(
+                    attrs,
+                    R.styleable.ServiceStatusLayout,
+                    R.styleable.ServiceStatusLayout_disabledText
+            )
         }
 
         //set to disabled state by default
@@ -35,34 +46,26 @@ class ServiceStatusLayout(
     }
 
     fun changeToServiceEnabledState() {
+
+        val drawable = drawable(R.drawable.check_circle_green)
+
         textViewStatus.text = mEnabledText
-        textViewStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.check_circle_green, 0, 0, 0)
+        textViewStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, null, null, null)
 
         buttonFix.visibility = View.GONE
     }
 
     fun changeToServiceDisabledState() {
-        textViewStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.close_circle_red, 0, 0, 0)
+
+        val drawable = drawable(R.drawable.close_circle_red)
+
         textViewStatus.text = mDisabledText
+        textViewStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, null, null, null)
 
         buttonFix.visibility = View.VISIBLE
     }
 
     fun setOnFixClickListener(onClickListener: OnClickListener) {
         buttonFix.setOnClickListener(onClickListener)
-    }
-
-    private fun getCustomStringAttrValue(attrs: AttributeSet, attrId: Int): String? {
-        val typedArray = context.theme.obtainStyledAttributes(attrs, R.styleable.ServiceStatusLayout, 0, 0)
-
-        val attrValue: String?
-
-        try {
-            attrValue = typedArray.getString(attrId)
-        } finally {
-            typedArray.recycle()
-        }
-
-        return attrValue
     }
 }

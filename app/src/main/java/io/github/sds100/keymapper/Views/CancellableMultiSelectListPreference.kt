@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper
+package io.github.sds100.keymapper.Views
 
 import android.content.Context
 import android.util.AttributeSet

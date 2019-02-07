@@ -1,17 +1,18 @@
 package io.github.sds100.keymapper.Fragment
 
+import android.content.SharedPreferences
 import android.os.Bundle
-import androidx.preference.MultiSelectListPreference
-import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.SwitchPreference
+import androidx.preference.*
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Utils.BluetoothUtils
 import io.github.sds100.keymapper.Utils.NotificationUtils
 import org.jetbrains.anko.alert
+import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.okButton
 
-class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener {
+class SettingsFragment : PreferenceFragmentCompat(),
+        Preference.OnPreferenceChangeListener,
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val mShowNotificationPreference by lazy {
         findPreference(getString(R.string.key_pref_show_notification)) as SwitchPreference
@@ -30,17 +31,18 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
         findPreference(getString(R.string.key_pref_auto_show_ime_picker)) as SwitchPreference
     }
 
+    private val mRootPrefCategory by lazy {
+        findPreference(getString(R.string.key_pref_category_root)) as PreferenceCategory
+    }
+
+    private val mEnableRootFeaturesPreference by lazy {
+        findPreference(getString(R.string.key_pref_allow_root_features)) as SwitchPreference
+    }
+
     private var mShowingNoPairedDevicesDialog = false
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.preferences)
-
-        mAutoShowIMEDialogPreference.onPreferenceChangeListener = this
-        mShowNotificationPreference.onPreferenceChangeListener = this
-
-        /*only allow the user to toggle whether the notification shows on boot if they want
-        * to see the notification at all. */
-        mShowNotificationOnBootPreference.isEnabled = mShowNotificationPreference.isChecked
 
         mBluetoothDevicesPreferences.setOnPreferenceClickListener {
             populateBluetoothDevicesPreference()
@@ -50,7 +52,7 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
 
                 /* This awkward way of showing the "can't find any paired devices" dialog
                  * with a CancellableMultiSelectPreference is necessary since you can't
-                 * cancel showing the dialog when once the preference has been clicked.*/
+                 * cancel showing the dialog once the preference has been clicked.*/
 
                 if (!mShowingNoPairedDevicesDialog) {
                     mShowingNoPairedDevicesDialog = true
@@ -73,6 +75,22 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
 
             true
         }
+
+        enableRootPreferences(mEnableRootFeaturesPreference.isChecked)
+
+        mAutoShowIMEDialogPreference.onPreferenceChangeListener = this
+        mShowNotificationPreference.onPreferenceChangeListener = this
+        mEnableRootFeaturesPreference.onPreferenceChangeListener = this
+
+        context!!.defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        onPreferenceChange(
+                findPreference(key),
+                //Use .all[index] because we don't know the data type
+                sharedPreferences!!.all[key]
+        )
     }
 
     override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
@@ -91,14 +109,19 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
                 }
             }
 
-            /* If the user doesn't want the IME picker to automatically show, they don't need
-            * to choose bluetooth devices*/
-            mAutoShowIMEDialogPreference -> {
-                mBluetoothDevicesPreferences.isEnabled = newValue as Boolean
+            //Only enable the root preferences if the user has enabled root features
+            mEnableRootFeaturesPreference -> {
+                enableRootPreferences(newValue as Boolean)
             }
         }
 
         return true
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        context!!.defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
     }
 
     private fun populateBluetoothDevicesPreference() {
@@ -112,5 +135,28 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
             mBluetoothDevicesPreferences.entryValues =
                     pairedDevices.map { it.address }.toTypedArray()
         }
+    }
+
+    private fun enableRootPreferences(enabled: Boolean) {
+        loop@ for (i in 0 until mRootPrefCategory.preferenceCount) {
+            val preference = mRootPrefCategory.getPreference(i)
+
+            when (preference) {
+                mEnableRootFeaturesPreference -> continue@loop
+
+                else -> {
+                    //If disabling the preferences, turn them off.
+                    if (!enabled && preference is SwitchPreference) {
+                        preference.isChecked = false
+                    }
+                }
+            }
+
+            preference.isEnabled = enabled
+        }
+
+        /*only allow the user to toggle whether the notification shows on boot if they want
+        * to see the notification at all.*/
+        mShowNotificationOnBootPreference.isEnabled = mShowNotificationPreference.isChecked
     }
 }

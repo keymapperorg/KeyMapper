@@ -3,16 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="64dp">
+    android:layout_height="wrap_content"
+    android:minHeight="48dp">
 
     <Button
         android:id="@+id/buttonFix"
         style="@style/Widget.MaterialComponents.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:text="@string/button_fix"
         android:visibility="visible"
         app:backgroundTint="@color/error"
@@ -23,11 +24,11 @@
     <TextView
         android:id="@+id/textViewStatus"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="0dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="0dp"
+        android:layout_marginBottom="8dp"
         android:drawablePadding="16dp"
         android:gravity="center_vertical"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"

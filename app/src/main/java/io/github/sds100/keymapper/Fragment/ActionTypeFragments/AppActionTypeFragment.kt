@@ -10,7 +10,7 @@ import io.github.sds100.keymapper.Action
 import io.github.sds100.keymapper.ActionType
 import io.github.sds100.keymapper.Adapters.AppListAdapter
 import io.github.sds100.keymapper.Interfaces.OnItemClickListener
-import io.github.sds100.keymapper.LoadAppListAsyncTask
+import io.github.sds100.keymapper.AsyncTasks.LoadAppListAsyncTask
 import io.github.sds100.keymapper.R
 import kotlinx.android.synthetic.main.action_type_recyclerview.*
 

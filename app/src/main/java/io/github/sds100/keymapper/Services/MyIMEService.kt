@@ -25,7 +25,13 @@ class MyIMEService : InputMethodService() {
 
             val enabledMethods = imeService.enabledInputMethodList
 
-            return enabledMethods.any { it.packageName == "io.github.sds100.keymapper" }
+            return enabledMethods.any { it.packageName == Constants.PACKAGE_NAME }
+        }
+
+        fun getImeId(ctx: Context): String {
+            val imeManager = ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+            return imeManager.inputMethodList.find { it.packageName == Constants.PACKAGE_NAME }!!.id
         }
 
         /**

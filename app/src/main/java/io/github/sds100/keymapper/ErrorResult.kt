@@ -1,17 +1,19 @@
 package io.github.sds100.keymapper
 
-import androidx.annotation.IntDef
-import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_ACTION_IS_NULL
+import android.content.Context
+import io.github.sds100.keymapper.Utils.ErrorCode
+import io.github.sds100.keymapper.Utils.ErrorCodeUtils
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_APP_DISABLED
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_APP_UNINSTALLED
-import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_NO_ACTION_DATA
+import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_FEATURE_NOT_AVAILABLE
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_PERMISSION_DENIED
+import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_SDK_VERSION_TOO_LOW
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_SHORTCUT_NOT_FOUND
 
 /**
  * Created by sds100 on 25/11/2018.
  */
-class ErrorCodeResult(
+class ErrorResult(
         @ErrorCode val errorCode: Int,
         /**
          * Any extra information relating to the error code. E.g the cause
@@ -20,19 +22,21 @@ class ErrorCodeResult(
          *
          * [ERROR_CODE_APP_DISABLED], [ERROR_CODE_APP_UNINSTALLED], [ERROR_CODE_SHORTCUT_NOT_FOUND]:
          * the package name of the app
+         *
+         * [ERROR_CODE_SDK_VERSION_TOO_LOW]: The version code.
+         *
+         * [ERROR_CODE_FEATURE_NOT_AVAILABLE]: The feature id.
          */
         val data: String? = null
-) {
-    companion object {
-        @IntDef(value = [
-            ERROR_CODE_NO_ACTION_DATA,
-            ERROR_CODE_ACTION_IS_NULL,
-            ERROR_CODE_APP_DISABLED,
-            ERROR_CODE_APP_UNINSTALLED,
-            ERROR_CODE_PERMISSION_DENIED,
-            ERROR_CODE_SHORTCUT_NOT_FOUND]
-        )
-        @Retention(AnnotationRetention.SOURCE)
-        private annotation class ErrorCode
-    }
-}
+)
+
+/**
+ * @return The [ErrorResult] isn't null and it can be fixed.
+ */
+val ErrorResult?.isFixable: Boolean
+    get() = this != null && ErrorCodeUtils.isErrorFixable(errorCode)
+
+/**
+ * @see ErrorCodeUtils.fixError
+ */
+fun ErrorResult.fix(ctx: Context) = ErrorCodeUtils.fixError(ctx, this)

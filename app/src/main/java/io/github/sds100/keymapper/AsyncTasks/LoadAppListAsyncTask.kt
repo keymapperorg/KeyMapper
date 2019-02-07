@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper
+package io.github.sds100.keymapper.AsyncTasks
 
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager

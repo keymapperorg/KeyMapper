@@ -20,39 +20,42 @@ object NotificationUtils {
     private const val CHANNEL_ID_PERSISTENT = "channel_persistent"
 
     fun showIMEPickerNotification(ctx: Context) {
-        //create the channel
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                    CHANNEL_ID_PERSISTENT,
-                    ctx.getString(R.string.notification_channel_persistent),
-                    NotificationManager.IMPORTANCE_MIN
-            )
+        ctx.apply {
+            //create the channel
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-            val manager = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            manager.createNotificationChannel(channel)
-        }
+                val channel = NotificationChannel(
+                        CHANNEL_ID_PERSISTENT,
+                        str(R.string.notification_channel_persistent),
+                        NotificationManager.IMPORTANCE_MIN
+                )
 
-        val openImePickerIntent = Intent(ctx, OpenIMEPickerBroadcastReceiver::class.java).apply {
-            action = OpenIMEPickerBroadcastReceiver.ACTION_SHOW_IME_PICKER
-        }
+                val manager = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                manager.createNotificationChannel(channel)
+            }
 
-        val openImePickerPendingIntent = PendingIntent.getBroadcast(ctx, 0, openImePickerIntent, 0)
+            val openImePickerIntent = Intent(ctx, OpenIMEPickerBroadcastReceiver::class.java).apply {
+                action = OpenIMEPickerBroadcastReceiver.ACTION_SHOW_IME_PICKER
+            }
 
-        val builder = NotificationCompat.Builder(ctx, CHANNEL_ID_PERSISTENT)
-                //TODO change notification icon
-                .setSmallIcon(R.mipmap.ic_launcher_round)
-                .setContentTitle(ctx.getString(R.string.notification_persistent_title))
-                .setContentText(ctx.getString(R.string.notification_persistent_text))
-                .setPriority(NotificationCompat.PRIORITY_MIN)
-                .setOngoing(true)
-                .setVisibility(NotificationCompat.VISIBILITY_SECRET) //hide on lockscreen
-                .setContentIntent(openImePickerPendingIntent) //show IME picker on click
+            val openImePickerPendingIntent = PendingIntent.getBroadcast(ctx, 0, openImePickerIntent, 0)
 
-        val notification = builder.build()
+            val builder = NotificationCompat.Builder(ctx, CHANNEL_ID_PERSISTENT)
+                    //TODO change notification icon
+                    .setSmallIcon(R.mipmap.ic_launcher_round)
+                    .setContentTitle(str(R.string.notification_persistent_title))
+                    .setContentText(str(R.string.notification_persistent_text))
+                    .setPriority(NotificationCompat.PRIORITY_MIN)
+                    .setOngoing(true)
+                    .setVisibility(NotificationCompat.VISIBILITY_SECRET) //hide on lockscreen
+                    .setContentIntent(openImePickerPendingIntent) //show IME picker on click
 
-        //show the notification
-        with(NotificationManagerCompat.from(ctx)) {
-            notify(NotificationUtils.NOTIFICATION_ID_PERSISTENT, notification)
+            val notification = builder.build()
+
+            //show the notification
+            with(NotificationManagerCompat.from(ctx)) {
+                notify(NotificationUtils.NOTIFICATION_ID_PERSISTENT, notification)
+            }
         }
     }
 

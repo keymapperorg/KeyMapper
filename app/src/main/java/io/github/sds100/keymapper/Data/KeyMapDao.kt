@@ -13,9 +13,13 @@ abstract class KeyMapDao {
     companion object {
         const val TABLE_NAME = "keymaps"
         const val KEY_ID = "id"
+        const val KEY_FLAGS = "flags"
         const val KEY_TRIGGER_LIST = "trigger_list"
+
+        //Action stuff
         const val KEY_ACTION_TYPE = "action_type"
         const val KEY_ACTION_DATA = "action_data"
+        const val KEY_ACTION_EXTRAS = "action_extras"
     }
 
     @Query("SELECT * FROM $TABLE_NAME")

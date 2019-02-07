@@ -3,8 +3,8 @@
 
     <string name="no_action_chosen">No Action Chosen</string>
     <string name="triggers_header">Triggers</string>
-    <string name="accessibility_service_description">This is required so KeyMapper can listen for user defined triggers then act upon them.
-    The accessibility service only listens for key events and nothing else. Look at the source code, which is linked to in the About section inside the app if you are paranoid. :)</string>
+    <string name="accessibility_service_description">Key Mapper needs to use an Accessibility Service so it can listen to button/key presses and perform the actions you\'ve chosen.
+    The accessibility service only listens for key events and nothing else. Look at the source code, which is linked to in the About section inside the app if you are paranoid I\'m spying. :)</string>
     <string name="record_trigger_help">You have 5 seconds to press the keys/buttons which will trigger the action. Then press \"Stop recording trigger\" to confirm. Press \"clear\" to clear the keys you have already typed.</string>
     <string name="selection_count">%d selected</string>
     <string name="ime_service_label">Key Mapper Input Method</string>
@@ -29,12 +29,23 @@
     <string name="description_text_block">Insert \'%s\'</string>
     <string name="description_keycode">%s</string>
 
+    <!-- URLs -->
+    <string name="url_source_code">https://github.com/sds100/KeyMapper</string>
+    <string name="url_developer_github">https://github.com/sds100</string>
+    <string name="url_play_store_listing">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper</string>
+    <string name="url_license">https://raw.githubusercontent.com/sds100/KeyMapper/master/LICENSE.md</string>
+    <string name="url_changelog">https://raw.githubusercontent.com/sds100/KeyMapper/master/CHANGELOG.md</string>
+    <string name="url_credits">https://raw.githubusercontent.com/sds100/KeyMapper/master/CREDITS.md</string>
+    <string name="url_help">https://github.com/sds100/KeyMapper/wiki/Help.md</string>
+    <!-- URLs -->
+
     <!-- Activity titles -->
     <string name="title_activity_edit_key_map">Edit Keymap</string>
     <string name="title_activity_new_key_map">New Keymap</string>
     <string name="title_choose_action">Choose Action</string>
     <string name="title_settings">Settings</string>
     <string name="title_about">About</string>
+    <string name="title_help">Help</string>
     <!-- Activity titles -->
 
     <!-- Menu action titles-->
@@ -44,6 +55,7 @@
     <string name="action_delete">Delete</string>
     <string name="action_about">About</string>
     <string name="action_search">Search</string>
+    <string name="action_help">Help</string>
     <!-- Menu action titles-->
 
     <!-- Button titles -->
@@ -55,6 +67,7 @@
     <string name="button_done">Done</string>
     <string name="button_fix">Fix</string>
     <string name="button_stop_recording_trigger">Stop Recording Trigger…</string>
+    <string name="button_flags">More</string>
     <!-- Button titles -->
 
     <!-- Content descriptions -->
@@ -66,12 +79,16 @@
     <string name="dialog_title_create_shortcut_title">Create Shortcut Title</string>
     <string name="dialog_title_cant_find_paired_devices">Can\'t find any paired devices</string>
     <string name="dialog_title_root_prompt">Root permission needed!</string>
+    <string name="dialog_title_flags">More</string>
+    <string name="dialog_title_pick_stream">Pick stream</string>
     <!-- Dialog titles -->
 
     <!-- Dialog messages -->
     <string name="dialog_message_are_you_sure_want_to_leave">Are you sure you want to leave?</string>
     <string name="dialog_message_cant_find_paired_devices">Make sure Bluetooth is turned on and you have paired devices. Then try again.</string>
-    <string name="dialog_message_root_prompt">When you click \"OK\", Key Mapper will try to ask for root permission. If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use that action.</string>
+    <string name="dialog_message_root_prompt">When you click \"OK\", you will be taken to Settings.
+        In the Settings, scroll to the bottom and click "Enable Root Features" so you can use root features/actions. If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use features which only work on rooted devices.</string>
+    <string name="dialog_message_downloading">Downloading…</string>
     <!-- Dialog messages -->
 
     <!-- Dialog buttons -->
@@ -89,33 +106,61 @@
     <!-- Notification strings -->
 
     <!-- Settings Activity -->
-    <string name="key_pref_show_notification">pref_show_notification</string>
-    <string name="key_pref_show_notification_on_boot">pref_show_notification_on_boot</string>
-    <string name="key_pref_bluetooth_devices">pref_bluetooth_devices</string>
-    <string name="key_pref_auto_show_ime_picker">pref_auto_show_ime_picker</string>
-    <string name="key_pref_show_volume_dialog_on_adjust">pref_show_volume_dialog_on_adjust</string>
-    <string name="key_pref_show_toast_when_action_performed">pref_show_toast_on_perform_action</string>
 
+    <!--preferences-->
+    <!-- Look in the bools.xml file to find their default values -->
     <string name="title_pref_show_notification">Show Notification</string>
-    <string name="title_pref_category_notifications">Notifications</string>
-    <string name="title_pref_show_notification_on_boot">Show Notification On Boot</string>
-    <string name="title_pref_category_ime_picker">Input Method Picker</string>
-    <string name="title_pref_bluetooth_devices">Bluetooth devices</string>
-    <string name="title_pref_auto_show_ime_picker">Automatically show input method picker</string>
-    <string name="title_pref_show_toast_when_action_performed">Show a toast message when you perform an action</string>
-    <string name="title_pref_show_volume_dialog_on_adjust">Show the volume dialog</string>
-
-    <string name="summary_pref_auto_show_ime_picker">When a Bluetooth device you have chosen connects or disconnects, the input method picker will show automatically. Choose the devices below.</string>
+    <string name="key_pref_show_notification">pref_show_notification</string>
     <string name="summary_pref_show_notification">Show a persistent notification to allow you to pick an input method. (The app requires ROOT permission for it to work on Android 8.1 and higher).</string>
+
+    <string name="title_pref_show_notification_on_boot">Show Notification On Boot</string>
+    <string name="key_pref_show_notification_on_boot">pref_show_notification_on_boot</string>
     <string name="summary_pref_show_notification_on_boot">Automatically start showing the notification when your device starts up.</string>
-    <string name="summary_pref_show_volume_dialog_on_adjust">Show the volume dialog when performing any volume related action.</string>
-    <string name="summary_pref_show_toast_when_action_performed">Whenever an action is performed, a little message will popup on the screen telling you Key Mapper is performing an action.</string>
+
+    <string name="key_pref_bluetooth_devices">pref_bluetooth_devices</string>
+    <string name="title_pref_bluetooth_devices">Choose Bluetooth Devices…</string>
+
+    <string name="key_pref_auto_show_ime_picker">pref_auto_show_ime_picker</string>
+    <string name="title_pref_auto_show_ime_picker">Automatically Show Input Method Picker</string>
+    <string name="summary_pref_auto_show_ime_picker">When a Bluetooth device you have chosen connects or disconnects, the input method picker will show automatically. Choose the devices below. Requires root for Android 8.1+.</string>
+
+    <string name="key_pref_show_toast_when_action_performed">pref_show_toast_on_perform_action</string>
+    <string name="title_pref_show_toast_when_action_performed">Show A Toast Message When You Perform An Action</string>
+    <string name="summary_pref_show_toast_when_action_performed">A little message will popup when you perform an action.</string>
+
+    <string name="key_pref_auto_change_ime_on_connection">pref_auto_change_ime_on_connect_disconnect</string>
+    <string name="title_pref_auto_change_ime_on_connection">Automatically Change Input Method</string>
+    <string name="summary_pref_auto_change_ime_on_connection">The Key Mapper input method will be automatically selected when a chosen bluetooth device is connected. Your old input method will be automatically selected when the device disconnects.
+        There may be a 5-10 second delay after disconnecting your device for the input method to change.</string>
+
+    <string name="key_pref_allow_root_features">pref_allow_root_features</string>
+    <string name="title_pref_allow_root_features">Enable Root Features</string>
+    <string name="summary_pref_allow_root_features">Enable this if you want to use features/actions which only work on rooted devices. Key Mapper must have root permission from your root-access-management app (e.g Magisk, SuperSU) for these features to work.
+        Only turn this on if you know your device is rooted and you have given Key Mapper root permission.</string>
+    <!--preferences-->
+
+    <!--categories-->
+    <string name="title_pref_category_ime_picker">Input Method Picker</string>
+
+    <string name="title_pref_category_notifications">Notifications</string>
+    <string name="key_pref_category_notifications">pref_category_notifications</string>
+
+    <string name="title_pref_category_root">ROOT</string>
+    <string name="summary_pref_category_root">These options will only work on root devices! If you don\'t know what root is or whether your device is rooted, please don\'t leave a bad review if they don\'t work. :)</string>
+    <string name="key_pref_category_root">pref_category_root</string>
+    <!--categories-->
     <!-- Settings Activity -->
 
     <!-- About activity-->
-    <string name="pref_title_changelog">Changelog</string>
+    <string name="key_pref_version">key_version</string>
 
-    <string name="action_changelog">action_changelog</string>
+    <string name="pref_title_changelog">Changelog</string>
+    <string name="pref_title_license">License</string>
+    <string name="pref_title_credits">Credits</string>
+    <string name="pref_title_source_code">Source Code</string>
+    <string name="pref_title_developer_github">Developer\'s GitHub Profile</string>
+    <string name="pref_title_rate_review">Rate and Review</string>
+    <string name="pref_title_version">Version</string>
     <!-- About activity-->
 
     <!--Action Types Titles-->
@@ -126,6 +171,22 @@
     <string name="action_type_title_system_action">Other</string>
     <string name="action_type_title_text_block">Text Block</string>
     <!--Action Types Titles-->
+
+    <!--flags-->
+    <string name="flag_show_volume_dialog">Show volume dialog</string>
+    <string name="flag_long_press">Long press</string>
+    <!--flags-->
+
+    <!-- streams -->
+    <string name="stream_accessibility">Accessibility</string>
+    <string name="stream_alarm">Alarm</string>
+    <string name="stream_dtmf">DTMF</string>
+    <string name="stream_music">Music</string>
+    <string name="stream_notification">Notifications</string>
+    <string name="stream_ring">Ring</string>
+    <string name="stream_system">System</string>
+    <string name="stream_voice_call">Voice call</string>
+    <!-- streams -->
 
     <!-- Error messages -->
     <string name="error_must_type_a_key">You must type a key!</string>
@@ -138,12 +199,15 @@
     <string name="error_app_is_disabled">App is disabled!</string>
     <string name="error_action_requires_write_settings_permission">You need to grant Key Mapper permission to modify system settings to use this action.</string>
     <string name="error_action_requires_root">This action requires root permission!</string>
+    <string name="error_action_requires_camera_permission">This action requires camera permission!</string>
+    <string name="error_sdk_version_too_low">This action requires Android %s</string>
+    <string name="error_feature_not_available">Your device doesn\'t support %s.</string>
 
     <string name="error_accessibility_service_disabled">The accessibility service must be enabled for this app to work!</string>
-    <string name="error_accessibility_service_enabled">Accessibility Service is enabled!</string>
+    <string name="error_accessibility_service_enabled">Accessibility service is enabled!</string>
 
-    <string name="error_ime_service_disabled">The Input Method Service must be enabled for this app to be an input method!</string>
-    <string name="error_ime_service_enabled">Input Method Service is enabled!</string>
+    <string name="error_ime_service_disabled">The input method service must be enabled for “Keycode”, “Key” and “Text block” actions to work!</string>
+    <string name="error_ime_service_enabled">Input method service is enabled!</string>
     <!-- Error messages -->
 
     <!-- System action labels -->
@@ -161,6 +225,10 @@
     <string name="action_toggle_mute">Toggle Mute</string>
     <string name="action_volume_unmute">Unmute Volume</string>
     <string name="action_volume_show_dialog">Show Volume Dialog</string>
+    <string name="action_increase_stream">Increase Stream</string>
+    <string name="action_increase_stream_formatted">Increase %s Stream</string>
+    <string name="action_decrease_stream">Decrease Stream</string>
+    <string name="action_decrease_stream_formatted">Decrease %s Stream</string>
 
     <string name="action_enable_auto_rotate">Enable Auto Rotate</string>
     <string name="action_disable_auto_rotate">Disable Auto Rotate</string>
@@ -191,7 +259,13 @@
     <string name="action_go_back">Go Back</string>
     <string name="action_go_home">Go Home</string>
     <string name="action_open_recents">Open Recents</string>
-    <string name="action_open_menu">Open Menu.</string>
+    <string name="action_open_menu">Open Menu</string>
+
+    <string name="action_toggle_flashlight">Toggle Flashlight</string>
+    <string name="action_enable_flashlight">Enable Flashlight</string>
+    <string name="action_disable_flashlight">Disable Flashlight</string>
+
+    <string name="action_screenshot">Screenshot</string>
     <!-- System action labels -->
 
     <!-- System action category labels -->
@@ -201,5 +275,10 @@
     <string name="system_action_cat_navigation">Navigation</string>
     <string name="system_action_cat_volume">Volume</string>
     <string name="system_action_cat_screen_rotation">Screen Rotation</string>
+    <string name="system_action_cat_brightness">Brightness</string>
+    <string name="system_action_cat_status_bar">Status Bar</string>
+    <string name="system_action_cat_media">Media</string>
+    <string name="system_action_cat_flashlight">Flashlight</string>
+    <string name="system_action_cat_other">Other</string>
     <!-- System action category labels -->
 </resources>

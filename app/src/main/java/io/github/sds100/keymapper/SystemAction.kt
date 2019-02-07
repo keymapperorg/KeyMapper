@@ -51,6 +51,8 @@ object SystemAction {
     const val VOLUME_UP = "volume_up"
     const val VOLUME_DOWN = "volume_down"
     const val VOLUME_SHOW_DIALOG = "volume_show_dialog"
+    const val VOLUME_DECREASE_STREAM = "volume_decrease_stream"
+    const val VOLUME_INCREASE_STREAM = "volume_increase_stream"
 
     @RequiresApi(Build.VERSION_CODES.M)
     const val VOLUME_UNMUTE = "volume_unmute"
@@ -61,20 +63,31 @@ object SystemAction {
     @RequiresApi(Build.VERSION_CODES.M)
     const val VOLUME_TOGGLE_MUTE = "volume_toggle_mute"
 
+    //status bar
     const val EXPAND_NOTIFICATION_DRAWER = "expand_notification_drawer"
     const val EXPAND_QUICK_SETTINGS = "expand_quick_settings"
     const val COLLAPSE_STATUS_BAR = "collapse_status_bar"
 
+    //media
     const val PAUSE_MEDIA = "pause_media"
     const val PLAY_MEDIA = "play_media"
     const val PLAY_PAUSE_MEDIA = "play_pause_media"
     const val NEXT_TRACK = "next_track"
     const val PREVIOUS_TRACK = "previous_track"
 
+    //navigation
     const val GO_BACK = "go_back"
     const val GO_HOME = "go_home"
     const val OPEN_RECENTS = "open_recents"
 
+    //flashlight
+    const val TOGGLE_FLASHLIGHT = "toggle_flashlight"
+    const val ENABLE_FLASHLIGHT = "enable_flashlight"
+    const val DISABLE_FLASHLIGHT = "disable_flashlight"
+
+    //other
+    @RequiresApi(Build.VERSION_CODES.P)
+    const val SCREENSHOT = "screenshot"
     /**
      * REQUIRES ROOT
      */
@@ -86,4 +99,9 @@ object SystemAction {
     const val CATEGORY_NAVIGATION = "navigation"
     const val CATEGORY_VOLUME = "volume"
     const val CATEGORY_SCREEN_ROTATION = "screen_rotation"
+    const val CATEGORY_BRIGHTNESS = "brightness"
+    const val CATEGORY_STATUS_BAR = "status_bar"
+    const val CATEGORY_MEDIA = "media"
+    const val CATEGORY_FLASHLIGHT = "flashlight"
+    const val CATEGORY_OTHER = "other"
 }

@@ -4,7 +4,7 @@ buildscript {
     ext.kotlin_version = '1.3.11'
     ext.anko_version = '0.10.7'
     ext.lifecycle_version = '2.0.0'
-    ext.room_version = '2.1.0-alpha02'
+    ext.room_version = '2.1.0-alpha03'
     ext.coroutine_version = '1.0.1'
 
     repositories {
@@ -13,7 +13,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.0-alpha11'
+        classpath 'com.android.tools.build:gradle:3.3.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -25,6 +25,7 @@ allprojects {
     repositories {
         google()
         jcenter()
+        maven { url "https://jitpack.io" }
     }
 }
 

@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.Adapters
 
 import android.graphics.drawable.Drawable
 import android.widget.Filterable
-import androidx.core.content.ContextCompat
 import com.hannesdorfmann.adapterdelegates4.AbsDelegationAdapter
 import io.github.sds100.keymapper.AlphabeticalFilter
 import io.github.sds100.keymapper.Delegates.SectionedAdapterDelegate
@@ -14,7 +13,8 @@ import io.github.sds100.keymapper.Interfaces.OnItemClickListener
 import io.github.sds100.keymapper.SectionItem
 import io.github.sds100.keymapper.SystemActionDef
 import io.github.sds100.keymapper.Utils.SystemActionUtils
-import io.github.sds100.keymapper.Utils.SystemActionUtils.SYSTEM_ACTION_DEFINITIONS
+import io.github.sds100.keymapper.Utils.drawable
+import io.github.sds100.keymapper.Utils.str
 
 /**
  * Created by sds100 on 17/07/2018.
@@ -31,8 +31,10 @@ class SystemActionAdapter(
     @Suppress("UNCHECKED_CAST")
     override val onItemClickListener = onItemClickListener as OnItemClickListener<Any>
 
+    private val mSystemActionDefinitions = SystemActionUtils.getSystemActionDefinitions(ctx)
+
     private val mAlphabeticalFilter = AlphabeticalFilter(
-            mOriginalList = SYSTEM_ACTION_DEFINITIONS,
+            mOriginalList = mSystemActionDefinitions,
 
             onFilter = { filteredList ->
                 filtering = true
@@ -61,15 +63,15 @@ class SystemActionAdapter(
     override fun getItem(position: Int): Any? {
         val item = items[position]
 
-        if (item is SectionItem) {
-            return null
+        return if (item is SectionItem) {
+            null
         } else {
-            return item
+            item
         }
     }
 
     override fun getItemText(item: Any): String {
-        return ctx.getString((item as SystemActionDef).descriptionRes)
+        return str((item as SystemActionDef).descriptionRes)
     }
 
     override fun getItemCount() = items.size
@@ -77,21 +79,22 @@ class SystemActionAdapter(
     override fun getItemDrawable(item: Any): Drawable? {
         if ((item as SystemActionDef).iconRes == null) return null
 
-        return ContextCompat.getDrawable(ctx, item.iconRes!!)
+        return drawable(item.iconRes!!)
     }
 
     private fun createSystemActionDefListWithCategories(): List<Any> {
         return sequence {
-            SYSTEM_ACTION_DEFINITIONS.forEachIndexed { i, systemAction ->
+            mSystemActionDefinitions.forEachIndexed { i, systemAction ->
                 fun getCategoryLabel(): String {
                     val resId = SystemActionUtils.CATEGORY_LABEL_MAP[systemAction.category]
-                            ?: throw Exception("That system action category id isn't mapped to a label")
+                            ?: throw Exception("That system action category id isn't mapped to a label. " +
+                                    "id: ${systemAction.category}")
 
-                    return ctx.getString(resId)
+                    return str(resId)
                 }
 
                 //if at the end of the list, the next item can't be compared
-                if (i == 0 || systemAction.category != SYSTEM_ACTION_DEFINITIONS[i - 1].category) {
+                if (i == 0 || systemAction.category != mSystemActionDefinitions[i - 1].category) {
                     val section = SectionItem(getCategoryLabel())
 
                     yield(section)

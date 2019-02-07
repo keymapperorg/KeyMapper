@@ -24,9 +24,11 @@ data class KeyMap(
         @Embedded
         var action: Action? = null,
 
+        @ColumnInfo(name = KeyMapDao.KEY_FLAGS)
+        val flags: MutableList<Int> = mutableListOf(),
+
         var isEnabled: Boolean = true
 ) {
-
     override fun hashCode() = id.toInt()
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

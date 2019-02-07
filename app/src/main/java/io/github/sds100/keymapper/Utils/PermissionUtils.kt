@@ -2,9 +2,7 @@ package io.github.sds100.keymapper.Utils
 
 import android.Manifest
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.annotation.StringRes
@@ -18,45 +16,43 @@ import io.github.sds100.keymapper.R
 
 object PermissionUtils {
 
-    fun isPermissionGranted(ctx: Context, permission: String): Boolean {
-        //a different method must be used for WRITE_SETTINGS permission
-        if (permission.contains(Manifest.permission.WRITE_SETTINGS) &&
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return Settings.System.canWrite(ctx)
-
-        } else if (permission.contains(Constants.PERMISSION_ROOT)) {
-            return RootUtils.checkAppHasRootPermission()
-        }
-
-        return ContextCompat.checkSelfPermission(ctx, permission) ==
-                PackageManager.PERMISSION_GRANTED
-    }
-
-    fun haveWriteSettingsPermission(ctx: Context) = isPermissionGranted(ctx, Manifest.permission.WRITE_SETTINGS)
-
-    fun requestPermission(ctx: Context, vararg permission: String, requestCode: Int = 0) {
-        //WRITE_SETTINGS permission only has to be granted on Marshmallow or higher
-        if (permission.contains(Manifest.permission.WRITE_SETTINGS) &&
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
-            //open settings to grant permission{
-            val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
-            intent.data = Uri.parse("package:${Constants.PACKAGE_NAME}")
-            intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
-
-            ctx.startActivity(intent)
-
-        } else if (permission.contains(Constants.PERMISSION_ROOT)) {
-            RootUtils.promptForRootPermission(ctx)
-        }
-    }
-
+    /**
+     * @return a string resource describing the [permission]
+     */
     @StringRes
-    fun getPermissionWarningStringRes(permission: String): Int {
+    fun getPermissionDescriptionRes(permission: String): Int {
         return when (permission) {
             Manifest.permission.WRITE_SETTINGS -> R.string.error_action_requires_write_settings_permission
+            Manifest.permission.CAMERA -> R.string.error_action_requires_camera_permission
             Constants.PERMISSION_ROOT -> R.string.error_action_requires_root
-            else -> throw Exception("No error message string resource for that permission!")
+            else -> throw Exception("Couldn't find permission description for $permission")
+        }
+    }
+
+    /**
+     * @return whether a permission can only be requested from an [Activity].
+     */
+    fun requiresActivityToRequest(permission: String): Boolean {
+        return when (permission) {
+            Manifest.permission.CAMERA -> true
+            else -> false
         }
     }
 }
+
+fun Context.isPermissionGranted(permission: String): Boolean {
+    //a different method must be used for WRITE_SETTINGS permission
+    if (permission == Manifest.permission.WRITE_SETTINGS &&
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        return Settings.System.canWrite(this)
+
+    } else if (permission == Constants.PERMISSION_ROOT) {
+        return RootUtils.checkAppHasRootPermission(this)
+    }
+
+    return ContextCompat.checkSelfPermission(this, permission) ==
+            PackageManager.PERMISSION_GRANTED
+}
+
+val Context.haveWriteSettingsPermission: Boolean
+    get() = this.isPermissionGranted(Manifest.permission.WRITE_SETTINGS)

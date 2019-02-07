@@ -11,6 +11,7 @@ class SystemActionDef(
         val id: String,
         val category: String,
         val permissions: Array<String> = arrayOf(),
+        val features: Array<String> = arrayOf(),
         val minApi: Int = Constants.MIN_API,
         @DrawableRes val iconRes: Int? = null,
         @StringRes val descriptionRes: Int
@@ -21,5 +22,14 @@ class SystemActionDef(
                 minApi: Int = Constants.MIN_API,
                 @DrawableRes iconRes: Int? = null,
                 @StringRes descriptionRes: Int
-    ) : this(id, category, arrayOf(permission), minApi, iconRes, descriptionRes)
+    ) : this(id, category, arrayOf(permission), minApi = minApi, iconRes = iconRes, descriptionRes = descriptionRes)
+
+    constructor(id: String,
+                category: String,
+                permission: String,
+                feature: String,
+                minApi: Int = Constants.MIN_API,
+                @DrawableRes iconRes: Int? = null,
+                @StringRes descriptionRes: Int
+    ) : this(id, category, arrayOf(permission), arrayOf(feature), minApi, iconRes, descriptionRes)
 }

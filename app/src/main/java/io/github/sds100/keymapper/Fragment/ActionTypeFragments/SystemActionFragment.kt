@@ -7,13 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Filterable
 import androidx.recyclerview.widget.LinearLayoutManager
-import io.github.sds100.keymapper.Action
-import io.github.sds100.keymapper.ActionType
+import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Adapters.SystemActionAdapter
 import io.github.sds100.keymapper.Interfaces.IContext
 import io.github.sds100.keymapper.Interfaces.OnItemClickListener
-import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.SystemActionDef
+import io.github.sds100.keymapper.Utils.VolumeUtils
 import kotlinx.android.synthetic.main.action_type_recyclerview.*
 
 /**
@@ -55,6 +53,21 @@ class SystemActionFragment : FilterableActionTypeFragment(),
     }
 
     override fun onItemClick(item: SystemActionDef) {
+        if (item.id == SystemAction.VOLUME_DECREASE_STREAM
+                || item.id == SystemAction.VOLUME_INCREASE_STREAM) {
+
+            VolumeUtils.showStreamPickerDialog(context!!) { streamType ->
+
+                val action = Action(ActionType.SYSTEM_ACTION,
+                        item.id,
+                        Extra(Action.EXTRA_STREAM_TYPE, streamType.toString()))
+
+                chooseSelectedAction(action)
+            }
+
+            return
+        }
+
         val action = Action(ActionType.SYSTEM_ACTION, item.id)
         chooseSelectedAction(action)
     }
