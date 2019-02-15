@@ -34,7 +34,7 @@ class KeyMapRepository private constructor(ctx: Context) {
     private val mDb: AppDatabase = AppDatabase.getInstance(ctx)
 
     init {
-        keyMapList = mDb.keyMapDao().getAllKeyMaps()
+        keyMapList = mDb.keyMapDao().getAll()
 
         if (BuildConfig.DEBUG) {
             //addDebugItems()
@@ -57,6 +57,10 @@ class KeyMapRepository private constructor(ctx: Context) {
     fun insertKeyMap(vararg keyMap: KeyMap) = doAsync { mDb.keyMapDao().insert(*keyMap) }
 
     fun updateKeyMap(vararg keyMap: KeyMap) = doAsync { mDb.keyMapDao().update(*keyMap) }
+
+    fun disableAllKeymaps() = doAsync { mDb.keyMapDao().disableAll() }
+    
+    fun enableAllKeymaps() = doAsync { mDb.keyMapDao().enableAll() }
 
     private fun addDebugItems() {
         val observer = Observer<List<KeyMap>> { list ->

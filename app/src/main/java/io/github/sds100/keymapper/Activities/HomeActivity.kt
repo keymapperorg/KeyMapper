@@ -173,16 +173,29 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
                 startActivity(intent)
                 true
             }
+
             R.id.action_about -> {
                 val intent = Intent(this, AboutActivity::class.java)
                 startActivity(intent)
                 true
             }
+
             R.id.action_help -> {
                 val intent = Intent(this, HelpActivity::class.java)
                 startActivity(intent)
                 true
             }
+
+            R.id.action_disable_all_keymaps -> {
+                mViewModel.disableAllKeymaps()
+                true
+            }
+
+            R.id.action_enable_all_keymaps -> {
+                mViewModel.enableAllKeymaps()
+                true
+            }
+
             else -> super.onOptionsItemSelected(item)
         }
     }

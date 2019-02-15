@@ -57,6 +57,8 @@
     <string name="action_about">About</string>
     <string name="action_search">Search</string>
     <string name="action_help">Help</string>
+    <string name="action_disable_all_keymaps">Disable all</string>
+    <string name="action_enable_all_keymaps">Enable all</string>
     <!-- Menu action titles-->
 
     <!-- Button titles -->

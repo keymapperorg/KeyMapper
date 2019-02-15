@@ -15,6 +15,7 @@ abstract class KeyMapDao {
         const val KEY_ID = "id"
         const val KEY_FLAGS = "flags"
         const val KEY_TRIGGER_LIST = "trigger_list"
+        const val KEY_ENABLED = "is_enabled"
 
         //Action stuff
         const val KEY_ACTION_TYPE = "action_type"
@@ -23,7 +24,13 @@ abstract class KeyMapDao {
     }
 
     @Query("SELECT * FROM $TABLE_NAME")
-    abstract fun getAllKeyMaps(): LiveData<List<KeyMap>>
+    abstract fun getAll(): LiveData<List<KeyMap>>
+
+    @Query("UPDATE $TABLE_NAME SET $KEY_ENABLED=0")
+    abstract fun disableAll()
+
+    @Query("UPDATE $TABLE_NAME SET $KEY_ENABLED=1")
+    abstract fun enableAll()
 
     @Insert(onConflict = OnConflictStrategy.FAIL)
     abstract fun insert(vararg keyMap: KeyMap): LongArray

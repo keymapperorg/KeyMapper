@@ -19,4 +19,7 @@ class KeyMapListViewModel(application: Application) : AndroidViewModel(applicati
     fun deleteKeyMapsById(vararg id: Long) {
         mKeyMapRepository.deleteKeyMapById(*id)
     }
+
+    fun disableAllKeymaps() = mKeyMapRepository.disableAllKeymaps()
+    fun enableAllKeymaps() = mKeyMapRepository.enableAllKeymaps()
 }
