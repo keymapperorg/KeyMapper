@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.Data
 
 import android.content.Context
-import android.view.KeyEvent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import io.github.sds100.keymapper.*
@@ -9,6 +8,7 @@ import io.github.sds100.keymapper.AsyncTasks.DeleteKeyMapAsync
 import io.github.sds100.keymapper.AsyncTasks.DeleteKeyMapByIdAsync
 import io.github.sds100.keymapper.AsyncTasks.InsertKeyMapAsync
 import io.github.sds100.keymapper.AsyncTasks.UpdateKeyMapAsync
+import io.github.sds100.keymapper.Utils.KeycodeUtils
 
 /**
  * Created by sds100 on 08/08/2018.
@@ -89,7 +89,7 @@ class KeyMapRepository private constructor(ctx: Context) {
                         val id = minimumId + i
 
                         val triggerList = mutableListOf(
-                                Trigger(listOf(KeyEvent.KEYCODE_VOLUME_UP))
+                                Trigger(listOf(KeycodeUtils.getKeyCodes().random()))
                         )
 
                         val keyMap = KeyMap(id,

@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Handler
+import android.os.SystemClock
 import android.provider.Settings
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
@@ -25,11 +26,8 @@ import io.github.sds100.keymapper.Delegates.ActionPerformerDelegate
 import io.github.sds100.keymapper.Interfaces.IContext
 import io.github.sds100.keymapper.Interfaces.IPerformGlobalAction
 import io.github.sds100.keymapper.KeyMap
-import io.github.sds100.keymapper.Utils.ActionUtils
-import io.github.sds100.keymapper.Utils.ErrorCodeUtils
+import io.github.sds100.keymapper.Utils.*
 import io.github.sds100.keymapper.Utils.FlagUtils.FLAG_LONG_PRESS
-import io.github.sds100.keymapper.Utils.RootUtils
-import io.github.sds100.keymapper.Utils.isVolumeKey
 
 /**
  * Created by sds100 on 16/07/2018.
@@ -149,8 +147,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
                 ACTION_TEST_ACTION -> {
                     mActionPerformerDelegate.performAction(
-                            intent.getSerializableExtra(EXTRA_ACTION) as Action,
-                            listOf())
+                            action = intent.getSerializableExtra(EXTRA_ACTION) as Action,
+                            flags = 0x0)
                 }
             }
         }
@@ -304,7 +302,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                 //if there is no error
                 if (errorResult == null) {
                     //if the action should only be performed if it is a long press
-                    if (keyMap.flags.contains(FLAG_LONG_PRESS)) {
+                    if (containsFlag(keyMap.flags, FLAG_LONG_PRESS)) {
 
                         val runnable = Runnable {
                             mActionPerformerDelegate.performAction(keyMap.action!!, keyMap.flags)
@@ -341,7 +339,6 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
                         mRunnables.add(runnable)
                         mHandler.post(runnable)
-
                     } else {
                         mActionPerformerDelegate.performAction(keyMap.action!!, keyMap.flags)
                     }
@@ -364,4 +361,10 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
             mKeyMapListCache = list
         }
     }
+
+    /**
+     * @return how long it has been since a key has been pressed down.
+     */
+    private val KeyEvent.holdDownTime
+        get() = SystemClock.uptimeMillis() - this.downTime
 }

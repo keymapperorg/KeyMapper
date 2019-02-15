@@ -1,8 +1,5 @@
 package io.github.sds100.keymapper
 
-import android.content.Context
-import android.widget.Toast
-import android.widget.Toast.LENGTH_SHORT
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
@@ -25,7 +22,10 @@ data class KeyMap(
         var action: Action? = null,
 
         @ColumnInfo(name = KeyMapDao.KEY_FLAGS)
-        val flags: MutableList<Int> = mutableListOf(),
+        /**
+         * Flags are stored as bits.
+         */
+        var flags: Int = 0,
 
         var isEnabled: Boolean = true
 ) {

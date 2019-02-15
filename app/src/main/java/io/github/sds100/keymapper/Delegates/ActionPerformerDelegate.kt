@@ -35,7 +35,7 @@ class ActionPerformerDelegate(
         }
     }
 
-    fun performAction(action: Action, flags: List<Int>) {
+    fun performAction(action: Action, flags: Int) {
         ctx.apply {
             //Only show a toast message that Key Mapper is performing an action if the user has enabled it
             val key = str(R.string.key_pref_show_toast_when_action_performed)
@@ -91,11 +91,11 @@ class ActionPerformerDelegate(
         }
     }
 
-    private fun performSystemAction(action: Action, flags: List<Int>) {
+    private fun performSystemAction(action: Action, flags: Int) {
 
         val id = action.data
 
-        val showVolumeUi = flags.contains(FLAG_SHOW_VOLUME_UI)
+        val showVolumeUi = containsFlag(flags, FLAG_SHOW_VOLUME_UI)
 
         ctx.apply {
             when (id) {

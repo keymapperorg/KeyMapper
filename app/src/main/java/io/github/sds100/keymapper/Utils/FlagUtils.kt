@@ -13,8 +13,8 @@ import io.github.sds100.keymapper.Views.multiChoiceDialog
 object FlagUtils {
 
     //DON't CHANGE THESE IDs!!!
-    const val FLAG_LONG_PRESS = 0
-    const val FLAG_SHOW_VOLUME_UI = 1
+    const val FLAG_LONG_PRESS = 1
+    const val FLAG_SHOW_VOLUME_UI = 2
 
     private val FLAG_LABEL_MAP = mapOf(
             FLAG_LONG_PRESS to R.string.flag_long_press,
@@ -23,7 +23,7 @@ object FlagUtils {
 
     fun showFlagDialog(ctx: Context,
                        keyMap: KeyMap,
-                       onPosClick: (newItems: List<Triple<String, Int, Boolean>>) -> Unit) {
+                       onPosClick: (selectedItems: List<Triple<String, Int, Boolean>>) -> Unit) {
 
         val items = sequence {
             for (item in FLAG_LABEL_MAP) {
@@ -35,7 +35,8 @@ object FlagUtils {
                                 || keyMap.action!!.data == SystemAction.VOLUME_SHOW_DIALOG)
                         && flag == FLAG_SHOW_VOLUME_UI) continue
 
-                yield(Triple(ctx.str(label), flag, keyMap.flags.contains(flag)))
+                //1st = label for the flag, 2nd = the flag, 3rd = whether the flag should be checked
+                yield(Triple(ctx.str(label), flag, containsFlag(keyMap.flags, flag)))
             }
         }.toMutableList()
 
@@ -46,3 +47,18 @@ object FlagUtils {
         )
     }
 }
+
+/**
+ * @return a new flag set which contains the flag
+ */
+fun addFlag(flagSet: Int, flag: Int) = flagSet or flag
+
+/**
+ * @return a new flag set which doesn't contain the flag
+ */
+fun removeFlag(flagSet: Int, flag: Int): Int {
+    //same as flagSet &(~flag)
+    return flagSet and flag.inv()
+}
+
+fun containsFlag(flagSet: Int, flag: Int) = (flagSet and flag) == flag
