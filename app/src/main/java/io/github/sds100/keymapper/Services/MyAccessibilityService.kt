@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Handler
-import android.os.SystemClock
 import android.provider.Settings
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
@@ -52,12 +51,17 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         private const val RECORD_TRIGGER_TIMER_LENGTH = 5000L
 
         /**
-         * How long a long-press is.
+         * How long a long-press is in ms.
          */
         private const val LONG_PRESS_DELAY = 500L
 
         /**
-         * How long a key should be held down to repeatedly perform an action
+         * The time in ms between repeating an action while holding down.
+         */
+        private const val REPEAT_DELAY = 10L
+
+        /**
+         * How long a key should be held down to repeatedly perform an action in ms.
          */
         private const val HOLD_DOWN_DELAY = 200L
 
@@ -315,6 +319,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
                         return super.onKeyEvent(event)
 
+                        //for example, you dont want an app or app-shortcut to be repeatedly opened.
                     } else if (keyMap.action!!.isVolumeAction
                             || keyMap.action!!.type == ActionType.KEY
                             || keyMap.action!!.type == ActionType.KEYCODE) {
@@ -326,7 +331,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                                 mActionPerformerDelegate.performAction(keyMap.action!!, keyMap.flags)
 
                                 if (mShouldRepeat) {
-                                    mHandler.postDelayed(this, 10)
+                                    mHandler.postDelayed(this, REPEAT_DELAY)
                                 } else {
                                     //wait a bit before registering the key as being held down.
                                     mHandler.postDelayed(this, HOLD_DOWN_DELAY)
@@ -361,10 +366,4 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
             mKeyMapListCache = list
         }
     }
-
-    /**
-     * @return how long it has been since a key has been pressed down.
-     */
-    private val KeyEvent.holdDownTime
-        get() = SystemClock.uptimeMillis() - this.downTime
 }
