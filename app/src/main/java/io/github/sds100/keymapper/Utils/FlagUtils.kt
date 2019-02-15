@@ -4,7 +4,9 @@ import android.content.Context
 import io.github.sds100.keymapper.KeyMap
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.SystemAction
+import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_FLAG_NOT_FOUND
 import io.github.sds100.keymapper.Views.multiChoiceDialog
+import io.github.sds100.keymapper.createResult
 
 /**
  * Created by sds100 on 26/01/2019.
@@ -12,7 +14,7 @@ import io.github.sds100.keymapper.Views.multiChoiceDialog
 
 object FlagUtils {
 
-    //DON't CHANGE THESE IDs!!!
+    //DON'T CHANGE THESE IDs!!!
     const val FLAG_LONG_PRESS = 1
     const val FLAG_SHOW_VOLUME_UI = 2
 
@@ -46,6 +48,16 @@ object FlagUtils {
                 onPosClick = { onPosClick(it) }
         )
     }
+
+    fun getFlagLabel(flagId: Int) = FLAG_LABEL_MAP[flagId].createResult(ERROR_CODE_FLAG_NOT_FOUND, flagId.toString())
+
+    fun getFlags(flagSet: Int) = sequence {
+        FLAG_LABEL_MAP.keys.forEach { flag ->
+            if (containsFlag(flagSet, flag)) {
+                yield(flag)
+            }
+        }
+    }.toList()
 }
 
 /**
