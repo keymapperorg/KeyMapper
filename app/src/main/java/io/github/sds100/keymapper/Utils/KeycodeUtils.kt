@@ -19,8 +19,8 @@ object KeycodeUtils {
      * Maps keys which aren't single characters like the Control keys to a string representation
      */
     private val NON_CHARACTER_KEY_MAP = mapOf(
-            Pair(KeyEvent.KEYCODE_VOLUME_DOWN, "Vol Down"),
-            Pair(KeyEvent.KEYCODE_VOLUME_UP, "Vol Up"),
+            KeyEvent.KEYCODE_VOLUME_DOWN to "Vol down",
+            KeyEvent.KEYCODE_VOLUME_UP to "Vol up",
 
             Pair(KeyEvent.KEYCODE_CTRL_LEFT, "Ctrl"),
             Pair(KeyEvent.KEYCODE_CTRL_RIGHT, "Ctrl"),

@@ -6,6 +6,7 @@ import io.github.sds100.keymapper.Utils.ErrorCodeUtils
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_APP_DISABLED
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_APP_UNINSTALLED
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_FEATURE_NOT_AVAILABLE
+import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_FLAG_NOT_FOUND
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_PERMISSION_DENIED
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_SDK_VERSION_TOO_LOW
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_SHORTCUT_NOT_FOUND
@@ -26,6 +27,8 @@ class ErrorResult(
          * [ERROR_CODE_SDK_VERSION_TOO_LOW]: The version code.
          *
          * [ERROR_CODE_FEATURE_NOT_AVAILABLE]: The feature id.
+         *
+         * [ERROR_CODE_FLAG_NOT_FOUND]: The flag id.
          */
         val data: String? = null
 )
