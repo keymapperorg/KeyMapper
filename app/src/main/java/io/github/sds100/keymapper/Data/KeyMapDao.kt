@@ -32,6 +32,12 @@ abstract class KeyMapDao {
     @Query("UPDATE $TABLE_NAME SET $KEY_ENABLED=1")
     abstract fun enableAll()
 
+    @Query("UPDATE $TABLE_NAME SET $KEY_ENABLED=1 WHERE $KEY_ID in (:id)")
+    abstract fun enableKeymapById(vararg id: Long)
+
+    @Query("UPDATE $TABLE_NAME SET $KEY_ENABLED=0 WHERE $KEY_ID in (:id)")
+    abstract fun disableKeymapById(vararg id: Long)
+
     @Insert(onConflict = OnConflictStrategy.FAIL)
     abstract fun insert(vararg keyMap: KeyMap): LongArray
 

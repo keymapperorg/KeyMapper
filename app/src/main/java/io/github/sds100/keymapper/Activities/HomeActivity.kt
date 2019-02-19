@@ -16,12 +16,11 @@ import androidx.annotation.ColorRes
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import io.github.sds100.keymapper.Adapters.KeymapAdapter
 import io.github.sds100.keymapper.BuildConfig
-import io.github.sds100.keymapper.Interfaces.OnDeleteMenuItemClickListener
+import io.github.sds100.keymapper.Data.KeyMapRepository
 import io.github.sds100.keymapper.Interfaces.OnItemClickListener
 import io.github.sds100.keymapper.KeyMap
 import io.github.sds100.keymapper.KeymapAdapterModel
@@ -33,7 +32,6 @@ import io.github.sds100.keymapper.Selection.SelectionProvider
 import io.github.sds100.keymapper.Services.MyAccessibilityService
 import io.github.sds100.keymapper.Services.MyIMEService
 import io.github.sds100.keymapper.Utils.*
-import io.github.sds100.keymapper.ViewModels.KeyMapListViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import org.jetbrains.anko.append
@@ -41,8 +39,8 @@ import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 
-class HomeActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemClickListener,
-        OnItemClickListener<KeymapAdapterModel> {
+class HomeActivity : AppCompatActivity(), SelectionCallback,
+        OnItemClickListener<KeymapAdapterModel>, MenuItem.OnMenuItemClickListener {
 
     private val mBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -53,8 +51,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
     }
 
     private val mKeymapAdapter: KeymapAdapter = KeymapAdapter(this)
-
-    private lateinit var mViewModel: KeyMapListViewModel
+    private val mRepository by lazy { KeyMapRepository.getInstance(application.applicationContext) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,9 +72,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
             MyAccessibilityService.enableServiceInSettings()
         }
 
-        mViewModel = ViewModelProviders.of(this).get(KeyMapListViewModel::class.java)
-
-        mViewModel.keyMapList.observe(this, Observer { keyMapList ->
+        mRepository.keyMapList.observe(this, Observer { keyMapList ->
             populateKeymapsAsync(keyMapList)
 
             updateAccessibilityServiceKeymapCache(keyMapList)
@@ -112,6 +107,22 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
         val intentFilter = IntentFilter()
         intentFilter.addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
         registerReceiver(mBroadcastReceiver, intentFilter)
+    }
+
+    override fun onMenuItemClick(item: MenuItem?): Boolean {
+        return when (item?.itemId) {
+            R.id.action_enable -> {
+                mRepository.enableKeymapById(*mKeymapAdapter.iSelectionProvider.selectedItemIds)
+                true
+            }
+
+            R.id.action_disable -> {
+                mRepository.disableKeymapById(*mKeymapAdapter.iSelectionProvider.selectedItemIds)
+                true
+            }
+
+            else -> false
+        }
     }
 
     override fun onResume() {
@@ -187,12 +198,17 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
             }
 
             R.id.action_disable_all_keymaps -> {
-                mViewModel.disableAllKeymaps()
+                mRepository.disableAllKeymaps()
                 true
             }
 
             R.id.action_enable_all_keymaps -> {
-                mViewModel.enableAllKeymaps()
+                mRepository.enableAllKeymaps()
+                true
+            }
+
+            R.id.action_delete -> {
+                mRepository.deleteKeyMapById(*mKeymapAdapter.iSelectionProvider.selectedItemIds)
                 true
             }
 
@@ -200,13 +216,13 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
         }
     }
 
-    override fun onDeleteMenuButtonClick() {
-        mViewModel.deleteKeyMapsById(*mKeymapAdapter.iSelectionProvider.selectedItemIds)
-    }
-
     override fun onSelectionEvent(id: Long?, event: SelectionEvent) {
         if (event == SelectionEvent.START) {
-            val actionMode = SelectableActionMode(this, mKeymapAdapter.iSelectionProvider, this)
+            val actionMode = SelectableActionMode(
+                    mCtx = this,
+                    mISelectionProvider = mKeymapAdapter.iSelectionProvider,
+                    mMenuId = R.menu.menu_multi_select,
+                    mOnMenuItemClickListener = this)
             startSupportActionMode(actionMode)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -261,7 +277,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnDeleteMenuItemCli
         doAsync {
             mKeymapAdapter.itemList.forEach { model ->
                 val keyMapId = model.id
-                val keyMap = mViewModel.keyMapList.value!!.find { it.id == keyMapId }
+                val keyMap = mRepository.keyMapList.value!!.find { it.id == keyMapId }
 
                 if (keyMap != null) {
                     val actionDescription = ActionUtils.getDescription(this.weakRef.get()!!.baseContext, keyMap.action)

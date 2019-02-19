@@ -59,8 +59,11 @@ class KeyMapRepository private constructor(ctx: Context) {
     fun updateKeyMap(vararg keyMap: KeyMap) = doAsync { mDb.keyMapDao().update(*keyMap) }
 
     fun disableAllKeymaps() = doAsync { mDb.keyMapDao().disableAll() }
-    
+
     fun enableAllKeymaps() = doAsync { mDb.keyMapDao().enableAll() }
+
+    fun enableKeymapById(vararg id: Long) = doAsync { mDb.keyMapDao().enableKeymapById(*id) }
+    fun disableKeymapById(vararg id: Long) = doAsync { mDb.keyMapDao().disableKeymapById(*id) }
 
     private fun addDebugItems() {
         val observer = Observer<List<KeyMap>> { list ->
