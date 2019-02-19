@@ -4,11 +4,8 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import io.github.sds100.keymapper.*
-import io.github.sds100.keymapper.AsyncTasks.DeleteKeyMapAsync
-import io.github.sds100.keymapper.AsyncTasks.DeleteKeyMapByIdAsync
-import io.github.sds100.keymapper.AsyncTasks.InsertKeyMapAsync
-import io.github.sds100.keymapper.AsyncTasks.UpdateKeyMapAsync
 import io.github.sds100.keymapper.Utils.KeycodeUtils
+import org.jetbrains.anko.doAsync
 
 /**
  * Created by sds100 on 08/08/2018.
@@ -37,7 +34,7 @@ class KeyMapRepository private constructor(ctx: Context) {
     private val mDb: AppDatabase = AppDatabase.getInstance(ctx)
 
     init {
-        keyMapList = mDb.keyMapDao().getAllKeyMaps()
+        keyMapList = mDb.keyMapDao().getAll()
 
         if (BuildConfig.DEBUG) {
             //addDebugItems()
@@ -53,21 +50,20 @@ class KeyMapRepository private constructor(ctx: Context) {
         return keyMapList.value!!.find { it.id == id }!!.copy()
     }
 
-    fun deleteKeyMap(vararg keyMap: KeyMap) {
-        DeleteKeyMapAsync(mDb).execute(*keyMap)
-    }
+    fun deleteKeyMap(vararg keyMap: KeyMap) = doAsync { mDb.keyMapDao().delete(*keyMap) }
 
-    fun deleteKeyMapById(vararg id: Long) {
-        DeleteKeyMapByIdAsync(mDb).execute(*id.toList().toTypedArray())
-    }
+    fun deleteKeyMapById(vararg id: Long) = doAsync { mDb.keyMapDao().deleteById(*id.toList().toLongArray()) }
 
-    fun insertKeyMap(vararg keyMap: KeyMap) {
-        InsertKeyMapAsync(mDb).execute(*keyMap)
-    }
+    fun insertKeyMap(vararg keyMap: KeyMap) = doAsync { mDb.keyMapDao().insert(*keyMap) }
 
-    fun updateKeyMap(vararg keyMap: KeyMap) {
-        UpdateKeyMapAsync(mDb).execute(*keyMap)
-    }
+    fun updateKeyMap(vararg keyMap: KeyMap) = doAsync { mDb.keyMapDao().update(*keyMap) }
+
+    fun disableAllKeymaps() = doAsync { mDb.keyMapDao().disableAll() }
+
+    fun enableAllKeymaps() = doAsync { mDb.keyMapDao().enableAll() }
+
+    fun enableKeymapById(vararg id: Long) = doAsync { mDb.keyMapDao().enableKeymapById(*id) }
+    fun disableKeymapById(vararg id: Long) = doAsync { mDb.keyMapDao().disableKeymapById(*id) }
 
     private fun addDebugItems() {
         val observer = Observer<List<KeyMap>> { list ->
