@@ -84,15 +84,21 @@ class KeymapAdapter(private val mOnItemClickListener: OnItemClickListener<Keymap
                 flagsLayout.visibility = View.GONE
             }
 
+            if (model.triggerList.isEmpty()) {
+                triggerLayout.visibility = View.GONE
+
+            } else {
+                triggerLayout.visibility = View.VISIBLE
+                //show all the triggers in a list
+                val triggerAdapter = TriggerAdapter(model.triggerList.toMutableList(), showRemoveButton = false)
+
+                recyclerViewTriggers.layoutManager = LinearLayoutManager(context)
+                recyclerViewTriggers.adapter = triggerAdapter
+            }
+
             checkBox.isChecked = iSelectionProvider.isSelected(holder.itemId)
 
             actionDescriptionLayout.setDescription(model.actionDescription)
-
-            //show all the triggers in a list
-            val triggerAdapter = TriggerAdapter(model.triggerList.toMutableList(), showRemoveButton = false)
-
-            recyclerViewTriggers.layoutManager = LinearLayoutManager(context)
-            recyclerViewTriggers.adapter = triggerAdapter
 
             if (model.isEnabled) {
                 textViewDisabled.visibility = View.GONE
