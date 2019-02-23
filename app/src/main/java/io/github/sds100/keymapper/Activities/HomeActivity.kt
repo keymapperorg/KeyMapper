@@ -110,14 +110,21 @@ class HomeActivity : AppCompatActivity(), SelectionCallback,
     }
 
     override fun onMenuItemClick(item: MenuItem?): Boolean {
+        val selectedItemIds = mKeymapAdapter.iSelectionProvider.selectedItemIds
+
         return when (item?.itemId) {
+            R.id.action_delete -> {
+                mRepository.deleteKeyMapById(*selectedItemIds)
+                mKeymapAdapter.iSelectionProvider.stopSelecting()
+                true
+            }
             R.id.action_enable -> {
-                mRepository.enableKeymapById(*mKeymapAdapter.iSelectionProvider.selectedItemIds)
+                mRepository.enableKeymapById(*selectedItemIds)
                 true
             }
 
             R.id.action_disable -> {
-                mRepository.disableKeymapById(*mKeymapAdapter.iSelectionProvider.selectedItemIds)
+                mRepository.disableKeymapById(*selectedItemIds)
                 true
             }
 
@@ -204,11 +211,6 @@ class HomeActivity : AppCompatActivity(), SelectionCallback,
 
             R.id.action_enable_all_keymaps -> {
                 mRepository.enableAllKeymaps()
-                true
-            }
-
-            R.id.action_delete -> {
-                mRepository.deleteKeyMapById(*mKeymapAdapter.iSelectionProvider.selectedItemIds)
                 true
             }
 

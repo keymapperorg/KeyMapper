@@ -30,7 +30,7 @@ class SelectableActionMode(
     override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
         when (item!!.itemId) {
             //when back button is pressed
-            android.R.id.home -> onBackPressed(mode!!)
+            android.R.id.home -> onDestroyActionMode(mode!!)
 
             R.id.action_select_all -> {
                 mISelectionProvider.selectAll()
@@ -50,7 +50,8 @@ class SelectableActionMode(
         return true
     }
 
-    override fun onDestroyActionMode(mode: ActionMode?) {
+    override fun onDestroyActionMode(mode: ActionMode) {
+        mode.finish()
         mActionMode = null
         mISelectionProvider.unsubscribeFromSelectionEvents(this)
         mISelectionProvider.stopSelecting()
@@ -58,11 +59,9 @@ class SelectableActionMode(
 
     override fun onSelectionEvent(id: Long?, event: SelectionEvent) {
         mActionMode?.invalidate()
-    }
 
-    private fun onBackPressed(mode: ActionMode) {
-        mode.finish()
-        mISelectionProvider.stopSelecting()
-        mISelectionProvider.unsubscribeFromSelectionEvents(this)
+        if (event == SelectionEvent.STOP) {
+            onDestroyActionMode(mActionMode!!)
+        }
     }
 }
