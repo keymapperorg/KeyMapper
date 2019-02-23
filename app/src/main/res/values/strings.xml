@@ -272,6 +272,7 @@
     <string name="action_disable_flashlight">Disable Flashlight</string>
 
     <string name="action_screenshot">Screenshot</string>
+    <string name="action_open_assistant">Open Google Assistant</string>
     <!-- System action labels -->
 
     <!-- System action category labels -->

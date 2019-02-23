@@ -93,6 +93,8 @@ object SystemAction {
      */
     const val OPEN_MENU = "open_menu"
 
+    const val OPEN_ASSISTANT = "open_assistant"
+
     const val CATEGORY_WIFI = "wifi"
     const val CATEGORY_BLUETOOTH = "bluetooth"
     const val CATEGORY_MOBILE_DATA = "mobile_data"
