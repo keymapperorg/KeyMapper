@@ -88,12 +88,12 @@ object SystemAction {
     //other
     @RequiresApi(Build.VERSION_CODES.P)
     const val SCREENSHOT = "screenshot"
+    const val OPEN_ASSISTANT = "open_assistant"
+    const val OPEN_CAMERA = "open_camera"
     /**
      * REQUIRES ROOT
      */
     const val OPEN_MENU = "open_menu"
-
-    const val OPEN_ASSISTANT = "open_assistant"
 
     const val CATEGORY_WIFI = "wifi"
     const val CATEGORY_BLUETOOTH = "bluetooth"

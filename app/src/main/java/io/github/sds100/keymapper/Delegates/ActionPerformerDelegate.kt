@@ -5,6 +5,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.media.AudioManager
 import android.os.Build
+import android.provider.MediaStore
 import android.provider.Settings
 import android.widget.Toast
 import androidx.lifecycle.Lifecycle
@@ -175,6 +176,11 @@ class ActionPerformerDelegate(
 
                 SystemAction.OPEN_ASSISTANT -> {
                     val intent = Intent(Intent.ACTION_VOICE_COMMAND).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(intent)
+                }
+
+                SystemAction.OPEN_CAMERA -> {
+                    val intent = Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(intent)
                 }
 
