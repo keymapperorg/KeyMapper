@@ -42,7 +42,8 @@ object NotificationUtils {
 
             val builder = NotificationCompat.Builder(ctx, CHANNEL_ID_PERSISTENT)
                     //TODO change notification icon
-                    .setSmallIcon(R.mipmap.ic_launcher_round)
+                    .setSmallIcon(R.drawable.ic_keyboard_notification)
+                    .setColor(color(R.color.colorAccent))
                     .setContentTitle(str(R.string.notification_persistent_title))
                     .setContentText(str(R.string.notification_persistent_text))
                     .setPriority(NotificationCompat.PRIORITY_MIN)

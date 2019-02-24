@@ -18,11 +18,6 @@ class SettingsFragment : PreferenceFragmentCompat(),
         findPreference(getString(R.string.key_pref_show_notification)) as SwitchPreference
     }
 
-    private val mShowNotificationOnBootPreference by lazy {
-        findPreference(getString(R.string.key_pref_show_notification_on_boot))
-                as SwitchPreference
-    }
-
     private val mBluetoothDevicesPreferences by lazy {
         findPreference(getString(R.string.key_pref_bluetooth_devices)) as MultiSelectListPreference
     }
@@ -96,13 +91,9 @@ class SettingsFragment : PreferenceFragmentCompat(),
     override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
         when (preference) {
 
-            /* if the user doesn't want to see the notification, don't allow them
-             * to toggle whether it is shown on boot */
             mShowNotificationPreference -> {
-                mShowNotificationOnBootPreference.isEnabled = newValue as Boolean
-
                 //show/hide the notification when the preference is toggled
-                if (newValue) {
+                if (newValue as Boolean) {
                     NotificationUtils.showIMEPickerNotification(context!!)
                 } else {
                     NotificationUtils.hideImePickerNotification(context!!)
@@ -154,9 +145,5 @@ class SettingsFragment : PreferenceFragmentCompat(),
 
             preference.isEnabled = enabled
         }
-
-        /*only allow the user to toggle whether the notification shows on boot if they want
-        * to see the notification at all.*/
-        mShowNotificationOnBootPreference.isEnabled = mShowNotificationPreference.isChecked
     }
 }

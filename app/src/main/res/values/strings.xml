@@ -118,10 +118,6 @@
     <string name="key_pref_show_notification">pref_show_notification</string>
     <string name="summary_pref_show_notification">Show a persistent notification to allow you to pick an input method. (The app requires ROOT permission for it to work on Android 8.1 and higher).</string>
 
-    <string name="title_pref_show_notification_on_boot">Show Notification On Boot</string>
-    <string name="key_pref_show_notification_on_boot">pref_show_notification_on_boot</string>
-    <string name="summary_pref_show_notification_on_boot">Automatically start showing the notification when your device starts up.</string>
-
     <string name="key_pref_bluetooth_devices">pref_bluetooth_devices</string>
     <string name="title_pref_bluetooth_devices">Choose Bluetooth Devices…</string>
 
