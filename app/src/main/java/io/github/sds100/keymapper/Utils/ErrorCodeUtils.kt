@@ -40,6 +40,7 @@ object ErrorCodeUtils {
     const val ERROR_CODE_SDK_VERSION_TOO_LOW = 8
     const val ERROR_CODE_FEATURE_NOT_AVAILABLE = 9
     const val ERROR_CODE_ACTION_EXTRA_NOT_FOUND = 10
+    const val ERROR_CODE_FLAG_NOT_FOUND = 11
 
     private val FIXABLE_ERRORS = arrayOf(
             ERROR_CODE_APP_DISABLED,
@@ -113,6 +114,10 @@ object ErrorCodeUtils {
 
                 ERROR_CODE_PERMISSION_DENIED -> {
                     str(PermissionUtils.getPermissionDescriptionRes(errorResult.data!!))
+                }
+
+                ERROR_CODE_FLAG_NOT_FOUND -> {
+                    str(R.string.error_flag_not_found, errorResult.data)
                 }
 
                 else -> throw Exception("Can't find a description for this error code: ${errorResult.errorCode}")

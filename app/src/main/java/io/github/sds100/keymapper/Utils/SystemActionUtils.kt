@@ -36,6 +36,8 @@ import io.github.sds100.keymapper.SystemAction.GO_HOME
 import io.github.sds100.keymapper.SystemAction.INCREASE_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.LANDSCAPE_MODE
 import io.github.sds100.keymapper.SystemAction.NEXT_TRACK
+import io.github.sds100.keymapper.SystemAction.OPEN_ASSISTANT
+import io.github.sds100.keymapper.SystemAction.OPEN_CAMERA
 import io.github.sds100.keymapper.SystemAction.OPEN_MENU
 import io.github.sds100.keymapper.SystemAction.OPEN_RECENTS
 import io.github.sds100.keymapper.SystemAction.PAUSE_MEDIA
@@ -387,6 +389,18 @@ object SystemActionUtils {
                     minApi = Build.VERSION_CODES.P,
                     iconRes = R.drawable.ic_screenshot_black_24dp,
                     descriptionRes = R.string.action_screenshot
+            ),
+            SystemActionDef(
+                    id = OPEN_ASSISTANT,
+                    category = CATEGORY_OTHER,
+                    iconRes = R.drawable.ic_assistant_black_24dp,
+                    descriptionRes = R.string.action_open_assistant
+            ),
+            SystemActionDef(
+                    id = OPEN_CAMERA,
+                    category = CATEGORY_OTHER,
+                    iconRes = R.drawable.ic_camera_alt_black_24dp,
+                    descriptionRes = R.string.action_open_camera
             )
     )
 

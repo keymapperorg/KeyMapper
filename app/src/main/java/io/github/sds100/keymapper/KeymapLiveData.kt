@@ -9,7 +9,7 @@ import androidx.lifecycle.LiveData
 /**
  * @param keyMap The initial [KeyMap] object to use
  */
-class KeymapLiveData(keyMap: KeyMap = KeyMap(0L)) : LiveData<KeyMap>() {
+class KeymapLiveData(keyMap: KeyMap = KeyMap(id = 0L)) : LiveData<KeyMap>() {
 
     var action: Action?
         get() = value!!.action

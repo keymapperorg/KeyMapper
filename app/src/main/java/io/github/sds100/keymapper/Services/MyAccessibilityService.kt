@@ -17,6 +17,7 @@ import androidx.lifecycle.LifecycleRegistry
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import io.github.sds100.keymapper.Action
+import io.github.sds100.keymapper.ActionType
 import io.github.sds100.keymapper.Activities.ConfigKeymapActivity
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.Data.KeyMapRepository
@@ -24,11 +25,8 @@ import io.github.sds100.keymapper.Delegates.ActionPerformerDelegate
 import io.github.sds100.keymapper.Interfaces.IContext
 import io.github.sds100.keymapper.Interfaces.IPerformGlobalAction
 import io.github.sds100.keymapper.KeyMap
-import io.github.sds100.keymapper.Utils.ActionUtils
-import io.github.sds100.keymapper.Utils.ErrorCodeUtils
+import io.github.sds100.keymapper.Utils.*
 import io.github.sds100.keymapper.Utils.FlagUtils.FLAG_LONG_PRESS
-import io.github.sds100.keymapper.Utils.RootUtils
-import io.github.sds100.keymapper.Utils.isVolumeKey
 
 /**
  * Created by sds100 on 16/07/2018.
@@ -53,9 +51,19 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         private const val RECORD_TRIGGER_TIMER_LENGTH = 5000L
 
         /**
-         * How long a long-press is.
+         * How long a long-press is in ms.
          */
         private const val LONG_PRESS_DELAY = 500L
+
+        /**
+         * The time in ms between repeating an action while holding down.
+         */
+        private const val REPEAT_DELAY = 10L
+
+        /**
+         * How long a key should be held down to repeatedly perform an action in ms.
+         */
+        private const val HOLD_DOWN_DELAY = 200L
 
         /**
          * Enable this accessibility service. REQUIRES ROOT
@@ -143,8 +151,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
                 ACTION_TEST_ACTION -> {
                     mActionPerformerDelegate.performAction(
-                            intent.getSerializableExtra(EXTRA_ACTION) as Action,
-                            listOf())
+                            action = intent.getSerializableExtra(EXTRA_ACTION) as Action,
+                            flags = 0x0)
                 }
             }
         }
@@ -176,7 +184,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
        will be removed from the Runnable list and removed from the Handler. This stops it being executed after the user
        has stopped long-pressing the trigger.
     * */
-    private val mLongPressRunnables = mutableListOf<Runnable>()
+    private val mRunnables = mutableListOf<Runnable>()
 
     private val mRunnableTriggerMap = mutableMapOf<Int, List<Int>>()
 
@@ -256,11 +264,12 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
                 //when a key is lifted
             } else if (event.action == KeyEvent.ACTION_UP) {
+
                 mPressedKeys.remove(event.keyCode)
 
-                mLongPressRunnables.filter { it.trigger.contains(event.keyCode) }.forEach {
+                mRunnables.filter { it.trigger.contains(event.keyCode) }.forEach {
                     mHandler.removeCallbacks(it)
-                    mLongPressRunnables.remove(it)
+                    mRunnables.remove(it)
                 }
 
                 if (mPressedTriggerKeys.isNotEmpty()) {
@@ -296,7 +305,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
                 //if there is no error
                 if (errorResult == null) {
-                    if (keyMap.flags.contains(FLAG_LONG_PRESS)) {
+                    //if the action should only be performed if it is a long press
+                    if (containsFlag(keyMap.flags, FLAG_LONG_PRESS)) {
 
                         val runnable = Runnable {
                             mActionPerformerDelegate.performAction(keyMap.action!!, keyMap.flags)
@@ -304,13 +314,40 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
                         runnable.trigger = mPressedTriggerKeys
 
-                        mLongPressRunnables.add(runnable)
-
+                        mRunnables.add(runnable)
                         mHandler.postDelayed(runnable, LONG_PRESS_DELAY)
 
+                        return super.onKeyEvent(event)
+
+                        //for example, you dont want an app or app-shortcut to be repeatedly opened.
+                    } else if (keyMap.action!!.isVolumeAction
+                            || keyMap.action!!.type == ActionType.KEY
+                            || keyMap.action!!.type == ActionType.KEYCODE) {
+
+                        val runnable = object : Runnable {
+                            private var mShouldRepeat = false
+
+                            override fun run() {
+                                mActionPerformerDelegate.performAction(keyMap.action!!, keyMap.flags)
+
+                                if (mShouldRepeat) {
+                                    mHandler.postDelayed(this, REPEAT_DELAY)
+                                } else {
+                                    //wait a bit before registering the key as being held down.
+                                    mHandler.postDelayed(this, HOLD_DOWN_DELAY)
+                                    mShouldRepeat = true
+                                }
+                            }
+                        }
+
+                        runnable.trigger = mPressedTriggerKeys
+
+                        mRunnables.add(runnable)
+                        mHandler.post(runnable)
                     } else {
                         mActionPerformerDelegate.performAction(keyMap.action!!, keyMap.flags)
                     }
+
                 } else {
                     val errorDescription = ErrorCodeUtils.getErrorCodeDescription(this, errorResult)
 

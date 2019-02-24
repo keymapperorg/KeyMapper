@@ -23,6 +23,7 @@
     <string name="switch_enabled">Enabled</string>
     <string name="disabled">Disabled</string>
     <string name="show_hidden_system_actions">Show hidden items</string>
+    <string name="key_map_adapter_flags">Flags</string>
 
     <string name="description_open_app">Open %s</string>
     <string name="description_key">Press \'%s\' key</string>
@@ -56,6 +57,10 @@
     <string name="action_about">About</string>
     <string name="action_search">Search</string>
     <string name="action_help">Help</string>
+    <string name="action_enable">Enable</string>
+    <string name="action_disable">Disable</string>
+    <string name="action_disable_all_keymaps">Disable all</string>
+    <string name="action_enable_all_keymaps">Enable all</string>
     <!-- Menu action titles-->
 
     <!-- Button titles -->
@@ -67,7 +72,7 @@
     <string name="button_done">Done</string>
     <string name="button_fix">Fix</string>
     <string name="button_stop_recording_trigger">Stop Recording Trigger…</string>
-    <string name="button_flags">More</string>
+    <string name="button_flags">Flags</string>
     <!-- Button titles -->
 
     <!-- Content descriptions -->
@@ -202,6 +207,7 @@
     <string name="error_action_requires_camera_permission">This action requires camera permission!</string>
     <string name="error_sdk_version_too_low">This action requires Android %s</string>
     <string name="error_feature_not_available">Your device doesn\'t support %s.</string>
+    <string name="error_flag_not_found">Flag "%s" not found!</string>
 
     <string name="error_accessibility_service_disabled">The accessibility service must be enabled for this app to work!</string>
     <string name="error_accessibility_service_enabled">Accessibility service is enabled!</string>
@@ -266,6 +272,8 @@
     <string name="action_disable_flashlight">Disable Flashlight</string>
 
     <string name="action_screenshot">Screenshot</string>
+    <string name="action_open_assistant">Open Google Assistant</string>
+    <string name="action_open_camera">Open Camera</string>
     <!-- System action labels -->
 
     <!-- System action category labels -->

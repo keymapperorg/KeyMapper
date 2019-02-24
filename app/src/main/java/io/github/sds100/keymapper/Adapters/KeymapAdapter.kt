@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.chip.Chip
 import io.github.sds100.keymapper.Interfaces.OnItemClickListener
 import io.github.sds100.keymapper.KeyMap
 import io.github.sds100.keymapper.KeymapAdapterModel
@@ -12,7 +13,10 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.Selection.SelectionCallback
 import io.github.sds100.keymapper.Selection.SelectionEvent
 import io.github.sds100.keymapper.Selection.SelectionProvider
+import io.github.sds100.keymapper.Utils.FlagUtils
+import io.github.sds100.keymapper.Utils.str
 import io.github.sds100.keymapper.ViewHolders.SelectableViewHolder
+import io.github.sds100.keymapper.onSuccess
 import kotlinx.android.synthetic.main.keymap_adapter_item.view.*
 
 /**
@@ -59,15 +63,42 @@ class KeymapAdapter(private val mOnItemClickListener: OnItemClickListener<Keymap
                 checkBox.visibility = View.GONE
             }
 
+            //only show the flag layout if the keymap has chosen flags.
+            if (model.flags != 0) {
+                flagsLayout.visibility = View.VISIBLE
+                chipGroupFlags.removeAllViews()
+
+                FlagUtils.getFlags(model.flags).forEach { flag ->
+
+                    //if a label for a flag can be found, set the text of the chip to the flag
+                    val chip = Chip(context).apply {
+                        FlagUtils.getFlagLabel(flag).onSuccess {
+                            text = str(it)
+                        }
+                    }
+
+                    chipGroupFlags.addView(chip)
+                }
+
+            } else {
+                flagsLayout.visibility = View.GONE
+            }
+
+            if (model.triggerList.isEmpty()) {
+                triggerLayout.visibility = View.GONE
+
+            } else {
+                triggerLayout.visibility = View.VISIBLE
+                //show all the triggers in a list
+                val triggerAdapter = TriggerAdapter(model.triggerList.toMutableList(), showRemoveButton = false)
+
+                recyclerViewTriggers.layoutManager = LinearLayoutManager(context)
+                recyclerViewTriggers.adapter = triggerAdapter
+            }
+
             checkBox.isChecked = iSelectionProvider.isSelected(holder.itemId)
 
             actionDescriptionLayout.setDescription(model.actionDescription)
-
-            //show all the triggers in a list
-            val triggerAdapter = TriggerAdapter(model.triggerList.toMutableList(), showRemoveButton = false)
-
-            recyclerViewTriggers.layoutManager = LinearLayoutManager(context)
-            recyclerViewTriggers.adapter = triggerAdapter
 
             if (model.isEnabled) {
                 textViewDisabled.visibility = View.GONE

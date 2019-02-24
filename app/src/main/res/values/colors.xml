@@ -9,4 +9,5 @@
     <color name="actionModeBackground">#424242</color>
     <color name="actionModeStatusBar">#212121</color>
     <color name="green">#4CAF50</color>
+    <color name="ic_launcher_background">#ffffff</color>
 </resources>

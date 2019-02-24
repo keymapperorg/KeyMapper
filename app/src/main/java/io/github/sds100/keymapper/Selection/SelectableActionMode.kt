@@ -3,8 +3,8 @@ package io.github.sds100.keymapper.Selection
 import android.content.Context
 import android.view.Menu
 import android.view.MenuItem
+import androidx.annotation.MenuRes
 import androidx.appcompat.view.ActionMode
-import io.github.sds100.keymapper.Interfaces.OnDeleteMenuItemClickListener
 import io.github.sds100.keymapper.R
 
 /**
@@ -12,14 +12,15 @@ import io.github.sds100.keymapper.R
  */
 class SelectableActionMode(
         private val mCtx: Context,
+        @MenuRes private val mMenuId: Int,
         private val mISelectionProvider: ISelectionProvider,
-        private val mOnDeleteMenuItemClickListener: OnDeleteMenuItemClickListener
+        private val mOnMenuItemClickListener: MenuItem.OnMenuItemClickListener
 ) : ActionMode.Callback, SelectionCallback {
 
     private var mActionMode: ActionMode? = null
 
     override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
-        mode!!.menuInflater.inflate(R.menu.menu_multi_select, menu)
+        mode!!.menuInflater.inflate(mMenuId, menu)
 
         mActionMode = mode
         mISelectionProvider.subscribeToSelectionEvents(this)
@@ -29,20 +30,15 @@ class SelectableActionMode(
     override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
         when (item!!.itemId) {
             //when back button is pressed
-            android.R.id.home -> onBackPressed(mode!!)
+            android.R.id.home -> onDestroyActionMode(mode!!)
 
             R.id.action_select_all -> {
                 mISelectionProvider.selectAll()
                 return true
             }
-
-            R.id.action_delete -> {
-                mOnDeleteMenuItemClickListener.onDeleteMenuButtonClick()
-                //when the user clicks delete, leave the action mode and stop selecting items
-                onBackPressed(mode!!)
-                return true
-            }
         }
+
+        mOnMenuItemClickListener.onMenuItemClick(item)
         return true
     }
 
@@ -54,7 +50,8 @@ class SelectableActionMode(
         return true
     }
 
-    override fun onDestroyActionMode(mode: ActionMode?) {
+    override fun onDestroyActionMode(mode: ActionMode) {
+        mode.finish()
         mActionMode = null
         mISelectionProvider.unsubscribeFromSelectionEvents(this)
         mISelectionProvider.stopSelecting()
@@ -62,11 +59,9 @@ class SelectableActionMode(
 
     override fun onSelectionEvent(id: Long?, event: SelectionEvent) {
         mActionMode?.invalidate()
-    }
 
-    private fun onBackPressed(mode: ActionMode) {
-        mode.finish()
-        mISelectionProvider.stopSelecting()
-        mISelectionProvider.unsubscribeFromSelectionEvents(this)
+        if (event == SelectionEvent.STOP) {
+            onDestroyActionMode(mActionMode!!)
+        }
     }
 }

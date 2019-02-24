@@ -26,11 +26,8 @@ import com.google.gson.Gson
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Adapters.TriggerAdapter
 import io.github.sds100.keymapper.Services.MyAccessibilityService
-import io.github.sds100.keymapper.Utils.ActionUtils
+import io.github.sds100.keymapper.Utils.*
 import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_PERMISSION_DENIED
-import io.github.sds100.keymapper.Utils.FlagUtils
-import io.github.sds100.keymapper.Utils.PermissionUtils
-import io.github.sds100.keymapper.Utils.RootUtils
 import io.github.sds100.keymapper.ViewModels.ConfigKeyMapViewModel
 import kotlinx.android.synthetic.main.activity_config_key_map.*
 import kotlinx.android.synthetic.main.content_config_key_map.*
@@ -139,15 +136,15 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
 
         buttonFlags.setOnClickListener {
             viewModel.keyMap.value!!.let { keyMap ->
-                FlagUtils.showFlagDialog(this, keyMap) { newItems ->
-                    keyMap.flags.clear()
+                FlagUtils.showFlagDialog(this, keyMap) { selectedItems ->
+                    keyMap.flags = 0
 
-                    newItems.forEach {
+                    selectedItems.forEach {
                         val flag = it.second
                         val isChecked = it.third
 
                         if (isChecked) {
-                            keyMap.flags.add(flag)
+                            keyMap.flags = addFlag(keyMap.flags, flag)
                         }
                     }
                 }
@@ -203,11 +200,6 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
             }
 
             R.id.action_done -> {
-                //if the key map isn't valid, return.
-                if (!viewModel.keyMap.value!!.isValid(this)) {
-                    return true
-                }
-
                 viewModel.saveKeymap()
 
                 finish()

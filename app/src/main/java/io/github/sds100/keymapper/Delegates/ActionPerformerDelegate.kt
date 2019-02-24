@@ -5,6 +5,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.media.AudioManager
 import android.os.Build
+import android.provider.MediaStore
 import android.provider.Settings
 import android.widget.Toast
 import androidx.lifecycle.Lifecycle
@@ -35,7 +36,7 @@ class ActionPerformerDelegate(
         }
     }
 
-    fun performAction(action: Action, flags: List<Int>) {
+    fun performAction(action: Action, flags: Int) {
         ctx.apply {
             //Only show a toast message that Key Mapper is performing an action if the user has enabled it
             val key = str(R.string.key_pref_show_toast_when_action_performed)
@@ -91,11 +92,11 @@ class ActionPerformerDelegate(
         }
     }
 
-    private fun performSystemAction(action: Action, flags: List<Int>) {
+    private fun performSystemAction(action: Action, flags: Int) {
 
         val id = action.data
 
-        val showVolumeUi = flags.contains(FLAG_SHOW_VOLUME_UI)
+        val showVolumeUi = containsFlag(flags, FLAG_SHOW_VOLUME_UI)
 
         ctx.apply {
             when (id) {
@@ -172,6 +173,16 @@ class ActionPerformerDelegate(
                 SystemAction.OPEN_RECENTS -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
                 //there must be a way to do this without root
                 SystemAction.OPEN_MENU -> RootUtils.executeRootCommand("input keyevent 82")
+
+                SystemAction.OPEN_ASSISTANT -> {
+                    val intent = Intent(Intent.ACTION_VOICE_COMMAND).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(intent)
+                }
+
+                SystemAction.OPEN_CAMERA -> {
+                    val intent = Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(intent)
+                }
 
                 else -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

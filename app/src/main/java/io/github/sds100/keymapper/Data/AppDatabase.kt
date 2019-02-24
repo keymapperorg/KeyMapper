@@ -8,7 +8,6 @@ import androidx.room.TypeConverters
 import io.github.sds100.keymapper.KeyMap
 import io.github.sds100.keymapper.TypeConverters.ActionTypeTypeConverter
 import io.github.sds100.keymapper.TypeConverters.ExtraListTypeConverter
-import io.github.sds100.keymapper.TypeConverters.IntMutableListTypeConverter
 import io.github.sds100.keymapper.TypeConverters.TriggerListTypeConverter
 
 /**
@@ -19,9 +18,7 @@ import io.github.sds100.keymapper.TypeConverters.TriggerListTypeConverter
 @TypeConverters(
         TriggerListTypeConverter::class,
         ActionTypeTypeConverter::class,
-        ExtraListTypeConverter::class,
-        IntMutableListTypeConverter::class
-)
+        ExtraListTypeConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     companion object {
         private const val DATABASE_NAME = "key_map_database"

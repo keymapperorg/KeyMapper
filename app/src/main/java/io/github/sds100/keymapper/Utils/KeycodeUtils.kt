@@ -19,16 +19,16 @@ object KeycodeUtils {
      * Maps keys which aren't single characters like the Control keys to a string representation
      */
     private val NON_CHARACTER_KEY_MAP = mapOf(
-            Pair(KeyEvent.KEYCODE_VOLUME_DOWN, "Vol Down"),
-            Pair(KeyEvent.KEYCODE_VOLUME_UP, "Vol Up"),
+            KeyEvent.KEYCODE_VOLUME_DOWN to "Vol down",
+            KeyEvent.KEYCODE_VOLUME_UP to "Vol up",
 
-            Pair(KeyEvent.KEYCODE_CTRL_LEFT, "Ctrl"),
-            Pair(KeyEvent.KEYCODE_CTRL_RIGHT, "Ctrl"),
+            KeyEvent.KEYCODE_CTRL_LEFT to "Ctrl",
+            KeyEvent.KEYCODE_CTRL_RIGHT to "Ctrl",
 
-            Pair(KeyEvent.KEYCODE_SHIFT_LEFT, "Shift"),
-            Pair(KeyEvent.KEYCODE_SHIFT_RIGHT, "Shift"),
+            KeyEvent.KEYCODE_SHIFT_LEFT to "Shift",
+            KeyEvent.KEYCODE_SHIFT_RIGHT to "Shift",
 
-            Pair(KeyEvent.KEYCODE_DPAD_LEFT, "Left")
+            KeyEvent.KEYCODE_DPAD_LEFT to "Left"
     )
 
     private val KEYCODES = listOf(
