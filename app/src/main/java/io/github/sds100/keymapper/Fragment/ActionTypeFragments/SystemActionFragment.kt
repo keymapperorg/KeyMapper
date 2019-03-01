@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.Fragment.ActionTypeFragments
+package io.github.sds100.keymapper.fragment.ActionTypeFragments
 
 import android.content.Context
 import android.os.Bundle
@@ -8,10 +8,10 @@ import android.view.ViewGroup
 import android.widget.Filterable
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.sds100.keymapper.*
-import io.github.sds100.keymapper.Adapters.SystemActionAdapter
-import io.github.sds100.keymapper.Interfaces.IContext
-import io.github.sds100.keymapper.Interfaces.OnItemClickListener
-import io.github.sds100.keymapper.Utils.VolumeUtils
+import io.github.sds100.keymapper.adapter.SystemActionAdapter
+import io.github.sds100.keymapper.interfaces.IContext
+import io.github.sds100.keymapper.interfaces.OnItemClickListener
+import io.github.sds100.keymapper.util.VolumeUtils
 import kotlinx.android.synthetic.main.action_type_recyclerview.*
 
 /**

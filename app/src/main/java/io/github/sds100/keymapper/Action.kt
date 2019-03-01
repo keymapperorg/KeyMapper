@@ -2,10 +2,10 @@ package io.github.sds100.keymapper
 
 import androidx.annotation.StringDef
 import androidx.room.ColumnInfo
-import io.github.sds100.keymapper.Data.KeyMapDao
+import io.github.sds100.keymapper.data.KeyMapDao
 import io.github.sds100.keymapper.SystemAction.CATEGORY_VOLUME
-import io.github.sds100.keymapper.Utils.ErrorCodeUtils
-import io.github.sds100.keymapper.Utils.SystemActionUtils
+import io.github.sds100.keymapper.util.ErrorCodeUtils
+import io.github.sds100.keymapper.util.SystemActionUtils
 import java.io.Serializable
 
 /**

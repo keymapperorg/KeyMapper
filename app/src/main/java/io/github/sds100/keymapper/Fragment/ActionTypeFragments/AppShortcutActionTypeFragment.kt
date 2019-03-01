@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.Fragment.ActionTypeFragments
+package io.github.sds100.keymapper.fragment.ActionTypeFragments
 
 import android.app.Activity
 import android.content.Intent
@@ -12,12 +12,12 @@ import io.github.sds100.keymapper.Action
 import io.github.sds100.keymapper.Action.Companion.EXTRA_PACKAGE_NAME
 import io.github.sds100.keymapper.Action.Companion.EXTRA_SHORTCUT_TITLE
 import io.github.sds100.keymapper.ActionType
-import io.github.sds100.keymapper.Adapters.AppShortcutAdapter
+import io.github.sds100.keymapper.adapter.AppShortcutAdapter
 import io.github.sds100.keymapper.Extra
-import io.github.sds100.keymapper.Interfaces.OnItemClickListener
+import io.github.sds100.keymapper.interfaces.OnItemClickListener
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.Utils.AppShortcutUtils
-import io.github.sds100.keymapper.Views.editTextDialog
+import io.github.sds100.keymapper.util.AppShortcutUtils
+import io.github.sds100.keymapper.view.editTextDialog
 import kotlinx.android.synthetic.main.action_type_recyclerview.*
 
 /**

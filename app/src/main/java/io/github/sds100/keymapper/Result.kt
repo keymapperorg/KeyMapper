@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper
 
-import io.github.sds100.keymapper.Utils.ErrorCode
+import io.github.sds100.keymapper.util.ErrorCode
 
 /**
  * Created by sds100 on 31/12/2018.

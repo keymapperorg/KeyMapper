@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.Selection
+package io.github.sds100.keymapper.selection
 
 import android.content.Context
 import android.view.Menu

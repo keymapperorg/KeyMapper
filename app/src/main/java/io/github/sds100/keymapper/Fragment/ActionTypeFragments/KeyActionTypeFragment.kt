@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.Fragment.ActionTypeFragments
+package io.github.sds100.keymapper.fragment.ActionTypeFragments
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -13,7 +13,7 @@ import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import io.github.sds100.keymapper.Action
 import io.github.sds100.keymapper.ActionType
-import io.github.sds100.keymapper.Activities.ConfigKeymapActivity
+import io.github.sds100.keymapper.activity.ConfigKeymapActivity
 import io.github.sds100.keymapper.R
 import kotlinx.android.synthetic.main.action_type_key.*
 

@@ -1,10 +1,10 @@
-package io.github.sds100.keymapper.Data
+package io.github.sds100.keymapper.data
 
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import io.github.sds100.keymapper.*
-import io.github.sds100.keymapper.Utils.KeycodeUtils
+import io.github.sds100.keymapper.util.KeycodeUtils
 import org.jetbrains.anko.doAsync
 
 /**

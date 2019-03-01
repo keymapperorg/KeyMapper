@@ -17,7 +17,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <io.github.sds100.keymapper.Views.TriggerChipGroup
+        <io.github.sds100.keymapper.view.TriggerChipGroup
             android:id="@+id/triggerChipGroup"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -27,7 +27,7 @@
             tools:layout_height="20dp" />
     </HorizontalScrollView>
 
-    <io.github.sds100.keymapper.Views.SquareImageButton
+    <io.github.sds100.keymapper.view.SquareImageButton
         android:id="@+id/buttonRemove"
         style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:layout_width="wrap_content"

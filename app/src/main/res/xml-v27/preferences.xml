@@ -33,7 +33,7 @@
             android:summary="@string/summary_pref_auto_show_ime_picker"
             android:title="@string/title_pref_auto_show_ime_picker" />
 
-        <io.github.sds100.keymapper.Views.CancellableMultiSelectListPreference
+        <io.github.sds100.keymapper.view.CancellableMultiSelectListPreference
             android:key="@string/key_pref_bluetooth_devices"
             android:title="@string/title_pref_bluetooth_devices" />
 
@@ -43,10 +43,5 @@
             android:summary="@string/summary_pref_show_notification"
             android:title="@string/title_pref_show_notification" />
 
-        <androidx.preference.SwitchPreference
-            android:defaultValue="@bool/default_value_show_notification_on_boot"
-            android:key="@string/key_pref_show_notification_on_boot"
-            android:summary="@string/summary_pref_show_notification_on_boot"
-            android:title="@string/title_pref_show_notification_on_boot" />
     </androidx.preference.PreferenceCategory>
 </androidx.preference.PreferenceScreen>

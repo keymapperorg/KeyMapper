@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.BroadcastReceiver
+package io.github.sds100.keymapper.broadcastreceiver
 
 import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
@@ -6,10 +6,10 @@ import android.content.Context
 import android.content.Intent
 import android.provider.Settings
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.Services.MyIMEService
-import io.github.sds100.keymapper.Utils.ImeUtils
-import io.github.sds100.keymapper.Utils.bool
-import io.github.sds100.keymapper.Utils.str
+import io.github.sds100.keymapper.service.MyIMEService
+import io.github.sds100.keymapper.util.ImeUtils
+import io.github.sds100.keymapper.util.bool
+import io.github.sds100.keymapper.util.str
 import org.jetbrains.anko.defaultSharedPreferences
 
 /**

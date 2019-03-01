@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.Data
+package io.github.sds100.keymapper.data
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
@@ -38,7 +38,7 @@ abstract class KeyMapDao {
     @Query("UPDATE $TABLE_NAME SET $KEY_ENABLED=0 WHERE $KEY_ID in (:id)")
     abstract fun disableKeymapById(vararg id: Long)
 
-    @Insert(onConflict = OnConflictStrategy.FAIL)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     abstract fun insert(vararg keyMap: KeyMap): LongArray
 
     @Delete
