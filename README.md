@@ -1,6 +1,8 @@
 # KeyMapper
 An Android app that maps a single or multiple key events to a custom action.
 
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/sds100/KeyMapper.svg)
+
 ### Help
 Look at the help page in the wiki.
 
