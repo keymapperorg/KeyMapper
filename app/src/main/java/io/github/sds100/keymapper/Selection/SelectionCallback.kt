@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.Selection
+package io.github.sds100.keymapper.selection
 
 /**
  * Created by sds100 on 12/07/2018.

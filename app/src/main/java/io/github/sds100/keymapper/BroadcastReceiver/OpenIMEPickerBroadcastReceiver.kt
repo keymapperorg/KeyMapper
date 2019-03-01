@@ -1,9 +1,9 @@
-package io.github.sds100.keymapper.BroadcastReceiver
+package io.github.sds100.keymapper.broadcastreceiver
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import io.github.sds100.keymapper.Utils.ImeUtils
+import io.github.sds100.keymapper.util.ImeUtils
 
 /**
  * Created by sds100 on 30/09/2018.

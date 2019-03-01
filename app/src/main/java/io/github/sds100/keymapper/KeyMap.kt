@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import io.github.sds100.keymapper.Data.KeyMapDao
+import io.github.sds100.keymapper.data.KeyMapDao
 
 /**
  * Created by sds100 on 12/07/2018.

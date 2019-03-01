@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.Fragment.ActionTypeFragments
+package io.github.sds100.keymapper.fragment.ActionTypeFragments
 
 import android.content.pm.ApplicationInfo
 import android.os.Bundle
@@ -8,9 +8,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.sds100.keymapper.Action
 import io.github.sds100.keymapper.ActionType
-import io.github.sds100.keymapper.Adapters.AppListAdapter
-import io.github.sds100.keymapper.Interfaces.OnItemClickListener
-import io.github.sds100.keymapper.AsyncTasks.LoadAppListAsyncTask
+import io.github.sds100.keymapper.adapter.AppListAdapter
+import io.github.sds100.keymapper.interfaces.OnItemClickListener
+import io.github.sds100.keymapper.asynctask.LoadAppListAsyncTask
 import io.github.sds100.keymapper.R
 import kotlinx.android.synthetic.main.action_type_recyclerview.*
 

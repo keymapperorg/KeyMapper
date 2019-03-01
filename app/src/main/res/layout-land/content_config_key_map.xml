@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".Activities.NewKeymapActivity"
+    tools:context=".activity.NewKeymapActivity"
     tools:showIn="@layout/activity_config_key_map">
 
-    <io.github.sds100.keymapper.Views.ActionDescriptionLayout
+    <io.github.sds100.keymapper.view.ActionDescriptionLayout
         android:id="@+id/actionDescriptionLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -93,7 +93,7 @@
         app:layout_constraintStart_toEndOf="@+id/recyclerViewTriggers"
         app:layout_constraintTop_toTopOf="@+id/buttonClearKeys">
 
-        <io.github.sds100.keymapper.Views.TriggerChipGroup
+        <io.github.sds100.keymapper.view.TriggerChipGroup
             android:id="@+id/chipGroupTriggerPreview"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"

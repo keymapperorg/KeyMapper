@@ -4,8 +4,10 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 
 android {
+
     compileSdkVersion 28
     buildToolsVersion = "28.0.3"
+
     defaultConfig {
         applicationId "io.github.sds100.keymapper"
         minSdkVersion 19
@@ -14,6 +16,7 @@ android {
         versionName "1.0.0-alpha.1"
         vectorDrawables.useSupportLibrary = true
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -24,6 +27,7 @@ android {
             versionNameSuffix "-debug"
         }
     }
+
     buildToolsVersion '28.0.3'
 }
 

@@ -1,11 +1,11 @@
-package io.github.sds100.keymapper.Fragment
+package io.github.sds100.keymapper.fragment
 
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.preference.*
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.Utils.BluetoothUtils
-import io.github.sds100.keymapper.Utils.NotificationUtils
+import io.github.sds100.keymapper.util.BluetoothUtils
+import io.github.sds100.keymapper.util.NotificationUtils
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.okButton

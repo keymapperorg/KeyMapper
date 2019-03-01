@@ -33,7 +33,7 @@
             android:summary="@string/summary_pref_auto_show_ime_picker"
             android:title="@string/title_pref_auto_show_ime_picker" />
 
-        <io.github.sds100.keymapper.Views.CancellableMultiSelectListPreference
+        <io.github.sds100.keymapper.view.CancellableMultiSelectListPreference
             android:key="@string/key_pref_bluetooth_devices"
             android:title="@string/title_pref_bluetooth_devices" />
 

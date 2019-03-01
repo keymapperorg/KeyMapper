@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground">
 
-        <io.github.sds100.keymapper.Views.ActionDescriptionLayout
+        <io.github.sds100.keymapper.view.ActionDescriptionLayout
             android:id="@+id/actionDescriptionLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

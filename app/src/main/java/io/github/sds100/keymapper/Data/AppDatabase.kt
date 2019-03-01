@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.Data
+package io.github.sds100.keymapper.data
 
 import android.content.Context
 import androidx.room.Database
@@ -6,9 +6,9 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import io.github.sds100.keymapper.KeyMap
-import io.github.sds100.keymapper.TypeConverters.ActionTypeTypeConverter
-import io.github.sds100.keymapper.TypeConverters.ExtraListTypeConverter
-import io.github.sds100.keymapper.TypeConverters.TriggerListTypeConverter
+import io.github.sds100.keymapper.typeconverter.ActionTypeTypeConverter
+import io.github.sds100.keymapper.typeconverter.ExtraListTypeConverter
+import io.github.sds100.keymapper.typeconverter.TriggerListTypeConverter
 
 /**
  * Created by sds100 on 05/09/2018.

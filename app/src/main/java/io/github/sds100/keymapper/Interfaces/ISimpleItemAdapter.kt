@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.Interfaces
+package io.github.sds100.keymapper.interfaces
 
 import android.graphics.drawable.Drawable
 

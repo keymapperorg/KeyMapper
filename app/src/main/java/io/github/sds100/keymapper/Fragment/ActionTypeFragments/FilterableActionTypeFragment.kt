@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.Fragment.ActionTypeFragments
+package io.github.sds100.keymapper.fragment.ActionTypeFragments
 
 import android.widget.Filterable
 import androidx.appcompat.widget.SearchView

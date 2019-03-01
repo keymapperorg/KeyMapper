@@ -28,7 +28,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name=".Activities.HomeActivity"
+            android:name=".activity.HomeActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -38,36 +38,36 @@
         </activity>
 
         <activity
-            android:name=".Activities.NewKeymapActivity"
+            android:name=".activity.NewKeymapActivity"
             android:label="@string/title_activity_new_key_map"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name=".Activities.EditKeymapActivity"
+            android:name=".activity.EditKeymapActivity"
             android:label="@string/title_activity_edit_key_map"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name=".Activities.ChooseActionActivity"
+            android:name=".activity.ChooseActionActivity"
             android:label="@string/title_choose_action"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name=".Activities.SettingsActivity"
+            android:name=".activity.SettingsActivity"
             android:label="@string/title_settings" />
 
         <activity
-            android:name=".Activities.AboutActivity"
+            android:name=".activity.AboutActivity"
             android:label="@string/title_about" />
 
         <activity
-            android:name=".Activities.HelpActivity"
+            android:name=".activity.HelpActivity"
             android:label="@string/title_help"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <receiver android:name=".BroadcastReceiver.OpenIMEPickerBroadcastReceiver" />
+        <receiver android:name=".broadcastreceiver.OpenIMEPickerBroadcastReceiver" />
 
-        <receiver android:name=".BroadcastReceiver.BluetoothConnectionBroadcastReceiver">
+        <receiver android:name=".broadcastreceiver.BluetoothConnectionBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
                 <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
@@ -76,7 +76,7 @@
 
         <!-- Services -->
         <service
-            android:name=".Services.MyAccessibilityService"
+            android:name=".service.MyAccessibilityService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
@@ -88,7 +88,7 @@
         </service>
 
         <service
-            android:name=".Services.MyIMEService"
+            android:name=".service.MyIMEService"
             android:label="@string/ime_service_label"
             android:permission="android.permission.BIND_INPUT_METHOD">
             <intent-filter>

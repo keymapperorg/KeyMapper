@@ -1,15 +1,15 @@
 package io.github.sds100.keymapper
 
 import android.content.Context
-import io.github.sds100.keymapper.Utils.ErrorCode
-import io.github.sds100.keymapper.Utils.ErrorCodeUtils
-import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_APP_DISABLED
-import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_APP_UNINSTALLED
-import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_FEATURE_NOT_AVAILABLE
-import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_FLAG_NOT_FOUND
-import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_PERMISSION_DENIED
-import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_SDK_VERSION_TOO_LOW
-import io.github.sds100.keymapper.Utils.ErrorCodeUtils.ERROR_CODE_SHORTCUT_NOT_FOUND
+import io.github.sds100.keymapper.util.ErrorCode
+import io.github.sds100.keymapper.util.ErrorCodeUtils
+import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_APP_DISABLED
+import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_APP_UNINSTALLED
+import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_FEATURE_NOT_AVAILABLE
+import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_FLAG_NOT_FOUND
+import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_PERMISSION_DENIED
+import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_SDK_VERSION_TOO_LOW
+import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_SHORTCUT_NOT_FOUND
 
 /**
  * Created by sds100 on 25/11/2018.
