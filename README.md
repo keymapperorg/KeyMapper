@@ -1,9 +1,9 @@
 # KeyMapper
 Key Mapper is a free and open source Android app that maps a single or multiple key events to a custom action.
 
-![](app/src/main/ic_launcher-web.png?raw=true)
-
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/sds100/KeyMapper.svg)
+
+![](app/src/main/ic_launcher-web.png?raw=true)
 
 ### Help
 Look at the help page in the wiki.
