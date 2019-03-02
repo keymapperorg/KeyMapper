@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Handler
 import android.provider.Settings
+import android.util.Log
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import android.widget.Toast
@@ -261,6 +262,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                 }
             }
 
+            Log.i(this::class.java.simpleName, "Consumed key event ${event.keyCode}")
             //Don't allow the key to do anything when recording a trigger
             return true
 
@@ -290,6 +292,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                             return super.onKeyEvent(event)
                         }
 
+                        Log.i(this::class.java.simpleName, "Consumed key event ${event.keyCode}")
                         return true
                     }
                 }
@@ -363,6 +366,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                 }
             }
 
+            Log.i(this::class.java.simpleName, "Consumed key event ${event.keyCode}")
             return true
         }
     }
