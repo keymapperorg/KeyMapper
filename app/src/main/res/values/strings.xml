@@ -13,6 +13,7 @@
     <string name="shrug">¯\\_(ツ)_/¯</string>
     <string name="no_key_maps">You haven\'t created any keymaps!</string>
     <string name="performing_action">Key Mapper is performing an action…</string>
+    <string name="email_subject">Key Mapper query</string>
 
     <string name="caption_action_type_key">Click the key on the keyboard which you want to be entered.
         \n\nIMPORTANT!
@@ -154,6 +155,7 @@
 
     <!-- About activity-->
     <string name="key_pref_version">key_version</string>
+    <string name="key_pref_developer_email">developer_email</string>
 
     <string name="pref_title_changelog">Changelog</string>
     <string name="pref_title_license">License</string>
@@ -162,6 +164,7 @@
     <string name="pref_title_developer_github">Developer\'s GitHub Profile</string>
     <string name="pref_title_rate_review">Rate and Review</string>
     <string name="pref_title_version">Version</string>
+    <string name="pref_title_developer_email">Email Developer</string>
     <!-- About activity-->
 
     <!--Action Types Titles-->
