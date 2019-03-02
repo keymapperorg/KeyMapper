@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ## 1.0.0 Beta 1
 - Initial release!
-   #### Added these actions:
+   #### Added these actions
    - Open App
    - Open App shortcut
    - A keycode
