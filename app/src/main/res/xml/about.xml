@@ -15,6 +15,10 @@
         android:title="@string/pref_title_rate_review"
         app:linkUrl="@string/url_play_store_listing" />
 
+    <androidx.preference.Preference
+        android:key="@string/key_pref_developer_email"
+        android:title="@string/pref_title_developer_email"/>
+
     <io.github.sds100.keymapper.view.UrlLinkPreference
         android:title="@string/pref_title_developer_github"
         app:linkUrl="@string/url_developer_github" />
