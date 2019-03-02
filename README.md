@@ -26,3 +26,6 @@ This project uses semantic versioning. e.g 1.2.3-alpha.1
 - 3rd digit: patches. Incrememtend after a hotfix or bug fix.
 
 Additional labels can be used as a suffix. e.g "alpha".
+
+#### Version codes
+The version code in the develop branch should always be the highest. Therefore, when a new version is released in the release branch, it should be incremented as well.
