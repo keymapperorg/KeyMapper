@@ -1,4 +1,7 @@
 # KeyMapper
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/1ca8cdc8b934404f8a0ec8a9b61a75ce)](https://app.codacy.com/app/sds100/KeyMapper?utm_source=github.com&utm_medium=referral&utm_content=sds100/KeyMapper&utm_campaign=Badge_Grade_Dashboard)
+
 Key Mapper is a free and open source Android app that maps a single or multiple key events to a custom action.
 
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/sds100/KeyMapper.svg)
