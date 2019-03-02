@@ -15,8 +15,10 @@ import android.view.View
 import androidx.annotation.ColorRes
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.Gson
 import io.github.sds100.keymapper.BuildConfig
 import io.github.sds100.keymapper.KeyMap
@@ -34,10 +36,7 @@ import io.github.sds100.keymapper.service.MyIMEService
 import io.github.sds100.keymapper.util.*
 import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.content_home.*
-import org.jetbrains.anko.append
-import org.jetbrains.anko.defaultSharedPreferences
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.uiThread
+import org.jetbrains.anko.*
 
 class HomeActivity : AppCompatActivity(), SelectionCallback,
         OnItemClickListener<KeymapAdapterModel>, MenuItem.OnMenuItemClickListener {
@@ -107,6 +106,34 @@ class HomeActivity : AppCompatActivity(), SelectionCallback,
         val intentFilter = IntentFilter()
         intentFilter.addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
         registerReceiver(mBroadcastReceiver, intentFilter)
+
+        //ask the user whether they want to enable analytics
+        val isFirstTime = defaultSharedPreferences.getBoolean(
+                str(R.string.key_pref_first_time), true
+        )
+
+        defaultSharedPreferences.edit {
+            if (isFirstTime) {
+                alert {
+                    titleResource = R.string.title_pref_data_collection
+                    messageResource = R.string.summary_pref_data_collection
+                    positiveButton(R.string.pos_opt_in) {
+                        putBoolean(str(R.string.key_pref_data_collection), true).commit()
+                        setFirebaseDataCollection()
+                        putBoolean(str(R.string.key_pref_first_time), false).commit()
+                    }
+
+                    negativeButton(R.string.neg_opt_out) {
+                        putBoolean(str(R.string.key_pref_data_collection), false).commit()
+                        setFirebaseDataCollection()
+                        putBoolean(str(R.string.key_pref_first_time), false).commit()
+                    }
+                }.show()
+
+            } else {
+                setFirebaseDataCollection()
+            }
+        }
     }
 
     override fun onMenuItemClick(item: MenuItem?): Boolean {
@@ -315,5 +342,13 @@ class HomeActivity : AppCompatActivity(), SelectionCallback,
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setStatusBarColor(@ColorRes colorId: Int) {
         window.statusBarColor = color(colorId)
+    }
+
+    private fun setFirebaseDataCollection() {
+        val isDataCollectionEnabled = defaultSharedPreferences.getBoolean(
+                str(R.string.key_pref_data_collection),
+                bool(R.bool.default_value_data_collection))
+
+        FirebaseAnalytics.getInstance(this@HomeActivity).setAnalyticsCollectionEnabled(isDataCollectionEnabled)
     }
 }

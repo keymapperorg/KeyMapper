@@ -101,7 +101,9 @@
     <!-- Dialog buttons -->
     <string name="pos_yes">Yes</string>
     <string name="pos_done">Done</string>
+    <string name="pos_opt_in">Opt in</string>
 
+    <string name="neg_opt_out">Opt out</string>
     <string name="neg_no">No</string>
     <string name="neg_cancel">Cancel</string>
     <!-- Dialog buttons -->
@@ -116,9 +118,15 @@
 
     <!--preferences-->
     <!-- Look in the bools.xml file to find their default values -->
+    <string name="key_pref_first_time">pref_first_time</string>
+
     <string name="title_pref_show_notification">Show Notification</string>
     <string name="key_pref_show_notification">pref_show_notification</string>
     <string name="summary_pref_show_notification">Show a persistent notification to allow you to pick an input method. (The app requires ROOT permission for it to work on Android 8.1 and higher).</string>
+
+    <string name="title_pref_data_collection">Anonymous analytics</string>
+    <string name="key_pref_data_collection">pref_data_collection</string>
+    <string name="summary_pref_data_collection">Do you want to help improve Key Mapper by allowing it to anonymously collect data about how you use it such as crash reports? The data is collected by Google Firebase. The privacy policy is located in the About activity.</string>
 
     <string name="key_pref_bluetooth_devices">pref_bluetooth_devices</string>
     <string name="title_pref_bluetooth_devices">Choose Bluetooth Devices…</string>
