@@ -22,11 +22,14 @@ object KeycodeUtils {
             KeyEvent.KEYCODE_VOLUME_DOWN to "Vol down",
             KeyEvent.KEYCODE_VOLUME_UP to "Vol up",
 
-            KeyEvent.KEYCODE_CTRL_LEFT to "Ctrl",
-            KeyEvent.KEYCODE_CTRL_RIGHT to "Ctrl",
+            KeyEvent.KEYCODE_CTRL_LEFT to "Ctrl Left",
+            KeyEvent.KEYCODE_CTRL_RIGHT to "Ctrl Right",
 
-            KeyEvent.KEYCODE_SHIFT_LEFT to "Shift",
-            KeyEvent.KEYCODE_SHIFT_RIGHT to "Shift",
+            KeyEvent.KEYCODE_SHIFT_LEFT to "Shift Left",
+            KeyEvent.KEYCODE_SHIFT_RIGHT to "Shift Right",
+
+            KeyEvent.KEYCODE_ALT_LEFT to "Alt Left",
+            KeyEvent.KEYCODE_ALT_RIGHT to "Alt Right",
 
             KeyEvent.KEYCODE_DPAD_LEFT to "Left",
             KeyEvent.KEYCODE_DPAD_RIGHT to "Right",
@@ -37,7 +40,9 @@ object KeycodeUtils {
             KeyEvent.KEYCODE_HOME to "Home",
             KeyEvent.KEYCODE_BACK to "Back",
             KeyEvent.KEYCODE_DEL to "Delete",
-            KeyEvent.KEYCODE_TAB to "Tab"
+            KeyEvent.KEYCODE_TAB to "Tab",
+            KeyEvent.KEYCODE_SPACE to "Space",
+            KeyEvent.KEYCODE_SEARCH to "Search"
     )
 
     private val KEYCODES = listOf(
