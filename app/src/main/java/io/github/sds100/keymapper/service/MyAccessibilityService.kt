@@ -263,7 +263,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                 }
             }
 
-            Log.i(this::class.java.simpleName, "Consumed key event ${event.keyCode}")
+            logConsumedKeyEvent(event)
             //Don't allow the key to do anything when recording a trigger
             return true
 
@@ -293,7 +293,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                             return super.onKeyEvent(event)
                         }
 
-                        Log.i(this::class.java.simpleName, "Consumed key event ${event.keyCode}")
+                        logConsumedKeyEvent(event)
                         return true
                     }
                 }
@@ -367,7 +367,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                 }
             }
 
-            Log.i(this::class.java.simpleName, "Consumed key event ${event.keyCode}")
+            logConsumedKeyEvent(event)
             return true
         }
     }
@@ -378,5 +378,9 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         if (list != null) {
             mKeyMapListCache = list
         }
+    }
+
+    private fun logConsumedKeyEvent(event: KeyEvent) {
+        Log.i(this::class.java.simpleName, "Consumed key event ${event.keyCode}")
     }
 }
