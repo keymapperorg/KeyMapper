@@ -18,7 +18,7 @@ object KeycodeUtils {
     /**
      * Maps keys which aren't single characters like the Control keys to a string representation
      */
-    private val NON_CHARACTER_KEY_MAP = mapOf(
+    private val NON_CHARACTER_KEY_LABELS = mapOf(
             KeyEvent.KEYCODE_VOLUME_DOWN to "Vol down",
             KeyEvent.KEYCODE_VOLUME_UP to "Vol up",
 
@@ -42,7 +42,8 @@ object KeycodeUtils {
             KeyEvent.KEYCODE_DEL to "Delete",
             KeyEvent.KEYCODE_TAB to "Tab",
             KeyEvent.KEYCODE_SPACE to "Space",
-            KeyEvent.KEYCODE_SEARCH to "Search"
+            KeyEvent.KEYCODE_SEARCH to "Search",
+            KeyEvent.KEYCODE_CAPS_LOCK to "Caps Lock"
     )
 
     private val KEYCODES = listOf(
@@ -362,8 +363,8 @@ object KeycodeUtils {
      * "Ctrl" will be returned
      */
     fun keycodeToString(keyCode: Int): String {
-        return if (NON_CHARACTER_KEY_MAP.containsKey(keyCode)) {
-            NON_CHARACTER_KEY_MAP.getValue(keyCode)
+        return if (NON_CHARACTER_KEY_LABELS.containsKey(keyCode)) {
+            NON_CHARACTER_KEY_LABELS.getValue(keyCode)
         } else {
             KeyEvent(KeyEvent.ACTION_UP, keyCode).displayLabel.toString()
         }
