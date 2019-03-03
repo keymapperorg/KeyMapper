@@ -2,8 +2,8 @@ package io.github.sds100.keymapper
 
 import androidx.annotation.StringDef
 import androidx.room.ColumnInfo
-import io.github.sds100.keymapper.data.KeyMapDao
 import io.github.sds100.keymapper.SystemAction.CATEGORY_VOLUME
+import io.github.sds100.keymapper.data.KeyMapDao
 import io.github.sds100.keymapper.util.ErrorCodeUtils
 import io.github.sds100.keymapper.util.SystemActionUtils
 import java.io.Serializable
@@ -67,14 +67,24 @@ data class Action(
                 type == ActionType.KEYCODE ||
                 type == ActionType.TEXT_BLOCK
 
-    val isVolumeAction: Boolean
-        get() = type == ActionType.SYSTEM_ACTION &&
-                SystemActionUtils.getSystemActionDef(data).handle(
-                        onSuccess = { it.category == CATEGORY_VOLUME },
-                        onFailure = { false }
-                )
 
     fun getExtraData(extraId: String) = extras.find { it.id == extraId }?.data.createResult(
             ErrorCodeUtils.ERROR_CODE_ACTION_EXTRA_NOT_FOUND, extraId
     )
 }
+
+val Action?.isVolumeAction: Boolean
+    get() {
+        if (this == null) return false
+
+        if (type == ActionType.SYSTEM_ACTION) {
+            val isVolumeAction = SystemActionUtils.getSystemActionDef(data).handle(
+                    onSuccess = { it.category == CATEGORY_VOLUME },
+                    onFailure = { false }
+            )
+
+            return isVolumeAction
+        }
+
+        return false
+    }

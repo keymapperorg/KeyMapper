@@ -26,6 +26,7 @@ import io.github.sds100.keymapper.data.KeyMapRepository
 import io.github.sds100.keymapper.delegate.ActionPerformerDelegate
 import io.github.sds100.keymapper.interfaces.IContext
 import io.github.sds100.keymapper.interfaces.IPerformGlobalAction
+import io.github.sds100.keymapper.isVolumeAction
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.FlagUtils.FLAG_LONG_PRESS
 
