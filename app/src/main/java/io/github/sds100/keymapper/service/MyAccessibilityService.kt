@@ -381,6 +381,6 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
     }
 
     private fun logConsumedKeyEvent(event: KeyEvent) {
-        Log.i(this::class.java.simpleName, "Consumed key event ${event.keyCode}")
+        Log.i(this::class.java.simpleName, "Consumed key event ${event.keyCode} ${event.action}")
     }
 }
