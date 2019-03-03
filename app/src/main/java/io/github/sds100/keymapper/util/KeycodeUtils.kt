@@ -43,7 +43,8 @@ object KeycodeUtils {
             KeyEvent.KEYCODE_TAB to "Tab",
             KeyEvent.KEYCODE_SPACE to "Space",
             KeyEvent.KEYCODE_SEARCH to "Search",
-            KeyEvent.KEYCODE_CAPS_LOCK to "Caps Lock"
+            KeyEvent.KEYCODE_CAPS_LOCK to "Caps Lock",
+            KeyEvent.KEYCODE_HEADSETHOOK to "Headphone button"
     )
 
     private val KEYCODES = listOf(
