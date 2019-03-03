@@ -20,12 +20,6 @@
 
     <androidx.preference.PreferenceCategory android:title="@string/title_pref_category_ime_picker">
         <androidx.preference.SwitchPreference
-            android:defaultValue="@bool/default_value_auto_change_ime_on_connection"
-            android:key="@string/key_pref_auto_change_ime_on_connection"
-            android:summary="@string/summary_pref_auto_change_ime_on_connection"
-            android:title="@string/title_pref_auto_change_ime_on_connection" />
-
-        <androidx.preference.SwitchPreference
             android:defaultValue="@bool/default_value_auto_show_ime_picker"
             android:key="@string/key_pref_auto_show_ime_picker"
             android:summary="@string/summary_pref_auto_show_ime_picker"
@@ -50,6 +44,12 @@
             android:key="@string/key_pref_allow_root_features"
             android:summary="@string/summary_pref_allow_root_features"
             android:title="@string/title_pref_allow_root_features" />
+
+        <androidx.preference.SwitchPreference
+            android:defaultValue="@bool/default_value_auto_change_ime_on_connection"
+            android:key="@string/key_pref_auto_change_ime_on_connection"
+            android:summary="@string/summary_pref_auto_change_ime_on_connection"
+            android:title="@string/title_pref_auto_change_ime_on_connection" />
 
     </androidx.preference.PreferenceCategory>
 </androidx.preference.PreferenceScreen>
