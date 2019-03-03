@@ -15,6 +15,15 @@ All notable changes to this project will be documented in this file. This projec
 
 ## 1.0.0 Beta 1
 - Initial release!
+- Option to automatically change the input method and/or show the input method picker when a chosen Bluetooth device is connected and switch back to the old one when disconnected
+- Option to show a notification, which when clicked on, will show the input method picker. Android 8.1+ needs root.
+- Option to show a toast message whenever an action is performed.
+- A Help activity
+- An About activity
+- No limit on the amount of triggers for a keymap and how many keys can be used to create a trigger.
+- Optional flags for each keymap so it can only be triggered on a long press and whether to show the volume dialog for volume related actions.
+- Ability to enable/disable specific/all keymaps.
+
    #### Added these actions
    - Open App
    - Open App shortcut
