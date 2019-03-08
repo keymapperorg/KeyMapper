@@ -251,23 +251,17 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
         if (mRecordingTrigger) {
             if (event.action == KeyEvent.ACTION_DOWN) {
-                //only add the key to the trigger if it isn't already a part of the trigger
-                if (!mPressedKeys.contains(event.keyCode)) {
-                    //tell NewKeymapActivity to add the chip
-                    val intent = Intent(ConfigKeymapActivity.ACTION_ADD_KEY_CHIP)
-                    intent.putExtra(ConfigKeymapActivity.EXTRA_KEY_EVENT, event)
+                //tell NewKeymapActivity to add the chip
+                val intent = Intent(ConfigKeymapActivity.ACTION_ADD_KEY_CHIP)
+                intent.putExtra(ConfigKeymapActivity.EXTRA_KEY_EVENT, event)
 
-                    sendBroadcast(intent)
-
-                    mPressedKeys.add(event.keyCode)
-                }
+                sendBroadcast(intent)
             }
 
             logConsumedKeyEvent(event)
             //Don't allow the key to do anything when recording a trigger
             return true
 
-        } else {
 
             //when a key is pressed down
             if (event.action == KeyEvent.ACTION_DOWN) {
