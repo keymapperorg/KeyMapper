@@ -59,7 +59,10 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
                 ACTION_ADD_KEY_CHIP -> {
                     val keyEvent = intent.getParcelableExtra<KeyEvent>(EXTRA_KEY_EVENT)
 
-                    chipGroupTriggerPreview.addChip(keyEvent)
+                    //only add the chip to the group if it doesn't contain already it.
+                    if (!chipGroupTriggerPreview.containsChip(keyEvent.keyCode)) {
+                        chipGroupTriggerPreview.addChip(keyEvent)
+                    }
                 }
 
                 MyAccessibilityService.ACTION_RECORD_TRIGGER_TIMER_STOPPED -> {
