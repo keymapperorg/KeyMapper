@@ -22,7 +22,6 @@ All notable changes to this project will be documented in this file. This projec
 - added option to email developer in the About activity.
 - created privacy policy and ability to opt in/out of Firebase analytics
 
-
 ## [1.0.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v1.0.0-beta.1)
 - Initial release!
 - Option to automatically change the input method and/or show the input method picker when a chosen Bluetooth device is connected and switch back to the old one when disconnected

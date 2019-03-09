@@ -12,11 +12,11 @@ Look at the help page in the wiki.
 
 ### Branches
  - master: Everything in the latest stable release.
- - develop: The most recent changes. The app is potentially unstable but it can be successfully compiled. Merges into master when in a stable state.
+ - develop: The most recent changes. The app is potentially unstable but it can be successfully compiled. Merges into a release branch when enough has been changed for a new release.
 
  - release/*: Branched off develop. Beta releases for a particular release are compiled from here. Once the code is stable, it will be merged into master. No big changes should be made/merged here as the purpose of this branch is to make a release stable. By separating upcoming releases from develop, new features can be worked on in develop without affecting the upcoming release's code base.
  - feature/*: Any new changes currently being developed. Merges into develop.
- - hotfix/*: Any small, quick (atleast things which SHOULD be quick) changes that need to be made. Merge into master, develop and release.
+ - hotfix/*: Any small, quick (atleast things which SHOULD be quick) changes that need to be made. Merge into develop and release. If there is no release already being worked on, quickly release a new version depending on how critical the issue is and merge the new release branch into master.
 
 ### Versioning
 This project uses semantic versioning. e.g 1.2.3-alpha.1
