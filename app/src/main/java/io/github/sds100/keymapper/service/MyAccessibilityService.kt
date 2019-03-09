@@ -5,8 +5,10 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.media.AudioManager
 import android.os.Handler
 import android.provider.Settings
+import android.util.Log
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import android.widget.Toast
@@ -25,8 +27,11 @@ import io.github.sds100.keymapper.data.KeyMapRepository
 import io.github.sds100.keymapper.delegate.ActionPerformerDelegate
 import io.github.sds100.keymapper.interfaces.IContext
 import io.github.sds100.keymapper.interfaces.IPerformGlobalAction
-import io.github.sds100.keymapper.util.*
-import io.github.sds100.keymapper.util.FlagUtils.FLAG_LONG_PRESS
+import io.github.sds100.keymapper.isVolumeAction
+import io.github.sds100.keymapper.util.ActionUtils
+import io.github.sds100.keymapper.util.ErrorCodeUtils
+import io.github.sds100.keymapper.util.RootUtils
+import io.github.sds100.keymapper.util.VolumeUtils
 
 /**
  * Created by sds100 on 16/07/2018.
@@ -63,7 +68,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         /**
          * How long a key should be held down to repeatedly perform an action in ms.
          */
-        private const val HOLD_DOWN_DELAY = 200L
+        private const val HOLD_DOWN_DELAY = 400L
 
         /**
          * Enable this accessibility service. REQUIRES ROOT
@@ -192,7 +197,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
        will be removed from the Runnable list and removed from the Handler. This stops it being executed after the user
        has stopped long-pressing the trigger.
     * */
-    private val mRunnables = mutableListOf<Runnable>()
+    private val mLongPressRunnables = mutableListOf<Runnable>()
+    private val mRepeatRunnables = mutableListOf<Runnable>()
 
     private val mRunnableTriggerMap = mutableMapOf<Int, List<Int>>()
 
@@ -249,122 +255,120 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
         if (mRecordingTrigger) {
             if (event.action == KeyEvent.ACTION_DOWN) {
-                //only add the key to the trigger if it isn't already a part of the trigger
-                if (!mPressedKeys.contains(event.keyCode)) {
-                    //tell NewKeymapActivity to add the chip
-                    val intent = Intent(ConfigKeymapActivity.ACTION_ADD_KEY_CHIP)
-                    intent.putExtra(ConfigKeymapActivity.EXTRA_KEY_EVENT, event)
+                //tell NewKeymapActivity to add the chip
+                val intent = Intent(ConfigKeymapActivity.ACTION_ADD_KEY_CHIP)
+                intent.putExtra(ConfigKeymapActivity.EXTRA_KEY_EVENT, event)
 
-                    sendBroadcast(intent)
-
-                    mPressedKeys.add(event.keyCode)
-                }
+                sendBroadcast(intent)
             }
 
+            logConsumedKeyEvent(event)
             //Don't allow the key to do anything when recording a trigger
             return true
+        }
 
-        } else {
+        //when a key is pressed down
+        if (event.action == KeyEvent.ACTION_DOWN) {
+            mPressedKeys.add(event.keyCode)
 
-            //when a key is pressed down
-            if (event.action == KeyEvent.ACTION_DOWN) {
-                mPressedKeys.add(event.keyCode)
+            //when a key is lifted
+        } else if (event.action == KeyEvent.ACTION_UP) {
 
-                //when a key is lifted
-            } else if (event.action == KeyEvent.ACTION_UP) {
+            mPressedKeys.remove(event.keyCode)
 
-                mPressedKeys.remove(event.keyCode)
+            if (mLongPressRunnables.any { it.trigger.contains(event.keyCode) }) {
+                imitateButtonPress(event.keyCode)
+            }
 
-                mRunnables.filter { it.trigger.contains(event.keyCode) }.forEach {
+            mLongPressRunnables.forEach {
+                if (it.trigger.contains(event.keyCode)) {
                     mHandler.removeCallbacks(it)
-                    mRunnables.remove(it)
+                    mLongPressRunnables.remove(it)
                 }
+            }
 
-                if (mPressedTriggerKeys.isNotEmpty()) {
-                    if (mPressedTriggerKeys.contains(event.keyCode)) {
-                        mPressedTriggerKeys.remove(event.keyCode)
+            mRepeatRunnables.forEach {
+                if (it.trigger.contains(event.keyCode)) {
+                    mHandler.removeCallbacks(it)
+                    mRepeatRunnables.remove(it)
+                }
+            }
+        }
 
-                        /* pass the volume key event to the system otherwise strange behaviour
-                        * happens where the volume key is constantly being pressed */
-                        if (event.isVolumeKey) {
-                            return super.onKeyEvent(event)
-                        }
+        mPressedTriggerKeys = mPressedKeys.toMutableList()
 
-                        return true
+        //find all the keymap which can be triggered with the keys being pressed
+        val keyMaps = mKeyMapListCache.filter { keymap ->
+            keymap.containsTrigger(mPressedTriggerKeys) && keymap.isEnabled
+        }
+
+        //if no applicable keymaps are found the keyevent won't be consumed
+        if (keyMaps.isEmpty()) return super.onKeyEvent(event)
+
+        var consumeEvent = false
+
+        //loop through each keymap and perform their action
+        for (keymap in keyMaps) {
+            val errorResult = ActionUtils.getPotentialErrorCode(this, keymap.action)
+
+            //if there is no error
+            if (errorResult != null) {
+                val errorDescription = ErrorCodeUtils.getErrorCodeDescription(this, errorResult)
+
+                Toast.makeText(this, errorDescription, LENGTH_SHORT).show()
+                continue
+            }
+
+            //if the action should only be performed if it is a long press
+            if (keymap.isLongPress) {
+
+                val runnable = object : Runnable {
+                    override fun run() {
+
+                        mActionPerformerDelegate.performAction(keymap.action!!, keymap.flags)
+
+                        mRunnableTriggerMap.remove(this.hashCode())
+                        mLongPressRunnables.remove(this)
                     }
                 }
+
+                runnable.trigger = mPressedTriggerKeys
+
+                mLongPressRunnables.add(runnable)
+                mHandler.postDelayed(runnable, LONG_PRESS_DELAY)
+
+                consumeEvent = true
+                continue
             }
 
-            mPressedTriggerKeys = mPressedKeys.toMutableList()
+            if (keymap.action!!.isVolumeAction
+                    || keymap.action!!.type == ActionType.KEY
+                    || keymap.action!!.type == ActionType.KEYCODE) {
 
-            //find all the keymap which can be triggered with the keys being pressed
-            val keyMaps = mKeyMapListCache.filter { keyMap ->
-                keyMap.triggerList.any { trigger ->
-                    trigger.keys.toTypedArray().contentEquals(mPressedKeys.toTypedArray()) && keyMap.isEnabled
-                }
-            }
+                val runnable = object : Runnable {
+                    override fun run() {
+                        mActionPerformerDelegate.performAction(keymap.action!!, keymap.flags)
 
-            //if no applicable keymaps are found the keyevent won't be consumed
-            if (keyMaps.isEmpty()) return super.onKeyEvent(event)
-
-            //loop through each keymap and perform their action
-            keyMaps.forEach { keyMap ->
-                val errorResult = ActionUtils.getPotentialErrorCode(this, keyMap.action)
-
-                //if there is no error
-                if (errorResult == null) {
-                    //if the action should only be performed if it is a long press
-                    if (containsFlag(keyMap.flags, FLAG_LONG_PRESS)) {
-
-                        val runnable = Runnable {
-                            mActionPerformerDelegate.performAction(keyMap.action!!, keyMap.flags)
-                        }
-
-                        runnable.trigger = mPressedTriggerKeys
-
-                        mRunnables.add(runnable)
-                        mHandler.postDelayed(runnable, LONG_PRESS_DELAY)
-
-                        return super.onKeyEvent(event)
-
-                        //for example, you dont want an app or app-shortcut to be repeatedly opened.
-                    } else if (keyMap.action!!.isVolumeAction
-                            || keyMap.action!!.type == ActionType.KEY
-                            || keyMap.action!!.type == ActionType.KEYCODE) {
-
-                        val runnable = object : Runnable {
-                            private var mShouldRepeat = false
-
-                            override fun run() {
-                                mActionPerformerDelegate.performAction(keyMap.action!!, keyMap.flags)
-
-                                if (mShouldRepeat) {
-                                    mHandler.postDelayed(this, REPEAT_DELAY)
-                                } else {
-                                    //wait a bit before registering the key as being held down.
-                                    mHandler.postDelayed(this, HOLD_DOWN_DELAY)
-                                    mShouldRepeat = true
-                                }
-                            }
-                        }
-
-                        runnable.trigger = mPressedTriggerKeys
-
-                        mRunnables.add(runnable)
-                        mHandler.post(runnable)
-                    } else {
-                        mActionPerformerDelegate.performAction(keyMap.action!!, keyMap.flags)
+                        mHandler.postDelayed(this, REPEAT_DELAY)
                     }
-
-                } else {
-                    val errorDescription = ErrorCodeUtils.getErrorCodeDescription(this, errorResult)
-
-                    Toast.makeText(this, errorDescription, LENGTH_SHORT).show()
                 }
+
+                runnable.trigger = mPressedTriggerKeys
+
+                mRepeatRunnables.add(runnable)
+                mHandler.postDelayed(runnable, HOLD_DOWN_DELAY)
             }
 
+            mActionPerformerDelegate.performAction(keymap.action!!, keymap.flags)
+            consumeEvent = true
+        }
+
+        if (consumeEvent) {
+            logConsumedKeyEvent(event)
             return true
         }
+
+        return super.onKeyEvent(event)
     }
 
     private fun getKeyMapListFromRepository() {
@@ -373,5 +377,24 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         if (list != null) {
             mKeyMapListCache = list
         }
+    }
+
+    private fun imitateButtonPress(keyCode: Int) {
+        when (keyCode) {
+            KeyEvent.KEYCODE_VOLUME_UP -> VolumeUtils.adjustVolume(ctx, AudioManager.ADJUST_RAISE,
+                    showVolumeUi = true)
+
+            KeyEvent.KEYCODE_VOLUME_DOWN -> VolumeUtils.adjustVolume(ctx, AudioManager.ADJUST_LOWER,
+                    showVolumeUi = true)
+
+            KeyEvent.KEYCODE_BACK -> performGlobalAction(GLOBAL_ACTION_BACK)
+            KeyEvent.KEYCODE_HOME -> performGlobalAction(GLOBAL_ACTION_HOME)
+            KeyEvent.KEYCODE_APP_SWITCH -> performGlobalAction(GLOBAL_ACTION_RECENTS)
+            KeyEvent.KEYCODE_MENU -> performGlobalAction(GLOBAL_ACTION_RECENTS)
+        }
+    }
+
+    private fun logConsumedKeyEvent(event: KeyEvent) {
+        Log.i(this::class.java.simpleName, "Consumed key event ${event.keyCode} ${event.action}")
     }
 }

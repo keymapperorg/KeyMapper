@@ -1,12 +1,9 @@
 package io.github.sds100.keymapper.util
 
 import android.content.Context
-import io.github.sds100.keymapper.KeyMap
-import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.SystemAction
+import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_FLAG_NOT_FOUND
 import io.github.sds100.keymapper.view.multiChoiceDialog
-import io.github.sds100.keymapper.createResult
 
 /**
  * Created by sds100 on 26/01/2019.
@@ -33,9 +30,11 @@ object FlagUtils {
                 val label = item.value
 
                 //only show the volume-ui flag if the action is volume-related
-                if ((!keyMap.action!!.isVolumeAction
-                                || keyMap.action!!.data == SystemAction.VOLUME_SHOW_DIALOG)
-                        && flag == FLAG_SHOW_VOLUME_UI) continue
+                if ((!keyMap.action.isVolumeAction
+                                || keyMap.action?.data == SystemAction.VOLUME_SHOW_DIALOG)
+                        && flag == FLAG_SHOW_VOLUME_UI) {
+                    continue
+                }
 
                 //1st = label for the flag, 2nd = the flag, 3rd = whether the flag should be checked
                 yield(Triple(ctx.str(label), flag, containsFlag(keyMap.flags, flag)))
@@ -45,7 +44,8 @@ object FlagUtils {
         ctx.multiChoiceDialog(
                 titleRes = R.string.dialog_title_flags,
                 items = items,
-                onPosClick = { onPosClick(it) }
+                onPosClick =
+                { onPosClick(it) }
         )
     }
 

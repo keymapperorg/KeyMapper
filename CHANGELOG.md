@@ -4,16 +4,25 @@ All notable changes to this project will be documented in this file. This projec
  
 ## [Unreleased](https://github.com/sds100/KeyMapper/tree/develop)
 
-## 1.0.0 Beta 3
+## [1.0.0 Beta 4](https://github.com/sds100/KeyMapper/releases/tag/v1.0.0-beta.4)
+- Added more labels for keys.
+- Added a link to the app in the device's Accessibility settings.
+- Updated the Gradle version to 3.3.2
+- When the long-press flag is chosen, show a warning saying it will only work properly for volume and navigation buttons.
+- Enable the show-volume-ui flag by default.
+
 #### Bug fixes
 - App would crash when choosing flags for a keymap without an action.
+- Buttons being repeatedly pressed.
+- Enabling the long-press flag would stop the button from working when it is pressed without a long press. 
 
-## 1.0.0 Beta 2
+## Accidentally skipped Beta 3 release. Oops.
+
+## [1.0.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v1.0.0-beta.2)
 - added option to email developer in the About activity.
 - created privacy policy and ability to opt in/out of Firebase analytics
 
-
-## 1.0.0 Beta 1
+## [1.0.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v1.0.0-beta.1)
 - Initial release!
 - Option to automatically change the input method and/or show the input method picker when a chosen Bluetooth device is connected and switch back to the old one when disconnected
 - Option to show a notification, which when clicked on, will show the input method picker. Android 8.1+ needs root.

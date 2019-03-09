@@ -39,6 +39,13 @@ open class KeyEventChipGroup(
         addView(chip)
     }
 
+    /**
+     * @return whether the ChipGroup already contains a [keyCode]
+     */
+    fun containsChip(keyCode: Int): Boolean {
+        return chips.any { it.keyCode == keyCode }
+    }
+
     fun removeChip(keyCode: Int) {
         val chip = chips.find { it.keyCode == keyCode }
 

@@ -13,6 +13,7 @@
     <string name="shrug">¯\\_(ツ)_/¯</string>
     <string name="no_key_maps">You haven\'t created any keymaps!</string>
     <string name="performing_action">Key Mapper is performing an action…</string>
+    <string name="email_subject">Key Mapper query</string>
 
     <string name="caption_action_type_key">Click the key on the keyboard which you want to be entered.
         \n\nIMPORTANT!
@@ -38,6 +39,7 @@
     <string name="url_changelog">https://raw.githubusercontent.com/sds100/KeyMapper/master/CHANGELOG.md</string>
     <string name="url_credits">https://raw.githubusercontent.com/sds100/KeyMapper/master/CREDITS.md</string>
     <string name="url_help">https://github.com/sds100/KeyMapper/wiki/Help.md</string>
+    <string name="url_privacy_policy">https://raw.githubusercontent.com/sds100/KeyMapper/master/PRIVACY_POLICY.md</string>
     <!-- URLs -->
 
     <!-- Activity titles -->
@@ -94,14 +96,18 @@
     <string name="dialog_message_root_prompt">When you click \"OK\", you will be taken to Settings.
         In the Settings, scroll to the bottom and click "Enable Root Features" so you can use root features/actions. If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use features which only work on rooted devices.</string>
     <string name="dialog_message_downloading">Downloading…</string>
+    <string name="dialog_message_long_press_warning">Long pressing only works for physical volume and navigation buttons. If you enable it for other keys, the keys won\'t work when they aren\'t long pressed.</string>
     <!-- Dialog messages -->
 
     <!-- Dialog buttons -->
     <string name="pos_yes">Yes</string>
     <string name="pos_done">Done</string>
+    <string name="pos_opt_in">Opt in</string>
 
+    <string name="neg_opt_out">Opt out</string>
     <string name="neg_no">No</string>
     <string name="neg_cancel">Cancel</string>
+    <string name="neg_dont_show_again">Don\'t show again</string>
     <!-- Dialog buttons -->
 
     <!-- Notification strings -->
@@ -114,9 +120,16 @@
 
     <!--preferences-->
     <!-- Look in the bools.xml file to find their default values -->
+    <string name="key_pref_first_time">pref_first_time</string>
+    <string name="pref_show_long_press_warning">key_show_long_press_warning</string>
+
     <string name="title_pref_show_notification">Show Notification</string>
     <string name="key_pref_show_notification">pref_show_notification</string>
     <string name="summary_pref_show_notification">Show a persistent notification to allow you to pick an input method. (The app requires ROOT permission for it to work on Android 8.1 and higher).</string>
+
+    <string name="title_pref_data_collection">Anonymous analytics</string>
+    <string name="key_pref_data_collection">pref_data_collection</string>
+    <string name="summary_pref_data_collection">Do you want to help improve Key Mapper by allowing it to anonymously collect data about how you use it such as crash reports? The data is collected by Google Firebase. The privacy policy is located in the About activity.</string>
 
     <string name="key_pref_bluetooth_devices">pref_bluetooth_devices</string>
     <string name="title_pref_bluetooth_devices">Choose Bluetooth Devices…</string>
@@ -154,14 +167,17 @@
 
     <!-- About activity-->
     <string name="key_pref_version">key_version</string>
+    <string name="key_pref_developer_email">developer_email</string>
 
     <string name="pref_title_changelog">Changelog</string>
     <string name="pref_title_license">License</string>
+    <string name="pref_title_privacy_policy">Privacy Policy</string>
     <string name="pref_title_credits">Credits</string>
     <string name="pref_title_source_code">Source Code</string>
     <string name="pref_title_developer_github">Developer\'s GitHub Profile</string>
     <string name="pref_title_rate_review">Rate and Review</string>
     <string name="pref_title_version">Version</string>
+    <string name="pref_title_developer_email">Email Developer</string>
     <!-- About activity-->
 
     <!--Action Types Titles-->
