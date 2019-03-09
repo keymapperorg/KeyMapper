@@ -39,6 +39,8 @@ object KeycodeUtils {
             KeyEvent.KEYCODE_ENTER to "Enter",
             KeyEvent.KEYCODE_HOME to "Home",
             KeyEvent.KEYCODE_BACK to "Back",
+            KeyEvent.KEYCODE_MENU to "Menu",
+            KeyEvent.KEYCODE_APP_SWITCH to "Recents",
             KeyEvent.KEYCODE_DEL to "Delete",
             KeyEvent.KEYCODE_TAB to "Tab",
             KeyEvent.KEYCODE_SPACE to "Space",
