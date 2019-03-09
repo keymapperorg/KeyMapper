@@ -96,6 +96,7 @@
     <string name="dialog_message_root_prompt">When you click \"OK\", you will be taken to Settings.
         In the Settings, scroll to the bottom and click "Enable Root Features" so you can use root features/actions. If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use features which only work on rooted devices.</string>
     <string name="dialog_message_downloading">Downloading…</string>
+    <string name="dialog_message_long_press_warning">Long pressing only works for physical volume and navigation buttons. If you enable it for other keys, the keys won\'t work when they aren\'t long pressed.</string>
     <!-- Dialog messages -->
 
     <!-- Dialog buttons -->
@@ -106,6 +107,7 @@
     <string name="neg_opt_out">Opt out</string>
     <string name="neg_no">No</string>
     <string name="neg_cancel">Cancel</string>
+    <string name="neg_dont_show_again">Don\'t show again</string>
     <!-- Dialog buttons -->
 
     <!-- Notification strings -->
@@ -119,6 +121,7 @@
     <!--preferences-->
     <!-- Look in the bools.xml file to find their default values -->
     <string name="key_pref_first_time">pref_first_time</string>
+    <string name="pref_show_long_press_warning">key_show_long_press_warning</string>
 
     <string name="title_pref_show_notification">Show Notification</string>
     <string name="key_pref_show_notification">pref_show_notification</string>

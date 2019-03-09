@@ -18,6 +18,7 @@ import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
+import androidx.core.content.edit
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,9 +32,7 @@ import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_PERMISSION_DENI
 import io.github.sds100.keymapper.viewmodel.ConfigKeyMapViewModel
 import kotlinx.android.synthetic.main.activity_config_key_map.*
 import kotlinx.android.synthetic.main.content_config_key_map.*
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.uiThread
+import org.jetbrains.anko.*
 
 /**
  * Created by sds100 on 04/10/2018.
@@ -138,7 +137,7 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
         }
 
         buttonFlags.setOnClickListener {
-            viewModel.keyMap.value!!.let { keyMap ->
+            viewModel.keyMap.value?.let { keyMap ->
                 FlagUtils.showFlagDialog(this, keyMap) { selectedItems ->
                     keyMap.flags = 0
 
@@ -148,6 +147,10 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
 
                         if (isChecked) {
                             keyMap.flags = addFlag(keyMap.flags, flag)
+                        }
+
+                        if (flag == FlagUtils.FLAG_LONG_PRESS) {
+                            showLongPressWarning()
                         }
                     }
                 }
@@ -364,6 +367,20 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
             } else if (permission == Constants.PERMISSION_ROOT) {
                 RootUtils.promptForRootPermission(this)
             }
+        }
+    }
+
+    private fun showLongPressWarning() {
+        if (defaultSharedPreferences.getBoolean(str(R.string.pref_show_long_press_warning), true)) {
+            alert {
+                messageResource = R.string.dialog_message_long_press_warning
+                okButton { }
+                negativeButton(R.string.neg_dont_show_again) {
+                    defaultSharedPreferences.edit {
+                        putBoolean(str(R.string.pref_show_long_press_warning), false).apply()
+                    }
+                }
+            }.show()
         }
     }
 }
