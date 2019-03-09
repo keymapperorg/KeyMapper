@@ -47,7 +47,7 @@ class KeyMapRepository private constructor(ctx: Context) {
     fun getKeyMapCopy(id: Long): KeyMap {
         /*must be copied otherwise any changes made to it (even without updating it in the database)
         will appear in the list */
-        return keyMapList.value!!.find { it.id == id }!!.copy()
+        return keyMapList.value!!.find { it.id == id }!!.clone()
     }
 
     fun deleteKeyMap(vararg keyMap: KeyMap) = doAsync { mDb.keyMapDao().delete(*keyMap) }
@@ -88,10 +88,9 @@ class KeyMapRepository private constructor(ctx: Context) {
                                 Trigger(listOf(KeycodeUtils.getKeyCodes().random()))
                         )
 
-                        val keyMap = KeyMap(id,
-                                triggerList,
-                                Action(ActionType.APP, Constants.PACKAGE_NAME)
-                        )
+                        val keyMap = KeyMap(id, triggerList).apply {
+                            action = Action(ActionType.APP, Constants.PACKAGE_NAME)
+                        }
 
                         yield(keyMap)
                     }
