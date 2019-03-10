@@ -27,7 +27,7 @@
         <item name="android:buttonBarButtonStyle">
             @style/Widget.MaterialComponents.Button.TextButton.Dialog
         </item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
