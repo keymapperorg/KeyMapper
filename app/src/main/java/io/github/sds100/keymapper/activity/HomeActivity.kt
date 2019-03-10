@@ -55,7 +55,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
-        setSupportActionBar(toolbar)
+        setSupportActionBar(appBar)
 
         if (defaultSharedPreferences.getBoolean(
                         str(R.string.key_pref_show_notification),
