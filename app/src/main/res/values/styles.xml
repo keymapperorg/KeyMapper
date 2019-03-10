@@ -28,6 +28,7 @@
             @style/Widget.MaterialComponents.Button.TextButton.Dialog
         </item>
         <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="dialogCornerRadius">@dimen/dialog_corner_radius</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
