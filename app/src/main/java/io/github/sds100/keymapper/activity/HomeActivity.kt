@@ -34,6 +34,7 @@ import io.github.sds100.keymapper.selection.SelectionProvider
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.service.MyIMEService
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.view.BottomSheetView
 import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.content_home.*
 import org.jetbrains.anko.*
@@ -76,6 +77,10 @@ class HomeActivity : AppCompatActivity(), SelectionCallback,
 
             updateAccessibilityServiceKeymapCache(keyMapList)
         })
+
+        appBar.setNavigationOnClickListener {
+            BottomSheetView.show(this, R.layout.simple_recyclerview_item)
+        }
 
         //start NewKeymapActivity when the fab is pressed
         fabNewKeyMap.setOnClickListener {

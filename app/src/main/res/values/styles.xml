@@ -10,6 +10,7 @@
         <item name="colorSecondary">@color/colorSecondary</item>
         <item name="colorOnSecondary">@color/colorOnSecondary</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="bottomSheetDialogTheme">@style/BottomSheetDialogTheme</item>
         <item name="android:alertDialogTheme">@style/AnkoSupportAlertDialog</item>
     </style>
 
@@ -18,6 +19,17 @@
         <item name="windowNoTitle">true</item>
         <item name="windowActionModeOverlay">true</item>
     </style>
+
+    <style name="BottomSheet" parent="@style/Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/bg_bottom_sheet</item>
+    </style>
+
+    <style name="BaseBottomSheetDialog" parent="@style/Theme.Design.Light.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="bottomSheetStyle">@style/BottomSheet</item>
+    </style>
+
+    <style name="BottomSheetDialogTheme" parent="BaseBottomSheetDialog" />
 
     <!--Fix bug where dialog buttons from the anko library don't style correctly.-->
     <style name="AnkoSupportAlertDialog" parent="Theme.MaterialComponents.Light.Dialog">
