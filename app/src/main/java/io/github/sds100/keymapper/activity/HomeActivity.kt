@@ -177,8 +177,8 @@ class HomeActivity : AppCompatActivity(), SelectionCallback,
         updateActionDescriptions()
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
-        outState!!.putBundle(
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBundle(
                 SelectionProvider.KEY_SELECTION_PROVIDER_STATE,
                 mKeymapAdapter.iSelectionProvider.saveInstanceState())
 
