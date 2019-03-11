@@ -9,16 +9,6 @@
 
     <include layout="@layout/content_home" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:id="@+id/bottomSheet"
-        android:orientation="vertical"
-        android:background="@drawable/bg_bottom_sheet"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
-
-    </LinearLayout>
-
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabNewKeyMap"
         android:layout_width="wrap_content"
