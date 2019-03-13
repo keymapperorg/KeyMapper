@@ -36,6 +36,7 @@ import io.github.sds100.keymapper.service.MyIMEService
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.view.BottomSheetView
 import kotlinx.android.synthetic.main.activity_home.*
+import kotlinx.android.synthetic.main.bottom_sheet_home.view.*
 import kotlinx.android.synthetic.main.content_home.*
 import org.jetbrains.anko.*
 
@@ -52,6 +53,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback,
 
     private val mKeymapAdapter: KeymapAdapter = KeymapAdapter(this)
     private val mRepository by lazy { KeyMapRepository.getInstance(application.applicationContext) }
+    private val mBottomSheetView by lazy { BottomSheetView.create(R.layout.bottom_sheet_home) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,7 +81,19 @@ class HomeActivity : AppCompatActivity(), SelectionCallback,
         })
 
         appBar.setNavigationOnClickListener {
-            BottomSheetView.show(this, R.layout.bottom_sheet_home)
+            mBottomSheetView.show(this)
+        }
+
+        mBottomSheetView.onViewCreated = { view ->
+            view.buttonEnableAll.setOnClickListener {
+                mRepository.enableAllKeymaps()
+                mBottomSheetView.dismiss()
+            }
+
+            view.buttonDisableAll.setOnClickListener {
+                mRepository.disableAllKeymaps()
+                mBottomSheetView.dismiss()
+            }
         }
 
         //start NewKeymapActivity when the fab is pressed

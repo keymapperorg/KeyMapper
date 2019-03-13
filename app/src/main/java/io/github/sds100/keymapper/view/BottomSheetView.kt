@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
+import androidx.fragment.app.FragmentActivity
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 /**
@@ -19,17 +20,30 @@ class BottomSheetView : BottomSheetDialogFragment() {
         private val TAG = this::class.java.simpleName
         private const val KEY_LAYOUT_ID = "key_layout_id"
 
-        fun show(activity: AppCompatActivity, @LayoutRes layoutId: Int) {
-            BottomSheetView().apply {
+        fun create(@LayoutRes layoutId: Int): BottomSheetView {
+            return BottomSheetView().apply {
                 arguments = bundleOf(KEY_LAYOUT_ID to layoutId)
-                show(activity.supportFragmentManager, TAG)
             }
         }
+
+        fun show(activity: AppCompatActivity, @LayoutRes layoutId: Int) {
+            create(layoutId).show(activity.supportFragmentManager, TAG)
+        }
     }
+
+    var onViewCreated: (view: View) -> Unit = {}
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val layoutId = arguments!!.getInt(KEY_LAYOUT_ID)
 
         return LayoutInflater.from(context).inflate(layoutId, container)
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        onViewCreated(view)
+    }
+
+    fun show(activity: FragmentActivity) = show(activity.supportFragmentManager, TAG)
 }
