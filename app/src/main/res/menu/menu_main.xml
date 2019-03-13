@@ -17,14 +17,4 @@
         android:id="@+id/action_about"
         android:title="@string/action_about"
         app:showAsAction="never" />
-
-    <item
-        android:id="@+id/action_disable_all_keymaps"
-        android:title="@string/action_disable_all_keymaps"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/action_enable_all_keymaps"
-        android:title="@string/action_enable_all_keymaps"
-        app:showAsAction="never" />
 </menu>

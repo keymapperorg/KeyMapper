@@ -250,16 +250,6 @@ class HomeActivity : AppCompatActivity(), SelectionCallback,
                 true
             }
 
-            R.id.action_disable_all_keymaps -> {
-                mRepository.disableAllKeymaps()
-                true
-            }
-
-            R.id.action_enable_all_keymaps -> {
-                mRepository.enableAllKeymaps()
-                true
-            }
-
             else -> super.onOptionsItemSelected(item)
         }
     }
