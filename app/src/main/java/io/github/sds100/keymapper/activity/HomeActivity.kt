@@ -79,7 +79,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback,
         })
 
         appBar.setNavigationOnClickListener {
-            BottomSheetView.show(this, R.layout.simple_recyclerview_item)
+            BottomSheetView.show(this, R.layout.bottom_sheet_home)
         }
 
         //start NewKeymapActivity when the fab is pressed
