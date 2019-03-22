@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file. This projec
  
 ## [Unreleased](https://github.com/sds100/KeyMapper/tree/develop)
 
+## [1.0.0 Beta 5](https://github.com/sds100/KeyMapper/releases/tag/v1.0.0-beta.5)
+- Fixed bug: app would crash when using brightness actions because it needed write system settings permission.
+
+- Updated build-tools to 28.0.4
+- Updated Room library to 2.1.0-alpha05
+- Updated Firebase core library to 16.0.8
+
 ## [1.0.0 Beta 4](https://github.com/sds100/KeyMapper/releases/tag/v1.0.0-beta.4)
 - Added more labels for keys.
 - Added a link to the app in the device's Accessibility settings.
