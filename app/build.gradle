@@ -52,7 +52,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     implementation "androidx.room:room-runtime:$room_version"
 
-    implementation 'com.google.firebase:firebase-core:16.0.7'
+    implementation 'com.google.firebase:firebase-core:16.0.8'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.9'
 
     kapt "android.arch.lifecycle:compiler:1.1.1"
