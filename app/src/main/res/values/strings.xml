@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Key Mapper</string>
+    <string name="developer_email">developer.sds100@gmail.com</string>
 
     <string name="no_action_chosen">No Action Chosen</string>
     <string name="triggers_header">Triggers</string>
