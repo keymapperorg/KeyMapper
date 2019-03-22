@@ -41,6 +41,7 @@
     <string name="url_credits">https://raw.githubusercontent.com/sds100/KeyMapper/master/CREDITS.md</string>
     <string name="url_help">https://github.com/sds100/KeyMapper/wiki/Help.md</string>
     <string name="url_privacy_policy">https://raw.githubusercontent.com/sds100/KeyMapper/master/PRIVACY_POLICY.md</string>
+    <string name="url_xda_thread">https://forum.xda-developers.com/android/apps-games/app-keyboard-button-mapper-t3914005</string>
     <!-- URLs -->
 
     <!-- Activity titles -->
@@ -177,6 +178,7 @@
     <string name="pref_title_source_code">Source Code</string>
     <string name="pref_title_developer_github">Developer\'s GitHub Profile</string>
     <string name="pref_title_rate_review">Rate and Review</string>
+    <string name="pref_title_xda_thread">XDA Thread</string>
     <string name="pref_title_version">Version</string>
     <string name="pref_title_developer_email">Email Developer</string>
     <!-- About activity-->
