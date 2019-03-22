@@ -326,31 +326,36 @@ object SystemActionUtils {
                     id = TOGGLE_AUTO_BRIGHTNESS,
                     category = CATEGORY_BRIGHTNESS,
                     iconRes = R.drawable.ic_brightness_auto_black_24dp,
-                    descriptionRes = R.string.action_toggle_auto_brightness
+                    descriptionRes = R.string.action_toggle_auto_brightness,
+                    permission = Manifest.permission.WRITE_SETTINGS
             ),
             SystemActionDef(
                     id = ENABLE_AUTO_BRIGHTNESS,
                     category = CATEGORY_BRIGHTNESS,
                     iconRes = R.drawable.ic_brightness_auto_black_24dp,
-                    descriptionRes = R.string.action_enable_auto_brightness
+                    descriptionRes = R.string.action_enable_auto_brightness,
+                    permission = Manifest.permission.WRITE_SETTINGS
             ),
             SystemActionDef(
                     id = DISABLE_AUTO_BRIGHTNESS,
                     category = CATEGORY_BRIGHTNESS,
                     iconRes = R.drawable.ic_disable_brightness_auto_24dp,
-                    descriptionRes = R.string.action_disable_auto_brightness
+                    descriptionRes = R.string.action_disable_auto_brightness,
+                    permission = Manifest.permission.WRITE_SETTINGS
             ),
             SystemActionDef(
                     id = INCREASE_BRIGHTNESS,
                     category = CATEGORY_BRIGHTNESS,
                     iconRes = R.drawable.ic_brightness_high_black_24dp,
-                    descriptionRes = R.string.action_increase_brightness
+                    descriptionRes = R.string.action_increase_brightness,
+                    permission = Manifest.permission.WRITE_SETTINGS
             ),
             SystemActionDef(
                     id = DECREASE_BRIGHTNESS,
                     category = CATEGORY_BRIGHTNESS,
                     iconRes = R.drawable.ic_brightness_low_black_24dp,
-                    descriptionRes = R.string.action_decrease_brightness
+                    descriptionRes = R.string.action_decrease_brightness,
+                    permission = Manifest.permission.WRITE_SETTINGS
             ),
 
             //FLASHLIGHT
