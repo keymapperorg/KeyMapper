@@ -5,9 +5,8 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'io.fabric'
 
 android {
-
     compileSdkVersion 28
-    buildToolsVersion = "28.0.3"
+    buildToolsVersion = "28.0.4"
 
     defaultConfig {
         applicationId "io.github.sds100.keymapper"
