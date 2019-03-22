@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. This projec
  
 ## [Unreleased](https://github.com/sds100/KeyMapper/tree/develop)
 
+## [1.0.0 Beta 6](https://github.com/sds100/KeyMapper/releases/tag/v1.0.0-beta.6)
+- Changed developer email.
+- Added link to the XDA Thread in the About activity.
+
 ## [1.0.0 Beta 5](https://github.com/sds100/KeyMapper/releases/tag/v1.0.0-beta.5)
 - Updated build-tools to 28.0.4
 - Updated Room library to 2.1.0-alpha05
