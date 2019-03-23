@@ -62,8 +62,7 @@
 
         <activity
             android:name=".activity.HelpActivity"
-            android:label="@string/title_help"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:label="@string/title_help" />
 
         <receiver android:name=".broadcastreceiver.OpenIMEPickerBroadcastReceiver" />
 
