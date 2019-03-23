@@ -2,9 +2,9 @@
 <resources>
     <color name="colorPrimary">#1565c0</color>
     <color name="colorPrimaryDark">#003c8f</color>
-    <color name="colorAccent">#f44336</color>
+    <color name="colorAccent">@color/red</color>
     <color name="colorPrimaryVariant">@color/colorAccent</color>
-    <color name="colorSecondary">#f44336</color>
+    <color name="colorSecondary">@color/red</color>
     <color name="colorOnSecondary">#ffffff</color>
 
     <color name="divider">#E0E0E0</color>
