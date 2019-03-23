@@ -37,7 +37,7 @@ class KeyMapRepository private constructor(ctx: Context) {
         keyMapList = mDb.keyMapDao().getAll()
 
         if (BuildConfig.DEBUG) {
-            //addDebugItems()
+            addDebugItems()
         }
     }
 

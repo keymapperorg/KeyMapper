@@ -10,7 +10,7 @@
     <include layout="@layout/content_home" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabNewKeyMap"
+        android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_anchor="@id/appBar"
@@ -24,8 +24,9 @@
         android:layout_gravity="bottom"
         app:backgroundTint="@color/colorPrimary"
         app:fabAlignmentMode="center"
+        app:fabAnimationMode="slide"
         app:hideOnScroll="true"
         app:layout_scrollFlags="scroll|enterAlways"
-        app:navigationIcon="@drawable/ic_menu_black_24dp" />
+        app:navigationIcon="@drawable/ic_menu_white_24dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

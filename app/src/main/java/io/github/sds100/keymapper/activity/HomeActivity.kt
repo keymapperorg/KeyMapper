@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.text.SpannableStringBuilder
 import android.text.style.RelativeSizeSpan
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.ColorRes
@@ -17,6 +18,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomappbar.BottomAppBar
+import com.google.android.material.bottomappbar.BottomAppBar.FAB_ALIGNMENT_MODE_CENTER
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.Gson
 import io.github.sds100.keymapper.BuildConfig
@@ -26,9 +29,10 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.adapter.KeymapAdapter
 import io.github.sds100.keymapper.data.KeyMapRepository
 import io.github.sds100.keymapper.interfaces.OnItemClickListener
-import io.github.sds100.keymapper.selection.SelectableActionMode
 import io.github.sds100.keymapper.selection.SelectionCallback
 import io.github.sds100.keymapper.selection.SelectionEvent
+import io.github.sds100.keymapper.selection.SelectionEvent.START
+import io.github.sds100.keymapper.selection.SelectionEvent.STOP
 import io.github.sds100.keymapper.selection.SelectionProvider
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.service.MyIMEService
@@ -39,8 +43,7 @@ import kotlinx.android.synthetic.main.bottom_sheet_home.view.*
 import kotlinx.android.synthetic.main.content_home.*
 import org.jetbrains.anko.*
 
-class HomeActivity : AppCompatActivity(), SelectionCallback,
-        OnItemClickListener<KeymapAdapterModel>, MenuItem.OnMenuItemClickListener {
+class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener<KeymapAdapterModel> {
 
     private val mBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -53,6 +56,23 @@ class HomeActivity : AppCompatActivity(), SelectionCallback,
     private val mKeymapAdapter: KeymapAdapter = KeymapAdapter(this)
     private val mRepository by lazy { KeyMapRepository.getInstance(application.applicationContext) }
     private val mBottomSheetView by lazy { BottomSheetView.create(R.layout.bottom_sheet_home) }
+
+    private var mActionModeActive = false
+        set(value) {
+            field = value
+
+            if (mActionModeActive) {
+                appBar.fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_END
+                appBar.navigationIcon = drawable(R.drawable.ic_arrow_back_appbar_24dp)
+                fab.setImageDrawable(drawable(R.drawable.ic_delete_white_24dp))
+                onCreateOptionsMenu(appBar.menu)
+            } else {
+                appBar.fabAlignmentMode = FAB_ALIGNMENT_MODE_CENTER
+                appBar.navigationIcon = drawable(R.drawable.ic_menu_white_24dp)
+                fab.setImageDrawable(drawable(R.drawable.ic_add_24dp_white))
+                appBar.menu.clear()
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,7 +100,11 @@ class HomeActivity : AppCompatActivity(), SelectionCallback,
         })
 
         appBar.setNavigationOnClickListener {
-            mBottomSheetView.show(this)
+            if (mActionModeActive) {
+                mKeymapAdapter.iSelectionProvider.stopSelecting()
+            } else {
+                mBottomSheetView.show(this)
+            }
         }
 
         mBottomSheetView.onViewCreated = { view ->
@@ -98,9 +122,14 @@ class HomeActivity : AppCompatActivity(), SelectionCallback,
         }
 
         //start NewKeymapActivity when the fab is pressed
-        fabNewKeyMap.setOnClickListener {
-            val intent = Intent(this, NewKeymapActivity::class.java)
-            startActivity(intent)
+        fab.setOnClickListener {
+            if (mActionModeActive) {
+                mRepository.deleteKeyMapById(*mKeymapAdapter.iSelectionProvider.selectedItemIds)
+                mKeymapAdapter.iSelectionProvider.stopSelecting()
+            } else {
+                val intent = Intent(this, NewKeymapActivity::class.java)
+                startActivity(intent)
+            }
         }
 
         accessibilityServiceStatusLayout.setOnFixClickListener(View.OnClickListener {
@@ -156,15 +185,17 @@ class HomeActivity : AppCompatActivity(), SelectionCallback,
         }
     }
 
-    override fun onMenuItemClick(item: MenuItem?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_multi_select, appBar.menu)
+        updateSelectionCount()
+
+        return mActionModeActive
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         val selectedItemIds = mKeymapAdapter.iSelectionProvider.selectedItemIds
 
         return when (item?.itemId) {
-            R.id.action_delete -> {
-                mRepository.deleteKeyMapById(*selectedItemIds)
-                mKeymapAdapter.iSelectionProvider.stopSelecting()
-                true
-            }
             R.id.action_enable -> {
                 mRepository.enableKeymapById(*selectedItemIds)
                 true
@@ -172,6 +203,16 @@ class HomeActivity : AppCompatActivity(), SelectionCallback,
 
             R.id.action_disable -> {
                 mRepository.disableKeymapById(*selectedItemIds)
+                true
+            }
+
+            R.id.action_select_all -> {
+                mKeymapAdapter.iSelectionProvider.selectAll()
+                return true
+            }
+
+            android.R.id.home -> {
+                onBackPressed()
                 true
             }
 
@@ -198,9 +239,11 @@ class HomeActivity : AppCompatActivity(), SelectionCallback,
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putBundle(
-                SelectionProvider.KEY_SELECTION_PROVIDER_STATE,
-                mKeymapAdapter.iSelectionProvider.saveInstanceState())
+        outState.apply {
+            putBundle(
+                    SelectionProvider.KEY_SELECTION_PROVIDER_STATE,
+                    mKeymapAdapter.iSelectionProvider.saveInstanceState())
+        }
 
         super.onSaveInstanceState(outState)
     }
@@ -222,23 +265,19 @@ class HomeActivity : AppCompatActivity(), SelectionCallback,
         unregisterReceiver(mBroadcastReceiver)
     }
 
+    override fun onBackPressed() {
+        if (mActionModeActive) {
+            mKeymapAdapter.iSelectionProvider.stopSelecting()
+        } else {
+            super.onBackPressed()
+        }
+    }
+
     override fun onSelectionEvent(id: Long?, event: SelectionEvent) {
-        if (event == SelectionEvent.START) {
-            val actionMode = SelectableActionMode(
-                    mCtx = this,
-                    mISelectionProvider = mKeymapAdapter.iSelectionProvider,
-                    mMenuId = R.menu.menu_multi_select,
-                    mOnMenuItemClickListener = this)
-            startSupportActionMode(actionMode)
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                setStatusBarColor(R.color.actionModeStatusBar)
-            }
-
-        } else if (event == SelectionEvent.STOP) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                setStatusBarColor(R.color.colorPrimaryDark)
-            }
+        when (event) {
+            START -> mActionModeActive = true
+            STOP -> mActionModeActive = false
+            else -> updateSelectionCount()
         }
     }
 
@@ -249,7 +288,15 @@ class HomeActivity : AppCompatActivity(), SelectionCallback,
         startActivity(intent)
     }
 
-    private fun updateAccessibilityServiceKeymapCache(keyMapList: List<KeyMap>) {
+    private fun updateSelectionCount() {
+        appBar.menu.findItem(R.id.selection_count)?.apply {
+            title = str(R.string.selection_count,
+                    mKeymapAdapter.iSelectionProvider.selectionCount)
+        }
+    }
+
+    private fun updateAccessibilityServiceKeymapCache(keyMapList: List<KeyMap>
+    ) {
         val intent = Intent(MyAccessibilityService.ACTION_UPDATE_KEYMAP_CACHE)
         val jsonString = Gson().toJson(keyMapList)
 
@@ -258,7 +305,8 @@ class HomeActivity : AppCompatActivity(), SelectionCallback,
         sendBroadcast(intent)
     }
 
-    private fun populateKeymapsAsync(keyMapList: List<KeyMap>) {
+    private fun populateKeymapsAsync(keyMapList: List<KeyMap>
+    ) {
         doAsync {
             val adapterModels = mutableListOf<KeymapAdapterModel>()
 
