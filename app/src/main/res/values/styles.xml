@@ -12,12 +12,30 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="bottomSheetDialogTheme">@style/BottomSheetDialogTheme</item>
         <item name="android:alertDialogTheme">@style/AnkoSupportAlertDialog</item>
+        <item name="bottomSheetMenuItemStyle">@style/BottomSheetMenuItem</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="windowActionModeOverlay">true</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.BottomSheetMenuItem">
+        <item name="cornerSizeTopRight">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+        <item name="cornerSizeTopLeft">24dp</item>
+        <item name="cornerSizeBottomLeft">24dp</item>
+    </style>
+
+    <style name="BottomSheetMenuItem" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:gravity">start|center_vertical</item>
+        <item name="android:minHeight">64dp</item>
+        <item name="iconPadding">16dp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="iconTint">?attr/colorOnSurface</item>
+        <item name="shapeAppearance">@style/ShapeAppearanceOverlay.BottomSheetMenuItem</item>
     </style>
 
     <style name="BottomSheet" parent="@style/Widget.Design.BottomSheet.Modal">
