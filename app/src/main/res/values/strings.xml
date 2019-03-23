@@ -65,6 +65,7 @@
     <string name="action_disable">Disable</string>
     <string name="action_disable_all_keymaps">Disable all</string>
     <string name="action_enable_all_keymaps">Enable all</string>
+    <string name="action_send_feedback">Send Feedback</string>
     <!-- Menu action titles-->
 
     <!-- Button titles -->

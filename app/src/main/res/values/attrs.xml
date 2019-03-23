@@ -17,4 +17,12 @@
         <!--The url to open-->
         <attr name="fileUrl" format="string" />
     </declare-styleable>
+
+    <declare-styleable name="AppTheme">
+        <attr name="bottomSheetMenuItemStyle" format="reference"/>
+    </declare-styleable>
+    
+    <declare-styleable name="BottomSheetMenuItem">
+        <attr name="activityToOpen" format="string"/>
+    </declare-styleable>
 </resources>

@@ -30,7 +30,7 @@
         <activity
             android:name=".activity.HomeActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.LightStatusBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -62,8 +62,7 @@
 
         <activity
             android:name=".activity.HelpActivity"
-            android:label="@string/title_help"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:label="@string/title_help" />
 
         <receiver android:name=".broadcastreceiver.OpenIMEPickerBroadcastReceiver" />
 

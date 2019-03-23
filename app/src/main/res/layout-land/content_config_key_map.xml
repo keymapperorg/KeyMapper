@@ -28,6 +28,7 @@
         android:contentDescription="@string/content_description_record_trigger_key_combination"
         android:scaleType="fitCenter"
         android:text="@string/button_record_trigger"
+        app:backgroundTint="@color/red"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/recyclerViewTriggers" />

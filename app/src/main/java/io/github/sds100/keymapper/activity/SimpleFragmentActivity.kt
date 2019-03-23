@@ -10,7 +10,7 @@ import androidx.fragment.app.transaction
  * Created by sds100 on 01/10/2018.
  */
 
-abstract class BasePreferenceActivity : AppCompatActivity() {
+abstract class SimpleFragmentActivity : AppCompatActivity() {
 
     abstract val fragmentToShow: Fragment
 
