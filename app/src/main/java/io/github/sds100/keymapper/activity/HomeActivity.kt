@@ -94,6 +94,8 @@ class HomeActivity : AppCompatActivity(), SelectionCallback,
                 mRepository.disableAllKeymaps()
                 mBottomSheetView.dismiss()
             }
+
+            view.menuItemSendFeedback.setOnClickListener { FeedbackUtils.sendFeedback(this) }
         }
 
         //start NewKeymapActivity when the fab is pressed

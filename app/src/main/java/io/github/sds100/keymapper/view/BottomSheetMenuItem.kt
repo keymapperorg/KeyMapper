@@ -28,15 +28,15 @@ class BottomSheetMenuItem(
                 R.style.BottomSheetMenuItem)
 
         if (array != null) {
+            array.getString(R.styleable.BottomSheetMenuItem_activityToOpen)?.let { activityToOpenAttr ->
 
-            val activityToOpenAttr = array.getString(R.styleable.BottomSheetMenuItem_activityToOpen)!!
+                intent = Intent().apply {
+                    //must be in format "io.github.sds100.keymapper/io.github.sds100.keymapper.activity.SettingsActivity"
+                    setClassName(context, activityToOpenAttr)
+                }
 
-            intent = Intent().apply {
-                //must be in format "io.github.sds100.keymapper/io.github.sds100.keymapper.activity.SettingsActivity"
-                setClassName(context, activityToOpenAttr)
+                array.recycle()
             }
-
-            array.recycle()
         }
 
         setOnClickListener {
