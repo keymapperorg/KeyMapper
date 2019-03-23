@@ -3,5 +3,7 @@
 
     <style name="AppTheme" parent="Base.AppTheme">
         <item name="android:navigationBarColor">?attr/colorPrimary</item>
+        <item name="android:statusBarColor">?attr/colorSurface</item>
+        <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
     </style>
 </resources>
