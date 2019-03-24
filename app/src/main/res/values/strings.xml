@@ -32,6 +32,8 @@
     <string name="description_text_block">Insert \'%s\'</string>
     <string name="description_keycode">%s</string>
 
+    <string name="exception_accessibility_service">Exception in onKeyEvent. Look in logcat.</string>
+
     <!-- URLs -->
     <string name="url_source_code">https://github.com/sds100/KeyMapper</string>
     <string name="url_developer_github">https://github.com/sds100</string>
