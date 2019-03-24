@@ -19,16 +19,13 @@ import androidx.lifecycle.LifecycleRegistry
 import com.crashlytics.android.Crashlytics
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
-import io.github.sds100.keymapper.Action
-import io.github.sds100.keymapper.ActionType
+import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
-import io.github.sds100.keymapper.KeyMap
 import io.github.sds100.keymapper.activity.ConfigKeymapActivity
 import io.github.sds100.keymapper.data.KeyMapRepository
 import io.github.sds100.keymapper.delegate.ActionPerformerDelegate
 import io.github.sds100.keymapper.interfaces.IContext
 import io.github.sds100.keymapper.interfaces.IPerformGlobalAction
-import io.github.sds100.keymapper.isVolumeAction
 import io.github.sds100.keymapper.util.ActionUtils
 import io.github.sds100.keymapper.util.ErrorCodeUtils
 import io.github.sds100.keymapper.util.RootUtils
