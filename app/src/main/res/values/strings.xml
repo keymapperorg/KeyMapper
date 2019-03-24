@@ -122,11 +122,15 @@
     <!-- Settings Activity -->
 
     <!--preferences-->
-    <!-- Look in the bools.xml file to find their default values -->
+    <!-- Look in the default_prefs.xml file to find their default values -->
     <string name="key_pref_first_time">pref_first_time</string>
     <string name="pref_show_long_press_warning">key_show_long_press_warning</string>
 
-    <string name="title_pref_show_notification">Show Notification</string>
+    <string name="key_pref_long_press_delay">pref_long_press_delay</string>
+    <string name="title_pref_long_press_delay">Long press delay</string>
+    <string name="summary_pref_long_press_delay">How long in milliseconds should a button be pressed for it to be detected as a long press. The default is 500ms.</string>
+
+    <string name="title_pref_show_notification">Show notification</string>
     <string name="key_pref_show_notification">pref_show_notification</string>
     <string name="summary_pref_show_notification">Show a persistent notification to allow you to pick an input method. (The app requires ROOT permission for it to work on Android 8.1 and higher).</string>
 
@@ -135,23 +139,23 @@
     <string name="summary_pref_data_collection">Do you want to help improve Key Mapper by allowing it to anonymously collect data about how you use it such as crash reports? The data is collected by Google Firebase. The privacy policy is located in the About activity.</string>
 
     <string name="key_pref_bluetooth_devices">pref_bluetooth_devices</string>
-    <string name="title_pref_bluetooth_devices">Choose Bluetooth Devices…</string>
+    <string name="title_pref_bluetooth_devices">Choose bluetooth devices…</string>
 
     <string name="key_pref_auto_show_ime_picker">pref_auto_show_ime_picker</string>
-    <string name="title_pref_auto_show_ime_picker">Automatically Show Input Method Picker</string>
+    <string name="title_pref_auto_show_ime_picker">Automatically show input method picker</string>
     <string name="summary_pref_auto_show_ime_picker">When a Bluetooth device you have chosen connects or disconnects, the input method picker will show automatically. Choose the devices below. Requires root for Android 8.1+.</string>
 
     <string name="key_pref_show_toast_when_action_performed">pref_show_toast_on_perform_action</string>
-    <string name="title_pref_show_toast_when_action_performed">Show A Toast Message When You Perform An Action</string>
+    <string name="title_pref_show_toast_when_action_performed">Show a toast message when you perform an action</string>
     <string name="summary_pref_show_toast_when_action_performed">A little message will popup when you perform an action.</string>
 
     <string name="key_pref_auto_change_ime_on_connection">pref_auto_change_ime_on_connect_disconnect</string>
-    <string name="title_pref_auto_change_ime_on_connection">Automatically Change Input Method</string>
+    <string name="title_pref_auto_change_ime_on_connection">Automatically change input method</string>
     <string name="summary_pref_auto_change_ime_on_connection">The Key Mapper input method will be automatically selected when a chosen bluetooth device is connected. Your old input method will be automatically selected when the device disconnects.
         There may be a 5-10 second delay after disconnecting your device for the input method to change.</string>
 
     <string name="key_pref_allow_root_features">pref_allow_root_features</string>
-    <string name="title_pref_allow_root_features">Enable Root Features</string>
+    <string name="title_pref_allow_root_features">Enable root features</string>
     <string name="summary_pref_allow_root_features">Enable this if you want to use features/actions which only work on rooted devices. Key Mapper must have root permission from your root-access-management app (e.g Magisk, SuperSU) for these features to work.
         Only turn this on if you know your device is rooted and you have given Key Mapper root permission.</string>
     <!--preferences-->

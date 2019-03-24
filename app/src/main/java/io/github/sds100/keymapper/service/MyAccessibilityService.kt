@@ -18,20 +18,15 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
-import io.github.sds100.keymapper.Action
-import io.github.sds100.keymapper.ActionType
+import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
-import io.github.sds100.keymapper.KeyMap
 import io.github.sds100.keymapper.activity.ConfigKeymapActivity
 import io.github.sds100.keymapper.data.KeyMapRepository
 import io.github.sds100.keymapper.delegate.ActionPerformerDelegate
 import io.github.sds100.keymapper.interfaces.IContext
 import io.github.sds100.keymapper.interfaces.IPerformGlobalAction
-import io.github.sds100.keymapper.isVolumeAction
-import io.github.sds100.keymapper.util.ActionUtils
-import io.github.sds100.keymapper.util.ErrorCodeUtils
-import io.github.sds100.keymapper.util.RootUtils
-import io.github.sds100.keymapper.util.VolumeUtils
+import io.github.sds100.keymapper.util.*
+import org.jetbrains.anko.defaultSharedPreferences
 
 /**
  * Created by sds100 on 16/07/2018.
@@ -54,11 +49,6 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
          * How long should the accessibility service record a trigger. In milliseconds.
          */
         private const val RECORD_TRIGGER_TIMER_LENGTH = 5000L
-
-        /**
-         * How long a long-press is in ms.
-         */
-        private const val LONG_PRESS_DELAY = 500L
 
         /**
          * The time in ms between repeating an action while holding down.
@@ -114,7 +104,15 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         }
     }
 
-    override val ctx
+    /**
+     * How long a long-press is in ms.
+     */
+    private val LONG_PRESS_DELAY
+        get() = ctx.defaultSharedPreferences.getInt(
+                ctx.str(R.string.key_pref_long_press_delay),
+                ctx.int(R.integer.default_value_long_press_delay)).toLong()
+
+    override val ctx: Context
         get() = this
 
     private val mRecordingTimerRunnable = Runnable {

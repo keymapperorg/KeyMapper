@@ -7,4 +7,5 @@
     <bool name="default_value_auto_change_ime_on_connection">false</bool>
     <bool name="default_value_allow_root_features">false</bool>
     <bool name="default_value_data_collection">false</bool>
+    <integer name="default_value_long_press_delay">500</integer>
 </resources>

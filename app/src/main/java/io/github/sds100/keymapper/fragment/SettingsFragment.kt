@@ -6,6 +6,7 @@ import androidx.preference.*
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.BluetoothUtils
 import io.github.sds100.keymapper.util.NotificationUtils
+import io.github.sds100.keymapper.util.int
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.okButton
@@ -15,23 +16,23 @@ class SettingsFragment : PreferenceFragmentCompat(),
         SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val mShowNotificationPreference by lazy {
-        findPreference(getString(R.string.key_pref_show_notification)) as SwitchPreference
+        findPreference<SwitchPreference>(getString(R.string.key_pref_show_notification))!!
     }
 
     private val mBluetoothDevicesPreferences by lazy {
-        findPreference(getString(R.string.key_pref_bluetooth_devices)) as MultiSelectListPreference
+        findPreference<MultiSelectListPreference>(getString(R.string.key_pref_bluetooth_devices))!!
     }
 
     private val mAutoShowIMEDialogPreference by lazy {
-        findPreference(getString(R.string.key_pref_auto_show_ime_picker)) as SwitchPreference
+        findPreference<SwitchPreference>(getString(R.string.key_pref_auto_show_ime_picker))!!
     }
 
     private val mRootPrefCategory by lazy {
-        findPreference(getString(R.string.key_pref_category_root)) as PreferenceCategory
+        findPreference<PreferenceCategory>(getString(R.string.key_pref_category_root))!!
     }
 
     private val mEnableRootFeaturesPreference by lazy {
-        findPreference(getString(R.string.key_pref_allow_root_features)) as SwitchPreference
+        findPreference<SwitchPreference>(getString(R.string.key_pref_allow_root_features))!!
     }
 
     private var mShowingNoPairedDevicesDialog = false
@@ -82,7 +83,7 @@ class SettingsFragment : PreferenceFragmentCompat(),
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         onPreferenceChange(
-                findPreference(key),
+                findPreference(key!!),
                 //Use .all[index] because we don't know the data type
                 sharedPreferences!!.all[key]
         )
