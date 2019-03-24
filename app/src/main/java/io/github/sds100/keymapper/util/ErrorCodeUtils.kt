@@ -41,13 +41,15 @@ object ErrorCodeUtils {
     const val ERROR_CODE_FEATURE_NOT_AVAILABLE = 9
     const val ERROR_CODE_ACTION_EXTRA_NOT_FOUND = 10
     const val ERROR_CODE_FLAG_NOT_FOUND = 11
+    const val ERROR_CODE_GOOGLE_APP_NOT_INSTALLED = 12
 
     private val FIXABLE_ERRORS = arrayOf(
             ERROR_CODE_APP_DISABLED,
             ERROR_CODE_APP_UNINSTALLED,
             ERROR_CODE_PERMISSION_DENIED,
             ERROR_CODE_SHORTCUT_NOT_FOUND,
-            ERROR_CODE_IME_SERVICE_NOT_CHOSEN
+            ERROR_CODE_IME_SERVICE_NOT_CHOSEN,
+            ERROR_CODE_GOOGLE_APP_NOT_INSTALLED
     )
 
     /**
@@ -85,6 +87,11 @@ object ErrorCodeUtils {
                     imeManager.showInputMethodPicker()
                 }
             }
+
+            ERROR_CODE_GOOGLE_APP_NOT_INSTALLED -> {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(ctx.str(R.string.url_google_app_listing)))
+                ctx.startActivity(intent)
+            }
         }
     }
 
@@ -102,6 +109,7 @@ object ErrorCodeUtils {
                 ERROR_CODE_APP_UNINSTALLED -> str(R.string.error_app_isnt_installed)
                 ERROR_CODE_SHORTCUT_NOT_FOUND -> str(R.string.error_shortcut_not_found)
                 ERROR_CODE_IME_SERVICE_NOT_CHOSEN -> str(R.string.error_ime_must_be_chosen)
+                ERROR_CODE_GOOGLE_APP_NOT_INSTALLED -> str(R.string.error_google_app_not_installed)
 
                 ERROR_CODE_SDK_VERSION_TOO_LOW -> {
                     val versionName = BuildUtils.getSdkVersionName(errorResult.data!!.toInt())
