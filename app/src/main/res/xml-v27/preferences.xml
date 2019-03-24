@@ -55,10 +55,10 @@
             android:title="@string/title_pref_bluetooth_devices" />
 
         <androidx.preference.SwitchPreference
-            android:defaultValue="@bool/default_value_show_notifications"
-            android:key="@string/key_pref_show_notification"
-            android:summary="@string/summary_pref_show_notification"
-            android:title="@string/title_pref_show_notification" />
+            android:defaultValue="@bool/default_value_show_ime_notification"
+            android:key="@string/key_pref_show_ime_notification"
+            android:summary="@string/summary_pref_show_ime_notification"
+            android:title="@string/title_pref_show_ime_notification" />
 
     </androidx.preference.PreferenceCategory>
 </androidx.preference.PreferenceScreen>

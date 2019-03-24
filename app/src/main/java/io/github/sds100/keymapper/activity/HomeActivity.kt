@@ -79,14 +79,6 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
         setContentView(R.layout.activity_home)
         setSupportActionBar(appBar)
 
-        if (defaultSharedPreferences.getBoolean(
-                        str(R.string.key_pref_show_notification),
-                        bool(R.bool.default_value_show_notifications))) {
-            NotificationUtils.showIMEPickerNotification(this)
-        } else {
-            NotificationUtils.hideImePickerNotification(this)
-        }
-
         /*if the app is a debug build then enable the accessibility service in settings
         / automatically so I don't have to! :)*/
         if (BuildConfig.DEBUG) {

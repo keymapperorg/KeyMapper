@@ -6,7 +6,6 @@ import androidx.preference.*
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.BluetoothUtils
 import io.github.sds100.keymapper.util.NotificationUtils
-import io.github.sds100.keymapper.util.int
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.okButton
@@ -16,7 +15,7 @@ class SettingsFragment : PreferenceFragmentCompat(),
         SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val mShowNotificationPreference by lazy {
-        findPreference<SwitchPreference>(getString(R.string.key_pref_show_notification))!!
+        findPreference<SwitchPreference>(getString(R.string.key_pref_show_ime_notification))!!
     }
 
     private val mBluetoothDevicesPreferences by lazy {

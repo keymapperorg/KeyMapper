@@ -14,10 +14,10 @@
         android:title="@string/title_pref_show_toast_when_action_performed" />
 
     <androidx.preference.SwitchPreference
-        android:defaultValue="@bool/default_value_show_notifications"
-        android:key="@string/key_pref_show_notification"
-        android:summary="@string/summary_pref_show_notification"
-        android:title="@string/title_pref_show_notification" />
+        android:defaultValue="@bool/default_value_show_ime_notification"
+        android:key="@string/key_pref_show_ime_notification"
+        android:summary="@string/summary_pref_show_ime_notification"
+        android:title="@string/title_pref_show_ime_notification" />
 
     <androidx.preference.SeekBarPreference
         android:defaultValue="@integer/default_value_long_press_delay"

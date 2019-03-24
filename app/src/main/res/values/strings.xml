@@ -117,8 +117,8 @@
 
     <!-- Notification strings -->
     <string name="notification_channel_persistent">Persistent Notifications</string>
-    <string name="notification_persistent_text">Will automatically show the input method dialog when a bluetooth device you\'ve chosen has connected or disconnected</string>
-    <string name="notification_persistent_title">Click to choose input method</string>
+    <string name="notification_ime_persistent_text">Will automatically show the input method dialog when a bluetooth device you\'ve chosen has connected or disconnected</string>
+    <string name="notification_ime_persistent_title">Click to choose input method</string>
     <!-- Notification strings -->
 
     <!-- Settings Activity -->
@@ -132,9 +132,9 @@
     <string name="title_pref_long_press_delay">Long press delay</string>
     <string name="summary_pref_long_press_delay">How long in milliseconds should a button be pressed for it to be detected as a long press. The default is 500ms.</string>
 
-    <string name="title_pref_show_notification">Show notification</string>
-    <string name="key_pref_show_notification">pref_show_notification</string>
-    <string name="summary_pref_show_notification">Show a persistent notification to allow you to pick an input method. (The app requires ROOT permission for it to work on Android 8.1 and higher).</string>
+    <string name="title_pref_show_ime_notification">IME notification</string>
+    <string name="key_pref_show_ime_notification">pref_show_ime_notification</string>
+    <string name="summary_pref_show_ime_notification">Show a persistent notification to allow you to pick an input method. (The app requires ROOT permission for it to work on Android 8.1 and higher).</string>
 
     <string name="title_pref_data_collection">Anonymous analytics</string>
     <string name="key_pref_data_collection">pref_data_collection</string>
