@@ -44,6 +44,7 @@
     <string name="url_help">https://github.com/sds100/KeyMapper/wiki/Help.md</string>
     <string name="url_privacy_policy">https://raw.githubusercontent.com/sds100/KeyMapper/master/PRIVACY_POLICY.md</string>
     <string name="url_xda_thread">https://forum.xda-developers.com/android/apps-games/app-keyboard-button-mapper-t3914005</string>
+    <string name="url_google_app_listing">https://play.google.com/store/apps/details?id=com.google.android.googlequicksearchbox</string>
     <!-- URLs -->
 
     <!-- Activity titles -->
@@ -98,8 +99,8 @@
     <!-- Dialog messages -->
     <string name="dialog_message_are_you_sure_want_to_leave">Are you sure you want to leave?</string>
     <string name="dialog_message_cant_find_paired_devices">Make sure Bluetooth is turned on and you have paired devices. Then try again.</string>
-    <string name="dialog_message_root_prompt">When you click \"OK\", you will be taken to Settings.
-        In the Settings, scroll to the bottom and click "Enable Root Features" so you can use root features/actions. If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use features which only work on rooted devices.</string>
+    <string name="dialog_message_root_prompt">When you tap \"OK\", you will be taken to Settings.
+        In the Settings, scroll to the bottom and tap "Enable Root Features" so you can use root features/actions. If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use features which only work on rooted devices.</string>
     <string name="dialog_message_downloading">Downloading…</string>
     <string name="dialog_message_long_press_warning">Long pressing only works for physical volume and navigation buttons. If you enable it for other keys, the keys won\'t work when they aren\'t long pressed.</string>
     <!-- Dialog messages -->
@@ -117,8 +118,20 @@
 
     <!-- Notification strings -->
     <string name="notification_channel_persistent">Persistent Notifications</string>
-    <string name="notification_persistent_text">Will automatically show the input method dialog when a bluetooth device you\'ve chosen has connected or disconnected</string>
-    <string name="notification_persistent_title">Click to choose input method</string>
+    <string name="notification_ime_persistent_text">Will automatically show the input method dialog when a bluetooth device you\'ve chosen has connected or disconnected</string>
+    <string name="notification_ime_persistent_title">Tap to choose input method</string>
+
+    <string name="notification_remappings_pause_title">Pause</string>
+    <string name="notification_remappings_pause_text">Tap to pause your remaps.</string>
+
+    <string name="notification_remappings_start_title">Resume</string>
+    <string name="notification_remappings_start_text">Tap to resume your remaps.</string>
+
+    <string name="notification_accessibility_service_disabled_title">Accessibility service disabled</string>
+    <string name="notification_accessibility_service_disabled_text">Tap to start the accessibility service.</string>
+
+    <string name="notification_action_open_app">Open App</string>
+    <string name="notification_action_stop_acc_service">Stop Accessibility Service</string>
     <!-- Notification strings -->
 
     <!-- Settings Activity -->
@@ -126,15 +139,19 @@
     <!--preferences-->
     <!-- Look in the default_prefs.xml file to find their default values -->
     <string name="key_pref_first_time">pref_first_time</string>
-    <string name="pref_show_long_press_warning">key_show_long_press_warning</string>
+    <string name="key_pref_show_long_press_warning">key_show_long_press_warning</string>
 
     <string name="key_pref_long_press_delay">pref_long_press_delay</string>
     <string name="title_pref_long_press_delay">Long press delay</string>
     <string name="summary_pref_long_press_delay">How long in milliseconds should a button be pressed for it to be detected as a long press. The default is 500ms.</string>
 
-    <string name="title_pref_show_notification">Show notification</string>
-    <string name="key_pref_show_notification">pref_show_notification</string>
-    <string name="summary_pref_show_notification">Show a persistent notification to allow you to pick an input method. (The app requires ROOT permission for it to work on Android 8.1 and higher).</string>
+    <string name="title_pref_show_ime_notification">IME notification</string>
+    <string name="key_pref_show_ime_notification">pref_show_ime_notification</string>
+    <string name="summary_pref_show_ime_notification">Show a persistent notification to allow you to pick an input method. (The app requires ROOT permission for it to work on Android 8.1 and higher).</string>
+
+    <string name="title_pref_show_toggle_remappings_notification">Pause/resume remappings notification</string>
+    <string name="key_pref_show_toggle_remappings_notification">pref_show_remappings_notification</string>
+    <string name="summary_pref_show_toggle_remappings_notification">Show a persistent notification which starts/pauses your remaps and has a link to start/stop the accessibility service.</string>
 
     <string name="title_pref_data_collection">Anonymous analytics</string>
     <string name="key_pref_data_collection">pref_data_collection</string>
@@ -311,6 +328,5 @@
     <string name="system_action_cat_media">Media</string>
     <string name="system_action_cat_flashlight">Flashlight</string>
     <string name="system_action_cat_other">Other</string>
-    <string name="url_google_app_listing">https://play.google.com/store/apps/details?id=com.google.android.googlequicksearchbox</string>
     <!-- System action category labels -->
 </resources>

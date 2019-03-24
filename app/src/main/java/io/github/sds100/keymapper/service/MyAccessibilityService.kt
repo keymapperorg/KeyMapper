@@ -16,10 +16,15 @@ import android.widget.Toast.LENGTH_SHORT
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.Observer
 import com.crashlytics.android.Crashlytics
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import io.github.sds100.keymapper.*
+import io.github.sds100.keymapper.AccessibilityServiceWidgetsManager.EVENT_PAUSE_REMAPS
+import io.github.sds100.keymapper.AccessibilityServiceWidgetsManager.EVENT_RESUME_REMAPS
+import io.github.sds100.keymapper.AccessibilityServiceWidgetsManager.EVENT_SERVICE_START
+import io.github.sds100.keymapper.AccessibilityServiceWidgetsManager.EVENT_SERVICE_STOPPED
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.activity.ConfigKeymapActivity
 import io.github.sds100.keymapper.data.KeyMapRepository
@@ -45,6 +50,9 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         const val ACTION_UPDATE_KEYMAP_CACHE = "$PACKAGE_NAME.UPDATE_KEYMAP_CACHE"
         const val ACTION_TEST_ACTION = "$PACKAGE_NAME.TEST_ACTION"
         const val ACTION_RECORD_TRIGGER_TIMER_STOPPED = "$PACKAGE_NAME.RECORD_TRIGGER_TIMER_STOPPED"
+        const val ACTION_PAUSE_REMAPPINGS = "$PACKAGE_NAME.PAUSE_REMAPPINGS"
+        const val ACTION_RESUME_REMAPPINGS = "$PACKAGE_NAME.RESUME_REMAPPINGS"
+        const val ACTION_UPDATE_NOTIFICATION = "$PACKAGE_NAME.UPDATE_NOTIFICATION"
 
         /**
          * How long should the accessibility service record a trigger. In milliseconds.
@@ -113,6 +121,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                 ctx.str(R.string.key_pref_long_press_delay),
                 ctx.int(R.integer.default_value_long_press_delay)).toLong()
 
+    private var mPaused = false
+
     override val ctx: Context
         get() = this
 
@@ -165,6 +175,24 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                     mActionPerformerDelegate.performAction(
                             action = intent.getSerializableExtra(EXTRA_ACTION) as Action,
                             flags = 0x0)
+                }
+
+                ACTION_PAUSE_REMAPPINGS -> {
+                    mPaused = true
+                    AccessibilityServiceWidgetsManager.onEvent(ctx, EVENT_PAUSE_REMAPS)
+                }
+
+                ACTION_RESUME_REMAPPINGS -> {
+                    mPaused = false
+                    AccessibilityServiceWidgetsManager.onEvent(ctx, EVENT_RESUME_REMAPS)
+                }
+
+                ACTION_UPDATE_NOTIFICATION -> {
+                    if (mPaused) {
+                        AccessibilityServiceWidgetsManager.onEvent(ctx, EVENT_PAUSE_REMAPS)
+                    } else {
+                        AccessibilityServiceWidgetsManager.onEvent(ctx, EVENT_RESUME_REMAPS)
+                    }
                 }
             }
         }
@@ -219,7 +247,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         super.onServiceConnected()
 
         mLifecycleRegistry = LifecycleRegistry(this)
-        mLifecycleRegistry.markState(Lifecycle.State.CREATED)
+        mLifecycleRegistry.currentState = Lifecycle.State.STARTED
 
         mActionPerformerDelegate = ActionPerformerDelegate(
                 iContext = this, iPerformGlobalAction = this, lifecycle = lifecycle)
@@ -231,17 +259,23 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         intentFilter.addAction(ACTION_CLEAR_PRESSED_KEYS)
         intentFilter.addAction(ACTION_UPDATE_KEYMAP_CACHE)
         intentFilter.addAction(ACTION_TEST_ACTION)
+        intentFilter.addAction(ACTION_PAUSE_REMAPPINGS)
+        intentFilter.addAction(ACTION_RESUME_REMAPPINGS)
+        intentFilter.addAction(ACTION_UPDATE_NOTIFICATION)
 
         registerReceiver(mBroadcastReceiver, intentFilter)
 
-        //when the accessibility service starts
         getKeyMapListFromRepository()
+
+        AccessibilityServiceWidgetsManager.onEvent(ctx, EVENT_SERVICE_START)
     }
+
 
     override fun onInterrupt() {}
 
     override fun onDestroy() {
         super.onDestroy()
+        AccessibilityServiceWidgetsManager.onEvent(ctx, EVENT_SERVICE_STOPPED)
 
         mLifecycleRegistry.markState(Lifecycle.State.DESTROYED)
         unregisterReceiver(mBroadcastReceiver)
@@ -253,7 +287,6 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         if (event == null) return super.onKeyEvent(event)
 
         try {
-
             if (mRecordingTrigger) {
                 if (event.action == KeyEvent.ACTION_DOWN) {
                     //tell NewKeymapActivity to add the chip
@@ -267,6 +300,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                 //Don't allow the key to do anything when recording a trigger
                 return true
             }
+
+            if (mPaused) return super.onKeyEvent(event)
 
             //when a key is pressed down
             if (event.action == KeyEvent.ACTION_DOWN) {
@@ -369,7 +404,6 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                 return true
             }
         } catch (e: Exception) {
-            Log.e(this::class.java.simpleName, e.toString())
 
             if (BuildConfig.DEBUG) {
                 Toast.makeText(this, R.string.exception_accessibility_service, LENGTH_SHORT).show()
@@ -382,11 +416,12 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
     }
 
     private fun getKeyMapListFromRepository() {
-        val list = KeyMapRepository.getInstance(baseContext).keyMapList.value
+        KeyMapRepository.getInstance(this).keyMapList.observe(this, Observer {
+            if (it != null) {
+                mKeyMapListCache = it
+            }
+        })
 
-        if (list != null) {
-            mKeyMapListCache = list
-        }
     }
 
     private fun imitateButtonPress(keyCode: Int) {

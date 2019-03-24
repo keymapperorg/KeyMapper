@@ -371,13 +371,13 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
     }
 
     private fun showLongPressWarning() {
-        if (defaultSharedPreferences.getBoolean(str(R.string.pref_show_long_press_warning), true)) {
+        if (defaultSharedPreferences.getBoolean(str(R.string.key_pref_show_long_press_warning), true)) {
             alert {
                 messageResource = R.string.dialog_message_long_press_warning
                 okButton { }
                 negativeButton(R.string.neg_dont_show_again) {
                     defaultSharedPreferences.edit {
-                        putBoolean(str(R.string.pref_show_long_press_warning), false).apply()
+                        putBoolean(str(R.string.key_pref_show_long_press_warning), false).apply()
                     }
                 }
             }.show()

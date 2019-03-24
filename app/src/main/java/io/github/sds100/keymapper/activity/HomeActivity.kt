@@ -22,10 +22,7 @@ import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomappbar.BottomAppBar.FAB_ALIGNMENT_MODE_CENTER
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.Gson
-import io.github.sds100.keymapper.BuildConfig
-import io.github.sds100.keymapper.KeyMap
-import io.github.sds100.keymapper.KeymapAdapterModel
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.adapter.KeymapAdapter
 import io.github.sds100.keymapper.data.KeyMapRepository
 import io.github.sds100.keymapper.interfaces.OnItemClickListener
@@ -79,13 +76,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
         setContentView(R.layout.activity_home)
         setSupportActionBar(appBar)
 
-        if (defaultSharedPreferences.getBoolean(
-                        str(R.string.key_pref_show_notification),
-                        bool(R.bool.default_value_show_notifications))) {
-            NotificationUtils.showIMEPickerNotification(this)
-        } else {
-            NotificationUtils.hideImePickerNotification(this)
-        }
+        AccessibilityServiceWidgetsManager.invalidateNotification(this)
 
         /*if the app is a debug build then enable the accessibility service in settings
         / automatically so I don't have to! :)*/
