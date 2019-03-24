@@ -16,6 +16,7 @@ import android.widget.Toast.LENGTH_SHORT
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
+import com.crashlytics.android.Crashlytics
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import io.github.sds100.keymapper.Action
@@ -253,119 +254,130 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
     override fun onKeyEvent(event: KeyEvent?): Boolean {
         if (event == null) return super.onKeyEvent(event)
 
-        if (mRecordingTrigger) {
+        try {
+
+            if (mRecordingTrigger) {
+                if (event.action == KeyEvent.ACTION_DOWN) {
+                    //tell NewKeymapActivity to add the chip
+                    val intent = Intent(ConfigKeymapActivity.ACTION_ADD_KEY_CHIP)
+                    intent.putExtra(ConfigKeymapActivity.EXTRA_KEY_EVENT, event)
+
+                    sendBroadcast(intent)
+                }
+
+                logConsumedKeyEvent(event)
+                //Don't allow the key to do anything when recording a trigger
+                return true
+            }
+
+            //when a key is pressed down
             if (event.action == KeyEvent.ACTION_DOWN) {
-                //tell NewKeymapActivity to add the chip
-                val intent = Intent(ConfigKeymapActivity.ACTION_ADD_KEY_CHIP)
-                intent.putExtra(ConfigKeymapActivity.EXTRA_KEY_EVENT, event)
+                mPressedKeys.add(event.keyCode)
 
-                sendBroadcast(intent)
-            }
+                //when a key is lifted
+            } else if (event.action == KeyEvent.ACTION_UP) {
 
-            logConsumedKeyEvent(event)
-            //Don't allow the key to do anything when recording a trigger
-            return true
-        }
+                mPressedKeys.remove(event.keyCode)
 
-        //when a key is pressed down
-        if (event.action == KeyEvent.ACTION_DOWN) {
-            mPressedKeys.add(event.keyCode)
-
-            //when a key is lifted
-        } else if (event.action == KeyEvent.ACTION_UP) {
-
-            mPressedKeys.remove(event.keyCode)
-
-            if (mLongPressRunnables.any { it.trigger.contains(event.keyCode) }) {
-                imitateButtonPress(event.keyCode)
-            }
-
-            mLongPressRunnables.forEach {
-                if (it.trigger.contains(event.keyCode)) {
-                    mHandler.removeCallbacks(it)
-                    mLongPressRunnables.remove(it)
+                if (mLongPressRunnables.any { it.trigger.contains(event.keyCode) }) {
+                    imitateButtonPress(event.keyCode)
                 }
-            }
 
-            mRepeatRunnables.forEach {
-                if (it.trigger.contains(event.keyCode)) {
-                    mHandler.removeCallbacks(it)
-                    mRepeatRunnables.remove(it)
-                }
-            }
-        }
-
-        mPressedTriggerKeys = mPressedKeys.toMutableList()
-
-        //find all the keymap which can be triggered with the keys being pressed
-        val keyMaps = mKeyMapListCache.filter { keymap ->
-            keymap.containsTrigger(mPressedTriggerKeys) && keymap.isEnabled
-        }
-
-        //if no applicable keymaps are found the keyevent won't be consumed
-        if (keyMaps.isEmpty()) return super.onKeyEvent(event)
-
-        var consumeEvent = false
-
-        //loop through each keymap and perform their action
-        for (keymap in keyMaps) {
-            val errorResult = ActionUtils.getPotentialErrorCode(this, keymap.action)
-
-            //if there is no error
-            if (errorResult != null) {
-                val errorDescription = ErrorCodeUtils.getErrorCodeDescription(this, errorResult)
-
-                Toast.makeText(this, errorDescription, LENGTH_SHORT).show()
-                continue
-            }
-
-            //if the action should only be performed if it is a long press
-            if (keymap.isLongPress) {
-
-                val runnable = object : Runnable {
-                    override fun run() {
-
-                        mActionPerformerDelegate.performAction(keymap.action!!, keymap.flags)
-
-                        mRunnableTriggerMap.remove(this.hashCode())
-                        mLongPressRunnables.remove(this)
+                mLongPressRunnables.forEach {
+                    if (it.trigger.contains(event.keyCode)) {
+                        mHandler.removeCallbacks(it)
+                        mLongPressRunnables.remove(it)
                     }
                 }
 
-                runnable.trigger = mPressedTriggerKeys
+                mRepeatRunnables.forEach {
+                    if (it.trigger.contains(event.keyCode)) {
+                        mHandler.removeCallbacks(it)
+                        mRepeatRunnables.remove(it)
+                    }
+                }
+            }
 
-                mLongPressRunnables.add(runnable)
-                mHandler.postDelayed(runnable, LONG_PRESS_DELAY)
+            mPressedTriggerKeys = mPressedKeys.toMutableList()
 
+            //find all the keymap which can be triggered with the keys being pressed
+            val keyMaps = mKeyMapListCache.filter { keymap ->
+                keymap.containsTrigger(mPressedTriggerKeys) && keymap.isEnabled
+            }
+
+            //if no applicable keymaps are found the keyevent won't be consumed
+            if (keyMaps.isEmpty()) return super.onKeyEvent(event)
+
+            var consumeEvent = false
+
+            //loop through each keymap and perform their action
+            for (keymap in keyMaps) {
+                val errorResult = ActionUtils.getPotentialErrorCode(this, keymap.action)
+
+                //if there is no error
+                if (errorResult != null) {
+                    val errorDescription = ErrorCodeUtils.getErrorCodeDescription(this, errorResult)
+
+                    Toast.makeText(this, errorDescription, LENGTH_SHORT).show()
+                    continue
+                }
+
+                //if the action should only be performed if it is a long press
+                if (keymap.isLongPress) {
+
+                    val runnable = object : Runnable {
+                        override fun run() {
+
+                            mActionPerformerDelegate.performAction(keymap.action!!, keymap.flags)
+
+                            mRunnableTriggerMap.remove(this.hashCode())
+                            mLongPressRunnables.remove(this)
+                        }
+                    }
+
+                    runnable.trigger = mPressedTriggerKeys
+
+                    mLongPressRunnables.add(runnable)
+                    mHandler.postDelayed(runnable, LONG_PRESS_DELAY)
+
+                    consumeEvent = true
+                    continue
+                }
+
+                if (keymap.action!!.isVolumeAction
+                        || keymap.action!!.type == ActionType.KEY
+                        || keymap.action!!.type == ActionType.KEYCODE) {
+
+                    val runnable = object : Runnable {
+                        override fun run() {
+                            mActionPerformerDelegate.performAction(keymap.action!!, keymap.flags)
+
+                            mHandler.postDelayed(this, REPEAT_DELAY)
+                        }
+                    }
+
+                    runnable.trigger = mPressedTriggerKeys
+
+                    mRepeatRunnables.add(runnable)
+                    mHandler.postDelayed(runnable, HOLD_DOWN_DELAY)
+                }
+
+                mActionPerformerDelegate.performAction(keymap.action!!, keymap.flags)
                 consumeEvent = true
-                continue
             }
 
-            if (keymap.action!!.isVolumeAction
-                    || keymap.action!!.type == ActionType.KEY
-                    || keymap.action!!.type == ActionType.KEYCODE) {
+            if (consumeEvent) {
+                logConsumedKeyEvent(event)
+                return true
+            }
+        } catch (e: Exception) {
+            Log.e(this::class.java.simpleName, e.toString())
 
-                val runnable = object : Runnable {
-                    override fun run() {
-                        mActionPerformerDelegate.performAction(keymap.action!!, keymap.flags)
-
-                        mHandler.postDelayed(this, REPEAT_DELAY)
-                    }
-                }
-
-                runnable.trigger = mPressedTriggerKeys
-
-                mRepeatRunnables.add(runnable)
-                mHandler.postDelayed(runnable, HOLD_DOWN_DELAY)
+            if (BuildConfig.DEBUG) {
+                Toast.makeText(this, R.string.exception_accessibility_service, LENGTH_SHORT).show()
             }
 
-            mActionPerformerDelegate.performAction(keymap.action!!, keymap.flags)
-            consumeEvent = true
-        }
-
-        if (consumeEvent) {
-            logConsumedKeyEvent(event)
-            return true
+            Crashlytics.logException(e)
         }
 
         return super.onKeyEvent(event)
