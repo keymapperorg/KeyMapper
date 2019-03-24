@@ -22,7 +22,7 @@ class KeyMapRepository private constructor(ctx: Context) {
 
         fun getInstance(ctx: Context): KeyMapRepository {
             if (INSTANCE == null) {
-                INSTANCE = KeyMapRepository(ctx)
+                INSTANCE = KeyMapRepository(ctx.applicationContext)
             }
 
             return INSTANCE!!

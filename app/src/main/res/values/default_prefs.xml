@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <bool name="default_value_show_ime_notification">false</bool>
+    <bool name="default_value_show_toggle_remappings_notification">true</bool>
     <bool name="default_value_auto_show_ime_picker">false</bool>
     <bool name="default_value_show_toast">true</bool>
     <bool name="default_value_show_volume_dialog_on_adjust">true</bool>

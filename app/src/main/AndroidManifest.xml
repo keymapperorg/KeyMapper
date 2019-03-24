@@ -65,7 +65,7 @@
             android:name=".activity.HelpActivity"
             android:label="@string/title_help" />
 
-        <receiver android:name=".broadcastreceiver.OpenIMEPickerBroadcastReceiver" />
+        <receiver android:name=".broadcastreceiver.KeyMapperBroadcastReceiver" />
 
         <receiver android:name=".broadcastreceiver.BootBroadcastReceiver">
             <intent-filter>

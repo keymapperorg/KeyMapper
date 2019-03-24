@@ -1,9 +1,12 @@
 package io.github.sds100.keymapper.fragment
 
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.preference.*
+import io.github.sds100.keymapper.AccessibilityServiceWidgetsManager
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.util.BluetoothUtils
 import io.github.sds100.keymapper.util.NotificationUtils
 import org.jetbrains.anko.alert
@@ -14,8 +17,12 @@ class SettingsFragment : PreferenceFragmentCompat(),
         Preference.OnPreferenceChangeListener,
         SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private val mShowNotificationPreference by lazy {
+    private val mShowImeNotificationPreference by lazy {
         findPreference<SwitchPreference>(getString(R.string.key_pref_show_ime_notification))!!
+    }
+
+    private val mToggleRemappingsNotificationPref by lazy {
+        findPreference<SwitchPreference>(getString(R.string.key_pref_show_toggle_remappings_notification))!!
     }
 
     private val mBluetoothDevicesPreferences by lazy {
@@ -74,8 +81,9 @@ class SettingsFragment : PreferenceFragmentCompat(),
         enableRootPreferences(mEnableRootFeaturesPreference.isChecked)
 
         mAutoShowIMEDialogPreference.onPreferenceChangeListener = this
-        mShowNotificationPreference.onPreferenceChangeListener = this
+        mShowImeNotificationPreference.onPreferenceChangeListener = this
         mEnableRootFeaturesPreference.onPreferenceChangeListener = this
+        mToggleRemappingsNotificationPref.onPreferenceChangeListener = this
 
         context!!.defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
     }
@@ -91,18 +99,33 @@ class SettingsFragment : PreferenceFragmentCompat(),
     override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
         when (preference) {
 
-            mShowNotificationPreference -> {
+            mShowImeNotificationPreference -> {
                 //show/hide the notification when the preference is toggled
                 if (newValue as Boolean) {
                     NotificationUtils.showIMEPickerNotification(context!!)
                 } else {
-                    NotificationUtils.hideImePickerNotification(context!!)
+                    NotificationUtils.hideNotification(context!!, NotificationUtils.ID_IME_PERSISTENT)
+                }
+            }
+
+            mToggleRemappingsNotificationPref -> {
+
+                if (newValue as Boolean) {
+                    AccessibilityServiceWidgetsManager.invalidateNotification(context!!)
+                } else {
+                    //when the user turns this off, resume the remappings because otherwise they can't without
+                    //the notification
+                    context!!.sendBroadcast(Intent(MyAccessibilityService.ACTION_RESUME_REMAPPINGS))
+                    NotificationUtils.hideNotification(context!!, NotificationUtils.ID_TOGGLE_REMAPPING_PERSISTENT)
                 }
             }
 
             //Only enable the root preferences if the user has enabled root features
             mEnableRootFeaturesPreference -> {
                 enableRootPreferences(newValue as Boolean)
+
+                //the pending intents need to be updated so they don't use the root methods
+                AccessibilityServiceWidgetsManager.invalidateNotification(context!!)
             }
         }
 

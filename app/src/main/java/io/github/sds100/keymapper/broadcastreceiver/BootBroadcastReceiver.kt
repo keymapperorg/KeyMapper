@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.broadcastreceiver
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import io.github.sds100.keymapper.AccessibilityServiceWidgetsManager
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.NotificationUtils
 import io.github.sds100.keymapper.util.bool
@@ -15,6 +16,8 @@ import org.jetbrains.anko.defaultSharedPreferences
 
 class BootBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
+        /* don't show the toggle remappings notification here since it will start when the accessibility service
+        starts on boot */
         if (intent?.action == Intent.ACTION_BOOT_COMPLETED) {
             context?.apply {
                 if (defaultSharedPreferences.getBoolean(
@@ -25,6 +28,8 @@ class BootBroadcastReceiver : BroadcastReceiver() {
                     NotificationUtils.hideNotification(this, NotificationUtils.ID_IME_PERSISTENT)
                 }
             }
+
+            AccessibilityServiceWidgetsManager.invalidateNotification(context!!)
         }
     }
 }
