@@ -12,6 +12,7 @@ import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_ACTION_IS_NULL
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_APP_DISABLED
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_APP_UNINSTALLED
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_FEATURE_NOT_AVAILABLE
+import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_GOOGLE_APP_NOT_INSTALLED
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_IME_SERVICE_NOT_CHOSEN
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_NO_ACTION_DATA
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_PERMISSION_DENIED
@@ -194,6 +195,15 @@ object ActionUtils {
 
             ActionType.SYSTEM_ACTION -> {
                 return SystemActionUtils.getSystemActionDef(action.data).onSuccess {
+                    //If an activity to open doesn't exist, the app crashes.
+                    if (it.id == SystemAction.OPEN_ASSISTANT) {
+                        val activityExists =
+                                Intent(Intent.ACTION_VOICE_COMMAND).resolveActivityInfo(ctx.packageManager, 0) != null
+
+                        if (!activityExists) {
+                            return@onSuccess ErrorResult(ERROR_CODE_GOOGLE_APP_NOT_INSTALLED)
+                        }
+                    }
 
                     if (Build.VERSION.SDK_INT < it.minApi) {
                         return@onSuccess ErrorResult(ERROR_CODE_SDK_VERSION_TOO_LOW, it.minApi.toString())

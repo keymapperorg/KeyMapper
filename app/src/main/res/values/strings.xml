@@ -230,6 +230,7 @@
     <string name="error_sdk_version_too_low">This action requires Android %s</string>
     <string name="error_feature_not_available">Your device doesn\'t support %s.</string>
     <string name="error_flag_not_found">Flag "%s" not found!</string>
+    <string name="error_google_app_not_installed">Google app not installed!</string>
 
     <string name="error_accessibility_service_disabled">The accessibility service must be enabled for this app to work!</string>
     <string name="error_accessibility_service_enabled">Accessibility service is enabled!</string>
@@ -310,5 +311,6 @@
     <string name="system_action_cat_media">Media</string>
     <string name="system_action_cat_flashlight">Flashlight</string>
     <string name="system_action_cat_other">Other</string>
+    <string name="url_google_app_listing">https://play.google.com/store/apps/details?id=com.google.android.googlequicksearchbox</string>
     <!-- System action category labels -->
 </resources>
