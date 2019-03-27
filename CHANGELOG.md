@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file. This projec
  
 ## [Unreleased](https://github.com/sds100/KeyMapper/tree/develop)
 
+## [1.1.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v1.1.0-beta.1)
+### Added
+- Setting to change the long-press delay.
+- Persistent notification which can pause/resume your remaps. It can also open the accessibility settings on the device to enable/disable the service. Rooted devices can start/stop the accessibility service without going into settings and just tap the notification.
+- Use Material Design 2 for homescreen.
+
+### Fixed bugs
+- Persistent notifications wouldn't show on boot
+- The app would crash if using the "open google assistant" action if the Google app wasn't installed.
+- Prevent the accessibility service from stopping if there is a fatal exception and show a toast when it happens.
+
+
 ## [1.0.0 Beta 6](https://github.com/sds100/KeyMapper/releases/tag/v1.0.0-beta.6)
 - Changed developer email.
 - Added link to the XDA Thread in the About activity.
