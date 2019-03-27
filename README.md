@@ -32,4 +32,4 @@ Additional labels can be used as a suffix. e.g "alpha".
 #### Version codes
 The version code in the develop branch should always be the highest. Therefore, when a new version is released in the release branch, it should be incremented as well.
 
-The README, License, Credits, Changelog and Privacy Policy files should be changed in the develop branch then cherry picked by the release and master branches.
+The README, License, Credits, Changelog and Privacy Policy files should just be changed in the master branch.
