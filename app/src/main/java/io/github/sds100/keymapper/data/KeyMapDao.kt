@@ -23,6 +23,9 @@ abstract class KeyMapDao {
         const val KEY_ACTION_EXTRAS = "action_extras"
     }
 
+    @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_ID = (:id)")
+    abstract fun getById(id: Long): KeyMap
+
     @Query("SELECT * FROM $TABLE_NAME")
     abstract fun getAll(): LiveData<List<KeyMap>>
 

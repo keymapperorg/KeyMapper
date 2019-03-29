@@ -27,7 +27,7 @@ import io.github.sds100.keymapper.AccessibilityServiceWidgetsManager.EVENT_SERVI
 import io.github.sds100.keymapper.AccessibilityServiceWidgetsManager.EVENT_SERVICE_STOPPED
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.activity.ConfigKeymapActivity
-import io.github.sds100.keymapper.data.KeyMapRepository
+import io.github.sds100.keymapper.data.AppDatabase
 import io.github.sds100.keymapper.delegate.ActionPerformerDelegate
 import io.github.sds100.keymapper.interfaces.IContext
 import io.github.sds100.keymapper.interfaces.IPerformGlobalAction
@@ -265,7 +265,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
         registerReceiver(mBroadcastReceiver, intentFilter)
 
-        getKeyMapListFromRepository()
+        getKeyMapList()
 
         AccessibilityServiceWidgetsManager.onEvent(ctx, EVENT_SERVICE_START)
     }
@@ -415,13 +415,12 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         return super.onKeyEvent(event)
     }
 
-    private fun getKeyMapListFromRepository() {
-        KeyMapRepository.getInstance(this).keyMapList.observe(this, Observer {
+    private fun getKeyMapList() {
+        AppDatabase.getInstance(this).keyMapDao().getAll().observe(this, Observer {
             if (it != null) {
                 mKeyMapListCache = it
             }
         })
-
     }
 
     private fun imitateButtonPress(keyCode: Int) {

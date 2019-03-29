@@ -1,20 +1,17 @@
 package io.github.sds100.keymapper
 
-import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 
 /**
  * Created by sds100 on 04/10/2018.
  */
 
-/**
- * @param keyMap The initial [KeyMap] object to use
- */
-class KeymapLiveData(keyMap: KeyMap = KeyMap(id = 0L)) : LiveData<KeyMap>() {
+class KeymapLiveData(keyMap: KeyMap = KeyMap(id = 0)) : MutableLiveData<KeyMap>() {
 
     var action: Action?
-        get() = value!!.action
+        get() = value?.action
         set(newAction) {
-            this.value!!.action = newAction
+            this.value?.action = newAction
             notifyObservers()
         }
 
@@ -23,7 +20,7 @@ class KeymapLiveData(keyMap: KeyMap = KeyMap(id = 0L)) : LiveData<KeyMap>() {
     }
 
     fun addTrigger(vararg trigger: Trigger) {
-        value!!.triggerList.addAll(trigger)
+        value?.apply { triggerList.addAll(trigger) }
         notifyObservers()
     }
 
