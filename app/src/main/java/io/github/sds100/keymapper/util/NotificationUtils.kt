@@ -9,8 +9,12 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.graphics.drawable.toBitmap
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
+import io.github.sds100.keymapper.AccessibilityServiceWidgetsManager
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.broadcastreceiver.KeyMapperBroadcastReceiver
+import org.jetbrains.anko.defaultSharedPreferences
 
 /**
  * Created by sds100 on 30/09/2018.
@@ -32,7 +36,7 @@ object NotificationUtils {
                 ctx,
                 ID_IME_PERSISTENT,
                 pendingIntent,
-                R.drawable.ic_keyboard_notification,
+                R.drawable.ic_notification_keyboard,
                 R.string.notification_ime_persistent_title,
                 R.string.notification_ime_persistent_text
         )
@@ -80,13 +84,21 @@ object NotificationUtils {
             }
 
             val builder = NotificationCompat.Builder(ctx, CHANNEL_ID_PERSISTENT)
-                    .setSmallIcon(icon)
                     .setColor(color(R.color.colorAccent))
                     .setContentTitle(str(title))
                     .setContentText(str(text))
                     .setPriority(NotificationCompat.PRIORITY_MIN)
                     .setOngoing(true)
                     .setContentIntent(intent) //show IME picker on click
+
+            //can't use vector drawables for KitKat
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                val bitmap = VectorDrawableCompat.create(ctx.resources, icon, ctx.theme)?.toBitmap()
+                builder.setLargeIcon(bitmap)
+                builder.setSmallIcon(R.mipmap.ic_launcher)
+            } else {
+                builder.setSmallIcon(icon)
+            }
 
             if (!showOnLockscreen) builder.setVisibility(NotificationCompat.VISIBILITY_SECRET) //hide on lockscreen
             actions.forEach { builder.addAction(it) }

@@ -205,13 +205,13 @@ object SystemActionUtils {
             SystemActionDef(
                     id = PAUSE_MEDIA,
                     category = CATEGORY_MEDIA,
-                    iconRes = R.drawable.ic_outline_pause_24px,
+                    iconRes = R.drawable.ic_pause_black_24dp,
                     descriptionRes = R.string.action_pause_media
             ),
             SystemActionDef(
                     id = PLAY_PAUSE_MEDIA,
                     category = CATEGORY_MEDIA,
-                    iconRes = R.drawable.ic_outline_play_arrow_24px,
+                    iconRes = R.drawable.ic_play_arrow_black_24dp,
                     descriptionRes = R.string.action_play_media
             ),
             SystemActionDef(
