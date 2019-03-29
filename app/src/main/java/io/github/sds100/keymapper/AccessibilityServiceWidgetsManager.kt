@@ -3,17 +3,17 @@ package io.github.sds100.keymapper
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.provider.Settings
 import androidx.annotation.DrawableRes
 import androidx.annotation.IntDef
 import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import io.github.sds100.keymapper.activity.HomeActivity
 import io.github.sds100.keymapper.broadcastreceiver.KeyMapperBroadcastReceiver
-import io.github.sds100.keymapper.broadcastreceiver.KeyMapperBroadcastReceiver.Companion.ACTION_START_ACCESSIBILITY_SERVICE
-import io.github.sds100.keymapper.broadcastreceiver.KeyMapperBroadcastReceiver.Companion.ACTION_STOP_ACCESSIBILITY_SERVICE
 import io.github.sds100.keymapper.service.MyAccessibilityService
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.IntentUtils
+import io.github.sds100.keymapper.util.NotificationUtils
+import io.github.sds100.keymapper.util.bool
+import io.github.sds100.keymapper.util.str
 import org.jetbrains.anko.defaultSharedPreferences
 
 /**
@@ -78,16 +78,11 @@ object AccessibilityServiceWidgetsManager {
                 textRes = R.string.notification_accessibility_service_disabled_text
                 iconRes = R.drawable.ic_outline_error_outline_24px
 
-                if (RootUtils.checkAppHasRootPermission(ctx)) {
-                    onClickPendingIntent = IntentUtils.createPendingBroadcastIntent(
-                            ctx,
-                            KeyMapperBroadcastReceiver::class.java,
-                            ACTION_START_ACCESSIBILITY_SERVICE
-                    )
-                } else {
-                    onClickPendingIntent =
-                            IntentUtils.createPendingActivityIntent(ctx, Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
-                }
+                onClickPendingIntent = IntentUtils.createPendingBroadcastIntent(
+                        ctx,
+                        KeyMapperBroadcastReceiver::class.java,
+                        MyAccessibilityService.ACTION_START
+                )
             }
 
             else -> return
@@ -97,15 +92,11 @@ object AccessibilityServiceWidgetsManager {
                 or (event == EVENT_SERVICE_START)
                 or (event == EVENT_PAUSE_REMAPS)) {
 
-            val actionPendingIntent = if (RootUtils.checkAppHasRootPermission(ctx)) {
-                IntentUtils.createPendingBroadcastIntent(
-                        ctx,
-                        KeyMapperBroadcastReceiver::class.java,
-                        ACTION_STOP_ACCESSIBILITY_SERVICE
-                )
-            } else {
-                IntentUtils.createPendingActivityIntent(ctx, Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
-            }
+            val actionPendingIntent = IntentUtils.createPendingBroadcastIntent(
+                    ctx,
+                    KeyMapperBroadcastReceiver::class.java,
+                    MyAccessibilityService.ACTION_STOP
+            )
 
             actions.add(NotificationCompat.Action(
                     0,
