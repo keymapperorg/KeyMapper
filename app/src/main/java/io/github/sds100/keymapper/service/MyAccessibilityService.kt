@@ -33,6 +33,7 @@ import io.github.sds100.keymapper.interfaces.IContext
 import io.github.sds100.keymapper.interfaces.IPerformGlobalAction
 import io.github.sds100.keymapper.util.*
 import org.jetbrains.anko.defaultSharedPreferences
+import org.jetbrains.anko.toast
 
 /**
  * Created by sds100 on 16/07/2018.
@@ -53,6 +54,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         const val ACTION_PAUSE_REMAPPINGS = "$PACKAGE_NAME.PAUSE_REMAPPINGS"
         const val ACTION_RESUME_REMAPPINGS = "$PACKAGE_NAME.RESUME_REMAPPINGS"
         const val ACTION_UPDATE_NOTIFICATION = "$PACKAGE_NAME.UPDATE_NOTIFICATION"
+        const val ACTION_START = "$PACKAGE_NAME.START_ACCESSIBILITY_SERVICE"
+        const val ACTION_STOP = "$PACKAGE_NAME.STOP_ACCESSIBILITY_SERVICE"
 
         /**
          * How long should the accessibility service record a trigger. In milliseconds.
@@ -72,7 +75,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         /**
          * Enable this accessibility service. REQUIRES ROOT
          */
-        fun enableServiceInSettings() {
+        fun enableServiceInSettingsRoot() {
             val className = MyAccessibilityService::class.java.name
 
             RootUtils.changeSecureSetting("enabled_accessibility_services", "$PACKAGE_NAME/$className")
@@ -81,8 +84,19 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         /**
          * Disable this accessibility service. REQUIRES ROOT
          */
-        fun disableServiceInSettings() {
+        fun disableServiceInSettingsRoot() {
             RootUtils.executeRootCommand("settings put secure enabled_accessibility_services \"\"")
+        }
+
+        fun openAccessibilitySettings(ctx: Context) {
+            try {
+                val settingsIntent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                settingsIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+
+                ctx.startActivity(settingsIntent)
+            } catch (e: Exception) {
+                ctx.toast(R.string.error_cant_find_accessibility_settings_page)
+            }
         }
 
         /**

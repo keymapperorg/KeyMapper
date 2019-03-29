@@ -88,7 +88,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
         /*if the app is a debug build then enable the accessibility service in settings
         / automatically so I don't have to! :)*/
         if (BuildConfig.DEBUG) {
-            MyAccessibilityService.enableServiceInSettings()
+            MyAccessibilityService.enableServiceInSettingsRoot()
         }
 
         mViewModel.keyMapList.observe(this, Observer { keyMapList ->
@@ -132,10 +132,12 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
         }
 
         accessibilityServiceStatusLayout.setOnFixClickListener(View.OnClickListener {
-            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-            intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+            if (RootUtils.checkAppHasRootPermission(this)) {
+                MyAccessibilityService.enableServiceInSettingsRoot()
 
-            startActivity(intent)
+            } else {
+                MyAccessibilityService.openAccessibilitySettings(this)
+            }
         })
 
         imeServiceStatusLayout.setOnFixClickListener(View.OnClickListener {
