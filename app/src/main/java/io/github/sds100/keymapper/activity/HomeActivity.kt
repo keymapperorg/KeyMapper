@@ -17,6 +17,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomappbar.BottomAppBar.FAB_ALIGNMENT_MODE_CENTER
@@ -24,7 +25,6 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.Gson
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.adapter.KeymapAdapter
-import io.github.sds100.keymapper.data.KeyMapRepository
 import io.github.sds100.keymapper.interfaces.OnItemClickListener
 import io.github.sds100.keymapper.selection.SelectionCallback
 import io.github.sds100.keymapper.selection.SelectionEvent
@@ -35,6 +35,7 @@ import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.service.MyIMEService
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.view.BottomSheetView
+import io.github.sds100.keymapper.viewmodel.HomeViewModel
 import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.bottom_sheet_home.view.*
 import kotlinx.android.synthetic.main.content_home.*
@@ -45,13 +46,19 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
     private val mBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent!!.action) {
-                Intent.ACTION_INPUT_METHOD_CHANGED -> updateActionDescriptions()
+                /*when the input method changes, update the action descriptions in case any need to show an error
+                * that they need the input method to be enabled. */
+                Intent.ACTION_INPUT_METHOD_CHANGED -> {
+                    mViewModel.keyMapList.value?.let {
+                        updateActionDescriptions(it)
+                    }
+                }
             }
         }
     }
 
+    private val mViewModel: HomeViewModel by lazy { ViewModelProviders.of(this).get(HomeViewModel::class.java) }
     private val mKeymapAdapter: KeymapAdapter = KeymapAdapter(this)
-    private val mRepository by lazy { KeyMapRepository.getInstance(application.applicationContext) }
     private val mBottomSheetView by lazy { BottomSheetView.create(R.layout.bottom_sheet_home) }
 
     private var mActionModeActive = false
@@ -84,10 +91,11 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
             MyAccessibilityService.enableServiceInSettings()
         }
 
-        mRepository.keyMapList.observe(this, Observer { keyMapList ->
+        mViewModel.keyMapList.observe(this, Observer { keyMapList ->
             populateKeymapsAsync(keyMapList)
 
             updateAccessibilityServiceKeymapCache(keyMapList)
+            updateActionDescriptions(keyMapList)
         })
 
         appBar.setNavigationOnClickListener {
@@ -100,12 +108,12 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
 
         mBottomSheetView.onViewCreated = { view ->
             view.buttonEnableAll.setOnClickListener {
-                mRepository.enableAllKeymaps()
+                mViewModel.enableAllKeymaps()
                 mBottomSheetView.dismiss()
             }
 
             view.buttonDisableAll.setOnClickListener {
-                mRepository.disableAllKeymaps()
+                mViewModel.disableAllKeymaps()
                 mBottomSheetView.dismiss()
             }
 
@@ -115,7 +123,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
         //start NewKeymapActivity when the fab is pressed
         fab.setOnClickListener {
             if (mActionModeActive) {
-                mRepository.deleteKeyMapById(*mKeymapAdapter.iSelectionProvider.selectedItemIds)
+                mViewModel.deleteKeyMapById(*mKeymapAdapter.iSelectionProvider.selectedItemIds)
                 mKeymapAdapter.iSelectionProvider.stopSelecting()
             } else {
                 val intent = Intent(this, NewKeymapActivity::class.java)
@@ -188,12 +196,12 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
 
         return when (item?.itemId) {
             R.id.action_enable -> {
-                mRepository.enableKeymapById(*selectedItemIds)
+                mViewModel.enableKeymapById(*selectedItemIds)
                 true
             }
 
             R.id.action_disable -> {
-                mRepository.disableKeymapById(*selectedItemIds)
+                mViewModel.disableKeymapById(*selectedItemIds)
                 true
             }
 
@@ -225,8 +233,6 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
         } else {
             imeServiceStatusLayout.changeToServiceDisabledState()
         }
-
-        updateActionDescriptions()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -296,8 +302,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
         sendBroadcast(intent)
     }
 
-    private fun populateKeymapsAsync(keyMapList: List<KeyMap>
-    ) {
+    private fun populateKeymapsAsync(keyMapList: List<KeyMap>) {
         doAsync {
             val adapterModels = mutableListOf<KeymapAdapterModel>()
 
@@ -318,14 +323,12 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
         }
     }
 
-    private fun updateActionDescriptions() {
+    private fun updateActionDescriptions(keyMapList: List<KeyMap>) {
+        //iterate through each keymap model and update the action description
         doAsync {
             mKeymapAdapter.itemList.forEach { model ->
-                val keyMapId = model.id
-                val keyMap = mRepository.keyMapList.value!!.find { it.id == keyMapId }
-
-                if (keyMap != null) {
-                    val actionDescription = ActionUtils.getDescription(this.weakRef.get()!!.baseContext, keyMap.action)
+                keyMapList.find { it.id == model.id }?.apply {
+                    val actionDescription = ActionUtils.getDescription(this@HomeActivity, action)
                     model.actionDescription = actionDescription
                 }
             }

@@ -103,18 +103,20 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
         registerReceiver(mBroadcastReceiver, intentFilter)
 
         //observing stuff
-        viewModel.keyMap.observe(this, Observer { keyMap ->
-            doAsync {
-                val actionDescription = ActionUtils.getDescription(this@ConfigKeymapActivity, keyMap.action)
+        viewModel.keyMap.observe(this, Observer {
+            it?.let { keyMap ->
+                doAsync {
+                    val actionDescription = ActionUtils.getDescription(this@ConfigKeymapActivity, keyMap.action)
 
-                uiThread {
-                    loadActionDescriptionLayout(actionDescription)
+                    uiThread {
+                        loadActionDescriptionLayout(actionDescription)
 
-                    mTriggerAdapter.triggerList = keyMap.triggerList
+                        mTriggerAdapter.triggerList = keyMap.triggerList
+                    }
                 }
-            }
 
-            switchEnabled.isChecked = keyMap.isEnabled
+                switchEnabled.isChecked = keyMap.isEnabled
+            }
         })
 
         //button stuff
