@@ -38,6 +38,20 @@ object NotificationUtils {
         )
     }
 
+    fun invalidateNotifications(ctx: Context) {
+        ctx.apply {
+            if (defaultSharedPreferences.getBoolean(
+                            str(R.string.key_pref_show_ime_notification),
+                            bool(R.bool.default_value_show_ime_notification))) {
+                NotificationUtils.showIMEPickerNotification(this)
+            } else {
+                NotificationUtils.hideNotification(this, NotificationUtils.ID_IME_PERSISTENT)
+            }
+
+            AccessibilityServiceWidgetsManager.invalidateNotification(ctx)
+        }
+    }
+
     fun hideNotification(ctx: Context, id: Int) {
         val manager = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         manager.cancel(id)
