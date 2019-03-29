@@ -52,7 +52,7 @@ object AccessibilityServiceWidgetsManager {
             EVENT_PAUSE_REMAPS -> {
                 titleRes = R.string.notification_remappings_start_title
                 textRes = R.string.notification_remappings_start_text
-                iconRes = R.drawable.ic_outline_play_arrow_24px
+                iconRes = R.drawable.ic_notification_play_arrow
 
                 onClickPendingIntent = IntentUtils.createPendingBroadcastIntent(
                         ctx,
@@ -64,7 +64,7 @@ object AccessibilityServiceWidgetsManager {
             EVENT_RESUME_REMAPS, EVENT_SERVICE_START -> {
                 titleRes = R.string.notification_remappings_pause_title
                 textRes = R.string.notification_remappings_pause_text
-                iconRes = R.drawable.ic_outline_pause_24px
+                iconRes = R.drawable.ic_notification_pause
 
                 onClickPendingIntent = IntentUtils.createPendingBroadcastIntent(
                         ctx,
@@ -76,7 +76,7 @@ object AccessibilityServiceWidgetsManager {
             EVENT_SERVICE_STOPPED -> {
                 titleRes = R.string.notification_accessibility_service_disabled_title
                 textRes = R.string.notification_accessibility_service_disabled_text
-                iconRes = R.drawable.ic_outline_error_outline_24px
+                iconRes = R.drawable.ic_notification_error
 
                 onClickPendingIntent = IntentUtils.createPendingBroadcastIntent(
                         ctx,
