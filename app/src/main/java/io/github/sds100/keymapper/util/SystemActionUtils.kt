@@ -18,6 +18,7 @@ import io.github.sds100.keymapper.SystemAction.CATEGORY_STATUS_BAR
 import io.github.sds100.keymapper.SystemAction.CATEGORY_VOLUME
 import io.github.sds100.keymapper.SystemAction.CATEGORY_WIFI
 import io.github.sds100.keymapper.SystemAction.COLLAPSE_STATUS_BAR
+import io.github.sds100.keymapper.SystemAction.CONSUME_KEY_EVENT
 import io.github.sds100.keymapper.SystemAction.DECREASE_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.DISABLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.DISABLE_AUTO_ROTATE
@@ -424,6 +425,11 @@ object SystemActionUtils {
                     feature = PackageManager.FEATURE_DEVICE_ADMIN,
                     permission = Manifest.permission.BIND_DEVICE_ADMIN,
                     messageOnSelection = R.string.action_secure_lock_device_message
+            ),
+            SystemActionDef(
+                    id = CONSUME_KEY_EVENT,
+                    category = CATEGORY_OTHER,
+                    descriptionRes = R.string.action_consume_keyevent
             )
     )
 
