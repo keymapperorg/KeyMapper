@@ -1,10 +1,8 @@
 package io.github.sds100.keymapper.activity
 
 import android.Manifest
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.app.admin.DevicePolicyManager
+import android.content.*
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.Uri
 import android.os.Build
@@ -34,6 +32,7 @@ import kotlinx.android.synthetic.main.activity_config_key_map.*
 import kotlinx.android.synthetic.main.content_config_key_map.*
 import org.jetbrains.anko.*
 
+
 /**
  * Created by sds100 on 04/10/2018.
  */
@@ -46,6 +45,7 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
 
         const val REQUEST_CODE_ACTION = 821
         const val PERMISSION_REQUEST_CODE = 344
+        const val REQUEST_CODE_DEVICE_ADMIN = 213
     }
 
     /**
@@ -241,11 +241,17 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == REQUEST_CODE_ACTION) {
-            if (data != null) {
-                viewModel.keyMap.action =
-                        Gson().fromJson(data.getStringExtra(Action.EXTRA_ACTION))
+        when (requestCode) {
+            REQUEST_CODE_ACTION -> {
+                if (data != null) {
+                    viewModel.keyMap.action =
+                            Gson().fromJson(data.getStringExtra(Action.EXTRA_ACTION))
+                }
             }
+
+            /* need to refresh the action description layout so it stops showing an error message after they've enabled
+            * the device admin. */
+            REQUEST_CODE_DEVICE_ADMIN -> viewModel.keyMap.notifyObservers()
         }
     }
 
@@ -368,6 +374,19 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
 
             } else if (permission == Constants.PERMISSION_ROOT) {
                 RootUtils.promptForRootPermission(this)
+
+            } else if (permission == Manifest.permission.BIND_DEVICE_ADMIN) {
+                val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
+
+                intent.putExtra(
+                        DevicePolicyManager.EXTRA_DEVICE_ADMIN,
+                        ComponentName(this, DeviceAdmin::class.java))
+
+                intent.putExtra(
+                        DevicePolicyManager.EXTRA_ADD_EXPLANATION,
+                        str(R.string.error_need_to_enable_device_admin))
+
+                startActivityForResult(intent, REQUEST_CODE_DEVICE_ADMIN)
             }
         }
     }

@@ -13,6 +13,8 @@ import io.github.sds100.keymapper.interfaces.IContext
 import io.github.sds100.keymapper.interfaces.OnItemClickListener
 import io.github.sds100.keymapper.util.VolumeUtils
 import kotlinx.android.synthetic.main.action_type_recyclerview.*
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.okButton
 
 /**
  * Created by sds100 on 29/07/2018.
@@ -66,6 +68,14 @@ class SystemActionFragment : FilterableActionTypeFragment(),
             }
 
             return
+        }
+
+        if (item.messageOnSelection != null) {
+            context?.alert {
+                titleResource = item.descriptionRes
+                messageResource = item.messageOnSelection
+                okButton {  }
+            }
         }
 
         val action = Action(ActionType.SYSTEM_ACTION, item.id)
