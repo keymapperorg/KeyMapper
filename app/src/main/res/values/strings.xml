@@ -319,6 +319,7 @@
     <string name="action_lock_device">Lock Device (ROOT only)</string>
     <string name="action_secure_lock_device">Secure Lock Device</string>
     <string name="action_secure_lock_device_message">This will lock your device but you will only be able to log back in with your PIN. The fingerprint scanner and face unlock will be disabled. For now, this is the only reliable way I have found to lock non-rooted devices.</string>
+    <string name="action_consume_keyevent">Do Nothing</string>
     <!-- System action labels -->
 
     <!-- System action category labels -->
