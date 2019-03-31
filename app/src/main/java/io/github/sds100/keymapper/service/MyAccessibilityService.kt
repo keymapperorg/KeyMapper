@@ -56,6 +56,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         const val ACTION_UPDATE_NOTIFICATION = "$PACKAGE_NAME.UPDATE_NOTIFICATION"
         const val ACTION_START = "$PACKAGE_NAME.START_ACCESSIBILITY_SERVICE"
         const val ACTION_STOP = "$PACKAGE_NAME.STOP_ACCESSIBILITY_SERVICE"
+        const val ACTION_ON_START = "$PACKAGE_NAME.ON_START_ACCESSIBILITY_SERVICE"
+        const val ACTION_ON_STOP = "$PACKAGE_NAME.ON_STOP_ACCESSIBILITY_SERVICE"
 
         /**
          * How long should the accessibility service record a trigger. In milliseconds.
@@ -282,6 +284,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         getKeyMapList()
 
         AccessibilityServiceWidgetsManager.onEvent(ctx, EVENT_SERVICE_START)
+        sendBroadcast(Intent(ACTION_ON_START))
     }
 
 
@@ -293,6 +296,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
         mLifecycleRegistry.markState(Lifecycle.State.DESTROYED)
         unregisterReceiver(mBroadcastReceiver)
+        sendBroadcast(Intent(ACTION_ON_STOP))
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {}

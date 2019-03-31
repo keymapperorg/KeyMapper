@@ -23,7 +23,10 @@ import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomappbar.BottomAppBar.FAB_ALIGNMENT_MODE_CENTER
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.Gson
-import io.github.sds100.keymapper.*
+import io.github.sds100.keymapper.BuildConfig
+import io.github.sds100.keymapper.KeyMap
+import io.github.sds100.keymapper.KeymapAdapterModel
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.adapter.KeymapAdapter
 import io.github.sds100.keymapper.interfaces.OnItemClickListener
 import io.github.sds100.keymapper.selection.SelectionCallback
@@ -52,6 +55,12 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
                     mViewModel.keyMapList.value?.let {
                         updateActionDescriptions(it)
                     }
+                }
+                MyAccessibilityService.ACTION_ON_START -> {
+                    accessibilityServiceStatusLayout.changeToServiceEnabledState()
+                }
+                MyAccessibilityService.ACTION_ON_STOP -> {
+                    accessibilityServiceStatusLayout.changeToServiceDisabledState()
                 }
             }
         }
@@ -155,6 +164,8 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
 
         val intentFilter = IntentFilter()
         intentFilter.addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
+        intentFilter.addAction(MyAccessibilityService.ACTION_ON_START)
+        intentFilter.addAction(MyAccessibilityService.ACTION_ON_STOP)
         registerReceiver(mBroadcastReceiver, intentFilter)
 
         //ask the user whether they want to enable analytics
