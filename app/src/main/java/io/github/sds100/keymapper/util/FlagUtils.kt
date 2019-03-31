@@ -11,13 +11,15 @@ import io.github.sds100.keymapper.view.multiChoiceDialog
 
 object FlagUtils {
 
-    //DON'T CHANGE THESE IDs!!!
+    //DON'T CHANGE THESE AND THEY MUST BE POWERS OF 2!!
     const val FLAG_LONG_PRESS = 1
     const val FLAG_SHOW_VOLUME_UI = 2
+    const val FLAG_VIBRATE = 4
 
     private val FLAG_LABEL_MAP = mapOf(
             FLAG_LONG_PRESS to R.string.flag_long_press,
-            FLAG_SHOW_VOLUME_UI to R.string.flag_show_volume_dialog
+            FLAG_SHOW_VOLUME_UI to R.string.flag_show_volume_dialog,
+            FLAG_VIBRATE to R.string.flag_vibrate
     )
 
     fun showFlagDialog(ctx: Context,
@@ -44,8 +46,7 @@ object FlagUtils {
         ctx.multiChoiceDialog(
                 titleRes = R.string.dialog_title_flags,
                 items = items,
-                onPosClick =
-                { onPosClick(it) }
+                onPosClick = { onPosClick(it) }
         )
     }
 

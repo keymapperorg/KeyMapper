@@ -149,10 +149,10 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
 
                         if (isChecked) {
                             keyMap.flags = addFlag(keyMap.flags, flag)
-                        }
 
-                        if (flag == FlagUtils.FLAG_LONG_PRESS) {
-                            showLongPressWarning()
+                            if (flag == FlagUtils.FLAG_LONG_PRESS) {
+                                showLongPressWarning()
+                            }
                         }
                     }
                 }
