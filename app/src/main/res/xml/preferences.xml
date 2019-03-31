@@ -20,6 +20,12 @@
         android:title="@string/title_pref_show_ime_notification" />
 
     <androidx.preference.SwitchPreference
+        android:defaultValue="@bool/default_value_force_vibrate"
+        android:key="@string/key_pref_force_vibrate"
+        android:summary="@string/summary_pref_force_vibrate"
+        android:title="@string/title_pref_force_vibrate" />
+
+    <androidx.preference.SwitchPreference
         android:defaultValue="@bool/default_value_show_toggle_remappings_notification"
         android:key="@string/key_pref_show_toggle_remappings_notification"
         android:summary="@string/summary_pref_show_toggle_remappings_notification"
@@ -33,6 +39,16 @@
         android:title="@string/title_pref_long_press_delay"
         app:min="@integer/long_press_delay_min"
         app:seekBarIncrement="@integer/long_press_delay_increment"
+        app:showSeekBarValue="true" />
+
+    <androidx.preference.SeekBarPreference
+        android:defaultValue="@integer/default_value_vibrate_duration"
+        android:key="@string/key_pref_vibrate_duration"
+        android:max="@integer/vibrate_duration_max"
+        android:summary="@string/summary_pref_vibrate_duration"
+        android:title="@string/title_pref_vibrate_duration"
+        app:min="@integer/vibrate_duration_min"
+        app:seekBarIncrement="@integer/vibrate_duration_increment"
         app:showSeekBarValue="true" />
 
     <androidx.preference.PreferenceCategory android:title="@string/title_pref_category_ime_picker">

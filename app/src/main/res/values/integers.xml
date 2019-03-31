@@ -3,4 +3,8 @@
     <integer name="long_press_delay_min">100</integer>
     <integer name="long_press_delay_max">5000</integer>
     <integer name="long_press_delay_increment">100</integer>
+
+    <integer name="vibrate_duration_min">100</integer>
+    <integer name="vibrate_duration_max">1000</integer>
+    <integer name="vibrate_duration_increment">100</integer>
 </resources>

@@ -4,9 +4,12 @@ import android.accessibilityservice.AccessibilityService
 import android.app.admin.DevicePolicyManager
 import android.content.ActivityNotFoundException
 import android.content.Context.DEVICE_POLICY_SERVICE
+import android.content.Context.VIBRATOR_SERVICE
 import android.content.Intent
 import android.media.AudioManager
 import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.provider.MediaStore
 import android.provider.Settings
 import android.view.KeyEvent
@@ -18,6 +21,7 @@ import io.github.sds100.keymapper.interfaces.IPerformGlobalAction
 import io.github.sds100.keymapper.service.MyIMEService
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.FlagUtils.FLAG_SHOW_VOLUME_UI
+import io.github.sds100.keymapper.util.FlagUtils.FLAG_VIBRATE
 import org.jetbrains.anko.defaultSharedPreferences
 
 
@@ -103,6 +107,24 @@ class ActionPerformerDelegate(
         val showVolumeUi = containsFlag(flags, FLAG_SHOW_VOLUME_UI)
 
         ctx.apply {
+            if (defaultSharedPreferences.getBoolean(
+                            str(R.string.key_pref_force_vibrate),
+                            bool(R.bool.default_value_force_vibrate)
+                    ) or containsFlag(flags, FLAG_VIBRATE)) {
+
+                val vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
+                val vibrateDuration = defaultSharedPreferences.getInt(
+                        str(R.string.key_pref_vibrate_duration),
+                        int(R.integer.default_value_vibrate_duration)
+                ).toLong()
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    vibrator.vibrate(VibrationEffect.createOneShot(vibrateDuration, VibrationEffect.DEFAULT_AMPLITUDE))
+                } else {
+                    vibrator.vibrate(vibrateDuration)
+                }
+            }
+
             when (id) {
                 SystemAction.ENABLE_WIFI -> NetworkUtils.changeWifiState(this, StateChange.ENABLE)
                 SystemAction.DISABLE_WIFI -> NetworkUtils.changeWifiState(this, StateChange.DISABLE)
