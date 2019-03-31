@@ -248,6 +248,8 @@
     <string name="error_feature_not_available">Your device doesn\'t support %s.</string>
     <string name="error_flag_not_found">Flag "%s" not found!</string>
     <string name="error_google_app_not_installed">Google app not installed!</string>
+    <string name="error_cant_find_accessibility_settings_page">Can\'t find the Accessibility settings page!</string>
+    <string name="error_need_to_enable_device_admin">Key Mapper needs to be a device administrator to use this action!</string>
 
     <string name="error_accessibility_service_disabled">The accessibility service must be enabled for this app to work!</string>
     <string name="error_accessibility_service_enabled">Accessibility service is enabled!</string>
@@ -314,6 +316,9 @@
     <string name="action_screenshot">Screenshot</string>
     <string name="action_open_assistant">Open Google Assistant</string>
     <string name="action_open_camera">Open Camera</string>
+    <string name="action_lock_device">Lock Device (ROOT only)</string>
+    <string name="action_secure_lock_device">Secure Lock Device</string>
+    <string name="action_secure_lock_device_message">This will lock your device but you will only be able to log back in with your PIN. The fingerprint scanner and face unlock will be disabled. For now, this is the only reliable way I have found to lock non-rooted devices.</string>
     <!-- System action labels -->
 
     <!-- System action category labels -->
@@ -328,6 +333,5 @@
     <string name="system_action_cat_media">Media</string>
     <string name="system_action_cat_flashlight">Flashlight</string>
     <string name="system_action_cat_other">Other</string>
-    <string name="error_cant_find_accessibility_settings_page">Can\'t find the Accessibility settings page!</string>
     <!-- System action category labels -->
 </resources>

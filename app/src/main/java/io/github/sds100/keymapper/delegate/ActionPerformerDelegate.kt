@@ -1,12 +1,15 @@
 package io.github.sds100.keymapper.delegate
 
 import android.accessibilityservice.AccessibilityService
+import android.app.admin.DevicePolicyManager
 import android.content.ActivityNotFoundException
+import android.content.Context.DEVICE_POLICY_SERVICE
 import android.content.Intent
 import android.media.AudioManager
 import android.os.Build
 import android.provider.MediaStore
 import android.provider.Settings
+import android.view.KeyEvent
 import android.widget.Toast
 import androidx.lifecycle.Lifecycle
 import io.github.sds100.keymapper.*
@@ -16,6 +19,7 @@ import io.github.sds100.keymapper.service.MyIMEService
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.FlagUtils.FLAG_SHOW_VOLUME_UI
 import org.jetbrains.anko.defaultSharedPreferences
+
 
 /**
  * Created by sds100 on 25/11/2018.
@@ -182,6 +186,13 @@ class ActionPerformerDelegate(
                 SystemAction.OPEN_CAMERA -> {
                     val intent = Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(intent)
+                }
+
+                SystemAction.LOCK_DEVICE -> RootUtils.executeRootCommand("input keyevent ${KeyEvent.KEYCODE_POWER}")
+
+                SystemAction.SECURE_LOCK_DEVICE -> {
+                    val dpm = getSystemService(DEVICE_POLICY_SERVICE) as DevicePolicyManager
+                    dpm.lockNow()
                 }
 
                 else -> {

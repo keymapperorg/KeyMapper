@@ -1,6 +1,8 @@
 package io.github.sds100.keymapper.util
 
 import android.Manifest
+import android.app.admin.DevicePolicyManager
+import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -8,6 +10,7 @@ import android.provider.Settings
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import io.github.sds100.keymapper.Constants
+import io.github.sds100.keymapper.DeviceAdmin
 import io.github.sds100.keymapper.R
 
 /**
@@ -24,6 +27,7 @@ object PermissionUtils {
         return when (permission) {
             Manifest.permission.WRITE_SETTINGS -> R.string.error_action_requires_write_settings_permission
             Manifest.permission.CAMERA -> R.string.error_action_requires_camera_permission
+            Manifest.permission.BIND_DEVICE_ADMIN -> R.string.error_need_to_enable_device_admin
             Constants.PERMISSION_ROOT -> R.string.error_action_requires_root
             else -> throw Exception("Couldn't find permission description for $permission")
         }
@@ -48,6 +52,10 @@ fun Context.isPermissionGranted(permission: String): Boolean {
 
     } else if (permission == Constants.PERMISSION_ROOT) {
         return RootUtils.checkAppHasRootPermission(this)
+
+    } else if (permission == Manifest.permission.BIND_DEVICE_ADMIN) {
+        val dpm = getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+        return dpm.isAdminActive(ComponentName(this, DeviceAdmin::class.java))
     }
 
     return ContextCompat.checkSelfPermission(this, permission) ==

@@ -35,6 +35,7 @@ import io.github.sds100.keymapper.SystemAction.GO_BACK
 import io.github.sds100.keymapper.SystemAction.GO_HOME
 import io.github.sds100.keymapper.SystemAction.INCREASE_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.LANDSCAPE_MODE
+import io.github.sds100.keymapper.SystemAction.LOCK_DEVICE
 import io.github.sds100.keymapper.SystemAction.NEXT_TRACK
 import io.github.sds100.keymapper.SystemAction.OPEN_ASSISTANT
 import io.github.sds100.keymapper.SystemAction.OPEN_CAMERA
@@ -45,6 +46,7 @@ import io.github.sds100.keymapper.SystemAction.PLAY_PAUSE_MEDIA
 import io.github.sds100.keymapper.SystemAction.PORTRAIT_MODE
 import io.github.sds100.keymapper.SystemAction.PREVIOUS_TRACK
 import io.github.sds100.keymapper.SystemAction.SCREENSHOT
+import io.github.sds100.keymapper.SystemAction.SECURE_LOCK_DEVICE
 import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_ROTATE
 import io.github.sds100.keymapper.SystemAction.TOGGLE_BLUETOOTH
@@ -406,6 +408,22 @@ object SystemActionUtils {
                     category = CATEGORY_OTHER,
                     iconRes = R.drawable.ic_camera_alt_black_24dp,
                     descriptionRes = R.string.action_open_camera
+            ),
+            SystemActionDef(
+                    id = LOCK_DEVICE,
+                    category = CATEGORY_OTHER,
+                    iconRes = R.drawable.ic_outline_lock_24px,
+                    descriptionRes = R.string.action_lock_device,
+                    permission = Constants.PERMISSION_ROOT
+            ),
+            SystemActionDef(
+                    id = SECURE_LOCK_DEVICE,
+                    category = CATEGORY_OTHER,
+                    iconRes = R.drawable.ic_outline_lock_24px,
+                    descriptionRes = R.string.action_secure_lock_device,
+                    feature = PackageManager.FEATURE_DEVICE_ADMIN,
+                    permission = Manifest.permission.BIND_DEVICE_ADMIN,
+                    messageOnSelection = R.string.action_secure_lock_device_message
             )
     )
 
