@@ -45,5 +45,11 @@ class BottomSheetView : BottomSheetDialogFragment() {
         onViewCreated(view)
     }
 
-    fun show(activity: FragmentActivity) = show(activity.supportFragmentManager, TAG)
+    fun show(activity: FragmentActivity) {
+        activity.apply {
+            if (supportFragmentManager.findFragmentByTag(TAG) == null) {
+                show(supportFragmentManager, TAG)
+            }
+        }
+    }
 }
