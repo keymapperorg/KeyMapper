@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.data.KeyMapDao
 import io.github.sds100.keymapper.util.FlagUtils
 import io.github.sds100.keymapper.util.addFlag
 import io.github.sds100.keymapper.util.containsFlag
+import io.github.sds100.keymapper.util.removeFlag
 
 /**
  * Created by sds100 on 12/07/2018.
@@ -35,6 +36,8 @@ class KeyMap(
         set(value) {
             if (value.isVolumeAction) {
                 flags = addFlag(flags, FlagUtils.FLAG_SHOW_VOLUME_UI)
+            } else {
+                flags = removeFlag(flags, FlagUtils.FLAG_SHOW_VOLUME_UI)
             }
 
             field = value
