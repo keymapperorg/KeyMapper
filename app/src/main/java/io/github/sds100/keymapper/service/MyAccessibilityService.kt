@@ -232,15 +232,24 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
      * E.g when Ctrl + J is pressed, the contents of this list will be the keycodes for Ctrl + J
      */
     private var mPressedTriggerKeys = mutableListOf<Int>()
+
+    /**
+     * The triggers of any long press actions waiting to be performed. This is to let short press actions, with the same
+     * trigger as a long press, to know whether to perform when they are pressed down or ONLY if the key is released
+     * before the long press delay.
+     */
     private val mTriggersAwaitingLongPress = mutableListOf<Trigger>()
 
     private val mHandler = Handler()
 
     /* How does long pressing work?
+    Any short press actions, which have the same trigger as a long press action, should be performed if the key is
+    released before the long press delay.
+
        - When a trigger is detected, a Runnable is created, which when executed, will perform the action.
        - The runnable will be queued in the Handler.
-       - After 500ms the runnable will be executed if it is still queued in the Handler.
-       - If the user releases one of the keys which is assigned to a Runnable in the mRunnableTriggerMap, the Runnable
+       - After the long press delay the runnable will be executed if it is still queued in the Handler.
+       - If the user releases one of the keys which is assigned to the Runnable, the Runnable
        will be removed from the Runnable list and removed from the Handler. This stops it being executed after the user
        has stopped long-pressing the trigger.
        -
@@ -320,15 +329,15 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
             //when a key is pressed down
             if (event.action == KeyEvent.ACTION_DOWN) {
-                Log.e(this::class.java.simpleName, "down")
                 mPressedKeys.add(event.keyCode)
 
                 //when a key is lifted
             } else if (event.action == KeyEvent.ACTION_UP) {
-                Log.e(this::class.java.simpleName, "up")
 
                 mPressedKeys.remove(event.keyCode)
 
+                /*only execute short press actions with the same trigger as a long press if the key has been held down
+                * shorter than the long press delay */
                 if (SystemClock.uptimeMillis() - event.downTime < LONG_PRESS_DELAY) {
                     var performedShortPress = false
 
@@ -371,6 +380,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
             val keyMaps = mutableListOf<KeyMap>()
 
             mKeyMapListCache.forEach { keymap ->
+                /* only add a trigger to the list if it hasn't already been registered as a long press trigger */
                 if (keymap.isLongPress) {
                     val newLongPressTriggers = keymap.triggerList.filter { !mTriggersAwaitingLongPress.contains(it) }
 
@@ -415,7 +425,11 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                     continue
 
                 } else {
+                    //if a short press click
 
+                    /* if there is a long press keymap with the same trigger as this short press one, only perform it
+                    * if the trigger is released before the long press delay. Therefore, a Runnable is created which
+                    * will be ran later. */
                     if (mTriggersAwaitingLongPress.any { it == trigger }) {
                         val runnable = object : PendingAction(trigger) {
                             override fun run() {
