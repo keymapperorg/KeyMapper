@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.media.AudioManager
 import android.os.Handler
+import android.os.SystemClock
 import android.provider.Settings
 import android.util.Log
 import android.view.KeyEvent
@@ -194,11 +195,13 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                 }
 
                 ACTION_PAUSE_REMAPPINGS -> {
+                    clearLists()
                     mPaused = true
                     AccessibilityServiceWidgetsManager.onEvent(ctx, EVENT_PAUSE_REMAPS)
                 }
 
                 ACTION_RESUME_REMAPPINGS -> {
+                    clearLists()
                     mPaused = false
                     AccessibilityServiceWidgetsManager.onEvent(ctx, EVENT_RESUME_REMAPS)
                 }
@@ -229,27 +232,22 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
      * E.g when Ctrl + J is pressed, the contents of this list will be the keycodes for Ctrl + J
      */
     private var mPressedTriggerKeys = mutableListOf<Int>()
+    private val mTriggersAwaitingLongPress = mutableListOf<Trigger>()
 
     private val mHandler = Handler()
 
     /* How does long pressing work?
-       - When a trigger is detected, a Runnable is created which when executed will perform the action.
+       - When a trigger is detected, a Runnable is created, which when executed, will perform the action.
        - The runnable will be queued in the Handler.
        - After 500ms the runnable will be executed if it is still queued in the Handler.
        - If the user releases one of the keys which is assigned to a Runnable in the mRunnableTriggerMap, the Runnable
        will be removed from the Runnable list and removed from the Handler. This stops it being executed after the user
        has stopped long-pressing the trigger.
+       -
     * */
-    private val mLongPressRunnables = mutableListOf<Runnable>()
-    private val mRepeatRunnables = mutableListOf<Runnable>()
-
-    private val mRunnableTriggerMap = mutableMapOf<Int, List<Int>>()
-
-    private var Runnable.trigger: List<Int>
-        get() = mRunnableTriggerMap.getValue(hashCode())
-        set(value) {
-            mRunnableTriggerMap[hashCode()] = value
-        }
+    private val mLongPressPendingActions = mutableListOf<PendingAction>()
+    private val mShortPressPendingActions = mutableListOf<PendingAction>()
+    private val mRepeatQueue = mutableListOf<PendingAction>()
 
     private var mRecordingTrigger = false
 
@@ -287,7 +285,6 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         sendBroadcast(Intent(ACTION_ON_START))
     }
 
-
     override fun onInterrupt() {}
 
     override fun onDestroy() {
@@ -323,43 +320,70 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
             //when a key is pressed down
             if (event.action == KeyEvent.ACTION_DOWN) {
+                Log.e(this::class.java.simpleName, "down")
                 mPressedKeys.add(event.keyCode)
 
                 //when a key is lifted
             } else if (event.action == KeyEvent.ACTION_UP) {
+                Log.e(this::class.java.simpleName, "up")
 
                 mPressedKeys.remove(event.keyCode)
 
-                if (mLongPressRunnables.any { it.trigger.contains(event.keyCode) }) {
-                    imitateButtonPress(event.keyCode)
-                }
+                if (SystemClock.uptimeMillis() - event.downTime < LONG_PRESS_DELAY) {
+                    var performedShortPress = false
 
-                mLongPressRunnables.forEach {
-                    if (it.trigger.contains(event.keyCode)) {
+                    mShortPressPendingActions.filter { it.trigger.keys.contains(event.keyCode) }.forEach {
+                        performedShortPress = true
+                        it.run()
                         mHandler.removeCallbacks(it)
-                        mLongPressRunnables.remove(it)
+                        mShortPressPendingActions.remove(it)
+                    }
+
+                    /*only imitate a short press for a button if the user hasn't mapped it to a short press action */
+                    if (!performedShortPress &&
+                            mLongPressPendingActions.any { it.trigger.keys.contains(event.keyCode) }) {
+                        imitateButtonPress(event.keyCode)
                     }
                 }
 
-                mRepeatRunnables.forEach {
-                    if (it.trigger.contains(event.keyCode)) {
-                        mHandler.removeCallbacks(it)
-                        mRepeatRunnables.remove(it)
-                    }
+                //remove all pending long press actions since their trigger has been released
+                mLongPressPendingActions.filter { it.trigger.keys.contains(event.keyCode) }.forEach {
+                    mHandler.removeCallbacks(it)
+                    mTriggersAwaitingLongPress.remove(it.trigger)
+                    mLongPressPendingActions.remove(it)
                 }
+
+                //remove all pending actions to repeat since their trigger has been released
+                mRepeatQueue.filter { it.trigger.keys.contains(event.keyCode) }.forEach {
+                    mHandler.removeCallbacks(it)
+                    mRepeatQueue.remove(it)
+                }
+
+                //NEVER CONSUME EVENTS ON ACTION_UP SINCE OTHERWISE THE KEY APPEARS TO BE HELD DOWN
+                return super.onKeyEvent(event)
             }
 
             mPressedTriggerKeys = mPressedKeys.toMutableList()
 
+            var consumeEvent = false
+
             //find all the keymap which can be triggered with the keys being pressed
-            val keyMaps = mKeyMapListCache.filter { keymap ->
-                keymap.containsTrigger(mPressedTriggerKeys) && keymap.isEnabled
+            val keyMaps = mutableListOf<KeyMap>()
+
+            mKeyMapListCache.forEach { keymap ->
+                if (keymap.isLongPress) {
+                    val newLongPressTriggers = keymap.triggerList.filter { !mTriggersAwaitingLongPress.contains(it) }
+
+                    mTriggersAwaitingLongPress.addAll(newLongPressTriggers)
+                }
+
+                if (keymap.containsTrigger(mPressedTriggerKeys) && keymap.isEnabled) {
+                    keyMaps.add(keymap)
+                }
             }
 
             //if no applicable keymaps are found the keyevent won't be consumed
             if (keyMaps.isEmpty()) return super.onKeyEvent(event)
-
-            var consumeEvent = false
 
             //loop through each keymap and perform their action
             for (keymap in keyMaps) {
@@ -373,58 +397,70 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                     continue
                 }
 
+                val trigger = Trigger(mPressedTriggerKeys)
+
                 //if the action should only be performed if it is a long press
                 if (keymap.isLongPress) {
 
-                    val runnable = object : Runnable {
+                    val runnable = object : PendingAction(trigger) {
                         override fun run() {
-
                             mActionPerformerDelegate.performAction(keymap.action!!, keymap.flags)
-
-                            mRunnableTriggerMap.remove(this.hashCode())
-                            mLongPressRunnables.remove(this)
                         }
                     }
 
-                    runnable.trigger = mPressedTriggerKeys
-
-                    mLongPressRunnables.add(runnable)
+                    mLongPressPendingActions.add(runnable)
                     mHandler.postDelayed(runnable, LONG_PRESS_DELAY)
 
                     consumeEvent = true
                     continue
-                }
 
-                if (keymap.action!!.isVolumeAction
-                        || keymap.action!!.type == ActionType.KEY
-                        || keymap.action!!.type == ActionType.KEYCODE) {
+                } else {
 
-                    val runnable = object : Runnable {
-                        override fun run() {
-                            mActionPerformerDelegate.performAction(keymap.action!!, keymap.flags)
-
-                            mHandler.postDelayed(this, REPEAT_DELAY)
+                    if (mTriggersAwaitingLongPress.any { it == trigger }) {
+                        val runnable = object : PendingAction(trigger) {
+                            override fun run() {
+                                mActionPerformerDelegate.performAction(keymap.action!!, keymap.flags)
+                            }
                         }
+
+                        mShortPressPendingActions.add(runnable)
+                        consumeEvent = true
+                        continue
+
+                    } else {
+                        if (keymap.action!!.isVolumeAction
+                                || keymap.action!!.type == ActionType.KEY
+                                || keymap.action!!.type == ActionType.KEYCODE) {
+
+                            val runnable = object : PendingAction(trigger) {
+                                override fun run() {
+                                    mActionPerformerDelegate.performAction(keymap.action!!, keymap.flags)
+
+                                    mHandler.postDelayed(this, REPEAT_DELAY)
+                                }
+                            }
+
+                            mRepeatQueue.add(runnable)
+                            mHandler.postDelayed(runnable, HOLD_DOWN_DELAY)
+                        }
+
+                        mActionPerformerDelegate.performAction(keymap.action!!, keymap.flags)
+                        consumeEvent = true
                     }
-
-                    runnable.trigger = mPressedTriggerKeys
-
-                    mRepeatRunnables.add(runnable)
-                    mHandler.postDelayed(runnable, HOLD_DOWN_DELAY)
                 }
-
-                mActionPerformerDelegate.performAction(keymap.action!!, keymap.flags)
-                consumeEvent = true
             }
 
             if (consumeEvent) {
                 logConsumedKeyEvent(event)
                 return true
             }
+
         } catch (e: Exception) {
 
             if (BuildConfig.DEBUG) {
                 Toast.makeText(this, R.string.exception_accessibility_service, LENGTH_SHORT).show()
+                Log.e(this::class.java.simpleName, "ONKEYEVENT CRASH")
+                e.printStackTrace()
             }
 
             Crashlytics.logException(e)
@@ -454,6 +490,15 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
             KeyEvent.KEYCODE_APP_SWITCH -> performGlobalAction(GLOBAL_ACTION_RECENTS)
             KeyEvent.KEYCODE_MENU -> performGlobalAction(GLOBAL_ACTION_RECENTS)
         }
+    }
+
+    private fun clearLists() {
+        mPressedKeys.clear()
+        mPressedTriggerKeys.clear()
+        mTriggersAwaitingLongPress.clear()
+        mLongPressPendingActions.clear()
+        mShortPressPendingActions.clear()
+        mRepeatQueue.clear()
     }
 
     private fun logConsumedKeyEvent(event: KeyEvent) {
