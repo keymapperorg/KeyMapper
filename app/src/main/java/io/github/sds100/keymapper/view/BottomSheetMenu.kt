@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.view
 
+import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,20 +9,22 @@ import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentActivity
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 /**
  * Created by sds100 on 10/03/2019.
  */
 
-class BottomSheetView : BottomSheetDialogFragment() {
+class BottomSheetMenu : BottomSheetDialogFragment() {
 
     companion object {
         private val TAG = this::class.java.simpleName
         private const val KEY_LAYOUT_ID = "key_layout_id"
 
-        fun create(@LayoutRes layoutId: Int): BottomSheetView {
-            return BottomSheetView().apply {
+        fun create(@LayoutRes layoutId: Int): BottomSheetMenu {
+            return BottomSheetMenu().apply {
                 arguments = bundleOf(KEY_LAYOUT_ID to layoutId)
             }
         }
@@ -43,6 +46,20 @@ class BottomSheetView : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         onViewCreated(view)
+    }
+
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState)
+
+        //force expand the bottom sheet when it is initially shown
+        (dialog as BottomSheetDialog).apply {
+            setOnShowListener {
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+            }
+        }
+
+        return dialog
     }
 
     fun show(activity: FragmentActivity) {
