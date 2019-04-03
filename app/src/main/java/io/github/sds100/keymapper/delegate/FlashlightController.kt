@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.delegate
 
 import android.content.Context
+import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.os.Build
@@ -8,7 +9,9 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.interfaces.IContext
+import org.jetbrains.anko.toast
 
 /**
  * Created by sds100 on 19/01/2019.
@@ -57,8 +60,17 @@ class FlashlightController(iContext: IContext) : IContext by iContext, Lifecycle
         (ctx.getSystemService(Context.CAMERA_SERVICE) as CameraManager).apply {
 
             for (cameraId in cameraIdList) {
+
+                //try to find a camera with a flash
                 if (getCameraCharacteristics(cameraId).get(CameraCharacteristics.FLASH_INFO_AVAILABLE)!!) {
-                    setTorchMode(cameraId, enabled)
+
+                    try {
+                        setTorchMode(cameraId, enabled)
+                    } catch (e: CameraAccessException) {
+                        when (e.reason) {
+                            CameraAccessException.CAMERA_IN_USE -> ctx.toast(R.string.error_camera_in_use)
+                        }
+                    }
                 }
             }
         }
