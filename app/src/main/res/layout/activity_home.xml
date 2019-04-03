@@ -7,7 +7,11 @@
     android:layout_height="match_parent"
     tools:context=".activity.HomeActivity">
 
-    <include layout="@layout/content_home" />
+    <include
+        layout="@layout/content_home"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="?attr/actionBarSize" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
@@ -25,8 +29,6 @@
         app:backgroundTint="@color/colorPrimary"
         app:fabAlignmentMode="center"
         app:fabAnimationMode="slide"
-        app:hideOnScroll="true"
-        app:layout_scrollFlags="scroll|enterAlways"
         app:navigationIcon="@drawable/ic_menu_white_24dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
