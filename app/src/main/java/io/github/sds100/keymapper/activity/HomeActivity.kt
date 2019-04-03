@@ -37,7 +37,7 @@ import io.github.sds100.keymapper.selection.SelectionProvider
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.service.MyIMEService
 import io.github.sds100.keymapper.util.*
-import io.github.sds100.keymapper.view.BottomSheetView
+import io.github.sds100.keymapper.view.BottomSheetMenu
 import io.github.sds100.keymapper.viewmodel.HomeViewModel
 import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.bottom_sheet_home.view.*
@@ -68,7 +68,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
 
     private val mViewModel: HomeViewModel by lazy { ViewModelProviders.of(this).get(HomeViewModel::class.java) }
     private val mKeymapAdapter: KeymapAdapter = KeymapAdapter(this)
-    private val mBottomSheetView by lazy { BottomSheetView.create(R.layout.bottom_sheet_home) }
+    private val mBottomSheetView by lazy { BottomSheetMenu.create(R.layout.bottom_sheet_home) }
 
     private var mActionModeActive = false
         set(value) {
