@@ -353,6 +353,13 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                             mLongPressPendingActions.any { it.trigger.keys.contains(event.keyCode) }) {
                         imitateButtonPress(event.keyCode)
                     }
+                } else {
+                    /* must remove all short press pending actions created during the down press. But don't run them
+                    * since only the long press should be ran. */
+                    mShortPressPendingActions.filter { it.trigger.keys.contains(event.keyCode) }.forEach {
+                        mHandler.removeCallbacks(it)
+                        mShortPressPendingActions.remove(it)
+                    }
                 }
 
                 //remove all pending long press actions since their trigger has been released
@@ -381,7 +388,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
             mKeyMapListCache.forEach { keymap ->
                 /* only add a trigger to the list if it hasn't already been registered as a long press trigger */
-                if (keymap.isLongPress) {
+                if (keymap.isLongPress && keymap.isEnabled) {
                     val newLongPressTriggers = keymap.triggerList.filter { !mTriggersAwaitingLongPress.contains(it) }
 
                     mTriggersAwaitingLongPress.addAll(newLongPressTriggers)
