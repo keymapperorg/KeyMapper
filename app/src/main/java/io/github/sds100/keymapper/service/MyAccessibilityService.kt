@@ -68,7 +68,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         /**
          * The time in ms between repeating an action while holding down.
          */
-        private const val REPEAT_DELAY = 10L
+        private const val REPEAT_DELAY = 5L
 
         /**
          * How long a key should be held down to repeatedly perform an action in ms.
