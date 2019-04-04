@@ -447,8 +447,13 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                                 || keymap.action!!.type == ActionType.KEYCODE) {
 
                             val runnable = object : PendingAction(trigger) {
+                                var flags = removeFlag(keymap.flags, FlagUtils.FLAG_VIBRATE)
+
                                 override fun run() {
-                                    mActionPerformerDelegate.performAction(keymap.action!!, keymap.flags)
+                                    mActionPerformerDelegate.performAction(
+                                            keymap.action!!,
+                                            flags
+                                    )
 
                                     mHandler.postDelayed(this, REPEAT_DELAY)
                                 }
