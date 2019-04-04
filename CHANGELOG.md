@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file. This projec
  
 ## [Unreleased](https://github.com/sds100/KeyMapper/tree/develop)
 
+## [1.1.0 Beta 3](https://github.com/sds100/KeyMapper/releases/tag/v1.1.0-beta.3)
+- Reduced the repeat delay to 5ms
+- Force expand the menu on the homescreen
+- Made the cards on the homescreen slightly more compact
+
+### Added
+- Flag to vibrate and an option to force vibrate for all actions
+- Action which just consumes the keyevent and does nothing
+- Action to lock the device (ROOT only for now) and an option to lock the device securely (without root).
+
+### Bug fixes
+- The bottom app bar on the homescreen would overlap the list items
+- The app would potentially crash when trying to perform a flashlight action whilst the camera is in use in another app.
+- Short press actions with the same trigger as a long press action would be performed with the long press action
+- A keymap would still have the "Show volume dialog" flag if the action is changed to a non volume related action
+- The app would crash if trying to show the menu on the homescreen if it is already showing.
+- The accessibility service status on the homescreen wouldn't change when the service is started/stopped.
+
 ## [1.1.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v1.1.0-beta.2)
 - Won't immediately crash on KitKat anymore! :)
 
