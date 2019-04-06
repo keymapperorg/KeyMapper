@@ -27,6 +27,9 @@
     <string name="show_hidden_system_actions">Show hidden items</string>
     <string name="key_map_adapter_flags">Flags</string>
 
+    <string name="lens_front">Front</string>
+    <string name="lens_back">Back</string>
+
     <string name="description_open_app">Open %s</string>
     <string name="description_key">Press \'%s\' key</string>
     <string name="description_text_block">Insert \'%s\'</string>
@@ -94,6 +97,7 @@
     <string name="dialog_title_root_prompt">Root permission needed!</string>
     <string name="dialog_title_flags">More</string>
     <string name="dialog_title_pick_stream">Pick stream</string>
+    <string name="dialog_title_choose_flash">Choose flash</string>
     <!-- Dialog titles -->
 
     <!-- Dialog messages -->
@@ -322,6 +326,10 @@
     <string name="action_toggle_flashlight">Toggle Flashlight</string>
     <string name="action_enable_flashlight">Enable Flashlight</string>
     <string name="action_disable_flashlight">Disable Flashlight</string>
+
+    <string name="action_toggle_flashlight_formatted">Toggle %s Flashlight</string>
+    <string name="action_enable_flashlight_formatted">Enable %s Flashlight</string>
+    <string name="action_disable_flashlight_formatted">Disable %s Flashlight</string>
 
     <string name="action_screenshot">Screenshot</string>
     <string name="action_open_assistant">Open Google Assistant</string>
