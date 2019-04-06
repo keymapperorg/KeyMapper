@@ -18,7 +18,7 @@ object KeycodeUtils {
     /**
      * Maps keys which aren't single characters like the Control keys to a string representation
      */
-    private val NON_CHARACTER_KEY_LABELS = mapOf(
+    private val NON_CHARACTER_KEY_LABELS = mutableMapOf(
             KeyEvent.KEYCODE_VOLUME_DOWN to "Vol down",
             KeyEvent.KEYCODE_VOLUME_UP to "Vol up",
 
@@ -46,8 +46,46 @@ object KeycodeUtils {
             KeyEvent.KEYCODE_SPACE to "Space",
             KeyEvent.KEYCODE_SEARCH to "Search",
             KeyEvent.KEYCODE_CAPS_LOCK to "Caps Lock",
-            KeyEvent.KEYCODE_HEADSETHOOK to "Headphone button"
-    )
+            KeyEvent.KEYCODE_HEADSETHOOK to "Headset Button",
+
+            KeyEvent.KEYCODE_BUTTON_1 to "Button 1",
+            KeyEvent.KEYCODE_BUTTON_2 to "Button 2",
+            KeyEvent.KEYCODE_BUTTON_3 to "Button 3",
+            KeyEvent.KEYCODE_BUTTON_4 to "Button 4",
+            KeyEvent.KEYCODE_BUTTON_5 to "Button 5",
+            KeyEvent.KEYCODE_BUTTON_6 to "Button 6",
+            KeyEvent.KEYCODE_BUTTON_7 to "Button 7",
+            KeyEvent.KEYCODE_BUTTON_8 to "Button 8",
+            KeyEvent.KEYCODE_BUTTON_9 to "Button 9",
+            KeyEvent.KEYCODE_BUTTON_10 to "Button 10",
+            KeyEvent.KEYCODE_BUTTON_11 to "Button 11",
+            KeyEvent.KEYCODE_BUTTON_12 to "Button 12",
+            KeyEvent.KEYCODE_BUTTON_13 to "Button 13",
+            KeyEvent.KEYCODE_BUTTON_14 to "Button 14",
+            KeyEvent.KEYCODE_BUTTON_15 to "Button 15",
+            KeyEvent.KEYCODE_BUTTON_16 to "Button 16",
+
+            KeyEvent.KEYCODE_BUTTON_L1 to "Button L1",
+            KeyEvent.KEYCODE_BUTTON_L2 to "Button L2",
+            KeyEvent.KEYCODE_BUTTON_R1 to "Button R1",
+            KeyEvent.KEYCODE_BUTTON_R2 to "Button R2",
+
+            KeyEvent.KEYCODE_BUTTON_A to "Button A",
+            KeyEvent.KEYCODE_BUTTON_B to "Button B",
+            KeyEvent.KEYCODE_BUTTON_C to "Button C",
+
+            KeyEvent.KEYCODE_BUTTON_X to "Button X",
+            KeyEvent.KEYCODE_BUTTON_Y to "Button Y",
+            KeyEvent.KEYCODE_BUTTON_Z to "Button Z",
+
+            KeyEvent.KEYCODE_BUTTON_THUMBL to "Thumb Left",
+            KeyEvent.KEYCODE_BUTTON_THUMBR to "Thumb Right"
+
+    ).apply {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            put(KeyEvent.KEYCODE_ALL_APPS, "All Apps")
+        }
+    }
 
     private val KEYCODES = listOf(
             KeyEvent.KEYCODE_SOFT_LEFT,
