@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.fragment.ActionTypeFragments
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.adapter.SystemActionAdapter
 import io.github.sds100.keymapper.interfaces.IContext
 import io.github.sds100.keymapper.interfaces.OnItemClickListener
+import io.github.sds100.keymapper.util.FlashlightUtils
 import io.github.sds100.keymapper.util.VolumeUtils
 import kotlinx.android.synthetic.main.action_type_recyclerview.*
 import org.jetbrains.anko.alert
@@ -55,26 +57,43 @@ class SystemActionFragment : FilterableActionTypeFragment(),
     }
 
     override fun onItemClick(item: SystemActionDef) {
-        if (item.id == SystemAction.VOLUME_DECREASE_STREAM
-                || item.id == SystemAction.VOLUME_INCREASE_STREAM) {
+        when (item.id) {
+            SystemAction.VOLUME_DECREASE_STREAM, SystemAction.VOLUME_INCREASE_STREAM -> {
 
-            VolumeUtils.showStreamPickerDialog(context!!) { streamType ->
+                VolumeUtils.showStreamPickerDialog(context!!) { streamType ->
 
-                val action = Action(ActionType.SYSTEM_ACTION,
-                        item.id,
-                        Extra(Action.EXTRA_STREAM_TYPE, streamType.toString()))
+                    val action = Action(ActionType.SYSTEM_ACTION,
+                            item.id,
+                            Extra(Action.EXTRA_STREAM_TYPE, streamType.toString()))
 
-                chooseSelectedAction(action)
+                    chooseSelectedAction(action)
+                }
+
+                return
             }
 
-            return
+            SystemAction.DISABLE_FLASHLIGHT,
+            SystemAction.ENABLE_FLASHLIGHT,
+            SystemAction.TOGGLE_FLASHLIGHT -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    FlashlightUtils.showLensSelector(ctx) { lens ->
+                        val action = Action(
+                                ActionType.SYSTEM_ACTION,
+                                item.id,
+                                Extra(Action.EXTRA_LENS, lens.toString()))
+
+                        chooseSelectedAction(action)
+                    }
+                    return
+                }
+            }
         }
 
         if (item.messageOnSelection != null) {
             context?.alert {
                 titleResource = item.descriptionRes
                 messageResource = item.messageOnSelection
-                okButton {  }
+                okButton { }
             }
         }
 

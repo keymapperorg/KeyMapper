@@ -6,6 +6,7 @@ import android.content.ActivityNotFoundException
 import android.content.Context.DEVICE_POLICY_SERVICE
 import android.content.Context.VIBRATOR_SERVICE
 import android.content.Intent
+import android.hardware.camera2.CameraCharacteristics
 import android.media.AudioManager
 import android.os.Build
 import android.os.VibrationEffect
@@ -219,6 +220,12 @@ class ActionPerformerDelegate(
 
                 else -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        var lensFacing = CameraCharacteristics.LENS_FACING_BACK
+
+                        action.getExtraData(Action.EXTRA_LENS).onSuccess {
+                            lensFacing = it.toInt()
+                        }
+
                         when (id) {
                             SystemAction.VOLUME_UNMUTE -> VolumeUtils.adjustVolume(
                                     this,
@@ -235,9 +242,9 @@ class ActionPerformerDelegate(
                             SystemAction.VOLUME_TOGGLE_MUTE ->
                                 VolumeUtils.adjustVolume(this, AudioManager.ADJUST_TOGGLE_MUTE, showVolumeUi)
 
-                            SystemAction.TOGGLE_FLASHLIGHT -> mFlashlightController.toggleFlashlight()
-                            SystemAction.ENABLE_FLASHLIGHT -> mFlashlightController.setFlashlightMode(true)
-                            SystemAction.DISABLE_FLASHLIGHT -> mFlashlightController.setFlashlightMode(false)
+                            SystemAction.TOGGLE_FLASHLIGHT -> mFlashlightController.toggleFlashlight(lensFacing)
+                            SystemAction.ENABLE_FLASHLIGHT -> mFlashlightController.setFlashlightMode(true, lensFacing)
+                            SystemAction.DISABLE_FLASHLIGHT -> mFlashlightController.setFlashlightMode(false, lensFacing)
                         }
                     }
 
