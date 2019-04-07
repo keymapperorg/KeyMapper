@@ -52,8 +52,10 @@ class TriggerAdapter(
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         init {
             itemView.findViewById<SquareImageButton>(R.id.buttonRemove).setOnClickListener {
-                triggerList.removeAt(adapterPosition)
-                notifyItemRemoved(adapterPosition)
+                if (adapterPosition in 0..itemCount) {
+                    triggerList.removeAt(adapterPosition)
+                    notifyItemRemoved(adapterPosition)
+                }
             }
         }
     }
