@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper
 
 import io.github.sds100.keymapper.util.ErrorCode
+import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_NULL
 
 /**
  * Created by sds100 on 31/12/2018.
@@ -34,7 +35,7 @@ data class Result<T>(val data: T? = null, val errorResult: ErrorResult? = null) 
  * If the object is null, the [Result.data] will be null and the specified [errorCode] and [errorData] will be
  * used.
  */
-fun <T> T?.createResult(@ErrorCode errorCode: Int, errorData: String? = null): Result<T> {
+fun <T> T?.result(@ErrorCode errorCode: Int = ERROR_CODE_NULL, errorData: String? = null): Result<T> {
     return if (this == null) {
         Result(ErrorResult(errorCode, errorData))
     } else {
@@ -65,7 +66,7 @@ fun <T, E> Result<T>.handle(onSuccess: (data: T) -> E, onFailure: (errorResult: 
  * }
  *
  * do this...
- * 
+ *
  * fun getFoo(): Foo
  *
  * getFoo().onSuccess { doThis() }

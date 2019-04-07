@@ -457,6 +457,6 @@ object SystemActionUtils {
     fun getSystemActionDef(id: String): Result<SystemActionDef> {
         val systemActionDef = SYSTEM_ACTION_DEFINITIONS.find { it.id == id }
 
-        return systemActionDef.createResult(ERROR_CODE_SYSTEM_ACTION_NOT_FOUND, id)
+        return systemActionDef.result(ERROR_CODE_SYSTEM_ACTION_NOT_FOUND, id)
     }
 }

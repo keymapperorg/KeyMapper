@@ -50,7 +50,7 @@ object FlagUtils {
         )
     }
 
-    fun getFlagLabel(flagId: Int) = FLAG_LABEL_MAP[flagId].createResult(ERROR_CODE_FLAG_NOT_FOUND, flagId.toString())
+    fun getFlagLabel(flagId: Int) = FLAG_LABEL_MAP[flagId].result(ERROR_CODE_FLAG_NOT_FOUND, flagId.toString())
 
     fun getFlags(flagSet: Int) = sequence {
         FLAG_LABEL_MAP.keys.forEach { flag ->
