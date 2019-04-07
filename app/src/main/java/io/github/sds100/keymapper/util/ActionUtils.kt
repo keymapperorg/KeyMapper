@@ -42,7 +42,7 @@ object ActionUtils {
 
         //If the errorResult is null, errorMessage will be null
         val errorMessage = errorResult?.let { ErrorCodeUtils.getErrorCodeDescription(ctx, it) }
-
+        
         val title = getTitle(ctx, action)
         val icon = getIcon(ctx, action)
 

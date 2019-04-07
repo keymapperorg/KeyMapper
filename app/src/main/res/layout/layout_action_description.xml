@@ -3,23 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:minHeight="80dp"
-    android:paddingTop="16dp">
+    android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/imageViewAction"
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toTopOf="@+id/textViewError"
         app:layout_constraintEnd_toStartOf="@+id/textViewTitle"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
         tools:srcCompat="@tools:sample/avatars[1]"
         tools:visibility="visible" />
 
@@ -28,6 +24,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:gravity="center_vertical"
@@ -36,7 +33,6 @@
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/textViewError"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/imageViewAction"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Open Settings App"
@@ -54,6 +50,7 @@
         android:orientation="horizontal"
         android:textColor="@color/error"
         android:textSize="@dimen/text_size_keymap_adapter_error"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
