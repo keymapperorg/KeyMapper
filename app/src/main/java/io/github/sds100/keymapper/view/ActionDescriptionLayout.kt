@@ -42,9 +42,9 @@ class ActionDescriptionLayout(
             imageViewAction.setImageDrawable(iconDrawable)
             textViewError.text = errorDescription
 
+            textViewError.setVisible(errorResult != null)
             imageViewAction.setVisible(iconDrawable != null)
             textViewTitle.setVisible(title != null)
-            textViewError.setVisible(errorResult != null)
         }
     }
 
