@@ -8,6 +8,8 @@ import android.view.inputmethod.InputMethodManager
 import androidx.annotation.IntDef
 import io.github.sds100.keymapper.ErrorResult
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.onSuccess
+import io.github.sds100.keymapper.result
 import io.github.sds100.keymapper.service.MyIMEService
 
 /**
@@ -24,7 +26,8 @@ import io.github.sds100.keymapper.service.MyIMEService
     ErrorCodeUtils.ERROR_CODE_SYSTEM_ACTION_NOT_FOUND,
     ErrorCodeUtils.ERROR_CODE_FEATURE_NOT_AVAILABLE,
     ErrorCodeUtils.ERROR_CODE_SDK_VERSION_TOO_LOW,
-    ErrorCodeUtils.ERROR_CODE_ACTION_EXTRA_NOT_FOUND]
+    ErrorCodeUtils.ERROR_CODE_ACTION_EXTRA_NOT_FOUND,
+    ErrorCodeUtils.ERROR_CODE_NULL]
 )
 annotation class ErrorCode
 
@@ -42,6 +45,7 @@ object ErrorCodeUtils {
     const val ERROR_CODE_ACTION_EXTRA_NOT_FOUND = 10
     const val ERROR_CODE_FLAG_NOT_FOUND = 11
     const val ERROR_CODE_GOOGLE_APP_NOT_INSTALLED = 12
+    const val ERROR_CODE_NULL = 13
 
     private val FIXABLE_ERRORS = arrayOf(
             ERROR_CODE_APP_DISABLED,
@@ -79,7 +83,9 @@ object ErrorCodeUtils {
                 val hasRootPermission = RootUtils.checkAppHasRootPermission(ctx)
 
                 if (hasRootPermission) {
-                    ImeUtils.switchIme(MyIMEService.getImeId(ctx))
+                    MyIMEService.getImeId(ctx).result().onSuccess {
+                        ImeUtils.switchIme(it)
+                    }
                 } else {
                     /* don't send broadcast to OpenIMEPickerBroadcastReceiver because it is only used
                        when outside of the app */

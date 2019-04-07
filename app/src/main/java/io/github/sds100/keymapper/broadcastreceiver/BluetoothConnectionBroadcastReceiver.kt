@@ -6,6 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.provider.Settings
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.onSuccess
+import io.github.sds100.keymapper.result
 import io.github.sds100.keymapper.service.MyIMEService
 import io.github.sds100.keymapper.util.ImeUtils
 import io.github.sds100.keymapper.util.bool
@@ -68,7 +70,9 @@ class BluetoothConnectionBroadcastReceiver : BroadcastReceiver() {
 
                 ctx.defaultSharedPreferences.edit().putString(KEY_DEFAULT_IME, defaultIme).apply()
 
-                ImeUtils.switchIme(MyIMEService.getImeId(ctx))
+                MyIMEService.getImeId(ctx).result().onSuccess {
+                    ImeUtils.switchIme(it)
+                }
             }
 
             //when a device is disconnected, change back to the old ime

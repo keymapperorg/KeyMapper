@@ -69,7 +69,7 @@ data class Action(
                 type == ActionType.TEXT_BLOCK
 
 
-    fun getExtraData(extraId: String) = extras.find { it.id == extraId }?.data.createResult(
+    fun getExtraData(extraId: String) = extras.find { it.id == extraId }?.data.result(
             ErrorCodeUtils.ERROR_CODE_ACTION_EXTRA_NOT_FOUND, extraId
     )
 }
