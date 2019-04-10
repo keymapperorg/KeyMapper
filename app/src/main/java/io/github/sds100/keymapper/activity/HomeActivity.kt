@@ -156,7 +156,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
 
                 startActivity(intent)
             } catch (e: Exception) {
-                toast(R.string.error_cant_find_ime_settings).show()
+                toast(R.string.error_cant_find_ime_settings)
             }
         })
 

@@ -12,8 +12,6 @@ import android.provider.Settings
 import android.util.Log
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
-import android.widget.Toast
-import android.widget.Toast.LENGTH_SHORT
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
@@ -98,7 +96,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
                 ctx.startActivity(settingsIntent)
             } catch (e: Exception) {
-                ctx.toast(R.string.error_cant_find_accessibility_settings_page).show()
+                ctx.toast(R.string.error_cant_find_accessibility_settings_page)
             }
         }
 
@@ -410,7 +408,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                 if (errorResult != null) {
                     val errorDescription = ErrorCodeUtils.getErrorCodeDescription(this, errorResult)
 
-                    Toast.makeText(this, errorDescription, LENGTH_SHORT).show()
+                    toast(errorDescription)
                     continue
                 }
 
@@ -484,7 +482,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         } catch (e: Exception) {
 
             if (BuildConfig.DEBUG) {
-                Toast.makeText(this, R.string.exception_accessibility_service, LENGTH_SHORT).show()
+                toast(R.string.exception_accessibility_service)
                 Log.e(this::class.java.simpleName, "ONKEYEVENT CRASH")
                 e.printStackTrace()
             }
