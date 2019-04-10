@@ -266,6 +266,7 @@
     <string name="error_need_to_enable_device_admin">Key Mapper needs to be a device administrator to use this action!</string>
     <string name="error_camera_in_use">Camera is in use!</string>
     <string name="error_in_do_not_disturb_mode">In Do Not Disturb mode!</string>
+    <string name="error_keymapper_doesnt_have_permission_app_shortcut">Key Mapper doesn\'t have permission to use that shortcut.</string>
 
     <string name="error_accessibility_service_disabled">The accessibility service must be enabled for this app to work!</string>
     <string name="error_accessibility_service_enabled">Accessibility service is enabled!</string>

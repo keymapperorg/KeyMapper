@@ -14,7 +14,6 @@ import android.os.Vibrator
 import android.provider.MediaStore
 import android.provider.Settings
 import android.view.KeyEvent
-import android.widget.Toast
 import androidx.lifecycle.Lifecycle
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.interfaces.IContext
@@ -24,6 +23,7 @@ import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.FlagUtils.FLAG_SHOW_VOLUME_UI
 import io.github.sds100.keymapper.util.FlagUtils.FLAG_VIBRATE
 import org.jetbrains.anko.defaultSharedPreferences
+import org.jetbrains.anko.toast
 
 
 /**
@@ -51,7 +51,7 @@ class ActionPerformerDelegate(
             val key = str(R.string.key_pref_show_toast_when_action_performed)
 
             if (defaultSharedPreferences.getBoolean(key, bool(R.bool.default_value_show_toast))) {
-                Toast.makeText(this, R.string.performing_action, Toast.LENGTH_SHORT).show()
+                toast(R.string.performing_action)
             }
 
             when (action.type) {
@@ -62,7 +62,7 @@ class ActionPerformerDelegate(
                     if (intent != null) {
                         startActivity(intent)
                     } else {
-                        Toast.makeText(this, R.string.error_app_isnt_installed, Toast.LENGTH_SHORT).show()
+                        toast(R.string.error_app_isnt_installed)
                     }
                 }
 
@@ -72,8 +72,10 @@ class ActionPerformerDelegate(
 
                     try {
                         startActivity(intent)
-                    } catch (exception: ActivityNotFoundException) {
-                        Toast.makeText(this, R.string.error_shortcut_not_found, Toast.LENGTH_SHORT).show()
+                    } catch (e: ActivityNotFoundException) {
+                        toast(R.string.error_shortcut_not_found)
+                    } catch (e: SecurityException) {
+                        toast(R.string.error_keymapper_doesnt_have_permission_app_shortcut)
                     }
                 }
 
