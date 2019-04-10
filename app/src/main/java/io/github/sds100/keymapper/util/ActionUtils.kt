@@ -4,14 +4,19 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
+import android.hardware.camera2.CameraCharacteristics
 import android.os.Build
 import android.view.KeyEvent
 import io.github.sds100.keymapper.*
+import io.github.sds100.keymapper.SystemAction.DISABLE_FLASHLIGHT
+import io.github.sds100.keymapper.SystemAction.ENABLE_FLASHLIGHT
+import io.github.sds100.keymapper.SystemAction.TOGGLE_FLASHLIGHT
 import io.github.sds100.keymapper.service.MyIMEService
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_ACTION_IS_NULL
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_APP_DISABLED
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_APP_UNINSTALLED
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_FEATURE_NOT_AVAILABLE
+import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_GOOGLE_APP_NOT_INSTALLED
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_IME_SERVICE_NOT_CHOSEN
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_NO_ACTION_DATA
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_PERMISSION_DENIED
@@ -37,7 +42,7 @@ object ActionUtils {
 
         //If the errorResult is null, errorMessage will be null
         val errorMessage = errorResult?.let { ErrorCodeUtils.getErrorCodeDescription(ctx, it) }
-
+        
         val title = getTitle(ctx, action)
         val icon = getIcon(ctx, action)
 
@@ -73,31 +78,50 @@ object ActionUtils {
             ActionType.SYSTEM_ACTION -> {
                 val systemActionId = action.data
 
-                return SystemActionUtils.getSystemActionDef(systemActionId).onSuccess {
+                return SystemActionUtils.getSystemActionDef(systemActionId).onSuccess { systemActionDef ->
 
                     //The description for changing a specific stream requires formatting the string with the stream type.
-                    if (systemActionId == SystemAction.VOLUME_DECREASE_STREAM
-                            || systemActionId == SystemAction.VOLUME_INCREASE_STREAM) {
+                    when (systemActionId) {
+                        SystemAction.VOLUME_INCREASE_STREAM, SystemAction.VOLUME_DECREASE_STREAM -> {
 
-                        action.getExtraData(Action.EXTRA_STREAM_TYPE).handle(
-                                onSuccess = { streamType ->
-                                    val streamLabel = ctx.str(VolumeUtils.getStreamLabel(streamType.toInt()))
+                            val streamLabel = action.getExtraData(Action.EXTRA_STREAM_TYPE).handle(
+                                    onSuccess = { ctx.str(VolumeUtils.getStreamLabel(it.toInt())) },
+                                    onFailure = { "" }
+                            )
 
-                                    if (systemActionId == SystemAction.VOLUME_DECREASE_STREAM) {
-                                        ctx.str(R.string.action_decrease_stream_formatted,
-                                                streamLabel)
-                                    } else {
-                                        ctx.str(R.string.action_increase_stream_formatted,
-                                                streamLabel)
-                                    }
-                                },
+                            when (systemActionId) {
+                                SystemAction.VOLUME_DECREASE_STREAM ->
+                                    return@onSuccess ctx.str(R.string.action_decrease_stream_formatted, streamLabel)
 
-                                onFailure = { "" }
-                        )
+                                SystemAction.VOLUME_INCREASE_STREAM ->
+                                    return@onSuccess ctx.str(R.string.action_increase_stream_formatted, streamLabel)
+                            }
+                        }
 
-                    } else {
-                        ctx.str(it.descriptionRes)
+                        ENABLE_FLASHLIGHT, DISABLE_FLASHLIGHT, TOGGLE_FLASHLIGHT -> {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                val lensFacing = action.getExtraData(Action.EXTRA_LENS).handle(
+                                        onSuccess = { it.toInt() },
+                                        onFailure = { CameraCharacteristics.LENS_FACING_BACK }
+                                )
+
+                                val label = ctx.str(FlashlightUtils.getLensLabel(lensFacing))
+
+                                when (systemActionId) {
+                                    ENABLE_FLASHLIGHT ->
+                                        return@onSuccess ctx.str(R.string.action_toggle_flashlight_formatted, label)
+
+                                    DISABLE_FLASHLIGHT ->
+                                        return@onSuccess ctx.str(R.string.action_disable_flashlight_formatted, label)
+
+                                    TOGGLE_FLASHLIGHT ->
+                                        return@onSuccess ctx.str(R.string.action_toggle_flashlight_formatted, label)
+                                }
+                            }
+                        }
                     }
+
+                    ctx.str(systemActionDef.descriptionRes)
                 }
             }
 
@@ -194,6 +218,15 @@ object ActionUtils {
 
             ActionType.SYSTEM_ACTION -> {
                 return SystemActionUtils.getSystemActionDef(action.data).onSuccess {
+                    //If an activity to open doesn't exist, the app crashes.
+                    if (it.id == SystemAction.OPEN_ASSISTANT) {
+                        val activityExists =
+                                Intent(Intent.ACTION_VOICE_COMMAND).resolveActivityInfo(ctx.packageManager, 0) != null
+
+                        if (!activityExists) {
+                            return@onSuccess ErrorResult(ERROR_CODE_GOOGLE_APP_NOT_INSTALLED)
+                        }
+                    }
 
                     if (Build.VERSION.SDK_INT < it.minApi) {
                         return@onSuccess ErrorResult(ERROR_CODE_SDK_VERSION_TOO_LOW, it.minApi.toString())

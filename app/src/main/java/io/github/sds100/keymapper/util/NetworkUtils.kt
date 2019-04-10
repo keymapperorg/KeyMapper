@@ -6,8 +6,8 @@ import android.net.wifi.WifiManager
 import android.os.Build
 import android.telephony.TelephonyManager
 import android.util.Log
-import android.widget.Toast
 import io.github.sds100.keymapper.StateChange
+import org.jetbrains.anko.toast
 import java.io.BufferedInputStream
 import java.io.FileOutputStream
 import java.io.IOException
@@ -66,7 +66,7 @@ object NetworkUtils {
 
                 } catch (e: IOException) {
                     Log.e(this::class.java.simpleName, e.toString())
-                    Toast.makeText(ctx, "IO Exception when downloading file", Toast.LENGTH_SHORT).show()
+                    ctx.toast("IO Exception when downloading file")
                     return false
                 }
             }

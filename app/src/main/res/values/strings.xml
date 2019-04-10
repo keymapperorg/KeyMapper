@@ -1,9 +1,10 @@
 <resources>
     <string name="app_name">Key Mapper</string>
+    <string name="developer_email">developer.sds100@gmail.com</string>
 
     <string name="no_action_chosen">No Action Chosen</string>
     <string name="triggers_header">Triggers</string>
-    <string name="accessibility_service_description">Key Mapper needs to use an Accessibility Service so it can listen to button/key presses and perform the actions you\'ve chosen.
+    <string name="accessibility_service_description">Key Mapper needs to use an accessibility service so it can listen to button/key presses and perform the actions you\'ve chosen.
     The accessibility service only listens for key events and nothing else. Look at the source code, which is linked to in the About section inside the app if you are paranoid I\'m spying. :)</string>
     <string name="record_trigger_help">You have 5 seconds to press the keys/buttons which will trigger the action. Then press \"Stop recording trigger\" to confirm. Press \"clear\" to clear the keys you have already typed.</string>
     <string name="selection_count">%d selected</string>
@@ -26,10 +27,15 @@
     <string name="show_hidden_system_actions">Show hidden items</string>
     <string name="key_map_adapter_flags">Flags</string>
 
+    <string name="lens_front">Front</string>
+    <string name="lens_back">Back</string>
+
     <string name="description_open_app">Open %s</string>
     <string name="description_key">Press \'%s\' key</string>
     <string name="description_text_block">Insert \'%s\'</string>
     <string name="description_keycode">%s</string>
+
+    <string name="exception_accessibility_service">Exception in onKeyEvent. Look in logcat.</string>
 
     <!-- URLs -->
     <string name="url_source_code">https://github.com/sds100/KeyMapper</string>
@@ -40,6 +46,8 @@
     <string name="url_credits">https://raw.githubusercontent.com/sds100/KeyMapper/master/CREDITS.md</string>
     <string name="url_help">https://github.com/sds100/KeyMapper/wiki/Help.md</string>
     <string name="url_privacy_policy">https://raw.githubusercontent.com/sds100/KeyMapper/master/PRIVACY_POLICY.md</string>
+    <string name="url_xda_thread">https://forum.xda-developers.com/android/apps-games/app-keyboard-button-mapper-t3914005</string>
+    <string name="url_google_app_listing">https://play.google.com/store/apps/details?id=com.google.android.googlequicksearchbox</string>
     <!-- URLs -->
 
     <!-- Activity titles -->
@@ -63,6 +71,7 @@
     <string name="action_disable">Disable</string>
     <string name="action_disable_all_keymaps">Disable all</string>
     <string name="action_enable_all_keymaps">Enable all</string>
+    <string name="action_send_feedback">Send Feedback</string>
     <!-- Menu action titles-->
 
     <!-- Button titles -->
@@ -88,13 +97,14 @@
     <string name="dialog_title_root_prompt">Root permission needed!</string>
     <string name="dialog_title_flags">More</string>
     <string name="dialog_title_pick_stream">Pick stream</string>
+    <string name="dialog_title_choose_flash">Choose flash</string>
     <!-- Dialog titles -->
 
     <!-- Dialog messages -->
     <string name="dialog_message_are_you_sure_want_to_leave">Are you sure you want to leave?</string>
     <string name="dialog_message_cant_find_paired_devices">Make sure Bluetooth is turned on and you have paired devices. Then try again.</string>
-    <string name="dialog_message_root_prompt">When you click \"OK\", you will be taken to Settings.
-        In the Settings, scroll to the bottom and click "Enable Root Features" so you can use root features/actions. If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use features which only work on rooted devices.</string>
+    <string name="dialog_message_root_prompt">When you tap \"OK\", you will be taken to Settings.
+        In the Settings, scroll to the bottom and tap "Enable Root Features" so you can use root features/actions. If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use features which only work on rooted devices.</string>
     <string name="dialog_message_downloading">Downloading…</string>
     <string name="dialog_message_long_press_warning">Long pressing only works for physical volume and navigation buttons. If you enable it for other keys, the keys won\'t work when they aren\'t long pressed.</string>
     <!-- Dialog messages -->
@@ -112,43 +122,71 @@
 
     <!-- Notification strings -->
     <string name="notification_channel_persistent">Persistent Notifications</string>
-    <string name="notification_persistent_text">Will automatically show the input method dialog when a bluetooth device you\'ve chosen has connected or disconnected</string>
-    <string name="notification_persistent_title">Click to choose input method</string>
+    <string name="notification_ime_persistent_text">Will automatically show the input method dialog when a bluetooth device you\'ve chosen has connected or disconnected</string>
+    <string name="notification_ime_persistent_title">Tap to choose input method</string>
+
+    <string name="notification_remappings_pause_title">Pause</string>
+    <string name="notification_remappings_pause_text">Tap to pause your remaps.</string>
+
+    <string name="notification_remappings_start_title">Resume</string>
+    <string name="notification_remappings_start_text">Tap to resume your remaps.</string>
+
+    <string name="notification_accessibility_service_disabled_title">Accessibility service disabled</string>
+    <string name="notification_accessibility_service_disabled_text">Tap to start the accessibility service.</string>
+
+    <string name="notification_action_open_app">Open App</string>
+    <string name="notification_action_stop_acc_service">Stop Accessibility Service</string>
     <!-- Notification strings -->
 
     <!-- Settings Activity -->
 
     <!--preferences-->
-    <!-- Look in the bools.xml file to find their default values -->
+    <!-- Look in the default_prefs.xml file to find their default values -->
     <string name="key_pref_first_time">pref_first_time</string>
-    <string name="pref_show_long_press_warning">key_show_long_press_warning</string>
+    <string name="key_pref_show_long_press_warning">key_show_long_press_warning</string>
 
-    <string name="title_pref_show_notification">Show Notification</string>
-    <string name="key_pref_show_notification">pref_show_notification</string>
-    <string name="summary_pref_show_notification">Show a persistent notification to allow you to pick an input method. (The app requires ROOT permission for it to work on Android 8.1 and higher).</string>
+    <string name="key_pref_long_press_delay">pref_long_press_delay</string>
+    <string name="title_pref_long_press_delay">Long press delay</string>
+    <string name="summary_pref_long_press_delay">How long in milliseconds should a button be pressed for it to be detected as a long press. The default is 500ms.</string>
+
+    <string name="key_pref_vibrate_duration">pref_vibrate_duration</string>
+    <string name="summary_pref_vibrate_duration">How long in milliseconds to vibrate for if vibrating is enabled for a remap. Default is 200</string>
+    <string name="title_pref_vibrate_duration">Vibrate duration</string>
+
+    <string name="key_pref_force_vibrate">pref_force_vibrate</string>
+    <string name="summary_pref_force_vibrate">Force all remaps to vibrate.</string>
+    <string name="title_pref_force_vibrate">Force vibrate</string>
+
+    <string name="title_pref_show_ime_notification">IME notification</string>
+    <string name="key_pref_show_ime_notification">pref_show_ime_notification</string>
+    <string name="summary_pref_show_ime_notification">Show a persistent notification to allow you to pick an input method. (The app requires ROOT permission for it to work on Android 8.1 and higher).</string>
+
+    <string name="title_pref_show_toggle_remappings_notification">Pause/resume remappings notification</string>
+    <string name="key_pref_show_toggle_remappings_notification">pref_show_remappings_notification</string>
+    <string name="summary_pref_show_toggle_remappings_notification">Show a persistent notification which starts/pauses your remaps and has a link to start/stop the accessibility service.</string>
 
     <string name="title_pref_data_collection">Anonymous analytics</string>
     <string name="key_pref_data_collection">pref_data_collection</string>
     <string name="summary_pref_data_collection">Do you want to help improve Key Mapper by allowing it to anonymously collect data about how you use it such as crash reports? The data is collected by Google Firebase. The privacy policy is located in the About activity.</string>
 
     <string name="key_pref_bluetooth_devices">pref_bluetooth_devices</string>
-    <string name="title_pref_bluetooth_devices">Choose Bluetooth Devices…</string>
+    <string name="title_pref_bluetooth_devices">Choose bluetooth devices…</string>
 
     <string name="key_pref_auto_show_ime_picker">pref_auto_show_ime_picker</string>
-    <string name="title_pref_auto_show_ime_picker">Automatically Show Input Method Picker</string>
+    <string name="title_pref_auto_show_ime_picker">Automatically show input method picker</string>
     <string name="summary_pref_auto_show_ime_picker">When a Bluetooth device you have chosen connects or disconnects, the input method picker will show automatically. Choose the devices below. Requires root for Android 8.1+.</string>
 
     <string name="key_pref_show_toast_when_action_performed">pref_show_toast_on_perform_action</string>
-    <string name="title_pref_show_toast_when_action_performed">Show A Toast Message When You Perform An Action</string>
+    <string name="title_pref_show_toast_when_action_performed">Show a toast message when you perform an action</string>
     <string name="summary_pref_show_toast_when_action_performed">A little message will popup when you perform an action.</string>
 
     <string name="key_pref_auto_change_ime_on_connection">pref_auto_change_ime_on_connect_disconnect</string>
-    <string name="title_pref_auto_change_ime_on_connection">Automatically Change Input Method</string>
+    <string name="title_pref_auto_change_ime_on_connection">Automatically change input method</string>
     <string name="summary_pref_auto_change_ime_on_connection">The Key Mapper input method will be automatically selected when a chosen bluetooth device is connected. Your old input method will be automatically selected when the device disconnects.
         There may be a 5-10 second delay after disconnecting your device for the input method to change.</string>
 
     <string name="key_pref_allow_root_features">pref_allow_root_features</string>
-    <string name="title_pref_allow_root_features">Enable Root Features</string>
+    <string name="title_pref_allow_root_features">Enable root features</string>
     <string name="summary_pref_allow_root_features">Enable this if you want to use features/actions which only work on rooted devices. Key Mapper must have root permission from your root-access-management app (e.g Magisk, SuperSU) for these features to work.
         Only turn this on if you know your device is rooted and you have given Key Mapper root permission.</string>
     <!--preferences-->
@@ -176,6 +214,7 @@
     <string name="pref_title_source_code">Source Code</string>
     <string name="pref_title_developer_github">Developer\'s GitHub Profile</string>
     <string name="pref_title_rate_review">Rate and Review</string>
+    <string name="pref_title_xda_thread">XDA Thread</string>
     <string name="pref_title_version">Version</string>
     <string name="pref_title_developer_email">Email Developer</string>
     <!-- About activity-->
@@ -192,6 +231,7 @@
     <!--flags-->
     <string name="flag_show_volume_dialog">Show volume dialog</string>
     <string name="flag_long_press">Long press</string>
+    <string name="flag_vibrate">Vibrate</string>
     <!--flags-->
 
     <!-- streams -->
@@ -220,6 +260,13 @@
     <string name="error_sdk_version_too_low">This action requires Android %s</string>
     <string name="error_feature_not_available">Your device doesn\'t support %s.</string>
     <string name="error_flag_not_found">Flag "%s" not found!</string>
+    <string name="error_google_app_not_installed">Google app not installed!</string>
+    <string name="error_cant_find_accessibility_settings_page">Can\'t find the Accessibility settings page!</string>
+    <string name="error_cant_find_ime_settings">Can\'t find the input method settings page!</string>
+    <string name="error_need_to_enable_device_admin">Key Mapper needs to be a device administrator to use this action!</string>
+    <string name="error_camera_in_use">Camera is in use!</string>
+    <string name="error_in_do_not_disturb_mode">In Do Not Disturb mode!</string>
+    <string name="error_keymapper_doesnt_have_permission_app_shortcut">Key Mapper doesn\'t have permission to use that shortcut.</string>
 
     <string name="error_accessibility_service_disabled">The accessibility service must be enabled for this app to work!</string>
     <string name="error_accessibility_service_enabled">Accessibility service is enabled!</string>
@@ -283,9 +330,17 @@
     <string name="action_enable_flashlight">Enable Flashlight</string>
     <string name="action_disable_flashlight">Disable Flashlight</string>
 
+    <string name="action_toggle_flashlight_formatted">Toggle %s Flashlight</string>
+    <string name="action_enable_flashlight_formatted">Enable %s Flashlight</string>
+    <string name="action_disable_flashlight_formatted">Disable %s Flashlight</string>
+
     <string name="action_screenshot">Screenshot</string>
     <string name="action_open_assistant">Open Google Assistant</string>
     <string name="action_open_camera">Open Camera</string>
+    <string name="action_lock_device">Lock Device (ROOT only)</string>
+    <string name="action_secure_lock_device">Secure Lock Device</string>
+    <string name="action_secure_lock_device_message">This will lock your device but you will only be able to log back in with your PIN. The fingerprint scanner and face unlock will be disabled. For now, this is the only reliable way I have found to lock non-rooted devices.</string>
+    <string name="action_consume_keyevent">Do Nothing</string>
     <!-- System action labels -->
 
     <!-- System action category labels -->

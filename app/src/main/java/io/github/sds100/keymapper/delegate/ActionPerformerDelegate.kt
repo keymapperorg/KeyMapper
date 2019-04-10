@@ -1,13 +1,19 @@
 package io.github.sds100.keymapper.delegate
 
 import android.accessibilityservice.AccessibilityService
+import android.app.admin.DevicePolicyManager
 import android.content.ActivityNotFoundException
+import android.content.Context.DEVICE_POLICY_SERVICE
+import android.content.Context.VIBRATOR_SERVICE
 import android.content.Intent
+import android.hardware.camera2.CameraCharacteristics
 import android.media.AudioManager
 import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.provider.MediaStore
 import android.provider.Settings
-import android.widget.Toast
+import android.view.KeyEvent
 import androidx.lifecycle.Lifecycle
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.interfaces.IContext
@@ -15,7 +21,10 @@ import io.github.sds100.keymapper.interfaces.IPerformGlobalAction
 import io.github.sds100.keymapper.service.MyIMEService
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.FlagUtils.FLAG_SHOW_VOLUME_UI
+import io.github.sds100.keymapper.util.FlagUtils.FLAG_VIBRATE
 import org.jetbrains.anko.defaultSharedPreferences
+import org.jetbrains.anko.toast
+
 
 /**
  * Created by sds100 on 25/11/2018.
@@ -42,7 +51,7 @@ class ActionPerformerDelegate(
             val key = str(R.string.key_pref_show_toast_when_action_performed)
 
             if (defaultSharedPreferences.getBoolean(key, bool(R.bool.default_value_show_toast))) {
-                Toast.makeText(this, R.string.performing_action, Toast.LENGTH_SHORT).show()
+                toast(R.string.performing_action)
             }
 
             when (action.type) {
@@ -53,7 +62,7 @@ class ActionPerformerDelegate(
                     if (intent != null) {
                         startActivity(intent)
                     } else {
-                        Toast.makeText(this, R.string.error_app_isnt_installed, Toast.LENGTH_SHORT).show()
+                        toast(R.string.error_app_isnt_installed)
                     }
                 }
 
@@ -63,8 +72,10 @@ class ActionPerformerDelegate(
 
                     try {
                         startActivity(intent)
-                    } catch (exception: ActivityNotFoundException) {
-                        Toast.makeText(this, R.string.error_shortcut_not_found, Toast.LENGTH_SHORT).show()
+                    } catch (e: ActivityNotFoundException) {
+                        toast(R.string.error_shortcut_not_found)
+                    } catch (e: SecurityException) {
+                        toast(R.string.error_keymapper_doesnt_have_permission_app_shortcut)
                     }
                 }
 
@@ -99,6 +110,24 @@ class ActionPerformerDelegate(
         val showVolumeUi = containsFlag(flags, FLAG_SHOW_VOLUME_UI)
 
         ctx.apply {
+            if (defaultSharedPreferences.getBoolean(
+                            str(R.string.key_pref_force_vibrate),
+                            bool(R.bool.default_value_force_vibrate)
+                    ) or containsFlag(flags, FLAG_VIBRATE)) {
+
+                val vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
+                val vibrateDuration = defaultSharedPreferences.getInt(
+                        str(R.string.key_pref_vibrate_duration),
+                        int(R.integer.default_value_vibrate_duration)
+                ).toLong()
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    vibrator.vibrate(VibrationEffect.createOneShot(vibrateDuration, VibrationEffect.DEFAULT_AMPLITUDE))
+                } else {
+                    vibrator.vibrate(vibrateDuration)
+                }
+            }
+
             when (id) {
                 SystemAction.ENABLE_WIFI -> NetworkUtils.changeWifiState(this, StateChange.ENABLE)
                 SystemAction.DISABLE_WIFI -> NetworkUtils.changeWifiState(this, StateChange.DISABLE)
@@ -184,8 +213,21 @@ class ActionPerformerDelegate(
                     startActivity(intent)
                 }
 
+                SystemAction.LOCK_DEVICE -> RootUtils.executeRootCommand("input keyevent ${KeyEvent.KEYCODE_POWER}")
+
+                SystemAction.SECURE_LOCK_DEVICE -> {
+                    val dpm = getSystemService(DEVICE_POLICY_SERVICE) as DevicePolicyManager
+                    dpm.lockNow()
+                }
+
                 else -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        var lensFacing = CameraCharacteristics.LENS_FACING_BACK
+
+                        action.getExtraData(Action.EXTRA_LENS).onSuccess {
+                            lensFacing = it.toInt()
+                        }
+
                         when (id) {
                             SystemAction.VOLUME_UNMUTE -> VolumeUtils.adjustVolume(
                                     this,
@@ -202,9 +244,9 @@ class ActionPerformerDelegate(
                             SystemAction.VOLUME_TOGGLE_MUTE ->
                                 VolumeUtils.adjustVolume(this, AudioManager.ADJUST_TOGGLE_MUTE, showVolumeUi)
 
-                            SystemAction.TOGGLE_FLASHLIGHT -> mFlashlightController.toggleFlashlight()
-                            SystemAction.ENABLE_FLASHLIGHT -> mFlashlightController.setFlashlightMode(true)
-                            SystemAction.DISABLE_FLASHLIGHT -> mFlashlightController.setFlashlightMode(false)
+                            SystemAction.TOGGLE_FLASHLIGHT -> mFlashlightController.toggleFlashlight(lensFacing)
+                            SystemAction.ENABLE_FLASHLIGHT -> mFlashlightController.setFlashlightMode(true, lensFacing)
+                            SystemAction.DISABLE_FLASHLIGHT -> mFlashlightController.setFlashlightMode(false, lensFacing)
                         }
                     }
 

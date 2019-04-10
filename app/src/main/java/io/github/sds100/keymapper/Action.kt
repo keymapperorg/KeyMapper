@@ -58,6 +58,7 @@ data class Action(
         const val EXTRA_SHORTCUT_TITLE = "extra_title"
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
         const val EXTRA_STREAM_TYPE = "extra_stream_type"
+        const val EXTRA_LENS = "extra_flash"
     }
 
     constructor(type: ActionType, data: String, extra: Extra) : this(type, data, mutableListOf(extra))
@@ -68,7 +69,7 @@ data class Action(
                 type == ActionType.TEXT_BLOCK
 
 
-    fun getExtraData(extraId: String) = extras.find { it.id == extraId }?.data.createResult(
+    fun getExtraData(extraId: String) = extras.find { it.id == extraId }?.data.result(
             ErrorCodeUtils.ERROR_CODE_ACTION_EXTRA_NOT_FOUND, extraId
     )
 }

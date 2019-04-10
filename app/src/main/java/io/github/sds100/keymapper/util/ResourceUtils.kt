@@ -56,3 +56,5 @@ fun IContext.drawable(@DrawableRes resId: Int): Drawable = ctx.drawable(resId)
 
 fun Context.color(@ColorRes resId: Int): Int = ContextCompat.getColor(this, resId)
 fun View.color(@ColorRes resId: Int): Int = context.color(resId)
+
+fun Context.int(@IntegerRes resId: Int) = resources.getInteger(resId)

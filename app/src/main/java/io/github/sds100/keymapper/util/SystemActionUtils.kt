@@ -18,6 +18,7 @@ import io.github.sds100.keymapper.SystemAction.CATEGORY_STATUS_BAR
 import io.github.sds100.keymapper.SystemAction.CATEGORY_VOLUME
 import io.github.sds100.keymapper.SystemAction.CATEGORY_WIFI
 import io.github.sds100.keymapper.SystemAction.COLLAPSE_STATUS_BAR
+import io.github.sds100.keymapper.SystemAction.CONSUME_KEY_EVENT
 import io.github.sds100.keymapper.SystemAction.DECREASE_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.DISABLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.DISABLE_AUTO_ROTATE
@@ -35,6 +36,7 @@ import io.github.sds100.keymapper.SystemAction.GO_BACK
 import io.github.sds100.keymapper.SystemAction.GO_HOME
 import io.github.sds100.keymapper.SystemAction.INCREASE_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.LANDSCAPE_MODE
+import io.github.sds100.keymapper.SystemAction.LOCK_DEVICE
 import io.github.sds100.keymapper.SystemAction.NEXT_TRACK
 import io.github.sds100.keymapper.SystemAction.OPEN_ASSISTANT
 import io.github.sds100.keymapper.SystemAction.OPEN_CAMERA
@@ -45,6 +47,7 @@ import io.github.sds100.keymapper.SystemAction.PLAY_PAUSE_MEDIA
 import io.github.sds100.keymapper.SystemAction.PORTRAIT_MODE
 import io.github.sds100.keymapper.SystemAction.PREVIOUS_TRACK
 import io.github.sds100.keymapper.SystemAction.SCREENSHOT
+import io.github.sds100.keymapper.SystemAction.SECURE_LOCK_DEVICE
 import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_ROTATE
 import io.github.sds100.keymapper.SystemAction.TOGGLE_BLUETOOTH
@@ -326,31 +329,36 @@ object SystemActionUtils {
                     id = TOGGLE_AUTO_BRIGHTNESS,
                     category = CATEGORY_BRIGHTNESS,
                     iconRes = R.drawable.ic_brightness_auto_black_24dp,
-                    descriptionRes = R.string.action_toggle_auto_brightness
+                    descriptionRes = R.string.action_toggle_auto_brightness,
+                    permission = Manifest.permission.WRITE_SETTINGS
             ),
             SystemActionDef(
                     id = ENABLE_AUTO_BRIGHTNESS,
                     category = CATEGORY_BRIGHTNESS,
                     iconRes = R.drawable.ic_brightness_auto_black_24dp,
-                    descriptionRes = R.string.action_enable_auto_brightness
+                    descriptionRes = R.string.action_enable_auto_brightness,
+                    permission = Manifest.permission.WRITE_SETTINGS
             ),
             SystemActionDef(
                     id = DISABLE_AUTO_BRIGHTNESS,
                     category = CATEGORY_BRIGHTNESS,
                     iconRes = R.drawable.ic_disable_brightness_auto_24dp,
-                    descriptionRes = R.string.action_disable_auto_brightness
+                    descriptionRes = R.string.action_disable_auto_brightness,
+                    permission = Manifest.permission.WRITE_SETTINGS
             ),
             SystemActionDef(
                     id = INCREASE_BRIGHTNESS,
                     category = CATEGORY_BRIGHTNESS,
                     iconRes = R.drawable.ic_brightness_high_black_24dp,
-                    descriptionRes = R.string.action_increase_brightness
+                    descriptionRes = R.string.action_increase_brightness,
+                    permission = Manifest.permission.WRITE_SETTINGS
             ),
             SystemActionDef(
                     id = DECREASE_BRIGHTNESS,
                     category = CATEGORY_BRIGHTNESS,
                     iconRes = R.drawable.ic_brightness_low_black_24dp,
-                    descriptionRes = R.string.action_decrease_brightness
+                    descriptionRes = R.string.action_decrease_brightness,
+                    permission = Manifest.permission.WRITE_SETTINGS
             ),
 
             //FLASHLIGHT
@@ -401,6 +409,27 @@ object SystemActionUtils {
                     category = CATEGORY_OTHER,
                     iconRes = R.drawable.ic_camera_alt_black_24dp,
                     descriptionRes = R.string.action_open_camera
+            ),
+            SystemActionDef(
+                    id = LOCK_DEVICE,
+                    category = CATEGORY_OTHER,
+                    iconRes = R.drawable.ic_outline_lock_24px,
+                    descriptionRes = R.string.action_lock_device,
+                    permission = Constants.PERMISSION_ROOT
+            ),
+            SystemActionDef(
+                    id = SECURE_LOCK_DEVICE,
+                    category = CATEGORY_OTHER,
+                    iconRes = R.drawable.ic_outline_lock_24px,
+                    descriptionRes = R.string.action_secure_lock_device,
+                    feature = PackageManager.FEATURE_DEVICE_ADMIN,
+                    permission = Manifest.permission.BIND_DEVICE_ADMIN,
+                    messageOnSelection = R.string.action_secure_lock_device_message
+            ),
+            SystemActionDef(
+                    id = CONSUME_KEY_EVENT,
+                    category = CATEGORY_OTHER,
+                    descriptionRes = R.string.action_consume_keyevent
             )
     )
 
@@ -428,6 +457,6 @@ object SystemActionUtils {
     fun getSystemActionDef(id: String): Result<SystemActionDef> {
         val systemActionDef = SYSTEM_ACTION_DEFINITIONS.find { it.id == id }
 
-        return systemActionDef.createResult(ERROR_CODE_SYSTEM_ACTION_NOT_FOUND, id)
+        return systemActionDef.result(ERROR_CODE_SYSTEM_ACTION_NOT_FOUND, id)
     }
 }

@@ -3,11 +3,10 @@ package io.github.sds100.keymapper.view
 import android.content.Context
 import android.widget.EditText
 import android.widget.LinearLayout
-import android.widget.Toast
-import android.widget.Toast.LENGTH_SHORT
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import io.github.sds100.keymapper.R
+import org.jetbrains.anko.toast
 
 /**
  * Created by sds100 on 30/09/2018.
@@ -45,7 +44,7 @@ fun Context.editTextDialog(
             onSuccess(editText.text.toString())
             dialog.dismiss()
         } else {
-            Toast.makeText(this, R.string.error_must_have_a_title, LENGTH_SHORT).show()
+            toast(R.string.error_must_have_a_title)
         }
     }
 

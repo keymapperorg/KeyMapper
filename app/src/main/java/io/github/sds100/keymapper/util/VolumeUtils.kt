@@ -1,13 +1,16 @@
 package io.github.sds100.keymapper.util
 
 import android.annotation.SuppressLint
+import android.app.NotificationManager
 import android.content.Context
 import android.media.AudioManager
 import android.os.Build
 import androidx.annotation.IntDef
+import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import io.github.sds100.keymapper.R
 import org.jetbrains.anko.selector
+import org.jetbrains.anko.toast
 
 /**
  * Created by sds100 on 21/10/2018.
@@ -61,6 +64,15 @@ object VolumeUtils {
     fun adjustVolume(ctx: Context,
                      @AdjustMode adjustMode: Int,
                      showVolumeUi: Boolean = false) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && isStreamSuppressed(
+                        ctx,
+                        AudioManager.USE_DEFAULT_STREAM_TYPE)) {
+            ctx.toast(R.string.error_in_do_not_disturb_mode)
+
+            return
+        }
+
         val audioManager = ctx.applicationContext.getSystemService(Context.AUDIO_SERVICE)
                 as AudioManager
 
@@ -75,8 +87,15 @@ object VolumeUtils {
 
     fun adjustSpecificStream(ctx: Context,
                              @AdjustMode adjustMode: Int,
-                             showVolumeUi: Boolean,
+                             showVolumeUi: Boolean = false,
                              @StreamType streamType: Int) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && isStreamSuppressed(ctx, streamType)) {
+            ctx.toast(R.string.error_in_do_not_disturb_mode)
+
+            return
+        }
+
         val audioManager = ctx.applicationContext.getSystemService(Context.AUDIO_SERVICE)
                 as AudioManager
 
@@ -108,4 +127,20 @@ object VolumeUtils {
 
     @StringRes
     fun getStreamLabel(@StreamType streamType: Int) = STREAM_TYPE_LABEL_MAP[streamType]!!
+
+    /**
+     * @return whether a specific volume stream is suppressed by the Do Not Disturb state
+     */
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun isStreamSuppressed(ctx: Context, @VolumeUtils.StreamType stream: Int): Boolean {
+        (ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).apply {
+            return when (stream) {
+                AudioManager.STREAM_ALARM ->
+                    (currentInterruptionFilter == NotificationManager.INTERRUPTION_FILTER_ALARMS) ||
+                            (currentInterruptionFilter == NotificationManager.INTERRUPTION_FILTER_NONE)
+
+                else -> currentInterruptionFilter != NotificationManager.INTERRUPTION_FILTER_ALL
+            }
+        }
+    }
 }

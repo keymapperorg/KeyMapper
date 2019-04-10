@@ -8,6 +8,8 @@ import android.inputmethodservice.InputMethodService
 import android.provider.Settings
 import android.view.inputmethod.InputMethodManager
 import io.github.sds100.keymapper.Constants
+import io.github.sds100.keymapper.handle
+import io.github.sds100.keymapper.result
 
 /**
  * Created by sds100 on 28/09/2018.
@@ -28,10 +30,16 @@ class MyIMEService : InputMethodService() {
             return enabledMethods.any { it.packageName == Constants.PACKAGE_NAME }
         }
 
-        fun getImeId(ctx: Context): String {
+        /**
+         * Get the id for the Key Mapper input method.
+         */
+        fun getImeId(ctx: Context): String? {
             val imeManager = ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
-            return imeManager.inputMethodList.find { it.packageName == Constants.PACKAGE_NAME }!!.id
+            return imeManager.inputMethodList.find { it.packageName == Constants.PACKAGE_NAME }.result().handle(
+                    onSuccess = { it.id },
+                    onFailure = { null }
+            )
         }
 
         /**
