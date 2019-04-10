@@ -4,7 +4,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.preference.*
-import io.github.sds100.keymapper.AccessibilityServiceWidgetsManager
+import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.util.BluetoothUtils
@@ -111,7 +111,7 @@ class SettingsFragment : PreferenceFragmentCompat(),
             mToggleRemappingsNotificationPref -> {
 
                 if (newValue as Boolean) {
-                    AccessibilityServiceWidgetsManager.invalidateNotification(context!!)
+                    WidgetsManager.invalidateNotification(context!!)
                 } else {
                     //when the user turns this off, resume the remappings because otherwise they can't without
                     //the notification
@@ -125,7 +125,7 @@ class SettingsFragment : PreferenceFragmentCompat(),
                 enableRootPreferences(newValue as Boolean)
 
                 //the pending intents need to be updated so they don't use the root methods
-                AccessibilityServiceWidgetsManager.invalidateNotification(context!!)
+                WidgetsManager.invalidateNotification(context!!)
             }
         }
 

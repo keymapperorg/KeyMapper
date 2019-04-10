@@ -22,10 +22,10 @@ import com.crashlytics.android.Crashlytics
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import io.github.sds100.keymapper.*
-import io.github.sds100.keymapper.AccessibilityServiceWidgetsManager.EVENT_PAUSE_REMAPS
-import io.github.sds100.keymapper.AccessibilityServiceWidgetsManager.EVENT_RESUME_REMAPS
-import io.github.sds100.keymapper.AccessibilityServiceWidgetsManager.EVENT_SERVICE_START
-import io.github.sds100.keymapper.AccessibilityServiceWidgetsManager.EVENT_SERVICE_STOPPED
+import io.github.sds100.keymapper.WidgetsManager.EVENT_PAUSE_REMAPS
+import io.github.sds100.keymapper.WidgetsManager.EVENT_RESUME_REMAPS
+import io.github.sds100.keymapper.WidgetsManager.EVENT_SERVICE_START
+import io.github.sds100.keymapper.WidgetsManager.EVENT_SERVICE_STOPPED
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.activity.ConfigKeymapActivity
 import io.github.sds100.keymapper.data.AppDatabase
@@ -197,20 +197,20 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                 ACTION_PAUSE_REMAPPINGS -> {
                     clearLists()
                     mPaused = true
-                    AccessibilityServiceWidgetsManager.onEvent(ctx, EVENT_PAUSE_REMAPS)
+                    WidgetsManager.onEvent(ctx, EVENT_PAUSE_REMAPS)
                 }
 
                 ACTION_RESUME_REMAPPINGS -> {
                     clearLists()
                     mPaused = false
-                    AccessibilityServiceWidgetsManager.onEvent(ctx, EVENT_RESUME_REMAPS)
+                    WidgetsManager.onEvent(ctx, EVENT_RESUME_REMAPS)
                 }
 
                 ACTION_UPDATE_NOTIFICATION -> {
                     if (mPaused) {
-                        AccessibilityServiceWidgetsManager.onEvent(ctx, EVENT_PAUSE_REMAPS)
+                        WidgetsManager.onEvent(ctx, EVENT_PAUSE_REMAPS)
                     } else {
-                        AccessibilityServiceWidgetsManager.onEvent(ctx, EVENT_RESUME_REMAPS)
+                        WidgetsManager.onEvent(ctx, EVENT_RESUME_REMAPS)
                     }
                 }
             }
@@ -290,7 +290,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
         getKeyMapList()
 
-        AccessibilityServiceWidgetsManager.onEvent(ctx, EVENT_SERVICE_START)
+        WidgetsManager.onEvent(ctx, EVENT_SERVICE_START)
         sendBroadcast(Intent(ACTION_ON_START))
     }
 
@@ -298,7 +298,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
     override fun onDestroy() {
         super.onDestroy()
-        AccessibilityServiceWidgetsManager.onEvent(ctx, EVENT_SERVICE_STOPPED)
+        WidgetsManager.onEvent(ctx, EVENT_SERVICE_STOPPED)
 
         mLifecycleRegistry.markState(Lifecycle.State.DESTROYED)
         unregisterReceiver(mBroadcastReceiver)

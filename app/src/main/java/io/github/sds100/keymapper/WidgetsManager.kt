@@ -23,7 +23,7 @@ import org.jetbrains.anko.defaultSharedPreferences
 /**
  * Tells widgets (notifications, quick settings) what to display depending on the state of the AccessibilityService.
  */
-object AccessibilityServiceWidgetsManager {
+object WidgetsManager {
     @IntDef(value = [
         EVENT_PAUSE_REMAPS,
         EVENT_RESUME_REMAPS,
