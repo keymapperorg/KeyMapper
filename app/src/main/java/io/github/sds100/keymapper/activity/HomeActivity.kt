@@ -150,10 +150,14 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
         })
 
         imeServiceStatusLayout.setOnFixClickListener(View.OnClickListener {
-            val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)
-            intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+            try {
+                val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)
+                intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
 
-            startActivity(intent)
+                startActivity(intent)
+            } catch (e: Exception) {
+                toast(R.string.error_cant_find_ime_settings).show()
+            }
         })
 
         mKeymapAdapter.iSelectionProvider.subscribeToSelectionEvents(this)
