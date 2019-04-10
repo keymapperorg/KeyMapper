@@ -105,13 +105,11 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
         //observing stuff
         viewModel.keyMap.observe(this, Observer {
             it?.let { keyMap ->
-                if (keyMap.action != null) {
-                    doAsync {
-                        val actionDescription = ActionUtils.getDescription(this@ConfigKeymapActivity, keyMap.action)
+                doAsync {
+                    val actionDescription = ActionUtils.getDescription(this@ConfigKeymapActivity, keyMap.action)
 
-                        uiThread {
-                            loadActionDescriptionLayout(actionDescription)
-                        }
+                    uiThread {
+                        loadActionDescriptionLayout(actionDescription)
                     }
                 }
 
