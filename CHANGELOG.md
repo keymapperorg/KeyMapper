@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file. This projec
  
 ## [Unreleased](https://github.com/sds100/KeyMapper/tree/develop)
 
+## [1.1.0 Beta 4](https://github.com/sds100/KeyMapper/releases/tag/v1.1.0-beta.4)
+### Added
+- Option to choose which flash to use for flashlight actions
+- Optimised the New and Edit Keymap activities for various screen sizes
+- Slightly optimised the homescreen for wide screens
+
+### Bug Fixes
+- Could potentially crash when trying to switch to the Key Mapper input method
+- Could potentially crash when removing a trigger from the list
+- Would crash if it couldn't find the input method settings page
+- Would crash when trying to change a specific volume stream while the device is in a Do Not Disturb state
+- Would crash when using an app shortcut without the correct permissions.
+
 ## [1.1.0 Beta 3](https://github.com/sds100/KeyMapper/releases/tag/v1.1.0-beta.3)
 - Reduced the repeat delay to 5ms
 - Force expand the menu on the homescreen
