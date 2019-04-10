@@ -22,11 +22,11 @@ import com.crashlytics.android.Crashlytics
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import io.github.sds100.keymapper.*
+import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.WidgetsManager.EVENT_PAUSE_REMAPS
 import io.github.sds100.keymapper.WidgetsManager.EVENT_RESUME_REMAPS
 import io.github.sds100.keymapper.WidgetsManager.EVENT_SERVICE_START
 import io.github.sds100.keymapper.WidgetsManager.EVENT_SERVICE_STOPPED
-import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.activity.ConfigKeymapActivity
 import io.github.sds100.keymapper.data.AppDatabase
 import io.github.sds100.keymapper.delegate.ActionPerformerDelegate
@@ -98,7 +98,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
                 ctx.startActivity(settingsIntent)
             } catch (e: Exception) {
-                ctx.toast(R.string.error_cant_find_accessibility_settings_page)
+                ctx.toast(R.string.error_cant_find_accessibility_settings_page).show()
             }
         }
 

@@ -262,6 +262,7 @@
     <string name="error_flag_not_found">Flag "%s" not found!</string>
     <string name="error_google_app_not_installed">Google app not installed!</string>
     <string name="error_cant_find_accessibility_settings_page">Can\'t find the Accessibility settings page!</string>
+    <string name="error_cant_find_ime_settings">Can\'t find the input method settings page!</string>
     <string name="error_need_to_enable_device_admin">Key Mapper needs to be a device administrator to use this action!</string>
     <string name="error_camera_in_use">Camera is in use!</string>
 
