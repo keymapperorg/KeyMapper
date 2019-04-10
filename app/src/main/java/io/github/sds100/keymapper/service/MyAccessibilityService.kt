@@ -225,7 +225,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
     /**
      * The keys currently being held down.
      */
-    private val mPressedKeys = mutableListOf<Int>()
+    private val mPressedKeys = mutableSetOf<Int>()
 
     /**
      * When all the keys that map to a specific trigger are pressed, they are put in here.
