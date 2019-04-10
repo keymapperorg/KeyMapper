@@ -20,8 +20,7 @@ object ImeUtils {
 
             imeManager.showInputMethodPicker()
         } else {
-            val command =
-                    "am broadcast -a com.android.server.InputMethodManagerService.SHOW_INPUT_METHOD_PICKER"
+            val command = "am broadcast -a com.android.server.InputMethodManagerService.SHOW_INPUT_METHOD_PICKER"
             RootUtils.executeRootCommand(command)
         }
     }

@@ -11,8 +11,8 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
-import io.github.sds100.keymapper.AccessibilityServiceWidgetsManager
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.broadcastreceiver.KeyMapperBroadcastReceiver
 import org.jetbrains.anko.defaultSharedPreferences
 
@@ -52,7 +52,7 @@ object NotificationUtils {
                 NotificationUtils.hideNotification(this, NotificationUtils.ID_IME_PERSISTENT)
             }
 
-            AccessibilityServiceWidgetsManager.invalidateNotification(ctx)
+            WidgetsManager.invalidateNotification(ctx)
         }
     }
 

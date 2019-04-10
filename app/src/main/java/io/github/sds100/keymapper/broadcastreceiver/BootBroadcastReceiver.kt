@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.broadcastreceiver
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import io.github.sds100.keymapper.AccessibilityServiceWidgetsManager
+import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.NotificationUtils
 import io.github.sds100.keymapper.util.bool
@@ -29,7 +29,7 @@ class BootBroadcastReceiver : BroadcastReceiver() {
                 }
             }
 
-            AccessibilityServiceWidgetsManager.invalidateNotification(context!!)
+            WidgetsManager.invalidateNotification(context!!)
         }
     }
 }
