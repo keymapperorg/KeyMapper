@@ -12,7 +12,7 @@ android {
         applicationId "io.github.sds100.keymapper"
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 13
+        versionCode 14
         versionName "1.2.0-alpha.1"
         vectorDrawables.useSupportLibrary = true
     }
