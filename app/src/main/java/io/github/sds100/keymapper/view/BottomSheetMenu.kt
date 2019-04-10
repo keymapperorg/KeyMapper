@@ -30,7 +30,9 @@ class BottomSheetMenu : BottomSheetDialogFragment() {
         }
 
         fun show(activity: AppCompatActivity, @LayoutRes layoutId: Int) {
-            create(layoutId).show(activity.supportFragmentManager, TAG)
+            if (activity.supportFragmentManager.findFragmentByTag(TAG) == null) {
+                create(layoutId).show(activity.supportFragmentManager, TAG)
+            }
         }
     }
 
