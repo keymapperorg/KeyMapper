@@ -32,6 +32,7 @@ import io.github.sds100.keymapper.SystemAction.ENABLE_MOBILE_DATA
 import io.github.sds100.keymapper.SystemAction.ENABLE_WIFI
 import io.github.sds100.keymapper.SystemAction.EXPAND_NOTIFICATION_DRAWER
 import io.github.sds100.keymapper.SystemAction.EXPAND_QUICK_SETTINGS
+import io.github.sds100.keymapper.SystemAction.FAST_FORWARD
 import io.github.sds100.keymapper.SystemAction.GO_BACK
 import io.github.sds100.keymapper.SystemAction.GO_HOME
 import io.github.sds100.keymapper.SystemAction.INCREASE_BRIGHTNESS
@@ -46,6 +47,7 @@ import io.github.sds100.keymapper.SystemAction.PAUSE_MEDIA
 import io.github.sds100.keymapper.SystemAction.PLAY_PAUSE_MEDIA
 import io.github.sds100.keymapper.SystemAction.PORTRAIT_MODE
 import io.github.sds100.keymapper.SystemAction.PREVIOUS_TRACK
+import io.github.sds100.keymapper.SystemAction.REWIND
 import io.github.sds100.keymapper.SystemAction.SCREENSHOT
 import io.github.sds100.keymapper.SystemAction.SECURE_LOCK_DEVICE
 import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_BRIGHTNESS
@@ -228,6 +230,20 @@ object SystemActionUtils {
                     category = CATEGORY_MEDIA,
                     iconRes = R.drawable.ic_skip_previous_black_24dp,
                     descriptionRes = R.string.action_previous_track
+            ),
+            SystemActionDef(
+                    id = FAST_FORWARD,
+                    category = CATEGORY_MEDIA,
+                    iconRes = R.drawable.ic_fast_forward_outline,
+                    descriptionRes = R.string.action_fast_forward,
+                    messageOnSelection = R.string.action_fast_forward_message
+            ),
+            SystemActionDef(
+                    id = REWIND,
+                    category = CATEGORY_MEDIA,
+                    iconRes = R.drawable.ic_outline_fast_rewind_24px,
+                    descriptionRes = R.string.action_rewind,
+                    messageOnSelection = R.string.action_rewind_message
             ),
             //MEDIA
 

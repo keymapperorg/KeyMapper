@@ -74,6 +74,8 @@ object SystemAction {
     const val PLAY_PAUSE_MEDIA = "play_pause_media"
     const val NEXT_TRACK = "next_track"
     const val PREVIOUS_TRACK = "previous_track"
+    const val FAST_FORWARD = "fast_forward"
+    const val REWIND = "rewind"
 
     //navigation
     const val GO_BACK = "go_back"

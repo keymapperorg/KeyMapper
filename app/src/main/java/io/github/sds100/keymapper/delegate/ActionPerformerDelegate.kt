@@ -196,6 +196,8 @@ class ActionPerformerDelegate(
                 SystemAction.PLAY_PAUSE_MEDIA -> MediaUtils.playPauseMediaPlayback(this)
                 SystemAction.NEXT_TRACK -> MediaUtils.nextTrack(this)
                 SystemAction.PREVIOUS_TRACK -> MediaUtils.previousTrack(this)
+                SystemAction.FAST_FORWARD -> MediaUtils.fastForward(this)
+                SystemAction.REWIND -> MediaUtils.rewind(this)
 
                 SystemAction.GO_BACK -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
                 SystemAction.GO_HOME -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
