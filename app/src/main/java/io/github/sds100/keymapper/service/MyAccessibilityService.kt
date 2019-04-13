@@ -256,6 +256,12 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
     private val mShortPressPendingActions = mutableListOf<PendingAction>()
     private val mRepeatQueue = mutableListOf<PendingAction>()
 
+    /**
+     * When the home keyevent action is up, the device goes to the homescreen. Therefore, the user doesn't want to go
+     * to the homescreen when they use a trigger with the home key in it.
+     */
+    private var mPerformedHomeButtonTrigger = false
+
     private var mRecordingTrigger = false
 
     private lateinit var mActionPerformerDelegate: ActionPerformerDelegate
@@ -373,7 +379,12 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                     mRepeatQueue.remove(it)
                 }
 
-                //NEVER CONSUME EVENTS ON ACTION_UP SINCE OTHERWISE THE KEY APPEARS TO BE HELD DOWN
+                //When the home button up event is passed to the system, the device goes to home screen
+                if (mPerformedHomeButtonTrigger) {
+                    mPerformedHomeButtonTrigger = false
+                    return true
+                }
+
                 return super.onKeyEvent(event)
             }
 
@@ -419,7 +430,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
                     val runnable = object : PendingAction(trigger) {
                         override fun run() {
-                            mActionPerformerDelegate.performAction(keymap.action!!, keymap.flags)
+                            performAction(keymap.action!!, keymap.flags)
                         }
                     }
 
@@ -438,7 +449,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                     if (mTriggersAwaitingLongPress.any { it == trigger }) {
                         val runnable = object : PendingAction(trigger) {
                             override fun run() {
-                                mActionPerformerDelegate.performAction(keymap.action!!, keymap.flags)
+                                performAction(keymap.action!!, keymap.flags)
                             }
                         }
 
@@ -455,11 +466,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                                 var flags = removeFlag(keymap.flags, FlagUtils.FLAG_VIBRATE)
 
                                 override fun run() {
-                                    mActionPerformerDelegate.performAction(
-                                            keymap.action!!,
-                                            flags
-                                    )
-
+                                    performAction(keymap.action!!, flags)
                                     mHandler.postDelayed(this, REPEAT_DELAY)
                                 }
                             }
@@ -468,7 +475,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                             mHandler.postDelayed(runnable, HOLD_DOWN_DELAY)
                         }
 
-                        mActionPerformerDelegate.performAction(keymap.action!!, keymap.flags)
+                        performAction(keymap.action!!, keymap.flags)
+
                         consumeEvent = true
                     }
                 }
@@ -491,6 +499,14 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         }
 
         return super.onKeyEvent(event)
+    }
+
+    private fun performAction(action: Action, flags: Int) {
+        mActionPerformerDelegate.performAction(action, flags)
+
+        if (mPressedTriggerKeys.contains(KeyEvent.KEYCODE_HOME)) {
+            mPerformedHomeButtonTrigger = true
+        }
     }
 
     private fun getKeyMapList() {
