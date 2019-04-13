@@ -13,6 +13,8 @@ object MediaUtils {
     fun playPauseMediaPlayback(ctx: Context) = sendMediaKeyEvent(ctx, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE)
     fun nextTrack(ctx: Context) = sendMediaKeyEvent(ctx, KeyEvent.KEYCODE_MEDIA_NEXT)
     fun previousTrack(ctx: Context) = sendMediaKeyEvent(ctx, KeyEvent.KEYCODE_MEDIA_PREVIOUS)
+    fun fastForward(ctx: Context) = sendMediaKeyEvent(ctx, KeyEvent.KEYCODE_MEDIA_FAST_FORWARD)
+    fun rewind(ctx: Context) = sendMediaKeyEvent(ctx, KeyEvent.KEYCODE_MEDIA_REWIND)
 
     private fun sendMediaKeyEvent(ctx: Context, keyEvent: Int) {
         //simulates media key being pressed.

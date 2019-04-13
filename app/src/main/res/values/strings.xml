@@ -320,6 +320,10 @@
     <string name="action_play_pause_media">Play/Pause Media</string>
     <string name="action_next_track">Next Track</string>
     <string name="action_previous_track">Previous Track</string>
+    <string name="action_fast_forward">Fast Forward</string>
+    <string name="action_fast_forward_message">Not all media apps support fast forwarding. E.g Google Play Music.</string>
+    <string name="action_rewind">Rewind</string>
+    <string name="action_rewind_message">Not all media apps support rewinding. E.g Google Play Music.</string>
 
     <string name="action_go_back">Go Back</string>
     <string name="action_go_home">Go Home</string>
