@@ -180,8 +180,9 @@ object SystemActionUtils {
             SystemActionDef(
                     id = TOGGLE_MOBILE_DATA,
                     category = CATEGORY_MOBILE_DATA,
-                    iconRes = R.drawable.ic_signal,
-                    permission = Constants.PERMISSION_ROOT,
+                    iconRes = R.drawable.ic_signal,/*needs READ_PHONE_STATE permission so it can check whether mobile data is enabled. On some devices
+                    * it seems to need this permission.*/
+                    permissions = arrayOf(Constants.PERMISSION_ROOT, Manifest.permission.READ_PHONE_STATE),
                     descriptionRes = R.string.action_toggle_mobile_data
             ),
             SystemActionDef(
