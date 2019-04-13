@@ -187,9 +187,11 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                 }
 
                 ACTION_TEST_ACTION -> {
-                    mActionPerformerDelegate.performAction(
-                            action = intent.getSerializableExtra(EXTRA_ACTION) as Action,
-                            flags = 0x0)
+                    intent.getSerializableExtra(EXTRA_ACTION)?.let { action ->
+                        mActionPerformerDelegate.performAction(
+                                action = action as Action,
+                                flags = 0x0)
+                    }
                 }
 
                 ACTION_PAUSE_REMAPPINGS -> {
