@@ -28,11 +28,15 @@ class FlashlightController(iContext: IContext) : IContext by iContext, Lifecycle
         override fun onTorchModeChanged(cameraId: String, enabled: Boolean) {
             super.onTorchModeChanged(cameraId, enabled)
 
-            val cameraManager = ctx.getSystemService(Context.CAMERA_SERVICE) as CameraManager
-            val lensFacing = cameraManager
-                    .getCameraCharacteristics(cameraId).get(CameraCharacteristics.LENS_FACING)!!
+            (ctx.getSystemService(Context.CAMERA_SERVICE) as CameraManager).apply {
+                try {
+                    val camera = getCameraCharacteristics(cameraId) ?: return
+                    val lensFacing = camera.get(CameraCharacteristics.LENS_FACING)!!
 
-            mFlashEnabled.put(lensFacing, enabled)
+                    mFlashEnabled.put(lensFacing, enabled)
+                } catch (e: Exception) {
+                }
+            }
         }
     }
 
