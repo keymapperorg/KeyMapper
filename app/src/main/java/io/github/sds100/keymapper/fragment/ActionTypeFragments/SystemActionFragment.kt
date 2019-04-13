@@ -93,8 +93,13 @@ class SystemActionFragment : FilterableActionTypeFragment(),
             context?.alert {
                 titleResource = item.descriptionRes
                 messageResource = item.messageOnSelection
-                okButton { }
-            }
+                okButton {
+                    val action = Action(ActionType.SYSTEM_ACTION, item.id)
+                    chooseSelectedAction(action)
+                }
+            }?.show()
+
+            return
         }
 
         val action = Action(ActionType.SYSTEM_ACTION, item.id)
