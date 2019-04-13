@@ -12,13 +12,14 @@ import io.github.sds100.keymapper.Action
 import io.github.sds100.keymapper.Action.Companion.EXTRA_PACKAGE_NAME
 import io.github.sds100.keymapper.Action.Companion.EXTRA_SHORTCUT_TITLE
 import io.github.sds100.keymapper.ActionType
-import io.github.sds100.keymapper.adapter.AppShortcutAdapter
 import io.github.sds100.keymapper.Extra
-import io.github.sds100.keymapper.interfaces.OnItemClickListener
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.adapter.AppShortcutAdapter
+import io.github.sds100.keymapper.interfaces.OnItemClickListener
 import io.github.sds100.keymapper.util.AppShortcutUtils
 import io.github.sds100.keymapper.view.editTextDialog
 import kotlinx.android.synthetic.main.action_type_recyclerview.*
+import org.jetbrains.anko.toast
 
 /**
  * Created by sds100 on 31/07/2018.
@@ -108,6 +109,11 @@ class AppShortcutActionTypeFragment : FilterableActionTypeFragment(), OnItemClic
         //open the shortcut configuration screen when the user taps a shortcut
         val intent = Intent()
         intent.setClassName(packageName, item.activityInfo.name)
-        startActivityForResult(intent, REQUEST_CODE_SHORTCUT_CONFIGURATION)
+
+        try {
+            startActivityForResult(intent, REQUEST_CODE_SHORTCUT_CONFIGURATION)
+        } catch (e: SecurityException) {
+            context?.toast(R.string.error_keymapper_doesnt_have_permission_app_shortcut)
+        }
     }
 }
