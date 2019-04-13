@@ -319,7 +319,7 @@
 
     <string name="action_pause_media">Pause Media Playback</string>
     <string name="action_play_media">Resume Media Playback</string>
-    <string name="action_play_pause_media">Play/Pause Media</string>
+    <string name="action_play_pause_media">Play/Pause Media Playback</string>
     <string name="action_next_track">Next Track</string>
     <string name="action_previous_track">Previous Track</string>
     <string name="action_fast_forward">Fast Forward</string>
