@@ -71,7 +71,9 @@ class FlashlightController(iContext: IContext) : IContext by iContext, Lifecycle
 
             for (cameraId in cameraIdList) {
 
-                val flashAvailable = getCameraCharacteristics(cameraId).get(CameraCharacteristics.FLASH_INFO_AVAILABLE)!!
+                val flashAvailable =
+                        getCameraCharacteristics(cameraId).get(CameraCharacteristics.FLASH_INFO_AVAILABLE) ?: return
+
                 val lensFacing = getCameraCharacteristics(cameraId).get(CameraCharacteristics.LENS_FACING)
 
                 //try to find a camera with a flash
