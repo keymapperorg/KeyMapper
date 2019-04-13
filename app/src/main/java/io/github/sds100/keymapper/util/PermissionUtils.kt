@@ -17,6 +17,7 @@ import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.DeviceAdmin
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.activity.ConfigKeymapActivity
+import org.jetbrains.anko.toast
 
 /**
  * Created by sds100 on 25/10/2018.
@@ -50,7 +51,11 @@ object PermissionUtils {
                 intent.data = Uri.parse("package:${Constants.PACKAGE_NAME}")
                 intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
 
-                startActivity(intent)
+                try {
+                    startActivity(intent)
+                } catch (e: Exception) {
+                    toast(R.string.error_cant_find_write_settings_page)
+                }
 
             } else if (permission == Constants.PERMISSION_ROOT) {
                 RootUtils.promptForRootPermission(this)
