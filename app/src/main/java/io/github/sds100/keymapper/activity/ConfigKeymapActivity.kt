@@ -1,13 +1,11 @@
 package io.github.sds100.keymapper.activity
 
-import android.Manifest
-import android.app.admin.DevicePolicyManager
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager.PERMISSION_GRANTED
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
@@ -15,7 +13,6 @@ import android.view.View
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.app.ActivityCompat
 import androidx.core.content.edit
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
@@ -342,50 +339,13 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
             buttonSecondary.setOnClickListener {
                 if (isFixable) {
                     if (errorCode == ERROR_CODE_PERMISSION_DENIED) {
-                        requestPermission(errorResult?.data!!)
+                        PermissionUtils.requestPermission(this@ConfigKeymapActivity, errorResult?.data!!)
                     }
 
                     errorResult?.fix(this@ConfigKeymapActivity)
                 } else {
                     testAction()
                 }
-            }
-        }
-    }
-
-
-    private fun requestPermission(permission: String) {
-        if (PermissionUtils.requiresActivityToRequest(permission)) {
-
-            ActivityCompat.requestPermissions(this, arrayOf(permission), PERMISSION_REQUEST_CODE)
-
-        } else {
-            //WRITE_SETTINGS permission only has to be granted on Marshmallow or higher
-            if (permission == Manifest.permission.WRITE_SETTINGS &&
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
-                //open settings to grant permission{
-                val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
-                intent.data = Uri.parse("package:${Constants.PACKAGE_NAME}")
-                intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
-
-                startActivity(intent)
-
-            } else if (permission == Constants.PERMISSION_ROOT) {
-                RootUtils.promptForRootPermission(this)
-
-            } else if (permission == Manifest.permission.BIND_DEVICE_ADMIN) {
-                val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
-
-                intent.putExtra(
-                        DevicePolicyManager.EXTRA_DEVICE_ADMIN,
-                        ComponentName(this, DeviceAdmin::class.java))
-
-                intent.putExtra(
-                        DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-                        str(R.string.error_need_to_enable_device_admin))
-
-                startActivityForResult(intent, REQUEST_CODE_DEVICE_ADMIN)
             }
         }
     }

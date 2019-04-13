@@ -22,19 +22,12 @@ import java.nio.file.StandardCopyOption
 
 object NetworkUtils {
 
-    fun isNetworkAvailable(ctx: Context): Boolean {
-        val connectivityManager = ctx.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val activeNetworkInfo = connectivityManager.activeNetworkInfo ?: return false
-
-        return activeNetworkInfo.isConnected
-    }
-
     /**
      * Download a file from a specified [url] to a specified path.
      * @return whether the file was downloaded successfully
      */
     fun downloadFile(ctx: Context, url: String, downloadPath: String): Boolean {
-        if (!NetworkUtils.isNetworkAvailable(ctx)) return false
+        if (!isNetworkAvailable(ctx)) return false
 
         val inputStream = URL(url).openStream()
 
@@ -109,6 +102,13 @@ object NetworkUtils {
         } else {
             enableMobileData()
         }
+    }
+
+    private fun isNetworkAvailable(ctx: Context): Boolean {
+        val connectivityManager = ctx.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetworkInfo = connectivityManager.activeNetworkInfo ?: return false
+
+        return activeNetworkInfo.isConnected
     }
 
     private fun isMobileDataEnabled(ctx: Context): Boolean {
