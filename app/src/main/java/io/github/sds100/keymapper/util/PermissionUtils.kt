@@ -116,5 +116,12 @@ fun Context.isPermissionGranted(permission: String): Boolean {
             PackageManager.PERMISSION_GRANTED
 }
 
+val Context.accessNotificationPolicy: Boolean
+    get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        isPermissionGranted(Manifest.permission.ACCESS_NOTIFICATION_POLICY)
+    } else {
+        true
+    }
+
 val Context.haveWriteSettingsPermission: Boolean
     get() = this.isPermissionGranted(Manifest.permission.WRITE_SETTINGS)

@@ -1,15 +1,9 @@
 package io.github.sds100.keymapper.util
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.app.NotificationManager
 import android.content.Context
 import android.media.AudioManager
-import android.os.Build
 import androidx.annotation.IntDef
-import androidx.annotation.RequiresApi
-import io.github.sds100.keymapper.R
-import org.jetbrains.anko.toast
 
 /**
  * Created by sds100 on 21/10/2018.
@@ -56,24 +50,19 @@ object AudioUtils {
                      @AdjustMode adjustMode: Int,
                      showVolumeUi: Boolean = false) {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && isStreamSuppressed(
-                        ctx,
-                        AudioManager.USE_DEFAULT_STREAM_TYPE)) {
-            ctx.toast(R.string.error_in_do_not_disturb_mode)
+        if (ctx.accessNotificationPolicy) {
 
-            return
+            val audioManager = ctx.applicationContext.getSystemService(Context.AUDIO_SERVICE)
+                    as AudioManager
+
+            val flag = if (showVolumeUi) {
+                AudioManager.FLAG_SHOW_UI
+            } else {
+                0
+            }
+
+            audioManager.adjustVolume(adjustMode, flag)
         }
-
-        val audioManager = ctx.applicationContext.getSystemService(Context.AUDIO_SERVICE)
-                as AudioManager
-
-        val flag = if (showVolumeUi) {
-            AudioManager.FLAG_SHOW_UI
-        } else {
-            0
-        }
-
-        audioManager.adjustVolume(adjustMode, flag)
     }
 
     fun adjustSpecificStream(ctx: Context,
@@ -81,37 +70,17 @@ object AudioUtils {
                              showVolumeUi: Boolean = false,
                              @StreamType streamType: Int) {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && isStreamSuppressed(ctx, streamType)) {
-            ctx.toast(R.string.error_in_do_not_disturb_mode)
+        if (ctx.accessNotificationPolicy) {
+            val audioManager = ctx.applicationContext.getSystemService(Context.AUDIO_SERVICE)
+                    as AudioManager
 
-            return
-        }
-
-        val audioManager = ctx.applicationContext.getSystemService(Context.AUDIO_SERVICE)
-                as AudioManager
-
-        val flag = if (showVolumeUi) {
-            AudioManager.FLAG_SHOW_UI
-        } else {
-            0
-        }
-
-        audioManager.adjustStreamVolume(streamType, adjustMode, flag)
-    }
-
-    /**
-     * @return whether a specific volume stream is suppressed by the Do Not Disturb state
-     */
-    @RequiresApi(Build.VERSION_CODES.M)
-    fun isStreamSuppressed(ctx: Context, @AudioUtils.StreamType stream: Int): Boolean {
-        (ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).apply {
-            return when (stream) {
-                AudioManager.STREAM_ALARM ->
-                    (currentInterruptionFilter == NotificationManager.INTERRUPTION_FILTER_ALARMS) ||
-                            (currentInterruptionFilter == NotificationManager.INTERRUPTION_FILTER_NONE)
-
-                else -> currentInterruptionFilter != NotificationManager.INTERRUPTION_FILTER_ALL
+            val flag = if (showVolumeUi) {
+                AudioManager.FLAG_SHOW_UI
+            } else {
+                0
             }
+
+            audioManager.adjustStreamVolume(streamType, adjustMode, flag)
         }
     }
 
@@ -128,7 +97,7 @@ object AudioUtils {
     }
 
     fun changeRingerMode(ctx: Context, @RingerMode ringerMode: Int) {
-        if (ctx.isPermissionGranted(Manifest.permission.ACCESS_NOTIFICATION_POLICY)) {
+        if (ctx.accessNotificationPolicy) {
             val audioManager = ctx.applicationContext.getSystemService(Context.AUDIO_SERVICE)
                     as AudioManager
 
