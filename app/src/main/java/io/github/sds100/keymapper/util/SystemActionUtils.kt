@@ -255,19 +255,22 @@ object SystemActionUtils {
                     id = SystemAction.VOLUME_UP,
                     category = CATEGORY_VOLUME,
                     iconRes = R.drawable.ic_volume_up_black_24dp,
-                    descriptionRes = R.string.action_volume_up
+                    descriptionRes = R.string.action_volume_up,
+                    permission = Manifest.permission.ACCESS_NOTIFICATION_POLICY
             ),
             SystemActionDef(
                     id = SystemAction.VOLUME_DOWN,
                     category = CATEGORY_VOLUME,
                     iconRes = R.drawable.ic_volume_down_black_24dp,
-                    descriptionRes = R.string.action_volume_down
+                    descriptionRes = R.string.action_volume_down,
+                    permission = Manifest.permission.ACCESS_NOTIFICATION_POLICY
             ),
             SystemActionDef(
                     id = SystemAction.VOLUME_INCREASE_STREAM,
                     category = CATEGORY_VOLUME,
                     iconRes = R.drawable.ic_volume_up_black_24dp,
                     descriptionRes = R.string.action_increase_stream,
+                    permission = Manifest.permission.ACCESS_NOTIFICATION_POLICY,
                     formattedDescription = { ctx, option -> ctx.str(R.string.action_increase_stream_formatted, option) },
                     options = Option.STREAMS
             ),
@@ -277,7 +280,8 @@ object SystemActionUtils {
                     iconRes = R.drawable.ic_volume_down_black_24dp,
                     descriptionRes = R.string.action_decrease_stream,
                     formattedDescription = { ctx, option -> ctx.str(R.string.action_decrease_stream_formatted, option) },
-                    options = Option.STREAMS
+                    options = Option.STREAMS,
+                    permission = Manifest.permission.ACCESS_NOTIFICATION_POLICY
             ),
             SystemActionDef(
                     id = SystemAction.VOLUME_SHOW_DIALOG,
@@ -309,21 +313,24 @@ object SystemActionUtils {
                     category = CATEGORY_VOLUME,
                     minApi = Build.VERSION_CODES.M,
                     iconRes = R.drawable.ic_volume_mute_black_24dp,
-                    descriptionRes = R.string.action_volume_mute
+                    descriptionRes = R.string.action_volume_mute,
+                    permission = Manifest.permission.ACCESS_NOTIFICATION_POLICY
             ),
             SystemActionDef(
                     id = VOLUME_UNMUTE,
                     category = CATEGORY_VOLUME,
                     minApi = Build.VERSION_CODES.M,
                     iconRes = R.drawable.ic_volume_up_black_24dp,
-                    descriptionRes = R.string.action_volume_unmute
+                    descriptionRes = R.string.action_volume_unmute,
+                    permission = Manifest.permission.ACCESS_NOTIFICATION_POLICY
             ),
             SystemActionDef(
                     id = VOLUME_TOGGLE_MUTE,
                     category = CATEGORY_VOLUME,
                     minApi = Build.VERSION_CODES.M,
                     iconRes = R.drawable.ic_volume_mute_black_24dp,
-                    descriptionRes = R.string.action_toggle_mute
+                    descriptionRes = R.string.action_toggle_mute,
+                    permission = Manifest.permission.ACCESS_NOTIFICATION_POLICY
             ),
             //VOLUME
 
