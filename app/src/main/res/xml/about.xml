@@ -21,7 +21,7 @@
 
     <androidx.preference.Preference
         android:key="@string/key_pref_developer_email"
-        android:title="@string/pref_title_developer_email"/>
+        android:title="@string/pref_title_developer_email" />
 
     <io.github.sds100.keymapper.view.UrlLinkPreference
         android:title="@string/pref_title_developer_github"
@@ -30,6 +30,10 @@
     <io.github.sds100.keymapper.view.UrlLinkPreference
         android:title="@string/pref_title_source_code"
         app:linkUrl="@string/url_source_code" />
+
+    <io.github.sds100.keymapper.view.MarkdownDialogPreference
+        android:title="@string/pref_title_translate"
+        app:fileUrl="@string/url_translate" />
 
     <io.github.sds100.keymapper.view.MarkdownDialogPreference
         android:title="@string/pref_title_credits"
