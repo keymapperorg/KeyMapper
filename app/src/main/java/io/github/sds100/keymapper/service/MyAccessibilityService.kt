@@ -521,10 +521,10 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
     private fun imitateButtonPress(keyCode: Int) {
         when (keyCode) {
-            KeyEvent.KEYCODE_VOLUME_UP -> VolumeUtils.adjustVolume(ctx, AudioManager.ADJUST_RAISE,
+            KeyEvent.KEYCODE_VOLUME_UP -> AudioUtils.adjustVolume(ctx, AudioManager.ADJUST_RAISE,
                     showVolumeUi = true)
 
-            KeyEvent.KEYCODE_VOLUME_DOWN -> VolumeUtils.adjustVolume(ctx, AudioManager.ADJUST_LOWER,
+            KeyEvent.KEYCODE_VOLUME_DOWN -> AudioUtils.adjustVolume(ctx, AudioManager.ADJUST_LOWER,
                     showVolumeUi = true)
 
             KeyEvent.KEYCODE_BACK -> performGlobalAction(GLOBAL_ACTION_BACK)

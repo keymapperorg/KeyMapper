@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.util
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.content.Context
@@ -7,16 +8,14 @@ import android.media.AudioManager
 import android.os.Build
 import androidx.annotation.IntDef
 import androidx.annotation.RequiresApi
-import androidx.annotation.StringRes
 import io.github.sds100.keymapper.R
-import org.jetbrains.anko.selector
 import org.jetbrains.anko.toast
 
 /**
  * Created by sds100 on 21/10/2018.
  */
 
-object VolumeUtils {
+object AudioUtils {
     @SuppressLint("InlinedApi")
     @IntDef(value = [
         AudioManager.ADJUST_LOWER,
@@ -43,20 +42,12 @@ object VolumeUtils {
     @Retention(AnnotationRetention.SOURCE)
     annotation class StreamType
 
-    private val STREAM_TYPE_LABEL_MAP = sequence {
-        yield(AudioManager.STREAM_ALARM to R.string.stream_alarm)
-        yield(AudioManager.STREAM_DTMF to R.string.stream_dtmf)
-        yield(AudioManager.STREAM_MUSIC to R.string.stream_music)
-        yield(AudioManager.STREAM_NOTIFICATION to R.string.stream_notification)
-        yield(AudioManager.STREAM_RING to R.string.stream_ring)
-        yield(AudioManager.STREAM_SYSTEM to R.string.stream_system)
-        yield(AudioManager.STREAM_VOICE_CALL to R.string.stream_voice_call)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            yield(AudioManager.STREAM_ACCESSIBILITY to R.string.stream_accessibility)
-        }
-
-    }.toMap()
+    @IntDef(value = [
+        AudioManager.RINGER_MODE_NORMAL,
+        AudioManager.RINGER_MODE_VIBRATE,
+        AudioManager.RINGER_MODE_SILENT
+    ])
+    annotation class RingerMode
 
     /**
      * @param adjustMode must be one of the AudioManager.ADJUST... values
@@ -108,31 +99,11 @@ object VolumeUtils {
         audioManager.adjustStreamVolume(streamType, adjustMode, flag)
     }
 
-    fun showStreamPickerDialog(ctx: Context,
-                               onPosClick: (streamType: Int) -> Unit) {
-
-        //get all the strings from resources
-        val labels = sequence {
-            STREAM_TYPE_LABEL_MAP.forEach { yield(ctx.str(it.value)) }
-        }.toList()
-
-        ctx.selector(
-                title = ctx.str(R.string.dialog_title_pick_stream),
-                items = labels
-        ) { _, which ->
-            //"which" is the index.
-            onPosClick(STREAM_TYPE_LABEL_MAP.toList()[which].first)
-        }
-    }
-
-    @StringRes
-    fun getStreamLabel(@StreamType streamType: Int) = STREAM_TYPE_LABEL_MAP[streamType]!!
-
     /**
      * @return whether a specific volume stream is suppressed by the Do Not Disturb state
      */
     @RequiresApi(Build.VERSION_CODES.M)
-    fun isStreamSuppressed(ctx: Context, @VolumeUtils.StreamType stream: Int): Boolean {
+    fun isStreamSuppressed(ctx: Context, @AudioUtils.StreamType stream: Int): Boolean {
         (ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).apply {
             return when (stream) {
                 AudioManager.STREAM_ALARM ->
@@ -141,6 +112,27 @@ object VolumeUtils {
 
                 else -> currentInterruptionFilter != NotificationManager.INTERRUPTION_FILTER_ALL
             }
+        }
+    }
+
+    fun cycleThroughRingerModes(ctx: Context) {
+        (ctx.applicationContext.getSystemService(Context.AUDIO_SERVICE)
+                as AudioManager).apply {
+
+            when (ringerMode) {
+                AudioManager.RINGER_MODE_NORMAL -> changeRingerMode(ctx, AudioManager.RINGER_MODE_VIBRATE)
+                AudioManager.RINGER_MODE_VIBRATE -> changeRingerMode(ctx, AudioManager.RINGER_MODE_SILENT)
+                AudioManager.RINGER_MODE_SILENT -> changeRingerMode(ctx, AudioManager.RINGER_MODE_NORMAL)
+            }
+        }
+    }
+
+    fun changeRingerMode(ctx: Context, @RingerMode ringerMode: Int) {
+        if (ctx.isPermissionGranted(Manifest.permission.ACCESS_NOTIFICATION_POLICY)) {
+            val audioManager = ctx.applicationContext.getSystemService(Context.AUDIO_SERVICE)
+                    as AudioManager
+
+            audioManager.ringerMode = ringerMode
         }
     }
 }

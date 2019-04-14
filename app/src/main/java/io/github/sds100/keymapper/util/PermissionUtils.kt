@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.util
 
 import android.Manifest
 import android.app.Activity
+import android.app.NotificationManager
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
@@ -24,6 +25,7 @@ import org.jetbrains.anko.toast
  */
 
 object PermissionUtils {
+    const val REQUEST_CODE_PERMISSION = 344
 
     /**
      * @return a string resource describing the [permission]
@@ -35,6 +37,7 @@ object PermissionUtils {
             Manifest.permission.CAMERA -> R.string.error_action_requires_camera_permission
             Manifest.permission.BIND_DEVICE_ADMIN -> R.string.error_need_to_enable_device_admin
             Manifest.permission.READ_PHONE_STATE -> R.string.error_action_requires_read_phone_state_permission
+            Manifest.permission.ACCESS_NOTIFICATION_POLICY -> R.string.error_action_notification_policy_permission
             Constants.PERMISSION_ROOT -> R.string.error_action_requires_root
             else -> throw Exception("Couldn't find permission description for $permission")
         }
@@ -73,15 +76,20 @@ object PermissionUtils {
 
                 startActivityForResult(intent, ConfigKeymapActivity.REQUEST_CODE_DEVICE_ADMIN)
 
+            } else if (permission == Manifest.permission.ACCESS_NOTIFICATION_POLICY
+                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+                val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
+                startActivityForResult(intent, REQUEST_CODE_PERMISSION)
+
             } else {
-                ActivityCompat.requestPermissions(this, arrayOf(permission), ConfigKeymapActivity.PERMISSION_REQUEST_CODE)
+                ActivityCompat.requestPermissions(this, arrayOf(permission), REQUEST_CODE_PERMISSION)
             }
         }
     }
 }
 
 fun Context.isPermissionGranted(permission: String): Boolean {
-    //a different method must be used for WRITE_SETTINGS permission
     if (permission == Manifest.permission.WRITE_SETTINGS &&
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         return Settings.System.canWrite(this)
@@ -92,6 +100,16 @@ fun Context.isPermissionGranted(permission: String): Boolean {
     } else if (permission == Manifest.permission.BIND_DEVICE_ADMIN) {
         val dpm = getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
         return dpm.isAdminActive(ComponentName(this, DeviceAdmin::class.java))
+
+    } else if (permission == Manifest.permission.ACCESS_NOTIFICATION_POLICY) {
+
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.isNotificationPolicyAccessGranted
+
+        } else {
+            true
+        }
     }
 
     return ContextCompat.checkSelfPermission(this, permission) ==

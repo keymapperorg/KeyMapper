@@ -24,7 +24,7 @@ class TabDelegate(supportFragmentManager: FragmentManager,
 
     fun configureTabs() {
         if (tabTitles.size != tabFragments.size) {
-            throw Exception("Not every fragment has been assigned a tab title!")
+            throw Exception("Not every fragment has been assigned a tab descriptionRes!")
         }
 
         //improves performance when switching tabs since the fragment's onViewCreated isn't called

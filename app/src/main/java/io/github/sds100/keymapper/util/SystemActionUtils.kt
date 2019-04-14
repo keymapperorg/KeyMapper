@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.annotation.StringRes
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.SystemAction.CATEGORY_BLUETOOTH
 import io.github.sds100.keymapper.SystemAction.CATEGORY_BRIGHTNESS
@@ -180,7 +181,8 @@ object SystemActionUtils {
             SystemActionDef(
                     id = TOGGLE_MOBILE_DATA,
                     category = CATEGORY_MOBILE_DATA,
-                    iconRes = R.drawable.ic_signal,/*needs READ_PHONE_STATE permission so it can check whether mobile data is enabled. On some devices
+                    iconRes = R.drawable.ic_signal,
+                    /*needs READ_PHONE_STATE permission so it can check whether mobile data is enabled. On some devices
                     * it seems to need this permission.*/
                     permissions = arrayOf(Constants.PERMISSION_ROOT, Manifest.permission.READ_PHONE_STATE),
                     descriptionRes = R.string.action_toggle_mobile_data
@@ -265,19 +267,41 @@ object SystemActionUtils {
                     id = SystemAction.VOLUME_INCREASE_STREAM,
                     category = CATEGORY_VOLUME,
                     iconRes = R.drawable.ic_volume_up_black_24dp,
-                    descriptionRes = R.string.action_increase_stream
+                    descriptionRes = R.string.action_increase_stream,
+                    formattedDescription = { ctx, option -> ctx.str(R.string.action_increase_stream_formatted, option) },
+                    options = Option.STREAMS
             ),
             SystemActionDef(
                     id = SystemAction.VOLUME_DECREASE_STREAM,
                     category = CATEGORY_VOLUME,
                     iconRes = R.drawable.ic_volume_down_black_24dp,
-                    descriptionRes = R.string.action_decrease_stream
+                    descriptionRes = R.string.action_decrease_stream,
+                    formattedDescription = { ctx, option -> ctx.str(R.string.action_decrease_stream_formatted, option) },
+                    options = Option.STREAMS
             ),
             SystemActionDef(
                     id = SystemAction.VOLUME_SHOW_DIALOG,
                     category = CATEGORY_VOLUME,
                     descriptionRes = R.string.action_volume_show_dialog
             ),
+            SystemActionDef(
+                    id = SystemAction.CYCLE_RINGER_MODE,
+                    category = CATEGORY_VOLUME,
+                    descriptionRes = R.string.action_cycle_ringer_mode,
+                    permission = Manifest.permission.ACCESS_NOTIFICATION_POLICY
+            ),
+            SystemActionDef(id = SystemAction.CHANGE_RINGER_MODE,
+                    category = CATEGORY_VOLUME,
+                    descriptionRes = R.string.action_change_ringer_mode,
+
+                    formattedDescription = { ctx, option -> ctx.str(R.string.action_change_ringer_mode_formatted, option) },
+
+                    permissions = arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY),
+                    options = listOf(
+                            Option.RINGER_MODE_NORMAL,
+                            Option.RINGER_MODE_VIBRATE,
+                            Option.RINGER_MODE_SILENT
+                    )),
 
             //Require Marshmallow and higher
             SystemActionDef(
@@ -386,7 +410,11 @@ object SystemActionUtils {
                     feature = PackageManager.FEATURE_CAMERA_FLASH,
                     minApi = Build.VERSION_CODES.M,
                     iconRes = R.drawable.ic_flashlight,
-                    descriptionRes = R.string.action_toggle_flashlight
+                    descriptionRes = R.string.action_toggle_flashlight,
+                    formattedDescription = { ctx, optionText ->
+                        ctx.str(R.string.action_toggle_flashlight_formatted, optionText)
+                    },
+                    options = listOf(Option.LENS_BACK, Option.LENS_FRONT)
             ),
             SystemActionDef(
                     id = SystemAction.ENABLE_FLASHLIGHT,
@@ -395,7 +423,11 @@ object SystemActionUtils {
                     feature = PackageManager.FEATURE_CAMERA_FLASH,
                     minApi = Build.VERSION_CODES.M,
                     iconRes = R.drawable.ic_flashlight,
-                    descriptionRes = R.string.action_enable_flashlight
+                    descriptionRes = R.string.action_enable_flashlight,
+                    formattedDescription = { ctx, optionText ->
+                        ctx.str(R.string.action_enable_flashlight_formatted, optionText)
+                    },
+                    options = listOf(Option.LENS_BACK, Option.LENS_FRONT)
             ),
             SystemActionDef(
                     id = SystemAction.DISABLE_FLASHLIGHT,
@@ -404,7 +436,11 @@ object SystemActionUtils {
                     feature = PackageManager.FEATURE_CAMERA_FLASH,
                     minApi = Build.VERSION_CODES.M,
                     iconRes = R.drawable.ic_flashlight_off,
-                    descriptionRes = R.string.action_disable_flashlight
+                    descriptionRes = R.string.action_disable_flashlight,
+                    formattedDescription = { ctx, optionText ->
+                        ctx.str(R.string.action_disable_flashlight_formatted, optionText)
+                    },
+                    options = listOf(Option.LENS_BACK, Option.LENS_FRONT)
             ),
 
             //OTHER
@@ -475,5 +511,41 @@ object SystemActionUtils {
         val systemActionDef = SYSTEM_ACTION_DEFINITIONS.find { it.id == id }
 
         return systemActionDef.result(ERROR_CODE_SYSTEM_ACTION_NOT_FOUND, id)
+    }
+
+    @StringRes
+    fun getTextForOptionId(optionId: String): Int {
+        return when (optionId) {
+            Option.STREAM_ALARM -> R.string.stream_alarm
+            Option.STREAM_DTMF -> R.string.stream_dtmf
+            Option.STREAM_MUSIC -> R.string.stream_music
+            Option.STREAM_NOTIFICATION -> R.string.stream_notification
+            Option.STREAM_RING -> R.string.stream_ring
+            Option.STREAM_SYSTEM -> R.string.stream_system
+            Option.STREAM_VOICE_CALL -> R.string.stream_voice_call
+
+            Option.RINGER_MODE_NORMAL -> R.string.ringer_mode_normal
+            Option.RINGER_MODE_VIBRATE -> R.string.ringer_mode_vibrate
+            Option.RINGER_MODE_SILENT -> R.string.ringer_mode_silent
+
+            Option.LENS_BACK -> R.string.lens_back
+            Option.LENS_FRONT -> R.string.lens_front
+
+            else -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    when (optionId) {
+                        Option.STREAM_ACCESSIBILITY -> return R.string.stream_accessibility
+                    }
+                }
+
+                throw Exception("Can't find a string resource to describe that option id $optionId")
+            }
+        }
+    }
+
+    fun getDescriptionWithOption(ctx: Context, systemActionId: String, optionId: String): Result<String> {
+        val optionText = ctx.str(getTextForOptionId(optionId))
+
+        return getSystemActionDef(systemActionId).onSuccess { it.formattedDescription(ctx, optionText) }.result()
     }
 }
