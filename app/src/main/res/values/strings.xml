@@ -268,7 +268,13 @@
     <string name="error_cant_find_accessibility_settings_page">Can\'t find the Accessibility settings page!</string>
     <string name="error_cant_find_ime_settings">Can\'t find the input method settings page!</string>
     <string name="error_need_to_enable_device_admin">Key Mapper needs to be a device administrator to use this action!</string>
-    <string name="error_camera_in_use">Camera is in use!</string>
+
+    <string name="error_camera_in_use">Exception: Camera is in use!</string>
+    <string name="error_camera_disconnected">Exception: Camera Disconnected!</string>
+    <string name="error_camera_disabled">Exception: Camera disabled!</string>
+    <string name="error_camera_error">Exception: Camera error!</string>
+    <string name="error_max_cameras_in_use">Exception: Max cameras in use!</string>
+
     <string name="error_in_do_not_disturb_mode">In Do Not Disturb mode!</string>
     <string name="error_keymapper_doesnt_have_permission_app_shortcut">Key Mapper doesn\'t have permission to use that shortcut.</string>
     <string name="error_action_notification_policy_permission">The app needs permission to change the Do Not Disturb state!</string>
