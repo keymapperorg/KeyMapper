@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Key Mapper</string>
+    <string name="app_name" translatable="false">Key Mapper</string>
     <string name="developer_email">developer.sds100@gmail.com</string>
 
     <string name="no_action_chosen">No Action Chosen</string>
@@ -32,7 +32,7 @@
     <string name="description_text_block">Insert \'%s\'</string>
     <string name="description_keycode">%s</string>
 
-    <string name="exception_accessibility_service">Exception in onKeyEvent. Look in logcat.</string>
+    <string name="exception_accessibility_service" translatable="false">Exception in onKeyEvent. Look in logcat.</string>
 
     <!-- URLs -->
     <string name="url_source_code">https://github.com/sds100/KeyMapper</string>
