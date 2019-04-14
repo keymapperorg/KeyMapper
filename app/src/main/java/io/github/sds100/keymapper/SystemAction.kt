@@ -1,8 +1,5 @@
 package io.github.sds100.keymapper
 
-import android.os.Build
-import androidx.annotation.RequiresApi
-
 /**
  * Created by sds100 on 04/08/2018.
  */
@@ -53,14 +50,11 @@ object SystemAction {
     const val VOLUME_SHOW_DIALOG = "volume_show_dialog"
     const val VOLUME_DECREASE_STREAM = "volume_decrease_stream"
     const val VOLUME_INCREASE_STREAM = "volume_increase_stream"
+    const val CYCLE_RINGER_MODE = "ringer_mode_cycle"
+    const val CHANGE_RINGER_MODE = "ringer_mode_change"
 
-    @RequiresApi(Build.VERSION_CODES.M)
     const val VOLUME_UNMUTE = "volume_unmute"
-
-    @RequiresApi(Build.VERSION_CODES.M)
     const val VOLUME_MUTE = "volume_mute"
-
-    @RequiresApi(Build.VERSION_CODES.M)
     const val VOLUME_TOGGLE_MUTE = "volume_toggle_mute"
 
     //status bar
@@ -88,8 +82,8 @@ object SystemAction {
     const val DISABLE_FLASHLIGHT = "disable_flashlight"
 
     //other
-    @RequiresApi(Build.VERSION_CODES.P)
     const val SCREENSHOT = "screenshot"
+
     const val OPEN_ASSISTANT = "open_assistant"
     const val OPEN_CAMERA = "open_camera"
     const val LOCK_DEVICE = "lock_device"

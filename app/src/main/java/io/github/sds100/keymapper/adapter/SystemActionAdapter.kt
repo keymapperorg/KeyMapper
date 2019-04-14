@@ -4,14 +4,14 @@ import android.graphics.drawable.Drawable
 import android.widget.Filterable
 import com.hannesdorfmann.adapterdelegates4.AbsDelegationAdapter
 import io.github.sds100.keymapper.AlphabeticalFilter
+import io.github.sds100.keymapper.SectionItem
+import io.github.sds100.keymapper.SystemActionDef
 import io.github.sds100.keymapper.delegate.SectionedAdapterDelegate
 import io.github.sds100.keymapper.delegate.SectionedAdapterDelegate.Companion.VIEW_TYPE_SECTION
 import io.github.sds100.keymapper.delegate.SimpleItemAdapterDelegate
 import io.github.sds100.keymapper.interfaces.IContext
 import io.github.sds100.keymapper.interfaces.ISimpleItemAdapter
 import io.github.sds100.keymapper.interfaces.OnItemClickListener
-import io.github.sds100.keymapper.SectionItem
-import io.github.sds100.keymapper.SystemActionDef
 import io.github.sds100.keymapper.util.SystemActionUtils
 import io.github.sds100.keymapper.util.drawable
 import io.github.sds100.keymapper.util.str

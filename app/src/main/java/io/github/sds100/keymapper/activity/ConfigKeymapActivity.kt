@@ -24,11 +24,11 @@ import io.github.sds100.keymapper.adapter.TriggerAdapter
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_PERMISSION_DENIED
+import io.github.sds100.keymapper.util.PermissionUtils.REQUEST_CODE_PERMISSION
 import io.github.sds100.keymapper.viewmodel.ConfigKeyMapViewModel
 import kotlinx.android.synthetic.main.activity_config_key_map.*
 import kotlinx.android.synthetic.main.content_config_key_map.*
 import org.jetbrains.anko.*
-
 
 /**
  * Created by sds100 on 04/10/2018.
@@ -41,7 +41,6 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
         const val EXTRA_KEY_EVENT = "extra_key_event"
 
         const val REQUEST_CODE_ACTION = 821
-        const val PERMISSION_REQUEST_CODE = 344
         const val REQUEST_CODE_DEVICE_ADMIN = 213
     }
 
@@ -257,7 +256,7 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         when (requestCode) {
-            PERMISSION_REQUEST_CODE -> {
+            REQUEST_CODE_PERMISSION -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED) {
                     //reload the ActionDescriptionLayout so it stops saying the app needs permission.
                     viewModel.keyMap.notifyObservers()

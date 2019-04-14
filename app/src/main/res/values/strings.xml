@@ -27,9 +27,6 @@
     <string name="show_hidden_system_actions">Show hidden items</string>
     <string name="key_map_adapter_flags">Flags</string>
 
-    <string name="lens_front">Front</string>
-    <string name="lens_back">Back</string>
-
     <string name="description_open_app">Open %s</string>
     <string name="description_key">Press \'%s\' key</string>
     <string name="description_text_block">Insert \'%s\'</string>
@@ -234,7 +231,7 @@
     <string name="flag_vibrate">Vibrate</string>
     <!--flags-->
 
-    <!-- streams -->
+    <!-- system action options -->
     <string name="stream_accessibility">Accessibility</string>
     <string name="stream_alarm">Alarm</string>
     <string name="stream_dtmf">DTMF</string>
@@ -243,7 +240,14 @@
     <string name="stream_ring">Ring</string>
     <string name="stream_system">System</string>
     <string name="stream_voice_call">Voice call</string>
-    <!-- streams -->
+
+    <string name="ringer_mode_normal">Ring</string>
+    <string name="ringer_mode_vibrate">Vibrate</string>
+    <string name="ringer_mode_silent">Silent</string>
+
+    <string name="lens_front">Front</string>
+    <string name="lens_back">Back</string>
+    <!-- system action options -->
 
     <!-- Error messages -->
     <string name="error_must_type_a_key">You must type a key!</string>
@@ -267,6 +271,7 @@
     <string name="error_camera_in_use">Camera is in use!</string>
     <string name="error_in_do_not_disturb_mode">In Do Not Disturb mode!</string>
     <string name="error_keymapper_doesnt_have_permission_app_shortcut">Key Mapper doesn\'t have permission to use that shortcut.</string>
+    <string name="error_action_notification_policy_permission">The app needs permission to change the Do Not Disturb state!</string>
     <string name="error_action_requires_read_phone_state_permission">This action needs permission to read the phone state!</string>
     <string name="error_cant_find_write_settings_page">Can\'t find the write-settings permission page!</string>
 
@@ -296,6 +301,9 @@
     <string name="action_increase_stream_formatted">Increase %s Stream</string>
     <string name="action_decrease_stream">Decrease Stream</string>
     <string name="action_decrease_stream_formatted">Decrease %s Stream</string>
+    <string name="action_cycle_ringer_mode">Cycle Through Ringer Modes (Ring, Vibrate, Silent)</string>
+    <string name="action_change_ringer_mode">Change Ringer Mode</string>
+    <string name="action_change_ringer_mode_formatted">Change To %s Mode</string>
 
     <string name="action_enable_auto_rotate">Enable Auto Rotate</string>
     <string name="action_disable_auto_rotate">Disable Auto Rotate</string>
