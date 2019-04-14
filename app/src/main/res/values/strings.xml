@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name" translatable="false">Key Mapper</string>
-    <string name="developer_email">developer.sds100@gmail.com</string>
+    <string name="developer_email" translatable="false">developer.sds100@gmail.com</string>
 
     <string name="no_action_chosen">No Action Chosen</string>
     <string name="triggers_header">Triggers</string>
@@ -8,10 +8,10 @@
     The accessibility service only listens for key events and nothing else. Look at the source code, which is linked to in the About section inside the app if you are paranoid I\'m spying. :)</string>
     <string name="record_trigger_help">You have 5 seconds to press the keys/buttons which will trigger the action. Then press \"Stop recording trigger\" to confirm. Press \"clear\" to clear the keys you have already typed.</string>
     <string name="selection_count">%d selected</string>
-    <string name="ime_service_label">Key Mapper Input Method</string>
+    <string name="ime_service_label" translatable="false">Key Mapper Input Method</string>
     <string name="enable">Enable</string>
     <string name="open">Open</string>
-    <string name="shrug">¯\\_(ツ)_/¯</string>
+    <string name="shrug" translatable="false">¯\\_(ツ)_/¯</string>
     <string name="no_key_maps">You haven\'t created any keymaps!</string>
     <string name="performing_action">Key Mapper is performing an action…</string>
     <string name="email_subject">Key Mapper query</string>
@@ -35,17 +35,17 @@
     <string name="exception_accessibility_service" translatable="false">Exception in onKeyEvent. Look in logcat.</string>
 
     <!-- URLs -->
-    <string name="url_source_code">https://github.com/sds100/KeyMapper</string>
-    <string name="url_developer_github">https://github.com/sds100</string>
-    <string name="url_play_store_listing">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper</string>
-    <string name="url_license">https://raw.githubusercontent.com/sds100/KeyMapper/master/LICENSE.md</string>
-    <string name="url_changelog">https://raw.githubusercontent.com/sds100/KeyMapper/master/CHANGELOG.md</string>
-    <string name="url_credits">https://raw.githubusercontent.com/sds100/KeyMapper/master/CREDITS.md</string>
-    <string name="url_help">https://github.com/sds100/KeyMapper/wiki/Help.md</string>
-    <string name="url_translate">https://github.com/sds100/KeyMapper/wiki/Translate.md</string>
-    <string name="url_privacy_policy">https://raw.githubusercontent.com/sds100/KeyMapper/master/PRIVACY_POLICY.md</string>
-    <string name="url_xda_thread">https://forum.xda-developers.com/android/apps-games/app-keyboard-button-mapper-t3914005</string>
-    <string name="url_google_app_listing">https://play.google.com/store/apps/details?id=com.google.android.googlequicksearchbox</string>
+    <string name="url_source_code" translatable="false">https://github.com/sds100/KeyMapper</string>
+    <string name="url_developer_github" translatable="false">https://github.com/sds100</string>
+    <string name="url_play_store_listing" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper</string>
+    <string name="url_license" translatable="false">https://raw.githubusercontent.com/sds100/KeyMapper/master/LICENSE.md</string>
+    <string name="url_changelog" translatable="false">https://raw.githubusercontent.com/sds100/KeyMapper/master/CHANGELOG.md</string>
+    <string name="url_credits" translatable="false">https://raw.githubusercontent.com/sds100/KeyMapper/master/CREDITS.md</string>
+    <string name="url_help" translatable="false">https://github.com/sds100/KeyMapper/wiki/Help.md</string>
+    <string name="url_translate" translatable="false">https://github.com/sds100/KeyMapper/wiki/Translate.md</string>
+    <string name="url_privacy_policy" translatable="false">https://raw.githubusercontent.com/sds100/KeyMapper/master/PRIVACY_POLICY.md</string>
+    <string name="url_xda_thread" translatable="false">https://forum.xda-developers.com/android/apps-games/app-keyboard-button-mapper-t3914005</string>
+    <string name="url_google_app_listing" translatable="false">https://play.google.com/store/apps/details?id=com.google.android.googlequicksearchbox</string>
     <!-- URLs -->
 
     <!-- Activity titles -->
