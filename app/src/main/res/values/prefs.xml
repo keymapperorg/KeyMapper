@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Look in the default_prefs.xml file to find their default values -->
+    <string name="key_pref_version" translatable="false">key_version</string>
+    <string name="key_pref_developer_email" translatable="false">developer_email</string>
+
+    <string name="key_pref_first_time" translatable="false">pref_first_time</string>
+    <string name="key_pref_show_long_press_warning" translatable="false">key_show_long_press_warning</string>
+    <string name="key_pref_long_press_delay" translatable="false">pref_long_press_delay</string>
+    <string name="key_pref_vibrate_duration" translatable="false">pref_vibrate_duration</string>
+    <string name="key_pref_force_vibrate" translatable="false">pref_force_vibrate</string>
+    <string name="key_pref_show_ime_notification" translatable="false">pref_show_ime_notification</string>
+    <string name="key_pref_show_toggle_remappings_notification" translatable="false">pref_show_remappings_notification</string>
+    <string name="key_pref_data_collection" translatable="false">pref_data_collection</string>
+    <string name="key_pref_bluetooth_devices" translatable="false">pref_bluetooth_devices</string>
+    <string name="key_pref_auto_show_ime_picker" translatable="false">pref_auto_show_ime_picker</string>
+    <string name="key_pref_show_toast_when_action_performed" translatable="false">pref_show_toast_on_perform_action</string>
+    <string name="key_pref_auto_change_ime_on_connection" translatable="false">pref_auto_change_ime_on_connect_disconnect</string>
+    <string name="key_pref_allow_root_features" translatable="false">pref_allow_root_features</string>
+
+    <string name="key_pref_category_notifications" translatable="false">pref_category_notifications</string>
+    <string name="key_pref_category_root" translatable="false">pref_category_root</string>
+</resources>
