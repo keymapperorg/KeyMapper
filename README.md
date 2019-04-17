@@ -12,7 +12,10 @@ Key Mapper is a free and open source Android app that maps a single or multiple 
 ### Help
 Look at the help page in the wiki.
 
-### Branches
+### Translations 🌍
+Take a look at the translations page in the wiki. Any translations would be appreciated. 😊
+
+### Branches 🌴
  - master: Everything in the latest stable release.
  - develop: The most recent changes. The app is potentially unstable but it can be successfully compiled. Merges into a release branch when enough has been changed for a new release.
 
