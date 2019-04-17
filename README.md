@@ -5,7 +5,6 @@ Key Mapper is a free and open source Android app that maps a single or multiple 
 [XDA Developers thread](https://forum.xda-developers.com/android/apps-games/app-keyboard-button-mapper-t3914005)
 
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/sds100/KeyMapper.svg)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/1ca8cdc8b934404f8a0ec8a9b61a75ce)](https://app.codacy.com/app/sds100/KeyMapper?utm_source=github.com&utm_medium=referral&utm_content=sds100/KeyMapper&utm_campaign=Badge_Grade_Dashboard)
 
 ![](app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png?raw=true) <a href='https://play.google.com/store/apps/details?id=io.github.sds100.keymapper&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_gb/badges/images/generic/en_badge_web_generic.png' height=128px/> </a>
 
