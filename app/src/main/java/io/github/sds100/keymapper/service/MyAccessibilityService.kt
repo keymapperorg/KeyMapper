@@ -213,6 +213,9 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                         WidgetsManager.onEvent(ctx, EVENT_RESUME_REMAPS)
                     }
                 }
+                Intent.ACTION_SCREEN_ON -> {
+                    clearLists()
+                }
             }
         }
     }
@@ -291,6 +294,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         intentFilter.addAction(ACTION_PAUSE_REMAPPINGS)
         intentFilter.addAction(ACTION_RESUME_REMAPPINGS)
         intentFilter.addAction(ACTION_UPDATE_NOTIFICATION)
+        intentFilter.addAction(Intent.ACTION_SCREEN_ON);
 
         registerReceiver(mBroadcastReceiver, intentFilter)
 
