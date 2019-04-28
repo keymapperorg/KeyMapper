@@ -47,6 +47,7 @@ object KeycodeUtils {
             KeyEvent.KEYCODE_SEARCH to "Search",
             KeyEvent.KEYCODE_CAPS_LOCK to "Caps Lock",
             KeyEvent.KEYCODE_HEADSETHOOK to "Headset Button",
+            KeyEvent.KEYCODE_NUM_LOCK to "Num Lock",
 
             KeyEvent.KEYCODE_BUTTON_1 to "Button 1",
             KeyEvent.KEYCODE_BUTTON_2 to "Button 2",
