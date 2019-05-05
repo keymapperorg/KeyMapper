@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="colorHomeBackground" format="color" />
+
     <declare-styleable name="ServiceStatusLayout">
         <!--The text to show if the service is enabled-->
         <attr name="enabledText" format="string" />
@@ -19,10 +21,10 @@
     </declare-styleable>
 
     <declare-styleable name="AppTheme">
-        <attr name="bottomSheetMenuItemStyle" format="reference"/>
+        <attr name="bottomSheetMenuItemStyle" format="reference" />
     </declare-styleable>
-    
+
     <declare-styleable name="BottomSheetMenuItem">
-        <attr name="activityToOpen" format="string"/>
+        <attr name="activityToOpen" format="string" />
     </declare-styleable>
 </resources>
