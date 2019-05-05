@@ -24,6 +24,7 @@ import io.github.sds100.keymapper.util.FlagUtils.FLAG_SHOW_VOLUME_UI
 import io.github.sds100.keymapper.util.FlagUtils.FLAG_VIBRATE
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.toast
+import java.lang.Exception
 
 
 /**
@@ -76,6 +77,8 @@ class ActionPerformerDelegate(
                         toast(R.string.error_shortcut_not_found)
                     } catch (e: SecurityException) {
                         toast(R.string.error_keymapper_doesnt_have_permission_app_shortcut)
+                    } catch (e: Exception) {
+                        toast(R.string.error_opening_app_shortcut)
                     }
                 }
 
