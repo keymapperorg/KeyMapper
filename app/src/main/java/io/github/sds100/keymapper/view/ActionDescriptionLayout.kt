@@ -26,7 +26,7 @@ class ActionDescriptionLayout(
 
         /* on pre-lollipop devices, vector drawables can't be used with drawableStart,
          * drawableEnd etc. otherwise the app crashes. */
-        val errorDrawable = drawable(R.drawable.ic_error_red_24dp)
+        val errorDrawable = drawable(R.drawable.ic_error_outline_red_24dp)
 
         textViewError.setCompoundDrawablesWithIntrinsicBounds(
                 errorDrawable,

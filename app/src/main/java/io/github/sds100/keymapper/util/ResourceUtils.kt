@@ -24,6 +24,31 @@ fun View.str(@StringRes resId: Int, formatArgs: Any? = null): String = context.s
 
 fun Context.bool(@BoolRes resId: Int): Boolean = resources.getBoolean(resId)
 
+fun View.bool(attributeSet: AttributeSet, @StyleableRes styleableId: IntArray, @StyleableRes attrId: Int) =
+        context.bool(attributeSet, styleableId, attrId)
+
+/**
+ * Get a boolean from an attribute
+ */
+fun Context.bool(
+        attributeSet: AttributeSet,
+        @StyleableRes styleableId: IntArray,
+        @StyleableRes attrId: Int,
+        defaultValue: Boolean = false
+): Boolean {
+    val typedArray = theme.obtainStyledAttributes(attributeSet, styleableId, 0, 0)
+
+    val attrValue: Boolean?
+
+    try {
+        attrValue = typedArray.getBoolean(attrId, defaultValue)
+    } finally {
+        typedArray.recycle()
+    }
+
+    return attrValue!!
+}
+
 /**
  * Get a string from an attribute
  */

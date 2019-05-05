@@ -57,10 +57,10 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
                     }
                 }
                 MyAccessibilityService.ACTION_ON_START -> {
-                    accessibilityServiceStatusLayout.changeToServiceEnabledState()
+                    accessibilityServiceStatusLayout.changeToFixedState()
                 }
                 MyAccessibilityService.ACTION_ON_STOP -> {
-                    accessibilityServiceStatusLayout.changeToServiceDisabledState()
+                    accessibilityServiceStatusLayout.changeToErrorState()
                 }
             }
         }
@@ -240,15 +240,15 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
         super.onResume()
 
         if (MyAccessibilityService.isServiceEnabled(this)) {
-            accessibilityServiceStatusLayout.changeToServiceEnabledState()
+            accessibilityServiceStatusLayout.changeToFixedState()
         } else {
-            accessibilityServiceStatusLayout.changeToServiceDisabledState()
+            accessibilityServiceStatusLayout.changeToErrorState()
         }
 
         if (MyIMEService.isServiceEnabled(this)) {
-            imeServiceStatusLayout.changeToServiceEnabledState()
+            imeServiceStatusLayout.changeToFixedState()
         } else {
-            imeServiceStatusLayout.changeToServiceDisabledState()
+            imeServiceStatusLayout.changeToErrorState()
         }
     }
 
