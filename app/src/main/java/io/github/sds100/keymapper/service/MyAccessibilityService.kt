@@ -126,6 +126,13 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
             return false
         }
+
+        /**
+         * Some keys need to be consumed on the up event to prevent them from working they way they are intended to.
+         */
+        private val KEYS_TO_CONSUME_UP_EVENT = listOf(
+                KeyEvent.KEYCODE_HOME
+        )
     }
 
     /**
@@ -262,10 +269,9 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
     private val mRepeatQueue = mutableListOf<PendingAction>()
 
     /**
-     * When the home keyevent action is up, the device goes to the homescreen. Therefore, the user doesn't want to go
-     * to the homescreen when they use a trigger with the home key in it.
+     * Some keys need to be consumed on the up event to prevent them from working they way they are intended to.
      */
-    private var mPerformedHomeButtonTrigger = false
+    private val mKeysToConsumeOnUp = mutableSetOf<Int>()
 
     private var mRecordingTrigger = false
 
@@ -385,9 +391,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                     mRepeatQueue.remove(it)
                 }
 
-                //When the home button up event is passed to the system, the device goes to home screen
-                if (mPerformedHomeButtonTrigger) {
-                    mPerformedHomeButtonTrigger = false
+                if (mKeysToConsumeOnUp.contains(event.keyCode)) {
+                    mKeysToConsumeOnUp.remove(event.keyCode)
                     return true
                 }
 
@@ -510,8 +515,10 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
     private fun performAction(action: Action, flags: Int) {
         mActionPerformerDelegate.performAction(action, flags)
 
-        if (mPressedTriggerKeys.contains(KeyEvent.KEYCODE_HOME)) {
-            mPerformedHomeButtonTrigger = true
+        mPressedTriggerKeys.forEach {
+            if (KEYS_TO_CONSUME_UP_EVENT.contains(it)) {
+                mKeysToConsumeOnUp.add(it)
+            }
         }
     }
 
