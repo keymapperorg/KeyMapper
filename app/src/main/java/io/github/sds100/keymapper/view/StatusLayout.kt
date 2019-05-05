@@ -34,13 +34,13 @@ class StatusLayout(
             mFixedText = str(
                     attrs,
                     R.styleable.StatusLayout,
-                    R.styleable.StatusLayout_enabledText
+                    R.styleable.StatusLayout_fixedText
             )
 
             mErrorText = str(
                     attrs,
                     R.styleable.StatusLayout,
-                    R.styleable.StatusLayout_disabledText
+                    R.styleable.StatusLayout_errorText
             )
 
             mYellowOnError = bool(

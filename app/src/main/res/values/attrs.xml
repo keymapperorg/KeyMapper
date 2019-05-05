@@ -4,10 +4,10 @@
 
     <declare-styleable name="StatusLayout">
         <!--The text to show if the service is enabled-->
-        <attr name="enabledText" format="string" />
+        <attr name="fixedText" format="string" />
 
         <!--The text to show if the service is disabled-->
-        <attr name="disabledText" format="string" />
+        <attr name="errorText" format="string" />
 
         <!-- Show a yellow warning symbol instead of a red one when it is disabled-->
         <attr name="yellowOnError" format="boolean" />
