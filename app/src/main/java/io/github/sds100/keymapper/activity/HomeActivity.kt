@@ -78,13 +78,14 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
                 appBar.fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_END
                 appBar.navigationIcon = drawable(R.drawable.ic_arrow_back_appbar_24dp)
                 fab.setImageDrawable(drawable(R.drawable.ic_delete_white_24dp))
-                onCreateOptionsMenu(appBar.menu)
             } else {
                 appBar.fabAlignmentMode = FAB_ALIGNMENT_MODE_CENTER
                 appBar.navigationIcon = drawable(R.drawable.ic_menu_white_24dp)
                 fab.setImageDrawable(drawable(R.drawable.ic_add_24dp_white))
-                appBar.menu.clear()
             }
+            
+            appBar.menu.clear()
+            onCreateOptionsMenu(appBar.menu)
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -202,10 +203,14 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_multi_select, appBar.menu)
-        updateSelectionCount()
+        if (mActionModeActive) {
+            menuInflater.inflate(R.menu.menu_multi_select, appBar.menu)
+            updateSelectionCount()
+        } else {
+            menuInflater.inflate(R.menu.menu_home, appBar.menu)
+        }
 
-        return mActionModeActive
+        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -224,7 +229,12 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
 
             R.id.action_select_all -> {
                 mKeymapAdapter.iSelectionProvider.selectAll()
-                return true
+                true
+            }
+
+            R.id.action_help -> {
+                startActivity(Intent(this, HelpActivity::class.java))
+                true
             }
 
             android.R.id.home -> {
