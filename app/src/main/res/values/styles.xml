@@ -11,6 +11,7 @@
         <item name="colorSecondary">@color/colorSecondary</item>
         <item name="colorOnSecondary">@color/colorOnSecondary</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorHomeBackground">#FAFAFA</item>
         <item name="bottomSheetDialogTheme">@style/BottomSheetDialogTheme</item>
         <item name="android:alertDialogTheme">@style/AnkoSupportAlertDialog</item>
         <item name="bottomSheetMenuItemStyle">@style/BottomSheetMenuItem</item>
