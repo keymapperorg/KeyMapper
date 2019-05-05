@@ -5,6 +5,8 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.util.bool
+import io.github.sds100.keymapper.util.color
 import io.github.sds100.keymapper.util.drawable
 import io.github.sds100.keymapper.util.str
 import kotlinx.android.synthetic.main.layout_service_status.view.*
@@ -12,7 +14,7 @@ import kotlinx.android.synthetic.main.layout_service_status.view.*
 /**
  * Created by sds100 on 15/11/2018.
  */
-class ServiceStatusLayout(
+class StatusLayout(
         context: Context,
         attrs: AttributeSet?,
         defStyleAttr: Int
@@ -21,45 +23,62 @@ class ServiceStatusLayout(
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context) : this(context, null, 0)
 
-    private var mEnabledText: String? = null
-    private var mDisabledText: String? = null
+    private var mFixedText: String? = null
+    private var mErrorText: String? = null
+    private var mYellowOnError: Boolean = false
 
     init {
         View.inflate(context, R.layout.layout_service_status, this)
 
         if (attrs != null) {
-            mEnabledText = str(
+            mFixedText = str(
                     attrs,
-                    R.styleable.ServiceStatusLayout,
-                    R.styleable.ServiceStatusLayout_enabledText
+                    R.styleable.StatusLayout,
+                    R.styleable.StatusLayout_enabledText
             )
 
-            mDisabledText = str(
+            mErrorText = str(
                     attrs,
-                    R.styleable.ServiceStatusLayout,
-                    R.styleable.ServiceStatusLayout_disabledText
+                    R.styleable.StatusLayout,
+                    R.styleable.StatusLayout_disabledText
+            )
+
+            mYellowOnError = bool(
+                    attrs,
+                    R.styleable.StatusLayout,
+                    R.styleable.StatusLayout_yellowOnError
             )
         }
 
+        if (mYellowOnError) {
+            buttonFix.setBackgroundColor(color(R.color.warn))
+        } else {
+            buttonFix.setBackgroundColor(color(R.color.error))
+        }
+
         //set to disabled state by default
-        changeToServiceDisabledState()
+        changeToErrorState()
     }
 
-    fun changeToServiceEnabledState() {
+    fun changeToFixedState() {
 
-        val drawable = drawable(R.drawable.check_circle_green)
+        val drawable = drawable(R.drawable.ic_check_green_outline_24dp)
 
-        textViewStatus.text = mEnabledText
+        textViewStatus.text = mFixedText
         textViewStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, null, null, null)
 
         buttonFix.visibility = View.GONE
     }
 
-    fun changeToServiceDisabledState() {
+    fun changeToErrorState() {
 
-        val drawable = drawable(R.drawable.close_circle_red)
+        val drawable = if (mYellowOnError) {
+            drawable(R.drawable.ic_warn_outline_yellow_24dp)
+        } else {
+            drawable(R.drawable.ic_error_outline_red_24dp)
+        }
 
-        textViewStatus.text = mDisabledText
+        textViewStatus.text = mErrorText
         textViewStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, null, null, null)
 
         buttonFix.visibility = View.VISIBLE

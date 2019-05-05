@@ -8,7 +8,7 @@
     tools:context=".activity.HomeActivity"
     tools:showIn="@layout/activity_home">
 
-    <io.github.sds100.keymapper.view.ServiceStatusLayout
+    <io.github.sds100.keymapper.view.StatusLayout
         android:id="@+id/accessibilityServiceStatusLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -22,7 +22,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <io.github.sds100.keymapper.view.ServiceStatusLayout
+    <io.github.sds100.keymapper.view.StatusLayout
         android:id="@+id/imeServiceStatusLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -31,7 +31,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/accessibilityServiceStatusLayout"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:warnWhenDisabled="true" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewKeyMaps"

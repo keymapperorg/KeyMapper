@@ -2,12 +2,15 @@
 <resources>
     <attr name="colorHomeBackground" format="color" />
 
-    <declare-styleable name="ServiceStatusLayout">
+    <declare-styleable name="StatusLayout">
         <!--The text to show if the service is enabled-->
         <attr name="enabledText" format="string" />
 
         <!--The text to show if the service is disabled-->
         <attr name="disabledText" format="string" />
+
+        <!-- Show a yellow warning symbol instead of a red one when it is disabled-->
+        <attr name="yellowOnError" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="UrlLinkPreference">
