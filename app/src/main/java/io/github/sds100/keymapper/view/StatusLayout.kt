@@ -9,7 +9,7 @@ import io.github.sds100.keymapper.util.bool
 import io.github.sds100.keymapper.util.color
 import io.github.sds100.keymapper.util.drawable
 import io.github.sds100.keymapper.util.str
-import kotlinx.android.synthetic.main.layout_service_status.view.*
+import kotlinx.android.synthetic.main.layout_status.view.*
 
 /**
  * Created by sds100 on 15/11/2018.
@@ -28,7 +28,7 @@ class StatusLayout(
     private var mYellowOnError: Boolean = false
 
     init {
-        View.inflate(context, R.layout.layout_service_status, this)
+        View.inflate(context, R.layout.layout_status, this)
 
         if (attrs != null) {
             mFixedText = str(
