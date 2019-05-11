@@ -6,7 +6,7 @@ apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 28
-    buildToolsVersion = "28.0.4"
+    buildToolsVersion = "29.0.0-rc3"
 
     defaultConfig {
         applicationId "io.github.sds100.keymapper"
@@ -27,8 +27,6 @@ android {
             versionNameSuffix "-debug"
         }
     }
-
-    buildToolsVersion '28.0.3'
 }
 
 dependencies {
