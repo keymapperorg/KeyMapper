@@ -18,6 +18,8 @@ import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.DeviceAdmin
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.activity.ConfigKeymapActivity
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.okButton
 import org.jetbrains.anko.toast
 
 /**
@@ -64,18 +66,24 @@ object PermissionUtils {
                 RootUtils.promptForRootPermission(this)
 
             } else if (permission == Manifest.permission.BIND_DEVICE_ADMIN) {
-                val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
+                activity.alert {
+                    messageResource = R.string.enable_device_admin_message
 
-                intent.putExtra(
-                        DevicePolicyManager.EXTRA_DEVICE_ADMIN,
-                        ComponentName(this, DeviceAdmin::class.java))
+                    okButton {
+                        val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
 
-                intent.putExtra(
-                        DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-                        str(R.string.error_need_to_enable_device_admin))
+                        intent.putExtra(
+                                DevicePolicyManager.EXTRA_DEVICE_ADMIN,
+                                ComponentName(activity, DeviceAdmin::class.java))
 
-                startActivityForResult(intent, ConfigKeymapActivity.REQUEST_CODE_DEVICE_ADMIN)
+                        intent.putExtra(
+                                DevicePolicyManager.EXTRA_ADD_EXPLANATION,
+                                str(R.string.error_need_to_enable_device_admin))
 
+                        startActivityForResult(intent, ConfigKeymapActivity.REQUEST_CODE_DEVICE_ADMIN)
+                    }
+
+                }.show()
             } else if (permission == Manifest.permission.ACCESS_NOTIFICATION_POLICY
                     && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
