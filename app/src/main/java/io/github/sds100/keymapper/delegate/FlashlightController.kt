@@ -92,6 +92,7 @@ class FlashlightController(iContext: IContext) : IContext by iContext, Lifecycle
                         CameraAccessException.CAMERA_DISABLED -> ctx.toast(R.string.error_camera_disabled)
                         CameraAccessException.CAMERA_ERROR -> ctx.toast(R.string.error_camera_error)
                         CameraAccessException.MAX_CAMERAS_IN_USE -> ctx.toast(R.string.error_max_cameras_in_use)
+                        else -> ctx.toast(R.string.error_camera_access_exception)
                     }
                 }
             }

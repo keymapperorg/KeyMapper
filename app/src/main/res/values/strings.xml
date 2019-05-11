@@ -262,11 +262,12 @@
     <string name="error_opening_app_shortcut">Error opening this app shortcut</string>
     <string name="error_no_app_found_to_send_feedback">No compatible app is found to send feedback.</string>
 
-    <string name="error_camera_in_use">Exception: Camera is in use!</string>
-    <string name="error_camera_disconnected">Exception: Camera Disconnected!</string>
-    <string name="error_camera_disabled">Exception: Camera disabled!</string>
-    <string name="error_camera_error">Exception: Camera error!</string>
-    <string name="error_max_cameras_in_use">Exception: Max cameras in use!</string>
+    <string name="error_camera_in_use">Camera is in use!</string>
+    <string name="error_camera_disconnected">Camera Disconnected!</string>
+    <string name="error_camera_disabled">Camera disabled!</string>
+    <string name="error_camera_error">Camera error!</string>
+    <string name="error_max_cameras_in_use">Maximum number of cameras in use!</string>
+    <string name="error_camera_access_exception">Can\'t access the camera!</string>
 
     <string name="error_accessibility_service_disabled">The accessibility service must be enabled for this app to work!</string>
     <string name="error_accessibility_service_enabled">Accessibility service is enabled!</string>
