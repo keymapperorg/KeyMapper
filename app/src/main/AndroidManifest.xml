@@ -69,6 +69,10 @@
             android:name=".activity.HelpActivity"
             android:label="@string/title_help" />
 
+        <activity
+            android:name=".activity.LogActivity"
+            android:label="@string/title_log" />
+
         <receiver android:name=".broadcastreceiver.KeyMapperBroadcastReceiver" />
 
         <receiver android:name=".broadcastreceiver.BootBroadcastReceiver">
@@ -92,7 +96,7 @@
                 android:resource="@xml/device_admin" />
 
             <intent-filter>
-                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED"/>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
             </intent-filter>
         </receiver>
 

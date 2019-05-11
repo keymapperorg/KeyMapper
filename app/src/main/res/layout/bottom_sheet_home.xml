@@ -36,12 +36,21 @@
             app:icon="@drawable/ic_outline_settings_24px" />
 
         <io.github.sds100.keymapper.view.BottomSheetMenuItem
+            android:id="@+id/menuItemSendFeedback"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:id="@+id/menuItemSendFeedback"
             android:text="@string/action_send_feedback"
             app:icon="@drawable/ic_outline_feedback_24px" />
+
+        <io.github.sds100.keymapper.view.BottomSheetMenuItem
+            android:id="@+id/menuItemLog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/action_log"
+            app:activityToOpen="io.github.sds100.keymapper.activity.LogActivity"
+            app:icon="@drawable/ic_outline_bug_report_24px" />
     </LinearLayout>
 
     <com.google.android.material.button.MaterialButton

@@ -4,8 +4,8 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.preference.*
-import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.util.BluetoothUtils
 import io.github.sds100.keymapper.util.NotificationUtils

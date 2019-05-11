@@ -45,6 +45,15 @@
         app:seekBarIncrement="@integer/vibrate_duration_increment"
         app:showSeekBarValue="true" />
 
+    <androidx.preference.PreferenceCategory android:title="@string/title_pref_category_debug">
+        <androidx.preference.SwitchPreference
+            android:defaultValue="@bool/default_value_debug"
+            android:key="@string/key_pref_debug"
+            android:layout="@layout/preference_material_no_max_lines"
+            android:summary="@string/summary_pref_debug"
+            android:title="@string/title_pref_debug" />
+    </androidx.preference.PreferenceCategory>
+
     <androidx.preference.PreferenceCategory
         android:key="@string/key_pref_category_root"
         android:title="@string/title_pref_category_root">
