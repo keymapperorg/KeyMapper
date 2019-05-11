@@ -16,6 +16,7 @@ import androidx.annotation.ColorRes
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -77,13 +78,13 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
             if (mActionModeActive) {
                 appBar.fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_END
                 appBar.navigationIcon = drawable(R.drawable.ic_arrow_back_appbar_24dp)
-                fab.setImageDrawable(drawable(R.drawable.ic_delete_white_24dp))
+                fab.setImageDrawable(drawable(R.drawable.ic_outline_delete_white))
             } else {
                 appBar.fabAlignmentMode = FAB_ALIGNMENT_MODE_CENTER
                 appBar.navigationIcon = drawable(R.drawable.ic_menu_white_24dp)
                 fab.setImageDrawable(drawable(R.drawable.ic_add_24dp_white))
             }
-            
+
             appBar.menu.clear()
             onCreateOptionsMenu(appBar.menu)
         }
@@ -116,7 +117,9 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
             }
         }
 
-        mBottomSheetView.onViewCreated = { view ->
+        mBottomSheetView.createView = { view ->
+            view.menuItemLog.isVisible = Logger.isLoggingEnabled(this)
+
             view.buttonEnableAll.setOnClickListener {
                 mViewModel.enableAllKeymaps()
                 mBottomSheetView.dismiss()

@@ -17,6 +17,7 @@
     <string name="key_pref_show_toast_when_action_performed" translatable="false">pref_show_toast_on_perform_action</string>
     <string name="key_pref_auto_change_ime_on_connection" translatable="false">pref_auto_change_ime_on_connect_disconnect</string>
     <string name="key_pref_allow_root_features" translatable="false">pref_allow_root_features</string>
+    <string name="key_pref_debug" translatable="false">pref_debugging_mode</string>
 
     <string name="key_pref_category_notifications" translatable="false">pref_category_notifications</string>
     <string name="key_pref_category_root" translatable="false">pref_category_root</string>

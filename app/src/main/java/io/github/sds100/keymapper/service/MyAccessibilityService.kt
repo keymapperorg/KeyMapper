@@ -324,6 +324,12 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {}
 
     override fun onKeyEvent(event: KeyEvent?): Boolean {
+        when {
+            event?.action == KeyEvent.ACTION_DOWN -> Logger.log(ctx, "Down Key Event", event.toString())
+            event?.action == KeyEvent.ACTION_UP -> Logger.log(ctx, "Up Key Event", event.toString())
+            else -> Logger.log(ctx, "Other Key Event", event.toString())
+        }
+
         if (event == null) return super.onKeyEvent(event)
 
         try {
@@ -499,6 +505,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
             }
 
         } catch (e: Exception) {
+            Logger.log(ctx, "Exception in onKeyEvent()", e.stackTrace.toString())
 
             if (BuildConfig.DEBUG) {
                 toast(R.string.exception_accessibility_service)
@@ -514,6 +521,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
     private fun performAction(action: Action, flags: Int) {
         mActionPerformerDelegate.performAction(action, flags)
+
+        Logger.log(ctx, "Performed Action", "${action.type} ${action.data} ${action.extras}")
 
         mPressedTriggerKeys.forEach {
             if (KEYS_TO_CONSUME_UP_EVENT.contains(it)) {
@@ -555,6 +564,12 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
     }
 
     private fun logConsumedKeyEvent(event: KeyEvent) {
+        if (event.action == KeyEvent.ACTION_DOWN) {
+            Logger.log(ctx, "Consumed Down", event.toString())
+        } else if (event.action == KeyEvent.ACTION_UP) {
+            Logger.log(ctx, "Consumed Up", event.toString())
+        }
+
         Log.i(this::class.java.simpleName, "Consumed key event ${event.keyCode} ${event.action}")
     }
 }

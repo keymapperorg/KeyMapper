@@ -36,7 +36,7 @@ class BottomSheetMenu : BottomSheetDialogFragment() {
         }
     }
 
-    var onViewCreated: (view: View) -> Unit = {}
+    var createView: (view: View) -> Unit = {}
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val layoutId = arguments!!.getInt(KEY_LAYOUT_ID)
@@ -47,9 +47,16 @@ class BottomSheetMenu : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        onViewCreated(view)
+        createView(view)
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        view?.let {
+            createView(it)
+        }
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
