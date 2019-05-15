@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="colorHomeBackground" format="color" />
+    <attr name="iconColorOnSurface" format="color" />
 
     <declare-styleable name="StatusLayout">
         <!--The text to show if the service is enabled-->
