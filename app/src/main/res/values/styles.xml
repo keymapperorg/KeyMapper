@@ -3,6 +3,7 @@
     <style name="AppTheme" parent="Base.AppTheme" />
 
     <style name="AppTheme.LightStatusBar" parent="AppTheme.NoActionBar" />
+
     <!-- Base application theme. -->
     <style name="Base.AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -15,6 +16,7 @@
         <item name="bottomSheetDialogTheme">@style/BottomSheetDialogTheme</item>
         <item name="android:alertDialogTheme">@style/AnkoSupportAlertDialog</item>
         <item name="bottomSheetMenuItemStyle">@style/BottomSheetMenuItem</item>
+        <item name="iconColorOnSurface">@color/colorIconDark</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

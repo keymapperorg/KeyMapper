@@ -6,6 +6,7 @@
     <color name="colorPrimaryVariant">@color/colorAccent</color>
     <color name="colorSecondary">@color/red</color>
     <color name="colorOnSecondary">#ffffff</color>
+    <color name="colorIconDark">#424242</color>
 
     <color name="divider">#E0E0E0</color>
     <color name="background_selected">#e0e0e0</color>
