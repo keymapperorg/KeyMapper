@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.util
 
 import android.content.Context
 import android.provider.Settings
+import android.view.Surface
 
 /**
  * Created by sds100 on 24/10/2018.
@@ -12,7 +13,7 @@ object ScreenRotationUtils {
 
         //auto rotate must be disabled for this to work
         disableAutoRotate(ctx)
-        Settings.System.putInt(ctx.contentResolver, Settings.System.USER_ROTATION, 0)
+        Settings.System.putInt(ctx.contentResolver, Settings.System.USER_ROTATION, Surface.ROTATION_0)
     }
 
     fun forceLandscapeMode(ctx: Context) {
@@ -20,7 +21,7 @@ object ScreenRotationUtils {
 
         //auto rotate must be disabled for this to work
         disableAutoRotate(ctx)
-        Settings.System.putInt(ctx.contentResolver, Settings.System.USER_ROTATION, 0)
+        Settings.System.putInt(ctx.contentResolver, Settings.System.USER_ROTATION, Surface.ROTATION_90)
     }
 
     fun enableAutoRotate(ctx: Context) {
