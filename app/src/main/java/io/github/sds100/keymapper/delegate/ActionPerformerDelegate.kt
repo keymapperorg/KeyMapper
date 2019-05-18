@@ -171,6 +171,7 @@ class ActionPerformerDelegate(
                 SystemAction.DISABLE_AUTO_ROTATE -> ScreenRotationUtils.disableAutoRotate(this)
                 SystemAction.PORTRAIT_MODE -> ScreenRotationUtils.forcePortraitMode(this)
                 SystemAction.LANDSCAPE_MODE -> ScreenRotationUtils.forceLandscapeMode(this)
+                SystemAction.SWITCH_ORIENTATION -> ScreenRotationUtils.switchOrientation(this)
 
                 SystemAction.VOLUME_UP -> AudioUtils.adjustVolume(this, AudioManager.ADJUST_RAISE, showVolumeUi)
                 SystemAction.VOLUME_DOWN -> AudioUtils.adjustVolume(this, AudioManager.ADJUST_LOWER, showVolumeUi)

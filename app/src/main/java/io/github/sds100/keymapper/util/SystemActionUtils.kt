@@ -51,6 +51,7 @@ import io.github.sds100.keymapper.SystemAction.PREVIOUS_TRACK
 import io.github.sds100.keymapper.SystemAction.REWIND
 import io.github.sds100.keymapper.SystemAction.SCREENSHOT
 import io.github.sds100.keymapper.SystemAction.SECURE_LOCK_DEVICE
+import io.github.sds100.keymapper.SystemAction.SWITCH_ORIENTATION
 import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_ROTATE
 import io.github.sds100.keymapper.SystemAction.TOGGLE_BLUETOOTH
@@ -369,6 +370,13 @@ object SystemActionUtils {
                     permission = Manifest.permission.WRITE_SETTINGS,
                     iconRes = R.drawable.ic_stay_current_landscape_black_24dp,
                     descriptionRes = R.string.action_landscape_mode
+            ),
+            SystemActionDef(
+                    id = SWITCH_ORIENTATION,
+                    category = CATEGORY_SCREEN_ROTATION,
+                    permission = Manifest.permission.WRITE_SETTINGS,
+                    iconRes = R.drawable.ic_screen_rotation_black_24dp,
+                    descriptionRes = R.string.action_switch_orientation
             ),
             //SCREEN ORIENTATION
 
