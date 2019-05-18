@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.SystemAction.CATEGORY_FLASHLIGHT
 import io.github.sds100.keymapper.SystemAction.CATEGORY_MEDIA
 import io.github.sds100.keymapper.SystemAction.CATEGORY_MOBILE_DATA
 import io.github.sds100.keymapper.SystemAction.CATEGORY_NAVIGATION
+import io.github.sds100.keymapper.SystemAction.CATEGORY_NFC
 import io.github.sds100.keymapper.SystemAction.CATEGORY_OTHER
 import io.github.sds100.keymapper.SystemAction.CATEGORY_SCREEN_ROTATION
 import io.github.sds100.keymapper.SystemAction.CATEGORY_STATUS_BAR
@@ -25,11 +26,13 @@ import io.github.sds100.keymapper.SystemAction.DISABLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.DISABLE_AUTO_ROTATE
 import io.github.sds100.keymapper.SystemAction.DISABLE_BLUETOOTH
 import io.github.sds100.keymapper.SystemAction.DISABLE_MOBILE_DATA
+import io.github.sds100.keymapper.SystemAction.DISABLE_NFC
 import io.github.sds100.keymapper.SystemAction.DISABLE_WIFI
 import io.github.sds100.keymapper.SystemAction.ENABLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.ENABLE_AUTO_ROTATE
 import io.github.sds100.keymapper.SystemAction.ENABLE_BLUETOOTH
 import io.github.sds100.keymapper.SystemAction.ENABLE_MOBILE_DATA
+import io.github.sds100.keymapper.SystemAction.ENABLE_NFC
 import io.github.sds100.keymapper.SystemAction.ENABLE_WIFI
 import io.github.sds100.keymapper.SystemAction.EXPAND_NOTIFICATION_DRAWER
 import io.github.sds100.keymapper.SystemAction.EXPAND_QUICK_SETTINGS
@@ -56,6 +59,7 @@ import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_ROTATE
 import io.github.sds100.keymapper.SystemAction.TOGGLE_BLUETOOTH
 import io.github.sds100.keymapper.SystemAction.TOGGLE_MOBILE_DATA
+import io.github.sds100.keymapper.SystemAction.TOGGLE_NFC
 import io.github.sds100.keymapper.SystemAction.TOGGLE_WIFI
 import io.github.sds100.keymapper.SystemAction.VOLUME_MUTE
 import io.github.sds100.keymapper.SystemAction.VOLUME_TOGGLE_MUTE
@@ -82,6 +86,7 @@ object SystemActionUtils {
             CATEGORY_STATUS_BAR to R.string.system_action_cat_status_bar,
             CATEGORY_MEDIA to R.string.system_action_cat_media,
             CATEGORY_FLASHLIGHT to R.string.system_action_cat_flashlight,
+            CATEGORY_NFC to R.string.system_action_cat_nfc,
             CATEGORY_OTHER to R.string.system_action_cat_other
     )
 
@@ -456,6 +461,30 @@ object SystemActionUtils {
                         ctx.str(R.string.action_disable_flashlight_formatted, optionText)
                     },
                     options = listOf(Option.LENS_BACK, Option.LENS_FRONT)
+            ),
+
+            //NFC
+
+            SystemActionDef(
+                    id = ENABLE_NFC,
+                    category = CATEGORY_NFC,
+                    iconRes = R.drawable.ic_outline_nfc_24px,
+                    permission = Constants.PERMISSION_ROOT,
+                    descriptionRes = R.string.action_nfc_enable
+            ),
+            SystemActionDef(
+                    id = DISABLE_NFC,
+                    category = CATEGORY_NFC,
+                    iconRes = R.drawable.ic_nfc_off,
+                    permission = Constants.PERMISSION_ROOT,
+                    descriptionRes = R.string.action_nfc_disable
+            ),
+            SystemActionDef(
+                    id = TOGGLE_NFC,
+                    category = CATEGORY_NFC,
+                    iconRes = R.drawable.ic_outline_nfc_24px,
+                    permission = Constants.PERMISSION_ROOT,
+                    descriptionRes = R.string.action_nfc_toggle
             ),
 
             //OTHER

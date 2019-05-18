@@ -24,7 +24,6 @@ import io.github.sds100.keymapper.util.FlagUtils.FLAG_SHOW_VOLUME_UI
 import io.github.sds100.keymapper.util.FlagUtils.FLAG_VIBRATE
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.toast
-import java.lang.Exception
 
 
 /**
@@ -206,6 +205,10 @@ class ActionPerformerDelegate(
                 SystemAction.EXPAND_NOTIFICATION_DRAWER -> StatusBarUtils.expandNotificationDrawer()
                 SystemAction.EXPAND_QUICK_SETTINGS -> StatusBarUtils.expandQuickSettings()
                 SystemAction.COLLAPSE_STATUS_BAR -> StatusBarUtils.collapseStatusBar()
+
+                SystemAction.ENABLE_NFC -> NfcUtils.enable()
+                SystemAction.DISABLE_NFC -> NfcUtils.disable()
+                SystemAction.TOGGLE_NFC -> NfcUtils.toggle(this)
 
                 SystemAction.PAUSE_MEDIA -> MediaUtils.pauseMediaPlayback(this)
                 SystemAction.PLAY_MEDIA -> MediaUtils.playMedia(this)

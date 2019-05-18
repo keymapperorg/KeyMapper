@@ -82,6 +82,11 @@ object SystemAction {
     const val ENABLE_FLASHLIGHT = "enable_flashlight"
     const val DISABLE_FLASHLIGHT = "disable_flashlight"
 
+    //NFC
+    const val ENABLE_NFC = "nfc_enable"
+    const val DISABLE_NFC = "nfc_disable"
+    const val TOGGLE_NFC = "nfc_toggle"
+
     //other
     const val SCREENSHOT = "screenshot"
 
@@ -105,5 +110,6 @@ object SystemAction {
     const val CATEGORY_STATUS_BAR = "status_bar"
     const val CATEGORY_MEDIA = "media"
     const val CATEGORY_FLASHLIGHT = "flashlight"
+    const val CATEGORY_NFC = "nfc"
     const val CATEGORY_OTHER = "other"
 }

@@ -343,6 +343,10 @@
     <string name="action_enable_flashlight_formatted">Enable %s Flashlight</string>
     <string name="action_disable_flashlight_formatted">Disable %s Flashlight</string>
 
+    <string name="action_nfc_enable">Enable NFC</string>
+    <string name="action_nfc_disable">Disable NFC</string>
+    <string name="action_nfc_toggle">Toggle NFC</string>
+
     <string name="action_screenshot">Screenshot</string>
     <string name="action_open_assistant">Open Google Assistant</string>
     <string name="action_open_camera">Open Camera</string>
@@ -363,6 +367,7 @@
     <string name="system_action_cat_status_bar">Status Bar</string>
     <string name="system_action_cat_media">Media</string>
     <string name="system_action_cat_flashlight">Flashlight</string>
+    <string name="system_action_cat_nfc">NFC</string>
     <string name="system_action_cat_other">Other</string>
     <!-- System action category labels -->
 </resources>
