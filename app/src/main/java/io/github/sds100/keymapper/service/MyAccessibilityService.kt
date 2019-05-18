@@ -45,11 +45,10 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         const val EXTRA_ACTION = "action"
 
         const val ACTION_RECORD_TRIGGER = "$PACKAGE_NAME.RECORD_TRIGGER"
-        const val ACTION_STOP_RECORDING_TRIGGER = "$PACKAGE_NAME.STOP_RECORDING_TRIGGER"
         const val ACTION_CLEAR_PRESSED_KEYS = "$PACKAGE_NAME.CLEAR_PRESSED_KEYS"
         const val ACTION_UPDATE_KEYMAP_CACHE = "$PACKAGE_NAME.UPDATE_KEYMAP_CACHE"
         const val ACTION_TEST_ACTION = "$PACKAGE_NAME.TEST_ACTION"
-        const val ACTION_RECORD_TRIGGER_TIMER_STOPPED = "$PACKAGE_NAME.RECORD_TRIGGER_TIMER_STOPPED"
+        const val ACTION_STOP_RECORDING_TRIGGER = "$PACKAGE_NAME.STOP_RECORDING_TRIGGER"
         const val ACTION_PAUSE_REMAPPINGS = "$PACKAGE_NAME.PAUSE_REMAPPINGS"
         const val ACTION_RESUME_REMAPPINGS = "$PACKAGE_NAME.RESUME_REMAPPINGS"
         const val ACTION_UPDATE_NOTIFICATION = "$PACKAGE_NAME.UPDATE_NOTIFICATION"
@@ -138,21 +137,18 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
     /**
      * How long a long-press is in ms.
      */
-    private val LONG_PRESS_DELAY
+    private val mLongPressDelay
         get() = ctx.defaultSharedPreferences.getInt(
                 ctx.str(R.string.key_pref_long_press_delay),
                 ctx.int(R.integer.default_value_long_press_delay)).toLong()
 
     private var mPaused = false
 
-    override val ctx: Context
-        get() = this
-
     private val mRecordingTimerRunnable = Runnable {
         mRecordingTrigger = false
         mPressedKeys.clear()
 
-        sendBroadcast(Intent(ACTION_RECORD_TRIGGER_TIMER_STOPPED))
+        sendBroadcast(Intent(ACTION_STOP_RECORDING_TRIGGER))
     }
 
     /**
@@ -160,7 +156,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
      */
     private val mBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            when (intent!!.action) {
+            when (intent?.action) {
                 ACTION_RECORD_TRIGGER -> {
                     mRecordingTrigger = true
 
@@ -169,15 +165,6 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                             mRecordingTimerRunnable,
                             RECORD_TRIGGER_TIMER_LENGTH
                     )
-                }
-
-                ACTION_STOP_RECORDING_TRIGGER -> {
-                    mRecordingTrigger = false
-
-                    //stop the timer since the user cancelled it before the time ran out
-                    mHandler.removeCallbacks(mRecordingTimerRunnable)
-
-                    mPressedKeys.clear()
                 }
 
                 ACTION_CLEAR_PRESSED_KEYS -> {
@@ -220,6 +207,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                         WidgetsManager.onEvent(ctx, EVENT_RESUME_REMAPS)
                     }
                 }
+
                 Intent.ACTION_SCREEN_ON -> {
                     clearLists()
                 }
@@ -279,6 +267,9 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
     private lateinit var mLifecycleRegistry: LifecycleRegistry
 
+    override val ctx: Context
+        get() = this
+
     override fun getLifecycle() = mLifecycleRegistry
 
     override fun onServiceConnected() {
@@ -292,8 +283,6 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
         //listen for events from NewKeymapActivity
         val intentFilter = IntentFilter()
-        intentFilter.addAction(ACTION_RECORD_TRIGGER)
-        intentFilter.addAction(ACTION_STOP_RECORDING_TRIGGER)
         intentFilter.addAction(ACTION_CLEAR_PRESSED_KEYS)
         intentFilter.addAction(ACTION_UPDATE_KEYMAP_CACHE)
         intentFilter.addAction(ACTION_TEST_ACTION)
@@ -301,6 +290,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         intentFilter.addAction(ACTION_RESUME_REMAPPINGS)
         intentFilter.addAction(ACTION_UPDATE_NOTIFICATION)
         intentFilter.addAction(Intent.ACTION_SCREEN_ON)
+        intentFilter.addAction(ACTION_RECORD_TRIGGER)
 
         registerReceiver(mBroadcastReceiver, intentFilter)
 
@@ -360,7 +350,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
                 /*only execute short press actions with the same trigger as a long press if the key has been held down
                 * shorter than the long press delay */
-                if (SystemClock.uptimeMillis() - event.downTime < LONG_PRESS_DELAY) {
+                if (SystemClock.uptimeMillis() - event.downTime < mLongPressDelay) {
                     var performedShortPress = false
 
                     mShortPressPendingActions.filter { it.trigger.keys.contains(event.keyCode) }.forEach {
@@ -452,7 +442,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                     }
 
                     mLongPressPendingActions.add(runnable)
-                    mHandler.postDelayed(runnable, LONG_PRESS_DELAY)
+                    mHandler.postDelayed(runnable, mLongPressDelay)
 
                     consumeEvent = true
                     continue
