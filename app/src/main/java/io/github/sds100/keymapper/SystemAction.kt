@@ -43,6 +43,7 @@ object SystemAction {
     const val DISABLE_AUTO_ROTATE = "disable_auto_rotate"
     const val PORTRAIT_MODE = "portrait_mode"
     const val LANDSCAPE_MODE = "landscape_mode"
+    const val SWITCH_ORIENTATION = "switch_orientation"
 
     //volume
     const val VOLUME_UP = "volume_up"
