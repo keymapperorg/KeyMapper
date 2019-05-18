@@ -46,13 +46,13 @@ fun Context.bool(
         typedArray.recycle()
     }
 
-    return attrValue!!
+    return attrValue ?: false
 }
 
 /**
  * Get a string from an attribute
  */
-fun Context.str(attributeSet: AttributeSet, @StyleableRes styleableId: IntArray, @StyleableRes attrId: Int): String {
+fun Context.str(attributeSet: AttributeSet, @StyleableRes styleableId: IntArray, @StyleableRes attrId: Int): String? {
     val typedArray = theme.obtainStyledAttributes(attributeSet, styleableId, 0, 0)
 
     val attrValue: String?
@@ -63,7 +63,7 @@ fun Context.str(attributeSet: AttributeSet, @StyleableRes styleableId: IntArray,
         typedArray.recycle()
     }
 
-    return attrValue!!
+    return attrValue
 }
 
 fun View.str(attributeSet: AttributeSet, @StyleableRes styleableId: IntArray, @StyleableRes attrId: Int) =

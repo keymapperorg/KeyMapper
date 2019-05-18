@@ -39,6 +39,7 @@ import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.service.MyIMEService
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.view.BottomSheetMenu
+import io.github.sds100.keymapper.view.StatusLayout
 import io.github.sds100.keymapper.viewmodel.HomeViewModel
 import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.bottom_sheet_home.view.*
@@ -70,6 +71,20 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
     private val mViewModel: HomeViewModel by lazy { ViewModelProviders.of(this).get(HomeViewModel::class.java) }
     private val mKeymapAdapter: KeymapAdapter = KeymapAdapter(this)
     private val mBottomSheetView by lazy { BottomSheetMenu.create(R.layout.bottom_sheet_home) }
+
+    private val accessibilityServiceStatusLayout by lazy {
+        StatusLayout(this).apply {
+            fixedText = str(R.string.accessibility_service_is_enabled)
+            errorText = str(R.string.error_accessibility_service_disabled)
+        }
+    }
+
+    private val imeServiceStatusLayout by lazy {
+        StatusLayout(this).apply {
+            fixedText = str(R.string.accessibility_service_is_enabled)
+            errorText = str(R.string.error_accessibility_service_disabled)
+        }
+    }
 
     private var mActionModeActive = false
         set(value) {
@@ -164,6 +179,9 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
             }
         })
 
+        statusLayoutList.addStatusLayout(accessibilityServiceStatusLayout)
+        statusLayoutList.addStatusLayout(imeServiceStatusLayout)
+
         mKeymapAdapter.iSelectionProvider.subscribeToSelectionEvents(this)
 
         //recyclerview stuff
@@ -203,6 +221,32 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
                 setFirebaseDataCollection()
             }
         }
+//
+//        buttonExpand.onCollapse = {
+//            Log.e(this::class.java.simpleName, "collapse")
+//            val sceneRoot = expandedStatusLayouts as ViewGroup
+//            val scene = Scene.getSceneForLayout(sceneRoot, R.layout.collapsed_status_layout_list, this)
+//
+//            val slide = Slide()
+//
+//            slide.addTarget(buttonExpand)
+//
+//            TransitionManager.go(scene, slide)
+//
+//            collapsedButtonExpand.onExpand = {
+//                Log.e(this::class.java.simpleName, "expand")
+//                val sceneRoot = collapsedStatusLayout as ViewGroup
+//                val scene = Scene.getSceneForLayout(sceneRoot, R.layout.expanded_status_layout, this)
+//
+//                val slide = Slide()
+//
+//                slide.addTarget(collapsedButtonExpand)
+//
+//                TransitionManager.go(scene, slide)
+//                true
+//            }
+//            true
+//        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

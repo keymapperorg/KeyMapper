@@ -23,34 +23,34 @@ class StatusLayout(
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context) : this(context, null, 0)
 
-    private var mFixedText: String? = null
-    private var mErrorText: String? = null
-    private var mYellowOnError: Boolean = false
+    var fixedText: String? = null
+    var errorText: String? = null
+    var yellowOnError: Boolean = false
 
     init {
         View.inflate(context, R.layout.layout_status, this)
 
         if (attrs != null) {
-            mFixedText = str(
+            fixedText = str(
                     attrs,
                     R.styleable.StatusLayout,
                     R.styleable.StatusLayout_fixedText
             )
 
-            mErrorText = str(
+            errorText = str(
                     attrs,
                     R.styleable.StatusLayout,
                     R.styleable.StatusLayout_errorText
             )
 
-            mYellowOnError = bool(
+            yellowOnError = bool(
                     attrs,
                     R.styleable.StatusLayout,
                     R.styleable.StatusLayout_yellowOnError
             )
         }
 
-        if (mYellowOnError) {
+        if (yellowOnError) {
             buttonFix.setBackgroundColor(color(R.color.warn))
         } else {
             buttonFix.setBackgroundColor(color(R.color.error))
@@ -64,7 +64,7 @@ class StatusLayout(
 
         val drawable = drawable(R.drawable.ic_check_green_outline_24dp)
 
-        textViewStatus.text = mFixedText
+        textViewStatus.text = fixedText
         textViewStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, null, null, null)
 
         buttonFix.visibility = View.GONE
@@ -72,13 +72,13 @@ class StatusLayout(
 
     fun changeToErrorState() {
 
-        val drawable = if (mYellowOnError) {
+        val drawable = if (yellowOnError) {
             drawable(R.drawable.ic_warn_outline_yellow_24dp)
         } else {
             drawable(R.drawable.ic_error_outline_red_24dp)
         }
 
-        textViewStatus.text = mErrorText
+        textViewStatus.text = errorText
         textViewStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, null, null, null)
 
         buttonFix.visibility = View.VISIBLE

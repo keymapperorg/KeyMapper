@@ -5,4 +5,5 @@
     <dimen name="dialog_corner_radius">8dp</dimen>
     <dimen name="bottom_sheet_corner_radius">@dimen/dialog_corner_radius</dimen>
     <dimen name="bottom_sheet_top_padding">16dp</dimen>
+    <dimen name="collapsed_status_layout_icon_size">48dp</dimen>
 </resources>

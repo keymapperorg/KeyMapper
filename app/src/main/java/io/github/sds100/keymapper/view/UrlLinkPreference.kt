@@ -20,7 +20,7 @@ class UrlLinkPreference(
         attrs: AttributeSet
 ) : Preference(context, attrs) {
 
-    private val mUrlLink: String = context!!.str(
+    private val mUrlLink = context!!.str(
             attrs,
             R.styleable.UrlLinkPreference,
             R.styleable.UrlLinkPreference_linkUrl
