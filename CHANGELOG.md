@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file. This projec
 ## [Unreleased](https://github.com/sds100/KeyMapper/tree/develop)
 
 ## [1.1.0 Beta 4](https://github.com/sds100/KeyMapper/releases/tag/v1.1.0-beta.4)
+#### 10 Apr 2019
 ### Added
 - Option to choose which flash to use for flashlight actions
 - Optimised the New and Edit Keymap activities for various screen sizes
@@ -18,6 +19,7 @@ All notable changes to this project will be documented in this file. This projec
 - Would crash when using an app shortcut without the correct permissions.
 
 ## [1.1.0 Beta 3](https://github.com/sds100/KeyMapper/releases/tag/v1.1.0-beta.3)
+#### 4 Apr 2019
 - Reduced the repeat delay to 5ms
 - Force expand the menu on the homescreen
 - Made the cards on the homescreen slightly more compact
@@ -36,6 +38,7 @@ All notable changes to this project will be documented in this file. This projec
 - The accessibility service status on the homescreen wouldn't change when the service is started/stopped.
 
 ## [1.1.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v1.1.0-beta.2)
+#### 31 Mar 2019
 - Won't immediately crash on KitKat anymore! :)
 
 ### Bug fixes
@@ -43,6 +46,7 @@ All notable changes to this project will be documented in this file. This projec
 - App would crash if it couldn't find the device's accessibility settings page.
 
 ## [1.1.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v1.1.0-beta.1)
+#### 27 Mar 2019
 ### Added
 - Setting to change the long-press delay.
 - Persistent notification which can pause/resume your remaps. It can also open the accessibility settings on the device to enable/disable the service. Rooted devices can start/stop the accessibility service without going into settings and just tap the notification.
@@ -55,10 +59,12 @@ All notable changes to this project will be documented in this file. This projec
 
 
 ## [1.0.0 Beta 6](https://github.com/sds100/KeyMapper/releases/tag/v1.0.0-beta.6)
+#### 22 Mar 2019
 - Changed developer email.
 - Added link to the XDA Thread in the About activity.
 
 ## [1.0.0 Beta 5](https://github.com/sds100/KeyMapper/releases/tag/v1.0.0-beta.5)
+#### 22 Mar 2019
 - Updated build-tools to 28.0.4
 - Updated Room library to 2.1.0-alpha05
 - Updated Firebase core library to 16.0.8
@@ -67,6 +73,7 @@ All notable changes to this project will be documented in this file. This projec
 - App would crash when using brightness actions because it needed write system settings permission.
 
 ## [1.0.0 Beta 4](https://github.com/sds100/KeyMapper/releases/tag/v1.0.0-beta.4)
+#### 9 Mar 2019
 - Added more labels for keys.
 - Added a link to the app in the device's Accessibility settings.
 - Updated the Gradle version to 3.3.2
@@ -81,10 +88,12 @@ All notable changes to this project will be documented in this file. This projec
 ## Accidentally skipped Beta 3 release. Oops.
 
 ## [1.0.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v1.0.0-beta.2)
+#### 2 Mar 2019
 - added option to email developer in the About activity.
 - created privacy policy and ability to opt in/out of Firebase analytics
 
 ## [1.0.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v1.0.0-beta.1)
+#### 2 Mar 2019
 - Initial release!
 - Option to automatically change the input method and/or show the input method picker when a chosen Bluetooth device is connected and switch back to the old one when disconnected
 - Option to show a notification, which when clicked on, will show the input method picker. Android 8.1+ needs root.
