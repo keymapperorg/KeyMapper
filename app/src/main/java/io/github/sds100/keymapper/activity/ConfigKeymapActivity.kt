@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
@@ -22,6 +23,8 @@ import com.google.gson.Gson
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.adapter.TriggerAdapter
 import io.github.sds100.keymapper.service.MyAccessibilityService
+import io.github.sds100.keymapper.service.MyAccessibilityService.Companion.ACTION_RECORD_TRIGGER
+import io.github.sds100.keymapper.service.MyAccessibilityService.Companion.ACTION_STOP_RECORDING_TRIGGER
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_PERMISSION_DENIED
 import io.github.sds100.keymapper.util.PermissionUtils.REQUEST_CODE_PERMISSION
@@ -60,8 +63,8 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
                     }
                 }
 
-                MyAccessibilityService.ACTION_RECORD_TRIGGER_TIMER_STOPPED -> {
-                    stopRecordingTrigger()
+                ACTION_STOP_RECORDING_TRIGGER -> {
+                    onStopRecordingTrigger()
                 }
 
                 Intent.ACTION_INPUT_METHOD_CHANGED -> {
@@ -82,6 +85,7 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
         setContentView(R.layout.activity_config_key_map)
         setSupportActionBar(toolbar)
 
+
         //this needs to be enabled for vector drawables from resources to work on kitkat
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
@@ -92,8 +96,9 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
          to stop recording a trigger */
 
         val intentFilter = IntentFilter()
+
         intentFilter.addAction(ACTION_ADD_KEY_CHIP)
-        intentFilter.addAction(MyAccessibilityService.ACTION_RECORD_TRIGGER_TIMER_STOPPED)
+        intentFilter.addAction(ACTION_STOP_RECORDING_TRIGGER)
         intentFilter.addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
 
         registerReceiver(mBroadcastReceiver, intentFilter)
@@ -116,11 +121,7 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
 
         //button stuff
         buttonRecordTrigger.setOnClickListener {
-            if (mIsRecordingTrigger) {
-                addTrigger()
-            } else {
-                recordTrigger()
-            }
+            recordTrigger()
         }
 
         buttonClearKeys.setOnClickListener {
@@ -213,7 +214,7 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
     }
 
     override fun onPause() {
-        if (mIsRecordingTrigger) stopRecordingTrigger()
+        if (mIsRecordingTrigger) onStopRecordingTrigger()
 
         super.onPause()
     }
@@ -221,7 +222,7 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
     override fun onStop() {
         //If the user manages to leave the app, allow the accessibility service to accept key events
         //so they can use the device
-        if (mIsRecordingTrigger) stopRecordingTrigger()
+        if (mIsRecordingTrigger) onStopRecordingTrigger()
 
         super.onStop()
     }
@@ -265,41 +266,34 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
         }
     }
 
-    private fun addTrigger() {
+    /**
+     * Start recording a new trigger
+     */
+    private fun recordTrigger() {
+        mIsRecordingTrigger = true
+        buttonRecordTrigger.text = getString(R.string.button_recording_trigger)
+        buttonRecordTrigger.isEnabled = false
+
+        //tell the accessibility service to record key events
+        sendBroadcast(Intent(ACTION_RECORD_TRIGGER))
+    }
+
+    /**
+     * What to do when a trigger has stopped being recorded
+     */
+    private fun onStopRecordingTrigger() {
+        mIsRecordingTrigger = false
+
+        buttonRecordTrigger.text = getString(R.string.button_record_trigger)
+        buttonRecordTrigger.isEnabled = true
+
         val trigger = chipGroupTriggerPreview.createTriggerFromChips()
 
         if (trigger.keys.isNotEmpty()) {
             viewModel.keyMap.addTrigger(trigger)
         }
 
-        stopRecordingTrigger()
-    }
-
-    /**
-     * Start recording a new trigger
-     */
-    private fun recordTrigger() {
-        mIsRecordingTrigger = true
-        buttonRecordTrigger.text = getString(R.string.button_stop_recording_trigger)
-
-        //tell the accessibility service to record key events
-        val intent = Intent(MyAccessibilityService.ACTION_RECORD_TRIGGER)
-        sendBroadcast(intent)
-    }
-
-    /**
-     * Stop recording a new trigger
-     */
-    private fun stopRecordingTrigger() {
-        mIsRecordingTrigger = false
-
-        buttonRecordTrigger.text = getString(R.string.button_record_trigger)
-
         chipGroupTriggerPreview.removeAllChips()
-
-        //tell the accessibility service to stop recording key events
-        val intent = Intent(MyAccessibilityService.ACTION_STOP_RECORDING_TRIGGER)
-        sendBroadcast(intent)
     }
 
     private fun testAction() {
