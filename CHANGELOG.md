@@ -4,6 +4,33 @@ All notable changes to this project will be documented in this file. This projec
  
 ## [Unreleased](https://github.com/sds100/KeyMapper/tree/develop)
 
+## [1.1.0 Beta 5](https://github.com/sds100/KeyMapper/releases/tag/v1.1.0-beta.5)
+#### 19 May 2019
+ - Updated libraries
+### Added
+ - Action to enable, disable and toggle NFC.
+ - Action to switch between portrait and landscape mode.
+ - Action to cycle through and change the ringer mode.
+ - Action to fast forward and rewind.
+ - Option to log events and send them to the developer so it is easier to debug issues with the app.
+ - Button to Help page on homescreen.
+ - Translation instuctions to the About activity.
+ 
+### Changes
+ - Add the trigger after the 5 seconds rather than having to press the button so the app can work with devices which only have remotes as input.
+ - Cleanup Settings strings.
+ - Use slightly darker homescreen background.
+ - Don't show the "Key mapper is performing an action" toast message by default.
+ - Allow the volume to be changed while in Do Not Disturb mode.
+ - Minimum vibration duration is 1ms rather than 100ms
+ 
+### Bug Fixes
+- The landscape mode action wouldn't work.
+- Would potentially crash when trying to open the write-settings permission page.
+- Don't show a toast message when enabling/disabling the device admin.
+- Would crash when selecting a shortcut without the correct permissions.
+- Device would go to the homescreen when using a trigger with the home button in it.
+
 ## [1.1.0 Beta 4](https://github.com/sds100/KeyMapper/releases/tag/v1.1.0-beta.4)
 #### 10 Apr 2019
 ### Added
