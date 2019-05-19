@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. This projec
  
 ## [Unreleased](https://github.com/sds100/KeyMapper/tree/develop)
 
+## [1.1.0 Beta 6](https://github.com/sds100/KeyMapper/releases/tag/v1.1.0-beta.6)
+#### 19 May 2019
+### Bug Fixes
+ - Don't show NFC actions on devices without NFC
+ - Couldn't change volume when short pressing a volume button remapped to a long press action
+
 ## [1.1.0 Beta 5](https://github.com/sds100/KeyMapper/releases/tag/v1.1.0-beta.5)
 #### 19 May 2019
  - Updated libraries
