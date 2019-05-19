@@ -464,17 +464,18 @@ object SystemActionUtils {
             ),
 
             //NFC
-
             SystemActionDef(
                     id = ENABLE_NFC,
                     category = CATEGORY_NFC,
                     iconRes = R.drawable.ic_outline_nfc_24px,
                     permission = Constants.PERMISSION_ROOT,
+                    feature = PackageManager.FEATURE_NFC,
                     descriptionRes = R.string.action_nfc_enable
             ),
             SystemActionDef(
                     id = DISABLE_NFC,
                     category = CATEGORY_NFC,
+                    feature = PackageManager.FEATURE_NFC,
                     iconRes = R.drawable.ic_nfc_off,
                     permission = Constants.PERMISSION_ROOT,
                     descriptionRes = R.string.action_nfc_disable
@@ -482,6 +483,7 @@ object SystemActionUtils {
             SystemActionDef(
                     id = TOGGLE_NFC,
                     category = CATEGORY_NFC,
+                    feature = PackageManager.FEATURE_NFC,
                     iconRes = R.drawable.ic_outline_nfc_24px,
                     permission = Constants.PERMISSION_ROOT,
                     descriptionRes = R.string.action_nfc_toggle
