@@ -1,7 +1,6 @@
-package io.github.sds100.keymapper.fragment.ActionTypeFragments
+package io.github.sds100.keymapper.fragment
 
 import android.content.Context
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,11 +11,12 @@ import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.adapter.SystemActionAdapter
 import io.github.sds100.keymapper.interfaces.IContext
 import io.github.sds100.keymapper.interfaces.OnItemClickListener
-import io.github.sds100.keymapper.util.FlashlightUtils
-import io.github.sds100.keymapper.util.VolumeUtils
+import io.github.sds100.keymapper.util.SystemActionUtils
+import io.github.sds100.keymapper.util.str
 import kotlinx.android.synthetic.main.action_type_recyclerview.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.okButton
+import org.jetbrains.anko.selector
 
 /**
  * Created by sds100 on 29/07/2018.
@@ -56,48 +56,39 @@ class SystemActionFragment : FilterableActionTypeFragment(),
         recyclerView.adapter = mSystemActionAdapter
     }
 
-    override fun onItemClick(item: SystemActionDef) {
-        when (item.id) {
-            SystemAction.VOLUME_DECREASE_STREAM, SystemAction.VOLUME_INCREASE_STREAM -> {
+    override fun onItemClick(systemAction: SystemActionDef) {
+        if (systemAction.hasOptions) {
+            val items = systemAction.options.map { ctx.str(SystemActionUtils.getTextForOptionId(it)) }
 
-                VolumeUtils.showStreamPickerDialog(context!!) { streamType ->
+            ctx.selector(items = items) { _, which ->
+                val selectedOption = systemAction.options[which]
 
-                    val action = Action(ActionType.SYSTEM_ACTION,
-                            item.id,
-                            Extra(Action.EXTRA_STREAM_TYPE, streamType.toString()))
+                val action = Action(
+                        type = ActionType.SYSTEM_ACTION,
+                        data = systemAction.id,
+                        extra = Extra(Option.getExtraIdForOption(systemAction.id), selectedOption)
+                )
 
+                chooseSelectedAction(action)
+            }
+
+            return
+        }
+
+        if (systemAction.messageOnSelection != null) {
+            context?.alert {
+                titleResource = systemAction.descriptionRes
+                messageResource = systemAction.messageOnSelection
+                okButton {
+                    val action = Action(ActionType.SYSTEM_ACTION, systemAction.id)
                     chooseSelectedAction(action)
                 }
+            }?.show()
 
-                return
-            }
-
-            SystemAction.DISABLE_FLASHLIGHT,
-            SystemAction.ENABLE_FLASHLIGHT,
-            SystemAction.TOGGLE_FLASHLIGHT -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    FlashlightUtils.showLensSelector(ctx) { lens ->
-                        val action = Action(
-                                ActionType.SYSTEM_ACTION,
-                                item.id,
-                                Extra(Action.EXTRA_LENS, lens.toString()))
-
-                        chooseSelectedAction(action)
-                    }
-                    return
-                }
-            }
+            return
         }
 
-        if (item.messageOnSelection != null) {
-            context?.alert {
-                titleResource = item.descriptionRes
-                messageResource = item.messageOnSelection
-                okButton { }
-            }
-        }
-
-        val action = Action(ActionType.SYSTEM_ACTION, item.id)
+        val action = Action(ActionType.SYSTEM_ACTION, systemAction.id)
         chooseSelectedAction(action)
     }
 }

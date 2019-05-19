@@ -45,11 +45,10 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         const val EXTRA_ACTION = "action"
 
         const val ACTION_RECORD_TRIGGER = "$PACKAGE_NAME.RECORD_TRIGGER"
-        const val ACTION_STOP_RECORDING_TRIGGER = "$PACKAGE_NAME.STOP_RECORDING_TRIGGER"
         const val ACTION_CLEAR_PRESSED_KEYS = "$PACKAGE_NAME.CLEAR_PRESSED_KEYS"
         const val ACTION_UPDATE_KEYMAP_CACHE = "$PACKAGE_NAME.UPDATE_KEYMAP_CACHE"
         const val ACTION_TEST_ACTION = "$PACKAGE_NAME.TEST_ACTION"
-        const val ACTION_RECORD_TRIGGER_TIMER_STOPPED = "$PACKAGE_NAME.RECORD_TRIGGER_TIMER_STOPPED"
+        const val ACTION_STOP_RECORDING_TRIGGER = "$PACKAGE_NAME.STOP_RECORDING_TRIGGER"
         const val ACTION_PAUSE_REMAPPINGS = "$PACKAGE_NAME.PAUSE_REMAPPINGS"
         const val ACTION_RESUME_REMAPPINGS = "$PACKAGE_NAME.RESUME_REMAPPINGS"
         const val ACTION_UPDATE_NOTIFICATION = "$PACKAGE_NAME.UPDATE_NOTIFICATION"
@@ -126,26 +125,30 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
             return false
         }
+
+        /**
+         * Some keys need to be consumed on the up event to prevent them from working they way they are intended to.
+         */
+        private val KEYS_TO_CONSUME_UP_EVENT = listOf(
+                KeyEvent.KEYCODE_HOME
+        )
     }
 
     /**
      * How long a long-press is in ms.
      */
-    private val LONG_PRESS_DELAY
+    private val mLongPressDelay
         get() = ctx.defaultSharedPreferences.getInt(
                 ctx.str(R.string.key_pref_long_press_delay),
                 ctx.int(R.integer.default_value_long_press_delay)).toLong()
 
     private var mPaused = false
 
-    override val ctx: Context
-        get() = this
-
     private val mRecordingTimerRunnable = Runnable {
         mRecordingTrigger = false
         mPressedKeys.clear()
 
-        sendBroadcast(Intent(ACTION_RECORD_TRIGGER_TIMER_STOPPED))
+        sendBroadcast(Intent(ACTION_STOP_RECORDING_TRIGGER))
     }
 
     /**
@@ -153,7 +156,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
      */
     private val mBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            when (intent!!.action) {
+            when (intent?.action) {
                 ACTION_RECORD_TRIGGER -> {
                     mRecordingTrigger = true
 
@@ -162,15 +165,6 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                             mRecordingTimerRunnable,
                             RECORD_TRIGGER_TIMER_LENGTH
                     )
-                }
-
-                ACTION_STOP_RECORDING_TRIGGER -> {
-                    mRecordingTrigger = false
-
-                    //stop the timer since the user cancelled it before the time ran out
-                    mHandler.removeCallbacks(mRecordingTimerRunnable)
-
-                    mPressedKeys.clear()
                 }
 
                 ACTION_CLEAR_PRESSED_KEYS -> {
@@ -187,9 +181,11 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                 }
 
                 ACTION_TEST_ACTION -> {
-                    mActionPerformerDelegate.performAction(
-                            action = intent.getSerializableExtra(EXTRA_ACTION) as Action,
-                            flags = 0x0)
+                    intent.getSerializableExtra(EXTRA_ACTION)?.let { action ->
+                        mActionPerformerDelegate.performAction(
+                                action = action as Action,
+                                flags = 0x0)
+                    }
                 }
 
                 ACTION_PAUSE_REMAPPINGS -> {
@@ -210,6 +206,10 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                     } else {
                         WidgetsManager.onEvent(ctx, EVENT_RESUME_REMAPS)
                     }
+                }
+
+                Intent.ACTION_SCREEN_ON -> {
+                    clearLists()
                 }
             }
         }
@@ -256,11 +256,19 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
     private val mShortPressPendingActions = mutableListOf<PendingAction>()
     private val mRepeatQueue = mutableListOf<PendingAction>()
 
+    /**
+     * Some keys need to be consumed on the up event to prevent them from working they way they are intended to.
+     */
+    private val mKeysToConsumeOnUp = mutableSetOf<Int>()
+
     private var mRecordingTrigger = false
 
     private lateinit var mActionPerformerDelegate: ActionPerformerDelegate
 
     private lateinit var mLifecycleRegistry: LifecycleRegistry
+
+    override val ctx: Context
+        get() = this
 
     override fun getLifecycle() = mLifecycleRegistry
 
@@ -275,14 +283,14 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
         //listen for events from NewKeymapActivity
         val intentFilter = IntentFilter()
-        intentFilter.addAction(ACTION_RECORD_TRIGGER)
-        intentFilter.addAction(ACTION_STOP_RECORDING_TRIGGER)
         intentFilter.addAction(ACTION_CLEAR_PRESSED_KEYS)
         intentFilter.addAction(ACTION_UPDATE_KEYMAP_CACHE)
         intentFilter.addAction(ACTION_TEST_ACTION)
         intentFilter.addAction(ACTION_PAUSE_REMAPPINGS)
         intentFilter.addAction(ACTION_RESUME_REMAPPINGS)
         intentFilter.addAction(ACTION_UPDATE_NOTIFICATION)
+        intentFilter.addAction(Intent.ACTION_SCREEN_ON)
+        intentFilter.addAction(ACTION_RECORD_TRIGGER)
 
         registerReceiver(mBroadcastReceiver, intentFilter)
 
@@ -306,6 +314,12 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {}
 
     override fun onKeyEvent(event: KeyEvent?): Boolean {
+        when {
+            event?.action == KeyEvent.ACTION_DOWN -> Logger.log(ctx, "Down Key Event", event.toString())
+            event?.action == KeyEvent.ACTION_UP -> Logger.log(ctx, "Up Key Event", event.toString())
+            else -> Logger.log(ctx, "Other Key Event", event.toString())
+        }
+
         if (event == null) return super.onKeyEvent(event)
 
         try {
@@ -336,7 +350,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
                 /*only execute short press actions with the same trigger as a long press if the key has been held down
                 * shorter than the long press delay */
-                if (SystemClock.uptimeMillis() - event.downTime < LONG_PRESS_DELAY) {
+                if (SystemClock.uptimeMillis() - event.downTime < mLongPressDelay) {
                     var performedShortPress = false
 
                     mShortPressPendingActions.filter { it.trigger.keys.contains(event.keyCode) }.forEach {
@@ -373,7 +387,11 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                     mRepeatQueue.remove(it)
                 }
 
-                //NEVER CONSUME EVENTS ON ACTION_UP SINCE OTHERWISE THE KEY APPEARS TO BE HELD DOWN
+                if (mKeysToConsumeOnUp.contains(event.keyCode)) {
+                    mKeysToConsumeOnUp.remove(event.keyCode)
+                    return true
+                }
+
                 return super.onKeyEvent(event)
             }
 
@@ -419,12 +437,12 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
                     val runnable = object : PendingAction(trigger) {
                         override fun run() {
-                            mActionPerformerDelegate.performAction(keymap.action!!, keymap.flags)
+                            performAction(keymap.action!!, keymap.flags)
                         }
                     }
 
                     mLongPressPendingActions.add(runnable)
-                    mHandler.postDelayed(runnable, LONG_PRESS_DELAY)
+                    mHandler.postDelayed(runnable, mLongPressDelay)
 
                     consumeEvent = true
                     continue
@@ -438,7 +456,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                     if (mTriggersAwaitingLongPress.any { it == trigger }) {
                         val runnable = object : PendingAction(trigger) {
                             override fun run() {
-                                mActionPerformerDelegate.performAction(keymap.action!!, keymap.flags)
+                                performAction(keymap.action!!, keymap.flags)
                             }
                         }
 
@@ -455,11 +473,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                                 var flags = removeFlag(keymap.flags, FlagUtils.FLAG_VIBRATE)
 
                                 override fun run() {
-                                    mActionPerformerDelegate.performAction(
-                                            keymap.action!!,
-                                            flags
-                                    )
-
+                                    performAction(keymap.action!!, flags)
                                     mHandler.postDelayed(this, REPEAT_DELAY)
                                 }
                             }
@@ -468,7 +482,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                             mHandler.postDelayed(runnable, HOLD_DOWN_DELAY)
                         }
 
-                        mActionPerformerDelegate.performAction(keymap.action!!, keymap.flags)
+                        performAction(keymap.action!!, keymap.flags)
+
                         consumeEvent = true
                     }
                 }
@@ -480,6 +495,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
             }
 
         } catch (e: Exception) {
+            Logger.log(ctx, "Exception in onKeyEvent()", e.stackTrace.toString())
 
             if (BuildConfig.DEBUG) {
                 toast(R.string.exception_accessibility_service)
@@ -493,6 +509,18 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         return super.onKeyEvent(event)
     }
 
+    private fun performAction(action: Action, flags: Int) {
+        mActionPerformerDelegate.performAction(action, flags)
+
+        Logger.log(ctx, "Performed Action", "${action.type} ${action.data} ${action.extras}")
+
+        mPressedTriggerKeys.forEach {
+            if (KEYS_TO_CONSUME_UP_EVENT.contains(it)) {
+                mKeysToConsumeOnUp.add(it)
+            }
+        }
+    }
+
     private fun getKeyMapList() {
         AppDatabase.getInstance(this).keyMapDao().getAll().observe(this, Observer {
             if (it != null) {
@@ -503,10 +531,10 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
     private fun imitateButtonPress(keyCode: Int) {
         when (keyCode) {
-            KeyEvent.KEYCODE_VOLUME_UP -> VolumeUtils.adjustVolume(ctx, AudioManager.ADJUST_RAISE,
+            KeyEvent.KEYCODE_VOLUME_UP -> AudioUtils.adjustVolume(ctx, AudioManager.ADJUST_RAISE,
                     showVolumeUi = true)
 
-            KeyEvent.KEYCODE_VOLUME_DOWN -> VolumeUtils.adjustVolume(ctx, AudioManager.ADJUST_LOWER,
+            KeyEvent.KEYCODE_VOLUME_DOWN -> AudioUtils.adjustVolume(ctx, AudioManager.ADJUST_LOWER,
                     showVolumeUi = true)
 
             KeyEvent.KEYCODE_BACK -> performGlobalAction(GLOBAL_ACTION_BACK)
@@ -526,6 +554,12 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
     }
 
     private fun logConsumedKeyEvent(event: KeyEvent) {
+        if (event.action == KeyEvent.ACTION_DOWN) {
+            Logger.log(ctx, "Consumed Down", event.toString())
+        } else if (event.action == KeyEvent.ACTION_UP) {
+            Logger.log(ctx, "Consumed Up", event.toString())
+        }
+
         Log.i(this::class.java.simpleName, "Consumed key event ${event.keyCode} ${event.action}")
     }
 }

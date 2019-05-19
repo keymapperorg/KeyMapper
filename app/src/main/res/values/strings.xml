@@ -1,20 +1,21 @@
 <resources>
-    <string name="app_name">Key Mapper</string>
-    <string name="developer_email">developer.sds100@gmail.com</string>
+    <string name="app_name" translatable="false">Key Mapper</string>
+    <string name="developer_email" translatable="false">developer.sds100@gmail.com</string>
 
     <string name="no_action_chosen">No Action Chosen</string>
     <string name="triggers_header">Triggers</string>
     <string name="accessibility_service_description">Key Mapper needs to use an accessibility service so it can listen to button/key presses and perform the actions you\'ve chosen.
     The accessibility service only listens for key events and nothing else. Look at the source code, which is linked to in the About section inside the app if you are paranoid I\'m spying. :)</string>
-    <string name="record_trigger_help">You have 5 seconds to press the keys/buttons which will trigger the action. Then press \"Stop recording trigger\" to confirm. Press \"clear\" to clear the keys you have already typed.</string>
+    <string name="record_trigger_help">You have 5 seconds to press the keys/buttons which will trigger the action. Your trigger will be added after the 5 seconds. Press \"clear\" to clear the keys you have already typed.</string>
     <string name="selection_count">%d selected</string>
-    <string name="ime_service_label">Key Mapper Input Method</string>
+    <string name="ime_service_label" translatable="false">Key Mapper Input Method</string>
     <string name="enable">Enable</string>
     <string name="open">Open</string>
-    <string name="shrug">¯\\_(ツ)_/¯</string>
+    <string name="shrug" translatable="false">¯\\_(ツ)_/¯</string>
     <string name="no_key_maps">You haven\'t created any keymaps!</string>
     <string name="performing_action">Key Mapper is performing an action…</string>
     <string name="email_subject">Key Mapper query</string>
+    <string name="log_is_empty">Log is empty!</string>
 
     <string name="caption_action_type_key">Click the key on the keyboard which you want to be entered.
         \n\nIMPORTANT!
@@ -24,30 +25,28 @@
 
     <string name="switch_enabled">Enabled</string>
     <string name="disabled">Disabled</string>
-    <string name="show_hidden_system_actions">Show hidden items</string>
     <string name="key_map_adapter_flags">Flags</string>
-
-    <string name="lens_front">Front</string>
-    <string name="lens_back">Back</string>
 
     <string name="description_open_app">Open %s</string>
     <string name="description_key">Press \'%s\' key</string>
     <string name="description_text_block">Insert \'%s\'</string>
     <string name="description_keycode">%s</string>
 
-    <string name="exception_accessibility_service">Exception in onKeyEvent. Look in logcat.</string>
+    <string name="exception_accessibility_service" translatable="false">Exception in onKeyEvent. Look in logcat.</string>
+    <string name="enable_device_admin_message">Once you have enabled the device admin, you must DISABLE it if you want to uninstall the app.</string>
 
     <!-- URLs -->
-    <string name="url_source_code">https://github.com/sds100/KeyMapper</string>
-    <string name="url_developer_github">https://github.com/sds100</string>
-    <string name="url_play_store_listing">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper</string>
-    <string name="url_license">https://raw.githubusercontent.com/sds100/KeyMapper/master/LICENSE.md</string>
-    <string name="url_changelog">https://raw.githubusercontent.com/sds100/KeyMapper/master/CHANGELOG.md</string>
-    <string name="url_credits">https://raw.githubusercontent.com/sds100/KeyMapper/master/CREDITS.md</string>
-    <string name="url_help">https://github.com/sds100/KeyMapper/wiki/Help.md</string>
-    <string name="url_privacy_policy">https://raw.githubusercontent.com/sds100/KeyMapper/master/PRIVACY_POLICY.md</string>
-    <string name="url_xda_thread">https://forum.xda-developers.com/android/apps-games/app-keyboard-button-mapper-t3914005</string>
-    <string name="url_google_app_listing">https://play.google.com/store/apps/details?id=com.google.android.googlequicksearchbox</string>
+    <string name="url_source_code" translatable="false">https://github.com/sds100/KeyMapper</string>
+    <string name="url_developer_github" translatable="false">https://github.com/sds100</string>
+    <string name="url_play_store_listing" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper</string>
+    <string name="url_license" translatable="false">https://raw.githubusercontent.com/sds100/KeyMapper/master/LICENSE.md</string>
+    <string name="url_changelog" translatable="false">https://raw.githubusercontent.com/sds100/KeyMapper/master/CHANGELOG.md</string>
+    <string name="url_credits" translatable="false">https://raw.githubusercontent.com/sds100/KeyMapper/master/CREDITS.md</string>
+    <string name="url_help" translatable="false">https://github.com/sds100/KeyMapper/wiki/Help.md</string>
+    <string name="url_translate" translatable="false">https://github.com/sds100/KeyMapper/wiki/Translate.md</string>
+    <string name="url_privacy_policy" translatable="false">https://raw.githubusercontent.com/sds100/KeyMapper/master/PRIVACY_POLICY.md</string>
+    <string name="url_xda_thread" translatable="false">https://forum.xda-developers.com/android/apps-games/app-keyboard-button-mapper-t3914005</string>
+    <string name="url_google_app_listing" translatable="false">https://play.google.com/store/apps/details?id=com.google.android.googlequicksearchbox</string>
     <!-- URLs -->
 
     <!-- Activity titles -->
@@ -57,12 +56,13 @@
     <string name="title_settings">Settings</string>
     <string name="title_about">About</string>
     <string name="title_help">Help</string>
+    <string name="title_log">Log</string>
     <!-- Activity titles -->
 
     <!-- Menu action titles-->
     <string name="action_settings">Settings</string>
     <string name="action_done">Done</string>
-    <string name="action_select_all">Select All</string>
+    <string name="action_select_all">Select all</string>
     <string name="action_delete">Delete</string>
     <string name="action_about">About</string>
     <string name="action_search">Search</string>
@@ -71,7 +71,9 @@
     <string name="action_disable">Disable</string>
     <string name="action_disable_all_keymaps">Disable all</string>
     <string name="action_enable_all_keymaps">Enable all</string>
-    <string name="action_send_feedback">Send Feedback</string>
+    <string name="action_send_feedback">Send feedback</string>
+    <string name="action_log">Log</string>
+    <string name="action_send_log">Send log</string>
     <!-- Menu action titles-->
 
     <!-- Button titles -->
@@ -82,8 +84,8 @@
     <string name="button_test">Test</string>
     <string name="button_done">Done</string>
     <string name="button_fix">Fix</string>
-    <string name="button_stop_recording_trigger">Stop Recording Trigger…</string>
-    <string name="button_flags">Flags</string>
+    <string name="button_recording_trigger">Recording Trigger…</string>
+    <string name="button_flags">More</string>
     <!-- Button titles -->
 
     <!-- Content descriptions -->
@@ -138,75 +140,55 @@
     <string name="notification_action_stop_acc_service">Stop Accessibility Service</string>
     <!-- Notification strings -->
 
-    <!-- Settings Activity -->
-
-    <!--preferences-->
-    <!-- Look in the default_prefs.xml file to find their default values -->
-    <string name="key_pref_first_time">pref_first_time</string>
-    <string name="key_pref_show_long_press_warning">key_show_long_press_warning</string>
-
-    <string name="key_pref_long_press_delay">pref_long_press_delay</string>
+    <!--Preference titles and summaries-->
     <string name="title_pref_long_press_delay">Long press delay</string>
-    <string name="summary_pref_long_press_delay">How long in milliseconds should a button be pressed for it to be detected as a long press. The default is 500ms.</string>
+    <string name="summary_pref_long_press_delay">How long in milliseconds should a button be pressed for it to be detected as a long press. Default is 500ms.</string>
 
-    <string name="key_pref_vibrate_duration">pref_vibrate_duration</string>
-    <string name="summary_pref_vibrate_duration">How long in milliseconds to vibrate for if vibrating is enabled for a remap. Default is 200</string>
+    <string name="summary_pref_vibrate_duration">How long in milliseconds to vibrate for if vibrating is enabled for a remap. Default is 200ms.</string>
     <string name="title_pref_vibrate_duration">Vibrate duration</string>
 
-    <string name="key_pref_force_vibrate">pref_force_vibrate</string>
     <string name="summary_pref_force_vibrate">Force all remaps to vibrate.</string>
     <string name="title_pref_force_vibrate">Force vibrate</string>
 
     <string name="title_pref_show_ime_notification">IME notification</string>
-    <string name="key_pref_show_ime_notification">pref_show_ime_notification</string>
-    <string name="summary_pref_show_ime_notification">Show a persistent notification to allow you to pick an input method. (The app requires ROOT permission for it to work on Android 8.1 and higher).</string>
+    <string name="summary_pref_show_ime_notification">Show a persistent notification to allow you to pick an input method.</string>
 
     <string name="title_pref_show_toggle_remappings_notification">Pause/resume remappings notification</string>
-    <string name="key_pref_show_toggle_remappings_notification">pref_show_remappings_notification</string>
     <string name="summary_pref_show_toggle_remappings_notification">Show a persistent notification which starts/pauses your remaps and has a link to start/stop the accessibility service.</string>
 
     <string name="title_pref_data_collection">Anonymous analytics</string>
-    <string name="key_pref_data_collection">pref_data_collection</string>
     <string name="summary_pref_data_collection">Do you want to help improve Key Mapper by allowing it to anonymously collect data about how you use it such as crash reports? The data is collected by Google Firebase. The privacy policy is located in the About activity.</string>
 
-    <string name="key_pref_bluetooth_devices">pref_bluetooth_devices</string>
     <string name="title_pref_bluetooth_devices">Choose bluetooth devices…</string>
 
-    <string name="key_pref_auto_show_ime_picker">pref_auto_show_ime_picker</string>
     <string name="title_pref_auto_show_ime_picker">Automatically show input method picker</string>
-    <string name="summary_pref_auto_show_ime_picker">When a Bluetooth device you have chosen connects or disconnects, the input method picker will show automatically. Choose the devices below. Requires root for Android 8.1+.</string>
+    <string name="summary_pref_auto_show_ime_picker">When a Bluetooth device you have chosen connects or disconnects, the input method picker will show automatically. Choose the devices below.</string>
 
-    <string name="key_pref_show_toast_when_action_performed">pref_show_toast_on_perform_action</string>
     <string name="title_pref_show_toast_when_action_performed">Show a toast message when you perform an action</string>
     <string name="summary_pref_show_toast_when_action_performed">A little message will popup when you perform an action.</string>
 
-    <string name="key_pref_auto_change_ime_on_connection">pref_auto_change_ime_on_connect_disconnect</string>
+    <string name="title_pref_debug">Logging</string>
+    <string name="summary_pref_debug">Enable logging of important events inside the app so it is easier for the developer (or you) to debug any issues you are having with the app. The app will log some potentially sensitive information, such as when and which keys are being pressed so disable this once you have finished logging. The log will never leave your device without your permission and it can\'t be read by another app or you in a text editor. It will disappear if you uninstall the app. A button to see the log will appear in the menu on the home screen. From here you can delete the log and send it to the developer if you need.</string>
+
     <string name="title_pref_auto_change_ime_on_connection">Automatically change input method</string>
     <string name="summary_pref_auto_change_ime_on_connection">The Key Mapper input method will be automatically selected when a chosen bluetooth device is connected. Your old input method will be automatically selected when the device disconnects.
         There may be a 5-10 second delay after disconnecting your device for the input method to change.</string>
 
-    <string name="key_pref_allow_root_features">pref_allow_root_features</string>
     <string name="title_pref_allow_root_features">Enable root features</string>
     <string name="summary_pref_allow_root_features">Enable this if you want to use features/actions which only work on rooted devices. Key Mapper must have root permission from your root-access-management app (e.g Magisk, SuperSU) for these features to work.
         Only turn this on if you know your device is rooted and you have given Key Mapper root permission.</string>
-    <!--preferences-->
+    <!--Preference titles and summaries-->
 
-    <!--categories-->
+    <!--Preference categories-->
     <string name="title_pref_category_ime_picker">Input Method Picker</string>
-
     <string name="title_pref_category_notifications">Notifications</string>
-    <string name="key_pref_category_notifications">pref_category_notifications</string>
+    <string name="title_pref_category_debug">Debugging</string>
 
     <string name="title_pref_category_root">ROOT</string>
     <string name="summary_pref_category_root">These options will only work on root devices! If you don\'t know what root is or whether your device is rooted, please don\'t leave a bad review if they don\'t work. :)</string>
-    <string name="key_pref_category_root">pref_category_root</string>
-    <!--categories-->
-    <!-- Settings Activity -->
+    <!--Preference categories-->
 
     <!-- About activity-->
-    <string name="key_pref_version">key_version</string>
-    <string name="key_pref_developer_email">developer_email</string>
-
     <string name="pref_title_changelog">Changelog</string>
     <string name="pref_title_license">License</string>
     <string name="pref_title_privacy_policy">Privacy Policy</string>
@@ -217,6 +199,7 @@
     <string name="pref_title_xda_thread">XDA Thread</string>
     <string name="pref_title_version">Version</string>
     <string name="pref_title_developer_email">Email Developer</string>
+    <string name="pref_title_translate">Translate</string>
     <!-- About activity-->
 
     <!--Action Types Titles-->
@@ -234,7 +217,7 @@
     <string name="flag_vibrate">Vibrate</string>
     <!--flags-->
 
-    <!-- streams -->
+    <!-- system action options -->
     <string name="stream_accessibility">Accessibility</string>
     <string name="stream_alarm">Alarm</string>
     <string name="stream_dtmf">DTMF</string>
@@ -243,7 +226,14 @@
     <string name="stream_ring">Ring</string>
     <string name="stream_system">System</string>
     <string name="stream_voice_call">Voice call</string>
-    <!-- streams -->
+
+    <string name="ringer_mode_normal">Ring</string>
+    <string name="ringer_mode_vibrate">Vibrate</string>
+    <string name="ringer_mode_silent">Silent</string>
+
+    <string name="lens_front">Front</string>
+    <string name="lens_back">Back</string>
+    <!-- system action options -->
 
     <!-- Error messages -->
     <string name="error_must_type_a_key">You must type a key!</string>
@@ -264,14 +254,25 @@
     <string name="error_cant_find_accessibility_settings_page">Can\'t find the Accessibility settings page!</string>
     <string name="error_cant_find_ime_settings">Can\'t find the input method settings page!</string>
     <string name="error_need_to_enable_device_admin">Key Mapper needs to be a device administrator to use this action!</string>
-    <string name="error_camera_in_use">Camera is in use!</string>
     <string name="error_in_do_not_disturb_mode">In Do Not Disturb mode!</string>
     <string name="error_keymapper_doesnt_have_permission_app_shortcut">Key Mapper doesn\'t have permission to use that shortcut.</string>
+    <string name="error_action_notification_policy_permission">The app needs permission to change the Do Not Disturb state!</string>
+    <string name="error_action_requires_read_phone_state_permission">This action needs permission to read the phone state!</string>
+    <string name="error_cant_find_write_settings_page">Can\'t find the write-settings permission page!</string>
+    <string name="error_opening_app_shortcut">Error opening this app shortcut</string>
+    <string name="error_no_app_found_to_send_feedback">No compatible app is found to send feedback.</string>
+
+    <string name="error_camera_in_use">Camera is in use!</string>
+    <string name="error_camera_disconnected">Camera Disconnected!</string>
+    <string name="error_camera_disabled">Camera disabled!</string>
+    <string name="error_camera_error">Camera error!</string>
+    <string name="error_max_cameras_in_use">Maximum number of cameras in use!</string>
+    <string name="error_camera_access_exception">Can\'t access the camera!</string>
 
     <string name="error_accessibility_service_disabled">The accessibility service must be enabled for this app to work!</string>
     <string name="error_accessibility_service_enabled">Accessibility service is enabled!</string>
 
-    <string name="error_ime_service_disabled">The input method service must be enabled for “Keycode”, “Key” and “Text block” actions to work!</string>
+    <string name="error_ime_service_disabled">The input method service ONLY needs to be enabled for “Keycode”, “Key” and “Text block” actions to work. This does not have to be enabled for other action types to work.</string>
     <string name="error_ime_service_enabled">Input method service is enabled!</string>
     <!-- Error messages -->
 
@@ -294,12 +295,16 @@
     <string name="action_increase_stream_formatted">Increase %s Stream</string>
     <string name="action_decrease_stream">Decrease Stream</string>
     <string name="action_decrease_stream_formatted">Decrease %s Stream</string>
+    <string name="action_cycle_ringer_mode">Cycle Through Ringer Modes (Ring, Vibrate, Silent)</string>
+    <string name="action_change_ringer_mode">Change Ringer Mode</string>
+    <string name="action_change_ringer_mode_formatted">Change To %s Mode</string>
 
     <string name="action_enable_auto_rotate">Enable Auto Rotate</string>
     <string name="action_disable_auto_rotate">Disable Auto Rotate</string>
     <string name="action_toggle_auto_rotate">Toggle Auto Rotate</string>
     <string name="action_portrait_mode">Portrait Mode</string>
     <string name="action_landscape_mode">Landscape Mode</string>
+    <string name="action_switch_orientation">Switch Orientation</string>
 
     <string name="action_toggle_mobile_data">Toggle Mobile Data</string>
     <string name="action_enable_mobile_data">Enable Mobile Data</string>
@@ -316,10 +321,14 @@
     <string name="action_collapse_status_bar">Collapse Status Bar</string>
 
     <string name="action_pause_media">Pause Media Playback</string>
-    <string name="action_play_media">Play Media</string>
-    <string name="action_play_pause_media">Play/Pause Media</string>
+    <string name="action_play_media">Resume Media Playback</string>
+    <string name="action_play_pause_media">Play/Pause Media Playback</string>
     <string name="action_next_track">Next Track</string>
     <string name="action_previous_track">Previous Track</string>
+    <string name="action_fast_forward">Fast Forward</string>
+    <string name="action_fast_forward_message">Not all media apps support fast forwarding. E.g Google Play Music.</string>
+    <string name="action_rewind">Rewind</string>
+    <string name="action_rewind_message">Not all media apps support rewinding. E.g Google Play Music.</string>
 
     <string name="action_go_back">Go Back</string>
     <string name="action_go_home">Go Home</string>
@@ -334,12 +343,16 @@
     <string name="action_enable_flashlight_formatted">Enable %s Flashlight</string>
     <string name="action_disable_flashlight_formatted">Disable %s Flashlight</string>
 
+    <string name="action_nfc_enable">Enable NFC</string>
+    <string name="action_nfc_disable">Disable NFC</string>
+    <string name="action_nfc_toggle">Toggle NFC</string>
+
     <string name="action_screenshot">Screenshot</string>
     <string name="action_open_assistant">Open Google Assistant</string>
     <string name="action_open_camera">Open Camera</string>
     <string name="action_lock_device">Lock Device (ROOT only)</string>
     <string name="action_secure_lock_device">Secure Lock Device</string>
-    <string name="action_secure_lock_device_message">This will lock your device but you will only be able to log back in with your PIN. The fingerprint scanner and face unlock will be disabled. For now, this is the only reliable way I have found to lock non-rooted devices.</string>
+    <string name="action_secure_lock_device_message">This will lock your device but you will only be able to log back in with your PIN. The fingerprint scanner and face unlock will be disabled. For now this is the only reliable way I have found to lock non-rooted devices.</string>
     <string name="action_consume_keyevent">Do Nothing</string>
     <!-- System action labels -->
 
@@ -354,6 +367,7 @@
     <string name="system_action_cat_status_bar">Status Bar</string>
     <string name="system_action_cat_media">Media</string>
     <string name="system_action_cat_flashlight">Flashlight</string>
+    <string name="system_action_cat_nfc">NFC</string>
     <string name="system_action_cat_other">Other</string>
     <!-- System action category labels -->
 </resources>

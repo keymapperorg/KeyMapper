@@ -76,6 +76,8 @@ class ActionPerformerDelegate(
                         toast(R.string.error_shortcut_not_found)
                     } catch (e: SecurityException) {
                         toast(R.string.error_keymapper_doesnt_have_permission_app_shortcut)
+                    } catch (e: Exception) {
+                        toast(R.string.error_opening_app_shortcut)
                     }
                 }
 
@@ -104,6 +106,18 @@ class ActionPerformerDelegate(
     }
 
     private fun performSystemAction(action: Action, flags: Int) {
+
+        fun getSdkValueForOption(systemActionId: String, onSuccess: (sdkOptionValue: Int) -> Unit) {
+            val extraId = Option.getExtraIdForOption(systemActionId)
+
+            action.getExtraData(extraId).onSuccess { option ->
+                val sdkOptionValue = Option.OPTION_ID_SDK_ID_MAP[option]
+
+                if (sdkOptionValue != null) {
+                    onSuccess(sdkOptionValue)
+                }
+            }
+        }
 
         val id = action.data
 
@@ -156,52 +170,59 @@ class ActionPerformerDelegate(
                 SystemAction.DISABLE_AUTO_ROTATE -> ScreenRotationUtils.disableAutoRotate(this)
                 SystemAction.PORTRAIT_MODE -> ScreenRotationUtils.forcePortraitMode(this)
                 SystemAction.LANDSCAPE_MODE -> ScreenRotationUtils.forceLandscapeMode(this)
+                SystemAction.SWITCH_ORIENTATION -> ScreenRotationUtils.switchOrientation(this)
 
-                SystemAction.VOLUME_UP -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_RAISE, showVolumeUi)
-                SystemAction.VOLUME_DOWN -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_LOWER, showVolumeUi)
+                SystemAction.VOLUME_UP -> AudioUtils.adjustVolume(this, AudioManager.ADJUST_RAISE, showVolumeUi)
+                SystemAction.VOLUME_DOWN -> AudioUtils.adjustVolume(this, AudioManager.ADJUST_LOWER, showVolumeUi)
 
                 //the volume UI should always be shown for this action
-                SystemAction.VOLUME_SHOW_DIALOG -> VolumeUtils.adjustVolume(this, AudioManager.ADJUST_SAME, true)
+                SystemAction.VOLUME_SHOW_DIALOG -> AudioUtils.adjustVolume(this, AudioManager.ADJUST_SAME, true)
 
-                SystemAction.VOLUME_DECREASE_STREAM -> {
-
-                    action.getExtraData(Action.EXTRA_STREAM_TYPE).onSuccess { streamType ->
-                        VolumeUtils.adjustSpecificStream(
-                                this,
-                                AudioManager.ADJUST_LOWER,
-                                showVolumeUi,
-                                streamType.toInt()
-                        )
-                    }
+                SystemAction.VOLUME_DECREASE_STREAM -> getSdkValueForOption(id) { stream ->
+                    AudioUtils.adjustSpecificStream(
+                            this,
+                            AudioManager.ADJUST_LOWER,
+                            showVolumeUi,
+                            stream
+                    )
                 }
 
-                SystemAction.VOLUME_INCREASE_STREAM -> {
+                SystemAction.VOLUME_INCREASE_STREAM -> getSdkValueForOption(id) { stream ->
+                    AudioUtils.adjustSpecificStream(
+                            this,
+                            AudioManager.ADJUST_RAISE,
+                            showVolumeUi,
+                            stream
+                    )
+                }
 
-                    action.getExtraData(Action.EXTRA_STREAM_TYPE).onSuccess { streamType ->
-                        VolumeUtils.adjustSpecificStream(
-                                this,
-                                AudioManager.ADJUST_RAISE,
-                                showVolumeUi,
-                                streamType.toInt()
-                        )
-                    }
+                SystemAction.CYCLE_RINGER_MODE -> AudioUtils.cycleThroughRingerModes(this)
+
+                SystemAction.CHANGE_RINGER_MODE -> getSdkValueForOption(id) { ringerMode ->
+                    AudioUtils.changeRingerMode(this, ringerMode)
                 }
 
                 SystemAction.EXPAND_NOTIFICATION_DRAWER -> StatusBarUtils.expandNotificationDrawer()
                 SystemAction.EXPAND_QUICK_SETTINGS -> StatusBarUtils.expandQuickSettings()
                 SystemAction.COLLAPSE_STATUS_BAR -> StatusBarUtils.collapseStatusBar()
 
+                SystemAction.ENABLE_NFC -> NfcUtils.enable()
+                SystemAction.DISABLE_NFC -> NfcUtils.disable()
+                SystemAction.TOGGLE_NFC -> NfcUtils.toggle(this)
+
                 SystemAction.PAUSE_MEDIA -> MediaUtils.pauseMediaPlayback(this)
                 SystemAction.PLAY_MEDIA -> MediaUtils.playMedia(this)
                 SystemAction.PLAY_PAUSE_MEDIA -> MediaUtils.playPauseMediaPlayback(this)
                 SystemAction.NEXT_TRACK -> MediaUtils.nextTrack(this)
                 SystemAction.PREVIOUS_TRACK -> MediaUtils.previousTrack(this)
+                SystemAction.FAST_FORWARD -> MediaUtils.fastForward(this)
+                SystemAction.REWIND -> MediaUtils.rewind(this)
 
                 SystemAction.GO_BACK -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
                 SystemAction.GO_HOME -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
                 SystemAction.OPEN_RECENTS -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
                 //there must be a way to do this without root
-                SystemAction.OPEN_MENU -> RootUtils.executeRootCommand("input keyevent 82")
+                SystemAction.OPEN_MENU -> RootUtils.executeRootCommand("input keyevent ${KeyEvent.KEYCODE_MENU}")
 
                 SystemAction.OPEN_ASSISTANT -> {
                     val intent = Intent(Intent.ACTION_VOICE_COMMAND).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -225,24 +246,26 @@ class ActionPerformerDelegate(
                         var lensFacing = CameraCharacteristics.LENS_FACING_BACK
 
                         action.getExtraData(Action.EXTRA_LENS).onSuccess {
-                            lensFacing = it.toInt()
+                            val sdkLensFacing = Option.OPTION_ID_SDK_ID_MAP[it]!!
+
+                            lensFacing = sdkLensFacing
                         }
 
                         when (id) {
-                            SystemAction.VOLUME_UNMUTE -> VolumeUtils.adjustVolume(
+                            SystemAction.VOLUME_UNMUTE -> AudioUtils.adjustVolume(
                                     this,
                                     AudioManager.ADJUST_UNMUTE,
                                     showVolumeUi
                             )
 
-                            SystemAction.VOLUME_MUTE -> VolumeUtils.adjustVolume(
+                            SystemAction.VOLUME_MUTE -> AudioUtils.adjustVolume(
                                     this,
                                     AudioManager.ADJUST_MUTE,
                                     showVolumeUi
                             )
 
                             SystemAction.VOLUME_TOGGLE_MUTE ->
-                                VolumeUtils.adjustVolume(this, AudioManager.ADJUST_TOGGLE_MUTE, showVolumeUi)
+                                AudioUtils.adjustVolume(this, AudioManager.ADJUST_TOGGLE_MUTE, showVolumeUi)
 
                             SystemAction.TOGGLE_FLASHLIGHT -> mFlashlightController.toggleFlashlight(lensFacing)
                             SystemAction.ENABLE_FLASHLIGHT -> mFlashlightController.setFlashlightMode(true, lensFacing)

@@ -9,13 +9,13 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import com.google.android.material.tabs.TabLayout
-import io.github.sds100.keymapper.activity.ConfigKeymapActivity.Companion.EXTRA_KEY_EVENT
 import io.github.sds100.keymapper.CustomViewPager
-import io.github.sds100.keymapper.delegate.TabDelegate
-import io.github.sds100.keymapper.fragment.ActionTypeFragments.*
-import io.github.sds100.keymapper.fragment.ActionTypeFragments.KeyActionTypeFragment.Companion.ACTION_ON_KEY_EVENT
-import io.github.sds100.keymapper.interfaces.ITabDelegate
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.activity.ConfigKeymapActivity.Companion.EXTRA_KEY_EVENT
+import io.github.sds100.keymapper.delegate.TabDelegate
+import io.github.sds100.keymapper.fragment.*
+import io.github.sds100.keymapper.fragment.KeyActionTypeFragment.Companion.ACTION_ON_KEY_EVENT
+import io.github.sds100.keymapper.interfaces.ITabDelegate
 import kotlinx.android.synthetic.main.activity_choose_action.*
 
 class ChooseActionActivity : AppCompatActivity(), ITabDelegate, TabLayout.OnTabSelectedListener {

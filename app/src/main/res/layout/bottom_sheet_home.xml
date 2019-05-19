@@ -17,7 +17,8 @@
             android:layout_marginStart="8dp"
             android:text="@string/action_help"
             app:activityToOpen="io.github.sds100.keymapper.activity.HelpActivity"
-            app:icon="@drawable/ic_help_outline_black_24dp" />
+            app:icon="@drawable/ic_help_outline_black_24dp"
+            app:iconTint="?attr/colorOnSurface" />
 
         <io.github.sds100.keymapper.view.BottomSheetMenuItem
             android:layout_width="match_parent"
@@ -25,7 +26,8 @@
             android:layout_marginStart="8dp"
             android:text="@string/action_about"
             app:activityToOpen="io.github.sds100.keymapper.activity.AboutActivity"
-            app:icon="@drawable/ic_info_outline_black_24dp" />
+            app:icon="@drawable/ic_info_outline_black_24dp"
+            app:iconTint="?attr/colorOnSurface" />
 
         <io.github.sds100.keymapper.view.BottomSheetMenuItem
             android:layout_width="match_parent"
@@ -33,15 +35,27 @@
             android:layout_marginStart="8dp"
             android:text="@string/action_settings"
             app:activityToOpen="io.github.sds100.keymapper.activity.SettingsActivity"
-            app:icon="@drawable/ic_outline_settings_24px" />
+            app:icon="@drawable/ic_outline_settings_24px"
+            app:iconTint="?attr/colorOnSurface" />
 
         <io.github.sds100.keymapper.view.BottomSheetMenuItem
+            android:id="@+id/menuItemSendFeedback"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:id="@+id/menuItemSendFeedback"
             android:text="@string/action_send_feedback"
-            app:icon="@drawable/ic_outline_feedback_24px" />
+            app:icon="@drawable/ic_outline_feedback_24px"
+            app:iconTint="?attr/colorOnSurface" />
+
+        <io.github.sds100.keymapper.view.BottomSheetMenuItem
+            android:id="@+id/menuItemLog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/action_log"
+            app:activityToOpen="io.github.sds100.keymapper.activity.LogActivity"
+            app:icon="@drawable/ic_outline_bug_report_24px"
+            app:iconTint="?attr/colorOnSurface" />
     </LinearLayout>
 
     <com.google.android.material.button.MaterialButton

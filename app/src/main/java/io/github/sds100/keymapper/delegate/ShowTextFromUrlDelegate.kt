@@ -41,7 +41,7 @@ interface ShowTextFromUrlDelegate {
         val path = FileUtils.getPathToFileInAppData(ctx, extractFileName(fileUrl))
         NetworkUtils.downloadFile(ctx, fileUrl, path)
 
-        return FileUtils.getTextFromFile(ctx, extractFileName(fileUrl))
+        return FileUtils.getTextFromAppFiles(ctx, extractFileName(fileUrl))
     }
 
     /**

@@ -1,8 +1,5 @@
 package io.github.sds100.keymapper
 
-import android.os.Build
-import androidx.annotation.RequiresApi
-
 /**
  * Created by sds100 on 04/08/2018.
  */
@@ -46,6 +43,7 @@ object SystemAction {
     const val DISABLE_AUTO_ROTATE = "disable_auto_rotate"
     const val PORTRAIT_MODE = "portrait_mode"
     const val LANDSCAPE_MODE = "landscape_mode"
+    const val SWITCH_ORIENTATION = "switch_orientation"
 
     //volume
     const val VOLUME_UP = "volume_up"
@@ -53,14 +51,11 @@ object SystemAction {
     const val VOLUME_SHOW_DIALOG = "volume_show_dialog"
     const val VOLUME_DECREASE_STREAM = "volume_decrease_stream"
     const val VOLUME_INCREASE_STREAM = "volume_increase_stream"
+    const val CYCLE_RINGER_MODE = "ringer_mode_cycle"
+    const val CHANGE_RINGER_MODE = "ringer_mode_change"
 
-    @RequiresApi(Build.VERSION_CODES.M)
     const val VOLUME_UNMUTE = "volume_unmute"
-
-    @RequiresApi(Build.VERSION_CODES.M)
     const val VOLUME_MUTE = "volume_mute"
-
-    @RequiresApi(Build.VERSION_CODES.M)
     const val VOLUME_TOGGLE_MUTE = "volume_toggle_mute"
 
     //status bar
@@ -74,6 +69,8 @@ object SystemAction {
     const val PLAY_PAUSE_MEDIA = "play_pause_media"
     const val NEXT_TRACK = "next_track"
     const val PREVIOUS_TRACK = "previous_track"
+    const val FAST_FORWARD = "fast_forward"
+    const val REWIND = "rewind"
 
     //navigation
     const val GO_BACK = "go_back"
@@ -85,9 +82,14 @@ object SystemAction {
     const val ENABLE_FLASHLIGHT = "enable_flashlight"
     const val DISABLE_FLASHLIGHT = "disable_flashlight"
 
+    //NFC
+    const val ENABLE_NFC = "nfc_enable"
+    const val DISABLE_NFC = "nfc_disable"
+    const val TOGGLE_NFC = "nfc_toggle"
+
     //other
-    @RequiresApi(Build.VERSION_CODES.P)
     const val SCREENSHOT = "screenshot"
+
     const val OPEN_ASSISTANT = "open_assistant"
     const val OPEN_CAMERA = "open_camera"
     const val LOCK_DEVICE = "lock_device"
@@ -108,5 +110,6 @@ object SystemAction {
     const val CATEGORY_STATUS_BAR = "status_bar"
     const val CATEGORY_MEDIA = "media"
     const val CATEGORY_FLASHLIGHT = "flashlight"
+    const val CATEGORY_NFC = "nfc"
     const val CATEGORY_OTHER = "other"
 }

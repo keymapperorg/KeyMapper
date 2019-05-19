@@ -8,25 +8,26 @@
     tools:context=".activity.HomeActivity"
     tools:showIn="@layout/activity_home">
 
-    <io.github.sds100.keymapper.view.ServiceStatusLayout
+    <io.github.sds100.keymapper.view.StatusLayout
         android:id="@+id/accessibilityServiceStatusLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:disabledText="@string/error_accessibility_service_disabled"
-        app:enabledText="@string/error_accessibility_service_enabled"
+        app:errorText="@string/error_accessibility_service_disabled"
+        app:fixedText="@string/error_accessibility_service_enabled"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <io.github.sds100.keymapper.view.ServiceStatusLayout
+    <io.github.sds100.keymapper.view.StatusLayout
         android:id="@+id/imeServiceStatusLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:disabledText="@string/error_ime_service_disabled"
-        app:enabledText="@string/error_ime_service_enabled"
+        app:errorText="@string/error_ime_service_disabled"
+        app:fixedText="@string/error_ime_service_enabled"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/accessibilityServiceStatusLayout" />
+        app:layout_constraintTop_toBottomOf="@id/accessibilityServiceStatusLayout"
+        app:yellowOnError="true" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewKeyMaps"
