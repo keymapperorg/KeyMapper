@@ -124,7 +124,7 @@ fun Context.isPermissionGranted(permission: String): Boolean {
             PackageManager.PERMISSION_GRANTED
 }
 
-val Context.accessNotificationPolicy: Boolean
+val Context.accessNotificationPolicyGranted: Boolean
     get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         isPermissionGranted(Manifest.permission.ACCESS_NOTIFICATION_POLICY)
     } else {

@@ -261,6 +261,8 @@
     <string name="error_cant_find_write_settings_page">Can\'t find the write-settings permission page!</string>
     <string name="error_opening_app_shortcut">Error opening this app shortcut</string>
     <string name="error_no_app_found_to_send_feedback">No compatible app is found to send feedback.</string>
+    <string name="error_dnd_access_not_granted">The app needs permission to change volume while in Do Not Disturb mode.</string>
+    <string name="dnd_access_granted">Permission to change Do Not Disturb mode granted!</string>
 
     <string name="error_camera_in_use">Camera is in use!</string>
     <string name="error_camera_disconnected">Camera Disconnected!</string>
