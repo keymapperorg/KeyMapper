@@ -50,7 +50,7 @@ object AudioUtils {
                      @AdjustMode adjustMode: Int,
                      showVolumeUi: Boolean = false) {
 
-        if (ctx.accessNotificationPolicy) {
+        if (ctx.accessNotificationPolicyGranted) {
 
             val audioManager = ctx.applicationContext.getSystemService(Context.AUDIO_SERVICE)
                     as AudioManager
@@ -70,7 +70,7 @@ object AudioUtils {
                              showVolumeUi: Boolean = false,
                              @StreamType streamType: Int) {
 
-        if (ctx.accessNotificationPolicy) {
+        if (ctx.accessNotificationPolicyGranted) {
             val audioManager = ctx.applicationContext.getSystemService(Context.AUDIO_SERVICE)
                     as AudioManager
 
@@ -97,7 +97,7 @@ object AudioUtils {
     }
 
     fun changeRingerMode(ctx: Context, @RingerMode ringerMode: Int) {
-        if (ctx.accessNotificationPolicy) {
+        if (ctx.accessNotificationPolicyGranted) {
             val audioManager = ctx.applicationContext.getSystemService(Context.AUDIO_SERVICE)
                     as AudioManager
 

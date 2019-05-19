@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.activity
 
+import android.Manifest
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -164,6 +165,12 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
             }
         })
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            dndAccessStatusLayout.setOnFixClickListener(View.OnClickListener {
+                PermissionUtils.requestPermission(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY)
+            })
+        }
+
         mKeymapAdapter.iSelectionProvider.subscribeToSelectionEvents(this)
 
         //recyclerview stuff
@@ -262,6 +269,14 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
             imeServiceStatusLayout.changeToFixedState()
         } else {
             imeServiceStatusLayout.changeToErrorState()
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (accessNotificationPolicyGranted) {
+                dndAccessStatusLayout.changeToFixedState()
+            } else {
+                dndAccessStatusLayout.changeToErrorState()
+            }
         }
     }
 
