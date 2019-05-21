@@ -298,6 +298,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
         WidgetsManager.onEvent(ctx, EVENT_SERVICE_START)
         sendBroadcast(Intent(ACTION_ON_START))
+
+        Logger.log(ctx, title = "Service Started", message = "Accessibility Service started")
     }
 
     override fun onInterrupt() {}
@@ -309,6 +311,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         mLifecycleRegistry.markState(Lifecycle.State.DESTROYED)
         unregisterReceiver(mBroadcastReceiver)
         sendBroadcast(Intent(ACTION_ON_STOP))
+
+        Logger.log(ctx, title = "Service Destroyed", message = "Accessibility Service destroyed")
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {}

@@ -26,10 +26,16 @@ object Logger {
         val path = getLogPath(ctx)
         val time = DateFormat.getDateTimeInstance().format(Date().time)
 
+        if (title.isNotEmpty()) {
+            FileUtils.appendTextToFile(
+                    path,
+                    "\n#### $title\n"
+            )
+        }
+
         FileUtils.appendTextToFile(
                 path,
-                "#### $title\n",
-                "[$time]: $message\n"
+                "\n[$time]: $message\n"
         )
 
         mOnChangeListener?.onLogChange()
