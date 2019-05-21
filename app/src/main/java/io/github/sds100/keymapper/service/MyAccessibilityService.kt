@@ -176,7 +176,11 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                     val jsonString = intent.getStringExtra(EXTRA_KEYMAP_CACHE_JSON)
 
                     if (jsonString != null) {
-                        mKeyMapListCache = Gson().fromJson(jsonString)
+                        /* app can crash if it can't deserialize the JSON. I don't know how to handle the try-catch in a
+                        * meaningful way */
+                        try {
+                            mKeyMapListCache = Gson().fromJson(jsonString)
+                        } catch (e: Exception) { }
                     }
                 }
 
