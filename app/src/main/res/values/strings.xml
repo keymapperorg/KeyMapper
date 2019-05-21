@@ -263,6 +263,7 @@
     <string name="error_no_app_found_to_send_feedback">No compatible app is found to send feedback.</string>
     <string name="error_dnd_access_not_granted">The app needs permission to change volume while in Do Not Disturb mode.</string>
     <string name="dnd_access_granted">Permission to change Do Not Disturb mode granted!</string>
+    <string name="error_cant_find_dnd_access_settings">Can\'t find the Do Not Disturb access permission settings!</string>
 
     <string name="error_camera_in_use">Camera is in use!</string>
     <string name="error_camera_disconnected">Camera Disconnected!</string>
