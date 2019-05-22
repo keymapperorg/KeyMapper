@@ -4,6 +4,7 @@ import android.content.Context
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.interfaces.OnLogChangedListener
 import org.jetbrains.anko.defaultSharedPreferences
+import org.jetbrains.anko.toast
 import java.io.File
 import java.text.DateFormat
 import java.util.*
@@ -23,10 +24,18 @@ object Logger {
     fun write(ctx: Context, title: String = "", message: String, isError: Boolean = false) {
         //only log if the user has enabled logging
         if (!isLoggingEnabled(ctx)) {
+            if (isError) {
+                ctx.toast(R.string.error_enable_log)
+            }
+
             return
         }
 
-        val path = getLogPath(ctx)
+        if (isError) {
+            ctx.toast(R.string.error_look_in_log)
+        }
+
+        val path = getPath(ctx)
         val time = DateFormat.getDateTimeInstance().format(Date().time)
 
         if (title.isNotEmpty()) {

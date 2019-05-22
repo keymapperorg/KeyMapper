@@ -264,6 +264,8 @@
     <string name="error_dnd_access_not_granted">The app needs permission to change volume while in Do Not Disturb mode.</string>
     <string name="dnd_access_granted">Permission to change Do Not Disturb mode granted!</string>
     <string name="error_cant_find_dnd_access_settings">Can\'t find the Do Not Disturb access permission settings!</string>
+    <string name="error_enable_log">Key Mapper encountered an error! Try to reproduce the error, enable logging to see what happened.</string>
+    <string name="error_look_in_log">Key Mapper encountered an error! Look in the Log.</string>
 
     <string name="error_camera_in_use">Camera is in use!</string>
     <string name="error_camera_disconnected">Camera Disconnected!</string>
