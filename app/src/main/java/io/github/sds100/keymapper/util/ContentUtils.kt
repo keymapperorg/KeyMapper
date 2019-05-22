@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.util
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.provider.Settings
 import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.*
@@ -16,6 +17,7 @@ import io.github.sds100.keymapper.interfaces.IContext
 /**
  * Get a resource string
  */
+
 // Using varargs doesn't work since prints [LJava.lang.object@32f...etc
 fun Context.str(@StringRes resId: Int, formatArg: Any? = null): String = getString(resId, formatArg)
 
@@ -83,3 +85,43 @@ fun Context.color(@ColorRes resId: Int): Int = ContextCompat.getColor(this, resI
 fun View.color(@ColorRes resId: Int): Int = context.color(resId)
 
 fun Context.int(@IntegerRes resId: Int) = resources.getInteger(resId)
+
+/**
+ * @return If the setting can't be found, it returns null
+ */
+inline fun <reified T> Context.getSystemSetting(name: String): T? {
+    return try {
+        when (T::class) {
+
+            Int::class -> Settings.System.getInt(contentResolver, name) as T?
+            String::class -> Settings.System.getString(contentResolver, name) as T?
+            Float::class -> Settings.System.getFloat(contentResolver, name) as T?
+            Long::class -> Settings.System.getLong(contentResolver, name) as T?
+
+            else -> {
+                throw Exception("Setting type ${T::class} is not supported")
+            }
+        }
+    } catch (e: Settings.SettingNotFoundException) {
+        Logger.log(
+                this,
+                title = "Exception",
+                message = "SettingNotFoundException: $name in ContentUtils")
+        null
+    }
+}
+
+inline fun <reified T> Context.putSystemSetting(name: String, value: T) {
+
+    when (T::class) {
+
+        Int::class -> Settings.System.putInt(contentResolver, name, value as Int)
+        String::class -> Settings.System.putStringblu(contentResolver, name, value as String)
+        Float::class -> Settings.System.putFloat(contentResolver, name, value as Float)
+        Long::class -> Settings.System.putLong(contentResolver, name, value as Long)
+
+        else -> {
+            throw Exception("Setting type ${T::class} is not supported")
+        }
+    }
+}

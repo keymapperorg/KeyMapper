@@ -26,9 +26,10 @@ object ScreenRotationUtils {
     }
 
     fun switchOrientation(ctx: Context) {
-        if (isPortrait(ctx)) {
+
+        if (isPortrait(ctx).isNotNullAndTrue()) {
             forceLandscapeMode(ctx)
-        } else if (isLandscape(ctx)) {
+        } else if (isLandscape(ctx).isNotNullAndTrue()) {
             forcePortraitMode(ctx)
         }
     }
@@ -50,6 +51,7 @@ object ScreenRotationUtils {
     }
 
     fun toggleAutoRotate(ctx: Context) {
+
         val autoRotateState = Settings.System.getInt(ctx.contentResolver,
                 Settings.System.ACCELEROMETER_ROTATION)
 
@@ -60,12 +62,18 @@ object ScreenRotationUtils {
         }
     }
 
-    fun isPortrait(ctx: Context): Boolean {
+    /**
+     * @return If the rotation setting can't be found, it returns null
+     */
+    fun isPortrait(ctx: Context): Boolean? {
         val setting = Settings.System.getInt(ctx.contentResolver, Settings.System.USER_ROTATION)
         return setting == Surface.ROTATION_0 || setting == Surface.ROTATION_180
     }
 
-    fun isLandscape(ctx: Context): Boolean {
+    /**
+     * @return If the rotation setting can't be found, it returns null
+     */
+    fun isLandscape(ctx: Context): Boolean? {
         val setting = Settings.System.getInt(ctx.contentResolver, Settings.System.USER_ROTATION)
         return setting == Surface.ROTATION_90 || setting == Surface.ROTATION_270
     }

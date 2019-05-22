@@ -8,37 +8,52 @@
     tools:context=".activity.HomeActivity"
     tools:showIn="@layout/activity_home">
 
-    <io.github.sds100.keymapper.view.StatusLayout
-        android:id="@+id/accessibilityServiceStatusLayout"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/statusCardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:errorText="@string/error_accessibility_service_disabled"
-        app:fixedText="@string/error_accessibility_service_enabled"
+        android:layout_margin="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <io.github.sds100.keymapper.view.StatusLayout
-        android:id="@+id/imeServiceStatusLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:errorText="@string/error_ime_service_disabled"
-        app:fixedText="@string/error_ime_service_enabled"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/accessibilityServiceStatusLayout"
-        app:yellowOnError="true" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <io.github.sds100.keymapper.view.StatusLayout
-        android:id="@+id/dndAccessStatusLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:errorText="@string/error_dnd_access_not_granted"
-        app:fixedText="@string/dnd_access_granted"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imeServiceStatusLayout"
-        app:yellowOnError="false" />
+            <io.github.sds100.keymapper.view.StatusLayout
+                android:id="@+id/accessibilityServiceStatusLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:errorText="@string/error_accessibility_service_disabled"
+                app:fixedText="@string/error_accessibility_service_enabled"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <io.github.sds100.keymapper.view.StatusLayout
+                android:id="@+id/imeServiceStatusLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:errorText="@string/error_ime_service_disabled"
+                app:fixedText="@string/error_ime_service_enabled"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/accessibilityServiceStatusLayout"
+                app:yellowOnError="true" />
+
+            <io.github.sds100.keymapper.view.StatusLayout
+                android:id="@+id/dndAccessStatusLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:errorText="@string/error_dnd_access_not_granted"
+                app:fixedText="@string/dnd_access_granted"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/imeServiceStatusLayout"
+                app:yellowOnError="false" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewKeyMaps"
@@ -47,7 +62,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dndAccessStatusLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/statusCardView" />
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -61,7 +76,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dndAccessStatusLayout"
+        app:layout_constraintTop_toBottomOf="@+id/statusCardView"
         tools:visibility="visible" />
 
     <TextView
@@ -77,7 +92,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dndAccessStatusLayout"
+        app:layout_constraintTop_toBottomOf="@+id/statusCardView"
         tools:text="@string/no_key_maps" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
