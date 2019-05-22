@@ -45,7 +45,7 @@ class LogFragment : Fragment(), ShowTextFromUrlDelegate {
     }
 
     private fun updateText() {
-        val text = Logger.getLogText(context!!)
+        val text = Logger.read(context!!)
 
         (view as MarkdownView).let { markDownView ->
             markDownView.setMarkDownText(text)

@@ -180,7 +180,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                         * meaningful way */
                         try {
                             mKeyMapListCache = Gson().fromJson(jsonString)
-                        } catch (e: Exception) { }
+                        } catch (e: Exception) {
+                        }
                     }
                 }
 
@@ -303,7 +304,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         WidgetsManager.onEvent(ctx, EVENT_SERVICE_START)
         sendBroadcast(Intent(ACTION_ON_START))
 
-        Logger.log(ctx, title = "Service Started", message = "Accessibility Service started")
+        Logger.write(ctx, title = "Service Started", message = "Accessibility Service started")
     }
 
     override fun onInterrupt() {}
@@ -316,16 +317,16 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         unregisterReceiver(mBroadcastReceiver)
         sendBroadcast(Intent(ACTION_ON_STOP))
 
-        Logger.log(ctx, title = "Service Destroyed", message = "Accessibility Service destroyed")
+        Logger.write(ctx, title = "Service Destroyed", message = "Accessibility Service destroyed")
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {}
 
     override fun onKeyEvent(event: KeyEvent?): Boolean {
         when {
-            event?.action == KeyEvent.ACTION_DOWN -> Logger.log(ctx, "Down Key Event", event.toString())
-            event?.action == KeyEvent.ACTION_UP -> Logger.log(ctx, "Up Key Event", event.toString())
-            else -> Logger.log(ctx, "Other Key Event", event.toString())
+            event?.action == KeyEvent.ACTION_DOWN -> Logger.write(ctx, "Down Key Event", event.toString())
+            event?.action == KeyEvent.ACTION_UP -> Logger.write(ctx, "Up Key Event", event.toString())
+            else -> Logger.write(ctx, "Other Key Event", event.toString())
         }
 
         if (event == null) return super.onKeyEvent(event)
@@ -503,10 +504,12 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
             }
 
         } catch (e: Exception) {
-            Logger.log(ctx, "Exception in onKeyEvent()", e.stackTrace.toString())
+            Logger.write(ctx,
+                    isError = true,
+                    title = "Exception in onKeyEvent()",
+                    message = e.stackTrace.toString())
 
             if (BuildConfig.DEBUG) {
-                toast(R.string.exception_accessibility_service)
                 Log.e(this::class.java.simpleName, "ONKEYEVENT CRASH")
                 e.printStackTrace()
             }
@@ -520,7 +523,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
     private fun performAction(action: Action, flags: Int) {
         mActionPerformerDelegate.performAction(action, flags)
 
-        Logger.log(ctx, "Performed Action", "${action.type} ${action.data} ${action.extras}")
+        Logger.write(ctx, "Performed Action", "${action.type} ${action.data} ${action.extras}")
 
         mPressedTriggerKeys.forEach {
             if (KEYS_TO_CONSUME_UP_EVENT.contains(it)) {
@@ -563,9 +566,9 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
     private fun logConsumedKeyEvent(event: KeyEvent) {
         if (event.action == KeyEvent.ACTION_DOWN) {
-            Logger.log(ctx, "Consumed Down", event.toString())
+            Logger.write(ctx, "Consumed Down", event.toString())
         } else if (event.action == KeyEvent.ACTION_UP) {
-            Logger.log(ctx, "Consumed Up", event.toString())
+            Logger.write(ctx, "Consumed Up", event.toString())
         }
 
         Log.i(this::class.java.simpleName, "Consumed key event ${event.keyCode} ${event.action}")

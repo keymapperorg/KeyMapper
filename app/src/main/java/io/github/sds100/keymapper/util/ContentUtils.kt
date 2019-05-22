@@ -103,8 +103,9 @@ inline fun <reified T> Context.getSystemSetting(name: String): T? {
             }
         }
     } catch (e: Settings.SettingNotFoundException) {
-        Logger.log(
+        Logger.write(
                 this,
+                isError = true,
                 title = "Exception",
                 message = "SettingNotFoundException: $name in ContentUtils")
         null
@@ -116,7 +117,7 @@ inline fun <reified T> Context.putSystemSetting(name: String, value: T) {
     when (T::class) {
 
         Int::class -> Settings.System.putInt(contentResolver, name, value as Int)
-        String::class -> Settings.System.putStringblu(contentResolver, name, value as String)
+        String::class -> Settings.System.putString(contentResolver, name, value as String)
         Float::class -> Settings.System.putFloat(contentResolver, name, value as Float)
         Long::class -> Settings.System.putLong(contentResolver, name, value as Long)
 

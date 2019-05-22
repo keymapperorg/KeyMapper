@@ -25,10 +25,10 @@ class LogActivity : SimpleFragmentActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            R.id.action_delete_log -> Logger.deleteLog(this)
+            R.id.action_delete_log -> Logger.delete(this)
 
             R.id.action_send_log -> {
-                FeedbackUtils.sendFeedback(this, "\n\nHere is a log:\n${Logger.getLogText(this)}")
+                FeedbackUtils.sendFeedback(this, "\n\nHere is a log:\n${Logger.read(this)}")
             }
         }
 

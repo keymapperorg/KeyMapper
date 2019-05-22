@@ -12,12 +12,15 @@ import java.util.*
  * Created by sds100 on 11/05/2019.
  */
 
+/**
+ * Controls how data is read and written to the app's custom logging feature.
+ */
 object Logger {
     private const val LOG_FILE_NAME = "log.txt"
 
     private var mOnChangeListener: OnLogChangedListener? = null
 
-    fun log(ctx: Context, title: String = "", message: String) {
+    fun write(ctx: Context, title: String = "", message: String, isError: Boolean = false) {
         //only log if the user has enabled logging
         if (!isLoggingEnabled(ctx)) {
             return
@@ -41,9 +44,9 @@ object Logger {
         mOnChangeListener?.onLogChange()
     }
 
-    fun getLogText(ctx: Context): String {
+    fun read(ctx: Context): String {
         //create the file if it doesn't exist
-        val logPath = getLogPath(ctx)
+        val logPath = getPath(ctx)
         File(logPath).createNewFile()
 
         return FileUtils.getTextFromAppFiles(ctx, LOG_FILE_NAME)
@@ -55,7 +58,7 @@ object Logger {
                 ctx.bool(R.bool.default_value_debug))
     }
 
-    fun deleteLog(ctx: Context) {
+    fun delete(ctx: Context) {
         ctx.deleteFile(LOG_FILE_NAME)
 
         mOnChangeListener?.onLogChange()
@@ -69,5 +72,5 @@ object Logger {
         mOnChangeListener = null
     }
 
-    fun getLogPath(ctx: Context) = "${ctx.filesDir}/$LOG_FILE_NAME"
+    fun getPath(ctx: Context) = "${ctx.filesDir}/$LOG_FILE_NAME"
 }
