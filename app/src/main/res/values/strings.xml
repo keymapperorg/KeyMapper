@@ -170,6 +170,9 @@
     <string name="title_pref_debug">Logging</string>
     <string name="summary_pref_debug">Enable logging of important events inside the app so it is easier for the developer (or you) to debug any issues you are having with the app. The app will log some potentially sensitive information, such as when and which keys are being pressed so disable this once you have finished logging. The log will never leave your device without your permission and it can\'t be read by another app or you in a text editor. It will disappear if you uninstall the app. A button to see the log will appear in the menu on the home screen. From here you can delete the log and send it to the developer if you need.</string>
 
+    <string name="title_pref_show_toast_when_error_encountered">Show a message when an error is encountered in the app</string>
+    <string name="summary_pref_show_toast_when_error_encountered">A message will be shown on the screen prompting you to log it when the app encounters an error it is aware of.</string>
+
     <string name="title_pref_auto_change_ime_on_connection">Automatically change input method</string>
     <string name="summary_pref_auto_change_ime_on_connection">The Key Mapper input method will be automatically selected when a chosen bluetooth device is connected. Your old input method will be automatically selected when the device disconnects.
         There may be a 5-10 second delay after disconnecting your device for the input method to change.</string>

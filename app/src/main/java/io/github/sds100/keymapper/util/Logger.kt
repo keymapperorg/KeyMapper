@@ -24,14 +24,14 @@ object Logger {
     fun write(ctx: Context, title: String = "", message: String, isError: Boolean = false) {
         //only log if the user has enabled logging
         if (!isLoggingEnabled(ctx)) {
-            if (isError) {
+            if (isError && shouldShowErrorToast(ctx)) {
                 ctx.toast(R.string.error_enable_log)
             }
 
             return
         }
 
-        if (isError) {
+        if (isError && shouldShowErrorToast(ctx)) {
             ctx.toast(R.string.error_look_in_log)
         }
 
@@ -82,4 +82,8 @@ object Logger {
     }
 
     fun getPath(ctx: Context) = "${ctx.filesDir}/$LOG_FILE_NAME"
+
+    fun shouldShowErrorToast(ctx: Context) =
+            ctx.defaultSharedPreferences.getBoolean(ctx.str(R.string.key_pref_show_toast_when_error_encountered),
+                    ctx.bool(R.bool.default_value_show_toast_when_error_encountered))
 }
