@@ -377,5 +377,6 @@
     <string name="system_action_cat_flashlight">Flashlight</string>
     <string name="system_action_cat_nfc">NFC</string>
     <string name="system_action_cat_other">Other</string>
+    <string name="dialog_message_describe_your_issue_in_the_email">Can you please describe the issue you are having in the email otherwise I can\'t help you. Thank you!</string>
     <!-- System action category labels -->
 </resources>
