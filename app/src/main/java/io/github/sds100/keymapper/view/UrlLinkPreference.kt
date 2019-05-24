@@ -20,7 +20,7 @@ class UrlLinkPreference(
         attrs: AttributeSet
 ) : Preference(context, attrs) {
 
-    private val mUrlLink: String = context!!.str(
+    private val mUrlLink = context?.str(
             attrs,
             R.styleable.UrlLinkPreference,
             R.styleable.UrlLinkPreference_linkUrl
@@ -30,7 +30,9 @@ class UrlLinkPreference(
         super.onClick()
 
         //open the link
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(mUrlLink))
-        context.startActivity(intent)
+        mUrlLink?.let { urlLink ->
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(urlLink))
+            context.startActivity(intent)
+        }
     }
 }

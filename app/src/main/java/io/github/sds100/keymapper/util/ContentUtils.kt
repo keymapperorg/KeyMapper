@@ -8,6 +8,7 @@ import android.view.View
 import androidx.annotation.*
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.getResourceIdOrThrow
 import io.github.sds100.keymapper.interfaces.IContext
 
 /**
@@ -26,8 +27,32 @@ fun View.str(@StringRes resId: Int, formatArgs: Any? = null): String = context.s
 
 fun Context.bool(@BoolRes resId: Int): Boolean = resources.getBoolean(resId)
 
-fun View.bool(attributeSet: AttributeSet, @StyleableRes styleableId: IntArray, @StyleableRes attrId: Int) =
-        context.bool(attributeSet, styleableId, attrId)
+fun View.bool(
+        attributeSet: AttributeSet,
+        @StyleableRes styleableId: IntArray,
+        @StyleableRes attrId: Int,
+        defaultValue: Boolean = false
+) = context.bool(attributeSet, styleableId, attrId, defaultValue)
+
+fun Context.resourceId(
+        attributeSet: AttributeSet,
+        @StyleableRes styleableId: IntArray,
+        @StyleableRes attrId: Int): Int? {
+
+    val typedArray = theme.obtainStyledAttributes(attributeSet, styleableId, 0, 0)
+    var attrValue: Int?
+
+    try {
+        attrValue = typedArray.getResourceIdOrThrow(attrId)
+    } catch (e: IllegalArgumentException) {
+        //return null if it can't find it
+        attrValue = null
+    }
+
+    typedArray.recycle()
+
+    return attrValue
+}
 
 /**
  * Get a boolean from an attribute
@@ -40,21 +65,23 @@ fun Context.bool(
 ): Boolean {
     val typedArray = theme.obtainStyledAttributes(attributeSet, styleableId, 0, 0)
 
-    val attrValue: Boolean?
+    var attrValue: Boolean
 
     try {
         attrValue = typedArray.getBoolean(attrId, defaultValue)
+    } catch (e: Exception) {
+        attrValue = defaultValue
     } finally {
         typedArray.recycle()
     }
 
-    return attrValue!!
+    return attrValue
 }
 
 /**
  * Get a string from an attribute
  */
-fun Context.str(attributeSet: AttributeSet, @StyleableRes styleableId: IntArray, @StyleableRes attrId: Int): String {
+fun Context.str(attributeSet: AttributeSet, @StyleableRes styleableId: IntArray, @StyleableRes attrId: Int): String? {
     val typedArray = theme.obtainStyledAttributes(attributeSet, styleableId, 0, 0)
 
     val attrValue: String?
@@ -65,7 +92,7 @@ fun Context.str(attributeSet: AttributeSet, @StyleableRes styleableId: IntArray,
         typedArray.recycle()
     }
 
-    return attrValue!!
+    return attrValue
 }
 
 fun View.str(attributeSet: AttributeSet, @StyleableRes styleableId: IntArray, @StyleableRes attrId: Int) =

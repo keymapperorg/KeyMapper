@@ -16,6 +16,8 @@
     <string name="performing_action">Key Mapper is performing an action…</string>
     <string name="email_subject">Key Mapper query</string>
     <string name="log_is_empty">Log is empty!</string>
+    <string name="everything_looks_good">Everything looks good!</string>
+    <string name="warning_the_app_will_work">The app will work but some things might need fixing depending on what you\'re doing.</string>
 
     <string name="caption_action_type_key">Click the key on the keyboard which you want to be entered.
         \n\nIMPORTANT!
@@ -108,6 +110,7 @@
     <string name="dialog_message_root_prompt">When you tap \"OK\", you will be taken to Settings.
         In the Settings, scroll to the bottom and tap "Enable Root Features" so you can use root features/actions. If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use features which only work on rooted devices.</string>
     <string name="dialog_message_downloading">Downloading…</string>
+    <string name="dialog_message_describe_your_issue_in_the_email">Can you please describe the issue you are having in the email otherwise I can\'t help you. Thank you!</string>
     <string name="dialog_message_long_press_warning">Long pressing only works for physical volume and navigation buttons. If you enable it for other keys, the keys won\'t work when they aren\'t long pressed.</string>
     <!-- Dialog messages -->
 
@@ -264,7 +267,7 @@
     <string name="error_cant_find_write_settings_page">Can\'t find the write-settings permission page!</string>
     <string name="error_opening_app_shortcut">Error opening this app shortcut</string>
     <string name="error_no_app_found_to_send_feedback">No compatible app is found to send feedback.</string>
-    <string name="error_dnd_access_not_granted">The app needs permission to change volume while in Do Not Disturb mode.</string>
+    <string name="error_dnd_access_not_granted">If you are remapping a volume button you need to give the app Do Not Disturb access if you want the button\'s to work while in Do Not Disturb mode!</string>
     <string name="dnd_access_granted">Permission to change Do Not Disturb mode granted!</string>
     <string name="error_cant_find_dnd_access_settings">Can\'t find the Do Not Disturb access permission settings!</string>
     <string name="error_enable_log">Key Mapper encountered an error! Try to reproduce the error, enable logging to see what happened.</string>
@@ -282,6 +285,8 @@
 
     <string name="error_ime_service_disabled">The input method service ONLY needs to be enabled for “Keycode”, “Key” and “Text block” actions to work. This does not have to be enabled for other action types to work.</string>
     <string name="error_ime_service_enabled">Input method service is enabled!</string>
+
+    <string name="error_the_app_wont_work">The app won\'t work! Some things need enabling!</string>
     <!-- Error messages -->
 
     <!-- System action labels -->
@@ -377,6 +382,5 @@
     <string name="system_action_cat_flashlight">Flashlight</string>
     <string name="system_action_cat_nfc">NFC</string>
     <string name="system_action_cat_other">Other</string>
-    <string name="dialog_message_describe_your_issue_in_the_email">Can you please describe the issue you are having in the email otherwise I can\'t help you. Thank you!</string>
     <!-- System action category labels -->
 </resources>

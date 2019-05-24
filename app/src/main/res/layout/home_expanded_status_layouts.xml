@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <io.github.sds100.keymapper.view.StatusLayout
+        android:id="@+id/accessibilityServiceStatusLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:errorText="@string/error_accessibility_service_disabled"
+        app:fixedText="@string/error_accessibility_service_enabled"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <io.github.sds100.keymapper.view.StatusLayout
+        android:id="@+id/imeServiceStatusLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:fixedText="@string/error_ime_service_enabled"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/accessibilityServiceStatusLayout"
+        app:warningText="@string/error_ime_service_disabled" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<io.github.sds100.keymapper.view.StatusLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/collapsedStatusLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:errorText="@string/error_the_app_wont_work"
+    app:fixedText="@string/everything_looks_good"
+    app:showFixButton="false"
+    app:warningText="@string/warning_the_app_will_work" />

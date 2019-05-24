@@ -25,20 +25,20 @@ class ExpandButton(
      * Called when the button is pressed and is going to the expanded state.
      * @return whether the button should continue with expanding by changing the arrow direction.
      */
-    var onExpand: () -> Boolean = { true }
+    var onExpandClick: () -> Boolean = { true }
 
     /**
      * Called when the button is pressed and is going to the collapsed state.
      * @return whether the button should continue with collapsing by changing the arrow direction.
      */
-    var onCollapse: () -> Boolean = { true }
+    var onCollapseClick: () -> Boolean = { true }
 
     var expanded = false
         set(value) {
             if (!value) {
-                if (!onCollapse()) return
+                if (!onCollapseClick()) return
             } else {
-                if (!onExpand()) return
+                if (!onExpandClick()) return
             }
 
             field = value
@@ -54,7 +54,7 @@ class ExpandButton(
         setImageDrawable(context.drawable(R.drawable.asl_expand))
         scaleType = ScaleType.FIT_CENTER
 
-        expanded = context.bool(attrs, R.styleable.ExpandButton, R.styleable.ExpandButton_expanded, false)
+        expanded = context.bool(attrs, R.styleable.ExpandButton, R.styleable.ExpandButton_expanded, true)
     }
 
     override fun performClick(): Boolean {

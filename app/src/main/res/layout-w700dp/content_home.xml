@@ -8,31 +8,16 @@
     tools:context=".activity.HomeActivity"
     tools:showIn="@layout/activity_home">
 
-    <io.github.sds100.keymapper.view.StatusLayout
-        android:id="@+id/accessibilityServiceStatusLayout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:errorText="@string/error_accessibility_service_disabled"
-        app:fixedText="@string/error_accessibility_service_enabled"
-        app:layout_constraintBottom_toBottomOf="@id/imeServiceStatusLayout"
-        app:layout_constraintEnd_toStartOf="@+id/imeServiceStatusLayout"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toEndOf="@+id/imeServiceStatusLayout"
+    <io.github.sds100.keymapper.view.ExpandableCardView
+        android:id="@+id/cardViewStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        app:collapsedLayout="@layout/home_collapsed_status_layouts"
+        app:expandedLayout="@layout/home_expanded_status_layouts"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <io.github.sds100.keymapper.view.StatusLayout
-        android:id="@+id/imeServiceStatusLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:errorText="@string/error_ime_service_disabled"
-        app:fixedText="@string/error_ime_service_enabled"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/accessibilityServiceStatusLayout"
-        app:layout_constraintTop_toTopOf="parent"
-        app:yellowOnError="true" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewKeyMaps"
@@ -41,7 +26,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imeServiceStatusLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/cardViewStatus" />
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -55,7 +40,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imeServiceStatusLayout"
+        app:layout_constraintTop_toBottomOf="@+id/cardViewStatus"
         tools:visibility="visible" />
 
     <TextView
@@ -71,7 +56,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imeServiceStatusLayout"
+        app:layout_constraintTop_toBottomOf="@+id/cardViewStatus"
         tools:text="@string/no_key_maps" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
