@@ -58,14 +58,14 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         const val ACTION_ON_STOP = "$PACKAGE_NAME.ON_STOP_ACCESSIBILITY_SERVICE"
 
         /**
-         * How long should the accessibility service record a trigger. In milliseconds.
+         * How long should the accessibility service record a trigger in ms.
          */
         private const val RECORD_TRIGGER_TIMER_LENGTH = 5000L
 
         /**
          * The time in ms between repeating an action while holding down.
          */
-        private const val REPEAT_DELAY = 5L
+        private const val REPEAT_DELAY = 50L
 
         /**
          * How long a key should be held down to repeatedly perform an action in ms.
