@@ -40,6 +40,7 @@ dependencies {
     implementation 'com.github.salomonbrys.kotson:kotson:2.5.0'
     implementation 'com.hannesdorfmann:adapterdelegates4:4.0.0'
     implementation 'com.github.mukeshsolanki:MarkdownView-Android:1.0.8'
+    implementation 'net.cachapa.expandablelayout:expandablelayout:2.9.2'
 
     implementation 'androidx.appcompat:appcompat:1.1.0-alpha04'
     implementation 'androidx.core:core-ktx:1.0.2'
