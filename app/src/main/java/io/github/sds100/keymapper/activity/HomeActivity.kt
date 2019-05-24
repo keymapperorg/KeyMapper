@@ -294,7 +294,10 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
 
         when {
             mStatusLayouts.all { it.state == StatusLayout.State.FIXED } -> collapsedStatusLayout.changeToFixedState()
-            mStatusLayouts.any { it.state == StatusLayout.State.ERROR } -> collapsedStatusLayout.changeToErrorState()
+            mStatusLayouts.any { it.state == StatusLayout.State.ERROR } -> {
+                collapsedStatusLayout.changeToErrorState()
+                cardViewStatus.expanded = true
+            }
             mStatusLayouts.any { it.state == StatusLayout.State.WARN } -> collapsedStatusLayout.changeToWarningState()
         }
     }

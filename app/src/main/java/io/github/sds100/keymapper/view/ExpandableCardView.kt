@@ -22,7 +22,12 @@ class ExpandableCardView(
         attrs: AttributeSet
 ) : MaterialCardView(context, attrs) {
 
-    var isExpanded = false
+    var expanded = false
+        set(value) {
+            field = value
+
+            buttonExpand.expanded = expanded
+        }
 
     init {
         val inflater = LayoutInflater.from(context)
@@ -45,7 +50,7 @@ class ExpandableCardView(
             inflater.inflate(collapsedLayoutId, layoutCollapsed)
         }
 
-        isExpanded = context!!.bool(
+        expanded = context!!.bool(
                 attrs,
                 R.styleable.ExpandableCardView,
                 R.styleable.ExpandableCardView_layoutExpanded,
@@ -77,6 +82,6 @@ class ExpandableCardView(
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
 
-        buttonExpand.expanded = isExpanded
+        buttonExpand.expanded = expanded
     }
 }
