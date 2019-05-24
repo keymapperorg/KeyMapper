@@ -110,7 +110,7 @@
     <string name="dialog_message_root_prompt">When you tap \"OK\", you will be taken to Settings.
         In the Settings, scroll to the bottom and tap "Enable Root Features" so you can use root features/actions. If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use features which only work on rooted devices.</string>
     <string name="dialog_message_downloading">Downloading…</string>
-    <string name="dialog_message_describe_your_issue_in_the_email">Can you please describe the issue you are having in the email otherwise I can\'t help you. Thank you!</string>
+    <string name="dialog_message_describe_your_issue_in_the_email">Can you please describe the issue you are having in the email, otherwise I can\'t help you. Thanks!</string>
     <string name="dialog_message_long_press_warning">Long pressing only works for physical volume and navigation buttons. If you enable it for other keys, the keys won\'t work when they aren\'t long pressed.</string>
     <!-- Dialog messages -->
 
