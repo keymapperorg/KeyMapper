@@ -9,7 +9,11 @@ Key Mapper is a free and open source Android app that can map a single or multip
 ![](app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png?raw=true) <a href='https://play.google.com/store/apps/details?id=io.github.sds100.keymapper&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_gb/badges/images/generic/en_badge_web_generic.png' height=128px/> </a>
 
 ### How do I contribute?
-Fork the repo
+1. Fork the KeyMapper repository (repo).
+2. Clone the repo to your device. It will clone to a folder called KeyMapper by default.
+3. [Install](https://developer.android.com/studio/install) Android Studio if you don't have it already. It is available for Windows, Linux and macOS.
+4. Open the cloned KeyMapper folder in Android Studio. Install anything Android Studio prompts you to install. E.g the gradle wrapper version used by KeyMapper or older Android SDK versions.
+5. Make any changes then commit them to your forked repo then make a pull request!
 
 ### I need help in the app!
 Look at the [help](https://github.com/sds100/KeyMapper/wiki/Help) page in the wiki.
