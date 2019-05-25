@@ -6,6 +6,7 @@ Many thanks to...
  - Hannes Dorfmann (@[sockeqwe]) for his [AdapterDelegates] library. You can read his [article] demonstrating why delegation is better than inheritance.
  - The [Material Design Icons] community for various icons that are not provided by Google.
  - Mukesh Solanki (@[mukeshsolanki]) for his [MarkdownView] library.
+ - Daniel Cachapa (@cachapa) for this [ExpandableLayout](https://github.com/cachapa/ExpandableLayout) library.
 
 [salomonbrys]: https://github.com/salomonbrys
 [Kotson]: https://github.com/salomonbrys/Kotson
