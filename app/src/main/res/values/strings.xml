@@ -16,6 +16,8 @@
     <string name="performing_action">Key Mapper is performing an action…</string>
     <string name="email_subject">Key Mapper query</string>
     <string name="log_is_empty">Log is empty!</string>
+    <string name="everything_looks_good">Everything looks good!</string>
+    <string name="warning_the_app_will_work">The app will work but some things might need fixing depending on what you\'re doing.</string>
 
     <string name="caption_action_type_key">Click the key on the keyboard which you want to be entered.
         \n\nIMPORTANT!
@@ -108,6 +110,7 @@
     <string name="dialog_message_root_prompt">When you tap \"OK\", you will be taken to Settings.
         In the Settings, scroll to the bottom and tap "Enable Root Features" so you can use root features/actions. If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use features which only work on rooted devices.</string>
     <string name="dialog_message_downloading">Downloading…</string>
+    <string name="dialog_message_describe_your_issue_in_the_email">Can you please describe the issue you are having in the email, otherwise I can\'t help you. Thanks!</string>
     <string name="dialog_message_long_press_warning">Long pressing only works for physical volume and navigation buttons. If you enable it for other keys, the keys won\'t work when they aren\'t long pressed.</string>
     <!-- Dialog messages -->
 
@@ -169,6 +172,9 @@
 
     <string name="title_pref_debug">Logging</string>
     <string name="summary_pref_debug">Enable logging of important events inside the app so it is easier for the developer (or you) to debug any issues you are having with the app. The app will log some potentially sensitive information, such as when and which keys are being pressed so disable this once you have finished logging. The log will never leave your device without your permission and it can\'t be read by another app or you in a text editor. It will disappear if you uninstall the app. A button to see the log will appear in the menu on the home screen. From here you can delete the log and send it to the developer if you need.</string>
+
+    <string name="title_pref_show_toast_when_error_encountered">Show a message when an error is encountered in the app</string>
+    <string name="summary_pref_show_toast_when_error_encountered">A message will be shown on the screen prompting you to log it when the app encounters an error it is aware of.</string>
 
     <string name="title_pref_auto_change_ime_on_connection">Automatically change input method</string>
     <string name="summary_pref_auto_change_ime_on_connection">The Key Mapper input method will be automatically selected when a chosen bluetooth device is connected. Your old input method will be automatically selected when the device disconnects.
@@ -261,8 +267,11 @@
     <string name="error_cant_find_write_settings_page">Can\'t find the write-settings permission page!</string>
     <string name="error_opening_app_shortcut">Error opening this app shortcut</string>
     <string name="error_no_app_found_to_send_feedback">No compatible app is found to send feedback.</string>
-    <string name="error_dnd_access_not_granted">The app needs permission to change volume while in Do Not Disturb mode.</string>
+    <string name="error_dnd_access_not_granted">If you are remapping a volume button you need to give the app Do Not Disturb access if you want the button\'s to work while in Do Not Disturb mode!</string>
     <string name="dnd_access_granted">Permission to change Do Not Disturb mode granted!</string>
+    <string name="error_cant_find_dnd_access_settings">Can\'t find the Do Not Disturb access permission settings!</string>
+    <string name="error_enable_log">Key Mapper encountered an error! Try to reproduce the error, enable logging to see what happened.</string>
+    <string name="error_look_in_log">Key Mapper encountered an error! Look in the Log.</string>
 
     <string name="error_camera_in_use">Camera is in use!</string>
     <string name="error_camera_disconnected">Camera Disconnected!</string>
@@ -276,6 +285,8 @@
 
     <string name="error_ime_service_disabled">The input method service ONLY needs to be enabled for “Keycode”, “Key” and “Text block” actions to work. This does not have to be enabled for other action types to work.</string>
     <string name="error_ime_service_enabled">Input method service is enabled!</string>
+
+    <string name="error_the_app_wont_work">The app won\'t work! Some things need enabling!</string>
     <!-- Error messages -->
 
     <!-- System action labels -->

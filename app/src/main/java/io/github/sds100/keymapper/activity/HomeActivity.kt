@@ -40,10 +40,13 @@ import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.service.MyIMEService
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.view.BottomSheetMenu
+import io.github.sds100.keymapper.view.StatusLayout
 import io.github.sds100.keymapper.viewmodel.HomeViewModel
 import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.bottom_sheet_home.view.*
 import kotlinx.android.synthetic.main.content_home.*
+import kotlinx.android.synthetic.main.home_collapsed_status_layouts.*
+import kotlinx.android.synthetic.main.home_expanded_status_layouts.*
 import org.jetbrains.anko.*
 
 class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener<KeymapAdapterModel> {
@@ -71,6 +74,16 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
     private val mViewModel: HomeViewModel by lazy { ViewModelProviders.of(this).get(HomeViewModel::class.java) }
     private val mKeymapAdapter: KeymapAdapter = KeymapAdapter(this)
     private val mBottomSheetView by lazy { BottomSheetMenu.create(R.layout.bottom_sheet_home) }
+
+    private val mStatusLayouts
+        get() = sequence {
+            yield(accessibilityServiceStatusLayout)
+            yield(imeServiceStatusLayout)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                yield(dndAccessStatusLayout)
+            }
+        }.toList()
 
     private var mActionModeActive = false
         set(value) {
@@ -268,15 +281,24 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
         if (MyIMEService.isServiceEnabled(this)) {
             imeServiceStatusLayout.changeToFixedState()
         } else {
-            imeServiceStatusLayout.changeToErrorState()
+            imeServiceStatusLayout.changeToWarningState()
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (accessNotificationPolicyGranted) {
                 dndAccessStatusLayout.changeToFixedState()
             } else {
-                dndAccessStatusLayout.changeToErrorState()
+                dndAccessStatusLayout.changeToWarningState()
             }
+        }
+
+        when {
+            mStatusLayouts.all { it.state == StatusLayout.State.FIXED } -> collapsedStatusLayout.changeToFixedState()
+            mStatusLayouts.any { it.state == StatusLayout.State.ERROR } -> {
+                collapsedStatusLayout.changeToErrorState()
+                cardViewStatus.expanded = true
+            }
+            mStatusLayouts.any { it.state == StatusLayout.State.WARN } -> collapsedStatusLayout.changeToWarningState()
         }
     }
 

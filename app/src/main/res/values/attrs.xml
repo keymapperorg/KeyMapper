@@ -7,11 +7,28 @@
         <!--The text to show if the service is enabled-->
         <attr name="fixedText" format="string" />
 
+        <attr name="warningText" format="string" />
+
         <!--The text to show if the service is disabled-->
         <attr name="errorText" format="string" />
 
-        <!-- Show a yellow warning symbol instead of a red one when it is disabled-->
-        <attr name="yellowOnError" format="boolean" />
+        <!--Whether to show the Fix button-->
+        <attr name="showFixButton" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="ExpandButton">
+        <attr name="expanded" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="ExpandableCardView">
+        <attr name="expandedLayout" format="reference" />
+        <attr name="collapsedLayout" format="reference" />
+        <attr name="layoutExpanded" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="ExpandArrowState">
+        <attr name="state_up" format="boolean" />
+        <attr name="state_down" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="UrlLinkPreference">

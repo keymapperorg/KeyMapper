@@ -88,7 +88,12 @@ object PermissionUtils {
                     && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
                 val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
-                startActivityForResult(intent, REQUEST_CODE_PERMISSION)
+
+                try {
+                    startActivityForResult(intent, REQUEST_CODE_PERMISSION)
+                } catch (e: Exception) {
+                    toast(R.string.error_cant_find_dnd_access_settings)
+                }
 
             } else {
                 ActivityCompat.requestPermissions(this, arrayOf(permission), REQUEST_CODE_PERMISSION)

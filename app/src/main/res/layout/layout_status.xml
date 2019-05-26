@@ -16,10 +16,10 @@
         android:layout_marginBottom="8dp"
         android:text="@string/button_fix"
         android:visibility="visible"
-        app:backgroundTint="@color/error"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:backgroundTint="@color/error" />
 
     <TextView
         android:id="@+id/textViewStatus"

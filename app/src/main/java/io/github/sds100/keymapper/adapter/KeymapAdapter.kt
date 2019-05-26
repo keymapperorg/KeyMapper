@@ -6,17 +6,17 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.chip.Chip
-import io.github.sds100.keymapper.interfaces.OnItemClickListener
 import io.github.sds100.keymapper.KeyMap
 import io.github.sds100.keymapper.KeymapAdapterModel
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.interfaces.OnItemClickListener
+import io.github.sds100.keymapper.onSuccess
 import io.github.sds100.keymapper.selection.SelectionCallback
 import io.github.sds100.keymapper.selection.SelectionEvent
 import io.github.sds100.keymapper.selection.SelectionProvider
 import io.github.sds100.keymapper.util.FlagUtils
 import io.github.sds100.keymapper.util.str
 import io.github.sds100.keymapper.viewholder.SelectableViewHolder
-import io.github.sds100.keymapper.onSuccess
 import kotlinx.android.synthetic.main.keymap_adapter_item.view.*
 
 /**
@@ -43,13 +43,13 @@ class KeymapAdapter(private val mOnItemClickListener: OnItemClickListener<Keymap
         iSelectionProvider.subscribeToSelectionEvents(this)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): KeymapAdapter.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
 
         return ViewHolder(inflater.inflate(R.layout.keymap_adapter_item, parent, false))
     }
 
-    override fun onBindViewHolder(holder: KeymapAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         super.onBindViewHolder(holder, position)
 
         val model = itemList[position]

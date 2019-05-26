@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
+import androidx.core.view.isVisible
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.bool
 import io.github.sds100.keymapper.util.color
@@ -23,9 +24,12 @@ class StatusLayout(
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context) : this(context, null, 0)
 
+    lateinit var state: State
+
     private var mFixedText: String? = null
+    private var mWarningText: String? = null
     private var mErrorText: String? = null
-    private var mYellowOnError: Boolean = false
+    private var mShowFixButton: Boolean = true
 
     init {
         View.inflate(context, R.layout.layout_status, this)
@@ -37,27 +41,31 @@ class StatusLayout(
                     R.styleable.StatusLayout_fixedText
             )
 
+            mWarningText = str(
+                    attrs,
+                    R.styleable.StatusLayout,
+                    R.styleable.StatusLayout_warningText
+            )
+
             mErrorText = str(
                     attrs,
                     R.styleable.StatusLayout,
                     R.styleable.StatusLayout_errorText
             )
 
-            mYellowOnError = bool(
+            mShowFixButton = bool(
                     attrs,
                     R.styleable.StatusLayout,
-                    R.styleable.StatusLayout_yellowOnError
+                    R.styleable.StatusLayout_showFixButton,
+                    defaultValue = true
             )
         }
 
-        if (mYellowOnError) {
-            buttonFix.setBackgroundColor(color(R.color.warn))
+        if (mErrorText.isNullOrEmpty()) {
+            changeToWarningState()
         } else {
-            buttonFix.setBackgroundColor(color(R.color.error))
+            changeToErrorState()
         }
-
-        //set to disabled state by default
-        changeToErrorState()
     }
 
     fun changeToFixedState() {
@@ -68,23 +76,38 @@ class StatusLayout(
         textViewStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, null, null, null)
 
         buttonFix.visibility = View.GONE
+        state = State.FIXED
+    }
+
+    fun changeToWarningState() {
+
+        val drawable = drawable(R.drawable.ic_warn_outline_yellow_24dp)
+
+        textViewStatus.text = mWarningText
+        textViewStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, null, null, null)
+
+        buttonFix.isVisible = mShowFixButton
+        buttonFix.setBackgroundColor(color(R.color.warn))
+        state = State.WARN
     }
 
     fun changeToErrorState() {
 
-        val drawable = if (mYellowOnError) {
-            drawable(R.drawable.ic_warn_outline_yellow_24dp)
-        } else {
-            drawable(R.drawable.ic_error_outline_red_24dp)
-        }
+        val drawable = drawable(R.drawable.ic_error_outline_red_24dp)
 
         textViewStatus.text = mErrorText
         textViewStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, null, null, null)
 
-        buttonFix.visibility = View.VISIBLE
+        buttonFix.isVisible = mShowFixButton
+        buttonFix.setBackgroundColor(color(R.color.error))
+        state = State.ERROR
     }
 
     fun setOnFixClickListener(onClickListener: OnClickListener) {
         buttonFix.setOnClickListener(onClickListener)
+    }
+
+    enum class State {
+        FIXED, WARN, ERROR
     }
 }
