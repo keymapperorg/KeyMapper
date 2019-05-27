@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-selector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="NewApi">
+
+    <item
+        android:id="@+id/down"
+        android:drawable="@drawable/avd_expand_down_to_up"
+        app:state_up="false" />
+
+    <item
+        android:id="@+id/up"
+        android:drawable="@drawable/avd_expand_up_to_down"
+        app:state_up="true" />
+
+    <transition
+        android:drawable="@drawable/avd_expand_down_to_up"
+        android:fromId="@+id/down"
+        android:toId="@+id/up" />
+
+    <transition
+        android:drawable="@drawable/avd_expand_up_to_down"
+        android:fromId="@+id/up"
+        android:toId="@+id/down" />
+
+</animated-selector>

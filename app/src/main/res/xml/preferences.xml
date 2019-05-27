@@ -58,6 +58,12 @@
             android:layout="@layout/preference_material_no_max_lines"
             android:summary="@string/summary_pref_debug"
             android:title="@string/title_pref_debug" />
+
+        <androidx.preference.SwitchPreference
+            android:defaultValue="@bool/default_value_show_toast_when_error_encountered"
+            android:key="@string/key_pref_show_toast_when_error_encountered"
+            android:summary="@string/summary_pref_show_toast_when_error_encountered"
+            android:title="@string/title_pref_show_toast_when_error_encountered" />
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory android:title="@string/title_pref_category_ime_picker">

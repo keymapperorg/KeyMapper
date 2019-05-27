@@ -58,14 +58,14 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         const val ACTION_ON_STOP = "$PACKAGE_NAME.ON_STOP_ACCESSIBILITY_SERVICE"
 
         /**
-         * How long should the accessibility service record a trigger. In milliseconds.
+         * How long should the accessibility service record a trigger in ms.
          */
         private const val RECORD_TRIGGER_TIMER_LENGTH = 5000L
 
         /**
          * The time in ms between repeating an action while holding down.
          */
-        private const val REPEAT_DELAY = 5L
+        private const val REPEAT_DELAY = 50L
 
         /**
          * How long a key should be held down to repeatedly perform an action in ms.
@@ -176,7 +176,12 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                     val jsonString = intent.getStringExtra(EXTRA_KEYMAP_CACHE_JSON)
 
                     if (jsonString != null) {
-                        mKeyMapListCache = Gson().fromJson(jsonString)
+                        /* app can crash if it can't deserialize the JSON. I don't know how to handle the try-catch in a
+                        * meaningful way */
+                        try {
+                            mKeyMapListCache = Gson().fromJson(jsonString)
+                        } catch (e: Exception) {
+                        }
                     }
                 }
 
@@ -298,6 +303,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
         WidgetsManager.onEvent(ctx, EVENT_SERVICE_START)
         sendBroadcast(Intent(ACTION_ON_START))
+
+        Logger.write(ctx, title = "Service Started", message = "Accessibility Service started")
     }
 
     override fun onInterrupt() {}
@@ -309,15 +316,17 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         mLifecycleRegistry.markState(Lifecycle.State.DESTROYED)
         unregisterReceiver(mBroadcastReceiver)
         sendBroadcast(Intent(ACTION_ON_STOP))
+
+        Logger.write(ctx, title = "Service Destroyed", message = "Accessibility Service destroyed")
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {}
 
     override fun onKeyEvent(event: KeyEvent?): Boolean {
         when {
-            event?.action == KeyEvent.ACTION_DOWN -> Logger.log(ctx, "Down Key Event", event.toString())
-            event?.action == KeyEvent.ACTION_UP -> Logger.log(ctx, "Up Key Event", event.toString())
-            else -> Logger.log(ctx, "Other Key Event", event.toString())
+            event?.action == KeyEvent.ACTION_DOWN -> Logger.write(ctx, "Down Key Event", event.toString())
+            event?.action == KeyEvent.ACTION_UP -> Logger.write(ctx, "Up Key Event", event.toString())
+            else -> Logger.write(ctx, "Other Key Event", event.toString())
         }
 
         if (event == null) return super.onKeyEvent(event)
@@ -495,10 +504,12 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
             }
 
         } catch (e: Exception) {
-            Logger.log(ctx, "Exception in onKeyEvent()", e.stackTrace.toString())
+            Logger.write(ctx,
+                    isError = true,
+                    title = "Exception in onKeyEvent()",
+                    message = e.stackTrace.toString())
 
             if (BuildConfig.DEBUG) {
-                toast(R.string.exception_accessibility_service)
                 Log.e(this::class.java.simpleName, "ONKEYEVENT CRASH")
                 e.printStackTrace()
             }
@@ -512,7 +523,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
     private fun performAction(action: Action, flags: Int) {
         mActionPerformerDelegate.performAction(action, flags)
 
-        Logger.log(ctx, "Performed Action", "${action.type} ${action.data} ${action.extras}")
+        Logger.write(ctx, "Performed Action", "${action.type} ${action.data} ${action.extras}")
 
         mPressedTriggerKeys.forEach {
             if (KEYS_TO_CONSUME_UP_EVENT.contains(it)) {
@@ -555,9 +566,9 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
     private fun logConsumedKeyEvent(event: KeyEvent) {
         if (event.action == KeyEvent.ACTION_DOWN) {
-            Logger.log(ctx, "Consumed Down", event.toString())
+            Logger.write(ctx, "Consumed Down", event.toString())
         } else if (event.action == KeyEvent.ACTION_UP) {
-            Logger.log(ctx, "Consumed Up", event.toString())
+            Logger.write(ctx, "Consumed Up", event.toString())
         }
 
         Log.i(this::class.java.simpleName, "Consumed key event ${event.keyCode} ${event.action}")
