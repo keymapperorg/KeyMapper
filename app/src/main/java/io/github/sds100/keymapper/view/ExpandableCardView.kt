@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.core.view.isVisible
-import androidx.core.view.updateLayoutParams
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
 import com.google.android.material.card.MaterialCardView
@@ -58,11 +57,6 @@ class ExpandableCardView(
         )
 
         buttonExpand.onExpandClick = {
-            //the card shouldn't shrink when the collapsed layout disappears
-            updateLayoutParams {
-                minimumHeight = this@ExpandableCardView.height
-            }
-
             layoutCollapsed.isVisible = false
 
             expandableLayout.expand()

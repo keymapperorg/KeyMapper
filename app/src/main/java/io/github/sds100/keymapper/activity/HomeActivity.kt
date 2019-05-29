@@ -121,6 +121,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
 
             updateAccessibilityServiceKeymapCache(keyMapList)
             updateActionDescriptions(keyMapList)
+            updateStatusLayouts()
         })
 
         appBar.setNavigationOnClickListener {
@@ -271,35 +272,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
 
     override fun onResume() {
         super.onResume()
-
-        if (MyAccessibilityService.isServiceEnabled(this)) {
-            accessibilityServiceStatusLayout.changeToFixedState()
-        } else {
-            accessibilityServiceStatusLayout.changeToErrorState()
-        }
-
-        if (MyIMEService.isServiceEnabled(this)) {
-            imeServiceStatusLayout.changeToFixedState()
-        } else {
-            imeServiceStatusLayout.changeToWarningState()
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (accessNotificationPolicyGranted) {
-                dndAccessStatusLayout.changeToFixedState()
-            } else {
-                dndAccessStatusLayout.changeToWarningState()
-            }
-        }
-
-        when {
-            mStatusLayouts.all { it.state == StatusLayout.State.FIXED } -> collapsedStatusLayout.changeToFixedState()
-            mStatusLayouts.any { it.state == StatusLayout.State.ERROR } -> {
-                collapsedStatusLayout.changeToErrorState()
-                cardViewStatus.expanded = true
-            }
-            mStatusLayouts.any { it.state == StatusLayout.State.WARN } -> collapsedStatusLayout.changeToWarningState()
-        }
+        updateStatusLayouts()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -422,6 +395,43 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
             textViewCaption.text = spannableBuilder
         } else {
             textViewCaption.visibility = View.GONE
+        }
+    }
+
+    private fun updateStatusLayouts() {
+        if (MyAccessibilityService.isServiceEnabled(this)) {
+            accessibilityServiceStatusLayout.changeToFixedState()
+        } else {
+            accessibilityServiceStatusLayout.changeToErrorState()
+        }
+
+        if (MyIMEService.isServiceEnabled(this)) {
+            imeServiceStatusLayout.changeToFixedState()
+
+        } else if (mKeymapAdapter.itemList.any {
+                    it.actionDescription.errorCode == ErrorCodeUtils.ERROR_CODE_IME_SERVICE_NOT_CHOSEN
+                }) {
+
+            imeServiceStatusLayout.changeToErrorState()
+        } else {
+            imeServiceStatusLayout.changeToWarningState()
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (accessNotificationPolicyGranted) {
+                dndAccessStatusLayout.changeToFixedState()
+            } else {
+                dndAccessStatusLayout.changeToWarningState()
+            }
+        }
+
+        when {
+            mStatusLayouts.all { it.state == StatusLayout.State.FIXED } -> collapsedStatusLayout.changeToFixedState()
+            mStatusLayouts.any { it.state == StatusLayout.State.ERROR } -> {
+                collapsedStatusLayout.changeToErrorState()
+                cardViewStatus.expanded = true
+            }
+            mStatusLayouts.any { it.state == StatusLayout.State.WARN } -> collapsedStatusLayout.changeToWarningState()
         }
     }
 

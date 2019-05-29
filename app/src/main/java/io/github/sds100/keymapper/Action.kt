@@ -64,11 +64,6 @@ data class Action(
 
     constructor(type: ActionType, data: String, extra: Extra) : this(type, data, mutableListOf(extra))
 
-    val requiresIME: Boolean
-        get() = type == ActionType.KEY ||
-                type == ActionType.KEYCODE ||
-                type == ActionType.TEXT_BLOCK
-
     fun getExtraData(extraId: String): Result<String> {
         migrateExtra(extraId)
 
@@ -110,6 +105,15 @@ data class Action(
         }
     }
 }
+
+val Action?.requiresIME: Boolean
+    get() {
+        if (this == null) return false
+
+        return type == ActionType.KEY ||
+                type == ActionType.KEYCODE ||
+                type == ActionType.TEXT_BLOCK
+    }
 
 val Action?.isVolumeAction: Boolean
     get() {
