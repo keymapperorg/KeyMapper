@@ -7,7 +7,7 @@ import android.content.IntentFilter
 import android.inputmethodservice.InputMethodService
 import android.provider.Settings
 import android.view.inputmethod.InputMethodManager
-import io.github.sds100.keymapper.Constants
+import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.handle
 import io.github.sds100.keymapper.result
 
@@ -16,8 +16,8 @@ import io.github.sds100.keymapper.result
  */
 class MyIMEService : InputMethodService() {
     companion object {
-        const val ACTION_INPUT_KEYCODE = "io.github.sds100.keymapper.INPUT_KEYCODE"
-        const val ACTION_INPUT_TEXT = "io.github.sds100.keymapper.INPUT_TEXT"
+        const val ACTION_INPUT_KEYCODE = "$PACKAGE_NAME.INPUT_KEYCODE"
+        const val ACTION_INPUT_TEXT = "$PACKAGE_NAME.INPUT_TEXT"
 
         const val EXTRA_KEYCODE = "extra_keycode"
         const val EXTRA_TEXT = "extra_text"
@@ -27,7 +27,7 @@ class MyIMEService : InputMethodService() {
 
             val enabledMethods = imeService.enabledInputMethodList
 
-            return enabledMethods.any { it.packageName == Constants.PACKAGE_NAME }
+            return enabledMethods.any { it.packageName == PACKAGE_NAME }
         }
 
         /**
@@ -36,7 +36,7 @@ class MyIMEService : InputMethodService() {
         fun getImeId(ctx: Context): String? {
             val imeManager = ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
-            return imeManager.inputMethodList.find { it.packageName == Constants.PACKAGE_NAME }.result().handle(
+            return imeManager.inputMethodList.find { it.packageName == PACKAGE_NAME }.result().handle(
                     onSuccess = { it.id },
                     onFailure = { null }
             )
@@ -52,7 +52,7 @@ class MyIMEService : InputMethodService() {
                     Settings.Secure.DEFAULT_INPUT_METHOD
             )
 
-            return chosenImeId.contains(Constants.PACKAGE_NAME)
+            return chosenImeId.contains(PACKAGE_NAME)
         }
 
     }
