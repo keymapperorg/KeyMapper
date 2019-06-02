@@ -6,10 +6,15 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.inputmethodservice.InputMethodService
 import android.provider.Settings
+import android.view.inputmethod.ExtractedTextRequest
+import android.view.inputmethod.InputConnection
 import android.view.inputmethod.InputMethodManager
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
+import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.Result
 import io.github.sds100.keymapper.handle
 import io.github.sds100.keymapper.result
+import org.jetbrains.anko.toast
 
 /**
  * Created by sds100 on 28/09/2018.
@@ -18,6 +23,7 @@ class MyIMEService : InputMethodService() {
     companion object {
         const val ACTION_INPUT_KEYCODE = "$PACKAGE_NAME.INPUT_KEYCODE"
         const val ACTION_INPUT_TEXT = "$PACKAGE_NAME.INPUT_TEXT"
+        const val ACTION_MOVE_CURSOR_TO_END = "$PACKAGE_NAME.MOVE_CURSOR_TO_END"
 
         const val EXTRA_KEYCODE = "extra_keycode"
         const val EXTRA_TEXT = "extra_text"
@@ -72,6 +78,17 @@ class MyIMEService : InputMethodService() {
 
                         currentInputConnection.commitText(text, 1)
                     }
+
+                    ACTION_MOVE_CURSOR_TO_END -> {
+                        currentInputConnection.charCount.handle(
+                                onSuccess = {
+                                    currentInputConnection.commitText("", it)
+                                },
+                                onFailure = {
+                                    toast(R.string.error_cant_move_to_end_of_text_in_this_field)
+                                }
+                        )
+                    }
                 }
             }
         }
@@ -83,6 +100,7 @@ class MyIMEService : InputMethodService() {
         val intentFilter = IntentFilter()
         intentFilter.addAction(ACTION_INPUT_KEYCODE)
         intentFilter.addAction(ACTION_INPUT_TEXT)
+        intentFilter.addAction(ACTION_MOVE_CURSOR_TO_END)
 
         registerReceiver(mBroadcastReceiver, intentFilter)
     }
@@ -92,4 +110,13 @@ class MyIMEService : InputMethodService() {
 
         unregisterReceiver(mBroadcastReceiver)
     }
+
+    private val InputConnection.charCount: Result<Int>
+        get() {
+            val request = ExtractedTextRequest().apply {
+                token = 0
+            }
+
+            return getExtractedText(request, 0).text.length.result()
+        }
 }

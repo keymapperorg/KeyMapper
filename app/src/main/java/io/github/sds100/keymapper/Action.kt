@@ -112,7 +112,8 @@ val Action?.requiresIME: Boolean
 
         return type == ActionType.KEY ||
                 type == ActionType.KEYCODE ||
-                type == ActionType.TEXT_BLOCK
+                type == ActionType.TEXT_BLOCK ||
+                data == SystemAction.MOVE_CURSOR_TO_END
     }
 
 val Action?.isVolumeAction: Boolean

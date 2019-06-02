@@ -241,6 +241,11 @@ class ActionPerformerDelegate(
                     dpm.lockNow()
                 }
 
+                SystemAction.MOVE_CURSOR_TO_END -> {
+                    val intent = Intent(MyIMEService.ACTION_MOVE_CURSOR_TO_END)
+                    sendBroadcast(intent)
+                }
+
                 else -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         var lensFacing = CameraCharacteristics.LENS_FACING_BACK

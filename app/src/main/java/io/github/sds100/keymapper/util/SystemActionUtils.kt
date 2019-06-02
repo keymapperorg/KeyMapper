@@ -42,6 +42,7 @@ import io.github.sds100.keymapper.SystemAction.GO_HOME
 import io.github.sds100.keymapper.SystemAction.INCREASE_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.LANDSCAPE_MODE
 import io.github.sds100.keymapper.SystemAction.LOCK_DEVICE
+import io.github.sds100.keymapper.SystemAction.MOVE_CURSOR_TO_END
 import io.github.sds100.keymapper.SystemAction.NEXT_TRACK
 import io.github.sds100.keymapper.SystemAction.OPEN_ASSISTANT
 import io.github.sds100.keymapper.SystemAction.OPEN_CAMERA
@@ -529,7 +530,12 @@ object SystemActionUtils {
                     id = CONSUME_KEY_EVENT,
                     category = CATEGORY_OTHER,
                     descriptionRes = R.string.action_consume_keyevent
-            )
+            ),
+            SystemActionDef(id = MOVE_CURSOR_TO_END,
+                    category = CATEGORY_OTHER,
+                    iconRes = R.drawable.ic_cursor,
+                    messageOnSelection = R.string.action_move_to_end_of_text_message,
+                    descriptionRes = R.string.action_move_to_end_of_text)
     )
 
     /**
