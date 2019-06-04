@@ -94,11 +94,7 @@ class ActionPerformerDelegate(
                 else -> {
                     //for actions which require the IME service
                     if (action.type == ActionType.KEYCODE || action.type == ActionType.KEY) {
-                        val intent = Intent(MyIMEService.ACTION_INPUT_KEYCODE)
-                        //put the keycode in the intent
-                        intent.putExtra(MyIMEService.EXTRA_KEYCODE, action.data.toInt())
-
-                        sendBroadcast(intent)
+                        inputKeyCode(action.data.toInt())
                     }
                 }
             }
@@ -241,10 +237,10 @@ class ActionPerformerDelegate(
                     dpm.lockNow()
                 }
 
-                SystemAction.MOVE_CURSOR_TO_END -> {
-                    val intent = Intent(MyIMEService.ACTION_MOVE_CURSOR_TO_END)
-                    sendBroadcast(intent)
-                }
+                SystemAction.MOVE_CURSOR_TO_END -> inputKeyEvent(
+                        keyCode = KeyEvent.KEYCODE_MOVE_END,
+                        metaState = KeyEvent.META_CTRL_ON
+                )
 
                 else -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
