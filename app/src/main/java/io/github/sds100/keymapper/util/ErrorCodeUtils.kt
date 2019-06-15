@@ -4,13 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
-import android.view.inputmethod.InputMethodManager
 import androidx.annotation.IntDef
 import io.github.sds100.keymapper.ErrorResult
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.onSuccess
-import io.github.sds100.keymapper.result
-import io.github.sds100.keymapper.service.MyIMEService
 
 /**
  * Created by sds100 on 25/11/2018.
@@ -74,30 +70,13 @@ object ErrorCodeUtils {
                 ctx.startActivity(intent)
             }
 
-            ERROR_CODE_APP_UNINSTALLED -> {
-                PackageUtils.viewAppOnline(ctx, errorResult.data!!)
-            }
+            ERROR_CODE_APP_UNINSTALLED -> PackageUtils.viewAppOnline(ctx, errorResult.data!!)
 
-            ERROR_CODE_SHORTCUT_NOT_FOUND -> {
-                PackageUtils.viewAppOnline(ctx, errorResult.data!!)
-            }
+            ERROR_CODE_SHORTCUT_NOT_FOUND -> PackageUtils.viewAppOnline(ctx, errorResult.data!!)
 
-            ERROR_CODE_IME_SERVICE_NOT_CHOSEN -> {
-                val hasRootPermission = RootUtils.checkAppHasRootPermission(ctx)
+            ERROR_CODE_IME_SERVICE_NOT_CHOSEN -> KeyboardUtils.switchToKeyMapperIme(ctx)
 
-                if (hasRootPermission) {
-                    MyIMEService.getImeId(ctx).result().onSuccess {
-                        KeyboardUtils.switchIme(it)
-                    }
-                } else {
-                    /* don't send broadcast to OpenIMEPickerBroadcastReceiver because it is only used
-                       when outside of the app */
-                    val imeManager = ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    imeManager.showInputMethodPicker()
-                }
-            }
-
-            ERROR_CODE_IME_SERVICE_DISABLED -> MyIMEService.openImeSettings(ctx)
+            ERROR_CODE_IME_SERVICE_DISABLED -> KeyboardUtils.openImeSettings(ctx)
 
             ERROR_CODE_GOOGLE_APP_NOT_INSTALLED -> {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(ctx.str(R.string.url_google_app_listing)))

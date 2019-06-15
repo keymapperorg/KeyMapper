@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.text.SpannableStringBuilder
 import android.text.style.RelativeSizeSpan
 import android.view.Menu
@@ -145,6 +144,10 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
                 mBottomSheetView.dismiss()
             }
 
+            view.menuItemChangeKeyboard.setOnClickListener {
+                KeyboardUtils.showInputMethodPicker(this)
+            }
+
             view.menuItemSendFeedback.setOnClickListener { FeedbackUtils.sendFeedback(this) }
         }
 
@@ -169,7 +172,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
         })
 
         imeServiceStatusLayout.setOnFixClickListener(View.OnClickListener {
-            MyIMEService.openImeSettings(this)
+            KeyboardUtils.openImeSettings(this)
         })
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

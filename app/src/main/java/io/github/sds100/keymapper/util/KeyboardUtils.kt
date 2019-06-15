@@ -2,17 +2,51 @@ package io.github.sds100.keymapper.util
 
 import android.accessibilityservice.AccessibilityService
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.provider.Settings
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.RequiresApi
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.WidgetsManager
+import io.github.sds100.keymapper.onSuccess
+import io.github.sds100.keymapper.result
+import io.github.sds100.keymapper.service.MyIMEService
+import org.jetbrains.anko.toast
 
 /**
  * Created by sds100 on 28/12/2018.
  */
 
 object KeyboardUtils {
+    fun switchToKeyMapperIme(ctx: Context) {
+        val hasRootPermission = RootUtils.checkAppHasRootPermission(ctx)
+
+        if (hasRootPermission) {
+            MyIMEService.getImeId(ctx).result().onSuccess {
+                switchIme(it)
+            }
+        } else {
+            showInputMethodPicker(ctx)
+        }
+    }
+
+    fun openImeSettings(ctx: Context) {
+        try {
+            val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)
+            intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+
+            ctx.startActivity(intent)
+        } catch (e: Exception) {
+            ctx.toast(R.string.error_cant_find_ime_settings)
+        }
+    }
+
+    fun showInputMethodPicker(ctx: Context) {
+        val imeManager = ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imeManager.showInputMethodPicker()
+    }
+
     fun showInputMethodPickerDialogOutsideApp(ctx: Context) {
         /* Android 8.1 and higher don't seem to allow you to open the input method picker dialog
              * from outside the app :( but it can be achieved by sending a broadcast with a

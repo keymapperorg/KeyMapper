@@ -62,17 +62,6 @@ class MyIMEService : InputMethodService() {
 
             return chosenImeId.contains(PACKAGE_NAME)
         }
-
-        fun openImeSettings(ctx: Context) {
-            try {
-                val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)
-                intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
-
-                ctx.startActivity(intent)
-            } catch (e: Exception) {
-                ctx.toast(R.string.error_cant_find_ime_settings)
-            }
-        }
     }
 
     private val mBroadcastReceiver = object : BroadcastReceiver() {
