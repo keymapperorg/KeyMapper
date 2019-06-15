@@ -64,6 +64,7 @@
     <string name="button_done">Done</string>
     <string name="button_fix">Fix</string>
     <string name="button_recording_trigger">Recording Trigger…</string>
+    <string name="button_recording_trigger_countdown">%d…</string>
     <string name="button_flags">More</string>
     <!-- Button titles -->
     <!-- Content descriptions -->
@@ -109,6 +110,8 @@
     <string name="notification_accessibility_service_disabled_text">Tap to start the accessibility service.</string>
     <string name="notification_action_open_app">Open App</string>
     <string name="notification_action_stop_acc_service">Stop Accessibility Service</string>
+    <string name="notification_keyboard_hidden_title">Keyboard is hidden!</string>
+    <string name="notification_keyboard_hidden_text">Tap to start showing the keyboard again.</string>
     <!-- Notification strings -->
     <!--Preference titles and summaries-->
     <string name="title_pref_long_press_delay">Long press delay</string>
@@ -319,7 +322,5 @@
     <string name="system_action_cat_nfc">NFC</string>
     <string name="system_action_cat_other">Other</string>
     <string name="system_action_cat_keyboard">Keyboard</string>
-    <string name="notification_keyboard_hidden_title">Keyboard is hidden!</string>
-    <string name="notification_keyboard_hidden_text">Tap to start showing the keyboard again.</string>
     <!-- System action category labels -->
 </resources>
