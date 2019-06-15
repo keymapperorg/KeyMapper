@@ -12,8 +12,10 @@ import android.view.inputmethod.InputConnection
 import android.view.inputmethod.InputMethodManager
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.Result
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.handle
 import io.github.sds100.keymapper.result
+import org.jetbrains.anko.toast
 
 /**
  * Created by sds100 on 28/09/2018.
@@ -61,6 +63,16 @@ class MyIMEService : InputMethodService() {
             return chosenImeId.contains(PACKAGE_NAME)
         }
 
+        fun openImeSettings(ctx: Context) {
+            try {
+                val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)
+                intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+
+                ctx.startActivity(intent)
+            } catch (e: Exception) {
+                ctx.toast(R.string.error_cant_find_ime_settings)
+            }
+        }
     }
 
     private val mBroadcastReceiver = object : BroadcastReceiver() {

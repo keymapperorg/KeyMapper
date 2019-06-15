@@ -289,8 +289,9 @@
     <string name="error_accessibility_service_disabled">The accessibility service must be enabled for this app to work!</string>
     <string name="error_accessibility_service_enabled">Accessibility service is enabled!</string>
 
-    <string name="error_ime_service_disabled">The keyboard needs to be enabled for “Keycode”, “Key”, “Text” and some other actions to work.</string>
+    <string name="error_ime_service_disabled_status_layout">The keyboard needs to be enabled for “Keycode”, “Key”, “Text” and some other actions to work.</string>
     <string name="error_ime_service_enabled">Keyboard is enabled!</string>
+    <string name="error_ime_service_disabled">Keyboard is disabled!</string>
     <string name="error_critical_ime_service_disabled">The keyboard must be enabled and selected for some of your actions to work!</string>
 
     <string name="error_the_app_wont_work">The app won\'t work! Some things need fixing!</string>

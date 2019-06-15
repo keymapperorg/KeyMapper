@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_APP_DISABLED
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_APP_UNINSTALLED
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_FEATURE_NOT_AVAILABLE
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_GOOGLE_APP_NOT_INSTALLED
+import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_IME_SERVICE_DISABLED
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_IME_SERVICE_NOT_CHOSEN
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_NO_ACTION_DATA
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_PERMISSION_DENIED
@@ -34,7 +35,7 @@ object ActionUtils {
      */
     fun getDescription(ctx: Context, action: Action?): ActionDescription {
 
-        val errorResult = getPotentialErrorCode(ctx, action)
+        val errorResult = getErrorCode(ctx, action)
 
         //If the errorResult is null, errorMessage will be null
         val errorMessage = errorResult?.let { ErrorCodeUtils.getErrorCodeDescription(ctx, it) }
@@ -144,16 +145,21 @@ object ActionUtils {
      * @return if the action can't be performed, it returns an error code.
      * returns null if their if the action can be performed.
      */
-    fun getPotentialErrorCode(ctx: Context, action: Action?): ErrorResult? {
+    fun getErrorCode(ctx: Context, action: Action?): ErrorResult? {
         //action is null
         action ?: return ErrorResult(ERROR_CODE_ACTION_IS_NULL)
 
         //the action has not data
         if (action.data.isEmpty()) return ErrorResult(ERROR_CODE_NO_ACTION_DATA)
 
-        //action requires the IME service but it isn't chosen
-        if (action.requiresIME && !MyIMEService.isInputMethodChosen(ctx)) {
-            return ErrorResult(ERROR_CODE_IME_SERVICE_NOT_CHOSEN)
+        if (action.requiresIME) {
+            if (!MyIMEService.isServiceEnabled(ctx)) {
+                return ErrorResult(ERROR_CODE_IME_SERVICE_DISABLED)
+            }
+
+            if (!MyIMEService.isInputMethodChosen(ctx)) {
+                return ErrorResult(ERROR_CODE_IME_SERVICE_NOT_CHOSEN)
+            }
         }
 
         when (action.type) {

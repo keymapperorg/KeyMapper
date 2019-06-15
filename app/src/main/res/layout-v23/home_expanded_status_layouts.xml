@@ -23,7 +23,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/accessibilityServiceStatusLayout"
-        app:warningText="@string/error_ime_service_disabled" />
+        app:warningText="@string/error_ime_service_disabled_status_layout" />
 
     <io.github.sds100.keymapper.view.StatusLayout
         android:id="@+id/dndAccessStatusLayout"

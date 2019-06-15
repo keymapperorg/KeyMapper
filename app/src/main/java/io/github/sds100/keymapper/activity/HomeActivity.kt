@@ -169,14 +169,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
         })
 
         imeServiceStatusLayout.setOnFixClickListener(View.OnClickListener {
-            try {
-                val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)
-                intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
-
-                startActivity(intent)
-            } catch (e: Exception) {
-                toast(R.string.error_cant_find_ime_settings)
-            }
+            MyIMEService.openImeSettings(this)
         })
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
