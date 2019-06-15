@@ -84,7 +84,7 @@ object ErrorCodeUtils {
 
                 if (hasRootPermission) {
                     MyIMEService.getImeId(ctx).result().onSuccess {
-                        ImeUtils.switchIme(it)
+                        KeyboardUtils.switchIme(it)
                     }
                 } else {
                     /* don't send broadcast to OpenIMEPickerBroadcastReceiver because it is only used

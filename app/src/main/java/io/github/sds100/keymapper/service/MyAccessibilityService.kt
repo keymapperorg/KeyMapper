@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.media.AudioManager
+import android.os.Build
 import android.os.Handler
 import android.os.SystemClock
 import android.provider.Settings
@@ -29,7 +30,7 @@ import io.github.sds100.keymapper.activity.ConfigKeymapActivity
 import io.github.sds100.keymapper.data.AppDatabase
 import io.github.sds100.keymapper.delegate.ActionPerformerDelegate
 import io.github.sds100.keymapper.interfaces.IContext
-import io.github.sds100.keymapper.interfaces.IPerformGlobalAction
+import io.github.sds100.keymapper.interfaces.IPerformAccessibilityAction
 import io.github.sds100.keymapper.util.*
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.toast
@@ -38,7 +39,7 @@ import org.jetbrains.anko.toast
  * Created by sds100 on 16/07/2018.
  */
 
-class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalAction, LifecycleOwner {
+class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessibilityAction, LifecycleOwner {
 
     companion object {
         const val EXTRA_KEYMAP_CACHE_JSON = "extra_keymap_cache_json"
@@ -56,6 +57,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         const val ACTION_STOP = "$PACKAGE_NAME.STOP_ACCESSIBILITY_SERVICE"
         const val ACTION_ON_START = "$PACKAGE_NAME.ON_START_ACCESSIBILITY_SERVICE"
         const val ACTION_ON_STOP = "$PACKAGE_NAME.ON_STOP_ACCESSIBILITY_SERVICE"
+        const val ACTION_SHOW_KEYBOARD = "$PACKAGE_NAME.SHOW_KEYBOARD"
 
         /**
          * How long should the accessibility service record a trigger in ms.
@@ -216,6 +218,11 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                 Intent.ACTION_SCREEN_ON -> {
                     clearLists()
                 }
+
+                ACTION_SHOW_KEYBOARD ->
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        softKeyboardController.show(ctx)
+                    }
             }
         }
     }
@@ -275,6 +282,13 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
     override val ctx: Context
         get() = this
 
+    override val keyboardController: SoftKeyboardController?
+        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            softKeyboardController
+        } else {
+            null
+        }
+
     override fun getLifecycle() = mLifecycleRegistry
 
     override fun onServiceConnected() {
@@ -284,7 +298,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         mLifecycleRegistry.currentState = Lifecycle.State.STARTED
 
         mActionPerformerDelegate = ActionPerformerDelegate(
-                iContext = this, iPerformGlobalAction = this, lifecycle = lifecycle)
+                iContext = this, iPerformAccessibilityAction = this, lifecycle = lifecycle)
 
         //listen for events from NewKeymapActivity
         val intentFilter = IntentFilter()
@@ -296,6 +310,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         intentFilter.addAction(ACTION_UPDATE_NOTIFICATION)
         intentFilter.addAction(Intent.ACTION_SCREEN_ON)
         intentFilter.addAction(ACTION_RECORD_TRIGGER)
+        intentFilter.addAction(ACTION_SHOW_KEYBOARD)
 
         registerReceiver(mBroadcastReceiver, intentFilter)
 

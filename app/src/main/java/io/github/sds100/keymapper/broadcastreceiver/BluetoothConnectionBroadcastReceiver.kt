@@ -9,7 +9,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.onSuccess
 import io.github.sds100.keymapper.result
 import io.github.sds100.keymapper.service.MyIMEService
-import io.github.sds100.keymapper.util.ImeUtils
+import io.github.sds100.keymapper.util.KeyboardUtils
 import io.github.sds100.keymapper.util.bool
 import io.github.sds100.keymapper.util.str
 import org.jetbrains.anko.defaultSharedPreferences
@@ -55,7 +55,7 @@ class BluetoothConnectionBroadcastReceiver : BroadcastReceiver() {
                                         bool(R.bool.default_value_auto_show_ime_picker))
 
                         //only show the dialog automatically if the user wants it to.
-                        if (showIMEPickerAutomatically) ImeUtils.showInputMethodPickerDialogOutsideApp(context)
+                        if (showIMEPickerAutomatically) KeyboardUtils.showInputMethodPickerDialogOutsideApp(context)
                     }
                 }
             }
@@ -71,13 +71,13 @@ class BluetoothConnectionBroadcastReceiver : BroadcastReceiver() {
                 ctx.defaultSharedPreferences.edit().putString(KEY_DEFAULT_IME, defaultIme).apply()
 
                 MyIMEService.getImeId(ctx).result().onSuccess {
-                    ImeUtils.switchIme(it)
+                    KeyboardUtils.switchIme(it)
                 }
             }
 
             //when a device is disconnected, change back to the old ime
             BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
-                ImeUtils.switchIme(ctx.defaultSharedPreferences.getString(KEY_DEFAULT_IME, "")!!)
+                KeyboardUtils.switchIme(ctx.defaultSharedPreferences.getString(KEY_DEFAULT_IME, "")!!)
             }
         }
     }

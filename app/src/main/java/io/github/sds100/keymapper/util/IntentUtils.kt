@@ -3,13 +3,18 @@ package io.github.sds100.keymapper.util
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import io.github.sds100.keymapper.broadcastreceiver.KeyMapperBroadcastReceiver
 
 /**
  * Created by sds100 on 24/03/2019.
  */
 
 object IntentUtils {
-    fun createPendingBroadcastIntent(ctx: Context, cls: Class<*>, action: String): PendingIntent {
+    fun createPendingBroadcastIntent(
+            ctx: Context,
+            action: String,
+            cls: Class<*> = KeyMapperBroadcastReceiver::class.java
+    ): PendingIntent {
         val intent = Intent(ctx, cls).apply {
             setAction(action)
         }

@@ -17,7 +17,7 @@ import android.view.KeyEvent
 import androidx.lifecycle.Lifecycle
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.interfaces.IContext
-import io.github.sds100.keymapper.interfaces.IPerformGlobalAction
+import io.github.sds100.keymapper.interfaces.IPerformAccessibilityAction
 import io.github.sds100.keymapper.service.MyIMEService
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.FlagUtils.FLAG_SHOW_VOLUME_UI
@@ -32,9 +32,9 @@ import org.jetbrains.anko.toast
 
 class ActionPerformerDelegate(
         iContext: IContext,
-        iPerformGlobalAction: IPerformGlobalAction,
+        iPerformAccessibilityAction: IPerformAccessibilityAction,
         lifecycle: Lifecycle
-) : IContext by iContext, IPerformGlobalAction by iPerformGlobalAction {
+) : IContext by iContext, IPerformAccessibilityAction by iPerformAccessibilityAction {
 
     private lateinit var mFlashlightController: FlashlightController
 
@@ -271,6 +271,14 @@ class ActionPerformerDelegate(
                             SystemAction.TOGGLE_FLASHLIGHT -> mFlashlightController.toggleFlashlight(lensFacing)
                             SystemAction.ENABLE_FLASHLIGHT -> mFlashlightController.setFlashlightMode(true, lensFacing)
                             SystemAction.DISABLE_FLASHLIGHT -> mFlashlightController.setFlashlightMode(false, lensFacing)
+                        }
+                    }
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        when (id) {
+                            SystemAction.TOGGLE_KEYBOARD -> keyboardController?.toggle(this)
+                            SystemAction.SHOW_KEYBOARD -> keyboardController?.show(this)
+                            SystemAction.HIDE_KEYBOARD -> keyboardController?.hide(this)
                         }
                     }
 

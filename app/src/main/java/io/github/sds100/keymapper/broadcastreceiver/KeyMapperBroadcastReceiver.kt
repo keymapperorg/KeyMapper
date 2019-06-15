@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import io.github.sds100.keymapper.service.MyAccessibilityService
-import io.github.sds100.keymapper.util.ImeUtils
+import io.github.sds100.keymapper.util.KeyboardUtils
 import io.github.sds100.keymapper.util.RootUtils
 
 /**
@@ -21,7 +21,7 @@ class KeyMapperBroadcastReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent?) {
         when (intent?.action) {
-            ACTION_SHOW_IME_PICKER -> ImeUtils.showInputMethodPickerDialogOutsideApp(context)
+            ACTION_SHOW_IME_PICKER -> KeyboardUtils.showInputMethodPickerDialogOutsideApp(context)
 
             MyAccessibilityService.ACTION_START -> {
                 if (RootUtils.checkAppHasRootPermission(context)) {

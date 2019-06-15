@@ -10,6 +10,7 @@ import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.SystemAction.CATEGORY_BLUETOOTH
 import io.github.sds100.keymapper.SystemAction.CATEGORY_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.CATEGORY_FLASHLIGHT
+import io.github.sds100.keymapper.SystemAction.CATEGORY_KEYBOARD
 import io.github.sds100.keymapper.SystemAction.CATEGORY_MEDIA
 import io.github.sds100.keymapper.SystemAction.CATEGORY_MOBILE_DATA
 import io.github.sds100.keymapper.SystemAction.CATEGORY_NAVIGATION
@@ -39,6 +40,7 @@ import io.github.sds100.keymapper.SystemAction.EXPAND_QUICK_SETTINGS
 import io.github.sds100.keymapper.SystemAction.FAST_FORWARD
 import io.github.sds100.keymapper.SystemAction.GO_BACK
 import io.github.sds100.keymapper.SystemAction.GO_HOME
+import io.github.sds100.keymapper.SystemAction.HIDE_KEYBOARD
 import io.github.sds100.keymapper.SystemAction.INCREASE_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.LANDSCAPE_MODE
 import io.github.sds100.keymapper.SystemAction.LOCK_DEVICE
@@ -55,10 +57,12 @@ import io.github.sds100.keymapper.SystemAction.PREVIOUS_TRACK
 import io.github.sds100.keymapper.SystemAction.REWIND
 import io.github.sds100.keymapper.SystemAction.SCREENSHOT
 import io.github.sds100.keymapper.SystemAction.SECURE_LOCK_DEVICE
+import io.github.sds100.keymapper.SystemAction.SHOW_KEYBOARD
 import io.github.sds100.keymapper.SystemAction.SWITCH_ORIENTATION
 import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_ROTATE
 import io.github.sds100.keymapper.SystemAction.TOGGLE_BLUETOOTH
+import io.github.sds100.keymapper.SystemAction.TOGGLE_KEYBOARD
 import io.github.sds100.keymapper.SystemAction.TOGGLE_MOBILE_DATA
 import io.github.sds100.keymapper.SystemAction.TOGGLE_NFC
 import io.github.sds100.keymapper.SystemAction.TOGGLE_WIFI
@@ -87,6 +91,7 @@ object SystemActionUtils {
             CATEGORY_STATUS_BAR to R.string.system_action_cat_status_bar,
             CATEGORY_MEDIA to R.string.system_action_cat_media,
             CATEGORY_FLASHLIGHT to R.string.system_action_cat_flashlight,
+            CATEGORY_KEYBOARD to R.string.system_action_cat_keyboard,
             CATEGORY_NFC to R.string.system_action_cat_nfc,
             CATEGORY_OTHER to R.string.system_action_cat_other
     )
@@ -490,6 +495,34 @@ object SystemActionUtils {
                     descriptionRes = R.string.action_nfc_toggle
             ),
 
+            //KEYBOARD
+            SystemActionDef(id = MOVE_CURSOR_TO_END,
+                    category = CATEGORY_KEYBOARD,
+                    iconRes = R.drawable.ic_cursor,
+                    messageOnSelection = R.string.action_move_to_end_of_text_message,
+                    descriptionRes = R.string.action_move_to_end_of_text),
+
+            SystemActionDef(id = TOGGLE_KEYBOARD,
+                    category = CATEGORY_KEYBOARD,
+                    minApi = Build.VERSION_CODES.N,
+                    iconRes = R.drawable.ic_keyboard_on_surface,
+                    messageOnSelection = R.string.action_toggle_keyboard_message,
+                    descriptionRes = R.string.action_toggle_keyboard),
+
+            SystemActionDef(id = SHOW_KEYBOARD,
+                    category = CATEGORY_KEYBOARD,
+                    minApi = Build.VERSION_CODES.N,
+                    iconRes = R.drawable.ic_keyboard_on_surface,
+                    messageOnSelection = R.string.action_toggle_keyboard_message,
+                    descriptionRes = R.string.action_show_keyboard),
+
+            SystemActionDef(id = HIDE_KEYBOARD,
+                    category = CATEGORY_KEYBOARD,
+                    minApi = Build.VERSION_CODES.N,
+                    iconRes = R.drawable.ic_keyboard_hide_24dp,
+                    messageOnSelection = R.string.action_toggle_keyboard_message,
+                    descriptionRes = R.string.action_hide_keyboard),
+
             //OTHER
             SystemActionDef(
                     id = SCREENSHOT,
@@ -530,12 +563,7 @@ object SystemActionUtils {
                     id = CONSUME_KEY_EVENT,
                     category = CATEGORY_OTHER,
                     descriptionRes = R.string.action_consume_keyevent
-            ),
-            SystemActionDef(id = MOVE_CURSOR_TO_END,
-                    category = CATEGORY_OTHER,
-                    iconRes = R.drawable.ic_cursor,
-                    messageOnSelection = R.string.action_move_to_end_of_text_message,
-                    descriptionRes = R.string.action_move_to_end_of_text)
+            )
     )
 
     /**

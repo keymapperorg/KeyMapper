@@ -127,6 +127,8 @@
 
     <!-- Notification strings -->
     <string name="notification_channel_persistent">Persistent Notifications</string>
+    <string name="notification_channel_warnings">Warnings</string>
+
     <string name="notification_ime_persistent_text">Will automatically show the input method dialog when a bluetooth device you\'ve chosen has connected or disconnected</string>
     <string name="notification_ime_persistent_title">Tap to choose input method</string>
 
@@ -374,6 +376,10 @@
 
     <string name="action_move_to_end_of_text">Move Cursor to the End</string>
     <string name="action_move_to_end_of_text_message">The Key Mapper Input Method must be selected for this action to work and this action may not work as intended in some apps.</string>
+    <string name="action_toggle_keyboard">Toggle Keyboard</string>
+    <string name="action_toggle_keyboard_message">This action will only work if you have tapped on an input field where the keyboard is supposed to be shown.</string>
+    <string name="action_show_keyboard">Show Keyboard</string>
+    <string name="action_hide_keyboard">Hide Keyboard</string>
     <!-- System action labels -->
 
     <!-- System action category labels -->
@@ -389,5 +395,8 @@
     <string name="system_action_cat_flashlight">Flashlight</string>
     <string name="system_action_cat_nfc">NFC</string>
     <string name="system_action_cat_other">Other</string>
+    <string name="system_action_cat_keyboard">Keyboard</string>
+    <string name="notification_keyboard_hidden_title">Keyboard is hidden!</string>
+    <string name="notification_keyboard_hidden_text">Tap to start showing the keyboard again.</string>
     <!-- System action category labels -->
 </resources>
