@@ -8,7 +8,7 @@
     The accessibility service only listens for key events and nothing else. Look at the source code, which is linked to in the About section inside the app, if you are paranoid I\'m spying. :)</string>
     <string name="record_trigger_help">You have 5 seconds to press the keys/buttons which will trigger the action. Your trigger will be added after the 5 seconds. Press \"clear\" to clear the keys you have already typed.</string>
     <string name="selection_count">%d selected</string>
-    <string name="ime_service_label" translatable="false">Key Mapper Input Method</string>
+    <string name="ime_service_label" translatable="false">Key Mapper Keyboard</string>
     <string name="enable">Enable</string>
     <string name="open">Open</string>
     <string name="shrug" translatable="false">¯\\_(ツ)_/¯</string>
@@ -21,9 +21,9 @@
 
     <string name="caption_action_type_key">Click the key on the keyboard which you want to be entered.
         \n\nIMPORTANT!
-        This will only work if you have selected this app as the input method. It is best used with a hardware keyboard.</string>
+        This will only work if you have selected the Key Mapper keyboard. This action is best used with a hardware keyboard.</string>
     <string name="caption_action_type_keycode">IMPORTANT!
-        This will only work if you have selected this app as the input method. It is best used with a hardware keyboard.</string>
+        This will only work if you have selected the Key Mapper keyboard. This action is best used with a hardware keyboard.</string>
 
     <string name="switch_enabled">Enabled</string>
     <string name="disabled">Disabled</string>
@@ -31,7 +31,7 @@
 
     <string name="description_open_app">Open %s</string>
     <string name="description_key">Press \'%s\' key</string>
-    <string name="description_text_block">Insert \'%s\'</string>
+    <string name="description_text_block">Type \'%s\'</string>
     <string name="description_keycode">%s</string>
 
     <string name="exception_accessibility_service" translatable="false">Exception in onKeyEvent. Look in logcat.</string>
@@ -129,8 +129,8 @@
     <string name="notification_channel_persistent">Persistent Notifications</string>
     <string name="notification_channel_warnings">Warnings</string>
 
-    <string name="notification_ime_persistent_text">Will automatically show the input method dialog when a bluetooth device you\'ve chosen has connected or disconnected</string>
-    <string name="notification_ime_persistent_title">Tap to choose input method</string>
+    <string name="notification_ime_persistent_text">Will automatically show the keyboard picker when a bluetooth device you\'ve chosen has connected or disconnected</string>
+    <string name="notification_ime_persistent_title">Tap to choose your keyboard.</string>
 
     <string name="notification_remappings_pause_title">Pause</string>
     <string name="notification_remappings_pause_text">Tap to pause your remaps.</string>
@@ -156,7 +156,7 @@
     <string name="title_pref_force_vibrate">Force vibrate</string>
 
     <string name="title_pref_show_ime_notification">IME notification</string>
-    <string name="summary_pref_show_ime_notification">Show a persistent notification to allow you to pick an input method.</string>
+    <string name="summary_pref_show_ime_notification">Show a persistent notification to allow you to pick a keyboard.</string>
 
     <string name="title_pref_show_toggle_remappings_notification">Pause/resume remappings notification</string>
     <string name="summary_pref_show_toggle_remappings_notification">Show a persistent notification which starts/pauses your remaps and has a link to start/stop the accessibility service.</string>
@@ -166,8 +166,8 @@
 
     <string name="title_pref_bluetooth_devices">Choose bluetooth devices…</string>
 
-    <string name="title_pref_auto_show_ime_picker">Automatically show input method picker</string>
-    <string name="summary_pref_auto_show_ime_picker">When a Bluetooth device you have chosen connects or disconnects, the input method picker will show automatically. Choose the devices below.</string>
+    <string name="title_pref_auto_show_ime_picker">Automatically show keyboard picker</string>
+    <string name="summary_pref_auto_show_ime_picker">When a Bluetooth device you have chosen connects or disconnects, the keyboard picker will show automatically. Choose the devices below.</string>
 
     <string name="title_pref_show_toast_when_action_performed">Show a toast message when you perform an action</string>
     <string name="summary_pref_show_toast_when_action_performed">A little message will popup when you perform an action.</string>
@@ -178,9 +178,9 @@
     <string name="title_pref_show_toast_when_error_encountered">Show a message when an error is encountered in the app</string>
     <string name="summary_pref_show_toast_when_error_encountered">A message will be shown on the screen prompting you to log it when the app encounters an error it is aware of.</string>
 
-    <string name="title_pref_auto_change_ime_on_connection">Automatically change input method</string>
-    <string name="summary_pref_auto_change_ime_on_connection">The Key Mapper input method will be automatically selected when a chosen bluetooth device is connected. Your old input method will be automatically selected when the device disconnects.
-        There may be a 5-10 second delay after disconnecting your device for the input method to change.</string>
+    <string name="title_pref_auto_change_ime_on_connection">Automatically change the keyboard.</string>
+    <string name="summary_pref_auto_change_ime_on_connection">The Key Mapper keyboard will be automatically selected when a chosen bluetooth device is connected. Your old keyboard will be automatically selected when the device disconnects.
+        There may be a 5-10 second delay after disconnecting your device for the keyboard to change.</string>
 
     <string name="title_pref_allow_root_features">Enable root features</string>
     <string name="summary_pref_allow_root_features">Enable this if you want to use features/actions which only work on rooted devices. Key Mapper must have root permission from your root-access-management app (e.g Magisk, SuperSU) for these features to work.
@@ -188,7 +188,7 @@
     <!--Preference titles and summaries-->
 
     <!--Preference categories-->
-    <string name="title_pref_category_ime_picker">Input Method Picker</string>
+    <string name="title_pref_category_ime_picker">Keyboard Picker</string>
     <string name="title_pref_category_notifications">Notifications</string>
     <string name="title_pref_category_debug">Debugging</string>
 
@@ -216,7 +216,7 @@
     <string name="action_type_title_key">Key</string>
     <string name="action_type_title_keycode">Key code</string>
     <string name="action_type_title_system_action">Other</string>
-    <string name="action_type_title_text_block">Text Block</string>
+    <string name="action_type_title_text_block">Text</string>
     <!--Action Types Titles-->
 
     <!--flags-->
@@ -248,7 +248,7 @@
     <string name="error_must_have_atleast_one_trigger">You must have at least one trigger</string>
     <string name="error_must_choose_action">You must choose an action!</string>
     <string name="error_must_have_a_title">The shortcut must have a title!</string>
-    <string name="error_ime_must_be_chosen">You must choose the Key Mapper input method for this action to work!</string>
+    <string name="error_ime_must_be_chosen">You must choose the Key Mapper keyboard for this action to work!</string>
     <string name="error_shortcut_not_found">Can\'t find the shortcut. Is the app installed or enabled?</string>
     <string name="error_app_isnt_installed">App isn\'t installed!</string>
     <string name="error_app_is_disabled">App is disabled!</string>
@@ -260,7 +260,7 @@
     <string name="error_flag_not_found">Flag "%s" not found!</string>
     <string name="error_google_app_not_installed">Google app not installed!</string>
     <string name="error_cant_find_accessibility_settings_page">Can\'t find the Accessibility settings page!</string>
-    <string name="error_cant_find_ime_settings">Can\'t find the input method settings page!</string>
+    <string name="error_cant_find_ime_settings">Can\'t find the keyboard settings page!</string>
     <string name="error_need_to_enable_device_admin">Key Mapper needs to be a device administrator to use this action!</string>
     <string name="error_in_do_not_disturb_mode">In Do Not Disturb mode!</string>
     <string name="error_keymapper_doesnt_have_permission_app_shortcut">Key Mapper doesn\'t have permission to use that shortcut.</string>
@@ -285,9 +285,9 @@
     <string name="error_accessibility_service_disabled">The accessibility service must be enabled for this app to work!</string>
     <string name="error_accessibility_service_enabled">Accessibility service is enabled!</string>
 
-    <string name="error_ime_service_disabled">The input method service needs to be enabled for “Keycode”, “Key”, “Text block” and some other actions to work.</string>
-    <string name="error_ime_service_enabled">Input method service is enabled!</string>
-    <string name="error_critical_ime_service_disabled">The input method service must be enabled for some of your actions to work!</string>
+    <string name="error_ime_service_disabled">The keyboard needs to be enabled for “Keycode”, “Key”, “Text” and some other actions to work.</string>
+    <string name="error_ime_service_enabled">Keyboard is enabled!</string>
+    <string name="error_critical_ime_service_disabled">The keyboard must be enabled and selected for some of your actions to work!</string>
 
     <string name="error_the_app_wont_work">The app won\'t work! Some things need fixing!</string>
     <string name="error_cant_move_to_end_of_text_in_this_field">You can\'t move to the end of the text in this field!</string>
@@ -375,7 +375,7 @@
     <string name="action_consume_keyevent">Do Nothing</string>
 
     <string name="action_move_to_end_of_text">Move Cursor to the End</string>
-    <string name="action_move_to_end_of_text_message">The Key Mapper Input Method must be selected for this action to work and this action may not work as intended in some apps.</string>
+    <string name="action_move_to_end_of_text_message">The Key Mapper keyboard must be selected for this action to work and this action may not work as intended in some apps.</string>
     <string name="action_toggle_keyboard">Toggle Keyboard</string>
     <string name="action_toggle_keyboard_message">This action will only work if you have tapped on an input field where the keyboard is supposed to be shown.</string>
     <string name="action_show_keyboard">Show Keyboard</string>
