@@ -87,6 +87,7 @@
     <string name="button_done">Done</string>
     <string name="button_fix">Fix</string>
     <string name="button_recording_trigger">Recording Trigger…</string>
+    <string name="button_recording_trigger_countdown">%d…</string>
     <string name="button_flags">More</string>
     <!-- Button titles -->
 

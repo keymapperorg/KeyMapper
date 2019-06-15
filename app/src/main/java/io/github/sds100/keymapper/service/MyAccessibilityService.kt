@@ -44,12 +44,14 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
     companion object {
         const val EXTRA_KEYMAP_CACHE_JSON = "extra_keymap_cache_json"
         const val EXTRA_ACTION = "action"
+        const val EXTRA_TIME_LEFT = "time"
 
         const val ACTION_RECORD_TRIGGER = "$PACKAGE_NAME.RECORD_TRIGGER"
         const val ACTION_CLEAR_PRESSED_KEYS = "$PACKAGE_NAME.CLEAR_PRESSED_KEYS"
         const val ACTION_UPDATE_KEYMAP_CACHE = "$PACKAGE_NAME.UPDATE_KEYMAP_CACHE"
         const val ACTION_TEST_ACTION = "$PACKAGE_NAME.TEST_ACTION"
         const val ACTION_STOP_RECORDING_TRIGGER = "$PACKAGE_NAME.STOP_RECORDING_TRIGGER"
+        const val ACTION_RECORD_TRIGGER_TIMER_INCREMENTED = "$PACKAGE_NAME.TIMER_INCREMENTED"
         const val ACTION_PAUSE_REMAPPINGS = "$PACKAGE_NAME.PAUSE_REMAPPINGS"
         const val ACTION_RESUME_REMAPPINGS = "$PACKAGE_NAME.RESUME_REMAPPINGS"
         const val ACTION_UPDATE_NOTIFICATION = "$PACKAGE_NAME.UPDATE_NOTIFICATION"
@@ -63,6 +65,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
          * How long should the accessibility service record a trigger in ms.
          */
         private const val RECORD_TRIGGER_TIMER_LENGTH = 5000L
+
+        private const val RECORD_TRIGGER_TIMER_INCREMENT = 1000L
 
         /**
          * The time in ms between repeating an action while holding down.
@@ -146,11 +150,32 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
 
     private var mPaused = false
 
-    private val mRecordingTimerRunnable = Runnable {
-        mRecordingTrigger = false
-        mPressedKeys.clear()
+    private val mRecordTriggerRunnable = object : Runnable {
+        var timeLeft = RECORD_TRIGGER_TIMER_LENGTH
 
-        sendBroadcast(Intent(ACTION_STOP_RECORDING_TRIGGER))
+        override fun run() {
+            if (timeLeft == 0L) {
+                sendBroadcast(ACTION_STOP_RECORDING_TRIGGER)
+                mHandler.removeCallbacks(this)
+
+                mRecordingTrigger = false
+                mPressedKeys.clear()
+
+                //reset the timer for the next time it is run
+                timeLeft = RECORD_TRIGGER_TIMER_LENGTH
+                return
+            }
+
+            Intent(ACTION_RECORD_TRIGGER_TIMER_INCREMENTED).apply {
+                putExtra(EXTRA_TIME_LEFT, timeLeft)
+
+                sendBroadcast(this)
+            }
+
+            timeLeft -= RECORD_TRIGGER_TIMER_INCREMENT
+
+            mHandler.postDelayed(this, RECORD_TRIGGER_TIMER_INCREMENT)
+        }
     }
 
     /**
@@ -162,11 +187,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
                 ACTION_RECORD_TRIGGER -> {
                     mRecordingTrigger = true
 
-                    //stop recording a trigger after a set amount of time.
-                    mHandler.postDelayed(
-                            mRecordingTimerRunnable,
-                            RECORD_TRIGGER_TIMER_LENGTH
-                    )
+                    mHandler.post(mRecordTriggerRunnable)
                 }
 
                 ACTION_CLEAR_PRESSED_KEYS -> {
@@ -257,8 +278,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
     released before the long press delay.
 
        - When a trigger is detected, a Runnable is created, which when executed, will perform the action.
-       - The runnable will be queued in the Handler.
-       - After the long press delay the runnable will be executed if it is still queued in the Handler.
+       - The mRecordTriggerRunnable will be queued in the Handler.
+       - After the long press delay the mRecordTriggerRunnable will be executed if it is still queued in the Handler.
        - If the user releases one of the keys which is assigned to the Runnable, the Runnable
        will be removed from the Runnable list and removed from the Handler. This stops it being executed after the user
        has stopped long-pressing the trigger.

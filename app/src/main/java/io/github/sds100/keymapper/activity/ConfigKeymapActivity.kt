@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
@@ -24,6 +23,7 @@ import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.adapter.TriggerAdapter
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.service.MyAccessibilityService.Companion.ACTION_RECORD_TRIGGER
+import io.github.sds100.keymapper.service.MyAccessibilityService.Companion.ACTION_RECORD_TRIGGER_TIMER_INCREMENTED
 import io.github.sds100.keymapper.service.MyAccessibilityService.Companion.ACTION_STOP_RECORDING_TRIGGER
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_PERMISSION_DENIED
@@ -63,9 +63,12 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
                     }
                 }
 
-                ACTION_STOP_RECORDING_TRIGGER -> {
-                    onStopRecordingTrigger()
+                ACTION_RECORD_TRIGGER_TIMER_INCREMENTED -> {
+                    val timeLeft = intent.getLongExtra(MyAccessibilityService.EXTRA_TIME_LEFT, 5000L)
+                    onIncrementRecordTriggerTimer(timeLeft)
                 }
+
+                ACTION_STOP_RECORDING_TRIGGER -> onStopRecordingTrigger()
 
                 Intent.ACTION_INPUT_METHOD_CHANGED -> {
                     viewModel.keyMap.notifyObservers()
@@ -99,6 +102,7 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
 
         intentFilter.addAction(ACTION_ADD_KEY_CHIP)
         intentFilter.addAction(ACTION_STOP_RECORDING_TRIGGER)
+        intentFilter.addAction(ACTION_RECORD_TRIGGER_TIMER_INCREMENTED)
         intentFilter.addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
 
         registerReceiver(mBroadcastReceiver, intentFilter)
@@ -271,11 +275,16 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
      */
     private fun recordTrigger() {
         mIsRecordingTrigger = true
-        buttonRecordTrigger.text = getString(R.string.button_recording_trigger)
+        buttonRecordTrigger.text = str(R.string.button_recording_trigger)
         buttonRecordTrigger.isEnabled = false
 
         //tell the accessibility service to record key events
         sendBroadcast(Intent(ACTION_RECORD_TRIGGER))
+    }
+
+    private fun onIncrementRecordTriggerTimer(timeLeft: Long) {
+        buttonRecordTrigger.isEnabled = false
+        buttonRecordTrigger.text = str(R.string.button_recording_trigger_countdown, timeLeft / 1000)
     }
 
     /**
