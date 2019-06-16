@@ -49,6 +49,7 @@
     <string name="url_privacy_policy" translatable="false">https://raw.githubusercontent.com/sds100/KeyMapper/master/PRIVACY_POLICY.md</string>
     <string name="url_xda_thread" translatable="false">https://forum.xda-developers.com/android/apps-games/app-keyboard-button-mapper-t3914005</string>
     <string name="url_google_app_listing" translatable="false">https://play.google.com/store/apps/details?id=com.google.android.googlequicksearchbox</string>
+    <string name="url_telegram_channel" translatable="false">https://t.me/key_mapper</string>
     <!-- URLs -->
 
     <!-- Activity titles -->
@@ -213,6 +214,7 @@
     <string name="pref_title_version">Version</string>
     <string name="pref_title_developer_email">Email Developer</string>
     <string name="pref_title_translate">Translate</string>
+    <string name="pref_title_telegram_channel">Telegram Channel</string>
     <!-- About activity-->
 
     <!--Action Types Titles-->

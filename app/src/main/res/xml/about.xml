@@ -16,6 +16,10 @@
         app:linkUrl="@string/url_xda_thread" />
 
     <io.github.sds100.keymapper.view.UrlLinkPreference
+        android:title="@string/pref_title_telegram_channel"
+        app:linkUrl="@string/url_telegram_channel" />
+
+    <io.github.sds100.keymapper.view.UrlLinkPreference
         android:title="@string/pref_title_rate_review"
         app:linkUrl="@string/url_play_store_listing" />
 
