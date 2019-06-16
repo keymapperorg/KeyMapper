@@ -38,6 +38,7 @@ import io.github.sds100.keymapper.selection.SelectionProvider
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.service.MyIMEService
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_IME_SERVICE_DISABLED
 import io.github.sds100.keymapper.view.BottomSheetMenu
 import io.github.sds100.keymapper.view.StatusLayout
 import io.github.sds100.keymapper.viewmodel.HomeViewModel
@@ -404,8 +405,11 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
         if (MyIMEService.isServiceEnabled(this)) {
             imeServiceStatusLayout.changeToFixedState()
 
-        } else if (mKeymapAdapter.itemList.any {
-                    it.actionDescription.errorCode == ErrorCodeUtils.ERROR_CODE_IME_SERVICE_NOT_CHOSEN
+        } else if (mViewModel.keyMapList.value != null
+                && mViewModel.keyMapList.value!!.any {
+                    val errorResult = ActionUtils.getErrorCode(this, it.action)
+
+                    errorResult?.errorCode == ERROR_CODE_IME_SERVICE_DISABLED
                 }) {
 
             imeServiceStatusLayout.changeToErrorState()
