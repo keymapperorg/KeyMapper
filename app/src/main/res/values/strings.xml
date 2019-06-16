@@ -121,7 +121,7 @@
     <string name="pos_done">Done</string>
     <string name="pos_opt_in">Opt in</string>
 
-    <string name="neg_opt_out">Opt out</string>
+    <string name="neg_stay_out">Stay out</string>
     <string name="neg_no">No</string>
     <string name="neg_cancel">Cancel</string>
     <string name="neg_dont_show_again">Don\'t show again</string>
@@ -166,8 +166,8 @@
     <string name="title_pref_show_toggle_remappings_notification">Pause/resume remappings notification</string>
     <string name="summary_pref_show_toggle_remappings_notification">Show a persistent notification which starts/pauses your remaps and has a link to start/stop the accessibility service.</string>
 
-    <string name="title_pref_data_collection">Anonymous analytics</string>
-    <string name="summary_pref_data_collection">Do you want to help improve Key Mapper by allowing it to anonymously collect data about how you use it such as crash reports? The data is collected by Google Firebase. The privacy policy is located in the About activity.</string>
+    <string name="title_pref_data_collection">Opt in to anonymous analytics</string>
+    <string name="summary_pref_data_collection">Do you want to allow Key Mapper to anonymously collect data about how it is used, such as crash reports? It is opt in and the data is collected by Google Firebase. The privacy policy is located in the About activity.</string>
 
     <string name="title_pref_bluetooth_devices">Choose bluetooth devices…</string>
 
