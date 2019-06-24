@@ -54,6 +54,7 @@
     <string name="action_send_feedback">Send feedback</string>
     <string name="action_log">Log</string>
     <string name="action_send_log">Send log</string>
+    <string name="action_change_keyboard">Change Keyboard</string>
     <!-- Menu action titles-->
     <!-- Button titles -->
     <string name="button_choose_action">Choose Action</string>
@@ -64,6 +65,7 @@
     <string name="button_done">Done</string>
     <string name="button_fix">Fix</string>
     <string name="button_recording_trigger">Recording Trigger…</string>
+    <string name="button_recording_trigger_countdown">%d…</string>
     <string name="button_flags">More</string>
     <!-- Button titles -->
     <!-- Content descriptions -->
@@ -91,7 +93,7 @@
     <string name="pos_yes">Yes</string>
     <string name="pos_done">Done</string>
     <string name="pos_opt_in">Opt in</string>
-    <string name="neg_opt_out">Opt out</string>
+    <string name="neg_stay_out">Stay out</string>
     <string name="neg_no">No</string>
     <string name="neg_cancel">Cancel</string>
     <string name="neg_dont_show_again">Don\'t show again</string>
@@ -109,6 +111,8 @@
     <string name="notification_accessibility_service_disabled_text">Tap to start the accessibility service.</string>
     <string name="notification_action_open_app">Open App</string>
     <string name="notification_action_stop_acc_service">Stop Accessibility Service</string>
+    <string name="notification_keyboard_hidden_title">Keyboard is hidden!</string>
+    <string name="notification_keyboard_hidden_text">Tap to start showing the keyboard again.</string>
     <!-- Notification strings -->
     <!--Preference titles and summaries-->
     <string name="title_pref_long_press_delay">Long press delay</string>
@@ -121,8 +125,8 @@
     <string name="summary_pref_show_ime_notification">Show a persistent notification to allow you to pick a keyboard.</string>
     <string name="title_pref_show_toggle_remappings_notification">Pause/resume remappings notification</string>
     <string name="summary_pref_show_toggle_remappings_notification">Show a persistent notification which starts/pauses your remaps and has a link to start/stop the accessibility service.</string>
-    <string name="title_pref_data_collection">Anonymous analytics</string>
-    <string name="summary_pref_data_collection">Do you want to help improve Key Mapper by allowing it to anonymously collect data about how you use it such as crash reports? The data is collected by Google Firebase. The privacy policy is located in the About activity.</string>
+    <string name="title_pref_data_collection">Opt in to anonymous analytics</string>
+    <string name="summary_pref_data_collection">Do you want to allow Key Mapper to anonymously collect data about how it is used, such as crash reports? It is opt in and the data is collected by Google Firebase. The privacy policy is located in the About activity.</string>
     <string name="title_pref_bluetooth_devices">Choose bluetooth devices…</string>
     <string name="title_pref_auto_show_ime_picker">Automatically show keyboard picker</string>
     <string name="summary_pref_auto_show_ime_picker">When a Bluetooth device you have chosen connects or disconnects, the keyboard picker will show automatically. Choose the devices below.</string>
@@ -158,6 +162,7 @@
     <string name="pref_title_version">Version</string>
     <string name="pref_title_developer_email">Email Developer</string>
     <string name="pref_title_translate">Translate</string>
+    <string name="pref_title_telegram_channel">Telegram Channel</string>
     <!-- About activity-->
     <!--Action Types Titles-->
     <string name="action_type_title_application">App</string>
@@ -213,7 +218,7 @@
     <string name="error_cant_find_write_settings_page">Can\'t find the write-settings permission page!</string>
     <string name="error_opening_app_shortcut">Error opening this app shortcut</string>
     <string name="error_no_app_found_to_send_feedback">No compatible app is found to send feedback.</string>
-    <string name="error_dnd_access_not_granted">If you are remapping a volume button you need to give the app Do Not Disturb access if you want the button\'s to work while in Do Not Disturb mode!</string>
+    <string name="error_dnd_access_not_granted">If you are remapping a volume button you need to give the app Do Not Disturb access if you want the buttons to work while in Do Not Disturb mode!</string>
     <string name="dnd_access_granted">Permission to change Do Not Disturb mode granted!</string>
     <string name="error_cant_find_dnd_access_settings">Can\'t find the Do Not Disturb access permission settings!</string>
     <string name="error_enable_log">Key Mapper encountered an error! Try to reproduce the error, enable logging to see what happened.</string>
@@ -226,8 +231,9 @@
     <string name="error_camera_access_exception">Can\'t access the camera!</string>
     <string name="error_accessibility_service_disabled">The accessibility service must be enabled for this app to work!</string>
     <string name="error_accessibility_service_enabled">Accessibility service is enabled!</string>
-    <string name="error_ime_service_disabled">The keyboard needs to be enabled for “Keycode”, “Key”, “Text” and some other actions to work.</string>
+    <string name="error_ime_service_disabled_status_layout">The keyboard needs to be enabled for “Keycode”, “Key”, “Text” and some other actions to work.</string>
     <string name="error_ime_service_enabled">Keyboard is enabled!</string>
+    <string name="error_ime_service_disabled">Keyboard is disabled!</string>
     <string name="error_critical_ime_service_disabled">The keyboard must be enabled and selected for some of your actions to work!</string>
     <string name="error_the_app_wont_work">The app won\'t work! Some things need fixing!</string>
     <string name="error_cant_move_to_end_of_text_in_this_field">You can\'t move to the end of the text in this field!</string>
@@ -319,7 +325,5 @@
     <string name="system_action_cat_nfc">NFC</string>
     <string name="system_action_cat_other">Other</string>
     <string name="system_action_cat_keyboard">Keyboard</string>
-    <string name="notification_keyboard_hidden_title">Keyboard is hidden!</string>
-    <string name="notification_keyboard_hidden_text">Tap to start showing the keyboard again.</string>
     <!-- System action category labels -->
 </resources>
