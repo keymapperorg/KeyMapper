@@ -210,7 +210,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
                         putBoolean(str(R.string.key_pref_first_time), false).commit()
                     }
 
-                    negativeButton(R.string.neg_opt_out) {
+                    negativeButton(R.string.neg_stay_out) {
                         putBoolean(str(R.string.key_pref_data_collection), false).commit()
                         setFirebaseDataCollection()
                         putBoolean(str(R.string.key_pref_first_time), false).commit()
