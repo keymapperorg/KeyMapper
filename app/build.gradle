@@ -13,7 +13,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 28
         versionCode 17
-        versionName "1.2.0-alpha.1"
+        versionName "1.2.0-alpha"
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -25,6 +25,38 @@ android {
         debug {
             applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
+        }
+        ci {
+            debuggable = true
+
+            def versionPropsFile = file('version.properties')
+            int versionBuild = 0
+
+            //increment the versionBuild
+            task("autoIncrementBuildNumber") {
+                if (versionPropsFile.canRead()) {
+                    Properties versionProps = new Properties()
+                    versionProps.load(new FileInputStream(versionPropsFile))
+
+                    //if the version name has changed, reset the build version counter
+                    if (versionProps['VERSION_NAME'].toString() != android.defaultConfig.versionName) {
+                        versionBuild = 0
+                    } else {
+                        versionBuild = versionProps['CI_BUILD'].toInteger()
+                    }
+
+                    versionBuild = versionProps['CI_BUILD'].toInteger() + 1
+                    versionProps['CI_BUILD'] = versionBuild.toString()
+                    versionProps['VERSION_NAME'] = android.defaultConfig.versionName
+                    versionProps.store(versionPropsFile.newWriter(), null)
+                } else {
+                    throw new FileNotFoundException("Could not read version.properties!")
+                }
+            }
+
+            applicationIdSuffix ".ci"
+            versionNameSuffix "." + versionBuild + "-ci"
+            signingConfig signingConfigs.debug
         }
     }
 }
