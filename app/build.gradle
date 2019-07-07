@@ -84,7 +84,7 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
 
     implementation 'com.google.firebase:firebase-core:17.0.0'
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.0'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
 
     kapt "android.arch.lifecycle:compiler:1.1.1"
     kapt "androidx.room:room-compiler:$room_version"
