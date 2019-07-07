@@ -17,6 +17,8 @@ import androidx.core.content.edit
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.getkeepsafe.taptargetview.TapTarget
+import com.getkeepsafe.taptargetview.TapTargetView
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import io.github.sds100.keymapper.*
@@ -77,6 +79,8 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
         }
     }
 
+    private var mRecordTriggerDisabledTapTarget: TapTargetView? = null
+
     private val mTriggerAdapter = TriggerAdapter()
 
     private var mIsRecordingTrigger = false
@@ -87,7 +91,6 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_config_key_map)
         setSupportActionBar(toolbar)
-
 
         //this needs to be enabled for vector drawables from resources to work on kitkat
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
@@ -172,10 +175,21 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
 
         /* disable "Record Trigger" button if the service is disabled because otherwise the button
          * wouldn't do anything*/
-        val isAccessibilityServiceEnabled =
-                MyAccessibilityService.isServiceEnabled(this)
+        val isAccessibilityServiceEnabled = MyAccessibilityService.isServiceEnabled(this)
 
         buttonRecordTrigger.isEnabled = isAccessibilityServiceEnabled
+
+        if (isAccessibilityServiceEnabled) {
+            mRecordTriggerDisabledTapTarget?.dismiss(true)
+        } else {
+            val tapTarget = TapTarget.forView(buttonRecordTrigger,
+                    str(R.string.showcase_record_trigger_title),
+                    str(R.string.showcase_record_trigger_description)).apply {
+                tintTarget(false)
+            }
+
+            mRecordTriggerDisabledTapTarget = TapTargetView.showFor(this, tapTarget)
+        }
 
         /* reload the action description since the user could have left the app and uninstalled
         the app chosen as the action so an error message should now be displayed */
