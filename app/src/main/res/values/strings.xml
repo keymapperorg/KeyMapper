@@ -232,6 +232,11 @@
     <string name="flag_vibrate">Vibrate</string>
     <!--flags-->
 
+    <!-- Showcase -->
+    <string name="showcase_accessibility_service_title">Enable the accessibility service</string>
+    <string name="showcase_accessibility_service_description">Your keymaps will only work once you have enabled the accessibility service. It also needs to be turned on to create a trigger.</string>
+    <!-- Showcase -->
+
     <!-- system action options -->
     <string name="stream_accessibility">Accessibility</string>
     <string name="stream_alarm">Alarm</string>

@@ -20,6 +20,8 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.getkeepsafe.taptargetview.TapTarget
+import com.getkeepsafe.taptargetview.TapTargetView
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomappbar.BottomAppBar.FAB_ALIGNMENT_MODE_CENTER
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -47,6 +49,7 @@ import kotlinx.android.synthetic.main.bottom_sheet_home.view.*
 import kotlinx.android.synthetic.main.content_home.*
 import kotlinx.android.synthetic.main.home_collapsed_status_layouts.*
 import kotlinx.android.synthetic.main.home_expanded_status_layouts.*
+import kotlinx.android.synthetic.main.layout_status.view.*
 import org.jetbrains.anko.*
 
 class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener<KeymapAdapterModel> {
@@ -84,6 +87,14 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
                 yield(dndAccessStatusLayout)
             }
         }.toList()
+
+    private val mIsFirstTime by lazy {
+        defaultSharedPreferences.getBoolean(
+                str(R.string.key_pref_first_time), true
+        )
+    }
+
+    private var mAccessibilityServiceTapTargetView: TapTargetView? = null
 
     private var mActionModeActive = false
         set(value) {
@@ -194,32 +205,25 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
         intentFilter.addAction(MyAccessibilityService.ACTION_ON_STOP)
         registerReceiver(mBroadcastReceiver, intentFilter)
 
-        //ask the user whether they want to enable analytics
-        val isFirstTime = defaultSharedPreferences.getBoolean(
-                str(R.string.key_pref_first_time), true
-        )
-
-        defaultSharedPreferences.edit {
-            if (isFirstTime) {
+        if (mIsFirstTime) {
+            defaultSharedPreferences.edit {
+                //ask the user whether they want to enable analytics
                 alert {
                     titleResource = R.string.title_pref_data_collection
                     messageResource = R.string.summary_pref_data_collection
                     positiveButton(R.string.pos_opt_in) {
                         putBoolean(str(R.string.key_pref_data_collection), true).commit()
                         setFirebaseDataCollection()
-                        putBoolean(str(R.string.key_pref_first_time), false).commit()
                     }
 
                     negativeButton(R.string.neg_stay_out) {
                         putBoolean(str(R.string.key_pref_data_collection), false).commit()
                         setFirebaseDataCollection()
-                        putBoolean(str(R.string.key_pref_first_time), false).commit()
                     }
                 }.show()
-
-            } else {
-                setFirebaseDataCollection()
             }
+        } else {
+            setFirebaseDataCollection()
         }
     }
 
@@ -297,6 +301,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
         super.onDestroy()
 
         unregisterReceiver(mBroadcastReceiver)
+        defaultSharedPreferences.edit().putBoolean(str(R.string.key_pref_first_time), false).apply()
     }
 
     override fun onBackPressed() {
@@ -398,8 +403,26 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
     private fun updateStatusLayouts() {
         if (MyAccessibilityService.isServiceEnabled(this)) {
             accessibilityServiceStatusLayout.changeToFixedState()
+
+            //dismiss the accessibility service showcase if it is showing
+            mAccessibilityServiceTapTargetView?.dismiss(false)
+
         } else {
             accessibilityServiceStatusLayout.changeToErrorState()
+
+            /*only showcase the accessibility service if it is the first time the app is opened and it isn't already
+                showing */
+            if (mIsFirstTime && mAccessibilityServiceTapTargetView == null) {
+                val target = TapTarget.forView(
+                        accessibilityServiceStatusLayout.buttonFix,
+                        str(R.string.showcase_accessibility_service_title),
+                        str(R.string.showcase_accessibility_service_description)
+                ).apply {
+                    tintTarget(false)
+                }
+
+                mAccessibilityServiceTapTargetView = TapTargetView.showFor(this, target)
+            }
         }
 
         if (MyIMEService.isServiceEnabled(this)) {
