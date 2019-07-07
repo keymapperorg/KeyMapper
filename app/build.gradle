@@ -68,7 +68,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "org.jetbrains.anko:anko-commons:$anko_version"
 
-    implementation 'com.google.android.material:material:1.1.0-alpha04'
+    implementation 'com.google.android.material:material:1.1.0-alpha07'
     implementation 'com.github.salomonbrys.kotson:kotson:2.5.0'
     implementation 'com.hannesdorfmann:adapterdelegates4:4.0.0'
     implementation 'com.github.mukeshsolanki:MarkdownView-Android:1.0.8'
