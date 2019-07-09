@@ -238,6 +238,9 @@
 
     <string name="showcase_record_trigger_title">The accessibility service is disabled</string>
     <string name="showcase_record_trigger_description">You can only record a trigger if the accessibility service is enabled.</string>
+
+    <string name="showcase_note_from_the_developer">Note from the developer</string>
+    <string name="showcase_note_from_the_developer_message">There is no guarantee that every action will work on your device. One reason is there are many flavours of Android and OEMs can break features by accident or intentionally. If something doesn\'t work, please notify the developer and restrain from rating the app poorly since the issue is often out of the developer\'s control. :)</string>
     <!-- Showcase -->
 
     <!-- system action options -->
