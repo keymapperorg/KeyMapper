@@ -116,6 +116,11 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (mIsFirstTime) {
+            startActivity(Intent(this, IntroActivity::class.java))
+        }
+
         setContentView(R.layout.activity_home)
         setSupportActionBar(appBar)
 
