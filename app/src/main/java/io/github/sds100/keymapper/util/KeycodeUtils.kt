@@ -114,7 +114,10 @@ object KeycodeUtils {
             KeyEvent.KEYCODE_BUTTON_Z to "Button Z",
 
             KeyEvent.KEYCODE_BUTTON_THUMBL to "Thumb Left",
-            KeyEvent.KEYCODE_BUTTON_THUMBR to "Thumb Right"
+            KeyEvent.KEYCODE_BUTTON_THUMBR to "Thumb Right",
+
+            KeyEvent.KEYCODE_BUTTON_START to "Start",
+            KeyEvent.KEYCODE_BUTTON_SELECT to "Select"
 
     ).apply {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
