@@ -14,13 +14,10 @@
     <string name="log_is_empty">Hacker attack = = dell</string>
     <string name="everything_looks_good">真的嗎@@🙋😂</string>
     <string name="warning_the_app_will_work">駭客root了 我手機 他好像控制系統</string>
-    <string name="caption_action_type_key">Click the key on the keyboard which you want to be entered.
-        \n\nIMPORTANT!
-        This will only work if you have selected the Key Mapper keyboard. This action is best used with a hardware keyboard.</string>
-    <string name="caption_action_type_keycode">IMPORTANT!
-        This will only work if you have selected the Key Mapper keyboard. This action is best used with a hardware keyboard.</string>
-    <string name="switch_enabled">Enabled</string>
-    <string name="disabled">Disabled</string>
+    <string name="caption_action_type_key">\n\nIMPORTANT!</string>
+    <string name="caption_action_type_keycode">This will only work if you have selected the Key Mapper keyboard. This action is best used with a hardware keyboard. CONTEXTREQUEST</string>
+    <string name="switch_enabled">Translate</string>
+    <string name="disabled">Translation</string>
     <string name="key_map_adapter_flags">Flags</string>
     <string name="description_open_app">Open %s</string>
     <string name="description_key">Press \'%s\' key</string>
