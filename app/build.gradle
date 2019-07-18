@@ -8,6 +8,11 @@ android {
     compileSdkVersion 28
     buildToolsVersion = '28.0.3'
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     defaultConfig {
         applicationId "io.github.sds100.keymapper"
         minSdkVersion 19
