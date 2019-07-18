@@ -156,6 +156,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
         override fun run() {
             if (timeLeft == 0L) {
                 sendBroadcast(ACTION_STOP_RECORDING_TRIGGER)
+                Logger.write(ctx, "Stopped Recording", "Stopped recording a trigger")
                 mHandler.removeCallbacks(this)
 
                 mRecordingTrigger = false
@@ -188,6 +189,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
                     mRecordingTrigger = true
 
                     mHandler.post(mRecordTriggerRunnable)
+                    Logger.write(ctx, "Recording", "Started recording a trigger")
                 }
 
                 ACTION_CLEAR_PRESSED_KEYS -> {
