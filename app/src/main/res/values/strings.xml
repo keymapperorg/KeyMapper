@@ -240,10 +240,10 @@
     <string name="showcase_record_trigger_description">You can only record a trigger if the accessibility service is enabled.</string>
 
     <string name="showcase_note_from_the_developer">Note from the developer</string>
-    <string name="showcase_note_from_the_developer_message">There is no guarantee that every action will work on your device. One reason is there are many flavours of Android and OEMs can break features by accident or intentionally. If something doesn\'t work, please notify the developer and restrain from rating the app poorly since the issue is often out of the developer\'s control. :)</string>
+    <string name="showcase_note_from_the_developer_message">There is no guarantee that EVERY action will work on your device and EVERY button will be detected. One reason is there are many flavours of Android and OEMs can break features by accident or intentionally. If something doesn\'t work, please notify the developer and restrain from giving the app a bad rating since the issue is often out of the developer\'s control. =)</string>
 
     <string name="showcase_disable_battery_optimisation">Disable battery optimisation</string>
-    <string name="showcase_disable_battery_optimisation_message">Tap "Turn off" to prevent Android stopping the app from working in the background to save battery life. Your OEM\'s skin such as MIUI or Samsung Experience may have other \"battery saving\" features so it is recommended to turn them off for Key Mapper as well.</string>
+    <string name="showcase_disable_battery_optimisation_message">Tap "Turn off" to prevent Android from stopping the app while it is in the background. Your OEM\'s skin such as MIUI or Samsung Experience may have other \"battery saving\" features so it is recommended to turn them off for Key Mapper as well.</string>
     <string name="showcase_disable_battery_optimisation_button">Turn off</string>
     <!-- Showcase -->
 
