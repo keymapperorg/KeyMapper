@@ -25,6 +25,7 @@ class IntroActivity : IntroActivity() {
             description(R.string.showcase_note_from_the_developer_message)
             background(R.color.red)
             backgroundDark(R.color.redDark)
+            image(R.mipmap.ic_launcher_round)
             scrollable(false)
             canGoBackward(true)
             isSkipEnabled = false
