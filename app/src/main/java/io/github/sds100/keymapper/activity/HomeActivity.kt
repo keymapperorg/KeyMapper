@@ -116,6 +116,11 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (mIsFirstTime) {
+            startActivity(Intent(this, IntroActivity::class.java))
+        }
+
         setContentView(R.layout.activity_home)
         setSupportActionBar(appBar)
 
@@ -301,7 +306,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
         super.onDestroy()
 
         unregisterReceiver(mBroadcastReceiver)
-        defaultSharedPreferences.edit().putBoolean(str(R.string.key_pref_first_time), false).apply()
+//        defaultSharedPreferences.edit().putBoolean(str(R.string.key_pref_first_time), false).apply()
     }
 
     override fun onBackPressed() {

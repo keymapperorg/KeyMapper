@@ -14,7 +14,14 @@
     <color name="warn">#FFC107</color>
     <color name="actionModeBackground">#424242</color>
     <color name="actionModeStatusBar">#212121</color>
+
     <color name="green">#4CAF50</color>
+
     <color name="red">#d32f2f</color>
+    <color name="redDark">#9a0007</color>
+
+    <color name="blue">#2196f3</color>
+    <color name="blueDark">#0069c0</color>
+
     <color name="ic_launcher_background">#ffffff</color>
 </resources>

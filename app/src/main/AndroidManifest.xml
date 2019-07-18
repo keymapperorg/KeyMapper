@@ -43,6 +43,10 @@
         </activity>
 
         <activity
+            android:name=".activity.IntroActivity"
+            android:theme="@style/Theme.Intro" />
+
+        <activity
             android:name=".activity.NewKeymapActivity"
             android:label="@string/title_activity_new_key_map"
             android:theme="@style/AppTheme.NoActionBar" />
