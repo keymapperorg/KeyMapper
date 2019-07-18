@@ -306,7 +306,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
         super.onDestroy()
 
         unregisterReceiver(mBroadcastReceiver)
-//        defaultSharedPreferences.edit().putBoolean(str(R.string.key_pref_first_time), false).apply()
+        defaultSharedPreferences.edit().putBoolean(str(R.string.key_pref_first_time), false).apply()
     }
 
     override fun onBackPressed() {
