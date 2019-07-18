@@ -17,6 +17,10 @@ import io.github.sds100.keymapper.R
 
 class IntroActivity : IntroActivity() {
 
+    companion object {
+        private const val BATTERY_OPTIMISATION_SLIDE_POSITION = 1
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -29,7 +33,7 @@ class IntroActivity : IntroActivity() {
             scrollable(false)
             canGoBackward(true)
             isSkipEnabled = false
-    }.build())
+        }.build())
 
         val powerManager = (getSystemService(Context.POWER_SERVICE)) as PowerManager
 
@@ -52,6 +56,20 @@ class IntroActivity : IntroActivity() {
                     startActivity(intent)
                 }
             }.build())
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val powerManager = (getSystemService(Context.POWER_SERVICE)) as PowerManager
+
+        /* when the user returns back from changing battery optimisation settings, go to the next page if they
+            have turned it off */
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                powerManager.isIgnoringBatteryOptimizations(Constants.PACKAGE_NAME) &&
+                currentSlidePosition == BATTERY_OPTIMISATION_SLIDE_POSITION) {
+            nextSlide()
         }
     }
 }
