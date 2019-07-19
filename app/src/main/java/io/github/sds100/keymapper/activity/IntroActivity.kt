@@ -57,7 +57,7 @@ class IntroActivity : IntroActivity() {
             }.build())
         }
 
-        if (!isDexSupported()) {
+        if (isDexSupported()) {
             addSlide(SimpleSlide.Builder().apply {
                 title(R.string.showcase_dex_mode_supported_title)
                 description(R.string.showcase_dex_mode_supported_message)
