@@ -7,11 +7,15 @@ import android.os.Build
 import android.provider.Settings
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.RequiresApi
+import androidx.core.content.edit
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.onSuccess
 import io.github.sds100.keymapper.result
 import io.github.sds100.keymapper.service.MyIMEService
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.defaultSharedPreferences
+import org.jetbrains.anko.okButton
 import org.jetbrains.anko.toast
 
 /**
@@ -19,15 +23,37 @@ import org.jetbrains.anko.toast
  */
 
 object KeyboardUtils {
-    fun switchToKeyMapperIme(ctx: Context) {
-        val hasRootPermission = RootUtils.checkAppHasRootPermission(ctx)
+    fun switchToKeyMapperIme(ctx: Context) = ctx.apply {
+        fun showDialog() {
+            val hasRootPermission = RootUtils.checkAppHasRootPermission(this)
 
-        if (hasRootPermission) {
-            MyIMEService.getImeId(ctx).result().onSuccess {
-                switchIme(it)
+            if (hasRootPermission) {
+                MyIMEService.getImeId(this).result().onSuccess {
+                    switchIme(it)
+                }
+            } else {
+                showInputMethodPicker(this)
             }
+        }
+
+        val shownDialog = defaultSharedPreferences.getBoolean(
+                str(R.string.key_pref_shown_cant_use_virtual_keyboard_message),
+                bool(R.bool.default_value_shown_cant_use_virtual_keyboard_message)
+        )
+
+        if (!shownDialog) {
+            alert {
+                messageResource = R.string.dialog_message_cant_use_virtual_keyboard
+                okButton {
+                    defaultSharedPreferences.edit {
+                        putBoolean(str(R.string.key_pref_shown_cant_use_virtual_keyboard_message), true)
+                    }
+
+                    showDialog()
+                }
+            }.show()
         } else {
-            showInputMethodPicker(ctx)
+            showDialog()
         }
     }
 
