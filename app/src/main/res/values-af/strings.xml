@@ -182,11 +182,13 @@
     <string name="showcase_accessibility_service_description">Your keymaps will only work once you have enabled the accessibility service. It also needs to be turned on to create a trigger.</string>
     <string name="showcase_record_trigger_title">The accessibility service is disabled</string>
     <string name="showcase_record_trigger_description">You can only record a trigger if the accessibility service is enabled.</string>
-    <string name="showcase_note_from_the_developer">Note from the developer</string>
-    <string name="showcase_note_from_the_developer_message">There is no guarantee that EVERY action will work on your device and EVERY button will be detected. One reason is there are many flavours of Android and OEMs can break features by accident or intentionally. If something doesn\'t work, please notify the developer and restrain from giving the app a bad rating since the issue is often out of the developer\'s control. =)</string>
-    <string name="showcase_disable_battery_optimisation">Disable battery optimisation</string>
+    <string name="showcase_note_from_the_developer_title">Note from the developer</string>
+    <string name="showcase_note_from_the_developer_message">There is no guarantee that every action will work on your device and every button will be detected. One reason is there are many flavours of Android and OEMs can break features by accident or intentionally. If something doesn\'t work, please notify the developer and restrain from giving the app a bad rating since the issue is often out of the developer\'s control. =)</string>
+    <string name="showcase_disable_battery_optimisation_title">Disable battery optimisation</string>
     <string name="showcase_disable_battery_optimisation_message">Tap \"Turn off\" to prevent Android from stopping the app while it is in the background. Your OEM\'s skin such as MIUI or Samsung Experience may have other \"battery saving\" features so it is recommended to turn them off for Key Mapper as well.</string>
     <string name="showcase_disable_battery_optimisation_button">Turn off</string>
+    <string name="showcase_dex_mode_supported_title">Your device seems to support Samsung Dex</string>
+    <string name="showcase_dex_mode_supported_message">Samsung doesn\'t allow apps with a 3rd party keyboard to open while in Dex mode. Therefore, this app won\'t open and the Key Mapper keyboard won\'t work while you are in Dex mode. Your key maps which don\'t require the Key Mapper keyboard will still work while you\'re in Dex mode.</string>
     <!-- Showcase -->
     <!-- system action options -->
     <string name="stream_accessibility">Accessibility</string>
