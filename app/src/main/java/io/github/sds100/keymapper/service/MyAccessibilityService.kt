@@ -13,6 +13,7 @@ import android.provider.Settings
 import android.util.Log
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
@@ -312,6 +313,9 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
             null
         }
 
+    override val rootNode: AccessibilityNodeInfo?
+        get() = rootInActiveWindow
+
     override fun getLifecycle() = mLifecycleRegistry
 
     override fun onServiceConnected() {
@@ -589,7 +593,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
             KeyEvent.KEYCODE_BACK -> performGlobalAction(GLOBAL_ACTION_BACK)
             KeyEvent.KEYCODE_HOME -> performGlobalAction(GLOBAL_ACTION_HOME)
             KeyEvent.KEYCODE_APP_SWITCH -> performGlobalAction(GLOBAL_ACTION_RECENTS)
-            KeyEvent.KEYCODE_MENU -> performGlobalAction(GLOBAL_ACTION_RECENTS)
+            KeyEvent.KEYCODE_MENU -> mActionPerformerDelegate.performSystemAction(SystemAction.OPEN_MENU)
         }
     }
 
@@ -611,4 +615,27 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
 
         Log.i(this::class.java.simpleName, "Consumed key event ${event.keyCode} ${event.action}")
     }
+}
+
+/**
+ * @return The node to find. Returns null if the node doesn't match the predicate
+ */
+fun AccessibilityNodeInfo?.findNodeRecursively(
+        nodeInfo: AccessibilityNodeInfo? = this,
+        depth: Int = 0,
+        predicate: (node: AccessibilityNodeInfo) -> Boolean
+): AccessibilityNodeInfo? {
+    if (nodeInfo == null) return null
+
+    if (predicate(nodeInfo)) return nodeInfo
+
+    for (i in 0 until nodeInfo.childCount) {
+        val node = findNodeRecursively(nodeInfo.getChild(i), depth + 1, predicate)
+
+        if (node != null) {
+            return node
+        }
+    }
+
+    return null
 }

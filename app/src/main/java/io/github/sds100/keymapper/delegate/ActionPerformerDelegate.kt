@@ -14,11 +14,13 @@ import android.os.Vibrator
 import android.provider.MediaStore
 import android.provider.Settings
 import android.view.KeyEvent
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.lifecycle.Lifecycle
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.interfaces.IContext
 import io.github.sds100.keymapper.interfaces.IPerformAccessibilityAction
 import io.github.sds100.keymapper.service.MyIMEService
+import io.github.sds100.keymapper.service.findNodeRecursively
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.FlagUtils.FLAG_SHOW_VOLUME_UI
 import io.github.sds100.keymapper.util.FlagUtils.FLAG_VIBRATE
@@ -35,6 +37,10 @@ class ActionPerformerDelegate(
         iPerformAccessibilityAction: IPerformAccessibilityAction,
         lifecycle: Lifecycle
 ) : IContext by iContext, IPerformAccessibilityAction by iPerformAccessibilityAction {
+
+    companion object {
+        private const val OVERFLOW_MENU_CONTENT_DESCRIPTION = "More options"
+    }
 
     private lateinit var mFlashlightController: FlashlightController
 
@@ -100,6 +106,8 @@ class ActionPerformerDelegate(
             }
         }
     }
+
+    fun performSystemAction(id: String) = performSystemAction(Action(ActionType.SYSTEM_ACTION, id), 0)
 
     private fun performSystemAction(action: Action, flags: Int) {
 
@@ -217,8 +225,17 @@ class ActionPerformerDelegate(
                 SystemAction.GO_BACK -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
                 SystemAction.GO_HOME -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
                 SystemAction.OPEN_RECENTS -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
-                //there must be a way to do this without root
-                SystemAction.OPEN_MENU -> RootUtils.executeRootCommand("input keyevent ${KeyEvent.KEYCODE_MENU}")
+                SystemAction.OPEN_MENU -> {
+                    if (RootUtils.checkAppHasRootPermission(this)) {
+                        RootUtils.executeRootCommand("input keyevent ${KeyEvent.KEYCODE_MENU}")
+                    } else {
+                        rootNode.findNodeRecursively {
+                            it.contentDescription == OVERFLOW_MENU_CONTENT_DESCRIPTION
+                        }?.let {
+                            it.performAction(AccessibilityNodeInfoCompat.ACTION_CLICK)
+                        }
+                    }
+                }
 
                 SystemAction.OPEN_ASSISTANT -> {
                     val intent = Intent(Intent.ACTION_VOICE_COMMAND).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

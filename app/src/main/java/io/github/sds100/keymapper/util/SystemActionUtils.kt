@@ -124,7 +124,6 @@ object SystemActionUtils {
                     id = OPEN_MENU,
                     category = CATEGORY_NAVIGATION,
                     iconRes = R.drawable.ic_more_vert_black_24dp,
-                    permission = Constants.PERMISSION_ROOT,
                     descriptionRes = R.string.action_open_menu
             ),
             //NAVIGATION
