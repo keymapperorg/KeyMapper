@@ -3,21 +3,25 @@
 <resources>
     <string name="no_action_chosen">无选择动作</string>
     <string name="triggers_header">触发器</string>
-    <string name="accessibility_service_description">I seem to be hacker attack = =</string>
-    <string name="record_trigger_help">当您点击“记录触发器”时，您有5秒钟按键按钮触发动作。每秒钟后会添加您的触发器。按下“清除”来清除您已经输入的密钥。</string>
-    <string name="selection_count">I seem to be hacker attack = =</string>
-    <string name="enable">I seem to be hacker attack = =</string>
+    <string name="accessibility_service_description">Key Mapper needs to use an accessibility service so it can listen to button/key presses and perform the actions you\'ve chosen.
+    The accessibility service only listens for key events and nothing else. Look at the source code, which is linked to in the About section inside the app, if you are paranoid I\'m spying. :)</string>
+    <string name="record_trigger_help">When you click \"record trigger\", you have 5 seconds to press the keys/buttons which will trigger the action. Your trigger will be added after the 5 seconds. Press \"clear\" to clear the keys you have already typed.</string>
+    <string name="selection_count">%d selected</string>
+    <string name="enable">Enable</string>
     <string name="open">Open</string>
-    <string name="no_key_maps">Yes haven\'t created any keymaps</string>
-    <string name="performing_action">Hacker attack = =</string>
-    <string name="email_subject">/system ??</string>
-    <string name="log_is_empty">Hacker attack = = dell</string>
-    <string name="everything_looks_good">真的嗎@@🙋😂</string>
-    <string name="warning_the_app_will_work">駭客root了 我手機 他好像控制系統</string>
-    <string name="caption_action_type_key">\n\nIMPORTANT!</string>
-    <string name="caption_action_type_keycode">This will only work if you have selected the Key Mapper keyboard. This action is best used with a hardware keyboard. CONTEXTREQUEST</string>
-    <string name="switch_enabled">Translate</string>
-    <string name="disabled">Translation</string>
+    <string name="no_key_maps">You haven\'t created any keymaps!</string>
+    <string name="performing_action">Key Mapper is performing an action…</string>
+    <string name="email_subject">Key Mapper query</string>
+    <string name="log_is_empty">Log is empty!</string>
+    <string name="everything_looks_good">Everything looks good!</string>
+    <string name="warning_the_app_will_work">The app will work but some things might need fixing depending on what you\'re doing.</string>
+    <string name="caption_action_type_key">Click the key on the keyboard which you want to be entered.
+        \n\nIMPORTANT!
+        This will only work if you have selected the Key Mapper keyboard. This action is best used with a hardware keyboard.</string>
+    <string name="caption_action_type_keycode">IMPORTANT!
+        This will only work if you have selected the Key Mapper keyboard. This action is best used with a hardware keyboard.</string>
+    <string name="switch_enabled">Enabled</string>
+    <string name="disabled">Disabled</string>
     <string name="key_map_adapter_flags">Flags</string>
     <string name="description_open_app">Open %s</string>
     <string name="description_key">Press \'%s\' key</string>
@@ -178,6 +182,13 @@
     <string name="showcase_accessibility_service_description">Your keymaps will only work once you have enabled the accessibility service. It also needs to be turned on to create a trigger.</string>
     <string name="showcase_record_trigger_title">The accessibility service is disabled</string>
     <string name="showcase_record_trigger_description">You can only record a trigger if the accessibility service is enabled.</string>
+    <string name="showcase_note_from_the_developer_title">Note from the developer</string>
+    <string name="showcase_note_from_the_developer_message">There is no guarantee that every action will work on your device and every button will be detected. One reason is there are many flavours of Android and OEMs can break features by accident or intentionally. If something doesn\'t work, please notify the developer and restrain from giving the app a bad rating since the issue is often out of the developer\'s control. =)</string>
+    <string name="showcase_disable_battery_optimisation_title">Disable battery optimisation</string>
+    <string name="showcase_disable_battery_optimisation_message">Tap \"Turn off\" to prevent Android from stopping the app while it is in the background. Your OEM\'s skin such as MIUI or Samsung Experience may have other \"battery saving\" features so it is recommended to turn them off for Key Mapper as well.</string>
+    <string name="showcase_disable_battery_optimisation_button">Turn off</string>
+    <string name="showcase_dex_mode_supported_title">Your device seems to support Samsung Dex</string>
+    <string name="showcase_dex_mode_supported_message">Samsung doesn\'t allow apps with a 3rd party keyboard to open while in Dex mode. Therefore, this app won\'t open and the Key Mapper keyboard won\'t work while you are in Dex mode. Your key maps which don\'t require the Key Mapper keyboard will still work while you\'re in Dex mode.</string>
     <!-- Showcase -->
     <!-- system action options -->
     <string name="stream_accessibility">Accessibility</string>
