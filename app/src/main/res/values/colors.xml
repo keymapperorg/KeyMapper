@@ -23,5 +23,8 @@
     <color name="blue">#2196f3</color>
     <color name="blueDark">#0069c0</color>
 
+    <color name="orange">#ef6c00</color>
+    <color name="orangeDark">#b53d00</color>
+
     <color name="ic_launcher_background">#ffffff</color>
 </resources>
