@@ -115,7 +115,7 @@
     <string name="dialog_message_downloading">Downloading…</string>
     <string name="dialog_message_describe_your_issue_in_the_email">Can you please describe the issue you are having in the email, otherwise I can\'t help you. Thanks!</string>
     <string name="dialog_message_long_press_warning">Long pressing only works for physical volume and navigation buttons. If you enable it for other keys, the keys won\'t work when they aren\'t long pressed.</string>
-    <string name="dialog_message_cant_use_virtual_keyboard">The Key Mapper keyboard is designed to only be chosen if you are using a hardware keyboard. Therefore, it doesn\'t have a GUI. You can\'t use your preferred virtual keyboard while the Key Mapper keyboard is chosen.</string>
+    <string name="dialog_message_cant_use_virtual_keyboard">The Key Mapper keyboard is designed to be used with a hardware keyboard, which is why it doesn\'t have a GUI. You can\'t use your preferred virtual keyboard while the Key Mapper keyboard is chosen.</string>
     <!-- Dialog messages -->
 
     <!-- Dialog buttons -->
