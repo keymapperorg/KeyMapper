@@ -435,7 +435,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
 
         } else if (mViewModel.keyMapList.value != null
             && mViewModel.keyMapList.value!!.any {
-                val errorResult = ActionUtils.getErrorCode(this, it.action)
+                val errorResult = ActionUtils.getError(this, it.action)
 
                 errorResult?.errorCode == ERROR_CODE_IME_SERVICE_DISABLED
             }) {

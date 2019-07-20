@@ -14,8 +14,8 @@ import io.github.sds100.keymapper.interfaces.IContext
 import io.github.sds100.keymapper.interfaces.OnItemClickListener
 import io.github.sds100.keymapper.util.SystemActionUtils
 import io.github.sds100.keymapper.util.str
-import kotlinx.android.synthetic.main.action_type_recyclerview.recyclerView
 import kotlinx.android.synthetic.main.action_type_system_action.*
+import kotlinx.android.synthetic.main.recyclerview_fragment.recyclerView
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.selector
@@ -28,12 +28,12 @@ import org.jetbrains.anko.selector
  * A Fragment which displays a list of all actions that can be performed on the system
  */
 class SystemActionFragment : FilterableActionTypeFragment(),
-        OnItemClickListener<SystemActionDef>, IContext {
+    OnItemClickListener<SystemActionDef>, IContext {
 
     private val mSystemActionAdapter by lazy {
         SystemActionAdapter(
-                iContext = this,
-                onItemClickListener = this
+            iContext = this,
+            onItemClickListener = this
         )
     }
 
@@ -44,9 +44,9 @@ class SystemActionFragment : FilterableActionTypeFragment(),
         get() = mSystemActionAdapter
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.action_type_system_action, container, false)
     }
@@ -57,7 +57,12 @@ class SystemActionFragment : FilterableActionTypeFragment(),
         recyclerView.layoutManager = LinearLayoutManager(ctx)
         recyclerView.adapter = mSystemActionAdapter
 
-        layoutUnsupportedActions.isVisible = !SystemActionUtils.areAllActionsSupported(ctx)
+        val areAllActionsSupported = SystemActionUtils.areAllActionsSupported(ctx)
+        textViewUnsupportedActions.isVisible = !areAllActionsSupported
+
+        if (!areAllActionsSupported) {
+
+        }
     }
 
     override fun onItemClick(systemAction: SystemActionDef) {
@@ -68,9 +73,9 @@ class SystemActionFragment : FilterableActionTypeFragment(),
                 val selectedOption = systemAction.options[which]
 
                 val action = Action(
-                        type = ActionType.SYSTEM_ACTION,
-                        data = systemAction.id,
-                        extra = Extra(Option.getExtraIdForOption(systemAction.id), selectedOption)
+                    type = ActionType.SYSTEM_ACTION,
+                    data = systemAction.id,
+                    extra = Extra(Option.getExtraIdForOption(systemAction.id), selectedOption)
                 )
 
                 chooseSelectedAction(action)
