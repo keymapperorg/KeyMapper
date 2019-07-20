@@ -88,11 +88,8 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
             }
         }.toList()
 
-    private val mIsFirstTime by lazy {
-        defaultSharedPreferences.getBoolean(
-                str(R.string.key_pref_first_time), true
-        )
-    }
+    private val mIsFirstTime
+        get() = defaultSharedPreferences.getBoolean(str(R.string.key_pref_first_time), true)
 
     private var mAccessibilityServiceTapTargetView: TapTargetView? = null
 
@@ -227,6 +224,10 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
                     }
                 }.show()
             }
+
+            defaultSharedPreferences.edit {
+                putBoolean(str(R.string.key_pref_first_time), false)
+            }
         } else {
             setFirebaseDataCollection()
         }
@@ -284,8 +285,8 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
     override fun onSaveInstanceState(outState: Bundle) {
         outState.apply {
             putBundle(
-                    SelectionProvider.KEY_SELECTION_PROVIDER_STATE,
-                    mKeymapAdapter.iSelectionProvider.saveInstanceState())
+                SelectionProvider.KEY_SELECTION_PROVIDER_STATE,
+                mKeymapAdapter.iSelectionProvider.saveInstanceState())
         }
 
         super.onSaveInstanceState(outState)
@@ -296,7 +297,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
 
         if (savedInstanceState!!.containsKey(SelectionProvider.KEY_SELECTION_PROVIDER_STATE)) {
             val selectionProviderState =
-                    savedInstanceState.getBundle(SelectionProvider.KEY_SELECTION_PROVIDER_STATE)!!
+                savedInstanceState.getBundle(SelectionProvider.KEY_SELECTION_PROVIDER_STATE)!!
 
             mKeymapAdapter.iSelectionProvider.restoreInstanceState(selectionProviderState)
         }
@@ -306,7 +307,6 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
         super.onDestroy()
 
         unregisterReceiver(mBroadcastReceiver)
-        defaultSharedPreferences.edit().putBoolean(str(R.string.key_pref_first_time), false).apply()
     }
 
     override fun onBackPressed() {
@@ -335,7 +335,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
     private fun updateSelectionCount() {
         appBar.menu.findItem(R.id.selection_count)?.apply {
             title = str(R.string.selection_count,
-                    mKeymapAdapter.iSelectionProvider.selectionCount)
+                mKeymapAdapter.iSelectionProvider.selectionCount)
         }
     }
 
@@ -419,9 +419,9 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
                 showing */
             if (mIsFirstTime && mAccessibilityServiceTapTargetView == null) {
                 val target = TapTarget.forView(
-                        accessibilityServiceStatusLayout.buttonFix,
-                        str(R.string.showcase_accessibility_service_title),
-                        str(R.string.showcase_accessibility_service_description)
+                    accessibilityServiceStatusLayout.buttonFix,
+                    str(R.string.showcase_accessibility_service_title),
+                    str(R.string.showcase_accessibility_service_description)
                 ).apply {
                     tintTarget(false)
                 }
@@ -434,11 +434,11 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
             imeServiceStatusLayout.changeToFixedState()
 
         } else if (mViewModel.keyMapList.value != null
-                && mViewModel.keyMapList.value!!.any {
-                    val errorResult = ActionUtils.getErrorCode(this, it.action)
+            && mViewModel.keyMapList.value!!.any {
+                val errorResult = ActionUtils.getError(this, it.action)
 
-                    errorResult?.errorCode == ERROR_CODE_IME_SERVICE_DISABLED
-                }) {
+                errorResult?.errorCode == ERROR_CODE_IME_SERVICE_DISABLED
+            }) {
 
             imeServiceStatusLayout.changeToErrorState()
         } else {
@@ -470,8 +470,8 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
 
     private fun setFirebaseDataCollection() {
         val isDataCollectionEnabled = defaultSharedPreferences.getBoolean(
-                str(R.string.key_pref_data_collection),
-                bool(R.bool.default_value_data_collection))
+            str(R.string.key_pref_data_collection),
+            bool(R.bool.default_value_data_collection))
 
         FirebaseAnalytics.getInstance(this@HomeActivity).setAnalyticsCollectionEnabled(isDataCollectionEnabled)
     }

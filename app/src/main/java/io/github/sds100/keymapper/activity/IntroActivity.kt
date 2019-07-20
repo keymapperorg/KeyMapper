@@ -39,7 +39,7 @@ class IntroActivity : IntroActivity() {
         val powerManager = (getSystemService(Context.POWER_SERVICE)) as PowerManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                && !powerManager.isIgnoringBatteryOptimizations(Constants.PACKAGE_NAME)) {
+            && !powerManager.isIgnoringBatteryOptimizations(Constants.PACKAGE_NAME)) {
 
             addSlide(SimpleSlide.Builder().apply {
                 title(R.string.showcase_disable_battery_optimisation_title)
@@ -77,8 +77,8 @@ class IntroActivity : IntroActivity() {
         /* when the user returns back from changing battery optimisation settings, go to the next page if they
             have turned it off */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                powerManager.isIgnoringBatteryOptimizations(Constants.PACKAGE_NAME) &&
-                currentSlidePosition == BATTERY_OPTIMISATION_SLIDE_POSITION) {
+            powerManager.isIgnoringBatteryOptimizations(Constants.PACKAGE_NAME) &&
+            currentSlidePosition == BATTERY_OPTIMISATION_SLIDE_POSITION) {
             nextSlide()
         }
     }

@@ -8,6 +8,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayout
 import io.github.sds100.keymapper.CustomViewPager
 import io.github.sds100.keymapper.R
@@ -16,6 +17,8 @@ import io.github.sds100.keymapper.delegate.TabDelegate
 import io.github.sds100.keymapper.fragment.*
 import io.github.sds100.keymapper.fragment.KeyActionTypeFragment.Companion.ACTION_ON_KEY_EVENT
 import io.github.sds100.keymapper.interfaces.ITabDelegate
+import io.github.sds100.keymapper.util.SystemActionUtils
+import io.github.sds100.keymapper.util.str
 import kotlinx.android.synthetic.main.activity_choose_action.*
 
 class ChooseActionActivity : AppCompatActivity(), ITabDelegate, TabLayout.OnTabSelectedListener {
@@ -25,29 +28,39 @@ class ChooseActionActivity : AppCompatActivity(), ITabDelegate, TabLayout.OnTabS
     override val viewPager: CustomViewPager
         get() = findViewById(R.id.viewPager)
 
-    override lateinit var tabFragments: List<ActionTypeFragment>
+    override lateinit var tabFragments: List<Fragment>
 
     override val tabTitles by lazy {
-        listOf(
-                getString(R.string.action_type_title_application),
-                getString(R.string.action_type_title_application_shortcut),
-                getString(R.string.action_type_title_keycode),
-                getString(R.string.action_type_title_key),
-                getString(R.string.action_type_title_text_block),
-                getString(R.string.action_type_title_system_action)
-        )
+        sequence {
+            yieldAll(listOf(
+                str(R.string.action_type_title_application),
+                str(R.string.action_type_title_application_shortcut),
+                str(R.string.action_type_title_keycode),
+                str(R.string.action_type_title_key),
+                str(R.string.action_type_title_text_block),
+                str(R.string.action_type_title_system_action)
+            ))
+
+            if (!mAreAllActionsSupported) {
+                yield(str(R.string.tab_unsupported_actions))
+            }
+        }.toList()
     }
 
     private val mTabDelegate = TabDelegate(
-            supportFragmentManager,
-            iTabDelegate = this,
-            onTabSelectedListener = this,
-            mOffScreenLimit = 6)
+        supportFragmentManager,
+        iTabDelegate = this,
+        onTabSelectedListener = this,
+        mOffScreenLimit = 6)
 
     private lateinit var mSearchViewMenuItem: MenuItem
 
     private val mSearchView
         get() = mSearchViewMenuItem.actionView as SearchView
+
+    private val mAreAllActionsSupported by lazy {
+        SystemActionUtils.areAllActionsSupported(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,14 +74,21 @@ class ChooseActionActivity : AppCompatActivity(), ITabDelegate, TabLayout.OnTabS
         * fragments being shown will not be the ones created again, which is why they have to be retrieved from the
         * fragment manager. */
         if (savedInstanceState == null) {
-            tabFragments = listOf(
+            tabFragments = sequence {
+                yieldAll(listOf(
                     AppActionTypeFragment(),
                     AppShortcutActionTypeFragment(),
                     KeycodeActionTypeFragment(),
                     KeyActionTypeFragment(),
                     TextActionTypeFragment(),
                     SystemActionFragment()
-            )
+                ))
+
+                if (!mAreAllActionsSupported) {
+                    yield(UnsupportedActionsFragment())
+                }
+            }.toList()
+
         } else {
             val oldActionTypeFragments = supportFragmentManager.fragments.filter { it is ActionTypeFragment }
 
@@ -124,7 +144,7 @@ class ChooseActionActivity : AppCompatActivity(), ITabDelegate, TabLayout.OnTabS
         //The first fragment shown needs to be initially attached to the SearchView otherwise it won't be
         if (tabFragments[tabLayout.selectedTabPosition] is FilterableActionTypeFragment) {
             mSearchView.setOnQueryTextListener(tabFragments[tabLayout.selectedTabPosition]
-                    as FilterableActionTypeFragment)
+                as FilterableActionTypeFragment)
         }
 
         return super.onCreateOptionsMenu(menu)
@@ -144,7 +164,7 @@ class ChooseActionActivity : AppCompatActivity(), ITabDelegate, TabLayout.OnTabS
 
     override fun onTabSelected(tab: TabLayout.Tab) {
         val fragment = tabFragments[tab.position]
-        
+
         val isFilterableFragment = fragment is FilterableActionTypeFragment
 
         mSearchViewMenuItem.isVisible = isFilterableFragment

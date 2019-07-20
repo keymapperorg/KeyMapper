@@ -471,7 +471,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
 
             //loop through each keymap and perform their action
             for (keymap in keyMaps) {
-                val errorResult = ActionUtils.getErrorCode(this, keymap.action)
+                val errorResult = ActionUtils.getError(this, keymap.action)
 
                 //if there is no error
                 if (errorResult != null) {

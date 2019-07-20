@@ -35,7 +35,7 @@ object ActionUtils {
      */
     fun getDescription(ctx: Context, action: Action?): ActionDescription {
 
-        val errorResult = getErrorCode(ctx, action)
+        val errorResult = getError(ctx, action)
 
         //If the errorResult is null, errorMessage will be null
         val errorMessage = errorResult?.let { ErrorCodeUtils.getErrorCodeDescription(ctx, it) }
@@ -145,7 +145,7 @@ object ActionUtils {
      * @return if the action can't be performed, it returns an error code.
      * returns null if their if the action can be performed.
      */
-    fun getErrorCode(ctx: Context, action: Action?): ErrorResult? {
+    fun getError(ctx: Context, action: Action?): ErrorResult? {
         //action is null
         action ?: return ErrorResult(ERROR_CODE_ACTION_IS_NULL)
 
