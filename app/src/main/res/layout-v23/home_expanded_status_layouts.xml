@@ -18,11 +18,12 @@
         android:id="@+id/imeServiceStatusLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:errorText="@string/error_critical_ime_service_disabled"
         app:fixedText="@string/error_ime_service_enabled"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/accessibilityServiceStatusLayout"
-        app:warningText="@string/error_ime_service_disabled" />
+        app:warningText="@string/error_ime_service_disabled_status_layout" />
 
     <io.github.sds100.keymapper.view.StatusLayout
         android:id="@+id/dndAccessStatusLayout"

@@ -104,7 +104,7 @@ class SettingsFragment : PreferenceFragmentCompat(),
                 if (newValue as Boolean) {
                     NotificationUtils.showIMEPickerNotification(context!!)
                 } else {
-                    NotificationUtils.hideNotification(context!!, NotificationUtils.ID_IME_PERSISTENT)
+                    NotificationUtils.dismissNotification(context!!, NotificationUtils.ID_IME_PERSISTENT)
                 }
             }
 
@@ -116,7 +116,7 @@ class SettingsFragment : PreferenceFragmentCompat(),
                     //when the user turns this off, resume the remappings because otherwise they can't without
                     //the notification
                     context!!.sendBroadcast(Intent(MyAccessibilityService.ACTION_RESUME_REMAPPINGS))
-                    NotificationUtils.hideNotification(context!!, NotificationUtils.ID_TOGGLE_REMAPPING_PERSISTENT)
+                    NotificationUtils.dismissNotification(context!!, NotificationUtils.ID_TOGGLE_REMAPPING_PERSISTENT)
                 }
             }
 

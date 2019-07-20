@@ -6,19 +6,27 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.inputmethodservice.InputMethodService
 import android.provider.Settings
+import android.view.KeyEvent
+import android.view.inputmethod.ExtractedTextRequest
+import android.view.inputmethod.InputConnection
 import android.view.inputmethod.InputMethodManager
-import io.github.sds100.keymapper.Constants
+import io.github.sds100.keymapper.Constants.PACKAGE_NAME
+import io.github.sds100.keymapper.Result
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.handle
 import io.github.sds100.keymapper.result
+import org.jetbrains.anko.toast
 
 /**
  * Created by sds100 on 28/09/2018.
  */
 class MyIMEService : InputMethodService() {
     companion object {
-        const val ACTION_INPUT_KEYCODE = "io.github.sds100.keymapper.INPUT_KEYCODE"
-        const val ACTION_INPUT_TEXT = "io.github.sds100.keymapper.INPUT_TEXT"
+        const val ACTION_INPUT_KEYCODE = "$PACKAGE_NAME.INPUT_KEYCODE"
+        const val ACTION_INPUT_KEYEVENT = "$PACKAGE_NAME.INPUT_KEYEVENT"
+        const val ACTION_INPUT_TEXT = "$PACKAGE_NAME.INPUT_TEXT"
 
+        const val EXTRA_KEYEVENT = "extra_keyevent"
         const val EXTRA_KEYCODE = "extra_keycode"
         const val EXTRA_TEXT = "extra_text"
 
@@ -27,7 +35,7 @@ class MyIMEService : InputMethodService() {
 
             val enabledMethods = imeService.enabledInputMethodList
 
-            return enabledMethods.any { it.packageName == Constants.PACKAGE_NAME }
+            return enabledMethods.any { it.packageName == PACKAGE_NAME }
         }
 
         /**
@@ -36,7 +44,7 @@ class MyIMEService : InputMethodService() {
         fun getImeId(ctx: Context): String? {
             val imeManager = ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
-            return imeManager.inputMethodList.find { it.packageName == Constants.PACKAGE_NAME }.result().handle(
+            return imeManager.inputMethodList.find { it.packageName == PACKAGE_NAME }.result().handle(
                     onSuccess = { it.id },
                     onFailure = { null }
             )
@@ -52,9 +60,8 @@ class MyIMEService : InputMethodService() {
                     Settings.Secure.DEFAULT_INPUT_METHOD
             )
 
-            return chosenImeId.contains(Constants.PACKAGE_NAME)
+            return chosenImeId.contains(PACKAGE_NAME)
         }
-
     }
 
     private val mBroadcastReceiver = object : BroadcastReceiver() {
@@ -72,6 +79,12 @@ class MyIMEService : InputMethodService() {
 
                         currentInputConnection.commitText(text, 1)
                     }
+
+                    ACTION_INPUT_KEYEVENT -> {
+                        intent.getParcelableExtra<KeyEvent>(EXTRA_KEYEVENT)?.let { keyEvent ->
+                            currentInputConnection.sendKeyEvent(keyEvent)
+                        }
+                    }
                 }
             }
         }
@@ -83,6 +96,7 @@ class MyIMEService : InputMethodService() {
         val intentFilter = IntentFilter()
         intentFilter.addAction(ACTION_INPUT_KEYCODE)
         intentFilter.addAction(ACTION_INPUT_TEXT)
+        intentFilter.addAction(ACTION_INPUT_KEYEVENT)
 
         registerReceiver(mBroadcastReceiver, intentFilter)
     }
@@ -92,4 +106,13 @@ class MyIMEService : InputMethodService() {
 
         unregisterReceiver(mBroadcastReceiver)
     }
+
+    private val InputConnection.charCount: Result<Int>
+        get() {
+            val request = ExtractedTextRequest().apply {
+                token = 0
+            }
+
+            return getExtractedText(request, 0).text.length.result()
+        }
 }

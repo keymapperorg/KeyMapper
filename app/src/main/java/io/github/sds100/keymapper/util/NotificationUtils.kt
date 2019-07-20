@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.os.Build
 import androidx.annotation.DrawableRes
+import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -22,23 +23,27 @@ import org.jetbrains.anko.defaultSharedPreferences
 
 object NotificationUtils {
     const val ID_IME_PERSISTENT = 123
+    const val ID_KEYBOARD_HIDDEN = 747
     const val ID_TOGGLE_REMAPPING_PERSISTENT = 231
-    private const val CHANNEL_ID_PERSISTENT = "channel_persistent"
+
+    const val CHANNEL_ID_WARNINGS = "channel_warnings"
+    const val CHANNEL_ID_PERSISTENT = "channel_persistent"
 
     fun showIMEPickerNotification(ctx: Context) {
         val pendingIntent = IntentUtils.createPendingBroadcastIntent(
                 ctx,
-                KeyMapperBroadcastReceiver::class.java,
                 KeyMapperBroadcastReceiver.ACTION_SHOW_IME_PICKER
         )
 
-        showPersistentNotification(
+        showNotification(
                 ctx,
                 ID_IME_PERSISTENT,
+                CHANNEL_ID_PERSISTENT,
                 pendingIntent,
                 R.drawable.ic_notification_keyboard,
                 R.string.notification_ime_persistent_title,
-                R.string.notification_ime_persistent_text
+                R.string.notification_ime_persistent_text,
+                onGoing = true
         )
     }
 
@@ -47,61 +52,63 @@ object NotificationUtils {
             if (defaultSharedPreferences.getBoolean(
                             str(R.string.key_pref_show_ime_notification),
                             bool(R.bool.default_value_show_ime_notification))) {
-                NotificationUtils.showIMEPickerNotification(this)
+                showIMEPickerNotification(this)
             } else {
-                NotificationUtils.hideNotification(this, NotificationUtils.ID_IME_PERSISTENT)
+                dismissNotification(this, ID_IME_PERSISTENT)
             }
 
             WidgetsManager.invalidateNotification(ctx)
         }
     }
 
-    fun hideNotification(ctx: Context, id: Int) {
+    fun dismissNotification(ctx: Context, id: Int) {
         val manager = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         manager.cancel(id)
     }
 
-    fun showPersistentNotification(ctx: Context,
-                                   id: Int,
-                                   intent: PendingIntent,
-                                   @DrawableRes icon: Int,
-                                   @StringRes title: Int,
-                                   @StringRes text: Int,
-                                   showOnLockscreen: Boolean = false,
-                                   vararg actions: NotificationCompat.Action = arrayOf()) {
+    fun showNotification(ctx: Context,
+                         id: Int,
+                         channel: String,
+                         intent: PendingIntent? = null,
+                         @DrawableRes icon: Int,
+                         @StringRes title: Int,
+                         @StringRes text: Int,
+                         showOnLockscreen: Boolean = false,
+                         onGoing: Boolean = false,
+                         priority: Int = NotificationCompat.PRIORITY_DEFAULT,
+                         vararg actions: NotificationCompat.Action = arrayOf()) {
+
         ctx.apply {
-            //create the channel
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
-                val channel = NotificationChannel(
-                        CHANNEL_ID_PERSISTENT,
-                        str(R.string.notification_channel_persistent),
-                        NotificationManager.IMPORTANCE_MIN
-                )
-
-                val manager = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                manager.createNotificationChannel(channel)
+                createChannels(ctx)
             }
 
-            val builder = NotificationCompat.Builder(ctx, CHANNEL_ID_PERSISTENT)
-                    .setColor(color(R.color.colorAccent))
-                    .setContentTitle(str(title))
-                    .setContentText(str(text))
-                    .setPriority(NotificationCompat.PRIORITY_MIN)
-                    .setOngoing(true)
-                    .setContentIntent(intent) //show IME picker on click
+            val builder = NotificationCompat.Builder(ctx, channel).apply {
+                color = color(R.color.colorAccent)
+                setContentTitle(str(title))
+                setContentText(str(text))
+                setContentIntent(intent)
+                setPriority(priority)
 
-            //can't use vector drawables for KitKat
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                val bitmap = VectorDrawableCompat.create(ctx.resources, icon, ctx.theme)?.toBitmap()
-                builder.setLargeIcon(bitmap)
-                builder.setSmallIcon(R.mipmap.ic_launcher)
-            } else {
-                builder.setSmallIcon(icon)
+
+                if (onGoing) {
+                    setOngoing(true)
+                }
+
+                //can't use vector drawables for KitKat
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                    val bitmap = VectorDrawableCompat.create(ctx.resources, icon, ctx.theme)?.toBitmap()
+                    setLargeIcon(bitmap)
+                    setSmallIcon(R.mipmap.ic_launcher)
+                } else {
+                    setSmallIcon(icon)
+                }
+
+                if (!showOnLockscreen) setVisibility(NotificationCompat.VISIBILITY_SECRET) //hide on lockscreen
+
+                actions.forEach { addAction(it) }
             }
 
-            if (!showOnLockscreen) builder.setVisibility(NotificationCompat.VISIBILITY_SECRET) //hide on lockscreen
-            actions.forEach { builder.addAction(it) }
 
             val notification = builder.build()
 
@@ -111,4 +118,49 @@ object NotificationUtils {
             }
         }
     }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createChannels(ctx: Context) {
+        ctx.apply {
+            val channels = listOf(
+                    NotificationChannel(
+                            CHANNEL_ID_PERSISTENT,
+                            str(R.string.notification_channel_persistent),
+                            NotificationManager.IMPORTANCE_MIN
+                    ),
+
+                    NotificationChannel(
+                            CHANNEL_ID_WARNINGS,
+                            str(R.string.notification_channel_warnings),
+                            NotificationManager.IMPORTANCE_DEFAULT
+                    )
+            )
+
+            val manager = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            manager.createNotificationChannels(channels)
+        }
+    }
 }
+
+fun Context.notification(id: Int,
+                         channel: String,
+                         intent: PendingIntent? = null,
+                         @DrawableRes icon: Int,
+                         @StringRes title: Int,
+                         @StringRes text: Int,
+                         showOnLockscreen: Boolean = false,
+                         onGoing: Boolean = false,
+                         priority: Int = NotificationCompat.PRIORITY_DEFAULT,
+                         vararg actions: NotificationCompat.Action = arrayOf()) = NotificationUtils.showNotification(
+        this,
+        id,
+        channel,
+        intent,
+        icon,
+        title,
+        text,
+        showOnLockscreen,
+        onGoing,
+        priority,
+        *actions
+)

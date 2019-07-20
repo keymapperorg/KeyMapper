@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.util
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.provider.Settings
 import android.util.AttributeSet
@@ -110,8 +111,11 @@ fun IContext.drawable(@DrawableRes resId: Int): Drawable = ctx.drawable(resId)
 
 fun Context.color(@ColorRes resId: Int): Int = ContextCompat.getColor(this, resId)
 fun View.color(@ColorRes resId: Int): Int = context.color(resId)
+fun IContext.color(@ColorRes resId: Int): Int = ContextCompat.getColor(ctx, resId)
 
 fun Context.int(@IntegerRes resId: Int) = resources.getInteger(resId)
+
+fun Context.sendBroadcast(action: String) = sendBroadcast(Intent(action))
 
 /**
  * @return If the setting can't be found, it returns null

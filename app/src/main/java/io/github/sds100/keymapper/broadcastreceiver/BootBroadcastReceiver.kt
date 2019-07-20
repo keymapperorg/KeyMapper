@@ -25,7 +25,7 @@ class BootBroadcastReceiver : BroadcastReceiver() {
                                 bool(R.bool.default_value_show_ime_notification))) {
                     NotificationUtils.showIMEPickerNotification(this)
                 } else {
-                    NotificationUtils.hideNotification(this, NotificationUtils.ID_IME_PERSISTENT)
+                    NotificationUtils.dismissNotification(this, NotificationUtils.ID_IME_PERSISTENT)
                 }
             }
 

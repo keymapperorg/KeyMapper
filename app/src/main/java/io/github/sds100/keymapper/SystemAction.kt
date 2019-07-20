@@ -87,6 +87,12 @@ object SystemAction {
     const val DISABLE_NFC = "nfc_disable"
     const val TOGGLE_NFC = "nfc_toggle"
 
+    //keyboard
+    const val MOVE_CURSOR_TO_END = "move_cursor_to_end"
+    const val TOGGLE_KEYBOARD = "toggle_keyboard"
+    const val SHOW_KEYBOARD = "show_keyboard"
+    const val HIDE_KEYBOARD = "hide_keyboard"
+
     //other
     const val SCREENSHOT = "screenshot"
 
@@ -111,5 +117,6 @@ object SystemAction {
     const val CATEGORY_MEDIA = "media"
     const val CATEGORY_FLASHLIGHT = "flashlight"
     const val CATEGORY_NFC = "nfc"
+    const val CATEGORY_KEYBOARD = "keyboard"
     const val CATEGORY_OTHER = "other"
 }

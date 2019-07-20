@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.text.SpannableStringBuilder
 import android.text.style.RelativeSizeSpan
 import android.view.Menu
@@ -21,6 +20,8 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.getkeepsafe.taptargetview.TapTarget
+import com.getkeepsafe.taptargetview.TapTargetView
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomappbar.BottomAppBar.FAB_ALIGNMENT_MODE_CENTER
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -39,6 +40,7 @@ import io.github.sds100.keymapper.selection.SelectionProvider
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.service.MyIMEService
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_IME_SERVICE_DISABLED
 import io.github.sds100.keymapper.view.BottomSheetMenu
 import io.github.sds100.keymapper.view.StatusLayout
 import io.github.sds100.keymapper.viewmodel.HomeViewModel
@@ -47,6 +49,7 @@ import kotlinx.android.synthetic.main.bottom_sheet_home.view.*
 import kotlinx.android.synthetic.main.content_home.*
 import kotlinx.android.synthetic.main.home_collapsed_status_layouts.*
 import kotlinx.android.synthetic.main.home_expanded_status_layouts.*
+import kotlinx.android.synthetic.main.layout_status.view.*
 import org.jetbrains.anko.*
 
 class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener<KeymapAdapterModel> {
@@ -85,6 +88,11 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
             }
         }.toList()
 
+    private val mIsFirstTime
+        get() = defaultSharedPreferences.getBoolean(str(R.string.key_pref_first_time), true)
+
+    private var mAccessibilityServiceTapTargetView: TapTargetView? = null
+
     private var mActionModeActive = false
         set(value) {
             field = value
@@ -105,6 +113,11 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (mIsFirstTime) {
+            startActivity(Intent(this, IntroActivity::class.java))
+        }
+
         setContentView(R.layout.activity_home)
         setSupportActionBar(appBar)
 
@@ -121,6 +134,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
 
             updateAccessibilityServiceKeymapCache(keyMapList)
             updateActionDescriptions(keyMapList)
+            updateStatusLayouts()
         })
 
         appBar.setNavigationOnClickListener {
@@ -142,6 +156,10 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
             view.buttonDisableAll.setOnClickListener {
                 mViewModel.disableAllKeymaps()
                 mBottomSheetView.dismiss()
+            }
+
+            view.menuItemChangeKeyboard.setOnClickListener {
+                KeyboardUtils.showInputMethodPicker(this)
             }
 
             view.menuItemSendFeedback.setOnClickListener { FeedbackUtils.sendFeedback(this) }
@@ -168,14 +186,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
         })
 
         imeServiceStatusLayout.setOnFixClickListener(View.OnClickListener {
-            try {
-                val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)
-                intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
-
-                startActivity(intent)
-            } catch (e: Exception) {
-                toast(R.string.error_cant_find_ime_settings)
-            }
+            KeyboardUtils.openImeSettings(this)
         })
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -196,32 +207,29 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
         intentFilter.addAction(MyAccessibilityService.ACTION_ON_STOP)
         registerReceiver(mBroadcastReceiver, intentFilter)
 
-        //ask the user whether they want to enable analytics
-        val isFirstTime = defaultSharedPreferences.getBoolean(
-                str(R.string.key_pref_first_time), true
-        )
-
-        defaultSharedPreferences.edit {
-            if (isFirstTime) {
+        if (mIsFirstTime) {
+            defaultSharedPreferences.edit {
+                //ask the user whether they want to enable analytics
                 alert {
                     titleResource = R.string.title_pref_data_collection
                     messageResource = R.string.summary_pref_data_collection
                     positiveButton(R.string.pos_opt_in) {
                         putBoolean(str(R.string.key_pref_data_collection), true).commit()
                         setFirebaseDataCollection()
-                        putBoolean(str(R.string.key_pref_first_time), false).commit()
                     }
 
-                    negativeButton(R.string.neg_opt_out) {
+                    negativeButton(R.string.neg_stay_out) {
                         putBoolean(str(R.string.key_pref_data_collection), false).commit()
                         setFirebaseDataCollection()
-                        putBoolean(str(R.string.key_pref_first_time), false).commit()
                     }
                 }.show()
-
-            } else {
-                setFirebaseDataCollection()
             }
+
+            defaultSharedPreferences.edit {
+                putBoolean(str(R.string.key_pref_first_time), false)
+            }
+        } else {
+            setFirebaseDataCollection()
         }
     }
 
@@ -271,42 +279,14 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
 
     override fun onResume() {
         super.onResume()
-
-        if (MyAccessibilityService.isServiceEnabled(this)) {
-            accessibilityServiceStatusLayout.changeToFixedState()
-        } else {
-            accessibilityServiceStatusLayout.changeToErrorState()
-        }
-
-        if (MyIMEService.isServiceEnabled(this)) {
-            imeServiceStatusLayout.changeToFixedState()
-        } else {
-            imeServiceStatusLayout.changeToWarningState()
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (accessNotificationPolicyGranted) {
-                dndAccessStatusLayout.changeToFixedState()
-            } else {
-                dndAccessStatusLayout.changeToWarningState()
-            }
-        }
-
-        when {
-            mStatusLayouts.all { it.state == StatusLayout.State.FIXED } -> collapsedStatusLayout.changeToFixedState()
-            mStatusLayouts.any { it.state == StatusLayout.State.ERROR } -> {
-                collapsedStatusLayout.changeToErrorState()
-                cardViewStatus.expanded = true
-            }
-            mStatusLayouts.any { it.state == StatusLayout.State.WARN } -> collapsedStatusLayout.changeToWarningState()
-        }
+        updateStatusLayouts()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.apply {
             putBundle(
-                    SelectionProvider.KEY_SELECTION_PROVIDER_STATE,
-                    mKeymapAdapter.iSelectionProvider.saveInstanceState())
+                SelectionProvider.KEY_SELECTION_PROVIDER_STATE,
+                mKeymapAdapter.iSelectionProvider.saveInstanceState())
         }
 
         super.onSaveInstanceState(outState)
@@ -317,7 +297,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
 
         if (savedInstanceState!!.containsKey(SelectionProvider.KEY_SELECTION_PROVIDER_STATE)) {
             val selectionProviderState =
-                    savedInstanceState.getBundle(SelectionProvider.KEY_SELECTION_PROVIDER_STATE)!!
+                savedInstanceState.getBundle(SelectionProvider.KEY_SELECTION_PROVIDER_STATE)!!
 
             mKeymapAdapter.iSelectionProvider.restoreInstanceState(selectionProviderState)
         }
@@ -355,7 +335,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
     private fun updateSelectionCount() {
         appBar.menu.findItem(R.id.selection_count)?.apply {
             title = str(R.string.selection_count,
-                    mKeymapAdapter.iSelectionProvider.selectionCount)
+                mKeymapAdapter.iSelectionProvider.selectionCount)
         }
     }
 
@@ -425,6 +405,64 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
         }
     }
 
+    private fun updateStatusLayouts() {
+        if (MyAccessibilityService.isServiceEnabled(this)) {
+            accessibilityServiceStatusLayout.changeToFixedState()
+
+            //dismiss the accessibility service showcase if it is showing
+            mAccessibilityServiceTapTargetView?.dismiss(false)
+
+        } else {
+            accessibilityServiceStatusLayout.changeToErrorState()
+
+            /*only showcase the accessibility service if it is the first time the app is opened and it isn't already
+                showing */
+            if (mIsFirstTime && mAccessibilityServiceTapTargetView == null) {
+                val target = TapTarget.forView(
+                    accessibilityServiceStatusLayout.buttonFix,
+                    str(R.string.showcase_accessibility_service_title),
+                    str(R.string.showcase_accessibility_service_description)
+                ).apply {
+                    tintTarget(false)
+                }
+
+                mAccessibilityServiceTapTargetView = TapTargetView.showFor(this, target)
+            }
+        }
+
+        if (MyIMEService.isServiceEnabled(this)) {
+            imeServiceStatusLayout.changeToFixedState()
+
+        } else if (mViewModel.keyMapList.value != null
+            && mViewModel.keyMapList.value!!.any {
+                val errorResult = ActionUtils.getError(this, it.action)
+
+                errorResult?.errorCode == ERROR_CODE_IME_SERVICE_DISABLED
+            }) {
+
+            imeServiceStatusLayout.changeToErrorState()
+        } else {
+            imeServiceStatusLayout.changeToWarningState()
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (accessNotificationPolicyGranted) {
+                dndAccessStatusLayout.changeToFixedState()
+            } else {
+                dndAccessStatusLayout.changeToWarningState()
+            }
+        }
+
+        when {
+            mStatusLayouts.all { it.state == StatusLayout.State.FIXED } -> collapsedStatusLayout.changeToFixedState()
+            mStatusLayouts.any { it.state == StatusLayout.State.ERROR } -> {
+                collapsedStatusLayout.changeToErrorState()
+                cardViewStatus.expanded = true
+            }
+            mStatusLayouts.any { it.state == StatusLayout.State.WARN } -> collapsedStatusLayout.changeToWarningState()
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setStatusBarColor(@ColorRes colorId: Int) {
         window.statusBarColor = color(colorId)
@@ -432,8 +470,8 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
 
     private fun setFirebaseDataCollection() {
         val isDataCollectionEnabled = defaultSharedPreferences.getBoolean(
-                str(R.string.key_pref_data_collection),
-                bool(R.bool.default_value_data_collection))
+            str(R.string.key_pref_data_collection),
+            bool(R.bool.default_value_data_collection))
 
         FirebaseAnalytics.getInstance(this@HomeActivity).setAnalyticsCollectionEnabled(isDataCollectionEnabled)
     }
