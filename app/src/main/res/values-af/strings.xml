@@ -15,6 +15,9 @@
     <string name="log_is_empty">Log is empty!</string>
     <string name="everything_looks_good">Everything looks good!</string>
     <string name="warning_the_app_will_work">The app will work but some things might need fixing depending on what you\'re doing.</string>
+    <string name="your_device_doesnt_support_some_actions">Your device doesn\'t support some actions.</string>
+    <string name="tab_unsupported_actions">Unsupported Actions</string>
+    <string name="requires_root">REQUIRES ROOT</string>
     <string name="caption_action_type_key">Click the key on the keyboard which you want to be entered.
         \n\nIMPORTANT!
         This will only work if you have selected the Key Mapper keyboard. This action is best used with a hardware keyboard.</string>
@@ -67,6 +70,7 @@
     <string name="button_recording_trigger">Recording Trigger…</string>
     <string name="button_recording_trigger_countdown">%d…</string>
     <string name="button_flags">More</string>
+    <string name="buttonView">View</string>
     <!-- Button titles -->
     <!-- Content descriptions -->
     <string name="content_description_record_trigger_key_combination">Record trigger key combination</string>
@@ -88,6 +92,7 @@
     <string name="dialog_message_downloading">Downloading…</string>
     <string name="dialog_message_describe_your_issue_in_the_email">Can you please describe the issue you are having in the email, otherwise I can\'t help you. Thanks!</string>
     <string name="dialog_message_long_press_warning">Long pressing only works for physical volume and navigation buttons. If you enable it for other keys, the keys won\'t work when they aren\'t long pressed.</string>
+    <string name="dialog_message_cant_use_virtual_keyboard">The Key Mapper keyboard is designed to be used with a hardware keyboard, which is why it doesn\'t have a GUI. You can\'t use your preferred virtual keyboard while the Key Mapper keyboard is chosen.</string>
     <!-- Dialog messages -->
     <!-- Dialog buttons -->
     <string name="pos_yes">Yes</string>
