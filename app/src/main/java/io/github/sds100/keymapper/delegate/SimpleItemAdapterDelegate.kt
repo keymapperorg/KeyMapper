@@ -52,6 +52,10 @@ class SimpleItemAdapterDelegate<T>(
                 textViewSecondary.text = getSecondaryItemText(item)
             }
 
+            if (getSecondaryItemTextColor(position) != null){
+                textViewSecondary.setTextColor(getSecondaryItemTextColor(position)!!)
+            }
+
             textViewSecondary.isVisible = getSecondaryItemText(item) != null
         }
     }

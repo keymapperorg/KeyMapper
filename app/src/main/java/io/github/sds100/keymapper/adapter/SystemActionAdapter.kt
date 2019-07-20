@@ -3,9 +3,7 @@ package io.github.sds100.keymapper.adapter
 import android.graphics.drawable.Drawable
 import android.widget.Filterable
 import com.hannesdorfmann.adapterdelegates4.AbsDelegationAdapter
-import io.github.sds100.keymapper.AlphabeticalFilter
-import io.github.sds100.keymapper.SectionItem
-import io.github.sds100.keymapper.SystemActionDef
+import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.delegate.SectionedAdapterDelegate
 import io.github.sds100.keymapper.delegate.SectionedAdapterDelegate.Companion.VIEW_TYPE_SECTION
 import io.github.sds100.keymapper.delegate.SimpleItemAdapterDelegate
@@ -13,6 +11,7 @@ import io.github.sds100.keymapper.interfaces.IContext
 import io.github.sds100.keymapper.interfaces.ISimpleItemAdapter
 import io.github.sds100.keymapper.interfaces.OnItemClickListener
 import io.github.sds100.keymapper.util.SystemActionUtils
+import io.github.sds100.keymapper.util.color
 import io.github.sds100.keymapper.util.drawable
 import io.github.sds100.keymapper.util.str
 
@@ -21,12 +20,12 @@ import io.github.sds100.keymapper.util.str
  */
 
 class SystemActionAdapter(
-        iContext: IContext,
-        onItemClickListener: OnItemClickListener<SystemActionDef>
+    iContext: IContext,
+    onItemClickListener: OnItemClickListener<SystemActionDef>
 ) : AbsDelegationAdapter<List<Any>>(),
-        ISimpleItemAdapter<Any>,
-        Filterable,
-        IContext by iContext {
+    ISimpleItemAdapter<Any>,
+    Filterable,
+    IContext by iContext {
 
     @Suppress("UNCHECKED_CAST")
     override val onItemClickListener = onItemClickListener as OnItemClickListener<Any>
@@ -34,15 +33,15 @@ class SystemActionAdapter(
     private val mSystemActionDefinitions = SystemActionUtils.getSupportedSystemActions(ctx)
 
     private val mAlphabeticalFilter = AlphabeticalFilter(
-            mOriginalList = mSystemActionDefinitions,
+        mOriginalList = mSystemActionDefinitions,
 
-            onFilter = { filteredList ->
-                filtering = true
-                setItems(filteredList)
-                notifyDataSetChanged()
-            },
+        onFilter = { filteredList ->
+            filtering = true
+            setItems(filteredList)
+            notifyDataSetChanged()
+        },
 
-            getItemText = { getItemText(it) }
+        getItemText = { getItemText(it) }
     )
 
     private var filtering = false
@@ -52,8 +51,8 @@ class SystemActionAdapter(
         val simpleItemDelegate = SimpleItemAdapterDelegate(this)
 
         delegatesManager
-                .addDelegate(VIEW_TYPE_SECTION, sectionedDelegate)
-                .addDelegate(simpleItemDelegate)
+            .addDelegate(VIEW_TYPE_SECTION, sectionedDelegate)
+            .addDelegate(simpleItemDelegate)
 
         setItems(createSystemActionDefListWithCategories())
     }
@@ -76,6 +75,16 @@ class SystemActionAdapter(
 
     override fun getItemCount() = items.size
 
+    override fun getSecondaryItemText(item: Any): String? {
+        if ((item as SystemActionDef).permissions.contains(Constants.PERMISSION_ROOT)) {
+            return str(R.string.requires_root)
+        }
+
+        return null
+    }
+
+    override fun getSecondaryItemTextColor(position: Int) = color(R.color.error)
+
     override fun getItemDrawable(item: Any): Drawable? {
         if ((item as SystemActionDef).iconRes == null) return null
 
@@ -87,8 +96,8 @@ class SystemActionAdapter(
             mSystemActionDefinitions.forEachIndexed { i, systemAction ->
                 fun getCategoryLabel(): String {
                     val resId = SystemActionUtils.CATEGORY_LABEL_MAP[systemAction.category]
-                            ?: throw Exception("That system action category id isn't mapped to a label. " +
-                                    "id: ${systemAction.category}")
+                        ?: throw Exception("That system action category id isn't mapped to a label. " +
+                            "id: ${systemAction.category}")
 
                     return str(resId)
                 }
