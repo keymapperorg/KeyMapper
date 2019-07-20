@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.annotation.StringRes
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.SystemAction.CATEGORY_BLUETOOTH
 import io.github.sds100.keymapper.SystemAction.CATEGORY_BRIGHTNESS
@@ -568,22 +567,22 @@ object SystemActionUtils {
     /**
      * Get all the system actions which are supported by the system.
      */
-    fun getSystemActionDefinitions(ctx: Context): List<SystemActionDef> {
-        return sequence {
-            SYSTEM_ACTION_DEFINITIONS.forEach {
-                /* If the device's Android version is less than the minimum version supported by the action,
-                   don't add it to the list.*/
-                if (Build.VERSION.SDK_INT < it.minApi) return@forEach
+    fun getSupportedSystemActions(ctx: Context) = SYSTEM_ACTION_DEFINITIONS.filter { it.isSupported(ctx) }
 
-                for (feature in it.features) {
-                    if (!ctx.packageManager.hasSystemFeature(feature)) {
-                        return@forEach
-                    }
-                }
+    fun getUnsupportedSystemActions(ctx: Context) = SYSTEM_ACTION_DEFINITIONS.filter { !it.isSupported(ctx) }
 
-                yield(it)
+    fun areAllActionsSupported(ctx: Context) = getUnsupportedSystemActions(ctx).isEmpty()
+
+    fun SystemActionDef.isSupported(ctx: Context): Boolean {
+        if (Build.VERSION.SDK_INT < minApi) return false
+
+        for (feature in features) {
+            if (!ctx.packageManager.hasSystemFeature(feature)) {
+                return false
             }
-        }.toList()
+        }
+
+        return true
     }
 
     fun getSystemActionDef(id: String): Result<SystemActionDef> {

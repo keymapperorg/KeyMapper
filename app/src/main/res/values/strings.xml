@@ -18,6 +18,7 @@
     <string name="log_is_empty">Log is empty!</string>
     <string name="everything_looks_good">Everything looks good!</string>
     <string name="warning_the_app_will_work">The app will work but some things might need fixing depending on what you\'re doing.</string>
+    <string name="your_device_doesnt_support_some_actions">Your device doesn\'t support some actions.</string>
 
     <string name="caption_action_type_key">Click the key on the keyboard which you want to be entered.
         \n\nIMPORTANT!
@@ -91,6 +92,7 @@
     <string name="button_recording_trigger">Recording Trigger…</string>
     <string name="button_recording_trigger_countdown">%d…</string>
     <string name="button_flags">More</string>
+    <string name="buttonView">View</string>
     <!-- Button titles -->
 
     <!-- Content descriptions -->

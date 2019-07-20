@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Filterable
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.adapter.SystemActionAdapter
@@ -13,7 +14,8 @@ import io.github.sds100.keymapper.interfaces.IContext
 import io.github.sds100.keymapper.interfaces.OnItemClickListener
 import io.github.sds100.keymapper.util.SystemActionUtils
 import io.github.sds100.keymapper.util.str
-import kotlinx.android.synthetic.main.action_type_recyclerview.*
+import kotlinx.android.synthetic.main.action_type_recyclerview.recyclerView
+import kotlinx.android.synthetic.main.action_type_system_action.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.selector
@@ -46,7 +48,7 @@ class SystemActionFragment : FilterableActionTypeFragment(),
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.action_type_recyclerview, container, false)
+        return inflater.inflate(R.layout.action_type_system_action, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -54,6 +56,8 @@ class SystemActionFragment : FilterableActionTypeFragment(),
 
         recyclerView.layoutManager = LinearLayoutManager(ctx)
         recyclerView.adapter = mSystemActionAdapter
+
+        layoutUnsupportedActions.isVisible = !SystemActionUtils.areAllActionsSupported(ctx)
     }
 
     override fun onItemClick(systemAction: SystemActionDef) {
