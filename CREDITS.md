@@ -7,6 +7,7 @@ Many thanks to...
  - The [Material Design Icons] community for various icons that are not provided by Google.
  - Mukesh Solanki (@[mukeshsolanki]) for his [MarkdownView] library.
  - Daniel Cachapa (@cachapa) for this [ExpandableLayout](https://github.com/cachapa/ExpandableLayout) library.
+ - Heinrich Reimer (@[heinrichreimer]) for his [Material Intro](https://github.com/heinrichreimer/material-intro) library.
 
 [salomonbrys]: https://github.com/salomonbrys
 [Kotson]: https://github.com/salomonbrys/Kotson
@@ -19,3 +20,5 @@ Many thanks to...
 
 [mukeshsolanki]: https://github.com/mukeshsolanki
 [MarkdownView]: https://github.com/mukeshsolanki/MarkdownView-Android
+
+[heinrichreimer]: https://github.com/heinrichreimer
