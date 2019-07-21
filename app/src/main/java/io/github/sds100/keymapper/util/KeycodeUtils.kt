@@ -1,8 +1,11 @@
 package io.github.sds100.keymapper.util
 
+import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.view.KeyEvent
 import androidx.annotation.RequiresApi
+import io.github.sds100.keymapper.service.MyIMEService
 
 /**
  * Created by sds100 on 17/07/2018.
@@ -13,6 +16,37 @@ val KeyEvent.isVolumeKey: Boolean
             || keyCode == KeyEvent.KEYCODE_VOLUME_UP
             || keyCode == KeyEvent.KEYCODE_VOLUME_MUTE
             || keyCode == KeyEvent.KEYCODE_MUTE
+
+
+fun Context.inputKeyEvent(action: Int = KeyEvent.ACTION_DOWN, keyCode: Int, metaState: Int? = null) {
+    val time = System.currentTimeMillis()
+
+    val event = if (metaState == null
+    ) {
+        KeyEvent(action, keyCode)
+    } else {
+        KeyEvent(
+                time,
+                time,
+                action,
+                keyCode,
+                0,
+                metaState
+        )
+    }
+
+    val intent = Intent(MyIMEService.ACTION_INPUT_KEYEVENT)
+    intent.putExtra(MyIMEService.EXTRA_KEYEVENT, event)
+    sendBroadcast(intent)
+}
+
+fun Context.inputKeyCode(keyCode: Int) {
+    val intent = Intent(MyIMEService.ACTION_INPUT_KEYCODE)
+    //put the keycode in the intent
+    intent.putExtra(MyIMEService.EXTRA_KEYCODE, keyCode)
+
+    sendBroadcast(intent)
+}
 
 object KeycodeUtils {
     /**
@@ -80,7 +114,10 @@ object KeycodeUtils {
             KeyEvent.KEYCODE_BUTTON_Z to "Button Z",
 
             KeyEvent.KEYCODE_BUTTON_THUMBL to "Thumb Left",
-            KeyEvent.KEYCODE_BUTTON_THUMBR to "Thumb Right"
+            KeyEvent.KEYCODE_BUTTON_THUMBR to "Thumb Right",
+
+            KeyEvent.KEYCODE_BUTTON_START to "Start",
+            KeyEvent.KEYCODE_BUTTON_SELECT to "Select"
 
     ).apply {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {

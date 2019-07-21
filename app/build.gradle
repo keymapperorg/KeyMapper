@@ -5,15 +5,20 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'io.fabric'
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion = '28.0.3'
+    compileSdkVersion 29
+    buildToolsVersion = '29.0.1'
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
     defaultConfig {
         applicationId "io.github.sds100.keymapper"
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 15
-        versionName "1.1.0-beta.7"
+        versionCode 16
+        versionName "1.1.0-beta.8"
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -26,6 +31,42 @@ android {
             applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
         }
+        ci {
+            debuggable = true
+
+            def versionPropsFile = file('version.properties')
+            int versionBuild = 0
+
+            //increment the versionBuild
+            task("autoIncrementBuildNumber") {
+                if (versionPropsFile.canRead()) {
+                    Properties versionProps = new Properties()
+                    versionProps.load(new FileInputStream(versionPropsFile))
+
+                    //if the version name has changed, reset the build version counter
+                    if (versionProps['VERSION_NAME'].toString() != android.defaultConfig.versionName) {
+                        versionBuild = 0
+                    } else {
+                        versionBuild = versionProps['CI_BUILD'].toInteger()
+                    }
+
+                    versionBuild = versionProps['CI_BUILD'].toInteger() + 1
+                    versionProps['CI_BUILD'] = versionBuild.toString()
+                    versionProps['VERSION_NAME'] = android.defaultConfig.versionName
+                    versionProps.store(versionPropsFile.newWriter(), null)
+                } else {
+                    throw new FileNotFoundException("Could not read version.properties!")
+                }
+            }
+
+            applicationIdSuffix ".ci"
+            versionNameSuffix "." + versionBuild + "-ci"
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    dataBinding {
+        enabled = true
     }
 }
 
@@ -36,23 +77,25 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "org.jetbrains.anko:anko-commons:$anko_version"
 
-    implementation 'com.google.android.material:material:1.1.0-alpha04'
+    implementation 'com.google.android.material:material:1.1.0-alpha08'
     implementation 'com.github.salomonbrys.kotson:kotson:2.5.0'
     implementation 'com.hannesdorfmann:adapterdelegates4:4.0.0'
     implementation 'com.github.mukeshsolanki:MarkdownView-Android:1.0.8'
     implementation 'net.cachapa.expandablelayout:expandablelayout:2.9.2'
+    implementation 'com.getkeepsafe.taptargetview:taptargetview:1.12.0'
+    implementation 'com.heinrichreimersoftware:material-intro:master-SNAPSHOT'
 
-    implementation 'androidx.appcompat:appcompat:1.1.0-alpha04'
+    implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
     implementation 'androidx.core:core-ktx:1.0.2'
     implementation 'androidx.fragment:fragment-ktx:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha05'
-    implementation 'androidx.preference:preference:1.1.0-alpha05'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0-beta01'
+    implementation 'androidx.preference:preference:1.1.0-rc01'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     implementation "androidx.room:room-runtime:$room_version"
 
-    implementation 'com.google.firebase:firebase-core:16.0.9'
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.0'
+    implementation 'com.google.firebase:firebase-core:17.0.1'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
 
     kapt "android.arch.lifecycle:compiler:1.1.1"
     kapt "androidx.room:room-compiler:$room_version"

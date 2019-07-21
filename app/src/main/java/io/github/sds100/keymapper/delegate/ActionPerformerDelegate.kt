@@ -14,11 +14,13 @@ import android.os.Vibrator
 import android.provider.MediaStore
 import android.provider.Settings
 import android.view.KeyEvent
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.lifecycle.Lifecycle
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.interfaces.IContext
-import io.github.sds100.keymapper.interfaces.IPerformGlobalAction
+import io.github.sds100.keymapper.interfaces.IPerformAccessibilityAction
 import io.github.sds100.keymapper.service.MyIMEService
+import io.github.sds100.keymapper.service.findNodeRecursively
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.FlagUtils.FLAG_SHOW_VOLUME_UI
 import io.github.sds100.keymapper.util.FlagUtils.FLAG_VIBRATE
@@ -32,9 +34,13 @@ import org.jetbrains.anko.toast
 
 class ActionPerformerDelegate(
         iContext: IContext,
-        iPerformGlobalAction: IPerformGlobalAction,
+        iPerformAccessibilityAction: IPerformAccessibilityAction,
         lifecycle: Lifecycle
-) : IContext by iContext, IPerformGlobalAction by iPerformGlobalAction {
+) : IContext by iContext, IPerformAccessibilityAction by iPerformAccessibilityAction {
+
+    companion object {
+        private const val OVERFLOW_MENU_CONTENT_DESCRIPTION = "More options"
+    }
 
     private lateinit var mFlashlightController: FlashlightController
 
@@ -94,16 +100,14 @@ class ActionPerformerDelegate(
                 else -> {
                     //for actions which require the IME service
                     if (action.type == ActionType.KEYCODE || action.type == ActionType.KEY) {
-                        val intent = Intent(MyIMEService.ACTION_INPUT_KEYCODE)
-                        //put the keycode in the intent
-                        intent.putExtra(MyIMEService.EXTRA_KEYCODE, action.data.toInt())
-
-                        sendBroadcast(intent)
+                        inputKeyCode(action.data.toInt())
                     }
                 }
             }
         }
     }
+
+    fun performSystemAction(id: String) = performSystemAction(Action(ActionType.SYSTEM_ACTION, id), 0)
 
     private fun performSystemAction(action: Action, flags: Int) {
 
@@ -221,8 +225,17 @@ class ActionPerformerDelegate(
                 SystemAction.GO_BACK -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
                 SystemAction.GO_HOME -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
                 SystemAction.OPEN_RECENTS -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
-                //there must be a way to do this without root
-                SystemAction.OPEN_MENU -> RootUtils.executeRootCommand("input keyevent ${KeyEvent.KEYCODE_MENU}")
+                SystemAction.OPEN_MENU -> {
+                    if (RootUtils.checkAppHasRootPermission(this)) {
+                        RootUtils.executeRootCommand("input keyevent ${KeyEvent.KEYCODE_MENU}")
+                    } else {
+                        rootNode.findNodeRecursively {
+                            it.contentDescription == OVERFLOW_MENU_CONTENT_DESCRIPTION
+                        }?.let {
+                            it.performAction(AccessibilityNodeInfoCompat.ACTION_CLICK)
+                        }
+                    }
+                }
 
                 SystemAction.OPEN_ASSISTANT -> {
                     val intent = Intent(Intent.ACTION_VOICE_COMMAND).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -240,6 +253,11 @@ class ActionPerformerDelegate(
                     val dpm = getSystemService(DEVICE_POLICY_SERVICE) as DevicePolicyManager
                     dpm.lockNow()
                 }
+
+                SystemAction.MOVE_CURSOR_TO_END -> inputKeyEvent(
+                        keyCode = KeyEvent.KEYCODE_MOVE_END,
+                        metaState = KeyEvent.META_CTRL_ON
+                )
 
                 else -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -270,6 +288,14 @@ class ActionPerformerDelegate(
                             SystemAction.TOGGLE_FLASHLIGHT -> mFlashlightController.toggleFlashlight(lensFacing)
                             SystemAction.ENABLE_FLASHLIGHT -> mFlashlightController.setFlashlightMode(true, lensFacing)
                             SystemAction.DISABLE_FLASHLIGHT -> mFlashlightController.setFlashlightMode(false, lensFacing)
+                        }
+                    }
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        when (id) {
+                            SystemAction.TOGGLE_KEYBOARD -> keyboardController?.toggle(this)
+                            SystemAction.SHOW_KEYBOARD -> keyboardController?.show(this)
+                            SystemAction.HIDE_KEYBOARD -> keyboardController?.hide(this)
                         }
                     }
 

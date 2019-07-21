@@ -8,11 +8,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.github.sds100.keymapper.Action
 import io.github.sds100.keymapper.ActionType
-import io.github.sds100.keymapper.adapter.AppListAdapter
-import io.github.sds100.keymapper.interfaces.OnItemClickListener
-import io.github.sds100.keymapper.asynctask.LoadAppListAsyncTask
 import io.github.sds100.keymapper.R
-import kotlinx.android.synthetic.main.action_type_recyclerview.*
+import io.github.sds100.keymapper.adapter.AppListAdapter
+import io.github.sds100.keymapper.asynctask.LoadAppListAsyncTask
+import io.github.sds100.keymapper.interfaces.OnItemClickListener
+import kotlinx.android.synthetic.main.recyclerview_fragment.*
 
 /**
  * Created by sds100 on 29/07/2018.
@@ -34,7 +34,7 @@ class AppActionTypeFragment : FilterableActionTypeFragment(), OnItemClickListene
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.action_type_recyclerview, container, false)
+        return inflater.inflate(R.layout.recyclerview_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

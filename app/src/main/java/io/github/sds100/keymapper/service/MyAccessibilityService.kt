@@ -6,12 +6,14 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.media.AudioManager
+import android.os.Build
 import android.os.Handler
 import android.os.SystemClock
 import android.provider.Settings
 import android.util.Log
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
@@ -29,7 +31,7 @@ import io.github.sds100.keymapper.activity.ConfigKeymapActivity
 import io.github.sds100.keymapper.data.AppDatabase
 import io.github.sds100.keymapper.delegate.ActionPerformerDelegate
 import io.github.sds100.keymapper.interfaces.IContext
-import io.github.sds100.keymapper.interfaces.IPerformGlobalAction
+import io.github.sds100.keymapper.interfaces.IPerformAccessibilityAction
 import io.github.sds100.keymapper.util.*
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.toast
@@ -38,17 +40,19 @@ import org.jetbrains.anko.toast
  * Created by sds100 on 16/07/2018.
  */
 
-class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalAction, LifecycleOwner {
+class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessibilityAction, LifecycleOwner {
 
     companion object {
         const val EXTRA_KEYMAP_CACHE_JSON = "extra_keymap_cache_json"
         const val EXTRA_ACTION = "action"
+        const val EXTRA_TIME_LEFT = "time"
 
         const val ACTION_RECORD_TRIGGER = "$PACKAGE_NAME.RECORD_TRIGGER"
         const val ACTION_CLEAR_PRESSED_KEYS = "$PACKAGE_NAME.CLEAR_PRESSED_KEYS"
         const val ACTION_UPDATE_KEYMAP_CACHE = "$PACKAGE_NAME.UPDATE_KEYMAP_CACHE"
         const val ACTION_TEST_ACTION = "$PACKAGE_NAME.TEST_ACTION"
         const val ACTION_STOP_RECORDING_TRIGGER = "$PACKAGE_NAME.STOP_RECORDING_TRIGGER"
+        const val ACTION_RECORD_TRIGGER_TIMER_INCREMENTED = "$PACKAGE_NAME.TIMER_INCREMENTED"
         const val ACTION_PAUSE_REMAPPINGS = "$PACKAGE_NAME.PAUSE_REMAPPINGS"
         const val ACTION_RESUME_REMAPPINGS = "$PACKAGE_NAME.RESUME_REMAPPINGS"
         const val ACTION_UPDATE_NOTIFICATION = "$PACKAGE_NAME.UPDATE_NOTIFICATION"
@@ -56,11 +60,14 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         const val ACTION_STOP = "$PACKAGE_NAME.STOP_ACCESSIBILITY_SERVICE"
         const val ACTION_ON_START = "$PACKAGE_NAME.ON_START_ACCESSIBILITY_SERVICE"
         const val ACTION_ON_STOP = "$PACKAGE_NAME.ON_STOP_ACCESSIBILITY_SERVICE"
+        const val ACTION_SHOW_KEYBOARD = "$PACKAGE_NAME.SHOW_KEYBOARD"
 
         /**
          * How long should the accessibility service record a trigger in ms.
          */
         private const val RECORD_TRIGGER_TIMER_LENGTH = 5000L
+
+        private const val RECORD_TRIGGER_TIMER_INCREMENT = 1000L
 
         /**
          * The time in ms between repeating an action while holding down.
@@ -144,11 +151,33 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
     private var mPaused = false
 
-    private val mRecordingTimerRunnable = Runnable {
-        mRecordingTrigger = false
-        mPressedKeys.clear()
+    private val mRecordTriggerRunnable = object : Runnable {
+        var timeLeft = RECORD_TRIGGER_TIMER_LENGTH
 
-        sendBroadcast(Intent(ACTION_STOP_RECORDING_TRIGGER))
+        override fun run() {
+            if (timeLeft == 0L) {
+                sendBroadcast(ACTION_STOP_RECORDING_TRIGGER)
+                Logger.write(ctx, "Stopped Recording", "Stopped recording a trigger")
+                mHandler.removeCallbacks(this)
+
+                mRecordingTrigger = false
+                mPressedKeys.clear()
+
+                //reset the timer for the next time it is run
+                timeLeft = RECORD_TRIGGER_TIMER_LENGTH
+                return
+            }
+
+            Intent(ACTION_RECORD_TRIGGER_TIMER_INCREMENTED).apply {
+                putExtra(EXTRA_TIME_LEFT, timeLeft)
+
+                sendBroadcast(this)
+            }
+
+            timeLeft -= RECORD_TRIGGER_TIMER_INCREMENT
+
+            mHandler.postDelayed(this, RECORD_TRIGGER_TIMER_INCREMENT)
+        }
     }
 
     /**
@@ -160,11 +189,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                 ACTION_RECORD_TRIGGER -> {
                     mRecordingTrigger = true
 
-                    //stop recording a trigger after a set amount of time.
-                    mHandler.postDelayed(
-                            mRecordingTimerRunnable,
-                            RECORD_TRIGGER_TIMER_LENGTH
-                    )
+                    mHandler.post(mRecordTriggerRunnable)
+                    Logger.write(ctx, "Recording", "Started recording a trigger")
                 }
 
                 ACTION_CLEAR_PRESSED_KEYS -> {
@@ -216,6 +242,11 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
                 Intent.ACTION_SCREEN_ON -> {
                     clearLists()
                 }
+
+                ACTION_SHOW_KEYBOARD ->
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        softKeyboardController.show(ctx)
+                    }
             }
         }
     }
@@ -250,8 +281,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
     released before the long press delay.
 
        - When a trigger is detected, a Runnable is created, which when executed, will perform the action.
-       - The runnable will be queued in the Handler.
-       - After the long press delay the runnable will be executed if it is still queued in the Handler.
+       - The mRecordTriggerRunnable will be queued in the Handler.
+       - After the long press delay the mRecordTriggerRunnable will be executed if it is still queued in the Handler.
        - If the user releases one of the keys which is assigned to the Runnable, the Runnable
        will be removed from the Runnable list and removed from the Handler. This stops it being executed after the user
        has stopped long-pressing the trigger.
@@ -275,6 +306,16 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
     override val ctx: Context
         get() = this
 
+    override val keyboardController: SoftKeyboardController?
+        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            softKeyboardController
+        } else {
+            null
+        }
+
+    override val rootNode: AccessibilityNodeInfo?
+        get() = rootInActiveWindow
+
     override fun getLifecycle() = mLifecycleRegistry
 
     override fun onServiceConnected() {
@@ -284,7 +325,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         mLifecycleRegistry.currentState = Lifecycle.State.STARTED
 
         mActionPerformerDelegate = ActionPerformerDelegate(
-                iContext = this, iPerformGlobalAction = this, lifecycle = lifecycle)
+                iContext = this, iPerformAccessibilityAction = this, lifecycle = lifecycle)
 
         //listen for events from NewKeymapActivity
         val intentFilter = IntentFilter()
@@ -296,6 +337,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
         intentFilter.addAction(ACTION_UPDATE_NOTIFICATION)
         intentFilter.addAction(Intent.ACTION_SCREEN_ON)
         intentFilter.addAction(ACTION_RECORD_TRIGGER)
+        intentFilter.addAction(ACTION_SHOW_KEYBOARD)
 
         registerReceiver(mBroadcastReceiver, intentFilter)
 
@@ -429,7 +471,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
             //loop through each keymap and perform their action
             for (keymap in keyMaps) {
-                val errorResult = ActionUtils.getPotentialErrorCode(this, keymap.action)
+                val errorResult = ActionUtils.getError(this, keymap.action)
 
                 //if there is no error
                 if (errorResult != null) {
@@ -551,7 +593,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
             KeyEvent.KEYCODE_BACK -> performGlobalAction(GLOBAL_ACTION_BACK)
             KeyEvent.KEYCODE_HOME -> performGlobalAction(GLOBAL_ACTION_HOME)
             KeyEvent.KEYCODE_APP_SWITCH -> performGlobalAction(GLOBAL_ACTION_RECENTS)
-            KeyEvent.KEYCODE_MENU -> performGlobalAction(GLOBAL_ACTION_RECENTS)
+            KeyEvent.KEYCODE_MENU -> mActionPerformerDelegate.performSystemAction(SystemAction.OPEN_MENU)
         }
     }
 
@@ -573,4 +615,27 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformGlobalA
 
         Log.i(this::class.java.simpleName, "Consumed key event ${event.keyCode} ${event.action}")
     }
+}
+
+/**
+ * @return The node to find. Returns null if the node doesn't match the predicate
+ */
+fun AccessibilityNodeInfo?.findNodeRecursively(
+        nodeInfo: AccessibilityNodeInfo? = this,
+        depth: Int = 0,
+        predicate: (node: AccessibilityNodeInfo) -> Boolean
+): AccessibilityNodeInfo? {
+    if (nodeInfo == null) return null
+
+    if (predicate(nodeInfo)) return nodeInfo
+
+    for (i in 0 until nodeInfo.childCount) {
+        val node = findNodeRecursively(nodeInfo.getChild(i), depth + 1, predicate)
+
+        if (node != null) {
+            return node
+        }
+    }
+
+    return null
 }

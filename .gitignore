@@ -85,3 +85,4 @@ fastlane/readme.md
 
 .idea/
 app/src/main/res/values/private_strings.xml
+.vscode/

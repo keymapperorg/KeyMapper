@@ -7,8 +7,10 @@ import android.graphics.drawable.Drawable
  */
 
 interface ISimpleItemAdapter<T> {
-    val onItemClickListener: OnItemClickListener<T>
+    val onItemClickListener: OnItemClickListener<T>?
     fun getItem(position: Int): T?
     fun getItemText(item: T): String
+    fun getSecondaryItemText(item: T): String? = null
+    fun getSecondaryItemTextColor(position: Int): Int? = null
     fun getItemDrawable(item: T): Drawable?
 }
