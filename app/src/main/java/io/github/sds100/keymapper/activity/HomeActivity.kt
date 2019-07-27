@@ -24,7 +24,6 @@ import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetView
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomappbar.BottomAppBar.FAB_ALIGNMENT_MODE_CENTER
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.Gson
 import io.github.sds100.keymapper.BuildConfig
 import io.github.sds100.keymapper.KeyMap
@@ -50,7 +49,10 @@ import kotlinx.android.synthetic.main.content_home.*
 import kotlinx.android.synthetic.main.home_collapsed_status_layouts.*
 import kotlinx.android.synthetic.main.home_expanded_status_layouts.*
 import kotlinx.android.synthetic.main.layout_status.view.*
-import org.jetbrains.anko.*
+import org.jetbrains.anko.append
+import org.jetbrains.anko.defaultSharedPreferences
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
 
 class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener<KeymapAdapterModel> {
 
@@ -88,7 +90,12 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
             }
         }.toList()
 
-    private val mIsFirstTime
+    private var mIsFirstTime
+        set(value) {
+            defaultSharedPreferences.edit {
+                putBoolean(str(R.string.key_pref_first_time), value)
+            }
+        }
         get() = defaultSharedPreferences.getBoolean(str(R.string.key_pref_first_time), true)
 
     private var mAccessibilityServiceTapTargetView: TapTargetView? = null
@@ -115,7 +122,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
         super.onCreate(savedInstanceState)
 
         if (mIsFirstTime) {
-            startActivity(Intent(this, IntroActivity::class.java))
+            startActivityForResult(Intent(this, IntroActivity::class.java), IntroActivity.REQUEST_CODE_INTRO)
         }
 
         setContentView(R.layout.activity_home)
@@ -206,31 +213,6 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
         intentFilter.addAction(MyAccessibilityService.ACTION_ON_START)
         intentFilter.addAction(MyAccessibilityService.ACTION_ON_STOP)
         registerReceiver(mBroadcastReceiver, intentFilter)
-
-        if (mIsFirstTime) {
-            defaultSharedPreferences.edit {
-                //ask the user whether they want to enable analytics
-                alert {
-                    titleResource = R.string.title_pref_data_collection
-                    messageResource = R.string.summary_pref_data_collection
-                    positiveButton(R.string.pos_opt_in) {
-                        putBoolean(str(R.string.key_pref_data_collection), true).commit()
-                        setFirebaseDataCollection()
-                    }
-
-                    negativeButton(R.string.neg_stay_out) {
-                        putBoolean(str(R.string.key_pref_data_collection), false).commit()
-                        setFirebaseDataCollection()
-                    }
-                }.show()
-            }
-
-            defaultSharedPreferences.edit {
-                putBoolean(str(R.string.key_pref_first_time), false)
-            }
-        } else {
-            setFirebaseDataCollection()
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -279,7 +261,9 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
 
     override fun onResume() {
         super.onResume()
+
         updateStatusLayouts()
+        FirebaseUtils.setFirebaseDataCollection(this)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -330,6 +314,14 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
         intent.putExtra(EditKeymapActivity.EXTRA_KEYMAP_ID, item.id)
 
         startActivity(intent)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == IntroActivity.REQUEST_CODE_INTRO && resultCode == RESULT_OK) {
+            mIsFirstTime = false
+        }
     }
 
     private fun updateSelectionCount() {
@@ -466,13 +458,5 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setStatusBarColor(@ColorRes colorId: Int) {
         window.statusBarColor = color(colorId)
-    }
-
-    private fun setFirebaseDataCollection() {
-        val isDataCollectionEnabled = defaultSharedPreferences.getBoolean(
-            str(R.string.key_pref_data_collection),
-            bool(R.bool.default_value_data_collection))
-
-        FirebaseAnalytics.getInstance(this@HomeActivity).setAnalyticsCollectionEnabled(isDataCollectionEnabled)
     }
 }

@@ -173,7 +173,7 @@
     <string name="summary_pref_show_toggle_remappings_notification">Show a persistent notification which starts/pauses your remaps and has a link to start/stop the accessibility service.</string>
 
     <string name="title_pref_data_collection">Opt in to anonymous analytics</string>
-    <string name="summary_pref_data_collection">Do you want to allow Key Mapper to anonymously collect data about how it is used, such as crash reports? It is opt in and the data is collected by Google Firebase. The privacy policy is located in the About activity.</string>
+    <string name="summary_pref_data_collection">Do you want to allow Key Mapper to anonymously collect data about how it is used (e.g crash reports)? You have to opt in and the data is collected by Google Firebase. The privacy policy is located in the About activity.</string>
 
     <string name="title_pref_bluetooth_devices">Choose bluetooth devices…</string>
 
@@ -253,6 +253,9 @@
 
     <string name="showcase_dex_mode_supported_title">Your device seems to support Samsung Dex</string>
     <string name="showcase_dex_mode_supported_message">Samsung doesn\'t allow apps with a 3rd party keyboard to open while in Dex mode. Therefore, this app won\'t open and the Key Mapper keyboard won\'t work while you are in Dex mode. Your key maps which don\'t require the Key Mapper keyboard will still work while you\'re in Dex mode.</string>
+
+    <string name="showcase_data_collection_title">Anonymous analytics</string>
+    <string name="showcase_data_collection_message">Do you want to allow Key Mapper to anonymously collect data about how it is used (e.g crash reports)? You have to opt in and the data is collected by Google Firebase. The privacy policy is located in the About activity. Click "opt in" to opt in. If you don\'t then you remain opted out.</string>
     <!-- Showcase -->
 
     <!-- system action options -->
