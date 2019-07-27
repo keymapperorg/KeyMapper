@@ -4,6 +4,54 @@ All notable changes to this project will be documented in this file. This projec
  
 ## [Unreleased](https://github.com/sds100/KeyMapper/tree/develop)
 
+## [1.1.0](https://github.com/sds100/KeyMapper/releases/tag/v1.1.0)
+#### 27 July 2019
+
+The initial release for Key Mapper.
+
+Changes from 1.1.0 Beta 8:
+- Moved the dialog to opt in to analytics to a slide in the intro activity.
+
+## [1.1.0 Beta 8](https://github.com/sds100/KeyMapper/releases/tag/v1.1.0-beta.8)
+#### 20 July 2019
+### Bug Fixes
+- Changes to a keymap wouldn't persist after a configuration change (e.g rotation)
+- The keyboard service status layout at the top of the homescreen wouldn't update.
+- fix minor inconsistencies in the app icons
+
+### Changed
+- The action to simulate the menu button no longer requires root
+- Use a countdown timer when recording a trigger
+- Support Android Q
+
+### Added
+- Show an error on the homescreen and if an action needs the Key Mapper keyboard to be enabled.
+- Show an error when trying to use an action which requires the Key Mapper keyboard and it is disabled.
+- Action to move the cursor to the end of a file
+- Actions to toggle, show and hide the keyboard
+- Button to change the keyboard in the homescreen menu
+- About: link to the Telegram channel
+- Show a prompt to enable the accessibility service when the app is first opened.
+- Explain why the "record trigger" button is greyed out
+- labels for the KEYCODE_BUTTON_START and KEYCODE_BUTTON_SELECT keycodes
+- An introduction activity the first time the app is opened
+- Logger: log when recording a trigger has started and stopped
+- Show a dialog the first time the Key Mapper keyboard is chosen explaining why another keyboard can't be used.
+- ChooseActionActivity: A tab to which lists all the actions which aren't supported and why.
+- Show a "requires root" message for actions which need it
+
+## [1.1.0 Beta 7](https://github.com/sds100/KeyMapper/releases/tag/v1.1.0-beta.7)
+#### 27 May 2019
+### Bug Fixes
+- App would crash when trying to read a system setting which doesn't exist
+- App would crash if couldn't find the Do Not Disturb settings page
+- Logger: send icon was grey but should be white 
+
+### Added
+- The status card at the top of the homescreen can now be expanded and collapsed
+- Show a toast message when a foreseen error is encountered
+- Logger: log whenever the accessibility service is started/stopped
+
 ## [1.1.0 Beta 6](https://github.com/sds100/KeyMapper/releases/tag/v1.1.0-beta.6)
 #### 19 May 2019
 ### Bug Fixes
