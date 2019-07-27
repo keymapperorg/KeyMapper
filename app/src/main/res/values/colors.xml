@@ -16,6 +16,7 @@
     <color name="actionModeStatusBar">#212121</color>
 
     <color name="green">#4CAF50</color>
+    <color name="greenDark">#087f23</color>
 
     <color name="red">#d32f2f</color>
     <color name="redDark">#9a0007</color>

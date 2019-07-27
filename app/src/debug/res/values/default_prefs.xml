@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="default_value_show_toggle_remappings_notification">false</bool>
+</resources>
