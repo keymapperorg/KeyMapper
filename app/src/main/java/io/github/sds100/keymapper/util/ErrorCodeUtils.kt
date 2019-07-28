@@ -44,6 +44,7 @@ object ErrorCodeUtils {
     const val ERROR_CODE_GOOGLE_APP_NOT_INSTALLED = 12
     const val ERROR_CODE_NULL = 13
     const val ERROR_CODE_IME_SERVICE_DISABLED = 14
+    const val ERROR_CODE_SDK_VERSION_TOO_HIGH = 15
 
     private val FIXABLE_ERRORS = arrayOf(
             ERROR_CODE_APP_DISABLED,
@@ -107,6 +108,10 @@ object ErrorCodeUtils {
                     str(R.string.error_sdk_version_too_low, versionName)
                 }
 
+                ERROR_CODE_SDK_VERSION_TOO_HIGH -> {
+                    val versionName = BuildUtils.getSdkVersionName(errorResult.data!!.toInt())
+                    str(R.string.error_sdk_version_too_high, versionName)
+                }
                 ERROR_CODE_FEATURE_NOT_AVAILABLE -> {
                     str(R.string.error_feature_not_available, errorResult.data)
                 }

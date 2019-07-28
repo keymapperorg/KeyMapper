@@ -13,20 +13,21 @@ import io.github.sds100.keymapper.util.str
  * @param messageOnSelection A message to show when the user selects this action
  */
 class SystemActionDef(
-        val id: String,
-        val category: String,
-        val permissions: Array<String> = arrayOf(),
-        val features: Array<String> = arrayOf(),
-        val minApi: Int = Constants.MIN_API,
-        @DrawableRes val iconRes: Int? = null,
-        @StringRes val descriptionRes: Int,
-        @StringRes val messageOnSelection: Int? = null,
-        val formattedDescription: (ctx: Context, optionText: String) -> String = { ctx, _ -> ctx.str(descriptionRes) },
+    val id: String,
+    val category: String,
+    val permissions: Array<String> = arrayOf(),
+    val features: Array<String> = arrayOf(),
+    val minApi: Int = Constants.MIN_API,
+    val maxApi: Int = Constants.MAX_API,
+    @DrawableRes val iconRes: Int? = null,
+    @StringRes val descriptionRes: Int,
+    @StringRes val messageOnSelection: Int? = null,
+    val formattedDescription: (ctx: Context, optionText: String) -> String = { ctx, _ -> ctx.str(descriptionRes) },
 
-        /**
-         * A map of any option ids to their label.
-         */
-        val options: List<String> = listOf()) {
+    /**
+     * A map of any option ids to their label.
+     */
+    val options: List<String> = listOf()) {
 
     constructor(id: String,
                 category: String,
@@ -38,15 +39,15 @@ class SystemActionDef(
                 formattedDescription: (ctx: Context, optionText: String) -> String = { ctx, _ -> ctx.str(descriptionRes) },
                 options: List<String> = listOf()
     ) : this(
-            id,
-            category,
-            arrayOf(permission),
-            minApi = minApi,
-            iconRes = iconRes,
-            descriptionRes = descriptionRes,
-            messageOnSelection = messageOnSelection,
-            formattedDescription = formattedDescription,
-            options = options
+        id,
+        category,
+        arrayOf(permission),
+        minApi = minApi,
+        iconRes = iconRes,
+        descriptionRes = descriptionRes,
+        messageOnSelection = messageOnSelection,
+        formattedDescription = formattedDescription,
+        options = options
     )
 
     constructor(id: String,
@@ -60,16 +61,16 @@ class SystemActionDef(
                 formattedDescription: (ctx: Context, optionText: String) -> String = { ctx, _ -> ctx.str(descriptionRes) },
                 options: List<String> = listOf()
     ) : this(
-            id = id,
-            category = category,
-            permissions = arrayOf(permission),
-            features = arrayOf(feature),
-            minApi = minApi,
-            iconRes = iconRes,
-            descriptionRes = descriptionRes,
-            messageOnSelection = messageOnSelection,
-            formattedDescription = formattedDescription,
-            options = options
+        id = id,
+        category = category,
+        permissions = arrayOf(permission),
+        features = arrayOf(feature),
+        minApi = minApi,
+        iconRes = iconRes,
+        descriptionRes = descriptionRes,
+        messageOnSelection = messageOnSelection,
+        formattedDescription = formattedDescription,
+        options = options
     )
 
     val hasOptions: Boolean

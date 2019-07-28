@@ -289,6 +289,7 @@
     <string name="error_action_requires_root">This action requires root permission!</string>
     <string name="error_action_requires_camera_permission">This action requires camera permission!</string>
     <string name="error_sdk_version_too_low">This action requires Android %s</string>
+    <string name="error_sdk_version_too_high">This action is only supported up to Android %s</string>
     <string name="error_feature_not_available">Your device doesn\'t support %s.</string>
     <string name="error_flag_not_found">Flag "%s" not found!</string>
     <string name="error_google_app_not_installed">Google app not installed!</string>
@@ -414,6 +415,8 @@
     <string name="action_toggle_keyboard_message">This action will only work if you have tapped on an input field where the keyboard is supposed to be shown.</string>
     <string name="action_show_keyboard">Show Keyboard</string>
     <string name="action_hide_keyboard">Hide Keyboard</string>
+    <string name="action_show_keyboard_picker">Show Keyboard Picker (non-root)</string>
+    <string name="action_show_keyboard_picker_root">Show Keyboard Picker (root)</string>
     <!-- System action labels -->
 
     <!-- System action category labels -->
