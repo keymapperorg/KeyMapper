@@ -8,6 +8,7 @@ Many thanks to...
  - Mukesh Solanki (@[mukeshsolanki]) for his [MarkdownView] library.
  - Daniel Cachapa (@cachapa) for this [ExpandableLayout](https://github.com/cachapa/ExpandableLayout) library.
  - Heinrich Reimer (@[heinrichreimer]) for his [Material Intro](https://github.com/heinrichreimer/material-intro) library.
+ - [App Mockup] for their screenshot utility.
 
 [salomonbrys]: https://github.com/salomonbrys
 [Kotson]: https://github.com/salomonbrys/Kotson
@@ -22,3 +23,5 @@ Many thanks to...
 [MarkdownView]: https://github.com/mukeshsolanki/MarkdownView-Android
 
 [heinrichreimer]: https://github.com/heinrichreimer
+
+[App Mockup]: https://app-mockup.com/
