@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file. This projec
 ## [Unreleased](https://github.com/sds100/KeyMapper/tree/develop)
 
 ## [1.1.1](https://github.com/sds100/KeyMapper/releases/tag/v1.1.1)
-### 27 July 2019
+#### 27 July 2019
 Exact same as 1.1.0 besides the version code and name. I messed up the versioning on Google play so had to increment the version code.
 
 ## [1.1.0](https://github.com/sds100/KeyMapper/releases/tag/v1.1.0)
