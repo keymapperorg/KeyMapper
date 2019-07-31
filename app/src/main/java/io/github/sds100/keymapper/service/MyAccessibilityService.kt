@@ -137,7 +137,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
          * Some keys need to be consumed on the up event to prevent them from working they way they are intended to.
          */
         private val KEYS_TO_CONSUME_UP_EVENT = listOf(
-                KeyEvent.KEYCODE_HOME
+                KeyEvent.KEYCODE_HOME,
+                KeyEvent.KEYCODE_APP_SWITCH
         )
     }
 
