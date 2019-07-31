@@ -51,7 +51,7 @@ class ChooseActionActivity : AppCompatActivity(), ITabDelegate, TabLayout.OnTabS
         supportFragmentManager,
         iTabDelegate = this,
         onTabSelectedListener = this,
-        mOffScreenLimit = 6)
+        mOffScreenLimit = 7)
 
     private lateinit var mSearchViewMenuItem: MenuItem
 
@@ -90,7 +90,9 @@ class ChooseActionActivity : AppCompatActivity(), ITabDelegate, TabLayout.OnTabS
             }.toList()
 
         } else {
-            val oldActionTypeFragments = supportFragmentManager.fragments.filter { it is ActionTypeFragment }
+            val oldActionTypeFragments = supportFragmentManager.fragments.filter {
+                it is ActionTypeFragment || it is UnsupportedActionsFragment
+            }
 
             @Suppress("UNCHECKED_CAST")
             if (oldActionTypeFragments.all { it != null }) {
