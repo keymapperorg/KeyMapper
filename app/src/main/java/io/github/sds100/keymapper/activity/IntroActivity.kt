@@ -35,6 +35,7 @@ class IntroActivity : IntroActivity() {
             backgroundDark(R.color.redDark)
             image(R.mipmap.ic_launcher_round)
             canGoBackward(true)
+            scrollable(true)
         }.build()
     }
 
@@ -46,6 +47,7 @@ class IntroActivity : IntroActivity() {
             backgroundDark(R.color.blueDark)
             image(R.drawable.ic_battery_std_white_64dp)
             canGoBackward(true)
+            scrollable(true)
 
             buttonCtaLabel(R.string.showcase_disable_battery_optimisation_button)
             buttonCtaClickListener {
@@ -63,6 +65,7 @@ class IntroActivity : IntroActivity() {
             backgroundDark(R.color.orangeDark)
             image(R.drawable.ic_dock_white_64dp)
             canGoBackward(true)
+            scrollable(true)
         }.build()
     }
 
@@ -74,6 +77,7 @@ class IntroActivity : IntroActivity() {
             backgroundDark(R.color.greenDark)
             image(R.drawable.ic_bug_white_64dp)
             canGoBackward(true)
+            scrollable(true)
 
             buttonCtaLabel(R.string.pos_opt_in)
             buttonCtaClickListener {
