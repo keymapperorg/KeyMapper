@@ -29,16 +29,16 @@ fun View.str(@StringRes resId: Int, formatArgs: Any? = null): String = context.s
 fun Context.bool(@BoolRes resId: Int): Boolean = resources.getBoolean(resId)
 
 fun View.bool(
-        attributeSet: AttributeSet,
-        @StyleableRes styleableId: IntArray,
-        @StyleableRes attrId: Int,
-        defaultValue: Boolean = false
+    attributeSet: AttributeSet,
+    @StyleableRes styleableId: IntArray,
+    @StyleableRes attrId: Int,
+    defaultValue: Boolean = false
 ) = context.bool(attributeSet, styleableId, attrId, defaultValue)
 
 fun Context.resourceId(
-        attributeSet: AttributeSet,
-        @StyleableRes styleableId: IntArray,
-        @StyleableRes attrId: Int): Int? {
+    attributeSet: AttributeSet,
+    @StyleableRes styleableId: IntArray,
+    @StyleableRes attrId: Int): Int? {
 
     val typedArray = theme.obtainStyledAttributes(attributeSet, styleableId, 0, 0)
     var attrValue: Int?
@@ -59,10 +59,10 @@ fun Context.resourceId(
  * Get a boolean from an attribute
  */
 fun Context.bool(
-        attributeSet: AttributeSet,
-        @StyleableRes styleableId: IntArray,
-        @StyleableRes attrId: Int,
-        defaultValue: Boolean = false
+    attributeSet: AttributeSet,
+    @StyleableRes styleableId: IntArray,
+    @StyleableRes attrId: Int,
+    defaultValue: Boolean = false
 ): Boolean {
     val typedArray = theme.obtainStyledAttributes(attributeSet, styleableId, 0, 0)
 
@@ -97,7 +97,7 @@ fun Context.str(attributeSet: AttributeSet, @StyleableRes styleableId: IntArray,
 }
 
 fun View.str(attributeSet: AttributeSet, @StyleableRes styleableId: IntArray, @StyleableRes attrId: Int) =
-        context.str(attributeSet, styleableId, attrId)
+    context.str(attributeSet, styleableId, attrId)
 
 /**
  * Get a resource drawable. Can be safely used to get vector drawables on pre-lollipop.
@@ -135,10 +135,10 @@ inline fun <reified T> Context.getSystemSetting(name: String): T? {
         }
     } catch (e: Settings.SettingNotFoundException) {
         Logger.write(
-                this,
-                isError = true,
-                title = "Exception",
-                message = "SettingNotFoundException: $name in ContentUtils")
+            this,
+            isError = true,
+            title = "Exception",
+            message = "SettingNotFoundException: $name in ContentUtils")
         null
     }
 }
