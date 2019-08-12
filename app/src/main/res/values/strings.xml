@@ -137,8 +137,8 @@
     <string name="notification_channel_persistent">Persistent Notifications</string>
     <string name="notification_channel_warnings">Warnings</string>
 
-    <string name="notification_ime_persistent_text">Will automatically show the keyboard picker when a bluetooth device you\'ve chosen has connected or disconnected</string>
-    <string name="notification_ime_persistent_title">Tap to change your keyboard.</string>
+    <string name="notification_ime_persistent_text">Tap to change your keyboard.</string>
+    <string name="notification_ime_persistent_title">Keyboard Picker</string>
 
     <string name="notification_remappings_pause_title">Pause</string>
     <string name="notification_remappings_pause_text">Tap to pause your remaps.</string>
