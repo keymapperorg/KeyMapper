@@ -64,7 +64,7 @@ object WidgetsManager {
     }
 
     fun invalidateNotification(ctx: Context) {
-        if (MyAccessibilityService.isServiceEnabled(ctx)) {
+        if (AccessibilityUtils.isServiceEnabled(ctx)) {
             ctx.sendBroadcast(Intent(MyAccessibilityService.ACTION_UPDATE_NOTIFICATION))
         } else {
             onEvent(ctx, EVENT_SERVICE_STOPPED)

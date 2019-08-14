@@ -191,6 +191,10 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
             KeyboardUtils.openImeSettings(this)
         })
 
+        secureSettingsStatusLayout.setOnFixClickListener(View.OnClickListener {
+            PermissionUtils.requestWriteSecureSettingsPermission(this)
+        })
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             dndAccessStatusLayout.setOnFixClickListener(View.OnClickListener {
                 PermissionUtils.requestPermission(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY)
@@ -415,6 +419,12 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
 
                 mAccessibilityServiceTapTargetView = TapTargetView.showFor(this, target)
             }
+        }
+
+        if (haveWriteSecureSettingsPermission) {
+            secureSettingsStatusLayout.changeToFixedState()
+        } else {
+            secureSettingsStatusLayout.changeToWarningState()
         }
 
         if (MyIMEService.isServiceEnabled(this)) {
