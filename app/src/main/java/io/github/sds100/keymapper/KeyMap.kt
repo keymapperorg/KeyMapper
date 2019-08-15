@@ -63,6 +63,8 @@ class KeyMap(
     }
 
     fun containsTrigger(keyCodes: List<Int>): Boolean {
-        return triggerList.any { trigger -> keyCodes.containsAll(trigger.keys) }
+        return triggerList.any { trigger ->
+            trigger.keys.toTypedArray().contentEquals(keyCodes.toTypedArray())
+        }
     }
 }

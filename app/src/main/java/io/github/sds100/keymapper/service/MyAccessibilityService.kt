@@ -392,9 +392,6 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
                 return super.onKeyEvent(event)
             }
 
-            //TODO if key is part of a combination trigger, consume down event when it is just performed by itself and then do the action it is remapped to do on the up or simulate if not.
-            //TODO stop repeating a key when another key is pressed.
-
             mPressedTriggerKeys = mPressedKeys.toMutableList()
 
             var consumeEvent = false
