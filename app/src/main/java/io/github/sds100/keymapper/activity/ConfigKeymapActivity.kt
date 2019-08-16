@@ -175,7 +175,7 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
 
         /* disable "Record Trigger" button if the service is disabled because otherwise the button
          * wouldn't do anything*/
-        val isAccessibilityServiceEnabled = MyAccessibilityService.isServiceEnabled(this)
+        val isAccessibilityServiceEnabled = AccessibilityUtils.isServiceEnabled(this)
 
         buttonRecordTrigger.isEnabled = isAccessibilityServiceEnabled
 

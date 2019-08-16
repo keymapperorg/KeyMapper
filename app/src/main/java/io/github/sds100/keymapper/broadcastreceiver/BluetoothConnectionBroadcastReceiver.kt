@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.result
 import io.github.sds100.keymapper.service.MyIMEService
 import io.github.sds100.keymapper.util.KeyboardUtils
 import io.github.sds100.keymapper.util.bool
+import io.github.sds100.keymapper.util.haveWriteSecureSettingsPermission
 import io.github.sds100.keymapper.util.str
 import org.jetbrains.anko.defaultSharedPreferences
 
@@ -31,7 +32,7 @@ class BluetoothConnectionBroadcastReceiver : BroadcastReceiver() {
 
         context!!.apply {
             if (intent.action == BluetoothDevice.ACTION_ACL_CONNECTED ||
-                    intent.action == BluetoothDevice.ACTION_ACL_DISCONNECTED) {
+                intent.action == BluetoothDevice.ACTION_ACL_DISCONNECTED) {
 
                 //get the properties of the device which just connected/disconnected
                 val device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE) ?: return
@@ -40,19 +41,22 @@ class BluetoothConnectionBroadcastReceiver : BroadcastReceiver() {
 
                     //get the bluetooth devices chosen by the user. return if no bluetooth devices are chosen
                     val selectedDevices =
-                            getStringSet(str(R.string.key_pref_bluetooth_devices), null) ?: return
+                        getStringSet(str(R.string.key_pref_bluetooth_devices), null) ?: return
+
 
                     //don't show the dialog if the user hasn't selected this device
                     if (selectedDevices.contains(device.address)) {
                         val automaticallySwitchIme =
-                                getBoolean(str(R.string.key_pref_auto_change_ime_on_connection),
-                                        bool(R.bool.default_value_auto_change_ime_on_connection))
+                            getBoolean(str(R.string.key_pref_auto_change_ime_on_connection),
+                                bool(R.bool.default_value_auto_change_ime_on_connection))
 
-                        if (automaticallySwitchIme) automaticallySwitchIme(context, intent.action!!)
+                        if (automaticallySwitchIme && context.haveWriteSecureSettingsPermission) {
+                            automaticallySwitchIme(context, intent.action!!)
+                        }
 
                         val showIMEPickerAutomatically =
-                                getBoolean(str(R.string.key_pref_auto_show_ime_picker),
-                                        bool(R.bool.default_value_auto_show_ime_picker))
+                            getBoolean(str(R.string.key_pref_auto_show_ime_picker),
+                                bool(R.bool.default_value_auto_show_ime_picker))
 
                         //only show the dialog automatically if the user wants it to.
                         if (showIMEPickerAutomatically) KeyboardUtils.showInputMethodPickerDialogOutsideApp(context)
@@ -71,13 +75,13 @@ class BluetoothConnectionBroadcastReceiver : BroadcastReceiver() {
                 ctx.defaultSharedPreferences.edit().putString(KEY_DEFAULT_IME, defaultIme).apply()
 
                 MyIMEService.getImeId(ctx).result().onSuccess {
-                    KeyboardUtils.switchIme(it)
+                    KeyboardUtils.switchIme(ctx, it)
                 }
             }
 
             //when a device is disconnected, change back to the old ime
             BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
-                KeyboardUtils.switchIme(ctx.defaultSharedPreferences.getString(KEY_DEFAULT_IME, "")!!)
+                KeyboardUtils.switchIme(ctx, ctx.defaultSharedPreferences.getString(KEY_DEFAULT_IME, "")!!)
             }
         }
     }
