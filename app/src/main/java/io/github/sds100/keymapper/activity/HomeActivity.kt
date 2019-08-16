@@ -132,8 +132,8 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
 
         /*if the app is a debug build then enable the accessibility service in settings
         / automatically so I don't have to! :)*/
-        if (BuildConfig.DEBUG) {
-            MyAccessibilityService.enableServiceInSettingsRoot()
+        if (BuildConfig.DEBUG && !AccessibilityUtils.isServiceEnabled(this)) {
+            AccessibilityUtils.enableService(this)
         }
 
         mViewModel.keyMapList.observe(this, Observer { keyMapList ->
@@ -184,16 +184,15 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
         }
 
         accessibilityServiceStatusLayout.setOnFixClickListener(View.OnClickListener {
-            if (RootUtils.checkAppHasRootPermission(this)) {
-                MyAccessibilityService.enableServiceInSettingsRoot()
-
-            } else {
-                MyAccessibilityService.openAccessibilitySettings(this)
-            }
+            AccessibilityUtils.enableService(this)
         })
 
         imeServiceStatusLayout.setOnFixClickListener(View.OnClickListener {
             KeyboardUtils.openImeSettings(this)
+        })
+
+        secureSettingsStatusLayout.setOnFixClickListener(View.OnClickListener {
+            PermissionUtils.requestWriteSecureSettingsPermission(this)
         })
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -398,7 +397,7 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
     }
 
     private fun updateStatusLayouts() {
-        if (MyAccessibilityService.isServiceEnabled(this)) {
+        if (AccessibilityUtils.isServiceEnabled(this)) {
             accessibilityServiceStatusLayout.changeToFixedState()
 
             //dismiss the accessibility service showcase if it is showing
@@ -420,6 +419,12 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
 
                 mAccessibilityServiceTapTargetView = TapTargetView.showFor(this, target)
             }
+        }
+
+        if (haveWriteSecureSettingsPermission) {
+            secureSettingsStatusLayout.changeToFixedState()
+        } else {
+            secureSettingsStatusLayout.changeToWarningState()
         }
 
         if (MyIMEService.isServiceEnabled(this)) {

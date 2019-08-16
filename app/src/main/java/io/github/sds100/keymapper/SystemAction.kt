@@ -92,6 +92,8 @@ object SystemAction {
     const val TOGGLE_KEYBOARD = "toggle_keyboard"
     const val SHOW_KEYBOARD = "show_keyboard"
     const val HIDE_KEYBOARD = "hide_keyboard"
+    const val SHOW_KEYBOARD_PICKER = "show_keyboard_picker"
+    const val SHOW_KEYBOARD_PICKER_ROOT = "show_keyboard_picker_root"
 
     //other
     const val SCREENSHOT = "screenshot"

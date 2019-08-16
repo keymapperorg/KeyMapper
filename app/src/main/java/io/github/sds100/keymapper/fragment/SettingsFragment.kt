@@ -9,13 +9,14 @@ import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.util.BluetoothUtils
 import io.github.sds100.keymapper.util.NotificationUtils
+import io.github.sds100.keymapper.util.haveWriteSecureSettingsPermission
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.okButton
 
 class SettingsFragment : PreferenceFragmentCompat(),
-        Preference.OnPreferenceChangeListener,
-        SharedPreferences.OnSharedPreferenceChangeListener {
+    Preference.OnPreferenceChangeListener,
+    SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val mShowImeNotificationPreference by lazy {
         findPreference<SwitchPreference>(getString(R.string.key_pref_show_ime_notification))!!
@@ -37,8 +38,12 @@ class SettingsFragment : PreferenceFragmentCompat(),
         findPreference<PreferenceCategory>(getString(R.string.key_pref_category_root))!!
     }
 
-    private val mEnableRootFeaturesPreference by lazy {
-        findPreference<SwitchPreference>(getString(R.string.key_pref_allow_root_features))!!
+    private val mSecureSettingsCategory by lazy {
+        findPreference<PreferenceCategory>(getString(R.string.key_pref_category_secure_settings))!!
+    }
+
+    private val mRootPermissionPreference by lazy {
+        findPreference<SwitchPreference>(getString(R.string.key_pref_root_permission))!!
     }
 
     private var mShowingNoPairedDevicesDialog = false
@@ -78,11 +83,11 @@ class SettingsFragment : PreferenceFragmentCompat(),
             true
         }
 
-        enableRootPreferences(mEnableRootFeaturesPreference.isChecked)
+        enableRootPreferences(mRootPermissionPreference.isChecked)
 
         mAutoShowIMEDialogPreference.onPreferenceChangeListener = this
         mShowImeNotificationPreference.onPreferenceChangeListener = this
-        mEnableRootFeaturesPreference.onPreferenceChangeListener = this
+        mRootPermissionPreference.onPreferenceChangeListener = this
         mToggleRemappingsNotificationPref.onPreferenceChangeListener = this
 
         context!!.defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
@@ -90,9 +95,9 @@ class SettingsFragment : PreferenceFragmentCompat(),
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         onPreferenceChange(
-                findPreference(key!!),
-                //Use .all[index] because we don't know the data type
-                sharedPreferences!!.all[key]
+            findPreference(key!!),
+            //Use .all[index] because we don't know the data type
+            sharedPreferences!!.all[key]
         )
     }
 
@@ -121,7 +126,7 @@ class SettingsFragment : PreferenceFragmentCompat(),
             }
 
             //Only enable the root preferences if the user has enabled root features
-            mEnableRootFeaturesPreference -> {
+            mRootPermissionPreference -> {
                 enableRootPreferences(newValue as Boolean)
 
                 //the pending intents need to be updated so they don't use the root methods
@@ -130,6 +135,24 @@ class SettingsFragment : PreferenceFragmentCompat(),
         }
 
         return true
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        //only enable the WRITE_SECURE_SETTINGS prefs if WRITE_SECURE_SETTINGS permisison is granted
+        mSecureSettingsCategory.isEnabled = context!!.haveWriteSecureSettingsPermission
+
+        if (!context!!.haveWriteSecureSettingsPermission) {
+            //uncheck all prefs which require WRITE_SECURE_SETTINGS permission
+            for (i in 0 until mSecureSettingsCategory.preferenceCount) {
+                val preference = mSecureSettingsCategory.getPreference(i)
+
+                if (preference is SwitchPreference) {
+                    preference.isChecked = false
+                }
+            }
+        }
     }
 
     override fun onDestroy() {
@@ -147,7 +170,7 @@ class SettingsFragment : PreferenceFragmentCompat(),
 
             //the unique addresses of the device will be saved to shared preferences
             mBluetoothDevicesPreferences.entryValues =
-                    pairedDevices.map { it.address }.toTypedArray()
+                pairedDevices.map { it.address }.toTypedArray()
         }
     }
 
@@ -156,7 +179,7 @@ class SettingsFragment : PreferenceFragmentCompat(),
             val preference = mRootPrefCategory.getPreference(i)
 
             when (preference) {
-                mEnableRootFeaturesPreference -> continue@loop
+                mRootPermissionPreference -> continue@loop
 
                 else -> {
                     //If disabling the preferences, turn them off.

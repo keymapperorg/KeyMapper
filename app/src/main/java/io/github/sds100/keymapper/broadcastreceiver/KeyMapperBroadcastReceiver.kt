@@ -4,8 +4,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import io.github.sds100.keymapper.service.MyAccessibilityService
+import io.github.sds100.keymapper.util.AccessibilityUtils
 import io.github.sds100.keymapper.util.KeyboardUtils
-import io.github.sds100.keymapper.util.RootUtils
 
 /**
  * Created by sds100 on 24/03/2019.
@@ -23,23 +23,9 @@ class KeyMapperBroadcastReceiver : BroadcastReceiver() {
         when (intent?.action) {
             ACTION_SHOW_IME_PICKER -> KeyboardUtils.showInputMethodPickerDialogOutsideApp(context)
 
-            MyAccessibilityService.ACTION_START -> {
-                if (RootUtils.checkAppHasRootPermission(context)) {
-                    MyAccessibilityService.enableServiceInSettingsRoot()
+            MyAccessibilityService.ACTION_START -> AccessibilityUtils.enableService(context)
 
-                } else {
-                    MyAccessibilityService.openAccessibilitySettings(context)
-                }
-            }
-
-            MyAccessibilityService.ACTION_STOP -> {
-                if (RootUtils.checkAppHasRootPermission(context)) {
-                    MyAccessibilityService.disableServiceInSettingsRoot()
-
-                } else {
-                    MyAccessibilityService.openAccessibilitySettings(context)
-                }
-            }
+            MyAccessibilityService.ACTION_STOP -> AccessibilityUtils.disableService(context)
 
             else -> context.sendBroadcast(Intent(intent?.action))
         }

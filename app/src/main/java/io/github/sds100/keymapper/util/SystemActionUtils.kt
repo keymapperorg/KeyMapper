@@ -58,6 +58,8 @@ import io.github.sds100.keymapper.SystemAction.REWIND
 import io.github.sds100.keymapper.SystemAction.SCREENSHOT
 import io.github.sds100.keymapper.SystemAction.SECURE_LOCK_DEVICE
 import io.github.sds100.keymapper.SystemAction.SHOW_KEYBOARD
+import io.github.sds100.keymapper.SystemAction.SHOW_KEYBOARD_PICKER
+import io.github.sds100.keymapper.SystemAction.SHOW_KEYBOARD_PICKER_ROOT
 import io.github.sds100.keymapper.SystemAction.SWITCH_ORIENTATION
 import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_ROTATE
@@ -70,6 +72,7 @@ import io.github.sds100.keymapper.SystemAction.VOLUME_MUTE
 import io.github.sds100.keymapper.SystemAction.VOLUME_TOGGLE_MUTE
 import io.github.sds100.keymapper.SystemAction.VOLUME_UNMUTE
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_FEATURE_NOT_AVAILABLE
+import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_SDK_VERSION_TOO_HIGH
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_SDK_VERSION_TOO_LOW
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_SYSTEM_ACTION_NOT_FOUND
 
@@ -524,6 +527,19 @@ object SystemActionUtils {
             messageOnSelection = R.string.action_toggle_keyboard_message,
             descriptionRes = R.string.action_hide_keyboard),
 
+        SystemActionDef(id = SHOW_KEYBOARD_PICKER,
+            category = CATEGORY_KEYBOARD,
+            iconRes = R.drawable.ic_keyboard_on_surface,
+            maxApi = Build.VERSION_CODES.O,
+            descriptionRes = R.string.action_show_keyboard_picker),
+
+        SystemActionDef(id = SHOW_KEYBOARD_PICKER_ROOT,
+            category = CATEGORY_KEYBOARD,
+            iconRes = R.drawable.ic_keyboard_on_surface,
+            permission = Constants.PERMISSION_ROOT,
+            minApi = Build.VERSION_CODES.O_MR1,
+            descriptionRes = R.string.action_show_keyboard_picker_root),
+
         //OTHER
         SystemActionDef(
             id = SCREENSHOT,
@@ -599,6 +615,13 @@ object SystemActionUtils {
                     data = feature
                 )
             }
+        }
+
+        if (Build.VERSION.SDK_INT > maxApi) {
+            return  ErrorResult(
+                errorCode = ERROR_CODE_SDK_VERSION_TOO_HIGH,
+                data = maxApi.toString()
+            )
         }
 
         return null
