@@ -75,7 +75,13 @@ object ErrorCodeUtils {
 
             ERROR_CODE_SHORTCUT_NOT_FOUND -> PackageUtils.viewAppOnline(ctx, errorResult.data!!)
 
-            ERROR_CODE_IME_SERVICE_NOT_CHOSEN -> KeyboardUtils.switchToKeyMapperIme(ctx)
+            ERROR_CODE_IME_SERVICE_NOT_CHOSEN -> {
+                if (ctx.haveWriteSecureSettingsPermission) {
+                    KeyboardUtils.switchToKeyMapperIme(ctx)
+                } else {
+                    KeyboardUtils.showInputMethodPicker(ctx)
+                }
+            }
 
             ERROR_CODE_IME_SERVICE_DISABLED -> KeyboardUtils.openImeSettings(ctx)
 
