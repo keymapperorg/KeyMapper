@@ -132,6 +132,7 @@
     <string name="pos_opt_in">Opt in</string>
     <string name="pos_help_page">Help page</string>
     <string name="pos_enable_root_features">Enable root features</string>
+    <string name="pos_grant">Grant</string>
 
     <string name="neg_stay_out">Stay out</string>
     <string name="neg_no">No</string>
@@ -157,7 +158,7 @@
 
     <string name="notification_action_open_app">Open App</string>
     <string name="notification_action_stop_acc_service">Stop Accessibility Service</string>
-    
+
     <string name="notification_keyboard_hidden_title">Keyboard is hidden!</string>
     <string name="notification_keyboard_hidden_text">Tap to start showing the keyboard again.</string>
     <!-- Notification strings -->
@@ -265,6 +266,9 @@
 
     <string name="showcase_data_collection_title">Anonymous analytics</string>
     <string name="showcase_data_collection_message">Do you want to allow Key Mapper to anonymously collect data about how it is used (e.g crash reports)? You have to opt in and the data is collected by Google Firebase. The privacy policy is located in the About activity. Click "opt in" to opt in. If you don\'t then you remain opted out.</string>
+
+    <string name="showcase_dnd_access_title">Do Not Disturb Access</string>
+    <string name="showcase_dnd_access_description">The app needs Do Not Disturb access if you want actions which change the volume and remapped volume buttons to work while in Do Not Disturb mode.</string>
     <!-- Showcase -->
 
     <!-- system action options -->
