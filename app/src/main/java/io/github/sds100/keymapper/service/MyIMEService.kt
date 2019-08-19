@@ -12,10 +12,8 @@ import android.view.inputmethod.InputConnection
 import android.view.inputmethod.InputMethodManager
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.Result
-import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.handle
 import io.github.sds100.keymapper.result
-import org.jetbrains.anko.toast
 
 /**
  * Created by sds100 on 28/09/2018.
@@ -60,7 +58,8 @@ class MyIMEService : InputMethodService() {
                     Settings.Secure.DEFAULT_INPUT_METHOD
             )
 
-            return chosenImeId.contains(PACKAGE_NAME)
+            val imeManager = ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            return imeManager.inputMethodList.find { it.id == chosenImeId }?.packageName == PACKAGE_NAME
         }
     }
 
