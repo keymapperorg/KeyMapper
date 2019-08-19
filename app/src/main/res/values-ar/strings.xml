@@ -104,6 +104,7 @@
     <string name="pos_opt_in">الإشتراك</string>
     <string name="pos_help_page">Help page</string>
     <string name="pos_enable_root_features">Enable root features</string>
+    <string name="pos_grant">Grant</string>
     <string name="neg_stay_out">Stay out</string>
     <string name="neg_no">لا</string>
     <string name="neg_cancel">إلغاء</string>
@@ -204,6 +205,8 @@
     <string name="showcase_dex_mode_supported_message">لا تسمح Samsung للتطبيقات التي تحتوي على لوحة مفاتيح تابعة للجهات الخارجية بفتحها أثناء وضع Dex. لذلك ، لن يتم فتح هذا التطبيق ولن تعمل لوحة المفاتيح Key Mapper أثناء وجودك في وضع Dex. ستظل خرائطك الرئيسية التي لا تتطلب لوحة المفاتيح Key Mapper تعمل أثناء وجودك في وضع Dex.</string>
     <string name="showcase_data_collection_title">تحليلات مجهولة</string>
     <string name="showcase_data_collection_message">هل تريد السماح لـ Key Mapper بجمع البيانات مجهولة الهوية حول كيفية استخدامها (مثل تقارير الأعطال)؟ يجب عليك الاشتراك سيتم جمع البيانات بواسطة Google Firebase. تقع سياسة الخصوصية في صفحة حول التطبيق. انقر فوق \"الاشتراك\" للإشتراك. إذا لم تقم بذلك ، فستظل غير مشترك.</string>
+    <string name="showcase_dnd_access_title">Do Not Disturb Access</string>
+    <string name="showcase_dnd_access_description">The app needs Do Not Disturb access if you want actions which change the volume and remapped volume buttons to work while in Do Not Disturb mode.</string>
     <!-- Showcase -->
     <!-- system action options -->
     <string name="stream_accessibility">إمكانية الوصول</string>
