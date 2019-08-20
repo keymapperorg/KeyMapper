@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file. This projec
  
 ## [Unreleased](https://github.com/sds100/KeyMapper/tree/develop)
 
+## [1.1.2](https://github.com/sds100/KeyMapper/releases/tag/v1.1.2)
+#### 19 Aug 2019
+### Bug Fixes
+- Make all slides in the intro activity scrollable so the content can be displayed on smaller devices
+- Remapping the recents button would still open recents
+- Crash when the app was rotated in the "choose action" activity
+- Triggers are ignored when another trigger is being detected.
+
+### Added
+- Action to show the keyboard picker
+- Guide the user to grant WRITE_SECURE_SETTINGS for the app so features previously restricted to rooted devices can be used on all devices.
+- Slide to enable Do Not Disturb in the intro activity.
+
+### Changed
+- Rename strings for the keyboard picker notification
+- Use unique keyboard names for CI and debug builds.
+
 ## [1.1.1](https://github.com/sds100/KeyMapper/releases/tag/v1.1.1)
 #### 27 July 2019
 Exact same as 1.1.0 besides the version code and name. I messed up the versioning on Google play so had to increment the version code.
