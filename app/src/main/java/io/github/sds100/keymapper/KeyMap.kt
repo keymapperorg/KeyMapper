@@ -16,20 +16,20 @@ import io.github.sds100.keymapper.util.removeFlag
 
 @Entity(tableName = KeyMapDao.TABLE_NAME)
 class KeyMap(
-        @PrimaryKey(autoGenerate = true)
-        val id: Long,
+    @PrimaryKey(autoGenerate = true)
+    val id: Long,
 
-        @ColumnInfo(name = KeyMapDao.KEY_TRIGGER_LIST)
-        val triggerList: MutableList<Trigger> = mutableListOf(),
+    @ColumnInfo(name = KeyMapDao.KEY_TRIGGER_LIST)
+    val triggerList: MutableList<Trigger> = mutableListOf(),
 
-        @ColumnInfo(name = KeyMapDao.KEY_FLAGS)
-        /**
-         * Flags are stored as bits.
-         */
-        var flags: Int = 0,
+    @ColumnInfo(name = KeyMapDao.KEY_FLAGS)
+    /**
+     * Flags are stored as bits.
+     */
+    var flags: Int = 0,
 
-        @ColumnInfo(name = KeyMapDao.KEY_ENABLED)
-        var isEnabled: Boolean = true
+    @ColumnInfo(name = KeyMapDao.KEY_ENABLED)
+    var isEnabled: Boolean = true
 ) {
     @Embedded
     var action: Action? = null
@@ -63,8 +63,6 @@ class KeyMap(
     }
 
     fun containsTrigger(keyCodes: List<Int>): Boolean {
-        return triggerList.any { trigger ->
-            trigger.keys.toTypedArray().contentEquals(keyCodes.toTypedArray())
-        }
+        return triggerList.any { trigger -> keyCodes.containsAll(trigger.keys) }
     }
 }

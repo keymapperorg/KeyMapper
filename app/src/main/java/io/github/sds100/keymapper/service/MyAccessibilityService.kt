@@ -9,7 +9,6 @@ import android.media.AudioManager
 import android.os.Build
 import android.os.Handler
 import android.os.SystemClock
-import android.provider.Settings
 import android.util.Log
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
@@ -80,64 +79,11 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
         private const val HOLD_DOWN_DELAY = 400L
 
         /**
-         * Enable this accessibility service. REQUIRES ROOT
-         */
-        fun enableServiceInSettingsRoot() {
-            val className = MyAccessibilityService::class.java.name
-
-            RootUtils.changeSecureSetting("enabled_accessibility_services", "$PACKAGE_NAME/$className")
-        }
-
-        /**
-         * Disable this accessibility service. REQUIRES ROOT
-         */
-        fun disableServiceInSettingsRoot() {
-            RootUtils.executeRootCommand("settings put secure enabled_accessibility_services \"\"")
-        }
-
-        fun openAccessibilitySettings(ctx: Context) {
-            try {
-                val settingsIntent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-                settingsIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-
-                ctx.startActivity(settingsIntent)
-            } catch (e: Exception) {
-                ctx.toast(R.string.error_cant_find_accessibility_settings_page)
-            }
-        }
-
-        /**
-         * @return whether the accessibility service is enabled
-         */
-        fun isServiceEnabled(ctx: Context): Boolean {
-            /* get a list of all the enabled accessibility services.
-             * The AccessibilityManager.getEnabledAccessibilityServices() method just returns an empty
-             * list. :(*/
-            val settingValue = Settings.Secure.getString(
-                    ctx.contentResolver,
-                    Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
-
-            //it can be null if the user has never interacted with accessibility settings before
-            if (settingValue != null) {
-                /* cant just use .contains because the debug and release accessibility service both contain
-                   io.github.sds100.keymapper. the enabled_accessibility_services are stored as
-
-                     io.github.sds100.keymapper.debug/io.github.sds100.keymapper.service.MyAccessibilityService
-                     :io.github.sds100.keymapper/io.github.sds100.keymapper.service.MyAccessibilityService
-
-                     without the new line before the :
-                */
-                return settingValue.split(':').any { it.split('/')[0] == ctx.packageName }
-            }
-
-            return false
-        }
-
-        /**
          * Some keys need to be consumed on the up event to prevent them from working they way they are intended to.
          */
         private val KEYS_TO_CONSUME_UP_EVENT = listOf(
-                KeyEvent.KEYCODE_HOME
+            KeyEvent.KEYCODE_HOME,
+            KeyEvent.KEYCODE_APP_SWITCH
         )
     }
 
@@ -146,8 +92,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
      */
     private val mLongPressDelay
         get() = ctx.defaultSharedPreferences.getInt(
-                ctx.str(R.string.key_pref_long_press_delay),
-                ctx.int(R.integer.default_value_long_press_delay)).toLong()
+            ctx.str(R.string.key_pref_long_press_delay),
+            ctx.int(R.integer.default_value_long_press_delay)).toLong()
 
     private var mPaused = false
 
@@ -214,8 +160,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
                 ACTION_TEST_ACTION -> {
                     intent.getSerializableExtra(EXTRA_ACTION)?.let { action ->
                         mActionPerformerDelegate.performAction(
-                                action = action as Action,
-                                flags = 0x0)
+                            action = action as Action,
+                            flags = 0x0)
                     }
                 }
 
@@ -325,7 +271,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
         mLifecycleRegistry.currentState = Lifecycle.State.STARTED
 
         mActionPerformerDelegate = ActionPerformerDelegate(
-                iContext = this, iPerformAccessibilityAction = this, lifecycle = lifecycle)
+            iContext = this, iPerformAccessibilityAction = this, lifecycle = lifecycle)
 
         //listen for events from NewKeymapActivity
         val intentFilter = IntentFilter()
@@ -413,7 +359,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
 
                     /*only imitate a short press for a button if the user hasn't mapped it to a short press action */
                     if (!performedShortPress &&
-                            mLongPressPendingActions.any { it.trigger.keys.contains(event.keyCode) }) {
+                        mLongPressPendingActions.any { it.trigger.keys.contains(event.keyCode) }) {
                         imitateButtonPress(event.keyCode)
                     }
                 } else {
@@ -517,8 +463,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
 
                     } else {
                         if (keymap.action!!.isVolumeAction
-                                || keymap.action!!.type == ActionType.KEY
-                                || keymap.action!!.type == ActionType.KEYCODE) {
+                            || keymap.action!!.type == ActionType.KEY
+                            || keymap.action!!.type == ActionType.KEYCODE) {
 
                             val runnable = object : PendingAction(trigger) {
                                 var flags = removeFlag(keymap.flags, FlagUtils.FLAG_VIBRATE)
@@ -547,9 +493,9 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
 
         } catch (e: Exception) {
             Logger.write(ctx,
-                    isError = true,
-                    title = "Exception in onKeyEvent()",
-                    message = e.stackTrace.toString())
+                isError = true,
+                title = "Exception in onKeyEvent()",
+                message = e.stackTrace.toString())
 
             if (BuildConfig.DEBUG) {
                 Log.e(this::class.java.simpleName, "ONKEYEVENT CRASH")
@@ -585,10 +531,10 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
     private fun imitateButtonPress(keyCode: Int) {
         when (keyCode) {
             KeyEvent.KEYCODE_VOLUME_UP -> AudioUtils.adjustVolume(ctx, AudioManager.ADJUST_RAISE,
-                    showVolumeUi = true)
+                showVolumeUi = true)
 
             KeyEvent.KEYCODE_VOLUME_DOWN -> AudioUtils.adjustVolume(ctx, AudioManager.ADJUST_LOWER,
-                    showVolumeUi = true)
+                showVolumeUi = true)
 
             KeyEvent.KEYCODE_BACK -> performGlobalAction(GLOBAL_ACTION_BACK)
             KeyEvent.KEYCODE_HOME -> performGlobalAction(GLOBAL_ACTION_HOME)
@@ -615,27 +561,4 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
 
         Log.i(this::class.java.simpleName, "Consumed key event ${event.keyCode} ${event.action}")
     }
-}
-
-/**
- * @return The node to find. Returns null if the node doesn't match the predicate
- */
-fun AccessibilityNodeInfo?.findNodeRecursively(
-        nodeInfo: AccessibilityNodeInfo? = this,
-        depth: Int = 0,
-        predicate: (node: AccessibilityNodeInfo) -> Boolean
-): AccessibilityNodeInfo? {
-    if (nodeInfo == null) return null
-
-    if (predicate(nodeInfo)) return nodeInfo
-
-    for (i in 0 until nodeInfo.childCount) {
-        val node = findNodeRecursively(nodeInfo.getChild(i), depth + 1, predicate)
-
-        if (node != null) {
-            return node
-        }
-    }
-
-    return null
 }

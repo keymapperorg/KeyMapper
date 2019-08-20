@@ -1,11 +1,13 @@
 package io.github.sds100.keymapper.activity
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
+import androidx.annotation.RequiresApi
 import androidx.core.content.edit
 import com.heinrichreimersoftware.materialintro.app.IntroActivity
 import com.heinrichreimersoftware.materialintro.slide.SimpleSlide
@@ -14,6 +16,8 @@ import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.DexUtils.isDexSupported
 import io.github.sds100.keymapper.util.FirebaseUtils
+import io.github.sds100.keymapper.util.PermissionUtils
+import io.github.sds100.keymapper.util.isPermissionGranted
 import io.github.sds100.keymapper.util.str
 import org.jetbrains.anko.defaultSharedPreferences
 
@@ -21,6 +25,7 @@ import org.jetbrains.anko.defaultSharedPreferences
  * Created by sds100 on 07/07/2019.
  */
 
+@RequiresApi(Build.VERSION_CODES.M)
 class IntroActivity : IntroActivity() {
 
     companion object {
@@ -35,6 +40,7 @@ class IntroActivity : IntroActivity() {
             backgroundDark(R.color.redDark)
             image(R.mipmap.ic_launcher_round)
             canGoBackward(true)
+            scrollable(true)
         }.build()
     }
 
@@ -46,6 +52,7 @@ class IntroActivity : IntroActivity() {
             backgroundDark(R.color.blueDark)
             image(R.drawable.ic_battery_std_white_64dp)
             canGoBackward(true)
+            scrollable(true)
 
             buttonCtaLabel(R.string.showcase_disable_battery_optimisation_button)
             buttonCtaClickListener {
@@ -63,6 +70,7 @@ class IntroActivity : IntroActivity() {
             backgroundDark(R.color.orangeDark)
             image(R.drawable.ic_dock_white_64dp)
             canGoBackward(true)
+            scrollable(true)
         }.build()
     }
 
@@ -74,6 +82,7 @@ class IntroActivity : IntroActivity() {
             backgroundDark(R.color.greenDark)
             image(R.drawable.ic_bug_white_64dp)
             canGoBackward(true)
+            scrollable(true)
 
             buttonCtaLabel(R.string.pos_opt_in)
             buttonCtaClickListener {
@@ -85,6 +94,23 @@ class IntroActivity : IntroActivity() {
 
                 nextSlide()
                 removeSlide(this)
+            }
+        }.build()
+    }
+
+    private val mDndAccessSlide: Slide by lazy {
+        SimpleSlide.Builder().apply {
+            title(R.string.showcase_dnd_access_title)
+            description(R.string.showcase_dnd_access_description)
+            background(R.color.red)
+            backgroundDark(R.color.redDark)
+            image(R.drawable.ic_do_not_disturb_white_64dp)
+            canGoBackward(true)
+            scrollable(true)
+
+            buttonCtaLabel(R.string.pos_grant)
+            buttonCtaClickListener {
+                PermissionUtils.requestPermission(this@IntroActivity, Manifest.permission.ACCESS_NOTIFICATION_POLICY)
             }
         }.build()
     }
@@ -111,6 +137,10 @@ class IntroActivity : IntroActivity() {
         }
 
         addSlide(mDataCollectionSlide)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            addSlide(mDndAccessSlide)
+        }
     }
 
     override fun onResume() {
@@ -125,6 +155,11 @@ class IntroActivity : IntroActivity() {
             currentSlide == mBatteryOptimisationSlide) {
             nextSlide()
             removeSlide(mBatteryOptimisationSlide)
+        }
+
+        if (isPermissionGranted(Manifest.permission.ACCESS_NOTIFICATION_POLICY) && currentSlide == mDndAccessSlide) {
+            nextSlide()
+            removeSlide(mDndAccessSlide)
         }
     }
 }

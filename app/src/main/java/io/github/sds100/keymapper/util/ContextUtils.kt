@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.util
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
@@ -29,16 +30,16 @@ fun View.str(@StringRes resId: Int, formatArgs: Any? = null): String = context.s
 fun Context.bool(@BoolRes resId: Int): Boolean = resources.getBoolean(resId)
 
 fun View.bool(
-        attributeSet: AttributeSet,
-        @StyleableRes styleableId: IntArray,
-        @StyleableRes attrId: Int,
-        defaultValue: Boolean = false
+    attributeSet: AttributeSet,
+    @StyleableRes styleableId: IntArray,
+    @StyleableRes attrId: Int,
+    defaultValue: Boolean = false
 ) = context.bool(attributeSet, styleableId, attrId, defaultValue)
 
 fun Context.resourceId(
-        attributeSet: AttributeSet,
-        @StyleableRes styleableId: IntArray,
-        @StyleableRes attrId: Int): Int? {
+    attributeSet: AttributeSet,
+    @StyleableRes styleableId: IntArray,
+    @StyleableRes attrId: Int): Int? {
 
     val typedArray = theme.obtainStyledAttributes(attributeSet, styleableId, 0, 0)
     var attrValue: Int?
@@ -59,10 +60,10 @@ fun Context.resourceId(
  * Get a boolean from an attribute
  */
 fun Context.bool(
-        attributeSet: AttributeSet,
-        @StyleableRes styleableId: IntArray,
-        @StyleableRes attrId: Int,
-        defaultValue: Boolean = false
+    attributeSet: AttributeSet,
+    @StyleableRes styleableId: IntArray,
+    @StyleableRes attrId: Int,
+    defaultValue: Boolean = false
 ): Boolean {
     val typedArray = theme.obtainStyledAttributes(attributeSet, styleableId, 0, 0)
 
@@ -97,7 +98,7 @@ fun Context.str(attributeSet: AttributeSet, @StyleableRes styleableId: IntArray,
 }
 
 fun View.str(attributeSet: AttributeSet, @StyleableRes styleableId: IntArray, @StyleableRes attrId: Int) =
-        context.str(attributeSet, styleableId, attrId)
+    context.str(attributeSet, styleableId, attrId)
 
 /**
  * Get a resource drawable. Can be safely used to get vector drawables on pre-lollipop.
@@ -135,14 +136,41 @@ inline fun <reified T> Context.getSystemSetting(name: String): T? {
         }
     } catch (e: Settings.SettingNotFoundException) {
         Logger.write(
-                this,
-                isError = true,
-                title = "Exception",
-                message = "SettingNotFoundException: $name in ContentUtils")
+            this,
+            isError = true,
+            title = "Exception",
+            message = "SettingNotFoundException: $name in ContentUtils")
         null
     }
 }
 
+/**
+ * @return If the setting can't be found, it returns null
+ */
+inline fun <reified T> Context.getSecureSetting(name: String): T? {
+    return try {
+        when (T::class) {
+
+            Int::class -> Settings.Secure.getInt(contentResolver, name) as T?
+            String::class -> Settings.Secure.getString(contentResolver, name) as T?
+            Float::class -> Settings.Secure.getFloat(contentResolver, name) as T?
+            Long::class -> Settings.Secure.getLong(contentResolver, name) as T?
+
+            else -> {
+                throw Exception("Setting type ${T::class} is not supported")
+            }
+        }
+    } catch (e: Settings.SettingNotFoundException) {
+        Logger.write(
+            this,
+            isError = true,
+            title = "Exception",
+            message = "SettingNotFoundException: $name in ContentUtils")
+        null
+    }
+}
+
+@RequiresPermission(Manifest.permission.WRITE_SETTINGS)
 inline fun <reified T> Context.putSystemSetting(name: String, value: T) {
 
     when (T::class) {
@@ -151,6 +179,21 @@ inline fun <reified T> Context.putSystemSetting(name: String, value: T) {
         String::class -> Settings.System.putString(contentResolver, name, value as String)
         Float::class -> Settings.System.putFloat(contentResolver, name, value as Float)
         Long::class -> Settings.System.putLong(contentResolver, name, value as Long)
+
+        else -> {
+            throw Exception("Setting type ${T::class} is not supported")
+        }
+    }
+}
+
+@RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
+inline fun <reified T> Context.putSecureSetting(name: String, value: T) {
+
+    when (T::class) {
+        Int::class -> Settings.Secure.putInt(contentResolver, name, value as Int)
+        String::class -> Settings.Secure.putString(contentResolver, name, value as String)
+        Float::class -> Settings.Secure.putFloat(contentResolver, name, value as Float)
+        Long::class -> Settings.Secure.putLong(contentResolver, name, value as Long)
 
         else -> {
             throw Exception("Setting type ${T::class} is not supported")

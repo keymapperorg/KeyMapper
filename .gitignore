@@ -10,12 +10,6 @@
 /captures
 .externalNativeBuild
 libs/
-src/main/java/io/github/sds100/keymapper/Adapters/SelectableAdapter.kt
-src/main/java/io/github/sds100/keymapper/AttrUtils.kt
-src/main/java/io/github/sds100/keymapper/ISelectionProvider.kt
-src/main/java/io/github/sds100/keymapper/SelectableActionMode.kt
-src/main/java/io/github/sds100/keymapper/SelectableBackground.kt
-src/main/res/menu/menu_multi_select.xml
 ### Android template
 # Built application files
 *.apk

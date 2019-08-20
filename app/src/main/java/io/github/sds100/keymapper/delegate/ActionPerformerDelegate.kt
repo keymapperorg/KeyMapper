@@ -20,7 +20,6 @@ import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.interfaces.IContext
 import io.github.sds100.keymapper.interfaces.IPerformAccessibilityAction
 import io.github.sds100.keymapper.service.MyIMEService
-import io.github.sds100.keymapper.service.findNodeRecursively
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.FlagUtils.FLAG_SHOW_VOLUME_UI
 import io.github.sds100.keymapper.util.FlagUtils.FLAG_VIBRATE
@@ -33,9 +32,9 @@ import org.jetbrains.anko.toast
  */
 
 class ActionPerformerDelegate(
-        iContext: IContext,
-        iPerformAccessibilityAction: IPerformAccessibilityAction,
-        lifecycle: Lifecycle
+    iContext: IContext,
+    iPerformAccessibilityAction: IPerformAccessibilityAction,
+    lifecycle: Lifecycle
 ) : IContext by iContext, IPerformAccessibilityAction by iPerformAccessibilityAction {
 
     companion object {
@@ -129,14 +128,14 @@ class ActionPerformerDelegate(
 
         ctx.apply {
             if (defaultSharedPreferences.getBoolean(
-                            str(R.string.key_pref_force_vibrate),
-                            bool(R.bool.default_value_force_vibrate)
-                    ) or containsFlag(flags, FLAG_VIBRATE)) {
+                    str(R.string.key_pref_force_vibrate),
+                    bool(R.bool.default_value_force_vibrate)
+                ) or containsFlag(flags, FLAG_VIBRATE)) {
 
                 val vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
                 val vibrateDuration = defaultSharedPreferences.getInt(
-                        str(R.string.key_pref_vibrate_duration),
-                        int(R.integer.default_value_vibrate_duration)
+                    str(R.string.key_pref_vibrate_duration),
+                    int(R.integer.default_value_vibrate_duration)
                 ).toLong()
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -184,19 +183,19 @@ class ActionPerformerDelegate(
 
                 SystemAction.VOLUME_DECREASE_STREAM -> getSdkValueForOption(id) { stream ->
                     AudioUtils.adjustSpecificStream(
-                            this,
-                            AudioManager.ADJUST_LOWER,
-                            showVolumeUi,
-                            stream
+                        this,
+                        AudioManager.ADJUST_LOWER,
+                        showVolumeUi,
+                        stream
                     )
                 }
 
                 SystemAction.VOLUME_INCREASE_STREAM -> getSdkValueForOption(id) { stream ->
                     AudioUtils.adjustSpecificStream(
-                            this,
-                            AudioManager.ADJUST_RAISE,
-                            showVolumeUi,
-                            stream
+                        this,
+                        AudioManager.ADJUST_RAISE,
+                        showVolumeUi,
+                        stream
                     )
                 }
 
@@ -249,14 +248,17 @@ class ActionPerformerDelegate(
 
                 SystemAction.LOCK_DEVICE -> RootUtils.executeRootCommand("input keyevent ${KeyEvent.KEYCODE_POWER}")
 
+                SystemAction.SHOW_KEYBOARD_PICKER, SystemAction.SHOW_KEYBOARD_PICKER_ROOT ->
+                    KeyboardUtils.showInputMethodPickerDialogOutsideApp(this)
+
                 SystemAction.SECURE_LOCK_DEVICE -> {
                     val dpm = getSystemService(DEVICE_POLICY_SERVICE) as DevicePolicyManager
                     dpm.lockNow()
                 }
 
                 SystemAction.MOVE_CURSOR_TO_END -> inputKeyEvent(
-                        keyCode = KeyEvent.KEYCODE_MOVE_END,
-                        metaState = KeyEvent.META_CTRL_ON
+                    keyCode = KeyEvent.KEYCODE_MOVE_END,
+                    metaState = KeyEvent.META_CTRL_ON
                 )
 
                 else -> {
@@ -271,15 +273,15 @@ class ActionPerformerDelegate(
 
                         when (id) {
                             SystemAction.VOLUME_UNMUTE -> AudioUtils.adjustVolume(
-                                    this,
-                                    AudioManager.ADJUST_UNMUTE,
-                                    showVolumeUi
+                                this,
+                                AudioManager.ADJUST_UNMUTE,
+                                showVolumeUi
                             )
 
                             SystemAction.VOLUME_MUTE -> AudioUtils.adjustVolume(
-                                    this,
-                                    AudioManager.ADJUST_MUTE,
-                                    showVolumeUi
+                                this,
+                                AudioManager.ADJUST_MUTE,
+                                showVolumeUi
                             )
 
                             SystemAction.VOLUME_TOGGLE_MUTE ->

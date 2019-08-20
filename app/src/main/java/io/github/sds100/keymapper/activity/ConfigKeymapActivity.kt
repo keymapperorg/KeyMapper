@@ -175,7 +175,7 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
 
         /* disable "Record Trigger" button if the service is disabled because otherwise the button
          * wouldn't do anything*/
-        val isAccessibilityServiceEnabled = MyAccessibilityService.isServiceEnabled(this)
+        val isAccessibilityServiceEnabled = AccessibilityUtils.isServiceEnabled(this)
 
         buttonRecordTrigger.isEnabled = isAccessibilityServiceEnabled
 
@@ -183,8 +183,8 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
             mRecordTriggerDisabledTapTarget?.dismiss(true)
         } else {
             val tapTarget = TapTarget.forView(buttonRecordTrigger,
-                    str(R.string.showcase_record_trigger_title),
-                    str(R.string.showcase_record_trigger_description)).apply {
+                str(R.string.showcase_record_trigger_title),
+                str(R.string.showcase_record_trigger_description)).apply {
                 tintTarget(false)
             }
 
@@ -259,7 +259,7 @@ abstract class ConfigKeymapActivity : AppCompatActivity() {
             REQUEST_CODE_ACTION -> {
                 if (data != null) {
                     viewModel.keyMap.action =
-                            Gson().fromJson(data.getStringExtra(Action.EXTRA_ACTION))
+                        Gson().fromJson(data.getStringExtra(Action.EXTRA_ACTION))
                 }
             }
 

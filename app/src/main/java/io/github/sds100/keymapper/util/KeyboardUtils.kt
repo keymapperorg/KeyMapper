@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.util
 
+import android.Manifest
 import android.accessibilityservice.AccessibilityService
 import android.content.Context
 import android.content.Intent
@@ -7,10 +8,10 @@ import android.os.Build
 import android.provider.Settings
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.RequiresApi
+import androidx.annotation.RequiresPermission
 import androidx.core.content.edit
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.WidgetsManager
-import io.github.sds100.keymapper.onSuccess
 import io.github.sds100.keymapper.result
 import io.github.sds100.keymapper.service.MyIMEService
 import org.jetbrains.anko.alert
@@ -23,25 +24,25 @@ import org.jetbrains.anko.toast
  */
 
 object KeyboardUtils {
+    @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
     fun switchToKeyMapperIme(ctx: Context) = ctx.apply {
-        fun showDialog() {
-            val hasRootPermission = RootUtils.checkAppHasRootPermission(this)
+        val shownWarningDialog = defaultSharedPreferences.getBoolean(
+            str(R.string.key_pref_shown_cant_use_virtual_keyboard_message),
+            bool(R.bool.default_value_shown_cant_use_virtual_keyboard_message)
+        )
 
-            if (hasRootPermission) {
-                MyIMEService.getImeId(this).result().onSuccess {
-                    switchIme(it)
-                }
-            } else {
-                showInputMethodPicker(this)
+        fun switch() {
+            if (!haveWriteSecureSettingsPermission) {
+                toast(R.string.error_need_write_secure_settings_permission).show()
+                return
+            }
+
+            if (MyIMEService.getImeId(ctx).result().isSuccess) {
+                switchIme(ctx, MyIMEService.getImeId(ctx)!!)
             }
         }
 
-        val shownDialog = defaultSharedPreferences.getBoolean(
-                str(R.string.key_pref_shown_cant_use_virtual_keyboard_message),
-                bool(R.bool.default_value_shown_cant_use_virtual_keyboard_message)
-        )
-
-        if (!shownDialog) {
+        if (!shownWarningDialog) {
             alert {
                 messageResource = R.string.dialog_message_cant_use_virtual_keyboard
                 okButton {
@@ -49,12 +50,17 @@ object KeyboardUtils {
                         putBoolean(str(R.string.key_pref_shown_cant_use_virtual_keyboard_message), true)
                     }
 
-                    showDialog()
+                    switch()
                 }
             }.show()
         } else {
-            showDialog()
+            switch()
         }
+    }
+
+    @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
+    fun switchIme(ctx: Context, imeId: String) {
+        ctx.putSecureSetting(Settings.Secure.DEFAULT_INPUT_METHOD, imeId)
     }
 
     fun openImeSettings(ctx: Context) {
@@ -86,10 +92,6 @@ object KeyboardUtils {
             val command = "am broadcast -a com.android.server.InputMethodManagerService.SHOW_INPUT_METHOD_PICKER"
             RootUtils.executeRootCommand(command)
         }
-    }
-
-    fun switchIme(imeId: String) {
-        RootUtils.changeSecureSetting(Settings.Secure.DEFAULT_INPUT_METHOD, imeId)
     }
 }
 

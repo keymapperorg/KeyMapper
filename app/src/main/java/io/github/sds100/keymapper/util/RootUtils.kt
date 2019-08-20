@@ -2,8 +2,8 @@ package io.github.sds100.keymapper.util
 
 import android.content.Context
 import android.content.Intent
-import io.github.sds100.keymapper.activity.SettingsActivity
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.activity.SettingsActivity
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.cancelButton
 import org.jetbrains.anko.defaultSharedPreferences
@@ -22,8 +22,8 @@ object RootUtils {
 
     fun checkAppHasRootPermission(ctx: Context): Boolean {
         return ctx.defaultSharedPreferences.getBoolean(
-                ctx.str(R.string.key_pref_allow_root_features),
-                ctx.bool(R.bool.default_value_allow_root_features))
+            ctx.str(R.string.key_pref_root_permission),
+            ctx.bool(R.bool.default_value_root_permission))
     }
 
     fun promptForRootPermission(ctx: Context) {
@@ -37,9 +37,5 @@ object RootUtils {
             }
             cancelButton { dialog -> dialog.cancel() }
         }.show()
-    }
-
-    fun changeSecureSetting(name: String, value: String) {
-        RootUtils.executeRootCommand("settings put secure $name $value")
     }
 }

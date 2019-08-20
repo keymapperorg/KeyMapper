@@ -6,7 +6,7 @@ apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 29
-    buildToolsVersion = '29.0.1'
+    buildToolsVersion = '29.0.2'
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -17,14 +17,14 @@ android {
         applicationId "io.github.sds100.keymapper"
         minSdkVersion 19
         targetSdkVersion 29
-        versionCode 19
-        versionName "1.1.1"
+        versionCode 20
+        versionName "1.1.2"
         vectorDrawables.useSupportLibrary = true
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
