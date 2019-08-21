@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. This projec
  
 ## [Unreleased](https://github.com/sds100/KeyMapper/tree/develop)
 
+## [1.1.3](https://github.com/sds100/KeyMapper/releases/tag/v1.1.3)
+#### 20 Aug 2019
+### Bug Fixes
+- App crashed after updating.
+
 ## [1.1.2](https://github.com/sds100/KeyMapper/releases/tag/v1.1.2)
 #### 19 Aug 2019
 ### Bug Fixes
