@@ -20,3 +20,6 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 -keepclassmembers enum * { *; }
+
+-keep class io.github.sds100.keymapper.** { *; }
+-keep interface io.github.sds100.keymapper.** { *; }
