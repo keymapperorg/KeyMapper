@@ -23,3 +23,4 @@
 
 -keep class io.github.sds100.keymapper.** { *; }
 -keep interface io.github.sds100.keymapper.** { *; }
+-keep class com.google.android.material.** { *; }
