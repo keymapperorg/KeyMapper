@@ -7,7 +7,7 @@ Key Mapper is a free and open source Android app that can map a single or multip
 
 [XDA Developers thread](https://forum.xda-developers.com/android/apps-games/app-keyboard-button-mapper-t3914005)  
 
-[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/M4M41032E)  
+
 
 ![](app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png?raw=true)
 <a href='https://play.google.com/store/apps/details?id=io.github.sds100.keymapper&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_gb/badges/images/generic/en_badge_web_generic.png' height=128px/> </a> <a href='https://t.me/key_mapper'><img alt='Telegram Channel' src='https://telegram.org/img/t_logo.png' height=128px/> </a>
