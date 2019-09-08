@@ -15,7 +15,7 @@ android {
 
     defaultConfig {
         applicationId "io.github.sds100.keymapper"
-        minSdkVersion 19
+        minSdkVersion 17
         targetSdkVersion 29
         versionCode 23
         versionName "1.2.0-alpha"
