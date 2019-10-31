@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 29
@@ -94,11 +93,6 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     implementation "androidx.room:room-runtime:$room_version"
 
-    implementation 'com.google.firebase:firebase-core:17.0.1'
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
-
     kapt "android.arch.lifecycle:compiler:1.1.1"
     kapt "androidx.room:room-compiler:$room_version"
 }
-
-apply plugin: 'com.google.gms.google-services'

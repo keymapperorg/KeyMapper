@@ -2,12 +2,6 @@
 <androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <androidx.preference.SwitchPreference
-        android:defaultValue="@bool/default_value_data_collection"
-        android:key="@string/key_pref_data_collection"
-        android:summary="@string/summary_pref_data_collection"
-        android:title="@string/title_pref_data_collection" />
-
-    <androidx.preference.SwitchPreference
         android:defaultValue="@bool/default_value_show_toast"
         android:key="@string/key_pref_show_toast_when_action_performed"
         android:summary="@string/summary_pref_show_toast_when_action_performed"
