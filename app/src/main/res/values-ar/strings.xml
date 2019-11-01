@@ -137,8 +137,6 @@
     <string name="summary_pref_show_ime_notification">Show a persistent notification to allow you to pick a keyboard.</string>
     <string name="title_pref_show_toggle_remappings_notification">Pause/resume remappings notification</string>
     <string name="summary_pref_show_toggle_remappings_notification">Show a persistent notification which starts/pauses your remaps and has a link to start/stop the accessibility service.</string>
-    <string name="title_pref_data_collection">الاشتراك في تحليلات مجهولة</string>
-    <string name="summary_pref_data_collection">هل تريد السماح لـ Key Mapper بجمع البيانات مجهولة الهوية حول كيفية استخدامها (مثل تقارير الأعطال)؟ يجب عليك الاشتراك سيتم جمع البيانات بواسطة Google Firebase. تقع سياسة الخصوصية في صفحة حول التطبيق.</string>
     <string name="title_pref_bluetooth_devices">Choose bluetooth devices…</string>
     <string name="title_pref_auto_show_ime_picker">Automatically show keyboard picker</string>
     <string name="summary_pref_auto_show_ime_picker">When a Bluetooth device you have chosen connects or disconnects, the keyboard picker will show automatically. Choose the devices below.</string>
@@ -203,8 +201,6 @@
     <string name="showcase_disable_battery_optimisation_button">إيقاف التشغيل</string>
     <string name="showcase_dex_mode_supported_title">يبدو أن جهازك يدعم Samsung Dex</string>
     <string name="showcase_dex_mode_supported_message">لا تسمح Samsung للتطبيقات التي تحتوي على لوحة مفاتيح تابعة للجهات الخارجية بفتحها أثناء وضع Dex. لذلك ، لن يتم فتح هذا التطبيق ولن تعمل لوحة المفاتيح Key Mapper أثناء وجودك في وضع Dex. ستظل خرائطك الرئيسية التي لا تتطلب لوحة المفاتيح Key Mapper تعمل أثناء وجودك في وضع Dex.</string>
-    <string name="showcase_data_collection_title">تحليلات مجهولة</string>
-    <string name="showcase_data_collection_message">هل تريد السماح لـ Key Mapper بجمع البيانات مجهولة الهوية حول كيفية استخدامها (مثل تقارير الأعطال)؟ يجب عليك الاشتراك سيتم جمع البيانات بواسطة Google Firebase. تقع سياسة الخصوصية في صفحة حول التطبيق. انقر فوق \"الاشتراك\" للإشتراك. إذا لم تقم بذلك ، فستظل غير مشترك.</string>
     <string name="showcase_dnd_access_title">Do Not Disturb Access</string>
     <string name="showcase_dnd_access_description">The app needs Do Not Disturb access if you want actions which change the volume and remapped volume buttons to work while in Do Not Disturb mode.</string>
     <!-- Showcase -->
