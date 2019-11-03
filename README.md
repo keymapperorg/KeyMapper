@@ -49,4 +49,33 @@ Additional labels can be used as a suffix. e.g "alpha".
 #### Version codes
 The version code in the develop branch should always be the highest. Therefore, when a new version is released in the release branch, it should be incremented as well.
 
+### Commit message format
+
+Format:
+```
+<type>: <subject [issue it is related to including the #]
+
+body
+```
+
+Every feature or bug fix commit should have an issue associated with it. This forces the developer to plan what they are doing, which improves efficiency. A feature should be split up into multiple tasks and each task should have its own commit. The feature should be developd on a sepearate branch and these commits should be squashed into a single commit when the branch is merged.
+
+#### Example
+```
+feat: This a new feature #100
+
+Extra information about the feature goes in here. It should be wrapped to
+roughly 80 characters.
+```
+
+#### Types
+- feat: a new feature
+- fix: a bug fix
+- docs: changes to documentation
+- style: formatting, missing semi colons, etc; no code change
+- refactor: refactoring production code
+- test: adding tests, refactoring test; no production code change
+- chore: updating build tasks, package manager configs, version name changes, etc; no production code change
+
+
 The README, License, Credits, Changelog and Privacy Policy files should just be changed in the master branch.
