@@ -47,4 +47,8 @@
         android:title="@string/pref_title_license"
         app:fileUrl="@string/url_license" />
 
+    <io.github.sds100.keymapper.view.MarkdownDialogPreference
+        android:title="@string/pref_title_privacy_policy"
+        app:fileUrl="@string/url_privacy_policy" />
+
 </androidx.preference.PreferenceScreen>
