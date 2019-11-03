@@ -56,6 +56,8 @@ Format:
 <type>: <subject [issue it is related to including the #]
 
 body
+
+footer
 ```
 
 Every feature or bug fix commit should have an issue associated with it. This forces the developer to plan what they are doing, which improves efficiency. A feature should be split up into multiple tasks and each task should have its own commit. The feature should be developd on a sepearate branch and these commits should be squashed into a single commit when the branch is merged.
@@ -76,6 +78,6 @@ roughly 80 characters.
 - refactor: refactoring production code
 - test: adding tests, refactoring test; no production code change
 - chore: updating build tasks, package manager configs, version name changes, etc; no production code change
-- release: a new release. Put issues it resolves in the body.
+- release: a new release. Put issues it resolves in the footer. E.g "Resolves: #543"
 
 The README, License, Credits, Changelog and Privacy Policy files should just be changed in the master branch.
