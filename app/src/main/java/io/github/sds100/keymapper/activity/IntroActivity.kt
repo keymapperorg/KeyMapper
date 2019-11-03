@@ -8,18 +8,14 @@ import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
 import androidx.annotation.RequiresApi
-import androidx.core.content.edit
 import com.heinrichreimersoftware.materialintro.app.IntroActivity
 import com.heinrichreimersoftware.materialintro.slide.SimpleSlide
 import com.heinrichreimersoftware.materialintro.slide.Slide
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.DexUtils.isDexSupported
-import io.github.sds100.keymapper.util.FirebaseUtils
 import io.github.sds100.keymapper.util.PermissionUtils
 import io.github.sds100.keymapper.util.isPermissionGranted
-import io.github.sds100.keymapper.util.str
-import org.jetbrains.anko.defaultSharedPreferences
 
 /**
  * Created by sds100 on 07/07/2019.
@@ -74,30 +70,6 @@ class IntroActivity : IntroActivity() {
         }.build()
     }
 
-    private val mDataCollectionSlide by lazy {
-        SimpleSlide.Builder().apply {
-            title(R.string.showcase_data_collection_title)
-            description(R.string.showcase_data_collection_message)
-            background(R.color.green)
-            backgroundDark(R.color.greenDark)
-            image(R.drawable.ic_bug_white_64dp)
-            canGoBackward(true)
-            scrollable(true)
-
-            buttonCtaLabel(R.string.pos_opt_in)
-            buttonCtaClickListener {
-                defaultSharedPreferences.edit {
-                    putBoolean(str(R.string.key_pref_data_collection), true)
-                }
-
-                FirebaseUtils.setFirebaseDataCollection(this@IntroActivity)
-
-                nextSlide()
-                removeSlide(this)
-            }
-        }.build()
-    }
-
     private val mDndAccessSlide: Slide by lazy {
         SimpleSlide.Builder().apply {
             title(R.string.showcase_dnd_access_title)
@@ -135,8 +107,6 @@ class IntroActivity : IntroActivity() {
         if (isDexSupported()) {
             addSlide(mDexSlide)
         }
-
-        addSlide(mDataCollectionSlide)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             addSlide(mDndAccessSlide)

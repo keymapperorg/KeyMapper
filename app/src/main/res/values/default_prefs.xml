@@ -7,7 +7,6 @@
     <bool name="default_value_show_volume_dialog_on_adjust">true</bool>
     <bool name="default_value_auto_change_ime_on_connection">false</bool>
     <bool name="default_value_root_permission">false</bool>
-    <bool name="default_value_data_collection">false</bool>
     <bool name="default_value_force_vibrate">false</bool>
     <bool name="default_value_debug">false</bool>
     <bool name="default_value_show_toast_when_error_encountered">true</bool>

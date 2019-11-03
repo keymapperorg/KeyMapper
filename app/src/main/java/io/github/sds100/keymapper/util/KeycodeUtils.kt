@@ -125,7 +125,7 @@ object KeycodeUtils {
         }
     }
 
-    private val KEYCODES = listOf(
+    private val KEYCODES = setOf(
         KeyEvent.KEYCODE_SOFT_LEFT,
         KeyEvent.KEYCODE_SOFT_RIGHT,
         KeyEvent.KEYCODE_HOME,
@@ -254,7 +254,6 @@ object KeycodeUtils {
         KeyEvent.KEYCODE_MOVE_HOME,
         KeyEvent.KEYCODE_MOVE_END,
         KeyEvent.KEYCODE_INSERT,
-        KeyEvent.KEYCODE_BACK,
         KeyEvent.KEYCODE_FORWARD,
         KeyEvent.KEYCODE_MEDIA_PLAY,
         KeyEvent.KEYCODE_MEDIA_PAUSE,

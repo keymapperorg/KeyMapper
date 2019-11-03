@@ -17,7 +17,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.Observer
-import com.crashlytics.android.Crashlytics
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import io.github.sds100.keymapper.*
@@ -501,8 +500,6 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
                 Log.e(this::class.java.simpleName, "ONKEYEVENT CRASH")
                 e.printStackTrace()
             }
-
-            Crashlytics.logException(e)
         }
 
         return super.onKeyEvent(event)

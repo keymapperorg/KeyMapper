@@ -11,7 +11,6 @@
     <string name="key_pref_force_vibrate" translatable="false">pref_force_vibrate</string>
     <string name="key_pref_show_ime_notification" translatable="false">pref_show_ime_notification</string>
     <string name="key_pref_show_toggle_remappings_notification" translatable="false">pref_show_remappings_notification</string>
-    <string name="key_pref_data_collection" translatable="false">pref_data_collection</string>
     <string name="key_pref_bluetooth_devices" translatable="false">pref_bluetooth_devices</string>
     <string name="key_pref_auto_show_ime_picker" translatable="false">pref_auto_show_ime_picker</string>
     <string name="key_pref_show_toast_when_action_performed" translatable="false">pref_show_toast_on_perform_action</string>
