@@ -76,6 +76,6 @@ roughly 80 characters.
 - refactor: refactoring production code
 - test: adding tests, refactoring test; no production code change
 - chore: updating build tasks, package manager configs, version name changes, etc; no production code change
-
+- release: a new release. Put issues it resolves in the body.
 
 The README, License, Credits, Changelog and Privacy Policy files should just be changed in the master branch.
