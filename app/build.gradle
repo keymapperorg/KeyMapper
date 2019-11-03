@@ -16,7 +16,7 @@ android {
         applicationId "io.github.sds100.keymapper"
         minSdkVersion 19
         targetSdkVersion 29
-        versionCode 23
+        versionCode 24
         versionName "1.2.0-alpha"
         vectorDrawables.useSupportLibrary = true
     }
