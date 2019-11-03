@@ -22,6 +22,7 @@ android {
     }
 
     buildTypes {
+
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -37,19 +38,20 @@ android {
             int versionBuild = 0
 
             //increment the versionBuild
-            task("autoIncrementBuildNumber") {
+            task("autoIncrementBuildNumber") doLast {
                 if (versionPropsFile.canRead()) {
                     Properties versionProps = new Properties()
                     versionProps.load(new FileInputStream(versionPropsFile))
 
                     //if the version name has changed, reset the build version counter
-                    if (versionProps['VERSION_NAME'].toString() != android.defaultConfig.versionName) {
+                    if (versionProps['VERSION_NAME'].toString() != android.defaultConfig.versionName
+                    || versionProps['CI_BUILD'] == null) {
                         versionBuild = 0
                     } else {
                         versionBuild = versionProps['CI_BUILD'].toInteger()
                     }
 
-                    versionBuild = versionProps['CI_BUILD'].toInteger() + 1
+                    versionBuild += 1
                     versionProps['CI_BUILD'] = versionBuild.toString()
                     versionProps['VERSION_NAME'] = android.defaultConfig.versionName
                     versionProps.store(versionPropsFile.newWriter(), null)
@@ -66,6 +68,12 @@ android {
 
     dataBinding {
         enabled = true
+    }
+}
+
+tasks.whenTaskAdded { task ->
+    if (task.name == 'generateCiBuildConfig') {
+        task.dependsOn autoIncrementBuildNumber
     }
 }
 
