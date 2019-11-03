@@ -10,6 +10,8 @@ If you choose to use my Service, then you agree to the collection and use of inf
 
 While using our Service, Key Mapper will temporarily record the buttons you are pressing. This information is erased once you have stopped pressing the buttons in question. This information will be temporarily stored on your device and is not collected by me in any way.
 
+#### As of version 1.1.5, the Google Analytics for Firebase library has been removed from the app. The rest of this section only applies to versions older than 1.1.5.
+
 The app does use third party services that may collect information used to identify you.
 
 The type of information collected through the Google Analytics for Firebase default implementation includes:
