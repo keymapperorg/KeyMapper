@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file. This projec
  
 ## [Unreleased](https://github.com/sds100/KeyMapper/tree/develop)
 
+## [1.1.5](https://github.com/sds100/KeyMapper/releases/tag/v1.1.5)
+#### 03 Nov 2019
+This is the first release to be released on F-Droid.
+
+### Removed
+- Firebase library.
+
+### Bug Fix
+- KEYCODE_BACK appeared twice in the keycode action list. #247 
+
 ## [1.1.4](https://github.com/sds100/KeyMapper/releases/tag/v1.1.4)
 #### 22 Aug 2019
 ### Bug Fixes
@@ -256,4 +266,3 @@ Changes from 1.1.0 Beta 8:
    - Screenshot
    - Open Google Assistant
    - Open camera
-   
