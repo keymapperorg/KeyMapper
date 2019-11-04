@@ -44,7 +44,7 @@
     <!-- Activity titles -->
     <!-- Menu action titles-->
     <string name="action_settings">Einstellungen</string>
-    <string name="action_done">Erledigt</string>
+    <string name="action_done">Fertig</string>
     <string name="action_select_all">Alle markieren</string>
     <string name="action_delete">Entfernen</string>
     <string name="action_about">About</string>
@@ -100,7 +100,7 @@
     <!-- Dialog messages -->
     <!-- Dialog buttons -->
     <string name="pos_yes">Ja</string>
-    <string name="pos_done">Erledigt</string>
+    <string name="pos_done">Fertig</string>
     <string name="pos_opt_in">Opt in</string>
     <string name="pos_help_page">Help page</string>
     <string name="pos_enable_root_features">Enable root features</string>
@@ -108,7 +108,7 @@
     <string name="neg_stay_out">Stay out</string>
     <string name="neg_no">Nein</string>
     <string name="neg_cancel">Abbrechen</string>
-    <string name="neg_dont_show_again">Nicht erneut anzeigen</string>
+    <string name="neg_dont_show_again">Nicht mehr anzeigen</string>
     <!-- Dialog buttons -->
     <!-- Notification strings -->
     <string name="notification_channel_persistent">Persistent Notifications</string>
@@ -163,10 +163,10 @@
     <string name="summary_pref_category_secure_settings">These options are only enabled if Key Mapper has WRITE_SECURE_SETTINGS permission. There are instructions to grant it in the Help page.</string>
     <!--Preference categories-->
     <!-- About activity-->
-    <string name="pref_title_changelog">Änderungsprotokoll</string>
+    <string name="pref_title_changelog">Changelog</string>
     <string name="pref_title_license">Lizenz</string>
     <string name="pref_title_privacy_policy">Datenschutzerklärung</string>
-    <string name="pref_title_credits">Mitwirkende</string>
+    <string name="pref_title_credits">Credits</string>
     <string name="pref_title_source_code">Source Code</string>
     <string name="pref_title_developer_github">Developer\'s GitHub Profile</string>
     <string name="pref_title_rate_review">Rate and Review</string>
