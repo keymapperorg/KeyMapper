@@ -3,74 +3,74 @@
 <resources>
     <string name="no_action_chosen">无选择动作</string>
     <string name="triggers_header">触发器</string>
-    <string name="accessibility_service_description">Key Mapper needs to use an accessibility service so it can listen to button/key presses and perform the actions you\'ve chosen.
-    The accessibility service only listens for key events and nothing else. Look at the source code, which is linked to in the About section inside the app, if you are paranoid I\'m spying. :)</string>
-    <string name="record_trigger_help">When you click \"record trigger\", you have 5 seconds to press the keys/buttons which will trigger the action. Your trigger will be added after the 5 seconds. Press \"clear\" to clear the keys you have already typed. If a button isn\'t detected here, the device vendor is probably blocking accessibility services from seeing it. Therefore, it can\'t be remapped.</string>
-    <string name="selection_count">%d selected</string>
-    <string name="enable">Enable</string>
-    <string name="open">Open</string>
-    <string name="no_key_maps">You haven\'t created any keymaps!</string>
-    <string name="performing_action">Key Mapper is performing an action…</string>
-    <string name="email_subject">Key Mapper query</string>
-    <string name="log_is_empty">Log is empty!</string>
-    <string name="everything_looks_good">Everything looks good!</string>
-    <string name="warning_the_app_will_work">The app will work but some things might need fixing depending on what you\'re doing.</string>
-    <string name="your_device_doesnt_support_some_actions">Your device doesn\'t support some actions.</string>
-    <string name="tab_unsupported_actions">Unsupported Actions</string>
-    <string name="requires_root">REQUIRES ROOT</string>
-    <string name="caption_action_type_key">Click the key on the keyboard which you want to be entered.
-        \n\nIMPORTANT!
-        This will only work if you have selected the Key Mapper keyboard. This action is best used with a hardware keyboard.</string>
-    <string name="caption_action_type_keycode">IMPORTANT!
-        This will only work if you have selected the Key Mapper keyboard. This action is best used with a hardware keyboard.</string>
-    <string name="switch_enabled">Enabled</string>
-    <string name="disabled">Disabled</string>
-    <string name="key_map_adapter_flags">Flags</string>
-    <string name="description_open_app">Open %s</string>
-    <string name="description_key">Press \'%s\' key</string>
-    <string name="description_text_block">Type \'%s\'</string>
+    <string name="accessibility_service_description">键映射需要使用无障碍服务时期能够监听按键并执行您选择的操作。
+    无障碍服务只能监听按键键事件。 查看应用内关于章节中链接的源代码，如果你怀疑我在偷窥。:)</string>
+    <string name="record_trigger_help">当您点击“录制触发器”时，您有 5 秒钟按下触发动作的键/按钮。 您的触发器将在 5 秒后添加。 按“清除”来清除您已经输入的键。 如果此处未检测到按键，设备供应商可能阻止无障碍服务查看它。因此，它无法映射。</string>
+    <string name="selection_count">已选择 %d 个</string>
+    <string name="enable">启用</string>
+    <string name="open">打开</string>
+    <string name="no_key_maps">您还没有创建任何键映射。</string>
+    <string name="performing_action">键映射正在执行一个操作…</string>
+    <string name="email_subject">键映射查询</string>
+    <string name="log_is_empty">日志为空！</string>
+    <string name="everything_looks_good">一切正常！</string>
+    <string name="warning_the_app_will_work">应用将正常工作，但有些东西可能需要修复，取决于你做什么。</string>
+    <string name="your_device_doesnt_support_some_actions">您的设备不支持一些操作。</string>
+    <string name="tab_unsupported_actions">不支持的动作</string>
+    <string name="requires_root">需要 ROOT</string>
+    <string name="caption_action_type_key">点击键盘上您想要输入的键。
+        \n\n重要！
+        只有在您选择了键映射键盘的情况下生效。 此操作最好用硬件键盘。</string>
+    <string name="caption_action_type_keycode">重要！
+        仅在您选择了键映射键盘后生效。此动作最好用在硬件键盘上。</string>
+    <string name="switch_enabled">已启用</string>
+    <string name="disabled">已禁用</string>
+    <string name="key_map_adapter_flags">标志</string>
+    <string name="description_open_app">打开 %s</string>
+    <string name="description_key">按 \'%s\' 键</string>
+    <string name="description_text_block">输入 \'%s\'</string>
     <string name="description_keycode">%s</string>
-    <string name="enable_device_admin_message">Once you have enabled the device admin, you must DISABLE it if you want to uninstall the app.</string>
+    <string name="enable_device_admin_message">一旦您启用了设备管理器，您必须禁用它才能卸载该应用。</string>
     <!-- URLs -->
     <!-- URLs -->
     <!-- Activity titles -->
-    <string name="title_activity_edit_key_map">Edit Keymap</string>
-    <string name="title_activity_new_key_map">New Keymap</string>
-    <string name="title_choose_action">Choose Action</string>
-    <string name="title_settings">Settings</string>
-    <string name="title_about">About</string>
-    <string name="title_help">Help</string>
-    <string name="title_log">Log</string>
+    <string name="title_activity_edit_key_map">编辑键映射</string>
+    <string name="title_activity_new_key_map">新建键映射</string>
+    <string name="title_choose_action">选择动作</string>
+    <string name="title_settings">设置</string>
+    <string name="title_about">关于</string>
+    <string name="title_help">帮助</string>
+    <string name="title_log">日志</string>
     <!-- Activity titles -->
     <!-- Menu action titles-->
-    <string name="action_settings">Settings</string>
-    <string name="action_done">Done</string>
-    <string name="action_select_all">Select all</string>
-    <string name="action_delete">Delete</string>
-    <string name="action_about">About</string>
-    <string name="action_search">Search</string>
-    <string name="action_help">Help</string>
-    <string name="action_enable">Enable</string>
-    <string name="action_disable">Disable</string>
-    <string name="action_disable_all_keymaps">Disable all</string>
-    <string name="action_enable_all_keymaps">Enable all</string>
-    <string name="action_send_feedback">Send feedback</string>
-    <string name="action_log">Log</string>
-    <string name="action_send_log">Send log</string>
-    <string name="action_change_keyboard">Change Keyboard</string>
+    <string name="action_settings">设置</string>
+    <string name="action_done">完成</string>
+    <string name="action_select_all">全选</string>
+    <string name="action_delete">删除</string>
+    <string name="action_about">关于</string>
+    <string name="action_search">搜索</string>
+    <string name="action_help">帮助</string>
+    <string name="action_enable">启用</string>
+    <string name="action_disable">禁用</string>
+    <string name="action_disable_all_keymaps">全部禁用</string>
+    <string name="action_enable_all_keymaps">全部启用</string>
+    <string name="action_send_feedback">发送反馈</string>
+    <string name="action_log">日志</string>
+    <string name="action_send_log">发送日志</string>
+    <string name="action_change_keyboard">更改键盘</string>
     <!-- Menu action titles-->
     <!-- Button titles -->
-    <string name="button_choose_action">Choose Action</string>
-    <string name="button_record_trigger">Record Trigger</string>
-    <string name="button_clear">Clear</string>
-    <string name="button_add_trigger">Add Trigger</string>
-    <string name="button_test">Test</string>
-    <string name="button_done">Done</string>
-    <string name="button_fix">Fix</string>
-    <string name="button_recording_trigger">Recording Trigger…</string>
+    <string name="button_choose_action">选择动作</string>
+    <string name="button_record_trigger">录制触发器</string>
+    <string name="button_clear">清除</string>
+    <string name="button_add_trigger">添加触发器</string>
+    <string name="button_test">测试</string>
+    <string name="button_done">完成</string>
+    <string name="button_fix">修复</string>
+    <string name="button_recording_trigger">录制触发器…</string>
     <string name="button_recording_trigger_countdown">%d…</string>
-    <string name="button_flags">More</string>
-    <string name="buttonView">View</string>
+    <string name="button_flags">更多</string>
+    <string name="buttonView">查看</string>
     <!-- Button titles -->
     <!-- Content descriptions -->
     <string name="content_description_record_trigger_key_combination">Record trigger key combination</string>
