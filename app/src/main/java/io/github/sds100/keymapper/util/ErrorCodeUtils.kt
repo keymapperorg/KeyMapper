@@ -92,7 +92,7 @@ object ErrorCodeUtils {
         }
     }
 
-    fun isErrorFixable(errorCode: Int) = FIXABLE_ERRORS.contains(errorCode)
+    fun isErrorResolvable(errorCode: Int) = FIXABLE_ERRORS.contains(errorCode)
 
     /**
      * @return a message describing an error code.
