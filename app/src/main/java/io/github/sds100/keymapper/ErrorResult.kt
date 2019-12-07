@@ -41,6 +41,6 @@ val ErrorResult?.isFixable: Boolean
     get() = this != null && ErrorCodeUtils.isErrorFixable(errorCode)
 
 /**
- * @see ErrorCodeUtils.fixError
+ * @see ErrorCodeUtils.resolveError
  */
-fun ErrorResult.fix(ctx: Context) = ErrorCodeUtils.fixError(ctx, this)
+fun ErrorResult.fix(ctx: Context) = ErrorCodeUtils.resolveError(ctx, this)
