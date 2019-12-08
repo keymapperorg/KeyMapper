@@ -81,8 +81,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
          * Some keys need to be consumed on the up event to prevent them from working they way they are intended to.
          */
         private val KEYS_TO_CONSUME_UP_EVENT = listOf(
-            KeyEvent.KEYCODE_HOME,
-            KeyEvent.KEYCODE_APP_SWITCH
+                KeyEvent.KEYCODE_HOME,
+                KeyEvent.KEYCODE_APP_SWITCH
         )
     }
 
@@ -91,8 +91,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
      */
     private val mLongPressDelay
         get() = ctx.defaultSharedPreferences.getInt(
-            ctx.str(R.string.key_pref_long_press_delay),
-            ctx.int(R.integer.default_value_long_press_delay)).toLong()
+                ctx.str(R.string.key_pref_long_press_delay),
+                ctx.int(R.integer.default_value_long_press_delay)).toLong()
 
     private val mShowToastOnActionError
         get() = ctx.defaultSharedPreferences.getBoolean(
@@ -164,8 +164,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
                 ACTION_TEST_ACTION -> {
                     intent.getSerializableExtra(EXTRA_ACTION)?.let { action ->
                         mActionPerformerDelegate.performAction(
-                            action = action as Action,
-                            flags = 0x0)
+                                action = action as Action,
+                                flags = 0x0)
                     }
                 }
 
@@ -275,7 +275,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
         mLifecycleRegistry.currentState = Lifecycle.State.STARTED
 
         mActionPerformerDelegate = ActionPerformerDelegate(
-            iContext = this, iPerformAccessibilityAction = this, lifecycle = lifecycle)
+                iContext = this, iPerformAccessibilityAction = this, lifecycle = lifecycle)
 
         //listen for events from NewKeymapActivity
         val intentFilter = IntentFilter()
@@ -363,7 +363,7 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
 
                     /*only imitate a short press for a button if the user hasn't mapped it to a short press action */
                     if (!performedShortPress &&
-                        mLongPressPendingActions.any { it.trigger.keys.contains(event.keyCode) }) {
+                            mLongPressPendingActions.any { it.trigger.keys.contains(event.keyCode) }) {
                         imitateButtonPress(event.keyCode)
                     }
                 } else {
@@ -470,8 +470,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
 
                     } else {
                         if (keymap.action!!.isVolumeAction
-                            || keymap.action!!.type == ActionType.KEY
-                            || keymap.action!!.type == ActionType.KEYCODE) {
+                                || keymap.action!!.type == ActionType.KEY
+                                || keymap.action!!.type == ActionType.KEYCODE) {
 
                             val runnable = object : PendingAction(trigger) {
                                 var flags = removeFlag(keymap.flags, FlagUtils.FLAG_VIBRATE)
@@ -500,9 +500,9 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
 
         } catch (e: Exception) {
             Logger.write(ctx,
-                isError = true,
-                title = "Exception in onKeyEvent()",
-                message = e.stackTrace.toString())
+                    isError = true,
+                    title = "Exception in onKeyEvent()",
+                    message = e.stackTrace.toString())
 
             if (BuildConfig.DEBUG) {
                 Log.e(this::class.java.simpleName, "ONKEYEVENT CRASH")
@@ -536,10 +536,10 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
     private fun imitateButtonPress(keyCode: Int) {
         when (keyCode) {
             KeyEvent.KEYCODE_VOLUME_UP -> AudioUtils.adjustVolume(ctx, AudioManager.ADJUST_RAISE,
-                showVolumeUi = true)
+                    showVolumeUi = true)
 
             KeyEvent.KEYCODE_VOLUME_DOWN -> AudioUtils.adjustVolume(ctx, AudioManager.ADJUST_LOWER,
-                showVolumeUi = true)
+                    showVolumeUi = true)
 
             KeyEvent.KEYCODE_BACK -> performGlobalAction(GLOBAL_ACTION_BACK)
             KeyEvent.KEYCODE_HOME -> performGlobalAction(GLOBAL_ACTION_HOME)
