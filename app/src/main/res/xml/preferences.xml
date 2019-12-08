@@ -93,8 +93,8 @@
 
     <androidx.preference.PreferenceCategory
         android:key="@string/key_pref_category_root"
-        android:visibility="gone"
-        android:title="@string/title_pref_category_root">
+        android:title="@string/title_pref_category_root"
+        android:visibility="gone">
 
         <!-- This must be at the top of the category-->
         <androidx.preference.Preference
