@@ -11,6 +11,7 @@
     <bool name="default_value_debug">false</bool>
     <bool name="default_value_show_toast_when_error_encountered">true</bool>
     <bool name="default_value_shown_cant_use_virtual_keyboard_message">false</bool>
+    <bool name="default_value_show_toast_on_action_error">true</bool>
 
     <integer name="default_value_long_press_delay">500</integer>
     <integer name="default_value_vibrate_duration">200</integer>

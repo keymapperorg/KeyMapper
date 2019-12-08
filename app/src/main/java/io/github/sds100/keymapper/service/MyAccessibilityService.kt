@@ -94,6 +94,11 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
             ctx.str(R.string.key_pref_long_press_delay),
             ctx.int(R.integer.default_value_long_press_delay)).toLong()
 
+    private val mShowToastOnActionError
+        get() = ctx.defaultSharedPreferences.getBoolean(
+                ctx.str(R.string.key_pref_show_toast_on_action_error),
+                ctx.bool(R.bool.default_value_show_toast_on_action_error))
+
     private var mPaused = false
 
     private val mRecordTriggerRunnable = object : Runnable {
@@ -418,11 +423,14 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
             for (keymap in keyMaps) {
                 val errorResult = ActionUtils.getError(this, keymap.action)
 
-                //if there is no error
+                //if there is an error
                 if (errorResult != null) {
-                    val errorDescription = ErrorCodeUtils.getErrorCodeDescription(this, errorResult)
+                    if (mShowToastOnActionError) {
+                        val errorDescription = ErrorCodeUtils.getErrorCodeDescription(this, errorResult)
 
-                    toast(errorDescription)
+                        toast(errorDescription)
+                    }
+
                     continue
                 }
 
