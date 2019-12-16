@@ -430,6 +430,7 @@
     <string name="action_hide_keyboard">Hide Keyboard</string>
     <string name="action_show_keyboard_picker">Show Keyboard Picker (non-root)</string>
     <string name="action_show_keyboard_picker_root">Show Keyboard Picker (root)</string>
+    <string name="action_open_settings">Open Settings</string>
     <!-- System action labels -->
 
     <!-- System action category labels -->

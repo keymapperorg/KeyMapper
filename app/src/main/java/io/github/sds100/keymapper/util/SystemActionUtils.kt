@@ -50,6 +50,7 @@ import io.github.sds100.keymapper.SystemAction.OPEN_ASSISTANT
 import io.github.sds100.keymapper.SystemAction.OPEN_CAMERA
 import io.github.sds100.keymapper.SystemAction.OPEN_MENU
 import io.github.sds100.keymapper.SystemAction.OPEN_RECENTS
+import io.github.sds100.keymapper.SystemAction.OPEN_SETTINGS
 import io.github.sds100.keymapper.SystemAction.PAUSE_MEDIA
 import io.github.sds100.keymapper.SystemAction.PLAY_PAUSE_MEDIA
 import io.github.sds100.keymapper.SystemAction.PORTRAIT_MODE
@@ -580,6 +581,12 @@ object SystemActionUtils {
             id = CONSUME_KEY_EVENT,
             category = CATEGORY_OTHER,
             descriptionRes = R.string.action_consume_keyevent
+        ),
+        SystemActionDef(
+            id = OPEN_SETTINGS,
+            category = CATEGORY_OTHER,
+            descriptionRes = R.string.action_open_settings,
+            iconRes = R.drawable.ic_outline_settings_24px
         )
     )
 
