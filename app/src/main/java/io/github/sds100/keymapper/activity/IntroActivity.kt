@@ -1,12 +1,14 @@
 package io.github.sds100.keymapper.activity
 
 import android.Manifest
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
+import android.widget.Toast.LENGTH_LONG
 import androidx.annotation.RequiresApi
 import com.heinrichreimersoftware.materialintro.app.IntroActivity
 import com.heinrichreimersoftware.materialintro.slide.SimpleSlide
@@ -16,6 +18,8 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.DexUtils.isDexSupported
 import io.github.sds100.keymapper.util.PermissionUtils
 import io.github.sds100.keymapper.util.isPermissionGranted
+import org.jetbrains.anko.longToast
+import org.jetbrains.anko.toast
 
 /**
  * Created by sds100 on 07/07/2019.
@@ -52,8 +56,12 @@ class IntroActivity : IntroActivity() {
 
             buttonCtaLabel(R.string.showcase_disable_battery_optimisation_button)
             buttonCtaClickListener {
-                val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-                startActivity(intent)
+                try {
+                    val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                    startActivity(intent)
+                } catch (e: ActivityNotFoundException) {
+                    longToast(R.string.error_battery_optimisation_activity_not_found)
+                }
             }
         }.build()
     }

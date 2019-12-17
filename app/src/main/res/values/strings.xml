@@ -339,6 +339,7 @@
 
     <string name="error_the_app_wont_work">Your keymaps won\'t work! Some things need fixing!</string>
     <string name="error_cant_move_to_end_of_text_in_this_field">You can\'t move to the end of the text in this field!</string>
+    <string name="error_battery_optimisation_activity_not_found">Battery optimisation settings not found! If it exists, open it manually.</string>
     <!-- Error messages -->
 
     <!-- System action labels -->
