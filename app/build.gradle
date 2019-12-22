@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 29
@@ -17,12 +16,13 @@ android {
         applicationId "io.github.sds100.keymapper"
         minSdkVersion 17
         targetSdkVersion 29
-        versionCode 23
+        versionCode 25
         versionName "1.2.0-alpha"
         vectorDrawables.useSupportLibrary = true
     }
 
     buildTypes {
+
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -38,19 +38,20 @@ android {
             int versionBuild = 0
 
             //increment the versionBuild
-            task("autoIncrementBuildNumber") {
+            task("autoIncrementBuildNumber") doLast {
                 if (versionPropsFile.canRead()) {
                     Properties versionProps = new Properties()
                     versionProps.load(new FileInputStream(versionPropsFile))
 
                     //if the version name has changed, reset the build version counter
-                    if (versionProps['VERSION_NAME'].toString() != android.defaultConfig.versionName) {
+                    if (versionProps['VERSION_NAME'].toString() != android.defaultConfig.versionName
+                    || versionProps['CI_BUILD'] == null) {
                         versionBuild = 0
                     } else {
                         versionBuild = versionProps['CI_BUILD'].toInteger()
                     }
 
-                    versionBuild = versionProps['CI_BUILD'].toInteger() + 1
+                    versionBuild += 1
                     versionProps['CI_BUILD'] = versionBuild.toString()
                     versionProps['VERSION_NAME'] = android.defaultConfig.versionName
                     versionProps.store(versionPropsFile.newWriter(), null)
@@ -70,6 +71,12 @@ android {
     }
 }
 
+tasks.whenTaskAdded { task ->
+    if (task.name == 'generateCiBuildConfig') {
+        task.dependsOn autoIncrementBuildNumber
+    }
+}
+
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutine_version"
@@ -83,7 +90,7 @@ dependencies {
     implementation 'com.github.mukeshsolanki:MarkdownView-Android:1.0.8'
     implementation 'net.cachapa.expandablelayout:expandablelayout:2.9.2'
     implementation 'com.getkeepsafe.taptargetview:taptargetview:1.12.0'
-    implementation 'com.heinrichreimersoftware:material-intro:master-SNAPSHOT'
+    implementation 'com.heinrichreimersoftware:material-intro:2.0.0'
 
     implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
     implementation 'androidx.core:core-ktx:1.0.2'
@@ -94,11 +101,6 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     implementation "androidx.room:room-runtime:$room_version"
 
-    implementation 'com.google.firebase:firebase-core:17.0.1'
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
-
     kapt "android.arch.lifecycle:compiler:1.1.1"
     kapt "androidx.room:room-compiler:$room_version"
 }
-
-apply plugin: 'com.google.gms.google-services'

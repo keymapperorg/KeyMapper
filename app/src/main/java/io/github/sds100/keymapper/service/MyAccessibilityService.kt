@@ -17,7 +17,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.Observer
-import com.crashlytics.android.Crashlytics
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import io.github.sds100.keymapper.*
@@ -83,7 +82,9 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
          */
         private val KEYS_TO_CONSUME_UP_EVENT = listOf(
             KeyEvent.KEYCODE_HOME,
-            KeyEvent.KEYCODE_APP_SWITCH
+            KeyEvent.KEYCODE_APP_SWITCH,
+            KeyEvent.KEYCODE_VOLUME_UP,
+            KeyEvent.KEYCODE_VOLUME_DOWN
         )
     }
 
@@ -94,6 +95,11 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
         get() = ctx.defaultSharedPreferences.getInt(
             ctx.str(R.string.key_pref_long_press_delay),
             ctx.int(R.integer.default_value_long_press_delay)).toLong()
+
+    private val mShowToastOnActionError
+        get() = ctx.defaultSharedPreferences.getBoolean(
+            ctx.str(R.string.key_pref_show_toast_on_action_error),
+            ctx.bool(R.bool.default_value_show_toast_on_action_error))
 
     private var mPaused = false
 
@@ -419,11 +425,14 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
             for (keymap in keyMaps) {
                 val errorResult = ActionUtils.getError(this, keymap.action)
 
-                //if there is no error
+                //if there is an error
                 if (errorResult != null) {
-                    val errorDescription = ErrorCodeUtils.getErrorCodeDescription(this, errorResult)
+                    if (mShowToastOnActionError) {
+                        val errorDescription = ErrorCodeUtils.getErrorCodeDescription(this, errorResult)
 
-                    toast(errorDescription)
+                        toast(errorDescription)
+                    }
+
                     continue
                 }
 
@@ -501,8 +510,6 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
                 Log.e(this::class.java.simpleName, "ONKEYEVENT CRASH")
                 e.printStackTrace()
             }
-
-            Crashlytics.logException(e)
         }
 
         return super.onKeyEvent(event)

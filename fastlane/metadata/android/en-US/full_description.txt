@@ -1,0 +1,100 @@
+'''What can be remapped?'''
+    ONLY HARDWARE buttons can be remapped.
+
+    There is NO GUARANTEE any of these buttons will work and this app isn't
+    designed to control games. Your device's OEM/vendor can prevent them from being
+    remapped.
+
+    * Volume buttons.
+    * Navigation buttons.
+    * Bluetooth/wired keyboards and mice connected to your device.
+    * Buttons on other connected devices should also work.
+
+    You can combine multiple keys to form a "trigger" and have as many triggers as
+    you want for each action. You can make a key map only work on a long press as
+    well and to vibrate as well.
+
+    '''What can’t be remapped?'''
+    * Pixel Active Edge
+    * OnePlus Alert Slider
+    * Power button
+    * Bixby button
+
+    Your key maps don't work if the screen is OFF.
+
+    '''What can I remap my keys to do?'''
+    Some actions will only work on rooted devices and specific Android versions.
+
+    * Open an app
+    * Open an app shortcut. This feature is very useful since you can tell another
+    app to do something Key Mapper can’t. E.g If your launcher has a shortcut to
+    open the app drawer, you can select that shortcut in this app and make any
+    button open the app drawer.
+
+    * Go back
+    * Go home
+    * Open recents
+    * Open menu
+    * Expand notification drawer
+    * Expand quick settings
+    * Collapse status bar
+    * Toggle/enable/disable WiFi
+    * Toggle/enable/disable Bluetooth
+    * Toggle/enable/disable mobile data (ROOT only)
+    * Toggle Play/pause media
+    * Pause/play media
+    * Fast forward/rewind
+    * Next/previous track
+    * Volume up/down
+    * Increase/decrease a specific volume stream
+    * Show the volume dialog
+    * Cycle through and change the ringer mode
+    * Mute/unmute/toggle mute (Android 6.0+)
+    * Toggle/enable/disable auto-rotate
+    * Switch between portrait and landscape mode
+    * Force portrait/landscape mode
+    * Toggle/enable/disable auto-brightness
+    * Increase/decrease brightness
+    * Toggle/enable/disable flashlight (Android 6.0+)
+    * Take a screenshot (Android 9.0+)
+    * Open the Google Assistant
+    * Open camera
+    * Consume key event. (Do nothing)
+    * Lock the device
+    * Move the cursor to the end of a file
+    * Toggle, show and hide the keyboard
+    * Show the keyboard picker (ROOT only for Android 8.1+)
+
+    The Key Mapper keyboard needs to be selected for these to work and you can’t
+    use a soft keyboard at the same time:
+    * Input a specific keycode
+    * Input a key
+    * Insert a block of text
+
+    More will be added. If you have any ideas, leave a comment or email the
+    developer. 😃
+
+    '''What other things can the app do?'''
+    * Option to show a persistent notification which can pause/resume your keymaps.
+    It can also open the accessibility settings on the device to enable/disable the
+    service. Rooted devices can start/stop the accessibility service without going
+    into settings and just tap the notification.
+    * Automatically change the keyboard to the Key Mapper one and/or show the
+    keyboard picker when a chosen Bluetooth device is connected and switch back to
+    the old one when it is disconnected.
+
+    '''Permissisons'''
+    You don't have to grant all the permissions for the app to work. The app will
+    tell you if a permission needs to be granted for a feature to work.
+
+    * Accessibility Service: Basic requirement for remapping to work. It is needed
+    so the app can listen to and block keyevents.
+    * Device Admin: To turn the screen off when using the action to turn off the
+    screen
+    * Modify System Settings: To change the brightness and rotation settings
+    * Camera: To control the flashlight
+
+    On some devices, enabling the accessibility service will disable "enhanced data
+    encryption".
+
+    [https://forum.xda-developers.com/android/apps-games/app-keyboard-button-mapper-t3914005 XDA-thread]

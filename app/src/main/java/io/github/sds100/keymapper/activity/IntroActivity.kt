@@ -1,25 +1,25 @@
 package io.github.sds100.keymapper.activity
 
 import android.Manifest
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
+import android.widget.Toast.LENGTH_LONG
 import androidx.annotation.RequiresApi
-import androidx.core.content.edit
 import com.heinrichreimersoftware.materialintro.app.IntroActivity
 import com.heinrichreimersoftware.materialintro.slide.SimpleSlide
 import com.heinrichreimersoftware.materialintro.slide.Slide
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.DexUtils.isDexSupported
-import io.github.sds100.keymapper.util.FirebaseUtils
 import io.github.sds100.keymapper.util.PermissionUtils
 import io.github.sds100.keymapper.util.isPermissionGranted
-import io.github.sds100.keymapper.util.str
-import org.jetbrains.anko.defaultSharedPreferences
+import org.jetbrains.anko.longToast
+import org.jetbrains.anko.toast
 
 /**
  * Created by sds100 on 07/07/2019.
@@ -56,8 +56,12 @@ class IntroActivity : IntroActivity() {
 
             buttonCtaLabel(R.string.showcase_disable_battery_optimisation_button)
             buttonCtaClickListener {
-                val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-                startActivity(intent)
+                try {
+                    val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                    startActivity(intent)
+                } catch (e: ActivityNotFoundException) {
+                    longToast(R.string.error_battery_optimisation_activity_not_found)
+                }
             }
         }.build()
     }
@@ -71,30 +75,6 @@ class IntroActivity : IntroActivity() {
             image(R.drawable.ic_dock_white_64dp)
             canGoBackward(true)
             scrollable(true)
-        }.build()
-    }
-
-    private val mDataCollectionSlide by lazy {
-        SimpleSlide.Builder().apply {
-            title(R.string.showcase_data_collection_title)
-            description(R.string.showcase_data_collection_message)
-            background(R.color.green)
-            backgroundDark(R.color.greenDark)
-            image(R.drawable.ic_bug_white_64dp)
-            canGoBackward(true)
-            scrollable(true)
-
-            buttonCtaLabel(R.string.pos_opt_in)
-            buttonCtaClickListener {
-                defaultSharedPreferences.edit {
-                    putBoolean(str(R.string.key_pref_data_collection), true)
-                }
-
-                FirebaseUtils.setFirebaseDataCollection(this@IntroActivity)
-
-                nextSlide()
-                removeSlide(this)
-            }
         }.build()
     }
 
@@ -135,8 +115,6 @@ class IntroActivity : IntroActivity() {
         if (isDexSupported()) {
             addSlide(mDexSlide)
         }
-
-        addSlide(mDataCollectionSlide)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             addSlide(mDndAccessSlide)

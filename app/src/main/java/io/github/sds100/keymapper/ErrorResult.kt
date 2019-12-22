@@ -38,9 +38,9 @@ class ErrorResult(
  * @return The [ErrorResult] isn't null and it can be fixed.
  */
 val ErrorResult?.isFixable: Boolean
-    get() = this != null && ErrorCodeUtils.isErrorFixable(errorCode)
+    get() = this != null && ErrorCodeUtils.isErrorResolvable(errorCode)
 
 /**
- * @see ErrorCodeUtils.fixError
+ * @see ErrorCodeUtils.resolveError
  */
-fun ErrorResult.fix(ctx: Context) = ErrorCodeUtils.fixError(ctx, this)
+fun ErrorResult.fix(ctx: Context) = ErrorCodeUtils.resolveError(ctx, this)

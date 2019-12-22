@@ -262,7 +262,6 @@ class HomeActivity : AppCompatActivity(), SelectionCallback, OnItemClickListener
         super.onResume()
 
         updateStatusLayouts()
-        FirebaseUtils.setFirebaseDataCollection(this)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

@@ -179,9 +179,6 @@
     <string name="title_pref_show_toggle_remappings_notification">Pause/resume remappings notification</string>
     <string name="summary_pref_show_toggle_remappings_notification">Show a persistent notification which starts/pauses your remaps and has a link to start/stop the accessibility service.</string>
 
-    <string name="title_pref_data_collection">Opt in to anonymous analytics</string>
-    <string name="summary_pref_data_collection">Do you want to allow Key Mapper to anonymously collect data about how it is used (e.g crash reports)? You have to opt in and the data is collected by Google Firebase. The privacy policy is located in the About activity.</string>
-
     <string name="title_pref_bluetooth_devices">Choose bluetooth devices…</string>
 
     <string name="title_pref_auto_show_ime_picker">Automatically show keyboard picker</string>
@@ -203,6 +200,9 @@
     <string name="title_pref_root_permission">Key Mapper has root permission</string>
     <string name="summary_pref_root_permission">Enable this if you want to use features/actions which only work on rooted devices. Key Mapper must have root permission from your root-access-management app (e.g Magisk, SuperSU) for these features to work.
         Only turn this on if you know your device is rooted and you have given Key Mapper root permission.</string>
+
+    <string name="title_pref_show_toast_on_action_error">Show a toast message when performing an action fails</string>
+    <string name="summary_pref_toast_on_action_error">A little message will popup when an error is encountered while performing an action.</string>
     <!--Preference titles and summaries-->
 
     <!--Preference categories-->
@@ -263,9 +263,6 @@
 
     <string name="showcase_dex_mode_supported_title">Your device seems to support Samsung Dex</string>
     <string name="showcase_dex_mode_supported_message">Samsung doesn\'t allow apps with a 3rd party keyboard to open while in Dex mode. Therefore, this app won\'t open and the Key Mapper keyboard won\'t work while you are in Dex mode. Your key maps which don\'t require the Key Mapper keyboard will still work while you\'re in Dex mode.</string>
-
-    <string name="showcase_data_collection_title">Anonymous analytics</string>
-    <string name="showcase_data_collection_message">Do you want to allow Key Mapper to anonymously collect data about how it is used (e.g crash reports)? You have to opt in and the data is collected by Google Firebase. The privacy policy is located in the About activity. Click "opt in" to opt in. If you don\'t then you remain opted out.</string>
 
     <string name="showcase_dnd_access_title">Do Not Disturb Access</string>
     <string name="showcase_dnd_access_description">The app needs Do Not Disturb access if you want actions which change the volume and remapped volume buttons to work while in Do Not Disturb mode.</string>
@@ -342,6 +339,7 @@
 
     <string name="error_the_app_wont_work">Your keymaps won\'t work! Some things need fixing!</string>
     <string name="error_cant_move_to_end_of_text_in_this_field">You can\'t move to the end of the text in this field!</string>
+    <string name="error_battery_optimisation_activity_not_found">Battery optimisation settings not found! If it exists, open it manually.</string>
     <!-- Error messages -->
 
     <!-- System action labels -->
@@ -433,6 +431,7 @@
     <string name="action_hide_keyboard">Hide Keyboard</string>
     <string name="action_show_keyboard_picker">Show Keyboard Picker (non-root)</string>
     <string name="action_show_keyboard_picker_root">Show Keyboard Picker (root)</string>
+    <string name="action_open_settings">Open Settings</string>
     <!-- System action labels -->
 
     <!-- System action category labels -->

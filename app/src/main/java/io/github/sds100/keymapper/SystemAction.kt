@@ -103,6 +103,7 @@ object SystemAction {
     const val LOCK_DEVICE = "lock_device"
     const val SECURE_LOCK_DEVICE = "secure_lock_device"
     const val CONSUME_KEY_EVENT = "consume_key_event"
+    const val OPEN_SETTINGS = "open_settings"
     /**
      * REQUIRES ROOT
      */

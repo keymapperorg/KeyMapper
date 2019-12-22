@@ -61,7 +61,7 @@ object ErrorCodeUtils {
      *
      * [ERROR_CODE_PERMISSION_DENIED] must be fixed by requesting for a permission in an activity.
      */
-    fun fixError(ctx: Context, errorResult: ErrorResult) {
+    fun resolveError(ctx: Context, errorResult: ErrorResult) {
         when (errorResult.errorCode) {
             ERROR_CODE_APP_DISABLED -> {
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
@@ -92,7 +92,7 @@ object ErrorCodeUtils {
         }
     }
 
-    fun isErrorFixable(errorCode: Int) = FIXABLE_ERRORS.contains(errorCode)
+    fun isErrorResolvable(errorCode: Int) = FIXABLE_ERRORS.contains(errorCode)
 
     /**
      * @return a message describing an error code.

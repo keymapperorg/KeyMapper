@@ -2,16 +2,16 @@
 <androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <androidx.preference.SwitchPreference
-        android:defaultValue="@bool/default_value_data_collection"
-        android:key="@string/key_pref_data_collection"
-        android:summary="@string/summary_pref_data_collection"
-        android:title="@string/title_pref_data_collection" />
-
-    <androidx.preference.SwitchPreference
         android:defaultValue="@bool/default_value_show_toast"
         android:key="@string/key_pref_show_toast_when_action_performed"
         android:summary="@string/summary_pref_show_toast_when_action_performed"
         android:title="@string/title_pref_show_toast_when_action_performed" />
+
+    <androidx.preference.SwitchPreference
+        android:defaultValue="@bool/default_value_show_toast_on_action_error"
+        android:key="@string/key_pref_show_toast_on_action_error"
+        android:summary="@string/summary_pref_toast_on_action_error"
+        android:title="@string/title_pref_show_toast_on_action_error" />
 
     <androidx.preference.SwitchPreference
         android:defaultValue="@bool/default_value_show_ime_notification"
@@ -93,8 +93,8 @@
 
     <androidx.preference.PreferenceCategory
         android:key="@string/key_pref_category_root"
-        android:visibility="gone"
-        android:title="@string/title_pref_category_root">
+        android:title="@string/title_pref_category_root"
+        android:visibility="gone">
 
         <!-- This must be at the top of the category-->
         <androidx.preference.Preference

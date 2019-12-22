@@ -261,6 +261,13 @@ class ActionPerformerDelegate(
                     metaState = KeyEvent.META_CTRL_ON
                 )
 
+                SystemAction.OPEN_SETTINGS -> {
+                    Intent(Settings.ACTION_SETTINGS).apply {
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        startActivity(this)
+                    }
+                }
+
                 else -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         var lensFacing = CameraCharacteristics.LENS_FACING_BACK
