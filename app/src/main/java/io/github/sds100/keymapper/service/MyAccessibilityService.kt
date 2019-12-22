@@ -83,6 +83,8 @@ class MyAccessibilityService : AccessibilityService(), IContext, IPerformAccessi
         private val KEYS_TO_CONSUME_UP_EVENT = listOf(
             KeyEvent.KEYCODE_HOME,
             KeyEvent.KEYCODE_APP_SWITCH,
+            KeyEvent.KEYCODE_VOLUME_UP,
+            KeyEvent.KEYCODE_VOLUME_DOWN
         )
     }
 
