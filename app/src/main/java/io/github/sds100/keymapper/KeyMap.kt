@@ -34,9 +34,8 @@ class KeyMap(
     @Embedded
     var action: Action? = null
         set(value) {
-            if (value.isVolumeAction) {
-                flags = addFlag(flags, FlagUtils.FLAG_SHOW_VOLUME_UI)
-            } else {
+            //remove the flag to show the volume dialog when an action not related to volume is chosen
+            if (!value.isVolumeAction) {
                 flags = removeFlag(flags, FlagUtils.FLAG_SHOW_VOLUME_UI)
             }
 
