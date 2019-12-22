@@ -29,6 +29,7 @@ object AccessibilityUtils {
                 val newEnabledServices = if (enabledServices == null) {
                     keyMapperEntry
                 } else {
+                    //append the keymapper entry to the rest of the other services.
                     "$keyMapperEntry:$enabledServices"
                 }
                 ctx.putSecureSetting(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, newEnabledServices)
