@@ -9,5 +9,6 @@ enum class ActionType {
     KEYCODE,
     KEY,
     TEXT_BLOCK,
+    URL,
     SYSTEM_ACTION
 }

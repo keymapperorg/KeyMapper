@@ -43,6 +43,7 @@ data class Action(
          * - Keycode: the keycode
          * - Key: the keycode of the key
          * - Block of text: text to insert
+         * - URL: the URL
          * - System action: the system action id
          */
         @ColumnInfo(name = KeyMapDao.KEY_ACTION_DATA)

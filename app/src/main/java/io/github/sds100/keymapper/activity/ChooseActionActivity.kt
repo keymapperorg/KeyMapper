@@ -30,6 +30,7 @@ class ChooseActionActivity : AppCompatActivity(), ITabDelegate, TabLayout.OnTabS
 
     override lateinit var tabFragments: List<Fragment>
 
+    //must be in the same order as the fragments list
     override val tabTitles by lazy {
         sequence {
             yieldAll(listOf(
@@ -38,6 +39,7 @@ class ChooseActionActivity : AppCompatActivity(), ITabDelegate, TabLayout.OnTabS
                 str(R.string.action_type_title_keycode),
                 str(R.string.action_type_title_key),
                 str(R.string.action_type_title_text_block),
+                str(R.string.action_type_url),
                 str(R.string.action_type_title_system_action)
             ))
 
@@ -81,6 +83,7 @@ class ChooseActionActivity : AppCompatActivity(), ITabDelegate, TabLayout.OnTabS
                     KeycodeActionTypeFragment(),
                     KeyActionTypeFragment(),
                     TextActionTypeFragment(),
+                    UrlActionTypeFragment(),
                     SystemActionFragment()
                 ))
 

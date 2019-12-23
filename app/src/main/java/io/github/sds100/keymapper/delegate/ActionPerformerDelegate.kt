@@ -8,12 +8,14 @@ import android.content.Context.VIBRATOR_SERVICE
 import android.content.Intent
 import android.hardware.camera2.CameraCharacteristics
 import android.media.AudioManager
+import android.net.Uri
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.provider.MediaStore
 import android.provider.Settings
 import android.view.KeyEvent
+import android.webkit.URLUtil
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.lifecycle.Lifecycle
 import io.github.sds100.keymapper.*
@@ -92,6 +94,20 @@ class ActionPerformerDelegate(
                     intent.putExtra(MyIMEService.EXTRA_TEXT, action.data)
 
                     sendBroadcast(intent)
+                }
+
+                ActionType.URL -> {
+                    val guessedUrl = URLUtil.guessUrl(action.data)
+                    val uri: Uri = Uri.parse(guessedUrl)
+
+                    val intent = Intent(Intent.ACTION_VIEW, uri)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+                    if (intent.resolveActivity(packageManager) != null) {
+                        startActivity(intent)
+                    }else{
+                        toast(R.string.error_no_app_found_to_open_url)
+                    }
                 }
 
                 ActionType.SYSTEM_ACTION -> performSystemAction(action, flags)

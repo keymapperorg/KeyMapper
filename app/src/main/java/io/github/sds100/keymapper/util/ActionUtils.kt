@@ -91,6 +91,10 @@ object ActionUtils {
                         onFailure = { null })
             }
 
+            ActionType.URL -> {
+                return ctx.str(R.string.description_url, action.data)
+            }
+
             ActionType.KEYCODE -> {
                 val key = KeyEvent.keyCodeToString(action.data.toInt())
                 return ctx.str(R.string.description_keycode, key)
