@@ -28,6 +28,8 @@ class TextActionTypeFragment : ActionTypeFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        textViewCaption.setText(R.string.caption_action_type_text)
+
         buttonDone.setOnClickListener {
             val action = Action(ActionType.TEXT_BLOCK, editText.text.toString())
             chooseSelectedAction(action)
