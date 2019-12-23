@@ -23,6 +23,8 @@
         This will only work if you have selected the Key Mapper keyboard. This action is best used with a hardware keyboard.</string>
     <string name="caption_action_type_keycode">IMPORTANT!
         This will only work if you have selected the Key Mapper keyboard. This action is best used with a hardware keyboard.</string>
+    <string name="caption_action_type_text">Type some text you want to be inserted when you perform this action.</string>
+    <string name="caption_action_type_url">Type a url which you want to be opened. The http://, https:// or www. isn\'t required.</string>
     <string name="switch_enabled">Enabled</string>
     <string name="disabled">Disabled</string>
     <string name="key_map_adapter_flags">Flags</string>
@@ -30,6 +32,7 @@
     <string name="description_key">Press \'%s\' key</string>
     <string name="description_text_block">Type \'%s\'</string>
     <string name="description_keycode">%s</string>
+    <string name="description_url">Open %s</string>
     <string name="enable_device_admin_message">Once you have enabled the device admin, you must DISABLE it if you want to uninstall the app.</string>
     <!-- URLs -->
     <!-- URLs -->
@@ -185,6 +188,7 @@
     <string name="action_type_title_keycode">Key code</string>
     <string name="action_type_title_system_action">Other</string>
     <string name="action_type_title_text_block">Text</string>
+    <string name="action_type_url">URL</string>
     <!--Action Types Titles-->
     <!--flags-->
     <string name="flag_show_volume_dialog">Show volume dialog</string>
@@ -253,6 +257,7 @@
     <string name="error_enable_log">Key Mapper encountered an error! Try to reproduce the error, enable logging to see what happened.</string>
     <string name="error_look_in_log">Key Mapper encountered an error! Look in the Log.</string>
     <string name="error_need_write_secure_settings_permission">Key Mapper needs WRITE_SECURE_SETTINGS permission.</string>
+    <string name="error_no_app_found_to_open_url">No app can be found to open that url</string>
     <string name="error_camera_in_use">Camera is in use!</string>
     <string name="error_camera_disconnected">Camera Disconnected!</string>
     <string name="error_camera_disabled">Camera disabled!</string>
