@@ -18,9 +18,9 @@ import kotlinx.android.synthetic.main.action_type_edit_text.*
  */
 class TextActionTypeFragment : ActionTypeFragment() {
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.action_type_edit_text, container, false)
     }
