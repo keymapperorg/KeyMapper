@@ -284,6 +284,12 @@ class ActionPerformerDelegate(
                     }
                 }
 
+                SystemAction.SWITCH_KEYBOARD -> {
+                    action.getExtraData(Action.EXTRA_IME_ID).onSuccess {
+                        KeyboardUtils.switchIme(ctx, it)
+                    }
+                }
+
                 else -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         var lensFacing = CameraCharacteristics.LENS_FACING_BACK

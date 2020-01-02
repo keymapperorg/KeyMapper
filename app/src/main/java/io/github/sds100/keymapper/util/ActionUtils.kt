@@ -15,6 +15,7 @@ import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_BACK_FLASH_NOT_
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_FEATURE_NOT_AVAILABLE
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_FRONT_FLASH_NOT_FOUND
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_GOOGLE_APP_NOT_INSTALLED
+import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_IME_NOT_FOUND
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_IME_SERVICE_DISABLED
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_IME_SERVICE_NOT_CHOSEN
 import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_NO_ACTION_DATA
@@ -87,6 +88,9 @@ object ActionUtils {
                             //get a saved label for the option if it can't find one
                             if (optionLabel == null) {
                                 when (systemActionId) {
+                                    SystemAction.SWITCH_KEYBOARD -> {
+                                        action.getExtraData(Action.EXTRA_IME_NAME).onSuccess { optionLabel = it }
+                                    }
                                 }
                             }
 
@@ -246,6 +250,19 @@ object ActionUtils {
                     }
                 }
 
+                if (systemActionDef.id == SystemAction.SWITCH_KEYBOARD) {
+
+                    action.getExtraData(Action.EXTRA_IME_ID).onSuccess { imeId ->
+                        if (!KeyboardUtils.inputMethodExists(ctx, imeId)) {
+                            var errorData = imeId
+
+                            action.getExtraData(Action.EXTRA_IME_NAME).onSuccess { imeName ->
+                                errorData = imeName
+                            }
+
+                            return@getError ErrorResult(ERROR_CODE_IME_NOT_FOUND, errorData)
+                        }
+                    }
                 }
 
                 return null

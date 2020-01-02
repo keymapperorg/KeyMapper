@@ -60,6 +60,7 @@ import io.github.sds100.keymapper.SystemAction.SECURE_LOCK_DEVICE
 import io.github.sds100.keymapper.SystemAction.SHOW_KEYBOARD
 import io.github.sds100.keymapper.SystemAction.SHOW_KEYBOARD_PICKER
 import io.github.sds100.keymapper.SystemAction.SHOW_KEYBOARD_PICKER_ROOT
+import io.github.sds100.keymapper.SystemAction.SWITCH_KEYBOARD
 import io.github.sds100.keymapper.SystemAction.SWITCH_ORIENTATION
 import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.TOGGLE_AUTO_ROTATE
@@ -534,6 +535,19 @@ object SystemActionUtils {
             permissions = arrayOf(Constants.PERMISSION_ROOT),
             minApi = Build.VERSION_CODES.O_MR1,
             descriptionRes = R.string.action_show_keyboard_picker_root),
+
+        SystemActionDef(id = SWITCH_KEYBOARD,
+            category = CATEGORY_KEYBOARD,
+            iconRes = R.drawable.ic_keyboard_on_surface,
+            permissions = arrayOf(Constants.PERMISSION_ROOT),
+            descriptionRes = R.string.action_switch_keyboard,
+            getDescriptionWithOption = { ctx, optionText ->
+                ctx.str(R.string.action_switch_keyboard_formatted, optionText)
+            },
+            getOptions = { ctx ->
+                KeyboardUtils.getInputMethodIds(ctx)
+            }
+        ),
 
         //OTHER
         SystemActionDef(

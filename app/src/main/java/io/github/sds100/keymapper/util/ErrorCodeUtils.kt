@@ -26,6 +26,8 @@ import io.github.sds100.keymapper.R
     ErrorCodeUtils.ERROR_CODE_NULL,
     ErrorCodeUtils.ERROR_CODE_IME_SERVICE_DISABLED,
     ErrorCodeUtils.ERROR_CODE_SDK_VERSION_TOO_HIGH,
+    ErrorCodeUtils.ERROR_CODE_IME_NOT_FOUND,
+    ErrorCodeUtils.ERROR_CODE_NO_ENABLED_IMES,
     ErrorCodeUtils.ERROR_CODE_OPTIONS_NOT_REQUIRED,
     ErrorCodeUtils.ERROR_CODE_FRONT_FLASH_NOT_FOUND,
     ErrorCodeUtils.ERROR_CODE_BACK_FLASH_NOT_FOUND]
@@ -49,6 +51,8 @@ object ErrorCodeUtils {
     const val ERROR_CODE_NULL = 13
     const val ERROR_CODE_IME_SERVICE_DISABLED = 14
     const val ERROR_CODE_SDK_VERSION_TOO_HIGH = 15
+    const val ERROR_CODE_IME_NOT_FOUND = 16
+    const val ERROR_CODE_NO_ENABLED_IMES = 17
     const val ERROR_CODE_OPTIONS_NOT_REQUIRED = 18
     const val ERROR_CODE_FRONT_FLASH_NOT_FOUND = 19
     const val ERROR_CODE_BACK_FLASH_NOT_FOUND = 20
@@ -117,6 +121,8 @@ object ErrorCodeUtils {
                 ERROR_CODE_IME_SERVICE_DISABLED -> str(R.string.error_ime_service_disabled)
                 ERROR_CODE_FEATURE_NOT_AVAILABLE -> str(R.string.error_feature_not_available, errorResult.data)
                 ERROR_CODE_FLAG_NOT_FOUND -> str(R.string.error_flag_not_found, errorResult.data)
+                ERROR_CODE_IME_NOT_FOUND -> str(R.string.error_ime_not_found, errorResult.data)
+                ERROR_CODE_NO_ENABLED_IMES -> str(R.string.error_no_enabled_imes)
 
                 ERROR_CODE_SDK_VERSION_TOO_LOW -> {
                     val versionName = BuildUtils.getSdkVersionName(errorResult.data!!.toInt())

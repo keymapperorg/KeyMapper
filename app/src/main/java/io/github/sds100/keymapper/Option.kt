@@ -89,9 +89,19 @@ object Option {
 
             SystemAction.CHANGE_RINGER_MODE -> Action.EXTRA_RINGER_MODE
 
-            else -> throw Exception("Can't find an extra id for that system action option $id")
+            SystemAction.SWITCH_KEYBOARD -> Action.EXTRA_IME_ID
+
+            else -> throw Exception("Can't find an extra id for that system action $systemActionId")
+        }
+    }
 
     fun getOptionLabel(ctx: Context, systemActionId: String, optionId: String): String? {
+        when (systemActionId) {
+            SystemAction.SWITCH_KEYBOARD -> {
+                return KeyboardUtils.getInputMethodLabel(ctx, optionId).data
+            }
+        }
+
         return when (optionId) {
             STREAM_ALARM -> ctx.str(R.string.stream_alarm)
             STREAM_DTMF -> ctx.str(R.string.stream_dtmf)

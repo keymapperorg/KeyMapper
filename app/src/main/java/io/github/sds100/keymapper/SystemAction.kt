@@ -95,6 +95,11 @@ object SystemAction {
     const val SHOW_KEYBOARD_PICKER = "show_keyboard_picker"
     const val SHOW_KEYBOARD_PICKER_ROOT = "show_keyboard_picker_root"
 
+    /**
+     * REQUIRES ROOT
+     */
+    const val SWITCH_KEYBOARD = "switch_keyboard"
+
     //other
     const val SCREENSHOT = "screenshot"
 

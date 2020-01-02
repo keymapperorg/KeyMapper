@@ -344,6 +344,8 @@
     <string name="error_ime_service_enabled">Keyboard is enabled!</string>
     <string name="error_ime_service_disabled">Keyboard is disabled!</string>
     <string name="error_critical_ime_service_disabled">The keyboard must be enabled and selected for some of your actions to work!</string>
+    <string name="error_ime_not_found">Can\'t find the %s input method</string>
+    <string name="error_no_enabled_imes">This device has no enabled input methods!</string>
 
     <string name="error_the_app_wont_work">Your keymaps won\'t work! Some things need fixing!</string>
     <string name="error_cant_move_to_end_of_text_in_this_field">You can\'t move to the end of the text in this field!</string>
@@ -441,6 +443,10 @@
     <string name="action_hide_keyboard">Hide Keyboard</string>
     <string name="action_show_keyboard_picker">Show Keyboard Picker (non-root)</string>
     <string name="action_show_keyboard_picker_root">Show Keyboard Picker (root)</string>
+
+    <string name="action_switch_keyboard">Switch Keyboard</string>
+    <string name="action_switch_keyboard_formatted">Switch to %s</string>
+
     <string name="action_open_settings">Open Settings</string>
     <!-- System action labels -->
 

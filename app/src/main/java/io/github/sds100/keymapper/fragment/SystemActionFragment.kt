@@ -83,6 +83,9 @@ class SystemActionFragment : FilterableActionTypeFragment(),
 
                 if (optionLabel != null) {
                     when (item.id) {
+                        SystemAction.SWITCH_KEYBOARD -> {
+                            action.extras.add(Extra(Action.EXTRA_IME_NAME, optionLabel))
+                        }
                     }
                 }
 
