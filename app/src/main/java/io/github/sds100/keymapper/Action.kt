@@ -32,25 +32,25 @@ annotation class ExtraId
  * - System actions/settings
  */
 data class Action(
-        @ColumnInfo(name = KeyMapDao.KEY_ACTION_TYPE)
-        val type: ActionType,
+    @ColumnInfo(name = KeyMapDao.KEY_ACTION_TYPE)
+    val type: ActionType,
 
-        /**
-         * How each action type saves data:
-         *
-         * - Apps: package name
-         * - App shortcuts: the intent for the shortcut as a parsed URI
-         * - Keycode: the keycode
-         * - Key: the keycode of the key
-         * - Block of text: text to insert
-         * - URL: the URL
-         * - System action: the system action id
-         */
-        @ColumnInfo(name = KeyMapDao.KEY_ACTION_DATA)
-        val data: String,
+    /**
+     * How each action type saves data:
+     *
+     * - Apps: package name
+     * - App shortcuts: the intent for the shortcut as a parsed URI
+     * - Keycode: the keycode
+     * - Key: the keycode of the key
+     * - Block of text: text to insert
+     * - URL: the URL
+     * - System action: the system action id
+     */
+    @ColumnInfo(name = KeyMapDao.KEY_ACTION_DATA)
+    val data: String,
 
-        @ColumnInfo(name = KeyMapDao.KEY_ACTION_EXTRAS)
-        val extras: MutableList<Extra> = mutableListOf()
+    @ColumnInfo(name = KeyMapDao.KEY_ACTION_EXTRAS)
+    val extras: MutableList<Extra> = mutableListOf()
 ) : Serializable {
     companion object {
         const val EXTRA_ACTION = "extra_action"
@@ -69,7 +69,7 @@ data class Action(
         migrateExtra(extraId)
 
         return extras.find { it.id == extraId }?.data.result(
-                ErrorCodeUtils.ERROR_CODE_ACTION_EXTRA_NOT_FOUND, extraId
+            ErrorCodeUtils.ERROR_CODE_ACTION_EXTRA_NOT_FOUND, extraId
         )
     }
 
@@ -112,9 +112,9 @@ val Action?.requiresIME: Boolean
         if (this == null) return false
 
         return type == ActionType.KEY ||
-                type == ActionType.KEYCODE ||
-                type == ActionType.TEXT_BLOCK ||
-                data == SystemAction.MOVE_CURSOR_TO_END
+            type == ActionType.KEYCODE ||
+            type == ActionType.TEXT_BLOCK ||
+            data == SystemAction.MOVE_CURSOR_TO_END
     }
 
 val Action?.isVolumeAction: Boolean
@@ -122,12 +122,12 @@ val Action?.isVolumeAction: Boolean
         if (this == null) return false
 
         return listOf(
-                SystemAction.VOLUME_DECREASE_STREAM,
-                SystemAction.VOLUME_INCREASE_STREAM,
-                SystemAction.VOLUME_DOWN,
-                SystemAction.VOLUME_UP,
-                SystemAction.VOLUME_MUTE,
-                SystemAction.VOLUME_TOGGLE_MUTE,
-                SystemAction.VOLUME_UNMUTE
+            SystemAction.VOLUME_DECREASE_STREAM,
+            SystemAction.VOLUME_INCREASE_STREAM,
+            SystemAction.VOLUME_DOWN,
+            SystemAction.VOLUME_UP,
+            SystemAction.VOLUME_MUTE,
+            SystemAction.VOLUME_TOGGLE_MUTE,
+            SystemAction.VOLUME_UNMUTE
         ).contains(data)
     }

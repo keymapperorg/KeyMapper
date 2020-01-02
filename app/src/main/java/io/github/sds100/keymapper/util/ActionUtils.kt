@@ -44,7 +44,7 @@ object ActionUtils {
         val icon = getIcon(ctx, action)
 
         return ActionDescription(
-                icon, title, errorMessage, errorResult
+            icon, title, errorMessage, errorResult
         )
     }
 
@@ -55,8 +55,8 @@ object ActionUtils {
             ActionType.APP -> {
                 try {
                     val applicationInfo = ctx.packageManager.getApplicationInfo(
-                            action.data,
-                            PackageManager.GET_META_DATA
+                        action.data,
+                        PackageManager.GET_META_DATA
                     )
 
                     val applicationLabel = ctx.packageManager.getApplicationLabel(applicationInfo)

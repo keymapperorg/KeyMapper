@@ -29,12 +29,12 @@ object Option {
 
     val STREAMS = sequence {
         yieldAll(listOf(STREAM_ALARM,
-                STREAM_DTMF,
-                STREAM_MUSIC,
-                STREAM_NOTIFICATION,
-                STREAM_RING,
-                STREAM_SYSTEM,
-                STREAM_VOICE_CALL
+            STREAM_DTMF,
+            STREAM_MUSIC,
+            STREAM_NOTIFICATION,
+            STREAM_RING,
+            STREAM_SYSTEM,
+            STREAM_VOICE_CALL
         ))
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -44,16 +44,16 @@ object Option {
 
     val OPTION_ID_SDK_ID_MAP = sequence {
         yieldAll(listOf(STREAM_ALARM to AudioManager.STREAM_ALARM,
-                STREAM_DTMF to AudioManager.STREAM_DTMF,
-                STREAM_MUSIC to AudioManager.STREAM_MUSIC,
-                STREAM_NOTIFICATION to AudioManager.STREAM_NOTIFICATION,
-                STREAM_RING to AudioManager.STREAM_RING,
-                STREAM_SYSTEM to AudioManager.STREAM_SYSTEM,
-                STREAM_VOICE_CALL to AudioManager.STREAM_VOICE_CALL,
+            STREAM_DTMF to AudioManager.STREAM_DTMF,
+            STREAM_MUSIC to AudioManager.STREAM_MUSIC,
+            STREAM_NOTIFICATION to AudioManager.STREAM_NOTIFICATION,
+            STREAM_RING to AudioManager.STREAM_RING,
+            STREAM_SYSTEM to AudioManager.STREAM_SYSTEM,
+            STREAM_VOICE_CALL to AudioManager.STREAM_VOICE_CALL,
 
-                RINGER_MODE_NORMAL to AudioManager.RINGER_MODE_NORMAL,
-                RINGER_MODE_VIBRATE to AudioManager.RINGER_MODE_VIBRATE,
-                RINGER_MODE_SILENT to AudioManager.RINGER_MODE_SILENT
+            RINGER_MODE_NORMAL to AudioManager.RINGER_MODE_NORMAL,
+            RINGER_MODE_VIBRATE to AudioManager.RINGER_MODE_VIBRATE,
+            RINGER_MODE_SILENT to AudioManager.RINGER_MODE_SILENT
         ))
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
