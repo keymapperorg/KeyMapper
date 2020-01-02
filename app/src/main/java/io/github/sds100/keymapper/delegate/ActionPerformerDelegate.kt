@@ -105,7 +105,7 @@ class ActionPerformerDelegate(
 
                     if (intent.resolveActivity(packageManager) != null) {
                         startActivity(intent)
-                    }else{
+                    } else {
                         toast(R.string.error_no_app_found_to_open_url)
                     }
                 }

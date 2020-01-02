@@ -331,6 +331,8 @@
     <string name="error_camera_error">Camera error!</string>
     <string name="error_max_cameras_in_use">Maximum number of cameras in use!</string>
     <string name="error_camera_access_exception">Can\'t access the camera!</string>
+    <string name="error_front_flash_not_found">No front flash</string>
+    <string name="error_back_flash_not_found">No back flash</string>
 
     <string name="error_accessibility_service_disabled">The accessibility service must be enabled for this app to work!</string>
     <string name="error_accessibility_service_enabled">Accessibility service is enabled!</string>
@@ -346,6 +348,8 @@
     <string name="error_the_app_wont_work">Your keymaps won\'t work! Some things need fixing!</string>
     <string name="error_cant_move_to_end_of_text_in_this_field">You can\'t move to the end of the text in this field!</string>
     <string name="error_battery_optimisation_activity_not_found">Battery optimisation settings not found! If it exists, open it manually.</string>
+
+    <string name="error_cant_find_option_label">error: Can\'t find a label for this option \"%s\"</string>
     <!-- Error messages -->
 
     <!-- System action labels -->

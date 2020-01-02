@@ -16,17 +16,13 @@ class UnsupportedActionsFragment : RecyclerViewFragment() {
     override val adapter by lazy {
         val items = sequence {
             SystemActionUtils.getUnsupportedSystemActionsWithReasons(context!!).forEach {
-                val action = it.first
+                val systemActionDef = it.first
                 val reason = it.second
 
-                val text = context!!.str(action.descriptionRes)
+                val text = systemActionDef.getDescription(context!!)
                 val secondaryText = ErrorCodeUtils.getErrorCodeDescription(context!!, reason!!)
 
-                var icon: Drawable? = null
-
-                if (action.iconRes != null) {
-                    icon = context!!.drawable(action.iconRes)
-                }
+                val icon = systemActionDef.getIcon(context!!)
 
                 yield(SimpleRecyclerViewItem(text, secondaryText, icon))
             }

@@ -61,6 +61,9 @@ data class Action(
         const val EXTRA_STREAM_TYPE = "extra_stream_type"
         const val EXTRA_LENS = "extra_flash"
         const val EXTRA_RINGER_MODE = "extra_ringer_mode"
+
+        const val EXTRA_IME_ID = "extra_ime_id"
+        const val EXTRA_IME_NAME = "extra_ime_name"
     }
 
     constructor(type: ActionType, data: String, extra: Extra) : this(type, data, mutableListOf(extra))
@@ -71,6 +74,16 @@ data class Action(
         return extras.find { it.id == extraId }?.data.result(
             ErrorCodeUtils.ERROR_CODE_ACTION_EXTRA_NOT_FOUND, extraId
         )
+    }
+
+    fun getOptionId(): String {
+        if (type == ActionType.SYSTEM_ACTION) {
+            val extraId = Option.getExtraIdForOption(data)
+
+            return getExtraData(extraId).data!!
+        }else{
+            throw Exception("This action must be a system action")
+        }
     }
 
     private fun migrateExtra(extraId: String) {

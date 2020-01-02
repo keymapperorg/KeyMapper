@@ -59,24 +59,32 @@ class SystemActionFragment : FilterableActionTypeFragment(),
 
         val areAllActionsSupported = SystemActionUtils.areAllActionsSupported(ctx)
         textViewUnsupportedActions.isVisible = !areAllActionsSupported
-
-        if (!areAllActionsSupported) {
-
-        }
     }
 
-    override fun onItemClick(systemAction: SystemActionDef) {
-        if (systemAction.hasOptions) {
-            val items = systemAction.options.map { ctx.str(SystemActionUtils.getTextForOptionId(it)) }
+    override fun onItemClick(item: SystemActionDef) {
+        item.getOptions(ctx).onSuccess { options ->
 
-            ctx.selector(items = items) { _, which ->
-                val selectedOption = systemAction.options[which]
+            val optionLabels = options.map { optionId ->
+                val optionLabel = Option.getOptionLabel(ctx, item.id, optionId)
+
+                optionLabel ?: ctx.str(R.string.error_cant_find_option_label, optionId)
+            }
+
+            ctx.selector(items = optionLabels) { _, which ->
+                val selectedOption = options[which]
 
                 val action = Action(
                     type = ActionType.SYSTEM_ACTION,
-                    data = systemAction.id,
-                    extra = Extra(Option.getExtraIdForOption(systemAction.id), selectedOption)
+                    data = item.id,
+                    extra = Extra(Option.getExtraIdForOption(item.id), selectedOption)
                 )
+
+                val optionLabel = Option.getOptionLabel(ctx, item.id, selectedOption)
+
+                if (optionLabel != null) {
+                    when (item.id) {
+                    }
+                }
 
                 chooseSelectedAction(action)
             }
@@ -84,12 +92,14 @@ class SystemActionFragment : FilterableActionTypeFragment(),
             return
         }
 
-        if (systemAction.messageOnSelection != null) {
+        val messageOnSelection = item.getMessageOnSelection(ctx)
+
+        if (messageOnSelection != null) {
             context?.alert {
-                titleResource = systemAction.descriptionRes
-                messageResource = systemAction.messageOnSelection
+                title = item.getDescription(ctx)
+                message = messageOnSelection
                 okButton {
-                    val action = Action(ActionType.SYSTEM_ACTION, systemAction.id)
+                    val action = Action(ActionType.SYSTEM_ACTION, item.id)
                     chooseSelectedAction(action)
                 }
             }?.show()
@@ -97,7 +107,7 @@ class SystemActionFragment : FilterableActionTypeFragment(),
             return
         }
 
-        val action = Action(ActionType.SYSTEM_ACTION, systemAction.id)
+        val action = Action(ActionType.SYSTEM_ACTION, item.id)
         chooseSelectedAction(action)
     }
 }

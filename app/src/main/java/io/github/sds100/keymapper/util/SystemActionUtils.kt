@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.annotation.StringRes
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.SystemAction.CATEGORY_BLUETOOTH
 import io.github.sds100.keymapper.SystemAction.CATEGORY_BRIGHTNESS
@@ -208,14 +207,14 @@ object SystemActionUtils {
             id = ENABLE_MOBILE_DATA,
             category = CATEGORY_MOBILE_DATA,
             iconRes = R.drawable.ic_signal,
-            permission = Constants.PERMISSION_ROOT,
+            permissions = arrayOf(Constants.PERMISSION_ROOT),
             descriptionRes = R.string.action_enable_mobile_data
         ),
         SystemActionDef(
             id = DISABLE_MOBILE_DATA,
             category = CATEGORY_MOBILE_DATA,
             iconRes = R.drawable.ic_signal_off,
-            permission = Constants.PERMISSION_ROOT,
+            permissions = arrayOf(Constants.PERMISSION_ROOT),
             descriptionRes = R.string.action_disable_mobile_data
         ),
         //MOBILE DATA
@@ -273,22 +272,22 @@ object SystemActionUtils {
             category = CATEGORY_VOLUME,
             iconRes = R.drawable.ic_volume_up_black_24dp,
             descriptionRes = R.string.action_volume_up,
-            permission = Manifest.permission.ACCESS_NOTIFICATION_POLICY
+            permissions = arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY)
         ),
         SystemActionDef(
             id = SystemAction.VOLUME_DOWN,
             category = CATEGORY_VOLUME,
             iconRes = R.drawable.ic_volume_down_black_24dp,
             descriptionRes = R.string.action_volume_down,
-            permission = Manifest.permission.ACCESS_NOTIFICATION_POLICY
+            permissions = arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY)
         ),
         SystemActionDef(
             id = SystemAction.VOLUME_INCREASE_STREAM,
             category = CATEGORY_VOLUME,
             iconRes = R.drawable.ic_volume_up_black_24dp,
             descriptionRes = R.string.action_increase_stream,
-            permission = Manifest.permission.ACCESS_NOTIFICATION_POLICY,
-            formattedDescription = { ctx, option -> ctx.str(R.string.action_increase_stream_formatted, option) },
+            permissions = arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY),
+            getDescriptionWithOption = { ctx, option -> ctx.str(R.string.action_increase_stream_formatted, option) },
             options = Option.STREAMS
         ),
         SystemActionDef(
@@ -296,9 +295,9 @@ object SystemActionUtils {
             category = CATEGORY_VOLUME,
             iconRes = R.drawable.ic_volume_down_black_24dp,
             descriptionRes = R.string.action_decrease_stream,
-            formattedDescription = { ctx, option -> ctx.str(R.string.action_decrease_stream_formatted, option) },
+            getDescriptionWithOption = { ctx, option -> ctx.str(R.string.action_increase_stream_formatted, option) },
             options = Option.STREAMS,
-            permission = Manifest.permission.ACCESS_NOTIFICATION_POLICY
+            permissions = arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY)
         ),
         SystemActionDef(
             id = SystemAction.VOLUME_SHOW_DIALOG,
@@ -309,20 +308,21 @@ object SystemActionUtils {
             id = SystemAction.CYCLE_RINGER_MODE,
             category = CATEGORY_VOLUME,
             descriptionRes = R.string.action_cycle_ringer_mode,
-            permission = Manifest.permission.ACCESS_NOTIFICATION_POLICY
+            permissions = arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY)
         ),
         SystemActionDef(id = SystemAction.CHANGE_RINGER_MODE,
             category = CATEGORY_VOLUME,
             descriptionRes = R.string.action_change_ringer_mode,
 
-            formattedDescription = { ctx, option -> ctx.str(R.string.action_change_ringer_mode_formatted, option) },
+            getDescriptionWithOption = { ctx, option -> ctx.str(R.string.action_change_ringer_mode_formatted, option) },
 
             permissions = arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY),
             options = listOf(
                 Option.RINGER_MODE_NORMAL,
                 Option.RINGER_MODE_VIBRATE,
                 Option.RINGER_MODE_SILENT
-            )),
+            )
+        ),
 
         //Require Marshmallow and higher
         SystemActionDef(
@@ -331,7 +331,7 @@ object SystemActionUtils {
             minApi = Build.VERSION_CODES.M,
             iconRes = R.drawable.ic_volume_mute_black_24dp,
             descriptionRes = R.string.action_volume_mute,
-            permission = Manifest.permission.ACCESS_NOTIFICATION_POLICY
+            permissions = arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY)
         ),
         SystemActionDef(
             id = VOLUME_UNMUTE,
@@ -339,7 +339,7 @@ object SystemActionUtils {
             minApi = Build.VERSION_CODES.M,
             iconRes = R.drawable.ic_volume_up_black_24dp,
             descriptionRes = R.string.action_volume_unmute,
-            permission = Manifest.permission.ACCESS_NOTIFICATION_POLICY
+            permissions = arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY)
         ),
         SystemActionDef(
             id = VOLUME_TOGGLE_MUTE,
@@ -347,7 +347,7 @@ object SystemActionUtils {
             minApi = Build.VERSION_CODES.M,
             iconRes = R.drawable.ic_volume_mute_black_24dp,
             descriptionRes = R.string.action_toggle_mute,
-            permission = Manifest.permission.ACCESS_NOTIFICATION_POLICY
+            permissions = arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY)
         ),
         //VOLUME
 
@@ -355,42 +355,42 @@ object SystemActionUtils {
         SystemActionDef(
             id = TOGGLE_AUTO_ROTATE,
             category = CATEGORY_SCREEN_ROTATION,
-            permission = Manifest.permission.WRITE_SETTINGS,
+            permissions = arrayOf(Manifest.permission.WRITE_SETTINGS),
             iconRes = R.drawable.ic_screen_rotation_black_24dp,
             descriptionRes = R.string.action_toggle_auto_rotate
         ),
         SystemActionDef(
             id = ENABLE_AUTO_ROTATE,
             category = CATEGORY_SCREEN_ROTATION,
-            permission = Manifest.permission.WRITE_SETTINGS,
+            permissions = arrayOf(Manifest.permission.WRITE_SETTINGS),
             iconRes = R.drawable.ic_screen_rotation_black_24dp,
             descriptionRes = R.string.action_enable_auto_rotate
         ),
         SystemActionDef(
             id = DISABLE_AUTO_ROTATE,
             category = CATEGORY_SCREEN_ROTATION,
-            permission = Manifest.permission.WRITE_SETTINGS,
+            permissions = arrayOf(Manifest.permission.WRITE_SETTINGS),
             iconRes = R.drawable.ic_screen_lock_rotation_black_24dp,
             descriptionRes = R.string.action_disable_auto_rotate
         ),
         SystemActionDef(
             id = PORTRAIT_MODE,
             category = CATEGORY_SCREEN_ROTATION,
-            permission = Manifest.permission.WRITE_SETTINGS,
+            permissions = arrayOf(Manifest.permission.WRITE_SETTINGS),
             iconRes = R.drawable.ic_stay_current_portrait_black_24dp,
             descriptionRes = R.string.action_portrait_mode
         ),
         SystemActionDef(
             id = LANDSCAPE_MODE,
             category = CATEGORY_SCREEN_ROTATION,
-            permission = Manifest.permission.WRITE_SETTINGS,
+            permissions = arrayOf(Manifest.permission.WRITE_SETTINGS),
             iconRes = R.drawable.ic_stay_current_landscape_black_24dp,
             descriptionRes = R.string.action_landscape_mode
         ),
         SystemActionDef(
             id = SWITCH_ORIENTATION,
             category = CATEGORY_SCREEN_ROTATION,
-            permission = Manifest.permission.WRITE_SETTINGS,
+            permissions = arrayOf(Manifest.permission.WRITE_SETTINGS),
             iconRes = R.drawable.ic_screen_rotation_black_24dp,
             descriptionRes = R.string.action_switch_orientation
         ),
@@ -402,76 +402,70 @@ object SystemActionUtils {
             category = CATEGORY_BRIGHTNESS,
             iconRes = R.drawable.ic_brightness_auto_black_24dp,
             descriptionRes = R.string.action_toggle_auto_brightness,
-            permission = Manifest.permission.WRITE_SETTINGS
+            permissions = arrayOf(Manifest.permission.WRITE_SETTINGS)
         ),
         SystemActionDef(
             id = ENABLE_AUTO_BRIGHTNESS,
             category = CATEGORY_BRIGHTNESS,
             iconRes = R.drawable.ic_brightness_auto_black_24dp,
             descriptionRes = R.string.action_enable_auto_brightness,
-            permission = Manifest.permission.WRITE_SETTINGS
+            permissions = arrayOf(Manifest.permission.WRITE_SETTINGS)
         ),
         SystemActionDef(
             id = DISABLE_AUTO_BRIGHTNESS,
             category = CATEGORY_BRIGHTNESS,
             iconRes = R.drawable.ic_disable_brightness_auto_24dp,
             descriptionRes = R.string.action_disable_auto_brightness,
-            permission = Manifest.permission.WRITE_SETTINGS
+            permissions = arrayOf(Manifest.permission.WRITE_SETTINGS)
         ),
         SystemActionDef(
             id = INCREASE_BRIGHTNESS,
             category = CATEGORY_BRIGHTNESS,
             iconRes = R.drawable.ic_brightness_high_black_24dp,
             descriptionRes = R.string.action_increase_brightness,
-            permission = Manifest.permission.WRITE_SETTINGS
+            permissions = arrayOf(Manifest.permission.WRITE_SETTINGS)
         ),
         SystemActionDef(
             id = DECREASE_BRIGHTNESS,
             category = CATEGORY_BRIGHTNESS,
             iconRes = R.drawable.ic_brightness_low_black_24dp,
             descriptionRes = R.string.action_decrease_brightness,
-            permission = Manifest.permission.WRITE_SETTINGS
+            permissions = arrayOf(Manifest.permission.WRITE_SETTINGS)
         ),
 
         //FLASHLIGHT
         SystemActionDef(
             id = SystemAction.TOGGLE_FLASHLIGHT,
             category = CATEGORY_FLASHLIGHT,
-            permission = Manifest.permission.CAMERA,
-            feature = PackageManager.FEATURE_CAMERA_FLASH,
+            permissions = arrayOf(Manifest.permission.CAMERA),
+            features = arrayOf(PackageManager.FEATURE_CAMERA_FLASH),
             minApi = Build.VERSION_CODES.M,
             iconRes = R.drawable.ic_flashlight,
             descriptionRes = R.string.action_toggle_flashlight,
-            formattedDescription = { ctx, optionText ->
-                ctx.str(R.string.action_toggle_flashlight_formatted, optionText)
-            },
-            options = listOf(Option.LENS_BACK, Option.LENS_FRONT)
+            getDescriptionWithOption = { ctx, optionText -> ctx.str(R.string.action_toggle_flashlight_formatted, optionText) },
+            options = Option.LENSES
         ),
         SystemActionDef(
             id = SystemAction.ENABLE_FLASHLIGHT,
             category = CATEGORY_FLASHLIGHT,
-            permission = Manifest.permission.CAMERA,
-            feature = PackageManager.FEATURE_CAMERA_FLASH,
+            permissions = arrayOf(Manifest.permission.CAMERA),
+            features = arrayOf(PackageManager.FEATURE_CAMERA_FLASH),
             minApi = Build.VERSION_CODES.M,
             iconRes = R.drawable.ic_flashlight,
             descriptionRes = R.string.action_enable_flashlight,
-            formattedDescription = { ctx, optionText ->
-                ctx.str(R.string.action_enable_flashlight_formatted, optionText)
-            },
-            options = listOf(Option.LENS_BACK, Option.LENS_FRONT)
+            getDescriptionWithOption = { ctx, optionText -> ctx.str(R.string.action_toggle_flashlight_formatted, optionText) },
+            options = Option.LENSES
         ),
         SystemActionDef(
             id = SystemAction.DISABLE_FLASHLIGHT,
             category = CATEGORY_FLASHLIGHT,
-            permission = Manifest.permission.CAMERA,
-            feature = PackageManager.FEATURE_CAMERA_FLASH,
+            permissions = arrayOf(Manifest.permission.CAMERA),
+            features = arrayOf(PackageManager.FEATURE_CAMERA_FLASH),
             minApi = Build.VERSION_CODES.M,
             iconRes = R.drawable.ic_flashlight_off,
             descriptionRes = R.string.action_disable_flashlight,
-            formattedDescription = { ctx, optionText ->
-                ctx.str(R.string.action_disable_flashlight_formatted, optionText)
-            },
-            options = listOf(Option.LENS_BACK, Option.LENS_FRONT)
+            getDescriptionWithOption = { ctx, optionText -> ctx.str(R.string.action_toggle_flashlight_formatted, optionText)},
+            options = Option.LENSES
         ),
 
         //NFC
@@ -479,24 +473,24 @@ object SystemActionUtils {
             id = ENABLE_NFC,
             category = CATEGORY_NFC,
             iconRes = R.drawable.ic_outline_nfc_24px,
-            permission = Constants.PERMISSION_ROOT,
-            feature = PackageManager.FEATURE_NFC,
+            permissions = arrayOf(Constants.PERMISSION_ROOT),
+            features = arrayOf(PackageManager.FEATURE_NFC),
             descriptionRes = R.string.action_nfc_enable
         ),
         SystemActionDef(
             id = DISABLE_NFC,
             category = CATEGORY_NFC,
-            feature = PackageManager.FEATURE_NFC,
+            features = arrayOf(PackageManager.FEATURE_NFC),
             iconRes = R.drawable.ic_nfc_off,
-            permission = Constants.PERMISSION_ROOT,
+            permissions = arrayOf(Constants.PERMISSION_ROOT),
             descriptionRes = R.string.action_nfc_disable
         ),
         SystemActionDef(
             id = TOGGLE_NFC,
             category = CATEGORY_NFC,
-            feature = PackageManager.FEATURE_NFC,
+            features = arrayOf(PackageManager.FEATURE_NFC),
             iconRes = R.drawable.ic_outline_nfc_24px,
-            permission = Constants.PERMISSION_ROOT,
+            permissions = arrayOf(Constants.PERMISSION_ROOT),
             descriptionRes = R.string.action_nfc_toggle
         ),
 
@@ -537,7 +531,7 @@ object SystemActionUtils {
         SystemActionDef(id = SHOW_KEYBOARD_PICKER_ROOT,
             category = CATEGORY_KEYBOARD,
             iconRes = R.drawable.ic_keyboard_on_surface,
-            permission = Constants.PERMISSION_ROOT,
+            permissions = arrayOf(Constants.PERMISSION_ROOT),
             minApi = Build.VERSION_CODES.O_MR1,
             descriptionRes = R.string.action_show_keyboard_picker_root),
 
@@ -566,15 +560,15 @@ object SystemActionUtils {
             category = CATEGORY_OTHER,
             iconRes = R.drawable.ic_outline_lock_24px,
             descriptionRes = R.string.action_lock_device,
-            permission = Constants.PERMISSION_ROOT
+            permissions = arrayOf(Constants.PERMISSION_ROOT)
         ),
         SystemActionDef(
             id = SECURE_LOCK_DEVICE,
             category = CATEGORY_OTHER,
             iconRes = R.drawable.ic_outline_lock_24px,
             descriptionRes = R.string.action_secure_lock_device,
-            feature = PackageManager.FEATURE_DEVICE_ADMIN,
-            permission = Manifest.permission.BIND_DEVICE_ADMIN,
+            features = arrayOf(PackageManager.FEATURE_DEVICE_ADMIN),
+            permissions = arrayOf(Manifest.permission.BIND_DEVICE_ADMIN),
             messageOnSelection = R.string.action_secure_lock_device_message
         ),
         SystemActionDef(
@@ -625,10 +619,18 @@ object SystemActionUtils {
         }
 
         if (Build.VERSION.SDK_INT > maxApi) {
-            return  ErrorResult(
+            return ErrorResult(
                 errorCode = ERROR_CODE_SDK_VERSION_TOO_HIGH,
                 data = maxApi.toString()
             )
+        }
+
+        val options = getOptions(ctx)
+
+        if (options.isFailure) {
+            if (options.errorResult?.errorCode != ErrorCodeUtils.ERROR_CODE_OPTIONS_NOT_REQUIRED) {
+                return options.errorResult
+            }
         }
 
         return null
@@ -638,41 +640,5 @@ object SystemActionUtils {
         val systemActionDef = SYSTEM_ACTION_DEFINITIONS.find { it.id == id }
 
         return systemActionDef.result(ERROR_CODE_SYSTEM_ACTION_NOT_FOUND, id)
-    }
-
-    @StringRes
-    fun getTextForOptionId(optionId: String): Int {
-        return when (optionId) {
-            Option.STREAM_ALARM -> R.string.stream_alarm
-            Option.STREAM_DTMF -> R.string.stream_dtmf
-            Option.STREAM_MUSIC -> R.string.stream_music
-            Option.STREAM_NOTIFICATION -> R.string.stream_notification
-            Option.STREAM_RING -> R.string.stream_ring
-            Option.STREAM_SYSTEM -> R.string.stream_system
-            Option.STREAM_VOICE_CALL -> R.string.stream_voice_call
-
-            Option.RINGER_MODE_NORMAL -> R.string.ringer_mode_normal
-            Option.RINGER_MODE_VIBRATE -> R.string.ringer_mode_vibrate
-            Option.RINGER_MODE_SILENT -> R.string.ringer_mode_silent
-
-            Option.LENS_BACK -> R.string.lens_back
-            Option.LENS_FRONT -> R.string.lens_front
-
-            else -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    when (optionId) {
-                        Option.STREAM_ACCESSIBILITY -> return R.string.stream_accessibility
-                    }
-                }
-
-                throw Exception("Can't find a string resource to describe that option id $optionId")
-            }
-        }
-    }
-
-    fun getDescriptionWithOption(ctx: Context, systemActionId: String, optionId: String): Result<String> {
-        val optionText = ctx.str(getTextForOptionId(optionId))
-
-        return getSystemActionDef(systemActionId).onSuccess { it.formattedDescription(ctx, optionText) }.result()
     }
 }
