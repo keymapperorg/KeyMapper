@@ -291,6 +291,12 @@ class ActionPerformerDelegate(
                 }
 
                 else -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        when (id) {
+                            SystemAction.SHOW_POWER_MENU -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_POWER_DIALOG)
+                        }
+                    }
+
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         var lensFacing = CameraCharacteristics.LENS_FACING_BACK
 

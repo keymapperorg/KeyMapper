@@ -448,6 +448,7 @@
     <string name="action_switch_keyboard_formatted">Switch to %s</string>
 
     <string name="action_open_settings">Open Settings</string>
+    <string name="action_show_power_menu">Show Power Menu</string>
     <!-- System action labels -->
 
     <!-- System action category labels -->

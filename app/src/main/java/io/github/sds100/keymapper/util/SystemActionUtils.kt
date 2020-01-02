@@ -48,6 +48,7 @@ import io.github.sds100.keymapper.SystemAction.NEXT_TRACK
 import io.github.sds100.keymapper.SystemAction.OPEN_ASSISTANT
 import io.github.sds100.keymapper.SystemAction.OPEN_CAMERA
 import io.github.sds100.keymapper.SystemAction.OPEN_MENU
+import io.github.sds100.keymapper.SystemAction.SHOW_POWER_MENU
 import io.github.sds100.keymapper.SystemAction.OPEN_RECENTS
 import io.github.sds100.keymapper.SystemAction.OPEN_SETTINGS
 import io.github.sds100.keymapper.SystemAction.PAUSE_MEDIA
@@ -595,6 +596,13 @@ object SystemActionUtils {
             category = CATEGORY_OTHER,
             descriptionRes = R.string.action_open_settings,
             iconRes = R.drawable.ic_outline_settings_24px
+        ),
+        SystemActionDef(
+            id = SHOW_POWER_MENU,
+            category = CATEGORY_OTHER,
+            descriptionRes = R.string.action_show_power_menu,
+            iconRes = R.drawable.ic_settings_power_black_24dp,
+            minApi = Build.VERSION_CODES.LOLLIPOP
         )
     )
 

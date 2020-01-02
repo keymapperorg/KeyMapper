@@ -109,6 +109,7 @@ object SystemAction {
     const val SECURE_LOCK_DEVICE = "secure_lock_device"
     const val CONSUME_KEY_EVENT = "consume_key_event"
     const val OPEN_SETTINGS = "open_settings"
+    const val SHOW_POWER_MENU = "show_power_menu"
     /**
      * REQUIRES ROOT
      */
