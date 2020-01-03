@@ -428,10 +428,12 @@
     <string name="action_screenshot">Screenshot</string>
     <string name="action_open_assistant">Open Google Assistant</string>
     <string name="action_open_camera">Open Camera</string>
-    <string name="action_lock_device">Lock Device (ROOT only)</string>
+
+    <string name="action_lock_device">Lock Device (non-root)</string>
+    <string name="action_lock_device_root">Lock Device (root)</string>
 
     <string name="action_secure_lock_device">Secure Lock Device</string>
-    <string name="action_secure_lock_device_message">This will lock your device but you will only be able to log back in with your PIN. The fingerprint scanner and face unlock will be disabled. For now this is the only reliable way I have found to lock non-rooted devices.</string>
+    <string name="action_secure_lock_device_message">This will lock your device but you will only be able to log back in with your PIN. The fingerprint scanner and face unlock will be disabled. For now this is the only reliable way I have found to lock non-rooted devices before Android Pie 9.0.</string>
 
     <string name="action_consume_keyevent">Do Nothing</string>
 

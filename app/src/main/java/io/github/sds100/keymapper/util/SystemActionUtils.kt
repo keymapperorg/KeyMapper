@@ -43,6 +43,7 @@ import io.github.sds100.keymapper.SystemAction.HIDE_KEYBOARD
 import io.github.sds100.keymapper.SystemAction.INCREASE_BRIGHTNESS
 import io.github.sds100.keymapper.SystemAction.LANDSCAPE_MODE
 import io.github.sds100.keymapper.SystemAction.LOCK_DEVICE
+import io.github.sds100.keymapper.SystemAction.LOCK_DEVICE_ROOT
 import io.github.sds100.keymapper.SystemAction.MOVE_CURSOR_TO_END
 import io.github.sds100.keymapper.SystemAction.NEXT_TRACK
 import io.github.sds100.keymapper.SystemAction.OPEN_ASSISTANT
@@ -575,6 +576,14 @@ object SystemActionUtils {
             category = CATEGORY_OTHER,
             iconRes = R.drawable.ic_outline_lock_24px,
             descriptionRes = R.string.action_lock_device,
+            minApi = Build.VERSION_CODES.P
+        ),
+        SystemActionDef(
+            id = LOCK_DEVICE_ROOT,
+            category = CATEGORY_OTHER,
+            iconRes = R.drawable.ic_outline_lock_24px,
+            descriptionRes = R.string.action_lock_device_root,
+            maxApi = Build.VERSION_CODES.O_MR1,
             permissions = arrayOf(Constants.PERMISSION_ROOT)
         ),
         SystemActionDef(

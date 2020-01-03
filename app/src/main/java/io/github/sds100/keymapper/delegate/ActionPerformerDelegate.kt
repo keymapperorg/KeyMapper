@@ -262,7 +262,7 @@ class ActionPerformerDelegate(
                     startActivity(intent)
                 }
 
-                SystemAction.LOCK_DEVICE -> RootUtils.executeRootCommand("input keyevent ${KeyEvent.KEYCODE_POWER}")
+                SystemAction.LOCK_DEVICE_ROOT -> RootUtils.executeRootCommand("input keyevent ${KeyEvent.KEYCODE_POWER}")
 
                 SystemAction.SHOW_KEYBOARD_PICKER, SystemAction.SHOW_KEYBOARD_PICKER_ROOT ->
                     KeyboardUtils.showInputMethodPickerDialogOutsideApp(this)
@@ -340,6 +340,9 @@ class ActionPerformerDelegate(
                         when (id) {
                             SystemAction.SCREENSHOT ->
                                 performGlobalAction(AccessibilityService.GLOBAL_ACTION_TAKE_SCREENSHOT)
+
+                            SystemAction.LOCK_DEVICE ->
+                                performGlobalAction(AccessibilityService.GLOBAL_ACTION_LOCK_SCREEN)
                         }
                     }
                 }
