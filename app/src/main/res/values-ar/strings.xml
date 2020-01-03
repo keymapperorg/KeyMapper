@@ -264,6 +264,8 @@
     <string name="error_camera_error">Camera error!</string>
     <string name="error_max_cameras_in_use">Maximum number of cameras in use!</string>
     <string name="error_camera_access_exception">Can\'t access the camera!</string>
+    <string name="error_front_flash_not_found">No front flash</string>
+    <string name="error_back_flash_not_found">No back flash</string>
     <string name="error_accessibility_service_disabled">The accessibility service must be enabled for this app to work!</string>
     <string name="error_accessibility_service_enabled">Accessibility service is enabled!</string>
     <string name="warning_need_write_secure_settings_permission">Some features need WRITE_SECURE_SETTINGS permission.</string>
@@ -272,9 +274,12 @@
     <string name="error_ime_service_enabled">Keyboard is enabled!</string>
     <string name="error_ime_service_disabled">Keyboard is disabled!</string>
     <string name="error_critical_ime_service_disabled">The keyboard must be enabled and selected for some of your actions to work!</string>
+    <string name="error_ime_not_found">Can\'t find the %s input method</string>
+    <string name="error_no_enabled_imes">This device has no enabled input methods!</string>
     <string name="error_the_app_wont_work">Your keymaps won\'t work! Some things need fixing!</string>
     <string name="error_cant_move_to_end_of_text_in_this_field">You can\'t move to the end of the text in this field!</string>
     <string name="error_battery_optimisation_activity_not_found">Battery optimisation settings not found! If it exists, open it manually.</string>
+    <string name="error_cant_find_option_label">error: Can\'t find a label for this option \"%s\"</string>
     <!-- Error messages -->
     <!-- System action labels -->
     <string name="action_toggle_wifi">Toggle WiFi</string>
@@ -338,9 +343,10 @@
     <string name="action_screenshot">Screenshot</string>
     <string name="action_open_assistant">Open Google Assistant</string>
     <string name="action_open_camera">Open Camera</string>
-    <string name="action_lock_device">Lock Device (ROOT only)</string>
+    <string name="action_lock_device">Lock Device (non-root)</string>
+    <string name="action_lock_device_root">Lock Device (root)</string>
     <string name="action_secure_lock_device">Secure Lock Device</string>
-    <string name="action_secure_lock_device_message">This will lock your device but you will only be able to log back in with your PIN. The fingerprint scanner and face unlock will be disabled. For now this is the only reliable way I have found to lock non-rooted devices.</string>
+    <string name="action_secure_lock_device_message">This will lock your device but you will only be able to log back in with your PIN. The fingerprint scanner and face unlock will be disabled. For now this is the only reliable way I have found to lock non-rooted devices before Android Pie 9.0.</string>
     <string name="action_consume_keyevent">Do Nothing</string>
     <string name="action_move_to_end_of_text">Move Cursor to the End</string>
     <string name="action_move_to_end_of_text_message">The Key Mapper keyboard must be selected for this action to work and this action may not work as intended in some apps.</string>
@@ -350,7 +356,10 @@
     <string name="action_hide_keyboard">Hide Keyboard</string>
     <string name="action_show_keyboard_picker">Show Keyboard Picker (non-root)</string>
     <string name="action_show_keyboard_picker_root">Show Keyboard Picker (root)</string>
+    <string name="action_switch_keyboard">Switch Keyboard</string>
+    <string name="action_switch_keyboard_formatted">Switch to %s</string>
     <string name="action_open_settings">Open Settings</string>
+    <string name="action_show_power_menu">Show Power Menu</string>
     <!-- System action labels -->
     <!-- System action category labels -->
     <string name="system_action_cat_wifi">WiFi</string>
