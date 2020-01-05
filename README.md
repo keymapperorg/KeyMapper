@@ -14,6 +14,8 @@ Key Mapper is a free and open source Android app that can map a single or multip
 ### How do I contribute?
 You can help by suggesting ideas, notifying me of any bugs or contributing to the code directly. You can post suggestions and bug fixes by emailing me or posting in the XDA thread, Telegram channel or GitHub issues page for this repo.
 
+[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/M4M41032E)
+
 To build and help with code stuff...
 1. Fork the KeyMapper repository (repo).
 2. Clone the repo to your device. It will clone to a folder called KeyMapper by default.
