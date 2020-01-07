@@ -76,6 +76,7 @@ object SystemAction {
     const val GO_BACK = "go_back"
     const val GO_HOME = "go_home"
     const val OPEN_RECENTS = "open_recents"
+    const val TOGGLE_SPLIT_SCREEN = "toggle_split_screen"
 
     //flashlight
     const val TOGGLE_FLASHLIGHT = "toggle_flashlight"
@@ -95,14 +96,22 @@ object SystemAction {
     const val SHOW_KEYBOARD_PICKER = "show_keyboard_picker"
     const val SHOW_KEYBOARD_PICKER_ROOT = "show_keyboard_picker_root"
 
+    /**
+     * REQUIRES ROOT
+     */
+    const val SWITCH_KEYBOARD = "switch_keyboard"
+
     //other
     const val SCREENSHOT = "screenshot"
 
     const val OPEN_ASSISTANT = "open_assistant"
     const val OPEN_CAMERA = "open_camera"
-    const val LOCK_DEVICE = "lock_device"
+    const val LOCK_DEVICE = "lock_device_no_root"
+    const val LOCK_DEVICE_ROOT = "lock_device"
     const val SECURE_LOCK_DEVICE = "secure_lock_device"
     const val CONSUME_KEY_EVENT = "consume_key_event"
+    const val OPEN_SETTINGS = "open_settings"
+    const val SHOW_POWER_MENU = "show_power_menu"
     /**
      * REQUIRES ROOT
      */

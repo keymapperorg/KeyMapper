@@ -73,12 +73,11 @@ fun <T, E> Result<T>.handle(onSuccess: (data: T) -> E, onFailure: (errorResult: 
  *
  * @return Performs the given action if the result is successful.
  */
-fun <T, E> Result<T>.onSuccess(action: (data: T) -> E): E? {
+inline fun <T, E> Result<T>.onSuccess(action: (data: T) -> E): E? {
     if (this.isSuccess) return action(this.data!!)
 
     return null
 }
-
 
 /**
  * @return Performs the given action if the result is a failure.

@@ -69,9 +69,7 @@ class SystemActionAdapter(
         }
     }
 
-    override fun getItemText(item: Any): String {
-        return str((item as SystemActionDef).descriptionRes)
-    }
+    override fun getItemText(item: Any) = (item as SystemActionDef).getDescription(ctx)
 
     override fun getItemCount() = items.size
 
@@ -85,11 +83,7 @@ class SystemActionAdapter(
 
     override fun getSecondaryItemTextColor(position: Int) = color(R.color.error)
 
-    override fun getItemDrawable(item: Any): Drawable? {
-        if ((item as SystemActionDef).iconRes == null) return null
-
-        return drawable(item.iconRes!!)
-    }
+    override fun getItemDrawable(item: Any) = (item as SystemActionDef).getIcon(ctx)
 
     private fun createSystemActionDefListWithCategories(): List<Any> {
         return sequence {

@@ -29,6 +29,7 @@ object AccessibilityUtils {
                 val newEnabledServices = if (enabledServices == null) {
                     keyMapperEntry
                 } else {
+                    //append the keymapper entry to the rest of the other services.
                     "$keyMapperEntry:$enabledServices"
                 }
                 ctx.putSecureSetting(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, newEnabledServices)
@@ -64,10 +65,13 @@ object AccessibilityUtils {
         }
     }
 
-    fun openAccessibilitySettings(ctx: Context) {
+    private fun openAccessibilitySettings(ctx: Context) {
         try {
             val settingsIntent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-            settingsIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+
+            settingsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
 
             ctx.startActivity(settingsIntent)
         } catch (e: ActivityNotFoundException) {

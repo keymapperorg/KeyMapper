@@ -24,7 +24,13 @@ import io.github.sds100.keymapper.R
     ErrorCodeUtils.ERROR_CODE_SDK_VERSION_TOO_LOW,
     ErrorCodeUtils.ERROR_CODE_ACTION_EXTRA_NOT_FOUND,
     ErrorCodeUtils.ERROR_CODE_NULL,
-    ErrorCodeUtils.ERROR_CODE_IME_SERVICE_DISABLED]
+    ErrorCodeUtils.ERROR_CODE_IME_SERVICE_DISABLED,
+    ErrorCodeUtils.ERROR_CODE_SDK_VERSION_TOO_HIGH,
+    ErrorCodeUtils.ERROR_CODE_IME_NOT_FOUND,
+    ErrorCodeUtils.ERROR_CODE_NO_ENABLED_IMES,
+    ErrorCodeUtils.ERROR_CODE_OPTIONS_NOT_REQUIRED,
+    ErrorCodeUtils.ERROR_CODE_FRONT_FLASH_NOT_FOUND,
+    ErrorCodeUtils.ERROR_CODE_BACK_FLASH_NOT_FOUND]
 )
 annotation class ErrorCode
 
@@ -45,6 +51,11 @@ object ErrorCodeUtils {
     const val ERROR_CODE_NULL = 13
     const val ERROR_CODE_IME_SERVICE_DISABLED = 14
     const val ERROR_CODE_SDK_VERSION_TOO_HIGH = 15
+    const val ERROR_CODE_IME_NOT_FOUND = 16
+    const val ERROR_CODE_NO_ENABLED_IMES = 17
+    const val ERROR_CODE_OPTIONS_NOT_REQUIRED = 18
+    const val ERROR_CODE_FRONT_FLASH_NOT_FOUND = 19
+    const val ERROR_CODE_BACK_FLASH_NOT_FOUND = 20
 
     private val FIXABLE_ERRORS = arrayOf(
         ERROR_CODE_APP_DISABLED,
@@ -61,7 +72,7 @@ object ErrorCodeUtils {
      *
      * [ERROR_CODE_PERMISSION_DENIED] must be fixed by requesting for a permission in an activity.
      */
-    fun fixError(ctx: Context, errorResult: ErrorResult) {
+    fun resolveError(ctx: Context, errorResult: ErrorResult) {
         when (errorResult.errorCode) {
             ERROR_CODE_APP_DISABLED -> {
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
@@ -92,7 +103,7 @@ object ErrorCodeUtils {
         }
     }
 
-    fun isErrorFixable(errorCode: Int) = FIXABLE_ERRORS.contains(errorCode)
+    fun isErrorResolvable(errorCode: Int) = FIXABLE_ERRORS.contains(errorCode)
 
     /**
      * @return a message describing an error code.
@@ -108,6 +119,10 @@ object ErrorCodeUtils {
                 ERROR_CODE_IME_SERVICE_NOT_CHOSEN -> str(R.string.error_ime_must_be_chosen)
                 ERROR_CODE_GOOGLE_APP_NOT_INSTALLED -> str(R.string.error_google_app_not_installed)
                 ERROR_CODE_IME_SERVICE_DISABLED -> str(R.string.error_ime_service_disabled)
+                ERROR_CODE_FEATURE_NOT_AVAILABLE -> str(R.string.error_feature_not_available, errorResult.data)
+                ERROR_CODE_FLAG_NOT_FOUND -> str(R.string.error_flag_not_found, errorResult.data)
+                ERROR_CODE_IME_NOT_FOUND -> str(R.string.error_ime_not_found, errorResult.data)
+                ERROR_CODE_NO_ENABLED_IMES -> str(R.string.error_no_enabled_imes)
 
                 ERROR_CODE_SDK_VERSION_TOO_LOW -> {
                     val versionName = BuildUtils.getSdkVersionName(errorResult.data!!.toInt())
@@ -118,17 +133,13 @@ object ErrorCodeUtils {
                     val versionName = BuildUtils.getSdkVersionName(errorResult.data!!.toInt())
                     str(R.string.error_sdk_version_too_high, versionName)
                 }
-                ERROR_CODE_FEATURE_NOT_AVAILABLE -> {
-                    str(R.string.error_feature_not_available, errorResult.data)
-                }
 
                 ERROR_CODE_PERMISSION_DENIED -> {
                     str(PermissionUtils.getPermissionDescriptionRes(errorResult.data!!))
                 }
 
-                ERROR_CODE_FLAG_NOT_FOUND -> {
-                    str(R.string.error_flag_not_found, errorResult.data)
-                }
+                ERROR_CODE_FRONT_FLASH_NOT_FOUND -> str(R.string.error_front_flash_not_found)
+                ERROR_CODE_BACK_FLASH_NOT_FOUND -> str(R.string.error_back_flash_not_found)
 
                 else -> throw Exception("Can't find a description for this error code: ${errorResult.errorCode}")
             }

@@ -8,12 +8,14 @@ import android.content.Context.VIBRATOR_SERVICE
 import android.content.Intent
 import android.hardware.camera2.CameraCharacteristics
 import android.media.AudioManager
+import android.net.Uri
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.provider.MediaStore
 import android.provider.Settings
 import android.view.KeyEvent
+import android.webkit.URLUtil
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.lifecycle.Lifecycle
 import io.github.sds100.keymapper.*
@@ -92,6 +94,20 @@ class ActionPerformerDelegate(
                     intent.putExtra(MyIMEService.EXTRA_TEXT, action.data)
 
                     sendBroadcast(intent)
+                }
+
+                ActionType.URL -> {
+                    val guessedUrl = URLUtil.guessUrl(action.data)
+                    val uri: Uri = Uri.parse(guessedUrl)
+
+                    val intent = Intent(Intent.ACTION_VIEW, uri)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+                    if (intent.resolveActivity(packageManager) != null) {
+                        startActivity(intent)
+                    } else {
+                        toast(R.string.error_no_app_found_to_open_url)
+                    }
                 }
 
                 ActionType.SYSTEM_ACTION -> performSystemAction(action, flags)
@@ -246,7 +262,7 @@ class ActionPerformerDelegate(
                     startActivity(intent)
                 }
 
-                SystemAction.LOCK_DEVICE -> RootUtils.executeRootCommand("input keyevent ${KeyEvent.KEYCODE_POWER}")
+                SystemAction.LOCK_DEVICE_ROOT -> RootUtils.executeRootCommand("input keyevent ${KeyEvent.KEYCODE_POWER}")
 
                 SystemAction.SHOW_KEYBOARD_PICKER, SystemAction.SHOW_KEYBOARD_PICKER_ROOT ->
                     KeyboardUtils.showInputMethodPickerDialogOutsideApp(this)
@@ -261,7 +277,26 @@ class ActionPerformerDelegate(
                     metaState = KeyEvent.META_CTRL_ON
                 )
 
+                SystemAction.OPEN_SETTINGS -> {
+                    Intent(Settings.ACTION_SETTINGS).apply {
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        startActivity(this)
+                    }
+                }
+
+                SystemAction.SWITCH_KEYBOARD -> {
+                    action.getExtraData(Action.EXTRA_IME_ID).onSuccess {
+                        KeyboardUtils.switchIme(ctx, it)
+                    }
+                }
+
                 else -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        when (id) {
+                            SystemAction.SHOW_POWER_MENU -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_POWER_DIALOG)
+                        }
+                    }
+
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         var lensFacing = CameraCharacteristics.LENS_FACING_BACK
 
@@ -298,6 +333,9 @@ class ActionPerformerDelegate(
                             SystemAction.TOGGLE_KEYBOARD -> keyboardController?.toggle(this)
                             SystemAction.SHOW_KEYBOARD -> keyboardController?.show(this)
                             SystemAction.HIDE_KEYBOARD -> keyboardController?.hide(this)
+
+                            SystemAction.TOGGLE_SPLIT_SCREEN ->
+                                performGlobalAction(AccessibilityService.GLOBAL_ACTION_TOGGLE_SPLIT_SCREEN)
                         }
                     }
 
@@ -305,6 +343,9 @@ class ActionPerformerDelegate(
                         when (id) {
                             SystemAction.SCREENSHOT ->
                                 performGlobalAction(AccessibilityService.GLOBAL_ACTION_TAKE_SCREENSHOT)
+
+                            SystemAction.LOCK_DEVICE ->
+                                performGlobalAction(AccessibilityService.GLOBAL_ACTION_LOCK_SCREEN)
                         }
                     }
                 }

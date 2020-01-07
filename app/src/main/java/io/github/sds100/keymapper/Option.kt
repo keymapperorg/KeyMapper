@@ -1,8 +1,11 @@
 package io.github.sds100.keymapper
 
+import android.content.Context
 import android.hardware.camera2.CameraCharacteristics
 import android.media.AudioManager
 import android.os.Build
+import io.github.sds100.keymapper.util.KeyboardUtils
+import io.github.sds100.keymapper.util.str
 
 /**
  * Created by sds100 on 14/04/2019.
@@ -29,12 +32,12 @@ object Option {
 
     val STREAMS = sequence {
         yieldAll(listOf(STREAM_ALARM,
-                STREAM_DTMF,
-                STREAM_MUSIC,
-                STREAM_NOTIFICATION,
-                STREAM_RING,
-                STREAM_SYSTEM,
-                STREAM_VOICE_CALL
+            STREAM_DTMF,
+            STREAM_MUSIC,
+            STREAM_NOTIFICATION,
+            STREAM_RING,
+            STREAM_SYSTEM,
+            STREAM_VOICE_CALL
         ))
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -42,18 +45,23 @@ object Option {
         }
     }.toList()
 
+    val LENSES = listOf(
+        LENS_FRONT,
+        LENS_BACK
+    )
+
     val OPTION_ID_SDK_ID_MAP = sequence {
         yieldAll(listOf(STREAM_ALARM to AudioManager.STREAM_ALARM,
-                STREAM_DTMF to AudioManager.STREAM_DTMF,
-                STREAM_MUSIC to AudioManager.STREAM_MUSIC,
-                STREAM_NOTIFICATION to AudioManager.STREAM_NOTIFICATION,
-                STREAM_RING to AudioManager.STREAM_RING,
-                STREAM_SYSTEM to AudioManager.STREAM_SYSTEM,
-                STREAM_VOICE_CALL to AudioManager.STREAM_VOICE_CALL,
+            STREAM_DTMF to AudioManager.STREAM_DTMF,
+            STREAM_MUSIC to AudioManager.STREAM_MUSIC,
+            STREAM_NOTIFICATION to AudioManager.STREAM_NOTIFICATION,
+            STREAM_RING to AudioManager.STREAM_RING,
+            STREAM_SYSTEM to AudioManager.STREAM_SYSTEM,
+            STREAM_VOICE_CALL to AudioManager.STREAM_VOICE_CALL,
 
-                RINGER_MODE_NORMAL to AudioManager.RINGER_MODE_NORMAL,
-                RINGER_MODE_VIBRATE to AudioManager.RINGER_MODE_VIBRATE,
-                RINGER_MODE_SILENT to AudioManager.RINGER_MODE_SILENT
+            RINGER_MODE_NORMAL to AudioManager.RINGER_MODE_NORMAL,
+            RINGER_MODE_VIBRATE to AudioManager.RINGER_MODE_VIBRATE,
+            RINGER_MODE_SILENT to AudioManager.RINGER_MODE_SILENT
         ))
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -70,8 +78,8 @@ object Option {
      * @return the [Extra] id for where the option is stored in the [Action]
      */
     @ExtraId
-    fun getExtraIdForOption(id: String): String {
-        return when (id) {
+    fun getExtraIdForOption(systemActionId: String): String {
+        return when (systemActionId) {
             SystemAction.VOLUME_DECREASE_STREAM,
             SystemAction.VOLUME_INCREASE_STREAM -> Action.EXTRA_STREAM_TYPE
 
@@ -81,7 +89,38 @@ object Option {
 
             SystemAction.CHANGE_RINGER_MODE -> Action.EXTRA_RINGER_MODE
 
-            else -> throw Exception("Can't find an extra id for that system action option $id")
+            SystemAction.SWITCH_KEYBOARD -> Action.EXTRA_IME_ID
+
+            else -> throw Exception("Can't find an extra id for that system action $systemActionId")
+        }
+    }
+
+    fun getOptionLabel(ctx: Context, systemActionId: String, optionId: String): String? {
+        when (systemActionId) {
+            SystemAction.SWITCH_KEYBOARD -> {
+                return KeyboardUtils.getInputMethodLabel(ctx, optionId).data
+            }
+        }
+
+        return when (optionId) {
+            STREAM_ALARM -> ctx.str(R.string.stream_alarm)
+            STREAM_DTMF -> ctx.str(R.string.stream_dtmf)
+            STREAM_MUSIC -> ctx.str(R.string.stream_music)
+            STREAM_NOTIFICATION -> ctx.str(R.string.stream_notification)
+            STREAM_RING -> ctx.str(R.string.stream_ring)
+            STREAM_SYSTEM -> ctx.str(R.string.stream_system)
+            STREAM_VOICE_CALL -> ctx.str(R.string.stream_voice_call)
+
+            RINGER_MODE_NORMAL -> ctx.str(R.string.ringer_mode_normal)
+            RINGER_MODE_VIBRATE -> ctx.str(R.string.ringer_mode_vibrate)
+            RINGER_MODE_SILENT -> ctx.str(R.string.ringer_mode_silent)
+
+            LENS_BACK -> ctx.str(R.string.lens_back)
+            LENS_FRONT -> ctx.str(R.string.lens_front)
+
+            STREAM_ACCESSIBILITY -> ctx.str(R.string.stream_accessibility)
+
+            else -> throw Exception("Can't find a string resource to describe that option id $optionId")
         }
     }
 }

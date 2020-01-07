@@ -10,10 +10,9 @@ import android.view.inputmethod.InputMethodManager
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import androidx.core.content.edit
-import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.WidgetsManager
-import io.github.sds100.keymapper.result
+import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.service.MyIMEService
+import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_IME_NOT_FOUND
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.okButton
@@ -93,6 +92,29 @@ object KeyboardUtils {
             RootUtils.executeRootCommand(command)
         }
     }
+
+    fun getInputMethodIds(ctx: Context): Result<List<String>> {
+        val imeManager = ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+        if (imeManager.enabledInputMethodList.isEmpty()) {
+            return null.result(ErrorCodeUtils.ERROR_CODE_NO_ENABLED_IMES)
+        }
+
+        return imeManager.enabledInputMethodList.map { it.id }.result()
+    }
+
+    fun getInputMethodLabel(ctx: Context, id: String): Result<String> {
+        val imeManager = ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+        return imeManager.enabledInputMethodList.find { it.id == id }
+            ?.loadLabel(ctx.packageManager)?.toString()
+            .result(ERROR_CODE_IME_NOT_FOUND, id)
+    }
+
+    fun inputMethodExists(ctx: Context, imeId: String) = getInputMethodIds(ctx).handle(
+        onSuccess = { it.contains(imeId) },
+        onFailure = { false }
+    )
 }
 
 @RequiresApi(Build.VERSION_CODES.N)

@@ -1,8 +1,11 @@
 package io.github.sds100.keymapper
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import io.github.sds100.keymapper.util.ErrorCodeUtils
+import io.github.sds100.keymapper.util.drawable
 import io.github.sds100.keymapper.util.str
 
 /**
@@ -19,60 +22,36 @@ class SystemActionDef(
     val features: Array<String> = arrayOf(),
     val minApi: Int = Constants.MIN_API,
     val maxApi: Int = Constants.MAX_API,
-    @DrawableRes val iconRes: Int? = null,
-    @StringRes val descriptionRes: Int,
-    @StringRes val messageOnSelection: Int? = null,
-    val formattedDescription: (ctx: Context, optionText: String) -> String = { ctx, _ -> ctx.str(descriptionRes) },
 
-    /**
-     * A map of any option ids to their label.
-     */
-    val options: List<String> = listOf()) {
+    @DrawableRes iconRes: Int? = null,
+    val getIcon: (ctx: Context) -> Drawable? = {
+        if (iconRes != null) {
+            it.drawable(iconRes)
+        } else {
+            null
+        }
+    },
 
-    constructor(id: String,
-                category: String,
-                permission: String,
-                minApi: Int = Constants.MIN_API,
-                @DrawableRes iconRes: Int? = null,
-                @StringRes descriptionRes: Int,
-                @StringRes messageOnSelection: Int? = null,
-                formattedDescription: (ctx: Context, optionText: String) -> String = { ctx, _ -> ctx.str(descriptionRes) },
-                options: List<String> = listOf()
-    ) : this(
-        id,
-        category,
-        arrayOf(permission),
-        minApi = minApi,
-        iconRes = iconRes,
-        descriptionRes = descriptionRes,
-        messageOnSelection = messageOnSelection,
-        formattedDescription = formattedDescription,
-        options = options
-    )
+    @StringRes messageOnSelection: Int? = null,
+    val getMessageOnSelection: (ctx: Context) -> String? = {
+        if (messageOnSelection != null) {
+            it.str(messageOnSelection)
+        } else {
+            null
+        }
+    },
 
-    constructor(id: String,
-                category: String,
-                permission: String,
-                feature: String,
-                minApi: Int = Constants.MIN_API,
-                @DrawableRes iconRes: Int? = null,
-                @StringRes descriptionRes: Int,
-                @StringRes messageOnSelection: Int? = null,
-                formattedDescription: (ctx: Context, optionText: String) -> String = { ctx, _ -> ctx.str(descriptionRes) },
-                options: List<String> = listOf()
-    ) : this(
-        id = id,
-        category = category,
-        permissions = arrayOf(permission),
-        features = arrayOf(feature),
-        minApi = minApi,
-        iconRes = iconRes,
-        descriptionRes = descriptionRes,
-        messageOnSelection = messageOnSelection,
-        formattedDescription = formattedDescription,
-        options = options
-    )
+    @StringRes descriptionRes: Int,
+    val getDescription: (ctx: Context) -> String = { ctx -> ctx.str(descriptionRes) },
 
-    val hasOptions: Boolean
-        get() = options.isNotEmpty()
-}
+    val getDescriptionWithOption: (ctx: Context, optionLabel: String) -> String? = { _, _ -> null },
+
+    options: List<String>? = null,
+    val getOptions: (ctx: Context) -> Result<List<String>> = {
+        @Suppress("IfThenToElvis")
+        if (options == null) {
+            null.result(ErrorCodeUtils.ERROR_CODE_OPTIONS_NOT_REQUIRED)
+        } else {
+            options.result()
+        }
+    })

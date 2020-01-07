@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.fragment
 
 import android.os.Bundle
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,15 +9,17 @@ import io.github.sds100.keymapper.Action
 import io.github.sds100.keymapper.ActionType
 import io.github.sds100.keymapper.R
 import kotlinx.android.synthetic.main.action_type_edit_text.*
+import kotlinx.android.synthetic.main.action_type_edit_text.view.*
 
 /**
  * Created by sds100 on 29/07/2018.
  */
 
 /**
- * A Fragment that allows a user to type any length of text
+ * A Fragment which displays all keycodes which can be used
  */
-class TextActionTypeFragment : ActionTypeFragment() {
+class UrlActionTypeFragment : ActionTypeFragment() {
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -28,10 +31,11 @@ class TextActionTypeFragment : ActionTypeFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        textViewCaption.setText(R.string.caption_action_type_text)
+        editText.inputType = InputType.TYPE_TEXT_VARIATION_URI
+        textViewCaption.setText(R.string.caption_action_type_url)
 
         buttonDone.setOnClickListener {
-            val action = Action(ActionType.TEXT_BLOCK, editText.text.toString())
+            val action = Action(ActionType.URL, view.editText.text.toString())
             chooseSelectedAction(action)
         }
     }
