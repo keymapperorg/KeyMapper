@@ -70,6 +70,7 @@ import io.github.sds100.keymapper.SystemAction.TOGGLE_BLUETOOTH
 import io.github.sds100.keymapper.SystemAction.TOGGLE_KEYBOARD
 import io.github.sds100.keymapper.SystemAction.TOGGLE_MOBILE_DATA
 import io.github.sds100.keymapper.SystemAction.TOGGLE_NFC
+import io.github.sds100.keymapper.SystemAction.TOGGLE_SPLIT_SCREEN
 import io.github.sds100.keymapper.SystemAction.TOGGLE_WIFI
 import io.github.sds100.keymapper.SystemAction.VOLUME_MUTE
 import io.github.sds100.keymapper.SystemAction.VOLUME_TOGGLE_MUTE
@@ -133,6 +134,12 @@ object SystemActionUtils {
             category = CATEGORY_NAVIGATION,
             iconRes = R.drawable.ic_more_vert_black_24dp,
             descriptionRes = R.string.action_open_menu
+        ),
+        SystemActionDef(
+            id = TOGGLE_SPLIT_SCREEN,
+            category = CATEGORY_NAVIGATION,
+            descriptionRes = R.string.action_toggle_split_screen,
+            minApi = Build.VERSION_CODES.N
         ),
         //NAVIGATION
 

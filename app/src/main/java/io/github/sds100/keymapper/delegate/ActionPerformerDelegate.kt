@@ -333,6 +333,9 @@ class ActionPerformerDelegate(
                             SystemAction.TOGGLE_KEYBOARD -> keyboardController?.toggle(this)
                             SystemAction.SHOW_KEYBOARD -> keyboardController?.show(this)
                             SystemAction.HIDE_KEYBOARD -> keyboardController?.hide(this)
+
+                            SystemAction.TOGGLE_SPLIT_SCREEN ->
+                                performGlobalAction(AccessibilityService.GLOBAL_ACTION_TOGGLE_SPLIT_SCREEN)
                         }
                     }
 
