@@ -4,6 +4,35 @@ All notable changes to this project will be documented in this file. This projec
  
 ## [Unreleased](https://github.com/sds100/KeyMapper/tree/develop)
 
+## [1.1.7](https://github.com/sds100/KeyMapper/releases/tag/v1.1.7)
+#### 07 Jan 2020
+
+### Bug Fixes
+- KEYCODE_BACK appeared twice in the keycode list.
+- crashed when the battery optimisation settings couldn't be found.
+- some trigger keys have no name.
+- unable to uncheck the "show volume dialog" flag.
+- on some devices (e.g Oxygen OS 10),  the volume buttons up keyevents need to be consumed to stop them from changing the volume when performing an action.
+- couldn't necessarily press the back button to get back to Key Mapper when opening the accessibility settings.
+
+### Added
+- support for Jelly Bean 4.2 and 4.3.
+- setting to show the toast message when an action fails to perform.
+- action to open the device settings.
+- action to open a URL.
+- action to switch the input method (ROOT only)
+- action to show the power dialog (Android 5.0+)
+- action to lock the device without root (only Android 9.0+)
+- action to toggle split screen (Android 7.0+)
+
+### Changes
+- Removed Firebase.
+
+## [1.1.6](https://github.com/sds100/KeyMapper/releases/tag/v1.1.6)
+#### 03 Nov 2019
+
+F-Droid can now build.
+
 ## [1.1.5](https://github.com/sds100/KeyMapper/releases/tag/v1.1.5)
 #### 03 Nov 2019
 This is the first release to be released on F-Droid.
