@@ -331,6 +331,7 @@
     <string name="action_go_home">主页</string>
     <string name="action_open_recents">打开最近任务</string>
     <string name="action_open_menu">打开菜单</string>
+    <string name="action_toggle_split_screen">Toggle Split Screen</string>
     <string name="action_toggle_flashlight">切换闪光灯</string>
     <string name="action_enable_flashlight">启用闪光灯</string>
     <string name="action_disable_flashlight">禁用闪光灯</string>
