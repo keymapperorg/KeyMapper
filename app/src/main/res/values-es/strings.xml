@@ -3,33 +3,33 @@
 <resources>
     <string name="no_action_chosen">Ninguna acción seleccionada</string>
     <string name="triggers_header">Disparador</string>
-    <string name="accessibility_service_description">Key Mapper needs to use an accessibility service so it can listen to button/key presses and perform the actions you\'ve chosen.
-    The accessibility service only listens for key events and nothing else. Look at the source code, which is linked to in the About section inside the app, if you are paranoid I\'m spying. :)</string>
-    <string name="record_trigger_help">When you click \"record trigger\", you have 5 seconds to press the keys/buttons which will trigger the action. Your trigger will be added after the 5 seconds. Press \"clear\" to clear the keys you have already typed. If a button isn\'t detected here, the device vendor is probably blocking accessibility services from seeing it. Therefore, it can\'t be remapped.</string>
-    <string name="selection_count">%d selected</string>
-    <string name="enable">Enable</string>
-    <string name="open">Open</string>
-    <string name="no_key_maps">You haven\'t created any keymaps!</string>
-    <string name="performing_action">Key Mapper is performing an action…</string>
-    <string name="email_subject">Key Mapper query</string>
-    <string name="log_is_empty">Log is empty!</string>
-    <string name="everything_looks_good">Everything looks good!</string>
-    <string name="warning_the_app_will_work">The app will work but some things might need fixing depending on what you\'re doing.</string>
-    <string name="your_device_doesnt_support_some_actions">Your device doesn\'t support some actions.</string>
-    <string name="tab_unsupported_actions">Unsupported Actions</string>
-    <string name="requires_root">REQUIRES ROOT</string>
-    <string name="caption_action_type_key">Click the key on the keyboard which you want to be entered.
-        \n\nIMPORTANT!
-        This will only work if you have selected the Key Mapper keyboard. This action is best used with a hardware keyboard.</string>
-    <string name="caption_action_type_keycode">IMPORTANT!
-        This will only work if you have selected the Key Mapper keyboard. This action is best used with a hardware keyboard.</string>
-    <string name="caption_action_type_text">Type some text you want to be inserted when you perform this action.</string>
-    <string name="caption_action_type_url">Type a url which you want to be opened. The http://, https:// or www. isn\'t required.</string>
-    <string name="switch_enabled">Enabled</string>
-    <string name="disabled">Disabled</string>
-    <string name="key_map_adapter_flags">Flags</string>
-    <string name="description_open_app">Open %s</string>
-    <string name="description_key">Press \'%s\' key</string>
+    <string name="accessibility_service_description">Key Mapper necesita usar un servicio de accesibilidad para poder escuchar el uso de los botones/teclas y realizar las acciones que seleccionaste.
+    Este servicio solo escuchará eventos de tecla y nada más. Mira el código fuente, está enlazado en la sección \"Acerca de\" dentro de la aplicación, si tienes la paranoia de que estoy espiando. :)</string>
+    <string name="record_trigger_help">Cuando toques \"Grabar disparador\", tendrás 5 segundos para presionar las teclas/botones que ejecutarán la acción. Tu disparador será añadido después de los 5 segundos. Presiona \"Limpiar\" para limpiar las teclas que ya hayas pulsado. Si un botón no es detectado aquí, el dispositivo probablemente está bloqueando los servicios de accesibilidad para verlo. Por lo tanto, no se puede remapear.</string>
+    <string name="selection_count">%d seleccionado</string>
+    <string name="enable">Activar</string>
+    <string name="open">Abrir</string>
+    <string name="no_key_maps">¡No has creado ningún mapa de teclas!</string>
+    <string name="performing_action">Key Mapper está realizando una acción…</string>
+    <string name="email_subject">Consulta de Key Mapper</string>
+    <string name="log_is_empty">¡El registro está vacío!</string>
+    <string name="everything_looks_good">¡Todo parece correcto!</string>
+    <string name="warning_the_app_will_work">La aplicación funcionará, pero algunas cosas necesitan repararse dependiendo de qué estás haciendo.</string>
+    <string name="your_device_doesnt_support_some_actions">Tu dispositivo no soporta algunas acciones.</string>
+    <string name="tab_unsupported_actions">Acciones no soportadas</string>
+    <string name="requires_root">REQUIERE ROOT</string>
+    <string name="caption_action_type_key">Toca la tecla en el teclado que quieres que sea ingresada.
+        \n\n¡IMPORTANTE!
+        Esto solo funcionará si seleccionaste el teclado de Key Mapper. Esta acción se ejecuta mejor con un teclado físico.</string>
+    <string name="caption_action_type_keycode">¡IMPORTANTE!
+        Esto solo funcionará si seleccionaste el teclado de Key Mapper. Esta acción se ejecuta mejor con un teclado físico.</string>
+    <string name="caption_action_type_text">Escribe el texto que quieres que se ingrese cuando realices esta acción.</string>
+    <string name="caption_action_type_url">Escribe el URL que quieres abrir. El \"http://\", \"https://\" o el \"www\" no son requeridos.</string>
+    <string name="switch_enabled">Activado</string>
+    <string name="disabled">Desactivado</string>
+    <string name="key_map_adapter_flags">Otros</string>
+    <string name="description_open_app">Abrir %s</string>
+    <string name="description_key">Presiona la tecla \"%s\"</string>
     <string name="description_text_block">Type \'%s\'</string>
     <string name="description_keycode">%s</string>
     <string name="description_url">Open %s</string>
@@ -331,6 +331,7 @@
     <string name="action_go_home">Go Home</string>
     <string name="action_open_recents">Open Recents</string>
     <string name="action_open_menu">Open Menu</string>
+    <string name="action_toggle_split_screen">Toggle Split Screen</string>
     <string name="action_toggle_flashlight">Toggle Flashlight</string>
     <string name="action_enable_flashlight">Enable Flashlight</string>
     <string name="action_disable_flashlight">Disable Flashlight</string>
