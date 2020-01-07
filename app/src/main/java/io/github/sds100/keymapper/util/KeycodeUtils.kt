@@ -285,11 +285,21 @@ object KeycodeUtils {
             KeyEvent.KEYCODE_YEN to "Yen",
             KeyEvent.KEYCODE_RO to "Ro",
             KeyEvent.KEYCODE_KANA to "Kana",
-            KeyEvent.KEYCODE_ASSIST to "Assist",
-            KeyEvent.KEYCODE_BRIGHTNESS_DOWN to "Brightness Down",
-            KeyEvent.KEYCODE_BRIGHTNESS_UP to "Brightness Up",
-            KeyEvent.KEYCODE_MEDIA_AUDIO_TRACK to "Audio Track"
+            KeyEvent.KEYCODE_ASSIST to "Assist"
         ))
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            yieldAll(listOf(
+                KeyEvent.KEYCODE_BRIGHTNESS_DOWN to "Brightness Down",
+                KeyEvent.KEYCODE_BRIGHTNESS_UP to "Brightness Up"
+            ))
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            yieldAll(listOf(
+                KeyEvent.KEYCODE_MEDIA_AUDIO_TRACK to "Audio Track"
+            ))
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             yieldAll(listOf(
@@ -597,10 +607,17 @@ object KeycodeUtils {
         KeyEvent.KEYCODE_RO,
         KeyEvent.KEYCODE_KANA,
         KeyEvent.KEYCODE_ASSIST,
-        KeyEvent.KEYCODE_BRIGHTNESS_DOWN,
-        KeyEvent.KEYCODE_BRIGHTNESS_UP,
-        KeyEvent.KEYCODE_MEDIA_AUDIO_TRACK,
         KeyEvent.KEYCODE_POWER)
+
+    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+    private val KEYCODES_API_18 = listOf(
+        KeyEvent.KEYCODE_BRIGHTNESS_DOWN,
+        KeyEvent.KEYCODE_BRIGHTNESS_UP)
+
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
+    private val KEYCODES_API_19 = listOf(
+        KeyEvent.KEYCODE_MEDIA_AUDIO_TRACK
+    )
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private val KEYCODES_API_21 = listOf(
@@ -701,6 +718,14 @@ object KeycodeUtils {
      */
     fun getKeyCodes(): List<Int> {
         val keyCodes = KEYCODES.toMutableList()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            keyCodes.addAll(KEYCODES_API_18)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            keyCodes.addAll(KEYCODES_API_19)
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             keyCodes.addAll(KEYCODES_API_21)
