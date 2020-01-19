@@ -12,17 +12,17 @@ import io.github.sds100.keymapper.R
  */
 
 class BottomSheetMenuItem(
-        context: Context?,
+        context: Context,
         attrs: AttributeSet?,
         @AttrRes defStyleAttr: Int
 ) : MaterialButton(context, attrs, defStyleAttr) {
 
     var intent: Intent? = null
 
-    constructor(context: Context?, attrs: AttributeSet?) : this(context, attrs, R.attr.bottomSheetMenuItemStyle)
+    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, R.attr.bottomSheetMenuItemStyle)
 
     init {
-        val array = context?.obtainStyledAttributes(attrs,
+        val array = context.obtainStyledAttributes(attrs,
                 R.styleable.BottomSheetMenuItem,
                 defStyleAttr,
                 R.style.BottomSheetMenuItem)

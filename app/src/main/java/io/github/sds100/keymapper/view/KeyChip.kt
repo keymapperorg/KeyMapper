@@ -10,10 +10,10 @@ import io.github.sds100.keymapper.R
  * Created by sds100 on 15/07/2018.
  */
 
-class KeyChip(context: Context?, attrs: AttributeSet?, val keyCode: Int
+class KeyChip(context: Context, attrs: AttributeSet?, val keyCode: Int
 ) : AppCompatTextView(context, attrs) {
 
-    constructor(context: Context?, keyCode: Int) : this(context, null, keyCode)
+    constructor(context: Context, keyCode: Int) : this(context, null, keyCode)
 
     private val mChipDrawable = ChipDrawable.createFromAttributes(
             context,
