@@ -3,13 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_search"
-        android:icon="@drawable/ic_search_white_24dp"
+        android:icon="@drawable/ic_outline_search_24"
         android:title="@string/action_search"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="ifRoom|collapseActionView" />
-
-    <!--<item-->
-        <!--android:id="@+id/action_show_hidden_system_actions"-->
-        <!--android:title="@string/show_hidden_system_actions"-->
-        <!--app:showAsAction="never" />-->
 </menu>

@@ -1,20 +1,17 @@
 <resources>
 
-    <style name="AppTheme" parent="Base.AppTheme" />
-
-    <style name="AppTheme.LightStatusBar" parent="AppTheme.NoActionBar" />
-
-    <!-- Base application theme. -->
-    <style name="Base.AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
+    <!--  Using a base theme makes it easier to add attributes for different API versions  -->
+    <style name="Base.AppTheme" parent="Theme.MaterialComponents.DayNight">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
+        <item name="colorOnPrimary">@color/colorOnPrimary</item>
         <item name="colorSecondary">@color/colorSecondary</item>
         <item name="colorOnSecondary">@color/colorOnSecondary</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorHomeBackground">#FAFAFA</item>
-        <item name="iconColorOnSurface">@color/colorIconDark</item>
     </style>
+
+    <style name="AppTheme" parent="Base.AppTheme"/>
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
