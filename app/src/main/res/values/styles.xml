@@ -13,9 +13,6 @@
         <item name="colorOnSecondary">@color/colorOnSecondary</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorHomeBackground">#FAFAFA</item>
-        <item name="bottomSheetDialogTheme">@style/BottomSheetDialogTheme</item>
-        <item name="android:alertDialogTheme">@style/AnkoSupportAlertDialog</item>
-        <item name="bottomSheetMenuItemStyle">@style/BottomSheetMenuItem</item>
         <item name="iconColorOnSurface">@color/colorIconDark</item>
     </style>
 
@@ -23,50 +20,4 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-
-    <style name="ShapeAppearanceOverlay.BottomSheetMenuItem">
-        <item name="cornerSizeTopRight">0dp</item>
-        <item name="cornerSizeBottomRight">0dp</item>
-        <item name="cornerSizeTopLeft">24dp</item>
-        <item name="cornerSizeBottomLeft">24dp</item>
-    </style>
-
-    <style name="BottomSheetMenuItem" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:gravity">start|center_vertical</item>
-        <item name="android:minHeight">64dp</item>
-        <item name="iconPadding">16dp</item>
-        <item name="android:paddingLeft">16dp</item>
-        <item name="android:textColor">?attr/colorOnSurface</item>
-        <item name="iconTint">?attr/colorOnSurface</item>
-        <item name="shapeAppearance">@style/ShapeAppearanceOverlay.BottomSheetMenuItem</item>
-    </style>
-
-    <style name="BottomSheet" parent="@style/Widget.Design.BottomSheet.Modal">
-        <item name="android:background">@drawable/bg_bottom_sheet</item>
-    </style>
-
-    <style name="BaseBottomSheetDialog" parent="@style/Theme.Design.Light.BottomSheetDialog">
-        <item name="android:windowIsFloating">false</item>
-        <item name="bottomSheetStyle">@style/BottomSheet</item>
-    </style>
-
-    <style name="BottomSheetDialogTheme" parent="BaseBottomSheetDialog" />
-
-    <!--Fix bug where dialog buttons from the anko library don't style correctly.-->
-    <style name="AnkoSupportAlertDialog" parent="Theme.MaterialComponents.Light.Dialog">
-
-        <!-- Forces the dialog to fill up more of the screen-->
-        <item name="android:windowMinWidthMajor">90%</item>
-        <item name="android:windowMinWidthMinor">90%</item>
-
-        <item name="android:buttonBarButtonStyle">
-            @style/Widget.MaterialComponents.Button.TextButton.Dialog
-        </item>
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="dialogCornerRadius">@dimen/dialog_corner_radius</item>
-    </style>
-
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
-
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light" />
 </resources>
