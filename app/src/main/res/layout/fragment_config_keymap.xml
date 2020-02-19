@@ -6,7 +6,7 @@
 
         <import type="android.view.View" />
 
-        <import type="androidx.lifecycle.LiveData" />
+        <import type="androidx.lifecycle.MutableLiveData" />
 
         <import type="com.google.android.material.bottomappbar.BottomAppBar" />
 
@@ -16,7 +16,7 @@
 
         <variable
             name="isKeymapEnabled"
-            type="LiveData&lt;Boolean>" />
+            type="MutableLiveData&lt;Boolean>" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -53,14 +53,14 @@
             app:fabAnimationMode="slide"
             app:navigationIcon="@drawable/ic_baseline_arrow_back_24">
 
-            <com.google.android.material.switchmaterial.SwitchMaterial
+            <Switch
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:checked="@={isKeymapEnabled}"
+                android:switchPadding="16dp"
                 android:text="@string/switch_enabled"
                 android:textAppearance="@style/TextAppearance.AppCompat.Button"
-                android:textColor="?attr/colorOnPrimarySurface"
-                app:switchPadding="16dp"
-                android:checked="@{isKeymapEnabled}"/>
+                android:textColor="?attr/colorOnPrimarySurface" />
 
         </com.google.android.material.bottomappbar.BottomAppBar>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
