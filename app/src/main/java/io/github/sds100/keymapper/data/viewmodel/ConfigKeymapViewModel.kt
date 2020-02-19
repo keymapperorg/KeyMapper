@@ -35,6 +35,10 @@ open class ConfigKeymapViewModel internal constructor(
         }
     }
 
+    fun saveKeymap() {
+
+    }
+
     class Factory(
             private val mRepository: KeymapRepository, private val mId: Long
     ) : ViewModelProvider.Factory {

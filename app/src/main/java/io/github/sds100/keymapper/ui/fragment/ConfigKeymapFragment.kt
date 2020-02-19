@@ -1,9 +1,17 @@
 package io.github.sds100.keymapper.ui.fragment
 
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.architecturetest.data.viewmodel.ConfigKeymapViewModel
+import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.databinding.FragmentConfigKeymapBinding
 import io.github.sds100.keymapper.util.InjectorUtils
 
 /**
@@ -16,4 +24,29 @@ open class ConfigKeymapFragment : Fragment() {
         InjectorUtils.provideConfigKeymapViewModel(requireContext(), args.keymapId)
     }
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val binding = DataBindingUtil.inflate<FragmentConfigKeymapBinding>(
+                inflater,
+                R.layout.fragment_config_keymap,
+                container,
+                false
+        )
+
+        binding.apply {
+            lifecycleOwner = viewLifecycleOwner
+
+            isKeymapEnabled = configKeymapViewModel.isEnabled
+
+            appBar.setNavigationOnClickListener {
+                findNavController().navigateUp()
+            }
+            
+            setOnConfirmKeymapClick {
+                configKeymapViewModel.saveKeymap()
+                findNavController().navigateUp()
+            }
+        }
+
+        return binding.root
+    }
 }
