@@ -21,7 +21,40 @@
 
     <fragment
         android:id="@+id/keymap_list_fragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.KeyMapListFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.KeymapListFragment"
         tools:layout="@layout/fragment_keymap_list">
+
+        <action
+            android:id="@+id/action_home_to_config_keymap"
+            app:destination="@id/edit_keymap_fragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+        <action
+            android:id="@+id/action_home_to_new_keymap"
+            app:destination="@id/new_keymap_fragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/new_keymap_fragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.NewKeymapFragment"
+        android:label="New Keymap"
+        tools:layout="@layout/fragment_config_keymap">
+    </fragment>
+
+    <fragment
+        android:id="@+id/edit_keymap_fragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.ConfigKeymapFragment"
+        android:label="Edit Keymap"
+        tools:layout="@layout/fragment_config_keymap">
+        <argument
+            android:name="keymapId"
+            app:argType="long" />
     </fragment>
 </navigation>
