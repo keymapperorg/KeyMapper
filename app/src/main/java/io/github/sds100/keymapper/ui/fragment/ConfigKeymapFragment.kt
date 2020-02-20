@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.example.architecturetest.data.viewmodel.ConfigKeymapViewModel
+import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentConfigKeymapBinding
 import io.github.sds100.keymapper.util.InjectorUtils
@@ -34,8 +34,7 @@ open class ConfigKeymapFragment : Fragment() {
 
         binding.apply {
             lifecycleOwner = viewLifecycleOwner
-
-            isKeymapEnabled = configKeymapViewModel.isEnabled
+            viewModel = configKeymapViewModel
 
             appBar.setNavigationOnClickListener {
                 findNavController().navigateUp()

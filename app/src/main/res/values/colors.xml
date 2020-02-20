@@ -29,4 +29,5 @@
     <color name="orangeDark">#b53d00</color>
 
     <color name="ic_launcher_background">#ffffff</color>
+    <color name="cardview_stroke">#eeeeee</color>
 </resources>

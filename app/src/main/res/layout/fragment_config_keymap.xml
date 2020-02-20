@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/tools">
 
     <data>
 
         <import type="android.view.View" />
-
-        <import type="androidx.lifecycle.MutableLiveData" />
-
         <import type="com.google.android.material.bottomappbar.BottomAppBar" />
+        <import type="io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel" />
+
+        <variable
+            name="viewModel"
+            type="ConfigKeymapViewModel" />
 
         <variable
             name="onConfirmKeymapClick"
             type="View.OnClickListener" />
-
-        <variable
-            name="isKeymapEnabled"
-            type="MutableLiveData&lt;Boolean>" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -24,14 +23,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/frameLayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="?attr/actionBarSize"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <include
+            layout="@layout/fragment_config_keymap_content"
+            bind:viewModel="@{viewModel}"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
@@ -56,7 +50,7 @@
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="@={isKeymapEnabled}"
+                android:checked="@={viewModel.isEnabled}"
                 app:switchPadding="16dp"
                 android:text="@string/switch_enabled"
                 android:textAppearance="@style/TextAppearance.AppCompat.Button"

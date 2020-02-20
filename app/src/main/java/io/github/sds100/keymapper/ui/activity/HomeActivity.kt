@@ -19,7 +19,6 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        DataBindingUtil.setContentView<ActivityHomeBinding>(this, R.layout.activity_home)
 
         lifecycleScope.launchWhenCreated {
             val darkThemeMode = AppPreferences().darkThemeMode
@@ -28,5 +27,7 @@ class HomeActivity : AppCompatActivity() {
                 AppCompatDelegate.setDefaultNightMode(darkThemeMode)
             }
         }
+
+        DataBindingUtil.setContentView<ActivityHomeBinding>(this, R.layout.activity_home)
     }
 }

@@ -3,6 +3,7 @@ package com.example.architecturetest.data.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.architecturetest.data.KeymapRepository
+import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 
 /**
  * Created by sds100 on 26/01/2020.

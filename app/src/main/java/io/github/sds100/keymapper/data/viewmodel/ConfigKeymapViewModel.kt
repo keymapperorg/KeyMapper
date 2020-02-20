@@ -1,4 +1,4 @@
-package com.example.architecturetest.data.viewmodel
+package io.github.sds100.keymapper.data.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

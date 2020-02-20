@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.util
 
 import android.content.Context
 import com.example.architecturetest.data.KeymapRepository
-import com.example.architecturetest.data.viewmodel.ConfigKeymapViewModel
+import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import com.example.architecturetest.data.viewmodel.NewKeymapViewModel
 import io.github.sds100.keymapper.data.db.AppDatabase
 

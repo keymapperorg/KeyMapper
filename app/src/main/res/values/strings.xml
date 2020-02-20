@@ -44,6 +44,9 @@
     <string name="exception_accessibility_service" translatable="false">Exception in onKeyEvent. Look in logcat.</string>
     <string name="enable_device_admin_message">Once you have enabled the device admin, you must DISABLE it if you want to uninstall the app.</string>
 
+    <string name="action_list_header">Actions</string>
+    <string name="trigger_list_header">Triggers</string>
+
     <!-- URLs -->
     <string name="url_source_code" translatable="false">https://github.com/sds100/KeyMapper</string>
     <string name="url_developer_github" translatable="false">https://github.com/sds100</string>
