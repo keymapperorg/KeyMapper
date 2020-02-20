@@ -6,57 +6,125 @@
 
         <import type="io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel" />
 
+        <import type="android.view.View" />
+
         <variable
             name="viewModel"
             type="ConfigKeymapViewModel" />
     </data>
 
-    <androidx.core.widget.NestedScrollView
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_margin="4dp"
+        android:layout_marginBottom="?attr/actionBarSize"
+        android:padding="8dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardViewTriggers"
+            style="@style/MyCardView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            android:layout_marginBottom="?attr/actionBarSize"
-            android:padding="8dp"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <com.google.android.material.card.MaterialCardView
-                style="@style/MyCardView"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:orientation="vertical"
+                android:paddingStart="@dimen/cardview_padding_left"
+                android:paddingTop="@dimen/cardview_padding_top"
+                android:paddingEnd="@dimen/cardview_padding_right"
+                android:paddingBottom="@dimen/cardview_padding_bottom">
 
-                <LinearLayout
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="@dimen/cardview_header_bottom_padding"
+                    android:text="@string/trigger_list_header"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                    android:textColor="?attr/colorAccent"
+                    android:textSize="14sp" />
+
+                <com.airbnb.epoxy.EpoxyRecyclerView
+                    android:id="@+id/epoxyRecyclerViewTriggers"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:paddingStart="@dimen/cardview_padding_left"
-                    android:paddingTop="@dimen/cardview_padding_top"
-                    android:paddingEnd="@dimen/cardview_padding_right"
-                    android:paddingBottom="@dimen/cardview_padding_bottom">
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingBottom="@dimen/cardview_header_bottom_padding"
-                        android:text="@string/trigger_list_header"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
-                        android:textColor="?attr/colorAccent"
-                        android:textSize="14sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/press_dot_dot_dot"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                    android:textSize="14sp" />
 
-                    <com.airbnb.epoxy.EpoxyRecyclerView
+                <RadioGroup
+                    android:id="@+id/radioGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent">
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/radioButtonParallel"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                        android:layout_weight="0.5"
+                        android:checked="@={viewModel.triggerInParallel}"
+                        android:text="@string/radio_button_parallel" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.core.widget.NestedScrollView>
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/radioButtonSequence"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:checked="@={viewModel.triggerInSequence}"
+                        android:text="@string/radio_button_sequence" />
+                </RadioGroup>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardViewActions"
+            style="@style/MyCardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/cardview_separation"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardViewTriggers">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="@dimen/cardview_padding_left"
+                android:paddingTop="@dimen/cardview_padding_top"
+                android:paddingEnd="@dimen/cardview_padding_right"
+                android:paddingBottom="@dimen/cardview_padding_bottom">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="@dimen/cardview_header_bottom_padding"
+                    android:text="@string/action_list_header"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                    android:textColor="?attr/colorAccent"
+                    android:textSize="14sp" />
+
+                <com.airbnb.epoxy.EpoxyRecyclerView
+                    android:id="@+id/epoxyRecyclerViewActions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

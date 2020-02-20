@@ -14,22 +14,37 @@ open class ConfigKeymapViewModel internal constructor(
         val id: Long? = null
 ) : ViewModel() {
 
-    val trigger: MutableLiveData<Trigger> = MutableLiveData()
+    val triggerKeys: MutableLiveData<List<Trigger.Key>> = MutableLiveData()
+    val triggerInParallel: MutableLiveData<Boolean> = MutableLiveData(false)
+    val triggerInSequence: MutableLiveData<Boolean> = MutableLiveData(false)
     val actionList: MutableLiveData<List<Action>> = MutableLiveData()
     val flags: MutableLiveData<Int> = MutableLiveData()
     val isEnabled: MutableLiveData<Boolean> = MutableLiveData()
 
     init {
         if (id == null) {
-            trigger.value = null
+            triggerKeys.value = listOf()
             actionList.value = listOf()
             flags.value = 0
             isEnabled.value = true
 
+            when (Trigger.DEFAULT_TRIGGER_MODE) {
+                Trigger.PARALLEL -> triggerInParallel.value = true
+                Trigger.SEQUENCE -> triggerInSequence.value = true
+            }
+
         } else {
             viewModelScope.launch {
                 repository.getKeymap(id).let { keymap ->
+                    triggerKeys.value = keymap.trigger?.keys
                     actionList.value = keymap.actionList
+                    flags.value = keymap.flags
+                    isEnabled.value = keymap.isEnabled
+
+                    when (keymap.trigger?.mode) {
+                        Trigger.PARALLEL -> triggerInParallel.value = true
+                        Trigger.SEQUENCE -> triggerInSequence.value = true
+                    }
                 }
             }
         }
