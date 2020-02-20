@@ -3,6 +3,7 @@ name: Android CI
 on:
   push:
     branches: 
+      - 'develop'
       - 'develop-2.0'
 
 jobs:
@@ -17,9 +18,10 @@ jobs:
         with:
           java-version: 1.8
       - name: Build debug APK
-        run: bash ./gradlew assembleDebug --stacktrace
+        run: bash ./gradlew assembleCi --stacktrace
       - name: Upload APK
         uses: actions/upload-artifact@v1
+        
         with:
-          name: app
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: app-ci
+          path: app/build/outputs/apk/ci/app-ci.apk
