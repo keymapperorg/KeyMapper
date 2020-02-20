@@ -30,34 +30,8 @@ android {
         ci {
             debuggable = true
 
-            def versionPropsFile = file('version.properties')
-            int versionBuild = 0
-
-            //increment the versionBuild
-            task("autoIncrementBuildNumber") doLast {
-                if (versionPropsFile.canRead()) {
-                    Properties versionProps = new Properties()
-                    versionProps.load(new FileInputStream(versionPropsFile))
-
-                    //if the version name has changed, reset the build version counter
-                    if (versionProps['VERSION_NAME'].toString() != android.defaultConfig.versionName
-                    || versionProps['CI_BUILD'] == null) {
-                        versionBuild = 0
-                    } else {
-                        versionBuild = versionProps['CI_BUILD'].toInteger()
-                    }
-
-                    versionBuild += 1
-                    versionProps['CI_BUILD'] = versionBuild.toString()
-                    versionProps['VERSION_NAME'] = android.defaultConfig.versionName
-                    versionProps.store(versionPropsFile.newWriter(), null)
-                } else {
-                    throw new FileNotFoundException("Could not read version.properties!")
-                }
-            }
-
             applicationIdSuffix ".ci"
-            versionNameSuffix "." + versionBuild + "-ci"
+            versionNameSuffix "-ci"
             signingConfig signingConfigs.debug
         }
     }
@@ -78,12 +52,6 @@ android {
 
     kapt {
         correctErrorTypes = true
-    }
-}
-
-tasks.whenTaskAdded { task ->
-    if (task.name == 'generateCiBuildConfig') {
-        task.dependsOn autoIncrementBuildNumber
     }
 }
 
