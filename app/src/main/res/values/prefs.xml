@@ -20,8 +20,14 @@
     <string name="key_pref_show_toast_when_error_encountered" translatable="false">pref_show_toast_on_error</string>
     <string name="key_pref_shown_cant_use_virtual_keyboard_message">pref_shown_cant_use_virtual_keyboard_message</string>
     <string name="key_pref_show_toast_on_action_error" translatable="false">pref_show_toast_on_action_error</string>
+    <string name="key_pref_dark_theme_mode" translatable="false">pref_dark_theme_mode</string>
 
     <string name="key_pref_category_notifications" translatable="false">pref_category_notifications</string>
     <string name="key_pref_category_secure_settings" translatable="false">pref_category_secure_settings</string>
     <string name="key_pref_category_root" translatable="false">pref_category_root</string>
+
+    <!-- Dark theme preference values -->
+    <integer name="value_pref_dark_theme_enabled">0</integer>
+    <integer name="value_pref_dark_theme_disabled">1</integer>
+    <integer name="value_pref_dark_theme_follow_system">2</integer>
 </resources>

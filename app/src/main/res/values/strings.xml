@@ -85,6 +85,7 @@
     <string name="action_log">Log</string>
     <string name="action_send_log">Send log</string>
     <string name="action_change_keyboard">Change Keyboard</string>
+    <string name="action_toggle_dark_theme">Toggle dark theme</string>
     <!-- Menu action titles-->
 
     <!-- Button titles -->
@@ -207,6 +208,9 @@
 
     <string name="title_pref_show_toast_on_action_error">Show a toast message when performing an action fails</string>
     <string name="summary_pref_toast_on_action_error">A little message will popup when an error is encountered while performing an action.</string>
+    
+    <string name="title_pref_dark_theme">Dark Theme</string>
+    <string name="summary_pref_dark_theme">When to enable the dark theme.</string>
     <!--Preference titles and summaries-->
 
     <!--Preference categories-->
