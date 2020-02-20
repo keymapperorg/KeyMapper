@@ -24,7 +24,7 @@ open class ConfigKeymapViewModel internal constructor(
             trigger.value = null
             actionList.value = listOf()
             flags.value = 0
-            isEnabled.value = false
+            isEnabled.value = true
 
         } else {
             viewModelScope.launch {
