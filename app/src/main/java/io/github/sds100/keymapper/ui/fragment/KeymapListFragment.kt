@@ -1,15 +1,19 @@
 package io.github.sds100.keymapper.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.databinding.FragmentKeymapListBinding
+import io.github.sds100.keymapper.worker.SeedDatabaseWorker
 import splitties.experimental.ExperimentalSplittiesApi
 import splitties.snackbar.snackForever
 
@@ -39,6 +43,12 @@ class KeymapListFragment : Fragment() {
                         AppPreferences().toggleDarkThemeMode()
                     }
 
+                    true
+                }
+
+                R.id.action_seed_database -> {
+                    val request = OneTimeWorkRequestBuilder<SeedDatabaseWorker>().build()
+                    WorkManager.getInstance(requireContext()).enqueue(request)
                     true
                 }
 

@@ -97,6 +97,7 @@
     <string name="action_send_log">Send log</string>
     <string name="action_change_keyboard">Change Keyboard</string>
     <string name="action_toggle_dark_theme">Toggle dark theme</string>
+    <string name="action_seed_database">Seed database</string>
     <!-- Menu action titles-->
 
     <!-- Button titles -->
