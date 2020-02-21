@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentConfigKeymapBinding
 import io.github.sds100.keymapper.util.InjectorUtils
+import kotlinx.android.synthetic.main.fragment_config_keymap_content.*
 
 /**
  * Created by sds100 on 19/02/2020.

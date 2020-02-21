@@ -12,6 +12,10 @@
     <string name="enable">Enable</string>
     <string name="open">Open</string>
     <string name="shrug" translatable="false">¯\\_(ツ)_/¯</string>
+    <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNothing here!</string>
+    <string name="triggers_recyclerview_placeholder">Record a trigger!</string>
+    <string name="acitons_recyclerview_placeholder">Add an action!</string>
+    <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nCreate a keymap!</string>
     <string name="no_key_maps">You haven\'t created any keymaps!</string>
     <string name="performing_action">Key Mapper is performing an action…</string>
     <string name="email_subject">Key Mapper query</string>

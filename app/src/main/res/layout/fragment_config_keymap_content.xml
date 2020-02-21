@@ -49,11 +49,24 @@
                     android:textColor="?attr/colorAccent"
                     android:textSize="14sp" />
 
-                <com.airbnb.epoxy.EpoxyRecyclerView
-                    android:id="@+id/epoxyRecyclerViewTriggers"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                    android:layout_height="wrap_content">
+
+                    <com.airbnb.epoxy.EpoxyRecyclerView
+                        android:id="@+id/epoxyRecyclerViewTriggers"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="@{viewModel.triggerKeys.empty ? View.GONE : View.VISIBLE}"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+                    <TextView
+                        style="@style/RecyclerViewPlaceholderTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/triggers_recyclerview_placeholder"
+                        android:visibility="@{viewModel.triggerKeys.empty ? View.VISIBLE : View.GONE}" />
+                </FrameLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -61,13 +74,15 @@
                     android:layout_marginTop="8dp"
                     android:text="@string/press_dot_dot_dot"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    android:visibility="@{viewModel.triggerKeys.empty ? View.GONE : View.VISIBLE}" />
 
                 <RadioGroup
                     android:id="@+id/radioGroup"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:visibility="@{viewModel.triggerKeys.empty ? View.GONE : View.VISIBLE}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent">
@@ -119,11 +134,24 @@
                     android:textColor="?attr/colorAccent"
                     android:textSize="14sp" />
 
-                <com.airbnb.epoxy.EpoxyRecyclerView
-                    android:id="@+id/epoxyRecyclerViewActions"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                    android:layout_height="wrap_content">
+
+                    <com.airbnb.epoxy.EpoxyRecyclerView
+                        android:id="@+id/epoxyRecyclerViewActions"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="@{viewModel.actionList.empty ? View.GONE : View.VISIBLE}"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+                    <TextView
+                        style="@style/RecyclerViewPlaceholderTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/acitons_recyclerview_placeholder"
+                        android:visibility="@{viewModel.actionList.empty ? View.VISIBLE : View.GONE}" />
+                </FrameLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
     </androidx.constraintlayout.widget.ConstraintLayout>

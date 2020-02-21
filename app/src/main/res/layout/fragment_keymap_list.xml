@@ -72,7 +72,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/shrug"
+                style="@style/RecyclerViewPlaceholderTextView"
+                android:text="@string/keymap_recyclerview_placeholder"
                 android:visibility="@{itemCount == 0 &amp;&amp; !progressCallback.loadingContent ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

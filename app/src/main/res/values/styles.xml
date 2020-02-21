@@ -23,4 +23,9 @@
         <item name="strokeColor">@color/cardview_stroke</item>
         <item name="strokeWidth">1dp</item>
     </style>
+
+    <style name="RecyclerViewPlaceholderTextView" parent="Widget.AppCompat.TextView">
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">14sp</item>
+    </style>
 </resources>
