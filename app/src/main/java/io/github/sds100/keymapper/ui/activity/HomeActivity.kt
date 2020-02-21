@@ -5,10 +5,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
+import androidx.preference.PreferenceManager
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.databinding.ActivityHomeBinding
+import kotlinx.coroutines.launch
 import splitties.experimental.ExperimentalSplittiesApi
+import splitties.resources.str
 
 /**
  * Created by sds100 on 19/02/2020.

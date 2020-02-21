@@ -18,20 +18,8 @@
             type="View.OnClickListener" />
 
         <variable
-            name="selectionCount"
-            type="androidx.lifecycle.LiveData&lt;Integer>" />
-
-        <variable
-            name="isSelectable"
-            type="androidx.lifecycle.LiveData&lt;Boolean>" />
-
-        <variable
-            name="progressCallback"
-            type="io.github.sds100.keymapper.ui.callback.ProgressCallback" />
-
-        <variable
-            name="itemCount"
-            type="Integer" />
+            name="viewModel"
+            type="io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -50,7 +38,7 @@
                 android:id="@+id/epoxyRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="@{progressCallback.loadingContent  || itemCount == 0 ? View.GONE : View.VISIBLE}"
+                android:visibility="@{viewModel.loadingContent  || viewModel.keymapList.empty ? View.GONE : View.VISIBLE}"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:visibility="visible" />
 
@@ -62,7 +50,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
-                android:visibility="@{progressCallback.loadingContent ? View.VISIBLE : View.GONE}"
+                android:visibility="@{viewModel.loadingContent ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -70,11 +58,11 @@
                 tools:visibility="visible" />
 
             <TextView
+                style="@style/RecyclerViewPlaceholderTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/RecyclerViewPlaceholderTextView"
                 android:text="@string/keymap_recyclerview_placeholder"
-                android:visibility="@{itemCount == 0 &amp;&amp; !progressCallback.loadingContent ? View.VISIBLE : View.GONE}"
+                android:visibility="@{viewModel.keymapList.empty &amp;&amp; !viewModel.loadingContent ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -84,7 +72,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:visibility="@{isSelectable ? View.VISIBLE : View.GONE}"
+                android:visibility="@{viewModel.selectionProvider.isSelectable() ? View.VISIBLE : View.GONE}"
                 app:cardBackgroundColor="?attr/colorSurface"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="8dp"
@@ -100,7 +88,7 @@
                     android:paddingTop="8dp"
                     android:paddingEnd="16dp"
                     android:paddingBottom="8dp"
-                    android:text='@{@string/selection_count(selectionCount)}'
+                    android:text='@{@string/selection_count(viewModel.selectionProvider.selectedCount)}'
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
                     android:textSize="17sp"
                     tools:text="0 Selected" />
@@ -113,8 +101,8 @@
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="@{isSelectable ? onConfirmSelectionClick : onNewKeymapClick}"
-            android:src='@{isSelectable ? @drawable/ic_baseline_delete_outline_24 : @drawable/ic_baseline_add_24}'
+            android:onClick="@{viewModel.selectionProvider.isSelectable() ? onConfirmSelectionClick : onNewKeymapClick}"
+            android:src='@{viewModel.selectionProvider.isSelectable() ? @drawable/ic_baseline_delete_outline_24 : @drawable/ic_baseline_add_24}'
             app:layout_anchor="@id/appBar" />
 
         <com.google.android.material.bottomappbar.BottomAppBar
@@ -125,10 +113,10 @@
             android:gravity="center"
             android:theme="@style/ThemeOverlay.MaterialComponents.BottomAppBar.Primary"
             app:backgroundTint="@color/colorPrimary"
-            app:fabAlignmentMode="@{isSelectable ? BottomAppBar.FAB_ALIGNMENT_MODE_END : BottomAppBar.FAB_ALIGNMENT_MODE_CENTER}"
+            app:fabAlignmentMode="@{viewModel.selectionProvider.isSelectable() ? BottomAppBar.FAB_ALIGNMENT_MODE_END : BottomAppBar.FAB_ALIGNMENT_MODE_CENTER}"
             app:fabAnimationMode="slide"
             app:menu="@menu/menu_keymap_list"
-            app:navigationIcon='@{isSelectable ? @drawable/ic_baseline_arrow_back_24 : @drawable/ic_baseline_menu_24}'>
+            app:navigationIcon='@{viewModel.selectionProvider.isSelectable() ? @drawable/ic_baseline_arrow_back_24 : @drawable/ic_baseline_menu_24}'>
 
         </com.google.android.material.bottomappbar.BottomAppBar>
 

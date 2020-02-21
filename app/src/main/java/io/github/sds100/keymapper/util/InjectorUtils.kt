@@ -5,6 +5,7 @@ import com.example.architecturetest.data.KeymapRepository
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import com.example.architecturetest.data.viewmodel.NewKeymapViewModel
 import io.github.sds100.keymapper.data.db.AppDatabase
+import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
 
 /**
  * Created by sds100 on 26/01/2020.
@@ -14,6 +15,11 @@ object InjectorUtils {
         return KeymapRepository.getInstance(
                 AppDatabase.getInstance(context.applicationContext).keymapDao()
         )
+    }
+
+    fun provideKeymapListViewModel(context: Context): KeymapListViewModel.Factory {
+        val repository = getKeymapRepository(context)
+        return KeymapListViewModel.Factory(repository)
     }
 
     fun provideConfigKeymapViewModel(
