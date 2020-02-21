@@ -13,4 +13,10 @@
         android:icon="@drawable/ic_outline_brightness_medium_24"
         android:title="@string/action_toggle_dark_theme"
         app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/action_seed_database"
+        android:title="@string/action_seed_database"
+        android:visible="false"
+        app:showAsAction="never" />
 </menu>

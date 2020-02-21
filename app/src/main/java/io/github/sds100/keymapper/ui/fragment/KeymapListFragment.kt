@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.airbnb.epoxy.EpoxyController
+import io.github.sds100.keymapper.BuildConfig
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
@@ -109,6 +110,9 @@ class KeymapListFragment : Fragment() {
                     } else {
                         appBar.replaceMenu(R.menu.menu_keymap_list)
                     }
+
+                    // only show the button to seed the database in debug builds.
+                    appBar.menu.findItem(R.id.action_seed_database).isVisible = BuildConfig.DEBUG
                 })
 
                 callback = mController
