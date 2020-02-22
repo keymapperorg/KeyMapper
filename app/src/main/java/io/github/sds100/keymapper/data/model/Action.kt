@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.data.model
 
 import androidx.annotation.StringDef
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.ActionType
 
 /**
@@ -55,6 +56,12 @@ data class Action(
         const val EXTRA_STREAM_TYPE = "extra_stream_type"
         const val EXTRA_LENS = "extra_flash"
         const val EXTRA_RINGER_MODE = "extra_ringer_mode"
+
+        const val ACTION_FLAG_SHOW_VOLUME_UI = 1
+
+        val ACTION_FLAG_LABEL_MAP = mapOf(
+                ACTION_FLAG_SHOW_VOLUME_UI to R.string.flag_show_volume_dialog
+        )
     }
 
     constructor(type: ActionType, data: String, extra: Extra) : this(type, data, mutableListOf(extra))

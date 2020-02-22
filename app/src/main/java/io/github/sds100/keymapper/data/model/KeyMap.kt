@@ -33,19 +33,17 @@ class KeyMap(
 ) {
     companion object {
         //DON'T CHANGE THESE AND THEY MUST BE POWERS OF 2!!
-        const val FLAG_LONG_PRESS = 1
-        const val FLAG_SHOW_VOLUME_UI = 2
-        const val FLAG_VIBRATE = 4
+        const val KEYMAP_FLAG_LONG_PRESS = 1
+        const val KEYMAP_FLAG_VIBRATE = 2
 
-        private val FLAG_LABEL_MAP = mapOf(
-                FLAG_LONG_PRESS to R.string.flag_long_press,
-                FLAG_SHOW_VOLUME_UI to R.string.flag_show_volume_dialog,
-                FLAG_VIBRATE to R.string.flag_vibrate
+        private val KEYMAP_FLAG_LABEL_MAP = mapOf(
+                KEYMAP_FLAG_LONG_PRESS to R.string.flag_long_press,
+                KEYMAP_FLAG_VIBRATE to R.string.flag_vibrate
         )
     }
 
     val isLongPress
-        get() = flags.hasFlag(FLAG_LONG_PRESS)
+        get() = flags.hasFlag(KEYMAP_FLAG_LONG_PRESS)
 
     override fun hashCode() = id.toInt()
     override fun equals(other: Any?): Boolean {
