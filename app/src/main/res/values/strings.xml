@@ -101,7 +101,7 @@
     <!-- Menu action titles-->
 
     <!-- Button titles -->
-    <string name="button_choose_action">Choose Action</string>
+    <string name="button_add_action">Add Action</string>
     <string name="button_record_trigger">Record Trigger</string>
     <string name="button_clear">Clear</string>
     <string name="button_add_trigger">Add Trigger</string>
@@ -110,8 +110,9 @@
     <string name="button_fix">Fix</string>
     <string name="button_recording_trigger">Recording Trigger…</string>
     <string name="button_recording_trigger_countdown">%d…</string>
-    <string name="button_flags">More</string>
-    <string name="buttonView">View</string>
+    <string name="button_flags">Options</string>
+    <string name="button_help">Help</string>
+
     <!-- Button titles -->
 
     <!-- Content descriptions -->
@@ -220,7 +221,7 @@
 
     <string name="title_pref_show_toast_on_action_error">Show a toast message when performing an action fails</string>
     <string name="summary_pref_toast_on_action_error">A little message will popup when an error is encountered while performing an action.</string>
-    
+
     <string name="title_pref_dark_theme">Dark Theme</string>
     <string name="summary_pref_dark_theme">When to enable the dark theme.</string>
     <!--Preference titles and summaries-->
