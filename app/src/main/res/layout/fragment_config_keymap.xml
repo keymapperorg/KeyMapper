@@ -6,16 +6,14 @@
     <data>
 
         <import type="android.view.View" />
+
         <import type="com.google.android.material.bottomappbar.BottomAppBar" />
+
         <import type="io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel" />
 
         <variable
             name="viewModel"
             type="ConfigKeymapViewModel" />
-
-        <variable
-            name="onConfirmKeymapClick"
-            type="View.OnClickListener" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -25,15 +23,10 @@
 
         <include
             layout="@layout/fragment_config_keymap_content"
-            bind:viewModel="@{viewModel}"/>
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="@{onConfirmKeymapClick}"
-            app:layout_anchor="@id/appBar"
-            app:srcCompat="@drawable/ic_baseline_done_24" />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="?attr/actionBarSize"
+            bind:viewModel="@{viewModel}" />
 
         <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/appBar"
@@ -45,16 +38,17 @@
             app:backgroundTint="@color/colorPrimary"
             app:fabAlignmentMode="end"
             app:fabAnimationMode="slide"
+            app:menu="@menu/menu_config_keymap"
             app:navigationIcon="@drawable/ic_baseline_arrow_back_24">
 
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="@={viewModel.isEnabled}"
-                app:switchPadding="16dp"
                 android:text="@string/switch_enabled"
                 android:textAppearance="@style/TextAppearance.AppCompat.Button"
-                android:textColor="?attr/colorOnPrimarySurface" />
+                android:textColor="?attr/colorOnPrimarySurface"
+                app:switchPadding="16dp" />
 
         </com.google.android.material.bottomappbar.BottomAppBar>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

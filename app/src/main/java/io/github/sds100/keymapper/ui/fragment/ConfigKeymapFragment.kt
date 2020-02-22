@@ -9,11 +9,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentConfigKeymapBinding
 import io.github.sds100.keymapper.util.InjectorUtils
-import kotlinx.android.synthetic.main.fragment_config_keymap_content.*
 
 /**
  * Created by sds100 on 19/02/2020.
@@ -40,10 +39,17 @@ open class ConfigKeymapFragment : Fragment() {
             appBar.setNavigationOnClickListener {
                 findNavController().navigateUp()
             }
-            
-            setOnConfirmKeymapClick {
-                configKeymapViewModel.saveKeymap()
-                findNavController().navigateUp()
+
+            appBar.setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.action_save -> {
+                        configKeymapViewModel.saveKeymap()
+                        findNavController().navigateUp()
+                        true
+                    }
+
+                    else -> false
+                }
             }
         }
 

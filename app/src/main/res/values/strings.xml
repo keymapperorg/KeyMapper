@@ -98,6 +98,7 @@
     <string name="action_change_keyboard">Change Keyboard</string>
     <string name="action_toggle_dark_theme">Toggle dark theme</string>
     <string name="action_seed_database">Seed database</string>
+    <string name="action_save">Save</string>
     <!-- Menu action titles-->
 
     <!-- Button titles -->
@@ -106,7 +107,7 @@
     <string name="button_clear">Clear</string>
     <string name="button_add_trigger">Add Trigger</string>
     <string name="button_test">Test</string>
-    <string name="button_done">Done</string>
+    <string name="button_save">Done</string>
     <string name="button_fix">Fix</string>
     <string name="button_recording_trigger">Recording Trigger…</string>
     <string name="button_recording_trigger_countdown">%d…</string>
