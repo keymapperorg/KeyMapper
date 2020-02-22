@@ -264,6 +264,19 @@
     <string name="action_type_url">URL</string>
     <!--Action Types Titles-->
 
+    <!-- Action Type tab title order-->
+    <string-array name="choose_action_tab_titles">
+        <item>@string/action_type_title_application</item>
+        <item>@string/action_type_title_application_shortcut</item>
+        <item>@string/action_type_title_key</item>
+        <item>@string/action_type_title_keycode</item>
+        <item>@string/action_type_title_text_block</item>
+        <item>@string/action_type_url</item>
+        <item>@string/action_type_title_system_action</item>
+        <item>@string/tab_unsupported_actions</item>
+    </string-array>
+    <!-- Action Type tab title order-->
+
     <!--flags-->
     <string name="flag_show_volume_dialog">Show volume dialog</string>
     <string name="flag_long_press">Long press</string>

@@ -12,6 +12,10 @@
         <variable
             name="viewModel"
             type="ConfigKeymapViewModel" />
+
+        <variable
+            name="onAddActionClick"
+            type="View.OnClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -175,6 +179,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:text="@string/button_add_action"
+            android:onClick="@{onAddActionClick}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"

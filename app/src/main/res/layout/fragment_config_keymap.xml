@@ -14,6 +14,10 @@
         <variable
             name="viewModel"
             type="ConfigKeymapViewModel" />
+
+        <variable
+            name="onAddActionClick"
+            type="View.OnClickListener" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -26,7 +30,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginBottom="?attr/actionBarSize"
-            bind:viewModel="@{viewModel}" />
+            bind:viewModel="@{viewModel}"
+            bind:onAddActionClick="@{onAddActionClick}"/>
 
         <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/appBar"
