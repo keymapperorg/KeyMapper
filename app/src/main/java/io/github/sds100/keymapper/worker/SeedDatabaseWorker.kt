@@ -2,11 +2,14 @@ package io.github.sds100.keymapper.worker
 
 import android.content.Context
 import android.util.Log
+import android.view.KeyEvent
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import io.github.sds100.keymapper.data.db.AppDatabase
+import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Trigger
+import io.github.sds100.keymapper.util.ActionType
 import kotlinx.coroutines.coroutineScope
 import kotlin.random.Random
 
@@ -23,7 +26,9 @@ class SeedDatabaseWorker(
                 for (i in 1..100) {
                     yield(KeyMap(
                             id = 0,
-                            trigger = createRandomTrigger()))
+                            trigger = createRandomTrigger(),
+                            actionList = createRandomActionList()
+                    ))
                 }
             }.toList().toTypedArray()
 
@@ -45,5 +50,18 @@ class SeedDatabaseWorker(
         }.toList()
 
         return Trigger(keys)
+    }
+
+    private fun createRandomActionList(): List<Action> {
+        return sequence {
+            yield(Action(
+                    type = ActionType.KEYCODE,
+                    data = KeyEvent.KEYCODE_A.toString()
+            ))
+            yield(Action(
+                    type = ActionType.KEYCODE,
+                    data = KeyEvent.KEYCODE_B.toString()
+            ))
+        }.toList()
     }
 }
