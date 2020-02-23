@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!--  Using a base theme makes it easier to add attributes for different API versions  -->
     <style name="Base.AppTheme" parent="Theme.MaterialComponents.DayNight">
@@ -22,6 +22,44 @@
         <item name="cardElevation">0dp</item>
         <item name="strokeColor">@color/cardview_stroke</item>
         <item name="strokeWidth">1dp</item>
+    </style>
+
+    <style name="KeymapListChip" parent="Widget.MaterialComponents.Chip.Entry">
+        <item name="chipBackgroundColor">?attr/colorSurface</item>
+        <item name="chipStrokeColor" tools:ignore="PrivateResource">@color/mtrl_btn_stroke_color_selector</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="android:checkable">false</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="KeymapListChip.TriggerKey">
+        <item name="closeIconVisible">false</item>
+        <item name="android:clickable">false</item>
+    </style>
+
+    <style name="KeymapListChip.Option">
+        <item name="closeIconVisible">false</item>
+        <item name="android:clickable">false</item>
+        <item name="chipIconTint">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="KeymapListChip.Action">
+        <item name="closeIcon">@drawable/ic_baseline_error_outline_24</item>
+        <item name="closeIconTint">?attr/colorError</item>
+    </style>
+
+    <style name="KeymapListChip.TriggerKeySeparator">
+        <item name="android:clickable">false</item>
+        <item name="chipIconTint">?attr/colorOnSurface</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="textEndPadding">0dp</item>
+        <item name="textStartPadding">0dp</item>
+        <item name="closeIconVisible">false</item>
+    </style>
+
+    <style name="KeymapListHeader" parent="TextAppearance.MaterialComponents.Subtitle2">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor" tools:ignore="PrivateResource">@color/mtrl_chip_text_color</item>
     </style>
 
     <style name="RecyclerViewPlaceholderTextView" parent="Widget.AppCompat.TextView">

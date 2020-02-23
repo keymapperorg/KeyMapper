@@ -49,6 +49,10 @@
     <string name="exception_accessibility_service" translatable="false">Exception in onKeyEvent. Look in logcat.</string>
     <string name="enable_device_admin_message">Once you have enabled the device admin, you must DISABLE it if you want to uninstall the app.</string>
 
+    <string name="debug_trigger_chip_name">Long Press <b>Volume Down</b> • USB Keyboard</string>
+    <string name="debug_trigger_chip_name2">Single Tap  <b>Home</b> • This Device</string>
+
+    <string name="option_list_header">Options</string>
     <string name="action_list_header">Actions</string>
     <string name="trigger_list_header">Trigger</string>
 
