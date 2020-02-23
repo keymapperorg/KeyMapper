@@ -5,5 +5,4 @@
     <color name="colorAccent">#00e676</color>
     <color name="colorPrimaryVariant">@color/colorAccent</color>
     <color name="colorSecondary">@color/colorAccent</color>
-    <color name="cardview_stroke">#BDBDBD</color>
 </resources>
