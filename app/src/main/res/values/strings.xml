@@ -50,7 +50,7 @@
     <string name="enable_device_admin_message">Once you have enabled the device admin, you must DISABLE it if you want to uninstall the app.</string>
 
     <string name="action_list_header">Actions</string>
-    <string name="trigger_list_header">Triggers</string>
+    <string name="trigger_list_header">Trigger</string>
 
     <string name="radio_button_parallel">At the same time</string>
     <string name="radio_button_sequence">In sequence</string>
