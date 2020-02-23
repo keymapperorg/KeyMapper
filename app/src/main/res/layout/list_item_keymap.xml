@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -13,6 +14,14 @@
         <variable
             name="onLongClick"
             type="android.view.View.OnLongClickListener" />
+
+        <variable
+            name="isSelected"
+            type="Boolean" />
+
+        <variable
+            name="isSelectable"
+            type="Boolean" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -22,16 +31,32 @@
         android:layout_marginTop="4dp"
         style="@style/MyCardView"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="4dp">
+        android:layout_marginBottom="4dp"
+        android:onClick="@{onClick}"
+        app:onLongClick="@{onLongClick}">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?selectableItemBackground"
-            android:onClick="@{onClick}"
-            android:padding="8dp"
-            app:onLongClick="@{onLongClick}">
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/cardview_padding_left"
+            android:paddingTop="@dimen/cardview_padding_top"
+            android:paddingEnd="@dimen/cardview_padding_right"
+            android:paddingBottom="@dimen/cardview_padding_bottom">
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:checked="@={isSelected}"
+                android:onClick="@{onClick}"
+                android:visibility="@{isSelectable ? View.VISIBLE : View.GONE}" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 </layout>
