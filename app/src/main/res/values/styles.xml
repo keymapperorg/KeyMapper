@@ -24,6 +24,10 @@
         <item name="strokeWidth">1dp</item>
     </style>
 
+    <style name="ActionChipGroup" parent="Widget.MaterialComponents.ChipGroup">
+        <item name="chipStyle">@style/KeymapListChip.Action</item>
+    </style>
+
     <style name="KeymapListChip" parent="Widget.MaterialComponents.Chip.Entry">
         <item name="chipBackgroundColor">?attr/colorSurface</item>
         <item name="chipStrokeColor" tools:ignore="PrivateResource">@color/mtrl_btn_stroke_color_selector</item>

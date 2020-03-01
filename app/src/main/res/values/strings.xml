@@ -503,5 +503,7 @@
     <string name="system_action_cat_nfc">NFC</string>
     <string name="system_action_cat_other">Other</string>
     <string name="system_action_cat_keyboard">Keyboard</string>
+    <string name="error_system_action_not_found">System action not found %s!</string>
+    <string name="error_no_action_data">No Action data!</string>
     <!-- System action category labels -->
 </resources>

@@ -6,6 +6,8 @@
 
         <import type="android.view.View" />
 
+        <import type="java.util.List" />
+
         <variable
             name="onClick"
             type="android.view.View.OnClickListener" />
@@ -21,6 +23,10 @@
         <variable
             name="isSelectable"
             type="Boolean" />
+
+        <variable
+            name="actions"
+            type="List&lt;io.github.sds100.keymapper.data.model.ActionModel>" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -60,29 +66,11 @@
                     android:id="@+id/chipGroupAction"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:theme="@style/ActionChipGroup"
+                    app:actions="@{actions}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/KeymapListChip.Action"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:clickable="false"
-                        android:text="Open Key Mapper"
-                        android:visibility="visible"
-                        app:chipIcon="@mipmap/ic_launcher_round"
-                        app:closeIconVisible="true" />
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/KeymapListChip.Action"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:clickable="false"
-                        android:text="Volume Up • Show Volume Dialog"
-                        android:visibility="visible"
-                        app:chipIcon="@drawable/ic_outline_volume_up_24"
-                        app:closeIconVisible="false" />
 
                 </com.google.android.material.chip.ChipGroup>
 
@@ -107,27 +95,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textViewTriggerHeader">
 
-                    <com.google.android.material.chip.Chip
-                        style="@style/KeymapListChip.TriggerKey"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:clickable="false"
-                        android:text="@string/debug_trigger_chip_name"
-                        android:visibility="visible" />
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/KeymapListChip.TriggerKeySeparator"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:chipIcon="@drawable/ic_baseline_arrow_forward_24" />
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/KeymapListChip.TriggerKey"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/debug_trigger_chip_name2"
-                        android:visibility="visible" />
-
                 </com.google.android.material.chip.ChipGroup>
 
                 <TextView
@@ -150,15 +117,6 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textViewOptionsHeader">
-
-                    <com.google.android.material.chip.Chip
-                        style="@style/KeymapListChip.TriggerKey"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:clickable="false"
-                        android:text="Vibrate"
-                        android:visibility="visible"
-                        app:chipIcon="@drawable/ic_outline_vibration_24" />
 
                 </com.google.android.material.chip.ChipGroup>
             </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,26 +6,27 @@ import io.github.sds100.keymapper.data.model.KeymapListItemModel
 import io.github.sds100.keymapper.ui.callback.ProgressCallback
 import io.github.sds100.keymapper.util.ISelectionProvider
 import io.github.sds100.keymapper.util.SelectionProvider
+import io.github.sds100.keymapper.util.buildActionModels
 import kotlinx.coroutines.launch
 
 class KeymapListViewModel internal constructor(
-        private val repository: KeymapRepository
+    private val repository: KeymapRepository
 ) : ViewModel(), ProgressCallback {
 
     val keymapList: LiveData<List<KeymapListItemModel>> =
-            Transformations.map(repository.keymapList) { keyMapList ->
-                loadingContent.value = true
+        Transformations.map(repository.keymapList) { keyMapList ->
+            loadingContent.value = true
 
-                val list = keyMapList?.map {
-                    KeymapListItemModel(it.id)
-                } ?: listOf()
+            val keymapList = keyMapList?.map {
+                KeymapListItemModel(it.id, it.buildActionModels())
+            } ?: listOf()
 
-                selectionProvider.updateIds(list.map { it.id }.toLongArray())
+            selectionProvider.updateIds(keymapList.map { it.id }.toLongArray())
 
-                loadingContent.value = false
+            loadingContent.value = false
 
-                list
-            }
+            keymapList
+        }
 
     val selectionProvider: ISelectionProvider = SelectionProvider()
 
@@ -39,7 +40,7 @@ class KeymapListViewModel internal constructor(
 
     @Suppress("UNCHECKED_CAST")
     class Factory(
-            private val mRepository: KeymapRepository
+        private val mRepository: KeymapRepository
     ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
