@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.worker
 
 import android.content.Context
-import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import io.github.sds100.keymapper.Constants

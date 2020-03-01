@@ -21,12 +21,12 @@ fun ChipGroup.bindActions(actions: List<ActionModel>) {
 
     actions.forEach {
         Chip(context).apply {
-            text = it.title
+            text = it.description
             chipIcon = it.icon
             isCloseIconVisible = it.hasError
             isClickable = it.hasError
 
-            if (it.title == null && it.hasError) {
+            if (it.description == null && it.hasError) {
                 text = it.errorDescription
             }
 

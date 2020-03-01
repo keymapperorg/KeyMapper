@@ -27,7 +27,21 @@ object ActionUtils {
             .then { isValid(action) }
             .errorMessageOrNull()
 
-        return ActionModel(title, errorMessage, icon)
+        val description = buildString {
+            val flagLabels = Action.getFlagLabelList(action.flags)
+
+            if (title == null) {
+                append(errorMessage)
+            } else {
+                append(title)
+            }
+
+            flagLabels.forEach {
+                append(" • $it")
+            }
+        }
+
+        return ActionModel(description, errorMessage, icon)
     }
 
     private fun getTitle(action: Action): Result<String> {

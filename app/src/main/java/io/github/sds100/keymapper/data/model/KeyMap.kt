@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.KeyMapDao
 import splitties.bitflags.hasFlag
+import splitties.resources.appStr
 
 /**
  * Created by sds100 on 12/07/2018.
@@ -13,23 +14,23 @@ import splitties.bitflags.hasFlag
 
 @Entity(tableName = KeyMapDao.TABLE_NAME)
 class KeyMap(
-        @PrimaryKey(autoGenerate = true)
-        val id: Long,
+    @PrimaryKey(autoGenerate = true)
+    val id: Long,
 
-        @ColumnInfo(name = KeyMapDao.KEY_TRIGGER)
-        var trigger: Trigger? = null,
+    @ColumnInfo(name = KeyMapDao.KEY_TRIGGER)
+    var trigger: Trigger? = null,
 
-        @ColumnInfo(name = KeyMapDao.KEY_ACTION_LIST)
-        var actionList: List<Action> = listOf(),
+    @ColumnInfo(name = KeyMapDao.KEY_ACTION_LIST)
+    var actionList: List<Action> = listOf(),
 
-        @ColumnInfo(name = KeyMapDao.KEY_FLAGS)
-        /**
-         * Flags are stored as bits.
-         */
-        var flags: Int = 0,
+    @ColumnInfo(name = KeyMapDao.KEY_FLAGS)
+    /**
+     * Flags are stored as bits.
+     */
+    var flags: Int = 0,
 
-        @ColumnInfo(name = KeyMapDao.KEY_ENABLED)
-        var isEnabled: Boolean = true
+    @ColumnInfo(name = KeyMapDao.KEY_ENABLED)
+    var isEnabled: Boolean = true
 ) {
     companion object {
         //DON'T CHANGE THESE AND THEY MUST BE POWERS OF 2!!
@@ -37,9 +38,17 @@ class KeyMap(
         const val KEYMAP_FLAG_VIBRATE = 2
 
         private val KEYMAP_FLAG_LABEL_MAP = mapOf(
-                KEYMAP_FLAG_LONG_PRESS to R.string.flag_long_press,
-                KEYMAP_FLAG_VIBRATE to R.string.flag_vibrate
+            KEYMAP_FLAG_LONG_PRESS to R.string.flag_long_press,
+            KEYMAP_FLAG_VIBRATE to R.string.flag_vibrate
         )
+
+        fun getFlagLabelList(flags: Int): List<String> = sequence {
+            KEYMAP_FLAG_LABEL_MAP.keys.forEach { flag ->
+                if (flags.hasFlag(flag)) {
+                    yield(appStr(KEYMAP_FLAG_LABEL_MAP.getValue(flag)))
+                }
+            }
+        }.toList()
     }
 
     val isLongPress

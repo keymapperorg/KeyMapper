@@ -7,10 +7,9 @@ import android.graphics.drawable.Drawable
  */
 
 data class ActionModel(
-    val title: String? = null,
+    val description: String? = null,
     val errorDescription: String? = null,
-    val icon: Drawable? = null
-) {
+    val icon: Drawable? = null) {
     val hasError: Boolean
         get() = errorDescription != null
 }

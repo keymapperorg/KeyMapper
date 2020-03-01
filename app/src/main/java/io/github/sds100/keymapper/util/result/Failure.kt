@@ -42,3 +42,5 @@ class AppDisabled : Failure(
 )
 
 class NoActionData : Failure(appStr(R.string.error_no_action_data))
+
+class FlagNotFound : Failure(appStr(R.string.error_flag_not_found))
