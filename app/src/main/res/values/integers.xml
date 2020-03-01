@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="long_press_delay_min">100</integer>
+    <integer name="long_press_delay_min">1</integer>
     <integer name="long_press_delay_max">5000</integer>
     <integer name="long_press_delay_increment">100</integer>
 
