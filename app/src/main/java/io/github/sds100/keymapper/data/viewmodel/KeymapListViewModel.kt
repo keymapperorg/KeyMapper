@@ -18,7 +18,7 @@ class KeymapListViewModel internal constructor(
             loadingContent.value = true
 
             val keymapList = keyMapList?.map {
-                KeymapListItemModel(it.id, it.buildActionModels())
+                KeymapListItemModel(it.id, it.buildActionModels(), it.isEnabled)
             } ?: listOf()
 
             selectionProvider.updateIds(keymapList.map { it.id }.toLongArray())

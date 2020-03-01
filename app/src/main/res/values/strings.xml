@@ -26,6 +26,8 @@
     <string name="tab_unsupported_actions">Unsupported Actions</string>
     <string name="requires_root">REQUIRES ROOT</string>
     <string name="press_dot_dot_dot">Press…</string>
+    <string name="no_actions">No Actions</string>
+    <string name="no_triggers">No Triggers</string>
 
     <string name="caption_action_type_key">Click the key on the keyboard which you want to be entered.
         \n\nIMPORTANT!
@@ -387,6 +389,8 @@
     <string name="error_battery_optimisation_activity_not_found">Battery optimisation settings not found! If it exists, open it manually.</string>
 
     <string name="error_cant_find_option_label">error: Can\'t find a label for this option \"%s\"</string>
+    <string name="error_system_action_not_found">System action not found %s!</string>
+    <string name="error_no_action_data">No Action data!</string>
     <!-- Error messages -->
 
     <!-- System action labels -->
@@ -503,7 +507,5 @@
     <string name="system_action_cat_nfc">NFC</string>
     <string name="system_action_cat_other">Other</string>
     <string name="system_action_cat_keyboard">Keyboard</string>
-    <string name="error_system_action_not_found">System action not found %s!</string>
-    <string name="error_no_action_data">No Action data!</string>
     <!-- System action category labels -->
 </resources>

@@ -135,6 +135,7 @@ class KeymapListFragment : Fragment() {
                     id(it.id)
                     isSelectable(selectionProvider.isSelectable.value)
                     isSelected(selectionProvider.isSelected(it.id))
+                    isEnabled(it.isEnabled)
                     actions(it.actionList)
 
                     onClick { _ ->

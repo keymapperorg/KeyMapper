@@ -6,12 +6,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.architecturetest.data.KeymapRepository
 import io.github.sds100.keymapper.data.model.Action
+import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Trigger
 import kotlinx.coroutines.launch
 
 open class ConfigKeymapViewModel internal constructor(
-        private val repository: KeymapRepository,
-        val id: Long? = null
+    private val repository: KeymapRepository,
+    val id: Long? = null
 ) : ViewModel() {
 
     val triggerKeys: MutableLiveData<List<Trigger.Key>> = MutableLiveData()
@@ -51,15 +52,35 @@ open class ConfigKeymapViewModel internal constructor(
     }
 
     fun saveKeymap() {
+        viewModelScope.launch {
+            val triggerMode = when {
+                triggerInParallel.value == true -> Trigger.PARALLEL
+                triggerInSequence.value == true -> Trigger.SEQUENCE
+                else -> Trigger.DEFAULT_TRIGGER_MODE
+            }
 
+            val keymap = KeyMap(
+                id = id ?: 0,
+                trigger = Trigger(triggerKeys.value!!, triggerMode),
+                actionList = actionList.value!!,
+                flags = flags.value!!,
+                isEnabled = isEnabled.value!!
+            )
+
+            if (id == null) {
+                repository.createKeymap(keymap)
+            } else {
+                repository.updateKeymap(keymap)
+            }
+        }
     }
 
     class Factory(
-            private val mRepository: KeymapRepository, private val mId: Long
+        private val mRepository: KeymapRepository, private val mId: Long
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>) =
-                ConfigKeymapViewModel(mRepository, mId) as T
+            ConfigKeymapViewModel(mRepository, mId) as T
     }
 }

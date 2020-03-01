@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -27,6 +28,10 @@
         <variable
             name="actions"
             type="List&lt;io.github.sds100.keymapper.data.model.ActionModel>" />
+
+        <variable
+            name="isEnabled"
+            type="Boolean" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -62,6 +67,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+                <TextView
+                    android:id="@+id/textViewExtraInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+                    android:textColor="?attr/colorError"
+                    android:textSize="14sp"
+                    android:visibility="@{isEnabled &amp;&amp; !actions.empty ? View.GONE : View.VISIBLE}"
+                    app:isKeymapEnabled="@{isEnabled}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:noActions="@{actions.empty}"
+                    tools:text="Disabled • No Actions • No Triggers" />
+
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/chipGroupAction"
                     android:layout_width="match_parent"
@@ -70,7 +90,7 @@
                     app:actions="@{actions}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toBottomOf="@+id/textViewExtraInfo">
 
                 </com.google.android.material.chip.ChipGroup>
 
