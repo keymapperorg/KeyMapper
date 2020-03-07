@@ -78,12 +78,13 @@
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
                     android:textColor="?attr/colorError"
                     android:textSize="14sp"
-                    android:visibility="@{isEnabled &amp;&amp; !actions.empty ? View.GONE : View.VISIBLE}"
+                    android:visibility="@{isEnabled &amp;&amp; !actions.empty &amp;&amp; !trigger.triggerKeyDescriptions.empty? View.GONE : View.VISIBLE}"
                     app:isKeymapEnabled="@{isEnabled}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:noActions="@{actions.empty}"
+                    app:noTrigger="@{trigger.triggerKeyDescriptions.empty}"
                     tools:text="Disabled • No Actions • No Triggers" />
 
                 <com.google.android.material.chip.ChipGroup

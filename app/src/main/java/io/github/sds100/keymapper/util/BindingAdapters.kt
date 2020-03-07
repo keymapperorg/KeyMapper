@@ -42,8 +42,8 @@ fun ChipGroup.bindActions(actions: List<ActionModel>) {
     }
 }
 
-@BindingAdapter("app:isKeymapEnabled", "app:noActions", "app:noTriggers", requireAll = false)
-fun TextView.setKeymapExtraInfo(isKeymapEnabled: Boolean = false, noActions: Boolean = false, noTriggers: Boolean = false) {
+@BindingAdapter("app:isKeymapEnabled", "app:noActions", "app:noTrigger", requireAll = false)
+fun TextView.setKeymapExtraInfo(isKeymapEnabled: Boolean = false, noActions: Boolean = false, noTrigger: Boolean = false) {
     text = ""
 
     if (!isKeymapEnabled) {
@@ -58,11 +58,11 @@ fun TextView.setKeymapExtraInfo(isKeymapEnabled: Boolean = false, noActions: Boo
         append(appStr(R.string.no_actions))
     }
 
-    if (noTriggers) {
+    if (noTrigger) {
         if (text.isNotEmpty()) {
             append(" • ")
         }
-        append(appStr(R.string.no_triggers))
+        append(appStr(R.string.no_trigger))
     }
 }
 

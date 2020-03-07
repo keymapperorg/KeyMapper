@@ -27,7 +27,7 @@
     <string name="requires_root">REQUIRES ROOT</string>
     <string name="press_dot_dot_dot">Press…</string>
     <string name="no_actions">No Actions</string>
-    <string name="no_triggers">No Triggers</string>
+    <string name="no_trigger">No Trigger</string>
     <string name="interpunct">•</string>
 
     <string name="caption_action_type_key">Click the key on the keyboard which you want to be entered.
