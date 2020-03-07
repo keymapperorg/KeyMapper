@@ -8,5 +8,6 @@ data class KeymapListItemModel(
     val id: Long,
     val actionList: List<ActionModel>,
     val triggerModel: TriggerModel,
+    val flagList: List<FlagModel>,
     val isEnabled: Boolean
 )

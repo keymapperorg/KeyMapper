@@ -34,6 +34,10 @@
             type="io.github.sds100.keymapper.data.model.TriggerModel" />
 
         <variable
+            name="flags"
+            type="List&lt;io.github.sds100.keymapper.data.model.FlagModel>" />
+
+        <variable
             name="isEnabled"
             type="Boolean" />
     </data>
@@ -133,6 +137,7 @@
                     android:paddingBottom="@dimen/cardview_header_bottom_padding"
                     android:text="@string/option_list_header"
                     android:textAppearance="@style/KeymapListHeader"
+                    android:visibility="@{flags.empty ? View.GONE : View.VISIBLE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
@@ -142,6 +147,8 @@
                     android:id="@+id/chipGroupOptions"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:theme="@style/OptionChipGroup"
+                    app:flagModels="@{flags}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textViewOptionsHeader">

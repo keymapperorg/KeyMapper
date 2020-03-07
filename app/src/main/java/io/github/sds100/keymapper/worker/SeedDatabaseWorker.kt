@@ -10,6 +10,7 @@ import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.util.ActionType
 import kotlinx.coroutines.coroutineScope
+import splitties.bitflags.withFlag
 import kotlin.random.Random
 
 /**
@@ -26,7 +27,8 @@ class SeedDatabaseWorker(
                     yield(KeyMap(
                         id = 0,
                         trigger = createRandomTrigger(),
-                        actionList = createRandomActionList()
+                        actionList = createRandomActionList(),
+                        flags = 0.withFlag(KeyMap.KEYMAP_FLAG_VIBRATE)
                     ))
                 }
             }.toList().toTypedArray()

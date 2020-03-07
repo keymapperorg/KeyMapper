@@ -7,6 +7,7 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.ActionModel
+import io.github.sds100.keymapper.data.model.FlagModel
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.model.TriggerModel
 import splitties.resources.appStr
@@ -95,6 +96,20 @@ fun ChipGroup.bindTriggerModel(triggerModel: TriggerModel) {
 
         Chip(context).apply {
             text = description
+
+            addView(this)
+        }
+    }
+}
+
+@BindingAdapter("app:flagModels")
+fun ChipGroup.bindFlagModels(flagModels: List<FlagModel>) {
+    removeAllViews()
+
+    flagModels.forEach {
+        Chip(context).apply {
+            text = it.text
+            chipIcon = it.icon
 
             addView(this)
         }
