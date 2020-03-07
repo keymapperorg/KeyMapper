@@ -38,11 +38,9 @@ const val ERROR_CODE_GOOGLE_APP_NOT_INSTALLED = 12
 const val ERROR_CODE_NULL = 13
 
 /**
- * Thank you to @antonyharfield for inspiration!
+ * Inspired from @antonyharfield great example!
  */
 
-// Result is a superpowered enum that can be Success or Failure
-// and the basis for a railway junction
 sealed class Result<out T>
 
 data class Success<T>(val value: T) : Result<T>()

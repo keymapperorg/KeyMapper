@@ -18,7 +18,7 @@ class KeyMap(
     val id: Long,
 
     @ColumnInfo(name = KeyMapDao.KEY_TRIGGER)
-    var trigger: Trigger? = null,
+    var trigger: Trigger = Trigger(),
 
     @ColumnInfo(name = KeyMapDao.KEY_ACTION_LIST)
     var actionList: List<Action> = listOf(),
@@ -34,11 +34,9 @@ class KeyMap(
 ) {
     companion object {
         //DON'T CHANGE THESE AND THEY MUST BE POWERS OF 2!!
-        const val KEYMAP_FLAG_LONG_PRESS = 1
-        const val KEYMAP_FLAG_VIBRATE = 2
+        const val KEYMAP_FLAG_VIBRATE = 1
 
         private val KEYMAP_FLAG_LABEL_MAP = mapOf(
-            KEYMAP_FLAG_LONG_PRESS to R.string.flag_long_press,
             KEYMAP_FLAG_VIBRATE to R.string.flag_vibrate
         )
 
@@ -50,9 +48,6 @@ class KeyMap(
             }
         }.toList()
     }
-
-    val isLongPress
-        get() = flags.hasFlag(KEYMAP_FLAG_LONG_PRESS)
 
     override fun hashCode() = id.toInt()
     override fun equals(other: Any?): Boolean {

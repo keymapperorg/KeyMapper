@@ -61,7 +61,7 @@ open class ConfigKeymapViewModel internal constructor(
 
             val keymap = KeyMap(
                 id = id ?: 0,
-                trigger = Trigger(triggerKeys.value!!, triggerMode),
+                trigger = Trigger(triggerKeys.value!!).apply { mode = triggerMode },
                 actionList = actionList.value!!,
                 flags = flags.value!!,
                 isEnabled = isEnabled.value!!

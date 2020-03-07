@@ -30,6 +30,10 @@
             type="List&lt;io.github.sds100.keymapper.data.model.ActionModel>" />
 
         <variable
+            name="trigger"
+            type="io.github.sds100.keymapper.data.model.TriggerModel" />
+
+        <variable
             name="isEnabled"
             type="Boolean" />
     </data>
@@ -102,6 +106,7 @@
                     android:paddingBottom="@dimen/cardview_header_bottom_padding"
                     android:text="@string/trigger_list_header"
                     android:textAppearance="@style/KeymapListHeader"
+                    android:visibility="@{trigger.triggerKeyDescriptions.empty ? View.GONE : View.VISIBLE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
@@ -111,9 +116,11 @@
                     android:id="@+id/chipGroupTrigger"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:theme="@style/TriggerChipGroup"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textViewTriggerHeader">
+                    app:layout_constraintTop_toBottomOf="@+id/textViewTriggerHeader"
+                    app:triggerModel="@{trigger}">
 
                 </com.google.android.material.chip.ChipGroup>
 

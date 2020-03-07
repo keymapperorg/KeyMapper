@@ -137,6 +137,7 @@ class KeymapListFragment : Fragment() {
                     isSelected(selectionProvider.isSelected(it.id))
                     isEnabled(it.isEnabled)
                     actions(it.actionList)
+                    trigger(it.triggerModel)
 
                     onClick { _ ->
                         val id = it.id

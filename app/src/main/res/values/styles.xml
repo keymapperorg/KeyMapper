@@ -28,6 +28,10 @@
         <item name="chipStyle">@style/KeymapListChip.Action</item>
     </style>
 
+    <style name="TriggerChipGroup" parent="Widget.MaterialComponents.ChipGroup">
+        <item name="chipStyle">@style/KeymapListChip.TriggerKey</item>
+    </style>
+
     <style name="KeymapListChip" parent="Widget.MaterialComponents.Chip.Entry">
         <item name="chipBackgroundColor">?attr/colorSurface</item>
         <item name="chipStrokeColor" tools:ignore="PrivateResource">@color/mtrl_btn_stroke_color_selector</item>
@@ -38,6 +42,7 @@
 
     <style name="KeymapListChip.TriggerKey">
         <item name="closeIconVisible">false</item>
+        <item name="chipIconTint">?attr/colorOnSurface</item>
         <item name="android:clickable">false</item>
     </style>
 
@@ -52,13 +57,10 @@
         <item name="closeIconTint">?attr/colorError</item>
     </style>
 
-    <style name="KeymapListChip.TriggerKeySeparator">
-        <item name="android:clickable">false</item>
-        <item name="chipIconTint">?attr/colorOnSurface</item>
+    <style name="KeymapListChip.TriggerKey.Separator">
         <item name="chipStrokeWidth">0dp</item>
         <item name="textEndPadding">0dp</item>
         <item name="textStartPadding">0dp</item>
-        <item name="closeIconVisible">false</item>
     </style>
 
     <style name="KeymapListHeader" parent="TextAppearance.MaterialComponents.Subtitle2">

@@ -64,15 +64,15 @@ data class Action(
         private val ACTION_FLAG_LABEL_MAP = mapOf(
             ACTION_FLAG_SHOW_VOLUME_UI to R.string.flag_show_volume_dialog
         )
-
-        fun getFlagLabelList(flags: Int): List<String> = sequence {
-            ACTION_FLAG_LABEL_MAP.keys.forEach { flag ->
-                if (flags.hasFlag(flag)) {
-                    yield(appStr(ACTION_FLAG_LABEL_MAP.getValue(flag)))
-                }
-            }
-        }.toList()
     }
 
     constructor(type: ActionType, data: String, extra: Extra) : this(type, data, mutableListOf(extra))
+
+    fun getFlagLabelList(): List<String> = sequence {
+        ACTION_FLAG_LABEL_MAP.keys.forEach { flag ->
+            if (flags.hasFlag(flag)) {
+                yield(appStr(ACTION_FLAG_LABEL_MAP.getValue(flag)))
+            }
+        }
+    }.toList()
 }

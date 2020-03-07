@@ -3,7 +3,7 @@
     <color name="colorPrimary">#212121</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#00e676</color>
-    <color name="error">#d32f2f</color>
     <color name="colorPrimaryVariant">@color/colorAccent</color>
     <color name="colorSecondary">@color/colorAccent</color>
+    <color name="iconTintTriggerKeySeparator">#cccccc</color>
 </resources>

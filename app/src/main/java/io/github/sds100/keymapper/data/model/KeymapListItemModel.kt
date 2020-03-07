@@ -7,5 +7,6 @@ package io.github.sds100.keymapper.data.model
 data class KeymapListItemModel(
     val id: Long,
     val actionList: List<ActionModel>,
+    val triggerModel: TriggerModel,
     val isEnabled: Boolean
 )

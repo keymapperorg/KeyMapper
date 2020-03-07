@@ -7,6 +7,7 @@ import io.github.sds100.keymapper.ui.callback.ProgressCallback
 import io.github.sds100.keymapper.util.ISelectionProvider
 import io.github.sds100.keymapper.util.SelectionProvider
 import io.github.sds100.keymapper.util.buildActionModels
+import io.github.sds100.keymapper.util.buildTriggerModel
 import kotlinx.coroutines.launch
 
 class KeymapListViewModel internal constructor(
@@ -18,7 +19,11 @@ class KeymapListViewModel internal constructor(
             loadingContent.value = true
 
             val keymapList = keyMapList?.map {
-                KeymapListItemModel(it.id, it.buildActionModels(), it.isEnabled)
+                KeymapListItemModel(
+                    id = it.id,
+                    actionList = it.buildActionModels(),
+                    triggerModel = it.trigger.buildTriggerModel(),
+                    isEnabled = it.isEnabled)
             } ?: listOf()
 
             selectionProvider.updateIds(keymapList.map { it.id }.toLongArray())
