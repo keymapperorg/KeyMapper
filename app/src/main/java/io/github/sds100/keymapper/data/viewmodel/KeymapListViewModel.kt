@@ -2,13 +2,9 @@ package io.github.sds100.keymapper.data.viewmodel
 
 import androidx.lifecycle.*
 import com.example.architecturetest.data.KeymapRepository
-import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
 import io.github.sds100.keymapper.ui.callback.ProgressCallback
-import io.github.sds100.keymapper.util.ISelectionProvider
-import io.github.sds100.keymapper.util.SelectionProvider
-import io.github.sds100.keymapper.util.buildActionModels
-import io.github.sds100.keymapper.util.buildTriggerModel
+import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.launch
 
 class KeymapListViewModel internal constructor(
@@ -24,7 +20,7 @@ class KeymapListViewModel internal constructor(
                     id = it.id,
                     actionList = it.buildActionModels(),
                     triggerModel = it.trigger.buildTriggerModel(),
-                    flagList = KeyMap.createFlagModels(it.flags),
+                    flagList = FlagUtils.createKeymapFlagModels(it.flags),
                     isEnabled = it.isEnabled)
             } ?: listOf()
 

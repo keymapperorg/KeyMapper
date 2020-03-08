@@ -6,7 +6,6 @@ import androidx.room.PrimaryKey
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.KeyMapDao
 import splitties.bitflags.hasFlag
-import splitties.resources.appDrawable
 import splitties.resources.appStr
 
 /**
@@ -37,11 +36,11 @@ class KeyMap(
         //DON'T CHANGE THESE AND THEY MUST BE POWERS OF 2!!
         const val KEYMAP_FLAG_VIBRATE = 1
 
-        private val KEYMAP_FLAG_LABEL_MAP = mapOf(
+        val KEYMAP_FLAG_LABEL_MAP = mapOf(
             KEYMAP_FLAG_VIBRATE to R.string.flag_vibrate
         )
 
-        private val KEYMAP_FLAG_ICON_MAP = mapOf(
+        val KEYMAP_FLAG_ICON_MAP = mapOf(
             KEYMAP_FLAG_VIBRATE to R.drawable.ic_outline_vibration_24
         )
 
@@ -49,16 +48,6 @@ class KeyMap(
             KEYMAP_FLAG_LABEL_MAP.keys.forEach { flag ->
                 if (flags.hasFlag(flag)) {
                     yield(appStr(KEYMAP_FLAG_LABEL_MAP.getValue(flag)))
-                }
-            }
-        }.toList()
-
-        fun createFlagModels(flags: Int): List<FlagModel> = sequence {
-            KEYMAP_FLAG_LABEL_MAP.keys.forEach { flag ->
-                if (flags.hasFlag(flag)) {
-                    val text = appStr(KEYMAP_FLAG_LABEL_MAP.getValue(flag))
-                    val drawable = appDrawable(KEYMAP_FLAG_ICON_MAP.getValue(flag))
-                    yield(FlagModel(text, drawable))
                 }
             }
         }.toList()

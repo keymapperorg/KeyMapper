@@ -12,7 +12,6 @@ import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.model.TriggerModel
 import io.github.sds100.keymapper.ui.callback.ActionErrorClickCallback
 import splitties.resources.appStr
-import splitties.resources.drawable
 
 
 /**
@@ -116,7 +115,7 @@ fun ChipGroup.bindFlagModels(flagModels: List<FlagModel>) {
     flagModels.forEach {
         Chip(context).apply {
             text = it.text
-            chipIcon = it.icon
+            chipIcon = context.safeVectorDrawable(it.icon)
 
             addView(this)
         }
