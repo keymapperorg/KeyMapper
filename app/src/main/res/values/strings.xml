@@ -168,6 +168,9 @@
     <string name="neg_no">No</string>
     <string name="neg_cancel">Cancel</string>
     <string name="neg_dont_show_again">Don\'t show again</string>
+
+    <string name="snackbar_cancel">Cancel</string>
+    <string name="snackbar_fix">Fix</string>
     <!-- Dialog buttons -->
 
     <!-- Notification strings -->

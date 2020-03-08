@@ -38,6 +38,10 @@
             type="List&lt;io.github.sds100.keymapper.data.model.FlagModel>" />
 
         <variable
+            name="onActionErrorClick"
+            type="io.github.sds100.keymapper.ui.callback.ActionErrorClickCallback" />
+
+        <variable
             name="isEnabled"
             type="Boolean" />
     </data>
@@ -96,6 +100,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:theme="@style/ActionChipGroup"
+                    app:actionErrorClickCallback="@{onActionErrorClick}"
                     app:actions="@{actions}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

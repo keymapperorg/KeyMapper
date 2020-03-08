@@ -10,6 +10,7 @@ import io.github.sds100.keymapper.data.model.ActionModel
 import io.github.sds100.keymapper.data.model.FlagModel
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.model.TriggerModel
+import io.github.sds100.keymapper.ui.callback.ActionErrorClickCallback
 import splitties.resources.appStr
 import splitties.resources.drawable
 
@@ -23,8 +24,8 @@ fun setLongClickListener(view: View, onLongClickListener: View.OnLongClickListen
     view.setOnLongClickListener(onLongClickListener)
 }
 
-@BindingAdapter("app:actions")
-fun ChipGroup.bindActions(actions: List<ActionModel>) {
+@BindingAdapter("app:actions", "app:actionErrorClickCallback", requireAll = true)
+fun ChipGroup.bindActions(actions: List<ActionModel>, callback: ActionErrorClickCallback) {
     removeAllViews()
 
     actions.forEach {
@@ -32,10 +33,16 @@ fun ChipGroup.bindActions(actions: List<ActionModel>) {
             text = it.description
             chipIcon = it.icon
             isCloseIconVisible = it.hasError
-            isClickable = it.hasError
 
             if (it.description == null && it.hasError) {
-                text = it.errorDescription
+                text = it.error?.errorMessage
+            }
+
+            if (it.hasError) {
+                isClickable = true
+                setOnClickListener { _ ->
+                    callback.onActionErrorClick(it.error!!)
+                }
             }
 
             addView(this)

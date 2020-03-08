@@ -20,16 +20,16 @@ fun Action.buildModel(): ActionModel {
     var title: String? = null
     var icon: Drawable? = null
 
-    val errorMessage = getTitle().onSuccess { title = it }
+    val error = getTitle().onSuccess { title = it }
         .then { getIcon() }.onSuccess { icon = it }
         .then { isValid() }
-        .errorMessageOrNull()
+        .failureOrNull()
 
     val description = buildString {
         val flagLabels = getFlagLabelList()
 
         if (title == null) {
-            append(errorMessage)
+            append(error?.errorMessage)
         } else {
             append(title)
         }
@@ -39,7 +39,7 @@ fun Action.buildModel(): ActionModel {
         }
     }
 
-    return ActionModel(description, errorMessage, icon)
+    return ActionModel(description, error, icon)
 }
 
 private fun Action.getTitle(): Result<String> {

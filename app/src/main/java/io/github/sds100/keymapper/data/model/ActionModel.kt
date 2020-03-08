@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.data.model
 
 import android.graphics.drawable.Drawable
+import io.github.sds100.keymapper.util.result.Failure
 
 /**
  * Created by sds100 on 26/02/2020.
@@ -8,8 +9,9 @@ import android.graphics.drawable.Drawable
 
 data class ActionModel(
     val description: String? = null,
-    val errorDescription: String? = null,
+    val error: Failure? = null,
     val icon: Drawable? = null) {
+
     val hasError: Boolean
-        get() = errorDescription != null
+        get() = error != null
 }

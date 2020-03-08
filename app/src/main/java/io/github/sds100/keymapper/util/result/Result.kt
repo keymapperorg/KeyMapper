@@ -81,5 +81,13 @@ fun <T> Result<T>.errorMessageOrNull(): String? {
     return null
 }
 
+fun <T> Result<T>.failureOrNull(): Failure? {
+    when (this) {
+        is Failure -> return this
+    }
+
+    return null
+}
+
 infix fun <T> Result<T>.otherwise(f: (failure: Failure) -> Unit) =
     if (this is Failure) f(this) else Unit
