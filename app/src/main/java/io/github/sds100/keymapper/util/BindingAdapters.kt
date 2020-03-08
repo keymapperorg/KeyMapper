@@ -51,34 +51,36 @@ fun ChipGroup.bindActions(actions: List<ActionModel>, callback: ActionErrorClick
 
 @BindingAdapter("app:isKeymapEnabled", "app:noActions", "app:noTrigger", requireAll = false)
 fun TextView.setKeymapExtraInfo(isKeymapEnabled: Boolean = false, noActions: Boolean = false, noTrigger: Boolean = false) {
-    text = ""
+    text = buildString {
+        val interpunct = appStr(R.string.interpunct)
 
-    if (!isKeymapEnabled) {
-        append(appStr(R.string.disabled))
-    }
-
-    if (noActions) {
-        if (text.isNotEmpty()) {
-            append(" • ")
+        if (!isKeymapEnabled) {
+            append(appStr(R.string.disabled))
         }
 
-        append(appStr(R.string.no_actions))
-    }
+        if (noActions) {
+            if (this.isNotEmpty()) {
+                append(" $interpunct ")
+            }
 
-    if (noTrigger) {
-        if (text.isNotEmpty()) {
-            append(" • ")
+            append(appStr(R.string.no_actions))
         }
-        append(appStr(R.string.no_trigger))
+
+        if (noTrigger) {
+            if (this.isNotEmpty()) {
+                append(" $interpunct ")
+            }
+            append(appStr(R.string.no_trigger))
+        }
     }
 }
 
 @BindingAdapter("app:triggerModel")
 fun ChipGroup.bindTriggerModel(triggerModel: TriggerModel) {
     val separatorDrawable = when (triggerModel.triggerMode) {
-        Trigger.PARALLEL -> context.drawable(R.drawable.ic_baseline_add_24)
-        Trigger.SEQUENCE -> context.drawable(R.drawable.ic_baseline_arrow_forward_24)
-        else -> context.drawable(R.drawable.ic_baseline_add_24)
+        Trigger.PARALLEL -> context.safeVectorDrawable(R.drawable.ic_baseline_add_24)
+        Trigger.SEQUENCE -> context.safeVectorDrawable(R.drawable.ic_baseline_arrow_forward_24)
+        else -> context.safeVectorDrawable(R.drawable.ic_baseline_add_24)
     }
 
     removeAllViews()
