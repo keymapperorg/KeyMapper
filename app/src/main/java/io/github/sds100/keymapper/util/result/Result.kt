@@ -44,8 +44,10 @@ const val ERROR_CODE_NULL = 13
 sealed class Result<out T>
 
 data class Success<T>(val value: T) : Result<T>()
-abstract class Failure(val errorMessage: String) : Result<Nothing>() {
-    open fun recover(ctx: Context) {}
+abstract class Failure(val errorMessage: String) : Result<Nothing>() {}
+
+abstract class RecoverableFailure(errorMessage: String) : Failure(errorMessage) {
+    abstract fun recover(ctx: Context)
 }
 
 fun <T> Result<T>.onSuccess(f: (T) -> Unit): Result<T> {
