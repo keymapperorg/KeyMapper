@@ -53,7 +53,7 @@ private fun Action.getTitle(): Result<String> {
                 return Success(appCtx.getString(R.string.description_open_app, applicationLabel.toString()))
             } catch (e: PackageManager.NameNotFoundException) {
                 //the app isn't installed
-                return AppNotFound()
+                return AppNotFound(data)
             }
         }
     }
@@ -69,7 +69,7 @@ private fun Action.getIcon(): Result<Drawable> {
                 Success(appCtx.packageManager.getApplicationIcon(data))
             } catch (e: PackageManager.NameNotFoundException) {
                 //if the app isn't installed, it can't find the icon for it
-                AppNotFound()
+                AppNotFound(data)
             }
         }
     }
@@ -90,10 +90,10 @@ private fun Action.isValid(): Result<Action> {
 
                 //if the app is disabled, show an error message because it won't open
                 if (!appInfo.enabled) {
-                    return AppDisabled()
+                    return AppDisabled(data)
                 }
             } catch (e: Exception) {
-                return AppNotFound()
+                return AppNotFound(data)
             }
         }
     }
