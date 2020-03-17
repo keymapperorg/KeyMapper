@@ -10,15 +10,6 @@ import splitties.resources.appStr
  * Created by sds100 on 16/07/2018.
  */
 
-@StringDef(value = [
-    Action.EXTRA_PACKAGE_NAME,
-    Action.EXTRA_SHORTCUT_TITLE,
-    Action.EXTRA_STREAM_TYPE,
-    Action.EXTRA_LENS,
-    Action.EXTRA_RINGER_MODE
-])
-annotation class ExtraId
-
 /**
  * @property [data] The information required to perform the action. E.g if the type is [ActionType.APP],
  * the data will be the package name of the application
@@ -50,15 +41,6 @@ data class Action(
 
 ) {
     companion object {
-        const val EXTRA_ACTION = "extra_action"
-
-        //DON'T CHANGE THESE IDs!!!!
-        const val EXTRA_SHORTCUT_TITLE = "extra_title"
-        const val EXTRA_PACKAGE_NAME = "extra_package_name"
-        const val EXTRA_STREAM_TYPE = "extra_stream_type"
-        const val EXTRA_LENS = "extra_flash"
-        const val EXTRA_RINGER_MODE = "extra_ringer_mode"
-
         const val ACTION_FLAG_SHOW_VOLUME_UI = 1
 
         private val ACTION_FLAG_LABEL_MAP = mapOf(

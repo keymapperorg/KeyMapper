@@ -23,11 +23,15 @@ class KeyMap(
     @ColumnInfo(name = KeyMapDao.KEY_ACTION_LIST)
     var actionList: List<Action> = listOf(),
 
+    @ColumnInfo(name = KeyMapDao.KEY_CONSTRAINT_LIST)
+    var constraintList: List<Constraint> = listOf(),
+
     @ColumnInfo(name = KeyMapDao.KEY_FLAGS)
     /**
      * Flags are stored as bits.
      */
     var flags: Int = 0,
+
 
     @ColumnInfo(name = KeyMapDao.KEY_ENABLED)
     var isEnabled: Boolean = true
@@ -65,5 +69,5 @@ class KeyMap(
         return true
     }
 
-    fun clone() = KeyMap(id, trigger, actionList, flags, isEnabled)
+    fun clone() = KeyMap(id, trigger, actionList, constraintList, flags, isEnabled)
 }

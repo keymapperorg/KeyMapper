@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import io.github.sds100.keymapper.data.KeyMapDao
 import io.github.sds100.keymapper.data.db.typeconverter.ActionListTypeConverter
+import io.github.sds100.keymapper.data.db.typeconverter.ConstraintListTypeConverter
 import io.github.sds100.keymapper.data.db.typeconverter.ExtraListTypeConverter
 import io.github.sds100.keymapper.data.db.typeconverter.TriggerTypeConverter
 import io.github.sds100.keymapper.data.model.KeyMap
@@ -18,7 +19,8 @@ import io.github.sds100.keymapper.data.model.KeyMap
 @TypeConverters(
         ActionListTypeConverter::class,
         ExtraListTypeConverter::class,
-        TriggerTypeConverter::class
+        TriggerTypeConverter::class,
+        ConstraintListTypeConverter::class
 )
 abstract class AppDatabase : RoomDatabase() {
     companion object {
