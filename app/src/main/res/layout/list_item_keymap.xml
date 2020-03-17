@@ -30,6 +30,14 @@
             type="List&lt;io.github.sds100.keymapper.data.model.ActionModel>" />
 
         <variable
+            name="constraints"
+            type="List&lt;io.github.sds100.keymapper.data.model.ConstraintModel>" />
+
+        <variable
+            name="constraintMode"
+            type="Integer" />
+
+        <variable
             name="trigger"
             type="io.github.sds100.keymapper.data.model.TriggerModel" />
 
@@ -38,8 +46,8 @@
             type="List&lt;io.github.sds100.keymapper.data.model.FlagModel>" />
 
         <variable
-            name="onActionErrorClick"
-            type="io.github.sds100.keymapper.ui.callback.ActionErrorClickCallback" />
+            name="onErrorClick"
+            type="io.github.sds100.keymapper.ui.callback.ErrorClickCallback" />
 
         <variable
             name="isEnabled"
@@ -100,8 +108,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:theme="@style/ActionChipGroup"
-                    app:actionErrorClickCallback="@{onActionErrorClick}"
                     app:actions="@{actions}"
+                    app:errorClickCallback="@{onErrorClick}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textViewExtraInfo">
@@ -157,6 +165,34 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textViewOptionsHeader">
+
+                </com.google.android.material.chip.ChipGroup>
+
+                <TextView
+                    android:id="@+id/textViewConstraintHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:paddingBottom="@dimen/cardview_header_bottom_padding"
+                    android:text="@string/constraint_list_header"
+                    android:textAppearance="@style/KeymapListHeader"
+                    android:visibility="@{constraints.empty ? View.GONE : View.VISIBLE}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/chipGroupOptions" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupConstraints"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/ConstraintChipGroup"
+                    app:constraintMode="@{constraintMode}"
+                    app:constraints="@{constraints}"
+                    app:errorClickCallback="@{onErrorClick}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textViewConstraintHeader">
 
                 </com.google.android.material.chip.ChipGroup>
             </androidx.constraintlayout.widget.ConstraintLayout>

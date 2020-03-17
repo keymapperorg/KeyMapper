@@ -36,6 +36,10 @@
         <item name="chipStyle">@style/KeymapListChip.Option</item>
     </style>
 
+    <style name="ConstraintChipGroup" parent="Widget.MaterialComponents.ChipGroup">
+        <item name="chipStyle">@style/KeymapListChip.Constraint</item>
+    </style>
+
     <style name="KeymapListChip" parent="Widget.MaterialComponents.Chip.Entry">
         <item name="chipBackgroundColor">?attr/colorSurface</item>
         <item name="chipStrokeColor" tools:ignore="PrivateResource">@color/mtrl_btn_stroke_color_selector</item>
@@ -50,21 +54,28 @@
         <item name="android:clickable">false</item>
     </style>
 
+    <style name="KeymapListChip.TriggerKey.Separator">
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="textEndPadding">0dp</item>
+        <item name="textStartPadding">0dp</item>
+    </style>
+
     <style name="KeymapListChip.Option">
         <item name="closeIconVisible">false</item>
         <item name="android:clickable">false</item>
         <item name="chipIconTint">?attr/colorOnSurface</item>
     </style>
 
-    <style name="KeymapListChip.Action">
+    <style name="KeymapListChip.Constraint">
+        <item name="closeIconVisible">false</item>
+        <item name="android:clickable">false</item>
         <item name="closeIcon">@drawable/ic_baseline_error_outline_24</item>
         <item name="closeIconTint">?attr/colorError</item>
     </style>
 
-    <style name="KeymapListChip.TriggerKey.Separator">
-        <item name="chipStrokeWidth">0dp</item>
-        <item name="textEndPadding">0dp</item>
-        <item name="textStartPadding">0dp</item>
+    <style name="KeymapListChip.Action">
+        <item name="closeIcon">@drawable/ic_baseline_error_outline_24</item>
+        <item name="closeIconTint">?attr/colorError</item>
     </style>
 
     <style name="KeymapListHeader" parent="TextAppearance.MaterialComponents.Subtitle2">

@@ -20,7 +20,7 @@ import io.github.sds100.keymapper.data.model.KeymapListItemModel
 import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
 import io.github.sds100.keymapper.databinding.FragmentKeymapListBinding
 import io.github.sds100.keymapper.keymap
-import io.github.sds100.keymapper.ui.callback.ActionErrorClickCallback
+import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
 import io.github.sds100.keymapper.ui.callback.SelectionCallback
 import io.github.sds100.keymapper.util.ISelectionProvider
 import io.github.sds100.keymapper.util.InjectorUtils
@@ -29,7 +29,6 @@ import io.github.sds100.keymapper.util.result.RecoverableFailure
 import io.github.sds100.keymapper.worker.SeedDatabaseWorker
 import kotlinx.android.synthetic.main.fragment_keymap_list.*
 import splitties.experimental.ExperimentalSplittiesApi
-import splitties.resources.color
 import splitties.snackbar.action
 import splitties.snackbar.longSnack
 
@@ -49,8 +48,8 @@ class KeymapListFragment : Fragment() {
     private var mController = KeymapController()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         val binding = FragmentKeymapListBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = this@KeymapListFragment

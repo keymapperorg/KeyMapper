@@ -8,28 +8,30 @@ import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.launch
 
 class KeymapListViewModel internal constructor(
-    private val repository: KeymapRepository
+        private val repository: KeymapRepository
 ) : ViewModel(), ProgressCallback {
 
     val keymapList: LiveData<List<KeymapListItemModel>> =
-        Transformations.map(repository.keymapList) { keyMapList ->
-            loadingContent.value = true
+            Transformations.map(repository.keymapList) { keyMapList ->
+                loadingContent.value = true
 
-            val keymapList = keyMapList?.map {
-                KeymapListItemModel(
-                    id = it.id,
-                    actionList = it.buildActionModels(),
-                    triggerModel = it.trigger.buildTriggerModel(),
-                    flagList = FlagUtils.createKeymapFlagModels(it.flags),
-                    isEnabled = it.isEnabled)
-            } ?: listOf()
+                val keymapList = keyMapList?.map {
+                    KeymapListItemModel(
+                            id = it.id,
+                            actionList = it.buildActionModels(),
+                            triggerModel = it.trigger.buildTriggerModel(),
+                            constraintList = it.buildConstraintModels(),
+                            constraintMode = it.constraintMode,
+                            flagList = FlagUtils.createKeymapFlagModels(it.flags),
+                            isEnabled = it.isEnabled)
+                } ?: listOf()
 
-            selectionProvider.updateIds(keymapList.map { it.id }.toLongArray())
+                selectionProvider.updateIds(keymapList.map { it.id }.toLongArray())
 
-            loadingContent.value = false
+                loadingContent.value = false
 
-            keymapList
-        }
+                keymapList
+            }
 
     val selectionProvider: ISelectionProvider = SelectionProvider()
 
@@ -43,7 +45,7 @@ class KeymapListViewModel internal constructor(
 
     @Suppress("UNCHECKED_CAST")
     class Factory(
-        private val mRepository: KeymapRepository
+            private val mRepository: KeymapRepository
     ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {

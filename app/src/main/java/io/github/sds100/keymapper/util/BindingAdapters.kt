@@ -6,11 +6,8 @@ import androidx.databinding.BindingAdapter
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.model.ActionModel
-import io.github.sds100.keymapper.data.model.FlagModel
-import io.github.sds100.keymapper.data.model.Trigger
-import io.github.sds100.keymapper.data.model.TriggerModel
-import io.github.sds100.keymapper.ui.callback.ActionErrorClickCallback
+import io.github.sds100.keymapper.data.model.*
+import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
 import splitties.resources.appStr
 
 
@@ -23,8 +20,8 @@ fun setLongClickListener(view: View, onLongClickListener: View.OnLongClickListen
     view.setOnLongClickListener(onLongClickListener)
 }
 
-@BindingAdapter("app:actions", "app:actionErrorClickCallback", requireAll = true)
-fun ChipGroup.bindActions(actions: List<ActionModel>, callback: ActionErrorClickCallback) {
+@BindingAdapter("app:actions", "app:errorClickCallback", requireAll = true)
+fun ChipGroup.bindActions(actions: List<ActionModel>, callback: ErrorClickCallback) {
     removeAllViews()
 
     actions.forEach {
@@ -104,6 +101,55 @@ fun ChipGroup.bindTriggerModel(triggerModel: TriggerModel) {
 
         Chip(context).apply {
             text = description
+
+            addView(this)
+        }
+    }
+}
+
+@BindingAdapter("app:constraints", "app:constraintMode", "app:errorClickCallback", requireAll = true)
+fun ChipGroup.bindConstraints(
+        constraintList: List<ConstraintModel>,
+        constraintMode: Int,
+        callback: ErrorClickCallback
+) {
+    val separatorText = when (constraintMode) {
+        Constraint.AND -> appStr(R.string.constraint_mode_and)
+        Constraint.OR -> appStr(R.string.constraint_mode_or)
+        else -> appStr(R.string.constraint_mode_and)
+    }
+
+    removeAllViews()
+
+    constraintList.forEachIndexed { index, model ->
+
+        //add a chip which is either a + or -> depending on the trigger mode
+        if (index != 0) {
+            Chip(context).apply {
+
+                text = separatorText
+
+                chipStrokeWidth = 0f
+
+                addView(this)
+            }
+        }
+
+        Chip(context).apply {
+            text = model.description
+            chipIcon = model.icon
+            isCloseIconVisible = model.hasError
+
+            if (model.description == null && model.hasError) {
+                text = model.error?.briefMessage
+            }
+
+            if (model.hasError) {
+                isClickable = true
+                setOnClickListener {
+                    callback.onErrorClick(model.error!!)
+                }
+            }
 
             addView(this)
         }

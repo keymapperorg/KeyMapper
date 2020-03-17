@@ -58,13 +58,23 @@
     <string name="option_list_header">Options</string>
     <string name="action_list_header">Actions</string>
     <string name="trigger_list_header">Trigger</string>
+    <string name="constraint_list_header">Constraints</string>
 
     <string name="radio_button_parallel">At the same time</string>
     <string name="radio_button_sequence">In sequence</string>
 
+    <!-- Constraints -->
+    <string name="constraint_app_description">%s is in foreground</string>
+
+    <string name="constraint_mode_and">and</string>
+    <string name="constraint_mode_or">Or</string>
+    <!-- Constraints -->
+
+    <!-- Click types -->
     <string name="clicktype_short_press">Short Press</string>
     <string name="clicktype_long_press">Long Press</string>
     <string name="clicktype_double_press">Double Tap</string>
+    <!-- Click types -->
 
     <!-- URLs -->
     <string name="url_source_code" translatable="false">https://github.com/sds100/KeyMapper</string>
@@ -124,7 +134,6 @@
     <string name="button_recording_trigger_countdown">%d…</string>
     <string name="button_flags">Options</string>
     <string name="button_help">Help</string>
-
     <!-- Button titles -->
 
     <!-- Content descriptions -->
@@ -402,6 +411,8 @@
     <string name="error_cant_find_option_label">error: Can\'t find a label for this option \"%s\"</string>
     <string name="error_system_action_not_found">System action not found %s!</string>
     <string name="error_no_action_data">No Action data!</string>
+    <string name="error_extra_not_found">Extra not found!</string>
+    <string name="error_constraint_not_found">Constraint not found</string>
     <!-- Error messages -->
 
     <!-- System action labels -->
