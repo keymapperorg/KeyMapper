@@ -44,9 +44,12 @@ const val ERROR_CODE_NULL = 13
 sealed class Result<out T>
 
 data class Success<T>(val value: T) : Result<T>()
-abstract class Failure(val errorMessage: String) : Result<Nothing>() {}
+abstract class Failure(val fullMessage: String, val briefMessage: String = fullMessage) : Result<Nothing>()
 
-abstract class RecoverableFailure(errorMessage: String) : Failure(errorMessage) {
+abstract class RecoverableFailure(
+        fullMessage: String,
+        briefMessage: String = fullMessage
+) : Failure(fullMessage, briefMessage) {
     abstract fun recover(ctx: Context)
 }
 
@@ -60,7 +63,7 @@ fun <T> Result<T>.onSuccess(f: (T) -> Unit): Result<T> {
 
 fun <T, U> Result<T>.onFailure(f: (errorMessage: String) -> U): Result<T> {
     if (this is Failure) {
-        f(this.errorMessage)
+        f(this.fullMessage)
     }
 
     return this
@@ -75,7 +78,7 @@ infix fun <T, U> Result<T>.then(f: (T) -> Result<U>): Result<U> {
 
 fun <T> Result<T>.errorMessageOrNull(): String? {
     when (this) {
-        is Failure -> return this.errorMessage
+        is Failure -> return this.fullMessage
     }
 
     return null
@@ -90,4 +93,4 @@ fun <T> Result<T>.failureOrNull(): Failure? {
 }
 
 infix fun <T> Result<T>.otherwise(f: (failure: Failure) -> Unit) =
-    if (this is Failure) f(this) else Unit
+        if (this is Failure) f(this) else Unit

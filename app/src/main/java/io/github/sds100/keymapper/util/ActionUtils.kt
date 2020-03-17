@@ -29,7 +29,7 @@ fun Action.buildModel(): ActionModel {
         val flagLabels = getFlagLabelList()
 
         if (title == null) {
-            append(error?.errorMessage)
+            append(error?.briefMessage)
         } else {
             append(title)
         }

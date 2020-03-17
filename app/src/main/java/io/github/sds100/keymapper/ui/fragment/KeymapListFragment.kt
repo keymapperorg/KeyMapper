@@ -144,12 +144,14 @@ class KeymapListFragment : Fragment() {
                     isEnabled(it.isEnabled)
                     actions(it.actionList)
                     trigger(it.triggerModel)
+                    constraints(it.constraintList)
+                    constraintMode(it.constraintMode)
                     flags(it.flagList)
 
-                    onActionErrorClick(object : ActionErrorClickCallback {
+                    onErrorClick(object : ErrorClickCallback {
 
-                        override fun onActionErrorClick(failure: Failure) {
-                            coordinatorLayout.longSnack(failure.errorMessage) {
+                        override fun onErrorClick(failure: Failure) {
+                            coordinatorLayout.longSnack(failure.fullMessage) {
 
                                 //only add an action to fix the error if the error can be recovered from
                                 if (failure is RecoverableFailure) {

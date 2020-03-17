@@ -37,7 +37,9 @@ class PermissionDenied<T>(permission: String) : RecoverableFailure(getMessageFor
     }
 }
 
-class AppNotFound(val packageName: String) : RecoverableFailure(appStr(R.string.error_app_isnt_installed)) {
+class AppNotFound(val packageName: String) : RecoverableFailure(
+        fullMessage = appStr(R.string.error_app_isnt_installed, packageName),
+        briefMessage = appStr(R.string.error_app_isnt_installed_brief)) {
     override fun recover(ctx: Context) = PackageUtils.viewAppOnline(ctx, packageName)
 }
 

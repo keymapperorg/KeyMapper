@@ -34,13 +34,13 @@ fun ChipGroup.bindActions(actions: List<ActionModel>, callback: ActionErrorClick
             isCloseIconVisible = it.hasError
 
             if (it.description == null && it.hasError) {
-                text = it.error?.errorMessage
+                text = it.error?.briefMessage
             }
 
             if (it.hasError) {
                 isClickable = true
                 setOnClickListener { _ ->
-                    callback.onActionErrorClick(it.error!!)
+                    callback.onErrorClick(it.error!!)
                 }
             }
 
