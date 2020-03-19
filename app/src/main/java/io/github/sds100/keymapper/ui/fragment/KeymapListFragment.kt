@@ -17,6 +17,7 @@ import io.github.sds100.keymapper.BuildConfig
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
+import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
 import io.github.sds100.keymapper.databinding.FragmentKeymapListBinding
 import io.github.sds100.keymapper.keymap
@@ -48,8 +49,8 @@ class KeymapListFragment : Fragment() {
     private var mController = KeymapController()
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         val binding = FragmentKeymapListBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = this@KeymapListFragment
@@ -57,7 +58,8 @@ class KeymapListFragment : Fragment() {
             epoxyRecyclerView.adapter = mController.adapter
 
             setOnNewKeymapClick {
-                val direction = KeymapListFragmentDirections.actionHomeToNewKeymap()
+                val direction =
+                    KeymapListFragmentDirections.actionHomeToConfigKeymap(ConfigKeymapViewModel.NEW_KEYMAP_ID)
                 findNavController().navigate(direction)
             }
 

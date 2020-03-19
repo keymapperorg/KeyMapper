@@ -6,40 +6,46 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.navigation.navGraphViewModels
+import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.viewmodel.ChooseActionSharedViewModel
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentConfigKeymapBinding
+import io.github.sds100.keymapper.ui.adapter.ConfigKeymapPagerAdapter
 import io.github.sds100.keymapper.util.InjectorUtils
-import splitties.toast.toast
+import splitties.resources.strArray
 
 /**
  * Created by sds100 on 19/02/2020.
  */
-open class ConfigKeymapFragment : Fragment() {
+class ConfigKeymapFragment : Fragment() {
     private val args by navArgs<ConfigKeymapFragmentArgs>()
-    private val mChooseActionSharedViewModel: ChooseActionSharedViewModel by activityViewModels()
 
-    open val configKeymapViewModel: ConfigKeymapViewModel by viewModels {
-        InjectorUtils.provideConfigKeymapViewModel(requireContext(), args.keymapId)
+    private val mConfigViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_app) {
+        InjectorUtils.provideConfigKeymapViewModel(requireContext())
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding = DataBindingUtil.inflate<FragmentConfigKeymapBinding>(
-                inflater,
-                R.layout.fragment_config_keymap,
-                container,
-                false
+            inflater,
+            R.layout.fragment_config_keymap,
+            container,
+            false
         )
+
+        mConfigViewModel.init(args.keymapId)
 
         binding.apply {
             lifecycleOwner = viewLifecycleOwner
-            viewModel = configKeymapViewModel
+            viewModel = mConfigViewModel
+
+            viewPager.adapter = ConfigKeymapPagerAdapter(this@ConfigKeymapFragment)
+
+            TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+                tab.text = strArray(R.array.config_keymap_tab_titles)[position]
+            }.attach()
 
             appBar.setNavigationOnClickListener {
                 findNavController().navigateUp()
@@ -48,28 +54,14 @@ open class ConfigKeymapFragment : Fragment() {
             appBar.setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.action_save -> {
-                        configKeymapViewModel.saveKeymap()
+                        mConfigViewModel.saveKeymap()
                         findNavController().navigateUp()
+
                         true
                     }
 
                     else -> false
                 }
-            }
-
-            setOnAddActionClick {
-                val direction = ConfigKeymapFragmentDirections.actionConfigKeymapFragmentToChooseActionFragment()
-                findNavController().navigate(direction)
-            }
-        }
-
-        mChooseActionSharedViewModel.chosenAction.observe(viewLifecycleOwner) {
-            it?.let {
-                //this will be replaced eventually
-                toast("Chose action ${it.data}")
-
-                // don't want the action to be repeatedly selected when this fragment is navigated to.
-                mChooseActionSharedViewModel.chosenAction.value = null
             }
         }
 

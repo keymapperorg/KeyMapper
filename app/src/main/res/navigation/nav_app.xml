@@ -16,6 +16,7 @@
 
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_app"
     xmlns:tools="http://schemas.android.com/tools"
     app:startDestination="@id/keymap_list_fragment">
 
@@ -32,23 +33,6 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
 
-        <action
-            android:id="@+id/action_home_to_new_keymap"
-            app:destination="@id/new_keymap_fragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/new_keymap_fragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.NewKeymapFragment"
-        android:label="New Keymap"
-        tools:layout="@layout/fragment_config_keymap">
-        <action
-            android:id="@id/action_config_keymap_fragment_to_choose_action_fragment"
-            app:destination="@id/choose_action_fragment" />
     </fragment>
 
     <fragment

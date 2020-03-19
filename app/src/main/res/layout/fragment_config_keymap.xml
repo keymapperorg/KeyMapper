@@ -33,9 +33,10 @@
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabLayout"
                 style="@style/AppTabLayout"
+                app:tabMode="fixed"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                
+
             </com.google.android.material.tabs.TabLayout>
 
             <androidx.viewpager2.widget.ViewPager2
