@@ -87,4 +87,12 @@
         <item name="android:gravity">center</item>
         <item name="android:textSize">14sp</item>
     </style>
+
+    <style name="AppTabLayout" parent="Widget.MaterialComponents.TabLayout">
+        <item name="android:background">?attr/colorSurface</item>
+        <item name="tabIndicatorColor">@color/colorAccent</item>
+        <item name="tabMode">scrollable</item>
+        <item name="tabSelectedTextColor">@color/colorAccent</item>
+        <item name="tabTextColor">?attr/colorOnSurface</item>
+    </style>
 </resources>
