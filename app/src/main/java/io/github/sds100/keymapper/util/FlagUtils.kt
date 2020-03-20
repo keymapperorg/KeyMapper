@@ -1,8 +1,11 @@
 package io.github.sds100.keymapper.util
 
+import android.util.Log
 import io.github.sds100.keymapper.data.model.FlagModel
 import io.github.sds100.keymapper.data.model.KeyMap
 import splitties.bitflags.hasFlag
+import splitties.bitflags.minusFlag
+import splitties.bitflags.withFlag
 import splitties.resources.appStr
 
 /**
@@ -20,3 +23,10 @@ object FlagUtils {
         }
     }.toList()
 }
+
+fun Int.toggleFlag(flag: Int): Int =
+    if (this.hasFlag(flag)) {
+        this.minusFlag(flag)
+    } else {
+        this.withFlag(flag)
+    }

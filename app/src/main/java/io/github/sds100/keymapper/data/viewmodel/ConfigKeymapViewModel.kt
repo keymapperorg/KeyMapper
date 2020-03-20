@@ -10,17 +10,15 @@ import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Trigger
 import kotlinx.coroutines.launch
-import kotlin.properties.Delegates
 
 class ConfigKeymapViewModel internal constructor(
-    private val repository: KeymapRepository
+    private val mRepository: KeymapRepository,
+    private val mId: Long
 ) : ViewModel() {
 
     companion object {
         const val NEW_KEYMAP_ID = -2L
     }
-
-    private var id by Delegates.notNull<Long>()
 
     val triggerKeys: MutableLiveData<List<Trigger.Key>> = MutableLiveData()
     val triggerInParallel: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -32,10 +30,8 @@ class ConfigKeymapViewModel internal constructor(
     val flags: MutableLiveData<Int> = MutableLiveData()
     val isEnabled: MutableLiveData<Boolean> = MutableLiveData()
 
-    fun init(keymapId: Long) {
-        id = keymapId
-
-        if (id == NEW_KEYMAP_ID) {
+    init {
+        if (mId == NEW_KEYMAP_ID) {
             triggerKeys.value = listOf()
             actionList.value = listOf()
             flags.value = 0
@@ -68,7 +64,7 @@ class ConfigKeymapViewModel internal constructor(
 
         } else {
             viewModelScope.launch {
-                repository.getKeymap(id).let { keymap ->
+                mRepository.getKeymap(mId).let { keymap ->
                     triggerKeys.value = keymap.trigger.keys
                     actionList.value = keymap.actionList
                     flags.value = keymap.flags
@@ -118,10 +114,10 @@ class ConfigKeymapViewModel internal constructor(
             }
 
             val actualId =
-                if (id == NEW_KEYMAP_ID) {
+                if (mId == NEW_KEYMAP_ID) {
                     0
                 } else {
-                    id
+                    mId
                 }
 
             val keymap = KeyMap(
@@ -134,18 +130,18 @@ class ConfigKeymapViewModel internal constructor(
                 isEnabled = isEnabled.value!!
             )
 
-            if (id == NEW_KEYMAP_ID) {
-                repository.createKeymap(keymap)
+            if (mId == NEW_KEYMAP_ID) {
+                mRepository.createKeymap(keymap)
             } else {
-                repository.updateKeymap(keymap)
+                mRepository.updateKeymap(keymap)
             }
         }
     }
 
-    class Factory(private val mRepository: KeymapRepository) : ViewModelProvider.Factory {
+    class Factory(private val mRepository: KeymapRepository, private val mId: Long) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>) =
-            ConfigKeymapViewModel(mRepository) as T
+            ConfigKeymapViewModel(mRepository, mId) as T
     }
 }

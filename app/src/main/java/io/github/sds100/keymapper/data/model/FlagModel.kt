@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.data.model
 
-import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 
 /**

@@ -16,8 +16,8 @@
 
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/nav_app"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_app"
     app:startDestination="@id/keymap_list_fragment">
 
     <fragment
@@ -27,29 +27,35 @@
 
         <action
             android:id="@+id/action_home_to_config_keymap"
-            app:destination="@id/edit_keymap_fragment"
+            app:destination="@id/nav_config_keymap"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
-
+            app:popExitAnim="@anim/slide_out_right" >
+            <argument
+                android:name="keymapId"
+                app:argType="long" />
+        </action>
     </fragment>
 
-    <fragment
-        android:id="@+id/edit_keymap_fragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.ConfigKeymapFragment"
-        android:label="Edit Keymap"
-        tools:layout="@layout/fragment_config_keymap">
-        <action
-            android:id="@+id/action_config_keymap_fragment_to_choose_action_fragment"
-            app:destination="@id/choose_action_fragment" />
-        <argument
-            android:name="keymapId"
-            app:argType="long" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/choose_action_fragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.ChooseActionFragment"
-        tools:layout="@layout/fragment_choose_action" />
+    <navigation
+        android:id="@+id/nav_config_keymap"
+        app:startDestination="@id/edit_keymap_fragment">
+        <fragment
+            android:id="@+id/edit_keymap_fragment"
+            android:name="io.github.sds100.keymapper.ui.fragment.ConfigKeymapFragment"
+            android:label="Edit Keymap"
+            tools:layout="@layout/fragment_config_keymap">
+            <action
+                android:id="@+id/action_config_keymap_fragment_to_choose_action_fragment"
+                app:destination="@id/choose_action_fragment" />
+            <argument
+                android:name="keymapId"
+                app:argType="long" />
+        </fragment>
+        <fragment
+            android:id="@+id/choose_action_fragment"
+            android:name="io.github.sds100.keymapper.ui.fragment.ChooseActionFragment"
+            tools:layout="@layout/fragment_choose_action" />
+    </navigation>
 </navigation>

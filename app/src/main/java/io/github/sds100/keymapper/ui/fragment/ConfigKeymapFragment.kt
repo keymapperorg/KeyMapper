@@ -21,10 +21,10 @@ import splitties.resources.strArray
  * Created by sds100 on 19/02/2020.
  */
 class ConfigKeymapFragment : Fragment() {
-    private val args by navArgs<ConfigKeymapFragmentArgs>()
+    private val mArgs by navArgs<ConfigKeymapFragmentArgs>()
 
-    private val mConfigViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_app) {
-        InjectorUtils.provideConfigKeymapViewModel(requireContext())
+    private val mConfigViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap) {
+        InjectorUtils.provideConfigKeymapViewModel(requireContext(), mArgs.keymapId)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -34,8 +34,6 @@ class ConfigKeymapFragment : Fragment() {
             container,
             false
         )
-
-        mConfigViewModel.init(args.keymapId)
 
         binding.apply {
             lifecycleOwner = viewLifecycleOwner

@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.util
 
 import android.view.View
+import android.widget.CompoundButton
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.google.android.material.chip.Chip
@@ -18,6 +19,11 @@ import splitties.resources.appStr
 @BindingAdapter("app:onLongClick")
 fun setLongClickListener(view: View, onLongClickListener: View.OnLongClickListener) {
     view.setOnLongClickListener(onLongClickListener)
+}
+
+@BindingAdapter("app:onCheckedChange")
+fun CompoundButton.onCheckedChange(onCheckedChangeListener: CompoundButton.OnCheckedChangeListener){
+    this.setOnCheckedChangeListener(onCheckedChangeListener)
 }
 
 @BindingAdapter("app:actions", "app:errorClickCallback", requireAll = true)

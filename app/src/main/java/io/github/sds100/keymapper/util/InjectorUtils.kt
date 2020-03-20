@@ -33,9 +33,10 @@ object InjectorUtils {
     }
 
     fun provideConfigKeymapViewModel(
-        context: Context
+        context: Context,
+        id: Long
     ): ConfigKeymapViewModel.Factory {
         val repository = getKeymapRepository(context)
-        return ConfigKeymapViewModel.Factory(repository)
+        return ConfigKeymapViewModel.Factory(repository, id)
     }
 }
