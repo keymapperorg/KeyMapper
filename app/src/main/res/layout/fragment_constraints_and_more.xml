@@ -159,7 +159,6 @@
             android:id="@+id/buttonAddConstraints"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
             android:onClick="@{onAddConstraintClick}"
             android:text="@string/button_add_constraint"
             app:layout_constraintBottom_toBottomOf="parent"
