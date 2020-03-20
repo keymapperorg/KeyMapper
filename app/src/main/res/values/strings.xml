@@ -14,7 +14,7 @@
     <string name="shrug" translatable="false">¯\\_(ツ)_/¯</string>
     <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNothing here!</string>
     <string name="triggers_recyclerview_placeholder">Record a trigger!</string>
-    <string name="acitons_recyclerview_placeholder">Add an action!</string>
+    <string name="actions_recyclerview_placeholder">Add an action!</string>
     <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nCreate a keymap!</string>
     <string name="no_key_maps">You haven\'t created any keymaps!</string>
     <string name="performing_action">Key Mapper is performing an action…</string>
@@ -55,13 +55,18 @@
     <string name="debug_trigger_chip_name">Long Press <b>Volume Down</b> • USB Keyboard</string>
     <string name="debug_trigger_chip_name2">Single Tap  <b>Home</b> • This Device</string>
 
+    <string name="constraints_recyclerview_placeholder">No constraints!</string>
+
     <string name="option_list_header">Options</string>
     <string name="action_list_header">Actions</string>
     <string name="trigger_list_header">Trigger</string>
     <string name="constraint_list_header">Constraints</string>
+    <string name="keymap_flags_header">Keymap Options</string>
 
     <string name="radio_button_parallel">At the same time</string>
     <string name="radio_button_sequence">In sequence</string>
+    <string name="radio_button_and">AND</string>
+    <string name="radio_button_or">OR</string>
 
     <string name="tab_trigger_and_actions">Trigger and Actions</string>
     <string name="tab_constraints_and_more">Constraints and More</string>
@@ -137,6 +142,7 @@
     <string name="button_recording_trigger_countdown">%d…</string>
     <string name="button_flags">Options</string>
     <string name="button_help">Help</string>
+    <string name="button_add_constraint">Add Constraint</string>
     <!-- Button titles -->
 
     <!-- Content descriptions -->

@@ -15,8 +15,8 @@ import io.github.sds100.keymapper.util.result.Success
 annotation class ConstraintId
 
 @IntDef(value = [
-    Constraint.AND,
-    Constraint.OR
+    Constraint.MODE_AND,
+    Constraint.MODE_OR
 ])
 annotation class ConstraintMode
 
@@ -25,8 +25,9 @@ data class Constraint(@ConstraintId val id: String, val extraList: List<Extra>) 
     constructor(id: String, extra: Extra) : this(id, listOf(extra))
 
     companion object {
-        const val AND = 1
-        const val OR = 0
+        const val MODE_OR = 0
+        const val MODE_AND = 1
+        const val DEFAULT_MODE = MODE_AND
 
         const val APP_FOREGROUND = "constraint_app_foreground"
 

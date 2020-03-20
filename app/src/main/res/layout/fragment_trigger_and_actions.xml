@@ -30,7 +30,6 @@
         android:padding="8dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardViewTriggers"
             style="@style/MyCardView"
@@ -171,7 +170,7 @@
                         style="@style/RecyclerViewPlaceholderTextView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:text="@string/acitons_recyclerview_placeholder"
+                        android:text="@string/actions_recyclerview_placeholder"
                         android:visibility="@{viewModel.actionList.empty ? View.VISIBLE : View.GONE}" />
                 </FrameLayout>
             </LinearLayout>

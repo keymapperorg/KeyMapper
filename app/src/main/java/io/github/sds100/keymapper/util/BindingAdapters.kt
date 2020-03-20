@@ -114,8 +114,8 @@ fun ChipGroup.bindConstraints(
         callback: ErrorClickCallback
 ) {
     val separatorText = when (constraintMode) {
-        Constraint.AND -> appStr(R.string.constraint_mode_and)
-        Constraint.OR -> appStr(R.string.constraint_mode_or)
+        Constraint.MODE_AND -> appStr(R.string.constraint_mode_and)
+        Constraint.MODE_OR -> appStr(R.string.constraint_mode_or)
         else -> appStr(R.string.constraint_mode_and)
     }
 

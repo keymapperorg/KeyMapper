@@ -28,7 +28,7 @@ class KeyMap(
 
     @ConstraintMode
     @ColumnInfo(name = KeyMapDao.KEY_CONSTRAINT_MODE)
-    var constraintMode: Int = Constraint.AND,
+    var constraintMode: Int = Constraint.DEFAULT_MODE,
 
     @ColumnInfo(name = KeyMapDao.KEY_FLAGS)
     /**
