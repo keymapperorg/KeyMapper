@@ -99,6 +99,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
+                    android:layout_marginBottom="8dp"
                     app:noActions="@{actions.empty}"
                     app:noTrigger="@{trigger.triggerKeyDescriptions.empty}"
                     tools:text="Disabled • No Actions • No Triggers" />
@@ -120,7 +121,6 @@
                     android:id="@+id/textViewTriggerHeader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
                     android:paddingBottom="@dimen/cardview_header_bottom_padding"
                     android:text="@string/trigger_list_header"
                     android:textAppearance="@style/KeymapListHeader"
