@@ -8,9 +8,9 @@ import io.github.sds100.keymapper.util.result.Failure
  */
 
 data class ConstraintModel(
-        val description: String? = null,
-        val error: Failure? = null,
-        val icon: Drawable? = null
+    val description: String? = null,
+    val error: Failure? = null,
+    val icon: Drawable? = null
 ) {
     val hasError: Boolean
         get() = error != null

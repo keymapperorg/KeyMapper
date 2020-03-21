@@ -20,8 +20,8 @@ fun Constraint.buildModel(): ConstraintModel {
     var icon: Drawable? = null
 
     val error = getDescription().onSuccess { description = it }
-            .then { getIcon() }.onSuccess { icon = it }
-            .failureOrNull()
+        .then { getIcon() }.onSuccess { icon = it }
+        .failureOrNull()
 
     return ConstraintModel(description, error, icon)
 }
