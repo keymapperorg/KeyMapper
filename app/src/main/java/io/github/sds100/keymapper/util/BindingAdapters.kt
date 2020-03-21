@@ -22,7 +22,7 @@ fun setLongClickListener(view: View, onLongClickListener: View.OnLongClickListen
 }
 
 @BindingAdapter("app:onCheckedChange")
-fun CompoundButton.onCheckedChange(onCheckedChangeListener: CompoundButton.OnCheckedChangeListener){
+fun CompoundButton.onCheckedChange(onCheckedChangeListener: CompoundButton.OnCheckedChangeListener) {
     this.setOnCheckedChangeListener(onCheckedChangeListener)
 }
 
@@ -45,6 +45,8 @@ fun ChipGroup.bindActions(actions: List<ActionModel>, callback: ErrorClickCallba
                 setOnClickListener { _ ->
                     callback.onErrorClick(it.error!!)
                 }
+            } else {
+                isClickable = false
             }
 
             addView(this)
@@ -115,9 +117,9 @@ fun ChipGroup.bindTriggerModel(triggerModel: TriggerModel) {
 
 @BindingAdapter("app:constraints", "app:constraintMode", "app:errorClickCallback", requireAll = true)
 fun ChipGroup.bindConstraints(
-        constraintList: List<ConstraintModel>,
-        constraintMode: Int,
-        callback: ErrorClickCallback
+    constraintList: List<ConstraintModel>,
+    constraintMode: Int,
+    callback: ErrorClickCallback
 ) {
     val separatorText = when (constraintMode) {
         Constraint.MODE_AND -> appStr(R.string.constraint_mode_and)
