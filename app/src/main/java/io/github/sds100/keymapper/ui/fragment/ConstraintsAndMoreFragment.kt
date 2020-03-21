@@ -35,29 +35,33 @@ class ConstraintsAndMoreFragment : Fragment() {
             lifecycleOwner = viewLifecycleOwner
             viewModel = mViewModel
 
-            mViewModel.flags.observe(viewLifecycleOwner) { flags ->
-                epoxyRecyclerViewFlags.withModels {
-                    KeyMap.KEYMAP_FLAG_LABEL_MAP.keys.forEach { flagId ->
-                        checkbox {
-                            id(flagId)
+            subscribeFlagList()
+        }
 
-                            val labelResId = KeyMap.KEYMAP_FLAG_LABEL_MAP[flagId]
+        return binding.root
+    }
 
-                            if (labelResId != null) {
-                                primaryText(str(labelResId))
-                            }
+    private fun FragmentConstraintsAndMoreBinding.subscribeFlagList(){
+        mViewModel.flags.observe(viewLifecycleOwner) { flags ->
+            epoxyRecyclerViewFlags.withModels {
+                KeyMap.KEYMAP_FLAG_LABEL_MAP.keys.forEach { flagId ->
+                    checkbox {
+                        id(flagId)
 
-                            isSelected(flags.hasFlag(flagId))
+                        val labelResId = KeyMap.KEYMAP_FLAG_LABEL_MAP[flagId]
 
-                            onClick { _ ->
-                                mViewModel.flags.value = flags.toggleFlag(flagId)
-                            }
+                        if (labelResId != null) {
+                            primaryText(str(labelResId))
+                        }
+
+                        isSelected(flags.hasFlag(flagId))
+
+                        onClick { _ ->
+                            mViewModel.flags.value = flags.toggleFlag(flagId)
                         }
                     }
                 }
             }
         }
-
-        return binding.root
     }
 }
