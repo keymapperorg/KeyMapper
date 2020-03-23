@@ -40,9 +40,9 @@
 
     <navigation
         android:id="@+id/nav_config_keymap"
-        app:startDestination="@id/edit_keymap_fragment">
+        app:startDestination="@id/config_keymap_fragment">
         <fragment
-            android:id="@+id/edit_keymap_fragment"
+            android:id="@+id/config_keymap_fragment"
             android:name="io.github.sds100.keymapper.ui.fragment.ConfigKeymapFragment"
             android:label="Edit Keymap"
             tools:layout="@layout/fragment_config_keymap">
@@ -61,8 +61,8 @@
         <fragment
             android:id="@+id/choose_action_fragment"
             android:name="io.github.sds100.keymapper.ui.fragment.ChooseActionFragment"
-            tools:layout="@layout/fragment_choose_action">
-        </fragment>
+            android:label="@string/title_choose_action"
+            tools:layout="@layout/fragment_choose_action" />
         <fragment
             android:id="@+id/chooseConstraintListFragment"
             android:name="io.github.sds100.keymapper.ui.fragment.ChooseConstraintListFragment"

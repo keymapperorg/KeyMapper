@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.tabs.TabLayoutMediator
@@ -19,24 +18,21 @@ import splitties.resources.strArray
 class ChooseActionFragment : Fragment() {
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
-        val binding = FragmentChooseActionBinding.inflate(inflater, container, false)
+        FragmentChooseActionBinding.inflate(inflater, container, false).apply {
+            viewPager.adapter = ChooseActionPagerAdapter(this@ChooseActionFragment)
 
-        val tabLayout = binding.tabLayout
-        val viewPager = binding.viewPager
+            TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+                tab.text = strArray(R.array.choose_action_tab_titles)[position]
+            }.attach()
 
-        viewPager.adapter = ChooseActionPagerAdapter(this)
+            appBar.setNavigationOnClickListener {
+                findNavController().navigateUp()
+            }
 
-        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-            tab.text = strArray(R.array.choose_action_tab_titles)[position]
-        }.attach()
-
-        binding.appBar.setNavigationOnClickListener {
-            findNavController().navigateUp()
+            return this.root
         }
-
-        return binding.root
     }
 }
