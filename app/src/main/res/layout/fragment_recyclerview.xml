@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <import type="android.view.View" />
 
         <variable
@@ -17,7 +16,7 @@
         android:layout_height="match_parent">
 
         <com.airbnb.epoxy.EpoxyRecyclerView
-            android:id="@+id/epoxy_recycler_view"
+            android:id="@+id/epoxyRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"

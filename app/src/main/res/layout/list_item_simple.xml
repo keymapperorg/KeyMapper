@@ -16,6 +16,10 @@
             type="String" />
 
         <variable
+            name="isSecondaryTextAnError"
+            type="Boolean" />
+
+        <variable
             name="icon"
             type="android.graphics.drawable.Drawable" />
 
@@ -38,11 +42,11 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:src="@{icon}"
-            android:visibility="@{icon == null ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:srcCompat="@mipmap/ic_launcher_round" />
+            tools:srcCompat="@mipmap/ic_launcher_round"
+            tools:visibility="visible" />
 
         <TextView
             android:id="@+id/textViewDescription"
@@ -60,23 +64,40 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="TextView" />
 
-        <TextView
+        <!--  you can't reference attributes in Data Binding, so toggle the visibility of two textviews  -->
+        <FrameLayout
             android:id="@+id/textViewSecondary"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="?attr/colorOnSurface"
+            tools:visibility="gone"
             android:visibility='@{secondaryText == null || secondaryText == "" ? View.GONE : View.VISIBLE}'
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageView"
-            app:layout_constraintTop_toBottomOf="@id/textViewDescription"
-            app:layout_constraintVertical_bias="0.0"
-            tools:text="Here is some secondary text. Let's make it really long."
-            tools:visibility="gone" />
+            app:layout_constraintTop_toBottomOf="@id/textViewDescription">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="?attr/colorOnSurface"
+                android:visibility='@{isSecondaryTextAnError == false ? View.GONE : View.VISIBLE}'
+                tools:text="Here is some secondary text. Let's make it really long."
+                tools:visibility="gone" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="?attr/colorError"
+                android:visibility='@{isSecondaryTextAnError == true ? View.GONE : View.VISIBLE}'
+                tools:text="Here is some secondary text. Let's make it really long."
+                tools:visibility="gone" />
+
+        </FrameLayout>
 
         <View
             android:id="@+id/bottom_divider"

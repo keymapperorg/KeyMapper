@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.checkbox
@@ -34,6 +35,11 @@ class ConstraintsAndMoreFragment : Fragment() {
         binding.apply {
             lifecycleOwner = viewLifecycleOwner
             viewModel = mViewModel
+
+            setOnAddConstraintClick {
+                val direction = ConfigKeymapFragmentDirections.actionChooseActionFragmentToChooseConstraintListFragment()
+                findNavController().navigate(direction)
+            }
 
             subscribeFlagList()
             subscribeConstraintsList()

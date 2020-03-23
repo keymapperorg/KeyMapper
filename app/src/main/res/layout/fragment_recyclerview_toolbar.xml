@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="progressCallback"
+            type="io.github.sds100.keymapper.ui.callback.ProgressCallback" />
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinatorLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include
+            android:id="@+id/fragmentRecyclerView"
+            layout="@layout/fragment_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="?attr/actionBarSize"
+            bind:progressCallback="@{progressCallback}" />
+
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/appBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:gravity="center"
+            android:theme="@style/ThemeOverlay.MaterialComponents.BottomAppBar.Primary"
+            app:backgroundTint="@color/colorPrimary"
+            app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

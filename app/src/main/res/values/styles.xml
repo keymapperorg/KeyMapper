@@ -94,4 +94,8 @@
         <item name="tabSelectedTextColor">@color/colorAccent</item>
         <item name="tabTextColor">?attr/colorOnSurface</item>
     </style>
+
+    <style name="ErrorTextAppearance">
+        <item name="android:textColor">?attr/colorError</item>
+    </style>
 </resources>

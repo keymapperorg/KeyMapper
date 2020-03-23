@@ -22,7 +22,7 @@ fun Action.buildModel(): ActionModel {
 
     val error = getTitle().onSuccess { title = it }
         .then { getIcon() }.onSuccess { icon = it }
-        .then { isValid() }
+        .then { canBePerformed() }
         .failureOrNull()
 
     val description = buildString {
@@ -79,7 +79,7 @@ private fun Action.getIcon(): Result<Drawable> {
  * @return if the action can't be performed, it returns an error code.
  * returns null if their if the action can be performed.
  */
-private fun Action.isValid(): Result<Action> {
+private fun Action.canBePerformed(): Result<Action> {
     //the action has no data
     if (data.isEmpty()) return NoActionData()
 

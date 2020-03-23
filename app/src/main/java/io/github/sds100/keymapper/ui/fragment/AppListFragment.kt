@@ -32,29 +32,30 @@ class AppListFragment : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        val binding = FragmentRecyclerviewBinding.inflate(inflater, container, false)
+        FragmentRecyclerviewBinding.inflate(inflater, container, false).apply {
 
-        binding.progressCallback = mViewModel
-        binding.lifecycleOwner = viewLifecycleOwner
+            progressCallback = mViewModel
+            lifecycleOwner = viewLifecycleOwner
 
-        mViewModel.appModelList.observe(viewLifecycleOwner) { appModelList ->
-            binding.epoxyRecyclerView.withModels {
-                appModelList.forEach {
-                    simple {
-                        id(it.packageName)
-                        primaryText(it.appName)
-                        icon(it.icon)
+            mViewModel.appModelList.observe(viewLifecycleOwner) { appModelList ->
+                epoxyRecyclerView.withModels {
+                    appModelList.forEach {
+                        simple {
+                            id(it.packageName)
+                            primaryText(it.appName)
+                            icon(it.icon)
 
-                        onClick { _ ->
-                            val action = Action(ActionType.APP, data = it.packageName)
-                            mChooseActionSharedViewModel.selectAction(action)
+                            onClick { _ ->
+                                val action = Action(ActionType.APP, data = it.packageName)
+                                mChooseActionSharedViewModel.selectAction(action)
 
-                            findNavController().navigateUp()
+                                findNavController().navigateUp()
+                            }
                         }
                     }
                 }
             }
+            return this.root
         }
-        return binding.root
     }
 }

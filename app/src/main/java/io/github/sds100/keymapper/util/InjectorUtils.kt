@@ -5,6 +5,7 @@ import com.example.architecturetest.data.KeymapRepository
 import io.github.sds100.keymapper.data.SystemRepository
 import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.viewmodel.AppListViewModel
+import io.github.sds100.keymapper.data.viewmodel.ChooseConstraintListViewModel
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
 
@@ -30,6 +31,10 @@ object InjectorUtils {
     fun provideKeymapListViewModel(context: Context): KeymapListViewModel.Factory {
         val repository = getKeymapRepository(context)
         return KeymapListViewModel.Factory(repository)
+    }
+
+    fun provideChooseConstraintListViewModel(): ChooseConstraintListViewModel.Factory {
+        return ChooseConstraintListViewModel.Factory()
     }
 
     fun provideConfigKeymapViewModel(

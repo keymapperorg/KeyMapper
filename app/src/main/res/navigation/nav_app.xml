@@ -31,7 +31,7 @@
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" >
+            app:popExitAnim="@anim/slide_out_right">
             <argument
                 android:name="keymapId"
                 app:argType="long" />
@@ -49,6 +49,11 @@
             <action
                 android:id="@+id/action_config_keymap_fragment_to_choose_action_fragment"
                 app:destination="@id/choose_action_fragment" />
+
+            <action
+                android:id="@+id/action_choose_action_fragment_to_chooseConstraintListFragment"
+                app:destination="@id/chooseConstraintListFragment" />
+
             <argument
                 android:name="keymapId"
                 app:argType="long" />
@@ -56,6 +61,12 @@
         <fragment
             android:id="@+id/choose_action_fragment"
             android:name="io.github.sds100.keymapper.ui.fragment.ChooseActionFragment"
-            tools:layout="@layout/fragment_choose_action" />
+            tools:layout="@layout/fragment_choose_action">
+        </fragment>
+        <fragment
+            android:id="@+id/chooseConstraintListFragment"
+            android:name="io.github.sds100.keymapper.ui.fragment.ChooseConstraintListFragment"
+            android:label="ChooseConstraintListFragment"
+            tools:layout="@layout/fragment_recyclerview_toolbar" />
     </navigation>
 </navigation>

@@ -3,10 +3,7 @@ package io.github.sds100.keymapper.util
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.model.Constraint
-import io.github.sds100.keymapper.data.model.ConstraintModel
-import io.github.sds100.keymapper.data.model.Extra
-import io.github.sds100.keymapper.data.model.KeyMap
+import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.util.result.*
 import splitties.init.appCtx
 import splitties.resources.appStr
@@ -14,6 +11,20 @@ import splitties.resources.appStr
 /**
  * Created by sds100 on 17/03/2020.
  */
+
+object ConstraintUtils {
+    fun isSupported(@ConstraintId id: String): Failure? {
+        when (id) {
+            Constraint.BT_DEVICE_CONNECTED -> {
+                if (!appCtx.packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)) {
+                    return SystemFeatureNotSupported(PackageManager.FEATURE_BLUETOOTH)
+                }
+            }
+        }
+
+        return null
+    }
+}
 
 fun Constraint.buildModel(): ConstraintModel {
     var description: String? = null

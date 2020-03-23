@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -28,14 +27,7 @@ class ConfigKeymapFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding = DataBindingUtil.inflate<FragmentConfigKeymapBinding>(
-            inflater,
-            R.layout.fragment_config_keymap,
-            container,
-            false
-        )
-
-        binding.apply {
+        FragmentConfigKeymapBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             viewModel = mConfigViewModel
 
@@ -61,8 +53,8 @@ class ConfigKeymapFragment : Fragment() {
                     else -> false
                 }
             }
-        }
 
-        return binding.root
+            return this.root
+        }
     }
 }
