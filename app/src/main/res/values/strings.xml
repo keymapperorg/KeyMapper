@@ -434,6 +434,7 @@
     <string name="error_no_action_data">No Action data!</string>
     <string name="error_extra_not_found">Extra not found!</string>
     <string name="error_constraint_not_found">Constraint not found</string>
+    <string name="error_constraint_exists">This keymap already has this constraint!</string>
     <!-- Error messages -->
 
     <!-- System action labels -->

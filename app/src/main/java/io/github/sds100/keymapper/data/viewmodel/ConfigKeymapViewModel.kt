@@ -153,6 +153,21 @@ class ConfigKeymapViewModel internal constructor(
         }
     }
 
+    /**
+     * @return whether the constraint already exists and has been added to the list
+     */
+    fun addConstraint(constraint: Constraint): Boolean {
+        if (mConstraintList.value?.any { it.uniqueId == constraint.uniqueId } == true) {
+            return false
+        }
+
+        mConstraintList.value = mConstraintList.value?.toMutableList()?.apply {
+            add(constraint)
+        }
+
+        return true
+    }
+
     class Factory(private val mRepository: KeymapRepository, private val mId: Long) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")

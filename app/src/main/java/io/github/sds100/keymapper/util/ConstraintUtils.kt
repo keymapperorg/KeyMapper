@@ -13,7 +13,7 @@ import splitties.resources.appStr
  */
 
 object ConstraintUtils {
-    fun isSupported(@ConstraintId id: String): Failure? {
+    fun isSupported(@ConstraintType id: String): Failure? {
         when (id) {
             Constraint.BT_DEVICE_CONNECTED -> {
                 if (!appCtx.packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)) {
@@ -34,11 +34,11 @@ fun Constraint.buildModel(): ConstraintModel {
         .then { getIcon() }.onSuccess { icon = it }
         .failureOrNull()
 
-    return ConstraintModel(description, error, icon)
+    return ConstraintModel(uniqueId, description, error, icon)
 }
 
 private fun Constraint.getDescription(): Result<String> {
-    return when (id) {
+    return when (type) {
         Constraint.APP_FOREGROUND ->
             getExtraData(Extra.EXTRA_PACKAGE_NAME).then {
                 try {
@@ -58,7 +58,7 @@ private fun Constraint.getDescription(): Result<String> {
 }
 
 private fun Constraint.getIcon(): Result<Drawable> {
-    return when (id) {
+    return when (type) {
         Constraint.APP_FOREGROUND ->
             getExtraData(Extra.EXTRA_PACKAGE_NAME).then {
                 try {

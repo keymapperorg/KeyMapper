@@ -2,10 +2,12 @@ package io.github.sds100.keymapper.data.model
 
 import androidx.annotation.IntDef
 import androidx.annotation.StringDef
+import androidx.room.Ignore
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.result.ExtraNotFound
 import io.github.sds100.keymapper.util.result.Result
 import io.github.sds100.keymapper.util.result.Success
+import java.io.Serializable
 
 /**
  * Created by sds100 on 17/03/2020.
@@ -14,7 +16,7 @@ import io.github.sds100.keymapper.util.result.Success
     Constraint.APP_FOREGROUND,
     Constraint.BT_DEVICE_CONNECTED
 ])
-annotation class ConstraintId
+annotation class ConstraintType
 
 @IntDef(value = [
     Constraint.MODE_AND,
@@ -28,9 +30,9 @@ annotation class ConstraintMode
 )
 annotation class ConstraintCategory
 
-data class Constraint(@ConstraintId val id: String, val extraList: List<Extra>) {
+data class Constraint(@ConstraintType val type: String, val extraList: List<Extra>) : Serializable {
 
-    constructor(id: String, extra: Extra) : this(id, listOf(extra))
+    constructor(type: String, extra: Extra) : this(type, listOf(extra))
 
     companion object {
         const val MODE_OR = 0
@@ -62,5 +64,16 @@ data class Constraint(@ConstraintId val id: String, val extraList: List<Extra>) 
 
         return Success(extra.data)
     }
+
+    /**
+     * A unique identifier describing this constraint
+     */
+    val uniqueId: String
+        get() = buildString {
+            append(type)
+            extraList.forEach {
+                append("${it.id}${it.data}")
+            }
+        }
 }
 

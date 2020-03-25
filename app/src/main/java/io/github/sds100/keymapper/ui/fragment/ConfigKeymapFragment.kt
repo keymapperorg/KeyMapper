@@ -1,20 +1,24 @@
 package io.github.sds100.keymapper.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentConfigKeymapBinding
 import io.github.sds100.keymapper.ui.adapter.ConfigKeymapPagerAdapter
 import io.github.sds100.keymapper.util.InjectorUtils
 import splitties.resources.strArray
+import splitties.toast.toast
 
 /**
  * Created by sds100 on 19/02/2020.

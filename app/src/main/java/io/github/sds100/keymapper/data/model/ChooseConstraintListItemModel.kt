@@ -9,7 +9,7 @@ import io.github.sds100.keymapper.util.result.Failure
 data class ChooseConstraintListItemModel(
     val id: String,
     @ConstraintCategory val categoryId: Int,
-    @ConstraintId val description: String,
+    @ConstraintType val description: String,
     val error: Failure? = ConstraintUtils.isSupported(id)
 ) {
     val isSupported: Boolean
