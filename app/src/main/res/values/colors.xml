@@ -10,7 +10,7 @@
     <color name="colorIconDark">#424242</color>
 
     <color name="iconTintTriggerKeySeparator">#666666</color>
-    <color name="divider">@color/cardview_stroke</color>
+    <color name="divider">#1F000000</color>
     <color name="background_selected">#e0e0e0</color>
     <color name="warn">#FFC107</color>
     <color name="actionModeBackground">#424242</color>

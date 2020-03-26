@@ -26,7 +26,7 @@ object ConstraintUtils {
     }
 }
 
-fun Constraint.buildModel(): ConstraintModel {
+fun Constraint.buildChipModel(): ConstraintModel {
     var description: String? = null
     var icon: Drawable? = null
 
@@ -75,6 +75,6 @@ private fun Constraint.getIcon(): Result<Drawable> {
 
 fun KeyMap.buildConstraintModels() = sequence {
     constraintList.forEach { constraint ->
-        yield(constraint.buildModel())
+        yield(constraint.buildChipModel())
     }
 }.toList()

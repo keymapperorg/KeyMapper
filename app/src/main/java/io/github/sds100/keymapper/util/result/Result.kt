@@ -61,9 +61,9 @@ fun <T> Result<T>.onSuccess(f: (T) -> Unit): Result<T> {
     return this
 }
 
-fun <T, U> Result<T>.onFailure(f: (errorMessage: String) -> U): Result<T> {
+fun <T, U> Result<T>.onFailure(f: (failiure: Failure) -> U): Result<T> {
     if (this is Failure) {
-        f(this.fullMessage)
+        f(this)
     }
 
     return this

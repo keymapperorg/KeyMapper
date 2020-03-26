@@ -49,7 +49,7 @@
             tools:visibility="visible" />
 
         <TextView
-            android:id="@+id/textViewDescription"
+            android:id="@+id/textViewTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -66,18 +66,18 @@
 
         <!--  you can't reference attributes in Data Binding, so toggle the visibility of two textviews  -->
         <FrameLayout
-            android:id="@+id/textViewSecondary"
+            android:id="@+id/textViewFlags"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            tools:visibility="gone"
             android:visibility='@{secondaryText == null || secondaryText == "" ? View.GONE : View.VISIBLE}'
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageView"
-            app:layout_constraintTop_toBottomOf="@id/textViewDescription">
+            app:layout_constraintTop_toBottomOf="@id/textViewTitle"
+            tools:visibility="gone">
 
             <TextView
                 android:layout_width="match_parent"
@@ -96,7 +96,6 @@
                 android:visibility='@{isSecondaryTextAnError == true ? View.GONE : View.VISIBLE}'
                 tools:text="Here is some secondary text. Let's make it really long."
                 tools:visibility="gone" />
-
         </FrameLayout>
 
         <View

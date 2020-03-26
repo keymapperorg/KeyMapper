@@ -27,7 +27,7 @@ fun CompoundButton.onCheckedChange(onCheckedChangeListener: CompoundButton.OnChe
 }
 
 @BindingAdapter("app:actions", "app:errorClickCallback", requireAll = true)
-fun ChipGroup.bindActions(actions: List<ActionModel>, callback: ErrorClickCallback) {
+fun ChipGroup.bindActions(actions: List<ActionChipModel>, callback: ErrorClickCallback) {
     removeAllViews()
 
     actions.forEach {
@@ -149,13 +149,13 @@ fun ChipGroup.bindConstraints(
             isCloseIconVisible = model.hasError
 
             if (model.description == null && model.hasError) {
-                text = model.error?.briefMessage
+                text = model.failure?.briefMessage
             }
 
             if (model.hasError) {
                 isClickable = true
                 setOnClickListener {
-                    callback.onErrorClick(model.error!!)
+                    callback.onErrorClick(model.failure!!)
                 }
             }
 

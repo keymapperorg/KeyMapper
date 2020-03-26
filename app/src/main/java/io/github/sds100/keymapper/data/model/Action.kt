@@ -57,4 +57,16 @@ data class Action(
             }
         }
     }.toList()
+
+    /**
+     * A unique identifier describing this action
+     */
+    val uniqueId: String
+        get() = buildString {
+            append(type)
+            append(data)
+            extras.forEach {
+                append("${it.id}${it.data}")
+            }
+        }
 }

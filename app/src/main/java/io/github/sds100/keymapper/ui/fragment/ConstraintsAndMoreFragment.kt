@@ -65,13 +65,10 @@ class ConstraintsAndMoreFragment : Fragment() {
                 constraintList.forEachIndexed { index, constraint ->
                     constraint {
                         id(constraint.id)
-                        description(constraint.description)
-                        errorMessage(constraint.error?.fullMessage)
-
-                        icon(constraint.icon)
+                        model(constraint)
 
                         onRemoveClick { _ ->
-                            mViewModel.removeConstraint(index)
+                            mViewModel.removeConstraint(constraint.id)
                         }
                     }
                 }

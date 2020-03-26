@@ -24,6 +24,10 @@
         <item name="strokeWidth">1dp</item>
     </style>
 
+    <style name="SecondaryCardView" parent="Widget.MaterialComponents.CardView">
+        <item name="cardElevation">1dp</item>
+    </style>
+
     <style name="ActionChipGroup" parent="Widget.MaterialComponents.ChipGroup">
         <item name="chipStyle">@style/KeymapListChip.Action</item>
     </style>

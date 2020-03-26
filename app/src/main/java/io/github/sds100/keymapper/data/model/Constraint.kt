@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.data.model
 
 import androidx.annotation.IntDef
 import androidx.annotation.StringDef
-import androidx.room.Ignore
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.result.ExtraNotFound
 import io.github.sds100.keymapper.util.result.Result
@@ -30,7 +29,7 @@ annotation class ConstraintMode
 )
 annotation class ConstraintCategory
 
-data class Constraint(@ConstraintType val type: String, val extraList: List<Extra>) : Serializable {
+data class Constraint(@ConstraintType val type: String, val extras: List<Extra>) : Serializable {
 
     constructor(type: String, extra: Extra) : this(type, listOf(extra))
 
@@ -60,7 +59,7 @@ data class Constraint(@ConstraintType val type: String, val extraList: List<Extr
     }
 
     fun getExtraData(extraId: String): Result<String> {
-        val extra = extraList.find { it.id == extraId } ?: return ExtraNotFound()
+        val extra = extras.find { it.id == extraId } ?: return ExtraNotFound()
 
         return Success(extra.data)
     }
@@ -71,7 +70,7 @@ data class Constraint(@ConstraintType val type: String, val extraList: List<Extr
     val uniqueId: String
         get() = buildString {
             append(type)
-            extraList.forEach {
+            extras.forEach {
                 append("${it.id}${it.data}")
             }
         }

@@ -4,19 +4,47 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Action
+import io.github.sds100.keymapper.data.model.ActionChipModel
 import io.github.sds100.keymapper.data.model.ActionModel
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.util.result.*
 import splitties.init.appCtx
+import splitties.resources.appStr
 
 /**
  * Created by sds100 on 03/09/2018.
  */
 
-/**
- * Provides functions commonly used with [Action]s
- */
 fun Action.buildModel(): ActionModel {
+    var title: String? = null
+    var icon: Drawable? = null
+
+    val error = getTitle().onSuccess { title = it }
+        .then { getIcon() }.onSuccess { icon = it }
+        .then { canBePerformed() }
+        .failureOrNull()
+
+    val flags =
+        if (flags == 0) {
+            null
+        } else {
+            buildString {
+                val flagLabels = getFlagLabelList()
+
+                flagLabels.forEachIndexed { index, label ->
+                    if (index != 0) {
+                        append(appStr(R.string.interpunct))
+                    }
+
+                    append(label)
+                }
+            }
+        }
+
+    return ActionModel(uniqueId, title, icon, flags, error)
+}
+
+fun Action.buildChipModel(): ActionChipModel {
     var title: String? = null
     var icon: Drawable? = null
 
@@ -39,7 +67,7 @@ fun Action.buildModel(): ActionModel {
         }
     }
 
-    return ActionModel(description, error, icon)
+    return ActionChipModel(uniqueId, description, error, icon)
 }
 
 private fun Action.getTitle(): Result<String> {
@@ -103,6 +131,6 @@ private fun Action.canBePerformed(): Result<Action> {
 
 fun KeyMap.buildActionModels() = sequence {
     actionList.forEach { action ->
-        yield(action.buildModel())
+        yield(action.buildChipModel())
     }
 }.toList()

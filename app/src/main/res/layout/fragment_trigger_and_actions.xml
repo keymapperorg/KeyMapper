@@ -162,8 +162,8 @@
                     <com.airbnb.epoxy.EpoxyRecyclerView
                         android:id="@+id/epoxyRecyclerViewActions"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:visibility="@{viewModel.actionList.empty ? View.GONE : View.VISIBLE}"
+                        android:layout_height="match_parent"
+                        android:visibility="@{viewModel.actionModelList.empty ? View.GONE : View.VISIBLE}"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
                     <TextView
@@ -171,7 +171,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:text="@string/actions_recyclerview_placeholder"
-                        android:visibility="@{viewModel.actionList.empty ? View.VISIBLE : View.GONE}" />
+                        android:visibility="@{viewModel.actionModelList.empty ? View.VISIBLE : View.GONE}" />
                 </FrameLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

@@ -27,7 +27,7 @@
 
         <variable
             name="actions"
-            type="List&lt;io.github.sds100.keymapper.data.model.ActionModel>" />
+            type="List&lt;io.github.sds100.keymapper.data.model.ActionChipModel>" />
 
         <variable
             name="constraints"
@@ -91,6 +91,7 @@
                     android:id="@+id/textViewExtraInfo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
                     android:textColor="?attr/colorError"
                     android:textSize="14sp"
@@ -99,7 +100,6 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    android:layout_marginBottom="8dp"
                     app:noActions="@{actions.empty}"
                     app:noTrigger="@{trigger.triggerKeyDescriptions.empty}"
                     tools:text="Disabled • No Actions • No Triggers" />
