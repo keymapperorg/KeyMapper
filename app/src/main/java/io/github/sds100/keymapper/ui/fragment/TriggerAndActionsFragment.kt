@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
@@ -21,15 +20,10 @@ class TriggerAndActionsFragment : Fragment() {
     private val mConfigKeymapViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding = DataBindingUtil.inflate<FragmentTriggerAndActionsBinding>(
-            inflater,
-            R.layout.fragment_trigger_and_actions,
-            container,
-            false
-        )
+        FragmentTriggerAndActionsBinding.inflate(inflater, container, false).apply {
 
-        binding.apply {
-            binding.viewModel = mConfigKeymapViewModel
+            viewModel = mConfigKeymapViewModel
+            lifecycleOwner = viewLifecycleOwner
 
             setOnAddActionClick {
                 val direction = ConfigKeymapFragmentDirections.actionConfigKeymapFragmentToChooseActionFragment()
@@ -37,9 +31,9 @@ class TriggerAndActionsFragment : Fragment() {
             }
 
             subscribeActionList()
-        }
 
-        return binding.root
+            return this.root
+        }
     }
 
     private fun FragmentTriggerAndActionsBinding.subscribeActionList() {
