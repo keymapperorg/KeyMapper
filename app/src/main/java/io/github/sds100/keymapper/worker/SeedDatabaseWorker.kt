@@ -65,10 +65,6 @@ class SeedDatabaseWorker(
             ))
             yield(Action(
                     type = ActionType.APP,
-                    data = Constants.PACKAGE_NAME
-            ))
-            yield(Action(
-                    type = ActionType.APP,
                     data = "this.app.doesnt.exist"
             ))
         }.toList()
