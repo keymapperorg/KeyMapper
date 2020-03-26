@@ -164,6 +164,12 @@ class ConfigKeymapViewModel internal constructor(
         }
     }
 
+    fun removeAction(id: String) {
+        mActionList.value = mActionList.value?.toMutableList()?.apply {
+            removeAll { it.uniqueId == id }
+        }
+    }
+
     /**
      * @return whether the constraint already exists and has been added to the list
      */

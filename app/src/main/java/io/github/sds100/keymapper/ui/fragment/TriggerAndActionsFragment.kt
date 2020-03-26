@@ -49,6 +49,10 @@ class TriggerAndActionsFragment : Fragment() {
                     action {
                         id(it.id)
                         model(it)
+
+                        onRemoveClick { _ ->
+                            mConfigKeymapViewModel.removeAction(it.id)
+                        }
                     }
                 }
             }
