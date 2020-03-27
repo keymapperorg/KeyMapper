@@ -3,12 +3,14 @@ package io.github.sds100.keymapper.util
 import android.view.View
 import android.widget.CompoundButton
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.databinding.BindingAdapter
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
+import splitties.resources.appDrawable
 import splitties.resources.appStr
 
 
@@ -83,9 +85,9 @@ fun TextView.setKeymapExtraInfo(isKeymapEnabled: Boolean = false, noActions: Boo
 @BindingAdapter("app:triggerModel")
 fun ChipGroup.bindTriggerModel(triggerModel: TriggerModel) {
     val separatorDrawable = when (triggerModel.triggerMode) {
-        Trigger.PARALLEL -> context.safeVectorDrawable(R.drawable.ic_baseline_add_24)
-        Trigger.SEQUENCE -> context.safeVectorDrawable(R.drawable.ic_baseline_arrow_forward_24)
-        else -> context.safeVectorDrawable(R.drawable.ic_baseline_add_24)
+        Trigger.PARALLEL -> appDrawable(R.drawable.ic_baseline_add_24)
+        Trigger.SEQUENCE -> appDrawable(R.drawable.ic_baseline_arrow_forward_24)
+        else -> appDrawable(R.drawable.ic_baseline_add_24)
     }
 
     removeAllViews()
@@ -171,7 +173,7 @@ fun ChipGroup.bindFlagModels(flagModels: List<FlagModel>) {
     flagModels.forEach {
         Chip(context).apply {
             text = it.text
-            chipIcon = context.safeVectorDrawable(it.icon)
+            chipIcon = appDrawable(it.icon!!)
 
             addView(this)
         }

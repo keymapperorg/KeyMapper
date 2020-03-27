@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:gravity="center"
-            android:theme="@style/ThemeOverlay.MaterialComponents.BottomAppBar.Primary"
+            android:theme="@style/BottomAppBar.PrimaryOverlay"
             app:backgroundTint="@color/colorPrimary"
             app:menu="@menu/menu_recyclerview_fragment"
             app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />

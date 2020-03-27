@@ -102,4 +102,9 @@
     <style name="ErrorTextAppearance">
         <item name="android:textColor">?attr/colorError</item>
     </style>
+
+    <style name="BottomAppBar.PrimaryOverlay" parent="ThemeOverlay.MaterialComponents.BottomAppBar.Primary">
+        <item name="tint">?attr/colorOnPrimary</item>
+        <item name="iconTint">?attr/colorOnPrimary</item>
+    </style>
 </resources>

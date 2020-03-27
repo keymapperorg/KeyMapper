@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:gravity="center"
-            android:theme="@style/ThemeOverlay.MaterialComponents.BottomAppBar.Primary"
+            android:theme="@style/BottomAppBar.PrimaryOverlay"
             app:backgroundTint="@color/colorPrimary"
             app:fabAlignmentMode="end"
             app:fabAnimationMode="slide"
