@@ -41,8 +41,11 @@ class TriggerAndActionsFragment : Fragment() {
             epoxyRecyclerViewActions.withModels {
                 actionList.forEach {
                     action {
-                        id(it.id)
-                        model(it)
+                        val action = mConfigKeymapViewModel.actionList.value?.get(index)
+
+                        id(model.id)
+                        model(model)
+                        flagsAreAvailable(action?.getAvailableFlags()?.isNotEmpty())
 
                         onRemoveClick { _ ->
                             mConfigKeymapViewModel.removeAction(it.id)

@@ -12,6 +12,10 @@
             type="io.github.sds100.keymapper.data.model.ActionModel" />
 
         <variable
+            name="flagsAreAvailable"
+            type="Boolean" />
+
+        <variable
             name="onRemoveClick"
             type="View.OnClickListener" />
 
@@ -108,6 +112,7 @@
                 android:layout_height="0dp"
                 android:onClick="@{onMoreClick}"
                 android:tint="?attr/colorOnSurface"
+                android:visibility="@{flagsAreAvailable ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toBottomOf="@+id/buttonRemove"
                 app:layout_constraintEnd_toStartOf="@+id/buttonRemove"
                 app:layout_constraintTop_toTopOf="@id/buttonRemove"
