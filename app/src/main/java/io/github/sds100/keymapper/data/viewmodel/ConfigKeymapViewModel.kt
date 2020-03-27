@@ -26,9 +26,9 @@ class ConfigKeymapViewModel internal constructor(
 
     val triggerKeys: MutableLiveData<List<Trigger.Key>> = MutableLiveData()
 
-    private val mActionList: MutableLiveData<List<Action>> = MutableLiveData()
+    val actionList: MutableLiveData<List<Action>> = MutableLiveData()
 
-    val actionModelList: LiveData<List<ActionModel>> = Transformations.map(mActionList) { actionList ->
+    val actionModelList: LiveData<List<ActionModel>> = Transformations.map(actionList) { actionList ->
         sequence {
             actionList.forEach {
                 yield(it.buildModel())
@@ -46,10 +46,11 @@ class ConfigKeymapViewModel internal constructor(
         }.toList()
     }
 
+
     init {
         if (mId == NEW_KEYMAP_ID) {
             triggerKeys.value = listOf()
-            mActionList.value = listOf()
+            actionList.value = listOf()
             flags.value = 0
             isEnabled.value = true
             mConstraintList.value = listOf()
@@ -82,7 +83,7 @@ class ConfigKeymapViewModel internal constructor(
             viewModelScope.launch {
                 mRepository.getKeymap(mId).let { keymap ->
                     triggerKeys.value = keymap.trigger.keys
-                    mActionList.value = keymap.actionList
+                    actionList.value = keymap.actionList
                     flags.value = keymap.flags
                     isEnabled.value = keymap.isEnabled
                     mConstraintList.value = keymap.constraintList
@@ -139,7 +140,7 @@ class ConfigKeymapViewModel internal constructor(
             val keymap = KeyMap(
                 id = actualId,
                 trigger = Trigger(triggerKeys.value!!).apply { mode = triggerMode },
-                actionList = mActionList.value!!,
+                actionList = actionList.value!!,
                 constraintList = mConstraintList.value!!,
                 constraintMode = constraintMode,
                 flags = flags.value!!,
@@ -158,6 +159,16 @@ class ConfigKeymapViewModel internal constructor(
         flags.value = flags.value?.toggleFlag(flagId)
     }
 
+    fun setActionFlags(actionId: String, flags: Int) {
+        actionList.value = actionList.value?.map {
+            if (it.uniqueId == actionId) {
+                it.flags = flags
+            }
+
+            it
+        }
+    }
+
     fun removeConstraint(id: String) {
         mConstraintList.value = mConstraintList.value?.toMutableList()?.apply {
             removeAll { it.uniqueId == id }
@@ -165,7 +176,7 @@ class ConfigKeymapViewModel internal constructor(
     }
 
     fun removeAction(id: String) {
-        mActionList.value = mActionList.value?.toMutableList()?.apply {
+        actionList.value = actionList.value?.toMutableList()?.apply {
             removeAll { it.uniqueId == id }
         }
     }

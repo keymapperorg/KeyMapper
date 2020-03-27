@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.data.model
 
-import androidx.annotation.StringDef
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.ActionType
 import splitties.bitflags.hasFlag
@@ -43,7 +42,7 @@ data class Action(
     companion object {
         const val ACTION_FLAG_SHOW_VOLUME_UI = 1
 
-        private val ACTION_FLAG_LABEL_MAP = mapOf(
+        val ACTION_FLAG_LABEL_MAP = mapOf(
             ACTION_FLAG_SHOW_VOLUME_UI to R.string.flag_show_volume_dialog
         )
     }

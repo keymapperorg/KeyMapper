@@ -129,7 +129,11 @@ private fun Action.canBePerformed(): Result<Action> {
     return Success(this)
 }
 
-fun KeyMap.buildActionModels() = sequence {
+fun Action.getAvailableFlags(): List<Int> = sequence<Int> {
+
+}.toList()
+
+fun KeyMap.buildActionChipModels() = sequence {
     actionList.forEach { action ->
         yield(action.buildChipModel())
     }

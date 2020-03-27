@@ -18,7 +18,7 @@ class KeymapListViewModel internal constructor(
                 val keymapList = keyMapList?.map {
                     KeymapListItemModel(
                             id = it.id,
-                            actionList = it.buildActionModels(),
+                            actionList = it.buildActionChipModels(),
                             triggerModel = it.trigger.buildTriggerModel(),
                             constraintList = it.buildConstraintModels(),
                             constraintMode = it.constraintMode,
