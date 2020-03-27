@@ -173,8 +173,13 @@ class ConfigKeymapViewModel internal constructor(
         }
     }
 
+    fun removeTriggerKey(keycode: Int){
+        triggerKeys.value = triggerKeys.value?.toMutableList()?.apply {
+            removeAll { it.keyCode == keycode }
+        }
+    }
+
     fun moveTriggerKey(fromIndex: Int, toIndex: Int) {
-        Log.e(this::class.java.simpleName, "$fromIndex to $toIndex")
         triggerKeys.value = triggerKeys.value?.toMutableList()?.apply {
             if (fromIndex < toIndex) {
                 for (i in fromIndex until toIndex) {

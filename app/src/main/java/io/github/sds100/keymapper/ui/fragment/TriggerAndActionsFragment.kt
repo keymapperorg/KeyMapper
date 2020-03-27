@@ -78,12 +78,20 @@ class TriggerAndActionsFragment : Fragment() {
 
                 triggerKeyList.forEachIndexed { index, model ->
                     triggerKey {
+                        val triggerKey = mViewModel.triggerKeys.value?.get(index)
+
                         id(model.name)
                         model(model)
 
                         triggerMode(mViewModel.triggerMode.value)
                         triggerKeyCount(triggerKeyList.size)
                         triggerKeyIndex(index)
+
+                        onRemoveClick { _ ->
+                            if (triggerKey != null) {
+                                mViewModel.removeTriggerKey(triggerKey.keyCode)
+                            }
+                        }
                     }
                 }
             }
@@ -158,6 +166,10 @@ class TriggerAndActionsFragment : Fragment() {
             .forVerticalList()
             .withTarget(TriggerKeyBindingModel_::class.java)
             .andCallbacks(object : EpoxyTouchHelper.DragCallbacks<TriggerKeyBindingModel_>() {
+
+                override fun isDragEnabledForModel(model: TriggerKeyBindingModel_?): Boolean {
+                    return mViewModel.triggerKeys.value?.size!! > 1
+                }
 
                 override fun onModelMoved(
                     fromPosition: Int,
