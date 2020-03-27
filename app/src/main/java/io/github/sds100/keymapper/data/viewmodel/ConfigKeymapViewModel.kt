@@ -20,12 +20,34 @@ class ConfigKeymapViewModel internal constructor(
 
     val triggerInParallel: MutableLiveData<Boolean> = MutableLiveData(false)
     val triggerInSequence: MutableLiveData<Boolean> = MutableLiveData(false)
+
+    val triggerMode: MediatorLiveData<Int> = MediatorLiveData<Int>().apply {
+        addSource(triggerInParallel) {
+            if (it == true) {
+                value = Trigger.PARALLEL
+            }
+        }
+
+        addSource(triggerInSequence) {
+            if (it == true) {
+                value = Trigger.SEQUENCE
+            }
+        }
+    }
+
     val constraintAndMode: MutableLiveData<Boolean> = MutableLiveData()
     val constraintOrMode: MutableLiveData<Boolean> = MutableLiveData()
     val flags: MutableLiveData<Int> = MutableLiveData()
     val isEnabled: MutableLiveData<Boolean> = MutableLiveData()
 
     val triggerKeys: MutableLiveData<List<Trigger.Key>> = MutableLiveData()
+    val triggerKeyModels: LiveData<List<TriggerKeyModel>> = Transformations.map(triggerKeys) { triggerKeys ->
+        sequence {
+            triggerKeys.forEach {
+                yield(it.buildModel())
+            }
+        }.toList()
+    }
 
     val actionList: MutableLiveData<List<Action>> = MutableLiveData()
 
@@ -119,12 +141,6 @@ class ConfigKeymapViewModel internal constructor(
 
     fun saveKeymap() {
         viewModelScope.launch {
-            val triggerMode = when {
-                triggerInParallel.value == true -> Trigger.PARALLEL
-                triggerInSequence.value == true -> Trigger.SEQUENCE
-                else -> Trigger.DEFAULT_TRIGGER_MODE
-            }
-
             val constraintMode = when {
                 constraintAndMode.value == true -> Constraint.MODE_AND
                 constraintOrMode.value == true -> Constraint.MODE_OR
@@ -140,7 +156,7 @@ class ConfigKeymapViewModel internal constructor(
 
             val keymap = KeyMap(
                 id = actualId,
-                trigger = Trigger(triggerKeys.value!!).apply { mode = triggerMode },
+                trigger = Trigger(triggerKeys.value!!).apply { mode = triggerMode.value!! },
                 actionList = actionList.value!!,
                 constraintList = mConstraintList.value!!,
                 constraintMode = constraintMode,

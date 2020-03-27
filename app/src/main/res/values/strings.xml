@@ -88,7 +88,7 @@
     <!-- Click types -->
     <string name="clicktype_short_press">Short Press</string>
     <string name="clicktype_long_press">Long Press</string>
-    <string name="clicktype_double_press">Double Tap</string>
+    <string name="clicktype_double_press">Double Press</string>
     <!-- Click types -->
 
     <!-- URLs -->

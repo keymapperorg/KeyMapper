@@ -11,14 +11,15 @@ import androidx.navigation.navGraphViewModels
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.action
 import io.github.sds100.keymapper.data.model.Action
+import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentTriggerAndActionsBinding
+import io.github.sds100.keymapper.triggerKey
 import io.github.sds100.keymapper.util.getAvailableFlags
 import io.github.sds100.keymapper.util.observeLiveData
 import io.github.sds100.keymapper.util.removeLiveData
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
-import splitties.alertdialog.appcompat.message
 import splitties.alertdialog.appcompat.okButton
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
@@ -31,17 +32,17 @@ import splitties.toast.toast
  */
 @ExperimentalSplittiesApi
 class TriggerAndActionsFragment : Fragment() {
-    private val mConfigKeymapViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap)
+    private val mViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         FragmentTriggerAndActionsBinding.inflate(inflater, container, false).apply {
 
-            viewModel = mConfigKeymapViewModel
+            viewModel = mViewModel
             lifecycleOwner = viewLifecycleOwner
 
             findNavController().currentBackStackEntry?.observeLiveData<Action>(viewLifecycleOwner, ChooseActionFragment.SAVED_STATE_KEY) {
 
-                if (!mConfigKeymapViewModel.addAction(it)) {
+                if (!mViewModel.addAction(it)) {
                     toast(R.string.error_action_exists)
                 }
 
@@ -54,66 +55,92 @@ class TriggerAndActionsFragment : Fragment() {
             }
 
             subscribeActionList()
+            subscribeTriggerList()
+
+            mViewModel.triggerMode.observe(viewLifecycleOwner) {
+                epoxyRecyclerViewTriggers.requestModelBuild()
+            }
 
             return this.root
         }
     }
 
+    private fun FragmentTriggerAndActionsBinding.subscribeTriggerList() {
+        mViewModel.triggerKeyModels.observe(viewLifecycleOwner) { triggerKeyList ->
+            epoxyRecyclerViewTriggers.withModels {
+                triggerKeyList.forEachIndexed { index, model ->
+                    triggerKey {
+                        id(model.name)
+                        model(model)
+
+                        triggerMode(mViewModel.triggerMode.value)
+                        triggerKeyCount(triggerKeyList.size)
+                        triggerKeyIndex(index)
+                    }
+                }
+            }
+        }
+    }
+
     private fun FragmentTriggerAndActionsBinding.subscribeActionList() {
-        mConfigKeymapViewModel.actionModelList.observe(viewLifecycleOwner) { actionList ->
+        mViewModel.actionModelList.observe(viewLifecycleOwner) { actionList ->
             epoxyRecyclerViewActions.withModels {
                 actionList.forEachIndexed { index, model ->
                     action {
-                        val action = mConfigKeymapViewModel.actionList.value?.get(index)
+                        val action = mViewModel.actionList.value?.get(index)
 
                         id(model.id)
                         model(model)
                         flagsAreAvailable(action?.getAvailableFlags()?.isNotEmpty())
 
                         onRemoveClick { _ ->
-                            mConfigKeymapViewModel.removeAction(model.id)
+                            mViewModel.removeAction(model.id)
                         }
 
                         onMoreClick { _ ->
-                            requireActivity().alertDialog {
-                                action ?: return@alertDialog
-
-                                val flagIds = action.getAvailableFlags()
-                                val labels = sequence {
-                                    flagIds.forEach { flagId ->
-                                        val label = appStr(Action.ACTION_FLAG_LABEL_MAP.getValue(flagId))
-                                        yield(label)
-                                    }
-                                }.toList().toTypedArray()
-
-                                val checkedArray = sequence {
-                                    flagIds.forEach {
-                                        yield(action.flags.hasFlag(it))
-                                    }
-                                }.toList().toBooleanArray()
-
-                                setMultiChoiceItems(labels, checkedArray) { _, index, checked ->
-                                    checkedArray[index] = checked
-                                }
-
-                                cancelButton()
-
-                                okButton {
-                                    var flags = 0
-
-                                    flagIds.forEachIndexed { index, flag ->
-                                        if (checkedArray[index]) {
-                                            flags = flags.withFlag(flag)
-                                        }
-                                    }
-
-                                    mConfigKeymapViewModel.setActionFlags(action.uniqueId, flags)
-                                }
-                            }.show()
+                            action?.chooseFlags()
                         }
                     }
                 }
             }
+        }
+    }
+
+    private fun Action.chooseFlags() {
+        requireActivity().alertDialog {
+            val flagIds = getAvailableFlags()
+            val labels = sequence {
+                flagIds.forEach { flagId ->
+                    val label = appStr(Action.ACTION_FLAG_LABEL_MAP.getValue(flagId))
+                    yield(label)
+                }
+            }.toList().toTypedArray()
+
+            val checkedArray = sequence {
+                flagIds.forEach {
+                    yield(flags.hasFlag(it))
+                }
+            }.toList().toBooleanArray()
+
+            setMultiChoiceItems(labels, checkedArray) { _, index, checked ->
+                checkedArray[index] = checked
+            }
+
+            cancelButton()
+
+            okButton {
+                var flags = 0
+
+                flagIds.forEachIndexed { index, flag ->
+                    if (checkedArray[index]) {
+                        flags = flags.withFlag(flag)
+                    }
+                }
+
+                mViewModel.setActionFlags(uniqueId, flags)
+            }
+
+            show()
         }
     }
 }

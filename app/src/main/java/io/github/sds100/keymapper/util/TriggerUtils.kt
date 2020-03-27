@@ -4,14 +4,24 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.model.Trigger.Companion.DOUBLE_PRESS
 import io.github.sds100.keymapper.data.model.Trigger.Companion.LONG_PRESS
-import io.github.sds100.keymapper.data.model.TriggerModel
+import io.github.sds100.keymapper.data.model.TriggerChipModel
+import io.github.sds100.keymapper.data.model.TriggerKeyModel
 import splitties.resources.appStr
 
 /**
  * Created by sds100 on 02/03/2020.
  */
 
-fun Trigger.buildTriggerModel(): TriggerModel {
+fun Trigger.Key.buildModel(): TriggerKeyModel {
+    //TODO get device name
+    return TriggerKeyModel(
+        name = KeycodeUtils.keycodeToString(keyCode),
+        clickType = clickType,
+        deviceName = null
+    )
+}
+
+fun Trigger.buildTriggerChipModel(): TriggerChipModel {
     val keyDescriptions = sequence {
         keys.forEach { key ->
             val description = buildString {
@@ -40,5 +50,5 @@ fun Trigger.buildTriggerModel(): TriggerModel {
         }
     }.toList()
 
-    return TriggerModel(keyDescriptions, mode)
+    return TriggerChipModel(keyDescriptions, mode)
 }

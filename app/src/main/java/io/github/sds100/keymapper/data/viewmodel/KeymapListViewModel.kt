@@ -19,7 +19,7 @@ class KeymapListViewModel internal constructor(
                     KeymapListItemModel(
                             id = it.id,
                             actionList = it.buildActionChipModels(),
-                            triggerModel = it.trigger.buildTriggerModel(),
+                            triggerChipModel = it.trigger.buildTriggerChipModel(),
                             constraintList = it.buildConstraintModels(),
                             constraintMode = it.constraintMode,
                             flagList = FlagUtils.createKeymapFlagModels(it.flags),

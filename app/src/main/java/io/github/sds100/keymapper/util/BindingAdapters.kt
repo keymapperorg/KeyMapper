@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.util
 import android.view.View
 import android.widget.CompoundButton
 import android.widget.TextView
-import androidx.appcompat.widget.AppCompatImageView
 import androidx.databinding.BindingAdapter
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -83,8 +82,8 @@ fun TextView.setKeymapExtraInfo(isKeymapEnabled: Boolean = false, noActions: Boo
 }
 
 @BindingAdapter("app:triggerModel")
-fun ChipGroup.bindTriggerModel(triggerModel: TriggerModel) {
-    val separatorDrawable = when (triggerModel.triggerMode) {
+fun ChipGroup.bindTriggerModel(triggerChipModel: TriggerChipModel) {
+    val separatorDrawable = when (triggerChipModel.triggerMode) {
         Trigger.PARALLEL -> appDrawable(R.drawable.ic_baseline_add_24)
         Trigger.SEQUENCE -> appDrawable(R.drawable.ic_baseline_arrow_forward_24)
         else -> appDrawable(R.drawable.ic_baseline_add_24)
@@ -92,7 +91,7 @@ fun ChipGroup.bindTriggerModel(triggerModel: TriggerModel) {
 
     removeAllViews()
 
-    triggerModel.triggerKeyDescriptions.forEachIndexed { index, description ->
+    triggerChipModel.triggerKeyDescriptions.forEachIndexed { index, description ->
 
         //add a chip which is either a + or -> depending on the trigger mode
         if (index != 0) {

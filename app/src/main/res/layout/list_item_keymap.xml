@@ -39,7 +39,7 @@
 
         <variable
             name="trigger"
-            type="io.github.sds100.keymapper.data.model.TriggerModel" />
+            type="io.github.sds100.keymapper.data.model.TriggerChipModel" />
 
         <variable
             name="flags"

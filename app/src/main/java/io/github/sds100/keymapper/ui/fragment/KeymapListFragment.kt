@@ -144,7 +144,7 @@ class KeymapListFragment : Fragment() {
                     isSelected(selectionProvider.isSelected(it.id))
                     isEnabled(it.isEnabled)
                     actions(it.actionList)
-                    trigger(it.triggerModel)
+                    trigger(it.triggerChipModel)
                     constraints(it.constraintList)
                     constraintMode(it.constraintMode)
                     flags(it.flagList)
