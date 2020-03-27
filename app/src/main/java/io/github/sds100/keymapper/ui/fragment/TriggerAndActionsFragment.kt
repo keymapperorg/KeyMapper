@@ -168,7 +168,7 @@ class TriggerAndActionsFragment : Fragment() {
             .andCallbacks(object : EpoxyTouchHelper.DragCallbacks<TriggerKeyBindingModel_>() {
 
                 override fun isDragEnabledForModel(model: TriggerKeyBindingModel_?): Boolean {
-                    return mViewModel.triggerKeys.value?.size!! > 1
+                    return mViewModel.triggerKeys.value?.size!! > 1 && mViewModel.triggerInSequence.value == true
                 }
 
                 override fun onModelMoved(

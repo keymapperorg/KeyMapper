@@ -120,7 +120,7 @@
                     android:layout_height="0dp"
                     android:src="@drawable/ic_baseline_drag_handle_24"
                     android:tint="?attr/colorOnSurface"
-                    android:visibility="@{triggerKeyCount > 1 ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{triggerKeyCount > 1 &amp;&amp; triggerMode == Trigger.SEQUENCE ? View.VISIBLE : View.GONE}"
                     app:layout_constraintBottom_toBottomOf="@id/buttonRemove"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/buttonRemove" />
