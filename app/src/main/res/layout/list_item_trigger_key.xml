@@ -133,6 +133,7 @@
                     android:onClick="@{onMoreClick}"
                     android:src="@drawable/ic_outline_more_vert_24"
                     android:tint="?attr/colorOnSurface"
+                    android:visibility="@{triggerMode == Trigger.SEQUENCE ? View.VISIBLE : View.GONE}"
                     app:layout_constraintBottom_toBottomOf="@+id/buttonRemove"
                     app:layout_constraintEnd_toStartOf="@+id/buttonRemove"
                     app:layout_constraintTop_toTopOf="@id/buttonRemove" />

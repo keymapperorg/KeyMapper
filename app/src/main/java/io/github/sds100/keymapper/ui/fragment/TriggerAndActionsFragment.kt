@@ -17,6 +17,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.TriggerKeyBindingModel_
 import io.github.sds100.keymapper.action
 import io.github.sds100.keymapper.data.model.Action
+import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentTriggerAndActionsBinding
 import io.github.sds100.keymapper.triggerKey
@@ -92,6 +93,12 @@ class TriggerAndActionsFragment : Fragment() {
                                 mViewModel.removeTriggerKey(triggerKey.keyCode)
                             }
                         }
+
+                        onMoreClick { _ ->
+                            if (mViewModel.triggerInSequence.value == true) {
+                                triggerKey?.chooseClickType()
+                            }
+                        }
                     }
                 }
             }
@@ -119,6 +126,27 @@ class TriggerAndActionsFragment : Fragment() {
                     }
                 }
             }
+        }
+    }
+
+    private fun Trigger.Key.chooseClickType() {
+        requireActivity().alertDialog {
+            val labels = Trigger.CLICK_TYPE_LABEL_MAP.values.map { appStr(it) }.toTypedArray()
+            var clickType = clickType
+
+            val checkedItemIndex = Trigger.CLICK_TYPE_LABEL_MAP.keys.indexOf(clickType)
+
+            setSingleChoiceItems(labels, checkedItemIndex) { _, index ->
+                clickType = Trigger.CLICK_TYPE_LABEL_MAP.keys.toList()[index]
+            }
+
+            cancelButton()
+
+            okButton {
+                mViewModel.setTriggerClickType(keyCode, clickType)
+            }
+
+            show()
         }
     }
 

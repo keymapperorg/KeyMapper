@@ -99,6 +99,7 @@
                     android:id="@+id/radioGroup"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="bottom"
                     android:orientation="horizontal"
                     android:visibility="@{viewModel.triggerKeys.empty ? View.GONE : View.VISIBLE}"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -116,7 +117,7 @@
                     <com.google.android.material.radiobutton.MaterialRadioButton
                         android:id="@+id/radioButtonSequence"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="0.5"
                         android:checked="@={viewModel.triggerInSequence}"
                         android:text="@string/radio_button_sequence" />

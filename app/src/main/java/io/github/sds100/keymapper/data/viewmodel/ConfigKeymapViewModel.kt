@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.data.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.*
 import com.example.architecturetest.data.KeymapRepository
 import io.github.sds100.keymapper.data.model.*
@@ -26,6 +25,12 @@ class ConfigKeymapViewModel internal constructor(
         addSource(triggerInParallel) {
             if (it == true) {
                 value = Trigger.PARALLEL
+
+                triggerKeys.value = triggerKeys.value?.map { key ->
+                    //keys can only be short pressed if the trigger is in parallel mode
+                    key.clickType = Trigger.SHORT_PRESS
+                    key
+                }
             }
         }
 
@@ -42,6 +47,7 @@ class ConfigKeymapViewModel internal constructor(
     val isEnabled: MutableLiveData<Boolean> = MutableLiveData()
 
     val triggerKeys: MutableLiveData<List<Trigger.Key>> = MutableLiveData()
+
     val triggerKeyModels: LiveData<List<TriggerKeyModel>> = Transformations.map(triggerKeys) { triggerKeys ->
         sequence {
             triggerKeys.forEach {
@@ -69,7 +75,6 @@ class ConfigKeymapViewModel internal constructor(
             }
         }.toList()
     }
-
 
     init {
         if (mId == NEW_KEYMAP_ID) {
@@ -173,7 +178,17 @@ class ConfigKeymapViewModel internal constructor(
         }
     }
 
-    fun removeTriggerKey(keycode: Int){
+    fun setTriggerClickType(keycode: Int, @Trigger.ClickType clickType: Int) {
+        triggerKeys.value = triggerKeys.value?.map {
+            if (it.keyCode == keycode) {
+                it.clickType = clickType
+            }
+
+            it
+        }
+    }
+
+    fun removeTriggerKey(keycode: Int) {
         triggerKeys.value = triggerKeys.value?.toMutableList()?.apply {
             removeAll { it.keyCode == keycode }
         }
