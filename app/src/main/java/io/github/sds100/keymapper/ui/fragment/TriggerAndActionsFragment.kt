@@ -14,13 +14,17 @@ import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentTriggerAndActionsBinding
 import io.github.sds100.keymapper.util.getAvailableFlags
+import io.github.sds100.keymapper.util.observeLiveData
+import io.github.sds100.keymapper.util.removeLiveData
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
+import splitties.alertdialog.appcompat.message
 import splitties.alertdialog.appcompat.okButton
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
 import splitties.experimental.ExperimentalSplittiesApi
 import splitties.resources.appStr
+import splitties.toast.toast
 
 /**
  * Created by sds100 on 19/03/2020.
@@ -34,6 +38,15 @@ class TriggerAndActionsFragment : Fragment() {
 
             viewModel = mConfigKeymapViewModel
             lifecycleOwner = viewLifecycleOwner
+
+            findNavController().currentBackStackEntry?.observeLiveData<Action>(viewLifecycleOwner, ChooseActionFragment.SAVED_STATE_KEY) {
+
+                if (!mConfigKeymapViewModel.addAction(it)) {
+                    toast(R.string.error_action_exists)
+                }
+
+                findNavController().currentBackStackEntry?.removeLiveData<Action>(ChooseActionFragment.SAVED_STATE_KEY)
+            }
 
             setOnAddActionClick {
                 val direction = ConfigKeymapFragmentDirections.actionConfigKeymapFragmentToChooseActionFragment()

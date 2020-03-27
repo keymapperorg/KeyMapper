@@ -4,6 +4,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.ActionType
 import splitties.bitflags.hasFlag
 import splitties.resources.appStr
+import java.io.Serializable
 
 /**
  * Created by sds100 on 16/07/2018.
@@ -38,13 +39,17 @@ data class Action(
     val extras: MutableList<Extra> = mutableListOf(),
     var flags: Int = 0
 
-) {
+) : Serializable {
     companion object {
         const val ACTION_FLAG_SHOW_VOLUME_UI = 1
 
         val ACTION_FLAG_LABEL_MAP = mapOf(
             ACTION_FLAG_SHOW_VOLUME_UI to R.string.flag_show_volume_dialog
         )
+
+        fun appAction(packageName: String): Action {
+            return Action(ActionType.APP, packageName)
+        }
     }
 
     constructor(type: ActionType, data: String, extra: Extra) : this(type, data, mutableListOf(extra))

@@ -64,13 +64,11 @@ class ChooseConstraintListFragment : RecyclerViewFragment() {
     }
 
     private fun observeFragmentChildrenLiveData() {
-        findNavController().apply {
-            currentBackStackEntry?.observeLiveData<AppListItemModel>(
-                viewLifecycleOwner,
-                AppListFragment.SAVED_STATE_KEY
-            ) {
-                selectModel(Constraint.appConstraint(it.packageName))
-            }
+        findNavController().currentBackStackEntry?.observeLiveData<AppListItemModel>(
+            viewLifecycleOwner,
+            AppListFragment.SAVED_STATE_KEY
+        ) {
+            selectModel(Constraint.appConstraint(it.packageName))
         }
     }
 

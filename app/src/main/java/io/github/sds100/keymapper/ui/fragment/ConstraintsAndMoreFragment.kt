@@ -37,8 +37,7 @@ class ConstraintsAndMoreFragment : Fragment() {
 
             findNavController().apply {
                 setOnAddConstraintClick {
-                    val direction = ConfigKeymapFragmentDirections.actionConfigKeymapFragmentToChooseConstraint()
-                    findNavController().navigate(direction)
+                    navigate(ConfigKeymapFragmentDirections.actionConfigKeymapFragmentToChooseConstraint())
                 }
 
                 currentBackStackEntry?.observeLiveData<Constraint>(

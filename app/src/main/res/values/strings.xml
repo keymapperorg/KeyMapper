@@ -435,6 +435,7 @@
     <string name="error_extra_not_found">Extra not found!</string>
     <string name="error_constraint_not_found">Constraint not found</string>
     <string name="error_constraint_exists">This keymap already has this constraint!</string>
+    <string name="error_action_exists">This keymap already has this action!</string>
     <!-- Error messages -->
 
     <!-- System action labels -->

@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.data.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.example.architecturetest.data.KeymapRepository
 import io.github.sds100.keymapper.data.model.*
@@ -159,6 +160,25 @@ class ConfigKeymapViewModel internal constructor(
         flags.value = flags.value?.toggleFlag(flagId)
     }
 
+    fun removeConstraint(id: String) {
+        mConstraintList.value = mConstraintList.value?.toMutableList()?.apply {
+            removeAll { it.uniqueId == id }
+        }
+    }
+
+    fun addAction(action: Action): Boolean {
+        Log.e(this::class.java.simpleName, "addaction")
+        if (actionList.value?.find { it.uniqueId == action.uniqueId } != null) {
+            return false
+        }
+
+        actionList.value = actionList.value?.toMutableList()?.apply {
+            add(action)
+        }
+
+        return true
+    }
+
     fun setActionFlags(actionId: String, flags: Int) {
         actionList.value = actionList.value?.map {
             if (it.uniqueId == actionId) {
@@ -166,12 +186,6 @@ class ConfigKeymapViewModel internal constructor(
             }
 
             it
-        }
-    }
-
-    fun removeConstraint(id: String) {
-        mConstraintList.value = mConstraintList.value?.toMutableList()?.apply {
-            removeAll { it.uniqueId == id }
         }
     }
 

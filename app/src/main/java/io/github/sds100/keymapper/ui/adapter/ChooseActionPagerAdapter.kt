@@ -14,7 +14,7 @@ class ChooseActionPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragme
      * Mapping of the ViewPager page indexes to their respective Fragments
      */
     private val tabFragmentsCreators: Map<Int, () -> Fragment> = mapOf(
-        0 to { AppListFragment().apply { isAppBarVisible = false } }
+        0 to { AppListFragment().apply { isAppBarVisible = false; isInPagerAdapter = true } }
     )
 
     override fun getItemCount() = tabFragmentsCreators.size

@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +23,7 @@ abstract class RecyclerViewFragment : Fragment() {
 
     open val progressCallback: ProgressCallback? = null
     var isAppBarVisible = true
+    var isInPagerAdapter = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,8 +53,14 @@ abstract class RecyclerViewFragment : Fragment() {
     fun <T : Serializable> selectModel(model: T) {
         findNavController().apply {
             if (savedStateKey != null) {
-                previousBackStackEntry?.setLiveData(savedStateKey!!, model)
-                navigateUp()
+                // this livedata could be observed from a fragment on the backstack or in the same position on the
+                // backstack as this fragment
+                if (isInPagerAdapter) {
+                    currentBackStackEntry?.setLiveData(savedStateKey!!, model)
+                } else {
+                    previousBackStackEntry?.setLiveData(savedStateKey!!, model)
+                    navigateUp()
+                }
             }
         }
     }
