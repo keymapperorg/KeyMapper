@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.ui.fragment
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,10 +9,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
+import androidx.recyclerview.widget.ItemTouchHelper
+import com.airbnb.epoxy.EpoxyController
+import com.airbnb.epoxy.EpoxyTouchHelper
+import com.google.android.material.card.MaterialCardView
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.TriggerKeyBindingModel_
 import io.github.sds100.keymapper.action
 import io.github.sds100.keymapper.data.model.Action
-import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentTriggerAndActionsBinding
 import io.github.sds100.keymapper.triggerKey
@@ -65,9 +70,12 @@ class TriggerAndActionsFragment : Fragment() {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun FragmentTriggerAndActionsBinding.subscribeTriggerList() {
         mViewModel.triggerKeyModels.observe(viewLifecycleOwner) { triggerKeyList ->
             epoxyRecyclerViewTriggers.withModels {
+                enableTriggerKeyDragging(this)
+
                 triggerKeyList.forEachIndexed { index, model ->
                     triggerKey {
                         id(model.name)
@@ -142,5 +150,35 @@ class TriggerAndActionsFragment : Fragment() {
 
             show()
         }
+    }
+
+    private fun FragmentTriggerAndActionsBinding.enableTriggerKeyDragging(controller: EpoxyController): ItemTouchHelper {
+        return EpoxyTouchHelper.initDragging(controller)
+            .withRecyclerView(epoxyRecyclerViewTriggers)
+            .forVerticalList()
+            .withTarget(TriggerKeyBindingModel_::class.java)
+            .andCallbacks(object : EpoxyTouchHelper.DragCallbacks<TriggerKeyBindingModel_>() {
+
+                override fun onModelMoved(
+                    fromPosition: Int,
+                    toPosition: Int,
+                    modelBeingMoved: TriggerKeyBindingModel_?,
+                    itemView: View?
+                ) {
+                    mViewModel.moveTriggerKey(fromPosition, toPosition)
+                }
+
+                override fun onDragStarted(
+                    model: TriggerKeyBindingModel_?,
+                    itemView: View?,
+                    adapterPosition: Int
+                ) {
+                    itemView?.findViewById<MaterialCardView>(R.id.cardView)?.isDragged = true
+                }
+
+                override fun onDragReleased(model: TriggerKeyBindingModel_?, itemView: View?) {
+                    itemView?.findViewById<MaterialCardView>(R.id.cardView)?.isDragged = false
+                }
+            })
     }
 }

@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.util.buildChipModel
 import io.github.sds100.keymapper.util.buildModel
 import io.github.sds100.keymapper.util.toggleFlag
 import kotlinx.coroutines.launch
+import java.util.*
 
 class ConfigKeymapViewModel internal constructor(
     private val mRepository: KeymapRepository,
@@ -172,6 +173,21 @@ class ConfigKeymapViewModel internal constructor(
         }
     }
 
+    fun moveTriggerKey(fromIndex: Int, toIndex: Int) {
+        Log.e(this::class.java.simpleName, "$fromIndex to $toIndex")
+        triggerKeys.value = triggerKeys.value?.toMutableList()?.apply {
+            if (fromIndex < toIndex) {
+                for (i in fromIndex until toIndex) {
+                    Collections.swap(this, i, i + 1)
+                }
+            } else {
+                for (i in fromIndex downTo toIndex + 1) {
+                    Collections.swap(this, i, i - 1)
+                }
+            }
+        }
+    }
+
     fun toggleFlag(flagId: Int) {
         flags.value = flags.value?.toggleFlag(flagId)
     }
@@ -183,7 +199,6 @@ class ConfigKeymapViewModel internal constructor(
     }
 
     fun addAction(action: Action): Boolean {
-        Log.e(this::class.java.simpleName, "addaction")
         if (actionList.value?.find { it.uniqueId == action.uniqueId } != null) {
             return false
         }

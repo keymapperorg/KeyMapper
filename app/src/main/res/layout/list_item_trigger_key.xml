@@ -32,10 +32,6 @@
         <variable
             name="onRemoveClick"
             type="View.OnClickListener" />
-
-        <variable
-            name="onDragClick"
-            type="View.OnClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -122,7 +118,6 @@
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:onClick="@{onDragClick}"
                     android:src="@drawable/ic_baseline_drag_handle_24"
                     android:tint="?attr/colorOnSurface"
                     android:visibility="@{triggerKeyCount > 1 ? View.VISIBLE : View.GONE}"
