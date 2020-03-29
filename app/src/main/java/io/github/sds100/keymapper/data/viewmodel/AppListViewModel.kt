@@ -8,12 +8,13 @@ import io.github.sds100.keymapper.data.SystemRepository
 import io.github.sds100.keymapper.data.model.AppListItemModel
 import io.github.sds100.keymapper.ui.callback.ProgressCallback
 import kotlinx.coroutines.launch
+import java.util.*
 
 /**
  * Created by sds100 on 27/01/2020.
  */
 class AppListViewModel internal constructor(
-        private val repository: SystemRepository
+    private val repository: SystemRepository
 ) : ViewModel(), ProgressCallback {
 
     val appModelList: MutableLiveData<List<AppListItemModel>> = MutableLiveData()
@@ -29,18 +30,18 @@ class AppListViewModel internal constructor(
                 val icon = repository.getAppIcon(it)
 
                 AppListItemModel(it.packageName, name, icon)
-            }.sortedBy { it.appName }
+            }.sortedBy { it.appName.toLowerCase(Locale.getDefault()) }
 
             loadingContent.value = false
         }
     }
 
     class Factory(
-            private val mRepository: SystemRepository
+        private val mRepository: SystemRepository
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>) =
-                AppListViewModel(mRepository) as T
+            AppListViewModel(mRepository) as T
     }
 }
