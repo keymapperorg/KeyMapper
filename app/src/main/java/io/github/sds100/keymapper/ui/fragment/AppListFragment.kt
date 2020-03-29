@@ -14,19 +14,22 @@ class AppListFragment : RecyclerViewFragment() {
 
     companion object {
         const val SAVED_STATE_KEY = "key_app"
-    }
-
-    override val savedStateKey = SAVED_STATE_KEY
-
-    private val mViewModel: AppListViewModel by viewModels {
-        InjectorUtils.provideAppListViewModel(requireContext())
+        const val SEARCH_STATE_KEY = "key_search_state"
     }
 
     override val progressCallback
         get() = mViewModel
 
+    override var searchStateKey: String? = SEARCH_STATE_KEY
+
+    override var selectedModelKey: String? = SAVED_STATE_KEY
+
+    private val mViewModel: AppListViewModel by viewModels {
+        InjectorUtils.provideAppListViewModel(requireContext())
+    }
+
     override fun subscribeList(binding: FragmentRecyclerviewBinding) {
-        mViewModel.appModelList.observe(viewLifecycleOwner) { appModelList ->
+        mViewModel.filteredAppModelList.observe(viewLifecycleOwner) { appModelList ->
             binding.epoxyRecyclerView.withModels {
                 appModelList.forEach {
                     simple {
@@ -41,5 +44,9 @@ class AppListFragment : RecyclerViewFragment() {
                 }
             }
         }
+    }
+
+    override fun onSearchQuery(query: String?) {
+        mViewModel.searchQuery.value = query
     }
 }

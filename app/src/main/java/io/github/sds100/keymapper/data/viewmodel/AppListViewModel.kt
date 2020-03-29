@@ -1,9 +1,6 @@
 package io.github.sds100.keymapper.data.viewmodel
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import io.github.sds100.keymapper.data.SystemRepository
 import io.github.sds100.keymapper.data.model.AppListItemModel
 import io.github.sds100.keymapper.ui.callback.ProgressCallback
@@ -17,7 +14,34 @@ class AppListViewModel internal constructor(
     private val repository: SystemRepository
 ) : ViewModel(), ProgressCallback {
 
-    val appModelList: MutableLiveData<List<AppListItemModel>> = MutableLiveData()
+    val searchQuery: MutableLiveData<String> = MutableLiveData("")
+
+    private val mAppModelList: MutableLiveData<List<AppListItemModel>> = MutableLiveData()
+
+    val filteredAppModelList = MediatorLiveData<List<AppListItemModel>>().apply {
+        fun filter(query: String) {
+            if (query.isBlank()) {
+                value = mAppModelList.value ?: listOf()
+                return
+            }
+
+            value = mAppModelList.value?.filter {
+                it.appName.toLowerCase(Locale.getDefault()).contains(query)
+            } ?: listOf()
+        }
+
+        addSource(searchQuery) { query ->
+            filter(query)
+        }
+
+        addSource(mAppModelList) {
+            value = it
+
+            searchQuery.value?.let { query ->
+                filter(query)
+            }
+        }
+    }
 
     override val loadingContent = MutableLiveData(false)
 
@@ -25,7 +49,7 @@ class AppListViewModel internal constructor(
         viewModelScope.launch {
             loadingContent.value = true
 
-            appModelList.value = repository.getAppList().map {
+            mAppModelList.value = repository.getAppList().map {
                 val name = repository.getAppName(it) ?: it.packageName
                 val icon = repository.getAppIcon(it)
 

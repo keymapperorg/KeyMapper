@@ -10,16 +10,22 @@ import io.github.sds100.keymapper.ui.fragment.AppListFragment
 
 class ChooseActionPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
 
-    /**
-     * Mapping of the ViewPager page indexes to their respective Fragments
-     */
-    private val tabFragmentsCreators: Map<Int, () -> Fragment> = mapOf(
-        0 to { AppListFragment().apply { isAppBarVisible = false; isInPagerAdapter = true } }
+    private val mTabFragmentsCreators: Array<() -> Fragment> = arrayOf(
+        {
+            AppListFragment().apply {
+                isAppBarVisible = false
+                isInPagerAdapter = true
+            }
+        }
     )
 
-    override fun getItemCount() = tabFragmentsCreators.size
+    fun getSearchStateKey(position: Int): String? = when (position) {
+        0 -> AppListFragment.SEARCH_STATE_KEY
 
-    override fun createFragment(position: Int): Fragment {
-        return tabFragmentsCreators[position]?.invoke() ?: throw IndexOutOfBoundsException()
+        else -> null
     }
+
+    override fun getItemCount() = mTabFragmentsCreators.size
+
+    override fun createFragment(position: Int) = mTabFragmentsCreators[position].invoke()
 }

@@ -29,7 +29,7 @@ class ChooseConstraintListFragment : RecyclerViewFragment() {
         InjectorUtils.provideChooseConstraintListViewModel()
     }
 
-    override val savedStateKey = SAVED_STATE_KEY
+    override var selectedModelKey: String? = SAVED_STATE_KEY
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
@@ -65,12 +65,12 @@ class ChooseConstraintListFragment : RecyclerViewFragment() {
 
     private fun observeFragmentChildrenLiveData() {
         findNavController().currentBackStackEntry?.observeLiveData<AppListItemModel>(
-            viewLifecycleOwner,
-            AppListFragment.SAVED_STATE_KEY
-        ) {
-            selectModel(Constraint.appConstraint(it.packageName))
-        }
-    }
+                        viewLifecycleOwner,
+                        AppListFragment.SAVED_STATE_KEY
+                    ) {
+                        selectModel(Constraint.appConstraint(it.packageName))
+                    }
+                }
 
     private fun onConstraintClick(@ConstraintType id: String) {
         when (id) {

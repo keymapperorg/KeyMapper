@@ -2,8 +2,11 @@ package io.github.sds100.keymapper.ui.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.tabs.TabLayoutMediator
@@ -13,6 +16,7 @@ import io.github.sds100.keymapper.data.model.AppListItemModel
 import io.github.sds100.keymapper.databinding.FragmentChooseActionBinding
 import io.github.sds100.keymapper.ui.adapter.ChooseActionPagerAdapter
 import io.github.sds100.keymapper.util.observeLiveData
+import io.github.sds100.keymapper.util.setCurrentDestinationLiveData
 import io.github.sds100.keymapper.util.setLiveData
 import splitties.resources.strArray
 
@@ -52,7 +56,45 @@ class ChooseActionFragment : Fragment() {
                 }
             }
 
+            subscribeSearchView()
+
             return this.root
         }
+    }
+
+    private fun FragmentChooseActionBinding.subscribeSearchView() {
+        val searchViewMenuItem = appBar.menu.findItem(R.id.action_search)
+        val searchView = searchViewMenuItem.actionView as SearchView
+
+        searchViewMenuItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+            override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+                //don't allow the user to change the tab when searching
+                viewPager.isUserInputEnabled = false
+                tabLayout.isVisible = false
+
+                return true
+            }
+
+            override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+                viewPager.isUserInputEnabled = true
+                tabLayout.isVisible = true
+
+                return true
+            }
+        })
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+
+                mPagerAdapter.getSearchStateKey(viewPager.currentItem)?.let { searchStateKey ->
+                    findNavController().setCurrentDestinationLiveData(searchStateKey, newText)
+                }
+
+                return false
+            }
+
+            override fun onQueryTextSubmit(query: String?) = onQueryTextChange(query)
+        })
     }
 }
