@@ -9,7 +9,7 @@
 
         <variable
             name="model"
-            type="io.github.sds100.keymapper.data.model.SimpleKeymapListItemModel" />
+            type="io.github.sds100.keymapper.data.model.KeymapListItemModel" />
 
         <variable
             name="onClick"

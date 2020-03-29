@@ -16,7 +16,7 @@ import com.airbnb.epoxy.EpoxyController
 import io.github.sds100.keymapper.BuildConfig
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
-import io.github.sds100.keymapper.data.model.SimpleKeymapListItemModel
+import io.github.sds100.keymapper.data.model.KeymapListItemModel
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
 import io.github.sds100.keymapper.databinding.FragmentKeymapListBinding
@@ -103,7 +103,7 @@ class KeymapListFragment : Fragment() {
 
         mViewModel.apply {
 
-            simpleKeymapModelList.observe(viewLifecycleOwner) { keymapList ->
+            keymapModelList.observe(viewLifecycleOwner) { keymapList ->
                 mController.keymapList = keymapList
             }
 
@@ -130,7 +130,7 @@ class KeymapListFragment : Fragment() {
     }
 
     inner class KeymapController : EpoxyController(), SelectionCallback {
-        var keymapList: List<SimpleKeymapListItemModel> = listOf()
+        var keymapList: List<KeymapListItemModel> = listOf()
             set(value) {
                 field = value
                 requestModelBuild()
