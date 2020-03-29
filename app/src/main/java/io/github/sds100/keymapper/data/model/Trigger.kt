@@ -10,7 +10,7 @@ import io.github.sds100.keymapper.R
 /**
  * @property [keys] The key codes which will trigger the action
  */
-class Trigger(keys: List<Key> = listOf()) {
+class Trigger(var keys: List<Key> = listOf()) {
 
     companion object {
         const val PARALLEL = 0
@@ -29,26 +29,8 @@ class Trigger(keys: List<Key> = listOf()) {
         )
     }
 
-    var keys: List<Key> = keys
-        set(value) {
-            //trigger keys can only be short pressed if the trigger is in parallel mode
-            if (mode == PARALLEL) {
-                value.forEach { it.clickType = SHORT_PRESS }
-            }
-
-            field = value
-        }
-
     @Mode
     var mode: Int = DEFAULT_TRIGGER_MODE
-        set(value) {
-            //trigger keys can only be short pressed if the trigger is in parallel mode
-            if (value == PARALLEL) {
-                keys.forEach { it.clickType = SHORT_PRESS }
-            }
-
-            field = value
-        }
 
     data class Key(val keyCode: Int, var deviceId: String? = null, @ClickType var clickType: Int = SHORT_PRESS) {
         override fun equals(other: Any?): Boolean {

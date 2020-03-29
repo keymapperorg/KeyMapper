@@ -14,6 +14,10 @@
             type="ConfigKeymapViewModel" />
 
         <variable
+            name="onClickTypeClick"
+            type="View.OnClickListener" />
+
+        <variable
             name="onRecordTriggerClick"
             type="View.OnClickListener" />
 
@@ -95,15 +99,28 @@
                     app:layout_constraintBottom_toTopOf="@+id/radioGroup"
                     app:layout_constraintStart_toStartOf="parent" />
 
+                <io.github.sds100.keymapper.ui.view.SquareImageButton
+                    android:id="@+id/buttonClickType"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:onClick="@{onClickTypeClick}"
+                    android:src="@drawable/ic_outline_more_vert_24"
+                    android:tint="?attr/colorOnSurface"
+                    android:visibility="@{!viewModel.triggerKeys.empty &amp;&amp; viewModel.triggerInParallel ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/radioGroup" />
+
                 <RadioGroup
                     android:id="@+id/radioGroup"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:gravity="bottom"
                     android:orientation="horizontal"
                     android:visibility="@{viewModel.triggerKeys.empty ? View.GONE : View.VISIBLE}"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/buttonClickType"
                     app:layout_constraintStart_toStartOf="parent">
 
                     <com.google.android.material.radiobutton.MaterialRadioButton
@@ -194,14 +211,15 @@
         <Button
             android:id="@+id/buttonAddAction"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginStart="4dp"
             android:onClick="@{onAddActionClick}"
             android:text="@string/button_add_action"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/buttonRecordKeys" />
+            app:layout_constraintStart_toEndOf="@+id/buttonRecordKeys"
+            app:layout_constraintTop_toTopOf="@id/buttonRecordKeys" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

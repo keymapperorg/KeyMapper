@@ -25,12 +25,6 @@ class ConfigKeymapViewModel internal constructor(
         addSource(triggerInParallel) {
             if (it == true) {
                 value = Trigger.PARALLEL
-
-                triggerKeys.value = triggerKeys.value?.map { key ->
-                    //keys can only be short pressed if the trigger is in parallel mode
-                    key.clickType = Trigger.SHORT_PRESS
-                    key
-                }
             }
         }
 
@@ -178,7 +172,18 @@ class ConfigKeymapViewModel internal constructor(
         }
     }
 
-    fun setTriggerClickType(keycode: Int, @Trigger.ClickType clickType: Int) {
+    @Trigger.ClickType
+    fun getParallelTriggerClickType() = triggerKeys.value?.get(0)?.clickType
+
+    fun setParallelTriggerClickType(@Trigger.ClickType clickType: Int) {
+        triggerKeys.value = triggerKeys.value?.map {
+            it.clickType = clickType
+
+            it
+        }
+    }
+
+    fun setTriggerKeyClickType(keycode: Int, @Trigger.ClickType clickType: Int) {
         triggerKeys.value = triggerKeys.value?.map {
             if (it.keyCode == keycode) {
                 it.clickType = clickType

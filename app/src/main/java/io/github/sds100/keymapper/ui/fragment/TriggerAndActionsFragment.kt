@@ -60,6 +60,14 @@ class TriggerAndActionsFragment : Fragment() {
                 findNavController().navigate(direction)
             }
 
+            setOnClickTypeClick {
+                val clickType = mViewModel.getParallelTriggerClickType() ?: return@setOnClickTypeClick
+
+                showClickTypeDialog(clickType) {
+                    mViewModel.setParallelTriggerClickType(it)
+                }
+            }
+
             subscribeActionList()
             subscribeTriggerList()
 
@@ -130,11 +138,17 @@ class TriggerAndActionsFragment : Fragment() {
     }
 
     private fun Trigger.Key.chooseClickType() {
+        showClickTypeDialog(clickType) {
+            mViewModel.setTriggerKeyClickType(keyCode, clickType)
+        }
+    }
+
+    private fun showClickTypeDialog(checkedClickType: Int, onOkClick: (clickType: Int) -> Unit) {
         requireActivity().alertDialog {
             val labels = Trigger.CLICK_TYPE_LABEL_MAP.values.map { appStr(it) }.toTypedArray()
-            var clickType = clickType
 
-            val checkedItemIndex = Trigger.CLICK_TYPE_LABEL_MAP.keys.indexOf(clickType)
+            val checkedItemIndex = Trigger.CLICK_TYPE_LABEL_MAP.keys.indexOf(checkedClickType)
+            var clickType = checkedClickType
 
             setSingleChoiceItems(labels, checkedItemIndex) { _, index ->
                 clickType = Trigger.CLICK_TYPE_LABEL_MAP.keys.toList()[index]
@@ -143,7 +157,7 @@ class TriggerAndActionsFragment : Fragment() {
             cancelButton()
 
             okButton {
-                mViewModel.setTriggerClickType(keyCode, clickType)
+                onOkClick(clickType)
             }
 
             show()
