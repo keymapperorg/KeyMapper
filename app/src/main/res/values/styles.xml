@@ -80,6 +80,8 @@
     <style name="KeymapListChip.Action">
         <item name="closeIcon">@drawable/ic_baseline_error_outline_24</item>
         <item name="closeIconTint">?attr/colorError</item>
+        <item name="closeIconVisible">false</item>
+        <item name="android:clickable">false</item>
     </style>
 
     <style name="KeymapListHeader" parent="TextAppearance.MaterialComponents.Subtitle2">

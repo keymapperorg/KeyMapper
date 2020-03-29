@@ -29,7 +29,6 @@ fun CompoundButton.onCheckedChange(onCheckedChangeListener: CompoundButton.OnChe
 
 @BindingAdapter("app:actions", "app:errorClickCallback", requireAll = true)
 fun ChipGroup.bindActions(actions: List<ActionChipModel>, callback: ErrorClickCallback) {
-    removeAllViews()
 
     actions.forEach {
         Chip(context).apply {
@@ -53,6 +52,30 @@ fun ChipGroup.bindActions(actions: List<ActionChipModel>, callback: ErrorClickCa
             addView(this)
         }
     }
+}
+
+@BindingAdapter("app:actions", "app:constraints", "app:constraintMode", "app:errorClickCallback", requireAll = true)
+fun ChipGroup.bindActionsAndConstraints(
+    actions: List<ActionChipModel>,
+    constraints: List<ConstraintModel>,
+    constraintMode: Int,
+    callback: ErrorClickCallback
+) {
+    removeAllViews()
+
+    bindActions(actions, callback)
+
+    if (actions.isNotEmpty() && constraints.isNotEmpty()) {
+        Chip(context).apply {
+            text = "while"
+
+            chipStrokeWidth = 0f
+
+            addView(this)
+        }
+    }
+
+    bindConstraints(constraints, constraintMode, callback)
 }
 
 @BindingAdapter("app:isKeymapEnabled", "app:noActions", "app:noTrigger", requireAll = false)
@@ -128,14 +151,11 @@ fun ChipGroup.bindConstraints(
         else -> appStr(R.string.constraint_mode_and)
     }
 
-    removeAllViews()
-
     constraintList.forEachIndexed { index, model ->
 
         //add a chip which is either a + or -> depending on the trigger mode
         if (index != 0) {
             Chip(context).apply {
-
                 text = separatorText
 
                 chipStrokeWidth = 0f

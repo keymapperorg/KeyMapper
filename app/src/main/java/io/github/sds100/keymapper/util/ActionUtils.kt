@@ -15,6 +15,10 @@ import splitties.resources.appStr
  * Created by sds100 on 03/09/2018.
  */
 
+fun List<Action>.buildDescription(): String = buildString {
+
+}
+
 fun Action.buildModel(): ActionModel {
     var title: String? = null
     var icon: Drawable? = null

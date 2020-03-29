@@ -3,7 +3,7 @@
     <dimen name="cardview_padding_left">16dp</dimen>
     <dimen name="cardview_padding_right">16dp</dimen>
     <dimen name="cardview_padding_top">16dp</dimen>
-    <dimen name="cardview_padding_bottom">8dp</dimen>
+    <dimen name="cardview_padding_bottom">16dp</dimen>
     <dimen name="cardview_header_bottom_padding">8dp</dimen>
     <dimen name="cardview_separation">8dp</dimen>
 </resources>

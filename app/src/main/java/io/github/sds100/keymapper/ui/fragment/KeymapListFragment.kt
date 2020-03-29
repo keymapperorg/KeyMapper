@@ -16,11 +16,11 @@ import com.airbnb.epoxy.EpoxyController
 import io.github.sds100.keymapper.BuildConfig
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
-import io.github.sds100.keymapper.data.model.KeymapListItemModel
+import io.github.sds100.keymapper.data.model.SimpleKeymapListItemModel
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
 import io.github.sds100.keymapper.databinding.FragmentKeymapListBinding
-import io.github.sds100.keymapper.keymap
+import io.github.sds100.keymapper.keymapSimple
 import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
 import io.github.sds100.keymapper.ui.callback.SelectionCallback
 import io.github.sds100.keymapper.util.ISelectionProvider
@@ -103,7 +103,7 @@ class KeymapListFragment : Fragment() {
 
         mViewModel.apply {
 
-            keymapList.observe(viewLifecycleOwner) { keymapList ->
+            simpleKeymapModelList.observe(viewLifecycleOwner) { keymapList ->
                 mController.keymapList = keymapList
             }
 
@@ -130,7 +130,7 @@ class KeymapListFragment : Fragment() {
     }
 
     inner class KeymapController : EpoxyController(), SelectionCallback {
-        var keymapList: List<KeymapListItemModel> = listOf()
+        var keymapList: List<SimpleKeymapListItemModel> = listOf()
             set(value) {
                 field = value
                 requestModelBuild()
@@ -138,19 +138,13 @@ class KeymapListFragment : Fragment() {
 
         override fun buildModels() {
             keymapList.forEach {
-                keymap {
+                keymapSimple {
                     id(it.id)
+                    model(it)
                     isSelectable(selectionProvider.isSelectable.value)
                     isSelected(selectionProvider.isSelected(it.id))
-                    isEnabled(it.isEnabled)
-                    actions(it.actionList)
-                    trigger(it.triggerChipModel)
-                    constraints(it.constraintList)
-                    constraintMode(it.constraintMode)
-                    flags(it.flagList)
 
                     onErrorClick(object : ErrorClickCallback {
-
                         override fun onErrorClick(failure: Failure) {
                             coordinatorLayout.longSnack(failure.fullMessage) {
 

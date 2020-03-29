@@ -28,7 +28,9 @@
     <string name="press_dot_dot_dot">Press…</string>
     <string name="no_actions">No Actions</string>
     <string name="no_trigger">No Trigger</string>
-    <string name="interpunct">•</string>
+    <string name="interpunct" translatable="false">•</string>
+    <string name="arrow" translatable="false">→</string>
+    <string name="plus" translatable="false">+</string>
 
     <string name="caption_action_type_key">Click the key on the keyboard which you want to be entered.
         \n\nIMPORTANT!
@@ -75,7 +77,7 @@
     <string name="constraint_app_description">%s is in foreground</string>
 
     <string name="constraint_mode_and">and</string>
-    <string name="constraint_mode_or">Or</string>
+    <string name="constraint_mode_or">or</string>
 
     <string name="constraint_category_app">App</string>
     <string name="constraint_category_bluetooth">Bluetooth</string>

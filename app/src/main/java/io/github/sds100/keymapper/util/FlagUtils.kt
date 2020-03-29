@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.util
 
-import android.util.Log
 import io.github.sds100.keymapper.data.model.FlagModel
 import io.github.sds100.keymapper.data.model.KeyMap
 import splitties.bitflags.hasFlag
@@ -22,6 +21,16 @@ object FlagUtils {
             }
         }
     }.toList()
+}
+
+fun Int.buildKeymapFlagsDescription(): String = buildString {
+    KeyMap.getFlagLabelList(this@buildKeymapFlagsDescription).forEachIndexed { index, label ->
+        if (index > 0) {
+            append(" , ")
+        }
+
+        append(label)
+    }
 }
 
 fun Int.toggleFlag(flag: Int): Int =
