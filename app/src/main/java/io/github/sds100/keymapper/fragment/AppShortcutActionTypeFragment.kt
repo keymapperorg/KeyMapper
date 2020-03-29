@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.fragment
 
 import android.app.Activity
+import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.content.pm.ResolveInfo
 import android.os.Bundle
@@ -36,9 +37,9 @@ class AppShortcutActionTypeFragment : FilterableActionTypeFragment(), OnItemClic
 
     private val mAppShortcutAdapter by lazy {
         AppShortcutAdapter(
-                onItemClickListener = this,
-                mAppShortcutList = AppShortcutUtils.getAppShortcuts(context!!.packageManager),
-                mPackageManager = context!!.packageManager)
+            onItemClickListener = this,
+            mAppShortcutList = AppShortcutUtils.getAppShortcuts(context!!.packageManager),
+            mPackageManager = context!!.packageManager)
     }
 
     private var mTempShortcutPackageName: String? = null
@@ -47,9 +48,9 @@ class AppShortcutActionTypeFragment : FilterableActionTypeFragment(), OnItemClic
         get() = mAppShortcutAdapter
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.recyclerview_fragment, container, false)
     }
@@ -66,7 +67,7 @@ class AppShortcutActionTypeFragment : FilterableActionTypeFragment(), OnItemClic
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == REQUEST_CODE_SHORTCUT_CONFIGURATION &&
-                resultCode == Activity.RESULT_OK) {
+            resultCode == Activity.RESULT_OK) {
 
             data ?: return
 
@@ -74,7 +75,7 @@ class AppShortcutActionTypeFragment : FilterableActionTypeFragment(), OnItemClic
 
             //the shortcut intents seem to be returned in 2 different formats.
             if (data.extras != null &&
-                    data.extras!!.containsKey(Intent.EXTRA_SHORTCUT_INTENT)) {
+                data.extras!!.containsKey(Intent.EXTRA_SHORTCUT_INTENT)) {
                 //get intent from selected shortcut
                 val shortcutIntent = data.extras!!.get(Intent.EXTRA_SHORTCUT_INTENT) as Intent
                 shortcutUri = shortcutIntent.toUri(0)
@@ -85,11 +86,11 @@ class AppShortcutActionTypeFragment : FilterableActionTypeFragment(), OnItemClic
 
             //show a dialog to prompt for a title.
             context!!.editTextDialog(
-                    titleRes = R.string.dialog_title_create_shortcut_title
+                titleRes = R.string.dialog_title_create_shortcut_title
             ) { title ->
                 val extras = mutableListOf(
-                        Extra(EXTRA_SHORTCUT_TITLE, title),
-                        Extra(EXTRA_PACKAGE_NAME, mTempShortcutPackageName!!)
+                    Extra(EXTRA_SHORTCUT_TITLE, title),
+                    Extra(EXTRA_PACKAGE_NAME, mTempShortcutPackageName!!)
                 )
 
                 //save the shortcut intent as a URI
@@ -108,7 +109,9 @@ class AppShortcutActionTypeFragment : FilterableActionTypeFragment(), OnItemClic
 
         //open the shortcut configuration screen when the user taps a shortcut
         val intent = Intent()
+        intent.action = Intent.ACTION_CREATE_SHORTCUT
         intent.setClassName(packageName, item.activityInfo.name)
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, 1)
 
         try {
             startActivityForResult(intent, REQUEST_CODE_SHORTCUT_CONFIGURATION)
