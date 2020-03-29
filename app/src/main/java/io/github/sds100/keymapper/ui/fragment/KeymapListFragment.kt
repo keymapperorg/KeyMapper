@@ -85,6 +85,16 @@ class KeymapListFragment : Fragment() {
                         true
                     }
 
+                    R.id.action_enable -> {
+                        mViewModel.enableKeymaps(*selectionProvider.selectedIds)
+                        true
+                    }
+
+                    R.id.action_disable -> {
+                        mViewModel.disableKeymaps(*selectionProvider.selectedIds)
+                        true
+                    }
+
                     else -> false
                 }
             }
@@ -97,7 +107,7 @@ class KeymapListFragment : Fragment() {
 
             setOnConfirmSelectionClick {
                 mViewModel.delete(*mViewModel.selectionProvider.selectedIds)
-                mViewModel.selectionProvider.stopSelecting()
+                selectionProvider.stopSelecting()
             }
         }
 

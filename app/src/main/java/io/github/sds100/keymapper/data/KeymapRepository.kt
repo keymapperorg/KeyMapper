@@ -13,9 +13,9 @@ class KeymapRepository private constructor(private val keymapDao: KeyMapDao) {
         private var instance: KeymapRepository? = null
 
         fun getInstance(keymapDao: KeyMapDao) =
-                instance ?: synchronized(this) {
-                    instance ?: KeymapRepository(keymapDao).also { instance = it }
-                }
+            instance ?: synchronized(this) {
+                instance ?: KeymapRepository(keymapDao).also { instance = it }
+            }
     }
 
     val keymapList = keymapDao.getAll()
@@ -28,6 +28,14 @@ class KeymapRepository private constructor(private val keymapDao: KeyMapDao) {
 
     suspend fun updateKeymap(keymap: KeyMap) {
         keymapDao.update(keymap)
+    }
+
+    suspend fun enableKeymapById(vararg id: Long) {
+        keymapDao.enableKeymapById(*id)
+    }
+
+    suspend fun disableKeymapById(vararg id: Long) {
+        keymapDao.disableKeymapById(*id)
     }
 
     suspend fun deleteKeymap(vararg id: Long) {

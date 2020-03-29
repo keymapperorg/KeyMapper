@@ -27,6 +27,8 @@ class KeymapListViewModel internal constructor(
                 )
             }
 
+            selectionProvider.updateIds(keymapList.map { it.id }.toLongArray())
+
             loadingContent.value = false
 
             modelList
@@ -39,6 +41,18 @@ class KeymapListViewModel internal constructor(
     fun delete(vararg id: Long) {
         viewModelScope.launch {
             repository.deleteKeymap(*id)
+        }
+    }
+
+    fun enableKeymaps(vararg id: Long) {
+        viewModelScope.launch {
+            repository.enableKeymapById(*id)
+        }
+    }
+
+    fun disableKeymaps(vararg id: Long) {
+        viewModelScope.launch {
+            repository.disableKeymapById(*id)
         }
     }
 
