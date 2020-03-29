@@ -38,7 +38,7 @@
                 android:id="@+id/epoxyRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="@{viewModel.loadingContent  || viewModel.keymapList.empty ? View.GONE : View.VISIBLE}"
+                android:visibility="@{viewModel.loadingContent  || viewModel.keymapModelList.empty ? View.GONE : View.VISIBLE}"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:visibility="visible" />
 
@@ -62,7 +62,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/keymap_recyclerview_placeholder"
-                android:visibility="@{viewModel.keymapList.empty &amp;&amp; !viewModel.loadingContent ? View.VISIBLE : View.GONE}"
+                android:visibility="@{viewModel.keymapModelList.empty &amp;&amp; !viewModel.loadingContent ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
