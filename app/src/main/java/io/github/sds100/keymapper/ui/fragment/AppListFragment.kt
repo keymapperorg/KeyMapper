@@ -14,7 +14,7 @@ class AppListFragment : RecyclerViewFragment() {
 
     companion object {
         const val SAVED_STATE_KEY = "key_app"
-        const val SEARCH_STATE_KEY = "key_search_state"
+        const val SEARCH_STATE_KEY = "key_app_search_state"
     }
 
     override val progressCallback

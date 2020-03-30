@@ -1,9 +1,12 @@
 package io.github.sds100.keymapper.data
 
 import android.content.Context
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager.GET_META_DATA
+import android.content.pm.ResolveInfo
 import android.graphics.drawable.Drawable
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -25,15 +28,34 @@ class SystemRepository private constructor(private val mContext: Context) {
                     }
                 }
             }
+
         }.toList()
+    }
+
+    suspend fun getAppShortcutList(): List<ResolveInfo> = withContext(Dispatchers.Default) {
+        val shortcutIntent = Intent(Intent.ACTION_CREATE_SHORTCUT)
+        return@withContext mContext.packageManager.queryIntentActivities(shortcutIntent, 0)
     }
 
     fun getAppIcon(applicationInfo: ApplicationInfo): Drawable? {
         return applicationInfo.loadIcon(mContext.packageManager)
     }
 
+    fun getIntentIcon(resolveInfo: ResolveInfo): Drawable? {
+        return resolveInfo.loadIcon(mContext.packageManager)
+    }
+
     fun getAppName(applicationInfo: ApplicationInfo): String? {
         return applicationInfo.loadLabel(mContext.packageManager).toString()
+    }
+
+    fun getAppName(packageName: String): String? {
+        val applicationInfo = mContext.packageManager.getApplicationInfo(packageName, 0)
+        return getAppName(applicationInfo)
+    }
+
+    fun getIntentLabel(resolveInfo: ResolveInfo): String? {
+        return resolveInfo.loadLabel(mContext.packageManager).toString()
     }
 
     companion object {

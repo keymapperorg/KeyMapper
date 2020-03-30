@@ -59,7 +59,7 @@ data class Constraint(@ConstraintType val type: String, val extras: List<Extra>)
     }
 
     fun getExtraData(extraId: String): Result<String> {
-        val extra = extras.find { it.id == extraId } ?: return ExtraNotFound()
+        val extra = extras.find { it.id == extraId } ?: return ExtraNotFound(extraId)
 
         return Success(extra.data)
     }

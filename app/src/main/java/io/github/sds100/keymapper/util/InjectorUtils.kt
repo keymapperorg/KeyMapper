@@ -4,10 +4,7 @@ import android.content.Context
 import com.example.architecturetest.data.KeymapRepository
 import io.github.sds100.keymapper.data.SystemRepository
 import io.github.sds100.keymapper.data.db.AppDatabase
-import io.github.sds100.keymapper.data.viewmodel.AppListViewModel
-import io.github.sds100.keymapper.data.viewmodel.ChooseConstraintListViewModel
-import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
-import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
+import io.github.sds100.keymapper.data.viewmodel.*
 
 /**
  * Created by sds100 on 26/01/2020.
@@ -26,6 +23,11 @@ object InjectorUtils {
     fun provideAppListViewModel(context: Context): AppListViewModel.Factory {
         val repository = getSystemRepository(context)
         return AppListViewModel.Factory(repository)
+    }
+
+    fun provideAppShortcutListViewModel(context: Context): AppShortcutListViewModel.Factory {
+        val repository = getSystemRepository(context)
+        return AppShortcutListViewModel.Factory(repository)
     }
 
     fun provideKeymapListViewModel(context: Context): KeymapListViewModel.Factory {

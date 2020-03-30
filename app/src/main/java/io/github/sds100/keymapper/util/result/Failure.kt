@@ -56,6 +56,6 @@ class AppDisabled(val packageName: String) : RecoverableFailure(appStr(R.string.
 
 class SystemFeatureNotSupported(feature: String) : Failure(appStr(R.string.error_feature_not_available, feature))
 class ConstraintNotFound : Failure(appStr(R.string.error_constraint_not_found))
-class ExtraNotFound : Failure(appStr(R.string.error_extra_not_found))
+class ExtraNotFound(extraId: String) : Failure(appStr(R.string.error_extra_not_found, extraId))
 class NoActionData : Failure(appStr(R.string.error_no_action_data))
 class FlagNotFound : Failure(appStr(R.string.error_flag_not_found))

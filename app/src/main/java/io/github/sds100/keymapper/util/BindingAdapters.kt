@@ -6,6 +6,7 @@ import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.textfield.TextInputLayout
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.ui.callback.ErrorClickCallback

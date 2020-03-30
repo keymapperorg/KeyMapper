@@ -15,10 +15,6 @@ import splitties.resources.appStr
  * Created by sds100 on 03/09/2018.
  */
 
-fun List<Action>.buildDescription(): String = buildString {
-
-}
-
 fun Action.buildModel(): ActionModel {
     var title: String? = null
     var icon: Drawable? = null
@@ -28,22 +24,21 @@ fun Action.buildModel(): ActionModel {
         .then { canBePerformed() }
         .failureOrNull()
 
-    val flags =
-        if (flags == 0) {
-            null
-        } else {
-            buildString {
-                val flagLabels = getFlagLabelList()
+    val flags = if (flags == 0) {
+        null
+    } else {
+        buildString {
+            val flagLabels = getFlagLabelList()
 
-                flagLabels.forEachIndexed { index, label ->
-                    if (index != 0) {
-                        append(appStr(R.string.interpunct))
-                    }
-
-                    append(label)
+            flagLabels.forEachIndexed { index, label ->
+                if (index != 0) {
+                    append(appStr(R.string.interpunct))
                 }
+
+                append(label)
             }
         }
+    }
 
     return ActionModel(uniqueId, title, icon, flags, error)
 }
@@ -74,36 +69,40 @@ fun Action.buildChipModel(): ActionChipModel {
     return ActionChipModel(uniqueId, description, error, icon)
 }
 
-private fun Action.getTitle(): Result<String> {
-    when (type) {
-        ActionType.APP -> {
-            try {
-                val applicationInfo = appCtx.packageManager.getApplicationInfo(data, PackageManager.GET_META_DATA)
+private fun Action.getTitle(): Result<String> = when (type) {
+    ActionType.APP -> {
+        try {
+            val applicationInfo = appCtx.packageManager.getApplicationInfo(data, PackageManager.GET_META_DATA)
 
-                val applicationLabel = appCtx.packageManager.getApplicationLabel(applicationInfo)
+            val applicationLabel = appCtx.packageManager.getApplicationLabel(applicationInfo)
 
-                return Success(appCtx.getString(R.string.description_open_app, applicationLabel.toString()))
-            } catch (e: PackageManager.NameNotFoundException) {
-                //the app isn't installed
-                return AppNotFound(data)
-            }
+            Success(appCtx.getString(R.string.description_open_app, applicationLabel.toString()))
+        } catch (e: PackageManager.NameNotFoundException) {
+            //the app isn't installed
+            AppNotFound(data)
         }
+    }
+
+    ActionType.APP_SHORTCUT -> {
+        getExtraData(Action.EXTRA_SHORTCUT_TITLE)
     }
 }
 
 /**
  * Get the icon for any Action
  */
-private fun Action.getIcon(): Result<Drawable> {
-    return when (type) {
-        ActionType.APP -> {
-            try {
-                Success(appCtx.packageManager.getApplicationIcon(data))
-            } catch (e: PackageManager.NameNotFoundException) {
-                //if the app isn't installed, it can't find the icon for it
-                AppNotFound(data)
-            }
+private fun Action.getIcon(): Result<Drawable?> = when (type) {
+    ActionType.APP -> {
+        try {
+            Success(appCtx.packageManager.getApplicationIcon(data))
+        } catch (e: PackageManager.NameNotFoundException) {
+            //if the app isn't installed, it can't find the icon for it
+            AppNotFound(data)
         }
+    }
+
+    ActionType.APP_SHORTCUT -> getExtraData(Action.EXTRA_PACKAGE_NAME).then {
+        Success(appCtx.packageManager.getApplicationIcon(it))
     }
 }
 
@@ -111,26 +110,35 @@ private fun Action.getIcon(): Result<Drawable> {
  * @return if the action can't be performed, it returns an error code.
  * returns null if their if the action can be performed.
  */
-private fun Action.canBePerformed(): Result<Action> {
+private fun Action.canBePerformed()
+    : Result<Action> {
     //the action has no data
     if (data.isEmpty()) return NoActionData()
 
     when (type) {
-        ActionType.APP -> {
-            try {
-                val appInfo = appCtx.packageManager.getApplicationInfo(data, 0)
+        ActionType.APP, ActionType.APP_SHORTCUT -> {
+            val packageName: Result<String> = when (type) {
+                ActionType.APP -> Success(data)
+                ActionType.APP_SHORTCUT -> getExtraData(Action.EXTRA_PACKAGE_NAME)
+            }
 
-                //if the app is disabled, show an error message because it won't open
-                if (!appInfo.enabled) {
-                    return AppDisabled(data)
+            return packageName.then {
+                try {
+                    val appInfo = appCtx.packageManager.getApplicationInfo(it, 0)
+
+                    //if the app is disabled, show an error message because it won't open
+                    if (!appInfo.enabled) {
+                        return@then AppDisabled(data)
+                    }
+
+                    return@then Success(this)
+
+                } catch (e: Exception) {
+                    return@then AppNotFound(data)
                 }
-            } catch (e: Exception) {
-                return AppNotFound(data)
             }
         }
     }
-
-    return Success(this)
 }
 
 fun Action.getAvailableFlags(): List<Int> = sequence<Int> {

@@ -13,6 +13,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.AppListItemModel
+import io.github.sds100.keymapper.data.model.AppShortcutModel
 import io.github.sds100.keymapper.databinding.FragmentChooseActionBinding
 import io.github.sds100.keymapper.ui.adapter.ChooseActionPagerAdapter
 import io.github.sds100.keymapper.util.observeLiveData
@@ -46,19 +47,27 @@ class ChooseActionFragment : Fragment() {
                 findNavController().navigateUp()
             }
 
-            findNavController().apply {
-                currentBackStackEntry?.observeLiveData<AppListItemModel>(
-                    viewLifecycleOwner,
-                    AppListFragment.SAVED_STATE_KEY
-                ) {
-                    previousBackStackEntry?.setLiveData(SAVED_STATE_KEY, Action.appAction(it.packageName))
-                    navigateUp()
-                }
+            onModelSelected<AppListItemModel>(AppListFragment.SAVED_STATE_KEY) {
+                Action.appAction(it.packageName)
+            }
+
+            onModelSelected<AppShortcutModel>(AppShortcutListFragment.SAVED_STATE_KEY) {
+                Action.appShortcutAction(it)
             }
 
             subscribeSearchView()
 
             return this.root
+        }
+    }
+
+    private fun <T> onModelSelected(key: String, createAction: (model: T) -> Action) = findNavController().apply {
+
+        currentBackStackEntry?.observeLiveData<T>(viewLifecycleOwner, key) {
+            val action = createAction(it)
+
+            previousBackStackEntry?.setLiveData(SAVED_STATE_KEY, action)
+            navigateUp()
         }
     }
 

@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.data.viewmodel
 
 import androidx.lifecycle.*
 import io.github.sds100.keymapper.data.SystemRepository
-import io.github.sds100.keymapper.data.model.AppListItemModel
+import io.github.sds100.keymapper.data.model.AppShortcutListItemModel
 import io.github.sds100.keymapper.ui.callback.ProgressCallback
 import kotlinx.coroutines.launch
 import java.util.*
@@ -10,18 +10,18 @@ import java.util.*
 /**
  * Created by sds100 on 27/01/2020.
  */
-class AppListViewModel internal constructor(
+class AppShortcutListViewModel internal constructor(
     private val repository: SystemRepository
 ) : ViewModel(), ProgressCallback {
 
     val searchQuery: MutableLiveData<String> = MutableLiveData("")
 
-    private val mAppModelList: MutableLiveData<List<AppListItemModel>> = MutableLiveData()
+    private val mAppShortcutModelList: MutableLiveData<List<AppShortcutListItemModel>> = MutableLiveData()
 
-    val filteredAppModelList = MediatorLiveData<List<AppListItemModel>>().apply {
+    val filteredAppShortcutModelList = MediatorLiveData<List<AppShortcutListItemModel>>().apply {
         fun filter(query: String) {
-            value = mAppModelList.value?.filter {
-                it.appName.toLowerCase(Locale.getDefault()).contains(query)
+            value = mAppShortcutModelList.value?.filter {
+                it.label.toLowerCase(Locale.getDefault()).contains(query)
             } ?: listOf()
         }
 
@@ -29,7 +29,7 @@ class AppListViewModel internal constructor(
             filter(query)
         }
 
-        addSource(mAppModelList) {
+        addSource(mAppShortcutModelList) {
             value = it
 
             searchQuery.value?.let { query ->
@@ -44,12 +44,14 @@ class AppListViewModel internal constructor(
         viewModelScope.launch {
             loadingContent.value = true
 
-            mAppModelList.value = repository.getAppList().map {
-                val name = repository.getAppName(it) ?: it.packageName
-                val icon = repository.getAppIcon(it)
+            mAppShortcutModelList.value = repository.getAppShortcutList().map {
+                //only include it if it has a configuration screen
 
-                AppListItemModel(it.packageName, name, icon)
-            }.sortedBy { it.appName.toLowerCase(Locale.getDefault()) }
+                val name = repository.getIntentLabel(it) ?: ""
+                val icon = repository.getIntentIcon(it)
+
+                AppShortcutListItemModel(it.activityInfo, name, icon)
+            }.sortedBy { it.label.toLowerCase(Locale.getDefault()) }
 
             loadingContent.value = false
         }
@@ -61,6 +63,6 @@ class AppListViewModel internal constructor(
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>) =
-            AppListViewModel(mRepository) as T
+            AppShortcutListViewModel(mRepository) as T
     }
 }
