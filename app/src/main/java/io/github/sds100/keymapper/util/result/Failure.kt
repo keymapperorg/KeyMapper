@@ -5,9 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
-import androidx.annotation.RequiresFeature
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.PackageUtils
 import splitties.resources.appStr
 
@@ -39,8 +39,8 @@ class PermissionDenied<T>(permission: String) : RecoverableFailure(getMessageFor
 }
 
 class AppNotFound(val packageName: String) : RecoverableFailure(
-        fullMessage = appStr(R.string.error_app_isnt_installed, packageName),
-        briefMessage = appStr(R.string.error_app_isnt_installed_brief)) {
+    fullMessage = appStr(R.string.error_app_isnt_installed, packageName),
+    briefMessage = appStr(R.string.error_app_isnt_installed_brief)) {
     override fun recover(ctx: Context) = PackageUtils.viewAppOnline(ctx, packageName)
 }
 
@@ -54,8 +54,21 @@ class AppDisabled(val packageName: String) : RecoverableFailure(appStr(R.string.
     }
 }
 
+class ImeServiceDisabled : RecoverableFailure(appStr(R.string.error_ime_service_disabled)) {
+    override fun recover(ctx: Context) {
+        //TODO port over IME stuff
+    }
+}
+
+class ImeServiceNotChosen : RecoverableFailure(appStr(R.string.error_ime_must_be_chosen)) {
+    override fun recover(ctx: Context) {
+        //TODO port over IME stuff
+    }
+}
+
 class SystemFeatureNotSupported(feature: String) : Failure(appStr(R.string.error_feature_not_available, feature))
 class ConstraintNotFound : Failure(appStr(R.string.error_constraint_not_found))
 class ExtraNotFound(extraId: String) : Failure(appStr(R.string.error_extra_not_found, extraId))
 class NoActionData : Failure(appStr(R.string.error_no_action_data))
 class FlagNotFound : Failure(appStr(R.string.error_flag_not_found))
+class InvalidActionType(actionType: ActionType): Failure(appStr(R.string.error_invalid_action_type, actionType.toString()))

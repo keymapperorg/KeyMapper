@@ -115,7 +115,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:src="@drawable/ic_baseline_error_outline_24"
-                    android:visibility="@{model.icon == null ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{model.hasError ? View.VISIBLE : View.GONE}"
                     app:tint="?attr/colorError"
                     tools:srcCompat="@mipmap/ic_launcher" />
             </FrameLayout>

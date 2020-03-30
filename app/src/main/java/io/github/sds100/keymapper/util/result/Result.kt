@@ -18,7 +18,14 @@ import androidx.annotation.IntDef
     ERROR_CODE_FEATURE_NOT_AVAILABLE,
     ERROR_CODE_SDK_VERSION_TOO_LOW,
     ERROR_CODE_ACTION_EXTRA_NOT_FOUND,
-    ERROR_CODE_NULL]
+    ERROR_CODE_NULL,
+    ERROR_CODE_IME_SERVICE_DISABLED,
+    ERROR_CODE_SDK_VERSION_TOO_HIGH,
+    ERROR_CODE_IME_NOT_FOUND,
+    ERROR_CODE_NO_ENABLED_IMES,
+    ERROR_CODE_OPTIONS_NOT_REQUIRED,
+    ERROR_CODE_FRONT_FLASH_NOT_FOUND,
+    ERROR_CODE_BACK_FLASH_NOT_FOUND]
 )
 annotation class ErrorCode
 
@@ -36,6 +43,13 @@ const val ERROR_CODE_ACTION_EXTRA_NOT_FOUND = 10
 const val ERROR_CODE_FLAG_NOT_FOUND = 11
 const val ERROR_CODE_GOOGLE_APP_NOT_INSTALLED = 12
 const val ERROR_CODE_NULL = 13
+const val ERROR_CODE_IME_SERVICE_DISABLED = 14
+const val ERROR_CODE_SDK_VERSION_TOO_HIGH = 15
+const val ERROR_CODE_IME_NOT_FOUND = 16
+const val ERROR_CODE_NO_ENABLED_IMES = 17
+const val ERROR_CODE_OPTIONS_NOT_REQUIRED = 18
+const val ERROR_CODE_FRONT_FLASH_NOT_FOUND = 19
+const val ERROR_CODE_BACK_FLASH_NOT_FOUND = 20
 
 /**
  * Inspired from @antonyharfield great example!
@@ -47,8 +61,8 @@ data class Success<T>(val value: T) : Result<T>()
 abstract class Failure(val fullMessage: String, val briefMessage: String = fullMessage) : Result<Nothing>()
 
 abstract class RecoverableFailure(
-        fullMessage: String,
-        briefMessage: String = fullMessage
+    fullMessage: String,
+    briefMessage: String = fullMessage
 ) : Failure(fullMessage, briefMessage) {
     abstract fun recover(ctx: Context)
 }
@@ -93,4 +107,4 @@ fun <T> Result<T>.failureOrNull(): Failure? {
 }
 
 infix fun <T> Result<T>.otherwise(f: (failure: Failure) -> Unit) =
-        if (this is Failure) f(this) else Unit
+    if (this is Failure) f(this) else Unit

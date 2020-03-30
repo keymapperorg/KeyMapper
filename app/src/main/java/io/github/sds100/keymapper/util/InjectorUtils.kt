@@ -39,6 +39,10 @@ object InjectorUtils {
         return ChooseConstraintListViewModel.Factory()
     }
 
+    fun provideKeyActionTypeViewModel(): KeyActionTypeViewModel.Factory {
+        return KeyActionTypeViewModel.Factory()
+    }
+
     fun provideConfigKeymapViewModel(
         context: Context,
         id: Long

@@ -69,6 +69,10 @@ data class Action(
 
             return Action(ActionType.APP_SHORTCUT, data = model.uri, extras = extras)
         }
+
+        fun keyAction(keyCode: Int): Action {
+            return Action(ActionType.KEY, keyCode.toString())
+        }
     }
 
     constructor(type: ActionType, data: String, extra: Extra) : this(type, data, mutableListOf(extra))

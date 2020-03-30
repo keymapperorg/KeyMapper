@@ -86,6 +86,15 @@ private fun Action.getTitle(): Result<String> = when (type) {
     ActionType.APP_SHORTCUT -> {
         getExtraData(Action.EXTRA_SHORTCUT_TITLE)
     }
+
+    ActionType.KEY -> {
+        val keyCode = data.toInt()
+        val key = KeycodeUtils.keycodeToString(keyCode)
+
+        Success(appStr(R.string.description_key, key))
+    }
+
+    else -> InvalidActionType(type)
 }
 
 /**
@@ -104,23 +113,36 @@ private fun Action.getIcon(): Result<Drawable?> = when (type) {
     ActionType.APP_SHORTCUT -> getExtraData(Action.EXTRA_PACKAGE_NAME).then {
         Success(appCtx.packageManager.getApplicationIcon(it))
     }
+
+    else -> Success(null)
 }
 
 /**
  * @return if the action can't be performed, it returns an error code.
  * returns null if their if the action can be performed.
  */
-private fun Action.canBePerformed()
-    : Result<Action> {
+private fun Action.canBePerformed(): Result<Action> {
     //the action has no data
     if (data.isEmpty()) return NoActionData()
 
+    if (requiresIME) {
+//        if (!MyIMEService.isServiceEnabled(ctx)) {
+//            return ImeServiceDisabled()
+//        }
+//
+//        if (!MyIMEService.isInputMethodChosen(ctx)) {
+//            return ImeServiceNotChosen()
+//        }
+    }
+
     when (type) {
         ActionType.APP, ActionType.APP_SHORTCUT -> {
-            val packageName: Result<String> = when (type) {
-                ActionType.APP -> Success(data)
-                ActionType.APP_SHORTCUT -> getExtraData(Action.EXTRA_PACKAGE_NAME)
-            }
+            val packageName: Result<String> =
+                if (type == ActionType.APP) {
+                    Success(data)
+                } else {
+                    getExtraData(Action.EXTRA_PACKAGE_NAME)
+                }
 
             return packageName.then {
                 try {
@@ -139,11 +161,21 @@ private fun Action.canBePerformed()
             }
         }
     }
+
+    return Success(this)
 }
 
 fun Action.getAvailableFlags(): List<Int> = sequence<Int> {
 
 }.toList()
+
+val Action.requiresIME: Boolean
+    get() {
+        return type == ActionType.KEY ||
+            type == ActionType.KEYCODE ||
+            type == ActionType.TEXT_BLOCK ||
+            data == SystemAction.MOVE_CURSOR_TO_END
+    }
 
 fun KeyMap.buildActionChipModels() = sequence {
     actionList.forEach { action ->

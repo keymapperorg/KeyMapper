@@ -1,14 +1,12 @@
 package io.github.sds100.keymapper.ui.fragment
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Action
@@ -55,6 +53,10 @@ class ChooseActionFragment : Fragment() {
                 Action.appShortcutAction(it)
             }
 
+            onModelSelected<Int>(KeyActionTypeFragment.SAVED_STATE_KEY){
+                Action.keyAction(it)
+            }
+
             subscribeSearchView()
 
             return this.root
@@ -74,6 +76,14 @@ class ChooseActionFragment : Fragment() {
     private fun FragmentChooseActionBinding.subscribeSearchView() {
         val searchViewMenuItem = appBar.menu.findItem(R.id.action_search)
         val searchView = searchViewMenuItem.actionView as SearchView
+
+        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+
+                searchViewMenuItem.isVisible = mPagerAdapter.getSearchStateKey(position) != null
+            }
+        })
 
         searchViewMenuItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
