@@ -107,12 +107,11 @@
 
         <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/appBar"
+            style="@style/BottomAppBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:gravity="center"
-            android:theme="@style/BottomAppBar.PrimaryOverlay"
-            app:backgroundTint="@color/colorPrimary"
             app:fabAlignmentMode="@{viewModel.selectionProvider.isSelectable() ? BottomAppBar.FAB_ALIGNMENT_MODE_END : BottomAppBar.FAB_ALIGNMENT_MODE_CENTER}"
             app:fabAnimationMode="slide"
             app:menu="@menu/menu_keymap_list"

@@ -105,8 +105,12 @@
         <item name="android:textColor">?attr/colorError</item>
     </style>
 
-    <style name="BottomAppBar.PrimaryOverlay" parent="ThemeOverlay.MaterialComponents.BottomAppBar.Primary">
-        <item name="tint">?attr/colorOnPrimary</item>
-        <item name="iconTint">?attr/colorOnPrimary</item>
+    <style name="BottomAppBar" parent="Widget.MaterialComponents.BottomAppBar.PrimarySurface">
+        <item name="theme">@style/BottomAppBar.Theme</item>
+    </style>
+
+    <style name="BottomAppBar.Theme" parent="ThemeOverlay.MaterialComponents.BottomAppBar.Primary">
+        <item name="iconTint">?attr/colorOnPrimarySurface</item>
+        <item name="tint">?attr/colorOnPrimarySurface</item>
     </style>
 </resources>

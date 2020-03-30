@@ -33,9 +33,9 @@
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabLayout"
                 style="@style/AppTabLayout"
-                app:tabMode="fixed"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                app:tabMode="fixed">
 
             </com.google.android.material.tabs.TabLayout>
 
@@ -48,12 +48,11 @@
 
         <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/appBar"
+            style="@style/BottomAppBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:gravity="center"
-            android:theme="@style/BottomAppBar.PrimaryOverlay"
-            app:backgroundTint="@color/colorPrimary"
             app:fabAlignmentMode="end"
             app:fabAnimationMode="slide"
             app:menu="@menu/menu_config_keymap"
