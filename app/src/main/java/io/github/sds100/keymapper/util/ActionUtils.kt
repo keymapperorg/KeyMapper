@@ -105,6 +105,10 @@ private fun Action.getTitle(): Result<String> = when (type) {
         Success(appStr(R.string.description_text_block, text))
     }
 
+    ActionType.URL -> {
+        Success(appStr(R.string.description_url, data))
+    }
+
     else -> InvalidActionType(type)
 }
 

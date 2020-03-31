@@ -51,6 +51,10 @@ object InjectorUtils {
         return TextBlockActionTypeViewModel.Factory()
     }
 
+    fun provideUrlActionTypeViewModel(): UrlActionTypeViewModel.Factory {
+        return UrlActionTypeViewModel.Factory()
+    }
+
     fun provideConfigKeymapViewModel(
         context: Context,
         id: Long

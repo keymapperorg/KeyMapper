@@ -81,6 +81,10 @@ data class Action(
         fun textBlockAction(text: String): Action {
             return Action(ActionType.TEXT_BLOCK, text)
         }
+
+        fun urlAction(url: String): Action {
+            return Action(ActionType.URL, url)
+        }
     }
 
     constructor(type: ActionType, data: String, extra: Extra) : this(type, data, mutableListOf(extra))

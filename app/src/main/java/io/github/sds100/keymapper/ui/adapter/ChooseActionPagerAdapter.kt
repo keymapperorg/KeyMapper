@@ -34,6 +34,9 @@ class ChooseActionPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragme
         },
         {
             TextBlockActionTypeFragment()
+        },
+        {
+            UrlActionTypeFragment()
         }
     )
 
