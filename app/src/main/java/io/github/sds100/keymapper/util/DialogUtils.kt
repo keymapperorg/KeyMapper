@@ -4,13 +4,11 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.observe
-import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.DialogEdittextBinding
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
 import splitties.alertdialog.appcompat.okButton
 import splitties.experimental.ExperimentalSplittiesApi
-import splitties.resources.appStr
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -38,12 +36,6 @@ suspend fun FragmentActivity.editTextAlertDialog(hint: String) = suspendCoroutin
 
             show().apply {
                 text.observe(this@editTextAlertDialog) {
-                    textInputLayout.error = if (it.isNullOrBlank()) {
-                        appStr(R.string.error_cant_be_empty)
-                    } else {
-                        null
-                    }
-
                     getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = !it.isNullOrBlank()
                 }
             }

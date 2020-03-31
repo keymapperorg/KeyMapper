@@ -2,10 +2,7 @@ package io.github.sds100.keymapper.ui.adapter
 
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import io.github.sds100.keymapper.ui.fragment.AppListFragment
-import io.github.sds100.keymapper.ui.fragment.AppShortcutListFragment
-import io.github.sds100.keymapper.ui.fragment.KeyActionTypeFragment
-import io.github.sds100.keymapper.ui.fragment.KeycodeListFragment
+import io.github.sds100.keymapper.ui.fragment.*
 
 /**
  * Created by sds100 on 26/01/2020.
@@ -34,6 +31,9 @@ class ChooseActionPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragme
                 isAppBarVisible = false
                 isInPagerAdapter = true
             }
+        },
+        {
+            TextBlockActionTypeFragment()
         }
     )
 

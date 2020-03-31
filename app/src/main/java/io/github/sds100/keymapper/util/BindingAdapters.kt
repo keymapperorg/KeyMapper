@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.util
 import android.view.View
 import android.widget.CompoundButton
 import android.widget.TextView
+import androidx.core.widget.addTextChangedListener
 import androidx.databinding.BindingAdapter
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -17,6 +18,23 @@ import splitties.resources.appStr
 /**
  * Created by sds100 on 25/01/2020.
  */
+
+@BindingAdapter("app:errorWhenEmpty")
+fun TextInputLayout.errorWhenEmpty(enabled: Boolean) {
+
+    //need to set it up when the view is created
+    if (editText?.text.isNullOrBlank()) {
+        error = appStr(R.string.error_cant_be_empty)
+    }
+
+    editText?.addTextChangedListener {
+        error = if (it.isNullOrBlank() && enabled) {
+            appStr(R.string.error_cant_be_empty)
+        } else {
+            null
+        }
+    }
+}
 
 @BindingAdapter("app:onLongClick")
 fun setLongClickListener(view: View, onLongClickListener: View.OnLongClickListener) {

@@ -20,6 +20,7 @@
         android:layout_height="wrap_content"
         android:hint="@{hint}"
         android:padding="8dp"
+        app:errorWhenEmpty="@{true}"
         tools:hint="Hint">
 
         <com.google.android.material.textfield.TextInputEditText

@@ -64,6 +64,10 @@ class ChooseActionFragment : Fragment() {
                 Action.keycodeAction(it)
             }
 
+            onModelSelected<String>(TextBlockActionTypeFragment.SAVED_STATE_KEY) {
+                Action.textBlockAction(it)
+            }
+
             subscribeSearchView()
 
             return this.root

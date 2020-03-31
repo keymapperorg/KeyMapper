@@ -100,6 +100,11 @@ private fun Action.getTitle(): Result<String> = when (type) {
         Success(appStr(R.string.description_keycode, key))
     }
 
+    ActionType.TEXT_BLOCK -> {
+        val text = data
+        Success(appStr(R.string.description_text_block, text))
+    }
+
     else -> InvalidActionType(type)
 }
 

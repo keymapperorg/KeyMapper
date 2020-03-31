@@ -47,6 +47,10 @@ object InjectorUtils {
         return KeycodeListViewModel.Factory()
     }
 
+    fun provideTextBlockActionTypeViewModel(): TextBlockActionTypeViewModel.Factory {
+        return TextBlockActionTypeViewModel.Factory()
+    }
+
     fun provideConfigKeymapViewModel(
         context: Context,
         id: Long
