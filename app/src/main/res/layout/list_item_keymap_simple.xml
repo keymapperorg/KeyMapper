@@ -138,7 +138,7 @@
                     app:layout_constraintTop_toBottomOf="@id/textViewTrigger" />
 
                 <TextView
-                    android:id="@+id/textViewFlags"
+                    android:id="@+id/textViewSecondary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"

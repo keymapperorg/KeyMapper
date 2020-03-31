@@ -6,4 +6,5 @@
     <color name="colorPrimaryVariant">@color/colorAccent</color>
     <color name="colorSecondary">@color/colorAccent</color>
     <color name="iconTintTriggerKeySeparator">#cccccc</color>
+    <color name="divider">#1FFFFFFF</color>
 </resources>

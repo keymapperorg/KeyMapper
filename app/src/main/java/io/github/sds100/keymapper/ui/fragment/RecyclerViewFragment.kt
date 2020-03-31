@@ -28,7 +28,6 @@ abstract class RecyclerViewFragment : Fragment() {
         private const val KEY_IS_APPBAR_VISIBLE = "key_is_app_visible"
         private const val KEY_IS_IN_PAGER_ADAPTER = "key_is_in_pager_adapter"
         private const val KEY_SELECTED_MODEL_KEY = "key_selected_model_key"
-        private const val KEY_SEARCH_ENABLED = "key_search_enabled"
         private const val KEY_SEARCH_STATE_KEY = "key_search_state_key"
     }
 

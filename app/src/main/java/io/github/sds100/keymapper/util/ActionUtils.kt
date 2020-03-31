@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.util
 
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
+import android.view.KeyEvent
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.ActionChipModel
@@ -92,6 +93,11 @@ private fun Action.getTitle(): Result<String> = when (type) {
         val key = KeycodeUtils.keycodeToString(keyCode)
 
         Success(appStr(R.string.description_key, key))
+    }
+
+    ActionType.KEYCODE -> {
+        val key = KeyEvent.keyCodeToString(data.toInt())
+        Success(appStr(R.string.description_keycode, key))
     }
 
     else -> InvalidActionType(type)

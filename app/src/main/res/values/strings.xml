@@ -49,7 +49,7 @@
     <string name="description_open_app">Open %s</string>
     <string name="description_key">Press \'%s\' key</string>
     <string name="description_text_block">Type \'%s\'</string>
-    <string name="description_keycode">%s</string>
+    <string name="description_keycode">Input %s</string>
     <string name="description_url">Open %s</string>
 
     <string name="exception_accessibility_service" translatable="false">Exception in onKeyEvent. Look in logcat.</string>

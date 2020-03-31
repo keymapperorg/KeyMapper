@@ -70,7 +70,7 @@
                     tools:text="Increase Volume" />
 
                 <TextView
-                    android:id="@+id/textViewFlags"
+                    android:id="@+id/textViewSecondary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@{model.flags}"

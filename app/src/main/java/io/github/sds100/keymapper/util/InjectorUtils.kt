@@ -43,6 +43,10 @@ object InjectorUtils {
         return KeyActionTypeViewModel.Factory()
     }
 
+    fun provideKeycodeListViewModel(): KeycodeListViewModel.Factory {
+        return KeycodeListViewModel.Factory()
+    }
+
     fun provideConfigKeymapViewModel(
         context: Context,
         id: Long

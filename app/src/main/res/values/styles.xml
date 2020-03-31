@@ -112,5 +112,6 @@
     <style name="BottomAppBar.Theme" parent="ThemeOverlay.MaterialComponents.BottomAppBar.Primary">
         <item name="iconTint">?attr/colorOnPrimarySurface</item>
         <item name="tint">?attr/colorOnPrimarySurface</item>
+        <item name="android:editTextColor">?attr/colorOnPrimarySurface</item>
     </style>
 </resources>

@@ -5,6 +5,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import io.github.sds100.keymapper.ui.fragment.AppListFragment
 import io.github.sds100.keymapper.ui.fragment.AppShortcutListFragment
 import io.github.sds100.keymapper.ui.fragment.KeyActionTypeFragment
+import io.github.sds100.keymapper.ui.fragment.KeycodeListFragment
 
 /**
  * Created by sds100 on 26/01/2020.
@@ -27,12 +28,19 @@ class ChooseActionPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragme
         },
         {
             KeyActionTypeFragment()
+        },
+        {
+            KeycodeListFragment().apply {
+                isAppBarVisible = false
+                isInPagerAdapter = true
+            }
         }
     )
 
     fun getSearchStateKey(position: Int): String? = when (position) {
         0 -> AppListFragment.SEARCH_STATE_KEY
         1 -> AppShortcutListFragment.SEARCH_STATE_KEY
+        3 -> KeycodeListFragment.SEARCH_STATE_KEY
 
         else -> null
     }

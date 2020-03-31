@@ -1,7 +1,10 @@
 package io.github.sds100.keymapper.ui.fragment
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -53,8 +56,12 @@ class ChooseActionFragment : Fragment() {
                 Action.appShortcutAction(it)
             }
 
-            onModelSelected<Int>(KeyActionTypeFragment.SAVED_STATE_KEY){
+            onModelSelected<Int>(KeyActionTypeFragment.SAVED_STATE_KEY) {
                 Action.keyAction(it)
+            }
+
+            onModelSelected<Int>(KeycodeListFragment.SAVED_STATE_KEY) {
+                Action.keycodeAction(it)
             }
 
             subscribeSearchView()

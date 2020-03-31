@@ -21,7 +21,6 @@ class AppListFragment : RecyclerViewFragment() {
         get() = mViewModel
 
     override var searchStateKey: String? = SEARCH_STATE_KEY
-
     override var selectedModelKey: String? = SAVED_STATE_KEY
 
     private val mViewModel: AppListViewModel by viewModels {

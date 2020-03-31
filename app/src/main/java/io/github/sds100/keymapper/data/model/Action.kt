@@ -73,6 +73,10 @@ data class Action(
         fun keyAction(keyCode: Int): Action {
             return Action(ActionType.KEY, keyCode.toString())
         }
+
+        fun keycodeAction(keyCode: Int): Action {
+            return Action(ActionType.KEYCODE, keyCode.toString())
+        }
     }
 
     constructor(type: ActionType, data: String, extra: Extra) : this(type, data, mutableListOf(extra))
