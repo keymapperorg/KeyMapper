@@ -40,9 +40,7 @@ class ChooseConstraintListFragment : RecyclerViewFragment() {
 
     override fun subscribeList(binding: FragmentRecyclerviewBinding) {
         binding.epoxyRecyclerView.withModels {
-            mViewModel.constraintsSortedByCategory.forEach {
-                val sectionHeader = it.first
-                val constraints = it.second
+            for ((sectionHeader, constraints) in mViewModel.constraintsSortedByCategory) {
 
                 sectionHeader {
                     id(sectionHeader)
@@ -65,12 +63,12 @@ class ChooseConstraintListFragment : RecyclerViewFragment() {
 
     private fun observeFragmentChildrenLiveData() {
         findNavController().currentBackStackEntry?.observeLiveData<AppListItemModel>(
-                        viewLifecycleOwner,
-                        AppListFragment.SAVED_STATE_KEY
-                    ) {
-                        selectModel(Constraint.appConstraint(it.packageName))
-                    }
-                }
+            viewLifecycleOwner,
+            AppListFragment.SAVED_STATE_KEY
+        ) {
+            selectModel(Constraint.appConstraint(it.packageName))
+        }
+    }
 
     private fun onConstraintClick(@ConstraintType id: String) {
         when (id) {

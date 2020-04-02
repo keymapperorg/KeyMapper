@@ -8,6 +8,7 @@ import android.provider.Settings
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.ActionType
+import io.github.sds100.keymapper.util.BuildUtils
 import io.github.sds100.keymapper.util.PackageUtils
 import splitties.resources.appStr
 
@@ -66,9 +67,23 @@ class ImeServiceNotChosen : RecoverableFailure(appStr(R.string.error_ime_must_be
     }
 }
 
+class OptionsNotRequired() : Failure(appStr(R.string.error_options_not_required))
 class SystemFeatureNotSupported(feature: String) : Failure(appStr(R.string.error_feature_not_available, feature))
 class ConstraintNotFound : Failure(appStr(R.string.error_constraint_not_found))
 class ExtraNotFound(extraId: String) : Failure(appStr(R.string.error_extra_not_found, extraId))
 class NoActionData : Failure(appStr(R.string.error_no_action_data))
 class FlagNotFound : Failure(appStr(R.string.error_flag_not_found))
-class InvalidActionType(actionType: ActionType): Failure(appStr(R.string.error_invalid_action_type, actionType.toString()))
+class InvalidActionType(actionType: ActionType) : Failure(appStr(R.string.error_invalid_action_type, actionType.toString()))
+
+class SdkVersionTooLow(sdkVersion: Int
+) : Failure(appStr(R.string.error_sdk_version_too_low, BuildUtils.getSdkVersionName(sdkVersion)))
+
+class SdkVersionTooHigh(sdkVersion: Int
+) : Failure(appStr(R.string.error_sdk_version_too_high, BuildUtils.getSdkVersionName(sdkVersion)))
+
+class FeatureUnavailable(feature: String) : Failure(appStr(R.string.error_feature_not_available, feature))
+class SystemActionNotFound(id: String) : Failure(appStr(R.string.error_system_action_not_found, id))
+class KeyMapperImeNotFound() : Failure(appStr(R.string.error_key_mapper_ime_not_found))
+class InputMethodNotFound(id: String) : Failure(appStr(R.string.error_ime_not_found, id))
+class OptionLabelNotFound(id: String) : Failure(appStr(R.string.error_cant_find_option_label, id))
+class NoEnabledInputMethods() : Failure(appStr(R.string.error_no_enabled_imes))

@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.util
 import android.view.View
 import android.widget.CompoundButton
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.BindingAdapter
 import com.google.android.material.chip.Chip
@@ -13,11 +14,33 @@ import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
 import splitties.resources.appDrawable
 import splitties.resources.appStr
+import splitties.resources.styledColor
+import splitties.resources.styledColorSL
 
 
 /**
  * Created by sds100 on 25/01/2020.
  */
+
+@BindingAdapter("app:onSurfaceTint")
+fun AppCompatImageView.onSurfaceTint(enabled: Boolean) {
+    if (enabled) {
+        val color = context.styledColor(R.attr.colorOnSurface)
+
+        setColorFilter(color)
+    }else{
+        clearColorFilter()
+    }
+}
+
+@BindingAdapter("app:errorTint")
+fun AppCompatImageView.errorTint(enabled: Boolean) {
+    if (enabled) {
+        val color = context.styledColor(R.attr.colorError)
+
+        setColorFilter(color)
+    }
+}
 
 @BindingAdapter("app:errorWhenEmpty")
 fun TextInputLayout.errorWhenEmpty(enabled: Boolean) {
@@ -55,6 +78,10 @@ fun ChipGroup.bindActions(actions: List<ActionChipModel>, callback: ErrorClickCa
             chipIcon = it.icon
             isCloseIconVisible = it.hasError
 
+            if (it.type == ActionType.SYSTEM_ACTION) {
+                chipIconTint = context.styledColorSL(R.attr.colorOnSurface)
+            }
+
             if (it.description == null && it.hasError) {
                 text = it.error?.briefMessage
             }
@@ -86,7 +113,7 @@ fun ChipGroup.bindActionsAndConstraints(
 
     if (actions.isNotEmpty() && constraints.isNotEmpty()) {
         Chip(context).apply {
-            text = "while"
+            text = appStr(R.string.chip_while)
 
             chipStrokeWidth = 0f
 

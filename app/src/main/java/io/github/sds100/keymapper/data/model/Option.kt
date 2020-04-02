@@ -1,5 +1,16 @@
 package io.github.sds100.keymapper.data.model
 
+import android.hardware.camera2.CameraCharacteristics
+import android.media.AudioManager
+import android.os.Build
+import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.util.KeyboardUtils
+import io.github.sds100.keymapper.util.SystemAction
+import io.github.sds100.keymapper.util.result.OptionLabelNotFound
+import io.github.sds100.keymapper.util.result.Result
+import io.github.sds100.keymapper.util.result.Success
+import splitties.resources.appStr
+
 /**
  * Created by sds100 on 14/04/2019.
  */
@@ -18,4 +29,104 @@ object Option {
 
     const val LENS_FRONT = "option_lens_front"
     const val LENS_BACK = "option_lens_back"
+
+    const val RINGER_MODE_NORMAL = "option_ringer_mode_normal"
+    const val RINGER_MODE_VIBRATE = "option_ringer_mode_vibrate"
+    const val RINGER_MODE_SILENT = "option_ringer_mode_silent"
+
+    val STREAMS = sequence {
+        yieldAll(listOf(STREAM_ALARM,
+            STREAM_DTMF,
+            STREAM_MUSIC,
+            STREAM_NOTIFICATION,
+            STREAM_RING,
+            STREAM_SYSTEM,
+            STREAM_VOICE_CALL
+        ))
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            yield(STREAM_ACCESSIBILITY)
+        }
+    }.toList()
+
+    val LENSES = listOf(
+        LENS_FRONT,
+        LENS_BACK
+    )
+
+    val OPTION_ID_SDK_ID_MAP = sequence {
+        yieldAll(listOf(STREAM_ALARM to AudioManager.STREAM_ALARM,
+            STREAM_DTMF to AudioManager.STREAM_DTMF,
+            STREAM_MUSIC to AudioManager.STREAM_MUSIC,
+            STREAM_NOTIFICATION to AudioManager.STREAM_NOTIFICATION,
+            STREAM_RING to AudioManager.STREAM_RING,
+            STREAM_SYSTEM to AudioManager.STREAM_SYSTEM,
+            STREAM_VOICE_CALL to AudioManager.STREAM_VOICE_CALL,
+
+            RINGER_MODE_NORMAL to AudioManager.RINGER_MODE_NORMAL,
+            RINGER_MODE_VIBRATE to AudioManager.RINGER_MODE_VIBRATE,
+            RINGER_MODE_SILENT to AudioManager.RINGER_MODE_SILENT
+        ))
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            yield(STREAM_ACCESSIBILITY to AudioManager.STREAM_ACCESSIBILITY)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            yield(LENS_FRONT to CameraCharacteristics.LENS_FACING_FRONT)
+            yield(LENS_BACK to CameraCharacteristics.LENS_FACING_BACK)
+        }
+    }.toMap()
+
+    /**
+     * @return the [Extra] id for where the option is stored in the [Action]
+     */
+    @ExtraId
+    fun getExtraIdForOption(systemActionId: String): String {
+        return when (systemActionId) {
+            SystemAction.VOLUME_DECREASE_STREAM,
+            SystemAction.VOLUME_INCREASE_STREAM -> Action.EXTRA_STREAM_TYPE
+
+            SystemAction.DISABLE_FLASHLIGHT,
+            SystemAction.ENABLE_FLASHLIGHT,
+            SystemAction.TOGGLE_FLASHLIGHT -> Action.EXTRA_LENS
+
+            SystemAction.CHANGE_RINGER_MODE -> Action.EXTRA_RINGER_MODE
+
+            SystemAction.SWITCH_KEYBOARD -> Action.EXTRA_IME_ID
+
+            else -> throw Exception("Can't find an extra id for that system action $systemActionId")
+        }
+    }
+
+    fun getOptionLabel(systemActionId: String, optionId: String): Result<String> {
+        when (systemActionId) {
+            SystemAction.SWITCH_KEYBOARD -> {
+                return KeyboardUtils.getInputMethodLabel(optionId)
+            }
+        }
+
+        val label =  when (optionId) {
+            STREAM_ALARM -> appStr(R.string.stream_alarm)
+            STREAM_DTMF -> appStr(R.string.stream_dtmf)
+            STREAM_MUSIC -> appStr(R.string.stream_music)
+            STREAM_NOTIFICATION -> appStr(R.string.stream_notification)
+            STREAM_RING -> appStr(R.string.stream_ring)
+            STREAM_SYSTEM -> appStr(R.string.stream_system)
+            STREAM_VOICE_CALL -> appStr(R.string.stream_voice_call)
+
+            RINGER_MODE_NORMAL -> appStr(R.string.ringer_mode_normal)
+            RINGER_MODE_VIBRATE -> appStr(R.string.ringer_mode_vibrate)
+            RINGER_MODE_SILENT -> appStr(R.string.ringer_mode_silent)
+
+            LENS_BACK -> appStr(R.string.lens_back)
+            LENS_FRONT -> appStr(R.string.lens_front)
+
+            STREAM_ACCESSIBILITY -> appStr(R.string.stream_accessibility)
+
+            else -> return OptionLabelNotFound(optionId)
+        }
+
+        return Success(label)
+    }
 }

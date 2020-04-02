@@ -7,6 +7,8 @@
 
         <import type="android.view.View" />
 
+        <import type="io.github.sds100.keymapper.util.ActionType" />
+
         <variable
             name="model"
             type="io.github.sds100.keymapper.data.model.ActionModel" />
@@ -91,34 +93,21 @@
                     tools:visibility="visible" />
             </LinearLayout>
 
-            <!--  you can't reference attributes in Data Binding, so toggle the visibility of two imageviews  -->
-            <FrameLayout
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imageView"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:padding="4dp"
+                android:src="@{model.hasError ? @drawable/ic_baseline_error_outline_24 : model.icon}"
+                app:errorTint="@{model.hasError}"
                 app:layout_constraintBottom_toBottomOf="@id/layoutDescription"
                 app:layout_constraintEnd_toStartOf="@+id/layoutDescription"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/layoutDescription"
-                app:layout_constraintVertical_bias="0.0">
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:src="@{model.icon}"
-                    android:visibility="@{model.icon != null ? View.VISIBLE : View.GONE}"
-                    tools:srcCompat="@mipmap/ic_launcher"
-                    tools:visibility="gone" />
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/ic_baseline_error_outline_24"
-                    android:visibility="@{model.hasError ? View.VISIBLE : View.GONE}"
-                    app:tint="?attr/colorError"
-                    tools:srcCompat="@mipmap/ic_launcher" />
-            </FrameLayout>
+                app:layout_constraintVertical_bias="0.0"
+                app:onSurfaceTint="@{model.type == ActionType.SYSTEM_ACTION}"
+                tools:srcCompat="@mipmap/ic_launcher"
+                tools:visibility="visible" />
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/buttonMore"

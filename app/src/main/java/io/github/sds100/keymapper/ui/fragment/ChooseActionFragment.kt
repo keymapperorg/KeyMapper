@@ -15,6 +15,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.AppListItemModel
 import io.github.sds100.keymapper.data.model.AppShortcutModel
+import io.github.sds100.keymapper.data.model.SelectedSystemActionModel
 import io.github.sds100.keymapper.databinding.FragmentChooseActionBinding
 import io.github.sds100.keymapper.ui.adapter.ChooseActionPagerAdapter
 import io.github.sds100.keymapper.util.observeLiveData
@@ -70,6 +71,10 @@ class ChooseActionFragment : Fragment() {
 
             onModelSelected<String>(UrlActionTypeFragment.SAVED_STATE_KEY) {
                 Action.urlAction(it)
+            }
+
+            onModelSelected<SelectedSystemActionModel>(SystemActionListFragment.SAVED_STATE_KEY){
+                Action.systemAction(it)
             }
 
             subscribeSearchView()

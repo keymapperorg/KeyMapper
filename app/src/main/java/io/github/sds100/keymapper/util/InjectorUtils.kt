@@ -55,6 +55,10 @@ object InjectorUtils {
         return UrlActionTypeViewModel.Factory()
     }
 
+    fun provideSystemActionListViewModel(): SystemActionListViewModel.Factory {
+        return SystemActionListViewModel.Factory()
+    }
+
     fun provideConfigKeymapViewModel(
         context: Context,
         id: Long

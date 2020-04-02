@@ -67,7 +67,7 @@ abstract class RecoverableFailure(
     abstract fun recover(ctx: Context)
 }
 
-fun <T> Result<T>.onSuccess(f: (T) -> Unit): Result<T> {
+inline fun <T> Result<T>.onSuccess(f: (T) -> Unit): Result<T> {
     if (this is Success) {
         f(this.value)
     }
@@ -75,7 +75,7 @@ fun <T> Result<T>.onSuccess(f: (T) -> Unit): Result<T> {
     return this
 }
 
-fun <T, U> Result<T>.onFailure(f: (failiure: Failure) -> U): Result<T> {
+inline fun <T, U> Result<T>.onFailure(f: (failure: Failure) -> U): Result<T> {
     if (this is Failure) {
         f(this)
     }
@@ -83,12 +83,17 @@ fun <T, U> Result<T>.onFailure(f: (failiure: Failure) -> U): Result<T> {
     return this
 }
 
-infix fun <T, U> Result<T>.then(f: (T) -> Result<U>): Result<U> {
-    return when (this) {
+infix fun <T, U> Result<T>.then(f: (T) -> Result<U>) =
+    when (this) {
         is Success -> f(this.value)
         is Failure -> this
     }
-}
+
+infix fun <T> Result<T>.otherwise(f: (failure: Failure) -> Result<T>) =
+    when (this) {
+        is Success -> this
+        is Failure -> f(this)
+    }
 
 fun <T> Result<T>.errorMessageOrNull(): String? {
     when (this) {
@@ -106,5 +111,9 @@ fun <T> Result<T>.failureOrNull(): Failure? {
     return null
 }
 
-infix fun <T> Result<T>.otherwise(f: (failure: Failure) -> Unit) =
-    if (this is Failure) f(this) else Unit
+fun <T, U> Result<T>.handle(onSuccess: (value: T) -> U, onFailure: (failure: Failure) -> U): U {
+    return when (this) {
+        is Success -> onSuccess(value)
+        is Failure -> onFailure(this)
+    }
+}

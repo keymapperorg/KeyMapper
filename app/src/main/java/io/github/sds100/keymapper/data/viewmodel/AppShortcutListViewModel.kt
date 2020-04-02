@@ -16,7 +16,22 @@ class AppShortcutListViewModel internal constructor(
 
     val searchQuery: MutableLiveData<String> = MutableLiveData("")
 
-    private val mAppShortcutModelList: MutableLiveData<List<AppShortcutListItemModel>> = MutableLiveData()
+    private val mAppShortcutModelList = liveData {
+        loadingContent.value = true
+
+        val appShortcutList = repository.getAppShortcutList().map {
+            //only include it if it has a configuration screen
+
+            val name = repository.getIntentLabel(it) ?: ""
+            val icon = repository.getIntentIcon(it)
+
+            AppShortcutListItemModel(it.activityInfo, name, icon)
+        }.sortedBy { it.label.toLowerCase(Locale.getDefault()) }
+
+        emit(appShortcutList)
+
+        loadingContent.value = false
+    }
 
     val filteredAppShortcutModelList = MediatorLiveData<List<AppShortcutListItemModel>>().apply {
         fun filter(query: String) {
@@ -39,23 +54,6 @@ class AppShortcutListViewModel internal constructor(
     }
 
     override val loadingContent = MutableLiveData(false)
-
-    init {
-        viewModelScope.launch {
-            loadingContent.value = true
-
-            mAppShortcutModelList.value = repository.getAppShortcutList().map {
-                //only include it if it has a configuration screen
-
-                val name = repository.getIntentLabel(it) ?: ""
-                val icon = repository.getIntentIcon(it)
-
-                AppShortcutListItemModel(it.activityInfo, name, icon)
-            }.sortedBy { it.label.toLowerCase(Locale.getDefault()) }
-
-            loadingContent.value = false
-        }
-    }
 
     class Factory(
         private val mRepository: SystemRepository

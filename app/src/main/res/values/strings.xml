@@ -32,6 +32,7 @@
     <string name="arrow" translatable="false">→</string>
     <string name="plus" translatable="false">+</string>
     <string name="unknown_keycode">Unknown keycode: %s</string>
+    <string name="chip_while">while</string>
 
     <string name="caption_action_type_key">Click the key on the device which you want to be entered.
         \n\nIMPORTANT!
@@ -442,6 +443,8 @@
     <string name="error_action_exists">This keymap already has this action!</string>
     <string name="error_cant_be_empty">Can\'t be empty!</string>
     <string name="error_invalid_action_type">Invalid Action Type: %s</string>
+    <string name="error_options_not_required">Options not required</string>
+    <string name="error_key_mapper_ime_not_found">Can\'t find the Key Mapper input method!</string>
     <!-- Error messages -->
 
     <!-- System action labels -->

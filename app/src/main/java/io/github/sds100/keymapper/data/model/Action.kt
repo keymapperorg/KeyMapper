@@ -2,12 +2,14 @@ package io.github.sds100.keymapper.data.model
 
 import android.hardware.camera2.CameraCharacteristics
 import android.media.AudioManager
+import android.util.Log
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.SystemAction
 import io.github.sds100.keymapper.util.result.ExtraNotFound
 import io.github.sds100.keymapper.util.result.Result
 import io.github.sds100.keymapper.util.result.Success
+import io.github.sds100.keymapper.util.result.onSuccess
 import splitties.bitflags.hasFlag
 import splitties.resources.appStr
 import java.io.Serializable
@@ -56,6 +58,12 @@ data class Action(
         //DON'T CHANGE THESE IDs!!!!
         const val EXTRA_SHORTCUT_TITLE = "extra_title"
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
+        const val EXTRA_STREAM_TYPE = "extra_stream_type"
+        const val EXTRA_LENS = "extra_flash"
+        const val EXTRA_RINGER_MODE = "extra_ringer_mode"
+
+        const val EXTRA_IME_ID = "extra_ime_id"
+        const val EXTRA_IME_NAME = "extra_ime_name"
 
         fun appAction(packageName: String): Action {
             return Action(ActionType.APP, packageName)
@@ -84,6 +92,22 @@ data class Action(
 
         fun urlAction(url: String): Action {
             return Action(ActionType.URL, url)
+        }
+
+        fun systemAction(model: SelectedSystemActionModel): Action {
+            val action = Action(ActionType.SYSTEM_ACTION, model.id)
+
+            model.optionData?.let {
+                action.extras.add(Extra(Option.getExtraIdForOption(model.id), it))
+
+                if (model.id == SystemAction.SWITCH_KEYBOARD) {
+                    Option.getOptionLabel(model.id, it).onSuccess { imeName ->
+                        action.extras.add(Extra(EXTRA_IME_NAME, imeName))
+                    }
+                }
+            }
+
+            return action
         }
     }
 

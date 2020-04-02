@@ -37,6 +37,18 @@ class ChooseActionPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragme
         },
         {
             UrlActionTypeFragment()
+        },
+        {
+            SystemActionListFragment().apply {
+                isAppBarVisible = false
+                isInPagerAdapter = true
+            }
+        },
+        {
+            UnsupportedSystemActionListFragment().apply {
+                isAppBarVisible = false
+                isInPagerAdapter = true
+            }
         }
     )
 
@@ -44,6 +56,7 @@ class ChooseActionPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragme
         0 -> AppListFragment.SEARCH_STATE_KEY
         1 -> AppShortcutListFragment.SEARCH_STATE_KEY
         3 -> KeycodeListFragment.SEARCH_STATE_KEY
+        6 -> SystemActionListFragment.SEARCH_STATE_KEY
 
         else -> null
     }

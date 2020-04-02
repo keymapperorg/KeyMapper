@@ -16,7 +16,20 @@ class AppListViewModel internal constructor(
 
     val searchQuery: MutableLiveData<String> = MutableLiveData("")
 
-    private val mAppModelList: MutableLiveData<List<AppListItemModel>> = MutableLiveData()
+    private val mAppModelList = liveData {
+        loadingContent.value = true
+
+        val modelList = repository.getAppList().map {
+            val name = repository.getAppName(it) ?: it.packageName
+            val icon = repository.getAppIcon(it)
+
+            AppListItemModel(it.packageName, name, icon)
+        }.sortedBy { it.appName.toLowerCase(Locale.getDefault()) }
+
+        emit(modelList)
+
+        loadingContent.value = false
+    }
 
     val filteredAppModelList = MediatorLiveData<List<AppListItemModel>>().apply {
         fun filter(query: String) {
@@ -39,21 +52,6 @@ class AppListViewModel internal constructor(
     }
 
     override val loadingContent = MutableLiveData(false)
-
-    init {
-        viewModelScope.launch {
-            loadingContent.value = true
-
-            mAppModelList.value = repository.getAppList().map {
-                val name = repository.getAppName(it) ?: it.packageName
-                val icon = repository.getAppIcon(it)
-
-                AppListItemModel(it.packageName, name, icon)
-            }.sortedBy { it.appName.toLowerCase(Locale.getDefault()) }
-
-            loadingContent.value = false
-        }
-    }
 
     class Factory(
         private val mRepository: SystemRepository

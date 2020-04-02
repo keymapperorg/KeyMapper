@@ -16,7 +16,6 @@ import kotlin.coroutines.suspendCoroutine
  * Created by sds100 on 30/03/2020.
  */
 
-@ExperimentalSplittiesApi
 suspend fun FragmentActivity.editTextAlertDialog(hint: String) = suspendCoroutine<String> {
 
     alertDialog {

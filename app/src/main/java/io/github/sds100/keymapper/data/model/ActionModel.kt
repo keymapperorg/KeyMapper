@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.data.model
 
 import android.graphics.drawable.Drawable
+import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.result.Failure
 
 /**
@@ -9,6 +10,7 @@ import io.github.sds100.keymapper.util.result.Failure
 
 data class ActionModel(
     val id: String,
+    val type: ActionType,
     val title: String? = null,
     val icon: Drawable? = null,
     val flags: String? = null,

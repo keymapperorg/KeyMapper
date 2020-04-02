@@ -36,9 +36,9 @@ class ChooseConstraintListViewModel : ViewModel() {
         for ((id, label) in Constraint.CATEGORY_LABEL_MAP) {
             val constraints = mConstraintList.filter { it.categoryId == id }
 
-            yield(Pair(appCtx.str(label), constraints))
+            yield(appCtx.str(label) to constraints)
         }
-    }.toList()
+    }.toMap()
 
     @Suppress("UNCHECKED_CAST")
     class Factory : ViewModelProvider.NewInstanceFactory() {

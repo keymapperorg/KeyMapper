@@ -4,10 +4,8 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.view.KeyEvent
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.model.Action
-import io.github.sds100.keymapper.data.model.ActionChipModel
-import io.github.sds100.keymapper.data.model.ActionModel
-import io.github.sds100.keymapper.data.model.KeyMap
+import io.github.sds100.keymapper.data.model.*
+import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.util.result.*
 import splitties.init.appCtx
 import splitties.resources.appStr
@@ -41,7 +39,7 @@ fun Action.buildModel(): ActionModel {
         }
     }
 
-    return ActionModel(uniqueId, title, icon, flags, error)
+    return ActionModel(uniqueId, type, title, icon, flags, error)
 }
 
 fun Action.buildChipModel(): ActionChipModel {
@@ -67,7 +65,7 @@ fun Action.buildChipModel(): ActionChipModel {
         }
     }
 
-    return ActionChipModel(uniqueId, description, error, icon)
+    return ActionChipModel(uniqueId, type, description, error, icon)
 }
 
 private fun Action.getTitle(): Result<String> = when (type) {
@@ -109,7 +107,34 @@ private fun Action.getTitle(): Result<String> = when (type) {
         Success(appStr(R.string.description_url, data))
     }
 
-    else -> InvalidActionType(type)
+    ActionType.SYSTEM_ACTION -> {
+        val systemActionId = data
+
+        SystemActionUtils.getSystemActionDef(systemActionId) then { systemActionDef ->
+            if (systemActionDef.hasOptions) {
+
+                getExtraData(Option.getExtraIdForOption(systemActionId)) then {
+                    Option.getOptionLabel(systemActionId, it)
+
+                } then {
+                    Success(systemActionDef.getDescriptionWithOption(it)!!)
+
+                } otherwise {
+                    if (systemActionId == SystemAction.SWITCH_KEYBOARD) {
+
+                        getExtraData(Action.EXTRA_IME_NAME) then {
+                            Success(systemActionDef.getDescriptionWithOption(it)!!)
+                        }
+
+                    } else {
+                        Success(systemActionDef.getDescription())
+                    }
+                }
+            } else {
+                Success(systemActionDef.getDescription())
+            }
+        }
+    }
 }
 
 /**
@@ -129,6 +154,15 @@ private fun Action.getIcon(): Result<Drawable?> = when (type) {
         Success(appCtx.packageManager.getApplicationIcon(it))
     }
 
+    ActionType.SYSTEM_ACTION -> {
+        //convert the string representation of the enum entry into an enum object
+        val systemActionId = data
+
+        SystemActionUtils.getSystemActionDef(systemActionId).then {
+            Success(it.getIcon())
+        }
+    }
+
     else -> Success(null)
 }
 
@@ -141,13 +175,13 @@ private fun Action.canBePerformed(): Result<Action> {
     if (data.isEmpty()) return NoActionData()
 
     if (requiresIME) {
-//        if (!MyIMEService.isServiceEnabled(ctx)) {
-//            return ImeServiceDisabled()
-//        }
-//
-//        if (!MyIMEService.isInputMethodChosen(ctx)) {
-//            return ImeServiceNotChosen()
-//        }
+        if (!KeyMapperImeService.isServiceEnabled()) {
+            return ImeServiceDisabled()
+        }
+
+        if (!KeyMapperImeService.isInputMethodChosen()) {
+            return ImeServiceNotChosen()
+        }
     }
 
     when (type) {
