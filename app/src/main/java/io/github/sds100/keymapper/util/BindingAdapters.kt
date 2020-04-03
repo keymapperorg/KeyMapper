@@ -22,23 +22,22 @@ import splitties.resources.styledColorSL
  * Created by sds100 on 25/01/2020.
  */
 
-@BindingAdapter("app:onSurfaceTint")
-fun AppCompatImageView.onSurfaceTint(enabled: Boolean) {
-    if (enabled) {
-        val color = context.styledColor(R.attr.colorOnSurface)
+@BindingAdapter("app:tintType")
+fun AppCompatImageView.tintType(tintType: TintType?) {
+    tintType ?: clearColorFilter()
 
-        setColorFilter(color)
-    }else{
-        clearColorFilter()
-    }
-}
+    when (tintType) {
+        TintType.NONE -> clearColorFilter()
+        TintType.ON_SURFACE -> {
+            val color = context.styledColor(R.attr.colorOnSurface)
 
-@BindingAdapter("app:errorTint")
-fun AppCompatImageView.errorTint(enabled: Boolean) {
-    if (enabled) {
-        val color = context.styledColor(R.attr.colorError)
+            setColorFilter(color)
+        }
+        TintType.ERROR -> {
+            val color = context.styledColor(R.attr.colorError)
 
-        setColorFilter(color)
+            setColorFilter(color)
+        }
     }
 }
 

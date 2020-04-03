@@ -16,6 +16,7 @@ import io.github.sds100.keymapper.simple
 import io.github.sds100.keymapper.ui.callback.ProgressCallback
 import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.SystemActionUtils
+import io.github.sds100.keymapper.util.TintType
 import io.github.sds100.keymapper.util.result.handle
 import io.github.sds100.keymapper.util.result.onSuccess
 import kotlinx.coroutines.cancel
@@ -127,7 +128,7 @@ class SystemActionListFragment : RecyclerViewFragment() {
         id(systemAction.id)
         primaryText(systemAction.description)
         icon(systemAction.icon)
-        onSurfaceTint(true)
+        tintType(TintType.ON_SURFACE)
 
         isSecondaryTextAnError(systemAction.requiresRoot)
 

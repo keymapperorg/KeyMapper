@@ -7,6 +7,8 @@
 
         <import type="android.view.View" />
 
+        <import type="io.github.sds100.keymapper.util.TintType" />
+
         <variable
             name="primaryText"
             type="String" />
@@ -24,8 +26,8 @@
             type="android.graphics.drawable.Drawable" />
 
         <variable
-            name="onSurfaceTint"
-            type="Boolean" />
+            name="tintType"
+            type="TintType" />
 
         <variable
             name="onClick"
@@ -49,7 +51,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:onSurfaceTint="@{onSurfaceTint}"
+            app:tintType="@{tintType}"
             tools:srcCompat="@mipmap/ic_launcher_round"
             tools:visibility="visible" />
 

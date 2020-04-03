@@ -9,6 +9,8 @@
 
         <import type="io.github.sds100.keymapper.util.ActionType" />
 
+        <import type="io.github.sds100.keymapper.util.TintType" />
+
         <variable
             name="model"
             type="io.github.sds100.keymapper.data.model.ActionModel" />
@@ -39,11 +41,11 @@
         style="@style/SecondaryCardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{onClick}"
         android:layout_marginStart="2dp"
         android:layout_marginTop="2dp"
         android:layout_marginEnd="2dp"
         android:layout_marginBottom="8dp"
+        android:onClick="@{onClick}"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -104,13 +106,12 @@
                 android:layout_height="40dp"
                 android:padding="4dp"
                 android:src="@{model.hasError ? @drawable/ic_baseline_error_outline_24 : model.icon}"
-                app:errorTint="@{model.hasError}"
                 app:layout_constraintBottom_toBottomOf="@id/layoutDescription"
                 app:layout_constraintEnd_toStartOf="@+id/layoutDescription"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/layoutDescription"
                 app:layout_constraintVertical_bias="0.0"
-                app:onSurfaceTint="@{model.type == ActionType.SYSTEM_ACTION &amp;&amp; !model.hasError}"
+                app:tintType="@{model.hasError ? TintType.ERROR : model.type == ActionType.SYSTEM_ACTION ? TintType.ON_SURFACE : TintType.NONE}"
                 tools:srcCompat="@mipmap/ic_launcher"
                 tools:visibility="visible" />
 
