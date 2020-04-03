@@ -1,22 +1,22 @@
 package io.github.sds100.keymapper.util.result
 
 import android.Manifest
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import androidx.fragment.app.Fragment
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.util.ActionType
-import io.github.sds100.keymapper.util.BuildUtils
-import io.github.sds100.keymapper.util.PackageUtils
+import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
+import splitties.experimental.ExperimentalSplittiesApi
 import splitties.resources.appStr
 
 /**
  * Created by sds100 on 29/02/2020.
  */
 
-class PermissionDenied<T>(permission: String) : RecoverableFailure(getMessageForPermission(permission)) {
+class PermissionDenied(private val mPermission: String) : RecoverableFailure(getMessageForPermission(mPermission)) {
     companion object {
         fun getMessageForPermission(permission: String): String {
             val resId = when (permission) {
@@ -34,40 +34,45 @@ class PermissionDenied<T>(permission: String) : RecoverableFailure(getMessageFor
         }
     }
 
-    override fun recover(ctx: Context) {
-
+    override suspend fun recover(fragment: Fragment) {
+        PermissionUtils.requestPermission(fragment, mPermission)
     }
 }
 
 class AppNotFound(val packageName: String) : RecoverableFailure(
     fullMessage = appStr(R.string.error_app_isnt_installed, packageName),
     briefMessage = appStr(R.string.error_app_isnt_installed_brief)) {
-    override fun recover(ctx: Context) = PackageUtils.viewAppOnline(ctx, packageName)
+    override suspend fun recover(fragment: Fragment) = PackageUtils.viewAppOnline(packageName)
 }
 
 class AppDisabled(val packageName: String) : RecoverableFailure(appStr(R.string.error_app_isnt_installed)) {
-    override fun recover(ctx: Context) {
+    override suspend fun recover(fragment: Fragment) {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
         intent.data = Uri.parse("package:$packageName")
         intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
 
-        ctx.startActivity(intent)
+        fragment.startActivity(intent)
     }
 }
 
 class ImeServiceDisabled : RecoverableFailure(appStr(R.string.error_ime_service_disabled)) {
-    override fun recover(ctx: Context) {
-        //TODO port over IME stuff
+    override suspend fun recover(fragment: Fragment) {
+        KeyboardUtils.openImeSettings()
     }
 }
 
 class ImeServiceNotChosen : RecoverableFailure(appStr(R.string.error_ime_must_be_chosen)) {
-    override fun recover(ctx: Context) {
-        //TODO port over IME stuff
+    @ExperimentalSplittiesApi
+    override suspend fun recover(fragment: Fragment) {
+        if (isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
+            KeyboardUtils.switchToKeyMapperIme()
+        } else {
+            KeyboardUtils.showInputMethodPicker()
+        }
     }
 }
 
-class OptionsNotRequired() : Failure(appStr(R.string.error_options_not_required))
+class OptionsNotRequired : Failure(appStr(R.string.error_options_not_required))
 class SystemFeatureNotSupported(feature: String) : Failure(appStr(R.string.error_feature_not_available, feature))
 class ConstraintNotFound : Failure(appStr(R.string.error_constraint_not_found))
 class ExtraNotFound(extraId: String) : Failure(appStr(R.string.error_extra_not_found, extraId))
@@ -83,7 +88,17 @@ class SdkVersionTooHigh(sdkVersion: Int
 
 class FeatureUnavailable(feature: String) : Failure(appStr(R.string.error_feature_not_available, feature))
 class SystemActionNotFound(id: String) : Failure(appStr(R.string.error_system_action_not_found, id))
-class KeyMapperImeNotFound() : Failure(appStr(R.string.error_key_mapper_ime_not_found))
+class KeyMapperImeNotFound : Failure(appStr(R.string.error_key_mapper_ime_not_found))
 class InputMethodNotFound(id: String) : Failure(appStr(R.string.error_ime_not_found, id))
 class OptionLabelNotFound(id: String) : Failure(appStr(R.string.error_cant_find_option_label, id))
-class NoEnabledInputMethods() : Failure(appStr(R.string.error_no_enabled_imes))
+class NoEnabledInputMethods : Failure(appStr(R.string.error_no_enabled_imes))
+class GoogleAppNotFound : RecoverableFailure(appStr(R.string.error_google_app_not_installed)) {
+    override suspend fun recover(fragment: Fragment) {
+
+        AppNotFound(appStr(R.string.google_app_package_name)).recover(fragment)
+    }
+}
+
+class FrontFlashNotFound : Failure(appStr(R.string.error_front_flash_not_found))
+class BackFlashNotFound : Failure(appStr(R.string.error_back_flash_not_found))
+class ImeNotFound(id: String) : Failure(appStr(R.string.error_ime_not_found, id))

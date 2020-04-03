@@ -26,200 +26,206 @@
             type="View.OnClickListener" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinatorLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="4dp"
-        android:padding="8dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:layout_height="match_parent">
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardViewTriggers"
-            style="@style/MyCardView"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/cardViewActions"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_height="match_parent"
+            android:layout_margin="4dp"
+            android:padding="8dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardViewTriggers"
+                style="@style/MyCardView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:paddingStart="@dimen/cardview_padding_left"
-                android:paddingTop="@dimen/cardview_padding_top"
-                android:paddingEnd="@dimen/cardview_padding_right"
-                android:paddingBottom="@dimen/cardview_padding_bottom">
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toTopOf="@+id/cardViewActions"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-                <TextView
-                    android:id="@+id/textViewTriggerHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="@dimen/cardview_header_bottom_padding"
-                    android:text="@string/trigger_list_header"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
-                    android:textColor="?attr/colorAccent"
-                    android:textSize="14sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <com.airbnb.epoxy.EpoxyRecyclerView
-                    android:id="@+id/epoxyRecyclerViewTriggers"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:visibility="@{viewModel.triggerKeys.empty ? View.GONE : View.VISIBLE}"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintBottom_toTopOf="@id/textViewRadioGroupHeader"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textViewTriggerHeader"
-                    tools:itemCount="1"
-                    tools:visibility="visible" />
-
-                <TextView
-                    style="@style/RecyclerViewPlaceholderTextView"
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="@string/triggers_recyclerview_placeholder"
-                    android:visibility="@{viewModel.triggerKeys.empty ? View.VISIBLE : View.GONE}"
-                    tools:visibility="gone" />
+                    android:orientation="vertical"
+                    android:paddingStart="@dimen/cardview_padding_left"
+                    android:paddingTop="@dimen/cardview_padding_top"
+                    android:paddingEnd="@dimen/cardview_padding_right"
+                    android:paddingBottom="@dimen/cardview_padding_bottom">
 
-                <TextView
-                    android:id="@+id/textViewRadioGroupHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="8dp"
-                    android:text="@string/press_dot_dot_dot"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-                    android:textSize="14sp"
-                    android:visibility="@{viewModel.triggerKeys.empty ? View.GONE : View.VISIBLE}"
-                    app:layout_constraintBottom_toTopOf="@+id/radioGroup"
-                    app:layout_constraintStart_toStartOf="parent" />
-
-                <io.github.sds100.keymapper.ui.view.SquareImageButton
-                    android:id="@+id/buttonClickType"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:onClick="@{onClickTypeClick}"
-                    android:src="@drawable/ic_outline_more_vert_24"
-                    android:tint="?attr/colorOnSurface"
-                    android:visibility="@{!viewModel.triggerKeys.empty &amp;&amp; viewModel.triggerInParallel ? View.VISIBLE : View.GONE}"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/radioGroup" />
-
-                <RadioGroup
-                    android:id="@+id/radioGroup"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:gravity="bottom"
-                    android:orientation="horizontal"
-                    android:visibility="@{viewModel.triggerKeys.empty ? View.GONE : View.VISIBLE}"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/buttonClickType"
-                    app:layout_constraintStart_toStartOf="parent">
-
-                    <com.google.android.material.radiobutton.MaterialRadioButton
-                        android:id="@+id/radioButtonParallel"
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/textViewTriggerHeader"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:checked="@={viewModel.triggerInParallel}"
-                        android:text="@string/radio_button_parallel" />
-
-                    <com.google.android.material.radiobutton.MaterialRadioButton
-                        android:id="@+id/radioButtonSequence"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="0.5"
-                        android:checked="@={viewModel.triggerInSequence}"
-                        android:text="@string/radio_button_sequence" />
-                </RadioGroup>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardViewActions"
-            style="@style/MyCardView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="@dimen/cardview_separation"
-            android:layout_marginBottom="4dp"
-            app:layout_constraintBottom_toTopOf="@+id/buttonRecordKeys"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cardViewTriggers">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:paddingStart="@dimen/cardview_padding_left"
-                android:paddingTop="@dimen/cardview_padding_top"
-                android:paddingEnd="@dimen/cardview_padding_right"
-                android:paddingBottom="@dimen/cardview_padding_bottom">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="@dimen/cardview_header_bottom_padding"
-                    android:text="@string/action_list_header"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
-                    android:textColor="?attr/colorAccent"
-                    android:textSize="14sp" />
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                        android:paddingBottom="@dimen/cardview_header_bottom_padding"
+                        android:text="@string/trigger_list_header"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                        android:textColor="?attr/colorAccent"
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <com.airbnb.epoxy.EpoxyRecyclerView
-                        android:id="@+id/epoxyRecyclerViewActions"
+                        android:id="@+id/epoxyRecyclerViewTriggers"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:visibility="@{viewModel.actionModelList.empty ? View.GONE : View.VISIBLE}"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                        android:layout_height="0dp"
+                        android:visibility="@{viewModel.triggerKeys.empty ? View.GONE : View.VISIBLE}"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        app:layout_constraintBottom_toTopOf="@id/textViewRadioGroupHeader"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textViewTriggerHeader"
+                        tools:itemCount="1"
+                        tools:visibility="visible" />
 
                     <TextView
                         style="@style/RecyclerViewPlaceholderTextView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:text="@string/actions_recyclerview_placeholder"
-                        android:visibility="@{viewModel.actionModelList.empty ? View.VISIBLE : View.GONE}" />
-                </FrameLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+                        android:text="@string/triggers_recyclerview_placeholder"
+                        android:visibility="@{viewModel.triggerKeys.empty ? View.VISIBLE : View.GONE}"
+                        tools:visibility="gone" />
 
-        <Button
-            android:id="@+id/buttonRecordKeys"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
-            android:onClick="@{onRecordTriggerClick}"
-            android:text="@string/button_record_trigger"
-            app:backgroundTint="@color/red"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/buttonAddAction"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_chainStyle="spread_inside"
-            app:layout_constraintStart_toStartOf="parent" />
+                    <TextView
+                        android:id="@+id/textViewRadioGroupHeader"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="8dp"
+                        android:text="@string/press_dot_dot_dot"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                        android:textSize="14sp"
+                        android:visibility="@{viewModel.triggerKeys.empty ? View.GONE : View.VISIBLE}"
+                        app:layout_constraintBottom_toTopOf="@+id/radioGroup"
+                        app:layout_constraintStart_toStartOf="parent" />
 
-        <Button
-            android:id="@+id/buttonAddAction"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="4dp"
-            android:onClick="@{onAddActionClick}"
-            android:text="@string/button_add_action"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/buttonRecordKeys"
-            app:layout_constraintTop_toTopOf="@id/buttonRecordKeys" />
+                    <io.github.sds100.keymapper.ui.view.SquareImageButton
+                        android:id="@+id/buttonClickType"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:onClick="@{onClickTypeClick}"
+                        android:src="@drawable/ic_outline_more_vert_24"
+                        android:tint="?attr/colorOnSurface"
+                        android:visibility="@{!viewModel.triggerKeys.empty &amp;&amp; viewModel.triggerInParallel ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/radioGroup" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                    <RadioGroup
+                        android:id="@+id/radioGroup"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="bottom"
+                        android:orientation="horizontal"
+                        android:visibility="@{viewModel.triggerKeys.empty ? View.GONE : View.VISIBLE}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/buttonClickType"
+                        app:layout_constraintStart_toStartOf="parent">
+
+                        <com.google.android.material.radiobutton.MaterialRadioButton
+                            android:id="@+id/radioButtonParallel"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:checked="@={viewModel.triggerInParallel}"
+                            android:text="@string/radio_button_parallel" />
+
+                        <com.google.android.material.radiobutton.MaterialRadioButton
+                            android:id="@+id/radioButtonSequence"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5"
+                            android:checked="@={viewModel.triggerInSequence}"
+                            android:text="@string/radio_button_sequence" />
+                    </RadioGroup>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardViewActions"
+                style="@style/MyCardView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="@dimen/cardview_separation"
+                android:layout_marginBottom="4dp"
+                app:layout_constraintBottom_toTopOf="@+id/buttonRecordKeys"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardViewTriggers">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:paddingStart="@dimen/cardview_padding_left"
+                    android:paddingTop="@dimen/cardview_padding_top"
+                    android:paddingEnd="@dimen/cardview_padding_right"
+                    android:paddingBottom="@dimen/cardview_padding_bottom">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="@dimen/cardview_header_bottom_padding"
+                        android:text="@string/action_list_header"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                        android:textColor="?attr/colorAccent"
+                        android:textSize="14sp" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <com.airbnb.epoxy.EpoxyRecyclerView
+                            android:id="@+id/epoxyRecyclerViewActions"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:visibility="@{viewModel.actionModelList.empty ? View.GONE : View.VISIBLE}"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+                        <TextView
+                            style="@style/RecyclerViewPlaceholderTextView"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="@string/actions_recyclerview_placeholder"
+                            android:visibility="@{viewModel.actionModelList.empty ? View.VISIBLE : View.GONE}" />
+                    </FrameLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <Button
+                android:id="@+id/buttonRecordKeys"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:onClick="@{onRecordTriggerClick}"
+                android:text="@string/button_record_trigger"
+                app:backgroundTint="@color/red"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/buttonAddAction"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_chainStyle="spread_inside"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <Button
+                android:id="@+id/buttonAddAction"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="4dp"
+                android:onClick="@{onAddActionClick}"
+                android:text="@string/button_add_action"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/buttonRecordKeys"
+                app:layout_constraintTop_toTopOf="@id/buttonRecordKeys" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

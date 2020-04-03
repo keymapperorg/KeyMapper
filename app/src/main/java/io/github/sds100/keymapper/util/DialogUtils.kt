@@ -8,7 +8,6 @@ import io.github.sds100.keymapper.databinding.DialogEdittextBinding
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
 import splitties.alertdialog.appcompat.okButton
-import splitties.experimental.ExperimentalSplittiesApi
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -17,7 +16,6 @@ import kotlin.coroutines.suspendCoroutine
  */
 
 suspend fun FragmentActivity.editTextAlertDialog(hint: String) = suspendCoroutine<String> {
-
     alertDialog {
         DialogEdittextBinding.inflate(layoutInflater).apply {
             val text = MutableLiveData("")

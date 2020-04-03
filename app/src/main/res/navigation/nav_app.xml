@@ -36,6 +36,9 @@
                 android:name="keymapId"
                 app:argType="long" />
         </action>
+        <action
+            android:id="@+id/action_keymap_list_fragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
     </fragment>
 
     <navigation
@@ -66,4 +69,20 @@
 
         <include app:graph="@navigation/nav_choose_constraint" />
     </navigation>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
+    <action
+        android:id="@+id/action_global_settingsFragment"
+        app:destination="@id/settingsFragment" />
+    <fragment
+        android:id="@+id/helpFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.HelpFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
+    <action
+        android:id="@+id/action_global_helpFragment"
+        app:destination="@id/helpFragment" />
 </navigation>

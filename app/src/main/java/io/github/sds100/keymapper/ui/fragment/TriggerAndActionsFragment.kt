@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
@@ -21,16 +22,22 @@ import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentTriggerAndActionsBinding
 import io.github.sds100.keymapper.triggerKey
-import io.github.sds100.keymapper.util.getAvailableFlags
+import io.github.sds100.keymapper.util.PermissionUtils
+import io.github.sds100.keymapper.util.availableFlags
 import io.github.sds100.keymapper.util.observeLiveData
 import io.github.sds100.keymapper.util.removeLiveData
+import io.github.sds100.keymapper.util.result.RecoverableFailure
+import kotlinx.coroutines.launch
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
 import splitties.alertdialog.appcompat.okButton
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
 import splitties.experimental.ExperimentalSplittiesApi
+import splitties.init.appCtx
 import splitties.resources.appStr
+import splitties.snackbar.action
+import splitties.snackbar.longSnack
 import splitties.toast.toast
 
 /**
@@ -39,20 +46,27 @@ import splitties.toast.toast
 @ExperimentalSplittiesApi
 class TriggerAndActionsFragment : Fragment() {
     private val mViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap)
+    private lateinit var mBinding: FragmentTriggerAndActionsBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         FragmentTriggerAndActionsBinding.inflate(inflater, container, false).apply {
+            mBinding = this
 
             viewModel = mViewModel
             lifecycleOwner = viewLifecycleOwner
 
-            findNavController().currentBackStackEntry?.observeLiveData<Action>(viewLifecycleOwner, ChooseActionFragment.SAVED_STATE_KEY) {
+            findNavController().apply {
+                currentBackStackEntry?.observeLiveData<Action>(
+                    viewLifecycleOwner,
+                    ChooseActionFragment.SAVED_STATE_KEY
+                ) {
 
-                if (!mViewModel.addAction(it)) {
-                    toast(R.string.error_action_exists)
+                    if (!mViewModel.addAction(it)) {
+                        toast(R.string.error_action_exists)
+                    }
+
+                    currentBackStackEntry?.removeLiveData<Action>(ChooseActionFragment.SAVED_STATE_KEY)
                 }
-
-                findNavController().currentBackStackEntry?.removeLiveData<Action>(ChooseActionFragment.SAVED_STATE_KEY)
             }
 
             setOnAddActionClick {
@@ -77,6 +91,20 @@ class TriggerAndActionsFragment : Fragment() {
 
             return this.root
         }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == PermissionUtils.REQUEST_CODE_PERMISSION) {
+            mViewModel.rebuildActionModels()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        mViewModel.rebuildActionModels()
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -122,7 +150,7 @@ class TriggerAndActionsFragment : Fragment() {
 
                         id(model.id)
                         model(model)
-                        flagsAreAvailable(action?.getAvailableFlags()?.isNotEmpty())
+                        flagsAreAvailable(action?.availableFlags?.isNotEmpty())
 
                         onRemoveClick { _ ->
                             mViewModel.removeAction(model.id)
@@ -130,6 +158,24 @@ class TriggerAndActionsFragment : Fragment() {
 
                         onMoreClick { _ ->
                             action?.chooseFlags()
+                        }
+
+                        onClick { _ ->
+                            if (model.hasError) {
+                                coordinatorLayout.longSnack(model.failure!!.fullMessage) {
+
+                                    //only add an action to fix the error if the error can be recovered from
+                                    if (model.failure is RecoverableFailure) {
+                                        action(R.string.snackbar_fix) {
+                                            lifecycleScope.launch {
+                                                model.failure.recover(this@TriggerAndActionsFragment)
+                                            }
+                                        }
+                                    }
+
+                                    show()
+                                }
+                            }
                         }
                     }
                 }
@@ -165,8 +211,8 @@ class TriggerAndActionsFragment : Fragment() {
     }
 
     private fun Action.chooseFlags() {
-        requireActivity().alertDialog {
-            val flagIds = getAvailableFlags()
+        appCtx.alertDialog {
+            val flagIds = availableFlags
             val labels = sequence {
                 flagIds.forEach { flagId ->
                     val label = appStr(Action.ACTION_FLAG_LABEL_MAP.getValue(flagId))

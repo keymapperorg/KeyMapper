@@ -25,10 +25,11 @@ import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
 import io.github.sds100.keymapper.ui.callback.SelectionCallback
 import io.github.sds100.keymapper.util.ISelectionProvider
 import io.github.sds100.keymapper.util.InjectorUtils
+import io.github.sds100.keymapper.util.PermissionUtils
 import io.github.sds100.keymapper.util.result.Failure
 import io.github.sds100.keymapper.util.result.RecoverableFailure
 import io.github.sds100.keymapper.worker.SeedDatabaseWorker
-import kotlinx.android.synthetic.main.fragment_keymap_list.*
+import kotlinx.coroutines.launch
 import splitties.experimental.ExperimentalSplittiesApi
 import splitties.snackbar.action
 import splitties.snackbar.longSnack
@@ -48,11 +49,14 @@ class KeymapListFragment : Fragment() {
 
     private val mController = KeymapController()
 
+    private lateinit var mBinding: FragmentKeymapListBinding
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding = FragmentKeymapListBinding.inflate(inflater, container, false).apply {
+        FragmentKeymapListBinding.inflate(inflater, container, false).apply {
+            mBinding = this
             lifecycleOwner = this@KeymapListFragment
             viewModel = mViewModel
             epoxyRecyclerView.adapter = mController.adapter
@@ -109,34 +113,48 @@ class KeymapListFragment : Fragment() {
                 mViewModel.delete(*mViewModel.selectionProvider.selectedIds)
                 selectionProvider.stopSelecting()
             }
-        }
 
-        mViewModel.apply {
+            mViewModel.apply {
 
-            keymapModelList.observe(viewLifecycleOwner) { keymapList ->
-                mController.keymapList = keymapList
+                keymapModelList.observe(viewLifecycleOwner) { keymapList ->
+                    mController.keymapList = keymapList
+                }
+
+                selectionProvider.apply {
+
+                    isSelectable.observe(viewLifecycleOwner, Observer { isSelectable ->
+                        mController.requestModelBuild()
+
+                        if (isSelectable) {
+                            appBar.replaceMenu(R.menu.menu_multi_select)
+                        } else {
+                            appBar.replaceMenu(R.menu.menu_keymap_list)
+
+                            // only show the button to seed the database in debug builds.
+                            appBar.menu.findItem(R.id.action_seed_database).isVisible = BuildConfig.DEBUG
+                        }
+                    })
+
+                    callback = mController
+                }
             }
 
-            selectionProvider.apply {
-
-                isSelectable.observe(viewLifecycleOwner, Observer { isSelectable ->
-                    mController.requestModelBuild()
-
-                    if (isSelectable) {
-                        appBar.replaceMenu(R.menu.menu_multi_select)
-                    } else {
-                        appBar.replaceMenu(R.menu.menu_keymap_list)
-
-                        // only show the button to seed the database in debug builds.
-                        appBar.menu.findItem(R.id.action_seed_database).isVisible = BuildConfig.DEBUG
-                    }
-                })
-
-                callback = mController
-            }
+            return this.root
         }
+    }
 
-        return binding.root
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == PermissionUtils.REQUEST_CODE_PERMISSION) {
+            mViewModel.rebuildModels()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        mViewModel.rebuildModels()
     }
 
     inner class KeymapController : EpoxyController(), SelectionCallback {
@@ -156,12 +174,14 @@ class KeymapListFragment : Fragment() {
 
                     onErrorClick(object : ErrorClickCallback {
                         override fun onErrorClick(failure: Failure) {
-                            coordinatorLayout.longSnack(failure.fullMessage) {
+                            mBinding.coordinatorLayout.longSnack(failure.fullMessage) {
 
                                 //only add an action to fix the error if the error can be recovered from
                                 if (failure is RecoverableFailure) {
                                     action(R.string.snackbar_fix) {
-                                        failure.recover(requireContext())
+                                        lifecycleScope.launch {
+                                            failure.recover(this@KeymapListFragment)
+                                        }
                                     }
                                 }
 

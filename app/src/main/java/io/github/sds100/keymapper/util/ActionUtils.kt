@@ -1,12 +1,15 @@
 package io.github.sds100.keymapper.util
 
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.view.KeyEvent
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.util.result.*
+import splitties.experimental.ExperimentalSplittiesApi
 import splitties.init.appCtx
 import splitties.resources.appStr
 
@@ -170,6 +173,7 @@ private fun Action.getIcon(): Result<Drawable?> = when (type) {
  * @return if the action can't be performed, it returns an error code.
  * returns null if their if the action can be performed.
  */
+@ExperimentalSplittiesApi
 private fun Action.canBePerformed(): Result<Action> {
     //the action has no data
     if (data.isEmpty()) return NoActionData()
@@ -209,14 +213,83 @@ private fun Action.canBePerformed(): Result<Action> {
                 }
             }
         }
+
+        ActionType.SYSTEM_ACTION -> {
+            SystemActionUtils.getSystemActionDef(data).onSuccess { systemActionDef ->
+
+                //If an activity to open doesn't exist, the app crashes.
+                if (systemActionDef.id == SystemAction.OPEN_ASSISTANT) {
+                    val activityExists =
+                        Intent(Intent.ACTION_VOICE_COMMAND).resolveActivityInfo(appCtx.packageManager, 0) != null
+
+                    if (!activityExists) {
+                        return GoogleAppNotFound()
+                    }
+                }
+
+                if (Build.VERSION.SDK_INT < systemActionDef.minApi) {
+                    return SdkVersionTooLow(systemActionDef.minApi)
+                }
+
+                systemActionDef.permissions.forEach { permission ->
+                    if (!PermissionUtils.isPermissionGranted(permission)) {
+                        return PermissionDenied(permission)
+                    }
+                }
+
+                for (feature in systemActionDef.features) {
+                    if (!appCtx.packageManager.hasSystemFeature(feature)) {
+                        return FeatureUnavailable(feature)
+                    }
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    if (systemActionDef.id == SystemAction.TOGGLE_FLASHLIGHT
+                        || systemActionDef.id == SystemAction.ENABLE_FLASHLIGHT
+                        || systemActionDef.id == SystemAction.DISABLE_FLASHLIGHT) {
+
+                        getExtraData(Action.EXTRA_LENS).onSuccess { lensOptionId ->
+                            val sdkLensId = Option.OPTION_ID_SDK_ID_MAP[lensOptionId]
+                                ?: error("Can't find sdk id for that option id")
+
+                            if (!CameraUtils.hasFlashFacing(sdkLensId)) {
+
+                                when (lensOptionId) {
+                                    Option.LENS_FRONT -> FrontFlashNotFound()
+                                    Option.LENS_BACK -> BackFlashNotFound()
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (systemActionDef.id == SystemAction.SWITCH_KEYBOARD) {
+
+                    getExtraData(Action.EXTRA_IME_ID).onSuccess { imeId ->
+                        if (!KeyboardUtils.inputMethodExists(imeId)) {
+                            var errorData = imeId
+
+                            getExtraData(Action.EXTRA_IME_NAME).onSuccess { imeName ->
+                                errorData = imeName
+                            }
+
+                            return ImeNotFound(errorData)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     return Success(this)
 }
 
-fun Action.getAvailableFlags(): List<Int> = sequence<Int> {
-
-}.toList()
+val Action.availableFlags: List<Int>
+    get() = sequence {
+        if (isVolumeAction && data != SystemAction.VOLUME_SHOW_DIALOG) {
+            yield(Action.ACTION_FLAG_SHOW_VOLUME_UI)
+        }
+    }.toList()
 
 val Action.requiresIME: Boolean
     get() {
@@ -224,6 +297,19 @@ val Action.requiresIME: Boolean
             type == ActionType.KEYCODE ||
             type == ActionType.TEXT_BLOCK ||
             data == SystemAction.MOVE_CURSOR_TO_END
+    }
+
+val Action.isVolumeAction: Boolean
+    get() {
+        return listOf(
+            SystemAction.VOLUME_DECREASE_STREAM,
+            SystemAction.VOLUME_INCREASE_STREAM,
+            SystemAction.VOLUME_DOWN,
+            SystemAction.VOLUME_UP,
+            SystemAction.VOLUME_MUTE,
+            SystemAction.VOLUME_TOGGLE_MUTE,
+            SystemAction.VOLUME_UNMUTE
+        ).contains(data)
     }
 
 fun KeyMap.buildActionChipModels() = sequence {

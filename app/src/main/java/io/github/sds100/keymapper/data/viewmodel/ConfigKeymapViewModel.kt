@@ -40,7 +40,7 @@ class ConfigKeymapViewModel internal constructor(
     val flags: MutableLiveData<Int> = MutableLiveData()
     val isEnabled: MutableLiveData<Boolean> = MutableLiveData()
 
-    val triggerKeys: MutableLiveData<List<Trigger.Key>> = MutableLiveData()
+    val triggerKeys: MutableLiveData<List<Trigger.Key>> = MutableLiveData(listOf())
 
     val triggerKeyModels: LiveData<List<TriggerKeyModel>> = Transformations.map(triggerKeys) { triggerKeys ->
         sequence {
@@ -50,7 +50,7 @@ class ConfigKeymapViewModel internal constructor(
         }.toList()
     }
 
-    val actionList: MutableLiveData<List<Action>> = MutableLiveData()
+    val actionList: MutableLiveData<List<Action>> = MutableLiveData(listOf())
 
     val actionModelList: LiveData<List<ActionModel>> = Transformations.map(actionList) { actionList ->
         sequence {
@@ -60,7 +60,7 @@ class ConfigKeymapViewModel internal constructor(
         }.toList()
     }
 
-    private val mConstraintList: MutableLiveData<List<Constraint>> = MutableLiveData()
+    private val mConstraintList: MutableLiveData<List<Constraint>> = MutableLiveData(listOf())
 
     val constraintModelList: LiveData<List<ConstraintModel>> = Transformations.map(mConstraintList) { constraintList ->
         sequence {
@@ -264,6 +264,12 @@ class ConfigKeymapViewModel internal constructor(
         }
 
         return true
+    }
+
+    fun rebuildActionModels() {
+        if (actionModelList.value.isNullOrEmpty()) return
+
+        actionList.value = actionList.value
     }
 
     class Factory(private val mRepository: KeymapRepository, private val mId: Long) : ViewModelProvider.Factory {

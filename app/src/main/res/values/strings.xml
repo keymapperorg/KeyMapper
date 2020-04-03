@@ -33,6 +33,7 @@
     <string name="plus" translatable="false">+</string>
     <string name="unknown_keycode">Unknown keycode: %s</string>
     <string name="chip_while">while</string>
+    <string name="google_app_package_name">com.google.android.googlequicksearchbox</string>
 
     <string name="caption_action_type_key">Click the key on the device which you want to be entered.
         \n\nIMPORTANT!
@@ -54,7 +55,7 @@
     <string name="description_url">Open %s</string>
 
     <string name="exception_accessibility_service" translatable="false">Exception in onKeyEvent. Look in logcat.</string>
-    <string name="enable_device_admin_message">Once you have enabled the device admin, you must DISABLE it if you want to uninstall the app.</string>
+    <string name="enable_device_admin_message">Once you have enabled the device admin, you must DEACTIVATE it if you want to uninstall the app.</string>
 
     <string name="debug_trigger_chip_name">Long Press <b>Volume Down</b> • USB Keyboard</string>
     <string name="debug_trigger_chip_name2">Single Tap  <b>Home</b> • This Device</string>
@@ -106,7 +107,7 @@
     <string name="url_translate" translatable="false">https://github.com/sds100/KeyMapper/wiki/Translate.md</string>
     <string name="url_privacy_policy" translatable="false">https://raw.githubusercontent.com/sds100/KeyMapper/master/PRIVACY_POLICY.md</string>
     <string name="url_xda_thread" translatable="false">https://forum.xda-developers.com/android/apps-games/app-keyboard-button-mapper-t3914005</string>
-    <string name="url_google_app_listing" translatable="false">https://play.google.com/store/apps/details?id=com.google.android.googlequicksearchbox</string>
+    <string name="url_google_app_listing" translatable="false">https://play.google.com/store/apps/details?id=</string>
     <string name="url_telegram_channel" translatable="false">https://t.me/key_mapper</string>
     <!-- URLs -->
 
@@ -561,5 +562,7 @@
     <string name="system_action_cat_nfc">NFC</string>
     <string name="system_action_cat_other">Other</string>
     <string name="system_action_cat_keyboard">Keyboard</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
     <!-- System action category labels -->
 </resources>

@@ -22,6 +22,10 @@
             type="View.OnClickListener" />
 
         <variable
+            name="onClick"
+            type="View.OnClickListener" />
+
+        <variable
             name="onMoreClick"
             type="View.OnClickListener" />
 
@@ -35,6 +39,7 @@
         style="@style/SecondaryCardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="@{onClick}"
         android:layout_marginStart="2dp"
         android:layout_marginTop="2dp"
         android:layout_marginEnd="2dp"
@@ -105,7 +110,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/layoutDescription"
                 app:layout_constraintVertical_bias="0.0"
-                app:onSurfaceTint="@{model.type == ActionType.SYSTEM_ACTION}"
+                app:onSurfaceTint="@{model.type == ActionType.SYSTEM_ACTION &amp;&amp; !model.hasError}"
                 tools:srcCompat="@mipmap/ic_launcher"
                 tools:visibility="visible" />
 
