@@ -1,11 +1,10 @@
 package io.github.sds100.keymapper.data.viewmodel
 
 import android.view.KeyEvent
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
 import io.github.sds100.keymapper.util.KeycodeUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.*
 
 /**
@@ -14,12 +13,16 @@ import java.util.*
 
 class KeycodeListViewModel : ViewModel() {
 
-    private val mKeycodeLabelMap = MutableLiveData<Map<Int, String>>().apply {
-        value = sequence {
-            KeycodeUtils.getKeyCodes().forEach {
-                yield(it to "$it \t\t ${KeyEvent.keyCodeToString(it)}")
-            }
-        }.sortedBy { it.first }.toMap()
+    private val mKeycodeLabelMap = liveData {
+        val keycodeList = withContext(viewModelScope.coroutineContext + Dispatchers.Default) {
+            sequence {
+                KeycodeUtils.getKeyCodes().forEach {
+                    yield(it to "$it \t\t ${KeyEvent.keyCodeToString(it)}")
+                }
+            }.sortedBy { it.first }.toMap()
+        }
+
+        emit(keycodeList)
     }
 
     val searchQuery: MutableLiveData<String> = MutableLiveData("")

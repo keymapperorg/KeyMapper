@@ -6,7 +6,9 @@ import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
 import io.github.sds100.keymapper.ui.callback.ProgressCallback
 import io.github.sds100.keymapper.util.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class KeymapListViewModel internal constructor(
     private val repository: KeymapRepository
@@ -14,14 +16,17 @@ class KeymapListViewModel internal constructor(
 
     val keymapModelList = MediatorLiveData<List<KeymapListItemModel>>().apply {
         addSource(repository.keymapList) { keymapList ->
-            loadingContent.value = true
 
-            val modelList = buildModelList(keymapList)
-            selectionProvider.updateIds(keymapList.map { it.id }.toLongArray())
+            viewModelScope.launch {
+                loadingContent.value = true
 
-            value = modelList
+                val modelList = buildModelList(keymapList)
+                selectionProvider.updateIds(keymapList.map { it.id }.toLongArray())
 
-            loadingContent.value = false
+                value = modelList
+
+                loadingContent.value = false
+            }
         }
     }
 
@@ -48,26 +53,26 @@ class KeymapListViewModel internal constructor(
         }
     }
 
-    fun rebuildModels() {
-        if (repository.keymapList.value.isNullOrEmpty()) return
+    fun rebuildModels() = viewModelScope.launch {
+        if (repository.keymapList.value.isNullOrEmpty()) return@launch
 
-        loadingContent.value = true
         keymapModelList.value = buildModelList(repository.keymapList.value ?: listOf())
-        loadingContent.value = false
     }
 
-    private fun buildModelList(keymapList: List<KeyMap>) = keymapList.map {
-        KeymapListItemModel(
-            id = it.id,
-            actionList = it.buildActionChipModels(),
-            triggerDescription = it.trigger.buildDescription(),
-            constraintList = it.buildConstraintModels(),
-            constraintMode = it.constraintMode,
-            flagsDescription = it.flags.buildKeymapFlagsDescription(),
-            isEnabled = it.isEnabled
-        )
-    }
-
+    private suspend fun buildModelList(keymapList: List<KeyMap>) =
+        withContext(viewModelScope.coroutineContext + Dispatchers.Default) {
+            keymapList.map {
+                KeymapListItemModel(
+                    id = it.id,
+                    actionList = it.buildActionChipModels(),
+                    triggerDescription = it.trigger.buildDescription(),
+                    constraintList = it.buildConstraintModels(),
+                    constraintMode = it.constraintMode,
+                    flagsDescription = it.flags.buildKeymapFlagsDescription(),
+                    isEnabled = it.isEnabled
+                )
+            }
+        }
 
     @Suppress("UNCHECKED_CAST")
     class Factory(

@@ -4,7 +4,8 @@ import androidx.lifecycle.*
 import io.github.sds100.keymapper.data.SystemRepository
 import io.github.sds100.keymapper.data.model.AppShortcutListItemModel
 import io.github.sds100.keymapper.ui.callback.ProgressCallback
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.*
 
 /**
@@ -19,14 +20,16 @@ class AppShortcutListViewModel internal constructor(
     private val mAppShortcutModelList = liveData {
         loadingContent.value = true
 
-        val appShortcutList = repository.getAppShortcutList().map {
-            //only include it if it has a configuration screen
+        val appShortcutList = withContext(viewModelScope.coroutineContext + Dispatchers.Default) {
+            repository.getAppShortcutList().map {
+                //only include it if it has a configuration screen
 
-            val name = repository.getIntentLabel(it) ?: ""
-            val icon = repository.getIntentIcon(it)
+                val name = repository.getIntentLabel(it) ?: ""
+                val icon = repository.getIntentIcon(it)
 
-            AppShortcutListItemModel(it.activityInfo, name, icon)
-        }.sortedBy { it.label.toLowerCase(Locale.getDefault()) }
+                AppShortcutListItemModel(it.activityInfo, name, icon)
+            }.sortedBy { it.label.toLowerCase(Locale.getDefault()) }
+        }
 
         emit(appShortcutList)
 
@@ -35,16 +38,18 @@ class AppShortcutListViewModel internal constructor(
 
     val filteredAppShortcutModelList = MediatorLiveData<List<AppShortcutListItemModel>>().apply {
         fun filter(query: String) {
-            value = mAppShortcutModelList.value?.filter {
+            mAppShortcutModelList.value?.filter {
                 it.label.toLowerCase(Locale.getDefault()).contains(query)
             } ?: listOf()
         }
 
-        addSource(searchQuery) { query ->
+        addSource(searchQuery)
+        { query ->
             filter(query)
         }
 
-        addSource(mAppShortcutModelList) {
+        addSource(mAppShortcutModelList)
+        {
             value = it
 
             searchQuery.value?.let { query ->

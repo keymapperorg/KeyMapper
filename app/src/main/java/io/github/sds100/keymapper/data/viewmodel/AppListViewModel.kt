@@ -4,7 +4,8 @@ import androidx.lifecycle.*
 import io.github.sds100.keymapper.data.SystemRepository
 import io.github.sds100.keymapper.data.model.AppListItemModel
 import io.github.sds100.keymapper.ui.callback.ProgressCallback
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.*
 
 /**
@@ -19,12 +20,14 @@ class AppListViewModel internal constructor(
     private val mAppModelList = liveData {
         loadingContent.value = true
 
-        val modelList = repository.getAppList().map {
-            val name = repository.getAppName(it) ?: it.packageName
-            val icon = repository.getAppIcon(it)
+        val modelList = withContext(viewModelScope.coroutineContext + Dispatchers.Default) {
+            repository.getAppList().map {
+                val name = repository.getAppName(it) ?: it.packageName
+                val icon = repository.getAppIcon(it)
 
-            AppListItemModel(it.packageName, name, icon)
-        }.sortedBy { it.appName.toLowerCase(Locale.getDefault()) }
+                AppListItemModel(it.packageName, name, icon)
+            }.sortedBy { it.appName.toLowerCase(Locale.getDefault()) }
+        }
 
         emit(modelList)
 

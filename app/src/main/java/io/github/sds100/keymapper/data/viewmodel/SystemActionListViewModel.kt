@@ -6,6 +6,8 @@ import io.github.sds100.keymapper.data.model.SystemActionListItemModel
 import io.github.sds100.keymapper.data.model.UnsupportedSystemActionListItemModel
 import io.github.sds100.keymapper.ui.callback.ProgressCallback
 import io.github.sds100.keymapper.util.SystemActionUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import splitties.resources.appStr
 import java.util.*
 
@@ -21,23 +23,25 @@ class SystemActionListViewModel : ViewModel(), ProgressCallback {
     private val mModelsSortedByCategory = liveData {
         loadingContent.value = true
 
-        val allModels = SystemActionUtils.getSupportedSystemActions().map {
-            val requiresRoot = it.permissions.contains(Constants.PERMISSION_ROOT)
+        val systemActionsSortedByCategory = withContext(viewModelScope.coroutineContext + Dispatchers.Default) {
+            val allModels = SystemActionUtils.getSupportedSystemActions().map {
+                val requiresRoot = it.permissions.contains(Constants.PERMISSION_ROOT)
 
-            SystemActionListItemModel(it.id, it.category, it.getDescription(), it.getIcon(), requiresRoot)
-        }
-
-        val systemActionsSortedByCategory = mutableMapOf<String, List<SystemActionListItemModel>>()
-
-        for ((categoryId, categoryLabel) in SystemActionUtils.CATEGORY_LABEL_MAP) {
-            val systemActions = allModels.filter { it.category == categoryId }
-
-            if (systemActions.isNotEmpty()) {
-                systemActionsSortedByCategory[appStr(categoryLabel)] = systemActions
+                SystemActionListItemModel(it.id, it.category, it.getDescription(), it.getIcon(), requiresRoot)
             }
+
+            sequence {
+                for ((categoryId, categoryLabel) in SystemActionUtils.CATEGORY_LABEL_MAP) {
+                    val systemActions = allModels.filter { it.category == categoryId }
+
+                    if (systemActions.isNotEmpty()) {
+                        yield(appStr(categoryLabel) to systemActions)
+                    }
+                }
+            }.toMap()
         }
 
-        this.emit(systemActionsSortedByCategory)
+        emit(systemActionsSortedByCategory)
 
         loadingContent.value = false
     }
@@ -73,16 +77,18 @@ class SystemActionListViewModel : ViewModel(), ProgressCallback {
     }
 
     val unsupportedSystemActions = liveData {
-        val unsupportedActions = SystemActionUtils.getUnsupportedSystemActionsWithReasons()
-            .map {
-                val systemAction = it.key
-                val failure = it.value
+        val unsupportedActions = withContext(viewModelScope.coroutineContext + Dispatchers.Default) {
+            SystemActionUtils.getUnsupportedSystemActionsWithReasons()
+                .map {
+                    val systemAction = it.key
+                    val failure = it.value
 
-                UnsupportedSystemActionListItemModel(systemAction.id,
-                    systemAction.getDescription(),
-                    systemAction.getIcon(),
-                    failure)
-            }
+                    UnsupportedSystemActionListItemModel(systemAction.id,
+                        systemAction.getDescription(),
+                        systemAction.getIcon(),
+                        failure)
+                }
+        }
 
         emit(unsupportedActions)
     }
