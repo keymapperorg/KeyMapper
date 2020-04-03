@@ -14,7 +14,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:gravity="center"
-            app:menu="@menu/menu_keymap_list"
             app:navigationIcon="@drawable/ic_baseline_arrow_back_24">
 
         </com.google.android.material.bottomappbar.BottomAppBar>

@@ -55,6 +55,12 @@ class ConfigKeymapFragment : Fragment() {
                         true
                     }
 
+                    R.id.action_help -> {
+                        findNavController().navigate(R.id.action_global_helpFragment)
+
+                        true
+                    }
+
                     else -> false
                 }
             }

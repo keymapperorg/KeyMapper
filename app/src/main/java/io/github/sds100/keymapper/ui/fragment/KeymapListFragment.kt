@@ -78,6 +78,12 @@ class KeymapListFragment : Fragment() {
                         true
                     }
 
+                    R.id.action_help -> {
+                        findNavController().navigate(R.id.action_global_helpFragment)
+
+                        true
+                    }
+
                     R.id.action_seed_database -> {
                         val request = OneTimeWorkRequestBuilder<SeedDatabaseWorker>().build()
                         WorkManager.getInstance(requireContext()).enqueue(request)
