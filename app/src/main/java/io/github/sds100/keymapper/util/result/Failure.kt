@@ -102,3 +102,5 @@ class GoogleAppNotFound : RecoverableFailure(appStr(R.string.error_google_app_no
 class FrontFlashNotFound : Failure(appStr(R.string.error_front_flash_not_found))
 class BackFlashNotFound : Failure(appStr(R.string.error_back_flash_not_found))
 class ImeNotFound(id: String) : Failure(appStr(R.string.error_ime_not_found, id))
+class DownloadFailed() : Failure(appStr(R.string.error_download_failed))
+class FileNotExists() : Failure(appStr(R.string.error_file_not_exists))

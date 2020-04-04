@@ -12,15 +12,26 @@ import com.google.android.material.textfield.TextInputLayout
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
+import io.noties.markwon.AbstractMarkwonPlugin
+import io.noties.markwon.Markwon
+import io.noties.markwon.core.MarkwonTheme
 import splitties.resources.appDrawable
 import splitties.resources.appStr
 import splitties.resources.styledColor
 import splitties.resources.styledColorSL
 
-
 /**
  * Created by sds100 on 25/01/2020.
  */
+
+@BindingAdapter("app:markdown")
+fun TextView.markdown(markdown: String?) {
+    markdown ?: return
+
+    Markwon.create(context).apply {
+        setMarkdown(this@markdown, markdown)
+    }
+}
 
 @BindingAdapter("app:tintType")
 fun AppCompatImageView.tintType(tintType: TintType?) {

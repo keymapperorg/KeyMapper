@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.util
 
 import android.content.Context
 import com.example.architecturetest.data.KeymapRepository
+import io.github.sds100.keymapper.data.FileRepository
 import io.github.sds100.keymapper.data.SystemRepository
 import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.viewmodel.*
@@ -18,6 +19,10 @@ object InjectorUtils {
 
     private fun getSystemRepository(context: Context): SystemRepository {
         return SystemRepository.getInstance(context)
+    }
+
+    private fun getFileRepository(context: Context): FileRepository {
+        return FileRepository.getInstance(context)
     }
 
     fun provideAppListViewModel(context: Context): AppListViewModel.Factory {
@@ -57,6 +62,11 @@ object InjectorUtils {
 
     fun provideSystemActionListViewModel(): SystemActionListViewModel.Factory {
         return SystemActionListViewModel.Factory()
+    }
+
+    fun provideHelpViewModel(context: Context): HelpViewModel.Factory {
+        val repository = getFileRepository(context)
+        return HelpViewModel.Factory(repository)
     }
 
     fun provideConfigKeymapViewModel(

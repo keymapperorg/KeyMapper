@@ -446,6 +446,8 @@
     <string name="error_invalid_action_type">Invalid Action Type: %s</string>
     <string name="error_options_not_required">Options not required</string>
     <string name="error_key_mapper_ime_not_found">Can\'t find the Key Mapper input method!</string>
+    <string name="error_download_failed">Download Failed!</string>
+    <string name="error_file_not_exists">File doesn\'t exist!</string>
     <!-- Error messages -->
 
     <!-- System action labels -->
@@ -562,7 +564,5 @@
     <string name="system_action_cat_nfc">NFC</string>
     <string name="system_action_cat_other">Other</string>
     <string name="system_action_cat_keyboard">Keyboard</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <!-- System action category labels -->
 </resources>
