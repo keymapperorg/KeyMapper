@@ -14,6 +14,7 @@ object PackageUtils {
         try {
             val intent = Intent(Intent.ACTION_VIEW)
             intent.data = Uri.parse("market://details?id=$packageName")
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             appCtx.startActivity(intent)
 
         } catch (e: ActivityNotFoundException) {
