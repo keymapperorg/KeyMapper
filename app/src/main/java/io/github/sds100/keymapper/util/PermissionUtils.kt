@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.util
 
 import android.Manifest
+import android.app.Activity
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Intent
@@ -8,8 +9,8 @@ import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.findNavController
 import io.github.sds100.keymapper.Constants
@@ -29,10 +30,7 @@ import splitties.toast.toast
  */
 
 object PermissionUtils {
-    const val REQUEST_CODE_PERMISSION = 344
-    const val REQUEST_CODE_DEVICE_ADMIN = 234
-
-    fun requestPermission(fragment: Fragment, permission: String) = fragment.apply {
+    fun requestPermission(activity: FragmentActivity, permission: String, onSuccess: () -> Unit) = activity.apply {
         //WRITE_SETTINGS permission only has to be granted on Marshmallow or higher
         when {
             permission == Manifest.permission.WRITE_SETTINGS &&
@@ -52,7 +50,7 @@ object PermissionUtils {
 
             permission == Constants.PERMISSION_ROOT -> RootUtils.promptForRootPermission(this)
 
-            permission == Manifest.permission.BIND_DEVICE_ADMIN -> requireActivity().alertDialog {
+            permission == Manifest.permission.BIND_DEVICE_ADMIN -> alertDialog {
 
                 messageResource = R.string.enable_device_admin_message
 
@@ -61,13 +59,17 @@ object PermissionUtils {
 
                     intent.putExtra(
                         DevicePolicyManager.EXTRA_DEVICE_ADMIN,
-                        ComponentName(requireActivity(), DeviceAdmin::class.java))
+                        ComponentName(activity, DeviceAdmin::class.java))
 
                     intent.putExtra(
                         DevicePolicyManager.EXTRA_ADD_EXPLANATION,
                         appStr(R.string.error_need_to_enable_device_admin))
 
-                    startActivityForResult(intent, REQUEST_CODE_DEVICE_ADMIN)
+                    prepareCall(ActivityResultContracts.StartActivityForResult(), activity.activityResultRegistry) {
+                        if (it.resultCode == Activity.RESULT_OK){
+                            onSuccess()
+                        }
+                    }.launch(intent)
                 }
 
                 cancelButton()
@@ -81,17 +83,27 @@ object PermissionUtils {
                 val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
 
                 try {
-                    startActivityForResult(intent, REQUEST_CODE_PERMISSION)
+                    prepareCall(ActivityResultContracts.StartActivityForResult(), activity.activityResultRegistry) {
+                        if (it.resultCode == Activity.RESULT_OK){
+                            onSuccess()
+                        }
+                    }.launch(intent)
                 } catch (e: Exception) {
                     toast(R.string.error_cant_find_dnd_access_settings)
                 }
             }
 
             permission == Manifest.permission.WRITE_SECURE_SETTINGS -> {
-                requestWriteSecureSettingsPermission(requireActivity())
+                requestWriteSecureSettingsPermission(activity)
             }
 
-            else -> fragment.requestPermissions(arrayOf(permission), REQUEST_CODE_PERMISSION)
+            else -> {
+                prepareCall(ActivityResultContracts.RequestPermission(), activityResultRegistry) {
+                    if (it == true) {
+                        onSuccess()
+                    }
+                }.launch(permission)
+            }
         }
     }
 

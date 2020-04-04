@@ -16,7 +16,6 @@ class KeymapListViewModel internal constructor(
 
     val keymapModelList = MediatorLiveData<List<KeymapListItemModel>>().apply {
         addSource(repository.keymapList) { keymapList ->
-
             viewModelScope.launch {
                 loadingContent.value = true
 

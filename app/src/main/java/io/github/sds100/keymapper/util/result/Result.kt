@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.util.result
 
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 
 /**
  * Created by sds100 on 26/02/2020.
@@ -19,7 +19,7 @@ abstract class RecoverableFailure(
     fullMessage: String,
     briefMessage: String = fullMessage
 ) : Failure(fullMessage, briefMessage) {
-    abstract suspend fun recover(fragment: Fragment)
+    abstract suspend fun recover(activity: FragmentActivity, onSuccess: () -> Unit = {})
 }
 
 inline fun <T> Result<T>.onSuccess(f: (T) -> Unit): Result<T> {

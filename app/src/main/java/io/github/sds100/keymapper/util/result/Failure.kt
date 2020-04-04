@@ -4,7 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.*
@@ -34,36 +34,36 @@ class PermissionDenied(private val mPermission: String) : RecoverableFailure(get
         }
     }
 
-    override suspend fun recover(fragment: Fragment) {
-        PermissionUtils.requestPermission(fragment, mPermission)
+    override suspend fun recover(activity: FragmentActivity, onSuccess: () -> Unit) {
+        PermissionUtils.requestPermission(activity, mPermission, onSuccess)
     }
 }
 
 class AppNotFound(val packageName: String) : RecoverableFailure(
     fullMessage = appStr(R.string.error_app_isnt_installed, packageName),
     briefMessage = appStr(R.string.error_app_isnt_installed_brief)) {
-    override suspend fun recover(fragment: Fragment) = PackageUtils.viewAppOnline(packageName)
+    override suspend fun recover(activity: FragmentActivity, onSuccess: () -> Unit) = PackageUtils.viewAppOnline(packageName)
 }
 
 class AppDisabled(val packageName: String) : RecoverableFailure(appStr(R.string.error_app_isnt_installed)) {
-    override suspend fun recover(fragment: Fragment) {
+    override suspend fun recover(activity: FragmentActivity, onSuccess: () -> Unit) {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
         intent.data = Uri.parse("package:$packageName")
         intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
 
-        fragment.startActivity(intent)
+        activity.startActivity(intent)
     }
 }
 
 class ImeServiceDisabled : RecoverableFailure(appStr(R.string.error_ime_service_disabled)) {
-    override suspend fun recover(fragment: Fragment) {
+    override suspend fun recover(activity: FragmentActivity, onSuccess: () -> Unit) {
         KeyboardUtils.openImeSettings()
     }
 }
 
 class ImeServiceNotChosen : RecoverableFailure(appStr(R.string.error_ime_must_be_chosen)) {
     @ExperimentalSplittiesApi
-    override suspend fun recover(fragment: Fragment) {
+    override suspend fun recover(activity: FragmentActivity, onSuccess: () -> Unit) {
         if (isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
             KeyboardUtils.switchToKeyMapperIme()
         } else {
@@ -93,9 +93,9 @@ class InputMethodNotFound(id: String) : Failure(appStr(R.string.error_ime_not_fo
 class OptionLabelNotFound(id: String) : Failure(appStr(R.string.error_cant_find_option_label, id))
 class NoEnabledInputMethods : Failure(appStr(R.string.error_no_enabled_imes))
 class GoogleAppNotFound : RecoverableFailure(appStr(R.string.error_google_app_not_installed)) {
-    override suspend fun recover(fragment: Fragment) {
+    override suspend fun recover(activity: FragmentActivity, onSuccess: () -> Unit) {
 
-        AppNotFound(appStr(R.string.google_app_package_name)).recover(fragment)
+        AppNotFound(appStr(R.string.google_app_package_name)).recover(activity, onSuccess)
     }
 }
 

@@ -26,7 +26,6 @@ import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
 import io.github.sds100.keymapper.ui.callback.SelectionCallback
 import io.github.sds100.keymapper.util.ISelectionProvider
 import io.github.sds100.keymapper.util.InjectorUtils
-import io.github.sds100.keymapper.util.PermissionUtils
 import io.github.sds100.keymapper.util.result.Failure
 import io.github.sds100.keymapper.util.result.RecoverableFailure
 import io.github.sds100.keymapper.worker.SeedDatabaseWorker
@@ -51,6 +50,12 @@ class KeymapListFragment : Fragment() {
     private val mController = KeymapController()
 
     private lateinit var mBinding: FragmentKeymapListBinding
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -158,20 +163,6 @@ class KeymapListFragment : Fragment() {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (requestCode == PermissionUtils.REQUEST_CODE_PERMISSION) {
-            mViewModel.rebuildModels()
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        mViewModel.rebuildModels()
-    }
-
     inner class KeymapController : EpoxyController(), SelectionCallback {
         var keymapList: List<KeymapListItemModel> = listOf()
             set(value) {
@@ -195,7 +186,9 @@ class KeymapListFragment : Fragment() {
                                 if (failure is RecoverableFailure) {
                                     action(R.string.snackbar_fix) {
                                         lifecycleScope.launch {
-                                            failure.recover(this@KeymapListFragment)
+                                            failure.recover(requireActivity()) {
+                                                mViewModel.rebuildModels()
+                                            }
                                         }
                                     }
                                 }

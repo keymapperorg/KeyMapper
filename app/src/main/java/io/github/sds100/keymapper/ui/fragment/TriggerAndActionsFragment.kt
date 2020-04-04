@@ -22,7 +22,6 @@ import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentTriggerAndActionsBinding
 import io.github.sds100.keymapper.triggerKey
-import io.github.sds100.keymapper.util.PermissionUtils
 import io.github.sds100.keymapper.util.availableFlags
 import io.github.sds100.keymapper.util.observeLiveData
 import io.github.sds100.keymapper.util.removeLiveData
@@ -93,14 +92,6 @@ class TriggerAndActionsFragment : Fragment() {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (requestCode == PermissionUtils.REQUEST_CODE_PERMISSION) {
-            mViewModel.rebuildActionModels()
-        }
-    }
-
     override fun onResume() {
         super.onResume()
 
@@ -168,7 +159,9 @@ class TriggerAndActionsFragment : Fragment() {
                                     if (model.failure is RecoverableFailure) {
                                         action(R.string.snackbar_fix) {
                                             lifecycleScope.launch {
-                                                model.failure.recover(this@TriggerAndActionsFragment)
+                                                model.failure.recover(requireActivity()) {
+                                                    mViewModel.rebuildActionModels()
+                                                }
                                             }
                                         }
                                     }
