@@ -211,7 +211,7 @@ class TriggerAndActionsFragment : Fragment() {
     }
 
     private fun Action.chooseFlags() {
-        appCtx.alertDialog {
+        requireActivity().alertDialog {
             val flagIds = availableFlags
             val labels = sequence {
                 flagIds.forEach { flagId ->
