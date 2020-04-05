@@ -1,5 +1,7 @@
 package io.github.sds100.keymapper.ui.fragment
 
+import android.Manifest
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,10 +9,13 @@ import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
+import androidx.transition.Fade
+import androidx.transition.TransitionManager
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.airbnb.epoxy.EpoxyController
@@ -22,12 +27,13 @@ import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
 import io.github.sds100.keymapper.databinding.FragmentKeymapListBinding
 import io.github.sds100.keymapper.keymapSimple
-import io.github.sds100.keymapper.ui.ExpandableHeaderDelegate
+import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
 import io.github.sds100.keymapper.ui.callback.SelectionCallback
-import io.github.sds100.keymapper.util.ISelectionProvider
-import io.github.sds100.keymapper.util.InjectorUtils
+import io.github.sds100.keymapper.ui.view.StatusLayout
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.Failure
+import io.github.sds100.keymapper.util.result.ImeServiceDisabled
 import io.github.sds100.keymapper.util.result.RecoverableFailure
 import io.github.sds100.keymapper.worker.SeedDatabaseWorker
 import kotlinx.coroutines.launch
@@ -51,7 +57,13 @@ class KeymapListFragment : Fragment() {
     private val mController = KeymapController()
 
     private lateinit var mBinding: FragmentKeymapListBinding
-    private lateinit var mExpandableHeaderDelegate: ExpandableHeaderDelegate
+
+    private val mExpanded = MutableLiveData(false)
+    private val mCollapsedStatusState = MutableLiveData(StatusLayout.State.ERROR)
+    private val mAccessibilityServiceStatusState = MutableLiveData(StatusLayout.State.ERROR)
+    private val mImeServiceStatusState = MutableLiveData(StatusLayout.State.ERROR)
+    private val mDndAccessStatusState = MutableLiveData(StatusLayout.State.ERROR)
+    private val mWriteSettingsStatusState = MutableLiveData(StatusLayout.State.ERROR)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -157,10 +169,57 @@ class KeymapListFragment : Fragment() {
                 }
             }
 
-            mExpandableHeaderDelegate = ExpandableHeaderDelegate(
-                { requireActivity() },
-                viewLifecycleOwner,
-                this)
+            expanded = mExpanded
+            collapsedStatusLayoutState = mCollapsedStatusState
+            accessibilityServiceStatusState = mAccessibilityServiceStatusState
+            imeServiceStatusState = mImeServiceStatusState
+            dndAccessStatusState = mDndAccessStatusState
+            writeSettingsStatusState = mWriteSettingsStatusState
+
+            buttonCollapse.setOnClickListener {
+
+                mExpanded.value = false
+            }
+
+            layoutCollapsed.setOnClickListener {
+                mExpanded.value = true
+            }
+
+            setEnableAccessibilityService {
+                AccessibilityUtils.enableService(requireActivity())
+            }
+
+            setEnableImeService {
+                KeyboardUtils.openImeSettings()
+            }
+
+            setGrantWriteSecureSettingsPermission {
+                PermissionUtils.requestPermission(requireActivity(), Manifest.permission.WRITE_SECURE_SETTINGS) {
+                    updateStatusLayouts()
+                }
+            }
+
+            setGrantDndAccess {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    PermissionUtils.requestPermission(requireActivity(),
+                        Manifest.permission.ACCESS_NOTIFICATION_POLICY) {
+                        updateStatusLayouts()
+                    }
+                }
+            }
+
+            mExpanded.observe(viewLifecycleOwner) {
+                if (it == true) {
+                    expandableLayout.expand()
+                } else {
+                    expandableLayout.collapse()
+
+                    val transition = Fade()
+                    TransitionManager.beginDelayedTransition(layoutCollapsed, transition)
+                }
+            }
+
+            updateStatusLayouts()
 
             return this.root
         }
@@ -170,7 +229,66 @@ class KeymapListFragment : Fragment() {
         super.onResume()
 
         mViewModel.rebuildModels()
-        mExpandableHeaderDelegate.updateStatusLayouts(mBinding)
+        updateStatusLayouts()
+    }
+
+    private fun updateStatusLayouts() {
+        if (AccessibilityUtils.isServiceEnabled(requireActivity())) {
+            mAccessibilityServiceStatusState.value = StatusLayout.State.POSITIVE
+
+        } else {
+            mAccessibilityServiceStatusState.value = StatusLayout.State.ERROR
+        }
+
+        if (PermissionUtils.isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
+            mWriteSettingsStatusState.value = StatusLayout.State.POSITIVE
+        } else {
+            mWriteSettingsStatusState.value = StatusLayout.State.WARN
+        }
+
+        if (KeyMapperImeService.isServiceEnabled()) {
+            mImeServiceStatusState.value = StatusLayout.State.POSITIVE
+
+        } else if (mViewModel?.keymapModelList?.value?.any { keymap ->
+                keymap.actionList.any { it.error is ImeServiceDisabled }
+            } == true) {
+
+            mImeServiceStatusState.value = StatusLayout.State.ERROR
+        } else {
+            mImeServiceStatusState.value = StatusLayout.State.WARN
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (PermissionUtils.isPermissionGranted(Manifest.permission.ACCESS_NOTIFICATION_POLICY)) {
+                mDndAccessStatusState.value = StatusLayout.State.POSITIVE
+            } else {
+                mDndAccessStatusState.value = StatusLayout.State.WARN
+            }
+        }
+
+        val states = listOf(
+            mAccessibilityServiceStatusState,
+            mWriteSettingsStatusState,
+            mImeServiceStatusState,
+            mDndAccessStatusState
+        )
+
+        when {
+            states.all { it.value == StatusLayout.State.POSITIVE } -> {
+                mExpanded.value = false
+                mCollapsedStatusState.value = StatusLayout.State.POSITIVE
+            }
+
+            states.any { it.value == StatusLayout.State.ERROR } -> {
+                mExpanded.value = true
+                mCollapsedStatusState.value = StatusLayout.State.ERROR
+            }
+
+            states.any { it.value == StatusLayout.State.WARN } -> {
+                mExpanded.value = false
+                mCollapsedStatusState.value = StatusLayout.State.WARN
+            }
+        }
     }
 
     inner class KeymapController : EpoxyController(), SelectionCallback {

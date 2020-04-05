@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -9,11 +10,9 @@
 
         <import type="com.google.android.material.bottomappbar.BottomAppBar" />
 
-        <import type="androidx.lifecycle.LiveData" />
+        <import type="io.github.sds100.keymapper.ui.view.StatusLayout.State" />
 
-        <import
-            alias="State"
-            type="io.github.sds100.keymapper.util.StatusLayoutState" />
+        <import type="androidx.lifecycle.LiveData" />
 
         <variable
             name="expanded"
@@ -32,20 +31,40 @@
             type="io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel" />
 
         <variable
-            name="collapsedLayoutState"
-            type="State" />
+            name="collapsedStatusLayoutState"
+            type="LiveData&lt;State>" />
 
         <variable
-            name="collapsedLayoutPositiveState"
-            type="String" />
+            name="accessibilityServiceStatusState"
+            type="LiveData&lt;State>" />
 
         <variable
-            name="collapsedLayoutWarningState"
-            type="String" />
+            name="imeServiceStatusState"
+            type="LiveData&lt;State>" />
 
         <variable
-            name="collapsedLayoutErrorState"
-            type="String" />
+            name="dndAccessStatusState"
+            type="LiveData&lt;State>" />
+
+        <variable
+            name="writeSettingsStatusState"
+            type="LiveData&lt;State>" />
+
+        <variable
+            name="enableAccessibilityService"
+            type="View.OnClickListener" />
+
+        <variable
+            name="enableImeService"
+            type="View.OnClickListener" />
+
+        <variable
+            name="grantWriteSecureSettingsPermission"
+            type="View.OnClickListener" />
+
+        <variable
+            name="grantDndAccess"
+            type="View.OnClickListener" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -69,7 +88,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/layoutContracted"
+                    android:id="@+id/layoutCollapsed"
                     style="@style/MyCardView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -80,37 +99,31 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:visibility="@{expanded ? View.GONE : View.VISIBLE}"
-                    tools:visibility="gone">
+                    tools:visibility="visible">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/textViewStatus"
+                        <io.github.sds100.keymapper.ui.view.StatusLayout
+                            android:id="@+id/statusLayout"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:layout_marginTop="8dp"
-                            android:layout_marginEnd="16dp"
-                            android:layout_marginBottom="8dp"
-                            android:drawablePadding="16dp"
-                            android:gravity="center_vertical"
-                            android:text="@{collapsedLayoutState == State.POSITIVE ? collapsedLayoutPositiveState : collapsedLayoutState == State.WARN ? collapsedLayoutWarningState : collapsedLayoutErrorState}"
-                            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                            app:errorText="@{@string/error_the_app_wont_work}"
+                            app:fixedText="@{@string/everything_looks_good}"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toStartOf="@id/buttonExpand"
+                            app:layout_constraintEnd_toStartOf="@+id/buttonExpand"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            app:statusLayoutState="@{collapsedLayoutState}"
-                            tools:drawableStart="@drawable/ic_baseline_error_outline_24"
-                            tools:text="@string/everything_looks_good" />
+                            app:showFixButton="@{false}"
+                            app:statusLayoutState="@{collapsedStatusLayoutState}"
+                            app:warningText="@{@string/warning_the_app_will_work}" />
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:id="@+id/buttonExpand"
                             android:layout_width="48dp"
-                            android:layout_height="match_parent"
+                            android:layout_height="0dp"
                             android:minHeight="48dp"
                             android:scaleType="centerInside"
                             android:src="@drawable/ic_outline_expand_more_24"
@@ -128,9 +141,8 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
-                    android:visibility="@{expanded ? View.VISIBLE : View.GONE}"
                     tools:el_expanded="true"
-                    tools:visibility="visible">
+                    tools:visibility="gone">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -143,17 +155,21 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
 
-                            <com.airbnb.epoxy.EpoxyRecyclerView
-                                android:id="@+id/epoxyRecyclerViewStatusLayout"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                                tools:itemCount="2" />
+                            <include
+                                layout="@layout/keymap_list_header_expanded"
+                                bind:accessibilityServiceStatusState="@{accessibilityServiceStatusState}"
+                                bind:dndAccessStatusState="@{dndAccessStatusState}"
+                                bind:enableAccessibilityService="@{enableAccessibilityService}"
+                                bind:enableImeService="@{enableImeService}"
+                                bind:grantDndAccess="@{grantDndAccess}"
+                                bind:grantWriteSecureSettingsPermission="@{grantWriteSecureSettingsPermission}"
+                                bind:imeServiceStatusState="@{imeServiceStatusState}"
+                                bind:writeSettingsStatusState="@{writeSettingsStatusState}" />
 
                         </com.google.android.material.card.MaterialCardView>
 
                         <FrameLayout
-                            android:id="@+id/buttonContract"
+                            android:id="@+id/buttonCollapse"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
 

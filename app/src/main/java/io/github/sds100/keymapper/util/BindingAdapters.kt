@@ -2,13 +2,9 @@ package io.github.sds100.keymapper.util
 
 import android.content.res.ColorStateList
 import android.view.View
-import android.widget.Button
 import android.widget.CompoundButton
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
-import androidx.appcompat.widget.AppCompatTextView
-import androidx.core.graphics.drawable.DrawableCompat
-import androidx.core.graphics.drawable.TintAwareDrawable
 import androidx.core.view.isVisible
 import androidx.core.widget.TextViewCompat
 import androidx.core.widget.addTextChangedListener
@@ -19,47 +15,70 @@ import com.google.android.material.textfield.TextInputLayout
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
+import io.github.sds100.keymapper.ui.view.StatusLayout
 import io.noties.markwon.Markwon
+import kotlinx.android.synthetic.main.list_item_status.view.*
 import splitties.resources.*
 
 /**
  * Created by sds100 on 25/01/2020.
  */
 
-@BindingAdapter("app:statusLayoutState")
-fun Button.setStatusLayoutState(state: StatusLayoutState) {
-    isVisible = state != StatusLayoutState.POSITIVE
+@BindingAdapter(
+    "app:statusLayoutState",
+    "app:fixedText",
+    "app:warningText",
+    "app:errorText",
+    "app:showFixButton",
+    "app:onFixClick",
+    requireAll = false
+)
+fun StatusLayout.setStatusLayoutState(
+    state: StatusLayout.State,
+    fixedText: String?,
+    warningText: String? = null,
+    errorText: String?,
+    showFixButton: Boolean = false,
+    onFixClick: View.OnClickListener?
+) {
+    buttonFix.isVisible = state != StatusLayout.State.POSITIVE && showFixButton
+
+    buttonFix.setOnClickListener(onFixClick)
 
     when (state) {
-        StatusLayoutState.WARN -> {
-            val color = appColor(R.color.warn)
-            setBackgroundColor(color)
+        StatusLayout.State.POSITIVE -> {
+            textViewStatus.text = fixedText
         }
 
-        StatusLayoutState.ERROR -> {
+        StatusLayout.State.WARN -> {
+            textViewStatus.text = warningText
+
+            val color = appColor(R.color.warn)
+            buttonFix.setBackgroundColor(color)
+        }
+
+        StatusLayout.State.ERROR -> {
+            textViewStatus.text = errorText
+
             val color = context.styledColor(R.attr.colorError)
-            setBackgroundColor(color)
+            buttonFix.setBackgroundColor(color)
         }
     }
-}
-
-@BindingAdapter("app:statusLayoutState")
-fun AppCompatTextView.setStatusLayoutState(state: StatusLayoutState) {
 
     val drawable = when (state) {
-        StatusLayoutState.POSITIVE -> appDrawable(R.drawable.ic_outline_check_circle_outline_24)
-        StatusLayoutState.WARN -> appDrawable(R.drawable.ic_baseline_error_outline_24)
-        StatusLayoutState.ERROR -> appDrawable(R.drawable.ic_baseline_error_outline_24)
+        StatusLayout.State.POSITIVE -> appDrawable(R.drawable.ic_outline_check_circle_outline_24)
+        StatusLayout.State.WARN -> appDrawable(R.drawable.ic_baseline_error_outline_24)
+        StatusLayout.State.ERROR -> appDrawable(R.drawable.ic_baseline_error_outline_24)
     }!!
 
     val tint = when (state) {
-        StatusLayoutState.POSITIVE -> appColor(R.color.green)
-        StatusLayoutState.WARN -> appColor(R.color.warn)
-        StatusLayoutState.ERROR -> styledColor(R.attr.colorError)
+        StatusLayout.State.POSITIVE -> appColor(R.color.green)
+        StatusLayout.State.WARN -> appColor(R.color.warn)
+        StatusLayout.State.ERROR -> styledColor(R.attr.colorError)
     }
 
-    TextViewCompat.setCompoundDrawableTintList(this, ColorStateList.valueOf(tint))
-    setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, null, null, null)
+    TextViewCompat.setCompoundDrawableTintList(textViewStatus, ColorStateList.valueOf(tint))
+    textViewStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, null, null, null)
 }
 
 @BindingAdapter("app:markdown")

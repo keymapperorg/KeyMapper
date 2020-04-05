@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- The summary is set in AboutFragment.-->
+    <androidx.preference.Preference
+        android:key="@string/key_pref_version"
+        android:title="@string/pref_title_version" />
+
+</androidx.preference.PreferenceScreen>
