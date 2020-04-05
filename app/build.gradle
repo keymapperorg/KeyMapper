@@ -23,9 +23,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-
             applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
         }
@@ -91,7 +88,6 @@ dependencies {
     implementation "com.louiscad.splitties:splitties-bitflags:$splitties_version"
     implementation "com.louiscad.splitties:splitties-alertdialog-appcompat-coroutines:$splitties_version"
     implementation "com.louiscad.splitties:splitties-alertdialog-appcompat:$splitties_version"
-    implementation "com.louiscad.splitties:splitties-permissions:$splitties_version"
     implementation "com.louiscad.splitties:splitties-preferences:$splitties_version"
     implementation "com.louiscad.splitties:splitties-resources:$splitties_version"
     implementation "com.louiscad.splitties:splitties-snackbar:$splitties_version"
