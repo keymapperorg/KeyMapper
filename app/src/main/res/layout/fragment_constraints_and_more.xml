@@ -21,8 +21,6 @@
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="4dp"
-        android:padding="8dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <com.google.android.material.card.MaterialCardView
@@ -30,6 +28,9 @@
             style="@style/MyCardView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -38,16 +39,15 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:paddingStart="@dimen/cardview_padding_left"
-                android:paddingTop="@dimen/cardview_padding_top"
-                android:paddingEnd="@dimen/cardview_padding_right"
-                android:paddingBottom="@dimen/cardview_padding_bottom">
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/textViewFlagsHeader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/cardview_padding_left"
+                    android:layout_marginTop="@dimen/cardview_padding_top"
+                    android:layout_marginEnd="@dimen/cardview_padding_right"
                     android:paddingBottom="@dimen/cardview_header_bottom_padding"
                     android:text="@string/keymap_flags_header"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
@@ -74,7 +74,9 @@
             style="@style/MyCardView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="@dimen/cardview_separation"
+            android:layout_marginEnd="8dp"
             android:layout_marginBottom="4dp"
             app:layout_constraintBottom_toTopOf="@+id/buttonAddConstraints"
             app:layout_constraintEnd_toEndOf="parent"
@@ -84,16 +86,15 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:paddingStart="@dimen/cardview_padding_left"
-                android:paddingTop="@dimen/cardview_padding_top"
-                android:paddingEnd="@dimen/cardview_padding_right"
-                android:paddingBottom="@dimen/cardview_padding_bottom">
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/textViewConstraintHeader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/cardview_padding_left"
+                    android:layout_marginTop="@dimen/cardview_padding_top"
+                    android:layout_marginEnd="@dimen/cardview_padding_right"
                     android:paddingBottom="@dimen/cardview_header_bottom_padding"
                     android:text="@string/constraint_list_header"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
@@ -130,6 +131,9 @@
                     android:id="@+id/radioGroup"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/cardview_padding_left"
+                    android:layout_marginEnd="@dimen/cardview_padding_right"
+                    android:layout_marginBottom="@dimen/cardview_padding_bottom"
                     android:orientation="horizontal"
                     android:visibility="@{viewModel.constraintModelList.size() &lt; 2 ? View.GONE : View.VISIBLE}"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -159,6 +163,9 @@
             android:id="@+id/buttonAddConstraints"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="4dp"
             android:onClick="@{onAddConstraintClick}"
             android:text="@string/button_add_constraint"
             app:layout_constraintBottom_toBottomOf="parent"

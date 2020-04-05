@@ -35,8 +35,6 @@
             android:id="@+id/constraintLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="4dp"
-            android:padding="8dp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <com.google.android.material.card.MaterialCardView
@@ -44,6 +42,9 @@
                 style="@style/MyCardView"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
                 app:layout_constraintBottom_toTopOf="@+id/cardViewActions"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -53,16 +54,15 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:paddingStart="@dimen/cardview_padding_left"
-                    android:paddingTop="@dimen/cardview_padding_top"
-                    android:paddingEnd="@dimen/cardview_padding_right"
-                    android:paddingBottom="@dimen/cardview_padding_bottom">
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/textViewTriggerHeader"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/cardview_padding_left"
+                        android:layout_marginTop="@dimen/cardview_padding_left"
+                        android:layout_marginEnd="@dimen/cardview_padding_right"
                         android:paddingBottom="@dimen/cardview_header_bottom_padding"
                         android:text="@string/trigger_list_header"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
@@ -96,6 +96,7 @@
                         android:id="@+id/textViewRadioGroupHeader"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/cardview_padding_left"
                         android:paddingTop="8dp"
                         android:text="@string/press_dot_dot_dot"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
@@ -109,6 +110,8 @@
                         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
+                        android:layout_marginEnd="@dimen/cardview_padding_right"
+                        android:layout_marginBottom="@dimen/cardview_padding_bottom"
                         android:onClick="@{onClickTypeClick}"
                         android:src="@drawable/ic_outline_more_vert_24"
                         android:tint="?attr/colorOnSurface"
@@ -121,6 +124,8 @@
                         android:id="@+id/radioGroup"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/cardview_padding_left"
+                        android:layout_marginBottom="@dimen/cardview_padding_bottom"
                         android:gravity="bottom"
                         android:orientation="horizontal"
                         android:visibility="@{viewModel.triggerKeys.empty ? View.GONE : View.VISIBLE}"
@@ -152,7 +157,9 @@
                 style="@style/MyCardView"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="@dimen/cardview_separation"
+                android:layout_marginEnd="8dp"
                 android:layout_marginBottom="4dp"
                 app:layout_constraintBottom_toTopOf="@+id/buttonRecordKeys"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -163,15 +170,14 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:paddingStart="@dimen/cardview_padding_left"
-                    android:paddingTop="@dimen/cardview_padding_top"
-                    android:paddingEnd="@dimen/cardview_padding_right"
-                    android:paddingBottom="@dimen/cardview_padding_bottom">
+                    android:orientation="vertical">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/cardview_padding_left"
+                        android:layout_marginTop="@dimen/cardview_padding_top"
+                        android:layout_marginEnd="@dimen/cardview_padding_right"
                         android:paddingBottom="@dimen/cardview_header_bottom_padding"
                         android:text="@string/action_list_header"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
@@ -203,7 +209,9 @@
                 android:id="@+id/buttonRecordKeys"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
                 android:layout_marginEnd="4dp"
+                android:layout_marginBottom="4dp"
                 android:onClick="@{onRecordTriggerClick}"
                 android:text="@string/button_record_trigger"
                 app:backgroundTint="@color/red"
@@ -218,6 +226,8 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginStart="4dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="4dp"
                 android:onClick="@{onAddActionClick}"
                 android:text="@string/button_add_action"
                 app:layout_constraintBottom_toBottomOf="parent"
