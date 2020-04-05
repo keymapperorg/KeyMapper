@@ -18,7 +18,6 @@
     <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nCreate a keymap!</string>
     <string name="no_key_maps">You haven\'t created any keymaps!</string>
     <string name="performing_action">Key Mapper is performing an action…</string>
-    <string name="email_subject">Key Mapper query</string>
     <string name="log_is_empty">Log is empty!</string>
     <string name="everything_looks_good">Everything looks good!</string>
     <string name="warning_the_app_will_work">The app will work but some things might need fixing depending on what you\'re doing.</string>
@@ -76,6 +75,8 @@
     <string name="tab_trigger_and_actions">Trigger and Actions</string>
     <string name="tab_constraints_and_more">Constraints and More</string>
 
+    <string name="email_subject">Key Mapper query</string>
+    <string name="email_default_message">What is your device?\n\n Which OEM skin or ROM are you using?\n\n Please describe the issue you\'re having:</string>
     <!-- Constraints -->
     <string name="constraint_app_description">%s is in foreground</string>
 

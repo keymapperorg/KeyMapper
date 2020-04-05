@@ -41,4 +41,12 @@ class KeymapRepository private constructor(private val keymapDao: KeyMapDao) {
     suspend fun deleteKeymap(vararg id: Long) {
         keymapDao.deleteById(*id)
     }
+
+    suspend fun enableAll() {
+        keymapDao.enableAll()
+    }
+
+    suspend fun disableAll() {
+        keymapDao.disableAll()
+    }
 }

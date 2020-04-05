@@ -65,7 +65,7 @@ class KeymapListFragment : Fragment() {
 
             setOnNewKeymapClick {
                 val direction =
-                    KeymapListFragmentDirections.actionHomeToConfigKeymap(ConfigKeymapViewModel.NEW_KEYMAP_ID)
+                    KeymapListFragmentDirections.actionToConfigKeymap(ConfigKeymapViewModel.NEW_KEYMAP_ID)
                 findNavController().navigate(direction)
             }
 
@@ -122,6 +122,8 @@ class KeymapListFragment : Fragment() {
             appBar.setNavigationOnClickListener {
                 if (selectionProvider.isSelectable.value == true) {
                     selectionProvider.stopSelecting()
+                } else {
+                    findNavController().navigate(R.id.action_global_menuFragment)
                 }
             }
 
@@ -213,7 +215,7 @@ class KeymapListFragment : Fragment() {
                         if (selectionProvider.isSelectable.value == true) {
                             selectionProvider.toggleSelection(id)
                         } else {
-                            val direction = KeymapListFragmentDirections.actionHomeToConfigKeymap(id)
+                            val direction = KeymapListFragmentDirections.actionToConfigKeymap(id)
                             findNavController().navigate(direction)
                         }
                     }

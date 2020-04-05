@@ -52,6 +52,18 @@ class KeymapListViewModel internal constructor(
         }
     }
 
+    fun enableAll() {
+        viewModelScope.launch {
+            repository.enableAll()
+        }
+    }
+
+    fun disableAll() {
+        viewModelScope.launch {
+            repository.disableAll()
+        }
+    }
+
     fun rebuildModels() = viewModelScope.launch {
         if (repository.keymapList.value.isNullOrEmpty()) return@launch
 
