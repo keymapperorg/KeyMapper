@@ -9,6 +9,16 @@
 
         <import type="com.google.android.material.bottomappbar.BottomAppBar" />
 
+        <import type="androidx.lifecycle.LiveData" />
+
+        <import
+            alias="State"
+            type="io.github.sds100.keymapper.util.StatusLayoutState" />
+
+        <variable
+            name="expanded"
+            type="LiveData&lt;Boolean>" />
+
         <variable
             name="onConfirmSelectionClick"
             type="View.OnClickListener" />
@@ -20,6 +30,22 @@
         <variable
             name="viewModel"
             type="io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel" />
+
+        <variable
+            name="collapsedLayoutState"
+            type="State" />
+
+        <variable
+            name="collapsedLayoutPositiveState"
+            type="String" />
+
+        <variable
+            name="collapsedLayoutWarningState"
+            type="String" />
+
+        <variable
+            name="collapsedLayoutErrorState"
+            type="String" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -28,24 +54,140 @@
         android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/frameLayout"
+            android:id="@+id/constraintLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginBottom="?attr/actionBarSize"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+            <FrameLayout
+                android:id="@+id/headerLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/layoutContracted"
+                    style="@style/MyCardView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:visibility="@{expanded ? View.GONE : View.VISIBLE}"
+                    tools:visibility="gone">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/textViewStatus"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginBottom="8dp"
+                            android:drawablePadding="16dp"
+                            android:gravity="center_vertical"
+                            android:text="@{collapsedLayoutState == State.POSITIVE ? collapsedLayoutPositiveState : collapsedLayoutState == State.WARN ? collapsedLayoutWarningState : collapsedLayoutErrorState}"
+                            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/buttonExpand"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:statusLayoutState="@{collapsedLayoutState}"
+                            tools:drawableStart="@drawable/ic_baseline_error_outline_24"
+                            tools:text="@string/everything_looks_good" />
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/buttonExpand"
+                            android:layout_width="48dp"
+                            android:layout_height="match_parent"
+                            android:minHeight="48dp"
+                            android:scaleType="centerInside"
+                            android:src="@drawable/ic_outline_expand_more_24"
+                            android:tint="?attr/colorOnSurface"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <net.cachapa.expandablelayout.ExpandableLayout
+                    android:id="@+id/expandableLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:visibility="@{expanded ? View.VISIBLE : View.GONE}"
+                    tools:el_expanded="true"
+                    tools:visibility="visible">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/cardView"
+                            style="@style/MyCardView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <com.airbnb.epoxy.EpoxyRecyclerView
+                                android:id="@+id/epoxyRecyclerViewStatusLayout"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                                tools:itemCount="2" />
+
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <FrameLayout
+                            android:id="@+id/buttonContract"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:layout_width="48dp"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="end"
+                                android:minHeight="48dp"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/ic_baseline_expand_less_24"
+                                android:tint="?attr/colorOnSurface"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent" />
+                        </FrameLayout>
+                    </LinearLayout>
+                </net.cachapa.expandablelayout.ExpandableLayout>
+            </FrameLayout>
+
             <com.airbnb.epoxy.EpoxyRecyclerView
                 android:id="@+id/epoxyRecyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 android:visibility="@{viewModel.loadingContent  || viewModel.keymapModelList.empty ? View.GONE : View.VISIBLE}"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/headerLayout"
                 tools:visibility="visible" />
 
             <ProgressBar
                 android:id="@+id/progressBar"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
@@ -54,19 +196,19 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/headerLayout"
                 tools:visibility="visible" />
 
             <TextView
                 style="@style/RecyclerViewPlaceholderTextView"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:text="@string/keymap_recyclerview_placeholder"
                 android:visibility="@{viewModel.keymapModelList.empty &amp;&amp; !viewModel.loadingContent ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/headerLayout" />
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="wrap_content"
@@ -94,7 +236,6 @@
                     tools:text="0 Selected" />
 
             </com.google.android.material.card.MaterialCardView>
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton

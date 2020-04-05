@@ -22,6 +22,7 @@ import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
 import io.github.sds100.keymapper.databinding.FragmentKeymapListBinding
 import io.github.sds100.keymapper.keymapSimple
+import io.github.sds100.keymapper.ui.ExpandableHeaderDelegate
 import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
 import io.github.sds100.keymapper.ui.callback.SelectionCallback
 import io.github.sds100.keymapper.util.ISelectionProvider
@@ -50,6 +51,7 @@ class KeymapListFragment : Fragment() {
     private val mController = KeymapController()
 
     private lateinit var mBinding: FragmentKeymapListBinding
+    private lateinit var mExpandableHeaderDelegate: ExpandableHeaderDelegate
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -153,6 +155,11 @@ class KeymapListFragment : Fragment() {
                 }
             }
 
+            mExpandableHeaderDelegate = ExpandableHeaderDelegate(
+                { requireActivity() },
+                viewLifecycleOwner,
+                this)
+
             return this.root
         }
     }
@@ -161,6 +168,7 @@ class KeymapListFragment : Fragment() {
         super.onResume()
 
         mViewModel.rebuildModels()
+        mExpandableHeaderDelegate.updateStatusLayouts(mBinding)
     }
 
     inner class KeymapController : EpoxyController(), SelectionCallback {

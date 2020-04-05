@@ -9,6 +9,48 @@ import androidx.annotation.RequiresPermission
  * Created by sds100 on 31/12/2018.
  */
 
+/**
+ * @return If the setting can't be found, it returns null
+ */
+inline fun <reified T> Context.getSystemSetting(name: String): T? {
+    return try {
+        when (T::class) {
+
+            Int::class -> Settings.System.getInt(contentResolver, name) as T?
+            String::class -> Settings.System.getString(contentResolver, name) as T?
+            Float::class -> Settings.System.getFloat(contentResolver, name) as T?
+            Long::class -> Settings.System.getLong(contentResolver, name) as T?
+
+            else -> {
+                throw Exception("Setting type ${T::class} is not supported")
+            }
+        }
+    } catch (e: Settings.SettingNotFoundException) {
+        null
+    }
+}
+
+/**
+ * @return If the setting can't be found, it returns null
+ */
+inline fun <reified T> Context.getSecureSetting(name: String): T? {
+    return try {
+        when (T::class) {
+
+            Int::class -> Settings.Secure.getInt(contentResolver, name) as T?
+            String::class -> Settings.Secure.getString(contentResolver, name) as T?
+            Float::class -> Settings.Secure.getFloat(contentResolver, name) as T?
+            Long::class -> Settings.Secure.getLong(contentResolver, name) as T?
+
+            else -> {
+                throw Exception("Setting type ${T::class} is not supported")
+            }
+        }
+    } catch (e: Settings.SettingNotFoundException) {
+        null
+    }
+}
+
 @RequiresPermission(Manifest.permission.WRITE_SETTINGS)
 inline fun <reified T> Context.putSystemSetting(name: String, value: T) {
 

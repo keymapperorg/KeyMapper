@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <import type="androidx.lifecycle.LiveData" />
+
+        <import
+            alias="State"
+            type="io.github.sds100.keymapper.util.StatusLayoutState" />
+
+        <variable
+            name="state"
+            type="State" />
+
+        <variable
+            name="positiveText"
+            type="String" />
+
+        <variable
+            name="warnText"
+            type="String" />
+
+        <variable
+            name="errorText"
+            type="String" />
+
+        <variable
+            name="onFixClickListener"
+            type="View.OnClickListener" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp">
+
+        <Button
+            android:id="@+id/buttonFix"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:onClick="@{onFixClickListener}"
+            android:text="@string/button_fix"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:statusLayoutState="@{state}"
+            tools:backgroundTint="?attr/colorError" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/textViewStatus"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:drawablePadding="16dp"
+            android:gravity="center_vertical"
+            android:text="@{state == State.POSITIVE ? positiveText : state == State.WARN ? warnText : errorText}"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/buttonFix"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:statusLayoutState="@{state}"
+            tools:drawableStart="@drawable/ic_baseline_error_outline_24"
+            tools:text="@string/error_accessibility_service_disabled" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

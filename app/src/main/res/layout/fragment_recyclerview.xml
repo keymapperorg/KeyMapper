@@ -30,7 +30,7 @@
             android:layout_marginBottom="16dp"
             android:text="@{caption}"
             android:visibility='@{caption == null || caption == "" ? View.GONE : View.VISIBLE}'
-            app:layout_constraintBottom_toTopOf="@+id/frameLayout"
+            app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintEnd_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -38,7 +38,7 @@
             tools:visibility="visible" />
 
         <FrameLayout
-            android:id="@+id/frameLayout"
+            android:id="@+id/constraintLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
