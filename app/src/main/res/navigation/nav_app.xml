@@ -52,14 +52,22 @@
             tools:layout="@layout/fragment_config_keymap">
             <action
                 android:id="@+id/action_config_keymap_fragment_to_choose_action_fragment"
-                app:destination="@id/choose_action_fragment" />
+                app:destination="@id/choose_action_fragment"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
 
             <argument
                 android:name="keymapId"
                 app:argType="long" />
             <action
                 android:id="@+id/action_config_keymap_fragment_to_choose_constraint"
-                app:destination="@id/nav_choose_constraint" />
+                app:destination="@id/nav_choose_constraint"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
         </fragment>
 
         <fragment
@@ -70,34 +78,72 @@
 
         <include app:graph="@navigation/nav_choose_constraint" />
     </navigation>
+
     <fragment
         android:id="@+id/settingsFragment"
         android:name="io.github.sds100.keymapper.ui.fragment.SettingsFragment"
         android:label="fragment_settings"
-        tools:layout="@layout/fragment_settings" />
+        tools:layout="@layout/fragment_about" />
     <action
         android:id="@+id/action_global_settingsFragment"
-        app:destination="@id/settingsFragment" />
+        app:destination="@id/settingsFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right" />
 
     <dialog
-        android:id="@+id/helpFragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.HelpFragment"
-        android:label="fragment_help"
-        tools:layout="@layout/fragment_help" />
+        android:id="@+id/onlineFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.OnlineFileFragment"
+        android:label="help_fragment"
+        tools:layout="@layout/fragment_online_file">
+        <argument
+            android:name="@string/nav_arg_header"
+            app:argType="reference" />
+        <argument
+            android:name="@string/nav_arg_file_url"
+            app:argType="reference" />
+    </dialog>
+
+    <action
+        android:id="@+id/action_global_onlineFileFragment"
+        app:destination="@id/onlineFragment"
+        app:enterAnim="@anim/slide_in_bottom">
+        <argument
+            android:name="@string/nav_arg_header"
+            app:argType="reference" />
+        <argument
+            android:name="@string/nav_arg_file_url"
+            app:argType="reference" />
+    </action>
+
     <action
         android:id="@+id/action_global_helpFragment"
-        app:destination="@id/helpFragment"
-        app:enterAnim="@anim/slide_in_bottom" />
+        app:destination="@id/onlineFragment"
+        app:enterAnim="@anim/slide_in_bottom">
+        <argument
+            android:name="@string/nav_arg_header"
+            android:defaultValue="@string/title_help"
+            app:argType="reference" />
+        <argument
+            android:name="@string/nav_arg_file_url"
+            android:defaultValue="@string/url_help"
+            app:argType="reference" />
+    </action>
 
-    <dialog
+    <fragment
         android:id="@+id/aboutFragment"
         android:name="io.github.sds100.keymapper.ui.fragment.AboutFragment"
         android:label="fragment_about"
-        tools:layout="@layout/fragment_about" />
+        tools:layout="@layout/fragment_about"/>
+
     <action
         android:id="@+id/action_global_aboutFragment"
         app:destination="@id/aboutFragment"
-        app:enterAnim="@anim/slide_in_bottom" />
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right" />
 
     <dialog
         android:id="@+id/menuFragment"

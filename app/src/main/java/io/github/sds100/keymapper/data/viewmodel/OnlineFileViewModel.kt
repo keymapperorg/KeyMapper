@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.data.FileRepository
 import io.github.sds100.keymapper.ui.callback.ProgressCallback
-import io.github.sds100.keymapper.util.result.DownloadFailed
 import io.github.sds100.keymapper.util.result.Failure
 import io.github.sds100.keymapper.util.result.Result
 import kotlinx.coroutines.launch
@@ -15,7 +14,8 @@ import kotlinx.coroutines.launch
  * Created by sds100 on 04/04/2020.
  */
 
-class HelpViewModel(private val repository: FileRepository) : ViewModel(), ProgressCallback {
+class OnlineFileViewModel(private val mFileUrl: String,
+                          private val repository: FileRepository) : ViewModel(), ProgressCallback {
 
     override val loadingContent = MutableLiveData(false)
 
@@ -30,7 +30,7 @@ class HelpViewModel(private val repository: FileRepository) : ViewModel(), Progr
             viewModelScope.launch {
                 loadingContent.value = true
 
-                markdownText.value = repository.getHelpMarkdown()
+                markdownText.value = repository.getFile(mFileUrl)
 
                 loadingContent.value = false
             }
@@ -38,11 +38,12 @@ class HelpViewModel(private val repository: FileRepository) : ViewModel(), Progr
     }
 
     class Factory(
+        private val mFileUrl: String,
         private val mRepository: FileRepository
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>) =
-            HelpViewModel(mRepository) as T
+            OnlineFileViewModel(mFileUrl, mRepository) as T
     }
 }

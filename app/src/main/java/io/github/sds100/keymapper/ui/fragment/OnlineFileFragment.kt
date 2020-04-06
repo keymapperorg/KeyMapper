@@ -4,26 +4,30 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.viewmodel.HelpViewModel
-import io.github.sds100.keymapper.databinding.FragmentHelpBinding
+import io.github.sds100.keymapper.data.viewmodel.OnlineFileViewModel
+import io.github.sds100.keymapper.databinding.FragmentOnlineFileBinding
 import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.result.onFailure
 import io.github.sds100.keymapper.util.result.onSuccess
+import splitties.resources.appStr
 import splitties.toast.toast
 
-class HelpFragment : BottomSheetDialogFragment() {
+class OnlineFileFragment : BottomSheetDialogFragment() {
 
-    private val mViewModel by activityViewModels<HelpViewModel> {
-        InjectorUtils.provideHelpViewModel(requireContext())
+    private val mArgs by navArgs<OnlineFileFragmentArgs>()
+
+    private val mViewModel by viewModels<OnlineFileViewModel> {
+        InjectorUtils.provideOnlineViewModel(requireContext(), appStr(mArgs.StringNavArgFileUrl))
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        FragmentHelpBinding.inflate(inflater, container, false).apply {
+        FragmentOnlineFileBinding.inflate(inflater, container, false).apply {
 
             lifecycleOwner = viewLifecycleOwner
             progressCallback = mViewModel
@@ -38,6 +42,8 @@ class HelpFragment : BottomSheetDialogFragment() {
                     toast(R.string.error_download_failed)
                 }
             }
+
+            header = appStr(mArgs.StringNavArgHeader)
 
             return this.root
         }

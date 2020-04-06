@@ -3,6 +3,16 @@
     <!-- Look in the default_prefs.xml file to find their default values -->
     <string name="key_pref_version" translatable="false">key_version</string>
     <string name="key_pref_developer_email" translatable="false">developer_email</string>
+    <string name="key_pref_changelog" translatable="false">changelog</string>
+    <string name="key_pref_xda_thread" translatable="false">xda_thread</string>
+    <string name="key_pref_telegram_channel" translatable="false">telegram_channel</string>
+    <string name="key_pref_rate_review" translatable="false">rate_review</string>
+    <string name="key_pref_developer_github" translatable="false">developer_github</string>
+    <string name="key_pref_source_code" translatable="false">source_code</string>
+    <string name="key_pref_translate" translatable="false">translate</string>
+    <string name="key_pref_credits" translatable="false">credits</string>
+    <string name="key_pref_license" translatable="false">license</string>
+    <string name="key_pref_privacy_policy" translatable="false">privacy_policy</string>
 
     <string name="key_pref_first_time" translatable="false">pref_first_time</string>
     <string name="key_pref_show_long_press_warning" translatable="false">key_show_long_press_warning</string>

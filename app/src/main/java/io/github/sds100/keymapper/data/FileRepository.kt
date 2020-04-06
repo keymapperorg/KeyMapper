@@ -7,6 +7,7 @@ import io.github.sds100.keymapper.util.NetworkUtils
 import io.github.sds100.keymapper.util.result.*
 import splitties.resources.appStr
 import java.io.File
+import java.net.URL
 
 /**
  * Created by sds100 on 04/04/2020.
@@ -20,14 +21,13 @@ class FileRepository private constructor(private val mContext: Context) {
             instance ?: synchronized(this) {
                 instance ?: FileRepository(context.applicationContext).also { instance = it }
             }
-
-        private const val FILE_NAME_HELP = "help.md"
     }
 
-    suspend fun getHelpMarkdown(): Result<String> {
-        val path = FileUtils.getPathToFileInAppData(mContext, FILE_NAME_HELP)
+    suspend fun getFile(url: String): Result<String>{
+        val fileName = extractFileName(url)
+        val path = FileUtils.getPathToFileInAppData(mContext, fileName)
 
-        return NetworkUtils.downloadFile(appStr(R.string.url_help), path)
+        return NetworkUtils.downloadFile(url, path)
             .otherwise {
                 val file = File(path)
 
@@ -38,5 +38,12 @@ class FileRepository private constructor(private val mContext: Context) {
                 }
             }
             .then { Success(it.readText()) }
+    }
+
+    /**
+     * Extracts the file name from the url
+     */
+    private fun extractFileName(fileUrl: String): String {
+        return File(URL(fileUrl).path.toString()).name
     }
 }

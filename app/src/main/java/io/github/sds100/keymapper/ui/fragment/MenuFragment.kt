@@ -41,8 +41,8 @@ class MenuFragment : BottomSheetDialogFragment() {
             }
 
             setOpenAbout {
-                findNavController().navigate(R.id.aboutFragment)
                 dismiss()
+                findNavController().navigate(R.id.action_global_aboutFragment)
             }
 
             setEnableAll {

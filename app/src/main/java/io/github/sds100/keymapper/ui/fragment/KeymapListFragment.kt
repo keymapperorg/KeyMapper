@@ -93,7 +93,8 @@ class KeymapListFragment : Fragment() {
                     }
 
                     R.id.action_help -> {
-                        findNavController().navigate(R.id.action_global_helpFragment)
+                        val direction = KeymapListFragmentDirections.actionGlobalHelpFragment()
+                        findNavController().navigate(direction)
 
                         true
                     }

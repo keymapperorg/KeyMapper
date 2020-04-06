@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.findNavController
 import io.github.sds100.keymapper.Constants
+import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.service.DeviceAdmin
@@ -66,7 +67,7 @@ object PermissionUtils {
                         appStr(R.string.error_need_to_enable_device_admin))
 
                     prepareCall(ActivityResultContracts.StartActivityForResult(), activity.activityResultRegistry) {
-                        if (it.resultCode == Activity.RESULT_OK){
+                        if (it.resultCode == Activity.RESULT_OK) {
                             onSuccess()
                         }
                     }.launch(intent)
@@ -84,7 +85,7 @@ object PermissionUtils {
 
                 try {
                     prepareCall(ActivityResultContracts.StartActivityForResult(), activity.activityResultRegistry) {
-                        if (it.resultCode == Activity.RESULT_OK){
+                        if (it.resultCode == Activity.RESULT_OK) {
                             onSuccess()
                         }
                     }.launch(intent)
@@ -110,11 +111,12 @@ object PermissionUtils {
     fun requestWriteSecureSettingsPermission(activity: FragmentActivity) = activity.alertDialog {
         messageResource = R.string.dialog_message_write_secure_settings
         positiveButton(R.string.pos_help_page) {
-            activity.findNavController(R.id.nav_host).navigate(R.id.action_global_helpFragment)
+            val direction = NavAppDirections.actionGlobalHelpFragment()
+            activity.findNavController(R.id.container).navigate(direction)
         }
 
         negativeButton(R.string.pos_enable_root_features) {
-            activity.findNavController(R.id.nav_host).navigate(R.id.action_global_settingsFragment)
+            activity.findNavController(R.id.container).navigate(R.id.action_global_settingsFragment)
         }
         show()
     }

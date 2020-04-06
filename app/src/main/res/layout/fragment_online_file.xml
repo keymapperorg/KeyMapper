@@ -8,6 +8,10 @@
         <import type="android.view.View" />
 
         <variable
+            name="header"
+            type="String" />
+
+        <variable
             name="markdown"
             type="String" />
 
@@ -26,13 +30,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:text="@string/title_help"
+            android:text="@{header}"
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
             android:textColor="?attr/colorOnSurface"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Help" />
 
         <ProgressBar
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"

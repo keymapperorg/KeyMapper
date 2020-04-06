@@ -1,9 +1,7 @@
 package io.github.sds100.keymapper.util
 
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.R
 import splitties.alertdialog.appcompat.*
 
@@ -23,7 +21,7 @@ object RootUtils {
         messageResource = R.string.dialog_message_root_prompt
         setIcon(R.drawable.ic_baseline_warning_24)
         okButton {
-            activity.findNavController(R.id.nav_host).navigate(R.id.action_global_settingsFragment)
+            activity.findNavController(R.id.container).navigate(R.id.action_global_settingsFragment)
             Shell.run("su")
         }
 

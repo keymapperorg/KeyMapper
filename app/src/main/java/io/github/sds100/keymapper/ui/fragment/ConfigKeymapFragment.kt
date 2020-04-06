@@ -56,7 +56,8 @@ class ConfigKeymapFragment : Fragment() {
                     }
 
                     R.id.action_help -> {
-                        findNavController().navigate(R.id.action_global_helpFragment)
+                        val direction = ConfigKeymapFragmentDirections.actionGlobalHelpFragment()
+                        findNavController().navigate(direction)
 
                         true
                     }
