@@ -25,6 +25,22 @@ class ConfigKeymapViewModel internal constructor(
         addSource(triggerInParallel) {
             if (it == true) {
                 value = Trigger.PARALLEL
+
+                //if the keys have different click types, set them all to the clicktype of the first key
+                triggerKeys.value?.let { keys ->
+                    if (keys.isEmpty()) {
+                        return@let
+                    }
+
+                    val firstKeyClickType = keys[0].clickType
+
+                    if (keys.any { key -> key.clickType != firstKeyClickType }) {
+                        triggerKeys.value = keys.map { key ->
+                            key.clickType = firstKeyClickType
+                            key
+                        }
+                    }
+                }
             }
         }
 
@@ -172,9 +188,6 @@ class ConfigKeymapViewModel internal constructor(
         }
     }
 
-    @Trigger.ClickType
-    fun getParallelTriggerClickType() = triggerKeys.value?.get(0)?.clickType
-
     fun setParallelTriggerClickType(@Trigger.ClickType clickType: Int) {
         triggerKeys.value = triggerKeys.value?.map {
             it.clickType = clickType
@@ -185,7 +198,7 @@ class ConfigKeymapViewModel internal constructor(
 
     fun setTriggerKeyClickType(keycode: Int, @Trigger.ClickType clickType: Int) {
         triggerKeys.value = triggerKeys.value?.map {
-            if (it.keyCode == keycode) {
+            if (it.keycode == keycode) {
                 it.clickType = clickType
             }
 
@@ -195,7 +208,7 @@ class ConfigKeymapViewModel internal constructor(
 
     fun removeTriggerKey(keycode: Int) {
         triggerKeys.value = triggerKeys.value?.toMutableList()?.apply {
-            removeAll { it.keyCode == keycode }
+            removeAll { it.keycode == keycode }
         }
     }
 

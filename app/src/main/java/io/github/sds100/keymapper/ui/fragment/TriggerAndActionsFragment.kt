@@ -33,11 +33,12 @@ import splitties.alertdialog.appcompat.okButton
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
 import splitties.experimental.ExperimentalSplittiesApi
-import splitties.init.appCtx
 import splitties.resources.appStr
 import splitties.snackbar.action
 import splitties.snackbar.longSnack
 import splitties.toast.toast
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * Created by sds100 on 19/03/2020.
@@ -74,10 +75,10 @@ class TriggerAndActionsFragment : Fragment() {
             }
 
             setOnClickTypeClick {
-                val clickType = mViewModel.getParallelTriggerClickType() ?: return@setOnClickTypeClick
+                lifecycleScope.launch {
+                    val newClickType = showClickTypeDialog()
 
-                showClickTypeDialog(clickType) {
-                    mViewModel.setParallelTriggerClickType(it)
+                    mViewModel.setParallelTriggerClickType(newClickType)
                 }
             }
 
@@ -117,7 +118,7 @@ class TriggerAndActionsFragment : Fragment() {
 
                         onRemoveClick { _ ->
                             if (triggerKey != null) {
-                                mViewModel.removeTriggerKey(triggerKey.keyCode)
+                                mViewModel.removeTriggerKey(triggerKey.keycode)
                             }
                         }
 
@@ -135,12 +136,19 @@ class TriggerAndActionsFragment : Fragment() {
     private fun FragmentTriggerAndActionsBinding.subscribeActionList() {
         mViewModel.actionModelList.observe(viewLifecycleOwner) { actionList ->
             epoxyRecyclerViewActions.withModels {
+                val icons = sequence {
+                    actionList.forEach {
+                        yield(it.getIcon(requireContext()))
+                    }
+                }.toList()
+
                 actionList.forEachIndexed { index, model ->
                     action {
                         val action = mViewModel.actionList.value?.get(index)
 
                         id(model.id)
                         model(model)
+                        icon(icons[index])
                         flagsAreAvailable(action?.availableFlags?.isNotEmpty())
 
                         onRemoveClick { _ ->
@@ -177,27 +185,23 @@ class TriggerAndActionsFragment : Fragment() {
     }
 
     private fun Trigger.Key.chooseClickType() {
-        showClickTypeDialog(clickType) {
-            mViewModel.setTriggerKeyClickType(keyCode, clickType)
+        lifecycleScope.launch {
+            val newClickType = showClickTypeDialog()
+
+            mViewModel.setTriggerKeyClickType(keycode, newClickType)
         }
     }
 
-    private fun showClickTypeDialog(checkedClickType: Int, onOkClick: (clickType: Int) -> Unit) {
+    private suspend fun showClickTypeDialog() = suspendCoroutine<Int> {
         requireActivity().alertDialog {
             val labels = Trigger.CLICK_TYPE_LABEL_MAP.values.map { appStr(it) }.toTypedArray()
 
-            val checkedItemIndex = Trigger.CLICK_TYPE_LABEL_MAP.keys.indexOf(checkedClickType)
-            var clickType = checkedClickType
-
-            setSingleChoiceItems(labels, checkedItemIndex) { _, index ->
-                clickType = Trigger.CLICK_TYPE_LABEL_MAP.keys.toList()[index]
+            setItems(labels) { _, index ->
+                val clickType = Trigger.CLICK_TYPE_LABEL_MAP.keys.toList()[index]
+                it.resume(clickType)
             }
 
             cancelButton()
-
-            okButton {
-                onOkClick(clickType)
-            }
 
             show()
         }

@@ -32,12 +32,12 @@ class Trigger(var keys: List<Key> = listOf()) {
     @Mode
     var mode: Int = DEFAULT_TRIGGER_MODE
 
-    data class Key(val keyCode: Int, var deviceId: String? = null, @ClickType var clickType: Int = SHORT_PRESS) {
+    data class Key(val keycode: Int, var deviceId: String? = null, @ClickType var clickType: Int = SHORT_PRESS) {
         override fun equals(other: Any?): Boolean {
-            return (other as Key).keyCode == keyCode
+            return (other as Key).keycode == keycode
         }
 
-        override fun hashCode() = keyCode
+        override fun hashCode() = keycode
     }
 
     @IntDef(value = [PARALLEL, SEQUENCE])

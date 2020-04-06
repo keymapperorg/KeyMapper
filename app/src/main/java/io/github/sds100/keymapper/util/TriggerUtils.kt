@@ -34,7 +34,7 @@ fun Trigger.buildDescription(): String = buildString {
             DOUBLE_PRESS -> append(doublePress)
         }
 
-        append(" ${KeycodeUtils.keycodeToString(key.keyCode)}")
+        append(" ${KeycodeUtils.keycodeToString(key.keycode)}")
 
         if (key.deviceId != null) {
             //TODO get device name
@@ -48,7 +48,7 @@ fun Trigger.buildDescription(): String = buildString {
 fun Trigger.Key.buildModel(): TriggerKeyModel {
     //TODO get device name
     return TriggerKeyModel(
-        name = KeycodeUtils.keycodeToString(keyCode),
+        name = KeycodeUtils.keycodeToString(keycode),
         clickType = clickType,
         deviceName = null
     )
@@ -67,7 +67,7 @@ fun Trigger.buildTriggerChipModel(): TriggerChipModel {
                     DOUBLE_PRESS -> append("${appStr(R.string.clicktype_double_press)} $interpunct ")
                 }
 
-                val keycodeString = KeycodeUtils.keycodeToString(key.keyCode)
+                val keycodeString = KeycodeUtils.keycodeToString(key.keycode)
                 append(keycodeString)
 
                 //TODO need to get device name from its ID
