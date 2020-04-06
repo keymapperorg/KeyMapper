@@ -233,6 +233,10 @@ private fun Action.canBePerformed(): Result<Action> {
                     return SdkVersionTooLow(systemActionDef.minApi)
                 }
 
+                if (Build.VERSION.SDK_INT > systemActionDef.maxApi) {
+                    return SdkVersionTooHigh(systemActionDef.maxApi)
+                }
+
                 systemActionDef.permissions.forEach { permission ->
                     if (!PermissionUtils.isPermissionGranted(permission)) {
                         return PermissionDenied(permission)

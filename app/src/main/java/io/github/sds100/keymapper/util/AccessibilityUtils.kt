@@ -6,13 +6,10 @@ import android.content.Context
 import android.content.Intent
 import android.provider.Settings
 import android.view.accessibility.AccessibilityNodeInfo
-import androidx.fragment.app.FragmentActivity
 import io.github.sds100.keymapper.Constants
-import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.service.MyAccessibilityService
+import io.github.sds100.keymapper.ui.activity.HomeActivity
 import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
-import splitties.alertdialog.appcompat.*
-import splitties.experimental.ExperimentalSplittiesApi
 import splitties.init.appCtx
 
 /**
@@ -20,7 +17,7 @@ import splitties.init.appCtx
  */
 
 object AccessibilityUtils {
-    fun enableService(activity: FragmentActivity) {
+    fun enableService(context: Context) {
         when {
             isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS) -> {
                 val enabledServices = appCtx.getSecureSetting<String>(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
@@ -38,12 +35,11 @@ object AccessibilityUtils {
                 appCtx.putSecureSetting(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, newEnabledServices)
             }
 
-            else -> openAccessibilitySettings(activity)
+            else -> openAccessibilitySettings(context)
         }
     }
 
-    @ExperimentalSplittiesApi
-    fun disableService(activity: FragmentActivity) {
+    fun disableService(context: Context) {
         when {
             isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS) -> {
                 val enabledServices = appCtx.getSystemSetting<String>(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
@@ -65,11 +61,11 @@ object AccessibilityUtils {
                 appCtx.putSecureSetting(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, newEnabledServices)
             }
 
-            else -> openAccessibilitySettings(activity)
+            else -> openAccessibilitySettings(context)
         }
     }
 
-    private fun openAccessibilitySettings(activity: FragmentActivity) {
+    private fun openAccessibilitySettings(context: Context) {
         try {
             val settingsIntent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
 
@@ -78,15 +74,15 @@ object AccessibilityUtils {
                 or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
 
             appCtx.startActivity(settingsIntent)
-        } catch (e: ActivityNotFoundException) {
-            activity.alertDialog {
-                titleResource = R.string.dialog_title_cant_find_accessibility_settings_page
-                messageResource = R.string.dialog_message_cant_find_accessibility_settings_page
 
-                okButton {
-                    PermissionUtils.requestWriteSecureSettingsPermission(activity)
-                }
-            }.show()
+        } catch (e: ActivityNotFoundException) {
+            //open the app to show a dialog to tell the user to give the app WRITE_SECURE_SETTINGS permission
+            Intent(context, HomeActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                putExtra(HomeActivity.KEY_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG, true)
+
+                context.startActivity(this)
+            }
         }
     }
 

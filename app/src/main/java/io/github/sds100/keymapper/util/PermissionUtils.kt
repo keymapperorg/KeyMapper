@@ -121,7 +121,7 @@ object PermissionUtils {
         show()
     }
 
-    @ExperimentalSplittiesApi
+    @Suppress("EXPERIMENTAL_API_USAGE")
     fun isPermissionGranted(permission: String): Boolean {
         when {
             permission == Manifest.permission.WRITE_SETTINGS &&

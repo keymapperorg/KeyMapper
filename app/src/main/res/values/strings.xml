@@ -212,8 +212,9 @@
     <!-- Dialog buttons -->
 
     <!-- Notification strings -->
-    <string name="notification_channel_persistent">Persistent Notifications</string>
-    <string name="notification_channel_warnings">Warnings</string>
+    <string name="notification_channel_ime_picker">Keyboard picker</string>
+    <string name="notification_channel_toggle_remaps">Pause/Resume remaps</string>
+    <string name="notification_channel_keyboard_hidden">Keyboard is hidden warning</string>
 
     <string name="notification_ime_persistent_text">Tap to change your keyboard.</string>
     <string name="notification_ime_persistent_title">Keyboard Picker</string>
@@ -277,6 +278,8 @@
 
     <string name="title_pref_dark_theme">Dark Theme</string>
     <string name="summary_pref_dark_theme">When to enable the dark theme.</string>
+
+    <string name="title_pref_notification_settings">Notification Settings</string>
     <!--Preference titles and summaries-->
 
     <!--Preference categories-->
@@ -457,6 +460,7 @@
     <string name="error_file_not_exists">File doesn\'t exist!</string>
     <string name="error_ssl_handshake_exception">SSL handshake error</string>
     <string name="error_file_not_cached">File isn\'t cached! Connect to internet to download it.</string>
+    <string name="error_this_is_unsupported">This is unsupported. :(</string>
 
     <!-- Error messages -->
 

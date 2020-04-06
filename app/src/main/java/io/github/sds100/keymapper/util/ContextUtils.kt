@@ -7,10 +7,14 @@ import android.provider.Settings
 import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresPermission
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.preference.PreferenceManager
 
 /**
  * Created by sds100 on 31/12/2018.
  */
+
+val Context.defaultSharedPreferences
+    get() = PreferenceManager.getDefaultSharedPreferences(this)
 
 /**
  * Get a resource drawable. Can be safely used to get vector drawables on pre-lollipop.

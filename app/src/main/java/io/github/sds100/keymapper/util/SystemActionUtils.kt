@@ -515,14 +515,14 @@ object SystemActionUtils {
         SystemActionDef(id = TOGGLE_KEYBOARD,
             category = CATEGORY_KEYBOARD,
             minApi = Build.VERSION_CODES.N,
-            iconRes = R.drawable.ic_outline_keyboard_24,
+            iconRes = R.drawable.ic_notification_keyboard,
             messageOnSelection = R.string.action_toggle_keyboard_message,
             descriptionRes = R.string.action_toggle_keyboard),
 
         SystemActionDef(id = SHOW_KEYBOARD,
             category = CATEGORY_KEYBOARD,
             minApi = Build.VERSION_CODES.N,
-            iconRes = R.drawable.ic_outline_keyboard_24,
+            iconRes = R.drawable.ic_notification_keyboard,
             messageOnSelection = R.string.action_toggle_keyboard_message,
             descriptionRes = R.string.action_show_keyboard),
 
@@ -535,20 +535,21 @@ object SystemActionUtils {
 
         SystemActionDef(id = SHOW_KEYBOARD_PICKER,
             category = CATEGORY_KEYBOARD,
-            iconRes = R.drawable.ic_outline_keyboard_24,
+            iconRes = R.drawable.ic_notification_keyboard,
             maxApi = Build.VERSION_CODES.O,
             descriptionRes = R.string.action_show_keyboard_picker),
 
         SystemActionDef(id = SHOW_KEYBOARD_PICKER_ROOT,
             category = CATEGORY_KEYBOARD,
-            iconRes = R.drawable.ic_outline_keyboard_24,
+            iconRes = R.drawable.ic_notification_keyboard,
             permissions = arrayOf(Constants.PERMISSION_ROOT),
             minApi = Build.VERSION_CODES.O_MR1,
+            maxApi = Build.VERSION_CODES.P,
             descriptionRes = R.string.action_show_keyboard_picker_root),
 
         SystemActionDef(id = SWITCH_KEYBOARD,
             category = CATEGORY_KEYBOARD,
-            iconRes = R.drawable.ic_outline_keyboard_24,
+            iconRes = R.drawable.ic_notification_keyboard,
             permissions = arrayOf(Constants.PERMISSION_ROOT),
             descriptionRes = R.string.action_switch_keyboard,
             getDescriptionWithOption = { optionText ->
@@ -657,7 +658,7 @@ object SystemActionUtils {
 
         val options = getOptions()
 
-        if (options is Failure && options !is OptionsNotRequired){
+        if (options is Failure && options !is OptionsNotRequired) {
             return options
         }
 

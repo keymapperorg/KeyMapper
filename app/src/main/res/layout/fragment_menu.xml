@@ -55,7 +55,7 @@
                 android:layout_marginStart="8dp"
                 android:onClick="@{changeKeyboard}"
                 android:text="@string/action_change_keyboard"
-                app:icon="@drawable/ic_outline_keyboard_24"
+                app:icon="@drawable/ic_notification_keyboard"
                 app:iconTint="?attr/colorOnSurface" />
 
             <com.google.android.material.button.MaterialButton

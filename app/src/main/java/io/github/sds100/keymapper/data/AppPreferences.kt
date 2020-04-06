@@ -1,29 +1,26 @@
 package io.github.sds100.keymapper.data
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate.*
-import androidx.preference.PreferenceManager
+import androidx.core.app.NotificationManagerCompat
 import io.github.sds100.keymapper.R
-import splitties.experimental.ExperimentalSplittiesApi
-import splitties.init.appCtx
+import io.github.sds100.keymapper.util.NotificationUtils
 import splitties.preferences.DefaultPreferences
-import splitties.preferences.SuspendPrefsAccessor
 import splitties.resources.appBool
 import splitties.resources.appInt
 import splitties.resources.appStr
+import splitties.systemservices.notificationManager
 
 /**
  * Created by sds100 on 20/02/2020.
  */
 
-@ExperimentalSplittiesApi
-class AppPreferences private constructor() : DefaultPreferences() {
-    companion object : SuspendPrefsAccessor<AppPreferences>(::AppPreferences) {
-        val hasRootPermission: Boolean
-            get() = PreferenceManager.getDefaultSharedPreferences(appCtx).getBoolean(
-                appStr(R.string.key_pref_root_permission),
-                appBool(R.bool.default_value_root_permission)
-            )
-    }
+@Suppress("EXPERIMENTAL_API_USAGE")
+object AppPreferences : DefaultPreferences() {
+    private const val KEY_DEFAULT_IME = "key_default_ime"
 
     private var mDarkThemeModePref by IntPref(
         appStr(R.string.key_pref_dark_theme_mode),
@@ -63,4 +60,30 @@ class AppPreferences private constructor() : DefaultPreferences() {
         appStr(R.string.key_pref_shown_cant_use_virtual_keyboard_message),
         appBool(R.bool.default_value_shown_cant_use_virtual_keyboard_message)
     )
+
+    var showImePickerNotification by BoolPref(
+        appStr(R.string.key_pref_show_ime_notification),
+        appBool(R.bool.default_value_show_ime_notification)
+    )
+
+    var showToggleRemapsNotification by BoolPref(
+        appStr(R.string.key_pref_show_toggle_remappings_notification),
+        appBool(R.bool.default_value_show_toggle_remappings_notification)
+    )
+
+    var bluetoothDevices by StringSetOrNullPref(
+        appStr(R.string.key_pref_bluetooth_devices)
+    )
+
+    var autoChangeImeOnBtConnect by BoolPref(
+        appStr(R.string.key_pref_auto_change_ime_on_connection),
+        appBool(R.bool.default_value_auto_change_ime_on_connection)
+    )
+
+    var autoShowImePicker by BoolPref(
+        appStr(R.string.key_pref_auto_show_ime_picker),
+        appBool(R.bool.default_value_auto_show_ime_picker)
+    )
+
+    var defaultIme by StringOrNullPref(KEY_DEFAULT_IME)
 }

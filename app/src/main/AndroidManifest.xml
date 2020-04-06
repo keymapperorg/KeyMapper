@@ -45,6 +45,21 @@
             </intent-filter>
         </activity>
 
+        <receiver android:name=".broadcastreceiver.KeyMapperBroadcastReceiver" />
+
+        <receiver android:name=".broadcastreceiver.BootBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".broadcastreceiver.BluetoothConnectionBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
+                <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
+            </intent-filter>
+        </receiver>
+
         <receiver
             android:name=".service.DeviceAdmin"
             android:permission="android.permission.BIND_DEVICE_ADMIN">

@@ -75,16 +75,6 @@
             android:summary="@string/summary_pref_root_permission"
             android:title="@string/title_pref_root_permission" />
 
-        <androidx.preference.SwitchPreference
-            android:defaultValue="@bool/default_value_auto_show_ime_picker"
-            android:key="@string/key_pref_auto_show_ime_picker"
-            android:summary="@string/summary_pref_auto_show_ime_picker"
-            android:title="@string/title_pref_auto_show_ime_picker" />
-
-        <androidx.preference.Preference
-            android:key="@string/key_pref_show_ime_notification"
-            android:summary="@string/summary_pref_show_ime_notification"
-            android:title="@string/title_pref_show_ime_notification" />
     </androidx.preference.PreferenceCategory>
 
     <io.github.sds100.keymapper.ui.view.CancellableMultiSelectListPreference

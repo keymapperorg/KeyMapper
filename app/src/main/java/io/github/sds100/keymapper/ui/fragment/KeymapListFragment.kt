@@ -86,7 +86,7 @@ class KeymapListFragment : Fragment() {
                     R.id.action_toggle_dark_theme -> {
 
                         lifecycleScope.launchWhenCreated {
-                            AppPreferences().toggleDarkThemeMode()
+                            AppPreferences.toggleDarkThemeMode()
                         }
 
                         true

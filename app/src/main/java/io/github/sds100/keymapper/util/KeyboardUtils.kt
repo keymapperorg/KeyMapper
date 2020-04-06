@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.util
 import android.Manifest
 import android.content.Intent
 import android.os.Build
+import android.os.Build.VERSION_CODES.O_MR1
 import android.provider.Settings
 import android.util.Log
 import androidx.annotation.RequiresPermission
@@ -27,7 +28,7 @@ object KeyboardUtils {
     @ExperimentalSplittiesApi
     @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
     suspend fun switchToKeyMapperIme() {
-        val shownWarningDialog = AppPreferences().shownKeyMapperImeWarningDialog
+        val shownWarningDialog = AppPreferences.shownKeyMapperImeWarningDialog
         var approvedWarning = shownWarningDialog
 
         if (!shownWarningDialog) {
@@ -37,7 +38,7 @@ object KeyboardUtils {
                 cancelValue = false,
                 dismissValue = false)
 
-            AppPreferences().shownKeyMapperImeWarningDialog = approvedWarning
+            AppPreferences.shownKeyMapperImeWarningDialog = approvedWarning
         }
 
         if (!approvedWarning) {
@@ -63,16 +64,19 @@ object KeyboardUtils {
         inputMethodManager.showInputMethodPicker()
     }
 
+
     fun showInputMethodPickerDialogOutsideApp() {
         /* Android 8.1 and higher don't seem to allow you to open the input method picker dialog
              * from outside the app :( but it can be achieved by sending a broadcast with a
              * system process id (requires root access) */
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1) {
+        if (Build.VERSION.SDK_INT < O_MR1) {
             inputMethodManager.showInputMethodPicker()
-        } else {
+        } else if ((O_MR1..Build.VERSION_CODES.P).contains(Build.VERSION.SDK_INT)) {
             val command = "am broadcast -a com.android.server.InputMethodManagerService.SHOW_INPUT_METHOD_PICKER"
             RootUtils.executeRootCommand(command)
+        }else{
+            appCtx.toast(R.string.error_this_is_unsupported)
         }
     }
 

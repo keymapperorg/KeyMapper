@@ -43,6 +43,20 @@
         app:seekBarIncrement="@integer/vibrate_duration_increment"
         app:showSeekBarValue="true" />
 
+    <androidx.preference.PreferenceCategory android:title="@string/title_pref_category_ime_picker">
+
+        <androidx.preference.Preference
+            android:key="@string/key_pref_show_ime_notification"
+            android:summary="@string/summary_pref_show_ime_notification"
+            android:title="@string/title_pref_show_ime_notification" />
+
+        <androidx.preference.SwitchPreference
+            android:defaultValue="@bool/default_value_auto_show_ime_picker"
+            android:key="@string/key_pref_auto_show_ime_picker"
+            android:summary="@string/summary_pref_auto_show_ime_picker"
+            android:title="@string/title_pref_auto_show_ime_picker" />
+    </androidx.preference.PreferenceCategory>
+
     <androidx.preference.PreferenceCategory
         android:key="@string/key_pref_category_secure_settings"
         android:title="@string/title_pref_category_secure_settings">
@@ -74,17 +88,6 @@
             android:key="@string/key_pref_root_permission"
             android:summary="@string/summary_pref_root_permission"
             android:title="@string/title_pref_root_permission" />
-
-        <androidx.preference.SwitchPreference
-            android:defaultValue="@bool/default_value_auto_show_ime_picker"
-            android:key="@string/key_pref_auto_show_ime_picker"
-            android:summary="@string/summary_pref_auto_show_ime_picker"
-            android:title="@string/title_pref_auto_show_ime_picker" />
-
-        <androidx.preference.Preference
-            android:key="@string/key_pref_show_ime_notification"
-            android:summary="@string/summary_pref_show_ime_notification"
-            android:title="@string/title_pref_show_ime_notification" />
     </androidx.preference.PreferenceCategory>
 
     <io.github.sds100.keymapper.ui.view.CancellableMultiSelectListPreference
