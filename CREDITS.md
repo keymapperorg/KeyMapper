@@ -1,4 +1,4 @@
-# Credits
+### Credits
 
 Many thanks to...
 
