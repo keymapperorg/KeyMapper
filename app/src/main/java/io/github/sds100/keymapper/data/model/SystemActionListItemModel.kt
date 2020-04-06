@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.data.model
 
+import android.content.Context
 import android.graphics.drawable.Drawable
 
 /**
@@ -9,6 +10,6 @@ data class SystemActionListItemModel(
     val id: String,
     val category: String,
     val description: String,
-    val icon: Drawable?,
+    val getIcon: (ctx: Context) -> Drawable?,
     val requiresRoot: Boolean
 )

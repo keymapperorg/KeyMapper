@@ -2,12 +2,22 @@ package io.github.sds100.keymapper.util
 
 import android.Manifest
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.provider.Settings
+import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresPermission
+import androidx.appcompat.content.res.AppCompatResources
 
 /**
  * Created by sds100 on 31/12/2018.
  */
+
+/**
+ * Get a resource drawable. Can be safely used to get vector drawables on pre-lollipop.
+ */
+fun Context.safeVectorDrawable(@DrawableRes resId: Int): Drawable {
+    return AppCompatResources.getDrawable(this, resId)!!
+}
 
 /**
  * @return If the setting can't be found, it returns null

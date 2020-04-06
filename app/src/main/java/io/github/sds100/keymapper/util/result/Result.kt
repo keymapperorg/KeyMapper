@@ -66,6 +66,14 @@ fun <T> Result<T>.failureOrNull(): Failure? {
     return null
 }
 
+fun <T> Result<T>.valueOrNull(): T? {
+    when (this) {
+        is Success -> return this.value
+    }
+
+    return null
+}
+
 fun <T, U> Result<T>.handle(onSuccess: (value: T) -> U, onFailure: (failure: Failure) -> U): U {
     return when (this) {
         is Success -> onSuccess(value)

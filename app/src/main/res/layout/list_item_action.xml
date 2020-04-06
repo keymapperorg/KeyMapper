@@ -16,6 +16,10 @@
             type="io.github.sds100.keymapper.data.model.ActionModel" />
 
         <variable
+            name="icon"
+            type="android.graphics.drawable.Drawable" />
+
+        <variable
             name="flagsAreAvailable"
             type="Boolean" />
 
@@ -105,7 +109,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:padding="4dp"
-                android:src="@{model.hasError ? @drawable/ic_baseline_error_outline_24 : model.icon}"
+                android:src="@{model.hasError ? @drawable/ic_baseline_error_outline_24 : icon}"
                 app:layout_constraintBottom_toBottomOf="@id/layoutDescription"
                 app:layout_constraintEnd_toStartOf="@+id/layoutDescription"
                 app:layout_constraintStart_toStartOf="parent"
@@ -121,7 +125,7 @@
                 android:layout_width="36dp"
                 android:layout_height="0dp"
                 android:onClick="@{onMoreClick}"
-                android:src="@drawable/ic_outline_more_vert_24"
+                app:srcCompat="@drawable/ic_outline_more_vert_24"
                 android:tint="?attr/colorOnSurface"
                 android:visibility="@{flagsAreAvailable ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toBottomOf="@+id/buttonRemove"
@@ -134,7 +138,7 @@
                 android:layout_width="36dp"
                 android:layout_height="0dp"
                 android:onClick="@{onRemoveClick}"
-                android:src="@drawable/ic_outline_clear_24"
+                app:srcCompat="@drawable/ic_outline_clear_24"
                 android:tint="?attr/colorOnSurface"
                 app:layout_constraintBottom_toBottomOf="@id/imageView"
                 app:layout_constraintEnd_toEndOf="parent"

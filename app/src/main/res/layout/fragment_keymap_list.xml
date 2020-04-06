@@ -126,11 +126,11 @@
                             android:layout_height="0dp"
                             android:minHeight="48dp"
                             android:scaleType="centerInside"
-                            android:src="@drawable/ic_outline_expand_more_24"
                             android:tint="?attr/colorOnSurface"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:srcCompat="@drawable/ic_outline_expand_more_24" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -179,10 +179,10 @@
                                 android:layout_gravity="end"
                                 android:minHeight="48dp"
                                 android:scaleType="centerInside"
-                                android:src="@drawable/ic_baseline_expand_less_24"
                                 android:tint="?attr/colorOnSurface"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent" />
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:srcCompat="@drawable/ic_baseline_expand_less_24" />
                         </FrameLayout>
                     </LinearLayout>
                 </net.cachapa.expandablelayout.ExpandableLayout>

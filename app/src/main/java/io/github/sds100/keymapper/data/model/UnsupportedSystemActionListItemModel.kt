@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.data.model
 
+import android.content.Context
 import android.graphics.drawable.Drawable
 import io.github.sds100.keymapper.util.result.Failure
 
@@ -9,6 +10,6 @@ import io.github.sds100.keymapper.util.result.Failure
 data class UnsupportedSystemActionListItemModel(
     val id: String,
     val description: String,
-    val icon: Drawable?,
+    val getIcon: (ctx: Context) -> Drawable?,
     val reason: Failure
 )

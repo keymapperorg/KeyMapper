@@ -113,7 +113,7 @@
                         android:layout_marginEnd="@dimen/cardview_padding_right"
                         android:layout_marginBottom="@dimen/cardview_padding_bottom"
                         android:onClick="@{onClickTypeClick}"
-                        android:src="@drawable/ic_outline_more_vert_24"
+                        app:srcCompat="@drawable/ic_outline_more_vert_24"
                         android:tint="?attr/colorOnSurface"
                         android:visibility="@{!viewModel.triggerKeys.empty &amp;&amp; viewModel.triggerInParallel ? View.VISIBLE : View.GONE}"
                         app:layout_constraintBottom_toBottomOf="parent"

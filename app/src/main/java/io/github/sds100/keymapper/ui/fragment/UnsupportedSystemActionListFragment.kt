@@ -28,7 +28,7 @@ class UnsupportedSystemActionListFragment : RecyclerViewFragment() {
                     unsupportedActions.forEach {
                         simple {
                             id(it.id)
-                            icon(it.icon)
+                            icon(it.getIcon(requireContext()))
                             tintType(TintType.ON_SURFACE)
                             primaryText(it.description)
                             secondaryText(it.reason.fullMessage)

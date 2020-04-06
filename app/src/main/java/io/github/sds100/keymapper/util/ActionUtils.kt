@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.util
 
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
@@ -17,12 +18,12 @@ import splitties.resources.appStr
  * Created by sds100 on 03/09/2018.
  */
 
+@Suppress("EXPERIMENTAL_API_USAGE")
 fun Action.buildModel(): ActionModel {
     var title: String? = null
-    var icon: Drawable? = null
+    val icon = { ctx: Context -> getIcon(ctx).valueOrNull() }
 
     val error = getTitle().onSuccess { title = it }
-        .then { getIcon() }.onSuccess { icon = it }
         .then { canBePerformed() }
         .failureOrNull()
 
@@ -45,12 +46,12 @@ fun Action.buildModel(): ActionModel {
     return ActionModel(uniqueId, type, title, icon, flags, error)
 }
 
+@ExperimentalSplittiesApi
 fun Action.buildChipModel(): ActionChipModel {
     var title: String? = null
-    var icon: Drawable? = null
+    val icon = { ctx: Context -> getIcon(ctx).valueOrNull() }
 
     val error = getTitle().onSuccess { title = it }
-        .then { getIcon() }.onSuccess { icon = it }
         .then { canBePerformed() }
         .failureOrNull()
 
@@ -143,7 +144,7 @@ private fun Action.getTitle(): Result<String> = when (type) {
 /**
  * Get the icon for any Action
  */
-private fun Action.getIcon(): Result<Drawable?> = when (type) {
+private fun Action.getIcon(ctx: Context): Result<Drawable?> = when (type) {
     ActionType.APP -> {
         try {
             Success(appCtx.packageManager.getApplicationIcon(data))
@@ -162,7 +163,8 @@ private fun Action.getIcon(): Result<Drawable?> = when (type) {
         val systemActionId = data
 
         SystemActionUtils.getSystemActionDef(systemActionId).then {
-            Success(it.getIcon())
+            Success(null)
+            Success(it.getIcon(ctx))
         }
     }
 

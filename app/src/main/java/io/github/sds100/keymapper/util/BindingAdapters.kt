@@ -66,10 +66,10 @@ fun StatusLayout.setStatusLayoutState(
     }
 
     val drawable = when (state) {
-        StatusLayout.State.POSITIVE -> appDrawable(R.drawable.ic_outline_check_circle_outline_24)
-        StatusLayout.State.WARN -> appDrawable(R.drawable.ic_baseline_error_outline_24)
-        StatusLayout.State.ERROR -> appDrawable(R.drawable.ic_baseline_error_outline_24)
-    }!!
+        StatusLayout.State.POSITIVE -> context.safeVectorDrawable(R.drawable.ic_outline_check_circle_outline_24)
+        StatusLayout.State.WARN -> context.safeVectorDrawable(R.drawable.ic_baseline_error_outline_24)
+        StatusLayout.State.ERROR -> context.safeVectorDrawable(R.drawable.ic_baseline_error_outline_24)
+    }
 
     val tint = when (state) {
         StatusLayout.State.POSITIVE -> appColor(R.color.green)
@@ -142,7 +142,7 @@ fun ChipGroup.bindActions(actions: List<ActionChipModel>, callback: ErrorClickCa
     actions.forEach {
         Chip(context).apply {
             text = it.description
-            chipIcon = it.icon
+            chipIcon = it.getIcon(context)
             isCloseIconVisible = it.hasError
 
             if (it.type == ActionType.SYSTEM_ACTION) {

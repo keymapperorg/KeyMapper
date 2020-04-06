@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.data.model
 
+import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -8,6 +9,7 @@ import io.github.sds100.keymapper.util.result.Failure
 import io.github.sds100.keymapper.util.result.OptionsNotRequired
 import io.github.sds100.keymapper.util.result.Result
 import io.github.sds100.keymapper.util.result.Success
+import io.github.sds100.keymapper.util.safeVectorDrawable
 import splitties.resources.appDrawable
 import splitties.resources.appStr
 
@@ -27,9 +29,9 @@ class SystemActionDef(
     val maxApi: Int = Constants.MAX_API,
 
     @DrawableRes iconRes: Int? = null,
-    val getIcon: () -> Drawable? = {
+    val getIcon: (ctx: Context) -> Drawable? = { ctx ->
         if (iconRes != null) {
-            appDrawable(iconRes)
+            ctx.safeVectorDrawable(iconRes)
         } else {
             null
         }

@@ -127,7 +127,7 @@ class SystemActionListFragment : RecyclerViewFragment() {
     private fun EpoxyController.createSimpleListItem(systemAction: SystemActionListItemModel) = simple {
         id(systemAction.id)
         primaryText(systemAction.description)
-        icon(systemAction.icon)
+        icon(systemAction.getIcon(requireContext()))
         tintType(TintType.ON_SURFACE)
 
         isSecondaryTextAnError(systemAction.requiresRoot)

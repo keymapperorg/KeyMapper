@@ -27,7 +27,7 @@ class SystemActionListViewModel : ViewModel(), ProgressCallback {
             val allModels = SystemActionUtils.getSupportedSystemActions().map {
                 val requiresRoot = it.permissions.contains(Constants.PERMISSION_ROOT)
 
-                SystemActionListItemModel(it.id, it.category, it.getDescription(), it.getIcon(), requiresRoot)
+                SystemActionListItemModel(it.id, it.category, it.getDescription(), it.getIcon, requiresRoot)
             }
 
             sequence {
@@ -85,7 +85,7 @@ class SystemActionListViewModel : ViewModel(), ProgressCallback {
 
                     UnsupportedSystemActionListItemModel(systemAction.id,
                         systemAction.getDescription(),
-                        systemAction.getIcon(),
+                        systemAction.getIcon,
                         failure)
                 }
         }
