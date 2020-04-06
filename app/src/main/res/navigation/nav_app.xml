@@ -103,6 +103,10 @@
         <argument
             android:name="@string/nav_arg_file_url"
             app:argType="reference" />
+        <argument
+            android:name="@string/nav_arg_file_url_alt"
+            android:defaultValue="0"
+            app:argType="reference" />
     </dialog>
 
     <action
@@ -129,13 +133,17 @@
             android:name="@string/nav_arg_file_url"
             android:defaultValue="@string/url_help"
             app:argType="reference" />
+        <argument
+            android:name="@string/nav_arg_file_url_alt"
+            android:defaultValue="@string/url_help_alternate"
+            app:argType="reference" />
     </action>
 
     <fragment
         android:id="@+id/aboutFragment"
         android:name="io.github.sds100.keymapper.ui.fragment.AboutFragment"
         android:label="fragment_about"
-        tools:layout="@layout/fragment_about"/>
+        tools:layout="@layout/fragment_about" />
 
     <action
         android:id="@+id/action_global_aboutFragment"

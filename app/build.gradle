@@ -81,7 +81,7 @@ dependencies {
     implementation "com.airbnb.android:epoxy-databinding:$epoxy_version"
     implementation "io.noties.markwon:core:$markwonVersion"
     implementation 'net.cachapa.expandablelayout:expandablelayout:2.9.2'
-    implementation "com.squareup.okhttp3:okhttp:4.4.0"
+    implementation 'com.android.volley:volley:1.1.1'
 
     // splitties
     implementation "com.louiscad.splitties:splitties-bitflags:$splitties_version"

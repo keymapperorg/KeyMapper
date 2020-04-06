@@ -1,5 +1,7 @@
 package io.github.sds100.keymapper.ui.fragment
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +15,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.viewmodel.OnlineFileViewModel
 import io.github.sds100.keymapper.databinding.FragmentOnlineFileBinding
 import io.github.sds100.keymapper.util.InjectorUtils
+import io.github.sds100.keymapper.util.result.SSLHandshakeError
 import io.github.sds100.keymapper.util.result.onFailure
 import io.github.sds100.keymapper.util.result.onSuccess
 import splitties.resources.appStr
@@ -26,6 +29,8 @@ class OnlineFileFragment : BottomSheetDialogFragment() {
         InjectorUtils.provideOnlineViewModel(requireContext(), appStr(mArgs.StringNavArgFileUrl))
     }
 
+    private val mAlternateUrl by lazy { mArgs.StringNavArgFileUrlAlt }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         FragmentOnlineFileBinding.inflate(inflater, container, false).apply {
 
@@ -38,8 +43,18 @@ class OnlineFileFragment : BottomSheetDialogFragment() {
                 result.onSuccess {
                     markdown = it
                 }.onFailure {
-                    findNavController().navigateUp()
-                    toast(R.string.error_download_failed)
+
+                    if (it is SSLHandshakeError) {
+                        if (mAlternateUrl != 0) {
+                            Intent(Intent.ACTION_VIEW, Uri.parse(appStr(mAlternateUrl))).apply {
+                                startActivity(this)
+                            }
+                        }
+                    }
+
+                    toast(it.fullMessage)
+
+                    dismiss()
                 }
             }
 

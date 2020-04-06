@@ -1,39 +1,55 @@
 package io.github.sds100.keymapper.util
 
+import android.util.Log
+import com.android.volley.NoConnectionError
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import io.github.sds100.keymapper.util.result.DownloadFailed
 import io.github.sds100.keymapper.util.result.Result
+import io.github.sds100.keymapper.util.result.SSLHandshakeError
 import io.github.sds100.keymapper.util.result.Success
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okio.IOException
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.suspendCancellableCoroutine
+import splitties.init.appCtx
 import java.io.File
+import javax.net.ssl.SSLHandshakeException
+import kotlin.coroutines.resume
 
 /**
  * Created by sds100 on 04/04/2020.
  */
 object NetworkUtils {
 
-    suspend fun downloadFile(url: String, filePath: String): Result<File> = withContext(Dispatchers.IO) {
-        val httpClient = OkHttpClient()
-        val request = Request.Builder().url(url).build()
+    @ExperimentalCoroutinesApi
+    suspend fun downloadFile(
+        url: String,
+        filePath: String
+    ): Result<File> = suspendCancellableCoroutine {
 
-        return@withContext try {
-            val response = httpClient.newCall(request).execute()
+        val queue = Volley.newRequestQueue(appCtx)
 
-            if (response.isSuccessful && response.body != null) {
-                val text = response.body!!.string()
+        val request = StringRequest(Request.Method.GET, url,
+            Response.Listener { response ->
                 val file = File(filePath)
-                file.writeText(text)
+                file.writeText(response)
 
-                Success(file)
+                it.resume(Success(file))
+            },
 
-            } else {
-                DownloadFailed()
-            }
-        } catch (e: IOException) {
-            DownloadFailed()
+            Response.ErrorListener { error ->
+                if (error.cause is SSLHandshakeException) {
+                    it.resume(SSLHandshakeError())
+                } else {
+                    it.resume(DownloadFailed())
+                }
+            })
+
+        it.invokeOnCancellation {
+            request.cancel()
         }
+
+        queue.add(request)
     }
 }

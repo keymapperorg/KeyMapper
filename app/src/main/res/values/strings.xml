@@ -80,6 +80,7 @@
 
     <string name="nav_arg_header">io.github.sds100.keymapper.ui.fragment.OnlineFileFragment.header</string>
     <string name="nav_arg_file_url">io.github.sds100.keymapper.ui.fragment.OnlineFileFragment.header.file_url</string>
+    <string name="nav_arg_file_url_alt">file_url_alt</string>
 
     <!-- Constraints -->
     <string name="constraint_app_description">%s is in foreground</string>
@@ -109,6 +110,7 @@
     <string name="url_changelog" translatable="false">https://raw.githubusercontent.com/sds100/KeyMapper/master/CHANGELOG.md</string>
     <string name="url_credits" translatable="false">https://raw.githubusercontent.com/sds100/KeyMapper/master/CREDITS.md</string>
     <string name="url_help" translatable="false">https://github.com/sds100/KeyMapper/wiki/Help.md</string>
+    <string name="url_help_alternate" translatable="false">https://github.com/sds100/KeyMapper/wiki/Help</string>
     <string name="url_translate" translatable="false">https://github.com/sds100/KeyMapper/wiki/Translate</string>
     <string name="url_privacy_policy" translatable="false">https://raw.githubusercontent.com/sds100/KeyMapper/master/PRIVACY_POLICY.md</string>
     <string name="url_xda_thread" translatable="false">https://forum.xda-developers.com/android/apps-games/app-keyboard-button-mapper-t3914005</string>
@@ -453,6 +455,9 @@
     <string name="error_key_mapper_ime_not_found">Can\'t find the Key Mapper input method!</string>
     <string name="error_download_failed">Download Failed!</string>
     <string name="error_file_not_exists">File doesn\'t exist!</string>
+    <string name="error_ssl_handshake_exception">SSL handshake error</string>
+    <string name="error_file_not_cached">File isn\'t cached! Connect to internet to download it.</string>
+
     <!-- Error messages -->
 
     <!-- System action labels -->
