@@ -26,19 +26,16 @@ class ConfigKeymapViewModel internal constructor(
             if (it == true) {
                 value = Trigger.PARALLEL
 
-                //if the keys have different click types, set them all to the clicktype of the first key
+                // set all the keys to a short press because they must all be the same click type and
+                // can't all be double pressed
                 triggerKeys.value?.let { keys ->
                     if (keys.isEmpty()) {
                         return@let
                     }
 
-                    val firstKeyClickType = keys[0].clickType
-
-                    if (keys.any { key -> key.clickType != firstKeyClickType }) {
-                        triggerKeys.value = keys.map { key ->
-                            key.clickType = firstKeyClickType
-                            key
-                        }
+                    triggerKeys.value = keys.map { key ->
+                        key.clickType = Trigger.SHORT_PRESS
+                        key
                     }
                 }
             }
@@ -59,6 +56,10 @@ class ConfigKeymapViewModel internal constructor(
     val triggerKeys: MutableLiveData<List<Trigger.Key>> = MutableLiveData(listOf())
 
     val triggerKeyModels: LiveData<List<TriggerKeyModel>> = Transformations.map(triggerKeys) { triggerKeys ->
+        if (triggerKeys.size <= 1) {
+            triggerInSequence.value = true
+        }
+
         sequence {
             triggerKeys.forEach {
                 yield(it.buildModel())

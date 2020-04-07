@@ -17,6 +17,7 @@ import com.google.android.material.card.MaterialCardView
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.TriggerKeyBindingModel_
 import io.github.sds100.keymapper.action
+import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
@@ -29,6 +30,8 @@ import io.github.sds100.keymapper.util.result.RecoverableFailure
 import kotlinx.coroutines.launch
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
+import splitties.alertdialog.appcompat.coroutines.showAndAwait
+import splitties.alertdialog.appcompat.message
 import splitties.alertdialog.appcompat.okButton
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
@@ -76,6 +79,18 @@ class TriggerAndActionsFragment : Fragment() {
 
             setOnClickTypeClick {
                 lifecycleScope.launch {
+                    if (!AppPreferences.shownDoublePressRestrictionWarning && mViewModel.triggerInParallel.value == true) {
+
+                        val approvedWarning = requireActivity().alertDialog {
+                            message = appStr(R.string.dialog_message_double_press_restricted_to_single_key)
+
+                        }.showAndAwait(okValue = true, cancelValue = null, dismissValue = false)
+
+                        if (approvedWarning) {
+                            AppPreferences.shownDoublePressRestrictionWarning = true
+                        }
+                    }
+
                     val newClickType = showClickTypeDialog()
 
                     mViewModel.setParallelTriggerClickType(newClickType)
@@ -194,10 +209,27 @@ class TriggerAndActionsFragment : Fragment() {
 
     private suspend fun showClickTypeDialog() = suspendCoroutine<Int> {
         requireActivity().alertDialog {
-            val labels = Trigger.CLICK_TYPE_LABEL_MAP.values.map { appStr(it) }.toTypedArray()
+            val labels = if (mViewModel.triggerInParallel.value == true) {
+                arrayOf(
+                    appStr(R.string.clicktype_short_press),
+                    appStr(R.string.clicktype_long_press)
+                )
+            } else {
+                arrayOf(
+                    appStr(R.string.clicktype_short_press),
+                    appStr(R.string.clicktype_long_press),
+                    appStr(R.string.clicktype_double_press)
+                )
+            }
 
             setItems(labels) { _, index ->
-                val clickType = Trigger.CLICK_TYPE_LABEL_MAP.keys.toList()[index]
+                val clickType = when (index) {
+                    0 -> Trigger.SHORT_PRESS
+                    1 -> Trigger.LONG_PRESS
+                    2 -> Trigger.DOUBLE_PRESS
+                    else -> throw IllegalStateException("Can't find the click type at index: $index")
+                }
+
                 it.resume(clickType)
             }
 

@@ -85,5 +85,10 @@ object AppPreferences : DefaultPreferences() {
         appBool(R.bool.default_value_auto_show_ime_picker)
     )
 
+    var shownDoublePressRestrictionWarning by BoolPref(
+        appStr(R.string.key_pref_shown_double_press_restriction_warning),
+        false
+    )
+
     var defaultIme by StringOrNullPref(KEY_DEFAULT_IME)
 }

@@ -21,12 +21,6 @@ class Trigger(var keys: List<Key> = listOf()) {
         const val SHORT_PRESS = 0
         const val LONG_PRESS = 1
         const val DOUBLE_PRESS = 2
-
-        val CLICK_TYPE_LABEL_MAP = mapOf(
-            SHORT_PRESS to R.string.clicktype_short_press,
-            LONG_PRESS to R.string.clicktype_long_press,
-            DOUBLE_PRESS to R.string.clicktype_double_press
-        )
     }
 
     @Mode

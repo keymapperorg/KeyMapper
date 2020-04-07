@@ -101,7 +101,7 @@
                         android:text="@string/press_dot_dot_dot"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
                         android:textSize="14sp"
-                        android:visibility="@{viewModel.triggerKeys.empty ? View.GONE : View.VISIBLE}"
+                        android:visibility="@{viewModel.triggerKeys.size() > 1 ? View.VISIBLE : View.GONE}"
                         app:layout_constraintBottom_toTopOf="@+id/radioGroup"
                         app:layout_constraintStart_toStartOf="parent" />
 
@@ -115,7 +115,7 @@
                         android:onClick="@{onClickTypeClick}"
                         app:srcCompat="@drawable/ic_outline_more_vert_24"
                         android:tint="?attr/colorOnSurface"
-                        android:visibility="@{!viewModel.triggerKeys.empty &amp;&amp; viewModel.triggerInParallel ? View.VISIBLE : View.GONE}"
+                        android:visibility="@{viewModel.triggerKeys.size() > 1 &amp;&amp; viewModel.triggerInParallel ? View.VISIBLE : View.GONE}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/radioGroup" />
@@ -128,7 +128,7 @@
                         android:layout_marginBottom="@dimen/cardview_padding_bottom"
                         android:gravity="bottom"
                         android:orientation="horizontal"
-                        android:visibility="@{viewModel.triggerKeys.empty ? View.GONE : View.VISIBLE}"
+                        android:visibility="@{viewModel.triggerKeys.size() > 1 ? View.VISIBLE : View.GONE}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/buttonClickType"
                         app:layout_constraintStart_toStartOf="parent">
