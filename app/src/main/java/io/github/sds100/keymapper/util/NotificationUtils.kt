@@ -23,7 +23,7 @@ import io.github.sds100.keymapper.broadcastreceiver.KeyMapperBroadcastReceiver
 import io.github.sds100.keymapper.data.AppPreferences
 import splitties.init.appCtx
 import splitties.resources.appStr
-import splitties.resources.styledColor
+import splitties.resources.color
 import splitties.systemservices.notificationManager
 
 /**
@@ -83,7 +83,7 @@ object NotificationUtils {
         }
 
         val builder = NotificationCompat.Builder(ctx, channel).apply {
-            color = ctx.styledColor(R.attr.colorAccent)
+            color = ctx.color(R.color.colorAccent)
             setContentTitle(appStr(title))
             setContentText(appStr(text))
             setContentIntent(intent)
