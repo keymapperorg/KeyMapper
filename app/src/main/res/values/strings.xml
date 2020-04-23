@@ -33,6 +33,9 @@
     <string name="unknown_keycode">Unknown keycode: %s</string>
     <string name="chip_while">while</string>
     <string name="google_app_package_name">com.google.android.googlequicksearchbox</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+    <string name="follow_system">Follow system</string>
 
     <string name="caption_action_type_key">Click the key on the device which you want to be entered.
         \n\nIMPORTANT!
@@ -278,7 +281,6 @@
     <string name="summary_pref_toast_on_action_error">A little message will popup when an error is encountered while performing an action.</string>
 
     <string name="title_pref_dark_theme">Dark Theme</string>
-    <string name="summary_pref_dark_theme">When to enable the dark theme.</string>
 
     <string name="title_pref_notification_settings">Notification Settings</string>
     <!--Preference titles and summaries-->
@@ -309,6 +311,12 @@
     <string name="pref_title_translate">Translate</string>
     <string name="pref_title_telegram_channel">Telegram Channel</string>
     <!-- About activity-->
+
+    <string-array name="pref_dark_theme_entries">
+        <item>@string/on</item>
+        <item>@string/off</item>
+        <item>@string/follow_system</item>
+    </string-array>
 
     <!--Action Types Titles-->
     <string name="action_type_title_application">App</string>

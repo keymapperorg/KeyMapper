@@ -6,13 +6,7 @@
         android:id="@+id/action_help"
         android:icon="@drawable/ic_baseline_help_outline_24"
         android:title="@string/action_help"
-        app:showAsAction="always" />
-
-    <item
-        android:id="@+id/action_toggle_dark_theme"
-        android:icon="@drawable/ic_outline_brightness_medium_24"
-        android:title="@string/action_toggle_dark_theme"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_seed_database"

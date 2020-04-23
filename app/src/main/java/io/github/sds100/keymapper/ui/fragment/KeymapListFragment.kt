@@ -21,7 +21,6 @@ import androidx.work.WorkManager
 import com.airbnb.epoxy.EpoxyController
 import io.github.sds100.keymapper.BuildConfig
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
@@ -83,15 +82,6 @@ class KeymapListFragment : Fragment() {
 
             appBar.setOnMenuItemClickListener {
                 when (it.itemId) {
-                    R.id.action_toggle_dark_theme -> {
-
-                        lifecycleScope.launchWhenCreated {
-                            AppPreferences.toggleDarkThemeMode()
-                        }
-
-                        true
-                    }
-
                     R.id.action_help -> {
                         val direction = KeymapListFragmentDirections.actionGlobalHelpFragment()
                         findNavController().navigate(direction)
@@ -250,7 +240,7 @@ class KeymapListFragment : Fragment() {
         if (KeyMapperImeService.isServiceEnabled()) {
             mImeServiceStatusState.value = StatusLayout.State.POSITIVE
 
-        } else if (mViewModel?.keymapModelList?.value?.any { keymap ->
+        } else if (mViewModel.keymapModelList.value?.any { keymap ->
                 keymap.actionList.any { it.error is ImeServiceDisabled }
             } == true) {
 

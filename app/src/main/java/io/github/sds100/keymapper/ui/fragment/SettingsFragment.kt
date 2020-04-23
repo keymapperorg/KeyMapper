@@ -83,6 +83,10 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
         findPreference<Preference>(appStr(R.string.key_pref_notification_settings))!!
     }
 
+    private val mDarkThemePreference by lazy {
+        findPreference<DropDownPreference>(appStr(R.string.key_pref_dark_theme_mode))
+    }
+
     private var mShowingNoPairedDevicesDialog = false
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -187,6 +191,10 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
 
                 //the pending intents need to be updated so they don't use the root methods
                 WidgetsManager.invalidateNotifications(requireContext())
+            }
+
+            mDarkThemePreference -> {
+
             }
         }
 

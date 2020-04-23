@@ -1,18 +1,10 @@
 package io.github.sds100.keymapper.data
 
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate.*
-import androidx.core.app.NotificationManagerCompat
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.util.NotificationUtils
 import splitties.preferences.DefaultPreferences
 import splitties.resources.appBool
-import splitties.resources.appInt
 import splitties.resources.appStr
-import splitties.systemservices.notificationManager
 
 /**
  * Created by sds100 on 20/02/2020.
@@ -22,34 +14,21 @@ import splitties.systemservices.notificationManager
 object AppPreferences : DefaultPreferences() {
     private const val KEY_DEFAULT_IME = "key_default_ime"
 
-    private var mDarkThemeModePref by IntPref(
+    private var mDarkThemeModePref by StringPref(
         appStr(R.string.key_pref_dark_theme_mode),
-        appInt(R.integer.default_value_dark_theme_mode)
+        appStr(R.string.default_value_dark_theme_mode)
     )
 
     @NightMode
     var darkThemeMode: Int
-        get() = when (mDarkThemeModePref) {
-            appInt(R.integer.value_pref_dark_theme_enabled) -> MODE_NIGHT_YES
-            appInt(R.integer.value_pref_dark_theme_disabled) -> MODE_NIGHT_NO
-            appInt(R.integer.value_pref_dark_theme_follow_system) -> MODE_NIGHT_FOLLOW_SYSTEM
-            else -> MODE_NIGHT_FOLLOW_SYSTEM
-        }
+        get() = getSdkNightMode(mDarkThemeModePref)
         set(value) {
             when (value) {
-                MODE_NIGHT_YES -> mDarkThemeModePref = appInt(R.integer.value_pref_dark_theme_enabled)
-                MODE_NIGHT_NO -> mDarkThemeModePref = appInt(R.integer.value_pref_dark_theme_disabled)
-                MODE_NIGHT_FOLLOW_SYSTEM -> mDarkThemeModePref = appInt(R.integer.value_pref_dark_theme_follow_system)
+                MODE_NIGHT_YES -> mDarkThemeModePref = appStr(R.string.value_pref_dark_theme_enabled)
+                MODE_NIGHT_NO -> mDarkThemeModePref = appStr(R.string.value_pref_dark_theme_disabled)
+                MODE_NIGHT_FOLLOW_SYSTEM -> mDarkThemeModePref = appStr(R.string.value_pref_dark_theme_follow_system)
             }
         }
-
-    fun toggleDarkThemeMode() {
-        darkThemeMode = if (darkThemeMode == MODE_NIGHT_YES) {
-            MODE_NIGHT_NO
-        } else {
-            MODE_NIGHT_YES
-        }
-    }
 
     val hasRootPermission by BoolPref(
         appStr(R.string.key_pref_root_permission),
@@ -91,4 +70,14 @@ object AppPreferences : DefaultPreferences() {
     )
 
     var defaultIme by StringOrNullPref(KEY_DEFAULT_IME)
+
+    @NightMode
+    fun getSdkNightMode(darkThemePrefValue: String): Int {
+        return when (darkThemePrefValue) {
+            appStr(R.string.value_pref_dark_theme_enabled) -> MODE_NIGHT_YES
+            appStr(R.string.value_pref_dark_theme_disabled) -> MODE_NIGHT_NO
+            appStr(R.string.value_pref_dark_theme_follow_system) -> MODE_NIGHT_FOLLOW_SYSTEM
+            else -> MODE_NIGHT_FOLLOW_SYSTEM
+        }
+    }
 }

@@ -39,7 +39,13 @@
     <string name="key_pref_category_root" translatable="false">pref_category_root</string>
 
     <!-- Dark theme preference values -->
-    <integer name="value_pref_dark_theme_enabled">0</integer>
-    <integer name="value_pref_dark_theme_disabled">1</integer>
-    <integer name="value_pref_dark_theme_follow_system">2</integer>
+    <string name="value_pref_dark_theme_enabled">0</string>
+    <string name="value_pref_dark_theme_disabled">1</string>
+    <string name="value_pref_dark_theme_follow_system">2</string>
+
+    <string-array name="pref_dark_theme_values">
+        <item>@string/value_pref_dark_theme_enabled</item>
+        <item>@string/value_pref_dark_theme_disabled</item>
+        <item>@string/value_pref_dark_theme_follow_system</item>
+    </string-array>
 </resources>
