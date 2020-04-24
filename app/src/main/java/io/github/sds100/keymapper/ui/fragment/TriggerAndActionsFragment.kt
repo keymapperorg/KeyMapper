@@ -1,11 +1,17 @@
 package io.github.sds100.keymapper.ui.fragment
 
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
@@ -22,7 +28,13 @@ import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentTriggerAndActionsBinding
+import io.github.sds100.keymapper.service.MyAccessibilityService
+import io.github.sds100.keymapper.service.MyAccessibilityService.Companion.ACTION_RECORD_TRIGGER
+import io.github.sds100.keymapper.service.MyAccessibilityService.Companion.ACTION_RECORD_TRIGGER_KEY
+import io.github.sds100.keymapper.service.MyAccessibilityService.Companion.ACTION_RECORD_TRIGGER_TIMER_INCREMENTED
+import io.github.sds100.keymapper.service.MyAccessibilityService.Companion.ACTION_STOP_RECORDING_TRIGGER
 import io.github.sds100.keymapper.triggerKey
+import io.github.sds100.keymapper.util.AccessibilityUtils
 import io.github.sds100.keymapper.util.availableFlags
 import io.github.sds100.keymapper.util.observeLiveData
 import io.github.sds100.keymapper.util.removeLiveData
@@ -39,6 +51,7 @@ import splitties.experimental.ExperimentalSplittiesApi
 import splitties.resources.appStr
 import splitties.snackbar.action
 import splitties.snackbar.longSnack
+import splitties.snackbar.snack
 import splitties.toast.toast
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -48,8 +61,55 @@ import kotlin.coroutines.suspendCoroutine
  */
 @ExperimentalSplittiesApi
 class TriggerAndActionsFragment : Fragment() {
+
     private val mViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap)
     private lateinit var mBinding: FragmentTriggerAndActionsBinding
+    private val mRecordTriggerTimeLeft = MutableLiveData(0)
+    private val mRecordingTrigger = MutableLiveData(false)
+
+    /**
+     * Listens for key events from the accessibility service
+     */
+    private val mBroadcastReceiver = object : BroadcastReceiver() {
+
+        override fun onReceive(context: Context?, intent: Intent?) {
+            when (intent?.action) {
+                ACTION_RECORD_TRIGGER_KEY -> {
+                    val keyEvent = intent.getParcelableExtra<KeyEvent>(Intent.EXTRA_KEY_EVENT) ?: return
+
+                    mViewModel.addTriggerKey(keyEvent)
+                }
+
+                ACTION_RECORD_TRIGGER_TIMER_INCREMENTED -> {
+                    mRecordingTrigger.value = true
+                    val timeLeft = intent.getIntExtra(MyAccessibilityService.EXTRA_TIME_LEFT, 5)
+
+                    mRecordTriggerTimeLeft.value = timeLeft
+                }
+
+                ACTION_STOP_RECORDING_TRIGGER -> {
+                    mRecordingTrigger.value = false
+                }
+
+                Intent.ACTION_INPUT_METHOD_CHANGED -> {
+                    mViewModel.rebuildActionModels()
+                }
+            }
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        IntentFilter().apply {
+            addAction(ACTION_RECORD_TRIGGER_KEY)
+            addAction(ACTION_STOP_RECORDING_TRIGGER)
+            addAction(ACTION_RECORD_TRIGGER_TIMER_INCREMENTED)
+            addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
+
+            requireActivity().registerReceiver(mBroadcastReceiver, this)
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         FragmentTriggerAndActionsBinding.inflate(inflater, container, false).apply {
@@ -104,6 +164,19 @@ class TriggerAndActionsFragment : Fragment() {
                 epoxyRecyclerViewTriggers.requestModelBuild()
             }
 
+            setOnRecordTriggerClick {
+                val serviceEnabled = AccessibilityUtils.isServiceEnabled(requireContext())
+
+                if (serviceEnabled) {
+                    requireActivity().sendBroadcast(Intent(ACTION_RECORD_TRIGGER))
+                } else {
+                    coordinatorLayout.snack(R.string.error_accessibility_service_disabled_record_trigger)
+                }
+            }
+
+            timeLeft = mRecordTriggerTimeLeft
+            recordingTrigger = mRecordingTrigger
+
             return this.root
         }
     }
@@ -113,6 +186,13 @@ class TriggerAndActionsFragment : Fragment() {
 
         mViewModel.rebuildActionModels()
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        requireActivity().unregisterReceiver(mBroadcastReceiver)
+    }
+
 
     @SuppressLint("ClickableViewAccessibility")
     private fun FragmentTriggerAndActionsBinding.subscribeTriggerList() {
@@ -124,7 +204,7 @@ class TriggerAndActionsFragment : Fragment() {
                     triggerKey {
                         val triggerKey = mViewModel.triggerKeys.value?.get(index)
 
-                        id(model.name)
+                        id(triggerKey?.uniqueId)
                         model(model)
 
                         triggerMode(mViewModel.triggerMode.value)
@@ -133,7 +213,7 @@ class TriggerAndActionsFragment : Fragment() {
 
                         onRemoveClick { _ ->
                             if (triggerKey != null) {
-                                mViewModel.removeTriggerKey(triggerKey.keycode)
+                                mViewModel.removeTriggerKey(triggerKey.keyCode)
                             }
                         }
 
@@ -203,7 +283,7 @@ class TriggerAndActionsFragment : Fragment() {
         lifecycleScope.launch {
             val newClickType = showClickTypeDialog()
 
-            mViewModel.setTriggerKeyClickType(keycode, newClickType)
+            mViewModel.setTriggerKeyClickType(keyCode, newClickType)
         }
     }
 

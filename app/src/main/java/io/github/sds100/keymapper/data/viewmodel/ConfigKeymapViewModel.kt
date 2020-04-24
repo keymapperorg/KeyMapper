@@ -1,10 +1,12 @@
 package io.github.sds100.keymapper.data.viewmodel
 
+import android.view.KeyEvent
 import androidx.lifecycle.*
 import com.example.architecturetest.data.KeymapRepository
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.util.buildChipModel
 import io.github.sds100.keymapper.util.buildModel
+import io.github.sds100.keymapper.util.isExternalCompat
 import io.github.sds100.keymapper.util.toggleFlag
 import kotlinx.coroutines.launch
 import java.util.*
@@ -199,7 +201,7 @@ class ConfigKeymapViewModel internal constructor(
 
     fun setTriggerKeyClickType(keycode: Int, @Trigger.ClickType clickType: Int) {
         triggerKeys.value = triggerKeys.value?.map {
-            if (it.keycode == keycode) {
+            if (it.keyCode == keycode) {
                 it.clickType = clickType
             }
 
@@ -207,9 +209,42 @@ class ConfigKeymapViewModel internal constructor(
         }
     }
 
+    /**
+     * @return whether the key already exists has been added to the list
+     */
+    fun addTriggerKey(keyEvent: KeyEvent): Boolean {
+        val device = keyEvent.device
+        val triggerKeyDeviceId = device.descriptor
+
+        val containsKey = triggerKeys.value?.any {
+            val sameKeyCode = keyEvent.keyCode == it.keyCode
+
+            //if the key has no device id, then it isn't restricted to any specific device
+            val sameDeviceId = if (it.deviceId == null && !device.isExternalCompat) {
+                true
+            } else {
+                it.deviceId == triggerKeyDeviceId
+            }
+
+            sameKeyCode && sameDeviceId
+
+        } ?: false
+
+        if (containsKey) {
+            return false
+        }
+
+        triggerKeys.value = triggerKeys.value?.toMutableList()?.apply {
+            val triggerKey = Trigger.Key.fromKeyEvent(keyEvent)
+            add(triggerKey)
+        }
+
+        return true
+    }
+
     fun removeTriggerKey(keycode: Int) {
         triggerKeys.value = triggerKeys.value?.toMutableList()?.apply {
-            removeAll { it.keycode == keycode }
+            removeAll { it.keyCode == keycode }
         }
     }
 
@@ -237,6 +272,9 @@ class ConfigKeymapViewModel internal constructor(
         }
     }
 
+    /**
+     * @return whether the action already exists has been added to the list
+     */
     fun addAction(action: Action): Boolean {
         if (actionList.value?.find { it.uniqueId == action.uniqueId } != null) {
             return false

@@ -38,6 +38,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:drawableStart="@drawable/ic_baseline_error_outline_24"
-        tools:text="@string/error_accessibility_service_disabled" />
+        tools:text="@string/error_accessibility_service_disabled_home_screen" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

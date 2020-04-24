@@ -1,6 +1,10 @@
 package io.github.sds100.keymapper.ui.fragment
 
 import android.Manifest
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -27,6 +31,7 @@ import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
 import io.github.sds100.keymapper.databinding.FragmentKeymapListBinding
 import io.github.sds100.keymapper.keymapSimple
 import io.github.sds100.keymapper.service.KeyMapperImeService
+import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
 import io.github.sds100.keymapper.ui.callback.SelectionCallback
 import io.github.sds100.keymapper.ui.view.StatusLayout
@@ -63,6 +68,37 @@ class KeymapListFragment : Fragment() {
     private val mImeServiceStatusState = MutableLiveData(StatusLayout.State.ERROR)
     private val mDndAccessStatusState = MutableLiveData(StatusLayout.State.ERROR)
     private val mWriteSettingsStatusState = MutableLiveData(StatusLayout.State.ERROR)
+
+    private val mBroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            when (intent!!.action) {
+                /*when the input method changes, update the action descriptions in case any need to show an error
+                * that they need the input method to be enabled. */
+                Intent.ACTION_INPUT_METHOD_CHANGED -> {
+                    mViewModel.rebuildModels()
+                }
+
+                MyAccessibilityService.ACTION_ON_SERVICE_START -> {
+                    mAccessibilityServiceStatusState.value = StatusLayout.State.POSITIVE
+                }
+
+                MyAccessibilityService.ACTION_ON_SERVICE_STOP -> {
+                    mAccessibilityServiceStatusState.value = StatusLayout.State.ERROR
+                }
+            }
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        IntentFilter().apply {
+            addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
+            addAction(MyAccessibilityService.ACTION_ON_SERVICE_START)
+            addAction(MyAccessibilityService.ACTION_ON_SERVICE_STOP)
+            requireActivity().registerReceiver(mBroadcastReceiver, this)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -221,6 +257,12 @@ class KeymapListFragment : Fragment() {
 
         mViewModel.rebuildModels()
         updateStatusLayouts()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        requireActivity().unregisterReceiver(mBroadcastReceiver)
     }
 
     private fun updateStatusLayouts() {

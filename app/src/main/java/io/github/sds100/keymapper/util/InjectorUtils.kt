@@ -11,7 +11,7 @@ import io.github.sds100.keymapper.data.viewmodel.*
  * Created by sds100 on 26/01/2020.
  */
 object InjectorUtils {
-    private fun getKeymapRepository(context: Context): KeymapRepository {
+    fun getKeymapRepository(context: Context): KeymapRepository {
         return KeymapRepository.getInstance(
             AppDatabase.getInstance(context.applicationContext).keymapDao()
         )

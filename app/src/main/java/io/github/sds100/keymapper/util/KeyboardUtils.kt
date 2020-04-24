@@ -1,13 +1,17 @@
 package io.github.sds100.keymapper.util
 
 import android.Manifest
+import android.accessibilityservice.AccessibilityService
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Build.VERSION_CODES.O_MR1
 import android.provider.Settings
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
@@ -110,5 +114,26 @@ object KeyboardUtils {
             Log.e(this::class.java.simpleName, e.toString())
             toast(R.string.error_cant_find_ime_settings)
         }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.N)
+fun AccessibilityService.SoftKeyboardController.hide(ctx: Context) {
+    showMode = AccessibilityService.SHOW_MODE_HIDDEN
+    WidgetsManager.onEvent(ctx, WidgetsManager.EVENT_HIDE_KEYBOARD)
+}
+
+@RequiresApi(Build.VERSION_CODES.N)
+fun AccessibilityService.SoftKeyboardController.show(ctx: Context) {
+    showMode = AccessibilityService.SHOW_MODE_AUTO
+    WidgetsManager.onEvent(ctx, WidgetsManager.EVENT_SHOW_KEYBOARD)
+}
+
+@RequiresApi(Build.VERSION_CODES.N)
+fun AccessibilityService.SoftKeyboardController.toggle(ctx: Context) {
+    if (showMode == AccessibilityService.SHOW_MODE_HIDDEN) {
+        show(ctx)
+    } else {
+        hide(ctx)
     }
 }

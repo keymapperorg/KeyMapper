@@ -55,7 +55,7 @@
         <io.github.sds100.keymapper.ui.view.StatusLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:errorText="@{@string/error_accessibility_service_disabled}"
+            app:errorText="@{@string/error_accessibility_service_disabled_home_screen}"
             app:fixedText="@{@string/error_accessibility_service_enabled}"
             app:onFixClick="@{enableAccessibilityService}"
             app:showFixButton="@{true}"

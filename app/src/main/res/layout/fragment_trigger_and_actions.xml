@@ -9,6 +9,8 @@
 
         <import type="android.view.View" />
 
+        <import type="androidx.lifecycle.LiveData" />
+
         <variable
             name="viewModel"
             type="ConfigKeymapViewModel" />
@@ -24,6 +26,14 @@
         <variable
             name="onAddActionClick"
             type="View.OnClickListener" />
+
+        <variable
+            name="recordingTrigger"
+            type="LiveData&lt;Boolean>" />
+
+        <variable
+            name="timeLeft"
+            type="LiveData&lt;Integer>" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -113,12 +123,12 @@
                         android:layout_marginEnd="@dimen/cardview_padding_right"
                         android:layout_marginBottom="@dimen/cardview_padding_bottom"
                         android:onClick="@{onClickTypeClick}"
-                        app:srcCompat="@drawable/ic_outline_more_vert_24"
                         android:tint="?attr/colorOnSurface"
                         android:visibility="@{viewModel.triggerKeys.size() > 1 &amp;&amp; viewModel.triggerInParallel ? View.VISIBLE : View.GONE}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/radioGroup" />
+                        app:layout_constraintTop_toTopOf="@+id/radioGroup"
+                        app:srcCompat="@drawable/ic_outline_more_vert_24" />
 
                     <RadioGroup
                         android:id="@+id/radioGroup"
@@ -213,13 +223,14 @@
                 android:layout_marginEnd="4dp"
                 android:layout_marginBottom="4dp"
                 android:onClick="@{onRecordTriggerClick}"
-                android:text="@string/button_record_trigger"
+                android:text="@{recordingTrigger ? @string/button_recording_trigger_countdown(timeLeft) : @string/button_record_trigger}"
                 app:backgroundTint="@color/red"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/buttonAddAction"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintHorizontal_chainStyle="spread_inside"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                tools:text="@string/button_record_trigger" />
 
             <Button
                 android:id="@+id/buttonAddAction"

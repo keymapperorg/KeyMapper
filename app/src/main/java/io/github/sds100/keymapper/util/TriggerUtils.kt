@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.util
 
+import android.view.InputDevice
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.model.Trigger.Companion.DOUBLE_PRESS
@@ -34,23 +35,19 @@ fun Trigger.buildDescription(): String = buildString {
             DOUBLE_PRESS -> append(doublePress)
         }
 
-        append(" ${KeycodeUtils.keycodeToString(key.keycode)}")
+        append(" ${KeycodeUtils.keycodeToString(key.keyCode)}")
 
         if (key.deviceId != null) {
-            //TODO get device name
-            val deviceName = ""
-
-            append(" ($deviceName)")
+            append(" (${key.deviceName})")
         }
     }
 }
 
 fun Trigger.Key.buildModel(): TriggerKeyModel {
-    //TODO get device name
     return TriggerKeyModel(
-        name = KeycodeUtils.keycodeToString(keycode),
+        name = KeycodeUtils.keycodeToString(keyCode),
         clickType = clickType,
-        deviceName = null
+        deviceName = deviceName
     )
 }
 
@@ -67,7 +64,7 @@ fun Trigger.buildTriggerChipModel(): TriggerChipModel {
                     DOUBLE_PRESS -> append("${appStr(R.string.clicktype_double_press)} $interpunct ")
                 }
 
-                val keycodeString = KeycodeUtils.keycodeToString(key.keycode)
+                val keycodeString = KeycodeUtils.keycodeToString(key.keyCode)
                 append(keycodeString)
 
                 //TODO need to get device name from its ID

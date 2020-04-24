@@ -437,7 +437,8 @@
     <string name="error_front_flash_not_found">No front flash</string>
     <string name="error_back_flash_not_found">No back flash</string>
 
-    <string name="error_accessibility_service_disabled">The accessibility service must be enabled for this app to work!</string>
+    <string name="error_accessibility_service_disabled_home_screen">The accessibility service must be enabled for this app to work!</string>
+    <string name="error_accessibility_service_disabled_record_trigger">The accessibility service needs to be enabled!</string>
     <string name="error_accessibility_service_enabled">Accessibility service is enabled!</string>
 
     <string name="warning_need_write_secure_settings_permission">Some features need WRITE_SECURE_SETTINGS permission.</string>
