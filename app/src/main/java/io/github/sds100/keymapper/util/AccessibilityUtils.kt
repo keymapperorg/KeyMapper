@@ -42,7 +42,7 @@ object AccessibilityUtils {
     fun disableService(context: Context) {
         when {
             isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS) -> {
-                val enabledServices = appCtx.getSystemSetting<String>(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
+                val enabledServices = appCtx.getSecureSetting<String>(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
 
                 enabledServices ?: return
 
