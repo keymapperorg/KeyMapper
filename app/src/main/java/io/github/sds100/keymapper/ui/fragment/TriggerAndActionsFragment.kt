@@ -170,7 +170,11 @@ class TriggerAndActionsFragment : Fragment() {
                 if (serviceEnabled) {
                     requireActivity().sendBroadcast(Intent(ACTION_RECORD_TRIGGER))
                 } else {
-                    coordinatorLayout.snack(R.string.error_accessibility_service_disabled_record_trigger)
+                    coordinatorLayout.snack(R.string.error_accessibility_service_disabled_record_trigger) {
+                        setAction(appStr(R.string.snackbar_fix)) {
+                            AccessibilityUtils.enableService(requireContext())
+                        }
+                    }
                 }
             }
 
