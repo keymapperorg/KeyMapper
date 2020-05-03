@@ -72,10 +72,13 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
                 ACTION_RECORD_TRIGGER -> {
-                    mRecordingTrigger = true
+                    //don't start recording if a trigger is being recorded
+                    if (!mRecordingTrigger) {
+                        mRecordingTrigger = true
 
-                    lifecycleScope.launchWhenCreated {
-                        recordTrigger()
+                        lifecycleScope.launchWhenCreated {
+                            recordTrigger()
+                        }
                     }
                 }
 
