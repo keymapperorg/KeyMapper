@@ -199,10 +199,20 @@ class ConfigKeymapViewModel internal constructor(
         }
     }
 
-    fun setTriggerKeyClickType(keycode: Int, @Trigger.ClickType clickType: Int) {
+    fun setTriggerKeyClickType(keyCode: Int, @Trigger.ClickType clickType: Int) {
         triggerKeys.value = triggerKeys.value?.map {
-            if (it.keyCode == keycode) {
+            if (it.keyCode == keyCode) {
                 it.clickType = clickType
+            }
+
+            it
+        }
+    }
+
+    fun setTriggerKeyDevice(keyCode: Int, deviceId: String) {
+        triggerKeys.value = triggerKeys.value?.map {
+            if (it.keyCode == keyCode) {
+                it.deviceId = deviceId
             }
 
             it
@@ -219,9 +229,12 @@ class ConfigKeymapViewModel internal constructor(
         val containsKey = triggerKeys.value?.any {
             val sameKeyCode = keyEvent.keyCode == it.keyCode
 
-            //if the key has no device id, then it isn't restricted to any specific device
-            val sameDeviceId = if (it.deviceId == null && !device.isExternalCompat) {
+            //if the key is not external, check whether a trigger key already exists for this device
+            val sameDeviceId = if (
+                (it.deviceId == Trigger.Key.DEVICE_ID_THIS_DEVICE || it.deviceId == Trigger.Key.DEVICE_ID_ANY_DEVICE)
+                && !device.isExternalCompat) {
                 true
+
             } else {
                 it.deviceId == triggerKeyDeviceId
             }

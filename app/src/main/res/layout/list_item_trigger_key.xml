@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <import type="io.github.sds100.keymapper.data.model.Trigger" />
 
         <import type="android.view.View" />
@@ -31,6 +30,10 @@
 
         <variable
             name="onRemoveClick"
+            type="View.OnClickListener" />
+
+        <variable
+            name="onDeviceClick"
             type="View.OnClickListener" />
     </data>
 
@@ -79,7 +82,7 @@
                     android:gravity="center_vertical"
                     android:minHeight="40dp"
                     android:orientation="vertical"
-                    app:layout_constraintEnd_toStartOf="@+id/buttonMore"
+                    app:layout_constraintEnd_toStartOf="@+id/buttonDevice"
                     app:layout_constraintStart_toEndOf="@+id/buttonDrag"
                     app:layout_constraintTop_toTopOf="parent">
 
@@ -136,6 +139,18 @@
                     android:visibility="@{triggerMode == Trigger.SEQUENCE ? View.VISIBLE : View.GONE}"
                     app:layout_constraintBottom_toBottomOf="@+id/buttonRemove"
                     app:layout_constraintEnd_toStartOf="@+id/buttonRemove"
+                    app:layout_constraintTop_toTopOf="@id/buttonRemove" />
+
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/buttonDevice"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:layout_width="36dp"
+                    android:layout_height="0dp"
+                    android:onClick="@{onDeviceClick}"
+                    app:srcCompat="@drawable/ic_baseline_devices_other_24"
+                    android:tint="?attr/colorOnSurface"
+                    app:layout_constraintBottom_toBottomOf="@+id/buttonRemove"
+                    app:layout_constraintEnd_toStartOf="@+id/buttonMore"
                     app:layout_constraintTop_toTopOf="@id/buttonRemove" />
 
                 <io.github.sds100.keymapper.ui.view.SquareImageButton

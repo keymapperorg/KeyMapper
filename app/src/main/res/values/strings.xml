@@ -36,6 +36,8 @@
     <string name="on">On</string>
     <string name="off">Off</string>
     <string name="follow_system">Follow system</string>
+    <string name="this_device">This Device</string>
+    <string name="any_device">Any Device</string>
 
     <string name="caption_action_type_key">Click the key on the device which you want to be entered.
         \n\nIMPORTANT!

@@ -44,10 +44,16 @@ fun Trigger.buildDescription(): String = buildString {
 }
 
 fun Trigger.Key.buildModel(): TriggerKeyModel {
+    val modelDeviceName = if(deviceName == null){
+        appStr(R.string.this_device)
+    }else{
+        deviceName!!
+    }
+
     return TriggerKeyModel(
         name = KeycodeUtils.keycodeToString(keyCode),
         clickType = clickType,
-        deviceName = deviceName
+        deviceName = modelDeviceName
     )
 }
 

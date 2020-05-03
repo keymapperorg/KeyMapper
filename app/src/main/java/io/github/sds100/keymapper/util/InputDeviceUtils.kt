@@ -22,23 +22,43 @@ object InputDeviceUtils {
 
         return ""
     }
-}
 
-    val InputDevice.isExternalCompat: Boolean
-        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            isExternal
-        } else {
-            try {
-                val m: Method = InputDevice::class.java.getMethod("isExternal")
-                (m.invoke(this) as Boolean)
-            } catch (e: NoSuchMethodException) {
-                e.printStackTrace()
-                false
-            } catch (e: IllegalAccessException) {
-                e.printStackTrace()
-                false
-            } catch (e: InvocationTargetException) {
-                e.printStackTrace()
-                false
+    fun getExternalDeviceDescriptors() = sequence {
+        InputDevice.getDeviceIds().forEach {
+            val device = InputDevice.getDevice(it)
+
+            if (device.isExternalCompat) {
+                yield(device.descriptor)
             }
         }
+    }
+
+    fun getExternalDeviceNames() = sequence {
+        InputDevice.getDeviceIds().forEach {
+            val device = InputDevice.getDevice(it)
+
+            if (device.isExternalCompat) {
+                yield(device.name)
+            }
+        }
+    }
+}
+
+val InputDevice.isExternalCompat: Boolean
+    get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        isExternal
+    } else {
+        try {
+            val m: Method = InputDevice::class.java.getMethod("isExternal")
+            (m.invoke(this) as Boolean)
+        } catch (e: NoSuchMethodException) {
+            e.printStackTrace()
+            false
+        } catch (e: IllegalAccessException) {
+            e.printStackTrace()
+            false
+        } catch (e: InvocationTargetException) {
+            e.printStackTrace()
+            false
+        }
+    }

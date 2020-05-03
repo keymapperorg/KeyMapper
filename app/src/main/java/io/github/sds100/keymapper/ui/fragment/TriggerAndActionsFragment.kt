@@ -34,10 +34,7 @@ import io.github.sds100.keymapper.service.MyAccessibilityService.Companion.ACTIO
 import io.github.sds100.keymapper.service.MyAccessibilityService.Companion.ACTION_RECORD_TRIGGER_TIMER_INCREMENTED
 import io.github.sds100.keymapper.service.MyAccessibilityService.Companion.ACTION_STOP_RECORDING_TRIGGER
 import io.github.sds100.keymapper.triggerKey
-import io.github.sds100.keymapper.util.AccessibilityUtils
-import io.github.sds100.keymapper.util.availableFlags
-import io.github.sds100.keymapper.util.observeLiveData
-import io.github.sds100.keymapper.util.removeLiveData
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.RecoverableFailure
 import kotlinx.coroutines.launch
 import splitties.alertdialog.appcompat.alertDialog
@@ -223,7 +220,23 @@ class TriggerAndActionsFragment : Fragment() {
 
                         onMoreClick { _ ->
                             if (mViewModel.triggerInSequence.value == true) {
-                                triggerKey?.chooseClickType()
+                                lifecycleScope.launch {
+                                    val newClickType = showClickTypeDialog()
+
+                                    triggerKey?.apply {
+                                        mViewModel.setTriggerKeyClickType(keyCode, newClickType)
+                                    }
+                                }
+                            }
+                        }
+
+                        onDeviceClick { _ ->
+                            lifecycleScope.launch {
+                                val deviceId = showChooseDeviceDialog()
+
+                                triggerKey?.apply {
+                                    mViewModel.setTriggerKeyDevice(keyCode, deviceId)
+                                }
                             }
                         }
                     }
@@ -283,11 +296,33 @@ class TriggerAndActionsFragment : Fragment() {
         }
     }
 
-    private fun Trigger.Key.chooseClickType() {
-        lifecycleScope.launch {
-            val newClickType = showClickTypeDialog()
+    private suspend fun showChooseDeviceDialog() = suspendCoroutine<String> {
+        requireActivity().alertDialog {
 
-            mViewModel.setTriggerKeyClickType(keyCode, newClickType)
+            val deviceIds = sequence {
+                yield(Trigger.Key.DEVICE_ID_THIS_DEVICE)
+                yield(Trigger.Key.DEVICE_ID_ANY_DEVICE)
+
+                yieldAll(InputDeviceUtils.getExternalDeviceDescriptors())
+
+            }.toList()
+
+            val deviceLabels = sequence {
+                yield(appStr(R.string.this_device))
+                yield(appStr(R.string.any_device))
+
+                yieldAll(InputDeviceUtils.getExternalDeviceNames())
+
+            }.toList().toTypedArray()
+
+            setItems(deviceLabels) { _, index ->
+                val deviceId = deviceIds[index]
+
+                it.resume(deviceId)
+            }
+
+            cancelButton()
+            show()
         }
     }
 
@@ -318,7 +353,6 @@ class TriggerAndActionsFragment : Fragment() {
             }
 
             cancelButton()
-
             show()
         }
     }
@@ -343,8 +377,6 @@ class TriggerAndActionsFragment : Fragment() {
                 checkedArray[index] = checked
             }
 
-            cancelButton()
-
             okButton {
                 var flags = 0
 
@@ -357,6 +389,7 @@ class TriggerAndActionsFragment : Fragment() {
                 mViewModel.setActionFlags(uniqueId, flags)
             }
 
+            cancelButton()
             show()
         }
     }
