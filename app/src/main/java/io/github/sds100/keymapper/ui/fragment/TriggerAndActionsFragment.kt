@@ -176,7 +176,7 @@ class TriggerAndActionsFragment : Fragment() {
                             }.showAndAwait(okValue = true, cancelValue = null, dismissValue = false)
 
                             if (approvedWarning) {
-                                AppPreferences.shownDoublePressRestrictionWarning = true
+                                AppPreferences.shownParallelTriggerOrderDialog = true
                             }
                         }
                     }
