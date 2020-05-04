@@ -161,6 +161,28 @@ class TriggerAndActionsFragment : Fragment() {
                 epoxyRecyclerViewTriggers.requestModelBuild()
             }
 
+            mViewModel.triggerInParallel.observe(viewLifecycleOwner) {
+
+                /* when the user first chooses to make parallel a trigger, show a dialog informing them that
+                the order in which they list the keys is the order in which they will need to be held down.
+                 */
+                if (it == true && mViewModel.triggerKeys.value?.size!! > 1) {
+                    lifecycleScope.launch {
+
+                        if (!AppPreferences.shownParallelTriggerOrderDialog) {
+                            val approvedWarning = requireActivity().alertDialog {
+                                message = appStr(R.string.dialog_message_parallel_trigger_order)
+
+                            }.showAndAwait(okValue = true, cancelValue = null, dismissValue = false)
+
+                            if (approvedWarning) {
+                                AppPreferences.shownDoublePressRestrictionWarning = true
+                            }
+                        }
+                    }
+                }
+            }
+
             setOnRecordTriggerClick {
                 val serviceEnabled = AccessibilityUtils.isServiceEnabled(requireContext())
 
@@ -402,7 +424,7 @@ class TriggerAndActionsFragment : Fragment() {
             .andCallbacks(object : EpoxyTouchHelper.DragCallbacks<TriggerKeyBindingModel_>() {
 
                 override fun isDragEnabledForModel(model: TriggerKeyBindingModel_?): Boolean {
-                    return mViewModel.triggerKeys.value?.size!! > 1 && mViewModel.triggerInSequence.value == true
+                    return mViewModel.triggerKeys.value?.size!! > 1
                 }
 
                 override fun onModelMoved(

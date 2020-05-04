@@ -69,6 +69,11 @@ object AppPreferences : DefaultPreferences() {
         false
     )
 
+    var shownParallelTriggerOrderDialog by BoolPref(
+        appStr(R.string.key_pref_shown_parallel_trigger_order_dialog),
+        false
+    )
+
     var defaultIme by StringOrNullPref(KEY_DEFAULT_IME)
 
     @NightMode
