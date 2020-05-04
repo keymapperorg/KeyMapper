@@ -91,20 +91,20 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner {
                 ACTION_PAUSE_REMAPPINGS -> {
                     clearLists()
                     mPaused = true
-                    WidgetsManager.onEvent(baseContext, WidgetsManager.EVENT_PAUSE_REMAPS)
+                    WidgetsManager.onEvent(this@MyAccessibilityService, WidgetsManager.EVENT_PAUSE_REMAPS)
                 }
 
                 ACTION_RESUME_REMAPPINGS -> {
                     clearLists()
                     mPaused = false
-                    WidgetsManager.onEvent(baseContext, WidgetsManager.EVENT_RESUME_REMAPS)
+                    WidgetsManager.onEvent(this@MyAccessibilityService, WidgetsManager.EVENT_RESUME_REMAPS)
                 }
 
                 ACTION_UPDATE_NOTIFICATION -> {
                     if (mPaused) {
-                        WidgetsManager.onEvent(baseContext, WidgetsManager.EVENT_PAUSE_REMAPS)
+                        WidgetsManager.onEvent(this@MyAccessibilityService, WidgetsManager.EVENT_PAUSE_REMAPS)
                     } else {
-                        WidgetsManager.onEvent(baseContext, WidgetsManager.EVENT_RESUME_REMAPS)
+                        WidgetsManager.onEvent(this@MyAccessibilityService, WidgetsManager.EVENT_RESUME_REMAPS)
                     }
                 }
 
@@ -149,11 +149,11 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner {
             registerReceiver(mBroadcastReceiver, this)
         }
 
-        InjectorUtils.getKeymapRepository(baseContext).keymapList.observe(this) {
+        InjectorUtils.getKeymapRepository(this).keymapList.observe(this) {
             mKeyMapListCache = it
         }
 
-        WidgetsManager.onEvent(baseContext, EVENT_SERVICE_START)
+        WidgetsManager.onEvent(this, EVENT_SERVICE_START)
         sendBroadcast(Intent(ACTION_ON_SERVICE_START))
     }
 
@@ -164,7 +164,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner {
 
         mLifecycleRegistry.currentState = Lifecycle.State.DESTROYED
 
-        WidgetsManager.onEvent(baseContext, EVENT_SERVICE_STOPPED)
+        WidgetsManager.onEvent(this, EVENT_SERVICE_STOPPED)
         sendBroadcast(Intent(ACTION_ON_SERVICE_STOP))
 
         unregisterReceiver(mBroadcastReceiver)
