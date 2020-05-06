@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.util.delegate
 
 import android.os.SystemClock
+import android.util.Log
 import android.view.KeyEvent
 import androidx.collection.SparseArrayCompat
 import androidx.collection.keyIterator
@@ -8,8 +9,8 @@ import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Trigger
+import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
-import kotlin.math.pow
 
 /**
  * Created by sds100 on 05/05/2020.
@@ -42,9 +43,10 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
         private const val FLAG_SHORT_PRESS = 1024
         private const val FLAG_LONG_PRESS = 2048
         private const val FLAG_DOUBLE_PRESS = 4096
+        private const val FLAG_INTERNAL_DEVICE = 8192
 
         private fun createDeviceDescriptorMap(descriptors: Set<String>): SparseArrayCompat<String> {
-            var key = 2.0.pow(13).toInt()
+            var key = 16384
             val map = SparseArrayCompat<String>()
 
             descriptors.forEach {
@@ -74,8 +76,9 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
          *
          * - 0 to 1023 will be reserved for the keycode.
          * - 1024, 2048, 4096 are the click types.
-         * - If the key is from an external device, a flag greater than 4096 is for the key that points to the descriptor
-         * in the [mDeviceDescriptorMap]. If there is no flag > 4096, it means the event is from an internal device.
+         * - An 8192 flag means the event came from an internal device.
+         * - If the key is from an external device, a flag greater than 8192 is for the key that points to the descriptor
+         * in the [mDeviceDescriptorMap].
          */
         private fun encodeEvent(keyCode: Int, @Trigger.ClickType clickType: Int, descriptorKey: Int): Int {
             val clickTypeFlag = when (clickType) {
@@ -86,7 +89,7 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
             }
 
             return if (descriptorKey == -1) {
-                keyCode.withFlag(clickTypeFlag)
+                keyCode.withFlag(clickTypeFlag).withFlag(FLAG_INTERNAL_DEVICE)
             } else {
                 keyCode.withFlag(clickTypeFlag).withFlag(descriptorKey)
             }
@@ -117,14 +120,31 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
 
                 val sequenceKeyMaps = mutableListOf<KeyMap>()
                 val parallelKeyMaps = mutableListOf<KeyMap>()
-                val deviceDescriptors = mutableSetOf<String>()
 
                 mActionMap = createActionMap(value.flatMap { it.actionList }.toSet())
 
+                val deviceDescriptors = mutableSetOf<String>()
+
                 value.forEach { keyMap ->
+                    keyMap.trigger.keys.forEach {
+
+                        if (it.deviceId != Trigger.Key.DEVICE_ID_THIS_DEVICE &&
+                            it.deviceId != Trigger.Key.DEVICE_ID_ANY_DEVICE) {
+                            deviceDescriptors.add(it.deviceId)
+                        }
+                    }
+                }
+
+                mDeviceDescriptorMap = createDeviceDescriptorMap(deviceDescriptors)
+
+                for(keyMap in value){
                     // ignore the keymap if it has no action.
                     if (keyMap.actionList.isEmpty()) {
-                        return@forEach
+                        continue
+                    }
+
+                    if (!keyMap.isEnabled){
+                        continue
                     }
 
                     //TRIGGER STUFF
@@ -132,6 +152,8 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
                         Trigger.PARALLEL -> parallelKeyMaps.add(keyMap)
                         Trigger.SEQUENCE -> sequenceKeyMaps.add(keyMap)
                     }
+
+                    val encodedTriggerList = mutableListOf<Int>()
 
                     keyMap.trigger.keys.forEach { key ->
                         when (key.deviceId) {
@@ -145,31 +167,27 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
                             }
 
                             else -> {
-                                deviceDescriptors.add(key.deviceId)
                                 mDetectExternalEvents = true
                             }
                         }
+
+                        encodedTriggerList.add(encodeTriggerKey(key))
                     }
 
                     val encodedActionList = encodeActionList(keyMap.actionList)
-                    val encodedTrigger = encodeTriggerKeys(keyMap.trigger.keys)
 
                     when (keyMap.trigger.mode) {
                         Trigger.SEQUENCE -> {
                             mDetectSequenceTriggers = true
-                            mSequenceTriggerActionMap[encodedTrigger] = intArrayOf()
+                            mSequenceTriggerActionMap[encodedTriggerList.toIntArray()] = encodedActionList
                         }
 
                         Trigger.PARALLEL -> {
                             mDetectParallelTriggers = true
-                            mParallelTriggerActionMap[encodedTrigger] = encodedActionList
+                            mParallelTriggerActionMap[encodedTriggerList.toIntArray()] = encodedActionList
                         }
                     }
-
-                    actions.addAll(keyMap.actionList)
                 }
-
-                mDeviceDescriptorMap = createDeviceDescriptorMap(deviceDescriptors)
 
                 val sequenceTriggerKeys = sequenceKeyMaps.map { it.trigger.keys }
                 val parallelTriggerKeys = parallelKeyMaps.map { it.trigger.keys }
@@ -218,13 +236,13 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
      * Maps a string representation of a sequence trigger to the actions it should trigger. The actions will
      * be represented by using bit flags.
      */
-    private val mSequenceTriggerActionMap = mutableMapOf<String, IntArray>()
+    private val mSequenceTriggerActionMap = mutableMapOf<IntArray, IntArray>()
 
     /**
      * Maps a string representation of a parallel trigger to the actions it should trigger. The actions will
      * be represented by using bit flags.
      */
-    private val mParallelTriggerActionMap = mutableMapOf<String, IntArray>()
+    private val mParallelTriggerActionMap = mutableMapOf<IntArray, IntArray>()
 
     private val mHeldDownKeys = mutableSetOf<Int>()
 
@@ -305,36 +323,124 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
             mSequenceEvents.removeAt(0)
         }
 
-        val encodedSequenceEvents = mSequenceEvents.joinToString(":")
+        val actionKeysToPerform = mutableSetOf<Int>()
 
-        mSequenceTriggerActionMap.entries.forEach { entry ->
-            val encodedTrigger = entry.key
-            val encodedActions = entry.value
+        triggerLoop@ for (entry in mSequenceTriggerActionMap) {
+            val trigger = entry.key
+            var previousKeyMatchedEvent = false
+            val matchedEvents = mutableListOf<Int>()
 
-            encodedActions
+            //the index of the event which matched the previous key in the trigger
+            var previousKeyMatchedEventIndex = -1
 
-            if (encodedSequenceEvents.contains(encodedTrigger)) {
+            keyLoop@ for ((keyIndex, key) in trigger.withIndex()) {
 
+                /*if the previous key in the trigger didn't match to any event, skip the trigger because
+                * at least one key doesn't match. */
+                if (keyIndex > 0 && !previousKeyMatchedEvent) {
+                    continue@triggerLoop
+                }
+
+                eventLoop@ for ((eventIndex, event) in mSequenceEvents.withIndex()) {
+
+                    //set this to false because if this key does match the event, it will be set to true
+                    previousKeyMatchedEvent = false
+
+                    /* the last key matched with the last event which means this key definitely won't match
+                    * with an event after it. */
+                    if (previousKeyMatchedEventIndex == mSequenceEvents.lastIndex) {
+                        continue@triggerLoop
+                    }
+
+                    if (event.keyCode != key.keyCode) {
+                        continue@eventLoop
+                    }
+
+                    if (event.clickType != key.clickType) {
+                        continue@eventLoop
+                    }
+
+                    if (event.internalDevice) {
+                        if (key.externalDevice) {
+                            continue@eventLoop
+                        }
+
+                    } else {
+                        if (key.internalDevice) {
+                            continue@eventLoop
+                        }
+
+                        /* if the trigger key isn't for ANY device, then the key is for a particular device, so if
+                        the device descriptors don't match, skip the event. */
+                        if (key.deviceDescriptor != 0 && event.deviceDescriptor != key.deviceDescriptor) {
+                            continue@eventLoop
+                        }
+                    }
+
+                    if (previousKeyMatchedEventIndex >= eventIndex) {
+                        continue@eventLoop
+                    }
+
+                    previousKeyMatchedEvent = true
+                    previousKeyMatchedEventIndex = eventIndex
+                    matchedEvents.add(event)
+
+                    /* if the event hasn't been skipped then it is a match so break out of the event loop and go to the
+                    next key in the loop
+                     */
+                    break@eventLoop
+                }
+
+                if (previousKeyMatchedEvent && keyIndex == trigger.lastIndex) {
+                    val actionKeys = entry.value
+                    actionKeysToPerform.addAll(actionKeys.toList())
+
+                    mSequenceEvents.removeAll(matchedEvents)
+                }
+            }
+
+        }
+
+        actionKeysToPerform.forEach {
+            val action = mActionMap[it]
+            Log.e(this::class.java.simpleName, "perform... ${action?.uniqueId}")
+        }
+    }
+
+    /**
+     * Key presses will be encoded as an integer to improve performance and simplify the data structures that
+     * could be needed. Attributes will be stored as flags added to the keycode.
+     *
+     * - 0 to 1023 will be reserved for the keycode.
+     * - 1024, 2048, 4096 are the click types.
+     * - An 8192 flag means the event came from an internal device.
+     * - If the key is from an external device, a flag greater than 8192 is for the key that points to the descriptor
+     * in the [mDeviceDescriptorMap].
+     */
+    private fun encodeTriggerKey(triggerKey: Trigger.Key): Int {
+        val clickTypeFlag = when (triggerKey.clickType) {
+            Trigger.SHORT_PRESS -> FLAG_SHORT_PRESS
+            Trigger.LONG_PRESS -> FLAG_LONG_PRESS
+            Trigger.DOUBLE_PRESS -> FLAG_DOUBLE_PRESS
+            else -> 0
+        }
+
+        return when (triggerKey.deviceId) {
+            Trigger.Key.DEVICE_ID_THIS_DEVICE ->
+                triggerKey.keyCode.withFlag(clickTypeFlag).withFlag(FLAG_INTERNAL_DEVICE)
+
+            Trigger.Key.DEVICE_ID_ANY_DEVICE ->
+                triggerKey.keyCode.withFlag(clickTypeFlag)
+
+            else -> {
+                val descriptorKey = getDescriptorKey(triggerKey.deviceId)
+                triggerKey.keyCode.withFlag(clickTypeFlag).withFlag(descriptorKey)
             }
         }
     }
 
-    private fun encodeTriggerKeys(keys: List<Trigger.Key>) = keys.joinToString(":") {
-        var descriptorKey = getDescriptorKey(it.deviceId)
-
-        if (descriptorKey == -1) descriptorKey = 0
-
-        encodeEvent(it.keyCode, it.clickType, descriptorKey).toString()
-    }
-
-    private fun encodeActionList(actions: List<Action>): Int {
-        var encodedActionList = 0
-
-        actions.forEach {
-            encodedActionList = encodedActionList.withFlag(getActionKey(it))
-        }
-
-        return encodedActionList
+    private fun encodeActionList(actions: List<Action>): IntArray {
+        return actions.map { getActionKey(it) }.toIntArray()
     }
 
     /**
@@ -363,4 +469,23 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
 
         return -1
     }
+
+    private val Int.internalDevice
+        get() = this.hasFlag(FLAG_INTERNAL_DEVICE)
+
+    private val Int.externalDevice
+        get() = this > 16384
+
+    private val Int.anyDevice
+        get() = this < 8192
+
+    private val Int.keyCode
+        get() = this and 1023
+
+    private val Int.clickType
+        //bit shift right 10x and only keep last 3 bits
+        get() = (this shr 10) and 7
+
+    private val Int.deviceDescriptor
+        get() = (this shr 13) shl 13
 }
