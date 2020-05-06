@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.ui.activity
 
+import android.Manifest
 import android.os.Bundle
 import android.view.KeyEvent
 import androidx.activity.viewModels
@@ -7,12 +8,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
 import androidx.preference.PreferenceManager
+import io.github.sds100.keymapper.BuildConfig
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.viewmodel.KeyActionTypeViewModel
 import io.github.sds100.keymapper.databinding.ActivityHomeBinding
+import io.github.sds100.keymapper.util.AccessibilityUtils
 import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.PermissionUtils
 import splitties.alertdialog.appcompat.alertDialog
@@ -20,6 +23,7 @@ import splitties.alertdialog.appcompat.messageResource
 import splitties.alertdialog.appcompat.okButton
 import splitties.alertdialog.appcompat.titleResource
 import splitties.resources.appStr
+import java.security.Permission
 
 /**
  * Created by sds100 on 19/02/2020.
@@ -70,6 +74,10 @@ class HomeActivity : AppCompatActivity() {
 
                 show()
             }
+        }
+
+        if (BuildConfig.DEBUG && PermissionUtils.isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)){
+            AccessibilityUtils.enableService(this)
         }
     }
 

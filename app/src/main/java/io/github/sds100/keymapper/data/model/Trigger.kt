@@ -22,6 +22,7 @@ class Trigger(var keys: List<Key> = listOf()) {
 
         const val DEFAULT_TRIGGER_MODE = PARALLEL
 
+        const val UNDETERMINED = -1
         const val SHORT_PRESS = 0
         const val LONG_PRESS = 1
         const val DOUBLE_PRESS = 2
@@ -86,6 +87,6 @@ class Trigger(var keys: List<Key> = listOf()) {
     @IntDef(value = [PARALLEL, SEQUENCE])
     annotation class Mode
 
-    @IntDef(value = [SHORT_PRESS, LONG_PRESS, DOUBLE_PRESS])
+    @IntDef(value = [UNDETERMINED, SHORT_PRESS, LONG_PRESS, DOUBLE_PRESS])
     annotation class ClickType
 }

@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
+import android.util.Log
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import androidx.lifecycle.*
@@ -13,15 +14,17 @@ import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.WidgetsManager.EVENT_SERVICE_START
 import io.github.sds100.keymapper.WidgetsManager.EVENT_SERVICE_STOPPED
-import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.util.InjectorUtils
+import io.github.sds100.keymapper.util.delegate.IKeymapDetectionDelegate
+import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
+import io.github.sds100.keymapper.util.isExternalCompat
 import io.github.sds100.keymapper.util.show
 import kotlinx.coroutines.delay
 
 /**
  * Created by sds100 on 05/04/2020.
  */
-class MyAccessibilityService : AccessibilityService(), LifecycleOwner {
+class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IKeymapDetectionDelegate {
 
     companion object {
         const val EXTRA_ACTION = "action"
@@ -45,24 +48,6 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner {
          * How long should the accessibility service record a trigger in seconds.
          */
         private const val RECORD_TRIGGER_TIMER_LENGTH = 5
-
-        /**
-         * The time in ms between repeating an action while holding down.
-         */
-        private const val REPEAT_DELAY = 50L
-
-        /**
-         * How long a key should be held down to repeatedly perform an action in ms.
-         */
-        private const val HOLD_DOWN_DELAY = 400L
-
-        /**
-         * Some keys need to be consumed on the up event to prevent them from working they way they are intended to.
-         */
-        private val KEYS_TO_CONSUME_UP_EVENT = listOf(
-            KeyEvent.KEYCODE_HOME,
-            KeyEvent.KEYCODE_APP_SWITCH
-        )
     }
 
     /**
@@ -89,13 +74,13 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner {
                 }
 
                 ACTION_PAUSE_REMAPPINGS -> {
-                    clearLists()
+                    mKeymapDetectionDelegate.reset()
                     mPaused = true
                     WidgetsManager.onEvent(this@MyAccessibilityService, WidgetsManager.EVENT_PAUSE_REMAPS)
                 }
 
                 ACTION_RESUME_REMAPPINGS -> {
-                    clearLists()
+                    mKeymapDetectionDelegate.reset()
                     mPaused = false
                     WidgetsManager.onEvent(this@MyAccessibilityService, WidgetsManager.EVENT_RESUME_REMAPS)
                 }
@@ -109,7 +94,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner {
                 }
 
                 Intent.ACTION_SCREEN_ON -> {
-                    clearLists()
+                    mKeymapDetectionDelegate.reset()
                 }
 
                 ACTION_SHOW_KEYBOARD ->
@@ -123,19 +108,15 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner {
     private var mRecordingTrigger = false
 
     private var mPaused = false
-
-    /**
-     * A cached copy of the keymaps in the database
-     */
-    private var mKeyMapListCache: List<KeyMap> = listOf()
-
     private lateinit var mLifecycleRegistry: LifecycleRegistry
+
+    private val mKeymapDetectionDelegate = KeymapDetectionDelegate(this)
 
     override fun onServiceConnected() {
         super.onServiceConnected()
 
         mLifecycleRegistry = LifecycleRegistry(this)
-        mLifecycleRegistry.currentState = Lifecycle.State.CREATED
+        mLifecycleRegistry.currentState = Lifecycle.State.STARTED
 
         IntentFilter().apply {
             addAction(ACTION_TEST_ACTION)
@@ -150,7 +131,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner {
         }
 
         InjectorUtils.getKeymapRepository(this).keymapList.observe(this) {
-            mKeyMapListCache = it
+            mKeymapDetectionDelegate.keyMapListCache = it
         }
 
         WidgetsManager.onEvent(this, EVENT_SERVICE_START)
@@ -170,9 +151,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner {
         unregisterReceiver(mBroadcastReceiver)
     }
 
-    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-
-    }
+    override fun onAccessibilityEvent(event: AccessibilityEvent?) {}
 
     override fun onKeyEvent(event: KeyEvent?): Boolean {
         event ?: return super.onKeyEvent(event)
@@ -191,13 +170,20 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner {
             return true
         }
 
+        try {
+            mKeymapDetectionDelegate.onKeyEvent(
+                event.keyCode,
+                event.action,
+                event.downTime,
+                event.device.descriptor,
+                event.device.isExternalCompat)
+
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
         return super.onKeyEvent(event)
-    }
-
-    override fun getLifecycle() = mLifecycleRegistry
-
-    private fun clearLists() {
-
     }
 
     private suspend fun recordTrigger() {
@@ -216,5 +202,11 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner {
         sendBroadcast(Intent(ACTION_STOP_RECORDING_TRIGGER))
 
         mRecordingTrigger = false
+    }
+
+    override fun getLifecycle() = mLifecycleRegistry
+
+    override fun performAction() {
+        Log.e(this::class.java.simpleName, "performAction")
     }
 }

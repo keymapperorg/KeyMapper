@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatDelegate.*
 import io.github.sds100.keymapper.R
 import splitties.preferences.DefaultPreferences
 import splitties.resources.appBool
+import splitties.resources.appInt
 import splitties.resources.appStr
 
 /**
@@ -75,6 +76,11 @@ object AppPreferences : DefaultPreferences() {
     )
 
     var defaultIme by StringOrNullPref(KEY_DEFAULT_IME)
+
+    val longPressDelay by IntPref(
+        appStr(R.string.key_pref_long_press_delay),
+        appInt(R.integer.default_value_long_press_delay)
+    )
 
     @NightMode
     fun getSdkNightMode(darkThemePrefValue: String): Int {

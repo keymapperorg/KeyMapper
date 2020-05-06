@@ -68,7 +68,6 @@ object KeyboardUtils {
         inputMethodManager.showInputMethodPicker()
     }
 
-
     fun showInputMethodPickerDialogOutsideApp() {
         /* Android 8.1 and higher don't seem to allow you to open the input method picker dialog
              * from outside the app :( but it can be achieved by sending a broadcast with a
