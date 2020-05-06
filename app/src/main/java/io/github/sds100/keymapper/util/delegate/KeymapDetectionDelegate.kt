@@ -137,13 +137,13 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
 
                 mDeviceDescriptorMap = createDeviceDescriptorMap(deviceDescriptors)
 
-                for(keyMap in value){
+                for (keyMap in value) {
                     // ignore the keymap if it has no action.
                     if (keyMap.actionList.isEmpty()) {
                         continue
                     }
 
-                    if (!keyMap.isEnabled){
+                    if (!keyMap.isEnabled) {
                         continue
                     }
 
@@ -328,7 +328,6 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
         triggerLoop@ for (entry in mSequenceTriggerActionMap) {
             val trigger = entry.key
             var previousKeyMatchedEvent = false
-            val matchedEvents = mutableListOf<Int>()
 
             //the index of the event which matched the previous key in the trigger
             var previousKeyMatchedEventIndex = -1
@@ -383,7 +382,6 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
 
                     previousKeyMatchedEvent = true
                     previousKeyMatchedEventIndex = eventIndex
-                    matchedEvents.add(event)
 
                     /* if the event hasn't been skipped then it is a match so break out of the event loop and go to the
                     next key in the loop
@@ -394,8 +392,6 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
                 if (previousKeyMatchedEvent && keyIndex == trigger.lastIndex) {
                     val actionKeys = entry.value
                     actionKeysToPerform.addAll(actionKeys.toList())
-
-                    mSequenceEvents.removeAll(matchedEvents)
                 }
             }
 
@@ -404,6 +400,10 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
         actionKeysToPerform.forEach {
             val action = mActionMap[it]
             Log.e(this::class.java.simpleName, "perform... ${action?.uniqueId}")
+        }
+
+        if (actionKeysToPerform.isNotEmpty()) {
+            mSequenceEvents.clear()
         }
     }
 
