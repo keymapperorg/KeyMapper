@@ -171,13 +171,12 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IKeymapDe
         }
 
         try {
-            mKeymapDetectionDelegate.onKeyEvent(
+            return mKeymapDetectionDelegate.onKeyEvent(
                 event.keyCode,
                 event.action,
                 event.downTime,
                 event.device.descriptor,
                 event.device.isExternalCompat)
-
 
         } catch (e: Exception) {
             e.printStackTrace()

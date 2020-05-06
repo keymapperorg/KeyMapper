@@ -120,12 +120,18 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
 
                 val sequenceKeyMaps = mutableListOf<KeyMap>()
                 val parallelKeyMaps = mutableListOf<KeyMap>()
+                val longPressKeycodes = mutableSetOf<Int>()
 
                 mActionMap = createActionMap(value.flatMap { it.actionList }.toSet())
 
+                // Extract all the external device descriptors used in enabled keymaps because the list is used later
                 val deviceDescriptors = mutableSetOf<String>()
 
-                value.forEach { keyMap ->
+                for (keyMap in value) {
+                    if (!keyMap.isEnabled) {
+                        continue
+                    }
+
                     keyMap.trigger.keys.forEach {
 
                         if (it.deviceId != Trigger.Key.DEVICE_ID_THIS_DEVICE &&
@@ -156,6 +162,11 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
                     val encodedTriggerList = mutableListOf<Int>()
 
                     keyMap.trigger.keys.forEach { key ->
+
+                        if (key.clickType == Trigger.LONG_PRESS) {
+                            longPressKeycodes.add(key.keyCode)
+                        }
+
                         when (key.deviceId) {
                             Trigger.Key.DEVICE_ID_THIS_DEVICE -> {
                                 mDetectInternalEvents = true
@@ -193,6 +204,7 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
                 val parallelTriggerKeys = parallelKeyMaps.map { it.trigger.keys }
 
                 mLongestSequenceTrigger = sequenceTriggerKeys.maxBy { it.size }?.size ?: 0
+                mLongPressKeyCodes = longPressKeycodes
 
                 //double press parallel triggers
                 val doublePressParallelTriggers = parallelTriggerKeys
@@ -216,6 +228,12 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
     private var mDetectExternalEvents = false
     private var mDetectSequenceTriggers = false
     private var mDetectParallelTriggers = false
+
+    /**
+     * Keys, which have been remapped on long press, need to be consumed on the down event so they don't perform
+     * the action.
+     */
+    private var mLongPressKeyCodes = setOf<Int>()
 
     private var mDetectDoublePresses = false
 
@@ -283,13 +301,19 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
         val encodedEvent = encodeEvent(keyCode, clickType = Trigger.UNDETERMINED, descriptorKey = descriptorKey)
         mHeldDownKeys.add(encodedEvent)
 
+        if (mLongPressKeyCodes.contains(keyCode)) {
+            return true
+        }
+
         return false
     }
 
     /**
-     * @return whether to consume the [KeyEvent].
+     * @return whether to consume the event.
      */
     private fun onKeyUp(keyCode: Int, downTime: Long, descriptorKey: Int): Boolean {
+
+        var consumeEvent = false
 
         var encodedEvent = encodeEvent(keyCode, clickType = Trigger.UNDETERMINED, descriptorKey = descriptorKey)
         mHeldDownKeys.remove(encodedEvent)
@@ -301,14 +325,19 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
         }
 
         if (mDetectSequenceTriggers) {
-            addSequenceEvent(encodedEvent)
+            onSequenceEvent(encodedEvent).let { consume ->
+                if (consume) {
+                    consumeEvent = true
+                }
+            }
+
         }
 
         if (mDetectParallelTriggers) {
 
         }
 
-        return false
+        return consumeEvent
     }
 
     fun reset() {
@@ -316,13 +345,17 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
         mSequenceEvents.clear()
     }
 
-    private fun addSequenceEvent(encodedEvent: Int) {
+    /**
+     * @return whether to consume the event.
+     */
+    private fun onSequenceEvent(encodedEvent: Int): Boolean {
         mSequenceEvents.add(encodedEvent)
 
         if (mSequenceEvents.size > mLongestSequenceTrigger) {
             mSequenceEvents.removeAt(0)
         }
 
+        var consumeEvent = false
         val actionKeysToPerform = mutableSetOf<Int>()
 
         triggerLoop@ for (entry in mSequenceTriggerActionMap) {
@@ -382,6 +415,7 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
 
                     previousKeyMatchedEvent = true
                     previousKeyMatchedEventIndex = eventIndex
+                    consumeEvent = true
 
                     /* if the event hasn't been skipped then it is a match so break out of the event loop and go to the
                     next key in the loop
@@ -405,6 +439,8 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
         if (actionKeysToPerform.isNotEmpty()) {
             mSequenceEvents.clear()
         }
+
+        return consumeEvent
     }
 
     /**
