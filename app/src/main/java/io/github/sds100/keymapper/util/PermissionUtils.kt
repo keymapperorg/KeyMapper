@@ -66,7 +66,7 @@ object PermissionUtils {
                         DevicePolicyManager.EXTRA_ADD_EXPLANATION,
                         appStr(R.string.error_need_to_enable_device_admin))
 
-                    prepareCall(ActivityResultContracts.StartActivityForResult(), activity.activityResultRegistry) {
+                    registerForActivityResult(ActivityResultContracts.StartActivityForResult(), activity.activityResultRegistry) {
                         if (it.resultCode == Activity.RESULT_OK) {
                             onSuccess()
                         }
@@ -84,7 +84,7 @@ object PermissionUtils {
                 val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
 
                 try {
-                    prepareCall(ActivityResultContracts.StartActivityForResult(), activity.activityResultRegistry) {
+                    registerForActivityResult(ActivityResultContracts.StartActivityForResult(), activity.activityResultRegistry) {
                         if (it.resultCode == Activity.RESULT_OK) {
                             onSuccess()
                         }
@@ -99,7 +99,7 @@ object PermissionUtils {
             }
 
             else -> {
-                prepareCall(ActivityResultContracts.RequestPermission(), activityResultRegistry) {
+                registerForActivityResult(ActivityResultContracts.RequestPermission(), activityResultRegistry) {
                     if (it == true) {
                         onSuccess()
                     }
