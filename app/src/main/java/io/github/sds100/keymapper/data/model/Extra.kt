@@ -26,5 +26,6 @@ data class Extra(@ExtraId val id: String, val data: String) {
         const val EXTRA_LENS = "extra_flash"
         const val EXTRA_RINGER_MODE = "extra_ringer_mode"
 
+        const val EXTRA_SEQUENCE_TRIGGER_TIMEOUT = "extra_sequence_trigger_timeout"
     }
 }

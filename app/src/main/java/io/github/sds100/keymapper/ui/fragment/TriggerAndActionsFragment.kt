@@ -25,6 +25,8 @@ import io.github.sds100.keymapper.TriggerKeyBindingModel_
 import io.github.sds100.keymapper.action
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Action
+import io.github.sds100.keymapper.data.model.Extra
+import io.github.sds100.keymapper.data.model.SeekBarListItemModel
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentTriggerAndActionsBinding
@@ -45,6 +47,7 @@ import splitties.alertdialog.appcompat.okButton
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
 import splitties.experimental.ExperimentalSplittiesApi
+import splitties.resources.appInt
 import splitties.resources.appStr
 import splitties.snackbar.action
 import splitties.snackbar.longSnack
@@ -134,23 +137,50 @@ class TriggerAndActionsFragment : Fragment() {
                 findNavController().navigate(direction)
             }
 
-            setOnClickTypeClick {
+            setOnTriggerOptionsClick {
                 lifecycleScope.launch {
-                    if (!AppPreferences.shownDoublePressRestrictionWarning && mViewModel.triggerInParallel.value == true) {
+                    when (mViewModel.triggerMode.value) {
+                        Trigger.SEQUENCE -> {
+                            var timeout = mViewModel.triggerExtras.value?.find {
+                                it.id == Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT
+                            }!!.data.toInt()
 
-                        val approvedWarning = requireActivity().alertDialog {
-                            message = appStr(R.string.dialog_message_double_press_restricted_to_single_key)
+                            val model = SeekBarListItemModel(
+                                id = Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT,
+                                title = appStr(R.string.seekbar_title_sequence_trigger_timeout),
+                                min = appInt(R.integer.sequence_trigger_timeout_min),
+                                max = appInt(R.integer.sequence_trigger_timeout_max),
+                                stepSize = appInt(R.integer.sequence_trigger_timeout_step_size),
+                                initialValue = timeout
+                            )
 
-                        }.showAndAwait(okValue = true, cancelValue = null, dismissValue = false)
+                            timeout = requireActivity().seekBarAlertDialog(model)
 
-                        if (approvedWarning) {
-                            AppPreferences.shownDoublePressRestrictionWarning = true
+                            mViewModel.setTriggerExtra(
+                                id = Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT,
+                                data = timeout.toString()
+                            )
+                        }
+
+                        Trigger.PARALLEL -> {
+                            if (!AppPreferences.shownDoublePressRestrictionWarning &&
+                                mViewModel.triggerInParallel.value == true) {
+
+                                val approvedWarning = requireActivity().alertDialog {
+                                    message = appStr(R.string.dialog_message_double_press_restricted_to_single_key)
+
+                                }.showAndAwait(okValue = true, cancelValue = null, dismissValue = false)
+
+                                if (approvedWarning) {
+                                    AppPreferences.shownDoublePressRestrictionWarning = true
+                                }
+                            }
+
+                            val newClickType = showClickTypeDialog()
+
+                            mViewModel.setParallelTriggerClickType(newClickType)
                         }
                     }
-
-                    val newClickType = showClickTypeDialog()
-
-                    mViewModel.setParallelTriggerClickType(newClickType)
                 }
             }
 

@@ -5,6 +5,9 @@ import androidx.annotation.IntDef
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.InputDeviceUtils
 import io.github.sds100.keymapper.util.isExternalCompat
+import io.github.sds100.keymapper.util.result.ExtraNotFound
+import io.github.sds100.keymapper.util.result.Result
+import io.github.sds100.keymapper.util.result.Success
 import splitties.resources.appStr
 
 /**
@@ -82,6 +85,15 @@ class Trigger(var keys: List<Key> = listOf(), val extras: List<Extra> = listOf()
         }
 
         override fun hashCode() = keyCode
+    }
+
+    fun getExtraData(extraId: String): Result<String> {
+
+        return extras.find { it.id == extraId }.let {
+            it ?: return@let ExtraNotFound(extraId)
+
+            Success(it.data)
+        }
     }
 
     @IntDef(value = [PARALLEL, SEQUENCE])

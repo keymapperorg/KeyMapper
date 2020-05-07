@@ -16,7 +16,7 @@
             type="ConfigKeymapViewModel" />
 
         <variable
-            name="onClickTypeClick"
+            name="onTriggerOptionsClick"
             type="View.OnClickListener" />
 
         <variable
@@ -116,15 +116,15 @@
                         app:layout_constraintStart_toStartOf="parent" />
 
                     <io.github.sds100.keymapper.ui.view.SquareImageButton
-                        android:id="@+id/buttonClickType"
+                        android:id="@+id/buttonTriggerOptions"
                         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_marginEnd="@dimen/cardview_padding_right"
                         android:layout_marginBottom="@dimen/cardview_padding_bottom"
-                        android:onClick="@{onClickTypeClick}"
+                        android:onClick="@{onTriggerOptionsClick}"
                         android:tint="?attr/colorOnSurface"
-                        android:visibility="@{viewModel.triggerKeys.size() > 1 &amp;&amp; viewModel.triggerInParallel ? View.VISIBLE : View.GONE}"
+                        android:visibility="@{viewModel.triggerKeys.size() > 1 ? View.VISIBLE : View.GONE}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/radioGroup"
@@ -140,7 +140,7 @@
                         android:orientation="horizontal"
                         android:visibility="@{viewModel.triggerKeys.size() > 1 ? View.VISIBLE : View.GONE}"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/buttonClickType"
+                        app:layout_constraintEnd_toStartOf="@id/buttonTriggerOptions"
                         app:layout_constraintStart_toStartOf="parent">
 
                         <com.google.android.material.radiobutton.MaterialRadioButton

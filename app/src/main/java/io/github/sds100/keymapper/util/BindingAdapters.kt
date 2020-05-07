@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.util
 import android.content.res.ColorStateList
 import android.view.View
 import android.widget.CompoundButton
+import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.view.isVisible
@@ -310,4 +311,9 @@ fun ChipGroup.bindFlagModels(flagModels: List<FlagModel>) {
             addView(this)
         }
     }
+}
+
+@BindingAdapter("app:onChangeListener")
+fun SeekBar.setOnChangeListener(onChangeListener: SeekBar.OnSeekBarChangeListener) {
+    setOnSeekBarChangeListener(onChangeListener)
 }

@@ -3,12 +3,14 @@ package io.github.sds100.keymapper.data.viewmodel
 import android.view.KeyEvent
 import androidx.lifecycle.*
 import com.example.architecturetest.data.KeymapRepository
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.util.buildChipModel
 import io.github.sds100.keymapper.util.buildModel
 import io.github.sds100.keymapper.util.isExternalCompat
 import io.github.sds100.keymapper.util.toggleFlag
 import kotlinx.coroutines.launch
+import splitties.resources.appInt
 import java.util.*
 
 class ConfigKeymapViewModel internal constructor(
@@ -28,6 +30,10 @@ class ConfigKeymapViewModel internal constructor(
             if (it == true) {
                 value = Trigger.PARALLEL
 
+                triggerExtras.value = triggerExtras.value?.toMutableList()?.apply {
+                    removeAll { extra -> extra.id == Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT }
+                }
+
                 // set all the keys to a short press because they must all be the same click type and
                 // can't all be double pressed
                 triggerKeys.value?.let { keys ->
@@ -44,11 +50,22 @@ class ConfigKeymapViewModel internal constructor(
         }
 
         addSource(triggerInSequence) {
+            triggerExtras.value = triggerExtras.value?.toMutableList()?.apply {
+                if (none { extra -> extra.id == Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT }) {
+                    add(Extra(
+                        id = Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT,
+                        data = appInt(R.integer.sequence_trigger_timeout_default).toString()
+                    ))
+                }
+            }
+
             if (it == true) {
                 value = Trigger.SEQUENCE
             }
         }
     }
+
+    val triggerExtras: MutableLiveData<List<Extra>> = MutableLiveData(listOf())
 
     val constraintAndMode: MutableLiveData<Boolean> = MutableLiveData()
     val constraintOrMode: MutableLiveData<Boolean> = MutableLiveData()
@@ -125,6 +142,7 @@ class ConfigKeymapViewModel internal constructor(
             viewModelScope.launch {
                 mRepository.getKeymap(mId).let { keymap ->
                     triggerKeys.value = keymap.trigger.keys
+                    triggerExtras.value = keymap.trigger.extras
                     actionList.value = keymap.actionList
                     flags.value = keymap.flags
                     isEnabled.value = keymap.isEnabled
@@ -175,7 +193,7 @@ class ConfigKeymapViewModel internal constructor(
 
             val keymap = KeyMap(
                 id = actualId,
-                trigger = Trigger(triggerKeys.value!!).apply { mode = triggerMode.value!! },
+                trigger = Trigger(triggerKeys.value!!, triggerExtras.value!!).apply { mode = triggerMode.value!! },
                 actionList = actionList.value!!,
                 constraintList = mConstraintList.value!!,
                 constraintMode = constraintMode,
@@ -253,6 +271,16 @@ class ConfigKeymapViewModel internal constructor(
         }
 
         return true
+    }
+
+    fun setTriggerExtra(id: String, data: String) {
+        triggerExtras.value = triggerExtras.value?.toMutableList()?.apply {
+            removeAll { it.id == id }
+            add(Extra(
+                id = id,
+                data = data
+            ))
+        }
     }
 
     fun removeTriggerKey(keycode: Int) {

@@ -9,5 +9,11 @@ data class SeekBarListItemModel(
     val min: Int,
     val max: Int,
     val stepSize: Int,
-    val defaultValue: Int = min
-)
+    val initialValue: Int = min
+) {
+    val viewMax: Int
+        get() = (max - min) / stepSize
+
+    fun calculateProgress(value: Int) = (value - min) / stepSize
+    fun calculateValue(progress: Int) = min + (progress * stepSize)
+}
