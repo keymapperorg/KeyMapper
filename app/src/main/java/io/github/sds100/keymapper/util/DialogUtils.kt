@@ -39,3 +39,13 @@ suspend fun FragmentActivity.editTextAlertDialog(hint: String) = suspendCoroutin
         }
     }
 }
+
+suspend fun FragmentActivity.seekBarAlertDialog(title: String,
+                                                min: Int,
+                                                max: Int,
+                                                increment: Int,
+                                                defaultValue: Int) = suspendCoroutine<Int> {
+    alertDialog {
+
+    }
+}

@@ -14,7 +14,7 @@ import splitties.resources.appStr
 /**
  * @property [keys] The key codes which will trigger the action
  */
-class Trigger(var keys: List<Key> = listOf()) {
+class Trigger(var keys: List<Key> = listOf(), val extras: List<Extra> = listOf()) {
 
     companion object {
         const val PARALLEL = 0
