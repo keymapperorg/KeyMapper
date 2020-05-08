@@ -34,6 +34,7 @@
     <string name="key_pref_notification_settings">key_notification_settings</string>
     <string name="key_pref_shown_double_press_restriction_warning">key_shown_double_press_restriction_warning</string>
     <string name="key_pref_shown_parallel_trigger_order_dialog">key_shown_parallel_trigger_order_warning</string>
+    <string name="key_pref_shown_sequence_trigger_explanation_dialog">key_shown_sequence_trigger_explanation_dialog</string>
 
     <string name="key_pref_category_notifications" translatable="false">pref_category_notifications</string>
     <string name="key_pref_category_secure_settings" translatable="false">pref_category_secure_settings</string>

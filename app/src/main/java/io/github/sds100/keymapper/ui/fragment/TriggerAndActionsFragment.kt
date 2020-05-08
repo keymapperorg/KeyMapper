@@ -196,18 +196,35 @@ class TriggerAndActionsFragment : Fragment() {
                 /* when the user first chooses to make parallel a trigger, show a dialog informing them that
                 the order in which they list the keys is the order in which they will need to be held down.
                  */
-                if (it == true && mViewModel.triggerKeys.value?.size!! > 1) {
+                if (it == true && mViewModel.triggerKeys.value?.size!! > 1
+                    && !AppPreferences.shownParallelTriggerOrderDialog) {
+
                     lifecycleScope.launch {
 
-                        if (!AppPreferences.shownParallelTriggerOrderDialog) {
-                            val approvedWarning = requireActivity().alertDialog {
-                                message = appStr(R.string.dialog_message_parallel_trigger_order)
+                        val approvedWarning = requireActivity().alertDialog {
+                            message = appStr(R.string.dialog_message_parallel_trigger_order)
 
-                            }.showAndAwait(okValue = true, cancelValue = null, dismissValue = false)
+                        }.showAndAwait(okValue = true, cancelValue = null, dismissValue = false)
 
-                            if (approvedWarning) {
-                                AppPreferences.shownParallelTriggerOrderDialog = true
-                            }
+                        if (approvedWarning) {
+                            AppPreferences.shownParallelTriggerOrderDialog = true
+                        }
+                    }
+                }
+            }
+
+            mViewModel.triggerInSequence.observe(viewLifecycleOwner) {
+                if (it == true && mViewModel.triggerKeys.value?.size!! > 1
+                    && !AppPreferences.shownSequenceTriggerExplanationDialog) {
+
+                    lifecycleScope.launch {
+                        val approvedWarning = requireActivity().alertDialog {
+                            message = appStr(R.string.dialog_message_sequence_trigger_explanation)
+
+                        }.showAndAwait(okValue = true, cancelValue = null, dismissValue = false)
+
+                        if (approvedWarning) {
+                            AppPreferences.shownSequenceTriggerExplanationDialog = true
                         }
                     }
                 }

@@ -593,5 +593,6 @@
     <string name="system_action_cat_nfc">NFC</string>
     <string name="system_action_cat_other">Other</string>
     <string name="system_action_cat_keyboard">Keyboard</string>
+    <string name="dialog_message_sequence_trigger_explanation">A \"sequence\" trigger has a timeout unlike parallel triggers. This means after you press the first key, you will have a set amount of time to input the rest of the keys in the trigger. All the keys that you have added to the trigger won\'t do their usual action until the timeout has been reached. You can change this timeout by pressing the 3 dots next to the \"in sequence\" button.</string>
     <!-- System action category labels -->
 </resources>

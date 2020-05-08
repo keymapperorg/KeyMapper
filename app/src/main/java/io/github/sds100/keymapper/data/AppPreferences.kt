@@ -75,6 +75,11 @@ object AppPreferences : DefaultPreferences() {
         false
     )
 
+    var shownSequenceTriggerExplanationDialog by BoolPref(
+        appStr(R.string.key_pref_shown_sequence_trigger_explanation_dialog),
+        false
+    )
+
     var defaultIme by StringOrNullPref(KEY_DEFAULT_IME)
 
     val longPressDelay by IntPref(
