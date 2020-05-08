@@ -5,12 +5,17 @@ import android.util.Log
 import android.view.KeyEvent
 import androidx.collection.SparseArrayCompat
 import androidx.collection.keyIterator
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Action
+import io.github.sds100.keymapper.data.model.Extra
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Trigger
+import io.github.sds100.keymapper.util.result.onFailure
+import io.github.sds100.keymapper.util.result.onSuccess
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
+import splitties.resources.appInt
 
 /**
  * Created by sds100 on 05/05/2020.
@@ -126,6 +131,7 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
 
                 // Extract all the external device descriptors used in enabled keymaps because the list is used later
                 val deviceDescriptors = mutableSetOf<String>()
+                val sequenceTriggerTimeouts = mutableListOf<Int>()
 
                 for (keyMap in value) {
                     if (!keyMap.isEnabled) {
@@ -191,6 +197,15 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
                         Trigger.SEQUENCE -> {
                             mDetectSequenceTriggers = true
                             mSequenceTriggerActionMap[encodedTriggerList.toIntArray()] = encodedActionList
+
+                            keyMap.trigger.getExtraData(Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT)
+                                .onSuccess {
+                                    sequenceTriggerTimeouts.add(it.toInt())
+                                }.onFailure {
+                                    val default = appInt(R.integer.sequence_trigger_timeout_default)
+
+                                    sequenceTriggerTimeouts.add(default)
+                                }
                         }
 
                         Trigger.PARALLEL -> {
@@ -199,6 +214,8 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
                         }
                     }
                 }
+
+                mSequenceTriggerTimeouts = sequenceTriggerTimeouts.toIntArray()
 
                 val sequenceTriggerKeys = sequenceKeyMaps.map { it.trigger.keys }
                 val parallelTriggerKeys = parallelKeyMaps.map { it.trigger.keys }
@@ -255,6 +272,12 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
      * be represented by using bit flags.
      */
     private val mSequenceTriggerActionMap = mutableMapOf<IntArray, IntArray>()
+
+    /**
+     * An array of the user-defined timeouts for each sequence trigger. The indexes match up with the ones in
+     * [mSequenceTriggerActionMap]
+     */
+    private var mSequenceTriggerTimeouts = intArrayOf()
 
     /**
      * Maps a string representation of a parallel trigger to the actions it should trigger. The actions will
