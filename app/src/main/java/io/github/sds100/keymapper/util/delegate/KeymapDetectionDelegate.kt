@@ -106,7 +106,7 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
      */
     var keyMapListCache: List<KeyMap> = listOf()
         set(value) {
-            mSequenceTriggerActionMap.clear()
+            mSequenceTriggerActionList.clear()
             mParallelTriggerActionMap.clear()
             mDeviceDescriptorMap.clear()
             mActionMap.clear()
@@ -196,7 +196,7 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
                     when (keyMap.trigger.mode) {
                         Trigger.SEQUENCE -> {
                             mDetectSequenceTriggers = true
-                            mSequenceTriggerActionMap[encodedTriggerList.toIntArray()] = encodedActionList
+                            mSequenceTriggerActionList.add(encodedTriggerList.toIntArray() to encodedActionList)
 
                             keyMap.trigger.getExtraData(Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT)
                                 .onSuccess {
@@ -216,6 +216,9 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
                 }
 
                 mSequenceTriggerTimeouts = sequenceTriggerTimeouts.toIntArray()
+                mSequenceTriggersAwaitingTimeout = LongArray(mSequenceTriggerActionList.size) {
+                    -1
+                }
 
                 val sequenceTriggerKeys = sequenceKeyMaps.map { it.trigger.keys }
                 val parallelTriggerKeys = parallelKeyMaps.map { it.trigger.keys }
@@ -271,13 +274,20 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
      * Maps a string representation of a sequence trigger to the actions it should trigger. The actions will
      * be represented by using bit flags.
      */
-    private val mSequenceTriggerActionMap = mutableMapOf<IntArray, IntArray>()
+    private val mSequenceTriggerActionList = mutableListOf<Pair<IntArray, IntArray>>()
 
     /**
      * An array of the user-defined timeouts for each sequence trigger. The indexes match up with the ones in
      * [mSequenceTriggerActionMap]
      */
     private var mSequenceTriggerTimeouts = intArrayOf()
+
+    /**
+     * Sequence triggers timeout after the first key has been pressed. This array stores the system uptime for when
+     * the corresponding trigger in [mSequenceTriggerActionList] will timeout. If the trigger in [mSequenceTriggerActionList]
+     * isn't waiting to timeout, -1 is stored.
+     */
+    private var mSequenceTriggersAwaitingTimeout = longArrayOf()
 
     /**
      * Maps a string representation of a parallel trigger to the actions it should trigger. The actions will
@@ -324,6 +334,73 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
         val encodedEvent = encodeEvent(keyCode, clickType = Trigger.UNDETERMINED, descriptorKey = descriptorKey)
         mHeldDownKeys.add(encodedEvent)
 
+        var consumeEvent = false
+
+        //consume sequence trigger keys until their timeout has been reached
+        mSequenceTriggersAwaitingTimeout.forEachIndexed { triggerIndex, timeoutTime ->
+            if (timeoutTime != -1L) {
+                val trigger = mSequenceTriggerActionList[triggerIndex].first
+
+                //if the timeout hasn't been reached
+                if (SystemClock.uptimeMillis() <= timeoutTime) {
+
+                    /* consume the down event if this trigger contains this keycode to prevent the key behaving
+                    normally
+                     */
+                    if (trigger.hasKeycode(keyCode)) {
+                        consumeEvent = true
+                    }
+
+                    //if the timeout HAS been reached
+                } else {
+                    /*
+                    If there are multiple sequence triggers with the same initial event and different timeouts,
+                    the sequence events shouldn't be cleared. Only the unique keys from each trigger, which have
+                    timed out, should be. This will determine the number of triggers which have not timed out
+                    and have the same initial event as this trigger.
+                     */
+                    val triggersAwaitingTimeoutCount = mSequenceTriggersAwaitingTimeout.filterIndexed { index, _ ->
+                        mSequenceTriggerActionList[index].first.hasEventAtIndex(trigger[0], 0)
+                    }.size
+
+                    /*
+                    Clear all the sequence events if there is only one trigger, which has the same initial event as
+                    this trigger, left to time out.
+                     */
+                    if (triggersAwaitingTimeoutCount == 1) {
+                        Log.e(this::class.java.simpleName, "sequence events: clear all")
+                        mSequenceEvents.clear()
+
+                    /*
+                    If there are multiple triggers, which have the same initial event, left to timeout only remove
+                    the unique events from this trigger from the sequence events.
+                     */
+                    } else {
+                        for ((index, event) in trigger.withIndex()) {
+                            if (index == 0) continue
+
+                            if (event.anyDevice) {
+                                mSequenceEvents.removeAll {
+                                    it.clickType == event.clickType && it.keyCode == event.keyCode
+                                }
+                            } else {
+                                Log.e(this::class.java.simpleName, "sequence events: remove keycode ${event.keyCode}")
+                                mSequenceEvents.remove(event)
+                            }
+                        }
+                    }
+
+                    Log.e(this::class.java.simpleName, "timed out")
+                    mSequenceTriggersAwaitingTimeout[triggerIndex] = -1
+                }
+            }
+        }
+
+        if (consumeEvent) {
+            Log.e(this::class.java.simpleName, "consume down")
+            return true
+        }
+
         if (mLongPressKeyCodes.contains(keyCode)) {
             return true
         }
@@ -360,6 +437,7 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
 
         }
 
+        if (consumeEvent) Log.e(this::class.java.simpleName, "consume up")
         return consumeEvent
     }
 
@@ -381,8 +459,8 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
         var consumeEvent = false
         val actionKeysToPerform = mutableSetOf<Int>()
 
-        triggerLoop@ for (entry in mSequenceTriggerActionMap) {
-            val trigger = entry.key
+        triggerLoop@ for ((triggerIndex, entry) in mSequenceTriggerActionList.withIndex()) {
+            val trigger = entry.first
             var previousKeyMatchedEvent = false
 
             //the index of the event which matched the previous key in the trigger
@@ -398,10 +476,10 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
 
                 eventLoop@ for ((eventIndex, event) in mSequenceEvents.withIndex()) {
 
-                    //set this to false because if this key does match the event, it will be set to true
+                    //set this to false because if this key does match the event, it will be set to true again
                     previousKeyMatchedEvent = false
 
-                    /* the last key matched with the last event which means this key definitely won't match
+                    /* the previous key matched with the last event which means this key definitely won't match
                     * with an event after it. */
                     if (previousKeyMatchedEventIndex == mSequenceEvents.lastIndex) {
                         continue@triggerLoop
@@ -436,6 +514,18 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
                         continue@eventLoop
                     }
 
+                    /*
+                    The first key in this trigger matched so the rest of the keys need to be consumed until the
+                    timeout has been reached.
+                     */
+                    if (keyIndex == 0 && mSequenceTriggersAwaitingTimeout[triggerIndex] == -1L) {
+                        val timeout = mSequenceTriggerTimeouts[triggerIndex]
+                        val startTime = SystemClock.uptimeMillis()
+
+                        Log.e(this::class.java.simpleName, "set timeout time ${startTime + timeout}")
+                        mSequenceTriggersAwaitingTimeout[triggerIndex] = startTime + timeout
+                    }
+
                     previousKeyMatchedEvent = true
                     previousKeyMatchedEventIndex = eventIndex
                     consumeEvent = true
@@ -447,8 +537,9 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
                 }
 
                 if (previousKeyMatchedEvent && keyIndex == trigger.lastIndex) {
-                    val actionKeys = entry.value
+                    val actionKeys = entry.second
                     actionKeysToPerform.addAll(actionKeys.toList())
+                    mSequenceTriggersAwaitingTimeout[triggerIndex] = -1
                 }
             }
 
@@ -460,6 +551,7 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
         }
 
         if (actionKeysToPerform.isNotEmpty()) {
+            Log.e(this::class.java.simpleName, "sequence events: clear all")
             mSequenceEvents.clear()
         }
 
@@ -540,6 +632,45 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
 
     private val Int.keyCode
         get() = this and 1023
+
+    private val IntArray.keyCodes: IntArray
+        get() {
+            val array = IntArray(size)
+
+            forEachIndexed { index, key ->
+                array[index] = key.keyCode
+            }
+
+            return array
+        }
+
+    private fun IntArray.hasKeycode(keyCode: Int) = this.any { it.keyCode == keyCode }
+
+    private fun IntArray.hasEvent(event: Int): Boolean {
+        for (i in this.indices) {
+            if (this.hasEventAtIndex(event, i)) {
+                return true
+            }
+        }
+
+        return false
+    }
+
+    private fun IntArray.hasEventAtIndex(event: Int, index: Int): Boolean {
+        val triggerEvent = this[index]
+
+        if (triggerEvent.anyDevice || event.anyDevice) {
+            if (triggerEvent.keyCode == event.keyCode && triggerEvent.clickType == event.clickType) {
+                return true
+            }
+        } else {
+            if (triggerEvent == event) {
+                return true
+            }
+        }
+
+        return false
+    }
 
     private val Int.clickType
         //bit shift right 10x and only keep last 3 bits
