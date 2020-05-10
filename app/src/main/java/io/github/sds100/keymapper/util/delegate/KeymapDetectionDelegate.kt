@@ -123,7 +123,7 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
 
                 val sequenceKeyMaps = mutableListOf<KeyMap>()
                 val parallelKeyMaps = mutableListOf<KeyMap>()
-                val longPressKeycodes = mutableSetOf<Int>()
+                val longPressEvents = mutableSetOf<Int>()
 
                 mActionMap = createActionMap(value.flatMap { it.actionList }.toSet())
 
@@ -170,7 +170,39 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
                     keyMap.trigger.keys.forEach { key ->
 
                         if (key.clickType == Trigger.LONG_PRESS) {
-                            longPressKeycodes.add(key.keyCode)
+
+                            /*
+                            It is pointless to have a long press event for ANY device and another one for a
+                            specific device.
+                             */
+                            if (key.deviceId == Trigger.Key.DEVICE_ID_ANY_DEVICE) {
+                                deviceDescriptors.forEach {
+                                    val encodedEvent = encodeEvent(
+                                        key.keyCode,
+                                        Trigger.UNDETERMINED,
+                                        getDescriptorKey(it)
+                                    )
+
+                                    longPressEvents.add(encodedEvent)
+                                }
+
+                                val internalDeviceEncodedEvent = encodeEvent(
+                                    key.keyCode,
+                                    Trigger.UNDETERMINED,
+                                    -1
+                                )
+
+                                longPressEvents.add(internalDeviceEncodedEvent)
+
+                            } else {
+                                val encodedEvent = encodeEvent(
+                                    key.keyCode,
+                                    Trigger.UNDETERMINED,
+                                    getDescriptorKey(key.deviceId)
+                                )
+
+                                longPressEvents.add(encodedEvent)
+                            }
                         }
 
                         when (key.deviceId) {
@@ -224,7 +256,7 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
 
                 val parallelTriggerKeys = parallelKeyMaps.map { it.trigger.keys }
 
-                mLongPressKeyCodes = longPressKeycodes
+                mLongPressEvents = longPressEvents.toIntArray()
 
                 //double press parallel triggers
                 val doublePressParallelTriggers = parallelTriggerKeys
@@ -246,10 +278,9 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
     private var mDetectParallelTriggers = false
 
     /**
-     * Keys, which have been remapped on long press, need to be consumed on the down event so they don't perform
-     * the action.
+     * All events that have the long press click type.
      */
-    private var mLongPressKeyCodes = setOf<Int>()
+    private var mLongPressEvents = intArrayOf()
 
     private var mDetectDoublePresses = false
 
@@ -302,8 +333,6 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
      */
     private val mParallelTriggerActionMap = mutableMapOf<IntArray, IntArray>()
 
-    private val mHeldDownKeys = mutableSetOf<Int>()
-
     /**
      * @return whether to consume the [KeyEvent].
      */
@@ -337,7 +366,6 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
     private fun onKeyDown(keyCode: Int, descriptorKey: Int): Boolean {
 
         val encodedEvent = encodeEvent(keyCode, clickType = Trigger.UNDETERMINED, descriptorKey = descriptorKey)
-        mHeldDownKeys.add(encodedEvent)
 
         var consumeEvent = false
 
@@ -359,7 +387,7 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
             return true
         }
 
-        if (mLongPressKeyCodes.contains(keyCode)) {
+        if (mLongPressEvents.contains(encodedEvent)) {
             return true
         }
 
@@ -374,9 +402,13 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
         var consumeEvent = false
 
         var encodedEvent = encodeEvent(keyCode, clickType = Trigger.UNDETERMINED, descriptorKey = descriptorKey)
-        mHeldDownKeys.remove(encodedEvent)
 
         if ((SystemClock.uptimeMillis() - downTime) < AppPreferences.longPressDelay) {
+
+            if (mLongPressEvents.contains(encodedEvent)) {
+                imitateButtonPress(keyCode)
+            }
+
             encodedEvent = encodedEvent.withFlag(FLAG_SHORT_PRESS)
         } else {
             encodedEvent = encodedEvent.withFlag(FLAG_LONG_PRESS)
@@ -399,7 +431,6 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
     }
 
     fun reset() {
-        mHeldDownKeys.clear()
         mSequenceTriggersTimeoutTimes = LongArray(mSequenceTriggerEvents.size) { -1 }
         mLastMatchedSequenceEventIndices = IntArray(mSequenceTriggerEvents.size) { -1 }
     }
@@ -448,8 +479,9 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
         }
 
         actionKeysToPerform.forEach {
-            val action = mActionMap[it]
-            Log.e(this::class.java.simpleName, "perform... ${action?.uniqueId}")
+            val action = mActionMap[it] ?: return@forEach
+
+            performAction(action)
         }
 
 

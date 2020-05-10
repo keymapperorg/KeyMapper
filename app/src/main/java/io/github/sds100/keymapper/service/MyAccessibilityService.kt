@@ -14,6 +14,7 @@ import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.WidgetsManager.EVENT_SERVICE_START
 import io.github.sds100.keymapper.WidgetsManager.EVENT_SERVICE_STOPPED
+import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.delegate.IKeymapDetectionDelegate
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
@@ -205,7 +206,11 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IKeymapDe
 
     override fun getLifecycle() = mLifecycleRegistry
 
-    override fun performAction() {
-        Log.e(this::class.java.simpleName, "performAction")
+    override fun performAction(action: Action) {
+        Log.e(this::class.java.simpleName, "perform... ${action.uniqueId}")
+    }
+
+    override fun imitateButtonPress(keyCode: Int) {
+        Log.e(this::class.java.simpleName, "imitate")
     }
 }
