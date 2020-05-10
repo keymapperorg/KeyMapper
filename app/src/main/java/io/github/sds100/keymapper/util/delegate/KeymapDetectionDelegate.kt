@@ -220,7 +220,7 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
                 mSequenceTriggerActions = sequenceTriggerActions.toTypedArray()
                 mSequenceTriggerTimeouts = sequenceTriggerTimeouts.toIntArray()
                 mSequenceTriggersTimeoutTimes = LongArray(mSequenceTriggerEvents.size) { -1 }
-                mLastMatchedSequenceEvents = IntArray(mSequenceTriggerEvents.size) { -1 }
+                mLastMatchedSequenceEventIndices = IntArray(mSequenceTriggerEvents.size) { -1 }
 
                 val parallelTriggerKeys = parallelKeyMaps.map { it.trigger.keys }
 
@@ -266,23 +266,35 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
     private var mDeviceDescriptorMap = SparseArrayCompat<String>()
     private var mActionMap = SparseArrayCompat<Action>()
 
+    /**
+     * The events for each trigger. The order matches with
+     * [mSequenceTriggerEvents].
+     */
     private var mSequenceTriggerEvents = arrayOf<IntArray>()
+
+    /**
+     * The actions to perform when each trigger is detected. The order matches with
+     * [mSequenceTriggerEvents].
+     */
     private var mSequenceTriggerActions = arrayOf<IntArray>()
 
     /**
-     * An array of the user-defined timeouts for each sequence trigger. The indexes match up with the ones in
-     * [mSequenceTriggerActionMap]
+     * An array of the user-defined timeouts for each sequence trigger. The order matches with
+     * [mSequenceTriggerEvents].
      */
     private var mSequenceTriggerTimeouts = intArrayOf()
 
     /**
-     * Sequence triggers timeout after the first key has been pressed. This array stores the system uptime for when
-     * the corresponding trigger in [mSequenceTriggerActionList] will timeout. If the trigger in [mSequenceTriggerActionList]
-     * isn't waiting to timeout, -1 is stored.
+     * Sequence triggers timeout after the first key has been pressed. The order matches with [mSequenceTriggerEvents].
+     * This array stores the time when the corresponding trigger in will timeout. If the trigger in
+     * isn't waiting to timeout, the value is -1.
      */
     private var mSequenceTriggersTimeoutTimes = longArrayOf()
 
-    private var mLastMatchedSequenceEvents = intArrayOf()
+    /**
+     * An array of the index of the last matched event in each trigger.
+     */
+    private var mLastMatchedSequenceEventIndices = intArrayOf()
 
     /**
      * Maps a string representation of a parallel trigger to the actions it should trigger. The actions will
@@ -332,9 +344,10 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
         //consume sequence trigger keys until their timeout has been reached
         mSequenceTriggersTimeoutTimes.forEachIndexed { triggerIndex, timeoutTime ->
             if (SystemClock.uptimeMillis() >= timeoutTime) {
-                mLastMatchedSequenceEvents[triggerIndex] = -1
+                mLastMatchedSequenceEventIndices[triggerIndex] = -1
                 mSequenceTriggersTimeoutTimes[triggerIndex] = -1
             } else {
+                //consume the event if the trigger contains this keycode.
                 if (mSequenceTriggerEvents[triggerIndex].hasKeycode(keyCode)) {
                     consumeEvent = true
                 }
@@ -388,7 +401,7 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
     fun reset() {
         mHeldDownKeys.clear()
         mSequenceTriggersTimeoutTimes = LongArray(mSequenceTriggerEvents.size) { -1 }
-        mLastMatchedSequenceEvents = IntArray(mSequenceTriggerEvents.size) { -1 }
+        mLastMatchedSequenceEventIndices = IntArray(mSequenceTriggerEvents.size) { -1 }
     }
 
     /**
@@ -400,14 +413,20 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
 
         val actionKeysToPerform = mutableSetOf<Int>()
 
-        for ((triggerIndex, lastMatchedEventIndex) in mLastMatchedSequenceEvents.withIndex()) {
+        for ((triggerIndex, lastMatchedEventIndex) in mLastMatchedSequenceEventIndices.withIndex()) {
+            //the index of the next event to match in the trigger
             val nextIndex = lastMatchedEventIndex + 1
 
+            //if the next event matches the event just pressed
             if (mSequenceTriggerEvents[triggerIndex].hasEventAtIndex(encodedEvent, nextIndex)) {
                 consumeEvent = true
 
-                mLastMatchedSequenceEvents[triggerIndex] = nextIndex
+                mLastMatchedSequenceEventIndices[triggerIndex] = nextIndex
 
+                /*
+                If the next index is 0, then the first event in the trigger has been matched, which means the timer
+                needs to start for this trigger.
+                 */
                 if (nextIndex == 0) {
                     val startTime = SystemClock.uptimeMillis()
                     val timeout = mSequenceTriggerTimeouts[triggerIndex]
@@ -415,10 +434,14 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
                     mSequenceTriggersTimeoutTimes[triggerIndex] = startTime + timeout
                 }
 
+                /*
+                If the last event in a trigger has been matched, then the action needs to be performed and the timer
+                reset.
+                 */
                 if (nextIndex == mSequenceTriggerEvents[triggerIndex].lastIndex) {
 
                     actionKeysToPerform.addAll(mSequenceTriggerActions[triggerIndex].toList())
-                    mLastMatchedSequenceEvents[triggerIndex] = -1
+                    mLastMatchedSequenceEventIndices[triggerIndex] = -1
                     mSequenceTriggersTimeoutTimes[triggerIndex] = -1
                 }
             }
