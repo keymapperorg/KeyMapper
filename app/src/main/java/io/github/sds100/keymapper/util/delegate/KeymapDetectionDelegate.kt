@@ -74,31 +74,6 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
 
             return map
         }
-
-        /**
-         * Key presses will be encoded as an integer to improve performance and simplify the data structures that
-         * could be needed. Attributes will be stored as flags added to the keycode.
-         *
-         * - 0 to 1023 will be reserved for the keycode.
-         * - 1024, 2048, 4096 are the click types.
-         * - An 8192 flag means the event came from an internal device.
-         * - If the key is from an external device, a flag greater than 8192 is for the key that points to the descriptor
-         * in the [mDeviceDescriptorMap].
-         */
-        private fun encodeEvent(keyCode: Int, @Trigger.ClickType clickType: Int, descriptorKey: Int): Int {
-            val clickTypeFlag = when (clickType) {
-                Trigger.SHORT_PRESS -> FLAG_SHORT_PRESS
-                Trigger.LONG_PRESS -> FLAG_LONG_PRESS
-                Trigger.DOUBLE_PRESS -> FLAG_DOUBLE_PRESS
-                else -> 0
-            }
-
-            return if (descriptorKey == -1) {
-                keyCode.withFlag(clickTypeFlag).withFlag(FLAG_INTERNAL_DEVICE)
-            } else {
-                keyCode.withFlag(clickTypeFlag).withFlag(descriptorKey)
-            }
-        }
     }
 
     /**
@@ -169,39 +144,17 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
 
                     keyMap.trigger.keys.forEach { key ->
 
-                        if (key.clickType == Trigger.LONG_PRESS) {
+                        when (key.clickType) {
+                            Trigger.LONG_PRESS -> {
+                                longPressEvents.add(encodeEvent(key.keyCode, key.clickType, key.deviceId))
 
-                            /*
-                            It is pointless to have a long press event for ANY device and another one for a
-                            specific device.
-                             */
-                            if (key.deviceId == Trigger.Key.DEVICE_ID_ANY_DEVICE) {
-                                deviceDescriptors.forEach {
-                                    val encodedEvent = encodeEvent(
-                                        key.keyCode,
-                                        Trigger.UNDETERMINED,
-                                        getDescriptorKey(it)
-                                    )
+                                mDetectLongPresses = true
+                            }
 
-                                    longPressEvents.add(encodedEvent)
-                                }
+                            Trigger.DOUBLE_PRESS -> {
+                                //TODO
 
-                                val internalDeviceEncodedEvent = encodeEvent(
-                                    key.keyCode,
-                                    Trigger.UNDETERMINED,
-                                    -1
-                                )
-
-                                longPressEvents.add(internalDeviceEncodedEvent)
-
-                            } else {
-                                val encodedEvent = encodeEvent(
-                                    key.keyCode,
-                                    Trigger.UNDETERMINED,
-                                    getDescriptorKey(key.deviceId)
-                                )
-
-                                longPressEvents.add(encodedEvent)
+                                mDetectDoublePresses = true
                             }
                         }
 
@@ -220,7 +173,7 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
                             }
                         }
 
-                        encodedTriggerList.add(encodeTriggerKey(key))
+                        encodedTriggerList.add(encodeEvent(key.keyCode, key.clickType, key.deviceId))
                     }
 
                     val encodedActionList = encodeActionList(keyMap.actionList)
@@ -276,6 +229,7 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
     private var mDetectExternalEvents = false
     private var mDetectSequenceTriggers = false
     private var mDetectParallelTriggers = false
+    private var mDetectLongPresses = false
 
     /**
      * All events that have the long press click type.
@@ -339,22 +293,20 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
     fun onKeyEvent(keyCode: Int, action: Int, downTime: Long, descriptor: String, isExternal: Boolean): Boolean {
         if (!mDetectKeymaps) return false
 
-        val descriptorKey = getDescriptorKey(descriptor)
-
-        if (isExternal) {
-            if (!mDetectExternalEvents) return false
-
-            /*
-            If the descriptor key is -1, there are no triggers which map this device
-             */
-            if (descriptorKey == -1) return false
-        } else {
-            if (!mDetectInternalEvents) return false
+        if ((isExternal && !mDetectExternalEvents) || (!isExternal && !mDetectInternalEvents)) {
+            return false
         }
 
+        val encodedEvent =
+            if (isExternal) {
+                encodeEvent(keyCode, Trigger.UNDETERMINED, descriptor)
+            } else {
+                encodeEvent(keyCode, Trigger.UNDETERMINED, Trigger.Key.DEVICE_ID_THIS_DEVICE)
+            }
+
         when (action) {
-            KeyEvent.ACTION_DOWN -> return onKeyDown(keyCode, descriptorKey)
-            KeyEvent.ACTION_UP -> return onKeyUp(keyCode, downTime, descriptorKey)
+            KeyEvent.ACTION_DOWN -> return onKeyDown(keyCode, encodedEvent)
+            KeyEvent.ACTION_UP -> return onKeyUp(keyCode, downTime, encodedEvent)
         }
 
         return false
@@ -363,9 +315,7 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
     /**
      * @return whether to consume the [KeyEvent].
      */
-    private fun onKeyDown(keyCode: Int, descriptorKey: Int): Boolean {
-
-        val encodedEvent = encodeEvent(keyCode, clickType = Trigger.UNDETERMINED, descriptorKey = descriptorKey)
+    private fun onKeyDown(keyCode: Int, encodedEvent: Int): Boolean {
 
         var consumeEvent = false
 
@@ -387,8 +337,11 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
             return true
         }
 
-        if (mLongPressEvents.contains(encodedEvent)) {
-            return true
+        if (mDetectLongPresses) {
+            if (mLongPressEvents.hasEvent(encodedEvent.withFlag(FLAG_LONG_PRESS))) {
+                Log.e(this::class.java.simpleName, "consume down")
+                return true
+            }
         }
 
         return false
@@ -397,25 +350,23 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
     /**
      * @return whether to consume the event.
      */
-    private fun onKeyUp(keyCode: Int, downTime: Long, descriptorKey: Int): Boolean {
+    private fun onKeyUp(keyCode: Int, downTime: Long, encodedEvent: Int): Boolean {
 
         var consumeEvent = false
 
-        var encodedEvent = encodeEvent(keyCode, clickType = Trigger.UNDETERMINED, descriptorKey = descriptorKey)
+        val encodedEventWithClickType = if ((SystemClock.uptimeMillis() - downTime) < AppPreferences.longPressDelay) {
 
-        if ((SystemClock.uptimeMillis() - downTime) < AppPreferences.longPressDelay) {
-
-            if (mLongPressEvents.contains(encodedEvent)) {
+            if (mLongPressEvents.hasEvent(encodedEvent.withFlag(FLAG_LONG_PRESS))) {
                 imitateButtonPress(keyCode)
             }
 
-            encodedEvent = encodedEvent.withFlag(FLAG_SHORT_PRESS)
+            encodedEvent.withFlag(FLAG_SHORT_PRESS)
         } else {
-            encodedEvent = encodedEvent.withFlag(FLAG_LONG_PRESS)
+            encodedEvent.withFlag(FLAG_LONG_PRESS)
         }
 
         if (mDetectSequenceTriggers) {
-            onSequenceEvent(encodedEvent).let { consume ->
+            onSequenceEvent(encodedEventWithClickType).let { consume ->
                 if (consume) {
                     consumeEvent = true
                 }
@@ -498,24 +449,29 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
      * - If the key is from an external device, a flag greater than 8192 is for the key that points to the descriptor
      * in the [mDeviceDescriptorMap].
      */
-    private fun encodeTriggerKey(triggerKey: Trigger.Key): Int {
-        val clickTypeFlag = when (triggerKey.clickType) {
+    private fun encodeEvent(keyCode: Int, @Trigger.ClickType clickType: Int, deviceId: String): Int {
+        val clickTypeFlag = when (clickType) {
             Trigger.SHORT_PRESS -> FLAG_SHORT_PRESS
             Trigger.LONG_PRESS -> FLAG_LONG_PRESS
             Trigger.DOUBLE_PRESS -> FLAG_DOUBLE_PRESS
             else -> 0
         }
 
-        return when (triggerKey.deviceId) {
+        return when (deviceId) {
             Trigger.Key.DEVICE_ID_THIS_DEVICE ->
-                triggerKey.keyCode.withFlag(clickTypeFlag).withFlag(FLAG_INTERNAL_DEVICE)
+                keyCode.withFlag(clickTypeFlag).withFlag(FLAG_INTERNAL_DEVICE)
 
             Trigger.Key.DEVICE_ID_ANY_DEVICE ->
-                triggerKey.keyCode.withFlag(clickTypeFlag)
+                keyCode.withFlag(clickTypeFlag)
 
             else -> {
-                val descriptorKey = getDescriptorKey(triggerKey.deviceId)
-                triggerKey.keyCode.withFlag(clickTypeFlag).withFlag(descriptorKey)
+                val descriptorKey = getDescriptorKey(deviceId)
+
+                if (descriptorKey == -1) {
+                    keyCode.withFlag(clickTypeFlag)
+                } else {
+                    keyCode.withFlag(clickTypeFlag).withFlag(descriptorKey)
+                }
             }
         }
     }

@@ -211,6 +211,6 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IKeymapDe
     }
 
     override fun imitateButtonPress(keyCode: Int) {
-        Log.e(this::class.java.simpleName, "imitate")
+        Log.e(this::class.java.simpleName, "imitate $keyCode")
     }
 }
