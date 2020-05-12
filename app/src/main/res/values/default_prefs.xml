@@ -15,5 +15,6 @@
 
     <string name="default_value_dark_theme_mode">@string/value_pref_dark_theme_follow_system</string>
     <integer name="default_value_long_press_delay">500</integer>
+    <integer name="default_value_double_press_delay">300</integer>
     <integer name="default_value_vibrate_duration">200</integer>
 </resources>

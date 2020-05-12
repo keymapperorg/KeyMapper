@@ -41,6 +41,15 @@
         app:showSeekBarValue="true" />
 
     <androidx.preference.SeekBarPreference
+        android:defaultValue="@integer/default_value_double_press_delay"
+        android:key="@string/key_pref_double_press_delay"
+        android:max="@integer/double_press_delay_max"
+        android:summary="@string/summary_pref_double_press_delay"
+        android:title="@string/title_pref_double_press_delay"
+        app:min="@integer/double_press_delay_min"
+        app:showSeekBarValue="true" />
+
+    <androidx.preference.SeekBarPreference
         android:defaultValue="@integer/default_value_vibrate_duration"
         android:key="@string/key_pref_vibrate_duration"
         android:max="@integer/vibrate_duration_max"

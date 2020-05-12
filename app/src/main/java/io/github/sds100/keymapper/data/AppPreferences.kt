@@ -87,6 +87,11 @@ object AppPreferences : DefaultPreferences() {
         appInt(R.integer.default_value_long_press_delay)
     )
 
+    val doublePressDelay by IntPref(
+        appStr(R.string.key_pref_double_press_delay),
+        appInt(R.integer.default_value_double_press_delay)
+    )
+
     @NightMode
     fun getSdkNightMode(darkThemePrefValue: String): Int {
         return when (darkThemePrefValue) {

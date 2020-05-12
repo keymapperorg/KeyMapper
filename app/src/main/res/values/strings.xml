@@ -248,6 +248,9 @@
     <string name="title_pref_long_press_delay">Long press delay</string>
     <string name="summary_pref_long_press_delay">How long in milliseconds should a button be pressed for it to be detected as a long press. Default is 500ms.</string>
 
+    <string name="title_pref_double_press_delay">Double press duration</string>
+    <string name="summary_pref_double_press_delay">How fast does a button have to be double pressed for it to be detected as a double press. Default is 300ms.</string>
+
     <string name="summary_pref_vibrate_duration">How long in milliseconds to vibrate for if vibrating is enabled for a remap. Default is 200ms.</string>
     <string name="title_pref_vibrate_duration">Vibrate duration</string>
 

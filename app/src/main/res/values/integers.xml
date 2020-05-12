@@ -4,6 +4,10 @@
     <integer name="long_press_delay_max">5000</integer>
     <integer name="long_press_delay_increment">100</integer>
 
+    <integer name="double_press_delay_min">1</integer>
+    <integer name="double_press_delay_max">5000</integer>
+    <integer name="double_press_delay_increment">100</integer>
+
     <integer name="sequence_trigger_timeout_min">200</integer>
     <integer name="sequence_trigger_timeout_max">10000</integer>
     <integer name="sequence_trigger_timeout_step_size">200</integer>
