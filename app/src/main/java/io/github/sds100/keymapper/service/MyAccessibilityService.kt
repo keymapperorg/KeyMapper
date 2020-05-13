@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.media.AudioManager
 import android.os.Build
 import android.util.Log
 import android.view.KeyEvent
@@ -15,6 +16,7 @@ import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.WidgetsManager.EVENT_SERVICE_START
 import io.github.sds100.keymapper.WidgetsManager.EVENT_SERVICE_STOPPED
 import io.github.sds100.keymapper.data.model.Action
+import io.github.sds100.keymapper.util.AudioUtils
 import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.delegate.IKeymapDetectionDelegate
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
@@ -213,6 +215,17 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IKeymapDe
     }
 
     override fun imitateButtonPress(keyCode: Int) {
-        Log.e(this::class.java.simpleName, "imitate $keyCode")
+        when (keyCode) {
+            KeyEvent.KEYCODE_VOLUME_UP -> AudioUtils.adjustVolume(this, AudioManager.ADJUST_RAISE,
+                showVolumeUi = true)
+
+            KeyEvent.KEYCODE_VOLUME_DOWN -> AudioUtils.adjustVolume(this, AudioManager.ADJUST_LOWER,
+                showVolumeUi = true)
+
+            KeyEvent.KEYCODE_BACK -> performGlobalAction(GLOBAL_ACTION_BACK)
+            KeyEvent.KEYCODE_HOME -> performGlobalAction(GLOBAL_ACTION_HOME)
+            KeyEvent.KEYCODE_APP_SWITCH -> performGlobalAction(GLOBAL_ACTION_RECENTS)
+//            KeyEvent.KEYCODE_MENU -> mActionPerformerDelegate.performSystemAction(SystemAction.OPEN_MENU)
+        }
     }
 }

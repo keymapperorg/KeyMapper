@@ -19,7 +19,6 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.service.DeviceAdmin
 import splitties.alertdialog.appcompat.*
-import splitties.experimental.ExperimentalSplittiesApi
 import splitties.init.appCtx
 import splitties.resources.appStr
 import splitties.systemservices.devicePolicyManager
