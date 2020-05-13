@@ -205,6 +205,8 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IKeymapDe
     }
 
     override fun getLifecycle() = mLifecycleRegistry
+    override val lifecycleScope
+        get() = mLifecycleRegistry.coroutineScope
 
     override fun performAction(action: Action) {
         Log.e(this::class.java.simpleName, "perform... ${action.uniqueId}")

@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.util.delegate
 
+import androidx.lifecycle.LifecycleCoroutineScope
 import io.github.sds100.keymapper.data.model.Action
 
 /**
@@ -8,4 +9,5 @@ import io.github.sds100.keymapper.data.model.Action
 interface IKeymapDetectionDelegate {
     fun performAction(action: Action)
     fun imitateButtonPress(keyCode: Int)
+    val lifecycleScope: LifecycleCoroutineScope
 }

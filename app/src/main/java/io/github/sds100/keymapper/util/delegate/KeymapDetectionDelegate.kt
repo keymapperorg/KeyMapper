@@ -13,6 +13,8 @@ import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.util.result.onFailure
 import io.github.sds100.keymapper.util.result.onSuccess
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
 import splitties.resources.appInt
@@ -49,6 +51,11 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
         private const val FLAG_LONG_PRESS = 2048
         private const val FLAG_DOUBLE_PRESS = 4096
         private const val FLAG_INTERNAL_DEVICE = 8192
+
+        //the states for keys awaiting a double press
+        private const val NOT_PRESSED = -1
+        private const val SINGLE_PRESSED = 0
+        private const val DOUBLE_PRESSED = 1
 
         private fun createDeviceDescriptorMap(descriptors: Set<String>): SparseArrayCompat<String> {
             var key = 16384
@@ -99,6 +106,7 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
                 val sequenceKeyMaps = mutableListOf<KeyMap>()
                 val parallelKeyMaps = mutableListOf<KeyMap>()
                 val longPressEvents = mutableSetOf<Int>()
+                val doublePressEvents = mutableSetOf<Int>()
 
                 mActionMap = createActionMap(value.flatMap { it.actionList }.toSet())
 
@@ -147,14 +155,10 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
                         when (key.clickType) {
                             Trigger.LONG_PRESS -> {
                                 longPressEvents.add(encodeEvent(key.keyCode, key.clickType, key.deviceId))
-
-                                mDetectLongPresses = true
                             }
 
                             Trigger.DOUBLE_PRESS -> {
-                                //TODO
-
-                                mDetectDoublePresses = true
+                                doublePressEvents.add(encodeEvent(key.keyCode, key.clickType, key.deviceId))
                             }
                         }
 
@@ -180,7 +184,6 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
 
                     when (keyMap.trigger.mode) {
                         Trigger.SEQUENCE -> {
-                            mDetectSequenceTriggers = true
                             sequenceTriggerEvents.add(encodedTriggerList.toIntArray())
                             sequenceTriggerActions.add(encodedActionList)
 
@@ -201,24 +204,20 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
                     }
                 }
 
+                mDetectSequenceTriggers = sequenceTriggerEvents.isNotEmpty()
                 mSequenceTriggerEvents = sequenceTriggerEvents.toTypedArray()
                 mSequenceTriggerActions = sequenceTriggerActions.toTypedArray()
                 mSequenceTriggerTimeouts = sequenceTriggerTimeouts.toIntArray()
                 mSequenceTriggersTimeoutTimes = LongArray(mSequenceTriggerEvents.size) { -1 }
                 mLastMatchedSequenceEventIndices = IntArray(mSequenceTriggerEvents.size) { -1 }
 
-                val parallelTriggerKeys = parallelKeyMaps.map { it.trigger.keys }
-
+                mDetectLongPresses = longPressEvents.isNotEmpty()
                 mLongPressEvents = longPressEvents.toIntArray()
 
-                //double press parallel triggers
-                val doublePressParallelTriggers = parallelTriggerKeys
-                    .filter { it.size == 1 && it[0].clickType == Trigger.DOUBLE_PRESS }
-                    .map { it[0] }
-                    .toTypedArray()
-
-                mDoublePressParallelTriggerKeyCodes = doublePressParallelTriggers.map { it.keyCode }.toTypedArray()
-                mDoublePressParallelTriggerDeviceIds = doublePressParallelTriggers.map { it.deviceId }.toTypedArray()
+                mDetectDoublePresses = doublePressEvents.isNotEmpty()
+                mDoublePressEvents = doublePressEvents.toIntArray()
+                mDoublePressEventStates = IntArray(mDoublePressEvents.size) { NOT_PRESSED }
+                mDoublePressTimeoutTimes = LongArray(mDoublePressEvents.size) { -1L }
             }
 
             field = value
@@ -230,23 +229,25 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
     private var mDetectSequenceTriggers = false
     private var mDetectParallelTriggers = false
     private var mDetectLongPresses = false
+    private var mDetectDoublePresses = false
 
     /**
      * All events that have the long press click type.
      */
     private var mLongPressEvents = intArrayOf()
 
-    private var mDetectDoublePresses = false
+    /**
+     * All events that have the double press click type.
+     */
+    private var mDoublePressEvents = intArrayOf()
+    private var mDoublePressEventStates = intArrayOf()
 
-    //double press parallel triggers can only have ONE key
-    private var mDoublePressParallelTriggerKeyCodes = arrayOf<Int>()
-        set(value) {
-            mDetectDoublePresses = value.isNotEmpty()
-
-            field = value
-        }
-
-    private var mDoublePressParallelTriggerDeviceIds = arrayOf<String>()
+    /**
+     * The user has an amount of time to double press a key for it to be registered as a double press.
+     * The order matches with [mDoublePressEvents]. This array stores the time when the corresponding trigger in will
+     * timeout. If the key isn't waiting to timeout, the value is -1.
+     */
+    private var mDoublePressTimeoutTimes = longArrayOf()
 
     private var mDeviceDescriptorMap = SparseArrayCompat<String>()
     private var mActionMap = SparseArrayCompat<Action>()
@@ -332,9 +333,26 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
             }
         }
 
+        mDoublePressTimeoutTimes.forEachIndexed { doublePressEventIndex, timeoutTime ->
+            if (SystemClock.uptimeMillis() >= timeoutTime) {
+                mDoublePressTimeoutTimes[doublePressEventIndex] = -1
+                mDoublePressEventStates[doublePressEventIndex] = NOT_PRESSED
+
+            } else {
+                consumeEvent = true
+            }
+        }
+
         if (consumeEvent) {
             Log.e(this::class.java.simpleName, "consume down")
             return true
+        }
+
+        if (mDetectDoublePresses) {
+            if (mDoublePressEvents.hasEvent(encodedEvent.withFlag(FLAG_DOUBLE_PRESS))) {
+                Log.e(this::class.java.simpleName, "consume down")
+                return true
+            }
         }
 
         if (mDetectLongPresses) {
@@ -353,16 +371,68 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
     private fun onKeyUp(keyCode: Int, downTime: Long, encodedEvent: Int): Boolean {
 
         var consumeEvent = false
+        var imitateButtonPress = false
 
-        val encodedEventWithClickType = if ((SystemClock.uptimeMillis() - downTime) < AppPreferences.longPressDelay) {
+        var encodedEventWithClickType = encodedEvent.withFlag(FLAG_SHORT_PRESS)
 
-            if (mLongPressEvents.hasEvent(encodedEvent.withFlag(FLAG_LONG_PRESS))) {
-                imitateButtonPress(keyCode)
+        if (mDetectLongPresses && mLongPressEvents.hasEvent(encodedEvent.withFlag(FLAG_LONG_PRESS))) {
+
+            /*
+            If the key is also mapped to a double press, the button will be imitated every time it is pressed when
+            the user tries to double press it so only imitate the key when a double press fails.
+             */
+            if ((SystemClock.uptimeMillis() - downTime) < AppPreferences.longPressDelay) {
+
+                if (!mDoublePressEvents.hasEvent(encodedEvent.withFlag(FLAG_DOUBLE_PRESS))) {
+                    imitateButtonPress = true
+                }
+
+            } else {
+                encodedEventWithClickType = encodedEvent.withFlag(FLAG_LONG_PRESS)
             }
+        }
 
-            encodedEvent.withFlag(FLAG_SHORT_PRESS)
-        } else {
-            encodedEvent.withFlag(FLAG_LONG_PRESS)
+        if (mDetectDoublePresses) {
+            //iterate over each possible double press event to detect
+            for (index in mDoublePressEvents.indices) {
+                if (mDoublePressEvents.hasEventAtIndex(encodedEvent.withFlag(FLAG_DOUBLE_PRESS), index)) {
+
+                    //increment the double press event state.
+                    mDoublePressEventStates[index] = mDoublePressEventStates[index] + 1
+
+                    when (mDoublePressEventStates[index]) {
+                        /*if the key is in the single pressed state, set the timeout time and start the timer
+                        * to imitate the key if it isn't double pressed in the end*/
+                        SINGLE_PRESSED -> {
+                            mDoublePressTimeoutTimes[index] =
+                                SystemClock.uptimeMillis() + AppPreferences.doublePressDelay
+
+                            /*
+                            Only imitate the key if it hasn't just been long pressed and wasn't double pressed.
+                             */
+                            if (!encodedEventWithClickType.hasFlag(FLAG_LONG_PRESS)) {
+                                lifecycleScope.launch {
+                                    delay(AppPreferences.doublePressDelay.toLong())
+
+                                    if (mDoublePressEventStates[index] == SINGLE_PRESSED) {
+                                        imitateButtonPress(keyCode)
+                                    }
+                                }
+                            }
+
+                            consumeEvent = true
+                        }
+
+                        /* When the key is double pressed */
+                        DOUBLE_PRESSED -> {
+
+                            encodedEventWithClickType = encodedEvent.withFlag(FLAG_DOUBLE_PRESS)
+                            mDoublePressEventStates[index] = NOT_PRESSED
+                            mDoublePressTimeoutTimes[index] = -1
+                        }
+                    }
+                }
+            }
         }
 
         if (mDetectSequenceTriggers) {
@@ -376,6 +446,8 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
         if (mDetectParallelTriggers) {
 
         }
+
+        if (imitateButtonPress) imitateButtonPress(keyCode)
 
         if (consumeEvent) Log.e(this::class.java.simpleName, "consume up")
         return consumeEvent
