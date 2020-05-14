@@ -16,7 +16,6 @@ import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentConstraintsAndMoreBinding
 import io.github.sds100.keymapper.util.observeLiveData
-import io.github.sds100.keymapper.util.removeLiveData
 import splitties.bitflags.hasFlag
 import splitties.resources.str
 import splitties.toast.toast
@@ -47,10 +46,6 @@ class ConstraintsAndMoreFragment : Fragment() {
                     if (!mViewModel.addConstraint(it)) {
                         toast(R.string.error_constraint_exists)
                     }
-
-                    // prevents the livedata observers receiving callbacks for the same data repeatedly.
-                    // e.g on configuration changes
-                    currentBackStackEntry?.removeLiveData<Constraint>(ChooseConstraintListFragment.SAVED_STATE_KEY)
                 }
             }
 

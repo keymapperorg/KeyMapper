@@ -13,6 +13,7 @@ import androidx.savedstate.SavedStateRegistry
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.ui.callback.ProgressCallback
+import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.observeCurrentDestinationLiveData
 import io.github.sds100.keymapper.util.setLiveData
 import java.io.Serializable
@@ -84,7 +85,7 @@ abstract class RecyclerViewFragment : Fragment() {
             }
 
             subscribeList(this)
-            subscribeSearching()
+            setupSearchView()
 
             return this.root
         }
@@ -96,16 +97,16 @@ abstract class RecyclerViewFragment : Fragment() {
                 // this livedata could be observed from a fragment on the backstack or in the same position on the
                 // backstack as this fragment
                 if (isInPagerAdapter) {
-                    currentBackStackEntry?.setLiveData(selectedModelKey!!, model)
+                    currentBackStackEntry?.setLiveData(selectedModelKey!!, Event(model))
                 } else {
-                    previousBackStackEntry?.setLiveData(selectedModelKey!!, model)
+                    previousBackStackEntry?.setLiveData(selectedModelKey!!, Event(model))
                     navigateUp()
                 }
             }
         }
     }
 
-    private fun FragmentRecyclerviewBinding.subscribeSearching() {
+    private fun FragmentRecyclerviewBinding.setupSearchView() {
         val searchViewMenuItem = appBar.menu.findItem(R.id.action_search)
         searchViewMenuItem.isVisible = mIsSearchEnabled
 

@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.util
 
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.observe
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 
@@ -10,20 +9,24 @@ import androidx.navigation.NavController
  */
 
 fun <T> NavBackStackEntry.observeLiveData(lifecycleOwner: LifecycleOwner, key: String, observe: (t: T) -> Unit) {
-    savedStateHandle.getLiveData<T>(key).observe(lifecycleOwner) {
+    /* use the Event class because any observers observing the saved state will receive the same callback multiple
+    * times on a configuration change for example. */
+    val observer = EventObserver<T> {
         observe(it)
     }
+
+    savedStateHandle.getLiveData<Event<T>>(key).observe(lifecycleOwner, observer)
 }
 
 fun <T> NavBackStackEntry.setLiveData(key: String, value: T) {
-    savedStateHandle.set(key, value)
+    savedStateHandle.set(key, Event(value))
 }
 
-fun <T> NavBackStackEntry.removeLiveData(key: String) {
-    savedStateHandle.remove<T>(key)
-}
-
-fun <T> NavController.observeCurrentDestinationLiveData(lifecycleOwner: LifecycleOwner, key: String, observe: (t: T) -> Unit) {
+fun <T> NavController.observeCurrentDestinationLiveData(
+    lifecycleOwner: LifecycleOwner,
+    key: String,
+    observe: (t: T) -> Unit
+) {
     currentDestination?.id?.let {
         getBackStackEntry(it).observeLiveData(lifecycleOwner, key, observe)
     }
@@ -31,12 +34,6 @@ fun <T> NavController.observeCurrentDestinationLiveData(lifecycleOwner: Lifecycl
 
 fun <T> NavController.setCurrentDestinationLiveData(key: String, value: T) {
     currentDestination?.id?.let {
-        getBackStackEntry(it).setLiveData(key, value)
-    }
-}
-
-fun <T> NavController.removeCurrentDestinationLiveData(key: String) {
-    currentDestination?.id?.let {
-        getBackStackEntry(it).removeLiveData<T>(key)
+        getBackStackEntry(it).setLiveData(key, Event(value))
     }
 }

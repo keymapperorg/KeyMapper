@@ -127,8 +127,6 @@ class TriggerAndActionsFragment : Fragment() {
                     if (!mViewModel.addAction(it)) {
                         toast(R.string.error_action_exists)
                     }
-
-                    currentBackStackEntry?.removeLiveData<Action>(ChooseActionFragment.SAVED_STATE_KEY)
                 }
             }
 

@@ -18,6 +18,7 @@ import io.github.sds100.keymapper.data.model.AppShortcutModel
 import io.github.sds100.keymapper.data.model.SelectedSystemActionModel
 import io.github.sds100.keymapper.databinding.FragmentChooseActionBinding
 import io.github.sds100.keymapper.ui.adapter.ChooseActionPagerAdapter
+import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.observeLiveData
 import io.github.sds100.keymapper.util.setCurrentDestinationLiveData
 import io.github.sds100.keymapper.util.setLiveData
@@ -85,8 +86,10 @@ class ChooseActionFragment : Fragment() {
 
     private fun <T> onModelSelected(key: String, createAction: (model: T) -> Action) = findNavController().apply {
 
-        currentBackStackEntry?.observeLiveData<T>(viewLifecycleOwner, key) {
-            val action = createAction(it)
+        currentBackStackEntry?.observeLiveData<Event<T>>(viewLifecycleOwner, key) {
+            val model = it.getContentIfNotHandled() ?: return@observeLiveData
+            
+            val action = createAction(model)
 
             previousBackStackEntry?.setLiveData(SAVED_STATE_KEY, action)
             navigateUp()
