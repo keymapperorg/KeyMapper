@@ -64,9 +64,12 @@ object InjectorUtils {
         return SystemActionListViewModel.Factory()
     }
 
-    fun provideOnlineViewModel(context: Context, fileUrl: String): OnlineFileViewModel.Factory {
+    fun provideOnlineViewModel(context: Context,
+                               fileUrl: String,
+                               alternateUrl: String? = null,
+                               header: String): OnlineFileViewModel.Factory {
         val repository = getFileRepository(context)
-        return OnlineFileViewModel.Factory(fileUrl, repository)
+        return OnlineFileViewModel.Factory(repository, fileUrl, alternateUrl, header)
     }
 
     fun provideConfigKeymapViewModel(

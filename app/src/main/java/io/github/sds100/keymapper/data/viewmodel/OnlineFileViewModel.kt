@@ -1,49 +1,67 @@
+@file:Suppress("EXPERIMENTAL_API_USAGE")
+
 package io.github.sds100.keymapper.data.viewmodel
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import io.github.sds100.keymapper.data.FileRepository
 import io.github.sds100.keymapper.ui.callback.ProgressCallback
-import io.github.sds100.keymapper.util.result.Failure
-import io.github.sds100.keymapper.util.result.Result
-import kotlinx.coroutines.launch
+import io.github.sds100.keymapper.util.Event
+import io.github.sds100.keymapper.util.result.SSLHandshakeError
+import io.github.sds100.keymapper.util.result.handle
 
 /**
  * Created by sds100 on 04/04/2020.
  */
 
-class OnlineFileViewModel(private val mFileUrl: String,
-                          private val repository: FileRepository) : ViewModel(), ProgressCallback {
+class OnlineFileViewModel(
+    private val mRepository: FileRepository,
+    private val mFileUrl: String,
+    private val mAlternateUrl: String? = null,
+    val header: String) : ViewModel(), ProgressCallback {
 
     override val loadingContent = MutableLiveData(false)
 
-    val markdownText = MutableLiveData<Result<String>>()
+    private val mMarkdownResult = liveData {
+        loadingContent.value = true
 
-    init {
-        refreshIfFailed()
+        emit(mRepository.getFile(mFileUrl))
+
+        loadingContent.value = false
     }
 
-    fun refreshIfFailed() {
-        if (markdownText.value == null || markdownText.value is Failure) {
-            viewModelScope.launch {
-                loadingContent.value = true
+    val markdownText = mMarkdownResult.map { result ->
+        result.handle(
+            onSuccess = {
+                it
+            },
+            onFailure = {
+                if (it is SSLHandshakeError) {
+                    if (mAlternateUrl != null) {
+                        openUrlExternallyEvent.value = Event(mAlternateUrl)
+                    }
+                }
 
-                markdownText.value = repository.getFile(mFileUrl)
+                showToastEvent.value = Event(it.fullMessage)
+                closeDialogEvent.value = Event(Unit)
 
-                loadingContent.value = false
+                ""
             }
-        }
+        )
     }
+
+    val openUrlExternallyEvent = MutableLiveData<Event<String>>()
+    val showToastEvent = MutableLiveData<Event<String>>()
+    val closeDialogEvent = MutableLiveData<Event<Unit>>()
 
     class Factory(
+        private val mRepository: FileRepository,
         private val mFileUrl: String,
-        private val mRepository: FileRepository
+        private val mAlternateUrl: String? = null,
+        private val mHeader: String
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>) =
-            OnlineFileViewModel(mFileUrl, mRepository) as T
+            OnlineFileViewModel(mRepository, mFileUrl, mAlternateUrl, mHeader) as T
     }
 }

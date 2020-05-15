@@ -8,16 +8,8 @@
         <import type="android.view.View" />
 
         <variable
-            name="header"
-            type="String" />
-
-        <variable
-            name="markdown"
-            type="String" />
-
-        <variable
-            name="progressCallback"
-            type="io.github.sds100.keymapper.ui.callback.ProgressCallback" />
+            name="viewModel"
+            type="io.github.sds100.keymapper.data.viewmodel.OnlineFileViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -30,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:text="@{header}"
+            android:text="@{viewModel.header}"
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
             android:textColor="?attr/colorOnSurface"
@@ -45,7 +37,7 @@
             android:layout_height="wrap_content"
             android:indeterminate="true"
             android:paddingBottom="16dp"
-            android:visibility="@{progressCallback.loadingContent ? View.VISIBLE : View.GONE}"
+            android:visibility="@{viewModel.loadingContent ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewHeader" />
@@ -53,7 +45,7 @@
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="@{progressCallback.loadingContent ? View.GONE : View.VISIBLE}"
+            android:visibility="@{viewModel.loadingContent ? View.GONE : View.VISIBLE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewHeader"
@@ -67,7 +59,7 @@
                 android:paddingBottom="100dp"
                 android:textColor="?attr/colorOnSurface"
                 android:textSize="16sp"
-                app:markdown="@{markdown}"
+                app:markdown="@{viewModel.markdownText}"
                 tools:text="Markdown will go here" />
         </androidx.core.widget.NestedScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>

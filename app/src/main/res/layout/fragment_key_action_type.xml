@@ -10,8 +10,8 @@
             type="View.OnClickListener" />
 
         <variable
-            name="keyEventLabel"
-            type="androidx.lifecycle.LiveData&lt;String>" />
+            name="viewModel"
+            type="io.github.sds100.keymapper.data.viewmodel.KeyActionTypeViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -26,8 +26,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:clickable="false"
-            android:text="@{keyEventLabel}"
-            android:visibility='@{keyEventLabel == null || keyEventLabel == "" ? View.GONE : View.VISIBLE}'
+            android:text="@{viewModel.keyLabel}"
+            android:visibility='@{viewModel.keyLabel == null || viewModel.keyLabel == "" ? View.GONE : View.VISIBLE}'
             app:closeIconVisible="false"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -41,7 +41,7 @@
             android:layout_marginEnd="16dp"
             android:onClick="@{onDoneClick}"
             android:text="@string/button_done"
-            android:visibility='@{keyEventLabel == null || keyEventLabel == "" ? View.GONE : View.VISIBLE}'
+            android:visibility='@{viewModel.keyLabel == null || viewModel.keyLabel == "" ? View.GONE : View.VISIBLE}'
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"

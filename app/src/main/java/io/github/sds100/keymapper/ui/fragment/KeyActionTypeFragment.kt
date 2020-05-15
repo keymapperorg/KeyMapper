@@ -31,7 +31,7 @@ class KeyActionTypeFragment : Fragment() {
             lifecycleOwner = viewLifecycleOwner
             mViewModel.clearKey()
 
-            keyEventLabel = mViewModel.keyLabel
+            viewModel = mViewModel
 
             setOnDoneClick {
                 findNavController().apply {
