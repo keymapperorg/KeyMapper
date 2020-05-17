@@ -2,8 +2,9 @@ package io.github.sds100.keymapper.data.viewmodel
 
 import android.view.KeyEvent
 import androidx.lifecycle.*
-import com.example.architecturetest.data.KeymapRepository
+import com.example.architecturetest.data.DefaultKeymapRepository
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.data.KeymapRepository
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.util.buildChipModel
 import io.github.sds100.keymapper.util.buildModel
@@ -365,7 +366,7 @@ class ConfigKeymapViewModel internal constructor(
         actionList.value = actionList.value
     }
 
-    class Factory(private val mRepository: KeymapRepository, private val mId: Long) : ViewModelProvider.Factory {
+    class Factory(private val mRepository: DefaultKeymapRepository, private val mId: Long) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>) =

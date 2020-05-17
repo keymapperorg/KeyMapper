@@ -1,7 +1,8 @@
 package io.github.sds100.keymapper.data.viewmodel
 
 import androidx.lifecycle.*
-import com.example.architecturetest.data.KeymapRepository
+import com.example.architecturetest.data.DefaultKeymapRepository
+import io.github.sds100.keymapper.data.KeymapRepository
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
 import io.github.sds100.keymapper.ui.callback.ProgressCallback
@@ -87,7 +88,7 @@ class KeymapListViewModel internal constructor(
 
     @Suppress("UNCHECKED_CAST")
     class Factory(
-        private val mRepository: KeymapRepository
+        private val mRepository: DefaultKeymapRepository
     ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {

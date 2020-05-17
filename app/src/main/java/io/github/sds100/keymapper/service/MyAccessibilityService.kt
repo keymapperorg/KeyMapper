@@ -133,7 +133,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IKeymapDe
             registerReceiver(mBroadcastReceiver, this)
         }
 
-        InjectorUtils.getKeymapRepository(this).keymapList.observe(this) {
+        InjectorUtils.getDefaultKeymapRepository(this).keymapList.observe(this) {
             mKeymapDetectionDelegate.keyMapListCache = it
         }
 

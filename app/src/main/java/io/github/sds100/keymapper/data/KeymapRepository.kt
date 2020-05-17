@@ -1,52 +1,25 @@
-package com.example.architecturetest.data
+package io.github.sds100.keymapper.data
 
-import io.github.sds100.keymapper.data.KeyMapDao
+import androidx.lifecycle.LiveData
 import io.github.sds100.keymapper.data.model.KeyMap
 
 /**
- * Created by sds100 on 26/01/2020.
+ * Created by sds100 on 17/05/2020.
  */
-class KeymapRepository private constructor(private val keymapDao: KeyMapDao) {
+interface KeymapRepository {
 
-    companion object {
-        @Volatile
-        private var instance: KeymapRepository? = null
+    val keymapList: LiveData<List<KeyMap>>
 
-        fun getInstance(keymapDao: KeyMapDao) =
-            instance ?: synchronized(this) {
-                instance ?: KeymapRepository(keymapDao).also { instance = it }
-            }
-    }
+    suspend fun getKeymap(id: Long): KeyMap
 
-    val keymapList = keymapDao.getAll()
+    suspend fun createKeymap(keymap: KeyMap)
+    suspend fun updateKeymap(keymap: KeyMap)
 
-    suspend fun getKeymap(id: Long) = keymapDao.getById(id)
+    suspend fun enableKeymapById(vararg id: Long)
+    suspend fun disableKeymapById(vararg id: Long)
 
-    suspend fun createKeymap(keymap: KeyMap) {
-        keymapDao.insert(keymap)
-    }
+    suspend fun deleteKeymap(vararg id: Long)
 
-    suspend fun updateKeymap(keymap: KeyMap) {
-        keymapDao.update(keymap)
-    }
-
-    suspend fun enableKeymapById(vararg id: Long) {
-        keymapDao.enableKeymapById(*id)
-    }
-
-    suspend fun disableKeymapById(vararg id: Long) {
-        keymapDao.disableKeymapById(*id)
-    }
-
-    suspend fun deleteKeymap(vararg id: Long) {
-        keymapDao.deleteById(*id)
-    }
-
-    suspend fun enableAll() {
-        keymapDao.enableAll()
-    }
-
-    suspend fun disableAll() {
-        keymapDao.disableAll()
-    }
+    suspend fun enableAll()
+    suspend fun disableAll()
 }
