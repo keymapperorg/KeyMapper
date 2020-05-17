@@ -6,6 +6,7 @@ import androidx.lifecycle.*
 import io.github.sds100.keymapper.data.FileRepository
 import io.github.sds100.keymapper.ui.callback.ProgressCallback
 import io.github.sds100.keymapper.util.Event
+import io.github.sds100.keymapper.util.result.Failure
 import io.github.sds100.keymapper.util.result.SSLHandshakeError
 import io.github.sds100.keymapper.util.result.handle
 
@@ -41,7 +42,7 @@ class OnlineFileViewModel(
                     }
                 }
 
-                showToastEvent.value = Event(it.fullMessage)
+                showErrorEvent.value = Event(it)
                 closeDialogEvent.value = Event(Unit)
 
                 ""
@@ -50,7 +51,7 @@ class OnlineFileViewModel(
     }
 
     val openUrlExternallyEvent = MutableLiveData<Event<String>>()
-    val showToastEvent = MutableLiveData<Event<String>>()
+    val showErrorEvent = MutableLiveData<Event<Failure>>()
     val closeDialogEvent = MutableLiveData<Event<Unit>>()
 
     class Factory(

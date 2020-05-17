@@ -59,7 +59,7 @@ fun Action.buildChipModel(): ActionChipModel {
         val flagLabels = getFlagLabelList()
 
         if (title == null) {
-            append(error?.briefMessage)
+            append(error?.getMessage(appCtx))
         } else {
             append(title)
         }

@@ -340,7 +340,7 @@ class TriggerAndActionsFragment : Fragment() {
 
                         onClick { _ ->
                             if (model.hasError) {
-                                coordinatorLayout.longSnack(model.failure!!.fullMessage) {
+                                coordinatorLayout.longSnack(model.errorMessage!!) {
 
                                     //only add an action to fix the error if the error can be recovered from
                                     if (model.failure is RecoverableFailure) {

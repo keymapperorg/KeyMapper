@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.util.result
 
+import android.content.Context
 import androidx.fragment.app.FragmentActivity
 
 /**
@@ -13,12 +14,9 @@ import androidx.fragment.app.FragmentActivity
 sealed class Result<out T>
 
 data class Success<T>(val value: T) : Result<T>()
-abstract class Failure(val fullMessage: String, val briefMessage: String = fullMessage) : Result<Nothing>()
 
-abstract class RecoverableFailure(
-    fullMessage: String,
-    briefMessage: String = fullMessage
-) : Failure(fullMessage, briefMessage) {
+abstract class Failure : Result<Nothing>()
+abstract class RecoverableFailure : Failure() {
     abstract suspend fun recover(activity: FragmentActivity, onSuccess: () -> Unit = {})
 }
 
@@ -49,14 +47,6 @@ infix fun <T> Result<T>.otherwise(f: (failure: Failure) -> Result<T>) =
         is Success -> this
         is Failure -> f(this)
     }
-
-fun <T> Result<T>.errorMessageOrNull(): String? {
-    when (this) {
-        is Failure -> return this.fullMessage
-    }
-
-    return null
-}
 
 fun <T> Result<T>.failureOrNull(): Failure? {
     when (this) {

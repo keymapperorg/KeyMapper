@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.data.viewmodel.OnlineFileViewModel
 import io.github.sds100.keymapper.databinding.FragmentOnlineFileBinding
 import io.github.sds100.keymapper.util.EventObserver
 import io.github.sds100.keymapper.util.InjectorUtils
+import io.github.sds100.keymapper.util.result.getMessage
 import splitties.resources.appStr
 import splitties.toast.toast
 
@@ -45,8 +46,8 @@ class OnlineFileFragment : BottomSheetDialogFragment() {
                 dismiss()
             })
 
-            mViewModel.showToastEvent.observe(viewLifecycleOwner, EventObserver {
-                toast(it)
+            mViewModel.showErrorEvent.observe(viewLifecycleOwner, EventObserver {
+                toast(it.getMessage(requireContext()))
             })
 
             mViewModel.openUrlExternallyEvent.observe(viewLifecycleOwner, EventObserver {

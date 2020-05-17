@@ -17,6 +17,7 @@ import io.github.sds100.keymapper.ui.callback.ProgressCallback
 import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.SystemActionUtils
 import io.github.sds100.keymapper.util.TintType
+import io.github.sds100.keymapper.util.result.getMessage
 import io.github.sds100.keymapper.util.result.handle
 import io.github.sds100.keymapper.util.result.onSuccess
 import kotlinx.coroutines.cancel
@@ -99,7 +100,7 @@ class SystemActionListFragment : RecyclerViewFragment() {
             val optionLabels = options.map { optionId ->
                 Option.getOptionLabel(systemActionDef.id, optionId).handle(
                     onSuccess = { it },
-                    onFailure = { it.fullMessage }
+                    onFailure = { it.getMessage(requireContext()) }
                 )
             }
 

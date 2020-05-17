@@ -39,6 +39,7 @@ import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.Failure
 import io.github.sds100.keymapper.util.result.ImeServiceDisabled
 import io.github.sds100.keymapper.util.result.RecoverableFailure
+import io.github.sds100.keymapper.util.result.getMessage
 import io.github.sds100.keymapper.worker.SeedDatabaseWorker
 import kotlinx.coroutines.launch
 import splitties.experimental.ExperimentalSplittiesApi
@@ -341,7 +342,7 @@ class KeymapListFragment : Fragment() {
 
                     onErrorClick(object : ErrorClickCallback {
                         override fun onErrorClick(failure: Failure) {
-                            mBinding.coordinatorLayout.longSnack(failure.fullMessage) {
+                            mBinding.coordinatorLayout.longSnack(failure.getMessage(requireContext())) {
 
                                 //only add an action to fix the error if the error can be recovered from
                                 if (failure is RecoverableFailure) {

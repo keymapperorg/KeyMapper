@@ -10,7 +10,6 @@ import androidx.core.view.isVisible
 import androidx.core.widget.TextViewCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.BindingAdapter
-import androidx.lifecycle.LiveData
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.textfield.TextInputLayout
@@ -18,6 +17,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
 import io.github.sds100.keymapper.ui.view.StatusLayout
+import io.github.sds100.keymapper.util.result.getMessage
 import io.noties.markwon.Markwon
 import kotlinx.android.synthetic.main.list_item_status.view.*
 import splitties.resources.*
@@ -152,7 +152,7 @@ fun ChipGroup.bindActions(actions: List<ActionChipModel>, callback: ErrorClickCa
             }
 
             if (it.description == null && it.hasError) {
-                text = it.error?.briefMessage
+                text = it.error?.getMessage(context)
             }
 
             if (it.hasError) {
@@ -285,7 +285,7 @@ fun ChipGroup.bindConstraints(
             isCloseIconVisible = model.hasError
 
             if (model.description == null && model.hasError) {
-                text = model.failure?.briefMessage
+                text = model.errorMessage
             }
 
             if (model.hasError) {

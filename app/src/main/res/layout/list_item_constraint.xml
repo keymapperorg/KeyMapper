@@ -58,7 +58,7 @@
                     android:id="@+id/textViewTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@{model.description == null ? model.failure.briefMessage : model.description}"
+                    android:text="@{model.description == null ? model.errorMessage : model.description}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:textColor="?attr/colorOnSurface"
                     tools:text="Increase Volume" />
@@ -67,7 +67,7 @@
                     android:id="@+id/textViewError"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@{model.failure.fullMessage}"
+                    android:text="@{model.errorMessage}"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                     android:textColor="?attr/colorError"
                     android:visibility='@{model.hasError ? View.VISIBLE : View.GONE}'

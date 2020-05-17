@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.simple
 import io.github.sds100.keymapper.ui.callback.ProgressCallback
 import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.TintType
+import io.github.sds100.keymapper.util.result.getMessage
 
 /**
  * Created by sds100 on 31/03/2020.
@@ -31,7 +32,7 @@ class UnsupportedSystemActionListFragment : RecyclerViewFragment() {
                             icon(it.getIcon(requireContext()))
                             tintType(TintType.ON_SURFACE)
                             primaryText(it.description)
-                            secondaryText(it.reason.fullMessage)
+                            secondaryText(it.reason.getMessage(requireContext()))
                         }
                     }
                 }

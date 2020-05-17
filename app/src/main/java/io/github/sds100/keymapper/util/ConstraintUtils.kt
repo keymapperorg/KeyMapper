@@ -34,7 +34,7 @@ fun Constraint.buildChipModel(): ConstraintModel {
         .then { getIcon() }.onSuccess { icon = it }
         .failureOrNull()
 
-    return ConstraintModel(uniqueId, description, error, icon)
+    return ConstraintModel(uniqueId, description, error, error?.getMessage(appCtx), icon)
 }
 
 private fun Constraint.getDescription(): Result<String> {

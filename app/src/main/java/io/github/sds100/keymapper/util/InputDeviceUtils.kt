@@ -23,7 +23,7 @@ object InputDeviceUtils {
             }
         }
 
-        return DeviceNotFound(descriptor)
+        return DeviceNotFound()
     }
 
     fun getExternalDeviceDescriptors() = sequence {

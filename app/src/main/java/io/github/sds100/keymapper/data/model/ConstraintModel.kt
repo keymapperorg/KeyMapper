@@ -11,6 +11,7 @@ data class ConstraintModel(
     val id: String,
     val description: String? = null,
     val failure: Failure? = null,
+    val errorMessage: String? = null,
     val icon: Drawable? = null
 ) {
     val hasError: Boolean
