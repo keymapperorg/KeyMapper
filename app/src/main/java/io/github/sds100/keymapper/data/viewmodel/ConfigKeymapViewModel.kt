@@ -366,7 +366,7 @@ class ConfigKeymapViewModel internal constructor(
         actionList.value = actionList.value
     }
 
-    class Factory(private val mRepository: DefaultKeymapRepository, private val mId: Long) : ViewModelProvider.Factory {
+    class Factory(private val mRepository: KeymapRepository, private val mId: Long) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>) =

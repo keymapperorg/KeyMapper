@@ -88,7 +88,7 @@ class KeymapListViewModel internal constructor(
 
     @Suppress("UNCHECKED_CAST")
     class Factory(
-        private val mRepository: DefaultKeymapRepository
+        private val mRepository: KeymapRepository
     ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
