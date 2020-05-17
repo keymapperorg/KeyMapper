@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.viewmodel.UrlActionTypeViewModel
 import io.github.sds100.keymapper.databinding.FragmentEdittextBinding
+import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.setLiveData
 import splitties.resources.appStr
@@ -40,7 +41,7 @@ class UrlActionTypeFragment : Fragment() {
 
             setOnDoneClick {
                 findNavController().apply {
-                    currentBackStackEntry?.setLiveData(SAVED_STATE_KEY, mViewModel.url.value)
+                    currentBackStackEntry?.setLiveData(SAVED_STATE_KEY, Event(mViewModel.url.value))
                 }
             }
 

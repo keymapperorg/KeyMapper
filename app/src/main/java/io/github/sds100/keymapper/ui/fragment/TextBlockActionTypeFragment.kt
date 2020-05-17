@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.viewmodel.TextBlockActionTypeViewModel
 import io.github.sds100.keymapper.databinding.FragmentEdittextBinding
+import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.setLiveData
 import splitties.resources.appStr
@@ -37,7 +38,7 @@ class TextBlockActionTypeFragment : Fragment() {
 
             setOnDoneClick {
                 findNavController().apply {
-                    currentBackStackEntry?.setLiveData(SAVED_STATE_KEY, mViewModel.text.value)
+                    currentBackStackEntry?.setLiveData(SAVED_STATE_KEY, Event(mViewModel.text.value))
                 }
             }
 

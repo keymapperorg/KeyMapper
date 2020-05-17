@@ -9,6 +9,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.data.viewmodel.KeyActionTypeViewModel
 import io.github.sds100.keymapper.databinding.FragmentKeyActionTypeBinding
+import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.setLiveData
 
@@ -35,7 +36,7 @@ class KeyActionTypeFragment : Fragment() {
 
             setOnDoneClick {
                 findNavController().apply {
-                    currentBackStackEntry?.setLiveData(SAVED_STATE_KEY, mViewModel.keyEvent.value?.keyCode)
+                    currentBackStackEntry?.setLiveData(SAVED_STATE_KEY, Event(mViewModel.keyEvent.value?.keyCode))
                 }
             }
 
