@@ -123,9 +123,9 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
 
                     keyMap.trigger.keys.forEach {
 
-                        if (it.deviceId != Trigger.Key.DEVICE_ID_THIS_DEVICE &&
-                            it.deviceId != Trigger.Key.DEVICE_ID_ANY_DEVICE) {
-                            deviceDescriptors.add(it.deviceId)
+                        if (it.device.descriptor != Trigger.Key.DEVICE_ID_THIS_DEVICE &&
+                            it.device.descriptor != Trigger.Key.DEVICE_ID_ANY_DEVICE) {
+                            deviceDescriptors.add(it.device.descriptor)
                         }
                     }
                 }
@@ -154,15 +154,15 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
 
                         when (key.clickType) {
                             Trigger.LONG_PRESS -> {
-                                longPressEvents.add(encodeEvent(key.keyCode, key.clickType, key.deviceId))
+                                longPressEvents.add(encodeEvent(key.keyCode, key.clickType, key.device.descriptor))
                             }
 
                             Trigger.DOUBLE_PRESS -> {
-                                doublePressEvents.add(encodeEvent(key.keyCode, key.clickType, key.deviceId))
+                                doublePressEvents.add(encodeEvent(key.keyCode, key.clickType, key.device.descriptor))
                             }
                         }
 
-                        when (key.deviceId) {
+                        when (key.device.descriptor) {
                             Trigger.Key.DEVICE_ID_THIS_DEVICE -> {
                                 mDetectInternalEvents = true
                             }
@@ -177,7 +177,7 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
                             }
                         }
 
-                        encodedTriggerList.add(encodeEvent(key.keyCode, key.clickType, key.deviceId))
+                        encodedTriggerList.add(encodeEvent(key.keyCode, key.clickType, key.device.descriptor))
                     }
 
                     val encodedActionList = encodeActionList(keyMap.actionList)

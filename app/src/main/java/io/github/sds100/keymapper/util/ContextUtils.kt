@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.util
 
 import android.Manifest
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.drawable.Drawable
 import android.provider.Settings
 import androidx.annotation.DrawableRes
@@ -13,7 +14,7 @@ import androidx.preference.PreferenceManager
  * Created by sds100 on 31/12/2018.
  */
 
-val Context.defaultSharedPreferences
+val Context.defaultSharedPreferences: SharedPreferences
     get() = PreferenceManager.getDefaultSharedPreferences(this)
 
 /**

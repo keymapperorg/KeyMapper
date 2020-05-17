@@ -2,6 +2,9 @@ package io.github.sds100.keymapper.util
 
 import android.os.Build
 import android.view.InputDevice
+import io.github.sds100.keymapper.util.result.DeviceNotFound
+import io.github.sds100.keymapper.util.result.Result
+import io.github.sds100.keymapper.util.result.Success
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 
@@ -10,17 +13,17 @@ import java.lang.reflect.Method
  */
 
 object InputDeviceUtils {
-    fun getName(descriptor: String): String {
+    fun getName(descriptor: String): Result<String> {
         InputDevice.getDeviceIds().forEach {
             val device = InputDevice.getDevice(it)
 
             if (device.descriptor == descriptor) {
 
-                return device.name
+                return Success(device.name)
             }
         }
 
-        return ""
+        return DeviceNotFound(descriptor)
     }
 
     fun getExternalDeviceDescriptors() = sequence {

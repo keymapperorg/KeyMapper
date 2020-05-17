@@ -36,7 +36,6 @@ class KeyMap(
      */
     var flags: Int = 0,
 
-
     @ColumnInfo(name = KeyMapDao.KEY_ENABLED)
     var isEnabled: Boolean = true
 ) {

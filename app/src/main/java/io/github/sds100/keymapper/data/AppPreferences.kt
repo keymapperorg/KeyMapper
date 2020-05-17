@@ -1,6 +1,8 @@
 package io.github.sds100.keymapper.data
 
 import androidx.appcompat.app.AppCompatDelegate.*
+import com.github.salomonbrys.kotson.fromJson
+import com.google.gson.Gson
 import io.github.sds100.keymapper.R
 import splitties.preferences.DefaultPreferences
 import splitties.resources.appBool
@@ -90,6 +92,11 @@ object AppPreferences : DefaultPreferences() {
     val doublePressDelay by IntPref(
         appStr(R.string.key_pref_double_press_delay),
         appInt(R.integer.default_value_double_press_delay)
+    )
+
+    private val triggerDeviceNamesJson by StringOrNullPref(
+        appStr(R.string.key_pref_trigger_device_names),
+        null
     )
 
     @NightMode

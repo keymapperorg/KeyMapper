@@ -1,8 +1,8 @@
 package io.github.sds100.keymapper.data.viewmodel
 
+import android.app.Application
 import android.view.KeyEvent
 import androidx.lifecycle.*
-import com.example.architecturetest.data.DefaultKeymapRepository
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.KeymapRepository
 import io.github.sds100.keymapper.data.model.*
@@ -15,9 +15,10 @@ import splitties.resources.appInt
 import java.util.*
 
 class ConfigKeymapViewModel internal constructor(
+    application: Application,
     private val mRepository: KeymapRepository,
     private val mId: Long
-) : ViewModel() {
+) : AndroidViewModel(application) {
 
     companion object {
         const val NEW_KEYMAP_ID = -2L
@@ -228,10 +229,10 @@ class ConfigKeymapViewModel internal constructor(
         }
     }
 
-    fun setTriggerKeyDevice(keyCode: Int, deviceId: String) {
+    fun setTriggerKeyDevice(keyCode: Int, descriptor: String) {
         triggerKeys.value = triggerKeys.value?.map {
             if (it.keyCode == keyCode) {
-                it.deviceId = deviceId
+                it.device = Trigger.DeviceInfo(getApplication(), descriptor = descriptor)
             }
 
             it
@@ -243,19 +244,20 @@ class ConfigKeymapViewModel internal constructor(
      */
     fun addTriggerKey(keyEvent: KeyEvent): Boolean {
         val device = keyEvent.device
-        val triggerKeyDeviceId = device.descriptor
+        val triggerKeyDeviceDescriptor = device.descriptor
 
         val containsKey = triggerKeys.value?.any {
             val sameKeyCode = keyEvent.keyCode == it.keyCode
 
             //if the key is not external, check whether a trigger key already exists for this device
             val sameDeviceId = if (
-                (it.deviceId == Trigger.Key.DEVICE_ID_THIS_DEVICE || it.deviceId == Trigger.Key.DEVICE_ID_ANY_DEVICE)
+                (it.device.descriptor == Trigger.Key.DEVICE_ID_THIS_DEVICE
+                    || it.device.descriptor == Trigger.Key.DEVICE_ID_ANY_DEVICE)
                 && !device.isExternalCompat) {
                 true
 
             } else {
-                it.deviceId == triggerKeyDeviceId
+                it.device.descriptor == triggerKeyDeviceDescriptor
             }
 
             sameKeyCode && sameDeviceId
@@ -267,7 +269,7 @@ class ConfigKeymapViewModel internal constructor(
         }
 
         triggerKeys.value = triggerKeys.value?.toMutableList()?.apply {
-            val triggerKey = Trigger.Key.fromKeyEvent(keyEvent)
+            val triggerKey = Trigger.Key.fromKeyEvent(getApplication(), keyEvent)
             add(triggerKey)
         }
 
@@ -366,10 +368,13 @@ class ConfigKeymapViewModel internal constructor(
         actionList.value = actionList.value
     }
 
-    class Factory(private val mRepository: KeymapRepository, private val mId: Long) : ViewModelProvider.Factory {
+    class Factory(
+        private val mApplication: Application,
+        private val mRepository: KeymapRepository,
+        private val mId: Long) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>) =
-            ConfigKeymapViewModel(mRepository, mId) as T
+            ConfigKeymapViewModel(mApplication, mRepository, mId) as T
     }
 }

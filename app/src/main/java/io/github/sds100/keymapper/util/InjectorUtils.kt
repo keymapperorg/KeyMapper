@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.util
 
+import android.app.Application
 import android.content.Context
 import com.example.architecturetest.data.DefaultKeymapRepository
 import io.github.sds100.keymapper.data.FileRepository
@@ -77,6 +78,6 @@ object InjectorUtils {
         id: Long
     ): ConfigKeymapViewModel.Factory {
         val repository = getDefaultKeymapRepository(context)
-        return ConfigKeymapViewModel.Factory(repository, id)
+        return ConfigKeymapViewModel.Factory(context.applicationContext as Application, repository, id)
     }
 }

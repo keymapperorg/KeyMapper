@@ -38,6 +38,7 @@
     <string name="follow_system">Follow system</string>
     <string name="this_device">This Device</string>
     <string name="any_device">Any Device</string>
+    <string name="trigger_device_name_not_found">The name for this device isn\'t known</string>
 
     <string name="caption_action_type_key">Click the key on the device which you want to be entered.
         \n\nIMPORTANT!
@@ -201,6 +202,8 @@
     <string name="dialog_message_cant_find_accessibility_settings_page">Your device doesn\'t seem to have an accessibility services settings page. You can enable the accessibility service by giving the app WRITE_SECURE_SETTINGS permission. After you tap \'okay\' a popup will guide you how to do it.</string>
     <string name="dialog_message_double_press_restricted_to_single_key">"Multiple keys can't be double pressed at the same time."</string>
     <string name="dialog_message_parallel_trigger_order">The keys need to be listed from top to bottom in the order that they will be held down.</string>
+    <string name="dialog_message_sequence_trigger_explanation">A \"sequence\" trigger has a timeout unlike parallel triggers. This means after you press the first key, you will have a set amount of time to input the rest of the keys in the trigger. All the keys that you have added to the trigger won\'t do their usual action until the timeout has been reached. You can change this timeout by pressing the 3 dots next to the \"in sequence\" button.</string>
+
     <!-- Dialog messages -->
 
     <!-- Dialog buttons -->
@@ -479,6 +482,7 @@
     <string name="error_ssl_handshake_exception">SSL handshake error</string>
     <string name="error_file_not_cached">File isn\'t cached! Connect to internet to download it.</string>
     <string name="error_this_is_unsupported">This is unsupported. :(</string>
+    <string name="error_device_not_found">Device not found!</string>
 
     <!-- Error messages -->
 
@@ -596,6 +600,5 @@
     <string name="system_action_cat_nfc">NFC</string>
     <string name="system_action_cat_other">Other</string>
     <string name="system_action_cat_keyboard">Keyboard</string>
-    <string name="dialog_message_sequence_trigger_explanation">A \"sequence\" trigger has a timeout unlike parallel triggers. This means after you press the first key, you will have a set amount of time to input the rest of the keys in the trigger. All the keys that you have added to the trigger won\'t do their usual action until the timeout has been reached. You can change this timeout by pressing the 3 dots next to the \"in sequence\" button.</string>
     <!-- System action category labels -->
 </resources>
