@@ -14,9 +14,6 @@
             name="viewModel"
             type="ConfigKeymapViewModel" />
 
-        <variable
-            name="onAddActionClick"
-            type="View.OnClickListener" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -60,7 +57,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="4dp"
-                android:onClick="@{onAddActionClick}"
+                android:onClick="@{() -> viewModel.chooseAction()}"
                 android:text="@string/button_add_action"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

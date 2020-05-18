@@ -1,18 +1,16 @@
 package io.github.sds100.keymapper.data.viewmodel
 
-import android.util.Log
 import android.view.KeyEvent
 import androidx.lifecycle.*
 import io.github.sds100.keymapper.data.DeviceInfoRepository
 import io.github.sds100.keymapper.data.KeymapRepository
 import io.github.sds100.keymapper.data.model.*
-import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.InputDeviceUtils
 import io.github.sds100.keymapper.util.isExternalCompat
+import io.github.sds100.keymapper.util.result.Failure
 import io.github.sds100.keymapper.util.result.onSuccess
 import io.github.sds100.keymapper.util.toggleFlag
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -88,6 +86,8 @@ class ConfigKeymapViewModel internal constructor(
     val isEnabled: MutableLiveData<Boolean> = MutableLiveData()
 
     val actionList: MutableLiveData<List<Action>> = MutableLiveData(listOf())
+    val chooseAction: MutableLiveData<Event<Unit>> = MutableLiveData()
+    val showFixActionPrompt: MutableLiveData<Event<Failure>> = MutableLiveData()
 
     val constraintList: MutableLiveData<List<Constraint>> = MutableLiveData(listOf())
 
@@ -330,6 +330,10 @@ class ConfigKeymapViewModel internal constructor(
         }
     }
 
+    fun chooseAction() {
+        chooseAction.value = Event(Unit)
+    }
+
     /**
      * @return whether the action already exists has been added to the list
      */
@@ -352,6 +356,14 @@ class ConfigKeymapViewModel internal constructor(
             }
 
             it
+        }
+    }
+
+    fun onActionModelClick(model: ActionModel) {
+        if (model.hasError){
+            showFixActionPrompt.value = Event(model.failure!!)
+        }else{
+            //TEST the action
         }
     }
 

@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.ui.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,13 +15,9 @@ import io.github.sds100.keymapper.action
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentActionsBinding
-import io.github.sds100.keymapper.databinding.FragmentTriggerAndActionsBinding
-import io.github.sds100.keymapper.util.availableFlags
-import io.github.sds100.keymapper.util.buildModel
-import io.github.sds100.keymapper.util.observeCurrentDestinationEvent
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.RecoverableFailure
 import io.github.sds100.keymapper.util.result.getFullMessage
-import io.github.sds100.keymapper.util.str
 import kotlinx.coroutines.launch
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
@@ -65,10 +60,10 @@ class ActionsFragment : Fragment() {
                 }
             }
 
-            setOnAddActionClick {
+            mViewModel.chooseAction.observe(viewLifecycleOwner, EventObserver {
                 val direction = ConfigKeymapFragmentDirections.actionConfigKeymapFragmentToChooseActionFragment()
                 findNavController().navigate(direction)
-            }
+            })
 
             subscribeActionList()
 
@@ -98,23 +93,7 @@ class ActionsFragment : Fragment() {
                         }
 
                         onClick { _ ->
-                            if (model.hasError) {
-                                coordinatorLayout.longSnack(model.failure!!.getFullMessage(requireContext())) {
-
-                                    //only add an action to fix the error if the error can be recovered from
-                                    if (model.failure is RecoverableFailure) {
-                                        action(R.string.snackbar_fix) {
-                                            lifecycleScope.launch {
-                                                model.failure.recover(requireActivity()) {
-                                                    mViewModel.rebuildActionModels()
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    show()
-                                }
-                            }
+                            mViewModel.onActionModelClick(model)
                         }
                     }
                 }

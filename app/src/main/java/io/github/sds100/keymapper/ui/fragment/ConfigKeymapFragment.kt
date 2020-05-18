@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
@@ -17,6 +18,11 @@ import io.github.sds100.keymapper.databinding.FragmentConfigKeymapBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.adapter.ConfigKeymapPagerAdapter
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.result.RecoverableFailure
+import io.github.sds100.keymapper.util.result.getFullMessage
+import kotlinx.coroutines.launch
+import splitties.snackbar.action
+import splitties.snackbar.longSnack
 import splitties.snackbar.snack
 
 /**
@@ -67,6 +73,24 @@ class ConfigKeymapFragment : Fragment() {
                     else -> false
                 }
             }
+
+            mViewModel.showFixActionPrompt.observe(viewLifecycleOwner, EventObserver {
+                coordinatorLayout.longSnack(it.getFullMessage(requireContext())) {
+
+                    //only add an action to fix the error if the error can be recovered from
+                    if (it is RecoverableFailure) {
+                        action(R.string.snackbar_fix) {
+                            lifecycleScope.launch {
+                                it.recover(requireActivity()) {
+                                    mViewModel.rebuildActionModels()
+                                }
+                            }
+                        }
+                    }
+
+                    show()
+                }
+            })
 
             mViewModel.startRecordingTriggerInService.observe(viewLifecycleOwner, EventObserver {
                 val serviceEnabled = AccessibilityUtils.isServiceEnabled(requireContext())
