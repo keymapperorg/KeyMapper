@@ -99,7 +99,7 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:visibility="@{expanded ? View.GONE : View.VISIBLE}"
-                    tools:visibility="visible">
+                    tools:visibility="gone">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
@@ -142,49 +142,54 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     tools:el_expanded="true"
-                    tools:visibility="gone">
+                    tools:visibility="visible">
 
-                    <LinearLayout
+                    <androidx.core.widget.NestedScrollView
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:layout_height="wrap_content">
 
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/cardView"
-                            style="@style/MyCardView"
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
 
-                            <include
-                                layout="@layout/keymap_list_header_expanded"
-                                bind:accessibilityServiceStatusState="@{accessibilityServiceStatusState}"
-                                bind:dndAccessStatusState="@{dndAccessStatusState}"
-                                bind:enableAccessibilityService="@{enableAccessibilityService}"
-                                bind:enableImeService="@{enableImeService}"
-                                bind:grantDndAccess="@{grantDndAccess}"
-                                bind:grantWriteSecureSettingsPermission="@{grantWriteSecureSettingsPermission}"
-                                bind:imeServiceStatusState="@{imeServiceStatusState}"
-                                bind:writeSettingsStatusState="@{writeSettingsStatusState}" />
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/cardView"
+                                style="@style/MyCardView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
 
-                        </com.google.android.material.card.MaterialCardView>
+                                <include
+                                    layout="@layout/keymap_list_header_expanded"
+                                    bind:accessibilityServiceStatusState="@{accessibilityServiceStatusState}"
+                                    bind:dndAccessStatusState="@{dndAccessStatusState}"
+                                    bind:enableAccessibilityService="@{enableAccessibilityService}"
+                                    bind:enableImeService="@{enableImeService}"
+                                    bind:grantDndAccess="@{grantDndAccess}"
+                                    bind:grantWriteSecureSettingsPermission="@{grantWriteSecureSettingsPermission}"
+                                    bind:imeServiceStatusState="@{imeServiceStatusState}"
+                                    bind:writeSettingsStatusState="@{writeSettingsStatusState}" />
 
-                        <FrameLayout
-                            android:id="@+id/buttonCollapse"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            </com.google.android.material.card.MaterialCardView>
 
-                            <androidx.appcompat.widget.AppCompatImageView
-                                android:layout_width="48dp"
-                                android:layout_height="match_parent"
-                                android:layout_gravity="end"
-                                android:minHeight="48dp"
-                                android:scaleType="centerInside"
-                                android:tint="?attr/colorOnSurface"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:srcCompat="@drawable/ic_baseline_expand_less_24" />
-                        </FrameLayout>
-                    </LinearLayout>
+                            <FrameLayout
+                                android:id="@+id/buttonCollapse"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <androidx.appcompat.widget.AppCompatImageView
+                                    android:layout_width="48dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="end"
+                                    android:minHeight="48dp"
+                                    android:scaleType="centerInside"
+                                    android:tint="?attr/colorOnSurface"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:srcCompat="@drawable/ic_baseline_expand_less_24" />
+                            </FrameLayout>
+                        </LinearLayout>
+                    </androidx.core.widget.NestedScrollView>
                 </net.cachapa.expandablelayout.ExpandableLayout>
             </FrameLayout>
 
