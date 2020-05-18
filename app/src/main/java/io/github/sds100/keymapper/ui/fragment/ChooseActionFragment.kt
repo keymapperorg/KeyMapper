@@ -18,11 +18,10 @@ import io.github.sds100.keymapper.data.model.AppShortcutModel
 import io.github.sds100.keymapper.data.model.SelectedSystemActionModel
 import io.github.sds100.keymapper.databinding.FragmentChooseActionBinding
 import io.github.sds100.keymapper.ui.adapter.ChooseActionPagerAdapter
-import io.github.sds100.keymapper.util.Event
-import io.github.sds100.keymapper.util.observeLiveData
+import io.github.sds100.keymapper.util.observeLiveDataEvent
 import io.github.sds100.keymapper.util.setCurrentDestinationLiveData
-import io.github.sds100.keymapper.util.setLiveData
-import splitties.resources.strArray
+import io.github.sds100.keymapper.util.setLiveDataEvent
+import io.github.sds100.keymapper.util.strArray
 
 /**
  * A placeholder fragment containing a simple view.
@@ -74,8 +73,8 @@ class ChooseActionFragment : Fragment() {
                 Action.urlAction(it)
             }
 
-            onModelSelected<SelectedSystemActionModel>(SystemActionListFragment.SAVED_STATE_KEY){
-                Action.systemAction(it)
+            onModelSelected<SelectedSystemActionModel>(SystemActionListFragment.SAVED_STATE_KEY) {
+                Action.systemAction(requireContext(), it)
             }
 
             subscribeSearchView()
@@ -86,12 +85,10 @@ class ChooseActionFragment : Fragment() {
 
     private fun <T> onModelSelected(key: String, createAction: (model: T) -> Action) = findNavController().apply {
 
-        currentBackStackEntry?.observeLiveData<Event<T>>(viewLifecycleOwner, key) {
-            val model = it.getContentIfNotHandled() ?: return@observeLiveData
-            
-            val action = createAction(model)
+        currentBackStackEntry?.observeLiveDataEvent<T>(viewLifecycleOwner, key) {
+            val action = createAction(it)
 
-            previousBackStackEntry?.setLiveData(SAVED_STATE_KEY, action)
+            previousBackStackEntry?.setLiveDataEvent(SAVED_STATE_KEY, action)
             navigateUp()
         }
     }

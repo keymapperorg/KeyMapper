@@ -14,7 +14,8 @@ import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.sectionHeader
 import io.github.sds100.keymapper.simple
 import io.github.sds100.keymapper.util.InjectorUtils
-import io.github.sds100.keymapper.util.observeLiveData
+import io.github.sds100.keymapper.util.observeLiveDataEvent
+import io.github.sds100.keymapper.util.str
 
 /**
  * A placeholder fragment containing a simple view.
@@ -44,13 +45,13 @@ class ChooseConstraintListFragment : RecyclerViewFragment() {
 
                 sectionHeader {
                     id(sectionHeader)
-                    header(sectionHeader)
+                    header(requireContext().str(sectionHeader))
                 }
 
                 constraints.forEach { constraint ->
                     simple {
                         id(constraint.id)
-                        primaryText(constraint.description)
+                        primaryText(requireContext().str(constraint.description))
 
                         onClick { _ ->
                             onConstraintClick(constraint.id)
@@ -62,7 +63,7 @@ class ChooseConstraintListFragment : RecyclerViewFragment() {
     }
 
     private fun observeFragmentChildrenLiveData() {
-        findNavController().currentBackStackEntry?.observeLiveData<AppListItemModel>(
+        findNavController().currentBackStackEntry?.observeLiveDataEvent<AppListItemModel>(
             viewLifecycleOwner,
             AppListFragment.SAVED_STATE_KEY
         ) {

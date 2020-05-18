@@ -8,7 +8,9 @@ import io.github.sds100.keymapper.simple
 import io.github.sds100.keymapper.ui.callback.ProgressCallback
 import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.TintType
-import io.github.sds100.keymapper.util.result.getMessage
+import io.github.sds100.keymapper.util.drawable
+import io.github.sds100.keymapper.util.result.getFullMessage
+import io.github.sds100.keymapper.util.str
 
 /**
  * Created by sds100 on 31/03/2020.
@@ -16,7 +18,7 @@ import io.github.sds100.keymapper.util.result.getMessage
 class UnsupportedSystemActionListFragment : RecyclerViewFragment() {
 
     private val mViewModel: SystemActionListViewModel by activityViewModels {
-        InjectorUtils.provideSystemActionListViewModel()
+        InjectorUtils.provideSystemActionListViewModel(requireContext())
     }
 
     override val progressCallback: ProgressCallback?
@@ -29,10 +31,10 @@ class UnsupportedSystemActionListFragment : RecyclerViewFragment() {
                     unsupportedActions.forEach {
                         simple {
                             id(it.id)
-                            icon(it.getIcon(requireContext()))
+                            icon(drawable(it.icon))
                             tintType(TintType.ON_SURFACE)
-                            primaryText(it.description)
-                            secondaryText(it.reason.getMessage(requireContext()))
+                            primaryText(str(it.description))
+                            secondaryText(it.reason.getFullMessage(requireContext()))
                         }
                     }
                 }

@@ -1,11 +1,11 @@
 package io.github.sds100.keymapper.util
 
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import io.github.sds100.keymapper.R
 import splitties.init.appCtx
-import splitties.resources.appStr
 import splitties.toast.toast
 
 /**
@@ -13,13 +13,13 @@ import splitties.toast.toast
  */
 
 object FeedbackUtils {
-    fun sendFeedback() {
+    fun sendFeedback(ctx: Context) {
         Intent(Intent.ACTION_SENDTO).apply {
             data = Uri.parse("mailto:")
 
-            putExtra(Intent.EXTRA_EMAIL, arrayOf(appStr(R.string.developer_email)))
-            putExtra(Intent.EXTRA_SUBJECT, appStr(R.string.email_subject))
-            putExtra(Intent.EXTRA_TEXT, appStr(R.string.email_default_message))
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(ctx.str(R.string.developer_email)))
+            putExtra(Intent.EXTRA_SUBJECT, ctx.str(R.string.email_subject))
+            putExtra(Intent.EXTRA_TEXT, ctx.str(R.string.email_default_message))
 
             addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_NEW_TASK)
 

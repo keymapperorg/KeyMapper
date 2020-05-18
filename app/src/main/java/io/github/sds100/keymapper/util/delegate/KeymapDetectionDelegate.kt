@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.KeyEvent
 import androidx.collection.SparseArrayCompat
 import androidx.collection.keyIterator
-import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Extra
@@ -17,7 +16,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
-import splitties.resources.appInt
 
 /**
  * Created by sds100 on 05/05/2020.
@@ -123,9 +121,9 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
 
                     keyMap.trigger.keys.forEach {
 
-                        if (it.device.descriptor != Trigger.Key.DEVICE_ID_THIS_DEVICE &&
-                            it.device.descriptor != Trigger.Key.DEVICE_ID_ANY_DEVICE) {
-                            deviceDescriptors.add(it.device.descriptor)
+                        if (it.deviceId != Trigger.Key.DEVICE_ID_THIS_DEVICE &&
+                            it.deviceId != Trigger.Key.DEVICE_ID_ANY_DEVICE) {
+                            deviceDescriptors.add(it.deviceId)
                         }
                     }
                 }
@@ -154,15 +152,15 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
 
                         when (key.clickType) {
                             Trigger.LONG_PRESS -> {
-                                longPressEvents.add(encodeEvent(key.keyCode, key.clickType, key.device.descriptor))
+                                longPressEvents.add(encodeEvent(key.keyCode, key.clickType, key.deviceId))
                             }
 
                             Trigger.DOUBLE_PRESS -> {
-                                doublePressEvents.add(encodeEvent(key.keyCode, key.clickType, key.device.descriptor))
+                                doublePressEvents.add(encodeEvent(key.keyCode, key.clickType, key.deviceId))
                             }
                         }
 
-                        when (key.device.descriptor) {
+                        when (key.deviceId) {
                             Trigger.Key.DEVICE_ID_THIS_DEVICE -> {
                                 mDetectInternalEvents = true
                             }
@@ -177,7 +175,7 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
                             }
                         }
 
-                        encodedTriggerList.add(encodeEvent(key.keyCode, key.clickType, key.device.descriptor))
+                        encodedTriggerList.add(encodeEvent(key.keyCode, key.clickType, key.deviceId))
                     }
 
                     val encodedActionList = encodeActionList(keyMap.actionList)
@@ -191,7 +189,7 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
                                 .onSuccess {
                                     sequenceTriggerTimeouts.add(it.toInt())
                                 }.onFailure {
-                                    val default = appInt(R.integer.sequence_trigger_timeout_default)
+                                    val default = Trigger.DEFAULT_TIMEOUT
 
                                     sequenceTriggerTimeouts.add(default)
                                 }

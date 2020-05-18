@@ -11,7 +11,7 @@ import io.github.sds100.keymapper.data.viewmodel.KeyActionTypeViewModel
 import io.github.sds100.keymapper.databinding.FragmentKeyActionTypeBinding
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.InjectorUtils
-import io.github.sds100.keymapper.util.setLiveData
+import io.github.sds100.keymapper.util.setLiveDataEvent
 
 /**
  * Created by sds100 on 30/03/2020.
@@ -36,7 +36,7 @@ class KeyActionTypeFragment : Fragment() {
 
             setOnDoneClick {
                 findNavController().apply {
-                    currentBackStackEntry?.setLiveData(SAVED_STATE_KEY, Event(mViewModel.keyEvent.value?.keyCode))
+                    currentBackStackEntry?.setLiveDataEvent(SAVED_STATE_KEY, Event(mViewModel.keyEvent.value?.keyCode))
                 }
             }
 

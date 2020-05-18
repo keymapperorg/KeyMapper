@@ -15,7 +15,7 @@ import io.github.sds100.keymapper.ui.activity.HomeActivity
 import io.github.sds100.keymapper.util.AccessibilityUtils
 import io.github.sds100.keymapper.util.IntentUtils
 import io.github.sds100.keymapper.util.NotificationUtils
-import splitties.resources.appStr
+import io.github.sds100.keymapper.util.str
 
 /**
  * Created by sds100 on 24/03/2019.
@@ -77,7 +77,7 @@ object WidgetsManager {
         }
 
         if (SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationUtils.invalidateChannels()
+            NotificationUtils.invalidateChannels(ctx)
         }
 
         //visibility of the notification is handled by the system on API >= 26 but is only supported up to API 28
@@ -155,13 +155,13 @@ object WidgetsManager {
 
             actions.add(NotificationCompat.Action(
                 0,
-                appStr(R.string.notification_action_stop_acc_service),
+                ctx.str(R.string.notification_action_stop_acc_service),
                 actionPendingIntent))
         }
 
         val openAppPendingIntent = IntentUtils.createPendingActivityIntent(ctx, HomeActivity::class.java)
 
-        actions.add(NotificationCompat.Action(0, appStr(R.string.notification_action_open_app), openAppPendingIntent))
+        actions.add(NotificationCompat.Action(0, ctx.str(R.string.notification_action_open_app), openAppPendingIntent))
 
         NotificationUtils.showNotification(
             ctx,

@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.data.model
 
+import android.content.Context
 import android.hardware.camera2.CameraCharacteristics
 import android.media.AudioManager
 import android.os.Build
@@ -9,7 +10,7 @@ import io.github.sds100.keymapper.util.SystemAction
 import io.github.sds100.keymapper.util.result.OptionLabelNotFound
 import io.github.sds100.keymapper.util.result.Result
 import io.github.sds100.keymapper.util.result.Success
-import splitties.resources.appStr
+import io.github.sds100.keymapper.util.str
 
 /**
  * Created by sds100 on 14/04/2019.
@@ -99,30 +100,30 @@ object Option {
         }
     }
 
-    fun getOptionLabel(systemActionId: String, optionId: String): Result<String> {
+    fun getOptionLabel(ctx: Context, systemActionId: String, optionId: String): Result<String> {
         when (systemActionId) {
             SystemAction.SWITCH_KEYBOARD -> {
                 return KeyboardUtils.getInputMethodLabel(optionId)
             }
         }
 
-        val label =  when (optionId) {
-            STREAM_ALARM -> appStr(R.string.stream_alarm)
-            STREAM_DTMF -> appStr(R.string.stream_dtmf)
-            STREAM_MUSIC -> appStr(R.string.stream_music)
-            STREAM_NOTIFICATION -> appStr(R.string.stream_notification)
-            STREAM_RING -> appStr(R.string.stream_ring)
-            STREAM_SYSTEM -> appStr(R.string.stream_system)
-            STREAM_VOICE_CALL -> appStr(R.string.stream_voice_call)
+        val label = when (optionId) {
+            STREAM_ALARM -> ctx.str(R.string.stream_alarm)
+            STREAM_DTMF -> ctx.str(R.string.stream_dtmf)
+            STREAM_MUSIC -> ctx.str(R.string.stream_music)
+            STREAM_NOTIFICATION -> ctx.str(R.string.stream_notification)
+            STREAM_RING -> ctx.str(R.string.stream_ring)
+            STREAM_SYSTEM -> ctx.str(R.string.stream_system)
+            STREAM_VOICE_CALL -> ctx.str(R.string.stream_voice_call)
 
-            RINGER_MODE_NORMAL -> appStr(R.string.ringer_mode_normal)
-            RINGER_MODE_VIBRATE -> appStr(R.string.ringer_mode_vibrate)
-            RINGER_MODE_SILENT -> appStr(R.string.ringer_mode_silent)
+            RINGER_MODE_NORMAL -> ctx.str(R.string.ringer_mode_normal)
+            RINGER_MODE_VIBRATE -> ctx.str(R.string.ringer_mode_vibrate)
+            RINGER_MODE_SILENT -> ctx.str(R.string.ringer_mode_silent)
 
-            LENS_BACK -> appStr(R.string.lens_back)
-            LENS_FRONT -> appStr(R.string.lens_front)
+            LENS_BACK -> ctx.str(R.string.lens_back)
+            LENS_FRONT -> ctx.str(R.string.lens_front)
 
-            STREAM_ACCESSIBILITY -> appStr(R.string.stream_accessibility)
+            STREAM_ACCESSIBILITY -> ctx.str(R.string.stream_accessibility)
 
             else -> return OptionLabelNotFound(optionId)
         }

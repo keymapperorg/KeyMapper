@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.map
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
@@ -15,9 +16,11 @@ import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentConstraintsAndMoreBinding
+import io.github.sds100.keymapper.util.buildChipModel
 import io.github.sds100.keymapper.util.observeLiveData
+import io.github.sds100.keymapper.util.observeLiveDataEvent
+import io.github.sds100.keymapper.util.str
 import splitties.bitflags.hasFlag
-import splitties.resources.str
 import splitties.toast.toast
 
 /**
@@ -25,6 +28,16 @@ import splitties.toast.toast
  */
 class ConstraintsAndMoreFragment : Fragment() {
     private val mViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap)
+
+    private val mConstraintModelList by lazy {
+        mViewModel.constraintList.map { constraintList ->
+            sequence {
+                constraintList.forEach {
+                    yield(it.buildChipModel(requireContext()))
+                }
+            }.toList()
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         FragmentConstraintsAndMoreBinding.inflate(inflater, container, false).apply {
@@ -39,7 +52,7 @@ class ConstraintsAndMoreFragment : Fragment() {
                     navigate(ConfigKeymapFragmentDirections.actionConfigKeymapFragmentToChooseConstraint())
                 }
 
-                currentBackStackEntry?.observeLiveData<Constraint>(
+                currentBackStackEntry?.observeLiveDataEvent<Constraint>(
                     viewLifecycleOwner,
                     ChooseConstraintListFragment.SAVED_STATE_KEY) {
 
@@ -54,7 +67,7 @@ class ConstraintsAndMoreFragment : Fragment() {
     }
 
     private fun FragmentConstraintsAndMoreBinding.subscribeConstraintsList() {
-        mViewModel.constraintModelList.observe(viewLifecycleOwner) { constraintList ->
+        mConstraintModelList.observe(viewLifecycleOwner) { constraintList ->
             epoxyRecyclerViewConstraints.withModels {
                 constraintList.forEachIndexed { index, constraint ->
                     constraint {

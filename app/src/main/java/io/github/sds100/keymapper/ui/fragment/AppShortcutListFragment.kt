@@ -15,9 +15,9 @@ import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.simple
 import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.editTextAlertDialog
+import io.github.sds100.keymapper.util.str
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import splitties.resources.appStr
 import splitties.toast.toast
 
 
@@ -118,7 +118,7 @@ class AppShortcutListFragment : RecyclerViewFragment() {
 
         if (shortcutName.isNullOrBlank()) {
             shortcutName = withContext(lifecycleScope.coroutineContext) {
-                requireActivity().editTextAlertDialog(appStr(R.string.dialog_title_create_shortcut_title))
+                requireActivity().editTextAlertDialog(str(R.string.dialog_title_create_shortcut_title))
             }
         }
 

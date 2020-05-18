@@ -1,12 +1,13 @@
 package io.github.sds100.keymapper.data.model
 
+import android.content.Context
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.KeyMapDao
+import io.github.sds100.keymapper.data.db.dao.KeyMapDao
+import io.github.sds100.keymapper.util.str
 import splitties.bitflags.hasFlag
-import splitties.resources.appStr
 
 /**
  * Created by sds100 on 12/07/2018.
@@ -51,10 +52,10 @@ class KeyMap(
             KEYMAP_FLAG_VIBRATE to R.drawable.ic_outline_vibration_24
         )
 
-        fun getFlagLabelList(flags: Int): List<String> = sequence {
+        fun getFlagLabelList(ctx: Context, flags: Int): List<String> = sequence {
             KEYMAP_FLAG_LABEL_MAP.keys.forEach { flag ->
                 if (flags.hasFlag(flag)) {
-                    yield(appStr(KEYMAP_FLAG_LABEL_MAP.getValue(flag)))
+                    yield(ctx.str(KEYMAP_FLAG_LABEL_MAP.getValue(flag)))
                 }
             }
         }.toList()

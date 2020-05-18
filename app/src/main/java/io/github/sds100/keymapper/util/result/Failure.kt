@@ -8,21 +8,16 @@ import android.provider.Settings
 import androidx.fragment.app.FragmentActivity
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.util.BuildUtils
-import io.github.sds100.keymapper.util.KeyboardUtils
-import io.github.sds100.keymapper.util.PackageUtils
-import io.github.sds100.keymapper.util.PermissionUtils
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
 import splitties.experimental.ExperimentalSplittiesApi
-import splitties.resources.appStr
-import splitties.resources.str
 
 /**
  * Created by sds100 on 29/02/2020.
  */
 
-fun Failure.getMessage(ctx: Context) = when (this) {
-    is PermissionDenied -> PermissionDenied.getMessageForPermission(permission)
+fun Failure.getFullMessage(ctx: Context) = when (this) {
+    is PermissionDenied -> PermissionDenied.getMessageForPermission(ctx, permission)
     is AppNotFound -> ctx.str(R.string.error_app_isnt_installed, packageName)
     is AppDisabled -> ctx.str(R.string.error_app_isnt_installed)
     is ImeServiceDisabled -> ctx.str(R.string.error_ime_service_disabled)
@@ -52,9 +47,15 @@ fun Failure.getMessage(ctx: Context) = when (this) {
     else -> throw Exception("Can't find error message for ${this::class.simpleName}")
 }
 
+fun Failure.getBriefMessage(ctx: Context) = when (this) {
+    is AppNotFound -> ctx.str(R.string.error_app_isnt_installed_brief)
+
+    else -> getFullMessage(ctx)
+}
+
 class PermissionDenied(val permission: String) : RecoverableFailure() {
     companion object {
-        fun getMessageForPermission(permission: String): String {
+        fun getMessageForPermission(ctx: Context, permission: String): String {
             val resId = when (permission) {
                 Manifest.permission.WRITE_SETTINGS -> R.string.error_action_requires_write_settings_permission
                 Manifest.permission.CAMERA -> R.string.error_action_requires_camera_permission
@@ -66,7 +67,7 @@ class PermissionDenied(val permission: String) : RecoverableFailure() {
                 else -> throw Exception("Couldn't find permission description for $permission")
             }
 
-            return appStr(resId)
+            return ctx.str(resId)
         }
     }
 
@@ -125,7 +126,7 @@ class NoEnabledInputMethods : Failure()
 class GoogleAppNotFound : RecoverableFailure() {
     override suspend fun recover(activity: FragmentActivity, onSuccess: () -> Unit) {
 
-        AppNotFound(appStr(R.string.google_app_package_name)).recover(activity, onSuccess)
+        AppNotFound(activity.str(R.string.google_app_package_name)).recover(activity, onSuccess)
     }
 }
 

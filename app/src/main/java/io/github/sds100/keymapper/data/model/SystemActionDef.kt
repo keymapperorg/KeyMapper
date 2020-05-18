@@ -5,13 +5,11 @@ import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import io.github.sds100.keymapper.Constants
-import io.github.sds100.keymapper.util.result.Failure
 import io.github.sds100.keymapper.util.result.OptionsNotRequired
 import io.github.sds100.keymapper.util.result.Result
 import io.github.sds100.keymapper.util.result.Success
 import io.github.sds100.keymapper.util.safeVectorDrawable
-import splitties.resources.appDrawable
-import splitties.resources.appStr
+import io.github.sds100.keymapper.util.str
 
 /**
  * Created by sds100 on 23/11/2018.
@@ -28,28 +26,12 @@ class SystemActionDef(
     val minApi: Int = Constants.MIN_API,
     val maxApi: Int = Constants.MAX_API,
 
-    @DrawableRes iconRes: Int? = null,
-    val getIcon: (ctx: Context) -> Drawable? = { ctx ->
-        if (iconRes != null) {
-            ctx.safeVectorDrawable(iconRes)
-        } else {
-            null
-        }
-    },
+    @DrawableRes val iconRes: Int? = null,
 
-    @StringRes messageOnSelection: Int? = null,
-    val getMessageOnSelection: () -> String? = {
-        if (messageOnSelection != null) {
-            appStr(messageOnSelection)
-        } else {
-            null
-        }
-    },
+    @StringRes val messageOnSelection: Int? = null,
 
-    @StringRes descriptionRes: Int,
-    val getDescription: () -> String = { appStr(descriptionRes) },
-
-    val getDescriptionWithOption: (optionLabel: String) -> String? = { _ -> null },
+    @StringRes val descriptionRes: Int,
+    @StringRes val descriptionFormattedRes: Int? = null,
 
     options: List<String>? = null,
 

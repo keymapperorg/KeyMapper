@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,6 +26,7 @@ import androidx.work.WorkManager
 import com.airbnb.epoxy.EpoxyController
 import io.github.sds100.keymapper.BuildConfig
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
@@ -39,9 +41,11 @@ import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.Failure
 import io.github.sds100.keymapper.util.result.ImeServiceDisabled
 import io.github.sds100.keymapper.util.result.RecoverableFailure
-import io.github.sds100.keymapper.util.result.getMessage
+import io.github.sds100.keymapper.util.result.getFullMessage
 import io.github.sds100.keymapper.worker.SeedDatabaseWorker
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import splitties.experimental.ExperimentalSplittiesApi
 import splitties.snackbar.action
 import splitties.snackbar.longSnack
@@ -195,6 +199,12 @@ class KeymapListFragment : Fragment() {
 
                     callback = mController
                 }
+
+                rebuildModelsEvent.observe(viewLifecycleOwner, EventObserver {
+                    lifecycleScope.launch {
+                        mViewModel.setModelList(buildModelList(it))
+                    }
+                })
             }
 
             expanded = mExpanded
@@ -252,6 +262,21 @@ class KeymapListFragment : Fragment() {
             return this.root
         }
     }
+
+    private suspend fun buildModelList(keymapList: List<KeyMap>) =
+        withContext(lifecycleScope.coroutineContext + Dispatchers.Default) {
+            keymapList.map { keymap ->
+                KeymapListItemModel(
+                    id = keymap.id,
+                    actionList = keymap.actionList.map { it.buildChipModel(requireContext()) },
+                    triggerDescription = keymap.trigger.buildDescription(requireContext(), mViewModel.getDeviceInfoList()),
+                    constraintList = keymap.constraintList.map { it.buildChipModel(requireContext()) },
+                    constraintMode = keymap.constraintMode,
+                    flagsDescription = keymap.flags.buildKeymapFlagsDescription(requireContext()),
+                    isEnabled = keymap.isEnabled
+                )
+            }
+        }
 
     override fun onResume() {
         super.onResume()
@@ -342,7 +367,7 @@ class KeymapListFragment : Fragment() {
 
                     onErrorClick(object : ErrorClickCallback {
                         override fun onErrorClick(failure: Failure) {
-                            mBinding.coordinatorLayout.longSnack(failure.getMessage(requireContext())) {
+                            mBinding.coordinatorLayout.longSnack(failure.getFullMessage(requireContext())) {
 
                                 //only add an action to fix the error if the error can be recovered from
                                 if (failure is RecoverableFailure) {

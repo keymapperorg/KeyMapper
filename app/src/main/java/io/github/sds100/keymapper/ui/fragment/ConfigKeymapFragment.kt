@@ -15,7 +15,7 @@ import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentConfigKeymapBinding
 import io.github.sds100.keymapper.ui.adapter.ConfigKeymapPagerAdapter
 import io.github.sds100.keymapper.util.InjectorUtils
-import splitties.resources.strArray
+import io.github.sds100.keymapper.util.strArray
 
 /**
  * Created by sds100 on 19/02/2020.

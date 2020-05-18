@@ -1,24 +1,23 @@
 package io.github.sds100.keymapper.data.viewmodel
 
-import android.app.Application
 import android.view.KeyEvent
 import androidx.lifecycle.*
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.data.DeviceInfoRepository
 import io.github.sds100.keymapper.data.KeymapRepository
 import io.github.sds100.keymapper.data.model.*
-import io.github.sds100.keymapper.util.buildChipModel
-import io.github.sds100.keymapper.util.buildModel
+import io.github.sds100.keymapper.util.Event
+import io.github.sds100.keymapper.util.InputDeviceUtils
 import io.github.sds100.keymapper.util.isExternalCompat
+import io.github.sds100.keymapper.util.result.onSuccess
 import io.github.sds100.keymapper.util.toggleFlag
 import kotlinx.coroutines.launch
-import splitties.resources.appInt
 import java.util.*
 
 class ConfigKeymapViewModel internal constructor(
-    application: Application,
-    private val mRepository: KeymapRepository,
+    private val mKeymapRepository: KeymapRepository,
+    private val mDeviceInfoRepository: DeviceInfoRepository,
     private val mId: Long
-) : AndroidViewModel(application) {
+) : ViewModel() {
 
     companion object {
         const val NEW_KEYMAP_ID = -2L
@@ -56,7 +55,7 @@ class ConfigKeymapViewModel internal constructor(
                 if (none { extra -> extra.id == Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT }) {
                     add(Extra(
                         id = Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT,
-                        data = appInt(R.integer.sequence_trigger_timeout_default).toString()
+                        data = Trigger.DEFAULT_TIMEOUT.toString()
                     ))
                 }
             }
@@ -67,6 +66,13 @@ class ConfigKeymapViewModel internal constructor(
         }
     }
 
+    val triggerKeys: MutableLiveData<List<Trigger.Key>> = MutableLiveData(listOf())
+
+    val triggerKeyModelList = MutableLiveData(listOf<TriggerKeyModel>())
+    val buildTriggerKeyModelListEvent = triggerKeys.map {
+        Event(it)
+    }
+
     val triggerExtras: MutableLiveData<List<Extra>> = MutableLiveData(listOf())
 
     val constraintAndMode: MutableLiveData<Boolean> = MutableLiveData()
@@ -74,39 +80,10 @@ class ConfigKeymapViewModel internal constructor(
     val flags: MutableLiveData<Int> = MutableLiveData()
     val isEnabled: MutableLiveData<Boolean> = MutableLiveData()
 
-    val triggerKeys: MutableLiveData<List<Trigger.Key>> = MutableLiveData(listOf())
-
-    val triggerKeyModels: LiveData<List<TriggerKeyModel>> = Transformations.map(triggerKeys) { triggerKeys ->
-        if (triggerKeys.size <= 1) {
-            triggerInSequence.value = true
-        }
-
-        sequence {
-            triggerKeys.forEach {
-                yield(it.buildModel())
-            }
-        }.toList()
-    }
 
     val actionList: MutableLiveData<List<Action>> = MutableLiveData(listOf())
 
-    val actionModelList: LiveData<List<ActionModel>> = Transformations.map(actionList) { actionList ->
-        sequence {
-            actionList.forEach {
-                yield(it.buildModel())
-            }
-        }.toList()
-    }
-
-    private val mConstraintList: MutableLiveData<List<Constraint>> = MutableLiveData(listOf())
-
-    val constraintModelList: LiveData<List<ConstraintModel>> = Transformations.map(mConstraintList) { constraintList ->
-        sequence {
-            constraintList.forEach {
-                yield(it.buildChipModel())
-            }
-        }.toList()
-    }
+    val constraintList: MutableLiveData<List<Constraint>> = MutableLiveData(listOf())
 
     init {
         if (mId == NEW_KEYMAP_ID) {
@@ -114,7 +91,7 @@ class ConfigKeymapViewModel internal constructor(
             actionList.value = listOf()
             flags.value = 0
             isEnabled.value = true
-            mConstraintList.value = listOf()
+            constraintList.value = listOf()
 
             when (Constraint.DEFAULT_MODE) {
                 Constraint.MODE_AND -> {
@@ -142,13 +119,13 @@ class ConfigKeymapViewModel internal constructor(
 
         } else {
             viewModelScope.launch {
-                mRepository.getKeymap(mId).let { keymap ->
+                mKeymapRepository.getKeymap(mId).let { keymap ->
                     triggerKeys.value = keymap.trigger.keys
                     triggerExtras.value = keymap.trigger.extras
                     actionList.value = keymap.actionList
                     flags.value = keymap.flags
                     isEnabled.value = keymap.isEnabled
-                    mConstraintList.value = keymap.constraintList
+                    constraintList.value = keymap.constraintList
 
                     when (keymap.constraintMode) {
                         Constraint.MODE_AND -> {
@@ -197,16 +174,16 @@ class ConfigKeymapViewModel internal constructor(
                 id = actualId,
                 trigger = Trigger(triggerKeys.value!!, triggerExtras.value!!).apply { mode = triggerMode.value!! },
                 actionList = actionList.value!!,
-                constraintList = mConstraintList.value!!,
+                constraintList = constraintList.value!!,
                 constraintMode = constraintMode,
                 flags = flags.value!!,
                 isEnabled = isEnabled.value!!
             )
 
             if (mId == NEW_KEYMAP_ID) {
-                mRepository.createKeymap(keymap)
+                mKeymapRepository.createKeymap(keymap)
             } else {
-                mRepository.updateKeymap(keymap)
+                mKeymapRepository.updateKeymap(keymap)
             }
         }
     }
@@ -232,7 +209,7 @@ class ConfigKeymapViewModel internal constructor(
     fun setTriggerKeyDevice(keyCode: Int, descriptor: String) {
         triggerKeys.value = triggerKeys.value?.map {
             if (it.keyCode == keyCode) {
-                it.device = Trigger.DeviceInfo(getApplication(), descriptor = descriptor)
+                it.deviceId = descriptor
             }
 
             it
@@ -242,22 +219,26 @@ class ConfigKeymapViewModel internal constructor(
     /**
      * @return whether the key already exists has been added to the list
      */
-    fun addTriggerKey(keyEvent: KeyEvent): Boolean {
+    suspend fun addTriggerKey(keyEvent: KeyEvent): Boolean {
         val device = keyEvent.device
         val triggerKeyDeviceDescriptor = device.descriptor
+
+        InputDeviceUtils.getName(triggerKeyDeviceDescriptor).onSuccess { deviceName ->
+            mDeviceInfoRepository.createDeviceInfo(DeviceInfo(triggerKeyDeviceDescriptor, deviceName))
+        }
 
         val containsKey = triggerKeys.value?.any {
             val sameKeyCode = keyEvent.keyCode == it.keyCode
 
             //if the key is not external, check whether a trigger key already exists for this device
             val sameDeviceId = if (
-                (it.device.descriptor == Trigger.Key.DEVICE_ID_THIS_DEVICE
-                    || it.device.descriptor == Trigger.Key.DEVICE_ID_ANY_DEVICE)
+                (it.deviceId == Trigger.Key.DEVICE_ID_THIS_DEVICE
+                    || it.deviceId == Trigger.Key.DEVICE_ID_ANY_DEVICE)
                 && !device.isExternalCompat) {
                 true
 
             } else {
-                it.device.descriptor == triggerKeyDeviceDescriptor
+                it.deviceId == triggerKeyDeviceDescriptor
             }
 
             sameKeyCode && sameDeviceId
@@ -269,8 +250,12 @@ class ConfigKeymapViewModel internal constructor(
         }
 
         triggerKeys.value = triggerKeys.value?.toMutableList()?.apply {
-            val triggerKey = Trigger.Key.fromKeyEvent(getApplication(), keyEvent)
+            val triggerKey = Trigger.Key.fromKeyEvent(keyEvent)
             add(triggerKey)
+        }
+
+        if (triggerKeys.value!!.size <= 1) {
+            triggerInSequence.value = true
         }
 
         return true
@@ -286,9 +271,15 @@ class ConfigKeymapViewModel internal constructor(
         }
     }
 
+    suspend fun getDeviceInfoList() = mDeviceInfoRepository.getAll()
+
     fun removeTriggerKey(keycode: Int) {
         triggerKeys.value = triggerKeys.value?.toMutableList()?.apply {
             removeAll { it.keyCode == keycode }
+        }
+
+        if (triggerKeys.value!!.size <= 1) {
+            triggerInSequence.value = true
         }
     }
 
@@ -311,7 +302,7 @@ class ConfigKeymapViewModel internal constructor(
     }
 
     fun removeConstraint(id: String) {
-        mConstraintList.value = mConstraintList.value?.toMutableList()?.apply {
+        constraintList.value = constraintList.value?.toMutableList()?.apply {
             removeAll { it.uniqueId == id }
         }
     }
@@ -351,11 +342,11 @@ class ConfigKeymapViewModel internal constructor(
      * @return whether the constraint already exists and has been added to the list
      */
     fun addConstraint(constraint: Constraint): Boolean {
-        if (mConstraintList.value?.any { it.uniqueId == constraint.uniqueId } == true) {
+        if (constraintList.value?.any { it.uniqueId == constraint.uniqueId } == true) {
             return false
         }
 
-        mConstraintList.value = mConstraintList.value?.toMutableList()?.apply {
+        constraintList.value = constraintList.value?.toMutableList()?.apply {
             add(constraint)
         }
 
@@ -363,18 +354,16 @@ class ConfigKeymapViewModel internal constructor(
     }
 
     fun rebuildActionModels() {
-        if (actionModelList.value.isNullOrEmpty()) return
-
         actionList.value = actionList.value
     }
 
     class Factory(
-        private val mApplication: Application,
-        private val mRepository: KeymapRepository,
+        private val mKeymapRepository: KeymapRepository,
+        private val mDeviceInfoRepository: DeviceInfoRepository,
         private val mId: Long) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>) =
-            ConfigKeymapViewModel(mApplication, mRepository, mId) as T
+            ConfigKeymapViewModel(mKeymapRepository, mDeviceInfoRepository, mId) as T
     }
 }

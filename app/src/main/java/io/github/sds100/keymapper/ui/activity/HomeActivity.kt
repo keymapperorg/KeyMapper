@@ -15,15 +15,11 @@ import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.viewmodel.KeyActionTypeViewModel
 import io.github.sds100.keymapper.databinding.ActivityHomeBinding
-import io.github.sds100.keymapper.util.AccessibilityUtils
-import io.github.sds100.keymapper.util.InjectorUtils
-import io.github.sds100.keymapper.util.PermissionUtils
+import io.github.sds100.keymapper.util.*
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.messageResource
 import splitties.alertdialog.appcompat.okButton
 import splitties.alertdialog.appcompat.titleResource
-import splitties.resources.appStr
-import java.security.Permission
 
 /**
  * Created by sds100 on 19/02/2020.
@@ -46,21 +42,6 @@ class HomeActivity : AppCompatActivity() {
         val darkThemeMode = AppPreferences.darkThemeMode
         AppCompatDelegate.setDefaultNightMode(darkThemeMode)
 
-        PreferenceManager.getDefaultSharedPreferences(this)
-            .registerOnSharedPreferenceChangeListener { sharedPreferences, key ->
-                if (key == appStr(R.string.key_pref_dark_theme_mode)) {
-
-                    val prefValue = sharedPreferences.getString(
-                        appStr(R.string.key_pref_dark_theme_mode),
-                        appStr(R.string.default_value_dark_theme_mode)
-                    ) ?: return@registerOnSharedPreferenceChangeListener
-
-                    val sdkValue = AppPreferences.getSdkNightMode(prefValue)
-
-                    AppCompatDelegate.setDefaultNightMode(sdkValue)
-                }
-            }
-
         DataBindingUtil.setContentView<ActivityHomeBinding>(this, R.layout.activity_home)
 
         if (intent.getBooleanExtra(KEY_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG, false)) {
@@ -76,7 +57,7 @@ class HomeActivity : AppCompatActivity() {
             }
         }
 
-        if (BuildConfig.DEBUG && PermissionUtils.isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)){
+        if (BuildConfig.DEBUG && PermissionUtils.isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
             AccessibilityUtils.enableService(this)
         }
     }

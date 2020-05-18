@@ -10,23 +10,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.preference.*
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.WidgetsManager
+import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.databinding.FragmentSettingsBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.util.BluetoothUtils
 import io.github.sds100.keymapper.util.NotificationUtils
 import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
 import io.github.sds100.keymapper.util.defaultSharedPreferences
+import io.github.sds100.keymapper.util.str
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.message
 import splitties.alertdialog.appcompat.okButton
 import splitties.alertdialog.appcompat.title
-import splitties.resources.appStr
 
 class SettingsFragment : Fragment() {
 
@@ -52,39 +54,39 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
     SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val mShowImeNotificationPreference by lazy {
-        findPreference<Preference>(appStr(R.string.key_pref_show_ime_notification))
+        findPreference<Preference>(str(R.string.key_pref_show_ime_notification))
     }
 
     private val mToggleRemappingsNotificationPref by lazy {
-        findPreference<SwitchPreference>(appStr(R.string.key_pref_show_toggle_remappings_notification))
+        findPreference<SwitchPreference>(str(R.string.key_pref_show_toggle_remappings_notification))
     }
 
     private val mBluetoothDevicesPreferences by lazy {
-        findPreference<MultiSelectListPreference>(appStr(R.string.key_pref_bluetooth_devices))!!
+        findPreference<MultiSelectListPreference>(str(R.string.key_pref_bluetooth_devices))!!
     }
 
     private val mAutoShowIMEDialogPreference by lazy {
-        findPreference<SwitchPreference>(appStr(R.string.key_pref_auto_show_ime_picker))
+        findPreference<SwitchPreference>(str(R.string.key_pref_auto_show_ime_picker))
     }
 
     private val mRootPrefCategory by lazy {
-        findPreference<PreferenceCategory>(appStr(R.string.key_pref_category_root))!!
+        findPreference<PreferenceCategory>(str(R.string.key_pref_category_root))!!
     }
 
     private val mSecureSettingsCategory by lazy {
-        findPreference<PreferenceCategory>(appStr(R.string.key_pref_category_secure_settings))!!
+        findPreference<PreferenceCategory>(str(R.string.key_pref_category_secure_settings))!!
     }
 
     private val mRootPermissionPreference by lazy {
-        findPreference<SwitchPreference>(appStr(R.string.key_pref_root_permission))!!
+        findPreference<SwitchPreference>(str(R.string.key_pref_root_permission))!!
     }
 
     private val mNotificationSettingsPreference by lazy {
-        findPreference<Preference>(appStr(R.string.key_pref_notification_settings))!!
+        findPreference<Preference>(str(R.string.key_pref_notification_settings))!!
     }
 
     private val mDarkThemePreference by lazy {
-        findPreference<DropDownPreference>(appStr(R.string.key_pref_dark_theme_mode))
+        findPreference<DropDownPreference>(str(R.string.key_pref_dark_theme_mode))
     }
 
     private var mShowingNoPairedDevicesDialog = false
@@ -194,7 +196,8 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
             }
 
             mDarkThemePreference -> {
-
+                val mode = AppPreferences.getSdkNightMode(newValue as String)
+                AppCompatDelegate.setDefaultNightMode(mode)
             }
         }
 

@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.map
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
@@ -38,6 +39,7 @@ import io.github.sds100.keymapper.service.MyAccessibilityService.Companion.ACTIO
 import io.github.sds100.keymapper.triggerKey
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.RecoverableFailure
+import io.github.sds100.keymapper.util.result.getFullMessage
 import kotlinx.coroutines.launch
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
@@ -47,8 +49,6 @@ import splitties.alertdialog.appcompat.okButton
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
 import splitties.experimental.ExperimentalSplittiesApi
-import splitties.resources.appInt
-import splitties.resources.appStr
 import splitties.snackbar.action
 import splitties.snackbar.longSnack
 import splitties.snackbar.snack
@@ -77,7 +77,9 @@ class TriggerAndActionsFragment : Fragment() {
                 ACTION_RECORD_TRIGGER_KEY -> {
                     val keyEvent = intent.getParcelableExtra<KeyEvent>(Intent.EXTRA_KEY_EVENT) ?: return
 
-                    mViewModel.addTriggerKey(keyEvent)
+                    lifecycleScope.launchWhenCreated {
+                        mViewModel.addTriggerKey(keyEvent)
+                    }
                 }
 
                 ACTION_RECORD_TRIGGER_TIMER_INCREMENTED -> {
@@ -95,6 +97,16 @@ class TriggerAndActionsFragment : Fragment() {
                     mViewModel.rebuildActionModels()
                 }
             }
+        }
+    }
+
+    private val mActionModelList by lazy {
+        mViewModel.actionList.map { actionList ->
+            sequence {
+                actionList.forEach {
+                    yield(it.buildModel(requireContext()))
+                }
+            }.toList()
         }
     }
 
@@ -118,15 +130,13 @@ class TriggerAndActionsFragment : Fragment() {
             viewModel = mViewModel
             lifecycleOwner = viewLifecycleOwner
 
-            findNavController().apply {
-                currentBackStackEntry?.observeLiveData<Action>(
-                    viewLifecycleOwner,
-                    ChooseActionFragment.SAVED_STATE_KEY
-                ) {
+            findNavController().observeCurrentDestinationEvent<Action>(
+                viewLifecycleOwner,
+                ChooseActionFragment.SAVED_STATE_KEY
+            ) {
 
-                    if (!mViewModel.addAction(it)) {
-                        toast(R.string.error_action_exists)
-                    }
+                if (!mViewModel.addAction(it)) {
+                    toast(R.string.error_action_exists)
                 }
             }
 
@@ -145,10 +155,10 @@ class TriggerAndActionsFragment : Fragment() {
 
                             val model = SeekBarListItemModel(
                                 id = Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT,
-                                title = appStr(R.string.seekbar_title_sequence_trigger_timeout),
-                                min = appInt(R.integer.sequence_trigger_timeout_min),
-                                max = appInt(R.integer.sequence_trigger_timeout_max),
-                                stepSize = appInt(R.integer.sequence_trigger_timeout_step_size),
+                                title = str(R.string.seekbar_title_sequence_trigger_timeout),
+                                min = int(R.integer.sequence_trigger_timeout_min),
+                                max = int(R.integer.sequence_trigger_timeout_max),
+                                stepSize = int(R.integer.sequence_trigger_timeout_step_size),
                                 initialValue = timeout
                             )
 
@@ -165,7 +175,7 @@ class TriggerAndActionsFragment : Fragment() {
                                 mViewModel.triggerInParallel.value == true) {
 
                                 val approvedWarning = requireActivity().alertDialog {
-                                    message = appStr(R.string.dialog_message_double_press_restricted_to_single_key)
+                                    message = str(R.string.dialog_message_double_press_restricted_to_single_key)
 
                                 }.showAndAwait(okValue = true, cancelValue = null, dismissValue = false)
 
@@ -200,7 +210,7 @@ class TriggerAndActionsFragment : Fragment() {
                     lifecycleScope.launch {
 
                         val approvedWarning = requireActivity().alertDialog {
-                            message = appStr(R.string.dialog_message_parallel_trigger_order)
+                            message = str(R.string.dialog_message_parallel_trigger_order)
 
                         }.showAndAwait(okValue = true, cancelValue = null, dismissValue = false)
 
@@ -211,13 +221,28 @@ class TriggerAndActionsFragment : Fragment() {
                 }
             }
 
+            mViewModel.buildTriggerKeyModelListEvent.observe(viewLifecycleOwner, EventObserver { triggerKeys ->
+                lifecycleScope.launchWhenCreated {
+                    val deviceInfoList = mViewModel.getDeviceInfoList()
+
+                    val modelList = sequence {
+                        triggerKeys.forEach {
+                            val model = it.buildModel(requireContext(), deviceInfoList)
+                            yield(model)
+                        }
+                    }.toList()
+
+                    mViewModel.triggerKeyModelList.value = modelList
+                }
+            })
+
             mViewModel.triggerInSequence.observe(viewLifecycleOwner) {
                 if (it == true && mViewModel.triggerKeys.value?.size!! > 1
                     && !AppPreferences.shownSequenceTriggerExplanationDialog) {
 
                     lifecycleScope.launch {
                         val approvedWarning = requireActivity().alertDialog {
-                            message = appStr(R.string.dialog_message_sequence_trigger_explanation)
+                            message = str(R.string.dialog_message_sequence_trigger_explanation)
 
                         }.showAndAwait(okValue = true, cancelValue = null, dismissValue = false)
 
@@ -235,7 +260,7 @@ class TriggerAndActionsFragment : Fragment() {
                     requireActivity().sendBroadcast(Intent(ACTION_RECORD_TRIGGER))
                 } else {
                     coordinatorLayout.snack(R.string.error_accessibility_service_disabled_record_trigger) {
-                        setAction(appStr(R.string.snackbar_fix)) {
+                        setAction(str(R.string.snackbar_fix)) {
                             AccessibilityUtils.enableService(requireContext())
                         }
                     }
@@ -264,7 +289,7 @@ class TriggerAndActionsFragment : Fragment() {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun FragmentTriggerAndActionsBinding.subscribeTriggerList() {
-        mViewModel.triggerKeyModels.observe(viewLifecycleOwner) { triggerKeyList ->
+        mViewModel.triggerKeyModelList.observe(viewLifecycleOwner) { triggerKeyList ->
             epoxyRecyclerViewTriggers.withModels {
                 enableTriggerKeyDragging(this)
 
@@ -313,13 +338,8 @@ class TriggerAndActionsFragment : Fragment() {
     }
 
     private fun FragmentTriggerAndActionsBinding.subscribeActionList() {
-        mViewModel.actionModelList.observe(viewLifecycleOwner) { actionList ->
+        mActionModelList.observe(viewLifecycleOwner) { actionList ->
             epoxyRecyclerViewActions.withModels {
-                val icons = sequence {
-                    actionList.forEach {
-                        yield(it.getIcon(requireContext()))
-                    }
-                }.toList()
 
                 actionList.forEachIndexed { index, model ->
                     action {
@@ -327,7 +347,7 @@ class TriggerAndActionsFragment : Fragment() {
 
                         id(model.id)
                         model(model)
-                        icon(icons[index])
+                        icon(model.icon)
                         flagsAreAvailable(action?.availableFlags?.isNotEmpty())
 
                         onRemoveClick { _ ->
@@ -340,7 +360,7 @@ class TriggerAndActionsFragment : Fragment() {
 
                         onClick { _ ->
                             if (model.hasError) {
-                                coordinatorLayout.longSnack(model.errorMessage!!) {
+                                coordinatorLayout.longSnack(model.failure!!.getFullMessage(requireContext())) {
 
                                     //only add an action to fix the error if the error can be recovered from
                                     if (model.failure is RecoverableFailure) {
@@ -375,8 +395,8 @@ class TriggerAndActionsFragment : Fragment() {
             }.toList()
 
             val deviceLabels = sequence {
-                yield(appStr(R.string.this_device))
-                yield(appStr(R.string.any_device))
+                yield(str(R.string.this_device))
+                yield(str(R.string.any_device))
 
                 yieldAll(InputDeviceUtils.getExternalDeviceNames())
 
@@ -397,14 +417,14 @@ class TriggerAndActionsFragment : Fragment() {
         requireActivity().alertDialog {
             val labels = if (mViewModel.triggerInParallel.value == true) {
                 arrayOf(
-                    appStr(R.string.clicktype_short_press),
-                    appStr(R.string.clicktype_long_press)
+                    str(R.string.clicktype_short_press),
+                    str(R.string.clicktype_long_press)
                 )
             } else {
                 arrayOf(
-                    appStr(R.string.clicktype_short_press),
-                    appStr(R.string.clicktype_long_press),
-                    appStr(R.string.clicktype_double_press)
+                    str(R.string.clicktype_short_press),
+                    str(R.string.clicktype_long_press),
+                    str(R.string.clicktype_double_press)
                 )
             }
 
@@ -429,7 +449,7 @@ class TriggerAndActionsFragment : Fragment() {
             val flagIds = availableFlags
             val labels = sequence {
                 flagIds.forEach { flagId ->
-                    val label = appStr(Action.ACTION_FLAG_LABEL_MAP.getValue(flagId))
+                    val label = str(Action.ACTION_FLAG_LABEL_MAP.getValue(flagId))
                     yield(label)
                 }
             }.toList().toTypedArray()

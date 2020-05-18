@@ -18,13 +18,6 @@ val Context.defaultSharedPreferences: SharedPreferences
     get() = PreferenceManager.getDefaultSharedPreferences(this)
 
 /**
- * Get a resource drawable. Can be safely used to get vector drawables on pre-lollipop.
- */
-fun Context.safeVectorDrawable(@DrawableRes resId: Int): Drawable {
-    return AppCompatResources.getDrawable(this, resId)!!
-}
-
-/**
  * @return If the setting can't be found, it returns null
  */
 inline fun <reified T> Context.getSystemSetting(name: String): T? {

@@ -13,8 +13,8 @@ import io.github.sds100.keymapper.data.viewmodel.UrlActionTypeViewModel
 import io.github.sds100.keymapper.databinding.FragmentEdittextBinding
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.InjectorUtils
-import io.github.sds100.keymapper.util.setLiveData
-import splitties.resources.appStr
+import io.github.sds100.keymapper.util.setLiveDataEvent
+import io.github.sds100.keymapper.util.str
 
 /**
  * Created by sds100 on 30/03/2020.
@@ -35,13 +35,13 @@ class UrlActionTypeFragment : Fragment() {
             lifecycleOwner = viewLifecycleOwner
 
             text = mViewModel.url
-            caption = appStr(R.string.caption_action_type_url)
+            caption = str(R.string.caption_action_type_url)
 
             editText.inputType = InputType.TYPE_TEXT_VARIATION_URI
 
             setOnDoneClick {
                 findNavController().apply {
-                    currentBackStackEntry?.setLiveData(SAVED_STATE_KEY, Event(mViewModel.url.value))
+                    currentBackStackEntry?.setLiveDataEvent(SAVED_STATE_KEY, Event(mViewModel.url.value))
                 }
             }
 

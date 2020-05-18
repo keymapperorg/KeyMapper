@@ -20,7 +20,6 @@ import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.service.DeviceAdmin
 import splitties.alertdialog.appcompat.*
 import splitties.init.appCtx
-import splitties.resources.appStr
 import splitties.systemservices.devicePolicyManager
 import splitties.systemservices.notificationManager
 import splitties.toast.toast
@@ -63,7 +62,7 @@ object PermissionUtils {
 
                     intent.putExtra(
                         DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-                        appStr(R.string.error_need_to_enable_device_admin))
+                        activity.str(R.string.error_need_to_enable_device_admin))
 
                     registerForActivityResult(ActivityResultContracts.StartActivityForResult(), activity.activityResultRegistry) {
                         if (it.resultCode == Activity.RESULT_OK) {

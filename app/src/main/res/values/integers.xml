@@ -11,7 +11,6 @@
     <integer name="sequence_trigger_timeout_min">200</integer>
     <integer name="sequence_trigger_timeout_max">10000</integer>
     <integer name="sequence_trigger_timeout_step_size">200</integer>
-    <integer name="sequence_trigger_timeout_default">2000</integer>
 
     <integer name="vibrate_duration_min">1</integer>
     <integer name="vibrate_duration_max">1000</integer>

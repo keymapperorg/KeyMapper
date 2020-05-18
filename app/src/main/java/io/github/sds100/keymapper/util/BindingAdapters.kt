@@ -17,10 +17,10 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
 import io.github.sds100.keymapper.ui.view.StatusLayout
-import io.github.sds100.keymapper.util.result.getMessage
+import io.github.sds100.keymapper.util.result.getBriefMessage
+import io.github.sds100.keymapper.util.result.getFullMessage
 import io.noties.markwon.Markwon
 import kotlinx.android.synthetic.main.list_item_status.view.*
-import splitties.resources.*
 
 /**
  * Created by sds100 on 25/01/2020.
@@ -55,14 +55,14 @@ fun StatusLayout.setStatusLayoutState(
         StatusLayout.State.WARN -> {
             textViewStatus.text = warningText
 
-            val color = appColor(R.color.warn)
+            val color = color(R.color.warn)
             buttonFix.setBackgroundColor(color)
         }
 
         StatusLayout.State.ERROR -> {
             textViewStatus.text = errorText
 
-            val color = context.styledColor(R.attr.colorError)
+            val color = styledColor(R.attr.colorError)
             buttonFix.setBackgroundColor(color)
         }
     }
@@ -74,8 +74,8 @@ fun StatusLayout.setStatusLayoutState(
     }
 
     val tint = when (state) {
-        StatusLayout.State.POSITIVE -> appColor(R.color.green)
-        StatusLayout.State.WARN -> appColor(R.color.warn)
+        StatusLayout.State.POSITIVE -> color(R.color.green)
+        StatusLayout.State.WARN -> color(R.color.warn)
         StatusLayout.State.ERROR -> styledColor(R.attr.colorError)
     }
 
@@ -116,12 +116,12 @@ fun TextInputLayout.errorWhenEmpty(enabled: Boolean) {
 
     //need to set it up when the view is created
     if (editText?.text.isNullOrBlank()) {
-        error = appStr(R.string.error_cant_be_empty)
+        error = str(R.string.error_cant_be_empty)
     }
 
     editText?.addTextChangedListener {
         error = if (it.isNullOrBlank() && enabled) {
-            appStr(R.string.error_cant_be_empty)
+            str(R.string.error_cant_be_empty)
         } else {
             null
         }
@@ -144,15 +144,15 @@ fun ChipGroup.bindActions(actions: List<ActionChipModel>, callback: ErrorClickCa
     actions.forEach {
         Chip(context).apply {
             text = it.description
-            chipIcon = it.getIcon(context)
+            chipIcon = it.icon
             isCloseIconVisible = it.hasError
 
             if (it.type == ActionType.SYSTEM_ACTION) {
-                chipIconTint = context.styledColorSL(R.attr.colorOnSurface)
+                chipIconTint = styledColorSL(R.attr.colorOnSurface)
             }
 
             if (it.description == null && it.hasError) {
-                text = it.error?.getMessage(context)
+                text = it.error?.getBriefMessage(context)
             }
 
             if (it.hasError) {
@@ -182,7 +182,7 @@ fun ChipGroup.bindActionsAndConstraints(
 
     if (actions.isNotEmpty() && constraints.isNotEmpty()) {
         Chip(context).apply {
-            text = appStr(R.string.chip_while)
+            text = str(R.string.chip_while)
 
             chipStrokeWidth = 0f
 
@@ -196,10 +196,10 @@ fun ChipGroup.bindActionsAndConstraints(
 @BindingAdapter("app:isKeymapEnabled", "app:noActions", "app:noTrigger", requireAll = false)
 fun TextView.setKeymapExtraInfo(isKeymapEnabled: Boolean = false, noActions: Boolean = false, noTrigger: Boolean = false) {
     text = buildString {
-        val interpunct = appStr(R.string.interpunct)
+        val interpunct = str(R.string.interpunct)
 
         if (!isKeymapEnabled) {
-            append(appStr(R.string.disabled))
+            append(str(R.string.disabled))
         }
 
         if (noActions) {
@@ -207,14 +207,14 @@ fun TextView.setKeymapExtraInfo(isKeymapEnabled: Boolean = false, noActions: Boo
                 append(" $interpunct ")
             }
 
-            append(appStr(R.string.no_actions))
+            append(str(R.string.no_actions))
         }
 
         if (noTrigger) {
             if (this.isNotEmpty()) {
                 append(" $interpunct ")
             }
-            append(appStr(R.string.no_trigger))
+            append(str(R.string.no_trigger))
         }
     }
 }
@@ -222,9 +222,9 @@ fun TextView.setKeymapExtraInfo(isKeymapEnabled: Boolean = false, noActions: Boo
 @BindingAdapter("app:triggerModel")
 fun ChipGroup.bindTriggerModel(triggerChipModel: TriggerChipModel) {
     val separatorDrawable = when (triggerChipModel.triggerMode) {
-        Trigger.PARALLEL -> appDrawable(R.drawable.ic_baseline_add_24)
-        Trigger.SEQUENCE -> appDrawable(R.drawable.ic_baseline_arrow_forward_24)
-        else -> appDrawable(R.drawable.ic_baseline_add_24)
+        Trigger.PARALLEL -> drawable(R.drawable.ic_baseline_add_24)
+        Trigger.SEQUENCE -> drawable(R.drawable.ic_baseline_arrow_forward_24)
+        else -> drawable(R.drawable.ic_baseline_add_24)
     }
 
     removeAllViews()
@@ -261,9 +261,9 @@ fun ChipGroup.bindConstraints(
     callback: ErrorClickCallback
 ) {
     val separatorText = when (constraintMode) {
-        Constraint.MODE_AND -> appStr(R.string.constraint_mode_and)
-        Constraint.MODE_OR -> appStr(R.string.constraint_mode_or)
-        else -> appStr(R.string.constraint_mode_and)
+        Constraint.MODE_AND -> str(R.string.constraint_mode_and)
+        Constraint.MODE_OR -> str(R.string.constraint_mode_or)
+        else -> str(R.string.constraint_mode_and)
     }
 
     constraintList.forEachIndexed { index, model ->
@@ -307,7 +307,7 @@ fun ChipGroup.bindFlagModels(flagModels: List<FlagModel>) {
     flagModels.forEach {
         Chip(context).apply {
             text = it.text
-            chipIcon = appDrawable(it.icon!!)
+            chipIcon = drawable(it.icon!!)
 
             addView(this)
         }

@@ -7,35 +7,38 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.KeyEvent
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.model.*
+import io.github.sds100.keymapper.data.model.Action
+import io.github.sds100.keymapper.data.model.ActionChipModel
+import io.github.sds100.keymapper.data.model.ActionModel
+import io.github.sds100.keymapper.data.model.Option
 import io.github.sds100.keymapper.service.KeyMapperImeService
+import io.github.sds100.keymapper.util.SystemActionUtils.getDescriptionWithOption
 import io.github.sds100.keymapper.util.result.*
-import splitties.experimental.ExperimentalSplittiesApi
-import splitties.init.appCtx
-import splitties.resources.appStr
+import splitties.bitflags.hasFlag
 
 /**
  * Created by sds100 on 03/09/2018.
  */
 
 @Suppress("EXPERIMENTAL_API_USAGE")
-fun Action.buildModel(): ActionModel {
+fun Action.buildModel(ctx: Context): ActionModel {
     var title: String? = null
-    val icon = { ctx: Context -> getIcon(ctx).valueOrNull() }
+    var icon: Drawable? = null
 
-    val error = getTitle().onSuccess { title = it }
-        .then { canBePerformed() }
+    val error = getTitle(ctx).onSuccess { title = it }
+        .then { getIcon(ctx).onSuccess { icon = it } }
+        .then { canBePerformed(ctx) }
         .failureOrNull()
 
     val flags = if (flags == 0) {
         null
     } else {
         buildString {
-            val flagLabels = getFlagLabelList()
+            val flagLabels = getFlagLabelList(ctx)
 
             flagLabels.forEachIndexed { index, label ->
                 if (index != 0) {
-                    append(appStr(R.string.interpunct))
+                    append(ctx.str(R.string.interpunct))
                 }
 
                 append(label)
@@ -43,23 +46,23 @@ fun Action.buildModel(): ActionModel {
         }
     }
 
-    return ActionModel(uniqueId, type, title, icon, flags, error)
+    return ActionModel(uniqueId, type, title, icon, flags, error, error?.getBriefMessage(ctx))
 }
 
-@ExperimentalSplittiesApi
-fun Action.buildChipModel(): ActionChipModel {
+fun Action.buildChipModel(ctx: Context): ActionChipModel {
     var title: String? = null
-    val icon = { ctx: Context -> getIcon(ctx).valueOrNull() }
+    var icon: Drawable? = null
 
-    val error = getTitle().onSuccess { title = it }
-        .then { canBePerformed() }
+    val error = getTitle(ctx).onSuccess { title = it }
+        .then { getIcon(ctx).onSuccess { icon = it } }
+        .then { canBePerformed(ctx) }
         .failureOrNull()
 
     val description = buildString {
-        val flagLabels = getFlagLabelList()
+        val flagLabels = getFlagLabelList(ctx)
 
         if (title == null) {
-            append(error?.getMessage(appCtx))
+            append(error?.getBriefMessage(ctx))
         } else {
             append(title)
         }
@@ -72,14 +75,14 @@ fun Action.buildChipModel(): ActionChipModel {
     return ActionChipModel(uniqueId, type, description, error, icon)
 }
 
-private fun Action.getTitle(): Result<String> = when (type) {
+private fun Action.getTitle(ctx: Context): Result<String> = when (type) {
     ActionType.APP -> {
         try {
-            val applicationInfo = appCtx.packageManager.getApplicationInfo(data, PackageManager.GET_META_DATA)
+            val applicationInfo = ctx.packageManager.getApplicationInfo(data, PackageManager.GET_META_DATA)
 
-            val applicationLabel = appCtx.packageManager.getApplicationLabel(applicationInfo)
+            val applicationLabel = ctx.packageManager.getApplicationLabel(applicationInfo)
 
-            Success(appCtx.getString(R.string.description_open_app, applicationLabel.toString()))
+            Success(ctx.str(R.string.description_open_app, applicationLabel.toString()))
         } catch (e: PackageManager.NameNotFoundException) {
             //the app isn't installed
             AppNotFound(data)
@@ -94,21 +97,21 @@ private fun Action.getTitle(): Result<String> = when (type) {
         val keyCode = data.toInt()
         val key = KeycodeUtils.keycodeToString(keyCode)
 
-        Success(appStr(R.string.description_key, key))
+        Success(ctx.str(R.string.description_key, key))
     }
 
     ActionType.KEYCODE -> {
         val key = KeyEvent.keyCodeToString(data.toInt())
-        Success(appStr(R.string.description_keycode, key))
+        Success(ctx.str(R.string.description_keycode, key))
     }
 
     ActionType.TEXT_BLOCK -> {
         val text = data
-        Success(appStr(R.string.description_text_block, text))
+        Success(ctx.str(R.string.description_text_block, text))
     }
 
     ActionType.URL -> {
-        Success(appStr(R.string.description_url, data))
+        Success(ctx.str(R.string.description_url, data))
     }
 
     ActionType.SYSTEM_ACTION -> {
@@ -118,24 +121,24 @@ private fun Action.getTitle(): Result<String> = when (type) {
             if (systemActionDef.hasOptions) {
 
                 getExtraData(Option.getExtraIdForOption(systemActionId)) then {
-                    Option.getOptionLabel(systemActionId, it)
+                    Option.getOptionLabel(ctx, systemActionId, it)
 
                 } then {
-                    Success(systemActionDef.getDescriptionWithOption(it)!!)
+                    Success(systemActionDef.getDescriptionWithOption(ctx, it))
 
                 } otherwise {
                     if (systemActionId == SystemAction.SWITCH_KEYBOARD) {
 
                         getExtraData(Action.EXTRA_IME_NAME) then {
-                            Success(systemActionDef.getDescriptionWithOption(it)!!)
+                            Success(systemActionDef.getDescriptionWithOption(ctx, it))
                         }
 
                     } else {
-                        Success(systemActionDef.getDescription())
+                        Success(ctx.str(systemActionDef.descriptionRes))
                     }
                 }
             } else {
-                Success(systemActionDef.getDescription())
+                Success(ctx.str(systemActionDef.descriptionRes))
             }
         }
     }
@@ -147,7 +150,7 @@ private fun Action.getTitle(): Result<String> = when (type) {
 private fun Action.getIcon(ctx: Context): Result<Drawable?> = when (type) {
     ActionType.APP -> {
         try {
-            Success(appCtx.packageManager.getApplicationIcon(data))
+            Success(ctx.packageManager.getApplicationIcon(data))
         } catch (e: PackageManager.NameNotFoundException) {
             //if the app isn't installed, it can't find the icon for it
             AppNotFound(data)
@@ -155,7 +158,7 @@ private fun Action.getIcon(ctx: Context): Result<Drawable?> = when (type) {
     }
 
     ActionType.APP_SHORTCUT -> getExtraData(Action.EXTRA_PACKAGE_NAME).then {
-        Success(appCtx.packageManager.getApplicationIcon(it))
+        Success(ctx.packageManager.getApplicationIcon(it))
     }
 
     ActionType.SYSTEM_ACTION -> {
@@ -164,7 +167,7 @@ private fun Action.getIcon(ctx: Context): Result<Drawable?> = when (type) {
 
         SystemActionUtils.getSystemActionDef(systemActionId).then {
             Success(null)
-            Success(it.getIcon(ctx))
+            Success(ctx.drawable(it.iconRes))
         }
     }
 
@@ -175,8 +178,7 @@ private fun Action.getIcon(ctx: Context): Result<Drawable?> = when (type) {
  * @return if the action can't be performed, it returns an error code.
  * returns null if their if the action can be performed.
  */
-@ExperimentalSplittiesApi
-private fun Action.canBePerformed(): Result<Action> {
+private fun Action.canBePerformed(ctx: Context): Result<Action> {
     //the action has no data
     if (data.isEmpty()) return NoActionData()
 
@@ -201,7 +203,7 @@ private fun Action.canBePerformed(): Result<Action> {
 
             return packageName.then {
                 try {
-                    val appInfo = appCtx.packageManager.getApplicationInfo(it, 0)
+                    val appInfo = ctx.packageManager.getApplicationInfo(it, 0)
 
                     //if the app is disabled, show an error message because it won't open
                     if (!appInfo.enabled) {
@@ -222,7 +224,7 @@ private fun Action.canBePerformed(): Result<Action> {
                 //If an activity to open doesn't exist, the app crashes.
                 if (systemActionDef.id == SystemAction.OPEN_ASSISTANT) {
                     val activityExists =
-                        Intent(Intent.ACTION_VOICE_COMMAND).resolveActivityInfo(appCtx.packageManager, 0) != null
+                        Intent(Intent.ACTION_VOICE_COMMAND).resolveActivityInfo(ctx.packageManager, 0) != null
 
                     if (!activityExists) {
                         return GoogleAppNotFound()
@@ -244,7 +246,7 @@ private fun Action.canBePerformed(): Result<Action> {
                 }
 
                 for (feature in systemActionDef.features) {
-                    if (!appCtx.packageManager.hasSystemFeature(feature)) {
+                    if (!ctx.packageManager.hasSystemFeature(feature)) {
                         return FeatureUnavailable(feature)
                     }
                 }
@@ -318,8 +320,10 @@ val Action.isVolumeAction: Boolean
         ).contains(data)
     }
 
-fun KeyMap.buildActionChipModels() = sequence {
-    actionList.forEach { action ->
-        yield(action.buildChipModel())
+fun Action.getFlagLabelList(ctx: Context): List<String> = sequence {
+    Action.ACTION_FLAG_LABEL_MAP.keys.forEach { flag ->
+        if (flags.hasFlag(flag)) {
+            yield(ctx.str(Action.ACTION_FLAG_LABEL_MAP.getValue(flag)))
+        }
     }
 }.toList()

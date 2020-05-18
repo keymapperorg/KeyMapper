@@ -1,35 +1,28 @@
 package io.github.sds100.keymapper.data.viewmodel
 
 import androidx.lifecycle.*
-import com.example.architecturetest.data.DefaultKeymapRepository
+import io.github.sds100.keymapper.data.DeviceInfoRepository
 import io.github.sds100.keymapper.data.KeymapRepository
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
 import io.github.sds100.keymapper.ui.callback.ProgressCallback
-import io.github.sds100.keymapper.util.*
-import kotlinx.coroutines.Dispatchers
+import io.github.sds100.keymapper.util.Event
+import io.github.sds100.keymapper.util.ISelectionProvider
+import io.github.sds100.keymapper.util.SelectionProvider
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class KeymapListViewModel internal constructor(
-    private val repository: KeymapRepository
+    private val mKeymapRepository: KeymapRepository,
+    private val mDeviceInfoRepository: DeviceInfoRepository
 ) : ViewModel(), ProgressCallback {
 
-    val keymapModelList = MediatorLiveData<List<KeymapListItemModel>>().apply {
-        addSource(repository.keymapList) { keymapList ->
-            viewModelScope.launch {
-                loadingContent.value = true
+    val keymapModelList = MutableLiveData(listOf<KeymapListItemModel>())
 
-                val modelList = buildModelList(keymapList)
-                selectionProvider.updateIds(keymapList.map { it.id }.toLongArray())
-
-                value = modelList
-
-                loadingContent.value = false
-            }
+    val rebuildModelsEvent = MediatorLiveData<Event<List<KeyMap>>>().apply {
+        addSource(mKeymapRepository.keymapList) {
+            this.value = Event(it)
         }
     }
-
 
     val selectionProvider: ISelectionProvider = SelectionProvider()
 
@@ -37,62 +30,60 @@ class KeymapListViewModel internal constructor(
 
     fun delete(vararg id: Long) {
         viewModelScope.launch {
-            repository.deleteKeymap(*id)
+            mKeymapRepository.deleteKeymap(*id)
         }
     }
 
     fun enableKeymaps(vararg id: Long) {
         viewModelScope.launch {
-            repository.enableKeymapById(*id)
+            mKeymapRepository.enableKeymapById(*id)
         }
     }
 
     fun disableKeymaps(vararg id: Long) {
         viewModelScope.launch {
-            repository.disableKeymapById(*id)
+            mKeymapRepository.disableKeymapById(*id)
         }
     }
 
     fun enableAll() {
         viewModelScope.launch {
-            repository.enableAll()
+            mKeymapRepository.enableAll()
         }
     }
 
     fun disableAll() {
         viewModelScope.launch {
-            repository.disableAll()
+            mKeymapRepository.disableAll()
         }
     }
 
     fun rebuildModels() = viewModelScope.launch {
-        if (repository.keymapList.value.isNullOrEmpty()) return@launch
+        if (mKeymapRepository.keymapList.value.isNullOrEmpty()) return@launch
 
-        keymapModelList.value = buildModelList(repository.keymapList.value ?: listOf())
+        rebuildModelsEvent.value = Event(mKeymapRepository.keymapList.value ?: listOf())
     }
 
-    private suspend fun buildModelList(keymapList: List<KeyMap>) =
-        withContext(viewModelScope.coroutineContext + Dispatchers.Default) {
-            keymapList.map {
-                KeymapListItemModel(
-                    id = it.id,
-                    actionList = it.buildActionChipModels(),
-                    triggerDescription = it.trigger.buildDescription(),
-                    constraintList = it.buildConstraintModels(),
-                    constraintMode = it.constraintMode,
-                    flagsDescription = it.flags.buildKeymapFlagsDescription(),
-                    isEnabled = it.isEnabled
-                )
-            }
-        }
+    fun setModelList(list: List<KeymapListItemModel>) {
+        loadingContent.value = true
+
+        selectionProvider.updateIds(list.map { it.id }.toLongArray())
+
+        keymapModelList.value = list
+
+        loadingContent.value = false
+    }
+
+    suspend fun getDeviceInfoList() = mDeviceInfoRepository.getAll()
 
     @Suppress("UNCHECKED_CAST")
     class Factory(
-        private val mRepository: KeymapRepository
+        private val mKeymapRepository: KeymapRepository,
+        private val mDeviceInfoRepository: DeviceInfoRepository
     ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return KeymapListViewModel(mRepository) as T
+            return KeymapListViewModel(mKeymapRepository, mDeviceInfoRepository) as T
         }
     }
 }

@@ -4,7 +4,6 @@ import android.os.Build
 import android.view.KeyEvent
 import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.R
-import splitties.resources.appStr
 
 /**
  * Created by sds100 on 17/07/2018.
@@ -673,7 +672,7 @@ object KeycodeUtils {
      */
     fun keycodeToString(keyCode: Int): String {
         return NON_CHARACTER_KEY_LABELS[keyCode].let {
-            it ?: appStr(R.string.unknown_keycode, keyCode.toString())
+            it ?: "unknown keycode $keyCode"
         }
     }
 

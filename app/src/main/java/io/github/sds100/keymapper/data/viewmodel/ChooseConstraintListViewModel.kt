@@ -5,8 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.ChooseConstraintListItemModel
 import io.github.sds100.keymapper.data.model.Constraint
-import splitties.init.appCtx
-import splitties.resources.str
 
 /**
  * Created by sds100 on 21/03/2020.
@@ -18,17 +16,17 @@ class ChooseConstraintListViewModel : ViewModel() {
         ChooseConstraintListItemModel(
             Constraint.APP_FOREGROUND,
             Constraint.CATEGORY_APP,
-            appCtx.str(R.string.constraint_choose_app_foreground)
-        ),
+            R.string.constraint_choose_app_foreground),
+
         ChooseConstraintListItemModel(
             Constraint.BT_DEVICE_CONNECTED,
             Constraint.CATEGORY_BLUETOOTH,
-            appCtx.str(R.string.constraint_choose_bluetooth_device_connected)
+            R.string.constraint_choose_bluetooth_device_connected
         ),
         ChooseConstraintListItemModel(
             Constraint.BT_DEVICE_DISCONNECTED,
             Constraint.CATEGORY_BLUETOOTH,
-            appCtx.str(R.string.constraint_choose_bluetooth_device_disconnected)
+            R.string.constraint_choose_bluetooth_device_disconnected
         )
     )
 
@@ -36,7 +34,7 @@ class ChooseConstraintListViewModel : ViewModel() {
         for ((id, label) in Constraint.CATEGORY_LABEL_MAP) {
             val constraints = mConstraintList.filter { it.categoryId == id }
 
-            yield(appCtx.str(label) to constraints)
+            yield(label to constraints)
         }
     }.toMap()
 

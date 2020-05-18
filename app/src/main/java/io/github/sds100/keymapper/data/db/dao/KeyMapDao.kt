@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.data
+package io.github.sds100.keymapper.data.db.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*

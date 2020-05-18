@@ -31,7 +31,7 @@ class MenuFragment : BottomSheetDialogFragment() {
             }
 
             setSendFeedback {
-                FeedbackUtils.sendFeedback()
+                FeedbackUtils.sendFeedback(requireContext())
                 dismiss()
             }
 

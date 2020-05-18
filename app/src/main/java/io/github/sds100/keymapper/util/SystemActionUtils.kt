@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.util
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import io.github.sds100.keymapper.Constants
@@ -78,8 +79,6 @@ import io.github.sds100.keymapper.util.SystemAction.VOLUME_MUTE
 import io.github.sds100.keymapper.util.SystemAction.VOLUME_TOGGLE_MUTE
 import io.github.sds100.keymapper.util.SystemAction.VOLUME_UNMUTE
 import io.github.sds100.keymapper.util.result.*
-import splitties.init.appCtx
-import splitties.resources.appStr
 
 /**
  * Created by sds100 on 01/08/2018.
@@ -298,7 +297,7 @@ object SystemActionUtils {
             iconRes = R.drawable.ic_outline_volume_up_24,
             descriptionRes = R.string.action_increase_stream,
             permissions = arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY),
-            getDescriptionWithOption = { option -> appStr(R.string.action_increase_stream_formatted, option) },
+            descriptionFormattedRes = R.string.action_increase_stream_formatted,
             options = Option.STREAMS
         ),
         SystemActionDef(
@@ -306,7 +305,7 @@ object SystemActionUtils {
             category = CATEGORY_VOLUME,
             iconRes = R.drawable.ic_outline_volume_down_24,
             descriptionRes = R.string.action_decrease_stream,
-            getDescriptionWithOption = { option -> appStr(R.string.action_increase_stream_formatted, option) },
+            descriptionFormattedRes = R.string.action_increase_stream_formatted,
             options = Option.STREAMS,
             permissions = arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY)
         ),
@@ -324,9 +323,7 @@ object SystemActionUtils {
         SystemActionDef(id = SystemAction.CHANGE_RINGER_MODE,
             category = CATEGORY_VOLUME,
             descriptionRes = R.string.action_change_ringer_mode,
-
-            getDescriptionWithOption = { option -> appStr(R.string.action_change_ringer_mode_formatted, option) },
-
+            descriptionFormattedRes = R.string.action_change_ringer_mode_formatted,
             permissions = arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY),
             options = listOf(
                 Option.RINGER_MODE_NORMAL,
@@ -453,7 +450,7 @@ object SystemActionUtils {
             minApi = Build.VERSION_CODES.M,
             iconRes = R.drawable.ic_flashlight,
             descriptionRes = R.string.action_toggle_flashlight,
-            getDescriptionWithOption = { optionText -> appStr(R.string.action_toggle_flashlight_formatted, optionText) },
+            descriptionFormattedRes = R.string.action_toggle_flashlight_formatted,
             options = Option.LENSES
         ),
         SystemActionDef(
@@ -464,7 +461,7 @@ object SystemActionUtils {
             minApi = Build.VERSION_CODES.M,
             iconRes = R.drawable.ic_flashlight,
             descriptionRes = R.string.action_enable_flashlight,
-            getDescriptionWithOption = { optionText -> appStr(R.string.action_toggle_flashlight_formatted, optionText) },
+            descriptionFormattedRes = R.string.action_toggle_flashlight_formatted,
             options = Option.LENSES
         ),
         SystemActionDef(
@@ -475,7 +472,7 @@ object SystemActionUtils {
             minApi = Build.VERSION_CODES.M,
             iconRes = R.drawable.ic_flashlight_off,
             descriptionRes = R.string.action_disable_flashlight,
-            getDescriptionWithOption = { optionText -> appStr(R.string.action_toggle_flashlight_formatted, optionText) },
+            descriptionFormattedRes = R.string.action_toggle_flashlight_formatted,
             options = Option.LENSES
         ),
 
@@ -552,9 +549,7 @@ object SystemActionUtils {
             iconRes = R.drawable.ic_notification_keyboard,
             permissions = arrayOf(Constants.PERMISSION_ROOT),
             descriptionRes = R.string.action_switch_keyboard,
-            getDescriptionWithOption = { optionText ->
-                appStr(R.string.action_switch_keyboard_formatted, optionText)
-            },
+            descriptionFormattedRes = R.string.action_switch_keyboard_formatted,
             getOptions = {
                 KeyboardUtils.getInputMethodIds()
             }
@@ -627,27 +622,25 @@ object SystemActionUtils {
     /**
      * Get all the system actions which are supported by the system.
      */
-    fun getSupportedSystemActions() = SYSTEM_ACTION_DEFINITIONS.filter { it.isSupported() is Success }
+    fun getSupportedSystemActions(ctx: Context) = SYSTEM_ACTION_DEFINITIONS.filter { it.isSupported(ctx) is Success }
 
-    fun getUnsupportedSystemActions() = SYSTEM_ACTION_DEFINITIONS.filter { it.isSupported() !is Success }
+    fun getUnsupportedSystemActions(ctx: Context) = SYSTEM_ACTION_DEFINITIONS.filter { it.isSupported(ctx) !is Success }
 
-    fun getUnsupportedSystemActionsWithReasons(): Map<SystemActionDef, Failure> =
-        SYSTEM_ACTION_DEFINITIONS.filter { it.isSupported() is Failure }.map {
-            it to (it.isSupported() as Failure)
+    fun getUnsupportedSystemActionsWithReasons(ctx: Context): Map<SystemActionDef, Failure> =
+        SYSTEM_ACTION_DEFINITIONS.filter { it.isSupported(ctx) is Failure }.map {
+            it to (it.isSupported(ctx) as Failure)
         }.toMap()
-
-    fun areAllActionsSupported() = getUnsupportedSystemActions().isEmpty()
 
     /**
      * @return null if the action is supported.
      */
-    fun SystemActionDef.isSupported(): Result<SystemActionDef> {
+    fun SystemActionDef.isSupported(ctx: Context): Result<SystemActionDef> {
         if (Build.VERSION.SDK_INT < minApi) {
             return SdkVersionTooLow(minApi)
         }
 
         for (feature in features) {
-            if (!appCtx.packageManager.hasSystemFeature(feature)) {
+            if (!ctx.packageManager.hasSystemFeature(feature)) {
                 return FeatureUnavailable(feature)
             }
         }
@@ -669,5 +662,12 @@ object SystemActionUtils {
         val systemActionDef = SYSTEM_ACTION_DEFINITIONS.find { it.id == id } ?: return SystemActionNotFound(id)
 
         return Success(systemActionDef)
+    }
+
+    fun SystemActionDef.getDescriptionWithOption(ctx: Context, optionText: String): String {
+        descriptionFormattedRes
+            ?: throw Exception("System action $id has options and doesn't have a formatted description")
+
+        return ctx.str(descriptionFormattedRes, optionText)
     }
 }

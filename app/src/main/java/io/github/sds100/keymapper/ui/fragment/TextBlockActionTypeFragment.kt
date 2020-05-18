@@ -12,8 +12,8 @@ import io.github.sds100.keymapper.data.viewmodel.TextBlockActionTypeViewModel
 import io.github.sds100.keymapper.databinding.FragmentEdittextBinding
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.InjectorUtils
-import io.github.sds100.keymapper.util.setLiveData
-import splitties.resources.appStr
+import io.github.sds100.keymapper.util.setLiveDataEvent
+import io.github.sds100.keymapper.util.str
 
 /**
  * Created by sds100 on 30/03/2020.
@@ -34,11 +34,11 @@ class TextBlockActionTypeFragment : Fragment() {
             lifecycleOwner = viewLifecycleOwner
 
             text = mViewModel.text
-            caption = appStr(R.string.caption_action_type_text)
+            caption = str(R.string.caption_action_type_text)
 
             setOnDoneClick {
                 findNavController().apply {
-                    currentBackStackEntry?.setLiveData(SAVED_STATE_KEY, Event(mViewModel.text.value))
+                    currentBackStackEntry?.setLiveDataEvent(SAVED_STATE_KEY, Event(mViewModel.text.value))
                 }
             }
 

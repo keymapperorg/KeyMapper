@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.data.model
 
-import android.content.Context
 import android.graphics.drawable.Drawable
 import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.result.Failure
@@ -14,7 +13,7 @@ data class ActionChipModel(
     val type: ActionType,
     val description: String? = null,
     val error: Failure? = null,
-    val getIcon: (ctx: Context) -> Drawable? = { null }) {
+    val icon: Drawable? = null) {
 
     val hasError: Boolean
         get() = error != null

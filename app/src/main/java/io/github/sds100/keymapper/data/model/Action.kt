@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.data.model
 
+import android.content.Context
 import android.hardware.camera2.CameraCharacteristics
 import android.media.AudioManager
 import android.util.Log
@@ -11,7 +12,6 @@ import io.github.sds100.keymapper.util.result.Result
 import io.github.sds100.keymapper.util.result.Success
 import io.github.sds100.keymapper.util.result.onSuccess
 import splitties.bitflags.hasFlag
-import splitties.resources.appStr
 import java.io.Serializable
 
 /**
@@ -94,14 +94,14 @@ data class Action(
             return Action(ActionType.URL, url)
         }
 
-        fun systemAction(model: SelectedSystemActionModel): Action {
+        fun systemAction(ctx: Context, model: SelectedSystemActionModel): Action {
             val action = Action(ActionType.SYSTEM_ACTION, model.id)
 
             model.optionData?.let {
                 action.extras.add(Extra(Option.getExtraIdForOption(model.id), it))
 
                 if (model.id == SystemAction.SWITCH_KEYBOARD) {
-                    Option.getOptionLabel(model.id, it).onSuccess { imeName ->
+                    Option.getOptionLabel(ctx, model.id, it).onSuccess { imeName ->
                         action.extras.add(Extra(EXTRA_IME_NAME, imeName))
                     }
                 }
@@ -124,14 +124,6 @@ data class Action(
                 append("${it.id}${it.data}")
             }
         }
-
-    fun getFlagLabelList(): List<String> = sequence {
-        ACTION_FLAG_LABEL_MAP.keys.forEach { flag ->
-            if (flags.hasFlag(flag)) {
-                yield(appStr(ACTION_FLAG_LABEL_MAP.getValue(flag)))
-            }
-        }
-    }.toList()
 
     fun getExtraData(extraId: String): Result<String> {
         migrateExtra(extraId)

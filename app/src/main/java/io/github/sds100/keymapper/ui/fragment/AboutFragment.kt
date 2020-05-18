@@ -16,7 +16,7 @@ import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentAboutBinding
 import io.github.sds100.keymapper.util.FeedbackUtils
-import splitties.resources.str
+import io.github.sds100.keymapper.util.str
 
 /**
  * Created by sds100 on 05/04/2020.
@@ -127,7 +127,7 @@ class AboutPreferenceFragment : PreferenceFragmentCompat() {
         }
 
         findPreference<Preference>(str(R.string.key_pref_developer_email))?.setOnPreferenceClickListener {
-            FeedbackUtils.sendFeedback()
+            FeedbackUtils.sendFeedback(requireContext())
             true
         }
     }

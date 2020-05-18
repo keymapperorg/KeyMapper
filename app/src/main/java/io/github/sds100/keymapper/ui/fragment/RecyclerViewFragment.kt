@@ -15,7 +15,7 @@ import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.ui.callback.ProgressCallback
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.observeCurrentDestinationLiveData
-import io.github.sds100.keymapper.util.setLiveData
+import io.github.sds100.keymapper.util.setLiveDataEvent
 import java.io.Serializable
 
 /**
@@ -97,9 +97,9 @@ abstract class RecyclerViewFragment : Fragment() {
                 // this livedata could be observed from a fragment on the backstack or in the same position on the
                 // backstack as this fragment
                 if (isInPagerAdapter) {
-                    currentBackStackEntry?.setLiveData(selectedModelKey!!, Event(model))
+                    currentBackStackEntry?.setLiveDataEvent(selectedModelKey!!, model)
                 } else {
-                    previousBackStackEntry?.setLiveData(selectedModelKey!!, Event(model))
+                    previousBackStackEntry?.setLiveDataEvent(selectedModelKey!!, model)
                     navigateUp()
                 }
             }

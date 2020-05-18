@@ -22,8 +22,6 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.broadcastreceiver.KeyMapperBroadcastReceiver
 import io.github.sds100.keymapper.data.AppPreferences
 import splitties.init.appCtx
-import splitties.resources.appStr
-import splitties.resources.color
 import splitties.systemservices.notificationManager
 
 /**
@@ -79,13 +77,13 @@ object NotificationUtils {
                          vararg actions: NotificationCompat.Action = arrayOf()) {
 
         if (SDK_INT >= Build.VERSION_CODES.O) {
-            invalidateChannels()
+            invalidateChannels(ctx)
         }
 
         val builder = NotificationCompat.Builder(ctx, channel).apply {
             color = ctx.color(R.color.colorAccent)
-            setContentTitle(appStr(title))
-            setContentText(appStr(text))
+            setContentTitle(ctx.str(title))
+            setContentText(ctx.str(text))
             setContentIntent(intent)
             setPriority(priority)
 
@@ -117,20 +115,20 @@ object NotificationUtils {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun invalidateChannels() {
+    fun invalidateChannels(ctx: Context) {
         notificationManager.deleteNotificationChannel(CHANNEL_ID_WARNINGS)
         notificationManager.deleteNotificationChannel(CHANNEL_ID_PERSISTENT)
 
         val channels = mutableListOf(
             NotificationChannel(
                 CHANNEL_TOGGLE_REMAPS,
-                appStr(R.string.notification_channel_toggle_remaps),
+                ctx.str(R.string.notification_channel_toggle_remaps),
                 NotificationManager.IMPORTANCE_MIN
             ),
 
             NotificationChannel(
                 CHANNEL_KEYBOARD_HIDDEN,
-                appStr(R.string.notification_channel_keyboard_hidden),
+                ctx.str(R.string.notification_channel_keyboard_hidden),
                 NotificationManager.IMPORTANCE_DEFAULT
             )
         )
@@ -139,7 +137,7 @@ object NotificationUtils {
 
             val imePickerChannel = NotificationChannel(
                 CHANNEL_IME_PICKER,
-                appStr(R.string.notification_channel_ime_picker),
+                ctx.str(R.string.notification_channel_ime_picker),
                 NotificationManager.IMPORTANCE_MIN
             )
 

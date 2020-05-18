@@ -51,17 +51,17 @@ class SeedDatabaseWorker(
         val keys = sequence {
             yield(Trigger.Key(
                 KeyEvent.KEYCODE_CTRL_LEFT,
-                Trigger.DeviceInfo(applicationContext, Trigger.Key.DEVICE_ID_THIS_DEVICE),
+                Trigger.Key.DEVICE_ID_THIS_DEVICE,
                 Trigger.SHORT_PRESS
             ))
             yield(Trigger.Key(
                 KeyEvent.KEYCODE_ALT_LEFT,
-                Trigger.DeviceInfo(applicationContext, Trigger.Key.DEVICE_ID_ANY_DEVICE),
+                Trigger.Key.DEVICE_ID_ANY_DEVICE,
                 Trigger.LONG_PRESS
             ))
             yield(Trigger.Key(
                 KeyEvent.KEYCODE_DEL,
-                Trigger.DeviceInfo(applicationContext, Trigger.Key.DEVICE_ID_THIS_DEVICE),
+                Trigger.Key.DEVICE_ID_THIS_DEVICE,
                 Trigger.SHORT_PRESS
             ))
         }.toList()

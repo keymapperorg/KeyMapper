@@ -13,23 +13,23 @@ import io.github.sds100.keymapper.data.viewmodel.OnlineFileViewModel
 import io.github.sds100.keymapper.databinding.FragmentOnlineFileBinding
 import io.github.sds100.keymapper.util.EventObserver
 import io.github.sds100.keymapper.util.InjectorUtils
-import io.github.sds100.keymapper.util.result.getMessage
-import splitties.resources.appStr
+import io.github.sds100.keymapper.util.result.getFullMessage
+import io.github.sds100.keymapper.util.str
 import splitties.toast.toast
 
 class OnlineFileFragment : BottomSheetDialogFragment() {
 
     private val mArgs by navArgs<OnlineFileFragmentArgs>()
 
-    private val mFileUrl by lazy { appStr(mArgs.StringNavArgFileUrl) }
+    private val mFileUrl by lazy { str(mArgs.StringNavArgFileUrl) }
     private val mAlternateUrl by lazy {
         if (mArgs.StringNavArgFileUrlAlt != 0) {
-            appStr(mArgs.StringNavArgFileUrlAlt)
+            str(mArgs.StringNavArgFileUrlAlt)
         } else {
             null
         }
     }
-    private val mHeader by lazy { appStr(mArgs.StringNavArgHeader) }
+    private val mHeader by lazy { str(mArgs.StringNavArgHeader) }
 
     private val mViewModel by viewModels<OnlineFileViewModel> {
         InjectorUtils.provideOnlineViewModel(requireContext(), mFileUrl, mAlternateUrl, mHeader)
@@ -47,7 +47,7 @@ class OnlineFileFragment : BottomSheetDialogFragment() {
             })
 
             mViewModel.showErrorEvent.observe(viewLifecycleOwner, EventObserver {
-                toast(it.getMessage(requireContext()))
+                toast(it.getFullMessage(requireContext()))
             })
 
             mViewModel.openUrlExternallyEvent.observe(viewLifecycleOwner, EventObserver {
