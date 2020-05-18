@@ -11,7 +11,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.navigation.navGraphViewModels
@@ -28,7 +27,6 @@ import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentTriggerBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
-import io.github.sds100.keymapper.service.MyAccessibilityService.Companion.ACTION_RECORD_TRIGGER
 import io.github.sds100.keymapper.service.MyAccessibilityService.Companion.ACTION_RECORD_TRIGGER_KEY
 import io.github.sds100.keymapper.service.MyAccessibilityService.Companion.ACTION_RECORD_TRIGGER_TIMER_INCREMENTED
 import io.github.sds100.keymapper.service.MyAccessibilityService.Companion.ACTION_STOP_RECORDING_TRIGGER
@@ -40,7 +38,6 @@ import splitties.alertdialog.appcompat.cancelButton
 import splitties.alertdialog.appcompat.coroutines.showAndAwait
 import splitties.alertdialog.appcompat.message
 import splitties.experimental.ExperimentalSplittiesApi
-import splitties.snackbar.snack
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -52,8 +49,6 @@ class TriggerFragment : Fragment() {
 
     private val mViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap)
     private lateinit var mBinding: FragmentTriggerBinding
-    private val mRecordTriggerTimeLeft = MutableLiveData(0)
-    private val mRecordingTrigger = MutableLiveData(false)
 
     /**
      * Listens for key events from the accessibility service
@@ -71,14 +66,14 @@ class TriggerFragment : Fragment() {
                 }
 
                 ACTION_RECORD_TRIGGER_TIMER_INCREMENTED -> {
-                    mRecordingTrigger.value = true
+                    mViewModel.recordingTrigger.value = true
                     val timeLeft = intent.getIntExtra(MyAccessibilityService.EXTRA_TIME_LEFT, 5)
 
-                    mRecordTriggerTimeLeft.value = timeLeft
+                    mViewModel.recordTriggerTimeLeft.value = timeLeft
                 }
 
                 ACTION_STOP_RECORDING_TRIGGER -> {
-                    mRecordingTrigger.value = false
+                    mViewModel.recordingTrigger.value = false
                 }
 
                 Intent.ACTION_INPUT_METHOD_CHANGED -> {
@@ -108,52 +103,49 @@ class TriggerFragment : Fragment() {
             viewModel = mViewModel
             lifecycleOwner = viewLifecycleOwner
 
-            setOnTriggerOptionsClick {
-                lifecycleScope.launch {
-                    when (mViewModel.triggerMode.value) {
-                        Trigger.SEQUENCE -> {
-                            var timeout = mViewModel.triggerExtras.value?.find {
-                                it.id == Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT
-                            }!!.data.toInt()
+            mViewModel.chooseTriggerTimeout.observe(viewLifecycleOwner, EventObserver {
+                lifecycleScope.launchWhenCreated {
+                    var timeout = mViewModel.triggerExtras.value?.find {
+                        it.id == Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT
+                    }!!.data.toInt()
 
-                            val model = SeekBarListItemModel(
-                                id = Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT,
-                                title = str(R.string.seekbar_title_sequence_trigger_timeout),
-                                min = int(R.integer.sequence_trigger_timeout_min),
-                                max = int(R.integer.sequence_trigger_timeout_max),
-                                stepSize = int(R.integer.sequence_trigger_timeout_step_size),
-                                initialValue = timeout
-                            )
+                    val model = SeekBarListItemModel(
+                        id = Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT,
+                        title = str(R.string.seekbar_title_sequence_trigger_timeout),
+                        min = int(R.integer.sequence_trigger_timeout_min),
+                        max = int(R.integer.sequence_trigger_timeout_max),
+                        stepSize = int(R.integer.sequence_trigger_timeout_step_size),
+                        initialValue = timeout
+                    )
 
-                            timeout = requireActivity().seekBarAlertDialog(model)
+                    timeout = requireActivity().seekBarAlertDialog(model)
 
-                            mViewModel.setTriggerExtra(
-                                id = Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT,
-                                data = timeout.toString()
-                            )
-                        }
+                    mViewModel.setTriggerExtra(
+                        id = Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT,
+                        data = timeout.toString()
+                    )
+                }
+            })
 
-                        Trigger.PARALLEL -> {
-                            if (!AppPreferences.shownDoublePressRestrictionWarning &&
-                                mViewModel.triggerInParallel.value == true) {
+            mViewModel.chooseParallelTriggerClickType.observe(viewLifecycleOwner, EventObserver {
+                lifecycleScope.launchWhenCreated {
+                    if (!AppPreferences.shownDoublePressRestrictionWarning &&
+                        mViewModel.triggerInParallel.value == true) {
 
-                                val approvedWarning = requireActivity().alertDialog {
-                                    message = str(R.string.dialog_message_double_press_restricted_to_single_key)
+                        val approvedWarning = requireActivity().alertDialog {
+                            message = str(R.string.dialog_message_double_press_restricted_to_single_key)
 
-                                }.showAndAwait(okValue = true, cancelValue = null, dismissValue = false)
+                        }.showAndAwait(okValue = true, cancelValue = null, dismissValue = false)
 
-                                if (approvedWarning) {
-                                    AppPreferences.shownDoublePressRestrictionWarning = true
-                                }
-                            }
-
-                            val newClickType = showClickTypeDialog()
-
-                            mViewModel.setParallelTriggerClickType(newClickType)
+                        if (approvedWarning) {
+                            AppPreferences.shownDoublePressRestrictionWarning = true
                         }
                     }
+
+                    val newClickType = showClickTypeDialog()
+                    mViewModel.setParallelTriggerClickType(newClickType)
                 }
-            }
+            })
 
             subscribeTriggerList()
 
@@ -214,23 +206,6 @@ class TriggerFragment : Fragment() {
                     }
                 }
             }
-
-            setOnRecordTriggerClick {
-                val serviceEnabled = AccessibilityUtils.isServiceEnabled(requireContext())
-
-                if (serviceEnabled) {
-                    requireActivity().sendBroadcast(Intent(ACTION_RECORD_TRIGGER))
-                } else {
-                    coordinatorLayout.snack(R.string.error_accessibility_service_disabled_record_trigger) {
-                        setAction(str(R.string.snackbar_fix)) {
-                            AccessibilityUtils.enableService(requireContext())
-                        }
-                    }
-                }
-            }
-
-            timeLeft = mRecordTriggerTimeLeft
-            recordingTrigger = mRecordingTrigger
 
             return this.root
         }

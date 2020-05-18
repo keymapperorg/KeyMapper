@@ -1,15 +1,18 @@
 package io.github.sds100.keymapper.data.viewmodel
 
+import android.util.Log
 import android.view.KeyEvent
 import androidx.lifecycle.*
 import io.github.sds100.keymapper.data.DeviceInfoRepository
 import io.github.sds100.keymapper.data.KeymapRepository
 import io.github.sds100.keymapper.data.model.*
+import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.InputDeviceUtils
 import io.github.sds100.keymapper.util.isExternalCompat
 import io.github.sds100.keymapper.util.result.onSuccess
 import io.github.sds100.keymapper.util.toggleFlag
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -74,16 +77,22 @@ class ConfigKeymapViewModel internal constructor(
     }
 
     val triggerExtras: MutableLiveData<List<Extra>> = MutableLiveData(listOf())
+    val chooseTriggerTimeout: MutableLiveData<Event<Long>> = MutableLiveData()
 
-    val constraintAndMode: MutableLiveData<Boolean> = MutableLiveData()
-    val constraintOrMode: MutableLiveData<Boolean> = MutableLiveData()
+    val recordTriggerTimeLeft = MutableLiveData(0)
+    val recordingTrigger = MutableLiveData(false)
+    val startRecordingTriggerInService: MutableLiveData<Event<Unit>> = MutableLiveData()
+    val chooseParallelTriggerClickType: MutableLiveData<Event<Unit>> = MutableLiveData()
+
     val flags: MutableLiveData<Int> = MutableLiveData()
     val isEnabled: MutableLiveData<Boolean> = MutableLiveData()
-
 
     val actionList: MutableLiveData<List<Action>> = MutableLiveData(listOf())
 
     val constraintList: MutableLiveData<List<Constraint>> = MutableLiveData(listOf())
+
+    val constraintAndMode: MutableLiveData<Boolean> = MutableLiveData()
+    val constraintOrMode: MutableLiveData<Boolean> = MutableLiveData()
 
     init {
         if (mId == NEW_KEYMAP_ID) {
@@ -188,6 +197,10 @@ class ConfigKeymapViewModel internal constructor(
         }
     }
 
+    fun chooseParallelTriggerClickType() {
+        chooseParallelTriggerClickType.value = Event(Unit)
+    }
+
     fun setParallelTriggerClickType(@Trigger.ClickType clickType: Int) {
         triggerKeys.value = triggerKeys.value?.map {
             it.clickType = clickType
@@ -271,8 +284,6 @@ class ConfigKeymapViewModel internal constructor(
         }
     }
 
-    suspend fun getDeviceInfoList() = mDeviceInfoRepository.getAll()
-
     fun removeTriggerKey(keycode: Int) {
         triggerKeys.value = triggerKeys.value?.toMutableList()?.apply {
             removeAll { it.keyCode == keycode }
@@ -294,6 +305,18 @@ class ConfigKeymapViewModel internal constructor(
                     Collections.swap(this, i, i - 1)
                 }
             }
+        }
+    }
+
+    fun chooseTriggerTimeout() {
+        triggerExtras.value?.single { it.id == Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT }?.let {
+            chooseTriggerTimeout.value = Event(it.data.toLong())
+        }
+    }
+
+    fun recordTrigger() {
+        if (!recordingTrigger.value!!) {
+            startRecordingTriggerInService.value = Event(Unit)
         }
     }
 
@@ -356,6 +379,8 @@ class ConfigKeymapViewModel internal constructor(
     fun rebuildActionModels() {
         actionList.value = actionList.value
     }
+
+    suspend fun getDeviceInfoList() = mDeviceInfoRepository.getAll()
 
     class Factory(
         private val mKeymapRepository: KeymapRepository,

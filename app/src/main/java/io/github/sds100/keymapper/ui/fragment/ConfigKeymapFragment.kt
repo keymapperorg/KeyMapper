@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.ui.fragment
 
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,9 +14,10 @@ import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentConfigKeymapBinding
+import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.adapter.ConfigKeymapPagerAdapter
-import io.github.sds100.keymapper.util.InjectorUtils
-import io.github.sds100.keymapper.util.strArray
+import io.github.sds100.keymapper.util.*
+import splitties.snackbar.snack
 
 /**
  * Created by sds100 on 19/02/2020.
@@ -66,6 +67,20 @@ class ConfigKeymapFragment : Fragment() {
                     else -> false
                 }
             }
+
+            mViewModel.startRecordingTriggerInService.observe(viewLifecycleOwner, EventObserver {
+                val serviceEnabled = AccessibilityUtils.isServiceEnabled(requireContext())
+
+                if (serviceEnabled) {
+                    requireActivity().sendBroadcast(Intent(MyAccessibilityService.ACTION_RECORD_TRIGGER))
+                } else {
+                    coordinatorLayout.snack(R.string.error_accessibility_service_disabled_record_trigger) {
+                        setAction(str(R.string.snackbar_fix)) {
+                            AccessibilityUtils.enableService(requireContext())
+                        }
+                    }
+                }
+            })
 
             return this.root
         }

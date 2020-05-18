@@ -9,27 +9,9 @@
 
         <import type="android.view.View" />
 
-        <import type="androidx.lifecycle.LiveData" />
-
         <variable
             name="viewModel"
             type="ConfigKeymapViewModel" />
-
-        <variable
-            name="onTriggerOptionsClick"
-            type="View.OnClickListener" />
-
-        <variable
-            name="onRecordTriggerClick"
-            type="View.OnClickListener" />
-
-        <variable
-            name="recordingTrigger"
-            type="LiveData&lt;Boolean>" />
-
-        <variable
-            name="timeLeft"
-            type="LiveData&lt;Integer>" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -89,7 +71,7 @@
                 android:layout_height="0dp"
                 android:layout_marginEnd="@dimen/cardview_padding_right"
                 android:layout_marginBottom="@dimen/cardview_padding_bottom"
-                android:onClick="@{onTriggerOptionsClick}"
+                android:onClick="@{() -> viewModel.triggerInSequence ? viewModel.chooseTriggerTimeout() : viewModel.chooseParallelTriggerClickType()}"
                 android:tint="?attr/colorOnSurface"
                 android:visibility="@{viewModel.triggerKeys.size() > 1 ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toTopOf="@+id/buttonRecordKeys"
@@ -134,8 +116,8 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="4dp"
-                android:onClick="@{onRecordTriggerClick}"
-                android:text="@{recordingTrigger ? @string/button_recording_trigger_countdown(timeLeft) : @string/button_record_trigger}"
+                android:onClick="@{() -> viewModel.recordTrigger()}"
+                android:text="@{viewModel.recordingTrigger ? @string/button_recording_trigger_countdown(viewModel.recordTriggerTimeLeft) : @string/button_record_trigger}"
                 app:backgroundTint="@color/red"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
