@@ -1,0 +1,161 @@
+package io.github.sds100.keymapper.ui.fragment
+
+import android.os.Bundle
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.map
+import androidx.lifecycle.observe
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.navGraphViewModels
+import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.action
+import io.github.sds100.keymapper.data.model.Action
+import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
+import io.github.sds100.keymapper.databinding.FragmentActionsBinding
+import io.github.sds100.keymapper.databinding.FragmentTriggerAndActionsBinding
+import io.github.sds100.keymapper.util.availableFlags
+import io.github.sds100.keymapper.util.buildModel
+import io.github.sds100.keymapper.util.observeCurrentDestinationEvent
+import io.github.sds100.keymapper.util.result.RecoverableFailure
+import io.github.sds100.keymapper.util.result.getFullMessage
+import io.github.sds100.keymapper.util.str
+import kotlinx.coroutines.launch
+import splitties.alertdialog.appcompat.alertDialog
+import splitties.alertdialog.appcompat.cancelButton
+import splitties.alertdialog.appcompat.okButton
+import splitties.bitflags.hasFlag
+import splitties.bitflags.withFlag
+import splitties.snackbar.action
+import splitties.snackbar.longSnack
+import splitties.toast.toast
+
+/**
+ * Created by sds100 on 18/05/2020.
+ */
+class ActionsFragment : Fragment() {
+
+    private val mViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap)
+
+    private val mActionModelList by lazy {
+        mViewModel.actionList.map { actionList ->
+            sequence {
+                actionList.forEach {
+                    yield(it.buildModel(requireContext()))
+                }
+            }.toList()
+        }
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        FragmentActionsBinding.inflate(inflater, container, false).apply {
+            viewModel = mViewModel
+            lifecycleOwner = viewLifecycleOwner
+
+            findNavController().observeCurrentDestinationEvent<Action>(
+                viewLifecycleOwner,
+                ChooseActionFragment.SAVED_STATE_KEY
+            ) {
+
+                if (!mViewModel.addAction(it)) {
+                    toast(R.string.error_action_exists)
+                }
+            }
+
+            setOnAddActionClick {
+                val direction = ConfigKeymapFragmentDirections.actionConfigKeymapFragmentToChooseActionFragment()
+                findNavController().navigate(direction)
+            }
+
+            subscribeActionList()
+
+            return this.root
+        }
+    }
+
+    private fun FragmentActionsBinding.subscribeActionList() {
+        mActionModelList.observe(viewLifecycleOwner) { actionList ->
+            epoxyRecyclerViewActions.withModels {
+
+                actionList.forEachIndexed { index, model ->
+                    action {
+                        val action = mViewModel.actionList.value?.get(index)
+
+                        id(model.id)
+                        model(model)
+                        icon(model.icon)
+                        flagsAreAvailable(action?.availableFlags?.isNotEmpty())
+
+                        onRemoveClick { _ ->
+                            mViewModel.removeAction(model.id)
+                        }
+
+                        onMoreClick { _ ->
+                            action?.chooseFlags()
+                        }
+
+                        onClick { _ ->
+                            if (model.hasError) {
+                                coordinatorLayout.longSnack(model.failure!!.getFullMessage(requireContext())) {
+
+                                    //only add an action to fix the error if the error can be recovered from
+                                    if (model.failure is RecoverableFailure) {
+                                        action(R.string.snackbar_fix) {
+                                            lifecycleScope.launch {
+                                                model.failure.recover(requireActivity()) {
+                                                    mViewModel.rebuildActionModels()
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    show()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun Action.chooseFlags() {
+        requireActivity().alertDialog {
+            val flagIds = availableFlags
+            val labels = sequence {
+                flagIds.forEach { flagId ->
+                    val label = str(Action.ACTION_FLAG_LABEL_MAP.getValue(flagId))
+                    yield(label)
+                }
+            }.toList().toTypedArray()
+
+            val checkedArray = sequence {
+                flagIds.forEach {
+                    yield(flags.hasFlag(it))
+                }
+            }.toList().toBooleanArray()
+
+            setMultiChoiceItems(labels, checkedArray) { _, index, checked ->
+                checkedArray[index] = checked
+            }
+
+            okButton {
+                var flags = 0
+
+                flagIds.forEachIndexed { index, flag ->
+                    if (checkedArray[index]) {
+                        flags = flags.withFlag(flag)
+                    }
+                }
+
+                mViewModel.setActionFlags(uniqueId, flags)
+            }
+
+            cancelButton()
+            show()
+        }
+    }
+}

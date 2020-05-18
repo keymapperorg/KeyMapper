@@ -13,10 +13,6 @@
         <variable
             name="viewModel"
             type="ConfigKeymapViewModel" />
-
-        <variable
-            name="onAddActionClick"
-            type="View.OnClickListener" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -35,7 +31,7 @@
                 style="@style/AppTabLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:tabMode="fixed">
+                app:tabMode="auto">
 
             </com.google.android.material.tabs.TabLayout>
 
