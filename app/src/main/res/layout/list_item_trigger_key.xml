@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <import type="io.github.sds100.keymapper.data.model.Trigger" />
 
         <import type="android.view.View" />
@@ -83,8 +84,8 @@
                     android:minHeight="40dp"
                     android:orientation="vertical"
                     app:layout_constraintEnd_toStartOf="@+id/buttonDevice"
-                    app:layout_constraintStart_toEndOf="@+id/buttonDrag"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintStart_toEndOf="@id/buttonDrag"
+                    app:layout_constraintTop_toTopOf="@+id/buttonDevice">
 
                     <TextView
                         android:id="@+id/textViewKeyName"
@@ -120,13 +121,15 @@
                     android:id="@+id/buttonDrag"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="40dp"
-                    android:layout_height="0dp"
-                    app:srcCompat="@drawable/ic_baseline_drag_handle_24"
+                    android:layout_height="40dp"
                     android:tint="?attr/colorOnSurface"
                     android:visibility="@{triggerKeyCount > 1 ? View.VISIBLE : View.GONE}"
-                    app:layout_constraintBottom_toBottomOf="@id/buttonRemove"
+                    app:layout_constraintBottom_toBottomOf="@id/layoutDescription"
+                    app:layout_constraintEnd_toStartOf="@+id/layoutDescription"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/buttonRemove" />
+                    app:layout_constraintTop_toTopOf="@id/layoutDescription"
+                    app:layout_constraintVertical_bias="0.0"
+                    app:srcCompat="@drawable/ic_baseline_drag_handle_24" />
 
                 <androidx.appcompat.widget.AppCompatImageButton
                     android:id="@+id/buttonMore"
@@ -134,12 +137,12 @@
                     android:layout_width="36dp"
                     android:layout_height="0dp"
                     android:onClick="@{onMoreClick}"
-                    app:srcCompat="@drawable/ic_outline_more_vert_24"
                     android:tint="?attr/colorOnSurface"
                     android:visibility="@{triggerMode == Trigger.SEQUENCE ? View.VISIBLE : View.GONE}"
                     app:layout_constraintBottom_toBottomOf="@+id/buttonRemove"
                     app:layout_constraintEnd_toStartOf="@+id/buttonRemove"
-                    app:layout_constraintTop_toTopOf="@id/buttonRemove" />
+                    app:layout_constraintTop_toTopOf="@id/buttonRemove"
+                    app:srcCompat="@drawable/ic_outline_more_vert_24" />
 
                 <androidx.appcompat.widget.AppCompatImageButton
                     android:id="@+id/buttonDevice"
@@ -147,11 +150,11 @@
                     android:layout_width="36dp"
                     android:layout_height="0dp"
                     android:onClick="@{onDeviceClick}"
-                    app:srcCompat="@drawable/ic_baseline_devices_other_24"
                     android:tint="?attr/colorOnSurface"
-                    app:layout_constraintBottom_toBottomOf="@+id/buttonRemove"
+                    app:layout_constraintBottom_toBottomOf="@+id/buttonMore"
                     app:layout_constraintEnd_toStartOf="@+id/buttonMore"
-                    app:layout_constraintTop_toTopOf="@id/buttonRemove" />
+                    app:layout_constraintTop_toTopOf="@id/buttonMore"
+                    app:srcCompat="@drawable/ic_baseline_devices_other_24" />
 
                 <io.github.sds100.keymapper.ui.view.SquareImageButton
                     android:id="@+id/buttonRemove"
@@ -159,14 +162,12 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:onClick="@{onRemoveClick}"
-                    app:srcCompat="@drawable/ic_outline_clear_24"
                     android:tint="?attr/colorOnSurface"
                     app:layout_constraintBottom_toBottomOf="@id/layoutDescription"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="1.0"
-                    app:layout_constraintStart_toEndOf="@+id/layoutDescription"
                     app:layout_constraintTop_toTopOf="@id/layoutDescription"
-                    app:layout_constraintVertical_bias="0.0" />
+                    app:layout_constraintVertical_bias="0.0"
+                    app:srcCompat="@drawable/ic_outline_clear_24" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
