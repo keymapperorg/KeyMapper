@@ -15,19 +15,14 @@ import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.WidgetsManager.EVENT_SERVICE_START
 import io.github.sds100.keymapper.WidgetsManager.EVENT_SERVICE_STOPPED
-import io.github.sds100.keymapper.data.model.Action
-import io.github.sds100.keymapper.util.AudioUtils
-import io.github.sds100.keymapper.util.InjectorUtils
-import io.github.sds100.keymapper.util.delegate.IKeymapDetectionDelegate
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
-import io.github.sds100.keymapper.util.isExternalCompat
-import io.github.sds100.keymapper.util.show
 import kotlinx.coroutines.delay
 
 /**
  * Created by sds100 on 05/04/2020.
  */
-class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IKeymapDetectionDelegate {
+class MyAccessibilityService : AccessibilityService(), LifecycleOwner {
 
     companion object {
         const val EXTRA_ACTION = "action"
@@ -113,13 +108,15 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IKeymapDe
     private var mPaused = false
     private lateinit var mLifecycleRegistry: LifecycleRegistry
 
-    private val mKeymapDetectionDelegate = KeymapDetectionDelegate(this)
+    private lateinit var mKeymapDetectionDelegate: KeymapDetectionDelegate
 
     override fun onServiceConnected() {
         super.onServiceConnected()
 
         mLifecycleRegistry = LifecycleRegistry(this)
         mLifecycleRegistry.currentState = Lifecycle.State.STARTED
+
+        mKeymapDetectionDelegate = KeymapDetectionDelegate(lifecycleScope)
 
         IntentFilter().apply {
             addAction(ACTION_TEST_ACTION)
@@ -139,6 +136,25 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IKeymapDe
 
         WidgetsManager.onEvent(this, EVENT_SERVICE_START)
         sendBroadcast(Intent(ACTION_ON_SERVICE_START))
+
+        mKeymapDetectionDelegate.imitateButtonPress.observe(this, EventObserver {
+            when (it) {
+                KeyEvent.KEYCODE_VOLUME_UP -> AudioUtils.adjustVolume(this, AudioManager.ADJUST_RAISE,
+                    showVolumeUi = true)
+
+                KeyEvent.KEYCODE_VOLUME_DOWN -> AudioUtils.adjustVolume(this, AudioManager.ADJUST_LOWER,
+                    showVolumeUi = true)
+
+                KeyEvent.KEYCODE_BACK -> performGlobalAction(GLOBAL_ACTION_BACK)
+                KeyEvent.KEYCODE_HOME -> performGlobalAction(GLOBAL_ACTION_HOME)
+                KeyEvent.KEYCODE_APP_SWITCH -> performGlobalAction(GLOBAL_ACTION_RECENTS)
+//            KeyEvent.KEYCODE_MENU -> mActionPerformerDelegate.performSystemAction(SystemAction.OPEN_MENU)
+            }
+        })
+
+        mKeymapDetectionDelegate.performAction.observe(this, EventObserver {
+            Log.e(this::class.java.simpleName, "perform... ${it.uniqueId}")
+        })
     }
 
     override fun onInterrupt() {}
@@ -207,25 +223,4 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IKeymapDe
     }
 
     override fun getLifecycle() = mLifecycleRegistry
-    override val lifecycleScope
-        get() = mLifecycleRegistry.coroutineScope
-
-    override fun performAction(action: Action) {
-        Log.e(this::class.java.simpleName, "perform... ${action.uniqueId}")
-    }
-
-    override fun imitateButtonPress(keyCode: Int) {
-        when (keyCode) {
-            KeyEvent.KEYCODE_VOLUME_UP -> AudioUtils.adjustVolume(this, AudioManager.ADJUST_RAISE,
-                showVolumeUi = true)
-
-            KeyEvent.KEYCODE_VOLUME_DOWN -> AudioUtils.adjustVolume(this, AudioManager.ADJUST_LOWER,
-                showVolumeUi = true)
-
-            KeyEvent.KEYCODE_BACK -> performGlobalAction(GLOBAL_ACTION_BACK)
-            KeyEvent.KEYCODE_HOME -> performGlobalAction(GLOBAL_ACTION_HOME)
-            KeyEvent.KEYCODE_APP_SWITCH -> performGlobalAction(GLOBAL_ACTION_RECENTS)
-//            KeyEvent.KEYCODE_MENU -> mActionPerformerDelegate.performSystemAction(SystemAction.OPEN_MENU)
-        }
-    }
 }

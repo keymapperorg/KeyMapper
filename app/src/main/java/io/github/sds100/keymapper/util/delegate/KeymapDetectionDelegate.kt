@@ -5,13 +5,16 @@ import android.util.Log
 import android.view.KeyEvent
 import androidx.collection.SparseArrayCompat
 import androidx.collection.keyIterator
+import androidx.lifecycle.MutableLiveData
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Extra
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Trigger
+import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.result.onFailure
 import io.github.sds100.keymapper.util.result.onSuccess
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import splitties.bitflags.hasFlag
@@ -21,8 +24,7 @@ import splitties.bitflags.withFlag
  * Created by sds100 on 05/05/2020.
  */
 
-class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate)
-    : IKeymapDetectionDelegate by iKeymapDetectionDelegate {
+class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope) {
 
     companion object {
         /**
@@ -286,6 +288,9 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
      */
     private val mParallelTriggerActionMap = mutableMapOf<IntArray, IntArray>()
 
+    val performAction: MutableLiveData<Event<Action>> = MutableLiveData()
+    val imitateButtonPress: MutableLiveData<Event<Int>> = MutableLiveData()
+
     /**
      * @return whether to consume the [KeyEvent].
      */
@@ -409,11 +414,11 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
                             Only imitate the key if it hasn't just been long pressed and wasn't double pressed.
                              */
                             if (!encodedEventWithClickType.hasFlag(FLAG_LONG_PRESS)) {
-                                lifecycleScope.launch {
+                                mCoroutineScope.launch {
                                     delay(AppPreferences.doublePressDelay.toLong())
 
                                     if (mDoublePressEventStates[index] == SINGLE_PRESSED) {
-                                        imitateButtonPress(keyCode)
+                                        this@KeymapDetectionDelegate.imitateButtonPress.value = Event(keyCode)
                                     }
                                 }
                             }
@@ -445,7 +450,9 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
 
         }
 
-        if (imitateButtonPress) imitateButtonPress(keyCode)
+        if (imitateButtonPress) {
+            this.imitateButtonPress.value = Event(keyCode)
+        }
 
         if (consumeEvent) Log.e(this::class.java.simpleName, "consume up")
         return consumeEvent
@@ -502,7 +509,7 @@ class KeymapDetectionDelegate(iKeymapDetectionDelegate: IKeymapDetectionDelegate
         actionKeysToPerform.forEach {
             val action = mActionMap[it] ?: return@forEach
 
-            performAction(action)
+            performAction.value = Event(action)
         }
 
 
