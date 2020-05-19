@@ -1,11 +1,11 @@
 package io.github.sds100.keymapper.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.map
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
@@ -16,16 +16,11 @@ import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentActionsBinding
 import io.github.sds100.keymapper.util.*
-import io.github.sds100.keymapper.util.result.RecoverableFailure
-import io.github.sds100.keymapper.util.result.getFullMessage
-import kotlinx.coroutines.launch
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
 import splitties.alertdialog.appcompat.okButton
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
-import splitties.snackbar.action
-import splitties.snackbar.longSnack
 import splitties.toast.toast
 
 /**
@@ -74,9 +69,11 @@ class ActionsFragment : Fragment() {
     private fun FragmentActionsBinding.subscribeActionList() {
         mActionModelList.observe(viewLifecycleOwner) { actionList ->
             epoxyRecyclerViewActions.withModels {
+                Log.e(this::class.java.simpleName, "refresh list")
 
                 actionList.forEachIndexed { index, model ->
                     action {
+                        Log.e(this::class.java.simpleName, model.hashCode().toString())
                         val action = mViewModel.actionList.value?.get(index)
 
                         id(model.id)
@@ -93,7 +90,9 @@ class ActionsFragment : Fragment() {
                         }
 
                         onClick { _ ->
-                            mViewModel.onActionModelClick(model)
+                            mActionModelList.value?.single { it.id == model.id }?.let {
+                                mViewModel.onActionModelClick(it)
+                            }
                         }
                     }
                 }
