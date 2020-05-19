@@ -20,7 +20,7 @@ class Trigger(var keys: List<Key> = listOf(), val extras: List<Extra> = listOf()
         const val PARALLEL = 0
         const val SEQUENCE = 1
 
-        const val DEFAULT_TRIGGER_MODE = PARALLEL
+        const val DEFAULT_TRIGGER_MODE = SEQUENCE
 
         const val UNDETERMINED = -1
         const val SHORT_PRESS = 0
