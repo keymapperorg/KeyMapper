@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.ui.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -69,11 +68,9 @@ class ActionsFragment : Fragment() {
     private fun FragmentActionsBinding.subscribeActionList() {
         mActionModelList.observe(viewLifecycleOwner) { actionList ->
             epoxyRecyclerViewActions.withModels {
-                Log.e(this::class.java.simpleName, "refresh list")
 
                 actionList.forEachIndexed { index, model ->
                     action {
-                        Log.e(this::class.java.simpleName, model.hashCode().toString())
                         val action = mViewModel.actionList.value?.get(index)
 
                         id(model.id)
