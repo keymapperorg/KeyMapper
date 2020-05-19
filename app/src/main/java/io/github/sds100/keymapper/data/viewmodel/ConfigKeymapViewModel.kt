@@ -2,7 +2,9 @@ package io.github.sds100.keymapper.data.viewmodel
 
 import android.view.KeyEvent
 import androidx.lifecycle.*
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.DeviceInfoRepository
+import io.github.sds100.keymapper.data.IOnboardingState
 import io.github.sds100.keymapper.data.KeymapRepository
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.util.Event
@@ -17,8 +19,9 @@ import java.util.*
 class ConfigKeymapViewModel internal constructor(
     private val mKeymapRepository: KeymapRepository,
     private val mDeviceInfoRepository: DeviceInfoRepository,
+    onboardingState: IOnboardingState,
     private val mId: Long
-) : ViewModel() {
+) : ViewModel(), IOnboardingState by onboardingState {
 
     companion object {
         const val NEW_KEYMAP_ID = -2L
@@ -31,6 +34,21 @@ class ConfigKeymapViewModel internal constructor(
         addSource(triggerInParallel) {
             if (it == true) {
                 value = Trigger.PARALLEL
+
+                /* when the user first chooses to make parallel a trigger, show a dialog informing them that
+                the order in which they list the keys is the order in which they will need to be held down.
+                 */
+                if (triggerKeys.value?.size!! > 1 &&
+                    !getShownPrompt(R.string.key_pref_shown_parallel_trigger_order_dialog)) {
+
+                    val notifyUser = NotifyUserModel(R.string.dialog_message_parallel_trigger_order) {
+                        setShownPrompt(R.string.key_pref_shown_parallel_trigger_order_dialog)
+
+
+                    }
+
+                    showOnboardingPrompt.value = Event(notifyUser)
+                }
 
                 triggerExtras.value = triggerExtras.value?.toMutableList()?.apply {
                     removeAll { extra -> extra.id == Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT }
@@ -63,6 +81,16 @@ class ConfigKeymapViewModel internal constructor(
 
             if (it == true) {
                 value = Trigger.SEQUENCE
+
+                if (triggerKeys.value?.size!! > 1 &&
+                    !getShownPrompt(R.string.key_pref_shown_sequence_trigger_explanation_dialog)) {
+                    val notifyUser = NotifyUserModel(R.string.dialog_message_sequence_trigger_explanation) {
+                        setShownPrompt(R.string.key_pref_shown_sequence_trigger_explanation_dialog)
+                    }
+
+                    showOnboardingPrompt.value = Event(notifyUser)
+
+                }
             }
         }
     }
@@ -93,6 +121,8 @@ class ConfigKeymapViewModel internal constructor(
 
     val constraintAndMode: MutableLiveData<Boolean> = MutableLiveData()
     val constraintOrMode: MutableLiveData<Boolean> = MutableLiveData()
+
+    val showOnboardingPrompt: MutableLiveData<Event<NotifyUserModel>> = MutableLiveData()
 
     init {
         if (mId == NEW_KEYMAP_ID) {
@@ -198,7 +228,18 @@ class ConfigKeymapViewModel internal constructor(
     }
 
     fun chooseParallelTriggerClickType() {
-        chooseParallelTriggerClickType.value = Event(Unit)
+        if (!getShownPrompt(R.string.key_pref_shown_double_press_restriction_warning)
+            && triggerInParallel.value == true) {
+            val notifyUser = NotifyUserModel(R.string.dialog_message_double_press_restricted_to_single_key) {
+                setShownPrompt(R.string.key_pref_shown_double_press_restriction_warning)
+
+                chooseParallelTriggerClickType.value = Event(Unit)
+            }
+
+            showOnboardingPrompt.value = Event(notifyUser)
+        } else {
+            chooseParallelTriggerClickType.value = Event(Unit)
+        }
     }
 
     fun setParallelTriggerClickType(@Trigger.ClickType clickType: Int) {
@@ -360,9 +401,9 @@ class ConfigKeymapViewModel internal constructor(
     }
 
     fun onActionModelClick(model: ActionModel) {
-        if (model.hasError){
+        if (model.hasError) {
             showFixActionPrompt.value = Event(model.failure!!)
-        }else{
+        } else {
             //TEST the action
         }
     }
@@ -397,10 +438,11 @@ class ConfigKeymapViewModel internal constructor(
     class Factory(
         private val mKeymapRepository: KeymapRepository,
         private val mDeviceInfoRepository: DeviceInfoRepository,
+        private val mIOnboardingState: IOnboardingState,
         private val mId: Long) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>) =
-            ConfigKeymapViewModel(mKeymapRepository, mDeviceInfoRepository, mId) as T
+            ConfigKeymapViewModel(mKeymapRepository, mDeviceInfoRepository, mIOnboardingState, mId) as T
     }
 }

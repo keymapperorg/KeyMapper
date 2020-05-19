@@ -13,6 +13,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.data.OnboardingState
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentConfigKeymapBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
@@ -21,6 +22,10 @@ import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.RecoverableFailure
 import io.github.sds100.keymapper.util.result.getFullMessage
 import kotlinx.coroutines.launch
+import splitties.alertdialog.appcompat.alertDialog
+import splitties.alertdialog.appcompat.coroutines.showAndAwait
+import splitties.alertdialog.appcompat.message
+import splitties.experimental.ExperimentalSplittiesApi
 import splitties.snackbar.action
 import splitties.snackbar.longSnack
 import splitties.snackbar.snack
@@ -30,11 +35,13 @@ import splitties.snackbar.snack
  */
 class ConfigKeymapFragment : Fragment() {
     private val mArgs by navArgs<ConfigKeymapFragmentArgs>()
+    private val mOnboardingState by lazy { OnboardingState(requireContext()) }
 
     private val mViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap) {
-        InjectorUtils.provideConfigKeymapViewModel(requireContext(), mArgs.keymapId)
+        InjectorUtils.provideConfigKeymapViewModel(requireContext(), mOnboardingState, mArgs.keymapId)
     }
 
+    @ExperimentalSplittiesApi
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         FragmentConfigKeymapBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
@@ -73,6 +80,20 @@ class ConfigKeymapFragment : Fragment() {
                     else -> false
                 }
             }
+
+            mViewModel.showOnboardingPrompt.observe(viewLifecycleOwner, EventObserver {
+
+                lifecycleScope.launchWhenCreated {
+                    val approvedWarning = requireActivity().alertDialog {
+                        message = str(it.message)
+
+                    }.showAndAwait(okValue = true, cancelValue = null, dismissValue = false)
+
+                    if (approvedWarning) {
+                        it.onApproved.invoke()
+                    }
+                }
+            })
 
             mViewModel.showFixActionPrompt.observe(viewLifecycleOwner, EventObserver {
                 coordinatorLayout.longSnack(it.getFullMessage(requireContext())) {

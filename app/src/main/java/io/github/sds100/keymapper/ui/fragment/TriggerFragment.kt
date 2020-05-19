@@ -129,19 +129,6 @@ class TriggerFragment : Fragment() {
 
             mViewModel.chooseParallelTriggerClickType.observe(viewLifecycleOwner, EventObserver {
                 lifecycleScope.launchWhenCreated {
-                    if (!AppPreferences.shownDoublePressRestrictionWarning &&
-                        mViewModel.triggerInParallel.value == true) {
-
-                        val approvedWarning = requireActivity().alertDialog {
-                            message = str(R.string.dialog_message_double_press_restricted_to_single_key)
-
-                        }.showAndAwait(okValue = true, cancelValue = null, dismissValue = false)
-
-                        if (approvedWarning) {
-                            AppPreferences.shownDoublePressRestrictionWarning = true
-                        }
-                    }
-
                     val newClickType = showClickTypeDialog()
                     mViewModel.setParallelTriggerClickType(newClickType)
                 }
@@ -151,28 +138,6 @@ class TriggerFragment : Fragment() {
 
             mViewModel.triggerMode.observe(viewLifecycleOwner) {
                 epoxyRecyclerViewTriggers.requestModelBuild()
-            }
-
-            mViewModel.triggerInParallel.observe(viewLifecycleOwner) {
-
-                /* when the user first chooses to make parallel a trigger, show a dialog informing them that
-                the order in which they list the keys is the order in which they will need to be held down.
-                 */
-                if (it == true && mViewModel.triggerKeys.value?.size!! > 1
-                    && !AppPreferences.shownParallelTriggerOrderDialog) {
-
-                    lifecycleScope.launch {
-
-                        val approvedWarning = requireActivity().alertDialog {
-                            message = str(R.string.dialog_message_parallel_trigger_order)
-
-                        }.showAndAwait(okValue = true, cancelValue = null, dismissValue = false)
-
-                        if (approvedWarning) {
-                            AppPreferences.shownParallelTriggerOrderDialog = true
-                        }
-                    }
-                }
             }
 
             mViewModel.buildTriggerKeyModelListEvent.observe(viewLifecycleOwner, EventObserver { triggerKeys ->
@@ -189,23 +154,6 @@ class TriggerFragment : Fragment() {
                     mViewModel.triggerKeyModelList.value = modelList
                 }
             })
-
-            mViewModel.triggerInSequence.observe(viewLifecycleOwner) {
-                if (it == true && mViewModel.triggerKeys.value?.size!! > 1
-                    && !AppPreferences.shownSequenceTriggerExplanationDialog) {
-
-                    lifecycleScope.launch {
-                        val approvedWarning = requireActivity().alertDialog {
-                            message = str(R.string.dialog_message_sequence_trigger_explanation)
-
-                        }.showAndAwait(okValue = true, cancelValue = null, dismissValue = false)
-
-                        if (approvedWarning) {
-                            AppPreferences.shownSequenceTriggerExplanationDialog = true
-                        }
-                    }
-                }
-            }
 
             return this.root
         }

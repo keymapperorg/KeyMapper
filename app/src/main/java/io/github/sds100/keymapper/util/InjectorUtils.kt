@@ -5,10 +5,10 @@ import com.example.architecturetest.data.DefaultDeviceInfoRepository
 import com.example.architecturetest.data.DefaultKeymapRepository
 import io.github.sds100.keymapper.data.DefaultSystemActionRepository
 import io.github.sds100.keymapper.data.FileRepository
+import io.github.sds100.keymapper.data.IOnboardingState
 import io.github.sds100.keymapper.data.SystemRepository
 import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.viewmodel.*
-import io.github.sds100.keymapper.ui.callback.StringResourceProvider
 
 /**
  * Created by sds100 on 26/01/2020.
@@ -89,10 +89,11 @@ object InjectorUtils {
 
     fun provideConfigKeymapViewModel(
         context: Context,
+        onboardingState: IOnboardingState,
         id: Long
     ): ConfigKeymapViewModel.Factory {
         val keymapRepository = getDefaultKeymapRepository(context)
         val deviceInfoRepository = getDeviceInfoRepository(context)
-        return ConfigKeymapViewModel.Factory(keymapRepository, deviceInfoRepository, id)
+        return ConfigKeymapViewModel.Factory(keymapRepository, deviceInfoRepository, onboardingState, id)
     }
 }

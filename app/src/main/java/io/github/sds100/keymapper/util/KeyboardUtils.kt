@@ -12,13 +12,9 @@ import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.WidgetsManager
-import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
 import io.github.sds100.keymapper.util.result.*
-import splitties.alertdialog.appcompat.alertDialog
-import splitties.alertdialog.appcompat.coroutines.showAndAwait
-import splitties.alertdialog.appcompat.messageResource
 import splitties.experimental.ExperimentalSplittiesApi
 import splitties.init.appCtx
 import splitties.systemservices.inputMethodManager
@@ -31,26 +27,9 @@ import splitties.toast.toast
 object KeyboardUtils {
     @ExperimentalSplittiesApi
     @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
-    suspend fun switchToKeyMapperIme() {
-        val shownWarningDialog = AppPreferences.shownKeyMapperImeWarningDialog
-        var approvedWarning = shownWarningDialog
-
-        if (!shownWarningDialog) {
-            approvedWarning = appCtx.alertDialog {
-                messageResource = R.string.dialog_message_cant_use_virtual_keyboard
-            }.showAndAwait(okValue = true,
-                cancelValue = false,
-                dismissValue = false)
-
-            AppPreferences.shownKeyMapperImeWarningDialog = approvedWarning
-        }
-
-        if (!approvedWarning) {
-            return
-        }
-
+    fun switchToKeyMapperIme(ctx: Context) {
         if (!isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
-            toast(R.string.error_need_write_secure_settings_permission)
+            ctx.toast(R.string.error_need_write_secure_settings_permission)
             return
         }
 
@@ -78,7 +57,7 @@ object KeyboardUtils {
         } else if ((O_MR1..Build.VERSION_CODES.P).contains(Build.VERSION.SDK_INT)) {
             val command = "am broadcast -a com.android.server.InputMethodManagerService.SHOW_INPUT_METHOD_PICKER"
             RootUtils.executeRootCommand(command)
-        }else{
+        } else {
             appCtx.toast(R.string.error_this_is_unsupported)
         }
     }

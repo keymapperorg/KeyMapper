@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,6 +25,7 @@ import androidx.work.WorkManager
 import com.airbnb.epoxy.EpoxyController
 import io.github.sds100.keymapper.BuildConfig
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.data.OnboardingState
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
@@ -46,6 +46,9 @@ import io.github.sds100.keymapper.worker.SeedDatabaseWorker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import splitties.alertdialog.appcompat.alertDialog
+import splitties.alertdialog.appcompat.coroutines.showAndAwait
+import splitties.alertdialog.appcompat.messageResource
 import splitties.experimental.ExperimentalSplittiesApi
 import splitties.snackbar.action
 import splitties.snackbar.longSnack
@@ -228,7 +231,23 @@ class KeymapListFragment : Fragment() {
             }
 
             setEnableImeService {
-                KeyboardUtils.openImeSettings()
+                lifecycleScope.launchWhenCreated {
+                    val onboardingState = OnboardingState(requireContext())
+
+                    if (!onboardingState.getShownPrompt(R.string.key_pref_shown_cant_use_virtual_keyboard_message)) {
+                        val approvedWarning = requireActivity().alertDialog {
+                            messageResource = R.string.dialog_message_cant_use_virtual_keyboard
+                        }.showAndAwait(okValue = true,
+                            cancelValue = false,
+                            dismissValue = false)
+
+                        if (approvedWarning) {
+                            onboardingState.setShownPrompt(R.string.key_pref_shown_cant_use_virtual_keyboard_message)
+
+                            KeyboardUtils.openImeSettings()
+                        }
+                    }
+                }
             }
 
             setGrantWriteSecureSettingsPermission {

@@ -37,11 +37,6 @@ object AppPreferences : DefaultPreferences() {
         appCtx.bool(R.bool.default_value_root_permission)
     )
 
-    var shownKeyMapperImeWarningDialog by BoolPref(
-        appCtx.str(R.string.key_pref_shown_cant_use_virtual_keyboard_message),
-        appCtx.bool(R.bool.default_value_shown_cant_use_virtual_keyboard_message)
-    )
-
     var showImePickerNotification by BoolPref(
         appCtx.str(R.string.key_pref_show_ime_notification),
         appCtx.bool(R.bool.default_value_show_ime_notification)
@@ -64,21 +59,6 @@ object AppPreferences : DefaultPreferences() {
     var autoShowImePicker by BoolPref(
         appCtx.str(R.string.key_pref_auto_show_ime_picker),
         appCtx.bool(R.bool.default_value_auto_show_ime_picker)
-    )
-
-    var shownDoublePressRestrictionWarning by BoolPref(
-        appCtx.str(R.string.key_pref_shown_double_press_restriction_warning),
-        false
-    )
-
-    var shownParallelTriggerOrderDialog by BoolPref(
-        appCtx.str(R.string.key_pref_shown_parallel_trigger_order_dialog),
-        false
-    )
-
-    var shownSequenceTriggerExplanationDialog by BoolPref(
-        appCtx.str(R.string.key_pref_shown_sequence_trigger_explanation_dialog),
-        false
     )
 
     var defaultIme by StringOrNullPref(KEY_DEFAULT_IME)

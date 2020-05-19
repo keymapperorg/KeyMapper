@@ -100,7 +100,7 @@ class ImeServiceNotChosen : RecoverableFailure() {
     @ExperimentalSplittiesApi
     override suspend fun recover(activity: FragmentActivity, onSuccess: () -> Unit) {
         if (isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
-            KeyboardUtils.switchToKeyMapperIme()
+            KeyboardUtils.switchToKeyMapperIme(activity)
         } else {
             KeyboardUtils.showInputMethodPicker()
         }
