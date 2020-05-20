@@ -1,16 +1,15 @@
 package io.github.sds100.keymapper.util.delegate
 
-import android.os.SystemClock
 import android.view.KeyEvent
 import androidx.collection.SparseArrayCompat
 import androidx.collection.keyIterator
 import androidx.lifecycle.MutableLiveData
-import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Extra
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.util.Event
+import io.github.sds100.keymapper.util.IClock
 import io.github.sds100.keymapper.util.result.onFailure
 import io.github.sds100.keymapper.util.result.onSuccess
 import kotlinx.coroutines.CoroutineScope
@@ -25,7 +24,9 @@ import timber.log.Timber
  */
 
 class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
-                              var longPressDelay: Int) {
+                              var longPressDelay: Int,
+                              var doublePressDelay: Int,
+                              iClock: IClock) : IClock by iClock {
 
     companion object {
         /**
@@ -289,13 +290,15 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
      */
     private val mParallelTriggerActionMap = mutableMapOf<IntArray, IntArray>()
 
+    private val mEventDownTimeMap = mutableMapOf<Int, Long>()
+
     val performAction: MutableLiveData<Event<Action>> = MutableLiveData()
     val imitateButtonPress: MutableLiveData<Event<Int>> = MutableLiveData()
 
     /**
      * @return whether to consume the [KeyEvent].
      */
-    fun onKeyEvent(keyCode: Int, action: Int, downTime: Long, descriptor: String, isExternal: Boolean): Boolean {
+    fun onKeyEvent(keyCode: Int, action: Int, descriptor: String, isExternal: Boolean): Boolean {
         if (!mDetectKeymaps) return false
 
         if ((isExternal && !mDetectExternalEvents) || (!isExternal && !mDetectInternalEvents)) {
@@ -311,7 +314,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
         when (action) {
             KeyEvent.ACTION_DOWN -> return onKeyDown(keyCode, encodedEvent)
-            KeyEvent.ACTION_UP -> return onKeyUp(keyCode, downTime, encodedEvent)
+            KeyEvent.ACTION_UP -> return onKeyUp(keyCode, encodedEvent)
         }
 
         return false
@@ -321,12 +324,13 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
      * @return whether to consume the [KeyEvent].
      */
     private fun onKeyDown(keyCode: Int, encodedEvent: Int): Boolean {
+        mEventDownTimeMap[encodedEvent] = currentTime
 
         var consumeEvent = false
 
         //consume sequence trigger keys until their timeout has been reached
         mSequenceTriggersTimeoutTimes.forEachIndexed { triggerIndex, timeoutTime ->
-            if (timeoutTime != -1L && SystemClock.uptimeMillis() >= timeoutTime) {
+            if (timeoutTime != -1L && currentTime >= timeoutTime) {
                 mLastMatchedSequenceEventIndices[triggerIndex] = -1
                 mSequenceTriggersTimeoutTimes[triggerIndex] = -1
             } else {
@@ -338,7 +342,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         }
 
         mDoublePressTimeoutTimes.forEachIndexed { doublePressEventIndex, timeoutTime ->
-            if (SystemClock.uptimeMillis() >= timeoutTime) {
+            if (currentTime >= timeoutTime) {
                 mDoublePressTimeoutTimes[doublePressEventIndex] = -1
                 mDoublePressEventStates[doublePressEventIndex] = NOT_PRESSED
 
@@ -372,7 +376,9 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
     /**
      * @return whether to consume the event.
      */
-    private fun onKeyUp(keyCode: Int, downTime: Long, encodedEvent: Int): Boolean {
+    private fun onKeyUp(keyCode: Int, encodedEvent: Int): Boolean {
+        val downTime = mEventDownTimeMap[encodedEvent]!!
+        mEventDownTimeMap.remove(encodedEvent)
 
         var consumeEvent = false
         var imitateButtonPress = false
@@ -385,7 +391,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             If the key is also mapped to a double press, the button will be imitated every time it is pressed when
             the user tries to double press it so only imitate the key when a double press fails.
              */
-            if ((SystemClock.uptimeMillis() - downTime) < longPressDelay) {
+            if ((currentTime - downTime) < longPressDelay) {
 
                 if (!mDoublePressEvents.hasEvent(encodedEvent.withFlag(FLAG_DOUBLE_PRESS))) {
                     imitateButtonPress = true
@@ -408,15 +414,14 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                         /*if the key is in the single pressed state, set the timeout time and start the timer
                         * to imitate the key if it isn't double pressed in the end*/
                         SINGLE_PRESSED -> {
-                            mDoublePressTimeoutTimes[index] =
-                                SystemClock.uptimeMillis() + AppPreferences.doublePressDelay
+                            mDoublePressTimeoutTimes[index] = currentTime + doublePressDelay
 
                             /*
                             Only imitate the key if it hasn't just been long pressed and wasn't double pressed.
                              */
                             if (!encodedEventWithClickType.hasFlag(FLAG_LONG_PRESS)) {
                                 mCoroutineScope.launch {
-                                    delay(AppPreferences.doublePressDelay.toLong())
+                                    delay(doublePressDelay.toLong())
 
                                     if (mDoublePressEventStates[index] == SINGLE_PRESSED) {
                                         this@KeymapDetectionDelegate.imitateButtonPress.value = Event(keyCode)
@@ -491,7 +496,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 needs to start for this trigger.
                  */
                 if (nextIndex == 0) {
-                    val startTime = SystemClock.uptimeMillis()
+                    val startTime = currentTime
                     val timeout = mSequenceTriggerTimeouts[triggerIndex]
 
                     mSequenceTriggersTimeoutTimes[triggerIndex] = startTime + timeout

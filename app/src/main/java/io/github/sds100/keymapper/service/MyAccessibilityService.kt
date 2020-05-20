@@ -4,6 +4,7 @@ import android.accessibilityservice.AccessibilityService
 import android.content.*
 import android.media.AudioManager
 import android.os.Build
+import android.os.SystemClock
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import androidx.lifecycle.*
@@ -22,7 +23,7 @@ import timber.log.Timber
  * Created by sds100 on 05/04/2020.
  */
 class MyAccessibilityService : AccessibilityService(),
-    LifecycleOwner, SharedPreferences.OnSharedPreferenceChangeListener {
+    LifecycleOwner, SharedPreferences.OnSharedPreferenceChangeListener, IClock {
 
     companion object {
         const val EXTRA_ACTION = "action"
@@ -110,13 +111,20 @@ class MyAccessibilityService : AccessibilityService(),
 
     private lateinit var mKeymapDetectionDelegate: KeymapDetectionDelegate
 
+    override val currentTime: Long
+        get() = SystemClock.elapsedRealtime()
+
     override fun onServiceConnected() {
         super.onServiceConnected()
 
         mLifecycleRegistry = LifecycleRegistry(this)
         mLifecycleRegistry.currentState = Lifecycle.State.STARTED
 
-        mKeymapDetectionDelegate = KeymapDetectionDelegate(lifecycleScope, AppPreferences.longPressDelay)
+        mKeymapDetectionDelegate = KeymapDetectionDelegate(
+            lifecycleScope,
+            AppPreferences.longPressDelay,
+            AppPreferences.doublePressDelay,
+            iClock = this)
 
         IntentFilter().apply {
             addAction(ACTION_TEST_ACTION)
@@ -197,7 +205,6 @@ class MyAccessibilityService : AccessibilityService(),
             return mKeymapDetectionDelegate.onKeyEvent(
                 event.keyCode,
                 event.action,
-                event.downTime,
                 event.device.descriptor,
                 event.device.isExternalCompat)
 
@@ -212,6 +219,10 @@ class MyAccessibilityService : AccessibilityService(),
         when (key) {
             str(R.string.key_pref_long_press_delay) -> {
                 mKeymapDetectionDelegate.longPressDelay = AppPreferences.longPressDelay
+            }
+
+            str(R.string.key_pref_double_press_delay) -> {
+                mKeymapDetectionDelegate.doublePressDelay = AppPreferences.doublePressDelay
             }
         }
     }
