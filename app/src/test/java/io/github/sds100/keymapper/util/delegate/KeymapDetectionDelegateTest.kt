@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.util.delegate
 
 import android.view.KeyEvent
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Trigger
@@ -41,6 +42,12 @@ class KeymapDetectionDelegateTest {
         private val DOUBLE_PRESS_DELAY = 300
 
         private val TEST_ACTION = Action(ActionType.SYSTEM_ACTION, SystemAction.TOGGLE_FLASHLIGHT)
+        private val TEST_ACTION_2 = Action(ActionType.APP, Constants.PACKAGE_NAME)
+
+        private val TEST_ACTIONS = arrayOf(
+            TEST_ACTION,
+            TEST_ACTION_2
+        )
     }
 
     private lateinit var mDelegate: KeymapDetectionDelegate
@@ -58,6 +65,39 @@ class KeymapDetectionDelegateTest {
 
         mDelegate = KeymapDetectionDelegate(mTestScope, LONG_PRESS_DELAY, DOUBLE_PRESS_DELAY, iClock)
     }
+
+    @Test
+    @Parameters(method = "params_multipleActionsPerformed")
+    fun validInput_multipleActionsPerformed(description: String, trigger: Trigger) {
+        //GIVEN
+        val keymap = KeyMap(0, trigger, TEST_ACTIONS.toList())
+        mDelegate.keyMapListCache = listOf(keymap)
+
+        //WHEN
+        runBlocking {
+            keymap.trigger.keys.forEach {
+                mockTriggerKeyInput(it)
+            }
+        }
+
+        //THEN
+        var actionPerformedCount = 0
+
+        for (i in TEST_ACTIONS.indices) {
+            mDelegate.performAction.getOrAwaitValue()
+            actionPerformedCount++
+        }
+
+        assertEquals(TEST_ACTIONS.size, actionPerformedCount)
+    }
+
+    fun params_multipleActionsPerformed() = listOf(
+        arrayOf("sequence", sequenceTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE))),
+        arrayOf("parallel", parallelTrigger(
+            Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE),
+            Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_THIS_DEVICE)
+        ))
+    )
 
     @Test
     @Parameters(method = "params_downConsumed")
