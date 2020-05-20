@@ -1,21 +1,18 @@
 package io.github.sds100.keymapper.service
 
 import android.accessibilityservice.AccessibilityService
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.media.AudioManager
 import android.os.Build
-import android.util.Log
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import androidx.lifecycle.*
-import io.github.sds100.keymapper.BuildConfig
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.WidgetsManager.EVENT_SERVICE_START
 import io.github.sds100.keymapper.WidgetsManager.EVENT_SERVICE_STOPPED
+import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
 import kotlinx.coroutines.delay
@@ -24,7 +21,8 @@ import timber.log.Timber
 /**
  * Created by sds100 on 05/04/2020.
  */
-class MyAccessibilityService : AccessibilityService(), LifecycleOwner {
+class MyAccessibilityService : AccessibilityService(),
+    LifecycleOwner, SharedPreferences.OnSharedPreferenceChangeListener {
 
     companion object {
         const val EXTRA_ACTION = "action"
@@ -118,7 +116,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner {
         mLifecycleRegistry = LifecycleRegistry(this)
         mLifecycleRegistry.currentState = Lifecycle.State.STARTED
 
-        mKeymapDetectionDelegate = KeymapDetectionDelegate(lifecycleScope)
+        mKeymapDetectionDelegate = KeymapDetectionDelegate(lifecycleScope, AppPreferences.longPressDelay)
 
         IntentFilter().apply {
             addAction(ACTION_TEST_ACTION)
@@ -135,6 +133,8 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner {
         InjectorUtils.getDefaultKeymapRepository(this).keymapList.observe(this) {
             mKeymapDetectionDelegate.keyMapListCache = it
         }
+
+        defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
 
         WidgetsManager.onEvent(this, EVENT_SERVICE_START)
         sendBroadcast(Intent(ACTION_ON_SERVICE_START))
@@ -169,6 +169,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner {
 
         WidgetsManager.onEvent(this, EVENT_SERVICE_STOPPED)
         sendBroadcast(Intent(ACTION_ON_SERVICE_STOP))
+        defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
 
         unregisterReceiver(mBroadcastReceiver)
     }
@@ -205,6 +206,14 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner {
         }
 
         return super.onKeyEvent(event)
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        when (key) {
+            str(R.string.key_pref_long_press_delay) -> {
+                mKeymapDetectionDelegate.longPressDelay = AppPreferences.longPressDelay
+            }
+        }
     }
 
     private suspend fun recordTrigger() {

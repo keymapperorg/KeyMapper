@@ -24,7 +24,8 @@ import timber.log.Timber
  * Created by sds100 on 05/05/2020.
  */
 
-class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope) {
+class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
+                              var longPressDelay: Int) {
 
     companion object {
         /**
@@ -384,7 +385,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope) {
             If the key is also mapped to a double press, the button will be imitated every time it is pressed when
             the user tries to double press it so only imitate the key when a double press fails.
              */
-            if ((SystemClock.uptimeMillis() - downTime) < AppPreferences.longPressDelay) {
+            if ((SystemClock.uptimeMillis() - downTime) < longPressDelay) {
 
                 if (!mDoublePressEvents.hasEvent(encodedEvent.withFlag(FLAG_DOUBLE_PRESS))) {
                     imitateButtonPress = true
