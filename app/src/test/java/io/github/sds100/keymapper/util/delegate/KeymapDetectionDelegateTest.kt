@@ -1,24 +1,27 @@
 package io.github.sds100.keymapper.util.delegate
 
-import android.os.SystemClock
 import android.view.KeyEvent
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.util.ActionType
+import io.github.sds100.keymapper.util.IClock
 import io.github.sds100.keymapper.util.SystemAction
+import junit.framework.Assert.assertEquals
+import junitparams.JUnitParamsRunner
+import junitparams.Parameters
+import junitparams.naming.TestCaseName
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
-import org.junit.Assert.assertEquals
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.annotation.Config
 import kotlin.random.Random
 
 /**
@@ -26,8 +29,7 @@ import kotlin.random.Random
  */
 
 @ExperimentalCoroutinesApi
-@RunWith(AndroidJUnit4::class)
-@Config(manifest = Config.NONE)
+@RunWith(JUnitParamsRunner::class)
 class KeymapDetectionDelegateTest {
 
     companion object {
@@ -35,6 +37,8 @@ class KeymapDetectionDelegateTest {
         private val FAKE_DESCRIPTORS = arrayOf(
             FAKE_KEYBOARD_DESCRIPTOR
         )
+        private val LONG_PRESS_DELAY = 500
+        private val DOUBLE_PRESS_DELAY = 300
 
         private val TEST_ACTION = Action(ActionType.SYSTEM_ACTION, SystemAction.TOGGLE_FLASHLIGHT)
     }
@@ -42,27 +46,26 @@ class KeymapDetectionDelegateTest {
     private lateinit var mDelegate: KeymapDetectionDelegate
     private val mTestScope = TestCoroutineScope()
 
+    @get:Rule
+    var instantExecutorRule = InstantTaskExecutorRule()
+
     @Before
     fun init() {
-        mDelegate = KeymapDetectionDelegate(mTestScope)
+        val iClock = object : IClock {
+            override val currentTime: Long
+                get() = System.currentTimeMillis()
+        }
+
+        mDelegate = KeymapDetectionDelegate(mTestScope, LONG_PRESS_DELAY, DOUBLE_PRESS_DELAY, iClock)
     }
 
     @Test
-    fun shortPressTrigger_validSequenceInput_actionPerformed() = validSequenceInput_actionPerformed(
-        Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE)
-    )
-
-    @Test
-    fun shortPressTrigger_validSequenceInput_downConsumed() = validSequenceInput_downConsumed(
-        Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE)
-    )
-
-    private fun validSequenceInput_downConsumed(key: Trigger.Key) {
-        mDelegate.keyMapListCache = listOf(KeyMap(
-            0,
-            Trigger(listOf(key)).apply { mode = Trigger.SEQUENCE },
-            listOf(TEST_ACTION)
-        ))
+    @Parameters(method = "params_downConsumed")
+    @TestCaseName("{0}")
+    fun validInput_downConsumed(description: String, key: Trigger.Key) {
+        //GIVEN
+        val keymap = createKeymapFromTriggerKey(0, key)
+        mDelegate.keyMapListCache = listOf(keymap)
 
         //WHEN
         val consumed = inputKeyEvent(key.keyCode, KeyEvent.ACTION_DOWN, deviceIdToDescriptor(key.deviceId))
@@ -71,13 +74,22 @@ class KeymapDetectionDelegateTest {
         assertEquals(consumed, true)
     }
 
-    private fun validSequenceInput_actionPerformed(vararg key: Trigger.Key) {
-        mDelegate.keyMapListCache = listOf(KeyMap(0, Trigger(key.toList()), listOf(TEST_ACTION)))
+    fun params_downConsumed() = listOf(
+        arrayOf("short press", Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE)),
+        arrayOf("long press", Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.LONG_PRESS)),
+        arrayOf("double press", Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.DOUBLE_PRESS))
+    )
+
+    @Test
+    @Parameters(method = "params_actionPerformed")
+    @TestCaseName("{0}")
+    fun validInput_actionPerformed(description: String, keymap: KeyMap) {
+        mDelegate.keyMapListCache = listOf(keymap)
 
         //WHEN
-        runBlockingTest {
-            key.forEach {
-                inputTriggerKey(it)
+        runBlocking {
+            keymap.trigger.keys.forEach {
+                mockTriggerKeyInput(it)
             }
         }
 
@@ -87,7 +99,20 @@ class KeymapDetectionDelegateTest {
         assertThat(value.getContentIfNotHandled(), `is`(TEST_ACTION))
     }
 
-    private suspend fun inputTriggerKey(key: Trigger.Key) {
+    fun params_actionPerformed(): List<Array<Any>> {
+        val triggerAndDescriptions = listOf(
+            "sequence single short-press this-device" to sequenceTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE)),
+            "sequence single long-press this-device" to sequenceTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.LONG_PRESS))
+        )
+
+        return triggerAndDescriptions.mapIndexed { i, triggerAndDescription ->
+            arrayOf(triggerAndDescription.first, KeyMap(i.toLong(), triggerAndDescription.second, listOf(TEST_ACTION)))
+        }
+    }
+
+    private fun sequenceTrigger(vararg key: Trigger.Key) = Trigger(key.toList()).apply { mode = Trigger.SEQUENCE }
+
+    private suspend fun mockTriggerKeyInput(key: Trigger.Key) {
         val deviceDescriptor = deviceIdToDescriptor(key.deviceId)
 
         inputKeyEvent(key.keyCode, KeyEvent.ACTION_DOWN, deviceDescriptor)
@@ -99,7 +124,7 @@ class KeymapDetectionDelegateTest {
             }
 
             Trigger.LONG_PRESS -> {
-                delay(500)
+                delay(600)
                 inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, deviceDescriptor)
             }
 
@@ -119,7 +144,6 @@ class KeymapDetectionDelegateTest {
         mDelegate.onKeyEvent(
             keyCode,
             action,
-            SystemClock.uptimeMillis(),
             deviceDescriptor ?: "",
             isExternal = deviceDescriptor != null
         )
@@ -139,4 +163,7 @@ class KeymapDetectionDelegateTest {
             else -> deviceId
         }
     }
+
+    private fun createKeymapFromTriggerKey(id: Long, key: Trigger.Key) =
+        KeyMap(id, Trigger(keys = listOf(key)), actionList = listOf(TEST_ACTION))
 }
