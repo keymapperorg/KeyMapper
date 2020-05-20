@@ -91,8 +91,6 @@ class ActionsFragment : Fragment() {
                                 mViewModel.onActionModelClick(it)
                             }
                         }
-
-                        onClick(onClickListener)
                     }
                 }
             }
