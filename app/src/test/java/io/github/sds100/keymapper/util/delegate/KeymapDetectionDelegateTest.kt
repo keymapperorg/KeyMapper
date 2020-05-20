@@ -62,6 +62,21 @@ class KeymapDetectionDelegateTest {
     @Test
     @Parameters(method = "params_downConsumed")
     @TestCaseName("{0}")
+    fun invalidInput_downNotConsumed(description: String, key: Trigger.Key) {
+        //GIVEN
+        val keymap = createKeymapFromTriggerKey(0, key)
+        mDelegate.keyMapListCache = listOf(keymap)
+
+        //WHEN
+        val consumed = inputKeyEvent(KeyEvent.KEYCODE_0, KeyEvent.ACTION_DOWN, deviceIdToDescriptor(key.deviceId))
+
+        //THEN
+        assertEquals(consumed, false)
+    }
+
+    @Test
+    @Parameters(method = "params_downConsumed")
+    @TestCaseName("{0}")
     fun validInput_downConsumed(description: String, key: Trigger.Key) {
         //GIVEN
         val keymap = createKeymapFromTriggerKey(0, key)
@@ -111,6 +126,7 @@ class KeymapDetectionDelegateTest {
     }
 
     private fun sequenceTrigger(vararg key: Trigger.Key) = Trigger(key.toList()).apply { mode = Trigger.SEQUENCE }
+    private fun parallelTrigger(vararg key: Trigger.Key) = Trigger(key.toList()).apply { mode = Trigger.PARALLEL }
 
     private suspend fun mockTriggerKeyInput(key: Trigger.Key) {
         val deviceDescriptor = deviceIdToDescriptor(key.deviceId)
