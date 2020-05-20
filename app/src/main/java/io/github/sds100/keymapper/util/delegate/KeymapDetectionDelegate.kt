@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.util.delegate
 
 import android.os.SystemClock
-import android.util.Log
 import android.view.KeyEvent
 import androidx.collection.SparseArrayCompat
 import androidx.collection.keyIterator
@@ -19,6 +18,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
+import timber.log.Timber
 
 /**
  * Created by sds100 on 05/05/2020.
@@ -325,7 +325,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope) {
 
         //consume sequence trigger keys until their timeout has been reached
         mSequenceTriggersTimeoutTimes.forEachIndexed { triggerIndex, timeoutTime ->
-            if (SystemClock.uptimeMillis() >= timeoutTime) {
+            if (timeoutTime != -1L && SystemClock.uptimeMillis() >= timeoutTime) {
                 mLastMatchedSequenceEventIndices[triggerIndex] = -1
                 mSequenceTriggersTimeoutTimes[triggerIndex] = -1
             } else {
@@ -347,20 +347,20 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope) {
         }
 
         if (consumeEvent) {
-            Log.e(this::class.java.simpleName, "consume down")
+            Timber.d("consume down")
             return true
         }
 
         if (mDetectDoublePresses) {
             if (mDoublePressEvents.hasEvent(encodedEvent.withFlag(FLAG_DOUBLE_PRESS))) {
-                Log.e(this::class.java.simpleName, "consume down")
+                Timber.d("consume down")
                 return true
             }
         }
 
         if (mDetectLongPresses) {
             if (mLongPressEvents.hasEvent(encodedEvent.withFlag(FLAG_LONG_PRESS))) {
-                Log.e(this::class.java.simpleName, "consume down")
+                Timber.d("consume down")
                 return true
             }
         }
@@ -454,7 +454,10 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope) {
             this.imitateButtonPress.value = Event(keyCode)
         }
 
-        if (consumeEvent) Log.e(this::class.java.simpleName, "consume up")
+        if (consumeEvent) {
+            Timber.d("consume up")
+        }
+
         return consumeEvent
     }
 

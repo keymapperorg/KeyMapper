@@ -2,86 +2,98 @@ package io.github.sds100.keymapper.util.delegate
 
 import android.os.SystemClock
 import android.view.KeyEvent
-import androidx.lifecycle.*
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.SystemAction
-import io.github.sds100.keymapper.util.SystemActionUtils
-import org.junit.After
+import junitparams.JUnitParamsRunner
+import junitparams.Parameters
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.runBlockingTest
+import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.`is`
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.verify
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
+import org.robolectric.annotation.Config
 
 /**
  * Created by sds100 on 17/05/2020.
  */
 
-class KeymapDetectionDelegateTest : LifecycleOwner {
+@ExperimentalCoroutinesApi
+@RunWith(JUnitParamsRunner::class)
+class KeymapDetectionDelegateTest {
 
     companion object {
         private const val FAKE_KEYBOARD_DESCRIPTOR = "fake_keyboard"
+
+        private val TEST_ACTION = Action(ActionType.SYSTEM_ACTION, SystemAction.TOGGLE_FLASHLIGHT)
     }
 
-    private val mIKeymapDetectionDelegate = object : IKeymapDetectionDelegate {
-        override fun performAction(action: Action) {}
-
-        override fun imitateButtonPress(keyCode: Int) {}
-
-        override val lifecycleScope: LifecycleCoroutineScope
-            get() = mLifecycleRegistry.coroutineScope
-
-    }
-
-    private lateinit var mLifecycleRegistry: LifecycleRegistry
-    private lateinit var mKeymapDetectionDelegate: KeymapDetectionDelegate
+    private lateinit var mDelegate: KeymapDetectionDelegate
+    private val mTestScope = TestCoroutineScope()
 
     @Before
     fun createDelegate() {
-        mLifecycleRegistry = LifecycleRegistry(this)
-        mLifecycleRegistry.currentState = Lifecycle.State.STARTED
-
-        mKeymapDetectionDelegate = KeymapDetectionDelegate(mIKeymapDetectionDelegate)
+        mDelegate = KeymapDetectionDelegate(mTestScope)
     }
 
-    @Test
-    fun onKeyEvent_shortPressParallelTrigger_actionPerformed() {
-        //GIVEN
-        val trigger = Trigger(
+    private val mSingleShortPressKeymap = KeyMap(0).apply {
+        actionList = listOf(TEST_ACTION)
+        trigger = Trigger(
             keys = listOf(
                 Trigger.Key(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
                     Trigger.Key.DEVICE_ID_THIS_DEVICE
                 )
-//                Trigger.Key(
-//                    KeyEvent.KEYCODE_VOLUME_UP,
-//                    Trigger.Key.DEVICE_ID_THIS_DEVICE
-//                )
             )
         )
+    }
 
-        val action = Action(ActionType.SYSTEM_ACTION, data = SystemAction.TOGGLE_FLASHLIGHT)
+    @Test
+    fun test
 
-        val keymap = KeyMap(0, trigger)
+    @Test
+    fun shortPressSingleKeyTrigger_actionPerformed() {
+        //GIVEN
 
-        val delegate = mock(KeymapDetectionDelegate::class.java)
-
-        delegate.keyMapListCache = listOf(keymap)
+        mDelegate.keyMapListCache = listOf(mSingleShortPressKeymap)
 
         //WHEN
-        delegate.onKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN, SystemClock.uptimeMillis(), "", isExternal = false)
-        delegate.onKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP, SystemClock.uptimeMillis(), "", isExternal = false)
+        mDelegate.onKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN, SystemClock.uptimeMillis(), "", isExternal = false)
+        mDelegate.onKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP, SystemClock.uptimeMillis(), "", isExternal = false)
 
         //THEN
-        verify(delegate).performAction(action)
+        val value = mDelegate.performAction.getOrAwaitValue()
+
+        assertThat(value.getContentIfNotHandled(), `is`(TEST_ACTION))
     }
 
-    @After
-    fun endLifecycle() {
-        mLifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+    @Test
+    fun shortPressSingleKeyTrigger_downConsumed() {
+        //GIVEN
+        mDelegate.keyMapListCache = listOf(mSingleShortPressKeymap)
+
+        //WHEN
+        val consume = mDelegate.onKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN, SystemClock.uptimeMillis(), "", isExternal = false)
+
+        //THEN
+        assert(consume)
     }
 
-    override fun getLifecycle() = mLifecycleRegistry
+    @Parameters
+    private fun validKeyInput_actionPerformed(trigger: Trigger): Boolean {
+    }
+
+    private suspend fun sendDownUp(keycode: Int) = runBlockingTest {
+        mDelegate.onKeyEvent(keycode, KeyEvent.ACTION_DOWN, SystemClock.uptimeMillis(), "", isExternal = false)
+        delay(100)
+        mDelegate.onKeyEvent(keycode, KeyEvent.ACTION_UP, SystemClock.uptimeMillis(), "", isExternal = false)
+    }
 }

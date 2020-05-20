@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import androidx.lifecycle.*
+import io.github.sds100.keymapper.BuildConfig
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.WidgetsManager.EVENT_SERVICE_START
@@ -18,6 +19,7 @@ import io.github.sds100.keymapper.WidgetsManager.EVENT_SERVICE_STOPPED
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
 import kotlinx.coroutines.delay
+import timber.log.Timber
 
 /**
  * Created by sds100 on 05/04/2020.
@@ -138,6 +140,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner {
         sendBroadcast(Intent(ACTION_ON_SERVICE_START))
 
         mKeymapDetectionDelegate.imitateButtonPress.observe(this, EventObserver {
+            Timber.d("imitate button press")
             when (it) {
                 KeyEvent.KEYCODE_VOLUME_UP -> AudioUtils.adjustVolume(this, AudioManager.ADJUST_RAISE,
                     showVolumeUi = true)
@@ -153,7 +156,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner {
         })
 
         mKeymapDetectionDelegate.performAction.observe(this, EventObserver {
-            Log.e(this::class.java.simpleName, "perform... ${it.uniqueId}")
+            Timber.d("perform... ${it.uniqueId}")
         })
     }
 
