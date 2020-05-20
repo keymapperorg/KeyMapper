@@ -8,30 +8,33 @@ import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.SystemAction
-import junitparams.JUnitParamsRunner
-import junitparams.Parameters
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.junit.runners.Parameterized
 import org.robolectric.annotation.Config
+import kotlin.random.Random
 
 /**
  * Created by sds100 on 17/05/2020.
  */
 
 @ExperimentalCoroutinesApi
-@RunWith(JUnitParamsRunner::class)
+@RunWith(AndroidJUnit4::class)
+@Config(manifest = Config.NONE)
 class KeymapDetectionDelegateTest {
 
     companion object {
         private const val FAKE_KEYBOARD_DESCRIPTOR = "fake_keyboard"
+        private val FAKE_DESCRIPTORS = arrayOf(
+            FAKE_KEYBOARD_DESCRIPTOR
+        )
 
         private val TEST_ACTION = Action(ActionType.SYSTEM_ACTION, SystemAction.TOGGLE_FLASHLIGHT)
     }
@@ -40,34 +43,43 @@ class KeymapDetectionDelegateTest {
     private val mTestScope = TestCoroutineScope()
 
     @Before
-    fun createDelegate() {
+    fun init() {
         mDelegate = KeymapDetectionDelegate(mTestScope)
     }
 
-    private val mSingleShortPressKeymap = KeyMap(0).apply {
-        actionList = listOf(TEST_ACTION)
-        trigger = Trigger(
-            keys = listOf(
-                Trigger.Key(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    Trigger.Key.DEVICE_ID_THIS_DEVICE
-                )
-            )
-        )
-    }
+    @Test
+    fun shortPressTrigger_validSequenceInput_actionPerformed() = validSequenceInput_actionPerformed(
+        Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE)
+    )
 
     @Test
-    fun test
+    fun shortPressTrigger_validSequenceInput_downConsumed() = validSequenceInput_downConsumed(
+        Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE)
+    )
 
-    @Test
-    fun shortPressSingleKeyTrigger_actionPerformed() {
-        //GIVEN
-
-        mDelegate.keyMapListCache = listOf(mSingleShortPressKeymap)
+    private fun validSequenceInput_downConsumed(key: Trigger.Key) {
+        mDelegate.keyMapListCache = listOf(KeyMap(
+            0,
+            Trigger(listOf(key)).apply { mode = Trigger.SEQUENCE },
+            listOf(TEST_ACTION)
+        ))
 
         //WHEN
-        mDelegate.onKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN, SystemClock.uptimeMillis(), "", isExternal = false)
-        mDelegate.onKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP, SystemClock.uptimeMillis(), "", isExternal = false)
+        val consumed = inputKeyEvent(key.keyCode, KeyEvent.ACTION_DOWN, deviceIdToDescriptor(key.deviceId))
+
+        //THEN
+        assertEquals(consumed, true)
+    }
+
+    private fun validSequenceInput_actionPerformed(vararg key: Trigger.Key) {
+        mDelegate.keyMapListCache = listOf(KeyMap(0, Trigger(key.toList()), listOf(TEST_ACTION)))
+
+        //WHEN
+        runBlockingTest {
+            key.forEach {
+                inputTriggerKey(it)
+            }
+        }
 
         //THEN
         val value = mDelegate.performAction.getOrAwaitValue()
@@ -75,25 +87,56 @@ class KeymapDetectionDelegateTest {
         assertThat(value.getContentIfNotHandled(), `is`(TEST_ACTION))
     }
 
-    @Test
-    fun shortPressSingleKeyTrigger_downConsumed() {
-        //GIVEN
-        mDelegate.keyMapListCache = listOf(mSingleShortPressKeymap)
+    private suspend fun inputTriggerKey(key: Trigger.Key) {
+        val deviceDescriptor = deviceIdToDescriptor(key.deviceId)
 
-        //WHEN
-        val consume = mDelegate.onKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN, SystemClock.uptimeMillis(), "", isExternal = false)
+        inputKeyEvent(key.keyCode, KeyEvent.ACTION_DOWN, deviceDescriptor)
 
-        //THEN
-        assert(consume)
+        when (key.clickType) {
+            Trigger.SHORT_PRESS -> {
+                delay(50)
+                inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, deviceDescriptor)
+            }
+
+            Trigger.LONG_PRESS -> {
+                delay(500)
+                inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, deviceDescriptor)
+            }
+
+            Trigger.DOUBLE_PRESS -> {
+                delay(50)
+                inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, deviceDescriptor)
+                delay(100)
+
+                inputKeyEvent(key.keyCode, KeyEvent.ACTION_DOWN, deviceDescriptor)
+                delay(50)
+                inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, deviceDescriptor)
+            }
+        }
     }
 
-    @Parameters
-    private fun validKeyInput_actionPerformed(trigger: Trigger): Boolean {
-    }
+    private fun inputKeyEvent(keyCode: Int, action: Int, deviceDescriptor: String?) =
+        mDelegate.onKeyEvent(
+            keyCode,
+            action,
+            SystemClock.uptimeMillis(),
+            deviceDescriptor ?: "",
+            isExternal = deviceDescriptor != null
+        )
 
-    private suspend fun sendDownUp(keycode: Int) = runBlockingTest {
-        mDelegate.onKeyEvent(keycode, KeyEvent.ACTION_DOWN, SystemClock.uptimeMillis(), "", isExternal = false)
-        delay(100)
-        mDelegate.onKeyEvent(keycode, KeyEvent.ACTION_UP, SystemClock.uptimeMillis(), "", isExternal = false)
+    private fun deviceIdToDescriptor(deviceId: String): String? {
+        return when (deviceId) {
+            Trigger.Key.DEVICE_ID_THIS_DEVICE -> null
+            Trigger.Key.DEVICE_ID_ANY_DEVICE -> {
+                val randomInt = Random.nextInt(-1, FAKE_DESCRIPTORS.lastIndex)
+
+                if (randomInt == -1) {
+                    ""
+                } else {
+                    FAKE_DESCRIPTORS[randomInt]
+                }
+            }
+            else -> deviceId
+        }
     }
 }
