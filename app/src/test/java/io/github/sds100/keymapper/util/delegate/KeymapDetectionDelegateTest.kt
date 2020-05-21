@@ -35,11 +35,15 @@ class KeymapDetectionDelegateTest {
 
     companion object {
         private const val FAKE_KEYBOARD_DESCRIPTOR = "fake_keyboard"
+        private const val FAKE_HEADPHONE_DESCRIPTOR = "fake_headphone"
+
         private val FAKE_DESCRIPTORS = arrayOf(
-            FAKE_KEYBOARD_DESCRIPTOR
+            FAKE_KEYBOARD_DESCRIPTOR,
+            FAKE_HEADPHONE_DESCRIPTOR
         )
-        private val LONG_PRESS_DELAY = 500
-        private val DOUBLE_PRESS_DELAY = 300
+
+        private const val LONG_PRESS_DELAY = 500
+        private const val DOUBLE_PRESS_DELAY = 300
 
         private val TEST_ACTION = Action(ActionType.SYSTEM_ACTION, SystemAction.TOGGLE_FLASHLIGHT)
         private val TEST_ACTION_2 = Action(ActionType.APP, Constants.PACKAGE_NAME)
@@ -111,7 +115,7 @@ class KeymapDetectionDelegateTest {
         val consumed = inputKeyEvent(KeyEvent.KEYCODE_0, KeyEvent.ACTION_DOWN, deviceIdToDescriptor(key.deviceId))
 
         //THEN
-        assertEquals(consumed, false)
+        assertEquals(false, consumed)
     }
 
     @Test
@@ -126,7 +130,7 @@ class KeymapDetectionDelegateTest {
         val consumed = inputKeyEvent(key.keyCode, KeyEvent.ACTION_DOWN, deviceIdToDescriptor(key.deviceId))
 
         //THEN
-        assertEquals(consumed, true)
+        assertEquals(true, consumed)
     }
 
     fun params_downConsumed() = listOf(
@@ -157,7 +161,34 @@ class KeymapDetectionDelegateTest {
     fun params_actionPerformed(): List<Array<Any>> {
         val triggerAndDescriptions = listOf(
             "sequence single short-press this-device" to sequenceTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE)),
-            "sequence single long-press this-device" to sequenceTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.LONG_PRESS))
+            "sequence single long-press this-device" to sequenceTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.LONG_PRESS)),
+            "sequence single double-press this-device" to sequenceTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.DOUBLE_PRESS)),
+            "sequence multiple short-press this-device" to sequenceTrigger(
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.SHORT_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.SHORT_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.SHORT_PRESS)
+            ),
+            "sequence multiple long-press this-device" to sequenceTrigger(
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.LONG_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.LONG_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.LONG_PRESS)
+            ),
+            "sequence multiple double-press this-device" to sequenceTrigger(
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.DOUBLE_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.DOUBLE_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.DOUBLE_PRESS)
+            ),
+            "sequence multiple mix this-device" to sequenceTrigger(
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.LONG_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.SHORT_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.DOUBLE_PRESS)
+            ),
+            "sequence multiple mix external-device" to sequenceTrigger(
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, FAKE_KEYBOARD_DESCRIPTOR, clickType = Trigger.LONG_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, FAKE_HEADPHONE_DESCRIPTOR, clickType = Trigger.SHORT_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, FAKE_HEADPHONE_DESCRIPTOR, clickType = Trigger.LONG_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_A, FAKE_KEYBOARD_DESCRIPTOR, clickType = Trigger.DOUBLE_PRESS)
+            )
         )
 
         return triggerAndDescriptions.mapIndexed { i, triggerAndDescription ->
