@@ -1,7 +1,8 @@
 package com.example.architecturetest.data
 
-import io.github.sds100.keymapper.data.db.dao.KeyMapDao
+import androidx.lifecycle.LiveData
 import io.github.sds100.keymapper.data.KeymapRepository
+import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 import io.github.sds100.keymapper.data.model.KeyMap
 
 /**
@@ -19,7 +20,10 @@ class DefaultKeymapRepository private constructor(private val mKeymapDao: KeyMap
             }
     }
 
-    override val keymapList = mKeymapDao.getAll()
+
+    override val keymapList: LiveData<List<KeyMap>> = mKeymapDao.observeAll()
+
+    override suspend fun getKeymaps(): List<KeyMap> = mKeymapDao.getAll()
 
     override suspend fun getKeymap(id: Long) = mKeymapDao.getById(id)
 

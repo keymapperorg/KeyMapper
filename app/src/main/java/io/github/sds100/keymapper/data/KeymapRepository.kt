@@ -10,6 +10,8 @@ interface KeymapRepository {
 
     val keymapList: LiveData<List<KeyMap>>
 
+    suspend fun getKeymaps(): List<KeyMap>
+
     suspend fun getKeymap(id: Long): KeyMap
 
     suspend fun createKeymap(keymap: KeyMap)

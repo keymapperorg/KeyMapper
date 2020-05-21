@@ -38,7 +38,10 @@ interface KeyMapDao {
     suspend fun getById(id: Long): KeyMap
 
     @Query("SELECT * FROM $TABLE_NAME")
-    fun getAll(): LiveData<List<KeyMap>>
+    fun observeAll(): LiveData<List<KeyMap>>
+
+    @Query("SELECT * FROM $TABLE_NAME")
+    fun getAll(): List<KeyMap>
 
     @Query("UPDATE $TABLE_NAME SET $KEY_ENABLED=0")
     suspend fun disableAll()
