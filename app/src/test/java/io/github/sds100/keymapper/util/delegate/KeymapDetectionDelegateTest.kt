@@ -188,6 +188,26 @@ class KeymapDetectionDelegateTest {
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, FAKE_HEADPHONE_DESCRIPTOR, clickType = Trigger.SHORT_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, FAKE_HEADPHONE_DESCRIPTOR, clickType = Trigger.LONG_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_A, FAKE_KEYBOARD_DESCRIPTOR, clickType = Trigger.DOUBLE_PRESS)
+            ),
+            "parallel multiple short-press this-device" to parallelTrigger(
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.SHORT_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.SHORT_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.SHORT_PRESS)
+            ),
+            "parallel multiple long-press this-device" to parallelTrigger(
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.LONG_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.LONG_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.LONG_PRESS)
+            ),
+            "parallel multiple short-press external-device" to parallelTrigger(
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, FAKE_KEYBOARD_DESCRIPTOR, clickType = Trigger.SHORT_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, FAKE_HEADPHONE_DESCRIPTOR, clickType = Trigger.SHORT_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_A, FAKE_HEADPHONE_DESCRIPTOR, clickType = Trigger.SHORT_PRESS)
+            ),
+            "parallel multiple long-press external-device" to parallelTrigger(
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, FAKE_HEADPHONE_DESCRIPTOR, clickType = Trigger.LONG_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, FAKE_HEADPHONE_DESCRIPTOR, clickType = Trigger.LONG_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_A, FAKE_HEADPHONE_DESCRIPTOR, clickType = Trigger.LONG_PRESS)
             )
         )
 
