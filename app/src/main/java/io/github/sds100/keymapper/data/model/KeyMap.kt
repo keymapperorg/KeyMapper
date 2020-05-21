@@ -16,7 +16,7 @@ import splitties.bitflags.hasFlag
 @Entity(tableName = KeyMapDao.TABLE_NAME)
 class KeyMap(
     @PrimaryKey(autoGenerate = true)
-    val id: Long,
+    var id: Long,
 
     @ColumnInfo(name = KeyMapDao.KEY_TRIGGER)
     var trigger: Trigger = Trigger(),

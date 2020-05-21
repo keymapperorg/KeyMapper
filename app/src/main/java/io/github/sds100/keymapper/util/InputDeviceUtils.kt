@@ -18,7 +18,6 @@ object InputDeviceUtils {
             val device = InputDevice.getDevice(it)
 
             if (device.descriptor == descriptor) {
-
                 return Success(device.name)
             }
         }

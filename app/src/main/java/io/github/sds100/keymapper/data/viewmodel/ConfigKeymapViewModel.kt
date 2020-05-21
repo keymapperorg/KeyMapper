@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.data.viewmodel
 
-import android.view.KeyEvent
 import androidx.lifecycle.*
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.DeviceInfoRepository
@@ -8,10 +7,7 @@ import io.github.sds100.keymapper.data.IOnboardingState
 import io.github.sds100.keymapper.data.KeymapRepository
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.util.Event
-import io.github.sds100.keymapper.util.InputDeviceUtils
-import io.github.sds100.keymapper.util.isExternalCompat
 import io.github.sds100.keymapper.util.result.Failure
-import io.github.sds100.keymapper.util.result.onSuccess
 import io.github.sds100.keymapper.util.toggleFlag
 import kotlinx.coroutines.launch
 import java.util.*
@@ -43,8 +39,6 @@ class ConfigKeymapViewModel internal constructor(
 
                     val notifyUser = NotifyUserModel(R.string.dialog_message_parallel_trigger_order) {
                         setShownPrompt(R.string.key_pref_shown_parallel_trigger_order_dialog)
-
-
                     }
 
                     showOnboardingPrompt.value = Event(notifyUser)
@@ -273,26 +267,21 @@ class ConfigKeymapViewModel internal constructor(
     /**
      * @return whether the key already exists has been added to the list
      */
-    suspend fun addTriggerKey(keyEvent: KeyEvent): Boolean {
-        val device = keyEvent.device
-        val triggerKeyDeviceDescriptor = device.descriptor
-
-        InputDeviceUtils.getName(triggerKeyDeviceDescriptor).onSuccess { deviceName ->
-            mDeviceInfoRepository.createDeviceInfo(DeviceInfo(triggerKeyDeviceDescriptor, deviceName))
-        }
+    suspend fun addTriggerKey(keyCode: Int, deviceDescriptor: String, deviceName: String, isExternal: Boolean): Boolean {
+        mDeviceInfoRepository.createDeviceInfo(DeviceInfo(deviceDescriptor, deviceName))
 
         val containsKey = triggerKeys.value?.any {
-            val sameKeyCode = keyEvent.keyCode == it.keyCode
+            val sameKeyCode = keyCode == it.keyCode
 
             //if the key is not external, check whether a trigger key already exists for this device
             val sameDeviceId = if (
                 (it.deviceId == Trigger.Key.DEVICE_ID_THIS_DEVICE
                     || it.deviceId == Trigger.Key.DEVICE_ID_ANY_DEVICE)
-                && !device.isExternalCompat) {
+                && !isExternal) {
                 true
 
             } else {
-                it.deviceId == triggerKeyDeviceDescriptor
+                it.deviceId == deviceDescriptor
             }
 
             sameKeyCode && sameDeviceId
@@ -304,12 +293,18 @@ class ConfigKeymapViewModel internal constructor(
         }
 
         triggerKeys.value = triggerKeys.value?.toMutableList()?.apply {
-            val triggerKey = Trigger.Key.fromKeyEvent(keyEvent)
+            val deviceId = if (isExternal) {
+                deviceDescriptor
+            } else {
+                Trigger.Key.DEVICE_ID_THIS_DEVICE
+            }
+
+            val triggerKey = Trigger.Key(keyCode, deviceId)
             add(triggerKey)
         }
 
         if (triggerKeys.value!!.size <= 1) {
-            triggerInSequence.value = true
+//            triggerInSequence.value = true
         }
 
         return true

@@ -38,7 +38,7 @@ class Trigger(var keys: List<Key> = listOf(), val extras: List<Extra> = listOf()
 
     class Key(
         val keyCode: Int,
-        var deviceId: String,
+        var deviceId: String = Key.DEVICE_ID_THIS_DEVICE,
         @ClickType var clickType: Int = SHORT_PRESS
     ) {
 

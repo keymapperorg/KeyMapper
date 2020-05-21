@@ -20,7 +20,6 @@ import com.airbnb.epoxy.EpoxyTouchHelper
 import com.google.android.material.card.MaterialCardView
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.TriggerKeyBindingModel_
-import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Extra
 import io.github.sds100.keymapper.data.model.SeekBarListItemModel
 import io.github.sds100.keymapper.data.model.Trigger
@@ -35,8 +34,6 @@ import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.launch
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
-import splitties.alertdialog.appcompat.coroutines.showAndAwait
-import splitties.alertdialog.appcompat.message
 import splitties.experimental.ExperimentalSplittiesApi
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -61,7 +58,11 @@ class TriggerFragment : Fragment() {
                     val keyEvent = intent.getParcelableExtra<KeyEvent>(Intent.EXTRA_KEY_EVENT) ?: return
 
                     lifecycleScope.launchWhenCreated {
-                        mViewModel.addTriggerKey(keyEvent)
+                        val deviceName = keyEvent.device.name
+                        val deviceDescriptor = keyEvent.device.descriptor
+                        val isExternal = keyEvent.device.isExternalCompat
+
+                        mViewModel.addTriggerKey(keyEvent.keyCode, deviceDescriptor, deviceName, isExternal)
                     }
                 }
 
