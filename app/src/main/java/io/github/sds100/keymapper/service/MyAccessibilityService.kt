@@ -209,7 +209,7 @@ class MyAccessibilityService : AccessibilityService(),
                 event.device.isExternalCompat)
 
         } catch (e: Exception) {
-            e.printStackTrace()
+            Timber.e(e)
         }
 
         return super.onKeyEvent(event)
