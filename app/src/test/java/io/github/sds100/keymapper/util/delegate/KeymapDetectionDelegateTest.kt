@@ -6,6 +6,7 @@ import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Trigger
+import io.github.sds100.keymapper.data.model.Trigger.Companion.LONG_PRESS
 import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.IClock
 import io.github.sds100.keymapper.util.SystemAction
@@ -68,6 +69,25 @@ class KeymapDetectionDelegateTest {
         }
 
         mDelegate = KeymapDetectionDelegate(mTestScope, LONG_PRESS_DELAY, DOUBLE_PRESS_DELAY, iClock)
+    }
+
+    @Test
+    fun longPressSequenceTrigger_validLongPressTooShort_keyImitated() {
+        val trigger = sequenceTrigger(
+            Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = LONG_PRESS),
+            Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP)
+        )
+
+        val keymap = createKeymapFromTriggerKey(0, *trigger.keys.toTypedArray())
+        mDelegate.keyMapListCache = listOf(keymap)
+
+        runBlocking {
+            mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = LONG_PRESS), 100)
+        }
+
+        val value = mDelegate.imitateButtonPress.getOrAwaitValue()
+
+        assertEquals(KeyEvent.KEYCODE_VOLUME_DOWN, value.getContentIfNotHandled())
     }
 
     @Test
@@ -219,29 +239,33 @@ class KeymapDetectionDelegateTest {
     private fun sequenceTrigger(vararg key: Trigger.Key) = Trigger(key.toList()).apply { mode = Trigger.SEQUENCE }
     private fun parallelTrigger(vararg key: Trigger.Key) = Trigger(key.toList()).apply { mode = Trigger.PARALLEL }
 
-    private suspend fun mockTriggerKeyInput(key: Trigger.Key) {
+    private suspend fun mockTriggerKeyInput(key: Trigger.Key, delay: Long? = null) {
         val deviceDescriptor = deviceIdToDescriptor(key.deviceId)
+        val pressDelay: Long = delay ?: when (key.clickType) {
+            Trigger.LONG_PRESS -> 600L
+            else -> 50L
+        }
 
         inputKeyEvent(key.keyCode, KeyEvent.ACTION_DOWN, deviceDescriptor)
 
         when (key.clickType) {
             Trigger.SHORT_PRESS -> {
-                delay(50)
+                delay(pressDelay)
                 inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, deviceDescriptor)
             }
 
             Trigger.LONG_PRESS -> {
-                delay(600)
+                delay(pressDelay)
                 inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, deviceDescriptor)
             }
 
             Trigger.DOUBLE_PRESS -> {
-                delay(50)
+                delay(pressDelay)
                 inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, deviceDescriptor)
-                delay(100)
+                delay(pressDelay)
 
                 inputKeyEvent(key.keyCode, KeyEvent.ACTION_DOWN, deviceDescriptor)
-                delay(50)
+                delay(pressDelay)
                 inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, deviceDescriptor)
             }
         }
@@ -271,6 +295,6 @@ class KeymapDetectionDelegateTest {
         }
     }
 
-    private fun createKeymapFromTriggerKey(id: Long, key: Trigger.Key) =
-        KeyMap(id, Trigger(keys = listOf(key)), actionList = listOf(TEST_ACTION))
+    private fun createKeymapFromTriggerKey(id: Long, vararg key: Trigger.Key) =
+        KeyMap(id, Trigger(keys = key.toList()), actionList = listOf(TEST_ACTION))
 }
