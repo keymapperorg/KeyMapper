@@ -170,6 +170,11 @@ class KeymapDetectionDelegateTest {
             "sequence single short-press this-device" to sequenceTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE)),
             "sequence single long-press this-device" to sequenceTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.LONG_PRESS)),
             "sequence single double-press this-device" to sequenceTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.DOUBLE_PRESS)),
+
+            "sequence single short-press any-device" to sequenceTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_ANY_DEVICE)),
+            "sequence single long-press any-device" to sequenceTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = Trigger.LONG_PRESS)),
+            "sequence single double-press any-device" to sequenceTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = Trigger.DOUBLE_PRESS)),
+
             "sequence multiple short-press this-device" to sequenceTrigger(
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.SHORT_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.SHORT_PRESS),
@@ -196,6 +201,34 @@ class KeymapDetectionDelegateTest {
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, FAKE_HEADPHONE_DESCRIPTOR, clickType = Trigger.LONG_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_A, FAKE_KEYBOARD_DESCRIPTOR, clickType = Trigger.DOUBLE_PRESS)
             ),
+
+            "sequence multiple short-press mixed-device" to sequenceTrigger(
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, FAKE_KEYBOARD_DESCRIPTOR, clickType = Trigger.SHORT_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = Trigger.SHORT_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.SHORT_PRESS)
+            ),
+            "sequence multiple long-press mixed-device" to sequenceTrigger(
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, FAKE_KEYBOARD_DESCRIPTOR, clickType = Trigger.LONG_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = Trigger.LONG_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.LONG_PRESS)
+            ),
+            "sequence multiple double-press mixed-device" to sequenceTrigger(
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, FAKE_KEYBOARD_DESCRIPTOR, clickType = Trigger.DOUBLE_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = Trigger.DOUBLE_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.DOUBLE_PRESS)
+            ),
+            "sequence multiple mix mixed-device" to sequenceTrigger(
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, FAKE_KEYBOARD_DESCRIPTOR, clickType = Trigger.LONG_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = Trigger.SHORT_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.DOUBLE_PRESS)
+            ),
+            "sequence multiple mix mixed-device" to sequenceTrigger(
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = Trigger.LONG_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, FAKE_HEADPHONE_DESCRIPTOR, clickType = Trigger.SHORT_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.LONG_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_A, FAKE_KEYBOARD_DESCRIPTOR, clickType = Trigger.DOUBLE_PRESS)
+            ),
+
             "parallel multiple short-press this-device" to parallelTrigger(
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.SHORT_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.SHORT_PRESS),
@@ -215,6 +248,16 @@ class KeymapDetectionDelegateTest {
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, FAKE_HEADPHONE_DESCRIPTOR, clickType = Trigger.LONG_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, FAKE_HEADPHONE_DESCRIPTOR, clickType = Trigger.LONG_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_A, FAKE_HEADPHONE_DESCRIPTOR, clickType = Trigger.LONG_PRESS)
+            ),
+            "parallel multiple short-press mix-device" to parallelTrigger(
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.SHORT_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = Trigger.SHORT_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_A, FAKE_KEYBOARD_DESCRIPTOR, clickType = Trigger.SHORT_PRESS)
+            ),
+            "parallel multiple long-press mix-device" to parallelTrigger(
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.LONG_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = Trigger.LONG_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_A, FAKE_KEYBOARD_DESCRIPTOR, clickType = Trigger.LONG_PRESS)
             )
         )
 
