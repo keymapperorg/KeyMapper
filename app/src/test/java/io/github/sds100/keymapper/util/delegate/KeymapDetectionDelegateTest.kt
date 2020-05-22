@@ -14,10 +14,7 @@ import junit.framework.Assert.assertEquals
 import junitparams.JUnitParamsRunner
 import junitparams.Parameters
 import junitparams.naming.TestCaseName
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.*
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.junit.Before
@@ -56,7 +53,6 @@ class KeymapDetectionDelegateTest {
     }
 
     private lateinit var mDelegate: KeymapDetectionDelegate
-    private val mTestScope = TestCoroutineScope()
 
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
@@ -68,7 +64,7 @@ class KeymapDetectionDelegateTest {
                 get() = System.currentTimeMillis()
         }
 
-        mDelegate = KeymapDetectionDelegate(mTestScope, LONG_PRESS_DELAY, DOUBLE_PRESS_DELAY, iClock)
+        mDelegate = KeymapDetectionDelegate(GlobalScope, LONG_PRESS_DELAY, DOUBLE_PRESS_DELAY, iClock)
     }
 
     @Test
@@ -98,9 +94,13 @@ class KeymapDetectionDelegateTest {
         mDelegate.keyMapListCache = listOf(keymap)
 
         //WHEN
-        runBlocking {
-            keymap.trigger.keys.forEach {
-                mockTriggerKeyInput(it)
+        if (keymap.trigger.mode == Trigger.PARALLEL) {
+            mockParallelTriggerKeys(*keymap.trigger.keys.toTypedArray())
+        } else {
+            runBlocking {
+                keymap.trigger.keys.forEach {
+                    mockTriggerKeyInput(it)
+                }
             }
         }
 
@@ -124,61 +124,48 @@ class KeymapDetectionDelegateTest {
     )
 
     @Test
-    @Parameters(method = "params_downConsumed")
+    @Parameters(method = "params_allTriggerKeyCombinations")
     @TestCaseName("{0}")
-    fun invalidInput_downNotConsumed(description: String, key: Trigger.Key) {
+    fun invalidInput_downNotConsumed(description: String, keymap: KeyMap) {
         //GIVEN
-        val keymap = createKeymapFromTriggerKey(0, key)
         mDelegate.keyMapListCache = listOf(keymap)
 
         //WHEN
-        val consumed = inputKeyEvent(KeyEvent.KEYCODE_0, KeyEvent.ACTION_DOWN, deviceIdToDescriptor(key.deviceId))
+        var consumedCount = 0
 
-        //THEN
-        assertEquals(false, consumed)
-    }
+        keymap.trigger.keys.forEach {
+            val consumed = inputKeyEvent(999, KeyEvent.ACTION_DOWN, deviceIdToDescriptor(it.deviceId))
 
-    @Test
-    @Parameters(method = "params_downConsumed")
-    @TestCaseName("{0}")
-    fun validInput_downConsumed(description: String, key: Trigger.Key) {
-        //GIVEN
-        val keymap = createKeymapFromTriggerKey(0, key)
-        mDelegate.keyMapListCache = listOf(keymap)
-
-        //WHEN
-        val consumed = inputKeyEvent(key.keyCode, KeyEvent.ACTION_DOWN, deviceIdToDescriptor(key.deviceId))
-
-        //THEN
-        assertEquals(true, consumed)
-    }
-
-    fun params_downConsumed() = listOf(
-        arrayOf("short press", Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE)),
-        arrayOf("long press", Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.LONG_PRESS)),
-        arrayOf("double press", Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.DOUBLE_PRESS))
-    )
-
-    @Test
-    @Parameters(method = "params_actionPerformed")
-    @TestCaseName("{0}")
-    fun validInput_actionPerformed(description: String, keymap: KeyMap) {
-        mDelegate.keyMapListCache = listOf(keymap)
-
-        //WHEN
-        runBlocking {
-            keymap.trigger.keys.forEach {
-                mockTriggerKeyInput(it)
+            if (consumed) {
+                consumedCount++
             }
         }
 
         //THEN
-        val value = mDelegate.performAction.getOrAwaitValue()
-
-        assertThat(value.getContentIfNotHandled(), `is`(TEST_ACTION))
+        assertEquals(0, consumedCount)
     }
 
-    fun params_actionPerformed(): List<Array<Any>> {
+    @Test
+    @Parameters(method = "params_allTriggerKeyCombinations")
+    @TestCaseName("{0}")
+    fun validInput_downConsumed(description: String, keymap: KeyMap) {
+        //GIVEN
+        mDelegate.keyMapListCache = listOf(keymap)
+
+        var consumedCount = 0
+
+        keymap.trigger.keys.forEach {
+            val consumed = inputKeyEvent(it.keyCode, KeyEvent.ACTION_DOWN, deviceIdToDescriptor(it.deviceId))
+
+            if (consumed) {
+                consumedCount++
+            }
+        }
+
+        assertEquals(keymap.trigger.keys.size, consumedCount)
+    }
+
+    fun params_allTriggerKeyCombinations(): List<Array<Any>> {
         val triggerAndDescriptions = listOf(
             "sequence single short-press this-device" to sequenceTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE)),
             "sequence single long-press this-device" to sequenceTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.LONG_PRESS)),
@@ -236,6 +223,29 @@ class KeymapDetectionDelegateTest {
         }
     }
 
+    @Test
+    @Parameters(method = "params_allTriggerKeyCombinations")
+    @TestCaseName("{0}")
+    fun validInput_actionPerformed(description: String, keymap: KeyMap) {
+        mDelegate.keyMapListCache = listOf(keymap)
+
+        //WHEN
+        if (keymap.trigger.mode == Trigger.PARALLEL) {
+            mockParallelTriggerKeys(*keymap.trigger.keys.toTypedArray())
+        } else {
+            runBlocking {
+                keymap.trigger.keys.forEach {
+                    mockTriggerKeyInput(it)
+                }
+            }
+        }
+
+        //THEN
+        val value = mDelegate.performAction.getOrAwaitValue()
+
+        assertThat(value.getContentIfNotHandled(), `is`(TEST_ACTION))
+    }
+
     private fun sequenceTrigger(vararg key: Trigger.Key) = Trigger(key.toList()).apply { mode = Trigger.SEQUENCE }
     private fun parallelTrigger(vararg key: Trigger.Key) = Trigger(key.toList()).apply { mode = Trigger.PARALLEL }
 
@@ -278,6 +288,33 @@ class KeymapDetectionDelegateTest {
             deviceDescriptor ?: "",
             isExternal = deviceDescriptor != null
         )
+
+    private fun mockParallelTriggerKeys(
+        vararg key: Trigger.Key,
+        delay: Long? = null) {
+        key.forEach {
+            val deviceDescriptor = deviceIdToDescriptor(it.deviceId)
+
+            inputKeyEvent(it.keyCode, KeyEvent.ACTION_DOWN, deviceDescriptor)
+        }
+
+        GlobalScope.launch {
+            if (delay != null) {
+                delay(delay)
+            } else {
+                when (key[0].clickType) {
+                    Trigger.SHORT_PRESS -> delay(50)
+                    Trigger.LONG_PRESS -> delay(600)
+                }
+            }
+
+            key.forEach {
+                val deviceDescriptor = deviceIdToDescriptor(it.deviceId)
+
+                inputKeyEvent(it.keyCode, KeyEvent.ACTION_UP, deviceDescriptor)
+            }
+        }
+    }
 
     private fun deviceIdToDescriptor(deviceId: String): String? {
         return when (deviceId) {
