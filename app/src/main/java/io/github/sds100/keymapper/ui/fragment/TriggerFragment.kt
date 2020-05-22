@@ -10,7 +10,6 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.VisibleForTesting
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
@@ -187,8 +186,7 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
 
                 triggerKeyList.forEachIndexed { index, model ->
                     triggerKey {
-                        val triggerKey = mViewModel.triggerKeys.value?.get(index)
-                        id(triggerKey?.uniqueId)
+                        id(model.id)
                         model(model)
 
                         triggerMode(mViewModel.triggerMode.value)
@@ -196,9 +194,7 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
                         triggerKeyIndex(index)
 
                         onRemoveClick { _ ->
-                            triggerKey?.let {
-                                mViewModel.removeTriggerKey(it.keyCode)
-                            }
+                            mViewModel.removeTriggerKey(model.keyCode)
                         }
 
                         onMoreClick { _ ->
