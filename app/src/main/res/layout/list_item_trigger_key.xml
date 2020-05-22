@@ -138,7 +138,7 @@
                     android:layout_height="0dp"
                     android:onClick="@{onMoreClick}"
                     android:tint="?attr/colorOnSurface"
-                    android:visibility="@{triggerMode == Trigger.SEQUENCE ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{triggerMode == Trigger.SEQUENCE || triggerKeyCount == 1 ? View.VISIBLE : View.GONE}"
                     app:layout_constraintBottom_toBottomOf="@+id/buttonRemove"
                     app:layout_constraintEnd_toStartOf="@+id/buttonRemove"
                     app:layout_constraintTop_toTopOf="@id/buttonRemove"
@@ -151,9 +151,9 @@
                     android:layout_height="0dp"
                     android:onClick="@{onDeviceClick}"
                     android:tint="?attr/colorOnSurface"
-                    app:layout_constraintBottom_toBottomOf="@+id/buttonMore"
+                    app:layout_constraintBottom_toBottomOf="@+id/buttonRemove"
                     app:layout_constraintEnd_toStartOf="@+id/buttonMore"
-                    app:layout_constraintTop_toTopOf="@id/buttonMore"
+                    app:layout_constraintTop_toTopOf="@id/buttonRemove"
                     app:srcCompat="@drawable/ic_baseline_devices_other_24" />
 
                 <io.github.sds100.keymapper.ui.view.SquareImageButton
