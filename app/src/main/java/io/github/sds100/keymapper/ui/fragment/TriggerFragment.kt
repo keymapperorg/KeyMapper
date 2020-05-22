@@ -198,10 +198,12 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
                         }
 
                         onMoreClick { _ ->
-                            lifecycleScope.launch {
-                                val newClickType = showClickTypeDialog()
+                            if (mViewModel.triggerInSequence.value == true) {
+                                lifecycleScope.launch {
+                                    val newClickType = showClickTypeDialog()
 
-                                mViewModel.setTriggerKeyClickType(model.keyCode, newClickType)
+                                    mViewModel.setTriggerKeyClickType(model.keyCode, newClickType)
+                                }
                             }
                         }
 
