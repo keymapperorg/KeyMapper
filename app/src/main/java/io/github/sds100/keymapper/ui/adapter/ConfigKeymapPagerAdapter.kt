@@ -10,12 +10,14 @@ import io.github.sds100.keymapper.ui.fragment.TriggerAndActionsFragment
 import io.github.sds100.keymapper.ui.fragment.TriggerFragment
 import io.github.sds100.keymapper.util.int
 import io.github.sds100.keymapper.util.intArray
+import splitties.experimental.ExperimentalSplittiesApi
 
 /**
  * Created by sds100 on 26/01/2020.
  */
 
-class ConfigKeymapPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
+@ExperimentalSplittiesApi
+class ConfigKeymapPagerAdapter(fragment: Fragment, private val mKeymapId: Long) : FragmentStateAdapter(fragment) {
 
     /**
      * Mapping of the ViewPager page indexes to their respective Fragments
@@ -46,20 +48,27 @@ class ConfigKeymapPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragme
 
         fragmentIds.forEachIndexed { index, id ->
 
-            val entry = when (id) {
-                ctx.int(R.integer.fragment_id_trigger_and_actions) -> ::TriggerAndActionsFragment
+            when (id) {
+                ctx.int(R.integer.fragment_id_trigger_and_actions) -> {
+                    tabFragmentsCreators[index] = { TriggerAndActionsFragment() }
+                }
 
-                ctx.int(R.integer.fragment_id_constraints_and_more) -> ::ConstraintsAndMoreFragment
+                ctx.int(R.integer.fragment_id_constraints_and_more) -> {
+                    tabFragmentsCreators[index] = { ConstraintsAndMoreFragment(mKeymapId) }
+                }
 
-                ctx.int(R.integer.fragment_id_actions) -> ::ActionsFragment
+                ctx.int(R.integer.fragment_id_actions) -> {
+                    tabFragmentsCreators[index] = { ActionsFragment(mKeymapId) }
+                }
 
-                ctx.int(R.integer.fragment_id_trigger) -> ::TriggerFragment
+                ctx.int(R.integer.fragment_id_trigger) -> {
+                    tabFragmentsCreators[index] = { TriggerFragment(mKeymapId) }
+                }
 
                 else -> throw Exception("Don't know how to instantiate a fragment for this id $id")
             }
 
             itemIds[index] = id.toLong()
-            tabFragmentsCreators[index] = entry
         }
     }
 }

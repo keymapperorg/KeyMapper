@@ -35,19 +35,19 @@ class ConfigKeymapViewModelTest : IOnboardingState {
     }
 
     @Test
-    fun dualKeyTrigger_keyRemoved_isSequence() {
+    fun dualKeyTrigger_keyRemoved_isParallel() {
         //GIVEN
         val trigger = Trigger(keys = listOf(
             Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN),
             Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP)
         )).apply {
-            mode = Trigger.PARALLEL
+            mode = Trigger.SEQUENCE
         }
 
         val keymap = KeyMap(0, trigger)
 
         runBlocking {
-            mRepository.createKeymap(keymap)
+            mRepository.insertKeymap(keymap)
         }
 
         createViewModel(0)
@@ -56,20 +56,20 @@ class ConfigKeymapViewModelTest : IOnboardingState {
         mViewModel.removeTriggerKey(KeyEvent.KEYCODE_VOLUME_UP)
 
         //THEN
-        val value = mViewModel.triggerInSequence.getOrAwaitValue()
+        val value = mViewModel.triggerInParallel.getOrAwaitValue()
 
         assert(value)
     }
 
     @Test
-    fun noTrigger_keyAdded_isSequence() {
+    fun noTrigger_keyAdded_isParallel() {
         //GIVEN
         val trigger = Trigger(keys = listOf())
 
         val keymap = KeyMap(0, trigger)
 
         runBlocking {
-            mRepository.createKeymap(keymap)
+            mRepository.insertKeymap(keymap)
         }
 
         createViewModel(0)
@@ -84,7 +84,7 @@ class ConfigKeymapViewModelTest : IOnboardingState {
         }
 
         //THEN
-        val value = mViewModel.triggerInSequence.getOrAwaitValue()
+        val value = mViewModel.triggerInParallel.getOrAwaitValue()
 
         assert(value)
     }

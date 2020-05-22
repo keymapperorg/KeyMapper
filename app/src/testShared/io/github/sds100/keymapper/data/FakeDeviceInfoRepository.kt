@@ -16,4 +16,8 @@ class FakeDeviceInfoRepository : DeviceInfoRepository {
     override suspend fun getDeviceInfo(descriptor: String) {
         TODO("Not yet implemented")
     }
+
+    override suspend fun deleteAll() {
+        mDeviceInfoList.clear()
+    }
 }

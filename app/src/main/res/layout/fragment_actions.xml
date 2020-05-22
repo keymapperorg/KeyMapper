@@ -16,54 +16,48 @@
 
     </data>
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/coordinatorLayout"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginTop="8dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout"
-            android:layout_marginTop="8dp"
+        <com.airbnb.epoxy.EpoxyRecyclerView
+            android:id="@+id/epoxyRecyclerViewActions"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            android:layout_height="0dp"
+            android:visibility="@{viewModel.actionList.empty ? View.GONE : View.VISIBLE}"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toTopOf="@+id/buttonAddAction"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <com.airbnb.epoxy.EpoxyRecyclerView
-                android:id="@+id/epoxyRecyclerViewActions"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:visibility="@{viewModel.actionList.empty ? View.GONE : View.VISIBLE}"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintBottom_toTopOf="@+id/buttonAddAction"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            style="@style/RecyclerViewPlaceholderTextView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:text="@string/actions_recyclerview_placeholder"
+            android:visibility="@{viewModel.actionList.empty ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toTopOf="@+id/buttonAddAction"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                style="@style/RecyclerViewPlaceholderTextView"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:text="@string/actions_recyclerview_placeholder"
-                android:visibility="@{viewModel.actionList.empty ? View.VISIBLE : View.GONE}"
-                app:layout_constraintBottom_toTopOf="@+id/buttonAddAction"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+        <Button
+            android:id="@+id/buttonAddAction"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="4dp"
+            android:onClick="@{() -> viewModel.chooseAction()}"
+            android:text="@string/button_add_action"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent" />
 
-            <Button
-                android:id="@+id/buttonAddAction"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="4dp"
-                android:onClick="@{() -> viewModel.chooseAction()}"
-                android:text="@string/button_add_action"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

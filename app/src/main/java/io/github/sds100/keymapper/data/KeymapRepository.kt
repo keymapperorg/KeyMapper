@@ -14,13 +14,14 @@ interface KeymapRepository {
 
     suspend fun getKeymap(id: Long): KeyMap
 
-    suspend fun createKeymap(keymap: KeyMap)
+    suspend fun insertKeymap(vararg keymap: KeyMap)
     suspend fun updateKeymap(keymap: KeyMap)
 
     suspend fun enableKeymapById(vararg id: Long)
     suspend fun disableKeymapById(vararg id: Long)
 
     suspend fun deleteKeymap(vararg id: Long)
+    suspend fun deleteAll()
 
     suspend fun enableAll()
     suspend fun disableAll()

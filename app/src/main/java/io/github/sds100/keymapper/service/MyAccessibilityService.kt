@@ -9,6 +9,7 @@ import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import androidx.lifecycle.*
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
+import io.github.sds100.keymapper.MyApplication
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.WidgetsManager.EVENT_SERVICE_START
@@ -138,7 +139,7 @@ class MyAccessibilityService : AccessibilityService(),
             registerReceiver(mBroadcastReceiver, this)
         }
 
-        InjectorUtils.getDefaultKeymapRepository(this).keymapList.observe(this) {
+        (application as MyApplication).keymapRepository.keymapList.observe(this) {
             mKeymapDetectionDelegate.keyMapListCache = it
         }
 

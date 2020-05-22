@@ -16,8 +16,8 @@ import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentConstraintsAndMoreBinding
+import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.buildChipModel
-import io.github.sds100.keymapper.util.observeLiveData
 import io.github.sds100.keymapper.util.observeLiveDataEvent
 import io.github.sds100.keymapper.util.str
 import splitties.bitflags.hasFlag
@@ -26,8 +26,11 @@ import splitties.toast.toast
 /**
  * Created by sds100 on 19/03/2020.
  */
-class ConstraintsAndMoreFragment : Fragment() {
-    private val mViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap)
+class ConstraintsAndMoreFragment(private val mKeymapId: Long) : Fragment() {
+
+    private val mViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap) {
+        InjectorUtils.provideConfigKeymapViewModel(requireContext(), mKeymapId)
+    }
 
     private val mConstraintModelList by lazy {
         mViewModel.constraintList.map { constraintList ->

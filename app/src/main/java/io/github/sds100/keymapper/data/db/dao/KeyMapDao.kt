@@ -61,6 +61,9 @@ interface KeyMapDao {
     @Delete
     suspend fun delete(vararg keyMap: KeyMap)
 
+    @Query("DELETE FROM $TABLE_NAME")
+    suspend fun deleteAll()
+
     @Query("DELETE FROM $TABLE_NAME WHERE $KEY_ID in (:id)")
     suspend fun deleteById(vararg id: Long)
 

@@ -92,6 +92,7 @@ class ConfigKeymapViewModel internal constructor(
     val triggerKeys: MutableLiveData<List<Trigger.Key>> = MutableLiveData(listOf())
 
     val triggerKeyModelList = MutableLiveData(listOf<TriggerKeyModel>())
+
     val buildTriggerKeyModelListEvent = triggerKeys.map {
         Event(it)
     }
@@ -214,7 +215,7 @@ class ConfigKeymapViewModel internal constructor(
             )
 
             if (mId == NEW_KEYMAP_ID) {
-                mKeymapRepository.createKeymap(keymap)
+                mKeymapRepository.insertKeymap(keymap)
             } else {
                 mKeymapRepository.updateKeymap(keymap)
             }
@@ -304,7 +305,7 @@ class ConfigKeymapViewModel internal constructor(
         }
 
         if (triggerKeys.value!!.size <= 1) {
-//            triggerInSequence.value = true
+            triggerInParallel.value = true
         }
 
         return true
@@ -326,7 +327,7 @@ class ConfigKeymapViewModel internal constructor(
         }
 
         if (triggerKeys.value!!.size <= 1) {
-            triggerInSequence.value = true
+            triggerInParallel.value = true
         }
     }
 

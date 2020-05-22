@@ -44,6 +44,8 @@ fun Trigger.buildDescription(ctx: Context, deviceInfoList: List<DeviceInfo>): St
 fun Trigger.Key.buildModel(ctx: Context, deviceInfoList: List<DeviceInfo>): TriggerKeyModel {
 
     return TriggerKeyModel(
+        id = uniqueId,
+        keyCode = keyCode,
         name = KeycodeUtils.keycodeToString(keyCode),
         clickType = clickType,
         deviceName = getDeviceName(ctx, deviceInfoList)

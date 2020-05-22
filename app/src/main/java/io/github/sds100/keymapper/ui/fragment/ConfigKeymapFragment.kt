@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -33,12 +34,29 @@ import splitties.snackbar.snack
 /**
  * Created by sds100 on 19/02/2020.
  */
+@ExperimentalSplittiesApi
 class ConfigKeymapFragment : Fragment() {
     private val mArgs by navArgs<ConfigKeymapFragmentArgs>()
-    private val mOnboardingState by lazy { OnboardingState(requireContext()) }
 
     private val mViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap) {
-        InjectorUtils.provideConfigKeymapViewModel(requireContext(), mOnboardingState, mArgs.keymapId)
+        InjectorUtils.provideConfigKeymapViewModel(requireContext(), mArgs.keymapId)
+    }
+
+    private val mFragmentFactory = object : FragmentFactory() {
+        override fun instantiate(classLoader: ClassLoader, className: String) =
+            when (className) {
+                TriggerFragment::class.java.name -> TriggerFragment(mArgs.keymapId)
+                ActionsFragment::class.java.name -> ActionsFragment(mArgs.keymapId)
+                ConstraintsAndMoreFragment::class.java.name -> ConstraintsAndMoreFragment(mArgs.keymapId)
+
+                else -> super.instantiate(classLoader, className)
+            }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        childFragmentManager.fragmentFactory = mFragmentFactory
+
+        super.onCreate(savedInstanceState)
     }
 
     @ExperimentalSplittiesApi
@@ -47,7 +65,7 @@ class ConfigKeymapFragment : Fragment() {
             lifecycleOwner = viewLifecycleOwner
             viewModel = mViewModel
 
-            viewPager.adapter = ConfigKeymapPagerAdapter(this@ConfigKeymapFragment)
+            viewPager.adapter = ConfigKeymapPagerAdapter(this@ConfigKeymapFragment, mArgs.keymapId)
 
             TabLayoutMediator(tabLayout, viewPager) { tab, position ->
                 tab.text = strArray(R.array.config_keymap_tab_titles)[position]

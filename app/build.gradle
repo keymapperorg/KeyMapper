@@ -16,6 +16,7 @@ android {
         versionName "2.0.0-alpha"
 
         vectorDrawables.useSupportLibrary = true
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -37,8 +38,9 @@ android {
         }
     }
 
-    buildFeatures {
-        dataBinding = true
+    dataBinding {
+        enabled = true
+        enabledForTests = true
     }
 
     compileOptions {
@@ -53,6 +55,16 @@ android {
 
     kapt {
         correctErrorTypes = true
+    }
+}
+
+android.sourceSets {
+    test {
+        java.srcDirs += "$projectDir/src/testShared"
+    }
+
+    androidTest {
+        java.srcDirs += "$projectDir/src/testShared"
     }
 }
 
@@ -118,7 +130,7 @@ dependencies {
 
     def junitVersion = "4.12"
     def androidXTestExtKotlinRunnerVersion = "1.1.1"
-    def espressoVersion = "3.3.0-beta01"
+    def espressoVersion = "3.2.0-beta01"
     def coroutinesVersion = "1.2.1"
     def androidXTestCoreVersion = "1.2.0"
 
@@ -132,16 +144,15 @@ dependencies {
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
     testImplementation "pl.pragmatists:JUnitParams:1.1.1"
 
-    // AndroidX Test - Instrumented testing
     androidTestImplementation "androidx.test.ext:junit:$androidXTestExtKotlinRunnerVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
-
-    // Dependencies for Android instrumented unit tests
+    androidTestImplementation "androidx.arch.core:core-testing:2.1.0"
     androidTestImplementation "org.mockito:mockito-core:3.3.1"
     androidTestImplementation "com.linkedin.dexmaker:dexmaker-mockito:2.12.1"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
     androidTestImplementation "junit:junit:$junitVersion"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
+    androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"
     debugImplementation "androidx.fragment:fragment-testing:1.2.4"
-    debugImplementation "androidx.test:core:$androidXTestCoreVersion"
+    implementation "androidx.test:core:$androidXTestCoreVersion"
 }

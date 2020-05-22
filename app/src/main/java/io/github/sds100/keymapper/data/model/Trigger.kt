@@ -20,7 +20,7 @@ class Trigger(var keys: List<Key> = listOf(), val extras: List<Extra> = listOf()
         const val PARALLEL = 0
         const val SEQUENCE = 1
 
-        const val DEFAULT_TRIGGER_MODE = SEQUENCE
+        const val DEFAULT_TRIGGER_MODE = PARALLEL
 
         const val UNDETERMINED = -1
         const val SHORT_PRESS = 0
@@ -56,7 +56,6 @@ class Trigger(var keys: List<Key> = listOf(), val extras: List<Extra> = listOf()
 
                 return Key(keyEvent.keyCode, deviceId)
             }
-
         }
 
         val uniqueId: String
@@ -84,3 +83,6 @@ class Trigger(var keys: List<Key> = listOf(), val extras: List<Extra> = listOf()
     @IntDef(value = [UNDETERMINED, SHORT_PRESS, LONG_PRESS, DOUBLE_PRESS])
     annotation class ClickType
 }
+
+fun sequenceTrigger(vararg key: Trigger.Key) = Trigger(key.toList()).apply { mode = Trigger.SEQUENCE }
+fun parallelTrigger(vararg key: Trigger.Key) = Trigger(key.toList()).apply { mode = Trigger.PARALLEL }

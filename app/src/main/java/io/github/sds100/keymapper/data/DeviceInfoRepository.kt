@@ -9,4 +9,5 @@ interface DeviceInfoRepository {
     suspend fun getAll(): List<DeviceInfo>
     suspend fun createDeviceInfo(deviceInfo: DeviceInfo)
     suspend fun getDeviceInfo(descriptor: String)
+    suspend fun deleteAll()
 }

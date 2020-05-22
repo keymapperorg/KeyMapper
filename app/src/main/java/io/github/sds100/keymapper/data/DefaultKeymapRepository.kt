@@ -8,18 +8,7 @@ import io.github.sds100.keymapper.data.model.KeyMap
 /**
  * Created by sds100 on 26/01/2020.
  */
-class DefaultKeymapRepository private constructor(private val mKeymapDao: KeyMapDao) : KeymapRepository {
-
-    companion object {
-        @Volatile
-        private var instance: DefaultKeymapRepository? = null
-
-        fun getInstance(keymapDao: KeyMapDao) =
-            instance ?: synchronized(this) {
-                instance ?: DefaultKeymapRepository(keymapDao).also { instance = it }
-            }
-    }
-
+class DefaultKeymapRepository internal constructor(private val mKeymapDao: KeyMapDao) : KeymapRepository {
 
     override val keymapList: LiveData<List<KeyMap>> = mKeymapDao.observeAll()
 
@@ -27,8 +16,8 @@ class DefaultKeymapRepository private constructor(private val mKeymapDao: KeyMap
 
     override suspend fun getKeymap(id: Long) = mKeymapDao.getById(id)
 
-    override suspend fun createKeymap(keymap: KeyMap) {
-        mKeymapDao.insert(keymap)
+    override suspend fun insertKeymap(vararg keymap: KeyMap) {
+        mKeymapDao.insert(*keymap)
     }
 
     override suspend fun updateKeymap(keymap: KeyMap) {
@@ -45,6 +34,10 @@ class DefaultKeymapRepository private constructor(private val mKeymapDao: KeyMap
 
     override suspend fun deleteKeymap(vararg id: Long) {
         mKeymapDao.deleteById(*id)
+    }
+
+    override suspend fun deleteAll() {
+        mKeymapDao.deleteAll()
     }
 
     override suspend fun enableAll() {

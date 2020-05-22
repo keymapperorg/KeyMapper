@@ -23,15 +23,18 @@ class FakeKeymapRepository : KeymapRepository {
 
     override suspend fun getKeymap(id: Long) = getKeymaps().single { it.id == id }
 
-    override suspend fun createKeymap(keymap: KeyMap) {
-        keymap.id = mKeymapList.size.toLong()
-        mKeymapList.putIfAbsent(keymap.id, keymap)
-        keymapList.value = mKeymapList.values.toList()
+    override suspend fun insertKeymap(vararg keymap: KeyMap) {
+        keymap.forEach {
+            it.id = mKeymapList.size.toLong()
+            mKeymapList.putIfAbsent(it.id, it)
+
+            keymapList.postValue(mKeymapList.values.toList())
+        }
     }
 
     override suspend fun updateKeymap(keymap: KeyMap) {
         mKeymapList[keymap.id] = keymap
-        keymapList.value = mKeymapList.values.toList()
+        keymapList.postValue(mKeymapList.values.toList())
     }
 
     override suspend fun enableKeymapById(vararg id: Long) {
@@ -54,9 +57,14 @@ class FakeKeymapRepository : KeymapRepository {
         TODO("Not yet implemented")
     }
 
+    override suspend fun deleteAll() {
+        mKeymapList.clear()
+        keymapList.value = mKeymapList.values.toList()
+    }
+
     suspend fun createTestData() {
         for (i in 0..100) {
-            createKeymap(KeyMap(
+            insertKeymap(KeyMap(
                 id = i.toLong(),
                 trigger = createRandomTrigger(),
                 actionList = createRandomActionList(),

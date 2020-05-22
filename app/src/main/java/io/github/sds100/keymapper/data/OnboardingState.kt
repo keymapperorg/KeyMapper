@@ -10,7 +10,9 @@ import io.github.sds100.keymapper.util.str
  */
 
 @Suppress("EXPERIMENTAL_API_USAGE")
-class OnboardingState(private val mCtx: Context) : IOnboardingState {
+class OnboardingState(ctx: Context) : IOnboardingState {
+    private val mCtx = ctx.applicationContext
+
     override fun getShownPrompt(key: Int): Boolean {
         return mCtx.defaultSharedPreferences.getBoolean(mCtx.str(key), false)
     }

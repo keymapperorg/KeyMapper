@@ -25,9 +25,11 @@ import splitties.toast.toast
 /**
  * Created by sds100 on 18/05/2020.
  */
-class ActionsFragment : Fragment() {
+class ActionsFragment(private val mKeymapId: Long) : Fragment() {
 
-    private val mViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap)
+    private val mViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap) {
+        InjectorUtils.provideConfigKeymapViewModel(requireContext(), mKeymapId)
+    }
 
     private val mActionModelList by lazy {
         mViewModel.actionList.map { actionList ->

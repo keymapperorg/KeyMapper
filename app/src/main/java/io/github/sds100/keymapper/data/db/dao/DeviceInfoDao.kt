@@ -26,4 +26,7 @@ interface DeviceInfoDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(vararg deviceInfo: DeviceInfo)
+
+    @Query("DELETE FROM ${KeyMapDao.TABLE_NAME}")
+    suspend fun deleteAll()
 }

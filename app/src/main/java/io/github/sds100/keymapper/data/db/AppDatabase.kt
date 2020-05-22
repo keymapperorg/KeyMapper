@@ -25,22 +25,6 @@ import io.github.sds100.keymapper.data.model.KeyMap
     ConstraintListTypeConverter::class
 )
 abstract class AppDatabase : RoomDatabase() {
-    companion object {
-        const val DATABASE_NAME = "key_map_database-db"
-
-        private var INSTANCE: AppDatabase? = null
-
-        fun getInstance(context: Context): AppDatabase {
-            return INSTANCE ?: synchronized(this) {
-                INSTANCE ?: buildDatabase(context).also { INSTANCE = it }
-            }
-        }
-
-        private fun buildDatabase(context: Context): AppDatabase {
-            return Room.databaseBuilder(context, AppDatabase::class.java, DATABASE_NAME).build()
-        }
-    }
-
     abstract fun keymapDao(): KeyMapDao
     abstract fun deviceInfoDao(): DeviceInfoDao
 }

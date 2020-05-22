@@ -1,33 +1,18 @@
 package io.github.sds100.keymapper.util
 
 import android.content.Context
-import com.example.architecturetest.data.DefaultDeviceInfoRepository
-import com.example.architecturetest.data.DefaultKeymapRepository
+import io.github.sds100.keymapper.MyApplication
 import io.github.sds100.keymapper.data.DefaultSystemActionRepository
 import io.github.sds100.keymapper.data.FileRepository
-import io.github.sds100.keymapper.data.IOnboardingState
 import io.github.sds100.keymapper.data.SystemRepository
-import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.viewmodel.*
 
 /**
  * Created by sds100 on 26/01/2020.
  */
 object InjectorUtils {
-    fun getDefaultKeymapRepository(context: Context): DefaultKeymapRepository {
-        return DefaultKeymapRepository.getInstance(
-            AppDatabase.getInstance(context.applicationContext).keymapDao()
-        )
-    }
-
     private fun getDefaultSystemActionRepository(context: Context): DefaultSystemActionRepository {
         return DefaultSystemActionRepository.getInstance(context)
-    }
-
-    fun getDeviceInfoRepository(context: Context): DefaultDeviceInfoRepository {
-        return DefaultDeviceInfoRepository.getInstance(
-            AppDatabase.getInstance(context.applicationContext).deviceInfoDao()
-        )
     }
 
     private fun getSystemRepository(context: Context): SystemRepository {
@@ -49,8 +34,8 @@ object InjectorUtils {
     }
 
     fun provideKeymapListViewModel(context: Context): KeymapListViewModel.Factory {
-        val keymapRepository = getDefaultKeymapRepository(context)
-        val deviceInfoRepository = getDeviceInfoRepository(context)
+        val keymapRepository = (context.applicationContext as MyApplication).keymapRepository
+        val deviceInfoRepository = (context.applicationContext as MyApplication).deviceInfoRepository
 
         return KeymapListViewModel.Factory(keymapRepository, deviceInfoRepository)
     }
@@ -89,11 +74,10 @@ object InjectorUtils {
 
     fun provideConfigKeymapViewModel(
         context: Context,
-        onboardingState: IOnboardingState,
         id: Long
     ): ConfigKeymapViewModel.Factory {
-        val keymapRepository = getDefaultKeymapRepository(context)
-        val deviceInfoRepository = getDeviceInfoRepository(context)
-        return ConfigKeymapViewModel.Factory(keymapRepository, deviceInfoRepository, onboardingState, id)
+        (context.applicationContext as MyApplication).apply {
+            return ConfigKeymapViewModel.Factory(keymapRepository, deviceInfoRepository, onboardingState, id)
+        }
     }
 }

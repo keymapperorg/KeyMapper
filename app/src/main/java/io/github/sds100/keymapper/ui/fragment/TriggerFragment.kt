@@ -10,6 +10,7 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.VisibleForTesting
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
@@ -34,17 +35,17 @@ import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.launch
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
-import splitties.experimental.ExperimentalSplittiesApi
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 /**
  * Created by sds100 on 19/03/2020.
  */
-@ExperimentalSplittiesApi
-class TriggerFragment : Fragment() {
+class TriggerFragment(private val mKeymapId: Long) : Fragment() {
+    private val mViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap) {
+        InjectorUtils.provideConfigKeymapViewModel(requireContext(), mKeymapId)
+    }
 
-    private val mViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap)
     private lateinit var mBinding: FragmentTriggerBinding
 
     /**
@@ -101,6 +102,14 @@ class TriggerFragment : Fragment() {
         FragmentTriggerBinding.inflate(inflater, container, false).apply {
             mBinding = this
 
+            return this.root
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        mBinding.apply {
             viewModel = mViewModel
             lifecycleOwner = viewLifecycleOwner
 
@@ -155,8 +164,6 @@ class TriggerFragment : Fragment() {
                     mViewModel.triggerKeyModelList.value = modelList
                 }
             })
-
-            return this.root
         }
     }
 
@@ -181,7 +188,6 @@ class TriggerFragment : Fragment() {
                 triggerKeyList.forEachIndexed { index, model ->
                     triggerKey {
                         val triggerKey = mViewModel.triggerKeys.value?.get(index)
-
                         id(triggerKey?.uniqueId)
                         model(model)
 
@@ -190,8 +196,8 @@ class TriggerFragment : Fragment() {
                         triggerKeyIndex(index)
 
                         onRemoveClick { _ ->
-                            if (triggerKey != null) {
-                                mViewModel.removeTriggerKey(triggerKey.keyCode)
+                            triggerKey?.let {
+                                mViewModel.removeTriggerKey(it.keyCode)
                             }
                         }
 
@@ -200,9 +206,7 @@ class TriggerFragment : Fragment() {
                                 lifecycleScope.launch {
                                     val newClickType = showClickTypeDialog()
 
-                                    triggerKey?.apply {
-                                        mViewModel.setTriggerKeyClickType(keyCode, newClickType)
-                                    }
+                                    mViewModel.setTriggerKeyClickType(model.keyCode, newClickType)
                                 }
                             }
                         }
@@ -211,9 +215,7 @@ class TriggerFragment : Fragment() {
                             lifecycleScope.launch {
                                 val deviceId = showChooseDeviceDialog()
 
-                                triggerKey?.apply {
-                                    mViewModel.setTriggerKeyDevice(keyCode, deviceId)
-                                }
+                                mViewModel.setTriggerKeyDevice(model.keyCode, deviceId)
                             }
                         }
                     }

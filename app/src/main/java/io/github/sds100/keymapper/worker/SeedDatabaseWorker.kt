@@ -5,6 +5,7 @@ import android.view.KeyEvent
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import io.github.sds100.keymapper.Constants
+import io.github.sds100.keymapper.MyApplication
 import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Constraint
@@ -38,8 +39,7 @@ class SeedDatabaseWorker(
                 }
             }.toList().toTypedArray()
 
-            val database = AppDatabase.getInstance(applicationContext)
-            database.keymapDao().insert(*keymaps)
+            (applicationContext as MyApplication).keymapRepository.insertKeymap(*keymaps)
 
             Result.success()
         } catch (e: Exception) {
