@@ -78,7 +78,7 @@
             android:layout_marginTop="@dimen/cardview_separation"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="4dp"
-            app:layout_constraintBottom_toTopOf="@+id/buttonAddConstraints"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/cardViewFlags">
@@ -136,7 +136,7 @@
                     android:layout_marginBottom="@dimen/cardview_padding_bottom"
                     android:orientation="horizontal"
                     android:visibility="@{viewModel.constraintList.size() &lt; 2 ? View.GONE : View.VISIBLE}"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintBottom_toTopOf="@+id/buttonAddConstraints"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent">
 
@@ -156,21 +156,20 @@
                         android:checked="@={viewModel.constraintOrMode}"
                         android:text="@string/radio_button_or" />
                 </RadioGroup>
+
+                <Button
+                    android:id="@+id/buttonAddConstraints"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="4dp"
+                    android:onClick="@{onAddConstraintClick}"
+                    android:text="@string/button_add_constraint"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
-
-        <Button
-            android:id="@+id/buttonAddConstraints"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="4dp"
-            android:onClick="@{onAddConstraintClick}"
-            android:text="@string/button_add_constraint"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
