@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.data.model
 
 import androidx.annotation.StringDef
+import java.io.Serializable
 
 /**
  * Created by sds100 on 26/01/2019.
@@ -11,14 +12,13 @@ import androidx.annotation.StringDef
     Extra.EXTRA_SHORTCUT_TITLE,
     Extra.EXTRA_STREAM_TYPE,
     Extra.EXTRA_LENS,
-    Extra.EXTRA_RINGER_MODE
+    Extra.EXTRA_RINGER_MODE,
+    Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT
 ])
 annotation class ExtraId
 
-data class Extra(@ExtraId val id: String, val data: String) {
+data class Extra(@ExtraId val id: String, val data: String) : Serializable {
     companion object {
-        const val EXTRA_ACTION = "extra_action"
-
         //DON'T CHANGE THESE IDs!!!!
         const val EXTRA_SHORTCUT_TITLE = "extra_title"
         const val EXTRA_PACKAGE_NAME = "extra_package_name"

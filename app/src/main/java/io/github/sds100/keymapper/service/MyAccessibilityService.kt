@@ -17,6 +17,7 @@ import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.WidgetsManager.EVENT_SERVICE_START
 import io.github.sds100.keymapper.WidgetsManager.EVENT_SERVICE_STOPPED
 import io.github.sds100.keymapper.data.AppPreferences
+import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.ActionPerformerDelegate
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
@@ -78,7 +79,7 @@ class MyAccessibilityService : AccessibilityService(),
 
                 ACTION_TEST_ACTION -> {
                     intent.getSerializableExtra(EXTRA_ACTION)?.let { action ->
-                        //TODO test action
+                        mActionPerformerDelegate.performAction(action as Action)
                     }
                 }
 

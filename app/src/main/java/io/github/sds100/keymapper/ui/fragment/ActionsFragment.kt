@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.ui.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,12 +10,15 @@ import androidx.lifecycle.map
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
+import io.github.sds100.keymapper.MyApplication
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.action
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentActionsBinding
+import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.delegate.ActionPerformerDelegate
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
 import splitties.alertdialog.appcompat.okButton
@@ -62,6 +66,17 @@ class ActionsFragment(private val mKeymapId: Long) : Fragment() {
             })
 
             subscribeActionList()
+
+            mViewModel.testAction.observe(viewLifecycleOwner, EventObserver {
+                if (AccessibilityUtils.isServiceEnabled(requireContext())){
+                    Intent(MyAccessibilityService.ACTION_TEST_ACTION).apply {
+                        putExtra(MyAccessibilityService.EXTRA_ACTION, it)
+                        requireContext().sendBroadcast(this)
+                    }
+                }else{
+                    mViewModel.promptToEnableAccessibilityService.value = Event(Unit)
+                }
+            })
 
             return this.root
         }

@@ -14,7 +14,6 @@ import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.OnboardingState
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentConfigKeymapBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
@@ -137,10 +136,14 @@ class ConfigKeymapFragment : Fragment() {
                 if (serviceEnabled) {
                     requireActivity().sendBroadcast(Intent(MyAccessibilityService.ACTION_RECORD_TRIGGER))
                 } else {
-                    coordinatorLayout.snack(R.string.error_accessibility_service_disabled_record_trigger) {
-                        setAction(str(R.string.snackbar_fix)) {
-                            AccessibilityUtils.enableService(requireContext())
-                        }
+                    mViewModel.promptToEnableAccessibilityService.value = Event(Unit)
+                }
+            })
+
+            mViewModel.promptToEnableAccessibilityService.observe(viewLifecycleOwner, EventObserver {
+                coordinatorLayout.snack(R.string.error_accessibility_service_disabled_record_trigger) {
+                    setAction(str(R.string.snackbar_fix)) {
+                        AccessibilityUtils.enableService(requireContext())
                     }
                 }
             })

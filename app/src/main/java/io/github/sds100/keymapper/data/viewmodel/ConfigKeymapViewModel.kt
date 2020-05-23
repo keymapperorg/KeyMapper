@@ -111,6 +111,7 @@ class ConfigKeymapViewModel internal constructor(
     val actionList: MutableLiveData<List<Action>> = MutableLiveData(listOf())
     val chooseAction: MutableLiveData<Event<Unit>> = MutableLiveData()
     val showFixActionPrompt: MutableLiveData<Event<Failure>> = MutableLiveData()
+    val testAction: MutableLiveData<Event<Action>> = MutableLiveData()
 
     val constraintList: MutableLiveData<List<Constraint>> = MutableLiveData(listOf())
 
@@ -118,6 +119,7 @@ class ConfigKeymapViewModel internal constructor(
     val constraintOrMode: MutableLiveData<Boolean> = MutableLiveData()
 
     val showOnboardingPrompt: MutableLiveData<Event<NotifyUserModel>> = MutableLiveData()
+    val promptToEnableAccessibilityService: MutableLiveData<Event<Unit>> = MutableLiveData()
 
     init {
         if (mId == NEW_KEYMAP_ID) {
@@ -400,7 +402,13 @@ class ConfigKeymapViewModel internal constructor(
         if (model.hasError) {
             showFixActionPrompt.value = Event(model.failure!!)
         } else {
-            //TEST the action
+            if (model.hasError) {
+                showFixActionPrompt.value = Event(model.failure!!)
+            } else {
+                actionList.value?.single { it.uniqueId == model.id }?.let {
+                    testAction.value = Event(it)
+                }
+            }
         }
     }
 
