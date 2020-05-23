@@ -190,9 +190,9 @@ class KeymapDetectionDelegateTest {
         }
 
         //then
-        assertEquals(KeyEvent.KEYCODE_VOLUME_DOWN, mDelegate.imitateButtonPress.value?.getContentIfNotHandled())
-        Thread.sleep(500)
         assertNull(mDelegate.imitateButtonPress.value?.getContentIfNotHandled())
+        Thread.sleep(500)
+        assertEquals(KeyEvent.KEYCODE_VOLUME_DOWN, mDelegate.imitateButtonPress.value?.getContentIfNotHandled())
     }
 
     @Test

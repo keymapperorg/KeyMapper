@@ -161,7 +161,9 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                         if (keyMap.trigger.mode == Trigger.SEQUENCE) {
                             when (key.clickType) {
                                 Trigger.LONG_PRESS -> {
-                                    longPressSequenceEvents.add(encodeEvent(key.keyCode, key.clickType, key.deviceId))
+                                    if (keyMap.trigger.keys.size > 1) {
+                                        longPressSequenceEvents.add(encodeEvent(key.keyCode, key.clickType, key.deviceId))
+                                    }
                                 }
 
                                 Trigger.DOUBLE_PRESS -> {
@@ -192,18 +194,26 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
                     when (keyMap.trigger.mode) {
                         Trigger.SEQUENCE -> {
-                            sequenceTriggerEvents.add(encodedTriggerList.toIntArray())
-                            sequenceTriggerActions.add(encodedActionList)
-                            sequenceTriggerVibrate.add(keyMap.flags.hasFlag(KeyMap.KEYMAP_FLAG_VIBRATE))
+                            if (keyMap.trigger.keys.size == 1 &&
+                                keyMap.trigger.keys[0].clickType != Trigger.DOUBLE_PRESS) {
+                                parallelTriggerEvents.add(encodedTriggerList.toIntArray())
+                                parallelTriggerActions.add(encodedActionList)
+                                parallelTriggerVibrate.add(keyMap.flags.hasFlag(KeyMap.KEYMAP_FLAG_VIBRATE))
 
-                            keyMap.trigger.getExtraData(Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT)
-                                .onSuccess {
-                                    sequenceTriggerTimeouts.add(it.toInt())
-                                }.onFailure {
-                                    val default = Trigger.DEFAULT_TIMEOUT
+                            } else {
+                                sequenceTriggerEvents.add(encodedTriggerList.toIntArray())
+                                sequenceTriggerActions.add(encodedActionList)
+                                sequenceTriggerVibrate.add(keyMap.flags.hasFlag(KeyMap.KEYMAP_FLAG_VIBRATE))
 
-                                    sequenceTriggerTimeouts.add(default)
-                                }
+                                keyMap.trigger.getExtraData(Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT)
+                                    .onSuccess {
+                                        sequenceTriggerTimeouts.add(it.toInt())
+                                    }.onFailure {
+                                        val default = Trigger.DEFAULT_TIMEOUT
+
+                                        sequenceTriggerTimeouts.add(default)
+                                    }
+                            }
                         }
 
                         Trigger.PARALLEL -> {
@@ -480,19 +490,19 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         var hasVibrateFlag = false
         var successfulLongPress = false
         var successfulDoublePress = false
+        var mappedToDoublePress = false
 
         var imitateKeyAfterDoublePressTimeout = false
         var matchedDoublePressEventIndex = -1
+        var shortPressSingleKeyTriggerJustReleased = false
+        var longPressSingleKeyTriggerJustReleased = false
         val actionKeysToPerform = mutableSetOf<Int>()
 
-        if (mDetectSequenceLongPresses &&
+        if ((currentTime - downTime) >= preferences.longPressDelay) {
+            successfulLongPress = true
+        } else if (mDetectSequenceLongPresses &&
             mLongPressSequenceEvents.hasEvent(encodedEvent.withFlag(FLAG_LONG_PRESS))) {
-
-            if ((currentTime - downTime) >= preferences.longPressDelay) {
-                successfulLongPress = true
-            } else {
-                imitateButtonPress = true
-            }
+            imitateButtonPress = true
         }
 
         if (mDetectSequenceDoublePresses) {
@@ -500,6 +510,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             for (index in mDoublePressSequenceEvents.indices) {
                 if (mDoublePressSequenceEvents.hasEventAtIndex(encodedEvent.withFlag(FLAG_DOUBLE_PRESS), index)) {
 
+                    mappedToDoublePress = true
                     //increment the double press event state.
                     mDoublePressEventStates[index] = mDoublePressEventStates[index] + 1
 
@@ -572,8 +583,13 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         if (mDetectParallelTriggers) {
             triggerLoop@ for ((triggerIndex, eventsAwaitingRelease) in mParallelTriggerEventsAwaitingRelease.withIndex()) {
                 val encodedWithShortPress = encodedEvent.withFlag(FLAG_SHORT_PRESS)
+                val singleKeyTrigger = mParallelTriggerEvents[triggerIndex].size == 1
 
                 if (eventsAwaitingRelease.toIntArray().hasEvent(encodedWithShortPress)) {
+
+                    if (singleKeyTrigger) {
+                        shortPressSingleKeyTriggerJustReleased = true
+                    }
 
                     mParallelTriggerEventsAwaitingRelease[triggerIndex].remove(encodedWithShortPress)
 
@@ -590,9 +606,17 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
                     val lastMatchedIndex = mLastMatchedParallelEventIndices[triggerIndex]
 
-                    if (lastMatchedIndex > -1 &&
-                        lastMatchedIndex < mParallelTriggerEvents[triggerIndex].lastIndex) {
-                        imitateButtonPress = true
+                    if (singleKeyTrigger && successfulLongPress) {
+                        longPressSingleKeyTriggerJustReleased = true
+                    }
+
+                    if (!imitateButtonPress) {
+                        if (singleKeyTrigger && !successfulLongPress) {
+                            imitateButtonPress = true
+                        } else if (lastMatchedIndex > -1 &&
+                            lastMatchedIndex < mParallelTriggerEvents[triggerIndex].lastIndex) {
+                            imitateButtonPress = true
+                        }
                     }
                 }
 
@@ -611,12 +635,10 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             }
         }
 
-        //only imitate a key if an action isn't going to be performed
-        if (imitateButtonPress && actionKeysToPerform.isEmpty()) {
-            this.imitateButtonPress.value = Event(keyCode)
-        }
+        if (imitateKeyAfterDoublePressTimeout
+            && actionKeysToPerform.isEmpty()
+            && !shortPressSingleKeyTriggerJustReleased && !longPressSingleKeyTriggerJustReleased) {
 
-        if (imitateKeyAfterDoublePressTimeout && !imitateButtonPress && actionKeysToPerform.isEmpty()) {
             mCoroutineScope.launch {
                 delay(preferences.doublePressDelay.toLong())
 
@@ -627,6 +649,11 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                     this@KeymapDetectionDelegate.imitateButtonPress.value = Event(keyCode)
                 }
             }
+        }
+        //only imitate a key if an action isn't going to be performed
+        else if (imitateButtonPress && actionKeysToPerform.isEmpty() &&
+            !shortPressSingleKeyTriggerJustReleased && !mappedToDoublePress) {
+            this.imitateButtonPress.value = Event(keyCode)
         }
 
         if (consumeEvent) {
