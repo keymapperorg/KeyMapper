@@ -178,7 +178,7 @@ private fun Action.getIcon(ctx: Context): Result<Drawable?> = when (type) {
  * @return if the action can't be performed, it returns an error code.
  * returns null if their if the action can be performed.
  */
-private fun Action.canBePerformed(ctx: Context): Result<Action> {
+fun Action.canBePerformed(ctx: Context): Result<Action> {
     //the action has no data
     if (data.isEmpty()) return NoActionData()
 

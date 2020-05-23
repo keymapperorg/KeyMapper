@@ -73,9 +73,24 @@ object AppPreferences : DefaultPreferences() {
         appCtx.int(R.integer.default_value_double_press_delay)
     )
 
-    private val triggerDeviceNamesJson by StringOrNullPref(
-        appCtx.str(R.string.key_pref_trigger_device_names),
-        null
+    val forceVibrate by BoolPref(
+        appCtx.str(R.string.key_pref_force_vibrate),
+        appCtx.bool(R.bool.default_value_force_vibrate)
+    )
+
+    val vibrateDuration by IntPref(
+        appCtx.str(R.string.key_pref_vibrate_duration),
+        appCtx.int(R.integer.default_value_vibrate_duration)
+    )
+
+    val showToastOnPerformAction by BoolPref(
+        appCtx.str(R.string.key_pref_show_toast_when_action_performed),
+        appCtx.bool(R.bool.default_value_show_toast)
+    )
+
+    val showToastOnActionError by BoolPref(
+        appCtx.str(R.string.key_pref_show_toast_on_action_error),
+        appCtx.bool(R.bool.default_value_show_toast_on_action_error)
     )
 
     @NightMode

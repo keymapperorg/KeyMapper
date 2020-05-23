@@ -5,8 +5,10 @@ import android.content.*
 import android.media.AudioManager
 import android.os.Build
 import android.os.SystemClock
+import android.os.VibrationEffect
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
 import androidx.lifecycle.*
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.MyApplication
@@ -16,15 +18,22 @@ import io.github.sds100.keymapper.WidgetsManager.EVENT_SERVICE_START
 import io.github.sds100.keymapper.WidgetsManager.EVENT_SERVICE_STOPPED
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.delegate.ActionPerformerDelegate
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
+import io.github.sds100.keymapper.util.delegate.KeymapDetectionPreferences
+import io.github.sds100.keymapper.util.result.getBriefMessage
+import io.github.sds100.keymapper.util.result.onFailure
+import io.github.sds100.keymapper.util.result.onSuccess
 import kotlinx.coroutines.delay
+import splitties.systemservices.vibrator
+import splitties.toast.toast
 import timber.log.Timber
 
 /**
  * Created by sds100 on 05/04/2020.
  */
 class MyAccessibilityService : AccessibilityService(),
-    LifecycleOwner, SharedPreferences.OnSharedPreferenceChangeListener, IClock {
+    LifecycleOwner, SharedPreferences.OnSharedPreferenceChangeListener, IClock, IPerformAccessibilityAction {
 
     companion object {
         const val EXTRA_ACTION = "action"
@@ -111,6 +120,7 @@ class MyAccessibilityService : AccessibilityService(),
     private lateinit var mLifecycleRegistry: LifecycleRegistry
 
     private lateinit var mKeymapDetectionDelegate: KeymapDetectionDelegate
+    private lateinit var mActionPerformerDelegate: ActionPerformerDelegate
 
     override val currentTime: Long
         get() = SystemClock.elapsedRealtime()
@@ -121,11 +131,21 @@ class MyAccessibilityService : AccessibilityService(),
         mLifecycleRegistry = LifecycleRegistry(this)
         mLifecycleRegistry.currentState = Lifecycle.State.STARTED
 
-        mKeymapDetectionDelegate = KeymapDetectionDelegate(
-            lifecycleScope,
+        val preferences = KeymapDetectionPreferences(
             AppPreferences.longPressDelay,
             AppPreferences.doublePressDelay,
+            AppPreferences.forceVibrate
+        )
+
+        mKeymapDetectionDelegate = KeymapDetectionDelegate(
+            lifecycleScope,
+            preferences,
             iClock = this)
+
+        mActionPerformerDelegate = ActionPerformerDelegate(
+            context = this,
+            iPerformAccessibilityAction = this,
+            lifecycle = lifecycle)
 
         IntentFilter().apply {
             addAction(ACTION_TEST_ACTION)
@@ -160,12 +180,31 @@ class MyAccessibilityService : AccessibilityService(),
                 KeyEvent.KEYCODE_BACK -> performGlobalAction(GLOBAL_ACTION_BACK)
                 KeyEvent.KEYCODE_HOME -> performGlobalAction(GLOBAL_ACTION_HOME)
                 KeyEvent.KEYCODE_APP_SWITCH -> performGlobalAction(GLOBAL_ACTION_RECENTS)
-//            KeyEvent.KEYCODE_MENU -> mActionPerformerDelegate.performSystemAction(SystemAction.OPEN_MENU)
+                KeyEvent.KEYCODE_MENU -> mActionPerformerDelegate.performSystemAction(SystemAction.OPEN_MENU)
             }
         })
 
-        mKeymapDetectionDelegate.performAction.observe(this, EventObserver {
-            Timber.d("perform... ${it.uniqueId}")
+        mKeymapDetectionDelegate.performAction.observe(this, EventObserver { action ->
+            Timber.d("perform... ${action.uniqueId}")
+
+            action.canBePerformed(this).onSuccess {
+                mActionPerformerDelegate.performAction(action)
+            }.onFailure {
+                if (AppPreferences.showToastOnActionError) {
+                    toast(it.getBriefMessage(this))
+                }
+            }
+        })
+
+        mKeymapDetectionDelegate.vibrate.observe(this, EventObserver {
+
+            val vibrateDuration = AppPreferences.vibrateDuration.toLong()
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator.vibrate(VibrationEffect.createOneShot(vibrateDuration, VibrationEffect.DEFAULT_AMPLITUDE))
+            } else {
+                vibrator.vibrate(vibrateDuration)
+            }
         })
     }
 
@@ -219,11 +258,15 @@ class MyAccessibilityService : AccessibilityService(),
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         when (key) {
             str(R.string.key_pref_long_press_delay) -> {
-                mKeymapDetectionDelegate.longPressDelay = AppPreferences.longPressDelay
+                mKeymapDetectionDelegate.preferences.longPressDelay = AppPreferences.longPressDelay
             }
 
             str(R.string.key_pref_double_press_delay) -> {
-                mKeymapDetectionDelegate.doublePressDelay = AppPreferences.doublePressDelay
+                mKeymapDetectionDelegate.preferences.doublePressDelay = AppPreferences.doublePressDelay
+            }
+
+            str(R.string.key_pref_force_vibrate) -> {
+                mKeymapDetectionDelegate.preferences.forceVibrate = AppPreferences.forceVibrate
             }
         }
     }
@@ -247,4 +290,14 @@ class MyAccessibilityService : AccessibilityService(),
     }
 
     override fun getLifecycle() = mLifecycleRegistry
+
+    override val keyboardController: SoftKeyboardController?
+        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            softKeyboardController
+        } else {
+            null
+        }
+
+    override val rootNode: AccessibilityNodeInfo?
+        get() = rootInActiveWindow
 }

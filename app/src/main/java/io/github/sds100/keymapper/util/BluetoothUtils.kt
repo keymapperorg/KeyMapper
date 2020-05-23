@@ -18,13 +18,13 @@ object BluetoothUtils {
         return bluetoothAdapter.bondedDevices.toList()
     }
 
-    fun changeBluetoothState(state: State) {
+    fun changeBluetoothState(state: StateChange) {
         val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 
         when (state) {
-            State.ENABLE -> bluetoothAdapter.enable()
-            State.DISABLE -> bluetoothAdapter.disable()
-            State.TOGGLE -> {
+            StateChange.ENABLE -> bluetoothAdapter.enable()
+            StateChange.DISABLE -> bluetoothAdapter.disable()
+            StateChange.TOGGLE -> {
                 val isEnabled = bluetoothAdapter.isEnabled
 
                 if (isEnabled) {
@@ -34,9 +34,5 @@ object BluetoothUtils {
                 }
             }
         }
-    }
-
-    enum class State {
-        ENABLE, DISABLE, TOGGLE
     }
 }

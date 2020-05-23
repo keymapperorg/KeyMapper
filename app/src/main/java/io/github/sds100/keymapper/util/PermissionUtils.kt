@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.Uri
@@ -148,3 +149,10 @@ object PermissionUtils {
         return ContextCompat.checkSelfPermission(appCtx, permission) == PERMISSION_GRANTED
     }
 }
+
+
+val Context.haveWriteSettingsPermission: Boolean
+    get() = PermissionUtils.isPermissionGranted(Manifest.permission.WRITE_SETTINGS)
+
+val Context.haveWriteSecureSettingsPermission: Boolean
+    get() = PermissionUtils.isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)

@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.util
 import android.os.Build
 import android.view.KeyEvent
 import androidx.annotation.RequiresApi
-import io.github.sds100.keymapper.R
 
 /**
  * Created by sds100 on 17/07/2018.
