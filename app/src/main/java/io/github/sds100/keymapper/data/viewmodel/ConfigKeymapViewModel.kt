@@ -10,6 +10,7 @@ import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.result.Failure
 import io.github.sds100.keymapper.util.toggleFlag
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.*
 
 class ConfigKeymapViewModel internal constructor(

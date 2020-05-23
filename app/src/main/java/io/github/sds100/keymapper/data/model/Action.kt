@@ -168,5 +168,5 @@ data class Action(
         }
     }
 
-    override fun equals(other: Any?) = this.uniqueId == (other as Action).uniqueId
+    override fun equals(other: Any?) = this.uniqueId == (other as Action?)?.uniqueId
 }

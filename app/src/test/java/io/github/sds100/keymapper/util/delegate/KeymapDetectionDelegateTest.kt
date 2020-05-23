@@ -6,6 +6,7 @@ import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.Trigger.Companion.DOUBLE_PRESS
 import io.github.sds100.keymapper.data.model.Trigger.Companion.LONG_PRESS
+import io.github.sds100.keymapper.data.model.Trigger.Companion.SHORT_PRESS
 import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.IClock
 import io.github.sds100.keymapper.util.SystemAction
@@ -42,6 +43,7 @@ class KeymapDetectionDelegateTest {
 
         private const val LONG_PRESS_DELAY = 500
         private const val DOUBLE_PRESS_DELAY = 300
+        private const val FORCE_VIBRATE = false
 
         private val TEST_ACTION = Action(ActionType.SYSTEM_ACTION, SystemAction.TOGGLE_FLASHLIGHT)
         private val TEST_ACTION_2 = Action(ActionType.APP, Constants.PACKAGE_NAME)
@@ -64,7 +66,110 @@ class KeymapDetectionDelegateTest {
                 get() = System.currentTimeMillis()
         }
 
-        mDelegate = KeymapDetectionDelegate(GlobalScope, LONG_PRESS_DELAY, DOUBLE_PRESS_DELAY, iClock)
+        val preferences = KeymapDetectionPreferences(LONG_PRESS_DELAY, DOUBLE_PRESS_DELAY, FORCE_VIBRATE)
+
+        mDelegate = KeymapDetectionDelegate(GlobalScope, preferences, iClock)
+    }
+
+    @Test
+    @Parameters(method = "params_dualParallelTrigger_input2ndKey_dontConsumeUp")
+    fun dualParallelTrigger_input2ndKey_dontConsumeUp(description: String, trigger: Trigger) {
+        //given
+        val keymap = KeyMap(0, trigger, actionList = listOf(TEST_ACTION))
+        mDelegate.keyMapListCache = listOf(keymap)
+
+        runBlocking {
+            //when
+            trigger.keys[1].let {
+                inputKeyEvent(it.keyCode, KeyEvent.ACTION_DOWN, deviceIdToDescriptor(it.deviceId))
+            }
+
+            trigger.keys[1].let {
+                val consumed = inputKeyEvent(it.keyCode, KeyEvent.ACTION_UP, deviceIdToDescriptor(it.deviceId))
+
+                //then
+                assertEquals(false, consumed)
+            }
+        }
+    }
+
+    fun params_dualParallelTrigger_input2ndKey_dontConsumeUp() = listOf(
+        arrayOf("long press", parallelTrigger(
+            Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = LONG_PRESS),
+            Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, clickType = LONG_PRESS)
+        )),
+
+        arrayOf("short press", parallelTrigger(
+            Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = SHORT_PRESS),
+            Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, clickType = SHORT_PRESS)
+        ))
+    )
+
+
+    @Test
+    fun dualShortPressParallelTrigger_validInput_consumeUp() {
+        //given
+        val trigger = parallelTrigger(
+            Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN),
+            Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP)
+        )
+
+        val keymap = KeyMap(0, trigger, actionList = listOf(TEST_ACTION))
+        mDelegate.keyMapListCache = listOf(keymap)
+
+        runBlocking {
+            //when
+            trigger.keys.forEach {
+                inputKeyEvent(it.keyCode, KeyEvent.ACTION_DOWN, deviceIdToDescriptor(it.deviceId))
+            }
+
+            var consumedUpCount = 0
+
+            trigger.keys.forEach {
+                val consumed = inputKeyEvent(it.keyCode, KeyEvent.ACTION_UP, deviceIdToDescriptor(it.deviceId))
+
+                if (consumed) {
+                    consumedUpCount += 1
+                }
+            }
+
+            //then
+            assertEquals(2, consumedUpCount)
+        }
+    }
+
+    @Test
+    fun dualLongPressParallelTrigger_validInput_consumeUp() {
+        //given
+        val trigger = parallelTrigger(
+            Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = LONG_PRESS),
+            Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, clickType = LONG_PRESS)
+        )
+
+        val keymap = KeyMap(0, trigger, actionList = listOf(TEST_ACTION))
+        mDelegate.keyMapListCache = listOf(keymap)
+
+        runBlocking {
+            //when
+            trigger.keys.forEach {
+                inputKeyEvent(it.keyCode, KeyEvent.ACTION_DOWN, deviceIdToDescriptor(it.deviceId))
+            }
+
+            delay(600)
+
+            var consumedUpCount = 0
+
+            trigger.keys.forEach {
+                val consumed = inputKeyEvent(it.keyCode, KeyEvent.ACTION_UP, deviceIdToDescriptor(it.deviceId))
+
+                if (consumed) {
+                    consumedUpCount += 1
+                }
+            }
+
+            //then
+            assertEquals(2, consumedUpCount)
+        }
     }
 
     @Test
@@ -440,7 +545,7 @@ class KeymapDetectionDelegateTest {
                 delay(delay)
             } else {
                 when (key[0].clickType) {
-                    Trigger.SHORT_PRESS -> delay(50)
+                    SHORT_PRESS -> delay(50)
                     LONG_PRESS -> delay(600)
                 }
             }
