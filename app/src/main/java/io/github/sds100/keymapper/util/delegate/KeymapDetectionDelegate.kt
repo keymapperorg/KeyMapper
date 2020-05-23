@@ -570,15 +570,10 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         }
 
         if (mDetectParallelTriggers) {
-            for ((triggerIndex, lastMatchedIndex) in mLastMatchedParallelEventIndices.withIndex()) {
-
-                if (lastMatchedIndex == -1) {
-                    continue
-                }
-
+            triggerLoop@ for ((triggerIndex, eventsAwaitingRelease) in mParallelTriggerEventsAwaitingRelease.withIndex()) {
                 val encodedWithShortPress = encodedEvent.withFlag(FLAG_SHORT_PRESS)
 
-                if (mParallelTriggerEvents[triggerIndex].hasEvent(encodedWithShortPress)) {
+                if (eventsAwaitingRelease.toIntArray().hasEvent(encodedWithShortPress)) {
 
                     mParallelTriggerEventsAwaitingRelease[triggerIndex].remove(encodedWithShortPress)
 
@@ -587,11 +582,13 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
                 val encodedWithLongPress = encodedEvent.withFlag(FLAG_LONG_PRESS)
 
-                if (mParallelTriggerEvents[triggerIndex].hasEvent(encodedWithLongPress)) {
+                if (eventsAwaitingRelease.toIntArray().hasEvent(encodedWithLongPress)) {
 
                     mParallelTriggerEventsAwaitingRelease[triggerIndex].remove(encodedWithLongPress)
 
                     consumeEvent = true
+
+                    val lastMatchedIndex = mLastMatchedParallelEventIndices[triggerIndex]
 
                     if (lastMatchedIndex > -1 &&
                         lastMatchedIndex < mParallelTriggerEvents[triggerIndex].lastIndex) {
