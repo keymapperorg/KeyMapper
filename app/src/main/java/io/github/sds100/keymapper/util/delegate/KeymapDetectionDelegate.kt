@@ -427,8 +427,8 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                         mCoroutineScope.launch {
                             delay(preferences.longPressDelay.toLong())
 
-                            if (mLastMatchedParallelEventIndices[triggerIndex] ==
-                                mParallelTriggerEvents[triggerIndex].lastIndex) {
+                            if (mParallelTriggerEventsAwaitingRelease[triggerIndex].size ==
+                                mParallelTriggerEvents[triggerIndex].size) {
 
                                 mParallelTriggerActions[triggerIndex].forEach {
                                     val action = mActionMap[it] ?: return@forEach
