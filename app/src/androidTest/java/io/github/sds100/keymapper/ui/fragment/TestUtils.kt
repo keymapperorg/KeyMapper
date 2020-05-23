@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.data
+package io.github.sds100.keymapper
 
 import android.view.View
 import androidx.test.espresso.UiController

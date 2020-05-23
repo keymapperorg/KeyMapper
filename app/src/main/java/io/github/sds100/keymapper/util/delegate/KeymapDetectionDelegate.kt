@@ -13,7 +13,6 @@ import io.github.sds100.keymapper.util.IClock
 import io.github.sds100.keymapper.util.result.onFailure
 import io.github.sds100.keymapper.util.result.onSuccess
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import splitties.bitflags.hasFlag
@@ -383,8 +382,6 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                     mLastMatchedParallelEventIndices[triggerIndex] = nextIndex
 
                     if (nextIndex == mParallelTriggerEvents[triggerIndex].lastIndex) {
-                        mLastMatchedParallelEventIndices[triggerIndex] = -1
-
                         mParallelTriggerActions[triggerIndex].forEach {
                             val action = mActionMap[it] ?: return@forEach
                             performAction.value = Event(action)
@@ -450,22 +447,23 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         var consumeEvent = false
         var imitateButtonPress = false
 
-        var encodedEventWithClickType = encodedEvent.withFlag(FLAG_SHORT_PRESS)
+        var mappedToLongPress = false
+        var mappedToDoublePress = false
+        var successfulLongPress = false
+        var successfulDoublePress = false
+
+        var imitateKeyAfterDoublePressTimeout = false
+        var matchedDoublePressEventIndex = -1
+        val actionKeysToPerform = mutableSetOf<Int>()
 
         if (mDetectSequenceLongPresses &&
             mLongPressSequenceEvents.hasEvent(encodedEvent.withFlag(FLAG_LONG_PRESS))) {
-            /*
-            If the key is also mapped to a double press, the button will be imitated every time it is pressed when
-            the user tries to double press it so only imitate the key when a double press fails.
-             */
-            if ((currentTime - downTime) < longPressDelay) {
+            mappedToLongPress = true
 
-                if (!mDoublePressSequenceEvents.hasEvent(encodedEvent.withFlag(FLAG_DOUBLE_PRESS))) {
-                    imitateButtonPress = true
-                }
-
+            if ((currentTime - downTime) >= longPressDelay) {
+                successfulLongPress = true
             } else {
-                encodedEventWithClickType = encodedEvent.withFlag(FLAG_LONG_PRESS)
+                imitateButtonPress = true
             }
         }
 
@@ -474,27 +472,18 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             for (index in mDoublePressSequenceEvents.indices) {
                 if (mDoublePressSequenceEvents.hasEventAtIndex(encodedEvent.withFlag(FLAG_DOUBLE_PRESS), index)) {
 
+                    mappedToDoublePress = true
                     //increment the double press event state.
                     mDoublePressEventStates[index] = mDoublePressEventStates[index] + 1
 
                     when (mDoublePressEventStates[index]) {
                         /*if the key is in the single pressed state, set the timeout time and start the timer
-                        * to imitate the key if it isn't double pressed in the end*/
+                        * to imitate the key if it isn't double pressed in the end */
                         SINGLE_PRESSED -> {
                             mDoublePressTimeoutTimes[index] = currentTime + doublePressDelay
 
-                            /*
-                            Only imitate the key if it hasn't just been long pressed and wasn't double pressed.
-                             */
-                            if (!encodedEventWithClickType.hasFlag(FLAG_LONG_PRESS)) {
-                                mCoroutineScope.launch {
-                                    delay(doublePressDelay.toLong())
-
-                                    if (mDoublePressEventStates[index] == SINGLE_PRESSED) {
-                                        this@KeymapDetectionDelegate.imitateButtonPress.value = Event(keyCode)
-                                    }
-                                }
-                            }
+                            imitateKeyAfterDoublePressTimeout = true
+                            matchedDoublePressEventIndex = index
 
                             consumeEvent = true
                         }
@@ -502,7 +491,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                         /* When the key is double pressed */
                         DOUBLE_PRESSED -> {
 
-                            encodedEventWithClickType = encodedEvent.withFlag(FLAG_DOUBLE_PRESS)
+                            successfulDoublePress = true
                             mDoublePressEventStates[index] = NOT_PRESSED
                             mDoublePressTimeoutTimes[index] = -1
                         }
@@ -512,9 +501,42 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         }
 
         if (mDetectSequenceTriggers) {
-            onSequenceEvent(encodedEventWithClickType).let { consume ->
-                if (consume) {
+            for ((triggerIndex, lastMatchedEventIndex) in mLastMatchedSequenceEventIndices.withIndex()) {
+                //the index of the next event to match in the trigger
+                val nextIndex = lastMatchedEventIndex + 1
+
+                val encodedEventWithClickType = when {
+                    successfulLongPress -> encodedEvent.withFlag(FLAG_LONG_PRESS)
+                    successfulDoublePress -> encodedEvent.withFlag(FLAG_DOUBLE_PRESS)
+                    else -> encodedEvent.withFlag(FLAG_SHORT_PRESS)
+                }
+                //if the next event matches the event just pressed
+                if (mSequenceTriggerEvents[triggerIndex].hasEventAtIndex(encodedEventWithClickType, nextIndex)) {
                     consumeEvent = true
+
+                    mLastMatchedSequenceEventIndices[triggerIndex] = nextIndex
+
+                    /*
+                    If the next index is 0, then the first event in the trigger has been matched, which means the timer
+                    needs to start for this trigger.
+                     */
+                    if (nextIndex == 0) {
+                        val startTime = currentTime
+                        val timeout = mSequenceTriggerTimeouts[triggerIndex]
+
+                        mSequenceTriggersTimeoutTimes[triggerIndex] = startTime + timeout
+                    }
+
+                    /*
+                    If the last event in a trigger has been matched, then the action needs to be performed and the timer
+                    reset.
+                     */
+                    if (nextIndex == mSequenceTriggerEvents[triggerIndex].lastIndex) {
+
+                        actionKeysToPerform.addAll(mSequenceTriggerActions[triggerIndex].toList())
+                        mLastMatchedSequenceEventIndices[triggerIndex] = -1
+                        mSequenceTriggersTimeoutTimes[triggerIndex] = -1
+                    }
                 }
             }
         }
@@ -527,20 +549,44 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
                 if (mParallelTriggerEvents[triggerIndex].hasEvent(encodedEvent.withFlag(FLAG_SHORT_PRESS))) {
                     consumeEvent = true
-                    imitateButtonPress = true
                     mLastMatchedParallelEventIndices[triggerIndex] = -1
                 }
 
                 if (mParallelTriggerEvents[triggerIndex].hasEvent(encodedEvent.withFlag(FLAG_LONG_PRESS))) {
                     consumeEvent = true
-                    imitateButtonPress = true
+
+                    if (lastMatchedIndex > -1 &&
+                        lastMatchedIndex < mParallelTriggerEvents[triggerIndex].lastIndex) {
+                        imitateButtonPress = true
+                    }
+
                     mLastMatchedParallelEventIndices[triggerIndex] = -1
                 }
             }
         }
 
-        if (imitateButtonPress) {
+        actionKeysToPerform.forEach {
+            val action = mActionMap[it] ?: return@forEach
+
+            performAction.value = Event(action)
+        }
+
+        //only imitate a key if an action isn't going to be performed
+        if (imitateButtonPress && actionKeysToPerform.isEmpty()) {
             this.imitateButtonPress.value = Event(keyCode)
+        }
+
+        if (imitateKeyAfterDoublePressTimeout && !imitateButtonPress && actionKeysToPerform.isEmpty()) {
+            mCoroutineScope.launch {
+                delay(doublePressDelay.toLong())
+
+                /*
+                If the key has still only been single pressed, imitate it.
+                 */
+                if (mDoublePressEventStates[matchedDoublePressEventIndex] == SINGLE_PRESSED) {
+                    this@KeymapDetectionDelegate.imitateButtonPress.value = Event(keyCode)
+                }
+            }
         }
 
         if (consumeEvent) {
@@ -553,59 +599,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
     fun reset() {
         mSequenceTriggersTimeoutTimes = LongArray(mSequenceTriggerEvents.size) { -1 }
         mLastMatchedSequenceEventIndices = IntArray(mSequenceTriggerEvents.size) { -1 }
-    }
-
-    /**
-     * @return whether to consume the event.
-     */
-    private fun onSequenceEvent(encodedEvent: Int): Boolean {
-
-        var consumeEvent = false
-
-        val actionKeysToPerform = mutableSetOf<Int>()
-
-        for ((triggerIndex, lastMatchedEventIndex) in mLastMatchedSequenceEventIndices.withIndex()) {
-            //the index of the next event to match in the trigger
-            val nextIndex = lastMatchedEventIndex + 1
-
-            //if the next event matches the event just pressed
-            if (mSequenceTriggerEvents[triggerIndex].hasEventAtIndex(encodedEvent, nextIndex)) {
-                consumeEvent = true
-
-                mLastMatchedSequenceEventIndices[triggerIndex] = nextIndex
-
-                /*
-                If the next index is 0, then the first event in the trigger has been matched, which means the timer
-                needs to start for this trigger.
-                 */
-                if (nextIndex == 0) {
-                    val startTime = currentTime
-                    val timeout = mSequenceTriggerTimeouts[triggerIndex]
-
-                    mSequenceTriggersTimeoutTimes[triggerIndex] = startTime + timeout
-                }
-
-                /*
-                If the last event in a trigger has been matched, then the action needs to be performed and the timer
-                reset.
-                 */
-                if (nextIndex == mSequenceTriggerEvents[triggerIndex].lastIndex) {
-
-                    actionKeysToPerform.addAll(mSequenceTriggerActions[triggerIndex].toList())
-                    mLastMatchedSequenceEventIndices[triggerIndex] = -1
-                    mSequenceTriggersTimeoutTimes[triggerIndex] = -1
-                }
-            }
-        }
-
-        actionKeysToPerform.forEach {
-            val action = mActionMap[it] ?: return@forEach
-
-            performAction.value = Event(action)
-        }
-
-
-        return consumeEvent
+        mLastMatchedParallelEventIndices = IntArray(mParallelTriggerEvents.size) { -1 }
     }
 
     /**

@@ -190,30 +190,30 @@ class ConfigKeymapViewModel internal constructor(
     }
 
     fun saveKeymap() {
-        viewModelScope.launch {
-            val constraintMode = when {
-                constraintAndMode.value == true -> Constraint.MODE_AND
-                constraintOrMode.value == true -> Constraint.MODE_OR
-                else -> Constraint.DEFAULT_MODE
+        val constraintMode = when {
+            constraintAndMode.value == true -> Constraint.MODE_AND
+            constraintOrMode.value == true -> Constraint.MODE_OR
+            else -> Constraint.DEFAULT_MODE
+        }
+
+        val actualId =
+            if (mId == NEW_KEYMAP_ID) {
+                0
+            } else {
+                mId
             }
 
-            val actualId =
-                if (mId == NEW_KEYMAP_ID) {
-                    0
-                } else {
-                    mId
-                }
+        val keymap = KeyMap(
+            id = actualId,
+            trigger = Trigger(triggerKeys.value!!, triggerExtras.value!!).apply { mode = triggerMode.value!! },
+            actionList = actionList.value!!,
+            constraintList = constraintList.value!!,
+            constraintMode = constraintMode,
+            flags = flags.value!!,
+            isEnabled = isEnabled.value!!
+        )
 
-            val keymap = KeyMap(
-                id = actualId,
-                trigger = Trigger(triggerKeys.value!!, triggerExtras.value!!).apply { mode = triggerMode.value!! },
-                actionList = actionList.value!!,
-                constraintList = constraintList.value!!,
-                constraintMode = constraintMode,
-                flags = flags.value!!,
-                isEnabled = isEnabled.value!!
-            )
-
+        viewModelScope.launch {
             if (mId == NEW_KEYMAP_ID) {
                 mKeymapRepository.insertKeymap(keymap)
             } else {
@@ -305,7 +305,7 @@ class ConfigKeymapViewModel internal constructor(
         }
 
         if (triggerKeys.value!!.size <= 1) {
-            triggerInParallel.value = true
+            triggerInSequence.value = true
         }
 
         return true
@@ -327,7 +327,7 @@ class ConfigKeymapViewModel internal constructor(
         }
 
         if (triggerKeys.value!!.size <= 1) {
-            triggerInParallel.value = true
+            triggerInSequence.value = true
         }
     }
 
