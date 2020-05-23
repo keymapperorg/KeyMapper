@@ -38,7 +38,7 @@ class TextBlockActionTypeFragment : Fragment() {
 
             setOnDoneClick {
                 findNavController().apply {
-                    currentBackStackEntry?.setLiveDataEvent(SAVED_STATE_KEY, Event(mViewModel.text.value))
+                    currentBackStackEntry?.setLiveDataEvent(SAVED_STATE_KEY, mViewModel.text.value)
                 }
             }
 

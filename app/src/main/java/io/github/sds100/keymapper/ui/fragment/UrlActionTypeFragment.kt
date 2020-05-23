@@ -41,7 +41,7 @@ class UrlActionTypeFragment : Fragment() {
 
             setOnDoneClick {
                 findNavController().apply {
-                    currentBackStackEntry?.setLiveDataEvent(SAVED_STATE_KEY, Event(mViewModel.url.value))
+                    currentBackStackEntry?.setLiveDataEvent(SAVED_STATE_KEY, mViewModel.url.value)
                 }
             }
 

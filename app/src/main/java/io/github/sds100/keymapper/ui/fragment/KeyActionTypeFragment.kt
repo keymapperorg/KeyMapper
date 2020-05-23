@@ -36,7 +36,7 @@ class KeyActionTypeFragment : Fragment() {
 
             setOnDoneClick {
                 findNavController().apply {
-                    currentBackStackEntry?.setLiveDataEvent(SAVED_STATE_KEY, Event(mViewModel.keyEvent.value?.keyCode))
+                    currentBackStackEntry?.setLiveDataEvent(SAVED_STATE_KEY, mViewModel.keyEvent.value?.keyCode)
                 }
             }
 
