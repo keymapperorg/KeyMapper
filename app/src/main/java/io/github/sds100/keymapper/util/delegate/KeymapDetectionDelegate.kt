@@ -329,10 +329,10 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
     private var mParallelTriggerActions = arrayOf<IntArray>()
 
     /**
-     * Stores which events in each parallel trigger need to be "released" after being held down. The order matches with
-     * [mParallelTriggerEvents].
+     * Stores whether each event in each parallel trigger need to be "released" after being held down.
+     * The order matches with [mParallelTriggerEvents].
      */
-    private var mParallelTriggerEventsAwaitingRelease = arrayOf<MutableSet<Int>>()
+    private var mParallelTriggerEventsAwaitingRelease = arrayOf<BooleanArray>()
 
     /**
      * An array of the index of the last matched event in each parallel trigger.
@@ -411,7 +411,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
                     consumeEvent = true
                     mLastMatchedParallelEventIndices[triggerIndex] = nextIndex
-                    mParallelTriggerEventsAwaitingRelease[triggerIndex].add(encodedWithShortPress)
+                    mParallelTriggerEventsAwaitingRelease[triggerIndex][nextIndex] = true
 
                     if (nextIndex == mParallelTriggerEvents[triggerIndex].lastIndex) {
                         mParallelTriggerActions[triggerIndex].forEach {
@@ -431,7 +431,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
                     consumeEvent = true
                     mLastMatchedParallelEventIndices[triggerIndex] = nextIndex
-                    mParallelTriggerEventsAwaitingRelease[triggerIndex].add(encodedWithLongPress)
+                    mParallelTriggerEventsAwaitingRelease[triggerIndex][nextIndex] = true
 
                     if (nextIndex == mParallelTriggerEvents[triggerIndex].lastIndex) {
                         mCoroutineScope.launch {
@@ -581,48 +581,56 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         }
 
         if (mDetectParallelTriggers) {
-            triggerLoop@ for ((triggerIndex, eventsAwaitingRelease) in mParallelTriggerEventsAwaitingRelease.withIndex()) {
+            triggerLoop@ for ((triggerIndex, events) in mParallelTriggerEvents.withIndex()) {
                 val encodedWithShortPress = encodedEvent.withFlag(FLAG_SHORT_PRESS)
-                val singleKeyTrigger = mParallelTriggerEvents[triggerIndex].size == 1
-
-                if (eventsAwaitingRelease.toIntArray().hasEvent(encodedWithShortPress)) {
-
-                    if (singleKeyTrigger) {
-                        shortPressSingleKeyTriggerJustReleased = true
-                    }
-
-                    mParallelTriggerEventsAwaitingRelease[triggerIndex].remove(encodedWithShortPress)
-
-                    consumeEvent = true
-                }
-
                 val encodedWithLongPress = encodedEvent.withFlag(FLAG_LONG_PRESS)
 
-                if (eventsAwaitingRelease.toIntArray().hasEvent(encodedWithLongPress)) {
+                val singleKeyTrigger = mParallelTriggerEvents[triggerIndex].size == 1
 
-                    mParallelTriggerEventsAwaitingRelease[triggerIndex].remove(encodedWithLongPress)
+                var lastHeldDownEventIndex = -1
 
-                    consumeEvent = true
+                for (eventIndex in events.indices) {
+                    val awaitingRelease = mParallelTriggerEventsAwaitingRelease[triggerIndex][eventIndex]
 
-                    val lastMatchedIndex = mLastMatchedParallelEventIndices[triggerIndex]
+                    if (awaitingRelease && events.hasEventAtIndex(encodedWithShortPress, eventIndex)) {
 
-                    if (singleKeyTrigger && successfulLongPress) {
-                        longPressSingleKeyTriggerJustReleased = true
+                        if (singleKeyTrigger) {
+                            shortPressSingleKeyTriggerJustReleased = true
+                        }
+
+                        mParallelTriggerEventsAwaitingRelease[triggerIndex][eventIndex] = false
+
+                        consumeEvent = true
                     }
 
-                    if (!imitateButtonPress) {
-                        if (singleKeyTrigger && !successfulLongPress) {
-                            imitateButtonPress = true
-                        } else if (lastMatchedIndex > -1 &&
-                            lastMatchedIndex < mParallelTriggerEvents[triggerIndex].lastIndex) {
-                            imitateButtonPress = true
+                    if (awaitingRelease && events.hasEventAtIndex(encodedWithLongPress, eventIndex)) {
+
+                        mParallelTriggerEventsAwaitingRelease[triggerIndex][eventIndex] = false
+
+                        consumeEvent = true
+
+                        val lastMatchedIndex = mLastMatchedParallelEventIndices[triggerIndex]
+
+                        if (singleKeyTrigger && successfulLongPress) {
+                            longPressSingleKeyTriggerJustReleased = true
+                        }
+
+                        if (!imitateButtonPress) {
+                            if (singleKeyTrigger && !successfulLongPress) {
+                                imitateButtonPress = true
+                            } else if (lastMatchedIndex > -1 &&
+                                lastMatchedIndex < mParallelTriggerEvents[triggerIndex].lastIndex) {
+                                imitateButtonPress = true
+                            }
                         }
                     }
+
+                    if (mParallelTriggerEventsAwaitingRelease[triggerIndex][eventIndex] && lastHeldDownEventIndex == eventIndex - 1) {
+                        lastHeldDownEventIndex = eventIndex
+                    }
                 }
 
-                if (mParallelTriggerEventsAwaitingRelease[triggerIndex].isEmpty()) {
-                    mLastMatchedParallelEventIndices[triggerIndex] = -1
-                }
+                mLastMatchedParallelEventIndices[triggerIndex] = lastHeldDownEventIndex
             }
         }
 
@@ -671,7 +679,9 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         mLastMatchedSequenceEventIndices = IntArray(mSequenceTriggerEvents.size) { -1 }
 
         mLastMatchedParallelEventIndices = IntArray(mParallelTriggerEvents.size) { -1 }
-        mParallelTriggerEventsAwaitingRelease = Array(mParallelTriggerEvents.size) { mutableSetOf<Int>() }
+        mParallelTriggerEventsAwaitingRelease = Array(mParallelTriggerEvents.size) {
+            BooleanArray(mParallelTriggerEvents[it].size) { false }
+        }
     }
 
     /**
