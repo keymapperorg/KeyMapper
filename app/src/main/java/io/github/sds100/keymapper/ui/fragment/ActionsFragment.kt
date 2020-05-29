@@ -10,7 +10,6 @@ import androidx.lifecycle.map
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
-import io.github.sds100.keymapper.MyApplication
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.action
 import io.github.sds100.keymapper.data.model.Action
@@ -18,7 +17,6 @@ import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentActionsBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.util.*
-import io.github.sds100.keymapper.util.delegate.ActionPerformerDelegate
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
 import splitties.alertdialog.appcompat.okButton
@@ -73,13 +71,19 @@ class ActionsFragment(private val mKeymapId: Long) : Fragment() {
                         putExtra(MyAccessibilityService.EXTRA_ACTION, it)
                         requireContext().sendBroadcast(this)
                     }
-                }else{
+                } else {
                     mViewModel.promptToEnableAccessibilityService.value = Event(Unit)
                 }
             })
 
             return this.root
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        mViewModel.rebuildActionModels()
     }
 
     private fun FragmentActionsBinding.subscribeActionList() {
