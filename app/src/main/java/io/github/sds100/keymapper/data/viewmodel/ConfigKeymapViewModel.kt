@@ -9,8 +9,8 @@ import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.result.Failure
 import io.github.sds100.keymapper.util.toggleFlag
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.util.*
 
 class ConfigKeymapViewModel internal constructor(
@@ -192,7 +192,7 @@ class ConfigKeymapViewModel internal constructor(
         }
     }
 
-    fun saveKeymap() {
+    fun saveKeymap(scope: CoroutineScope) {
         val constraintMode = when {
             constraintAndMode.value == true -> Constraint.MODE_AND
             constraintOrMode.value == true -> Constraint.MODE_OR
@@ -216,7 +216,7 @@ class ConfigKeymapViewModel internal constructor(
             isEnabled = isEnabled.value!!
         )
 
-        viewModelScope.launch {
+        scope.launch {
             if (mId == NEW_KEYMAP_ID) {
                 mKeymapRepository.insertKeymap(keymap)
             } else {

@@ -81,7 +81,7 @@ class ConfigKeymapFragment : Fragment() {
             appBar.setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.action_save -> {
-                        mViewModel.saveKeymap()
+                        mViewModel.saveKeymap(lifecycleScope)
                         findNavController().navigateUp()
 
                         true
