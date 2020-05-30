@@ -5,14 +5,11 @@ import android.app.admin.DevicePolicyManager
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Context.DEVICE_POLICY_SERVICE
-import android.content.Context.VIBRATOR_SERVICE
 import android.content.Intent
 import android.hardware.camera2.CameraCharacteristics
 import android.media.AudioManager
 import android.net.Uri
 import android.os.Build
-import android.os.VibrationEffect
-import android.os.Vibrator
 import android.provider.MediaStore
 import android.provider.Settings
 import android.view.KeyEvent
@@ -22,7 +19,6 @@ import androidx.lifecycle.Lifecycle
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Action
-import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Option
 import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.util.*
@@ -109,7 +105,7 @@ class ActionPerformerDelegate(context: Context,
                     }
                 }
 
-                ActionType.SYSTEM_ACTION -> performSystemAction(action, action.flags)
+                ActionType.SYSTEM_ACTION -> performSystemAction(action)
 
                 else -> {
                     //for actions which require the IME service
@@ -121,9 +117,9 @@ class ActionPerformerDelegate(context: Context,
         }
     }
 
-    fun performSystemAction(id: String) = performSystemAction(Action(ActionType.SYSTEM_ACTION, id), 0)
+    fun performSystemAction(id: String) = performSystemAction(Action(ActionType.SYSTEM_ACTION, id))
 
-    private fun performSystemAction(action: Action, flags: Int) {
+    private fun performSystemAction(action: Action) {
 
         fun getSdkValueForOption(systemActionId: String, onSuccess: (sdkOptionValue: Int) -> Unit) {
             val extraId = Option.getExtraIdForOption(systemActionId)
@@ -139,7 +135,7 @@ class ActionPerformerDelegate(context: Context,
 
         val id = action.data
 
-        val showVolumeUi = flags.hasFlag(Action.ACTION_FLAG_SHOW_VOLUME_UI)
+        val showVolumeUi = action.flags.hasFlag(Action.ACTION_FLAG_SHOW_VOLUME_UI)
 
         mCtx.apply {
             when (id) {

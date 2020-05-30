@@ -3,15 +3,15 @@ package io.github.sds100.keymapper.data.model
 import android.content.Context
 import android.hardware.camera2.CameraCharacteristics
 import android.media.AudioManager
-import android.util.Log
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.SystemAction
+import io.github.sds100.keymapper.util.isVolumeAction
 import io.github.sds100.keymapper.util.result.ExtraNotFound
 import io.github.sds100.keymapper.util.result.Result
 import io.github.sds100.keymapper.util.result.Success
 import io.github.sds100.keymapper.util.result.onSuccess
-import splitties.bitflags.hasFlag
+import splitties.bitflags.withFlag
 import java.io.Serializable
 
 /**
@@ -105,6 +105,11 @@ data class Action(
                         action.extras.add(Extra(EXTRA_IME_NAME, imeName))
                     }
                 }
+            }
+
+            //show the volume UI by default when the user chooses a volume action.
+            if (action.isVolumeAction) {
+                action.flags = action.flags.withFlag(ACTION_FLAG_SHOW_VOLUME_UI)
             }
 
             return action
