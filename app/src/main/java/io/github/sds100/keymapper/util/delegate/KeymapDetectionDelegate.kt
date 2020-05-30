@@ -8,8 +8,10 @@ import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Extra
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Trigger
+import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.IClock
+import io.github.sds100.keymapper.util.isVolumeAction
 import io.github.sds100.keymapper.util.result.onFailure
 import io.github.sds100.keymapper.util.result.onSuccess
 import kotlinx.coroutines.CoroutineScope
@@ -31,12 +33,12 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         /**
          * The time in ms between repeating an action while holding down.
          */
-        private const val REPEAT_DELAY = 50L
+        const val REPEAT_DELAY = 50L
 
         /**
          * How long a key should be held down to repeatedly perform an action in ms.
          */
-        private const val HOLD_DOWN_DELAY = 400L
+        const val HOLD_DOWN_DELAY = 400L
 
         /**
          * Some keys need to be consumed on the up event to prevent them from working they way they are intended to.
@@ -422,6 +424,10 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                                 vibrate.value = Event(Unit)
                             }
                         }
+
+                        mCoroutineScope.launch {
+                            repeatActions(triggerIndex)
+                        }
                     }
                 }
 
@@ -446,6 +452,10 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                                     if (mParallelTriggerVibrate[triggerIndex] || preferences.forceVibrate) {
                                         vibrate.value = Event(Unit)
                                     }
+                                }
+
+                                mCoroutineScope.launch {
+                                    repeatActions(triggerIndex)
                                 }
                             }
                         }
@@ -749,6 +759,25 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         }
 
         return -1
+    }
+
+    private suspend fun repeatActions(triggerIndex: Int) {
+        delay(HOLD_DOWN_DELAY)
+
+        val lastIndex = mParallelTriggerEvents[triggerIndex].lastIndex
+
+        while (mLastMatchedParallelEventIndices[triggerIndex] == lastIndex) {
+            mParallelTriggerActions[triggerIndex].forEach {
+                mActionMap[it]?.let { action ->
+                    if (action.type in arrayOf(ActionType.KEY, ActionType.KEYCODE, ActionType.TEXT_BLOCK) ||
+                        action.isVolumeAction)
+
+                        performAction.postValue(Event(action))
+                }
+            }
+
+            delay(REPEAT_DELAY)
+        }
     }
 
     private val Int.internalDevice

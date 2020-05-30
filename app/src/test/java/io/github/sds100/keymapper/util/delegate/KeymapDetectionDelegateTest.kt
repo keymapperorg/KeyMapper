@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.data.model.Trigger.Companion.DOUBLE_PRESS
 import io.github.sds100.keymapper.data.model.Trigger.Companion.LONG_PRESS
 import io.github.sds100.keymapper.data.model.Trigger.Companion.SHORT_PRESS
 import io.github.sds100.keymapper.util.ActionType
+import io.github.sds100.keymapper.util.EventObserver
 import io.github.sds100.keymapper.util.IClock
 import io.github.sds100.keymapper.util.SystemAction
 import junit.framework.Assert.assertEquals
@@ -22,6 +23,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
 /**
@@ -72,6 +75,50 @@ class KeymapDetectionDelegateTest {
     }
 
     @Test
+    @Parameters(method = "params_repeatAction")
+    fun parallelTrigger_holdDown_repeatAction10Times(description: String, trigger: Trigger) {
+        val action = Action(type = ActionType.SYSTEM_ACTION, data = SystemAction.VOLUME_UP)
+        val keymap = KeyMap(0, trigger, actionList = listOf(action))
+        mDelegate.keyMapListCache = listOf(keymap)
+
+        trigger.keys.forEach {
+            inputKeyEvent(it.keyCode, KeyEvent.ACTION_DOWN, deviceIdToDescriptor(it.deviceId))
+        }
+
+        val latch = CountDownLatch(10)
+
+        val observer = EventObserver<Action> {
+            latch.countDown()
+        }
+
+        mDelegate.performAction.observeForever(observer)
+
+        assertThat("Failed to repeat 10 times in 2 seconds", latch.await(2, TimeUnit.SECONDS))
+
+        mDelegate.performAction.removeObserver(observer)
+        trigger.keys.forEach {
+            inputKeyEvent(it.keyCode, KeyEvent.ACTION_UP, deviceIdToDescriptor(it.deviceId))
+        }
+    }
+
+    fun params_repeatAction() = listOf(
+        arrayOf("long press multiple keys", parallelTrigger(
+            Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = LONG_PRESS),
+            Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, clickType = LONG_PRESS)
+        )),
+        arrayOf("long press single key", parallelTrigger(
+            Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = LONG_PRESS)
+        )),
+        arrayOf("short press multiple keys", parallelTrigger(
+            Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = SHORT_PRESS),
+            Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, clickType = SHORT_PRESS)
+        )),
+        arrayOf("short press single key", parallelTrigger(
+            Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, clickType = SHORT_PRESS)
+        ))
+    )
+
+    @Test
     @Parameters(method = "params_dualParallelTrigger_input2ndKey_dontConsumeUp")
     fun dualParallelTrigger_input2ndKey_dontConsumeUp(description: String, trigger: Trigger) {
         //given
@@ -104,7 +151,6 @@ class KeymapDetectionDelegateTest {
             Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, clickType = SHORT_PRESS)
         ))
     )
-
 
     @Test
     fun dualShortPressParallelTrigger_validInput_consumeUp() {
