@@ -93,14 +93,7 @@ private fun Action.getTitle(ctx: Context): Result<String> = when (type) {
         getExtraData(Action.EXTRA_SHORTCUT_TITLE)
     }
 
-    ActionType.KEY -> {
-        val keyCode = data.toInt()
-        val key = KeycodeUtils.keycodeToString(keyCode)
-
-        Success(ctx.str(R.string.description_key, key))
-    }
-
-    ActionType.KEYCODE -> {
+    ActionType.KEY_EVENT -> {
         val key = KeyEvent.keyCodeToString(data.toInt())
         Success(ctx.str(R.string.description_keycode, key))
     }
@@ -301,8 +294,7 @@ val Action.availableFlags: List<Int>
 
 val Action.requiresIME: Boolean
     get() {
-        return type == ActionType.KEY ||
-            type == ActionType.KEYCODE ||
+        return type == ActionType.KEY_EVENT ||
             type == ActionType.TEXT_BLOCK ||
             data == SystemAction.MOVE_CURSOR_TO_END
     }

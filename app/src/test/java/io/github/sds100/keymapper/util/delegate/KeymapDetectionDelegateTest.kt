@@ -87,7 +87,7 @@ class KeymapDetectionDelegateTest {
 
         val latch = CountDownLatch(10)
 
-        val observer = EventObserver<Action> {
+        val observer = EventObserver<PerformActionModel> {
             latch.countDown()
         }
 
@@ -238,7 +238,7 @@ class KeymapDetectionDelegateTest {
         //then
         assertNull(mDelegate.imitateButtonPress.value?.getContentIfNotHandled())
         Thread.sleep(500)
-        assertEquals(KeyEvent.KEYCODE_VOLUME_DOWN, mDelegate.imitateButtonPress.value?.getContentIfNotHandled())
+        assertEquals(KeyEvent.KEYCODE_VOLUME_DOWN, mDelegate.imitateButtonPress.value?.getContentIfNotHandled()?.keyCode)
     }
 
     @Test
@@ -261,7 +261,7 @@ class KeymapDetectionDelegateTest {
         //then
         val performEvent = mDelegate.performAction.getOrAwaitValue()
 
-        assertEquals(TEST_ACTION, performEvent.getContentIfNotHandled())
+        assertEquals(TEST_ACTION, performEvent.getContentIfNotHandled()?.action)
         assertNull(mDelegate.imitateButtonPress.value?.getContentIfNotHandled())
     }
 
@@ -285,7 +285,7 @@ class KeymapDetectionDelegateTest {
         //then
         val performEvent = mDelegate.performAction.getOrAwaitValue()
 
-        assertEquals(TEST_ACTION, performEvent.getContentIfNotHandled())
+        assertEquals(TEST_ACTION, performEvent.getContentIfNotHandled()?.action)
 
         //wait for the double press to try and imitate the key.
         Thread.sleep(500)
@@ -312,7 +312,7 @@ class KeymapDetectionDelegateTest {
         val performEvent = mDelegate.performAction.getOrAwaitValue()
 
         assertNull(mDelegate.imitateButtonPress.value?.getContentIfNotHandled())
-        assertEquals(TEST_ACTION, performEvent.getContentIfNotHandled())
+        assertEquals(TEST_ACTION, performEvent.getContentIfNotHandled()?.action)
     }
 
     @Test
@@ -331,7 +331,7 @@ class KeymapDetectionDelegateTest {
 
         val value = mDelegate.imitateButtonPress.getOrAwaitValue()
 
-        assertEquals(KeyEvent.KEYCODE_VOLUME_DOWN, value.getContentIfNotHandled())
+        assertEquals(KeyEvent.KEYCODE_VOLUME_DOWN, value.getContentIfNotHandled()?.keyCode)
     }
 
     @Test
@@ -424,9 +424,9 @@ class KeymapDetectionDelegateTest {
             "sequence single double-press any-device" to sequenceTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = DOUBLE_PRESS)),
 
             "sequence multiple short-press this-device" to sequenceTrigger(
-                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.SHORT_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.SHORT_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.SHORT_PRESS)
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = SHORT_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = SHORT_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = SHORT_PRESS)
             ),
             "sequence multiple long-press this-device" to sequenceTrigger(
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = LONG_PRESS),
@@ -440,20 +440,20 @@ class KeymapDetectionDelegateTest {
             ),
             "sequence multiple mix this-device" to sequenceTrigger(
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = LONG_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.SHORT_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = SHORT_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = DOUBLE_PRESS)
             ),
             "sequence multiple mix external-device" to sequenceTrigger(
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, FAKE_KEYBOARD_DESCRIPTOR, clickType = LONG_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, FAKE_HEADPHONE_DESCRIPTOR, clickType = Trigger.SHORT_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, FAKE_HEADPHONE_DESCRIPTOR, clickType = SHORT_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, FAKE_HEADPHONE_DESCRIPTOR, clickType = LONG_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_A, FAKE_KEYBOARD_DESCRIPTOR, clickType = DOUBLE_PRESS)
             ),
 
             "sequence multiple short-press mixed-device" to sequenceTrigger(
-                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, FAKE_KEYBOARD_DESCRIPTOR, clickType = Trigger.SHORT_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = Trigger.SHORT_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.SHORT_PRESS)
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, FAKE_KEYBOARD_DESCRIPTOR, clickType = SHORT_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = SHORT_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = SHORT_PRESS)
             ),
             "sequence multiple long-press mixed-device" to sequenceTrigger(
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, FAKE_KEYBOARD_DESCRIPTOR, clickType = LONG_PRESS),
@@ -467,20 +467,20 @@ class KeymapDetectionDelegateTest {
             ),
             "sequence multiple mix mixed-device" to sequenceTrigger(
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, FAKE_KEYBOARD_DESCRIPTOR, clickType = LONG_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = Trigger.SHORT_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = SHORT_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = DOUBLE_PRESS)
             ),
             "sequence multiple mix mixed-device" to sequenceTrigger(
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = LONG_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, FAKE_HEADPHONE_DESCRIPTOR, clickType = Trigger.SHORT_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, FAKE_HEADPHONE_DESCRIPTOR, clickType = SHORT_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = LONG_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_A, FAKE_KEYBOARD_DESCRIPTOR, clickType = DOUBLE_PRESS)
             ),
 
             "parallel multiple short-press this-device" to parallelTrigger(
-                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.SHORT_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.SHORT_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.SHORT_PRESS)
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = SHORT_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = SHORT_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = SHORT_PRESS)
             ),
             "parallel multiple long-press this-device" to parallelTrigger(
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = LONG_PRESS),
@@ -488,9 +488,9 @@ class KeymapDetectionDelegateTest {
                 Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = LONG_PRESS)
             ),
             "parallel multiple short-press external-device" to parallelTrigger(
-                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, FAKE_KEYBOARD_DESCRIPTOR, clickType = Trigger.SHORT_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, FAKE_HEADPHONE_DESCRIPTOR, clickType = Trigger.SHORT_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_A, FAKE_HEADPHONE_DESCRIPTOR, clickType = Trigger.SHORT_PRESS)
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, FAKE_KEYBOARD_DESCRIPTOR, clickType = SHORT_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, FAKE_HEADPHONE_DESCRIPTOR, clickType = SHORT_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_A, FAKE_HEADPHONE_DESCRIPTOR, clickType = SHORT_PRESS)
             ),
             "parallel multiple long-press external-device" to parallelTrigger(
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, FAKE_HEADPHONE_DESCRIPTOR, clickType = LONG_PRESS),
@@ -498,9 +498,9 @@ class KeymapDetectionDelegateTest {
                 Trigger.Key(KeyEvent.KEYCODE_A, FAKE_HEADPHONE_DESCRIPTOR, clickType = LONG_PRESS)
             ),
             "parallel multiple short-press mix-device" to parallelTrigger(
-                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = Trigger.SHORT_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = Trigger.SHORT_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_A, FAKE_KEYBOARD_DESCRIPTOR, clickType = Trigger.SHORT_PRESS)
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = SHORT_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = SHORT_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_A, FAKE_KEYBOARD_DESCRIPTOR, clickType = SHORT_PRESS)
             ),
             "parallel multiple long-press mix-device" to parallelTrigger(
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = LONG_PRESS),
@@ -534,7 +534,7 @@ class KeymapDetectionDelegateTest {
         //THEN
         val value = mDelegate.performAction.getOrAwaitValue()
 
-        assertThat(value.getContentIfNotHandled(), `is`(TEST_ACTION))
+        assertThat(value.getContentIfNotHandled()?.action, `is`(TEST_ACTION))
     }
 
     private suspend fun mockTriggerKeyInput(key: Trigger.Key, delay: Long? = null) {
@@ -547,7 +547,7 @@ class KeymapDetectionDelegateTest {
         inputKeyEvent(key.keyCode, KeyEvent.ACTION_DOWN, deviceDescriptor)
 
         when (key.clickType) {
-            Trigger.SHORT_PRESS -> {
+            SHORT_PRESS -> {
                 delay(pressDelay)
                 inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, deviceDescriptor)
             }
@@ -574,7 +574,8 @@ class KeymapDetectionDelegateTest {
             keyCode,
             action,
             deviceDescriptor ?: "",
-            isExternal = deviceDescriptor != null
+            isExternal = deviceDescriptor != null,
+            metaState = 0
         )
 
     private fun mockParallelTriggerKeys(

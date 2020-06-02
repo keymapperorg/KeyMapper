@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.util
 import android.os.Build
 import android.view.KeyEvent
 import androidx.annotation.RequiresApi
+import splitties.bitflags.withFlag
 
 /**
  * Created by sds100 on 17/07/2018.
@@ -14,7 +15,7 @@ val KeyEvent.isVolumeKey: Boolean
         || keyCode == KeyEvent.KEYCODE_VOLUME_MUTE
         || keyCode == KeyEvent.KEYCODE_MUTE
 
-object KeycodeUtils {
+object KeyEventUtils {
     /**
      * Maps keys which aren't single characters like the Control keys to a string representation
      */
@@ -714,5 +715,29 @@ object KeycodeUtils {
         }
 
         return keyCodes
+    }
+
+    fun modifierKeycodeToMetaState(modifier: Int) = when (modifier) {
+        KeyEvent.KEYCODE_ALT_LEFT -> KeyEvent.META_ALT_LEFT_ON.withFlag(KeyEvent.META_ALT_ON)
+        KeyEvent.KEYCODE_ALT_RIGHT -> KeyEvent.META_ALT_RIGHT_ON.withFlag(KeyEvent.META_ALT_ON)
+
+        KeyEvent.KEYCODE_SHIFT_LEFT -> KeyEvent.META_SHIFT_LEFT_ON.withFlag(KeyEvent.META_SHIFT_ON)
+        KeyEvent.KEYCODE_SHIFT_RIGHT -> KeyEvent.META_SHIFT_RIGHT_ON.withFlag(KeyEvent.META_SHIFT_ON)
+
+        KeyEvent.KEYCODE_SYM -> KeyEvent.META_SYM_ON
+
+        KeyEvent.KEYCODE_FUNCTION -> KeyEvent.META_FUNCTION_ON
+
+        KeyEvent.KEYCODE_CTRL_LEFT -> KeyEvent.META_CTRL_LEFT_ON.withFlag(KeyEvent.META_CTRL_ON)
+        KeyEvent.KEYCODE_CTRL_RIGHT -> KeyEvent.META_CTRL_RIGHT_ON.withFlag(KeyEvent.META_CTRL_ON)
+
+        KeyEvent.KEYCODE_META_LEFT -> KeyEvent.META_META_LEFT_ON.withFlag(KeyEvent.META_META_ON)
+        KeyEvent.KEYCODE_META_RIGHT -> KeyEvent.META_META_RIGHT_ON.withFlag(KeyEvent.META_META_ON)
+
+        KeyEvent.KEYCODE_CAPS_LOCK -> KeyEvent.META_CAPS_LOCK_ON
+        KeyEvent.KEYCODE_NUM_LOCK -> KeyEvent.META_NUM_LOCK_ON
+        KeyEvent.KEYCODE_SCROLL_LOCK -> KeyEvent.META_SCROLL_LOCK_ON
+
+        else -> throw Exception("can't convert modifier $modifier to meta state")
     }
 }

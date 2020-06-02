@@ -34,7 +34,7 @@ fun Trigger.buildDescription(ctx: Context, deviceInfoList: List<DeviceInfo>): St
             DOUBLE_PRESS -> append(doublePress)
         }
 
-        append(" ${KeycodeUtils.keycodeToString(key.keyCode)}")
+        append(" ${KeyEventUtils.keycodeToString(key.keyCode)}")
 
         val deviceName = key.getDeviceName(ctx, deviceInfoList)
         append(" ($deviceName)")
@@ -46,7 +46,7 @@ fun Trigger.Key.buildModel(ctx: Context, deviceInfoList: List<DeviceInfo>): Trig
     return TriggerKeyModel(
         id = uniqueId,
         keyCode = keyCode,
-        name = KeycodeUtils.keycodeToString(keyCode),
+        name = KeyEventUtils.keycodeToString(keyCode),
         clickType = clickType,
         deviceName = getDeviceName(ctx, deviceInfoList)
     )

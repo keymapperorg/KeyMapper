@@ -20,10 +20,13 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Option
+import io.github.sds100.keymapper.data.model.PerformActionModel
 import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.onSuccess
+import io.github.sds100.keymapper.util.result.valueOrNull
 import splitties.bitflags.hasFlag
+import splitties.bitflags.withFlag
 import splitties.toast.toast
 
 
@@ -49,7 +52,11 @@ class ActionPerformerDelegate(context: Context,
         }
     }
 
-    fun performAction(action: Action) {
+    fun performAction(action: Action) = performAction(PerformActionModel(action))
+
+    fun performAction(performActionModel: PerformActionModel) {
+        val (action, metaState) = performActionModel
+
         mCtx.apply {
             //Only show a toast message that Key Mapper is performing an action if the user has enabled it
             if (AppPreferences.showToastOnPerformAction) {
@@ -108,9 +115,13 @@ class ActionPerformerDelegate(context: Context,
                 ActionType.SYSTEM_ACTION -> performSystemAction(action)
 
                 else -> {
-                    //for actions which require the IME service
-                    if (action.type == ActionType.KEYCODE || action.type == ActionType.KEY) {
-                        inputKeyCode(action.data.toInt())
+                    if (action.type == ActionType.KEY_EVENT) {
+                        mCtx.sendDownUpFromImeService(
+                            keyCode = action.data.toInt(),
+                            metaState = metaState.withFlag(
+                                action.getExtraData(Action.EXTRA_KEY_EVENT_META_STATE).valueOrNull()?.toInt() ?: 0
+                            )
+                        )
                     }
                 }
             }
@@ -249,7 +260,7 @@ class ActionPerformerDelegate(context: Context,
                     dpm.lockNow()
                 }
 
-                SystemAction.MOVE_CURSOR_TO_END -> inputKeyEvent(
+                SystemAction.MOVE_CURSOR_TO_END -> sendDownUpFromImeService(
                     keyCode = KeyEvent.KEYCODE_MOVE_END,
                     metaState = KeyEvent.META_CTRL_ON
                 )
@@ -328,28 +339,6 @@ class ActionPerformerDelegate(context: Context,
                 }
             }
         }
-    }
-
-    private fun Context.inputKeyEvent(action: Int = KeyEvent.ACTION_DOWN, keyCode: Int, metaState: Int? = null) {
-        val time = System.currentTimeMillis()
-
-        val event = if (metaState == null
-        ) {
-            KeyEvent(action, keyCode)
-        } else {
-            KeyEvent(
-                time,
-                time,
-                action,
-                keyCode,
-                0,
-                metaState
-            )
-        }
-
-        val intent = Intent(KeyMapperImeService.ACTION_INPUT_KEYEVENT)
-        intent.putExtra(KeyMapperImeService.EXTRA_KEYEVENT, event)
-        sendBroadcast(intent)
     }
 
     private fun Context.inputKeyCode(keyCode: Int) {

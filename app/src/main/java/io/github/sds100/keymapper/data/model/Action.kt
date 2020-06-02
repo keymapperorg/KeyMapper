@@ -38,8 +38,7 @@ data class Action(
      *
      * - Apps: package name
      * - App shortcuts: the intent for the shortcut as a parsed URI
-     * - Keycode: the keycode
-     * - Key: the keycode of the key
+     * - Key Event: the keycode. Any extra information is stored in [extras]
      * - Block of text: text to insert
      * - System action: the system action id
      */
@@ -62,6 +61,11 @@ data class Action(
         const val EXTRA_LENS = "extra_flash"
         const val EXTRA_RINGER_MODE = "extra_ringer_mode"
 
+        /**
+         * The KeyEvent meta state is stored as bit flags.
+         */
+        const val EXTRA_KEY_EVENT_META_STATE = "extra_meta_state"
+
         const val EXTRA_IME_ID = "extra_ime_id"
         const val EXTRA_IME_NAME = "extra_ime_name"
 
@@ -79,11 +83,11 @@ data class Action(
         }
 
         fun keyAction(keyCode: Int): Action {
-            return Action(ActionType.KEY, keyCode.toString())
+            return Action(ActionType.KEY_EVENT, keyCode.toString())
         }
 
         fun keycodeAction(keyCode: Int): Action {
-            return Action(ActionType.KEYCODE, keyCode.toString())
+            return Action(ActionType.KEY_EVENT, keyCode.toString())
         }
 
         fun textBlockAction(text: String): Action {
@@ -138,6 +142,11 @@ data class Action(
 
             Success(it.data)
         }
+    }
+
+    fun putExtraData(id: String, data: String) {
+        extras.removeAll { it.id == id }
+        extras.add(Extra(id, data))
     }
 
     private fun migrateExtra(extraId: String) {

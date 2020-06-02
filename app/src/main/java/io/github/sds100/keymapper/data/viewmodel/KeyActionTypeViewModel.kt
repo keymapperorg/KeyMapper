@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import io.github.sds100.keymapper.util.KeycodeUtils
+import io.github.sds100.keymapper.util.KeyEventUtils
 
 /**
  * Created by sds100 on 30/03/2020.
@@ -17,7 +17,7 @@ class KeyActionTypeViewModel : ViewModel() {
     val keyLabel = Transformations.map(keyEvent) {
         it ?: return@map null
 
-        KeycodeUtils.keycodeToString(it.keyCode)
+        KeyEventUtils.keycodeToString(it.keyCode)
     }
 
     fun clearKey() {

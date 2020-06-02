@@ -7,7 +7,6 @@ import android.content.Intent
 import android.os.Build
 import android.os.Build.VERSION_CODES.O_MR1
 import android.provider.Settings
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import io.github.sds100.keymapper.R
@@ -89,7 +88,6 @@ object KeyboardUtils {
 
             appCtx.startActivity(intent)
         } catch (e: Exception) {
-            Log.e(this::class.java.simpleName, e.toString())
             toast(R.string.error_cant_find_ime_settings)
         }
     }

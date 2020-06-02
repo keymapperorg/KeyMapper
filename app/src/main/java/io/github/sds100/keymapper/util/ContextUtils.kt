@@ -2,13 +2,12 @@ package io.github.sds100.keymapper.util
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.drawable.Drawable
 import android.provider.Settings
-import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresPermission
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.preference.PreferenceManager
+import io.github.sds100.keymapper.service.KeyMapperImeService
 
 /**
  * Created by sds100 on 31/12/2018.
@@ -89,3 +88,13 @@ inline fun <reified T> Context.putSecureSetting(name: String, value: T) {
         }
     }
 }
+
+fun Context.sendDownUpFromImeService(keyCode: Int, metaState: Int = 0) {
+    Intent(KeyMapperImeService.ACTION_INPUT_DOWN_UP).apply {
+        putExtra(KeyMapperImeService.EXTRA_META_STATE, metaState)
+        putExtra(KeyMapperImeService.EXTRA_KEYCODE, keyCode)
+
+        sendBroadcast(this)
+    }
+}
+

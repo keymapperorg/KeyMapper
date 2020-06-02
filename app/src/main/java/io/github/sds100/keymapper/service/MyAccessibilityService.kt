@@ -171,7 +171,7 @@ class MyAccessibilityService : AccessibilityService(),
 
         mKeymapDetectionDelegate.imitateButtonPress.observe(this, EventObserver {
             Timber.d("imitate button press")
-            when (it) {
+            when (it.keyCode) {
                 KeyEvent.KEYCODE_VOLUME_UP -> AudioUtils.adjustVolume(this, AudioManager.ADJUST_RAISE,
                     showVolumeUi = true)
 
@@ -182,14 +182,17 @@ class MyAccessibilityService : AccessibilityService(),
                 KeyEvent.KEYCODE_HOME -> performGlobalAction(GLOBAL_ACTION_HOME)
                 KeyEvent.KEYCODE_APP_SWITCH -> performGlobalAction(GLOBAL_ACTION_RECENTS)
                 KeyEvent.KEYCODE_MENU -> mActionPerformerDelegate.performSystemAction(SystemAction.OPEN_MENU)
+
+                else -> sendDownUpFromImeService(
+                    keyCode = it.keyCode,
+                    metaState = it.metaState
+                )
             }
         })
 
-        mKeymapDetectionDelegate.performAction.observe(this, EventObserver { action ->
-            Timber.d("perform... ${action.uniqueId}")
-
-            action.canBePerformed(this).onSuccess {
-                mActionPerformerDelegate.performAction(action)
+        mKeymapDetectionDelegate.performAction.observe(this, EventObserver { model ->
+            model.action.canBePerformed(this).onSuccess {
+                mActionPerformerDelegate.performAction(model)
             }.onFailure {
                 if (AppPreferences.showToastOnActionError) {
                     toast(it.getBriefMessage(this))
@@ -243,12 +246,13 @@ class MyAccessibilityService : AccessibilityService(),
         }
 
         try {
+            Timber.d(event.toString())
             return mKeymapDetectionDelegate.onKeyEvent(
                 event.keyCode,
                 event.action,
                 event.device.descriptor,
-                event.device.isExternalCompat)
-
+                event.device.isExternalCompat,
+                event.metaState)
         } catch (e: Exception) {
             Timber.e(e)
         }

@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.data.viewmodel
 
 import android.view.KeyEvent
 import androidx.lifecycle.*
-import io.github.sds100.keymapper.util.KeycodeUtils
+import io.github.sds100.keymapper.util.KeyEventUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
@@ -16,7 +16,7 @@ class KeycodeListViewModel : ViewModel() {
     private val mKeycodeLabelMap = liveData {
         val keycodeList = withContext(viewModelScope.coroutineContext + Dispatchers.Default) {
             sequence {
-                KeycodeUtils.getKeyCodes().forEach {
+                KeyEventUtils.getKeyCodes().forEach {
                     yield(it to "$it \t\t ${KeyEvent.keyCodeToString(it)}")
                 }
             }.sortedBy { it.first }.toMap()

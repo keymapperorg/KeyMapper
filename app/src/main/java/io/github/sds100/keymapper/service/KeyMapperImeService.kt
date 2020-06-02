@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.inputmethodservice.InputMethodService
+import android.os.SystemClock
 import android.provider.Settings
 import android.view.KeyEvent
 import android.view.inputmethod.ExtractedTextRequest
@@ -15,6 +16,7 @@ import io.github.sds100.keymapper.util.result.Result
 import io.github.sds100.keymapper.util.result.Success
 import splitties.init.appCtx
 import splitties.systemservices.inputMethodManager
+import timber.log.Timber
 
 /**
  * Created by sds100 on 31/03/2020.
@@ -23,11 +25,11 @@ import splitties.systemservices.inputMethodManager
 class KeyMapperImeService : InputMethodService() {
     companion object {
         const val ACTION_INPUT_KEYCODE = "$PACKAGE_NAME.INPUT_KEYCODE"
-        const val ACTION_INPUT_KEYEVENT = "$PACKAGE_NAME.INPUT_KEYEVENT"
+        const val ACTION_INPUT_DOWN_UP = "$PACKAGE_NAME.INPUT_DOWN_UP"
         const val ACTION_INPUT_TEXT = "$PACKAGE_NAME.INPUT_TEXT"
 
-        const val EXTRA_KEYEVENT = "extra_keyevent"
         const val EXTRA_KEYCODE = "extra_keycode"
+        const val EXTRA_META_STATE = "extra_meta_state"
         const val EXTRA_TEXT = "extra_text"
 
         fun isServiceEnabled(): Boolean {
@@ -77,10 +79,27 @@ class KeyMapperImeService : InputMethodService() {
                         currentInputConnection.commitText(text, 1)
                     }
 
-                    ACTION_INPUT_KEYEVENT -> {
-                        intent.getParcelableExtra<KeyEvent>(EXTRA_KEYEVENT)?.let { keyEvent ->
-                            currentInputConnection.sendKeyEvent(keyEvent)
-                        }
+                    ACTION_INPUT_DOWN_UP -> {
+                        val keyCode = intent.getIntExtra(EXTRA_KEYCODE, -1)
+                        val metaState = intent.getIntExtra(EXTRA_META_STATE, 0)
+
+                        if (keyCode == -1) return
+
+                        val eventTime = SystemClock.uptimeMillis()
+
+                        val downEvent = KeyEvent(eventTime, eventTime,
+                            KeyEvent.ACTION_DOWN, keyCode, 0, metaState)
+
+                        currentInputConnection.sendKeyEvent(downEvent)
+
+                        Timber.d("input $downEvent")
+
+                        val upEvent = KeyEvent(eventTime, SystemClock.uptimeMillis(),
+                            KeyEvent.ACTION_UP, keyCode, 0)
+
+                        currentInputConnection.sendKeyEvent(upEvent)
+
+                        Timber.d("input $upEvent")
                     }
                 }
             }
@@ -93,7 +112,7 @@ class KeyMapperImeService : InputMethodService() {
         val intentFilter = IntentFilter()
         intentFilter.addAction(ACTION_INPUT_KEYCODE)
         intentFilter.addAction(ACTION_INPUT_TEXT)
-        intentFilter.addAction(ACTION_INPUT_KEYEVENT)
+        intentFilter.addAction(ACTION_INPUT_DOWN_UP)
 
         registerReceiver(mBroadcastReceiver, intentFilter)
     }
