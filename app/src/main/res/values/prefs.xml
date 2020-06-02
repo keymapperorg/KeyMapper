@@ -24,7 +24,6 @@
     <string name="key_pref_show_toggle_remappings_notification" translatable="false">pref_show_remappings_notification</string>
     <string name="key_pref_bluetooth_devices" translatable="false">pref_bluetooth_devices</string>
     <string name="key_pref_auto_show_ime_picker" translatable="false">pref_auto_show_ime_picker</string>
-    <string name="key_pref_show_toast_when_action_performed" translatable="false">pref_show_toast_on_perform_action</string>
     <string name="key_pref_auto_change_ime_on_connection" translatable="false">pref_auto_change_ime_on_connect_disconnect</string>
     <string name="key_pref_root_permission" translatable="false">pref_allow_root_features</string>
     <string name="key_pref_debug" translatable="false">pref_debugging_mode</string>

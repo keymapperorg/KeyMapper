@@ -83,11 +83,6 @@ object AppPreferences : DefaultPreferences() {
         appCtx.int(R.integer.default_value_vibrate_duration)
     )
 
-    val showToastOnPerformAction by BoolPref(
-        appCtx.str(R.string.key_pref_show_toast_when_action_performed),
-        appCtx.bool(R.bool.default_value_show_toast)
-    )
-
     val showToastOnActionError by BoolPref(
         appCtx.str(R.string.key_pref_show_toast_on_action_error),
         appCtx.bool(R.bool.default_value_show_toast_on_action_error)

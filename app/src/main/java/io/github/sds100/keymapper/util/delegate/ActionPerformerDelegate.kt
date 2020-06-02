@@ -59,7 +59,7 @@ class ActionPerformerDelegate(context: Context,
 
         mCtx.apply {
             //Only show a toast message that Key Mapper is performing an action if the user has enabled it
-            if (AppPreferences.showToastOnPerformAction) {
+            if (performActionModel.showToast) {
                 toast(R.string.performing_action)
             }
 

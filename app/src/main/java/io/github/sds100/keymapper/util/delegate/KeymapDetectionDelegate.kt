@@ -112,11 +112,11 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 val sequenceTriggerTimeouts = mutableListOf<Int>()
                 val sequenceTriggerEvents = mutableListOf<IntArray>()
                 val sequenceTriggerActions = mutableListOf<IntArray>()
-                val sequenceTriggerVibrate = mutableListOf<Boolean>()
+                val sequenceTriggerKeymapFlags = mutableListOf<Int>()
 
                 val parallelTriggerEvents = mutableListOf<IntArray>()
                 val parallelTriggerActions = mutableListOf<IntArray>()
-                val parallelTriggerVibrate = mutableListOf<Boolean>()
+                val parallelTriggerKeymapFlags = mutableListOf<Int>()
 
                 for (keyMap in value) {
                     if (!keyMap.isEnabled) {
@@ -202,12 +202,12 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                                 keyMap.trigger.keys[0].clickType != Trigger.DOUBLE_PRESS) {
                                 parallelTriggerEvents.add(encodedTriggerList.toIntArray())
                                 parallelTriggerActions.add(encodedActionList)
-                                parallelTriggerVibrate.add(keyMap.flags.hasFlag(KeyMap.KEYMAP_FLAG_VIBRATE))
+                                parallelTriggerKeymapFlags.add(keyMap.flags)
 
                             } else {
                                 sequenceTriggerEvents.add(encodedTriggerList.toIntArray())
                                 sequenceTriggerActions.add(encodedActionList)
-                                sequenceTriggerVibrate.add(keyMap.flags.hasFlag(KeyMap.KEYMAP_FLAG_VIBRATE))
+                                sequenceTriggerKeymapFlags.add(keyMap.flags)
 
                                 keyMap.trigger.getExtraData(Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT)
                                     .onSuccess {
@@ -223,7 +223,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                         Trigger.PARALLEL -> {
                             parallelTriggerEvents.add(encodedTriggerList.toIntArray())
                             parallelTriggerActions.add(encodedActionList)
-                            parallelTriggerVibrate.add(keyMap.flags.hasFlag(KeyMap.KEYMAP_FLAG_VIBRATE))
+                            parallelTriggerKeymapFlags.add(keyMap.flags)
                         }
                     }
                 }
@@ -231,13 +231,13 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 mDetectSequenceTriggers = sequenceTriggerEvents.isNotEmpty()
                 mSequenceTriggerEvents = sequenceTriggerEvents.toTypedArray()
                 mSequenceTriggerActions = sequenceTriggerActions.toTypedArray()
-                mSequenceTriggerVibrate = sequenceTriggerVibrate.toTypedArray()
+                mSequenceTriggerKeymapFlags = sequenceTriggerKeymapFlags.toIntArray()
                 mSequenceTriggerTimeouts = sequenceTriggerTimeouts.toIntArray()
 
                 mDetectParallelTriggers = parallelTriggerEvents.isNotEmpty()
                 mParallelTriggerEvents = parallelTriggerEvents.toTypedArray()
                 mParallelTriggerActions = parallelTriggerActions.toTypedArray()
-                mParallelTriggerVibrate = parallelTriggerVibrate.toTypedArray()
+                mParallelTriggerKeymapFlags = parallelTriggerKeymapFlags.toIntArray()
 
                 mDetectSequenceLongPresses = longPressSequenceEvents.isNotEmpty()
                 mLongPressSequenceEvents = longPressSequenceEvents.toIntArray()
@@ -286,10 +286,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
      */
     private var mSequenceTriggerEvents = arrayOf<IntArray>()
 
-    /**
-     * An array of whether to vibrate when each trigger is detected.
-     */
-    private var mSequenceTriggerVibrate = arrayOf<Boolean>()
+    private var mSequenceTriggerKeymapFlags = intArrayOf()
 
     /**
      * The actions to perform when each trigger is detected. The order matches with
@@ -320,11 +317,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
      */
     private var mParallelTriggerEvents = arrayOf<IntArray>()
 
-    /**
-     * An array of whether to vibrate when each trigger is detected.The order matches with
-     * [mParallelTriggerEvents].
-     */
-    private var mParallelTriggerVibrate = arrayOf<Boolean>()
+    private var mParallelTriggerKeymapFlags = intArrayOf()
 
     /**
      * The actions to perform when each trigger is detected. The order matches with
@@ -454,9 +447,9 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                                 }
                             }
 
-                            performAction(action)
+                            performAction(action, mParallelTriggerKeymapFlags.showPerformingActionToast(triggerIndex))
 
-                            if (mParallelTriggerVibrate[triggerIndex] || preferences.forceVibrate) {
+                            if (mParallelTriggerKeymapFlags.vibrate(triggerIndex) || preferences.forceVibrate) {
                                 vibrate.value = Event(Unit)
                             }
                         }
@@ -532,6 +525,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         var imitateButtonPress = false
 
         var hasVibrateFlag = false
+        var hasShowToastFlag = false
         var successfulLongPress = false
         var successfulDoublePress = false
         var mappedToDoublePress = false
@@ -621,7 +615,8 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                     if (nextIndex == mSequenceTriggerEvents[triggerIndex].lastIndex) {
 
                         actionKeysToPerform.addAll(mSequenceTriggerActions[triggerIndex].toList())
-                        hasVibrateFlag = mSequenceTriggerVibrate[triggerIndex]
+                        hasVibrateFlag = mSequenceTriggerKeymapFlags.vibrate(triggerIndex)
+                        hasShowToastFlag = mSequenceTriggerKeymapFlags.showPerformingActionToast(triggerIndex)
                         mLastMatchedSequenceEventIndices[triggerIndex] = -1
                         mSequenceTriggersTimeoutTimes[triggerIndex] = -1
                     }
@@ -703,7 +698,6 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 mLastMatchedParallelEventIndices[triggerIndex] = lastHeldDownEventIndex
 
                 if (lastHeldDownEventIndex != mParallelTriggerEvents[triggerIndex].lastIndex) {
-                    Timber.i("$currentTime cancel job")
                     mRepeatJobs[triggerIndex]?.cancel()
                 }
             }
@@ -712,7 +706,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         actionKeysToPerform.forEach {
             val action = mActionMap[it] ?: return@forEach
 
-            performAction(action)
+            performAction(action, hasShowToastFlag)
             if (hasVibrateFlag || preferences.forceVibrate) {
                 vibrate.value = Event(Unit)
             }
@@ -867,7 +861,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                             if (isModifierKey(action.data.toInt())) return@let
                         }
 
-                        performAction(action)
+                        performAction(action, false)
                     }
                 }
 
@@ -879,19 +873,20 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
     private fun performActionsAfterLongPressDelay(triggerIndex: Int) = mCoroutineScope.launch {
         delay(preferences.longPressDelay.toLong())
 
+        val showToast = mParallelTriggerKeymapFlags.showPerformingActionToast(triggerIndex)
+
         mParallelTriggerActions[triggerIndex].forEach {
             val action = mActionMap[it] ?: return@forEach
 
-            performAction(action)
+            performAction(action, showToast)
 
-            if (mParallelTriggerVibrate[triggerIndex] || preferences.forceVibrate) {
+            if (mParallelTriggerKeymapFlags.vibrate(triggerIndex) || preferences.forceVibrate) {
                 vibrate.value = Event(Unit)
             }
         }
 
         val job = mRepeatJobs[triggerIndex]
         job?.cancel()
-        Timber.i("$currentTime put job")
         mRepeatJobs.put(triggerIndex, repeatActions(triggerIndex))
     }
 
@@ -948,10 +943,10 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         return false
     }
 
-    private fun performAction(action: Action) {
+    private fun performAction(action: Action, showToast: Boolean) {
         val metaState = mMetaStateFromKeyEvent.withFlag(mMetaStateFromActions)
         Timber.d("current metastate = $metaState")
-        performAction.postValue(Event(PerformActionModel(action, metaState)))
+        performAction.postValue(Event(PerformActionModel(action, metaState, showToast)))
     }
 
     private val Int.clickType
@@ -963,6 +958,10 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
     private val Action.mappedToModifier
         get() = type == ActionType.KEY_EVENT && isModifierKey(data.toInt())
+
+    private fun IntArray.vibrate(triggerIndex: Int) = this[triggerIndex].hasFlag(KeyMap.KEYMAP_FLAG_VIBRATE)
+    private fun IntArray.showPerformingActionToast(triggerIndex: Int) =
+        this[triggerIndex].hasFlag(KeyMap.KEYMAP_FLAG_SHOW_PERFORMING_ACTION_TOAST)
 
     private fun isModifierKey(keyCode: Int): Boolean {
         return when (keyCode) {

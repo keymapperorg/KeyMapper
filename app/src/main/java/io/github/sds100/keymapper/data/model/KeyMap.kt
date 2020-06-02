@@ -43,13 +43,16 @@ class KeyMap(
     companion object {
         //DON'T CHANGE THESE AND THEY MUST BE POWERS OF 2!!
         const val KEYMAP_FLAG_VIBRATE = 1
+        const val KEYMAP_FLAG_SHOW_PERFORMING_ACTION_TOAST = 2
 
         val KEYMAP_FLAG_LABEL_MAP = mapOf(
-            KEYMAP_FLAG_VIBRATE to R.string.flag_vibrate
+            KEYMAP_FLAG_VIBRATE to R.string.flag_vibrate,
+            KEYMAP_FLAG_SHOW_PERFORMING_ACTION_TOAST to R.string.flag_performing_action_toast
         )
 
         val KEYMAP_FLAG_ICON_MAP = mapOf(
-            KEYMAP_FLAG_VIBRATE to R.drawable.ic_outline_vibration_24
+            KEYMAP_FLAG_VIBRATE to R.drawable.ic_outline_vibration_24,
+            KEYMAP_FLAG_SHOW_PERFORMING_ACTION_TOAST to R.drawable.ic_baseline_announcement_24
         )
 
         fun getFlagLabelList(ctx: Context, flags: Int): List<String> = sequence {
