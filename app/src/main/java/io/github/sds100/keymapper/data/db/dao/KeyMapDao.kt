@@ -19,6 +19,7 @@ interface KeyMapDao {
         const val KEY_ACTION_LIST = "action_list"
         const val KEY_CONSTRAINT_LIST = "constraint_list"
         const val KEY_CONSTRAINT_MODE = "constraint_mode"
+        const val KEY_FOLDER_NAME = "folder_name"
 
         //Action stuff
         @Deprecated(message = "Actions are serialized to JSON after database version 1")

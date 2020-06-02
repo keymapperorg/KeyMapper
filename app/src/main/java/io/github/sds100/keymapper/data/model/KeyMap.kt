@@ -37,6 +37,9 @@ class KeyMap(
      */
     var flags: Int = 0,
 
+    @ColumnInfo(name = KeyMapDao.KEY_FOLDER_NAME)
+    var folderName: String? = null,
+
     @ColumnInfo(name = KeyMapDao.KEY_ENABLED)
     var isEnabled: Boolean = true
 ) {
@@ -75,6 +78,4 @@ class KeyMap(
 
         return true
     }
-
-    fun clone() = KeyMap(id, trigger, actionList, constraintList, constraintMode, flags, isEnabled)
 }
