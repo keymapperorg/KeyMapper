@@ -44,6 +44,7 @@ import io.github.sds100.keymapper.util.result.RecoverableFailure
 import io.github.sds100.keymapper.util.result.getFullMessage
 import io.github.sds100.keymapper.worker.SeedDatabaseWorker
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import splitties.alertdialog.appcompat.alertDialog
@@ -244,7 +245,15 @@ class KeymapListFragment : Fragment() {
                         if (approvedWarning) {
                             onboardingState.setShownPrompt(R.string.key_pref_shown_cant_use_virtual_keyboard_message)
 
-                            KeyboardUtils.openImeSettings()
+                            KeyboardUtils.enableKeyMapperIme()
+                        }
+                    } else {
+                        KeyboardUtils.enableKeyMapperIme()
+
+                        lifecycleScope.launch {
+                            delay(3000)
+
+                            updateStatusLayouts()
                         }
                     }
                 }

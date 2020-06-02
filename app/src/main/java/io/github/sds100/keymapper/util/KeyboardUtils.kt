@@ -9,6 +9,7 @@ import android.os.Build.VERSION_CODES.O_MR1
 import android.provider.Settings
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
+import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.service.KeyMapperImeService
@@ -18,12 +19,27 @@ import splitties.experimental.ExperimentalSplittiesApi
 import splitties.init.appCtx
 import splitties.systemservices.inputMethodManager
 import splitties.toast.toast
+import timber.log.Timber
 
 /**
  * Created by sds100 on 28/12/2018.
  */
 
 object KeyboardUtils {
+
+    fun enableKeyMapperIme() {
+        if (isPermissionGranted(Constants.PERMISSION_ROOT)) {
+            KeyMapperImeService.getImeId().onSuccess {
+                Timber.d(it)
+                RootUtils.executeRootCommand("ime enable $it")
+            }.onFailure {
+                Timber.d("failure")
+            }
+        } else {
+            openImeSettings()
+        }
+    }
+
     @ExperimentalSplittiesApi
     @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
     fun switchToKeyMapperIme(ctx: Context) {
