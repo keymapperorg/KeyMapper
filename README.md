@@ -1,4 +1,4 @@
-![Discord](https://img.shields.io/discord/717499872219103263?style=for-the-badge)
+[![Discord](https://img.shields.io/discord/717499872219103263?style=for-the-badge)](https://discord.gg/Qz6TN86)
 
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/sds100/KeyMapper.svg)
 ![GitHub Releases Downloads](https://img.shields.io/github/downloads/sds100/keymapper/total.svg?label=GitHub%20Releases%20Downloads)
