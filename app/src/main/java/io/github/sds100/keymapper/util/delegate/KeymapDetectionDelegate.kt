@@ -3,12 +3,14 @@ package io.github.sds100.keymapper.util.delegate
 import android.view.KeyEvent
 import androidx.collection.SparseArrayCompat
 import androidx.collection.keyIterator
+import androidx.collection.valueIterator
 import androidx.lifecycle.MutableLiveData
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.onFailure
 import io.github.sds100.keymapper.util.result.onSuccess
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import splitties.bitflags.hasFlag
@@ -349,6 +351,16 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
     private val mEventDownTimeMap = mutableMapOf<Int, Long>()
 
+    /**
+     * Maps repeat jobs to their corresponding parallel trigger index.
+     */
+    private val mRepeatJobs = SparseArrayCompat<Job>()
+
+    /**
+     * Maps jobs to perform an action after a long press to their corresponding parallel trigger index
+     */
+    private val mParallelTriggerLongPressJobs = SparseArrayCompat<Job>()
+
     val performAction: MutableLiveData<Event<PerformActionModel>> = MutableLiveData()
     val imitateButtonPress: MutableLiveData<Event<ImitateKeyModel>> = MutableLiveData()
     val vibrate: MutableLiveData<Event<Unit>> = MutableLiveData()
@@ -449,9 +461,9 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                             }
                         }
 
-                        mCoroutineScope.launch {
-                            repeatActions(triggerIndex)
-                        }
+                        val oldJob = mRepeatJobs[triggerIndex]
+                        oldJob?.cancel()
+                        mRepeatJobs.put(triggerIndex, repeatActions(triggerIndex))
                     }
                 }
 
@@ -465,27 +477,9 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                     mParallelTriggerEventsAwaitingRelease[triggerIndex][nextIndex] = true
 
                     if (nextIndex == mParallelTriggerEvents[triggerIndex].lastIndex) {
-                        mCoroutineScope.launch {
-                            delay(preferences.longPressDelay.toLong())
-
-                            if (mParallelTriggerEventsAwaitingRelease[triggerIndex].all { it }) {
-                                mappedToParallelTriggerAction = true
-
-                                mParallelTriggerActions[triggerIndex].forEach {
-                                    val action = mActionMap[it] ?: return@forEach
-
-                                    performAction(action)
-
-                                    if (mParallelTriggerVibrate[triggerIndex] || preferences.forceVibrate) {
-                                        vibrate.value = Event(Unit)
-                                    }
-                                }
-
-                                mCoroutineScope.launch {
-                                    repeatActions(triggerIndex)
-                                }
-                            }
-                        }
+                        val oldJob = mParallelTriggerLongPressJobs[triggerIndex]
+                        oldJob?.cancel()
+                        mParallelTriggerLongPressJobs.put(triggerIndex, performActionsAfterLongPressDelay(triggerIndex))
                     }
                 }
             }
@@ -679,6 +673,8 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
                         mParallelTriggerEventsAwaitingRelease[triggerIndex][eventIndex] = false
 
+                        mParallelTriggerLongPressJobs[triggerIndex]?.cancel()
+
                         consumeEvent = true
 
                         val lastMatchedIndex = mLastMatchedParallelEventIndices[triggerIndex]
@@ -697,12 +693,19 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                         }
                     }
 
-                    if (mParallelTriggerEventsAwaitingRelease[triggerIndex][eventIndex] && lastHeldDownEventIndex == eventIndex - 1) {
+                    if (mParallelTriggerEventsAwaitingRelease[triggerIndex][eventIndex] &&
+                        lastHeldDownEventIndex == eventIndex - 1) {
+
                         lastHeldDownEventIndex = eventIndex
                     }
                 }
 
                 mLastMatchedParallelEventIndices[triggerIndex] = lastHeldDownEventIndex
+
+                if (lastHeldDownEventIndex != mParallelTriggerEvents[triggerIndex].lastIndex) {
+                    Timber.i("$currentTime cancel job")
+                    mRepeatJobs[triggerIndex]?.cancel()
+                }
             }
         }
 
@@ -758,6 +761,18 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         mMetaStateFromActions = 0
         mMetaStateFromKeyEvent = 0
         mUnmappedKeycodesToConsumeOnUp = mutableSetOf()
+
+        mRepeatJobs.valueIterator().forEach {
+            it.cancel()
+        }
+
+        mRepeatJobs.clear()
+
+        mParallelTriggerLongPressJobs.valueIterator().forEach {
+            it.cancel()
+        }
+
+        mParallelTriggerLongPressJobs.clear()
     }
 
     /**
@@ -839,12 +854,10 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         }
     }
 
-    private suspend fun repeatActions(triggerIndex: Int) {
+    private fun repeatActions(triggerIndex: Int) = mCoroutineScope.launch {
         delay(HOLD_DOWN_DELAY)
 
-        val lastIndex = mParallelTriggerEvents[triggerIndex].lastIndex
-
-        while (mLastMatchedParallelEventIndices[triggerIndex] == lastIndex) {
+        while (true) {
             mParallelTriggerActions[triggerIndex].forEach {
                 mActionMap[it]?.let { action ->
                     if (action.type in arrayOf(ActionType.KEY_EVENT, ActionType.TEXT_BLOCK) ||
@@ -857,10 +870,29 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                         performAction(action)
                     }
                 }
-            }
 
-            delay(REPEAT_DELAY)
+                delay(REPEAT_DELAY)
+            }
         }
+    }
+
+    private fun performActionsAfterLongPressDelay(triggerIndex: Int) = mCoroutineScope.launch {
+        delay(preferences.longPressDelay.toLong())
+
+        mParallelTriggerActions[triggerIndex].forEach {
+            val action = mActionMap[it] ?: return@forEach
+
+            performAction(action)
+
+            if (mParallelTriggerVibrate[triggerIndex] || preferences.forceVibrate) {
+                vibrate.value = Event(Unit)
+            }
+        }
+
+        val job = mRepeatJobs[triggerIndex]
+        job?.cancel()
+        Timber.i("$currentTime put job")
+        mRepeatJobs.put(triggerIndex, repeatActions(triggerIndex))
     }
 
     private val Int.internalDevice
