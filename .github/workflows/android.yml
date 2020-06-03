@@ -6,14 +6,15 @@ on:
       - 'develop'
       - 'develop-2.0'
 
+env:
+  APK_NAME: keymapper-*
+  
 jobs:
   apk:
     name: Generate APK
     runs-on: ubuntu-18.04
 
     steps:
-      - env:
-          APK_NAME: keymapper-*
       - uses: actions/checkout@v1
         
       - name: Update Run Number in properties
