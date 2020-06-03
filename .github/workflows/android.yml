@@ -19,7 +19,7 @@ jobs:
         with:
           path: gradle.properties
           property: RUN_NUMBER
-          value: $GITHUB_RUN_NUMBER
+          value: ${{ env.GITHUB_RUN_NUMBER }}
 
       - name: set up JDK 1.8
         uses: actions/setup-java@v1
@@ -40,6 +40,7 @@ jobs:
 
       - name: Upload to Discord
         uses: sinshutu/upload-to-discord@v2.0.0
-        env: ${{ secrets.DISCORD_WEBHOOK }}
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
           args: app/build/outputs/apk/ci/${{ env.APK_NAME }}.apk
