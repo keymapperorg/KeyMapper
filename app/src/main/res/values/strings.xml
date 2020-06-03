@@ -123,7 +123,7 @@
     <string name="url_privacy_policy" translatable="false">https://raw.githubusercontent.com/sds100/KeyMapper/master/PRIVACY_POLICY.md</string>
     <string name="url_xda_thread" translatable="false">https://forum.xda-developers.com/android/apps-games/app-keyboard-button-mapper-t3914005</string>
     <string name="url_google_app_listing" translatable="false">https://play.google.com/store/apps/details?id=</string>
-    <string name="url_telegram_channel" translatable="false">https://t.me/key_mapper</string>
+    <string name="url_discord_server_invite" translatable="false">https://discord.gg/Suj6nyw</string>
     <!-- URLs -->
 
     <!-- Activity titles -->
@@ -203,7 +203,7 @@
     <string name="dialog_message_double_press_restricted_to_single_key">"Multiple keys can't be double pressed at the same time."</string>
     <string name="dialog_message_parallel_trigger_order">The keys need to be listed from top to bottom in the order that they will be held down.</string>
     <string name="dialog_message_sequence_trigger_explanation">A \"sequence\" trigger has a timeout unlike parallel triggers. This means after you press the first key, you will have a set amount of time to input the rest of the keys in the trigger. All the keys that you have added to the trigger won\'t do their usual action until the timeout has been reached. You can change this timeout by pressing the 3 dots next to the \"in sequence\" button.</string>
-
+    <string name="dialog_message_view_faq_and_use_discord_over_email">Please check out the Help page to see if your question has already been answered. If not then the developer would prefer it if you ask for help and suggest features in the Discord server. If you don\'t have Discord, you can email the developer directly.</string>
     <!-- Dialog messages -->
 
     <!-- Dialog buttons -->
@@ -218,6 +218,8 @@
     <string name="neg_no">No</string>
     <string name="neg_cancel">Cancel</string>
     <string name="neg_dont_show_again">Don\'t show again</string>
+
+    <string name="neutral_discord">Discord</string>
 
     <string name="snackbar_cancel">Cancel</string>
     <string name="snackbar_fix">Fix</string>
@@ -320,7 +322,7 @@
     <string name="pref_title_version">Version</string>
     <string name="pref_title_developer_email">Email Developer</string>
     <string name="pref_title_translate">Translate</string>
-    <string name="pref_title_telegram_channel">Telegram Channel</string>
+    <string name="pref_title_discord">Discord Server</string>
     <!-- About activity-->
 
     <string-array name="pref_dark_theme_entries">
@@ -619,6 +621,7 @@
     <string name="system_action_cat_nfc">NFC</string>
     <string name="system_action_cat_other">Other</string>
     <string name="system_action_cat_keyboard">Keyboard</string>
+    <string name="neg_email">Email</string>
     <!-- System action category labels -->
 
 </resources>

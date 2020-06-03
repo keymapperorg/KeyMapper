@@ -11,20 +11,20 @@
         android:title="@string/pref_title_changelog" />
 
     <androidx.preference.Preference
+        android:key="@string/key_pref_discord"
+        android:title="@string/pref_title_discord" />
+
+    <androidx.preference.Preference
         android:key="@string/key_pref_xda_thread"
         android:title="@string/pref_title_xda_thread" />
 
     <androidx.preference.Preference
-        android:key="@string/key_pref_telegram_channel"
-        android:title="@string/pref_title_telegram_channel" />
+        android:key="@string/key_pref_developer_email"
+        android:title="@string/pref_title_developer_email" />
 
     <androidx.preference.Preference
         android:key="@string/key_pref_rate_review"
         android:title="@string/pref_title_rate_review" />
-
-    <androidx.preference.Preference
-        android:key="@string/key_pref_developer_email"
-        android:title="@string/pref_title_developer_email" />
 
     <androidx.preference.Preference
         android:key="@string/key_pref_developer_github"

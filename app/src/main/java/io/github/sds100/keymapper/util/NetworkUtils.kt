@@ -1,12 +1,12 @@
 package io.github.sds100.keymapper.util
 
 import android.content.Context
+import android.content.Intent
 import android.net.ConnectivityManager
+import android.net.Uri
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.telephony.TelephonyManager
-import android.util.Log
-import com.android.volley.NoConnectionError
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
@@ -111,5 +111,11 @@ object NetworkUtils {
         }
 
         return false
+    }
+}
+
+fun Context.openUrl(url: String) {
+    Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+        startActivity(this)
     }
 }

@@ -10,9 +10,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
 import io.github.sds100.keymapper.databinding.FragmentMenuBinding
-import io.github.sds100.keymapper.util.FeedbackUtils
-import io.github.sds100.keymapper.util.InjectorUtils
-import io.github.sds100.keymapper.util.KeyboardUtils
+import io.github.sds100.keymapper.util.*
+import splitties.alertdialog.appcompat.*
 
 class MenuFragment : BottomSheetDialogFragment() {
 
@@ -31,8 +30,26 @@ class MenuFragment : BottomSheetDialogFragment() {
             }
 
             setSendFeedback {
-                FeedbackUtils.sendFeedback(requireContext())
-                dismiss()
+                requireActivity().alertDialog {
+                    messageResource = R.string.dialog_message_view_faq_and_use_discord_over_email
+
+                    positiveButton(R.string.pos_help_page) {
+                        dismiss()
+                        findNavController().navigate(MenuFragmentDirections.actionGlobalHelpFragment())
+                    }
+
+                    neutralButton(R.string.neutral_discord) {
+                        dismiss()
+                        requireContext().openUrl(str(R.string.url_discord_server_invite))
+                    }
+
+                    negativeButton(R.string.neg_email) {
+                        dismiss()
+                        FeedbackUtils.emailDeveloper(requireContext())
+                    }
+
+                    show()
+                }
             }
 
             setOpenSettings {

@@ -13,7 +13,7 @@ import splitties.toast.toast
  */
 
 object FeedbackUtils {
-    fun sendFeedback(ctx: Context) {
+    fun emailDeveloper(ctx: Context) {
         Intent(Intent.ACTION_SENDTO).apply {
             data = Uri.parse("mailto:")
 
