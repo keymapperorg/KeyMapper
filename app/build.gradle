@@ -33,7 +33,7 @@ android {
             debuggable = true
 
             applicationIdSuffix ".ci"
-            versionNameSuffix "-ci"
+            versionNameSuffix "-ci.$RUN_NUMBER"
             signingConfig signingConfigs.debug
         }
     }
