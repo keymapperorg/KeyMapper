@@ -2,174 +2,95 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data>
-
-        <import type="io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel" />
-
-        <import type="android.view.View" />
-
-        <variable
-            name="viewModel"
-            type="ConfigKeymapViewModel" />
-
-        <variable
-            name="onAddConstraintClick"
-            type="View.OnClickListener" />
-    </data>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinatorLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:layout_height="match_parent">
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardViewFlags"
-            style="@style/MyCardView"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardViewFlags"
+                style="@style/MyCardView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="0dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintBottom_toTopOf="@+id/cardViewConstraints"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-                <TextView
-                    android:id="@+id/textViewFlagsHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/cardview_padding_left"
-                    android:layout_marginTop="@dimen/cardview_padding_top"
-                    android:layout_marginEnd="@dimen/cardview_padding_right"
-                    android:paddingBottom="@dimen/cardview_header_bottom_padding"
-                    android:text="@string/keymap_flags_header"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
-                    android:textColor="?attr/colorAccent"
-                    android:textSize="14sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <com.airbnb.epoxy.EpoxyRecyclerView
-                    android:id="@+id/epoxyRecyclerViewFlags"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textViewFlagsHeader" />
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </com.google.android.material.card.MaterialCardView>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/cardview_padding_left"
+                        android:layout_marginTop="@dimen/cardview_padding_top"
+                        android:layout_marginEnd="@dimen/cardview_padding_right"
+                        android:paddingBottom="@dimen/cardview_header_bottom_padding"
+                        android:text="@string/keymap_flags_header"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                        android:textColor="?attr/colorAccent"
+                        android:textSize="14sp" />
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardViewConstraints"
-            style="@style/MyCardView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="@dimen/cardview_separation"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="4dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cardViewFlags">
+                    <androidx.fragment.app.FragmentContainerView
+                        android:id="@+id/fragmentContainerViewFlags"
+                        android:name="io.github.sds100.keymapper.ui.fragment.KeymapFlagsFragment"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardViewConstraints"
+                style="@style/MyCardView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="0dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="@dimen/cardview_separation"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="4dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardViewFlags">
 
-                <TextView
-                    android:id="@+id/textViewConstraintHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/cardview_padding_left"
-                    android:layout_marginTop="@dimen/cardview_padding_top"
-                    android:layout_marginEnd="@dimen/cardview_padding_right"
-                    android:paddingBottom="@dimen/cardview_header_bottom_padding"
-                    android:text="@string/constraint_list_header"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
-                    android:textColor="?attr/colorAccent"
-                    android:textSize="14sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <com.airbnb.epoxy.EpoxyRecyclerView
-                    android:id="@+id/epoxyRecyclerViewConstraints"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:visibility="@{viewModel.constraintList.empty ? View.GONE : View.VISIBLE}"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintBottom_toTopOf="@+id/radioGroup"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textViewConstraintHeader" />
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
 
-                <TextView
-                    style="@style/RecyclerViewPlaceholderTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:text="@string/constraints_recyclerview_placeholder"
-                    android:visibility="@{viewModel.constraintList.empty ? View.VISIBLE : View.GONE}"
-                    app:layout_constraintBottom_toTopOf="@+id/radioGroup"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textViewConstraintHeader" />
-
-                <RadioGroup
-                    android:id="@+id/radioGroup"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/cardview_padding_left"
-                    android:layout_marginEnd="@dimen/cardview_padding_right"
-                    android:layout_marginBottom="@dimen/cardview_padding_bottom"
-                    android:orientation="horizontal"
-                    android:visibility="@{viewModel.constraintList.size() &lt; 2 ? View.GONE : View.VISIBLE}"
-                    app:layout_constraintBottom_toTopOf="@+id/buttonAddConstraints"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent">
-
-                    <com.google.android.material.radiobutton.MaterialRadioButton
-                        android:id="@+id/radioButtonAnd"
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:checked="@={viewModel.constraintAndMode}"
-                        android:text="@string/radio_button_and" />
+                        android:layout_marginStart="@dimen/cardview_padding_left"
+                        android:layout_marginTop="@dimen/cardview_padding_top"
+                        android:layout_marginEnd="@dimen/cardview_padding_right"
+                        android:paddingBottom="@dimen/cardview_header_bottom_padding"
+                        android:text="@string/constraint_list_header"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                        android:textColor="?attr/colorAccent"
+                        android:textSize="14sp" />
 
-                    <com.google.android.material.radiobutton.MaterialRadioButton
-                        android:id="@+id/radioButtonOr"
+                    <androidx.fragment.app.FragmentContainerView
+                        android:id="@+id/fragmentContainerViewConstraints"
+                        android:name="io.github.sds100.keymapper.ui.fragment.KeymapConstraintsFragment"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:checked="@={viewModel.constraintOrMode}"
-                        android:text="@string/radio_button_or" />
-                </RadioGroup>
-
-                <Button
-                    android:id="@+id/buttonAddConstraints"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="4dp"
-                    android:onClick="@{onAddConstraintClick}"
-                    android:text="@string/button_add_constraint"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </com.google.android.material.card.MaterialCardView>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>
