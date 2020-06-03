@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-18.04
 
     steps:
+      - env:
+          APK_NAME: keymapper-*
       - uses: actions/checkout@v1
         
       - name: Update Run Number in properties
@@ -32,11 +34,11 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v1
         with:
-          name: app-ci-$GITHUB_RUN_NUMBER
-          path: app/build/outputs/apk/ci/app-ci-$GITHUB_RUN_NUMBER.apk
+          name: $APK_NAME
+          path: app/build/outputs/apk/ci/$APK_NAME.apk
 
       - name: Upload to Discord
         uses: sinshutu/upload-to-discord@v2.0.0
         env: ${{ secrets.DISCORD_WEBHOOK }}
         with:
-          args: app/build/outputs/apk/ci/app-ci-$GITHUB_RUN_NUMBER.apk
+          args: app/build/outputs/apk/ci/$APK_NAME.apk
