@@ -6,9 +6,6 @@ on:
       - 'develop'
       - 'develop-2.0'
 
-env:
-  APK_NAME: keymapper-*
-  
 jobs:
   apk:
     name: Generate APK
@@ -31,15 +28,18 @@ jobs:
 
       - name: Build debug APK
         run: bash ./gradlew assembleCi --stacktrace
+      
+      - name: set apk name env
+        run: echo ::set-env name=APK_NAME::$(basename app/build/outputs/apk/ci/*.apk .apk)
         
       - name: Upload APK
         uses: actions/upload-artifact@v1
         with:
-          name: $APK_NAME
-          path: app/build/outputs/apk/ci/$APK_NAME.apk
+          name: ${{ env.APK_NAME }}
+          path: app/build/outputs/apk/ci/${{ env.APK_NAME }}.apk
 
       - name: Upload to Discord
         uses: sinshutu/upload-to-discord@v2.0.0
         env: ${{ secrets.DISCORD_WEBHOOK }}
         with:
-          args: app/build/outputs/apk/ci/$APK_NAME.apk
+          args: app/build/outputs/apk/ci/${{ env.APK_NAME }}.apk
