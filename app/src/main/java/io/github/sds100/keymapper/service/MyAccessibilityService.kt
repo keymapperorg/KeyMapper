@@ -245,16 +245,18 @@ class MyAccessibilityService : AccessibilityService(),
             return true
         }
 
-        try {
-            Timber.d(event.toString())
-            return mKeymapDetectionDelegate.onKeyEvent(
-                event.keyCode,
-                event.action,
-                event.device.descriptor,
-                event.device.isExternalCompat,
-                event.metaState)
-        } catch (e: Exception) {
-            Timber.e(e)
+        if (!mPaused) {
+            try {
+                Timber.d(event.toString())
+                return mKeymapDetectionDelegate.onKeyEvent(
+                    event.keyCode,
+                    event.action,
+                    event.device.descriptor,
+                    event.device.isExternalCompat,
+                    event.metaState)
+            } catch (e: Exception) {
+                Timber.e(e)
+            }
         }
 
         return super.onKeyEvent(event)
