@@ -31,7 +31,7 @@
         android:summary="@string/summary_pref_long_press_delay"
         android:title="@string/title_pref_long_press_delay"
         app:min="@integer/long_press_delay_min"
-        app:seekBarIncrement="@integer/long_press_delay_increment"
+        app:seekBarIncrement="@integer/long_press_delay_step_size"
         app:showSeekBarValue="true" />
 
     <androidx.preference.SeekBarPreference
@@ -50,7 +50,7 @@
         android:summary="@string/summary_pref_vibrate_duration"
         android:title="@string/title_pref_vibrate_duration"
         app:min="@integer/vibrate_duration_min"
-        app:seekBarIncrement="@integer/vibrate_duration_increment"
+        app:seekBarIncrement="@integer/vibrate_duration_step_size"
         app:showSeekBarValue="true" />
 
     <androidx.preference.PreferenceCategory android:title="@string/title_pref_category_ime_picker">

@@ -73,6 +73,15 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
             return map
         }
+
+        /**
+         * @return whether the actions assigned to this trigger will be performed on the down event of the final key
+         * rather than the up event.
+         */
+        fun performActionOnDown(triggerKeys: List<Trigger.Key>, triggerMode: Int): Boolean {
+            return (triggerKeys.size == 1 && triggerKeys.getOrNull(0)?.clickType != Trigger.DOUBLE_PRESS)
+                || triggerMode == Trigger.PARALLEL
+        }
     }
 
     /**
@@ -196,35 +205,24 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                         mNotModifierKeyEventActions = true
                     }
 
-                    when (keyMap.trigger.mode) {
-                        Trigger.SEQUENCE -> {
-                            if (keyMap.trigger.keys.size == 1 &&
-                                keyMap.trigger.keys[0].clickType != Trigger.DOUBLE_PRESS) {
-                                parallelTriggerEvents.add(encodedTriggerList.toIntArray())
-                                parallelTriggerActions.add(encodedActionList)
-                                parallelTriggerKeymapFlags.add(keyMap.flags)
+                    if (performActionOnDown(keyMap.trigger.keys, keyMap.trigger.mode)) {
+                        parallelTriggerEvents.add(encodedTriggerList.toIntArray())
+                        parallelTriggerActions.add(encodedActionList)
+                        parallelTriggerKeymapFlags.add(keyMap.flags)
 
-                            } else {
-                                sequenceTriggerEvents.add(encodedTriggerList.toIntArray())
-                                sequenceTriggerActions.add(encodedActionList)
-                                sequenceTriggerKeymapFlags.add(keyMap.flags)
+                    } else {
+                        sequenceTriggerEvents.add(encodedTriggerList.toIntArray())
+                        sequenceTriggerActions.add(encodedActionList)
+                        sequenceTriggerKeymapFlags.add(keyMap.flags)
 
-                                keyMap.trigger.getExtraData(Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT)
-                                    .onSuccess {
-                                        sequenceTriggerTimeouts.add(it.toInt())
-                                    }.onFailure {
-                                        val default = Trigger.DEFAULT_TIMEOUT
+                        keyMap.trigger.getExtraData(Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT)
+                            .onSuccess {
+                                sequenceTriggerTimeouts.add(it.toInt())
+                            }.onFailure {
+                                val default = Trigger.DEFAULT_TIMEOUT
 
-                                        sequenceTriggerTimeouts.add(default)
-                                    }
+                                sequenceTriggerTimeouts.add(default)
                             }
-                        }
-
-                        Trigger.PARALLEL -> {
-                            parallelTriggerEvents.add(encodedTriggerList.toIntArray())
-                            parallelTriggerActions.add(encodedActionList)
-                            parallelTriggerKeymapFlags.add(keyMap.flags)
-                        }
                     }
                 }
 
@@ -854,8 +852,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         while (true) {
             mParallelTriggerActions[triggerIndex].forEach {
                 mActionMap[it]?.let { action ->
-                    if (action.type in arrayOf(ActionType.KEY_EVENT, ActionType.TEXT_BLOCK) ||
-                        action.isVolumeAction) {
+                    if (action.repeatable) {
 
                         if (action.type == ActionType.KEY_EVENT) {
                             if (isModifierKey(action.data.toInt())) return@let

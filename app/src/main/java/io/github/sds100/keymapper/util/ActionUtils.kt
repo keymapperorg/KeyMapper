@@ -319,3 +319,6 @@ fun Action.getFlagLabelList(ctx: Context): List<String> = sequence {
         }
     }
 }.toList()
+
+val Action.repeatable: Boolean
+    get() = type in arrayOf(ActionType.KEY_EVENT, ActionType.TEXT_BLOCK) || isVolumeAction

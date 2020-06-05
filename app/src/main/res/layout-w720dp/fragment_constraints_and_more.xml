@@ -14,7 +14,7 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardViewFlags"
+                android:id="@+id/cardViewOptions"
                 style="@style/MyCardView"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -46,8 +46,8 @@
                         android:textSize="14sp" />
 
                     <androidx.fragment.app.FragmentContainerView
-                        android:id="@+id/fragmentContainerViewFlags"
-                        android:name="io.github.sds100.keymapper.ui.fragment.KeymapFlagsFragment"
+                        android:id="@+id/fragmentContainerViewOptions"
+                        android:name="io.github.sds100.keymapper.ui.fragment.KeymapOptionsFragment"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" />
                 </LinearLayout>
@@ -65,7 +65,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@id/cardViewFlags"
+                app:layout_constraintStart_toEndOf="@id/cardViewOptions"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <LinearLayout

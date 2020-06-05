@@ -112,30 +112,6 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
             viewModel = mViewModel
             lifecycleOwner = viewLifecycleOwner
 
-            mViewModel.chooseTriggerTimeout.observe(viewLifecycleOwner, EventObserver {
-                lifecycleScope.launchWhenCreated {
-                    var timeout = mViewModel.triggerExtras.value?.find {
-                        it.id == Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT
-                    }!!.data.toInt()
-
-                    val model = SeekBarListItemModel(
-                        id = Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT,
-                        title = str(R.string.seekbar_title_sequence_trigger_timeout),
-                        min = int(R.integer.sequence_trigger_timeout_min),
-                        max = int(R.integer.sequence_trigger_timeout_max),
-                        stepSize = int(R.integer.sequence_trigger_timeout_step_size),
-                        initialValue = timeout
-                    )
-
-                    timeout = requireActivity().seekBarAlertDialog(model)
-
-                    mViewModel.setTriggerExtra(
-                        id = Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT,
-                        data = timeout.toString()
-                    )
-                }
-            })
-
             mViewModel.chooseParallelTriggerClickType.observe(viewLifecycleOwner, EventObserver {
                 lifecycleScope.launchWhenCreated {
                     val newClickType = showClickTypeDialog()

@@ -63,7 +63,7 @@ class ConfigKeymapPagerAdapter(fragment: Fragment, private val mKeymapId: Long) 
                 }
 
                 ctx.int(R.integer.fragment_id_keymap_flags) -> {
-                    tabFragmentsCreators[index] = { KeymapFlagsFragment(mKeymapId) }
+                    tabFragmentsCreators[index] = { KeymapOptionsFragment(mKeymapId) }
                 }
 
                 ctx.int(R.integer.fragment_id_keymap_constraints) -> {

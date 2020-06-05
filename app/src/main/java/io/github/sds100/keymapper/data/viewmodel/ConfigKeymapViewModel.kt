@@ -7,10 +7,13 @@ import io.github.sds100.keymapper.data.IOnboardingState
 import io.github.sds100.keymapper.data.KeymapRepository
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.util.Event
+import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
+import io.github.sds100.keymapper.util.repeatable
 import io.github.sds100.keymapper.util.result.Failure
 import io.github.sds100.keymapper.util.toggleFlag
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import splitties.bitflags.hasFlag
 import java.util.*
 
 class ConfigKeymapViewModel internal constructor(
@@ -22,6 +25,7 @@ class ConfigKeymapViewModel internal constructor(
 
     companion object {
         const val NEW_KEYMAP_ID = -2L
+        const val TRIGGER_EXTRA_USE_DEFAULT = -1
     }
 
     val triggerInParallel: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -45,10 +49,6 @@ class ConfigKeymapViewModel internal constructor(
                     showOnboardingPrompt.value = Event(notifyUser)
                 }
 
-                triggerExtras.value = triggerExtras.value?.toMutableList()?.apply {
-                    removeAll { extra -> extra.id == Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT }
-                }
-
                 // set all the keys to a short press because they must all be the same click type and
                 // can't all be double pressed
                 triggerKeys.value?.let { keys ->
@@ -65,15 +65,6 @@ class ConfigKeymapViewModel internal constructor(
         }
 
         addSource(triggerInSequence) {
-            triggerExtras.value = triggerExtras.value?.toMutableList()?.apply {
-                if (none { extra -> extra.id == Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT }) {
-                    add(Extra(
-                        id = Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT,
-                        data = Trigger.DEFAULT_TIMEOUT.toString()
-                    ))
-                }
-            }
-
             if (it == true) {
                 value = Trigger.SEQUENCE
 
@@ -84,7 +75,6 @@ class ConfigKeymapViewModel internal constructor(
                     }
 
                     showOnboardingPrompt.value = Event(notifyUser)
-
                 }
             }
         }
@@ -98,15 +88,14 @@ class ConfigKeymapViewModel internal constructor(
         Event(it)
     }
 
-    val triggerExtras: MutableLiveData<List<Extra>> = MutableLiveData(listOf())
-    val chooseTriggerTimeout: MutableLiveData<Event<Long>> = MutableLiveData()
+    private val mTriggerExtras: MutableLiveData<List<Extra>> = MutableLiveData(listOf())
 
     val recordTriggerTimeLeft = MutableLiveData(0)
     val recordingTrigger = MutableLiveData(false)
     val startRecordingTriggerInService: MutableLiveData<Event<Unit>> = MutableLiveData()
     val chooseParallelTriggerClickType: MutableLiveData<Event<Unit>> = MutableLiveData()
 
-    val flags: MutableLiveData<Int> = MutableLiveData()
+    val flags: MutableLiveData<Int> = MutableLiveData(0)
     val isEnabled: MutableLiveData<Boolean> = MutableLiveData()
 
     val actionList: MutableLiveData<List<Action>> = MutableLiveData(listOf())
@@ -121,6 +110,10 @@ class ConfigKeymapViewModel internal constructor(
 
     val showOnboardingPrompt: MutableLiveData<Event<NotifyUserModel>> = MutableLiveData()
     val promptToEnableAccessibilityService: MutableLiveData<Event<Unit>> = MutableLiveData()
+
+    private val mAllowedTriggerExtras: MutableLiveData<Set<String>>
+
+    val triggerOptions: MutableLiveData<List<TriggerOption>>
 
     init {
         if (mId == NEW_KEYMAP_ID) {
@@ -158,7 +151,7 @@ class ConfigKeymapViewModel internal constructor(
             viewModelScope.launch {
                 mKeymapRepository.getKeymap(mId).let { keymap ->
                     triggerKeys.value = keymap.trigger.keys
-                    triggerExtras.value = keymap.trigger.extras
+                    mTriggerExtras.value = keymap.trigger.extras
                     actionList.value = keymap.actionList
                     flags.value = keymap.flags
                     isEnabled.value = keymap.isEnabled
@@ -190,6 +183,91 @@ class ConfigKeymapViewModel internal constructor(
                 }
             }
         }
+
+        mAllowedTriggerExtras = MediatorLiveData<Set<String>>().apply {
+            this.value = setOf()
+
+            fun invalidate() {
+                val allowedExtras = mutableListOf<String>()
+
+                if (triggerKeys.value?.any { it.clickType == Trigger.LONG_PRESS } == true) {
+                    allowedExtras.add(Extra.EXTRA_LONG_PRESS_DELAY)
+                }
+
+                if (triggerKeys.value?.any { it.clickType == Trigger.DOUBLE_PRESS } == true) {
+                    allowedExtras.add(Extra.EXTRA_DOUBLE_PRESS_DELAY)
+                }
+
+                if (!triggerKeys.value.isNullOrEmpty() &&
+                    !KeymapDetectionDelegate.performActionOnDown(triggerKeys.value!!, triggerMode.value!!)) {
+                    allowedExtras.add(Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT)
+                }
+
+                if (actionList.value?.any { it.repeatable } == true &&
+                    KeymapDetectionDelegate.performActionOnDown(triggerKeys.value!!, triggerMode.value!!)) {
+                    allowedExtras.add(Extra.EXTRA_HOLD_DOWN_DELAY)
+                    allowedExtras.add(Extra.EXTRA_REPEAT_DELAY)
+                }
+
+                if (flags.value?.hasFlag(KeyMap.KEYMAP_FLAG_VIBRATE) == true) {
+                    allowedExtras.add(Extra.EXTRA_VIBRATION_DURATION)
+                }
+
+                this.value = this.value?.toMutableSet()?.apply {
+                    Extra.TRIGGER_EXTRAS.forEach {
+                        if (allowedExtras.contains(it)) {
+                            add(it)
+                        } else {
+                            remove(it)
+                        }
+                    }
+                }
+            }
+
+            addSource(triggerInSequence) {
+                invalidate()
+            }
+
+            addSource(triggerKeys) {
+                invalidate()
+            }
+
+            addSource(actionList) {
+                invalidate()
+            }
+
+            addSource(flags) {
+                invalidate()
+            }
+        }
+
+        triggerOptions = MediatorLiveData<List<TriggerOption>>().apply {
+            this.value = listOf()
+
+            addSource(mAllowedTriggerExtras) { allowedExtras ->
+                allowedExtras ?: return@addSource
+
+                //remove all extras which aren't allowed
+                mTriggerExtras.value = mTriggerExtras.value?.toMutableList()?.apply {
+                    removeAll { extra -> allowedExtras.none { extra.id == it } }
+                }
+            }
+
+            addSource(mTriggerExtras) { extras ->
+                val modelList = mutableListOf<TriggerOption>()
+
+                //Iterate over the list of ALL trigger extra IDs to keep the order consistent.
+                Extra.TRIGGER_EXTRAS.forEach { extraId ->
+                    if (mAllowedTriggerExtras.value?.contains(extraId) == true) {
+                        val currentValue = extras.find { extra -> extra.id == extraId }?.data?.toInt()
+
+                        modelList.add(TriggerOption(extraId, currentValue))
+                    }
+                }
+
+                this.value = modelList
+            }
+        }
     }
 
     fun saveKeymap(scope: CoroutineScope) {
@@ -208,7 +286,7 @@ class ConfigKeymapViewModel internal constructor(
 
         val keymap = KeyMap(
             id = actualId,
-            trigger = Trigger(triggerKeys.value!!, triggerExtras.value!!).apply { mode = triggerMode.value!! },
+            trigger = Trigger(triggerKeys.value!!, mTriggerExtras.value!!).apply { mode = triggerMode.value!! },
             actionList = actionList.value!!,
             constraintList = constraintList.value!!,
             constraintMode = constraintMode,
@@ -314,13 +392,19 @@ class ConfigKeymapViewModel internal constructor(
         return true
     }
 
-    fun setTriggerExtra(id: String, data: String) {
-        triggerExtras.value = triggerExtras.value?.toMutableList()?.apply {
+    fun setTriggerExtraValue(@ExtraId id: String, value: Int) {
+        mTriggerExtras.value = mTriggerExtras.value?.toMutableList()?.apply {
             removeAll { it.id == id }
-            add(Extra(
-                id = id,
-                data = data
-            ))
+
+            if (value != TRIGGER_EXTRA_USE_DEFAULT) {
+                add(Extra(id, value.toString()))
+            }
+        }
+    }
+
+    fun removeTriggerExtra(@ExtraId id: String) {
+        mTriggerExtras.value = mTriggerExtras.value?.toMutableList()?.apply {
+            removeAll { it.id == id }
         }
     }
 
@@ -345,12 +429,6 @@ class ConfigKeymapViewModel internal constructor(
                     Collections.swap(this, i, i - 1)
                 }
             }
-        }
-    }
-
-    fun chooseTriggerTimeout() {
-        triggerExtras.value?.single { it.id == Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT }?.let {
-            chooseTriggerTimeout.value = Event(it.data.toLong())
         }
     }
 
@@ -451,3 +529,5 @@ class ConfigKeymapViewModel internal constructor(
             ConfigKeymapViewModel(mKeymapRepository, mDeviceInfoRepository, mIOnboardingState, mId) as T
     }
 }
+
+typealias TriggerOption = Pair<String, Int?>
