@@ -1,8 +1,6 @@
 package io.github.sds100.keymapper.data.db
 
-import android.content.Context
 import androidx.room.Database
-import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import io.github.sds100.keymapper.data.db.dao.DeviceInfoDao
@@ -25,6 +23,10 @@ import io.github.sds100.keymapper.data.model.KeyMap
     ConstraintListTypeConverter::class
 )
 abstract class AppDatabase : RoomDatabase() {
+    companion object {
+        const val DATABASE_NAME = "keymapper_database"
+    }
+
     abstract fun keymapDao(): KeyMapDao
     abstract fun deviceInfoDao(): DeviceInfoDao
 }

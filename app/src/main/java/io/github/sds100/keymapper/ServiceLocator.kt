@@ -91,7 +91,7 @@ object ServiceLocator {
     private fun createDatabase(context: Context): AppDatabase {
         val result = Room.databaseBuilder(
             context.applicationContext,
-            AppDatabase::class.java, "Tasks.db"
+            AppDatabase::class.java, AppDatabase.DATABASE_NAME
         ).build()
         database = result
         return result
