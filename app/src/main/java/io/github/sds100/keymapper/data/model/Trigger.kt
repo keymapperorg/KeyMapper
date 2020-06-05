@@ -26,11 +26,6 @@ class Trigger(var keys: List<Key> = listOf(), val extras: List<Extra> = listOf()
         const val SHORT_PRESS = 0
         const val LONG_PRESS = 1
         const val DOUBLE_PRESS = 2
-
-        /**
-         * The default sequence trigger timeout in ms
-         */
-        const val DEFAULT_TIMEOUT = 2000
     }
 
     @Mode

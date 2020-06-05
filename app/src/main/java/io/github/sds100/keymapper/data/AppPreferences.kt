@@ -83,6 +83,21 @@ object AppPreferences : DefaultPreferences() {
         appCtx.int(R.integer.default_value_vibrate_duration)
     )
 
+    val holdDownDelay by IntPref(
+        appCtx.str(R.string.key_pref_hold_down_delay),
+        appCtx.int(R.integer.default_value_vibrate_duration)
+    )
+
+    val repeatDelay by IntPref(
+        appCtx.str(R.string.key_pref_repeat_delay),
+        appCtx.int(R.integer.default_value_repeat_delay)
+    )
+
+    val sequenceTriggerTimeout by IntPref(
+        appCtx.str(R.string.key_pref_sequence_trigger_timeout),
+        appCtx.int(R.integer.default_value_sequence_trigger_timeout)
+    )
+
     val showToastOnActionError by BoolPref(
         appCtx.str(R.string.key_pref_show_toast_on_action_error),
         appCtx.bool(R.bool.default_value_show_toast_on_action_error)
