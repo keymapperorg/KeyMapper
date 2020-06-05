@@ -46,7 +46,9 @@ class ConfigKeymapFragment : Fragment() {
             when (className) {
                 TriggerFragment::class.java.name -> TriggerFragment(mArgs.keymapId)
                 ActionsFragment::class.java.name -> ActionsFragment(mArgs.keymapId)
-                ConstraintsAndMoreFragment::class.java.name -> ConstraintsAndMoreFragment(mArgs.keymapId)
+                KeymapOptionsFragment::class.java.name -> KeymapOptionsFragment(mArgs.keymapId)
+                KeymapConstraintsFragment::class.java.name -> KeymapConstraintsFragment(mArgs.keymapId)
+                ConstraintsAndMoreFragment::class.java.name -> ConstraintsAndMoreFragment()
 
                 else -> super.instantiate(classLoader, className)
             }

@@ -47,6 +47,10 @@ class KeymapDetectionDelegateTest {
         private const val LONG_PRESS_DELAY = 500
         private const val DOUBLE_PRESS_DELAY = 300
         private const val FORCE_VIBRATE = false
+        private const val REPEAT_DELAY = 50
+        private const val HOLD_DOWN_DELAY = 400
+        private const val SEQUENCE_TRIGGER_TIMEOUT = 2000
+        private const val VIBRATION_DURATION = 100
 
         private val TEST_ACTION = Action(ActionType.SYSTEM_ACTION, SystemAction.TOGGLE_FLASHLIGHT)
         private val TEST_ACTION_2 = Action(ActionType.APP, Constants.PACKAGE_NAME)
@@ -69,7 +73,14 @@ class KeymapDetectionDelegateTest {
                 get() = System.currentTimeMillis()
         }
 
-        val preferences = KeymapDetectionPreferences(LONG_PRESS_DELAY, DOUBLE_PRESS_DELAY, FORCE_VIBRATE)
+        val preferences = KeymapDetectionPreferences(
+            LONG_PRESS_DELAY,
+            DOUBLE_PRESS_DELAY,
+            HOLD_DOWN_DELAY,
+            REPEAT_DELAY,
+            SEQUENCE_TRIGGER_TIMEOUT,
+            VIBRATION_DURATION,
+            FORCE_VIBRATE)
 
         mDelegate = KeymapDetectionDelegate(GlobalScope, preferences, iClock)
     }

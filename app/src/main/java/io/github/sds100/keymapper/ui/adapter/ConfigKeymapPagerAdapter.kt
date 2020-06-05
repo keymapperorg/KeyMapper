@@ -4,10 +4,7 @@ import android.content.Context
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.ui.fragment.ActionsFragment
-import io.github.sds100.keymapper.ui.fragment.ConstraintsAndMoreFragment
-import io.github.sds100.keymapper.ui.fragment.TriggerAndActionsFragment
-import io.github.sds100.keymapper.ui.fragment.TriggerFragment
+import io.github.sds100.keymapper.ui.fragment.*
 import io.github.sds100.keymapper.util.int
 import io.github.sds100.keymapper.util.intArray
 import splitties.experimental.ExperimentalSplittiesApi
@@ -54,7 +51,7 @@ class ConfigKeymapPagerAdapter(fragment: Fragment, private val mKeymapId: Long) 
                 }
 
                 ctx.int(R.integer.fragment_id_constraints_and_more) -> {
-                    tabFragmentsCreators[index] = { ConstraintsAndMoreFragment(mKeymapId) }
+                    tabFragmentsCreators[index] = { ConstraintsAndMoreFragment() }
                 }
 
                 ctx.int(R.integer.fragment_id_actions) -> {
@@ -63,6 +60,14 @@ class ConfigKeymapPagerAdapter(fragment: Fragment, private val mKeymapId: Long) 
 
                 ctx.int(R.integer.fragment_id_trigger) -> {
                     tabFragmentsCreators[index] = { TriggerFragment(mKeymapId) }
+                }
+
+                ctx.int(R.integer.fragment_id_keymap_flags) -> {
+                    tabFragmentsCreators[index] = { KeymapOptionsFragment(mKeymapId) }
+                }
+
+                ctx.int(R.integer.fragment_id_keymap_constraints) -> {
+                    tabFragmentsCreators[index] = { KeymapConstraintsFragment(mKeymapId) }
                 }
 
                 else -> throw Exception("Don't know how to instantiate a fragment for this id $id")

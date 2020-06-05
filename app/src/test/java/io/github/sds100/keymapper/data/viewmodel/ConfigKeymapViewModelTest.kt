@@ -3,16 +3,16 @@ package io.github.sds100.keymapper.data.viewmodel
 import android.view.KeyEvent
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.github.sds100.keymapper.data.*
+import io.github.sds100.keymapper.data.model.Extra
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.util.delegate.getOrAwaitValue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.setMain
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
 
 /**
  * Created by sds100 on 21/05/20.
@@ -34,62 +34,7 @@ class ConfigKeymapViewModelTest : IOnboardingState {
         mDeviceInfoRepository = FakeDeviceInfoRepository()
     }
 
-    @Test
-    fun dualKeyTrigger_keyRemoved_isParallel() {
-        //GIVEN
-        val trigger = Trigger(keys = listOf(
-            Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN),
-            Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP)
-        )).apply {
-            mode = Trigger.SEQUENCE
-        }
-
-        val keymap = KeyMap(0, trigger)
-
-        runBlocking {
-            mRepository.insertKeymap(keymap)
-        }
-
-        createViewModel(0)
-
-        //WHEN
-        mViewModel.removeTriggerKey(KeyEvent.KEYCODE_VOLUME_UP)
-
-        //THEN
-        val value = mViewModel.triggerInParallel.getOrAwaitValue()
-
-        assert(value)
-    }
-
-    @Test
-    fun noTrigger_keyAdded_isParallel() {
-        //GIVEN
-        val trigger = Trigger(keys = listOf())
-
-        val keymap = KeyMap(0, trigger)
-
-        runBlocking {
-            mRepository.insertKeymap(keymap)
-        }
-
-        createViewModel(0)
-
-        //WHEN
-        runBlocking {
-            mViewModel.addTriggerKey(
-                KeyEvent.KEYCODE_VOLUME_DOWN,
-                "internal_device",
-                "internal_device_name",
-                isExternal = false)
-        }
-
-        //THEN
-        val value = mViewModel.triggerInParallel.getOrAwaitValue()
-
-        assert(value)
-    }
-
-    fun createViewModel(id: Long) {
+    fun createViewModel(id: Long = ConfigKeymapViewModel.NEW_KEYMAP_ID) {
         mViewModel = ConfigKeymapViewModel(
             mRepository,
             mDeviceInfoRepository,

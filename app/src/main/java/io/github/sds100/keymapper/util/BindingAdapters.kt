@@ -12,13 +12,13 @@ import androidx.core.widget.addTextChangedListener
 import androidx.databinding.BindingAdapter
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.slider.Slider
 import com.google.android.material.textfield.TextInputLayout
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
 import io.github.sds100.keymapper.ui.view.StatusLayout
 import io.github.sds100.keymapper.util.result.getBriefMessage
-import io.github.sds100.keymapper.util.result.getFullMessage
 import io.noties.markwon.Markwon
 import kotlinx.android.synthetic.main.list_item_status.view.*
 
@@ -317,4 +317,14 @@ fun ChipGroup.bindFlagModels(flagModels: List<FlagModel>) {
 @BindingAdapter("app:onChangeListener")
 fun SeekBar.setOnChangeListener(onChangeListener: SeekBar.OnSeekBarChangeListener) {
     setOnSeekBarChangeListener(onChangeListener)
+}
+
+@BindingAdapter("app:onSliderChangeListener")
+fun Slider.setOnChangeListener(onChangeListener: Slider.OnChangeListener) {
+    addOnChangeListener(onChangeListener)
+}
+
+@BindingAdapter("app:seekBarEnabled")
+fun Slider.enabled(enabled: Boolean) {
+    isEnabled = enabled
 }

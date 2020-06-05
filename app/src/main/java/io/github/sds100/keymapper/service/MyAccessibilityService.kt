@@ -135,6 +135,10 @@ class MyAccessibilityService : AccessibilityService(),
         val preferences = KeymapDetectionPreferences(
             AppPreferences.longPressDelay,
             AppPreferences.doublePressDelay,
+            AppPreferences.holdDownDelay,
+            AppPreferences.repeatDelay,
+            AppPreferences.sequenceTriggerTimeout,
+            AppPreferences.vibrateDuration,
             AppPreferences.forceVibrate
         )
 
@@ -202,12 +206,10 @@ class MyAccessibilityService : AccessibilityService(),
 
         mKeymapDetectionDelegate.vibrate.observe(this, EventObserver {
 
-            val vibrateDuration = AppPreferences.vibrateDuration.toLong()
-
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                vibrator.vibrate(VibrationEffect.createOneShot(vibrateDuration, VibrationEffect.DEFAULT_AMPLITUDE))
+                vibrator.vibrate(VibrationEffect.createOneShot(it, VibrationEffect.DEFAULT_AMPLITUDE))
             } else {
-                vibrator.vibrate(vibrateDuration)
+                vibrator.vibrate(it)
             }
         })
     }
@@ -245,16 +247,18 @@ class MyAccessibilityService : AccessibilityService(),
             return true
         }
 
-        try {
-            Timber.d(event.toString())
-            return mKeymapDetectionDelegate.onKeyEvent(
-                event.keyCode,
-                event.action,
-                event.device.descriptor,
-                event.device.isExternalCompat,
-                event.metaState)
-        } catch (e: Exception) {
-            Timber.e(e)
+        if (!mPaused) {
+            try {
+                Timber.d(event.toString())
+                return mKeymapDetectionDelegate.onKeyEvent(
+                    event.keyCode,
+                    event.action,
+                    event.device.descriptor,
+                    event.device.isExternalCompat,
+                    event.metaState)
+            } catch (e: Exception) {
+                Timber.e(e)
+            }
         }
 
         return super.onKeyEvent(event)
@@ -263,11 +267,28 @@ class MyAccessibilityService : AccessibilityService(),
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         when (key) {
             str(R.string.key_pref_long_press_delay) -> {
-                mKeymapDetectionDelegate.preferences.longPressDelay = AppPreferences.longPressDelay
+                mKeymapDetectionDelegate.preferences.defaultLongPressDelay = AppPreferences.longPressDelay
             }
 
             str(R.string.key_pref_double_press_delay) -> {
-                mKeymapDetectionDelegate.preferences.doublePressDelay = AppPreferences.doublePressDelay
+                mKeymapDetectionDelegate.preferences.defaultDoublePressDelay = AppPreferences.doublePressDelay
+            }
+
+            str(R.string.key_pref_hold_down_delay) -> {
+                mKeymapDetectionDelegate.preferences.defaultHoldDownDelay = AppPreferences.holdDownDelay
+            }
+
+            str(R.string.key_pref_repeat_delay) -> {
+                mKeymapDetectionDelegate.preferences.defaultRepeatDelay = AppPreferences.repeatDelay
+            }
+
+            str(R.string.key_pref_sequence_trigger_timeout) -> {
+                mKeymapDetectionDelegate.preferences.defaultSequenceTriggerTimeout =
+                    AppPreferences.sequenceTriggerTimeout
+            }
+
+            str(R.string.key_pref_vibrate_duration) -> {
+                mKeymapDetectionDelegate.preferences.defaultVibrateDuration = AppPreferences.vibrateDuration
             }
 
             str(R.string.key_pref_force_vibrate) -> {
