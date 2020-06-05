@@ -260,14 +260,23 @@
     <!-- Notification strings -->
 
     <!--Preference titles and summaries-->
-    <string name="title_pref_long_press_delay">Long press delay</string>
-    <string name="summary_pref_long_press_delay">How long in milliseconds should a button be pressed for it to be detected as a long press. Default is 500ms.</string>
+    <string name="title_pref_long_press_delay">Default long press delay (ms)</string>
+    <string name="summary_pref_long_press_delay">How long a button should be pressed for it to be detected as a long press. Default is 500ms. Can be overridden in a keymap\'s options.</string>
 
-    <string name="title_pref_double_press_delay">Double press duration</string>
-    <string name="summary_pref_double_press_delay">How fast does a button have to be double pressed for it to be detected as a double press. Default is 300ms.</string>
+    <string name="title_pref_double_press_delay">Default double press duration (ms)</string>
+    <string name="summary_pref_double_press_delay">How fast does a button have to be double pressed for it to be detected as a double press. Default is 300ms. Can be overridden in a keymap\'s options.</string>
 
-    <string name="summary_pref_vibrate_duration">How long in milliseconds to vibrate for if vibrating is enabled for a remap. Default is 200ms.</string>
-    <string name="title_pref_vibrate_duration">Vibrate duration</string>
+    <string name="summary_pref_vibrate_duration">How long to vibrate if vibrating is enabled for a remap. Default is 200ms. Can be overridden in a keymap\'s options.</string>
+    <string name="title_pref_vibrate_duration">Default vibrate duration (ms)</string>
+
+    <string name="summary_pref_hold_down_delay">How long a key map needs to be held down for the action to start repeat. Default is 400ms. Can be overridden in a keymap\'s options.</string>
+    <string name="title_pref_hold_down_delay">Default hold down delay (ms)</string>
+
+    <string name="summary_pref_repeat_delay">The delay between every time an action is repeated. Default is 50ms. Can be overridden in a keymap\'s options.</string>
+    <string name="title_pref_repeat_delay">Default repeat delay (ms)</string>
+
+    <string name="summary_pref_sequence_trigger_timeout">The time allowed to complete a sequence trigger. Default is 1000ms. Can be overridden in a keymap\'s options.</string>
+    <string name="title_pref_sequence_trigger_timeout">Default sequence trigger timeout (ms)</string>
 
     <string name="summary_pref_force_vibrate">Force all remaps to vibrate.</string>
     <string name="title_pref_force_vibrate">Force vibrate</string>

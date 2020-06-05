@@ -18,5 +18,5 @@
     <integer name="default_value_vibrate_duration">200</integer>
     <integer name="default_value_hold_down_delay">400</integer>
     <integer name="default_value_repeat_delay">50</integer>
-    <integer name="default_value_sequence_trigger_timeout">250</integer>
+    <integer name="default_value_sequence_trigger_timeout">1000</integer>
 </resources>

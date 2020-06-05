@@ -54,6 +54,34 @@
         app:seekBarIncrement="@integer/vibrate_duration_step_size"
         app:showSeekBarValue="true" />
 
+    <androidx.preference.SeekBarPreference
+        android:defaultValue="@integer/default_value_hold_down_delay"
+        android:key="@string/key_pref_hold_down_delay"
+        android:max="@integer/hold_down_delay_max"
+        android:summary="@string/summary_pref_hold_down_delay"
+        android:title="@string/title_pref_hold_down_delay"
+        app:min="@integer/hold_down_delay_min"
+        app:showSeekBarValue="true" />
+
+    <androidx.preference.SeekBarPreference
+        android:defaultValue="@integer/default_value_repeat_delay"
+        android:key="@string/key_pref_repeat_delay"
+        android:max="@integer/repeat_delay_max"
+        android:summary="@string/summary_pref_repeat_delay"
+        android:title="@string/title_pref_repeat_delay"
+        app:min="@integer/repeat_delay_min"
+        app:seekBarIncrement="@integer/repeat_delay_step_size"
+        app:showSeekBarValue="true" />
+
+    <androidx.preference.SeekBarPreference
+        android:defaultValue="@integer/default_value_sequence_trigger_timeout"
+        android:key="@string/key_pref_sequence_trigger_timeout"
+        android:max="@integer/sequence_trigger_timeout_max"
+        android:summary="@string/summary_pref_sequence_trigger_timeout"
+        android:title="@string/title_pref_sequence_trigger_timeout"
+        app:min="@integer/sequence_trigger_timeout_min"
+        app:seekBarIncrement="@integer/sequence_trigger_timeout_step_size"
+        app:showSeekBarValue="true" />
     <androidx.preference.PreferenceCategory android:title="@string/title_pref_category_ime_picker">
 
         <androidx.preference.SwitchPreference
