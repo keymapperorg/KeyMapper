@@ -24,7 +24,7 @@ import io.github.sds100.keymapper.data.model.KeyMap
 )
 abstract class AppDatabase : RoomDatabase() {
     companion object {
-        const val DATABASE_NAME = "keymapper_database"
+        const val DATABASE_NAME = "key_map_database"
     }
 
     abstract fun keymapDao(): KeyMapDao
