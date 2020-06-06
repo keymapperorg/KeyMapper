@@ -17,6 +17,12 @@ android {
 
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
     }
 
     buildTypes {
@@ -65,6 +71,7 @@ android.sourceSets {
 
     androidTest {
         java.srcDirs += "$projectDir/src/testShared"
+        assets.srcDirs += files("$projectDir/schemas".toString())
     }
 }
 
@@ -159,6 +166,7 @@ dependencies {
     androidTestImplementation "junit:junit:$junitVersion"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
     androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"
+    androidTestImplementation 'android.arch.persistence.room:testing:1.1.1'
     debugImplementation "androidx.fragment:fragment-testing:1.2.4"
     implementation "androidx.test:core:$androidXTestCoreVersion"
 }

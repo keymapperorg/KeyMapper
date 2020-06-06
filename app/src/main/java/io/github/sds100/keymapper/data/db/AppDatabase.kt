@@ -1,12 +1,13 @@
 package io.github.sds100.keymapper.data.db
 
-import android.content.Context
 import androidx.room.Database
-import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import io.github.sds100.keymapper.data.db.dao.DeviceInfoDao
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
+import io.github.sds100.keymapper.data.db.migration.Migration_1_2
 import io.github.sds100.keymapper.data.db.typeconverter.ActionListTypeConverter
 import io.github.sds100.keymapper.data.db.typeconverter.ConstraintListTypeConverter
 import io.github.sds100.keymapper.data.db.typeconverter.ExtraListTypeConverter
@@ -25,6 +26,16 @@ import io.github.sds100.keymapper.data.model.KeyMap
     ConstraintListTypeConverter::class
 )
 abstract class AppDatabase : RoomDatabase() {
+    companion object {
+        const val DATABASE_NAME = "key_map_database"
+
+        val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                Migration_1_2.migrate(database)
+            }
+        }
+    }
+
     abstract fun keymapDao(): KeyMapDao
     abstract fun deviceInfoDao(): DeviceInfoDao
 }
