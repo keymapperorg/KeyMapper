@@ -64,7 +64,7 @@ object Migration_1_2 {
                 while (moveToNext()) {
                     val triggerListOld: List<Trigger1> = gson.fromJson(getString(1))
                     val flagsOld = getInt(2)
-                    val isEnabledOld = getInt(3) == 1
+                    val isEnabledOld = getInt(3)
 
                     val actionTypeJson = getString(4)
                     val actionTypeOld: ActionType1? = if (actionTypeJson.isNullOrBlank() || actionTypeJson == "NULL") {
@@ -125,7 +125,7 @@ object Migration_1_2 {
                     val actionListNew = mutableListOf<Action>()
 
                     if (actionTypeNew != null) {
-                        val actionFlags = if (flagsOld.hasFlag(Action.ACTION_FLAG_SHOW_VOLUME_UI)) {
+                        val actionFlags = if (flagsOld.hasFlag(FLAG_SHOW_VOLUME_UI_1)) {
                             Action.ACTION_FLAG_SHOW_VOLUME_UI
                         } else {
                             0
@@ -138,7 +138,7 @@ object Migration_1_2 {
                         actionListNew.add(Action(actionTypeNew, actionDataOld, actionExtras, actionFlags))
                     }
 
-                    val flagsNew = if (flagsOld.hasFlag(KeyMap.KEYMAP_FLAG_VIBRATE)) {
+                    val flagsNew = if (flagsOld.hasFlag(FLAG_VIBRATE_1)) {
                         KeyMap.KEYMAP_FLAG_VIBRATE
                     } else {
                         0
@@ -164,17 +164,6 @@ object Migration_1_2 {
 
         execSQL("DROP TABLE keymaps")
         execSQL("ALTER TABLE new_keymaps RENAME TO keymaps")
-        /*
-        - if keymap has vibrate flag, add it to the new keymap
-        - loop through all triggers. if the keymap has a long press flag, add it to ALL the new trigger keys
-        - if keymap has show volume UI flag, add it to the new action.
-        - set the device id for all new trigger keys to be ANY_DEVICE
-        - matching columns: keymap flags, isEnabled, id
-        - convert KEY and KEY_CODE action types to KEY_EVENT
-        - handle shortcut actions
-        - triggers should be parallel if have more than one key by default. if have one key, they should be sequence
-         */
-
         execSQL("CREATE TABLE IF NOT EXISTS `deviceinfo` (`descriptor` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`descriptor`))")
     }
 }

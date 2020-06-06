@@ -20,17 +20,22 @@ class MigrationTest {
     companion object {
         private val TEST_DB = "migration_test"
 
-        private val Migration_1_2_TEST_DATA = listOf(
-            arrayOf(1, "[]", 0, 1, "NULL", "NULL", "NULL")
-                to arrayOf(1, "{\"extras\":[],\"keys\":[],\"mode\":1}", "[]", "[]", 1, 0, "NULL", 1),
-
-            arrayOf(2, "[{\"keys\":[25]}]", 4, 1, "APP", "com.android.chrome", "[]")
-                to arrayOf(2, "{\"extras\":[],\"keys\":[{\"clickType\":0,\"deviceId\":\"io.github.sds100.keymapper.ANY_DEVICE\",\"keyCode\":25}],\"mode\":1}", "[{\"data\":\"com.android.chrome\",\"extras\":[],\"flags\":0,\"type\":\"APP\"}]", "[]", 1, 1, "NULL", 1),
-
-            arrayOf(3, "[{\"keys\":[25,24]}]", 0, 1, "KEY", "24", "[]")
-                to arrayOf(3, "{\"extras\":[],\"keys\":[{\"clickType\":0,\"deviceId\":\"io.github.sds100.keymapper.ANY_DEVICE\",\"keyCode\":25},{\"clickType\":0,\"deviceId\":\"io.github.sds100.keymapper.ANY_DEVICE\",\"keyCode\":24}],\"mode\":0}", "[{\"data\":\"24\",\"extras\":[],\"flags\":0,\"type\":\"KEY_EVENT\"}]", "[]", 1, 0, "NULL", 1)
+        private val MIGRATION_1_2_TEST_DATA = arrayOf(
+            arrayOf(1, "[]", 0, 1, "NULL", "NULL", "NULL"),
+            arrayOf(2, "[{\"keys\":[25]}]", 4, 1, "APP", "com.android.chrome", "[]"),
+            arrayOf(3, "[{\"keys\":[25,24]}]", 0, 1, "KEY", "24", "[]"),
+            arrayOf(4, "[{\"keys\":[25,24]},{\"keys\":[25]}]", 0, 1, "SYSTEM_ACTION", "toggle_flashlight", "[{\"data\":\"option_lens_back\",\"id\":\"extra_flash\"}]"),
+            arrayOf(5, "[{\"keys\":[4]}]", 3, 1, "SYSTEM_ACTION", "volume_mute", "[]")
         )
-        //TODO add rest of test rows and row with multiple triggers
+
+        private val MIGRATION_1_2_EXPECTED_DATA = arrayOf(
+            arrayOf(1, "{\"extras\":[],\"keys\":[],\"mode\":1}", "[]", "[]", 1, 0, "NULL", 1),
+            arrayOf(2, "{\"extras\":[],\"keys\":[{\"clickType\":0,\"deviceId\":\"io.github.sds100.keymapper.ANY_DEVICE\",\"keyCode\":25}],\"mode\":1}", "[{\"data\":\"com.android.chrome\",\"extras\":[],\"flags\":0,\"type\":\"APP\"}]", "[]", 1, 1, "NULL", 1),
+            arrayOf(3, "{\"extras\":[],\"keys\":[{\"clickType\":0,\"deviceId\":\"io.github.sds100.keymapper.ANY_DEVICE\",\"keyCode\":25},{\"clickType\":0,\"deviceId\":\"io.github.sds100.keymapper.ANY_DEVICE\",\"keyCode\":24}],\"mode\":0}", "[{\"data\":\"24\",\"extras\":[],\"flags\":0,\"type\":\"KEY_EVENT\"}]", "[]", 1, 0, "NULL", 1),
+            arrayOf(4, "{\"extras\":[],\"keys\":[{\"clickType\":0,\"deviceId\":\"io.github.sds100.keymapper.ANY_DEVICE\",\"keyCode\":25},{\"clickType\":0,\"deviceId\":\"io.github.sds100.keymapper.ANY_DEVICE\",\"keyCode\":24}],\"mode\":0}", "[{\"data\":\"toggle_flashlight\",\"extras\":[{\"data\":\"option_lens_back\",\"id\":\"extra_flash\"}],\"flags\":0,\"type\":\"SYSTEM_ACTION\"}]", "[]", 1, 0, "NULL", 1),
+            arrayOf(5, "{\"extras\":[],\"keys\":[{\"clickType\":0,\"deviceId\":\"io.github.sds100.keymapper.ANY_DEVICE\",\"keyCode\":25}],\"mode\":1}", "[{\"data\":\"toggle_flashlight\",\"extras\":[{\"data\":\"option_lens_back\",\"id\":\"extra_flash\"}],\"flags\":0,\"type\":\"SYSTEM_ACTION\"}]", "[]", 1, 0, "NULL", 1),
+            arrayOf(6, "{\"extras\":[],\"keys\":[{\"clickType\":1,\"deviceId\":\"io.github.sds100.keymapper.ANY_DEVICE\",\"keyCode\":4}],\"mode\":1}", "[{\"data\":\"volume_mute\",\"extras\":[],\"flags\":1,\"type\":\"SYSTEM_ACTION\"}]", "[]", 1, 0, "NULL", 1)
+        )
     }
 
     @get:Rule
@@ -47,8 +52,7 @@ class MigrationTest {
 
         var db = helper.createDatabase(TEST_DB, 1).apply {
 
-            Migration_1_2_TEST_DATA.forEach { pair ->
-                val row = pair.first
+            MIGRATION_1_2_TEST_DATA.forEach { row ->
 
                 execSQL(
                     """
@@ -63,21 +67,35 @@ class MigrationTest {
 
         val cursor = db.query("SELECT * FROM keymaps")
 
+        assertThat("Check the logcat", cursor.count, `is`(MIGRATION_1_2_EXPECTED_DATA.size))
+
         while (cursor.moveToNext()) {
             val row = cursor.position
-            val expectedColumnValues: Array<out Any> = Migration_1_2_TEST_DATA[row].second
+            val expectedColumnValues: Array<out Any> = MIGRATION_1_2_EXPECTED_DATA[row]
 
             //id
-            assertThat(cursor.getInt(0), `is`(expectedColumnValues[0] as Int))
+            assertThat("id at row $row", cursor.getInt(0), `is`(expectedColumnValues[0] as Int))
 
             //trigger
-            assertThat(cursor.getString(1), `is`(expectedColumnValues[1] as String))
+            assertThat("trigger at row $row", cursor.getString(1), `is`(expectedColumnValues[1] as String))
 
             //action list
-            assertThat(cursor.getString(2), `is`(expectedColumnValues[2] as String))
+            assertThat("action list at row $row", cursor.getString(2), `is`(expectedColumnValues[2] as String))
 
             //constraint list
-            assertThat(cursor.getString(3), `is`(expectedColumnValues[3] as String))
+            assertThat("constraint list at row $row", cursor.getString(3), `is`(expectedColumnValues[3] as String))
+
+            //constraint mode
+            assertThat("constraint mode at row $row", cursor.getInt(4), `is`(expectedColumnValues[4] as Int))
+
+            //flags
+            assertThat("flags at row $row", cursor.getInt(5), `is`(expectedColumnValues[5] as Int))
+
+            //folder name
+            assertThat("folder name at row $row", cursor.getString(6), `is`(expectedColumnValues[6] as String))
+
+            //is enabled
+            assertThat("isEnabled at row $row", cursor.getInt(7), `is`(expectedColumnValues[7] as Int))
         }
     }
 }
