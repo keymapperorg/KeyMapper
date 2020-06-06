@@ -20,19 +20,6 @@ interface KeyMapDao {
         const val KEY_CONSTRAINT_LIST = "constraint_list"
         const val KEY_CONSTRAINT_MODE = "constraint_mode"
         const val KEY_FOLDER_NAME = "folder_name"
-
-        //Action stuff
-        @Deprecated(message = "Actions are serialized to JSON after database version 1")
-        const val KEY_ACTION_TYPE = "action_type"
-
-        @Deprecated(message = "Actions are serialized to JSON after database version 1")
-        const val KEY_ACTION_DATA = "action_data"
-
-        @Deprecated(message = "Actions are serialized to JSON after database version 1")
-        const val KEY_ACTION_FLAGS = "action_flags"
-
-        @Deprecated(message = "Actions are serialized to JSON after database version 1")
-        const val KEY_ACTION_EXTRAS = "action_extras"
     }
 
     @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_ID = (:id)")
