@@ -34,7 +34,10 @@ import timber.log.Timber
  * Created by sds100 on 05/04/2020.
  */
 class MyAccessibilityService : AccessibilityService(),
-    LifecycleOwner, SharedPreferences.OnSharedPreferenceChangeListener, IClock, IPerformAccessibilityAction {
+    LifecycleOwner, SharedPreferences.OnSharedPreferenceChangeListener,
+    IClock,
+    IPerformAccessibilityAction,
+    IConstraintState {
 
     companion object {
         const val EXTRA_ACTION = "action"
@@ -126,6 +129,9 @@ class MyAccessibilityService : AccessibilityService(),
     override val currentTime: Long
         get() = SystemClock.elapsedRealtime()
 
+    override val currentPackageName: String
+        get() = rootInActiveWindow.packageName.toString()
+
     override fun onServiceConnected() {
         super.onServiceConnected()
 
@@ -145,7 +151,8 @@ class MyAccessibilityService : AccessibilityService(),
         mKeymapDetectionDelegate = KeymapDetectionDelegate(
             lifecycleScope,
             preferences,
-            iClock = this)
+            iClock = this,
+            iConstraintState = this)
 
         mActionPerformerDelegate = ActionPerformerDelegate(
             context = this,

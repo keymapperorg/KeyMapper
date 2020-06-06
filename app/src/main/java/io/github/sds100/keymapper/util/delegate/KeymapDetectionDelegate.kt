@@ -6,9 +6,12 @@ import androidx.collection.keyIterator
 import androidx.collection.valueIterator
 import androidx.lifecycle.MutableLiveData
 import io.github.sds100.keymapper.data.model.*
+import io.github.sds100.keymapper.data.model.Constraint.Companion.APP_FOREGROUND
+import io.github.sds100.keymapper.data.model.Constraint.Companion.MODE_AND
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.handle
 import io.github.sds100.keymapper.util.result.onSuccess
+import io.github.sds100.keymapper.util.result.valueOrNull
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -24,7 +27,8 @@ import timber.log.Timber
 
 class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                               val preferences: KeymapDetectionPreferences,
-                              iClock: IClock) : IClock by iClock {
+                              iClock: IClock,
+                              iConstraintState: IConstraintState) : IClock by iClock, IConstraintState by iConstraintState {
 
     companion object {
 
@@ -132,11 +136,15 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 val sequenceTriggerActions = mutableListOf<IntArray>()
                 val sequenceTriggerKeymapFlags = mutableListOf<Int>()
                 val sequenceTriggerOptions = mutableListOf<IntArray>()
+                val sequenceTriggerConstraints = mutableListOf<Array<Constraint>>()
+                val sequenceTriggerConstraintMode = mutableListOf<Int>()
 
                 val parallelTriggerEvents = mutableListOf<IntArray>()
                 val parallelTriggerActions = mutableListOf<IntArray>()
                 val parallelTriggerKeymapFlags = mutableListOf<Int>()
                 val parallelTriggerOptions = mutableListOf<IntArray>()
+                val parallelTriggerConstraints = mutableListOf<Array<Constraint>>()
+                val parallelTriggerConstraintMode = mutableListOf<Int>()
 
                 for (keyMap in value) {
                     if (!keyMap.isEnabled) {
@@ -234,17 +242,32 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                         }
                     }
 
+                    val constraints = sequence {
+                        keyMap.constraintList.forEach {
+                            val data = when (it.type) {
+                                APP_FOREGROUND -> it.getExtraData(Extra.EXTRA_PACKAGE_NAME).valueOrNull()
+                                else -> null
+                            } ?: return@forEach
+
+                            yield(it.type to data)
+                        }
+                    }.toList().toTypedArray()
+
                     if (performActionOnDown(keyMap.trigger.keys, keyMap.trigger.mode)) {
                         parallelTriggerEvents.add(encodedTriggerList.toIntArray())
                         parallelTriggerActions.add(encodedActionList)
                         parallelTriggerKeymapFlags.add(keyMap.flags)
                         parallelTriggerOptions.add(optionsArray)
+                        parallelTriggerConstraints.add(constraints)
+                        parallelTriggerConstraintMode.add(keyMap.constraintMode)
 
                     } else {
                         sequenceTriggerEvents.add(encodedTriggerList.toIntArray())
                         sequenceTriggerActions.add(encodedActionList)
                         sequenceTriggerKeymapFlags.add(keyMap.flags)
                         sequenceTriggerOptions.add(optionsArray)
+                        sequenceTriggerConstraints.add(constraints)
+                        sequenceTriggerConstraintMode.add(keyMap.constraintMode)
                     }
                 }
 
@@ -253,12 +276,16 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 mSequenceTriggerActions = sequenceTriggerActions.toTypedArray()
                 mSequenceTriggerKeymapFlags = sequenceTriggerKeymapFlags.toIntArray()
                 mSequenceTriggerOptions = sequenceTriggerOptions.toTypedArray()
+                mSequenceTriggerConstraints = sequenceTriggerConstraints.toTypedArray()
+                mSequenceTriggerConstraintMode = sequenceTriggerConstraintMode.toIntArray()
 
                 mDetectParallelTriggers = parallelTriggerEvents.isNotEmpty()
                 mParallelTriggerEvents = parallelTriggerEvents.toTypedArray()
                 mParallelTriggerActions = parallelTriggerActions.toTypedArray()
                 mParallelTriggerKeymapFlags = parallelTriggerKeymapFlags.toIntArray()
                 mParallelTriggerOptions = parallelTriggerOptions.toTypedArray()
+                mParallelTriggerConstraints = parallelTriggerConstraints.toTypedArray()
+                mParallelTriggerConstraintMode = parallelTriggerConstraintMode.toIntArray()
 
                 mDetectSequenceLongPresses = longPressSequenceEvents.isNotEmpty()
                 mLongPressSequenceEvents = longPressSequenceEvents.toIntArray()
@@ -335,6 +362,9 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
      */
     private var mSequenceTriggerOptions = arrayOf<IntArray>()
 
+    private var mSequenceTriggerConstraints = arrayOf<Array<Constraint>>()
+    private var mSequenceTriggerConstraintMode = intArrayOf()
+
     /**
      * The events to detect for each parallel trigger.
      */
@@ -347,6 +377,9 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
      * [mParallelTriggerEvents].
      */
     private var mParallelTriggerActions = arrayOf<IntArray>()
+
+    private var mParallelTriggerConstraints = arrayOf<Array<Constraint>>()
+    private var mParallelTriggerConstraintMode = intArrayOf()
 
     /**
      * Stores whether each event in each parallel trigger need to be "released" after being held down.
@@ -450,6 +483,11 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
         if (mDetectParallelTriggers) {
             for ((triggerIndex, lastMatchedIndex) in mLastMatchedParallelEventIndices.withIndex()) {
+                val constraints = mParallelTriggerConstraints[triggerIndex]
+                val constraintMode = mParallelTriggerConstraintMode[triggerIndex]
+
+                if (!constraints.constraintsSatisfied(constraintMode)) continue
+
                 val nextIndex = lastMatchedIndex + 1
 
                 //Perform short press action
@@ -1068,4 +1106,24 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             options[INDEX_SEQUENCE_TRIGGER_TIMEOUT].toLong()
         }
     }
+
+    private fun Array<Constraint>.constraintsSatisfied(@ConstraintMode mode: Int): Boolean {
+        return if (mode == MODE_AND) {
+            all { it.constraintSatisfied() }
+        } else {
+            any { it.constraintSatisfied() }
+        }
+    }
+
+    private fun Constraint.constraintSatisfied(): Boolean {
+        return when (first) {
+            APP_FOREGROUND -> second == currentPackageName
+            else -> true
+        }
+    }
 }
+
+/**
+ * first = type, second = data
+ */
+private typealias Constraint = Pair<String, String>
