@@ -108,9 +108,9 @@ object AppPreferences : DefaultPreferences() {
         false
     )
 
-    var shownTestActionShowcase by BoolPref(
-        appCtx.str(R.string.key_pref_showcase_tap_action_to_test),
-        false
+    var lastInstalledVersionCode by IntPref(
+        appCtx.str(R.string.key_pref_last_installed_version),
+        -1
     )
 
     @NightMode

@@ -11,4 +11,5 @@ object Constants {
     const val PACKAGE_NAME = BuildConfig.APPLICATION_ID
     const val PERMISSION_ROOT = "$PACKAGE_NAME.ROOT"
     const val VERSION = BuildConfig.VERSION_NAME
+    const val VERSION_CODE = BuildConfig.VERSION_CODE
 }

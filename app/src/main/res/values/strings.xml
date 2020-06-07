@@ -41,6 +41,7 @@
     <string name="performing_action">Key Mapper is performing an action…</string>
     <string name="slider_default">Default</string>
 
+    <string name="whats_new">What\'s New</string>
     <string name="caption_action_type_key">Click the key on the device which you want to be entered.
         \n\nIMPORTANT!
         Inputting this key as an action will only work if you have selected the Key Mapper keyboard.</string>

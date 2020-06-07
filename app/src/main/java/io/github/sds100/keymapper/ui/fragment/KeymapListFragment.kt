@@ -23,15 +23,14 @@ import androidx.transition.TransitionManager
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.airbnb.epoxy.EpoxyController
-import io.github.sds100.keymapper.BuildConfig
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.*
+import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.OnboardingState
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
 import io.github.sds100.keymapper.databinding.FragmentKeymapListBinding
-import io.github.sds100.keymapper.keymapSimple
 import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
@@ -286,6 +285,16 @@ class KeymapListFragment : Fragment() {
             }
 
             updateStatusLayouts()
+
+            if (AppPreferences.lastInstalledVersionCode != Constants.VERSION_CODE) {
+                val direction = NavAppDirections.actionGlobalOnlineFileFragment(
+                    R.string.whats_new,
+                    R.string.url_changelog
+                )
+                findNavController().navigate(direction)
+
+                AppPreferences.lastInstalledVersionCode = Constants.VERSION_CODE
+            }
 
             return this.root
         }
