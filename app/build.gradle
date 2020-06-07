@@ -102,7 +102,6 @@ dependencies {
     implementation 'com.github.salomonbrys.kotson:kotson:2.5.0'
     implementation 'com.github.mukeshsolanki:MarkdownView-Android:1.0.8'
     implementation 'net.cachapa.expandablelayout:expandablelayout:2.9.2'
-    implementation 'com.getkeepsafe.taptargetview:taptargetview:1.12.0'
     implementation 'com.heinrichreimersoftware:material-intro:2.0.0'
     implementation "com.airbnb.android:epoxy:$epoxy_version"
     implementation "com.airbnb.android:epoxy-databinding:$epoxy_version"
