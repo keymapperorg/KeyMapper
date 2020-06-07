@@ -110,6 +110,8 @@ dependencies {
     implementation "io.noties.markwon:core:$markwonVersion"
     implementation 'net.cachapa.expandablelayout:expandablelayout:2.9.2'
     implementation 'com.android.volley:volley:1.1.1'
+    implementation 'com.heinrichreimersoftware:material-intro:2.0.0'
+    implementation 'com.jakewharton.timber:timber:4.7.1'
 
     // splitties
     implementation "com.louiscad.splitties:splitties-bitflags:$splitties_version"
@@ -119,7 +121,6 @@ dependencies {
     implementation "com.louiscad.splitties:splitties-snackbar:$splitties_version"
     implementation "com.louiscad.splitties:splitties-systemservices:$splitties_version"
     implementation "com.louiscad.splitties:splitties-toast:$splitties_version"
-    implementation 'com.jakewharton.timber:timber:4.7.1'
 
     // androidx
     implementation 'androidx.core:core-ktx:1.2.0'

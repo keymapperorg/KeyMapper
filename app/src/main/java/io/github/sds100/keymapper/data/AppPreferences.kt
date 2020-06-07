@@ -103,6 +103,11 @@ object AppPreferences : DefaultPreferences() {
         appCtx.bool(R.bool.default_value_show_toast_on_action_error)
     )
 
+    var shownAppIntro by BoolPref(
+        appCtx.str(R.string.key_pref_first_time),
+        false
+    )
+
     @NightMode
     fun getSdkNightMode(darkThemePrefValue: String): Int {
         return when (darkThemePrefValue) {

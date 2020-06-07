@@ -49,6 +49,8 @@
             android:name=".ui.activity.HomeActivity"
             android:label="@string/app_name" />
 
+        <activity android:name=".ui.activity.AppIntroActivity" />
+
         <receiver android:name=".broadcastreceiver.KeyMapperBroadcastReceiver" />
 
         <receiver android:name=".broadcastreceiver.BootBroadcastReceiver">
