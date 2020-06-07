@@ -14,10 +14,12 @@ import com.heinrichreimersoftware.materialintro.slide.SimpleSlide
 import com.heinrichreimersoftware.materialintro.slide.Slide
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.util.AccessibilityUtils
 import io.github.sds100.keymapper.util.DexUtils.isDexSupported
 import io.github.sds100.keymapper.util.PermissionUtils
 import io.github.sds100.keymapper.util.openUrl
 import io.github.sds100.keymapper.util.str
+import splitties.systemservices.powerManager
 import splitties.toast.longToast
 
 /**
@@ -36,6 +38,23 @@ class AppIntroActivity : IntroActivity() {
             image(R.mipmap.ic_launcher_round)
             canGoBackward(true)
             scrollable(true)
+        }.build()
+    }
+
+    private val mAccessibilityServiceSlide by lazy {
+        SimpleSlide.Builder().apply {
+            title(R.string.showcase_accessibility_service_title)
+            description(R.string.showcase_accessibility_service_description)
+            background(R.color.purple)
+            backgroundDark(R.color.purpleDark)
+            image(R.drawable.ic_outline_error_outline_64)
+            canGoBackward(true)
+            scrollable(true)
+
+            buttonCtaLabel(R.string.enable)
+            buttonCtaClickListener {
+                AccessibilityUtils.enableService(this@AppIntroActivity)
+            }
         }.build()
     }
 
@@ -121,7 +140,9 @@ class AppIntroActivity : IntroActivity() {
 
         addSlide(mNoteFromDevSlide)
 
-        val powerManager = (getSystemService(Context.POWER_SERVICE)) as PowerManager
+        if (!AccessibilityUtils.isServiceEnabled(this)) {
+            addSlide(mAccessibilityServiceSlide)
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
             && !powerManager.isIgnoringBatteryOptimizations(Constants.PACKAGE_NAME)) {
@@ -151,6 +172,11 @@ class AppIntroActivity : IntroActivity() {
             currentSlide == mBatteryOptimisationSlide) {
             nextSlide()
             removeSlide(mBatteryOptimisationSlide)
+        }
+
+        if (currentSlide == mAccessibilityServiceSlide && AccessibilityUtils.isServiceEnabled(this)) {
+            nextSlide()
+            removeSlide(mAccessibilityServiceSlide)
         }
     }
 }
