@@ -7,10 +7,7 @@ import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.Trigger.Companion.DOUBLE_PRESS
 import io.github.sds100.keymapper.data.model.Trigger.Companion.LONG_PRESS
 import io.github.sds100.keymapper.data.model.Trigger.Companion.SHORT_PRESS
-import io.github.sds100.keymapper.util.ActionType
-import io.github.sds100.keymapper.util.EventObserver
-import io.github.sds100.keymapper.util.IClock
-import io.github.sds100.keymapper.util.SystemAction
+import io.github.sds100.keymapper.util.*
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertNull
 import junitparams.JUnitParamsRunner
@@ -38,6 +35,8 @@ class KeymapDetectionDelegateTest {
     companion object {
         private const val FAKE_KEYBOARD_DESCRIPTOR = "fake_keyboard"
         private const val FAKE_HEADPHONE_DESCRIPTOR = "fake_headphone"
+
+        private const val FAKE_PACKAGE_NAME = "test_package"
 
         private val FAKE_DESCRIPTORS = arrayOf(
             FAKE_KEYBOARD_DESCRIPTOR,
@@ -73,6 +72,11 @@ class KeymapDetectionDelegateTest {
                 get() = System.currentTimeMillis()
         }
 
+        val iConstraintState = object : IConstraintState {
+            override val currentPackageName: String
+                get() = FAKE_PACKAGE_NAME
+        }
+
         val preferences = KeymapDetectionPreferences(
             LONG_PRESS_DELAY,
             DOUBLE_PRESS_DELAY,
@@ -82,7 +86,7 @@ class KeymapDetectionDelegateTest {
             VIBRATION_DURATION,
             FORCE_VIBRATE)
 
-        mDelegate = KeymapDetectionDelegate(GlobalScope, preferences, iClock)
+        mDelegate = KeymapDetectionDelegate(GlobalScope, preferences, iClock, iConstraintState)
     }
 
     @Test

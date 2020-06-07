@@ -6,9 +6,12 @@ import androidx.collection.keyIterator
 import androidx.collection.valueIterator
 import androidx.lifecycle.MutableLiveData
 import io.github.sds100.keymapper.data.model.*
+import io.github.sds100.keymapper.data.model.Constraint.Companion.APP_FOREGROUND
+import io.github.sds100.keymapper.data.model.Constraint.Companion.APP_NOT_FOREGROUND
+import io.github.sds100.keymapper.data.model.Constraint.Companion.MODE_AND
 import io.github.sds100.keymapper.util.*
-import io.github.sds100.keymapper.util.result.handle
 import io.github.sds100.keymapper.util.result.onSuccess
+import io.github.sds100.keymapper.util.result.valueOrNull
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -24,7 +27,8 @@ import timber.log.Timber
 
 class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                               val preferences: KeymapDetectionPreferences,
-                              iClock: IClock) : IClock by iClock {
+                              iClock: IClock,
+                              iConstraintState: IConstraintState) : IClock by iClock, IConstraintState by iConstraintState {
 
     companion object {
 
@@ -118,11 +122,9 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
                 val sequenceKeyMaps = mutableListOf<KeyMap>()
                 val parallelKeyMaps = mutableListOf<KeyMap>()
-                val longPressSequenceEvents = mutableSetOf<Int>()
+                val longPressSequenceEvents = mutableListOf<Pair<Int, Int>>()
 
-                //these must have matching indices
-                val doublePressSequenceEvents = mutableListOf<Int>()
-                val doublePressTimeoutOptions = mutableListOf<Long>()
+                val doublePressEvents = mutableListOf<Pair<Int, Int>>()
 
                 mActionMap = createActionMap(value.flatMap { it.actionList }.toSet())
 
@@ -132,11 +134,15 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 val sequenceTriggerActions = mutableListOf<IntArray>()
                 val sequenceTriggerKeymapFlags = mutableListOf<Int>()
                 val sequenceTriggerOptions = mutableListOf<IntArray>()
+                val sequenceTriggerConstraints = mutableListOf<Array<Constraint>>()
+                val sequenceTriggerConstraintMode = mutableListOf<Int>()
 
                 val parallelTriggerEvents = mutableListOf<IntArray>()
                 val parallelTriggerActions = mutableListOf<IntArray>()
                 val parallelTriggerKeymapFlags = mutableListOf<Int>()
                 val parallelTriggerOptions = mutableListOf<IntArray>()
+                val parallelTriggerConstraints = mutableListOf<Array<Constraint>>()
+                val parallelTriggerConstraintMode = mutableListOf<Int>()
 
                 for (keyMap in value) {
                     if (!keyMap.isEnabled) {
@@ -172,26 +178,22 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
                     val encodedTriggerList = mutableListOf<Int>()
 
-                    keyMap.trigger.keys.forEach { key ->
+                    keyMap.trigger.keys.forEachIndexed { keyIndex, key ->
 
                         if (keyMap.trigger.mode == Trigger.SEQUENCE) {
+                            val sequenceTriggerIndex = sequenceTriggerEvents.size
+
                             when (key.clickType) {
                                 Trigger.LONG_PRESS -> {
                                     if (keyMap.trigger.keys.size > 1) {
-                                        longPressSequenceEvents.add(encodeEvent(key.keyCode, key.clickType, key.deviceId))
+                                        longPressSequenceEvents.add(
+                                            encodeEvent(key.keyCode, key.clickType, key.deviceId) to sequenceTriggerIndex)
                                     }
                                 }
 
                                 Trigger.DOUBLE_PRESS -> {
-                                    doublePressSequenceEvents.add(encodeEvent(key.keyCode, key.clickType, key.deviceId))
-
-                                    val doublePressDelayOption =
-                                        keyMap.trigger.getExtraData(Extra.EXTRA_DOUBLE_PRESS_DELAY).handle(
-                                            onSuccess = { it.toLong() },
-                                            onFailure = { preferences.defaultDoublePressDelay.toLong() }
-                                        )
-
-                                    doublePressTimeoutOptions.add(doublePressDelayOption)
+                                    doublePressEvents.add(
+                                        encodeEvent(key.keyCode, key.clickType, key.deviceId) to sequenceTriggerIndex)
                                 }
                             }
                         }
@@ -234,17 +236,33 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                         }
                     }
 
+                    val constraints = sequence {
+                        keyMap.constraintList.forEach {
+                            val data = when (it.type) {
+                                APP_FOREGROUND -> it.getExtraData(Extra.EXTRA_PACKAGE_NAME).valueOrNull()
+                                APP_NOT_FOREGROUND -> it.getExtraData(Extra.EXTRA_PACKAGE_NAME).valueOrNull()
+                                else -> null
+                            } ?: return@forEach
+
+                            yield(it.type to data)
+                        }
+                    }.toList().toTypedArray()
+
                     if (performActionOnDown(keyMap.trigger.keys, keyMap.trigger.mode)) {
                         parallelTriggerEvents.add(encodedTriggerList.toIntArray())
                         parallelTriggerActions.add(encodedActionList)
                         parallelTriggerKeymapFlags.add(keyMap.flags)
                         parallelTriggerOptions.add(optionsArray)
+                        parallelTriggerConstraints.add(constraints)
+                        parallelTriggerConstraintMode.add(keyMap.constraintMode)
 
                     } else {
                         sequenceTriggerEvents.add(encodedTriggerList.toIntArray())
                         sequenceTriggerActions.add(encodedActionList)
                         sequenceTriggerKeymapFlags.add(keyMap.flags)
                         sequenceTriggerOptions.add(optionsArray)
+                        sequenceTriggerConstraints.add(constraints)
+                        sequenceTriggerConstraintMode.add(keyMap.constraintMode)
                     }
                 }
 
@@ -253,19 +271,22 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 mSequenceTriggerActions = sequenceTriggerActions.toTypedArray()
                 mSequenceTriggerKeymapFlags = sequenceTriggerKeymapFlags.toIntArray()
                 mSequenceTriggerOptions = sequenceTriggerOptions.toTypedArray()
+                mSequenceTriggerConstraints = sequenceTriggerConstraints.toTypedArray()
+                mSequenceTriggerConstraintMode = sequenceTriggerConstraintMode.toIntArray()
 
                 mDetectParallelTriggers = parallelTriggerEvents.isNotEmpty()
                 mParallelTriggerEvents = parallelTriggerEvents.toTypedArray()
                 mParallelTriggerActions = parallelTriggerActions.toTypedArray()
                 mParallelTriggerKeymapFlags = parallelTriggerKeymapFlags.toIntArray()
                 mParallelTriggerOptions = parallelTriggerOptions.toTypedArray()
+                mParallelTriggerConstraints = parallelTriggerConstraints.toTypedArray()
+                mParallelTriggerConstraintMode = parallelTriggerConstraintMode.toIntArray()
 
                 mDetectSequenceLongPresses = longPressSequenceEvents.isNotEmpty()
-                mLongPressSequenceEvents = longPressSequenceEvents.toIntArray()
+                mLongPressSequenceEvents = longPressSequenceEvents.toTypedArray()
 
-                mDetectSequenceDoublePresses = doublePressSequenceEvents.isNotEmpty()
-                mDoublePressSequenceEvents = doublePressSequenceEvents.toIntArray()
-                mDoublePressTimeoutOptions = doublePressTimeoutOptions.toLongArray()
+                mDetectSequenceDoublePresses = doublePressEvents.isNotEmpty()
+                mDoublePressEvents = doublePressEvents.toTypedArray()
 
                 reset()
             }
@@ -283,20 +304,23 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
     private var mDetectParallelTriggers = false
 
     /**
-     * All events that have the long press click type.
+     * All sequence events that have the long press click type.
      */
-    private var mLongPressSequenceEvents = intArrayOf()
+    private var mLongPressSequenceEvents = arrayOf<Pair<Int, Int>>()
 
     /**
-     * All events that have the double press click type.
+     * All double press sequence events and the index of their corresponding trigger.
      */
-    private var mDoublePressSequenceEvents = intArrayOf()
-    private var mDoublePressTimeoutOptions = longArrayOf()
+    private var mDoublePressEvents = arrayOf<Pair<Int, Int>>()
+
+    /**
+     * order matches with [mDoublePressEvents]
+     */
     private var mDoublePressEventStates = intArrayOf()
 
     /**
      * The user has an amount of time to double press a key before it is registered as a double press.
-     * The order matches with [mDoublePressSequenceEvents]. This array stores the time when the corresponding trigger will
+     * The order matches with [mDoublePressEvents]. This array stores the time when the corresponding trigger will
      * timeout. If the key isn't waiting to timeout, the value is -1.
      */
     private var mDoublePressTimeoutTimes = longArrayOf()
@@ -335,6 +359,9 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
      */
     private var mSequenceTriggerOptions = arrayOf<IntArray>()
 
+    private var mSequenceTriggerConstraints = arrayOf<Array<Constraint>>()
+    private var mSequenceTriggerConstraintMode = intArrayOf()
+
     /**
      * The events to detect for each parallel trigger.
      */
@@ -347,6 +374,9 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
      * [mParallelTriggerEvents].
      */
     private var mParallelTriggerActions = arrayOf<IntArray>()
+
+    private var mParallelTriggerConstraints = arrayOf<Array<Constraint>>()
+    private var mParallelTriggerConstraintMode = intArrayOf()
 
     /**
      * Stores whether each event in each parallel trigger need to be "released" after being held down.
@@ -427,6 +457,8 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
         //consume sequence trigger keys until their timeout has been reached
         mSequenceTriggersTimeoutTimes.forEachIndexed { triggerIndex, timeoutTime ->
+            if (!areSequenceTriggerConstraintsSatisfied(triggerIndex)) return@forEachIndexed
+
             if (timeoutTime != -1L && currentTime >= timeoutTime) {
                 mLastMatchedSequenceEventIndices[triggerIndex] = -1
                 mSequenceTriggersTimeoutTimes[triggerIndex] = -1
@@ -450,6 +482,11 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
         if (mDetectParallelTriggers) {
             for ((triggerIndex, lastMatchedIndex) in mLastMatchedParallelEventIndices.withIndex()) {
+                val constraints = mParallelTriggerConstraints[triggerIndex]
+                val constraintMode = mParallelTriggerConstraintMode[triggerIndex]
+
+                if (!constraints.constraintsSatisfied(constraintMode)) continue
+
                 val nextIndex = lastMatchedIndex + 1
 
                 //Perform short press action
@@ -527,16 +564,32 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         }
 
         if (mDetectSequenceDoublePresses) {
-            if (mDoublePressSequenceEvents.hasEvent(encodedEvent.withFlag(FLAG_DOUBLE_PRESS))) {
-                Timber.d("consume down $keyCode")
-                return true
+            mDoublePressEvents.forEach {
+                val triggerIndex = it.second
+
+                if (!areSequenceTriggerConstraintsSatisfied(triggerIndex)) return@forEach
+
+                val event = it.first
+
+                if (event.matchesEvent(encodedEvent.withFlag(FLAG_DOUBLE_PRESS))) {
+                    Timber.d("consume down $keyCode")
+                    return true
+                }
             }
         }
 
         if (mDetectSequenceLongPresses) {
-            if (mDoublePressSequenceEvents.hasEvent(encodedEvent.withFlag(FLAG_LONG_PRESS))) {
-                Timber.d("consume down $keyCode")
-                return true
+            mLongPressSequenceEvents.forEach {
+                val triggerIndex = it.second
+
+                if (!areSequenceTriggerConstraintsSatisfied(triggerIndex)) return@forEach
+
+                val event = it.first
+
+                if (event.matchesEvent(encodedEvent.withFlag(FLAG_LONG_PRESS))) {
+                    Timber.d("consume down $keyCode")
+                    return true
+                }
             }
         }
 
@@ -574,9 +627,13 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
         if (mDetectSequenceDoublePresses) {
             //iterate over each possible double press event to detect
-            for (index in mDoublePressSequenceEvents.indices) {
-                if (mDoublePressSequenceEvents.hasEventAtIndex(encodedEvent.withFlag(FLAG_DOUBLE_PRESS), index)) {
+            for ((index, pair) in mDoublePressEvents.withIndex()) {
+                val event = pair.first
+                val triggerIndex = pair.second
 
+                if (!areSequenceTriggerConstraintsSatisfied(triggerIndex)) continue
+
+                if (event.matchesEvent(encodedEvent.withFlag(FLAG_DOUBLE_PRESS))) {
                     mappedToDoublePress = true
                     //increment the double press event state.
                     mDoublePressEventStates[index] = mDoublePressEventStates[index] + 1
@@ -585,9 +642,10 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                         /*if the key is in the single pressed state, set the timeout time and start the timer
                         * to imitate the key if it isn't double pressed in the end */
                         SINGLE_PRESSED -> {
-                            mDoublePressTimeoutTimes[index] = currentTime + mDoublePressTimeoutOptions[index]
+                            val doublePressTimeout = doublePressTimeout(mSequenceTriggerOptions[triggerIndex])
+                            mDoublePressTimeoutTimes[index] = currentTime + doublePressTimeout
 
-                            imitateKeyAfterDoublePressTimeout.add(mDoublePressTimeoutOptions[index])
+                            imitateKeyAfterDoublePressTimeout.add(doublePressTimeout)
                             matchedDoublePressEventIndex = index
 
                             consumeEvent = true
@@ -607,13 +665,15 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
         if (mDetectSequenceTriggers) {
             for ((triggerIndex, lastMatchedEventIndex) in mLastMatchedSequenceEventIndices.withIndex()) {
+                if (!areSequenceTriggerConstraintsSatisfied(triggerIndex)) continue
+
                 //the index of the next event to match in the trigger
                 val nextIndex = lastMatchedEventIndex + 1
 
                 if ((currentTime - downTime) >= longPressDelay(mSequenceTriggerOptions[triggerIndex])) {
                     successfulLongPress = true
                 } else if (mDetectSequenceLongPresses &&
-                    mLongPressSequenceEvents.hasEvent(encodedEvent.withFlag(FLAG_LONG_PRESS))) {
+                    mLongPressSequenceEvents.any { it.first.matchesEvent(encodedEvent.withFlag(FLAG_LONG_PRESS)) }) {
                     imitateButtonPress = true
                 }
 
@@ -779,8 +839,8 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
     }
 
     fun reset() {
-        mDoublePressEventStates = IntArray(mDoublePressSequenceEvents.size) { NOT_PRESSED }
-        mDoublePressTimeoutTimes = LongArray(mDoublePressSequenceEvents.size) { -1L }
+        mDoublePressEventStates = IntArray(mDoublePressEvents.size) { NOT_PRESSED }
+        mDoublePressTimeoutTimes = LongArray(mDoublePressEvents.size) { -1L }
 
         mSequenceTriggersTimeoutTimes = LongArray(mSequenceTriggerEvents.size) { -1 }
         mLastMatchedSequenceEventIndices = IntArray(mSequenceTriggerEvents.size) { -1 }
@@ -970,12 +1030,16 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
         val triggerEvent = this[index]
 
-        if (triggerEvent.anyDevice || event.anyDevice) {
-            if (triggerEvent.keyCode == event.keyCode && triggerEvent.clickType == event.clickType) {
+        return triggerEvent.matchesEvent(event)
+    }
+
+    private fun Int.matchesEvent(event: Int): Boolean {
+        if (this.anyDevice || event.anyDevice) {
+            if (this.keyCode == event.keyCode && this.clickType == event.clickType) {
                 return true
             }
         } else {
-            if (triggerEvent == event) {
+            if (this == event) {
                 return true
             }
         }
@@ -1045,7 +1109,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         }
     }
 
-    private fun doublePressDelay(options: IntArray): Long {
+    private fun doublePressTimeout(options: IntArray): Long {
         return if (options[INDEX_DOUBLE_PRESS_DELAY] == -1) {
             preferences.defaultDoublePressDelay.toLong()
         } else {
@@ -1068,4 +1132,34 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             options[INDEX_SEQUENCE_TRIGGER_TIMEOUT].toLong()
         }
     }
+
+    private fun Array<Constraint>.constraintsSatisfied(@ConstraintMode mode: Int): Boolean {
+        if (this.isEmpty()) return true
+
+        return if (mode == MODE_AND) {
+            all { it.constraintSatisfied() }
+        } else {
+            any { it.constraintSatisfied() }
+        }
+    }
+
+    private fun areSequenceTriggerConstraintsSatisfied(triggerIndex: Int): Boolean {
+        val constraints = mSequenceTriggerConstraints[triggerIndex]
+        val constraintMode = mSequenceTriggerConstraintMode[triggerIndex]
+
+        return constraints.constraintsSatisfied(constraintMode)
+    }
+
+    private fun Constraint.constraintSatisfied(): Boolean {
+        return when (first) {
+            APP_FOREGROUND -> second == currentPackageName
+            APP_NOT_FOREGROUND -> second != currentPackageName
+            else -> true
+        }
+    }
 }
+
+/**
+ * first = type, second = data
+ */
+private typealias Constraint = Pair<String, String>

@@ -100,7 +100,8 @@
     <string name="extra_label_repeat_delay">Repeat delay (ms)</string>
     <string name="extra_label_vibration_duration">Vibration duration (ms)</string>
     <!-- Constraints -->
-    <string name="constraint_app_description">%s is in foreground</string>
+    <string name="constraint_app_foreground_description">%s is in foreground</string>
+    <string name="constraint_app_not_foreground_description">%s is not in foreground</string>
 
     <string name="constraint_mode_and">and</string>
     <string name="constraint_mode_or">or</string>
@@ -109,6 +110,7 @@
     <string name="constraint_category_bluetooth">Bluetooth</string>
 
     <string name="constraint_choose_app_foreground">App in Foreground</string>
+    <string name="constraint_choose_app_not_foreground">App not in Foreground</string>
     <string name="constraint_choose_bluetooth_device_connected">Bluetooth Device is Connected</string>
     <string name="constraint_choose_bluetooth_device_disconnected">Bluetooth Device is Disconnected</string>
     <!-- Constraints -->

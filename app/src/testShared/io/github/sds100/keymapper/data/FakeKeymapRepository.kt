@@ -69,8 +69,8 @@ class FakeKeymapRepository : KeymapRepository {
                 trigger = createRandomTrigger(),
                 actionList = createRandomActionList(),
                 constraintList = listOf(
-                    Constraint.appConstraint(Constants.PACKAGE_NAME),
-                    Constraint.appConstraint("io.github.sds100.keymapper.ci")
+                    Constraint.appConstraint(Constraint.APP_FOREGROUND, Constants.PACKAGE_NAME),
+                    Constraint.appConstraint(Constraint.APP_NOT_FOREGROUND, "io.github.sds100.keymapper.ci")
                 ),
                 flags = 0.withFlag(KeyMap.KEYMAP_FLAG_VIBRATE)
             ))
