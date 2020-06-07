@@ -5,17 +5,16 @@ import android.os.Bundle
 import android.view.KeyEvent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
-import androidx.preference.PreferenceManager
 import io.github.sds100.keymapper.BuildConfig
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.WidgetsManager
-import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.viewmodel.KeyActionTypeViewModel
 import io.github.sds100.keymapper.databinding.ActivityHomeBinding
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.AccessibilityUtils
+import io.github.sds100.keymapper.util.InjectorUtils
+import io.github.sds100.keymapper.util.PermissionUtils
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.messageResource
 import splitties.alertdialog.appcompat.okButton
@@ -38,9 +37,6 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val darkThemeMode = AppPreferences.darkThemeMode
-        AppCompatDelegate.setDefaultNightMode(darkThemeMode)
 
         DataBindingUtil.setContentView<ActivityHomeBinding>(this, R.layout.activity_home)
 
