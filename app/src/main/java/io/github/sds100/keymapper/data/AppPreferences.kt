@@ -108,6 +108,11 @@ object AppPreferences : DefaultPreferences() {
         false
     )
 
+    var shownTestActionShowcase by BoolPref(
+        appCtx.str(R.string.key_pref_showcase_tap_action_to_test),
+        false
+    )
+
     @NightMode
     fun getSdkNightMode(darkThemePrefValue: String): Int {
         return when (darkThemePrefValue) {
