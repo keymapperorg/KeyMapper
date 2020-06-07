@@ -33,7 +33,7 @@ annotation class ConstraintCategory
 
 data class Constraint(@ConstraintType val type: String, val extras: List<Extra>) : Serializable {
 
-    constructor(type: String, extra: Extra) : this(type, listOf(extra))
+    constructor(type: String, vararg extra: Extra) : this(type, extra.toList())
 
     companion object {
         const val MODE_OR = 0
@@ -55,9 +55,11 @@ data class Constraint(@ConstraintType val type: String, val extras: List<Extra>)
         )
 
         fun appConstraint(@ConstraintType type: String, packageName: String): Constraint {
-            val extra = Extra(Extra.EXTRA_PACKAGE_NAME, packageName)
+            return Constraint(type, Extra(Extra.EXTRA_PACKAGE_NAME, packageName))
+        }
 
-            return Constraint(type, extra)
+        fun btConstraint(@ConstraintType type: String, address: String, name: String): Constraint {
+            return Constraint(type, Extra(Extra.EXTRA_BT_ADDRESS, address), Extra(Extra.EXTRA_BT_NAME, name))
         }
     }
 

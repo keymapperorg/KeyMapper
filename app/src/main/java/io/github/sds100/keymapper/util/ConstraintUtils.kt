@@ -18,7 +18,7 @@ object ConstraintUtils {
 
     fun isSupported(ctx: Context, @ConstraintType id: String): Failure? {
         when (id) {
-            Constraint.BT_DEVICE_CONNECTED -> {
+            Constraint.BT_DEVICE_CONNECTED, Constraint.BT_DEVICE_DISCONNECTED -> {
                 if (!ctx.packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)) {
                     return SystemFeatureNotSupported(PackageManager.FEATURE_BLUETOOTH)
                 }
@@ -62,6 +62,16 @@ private fun Constraint.getDescription(ctx: Context): Result<String> {
                 }
             }
 
+        Constraint.BT_DEVICE_CONNECTED, Constraint.BT_DEVICE_DISCONNECTED -> getExtraData(Extra.EXTRA_BT_NAME).then {
+            val descriptionRes = if (type == Constraint.BT_DEVICE_CONNECTED) {
+                R.string.constraint_bt_device_connected_description
+            } else {
+                R.string.constraint_bt_device_disconnected_description
+            }
+
+            Success(ctx.str(descriptionRes, it))
+        }
+
         else -> ConstraintNotFound()
     }
 }
@@ -77,6 +87,12 @@ private fun Constraint.getIcon(ctx: Context): Result<Drawable> {
                     AppNotFound(it)
                 }
             }
+
+        Constraint.BT_DEVICE_CONNECTED ->
+            Success(ctx.safeVectorDrawable(R.drawable.ic_outline_bluetooth_connected_24)!!)
+
+        Constraint.BT_DEVICE_DISCONNECTED ->
+            Success(ctx.safeVectorDrawable(R.drawable.ic_outline_bluetooth_disabled_24)!!)
 
         else -> ConstraintNotFound()
     }

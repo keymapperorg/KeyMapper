@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.service
 
 import android.accessibilityservice.AccessibilityService
+import android.bluetooth.BluetoothDevice
 import android.content.*
 import android.media.AudioManager
 import android.os.Build
@@ -114,6 +115,16 @@ class MyAccessibilityService : AccessibilityService(),
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                         softKeyboardController.show(baseContext)
                     }
+
+                BluetoothDevice.ACTION_ACL_CONNECTED, BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
+                    val device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE) ?: return
+
+                    if (intent.action == BluetoothDevice.ACTION_ACL_DISCONNECTED) {
+                        mConnectedBtAddresses.remove(device.address)
+                    } else {
+                        mConnectedBtAddresses.add(device.address)
+                    }
+                }
             }
         }
     }
@@ -131,6 +142,8 @@ class MyAccessibilityService : AccessibilityService(),
 
     override val currentPackageName: String
         get() = rootInActiveWindow.packageName.toString()
+
+    private val mConnectedBtAddresses = mutableSetOf<String>()
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -167,6 +180,8 @@ class MyAccessibilityService : AccessibilityService(),
             addAction(Intent.ACTION_SCREEN_ON)
             addAction(ACTION_RECORD_TRIGGER)
             addAction(ACTION_SHOW_KEYBOARD)
+            addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
+            addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
 
             registerReceiver(mBroadcastReceiver, this)
         }
@@ -303,6 +318,8 @@ class MyAccessibilityService : AccessibilityService(),
             }
         }
     }
+
+    override fun isBluetoothDeviceConnected(address: String) = mConnectedBtAddresses.contains(address)
 
     private suspend fun recordTrigger() {
         repeat(RECORD_TRIGGER_TIMER_LENGTH) { iteration ->

@@ -6,7 +6,6 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager.GET_META_DATA
 import android.content.pm.ResolveInfo
 import android.graphics.drawable.Drawable
-import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

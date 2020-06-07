@@ -8,6 +8,8 @@ import androidx.lifecycle.MutableLiveData
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.Constraint.Companion.APP_FOREGROUND
 import io.github.sds100.keymapper.data.model.Constraint.Companion.APP_NOT_FOREGROUND
+import io.github.sds100.keymapper.data.model.Constraint.Companion.BT_DEVICE_CONNECTED
+import io.github.sds100.keymapper.data.model.Constraint.Companion.BT_DEVICE_DISCONNECTED
 import io.github.sds100.keymapper.data.model.Constraint.Companion.MODE_AND
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.onSuccess
@@ -239,8 +241,11 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                     val constraints = sequence {
                         keyMap.constraintList.forEach {
                             val data = when (it.type) {
-                                APP_FOREGROUND -> it.getExtraData(Extra.EXTRA_PACKAGE_NAME).valueOrNull()
-                                APP_NOT_FOREGROUND -> it.getExtraData(Extra.EXTRA_PACKAGE_NAME).valueOrNull()
+                                APP_FOREGROUND, APP_NOT_FOREGROUND ->
+                                    it.getExtraData(Extra.EXTRA_PACKAGE_NAME).valueOrNull()
+
+                                BT_DEVICE_CONNECTED, BT_DEVICE_DISCONNECTED ->
+                                    it.getExtraData(Extra.EXTRA_BT_ADDRESS).valueOrNull()
                                 else -> null
                             } ?: return@forEach
 
@@ -1154,6 +1159,8 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         return when (first) {
             APP_FOREGROUND -> second == currentPackageName
             APP_NOT_FOREGROUND -> second != currentPackageName
+            BT_DEVICE_CONNECTED -> isBluetoothDeviceConnected(second)
+            BT_DEVICE_DISCONNECTED -> !isBluetoothDeviceConnected(second)
             else -> true
         }
     }

@@ -14,11 +14,21 @@
         <action
             android:id="@+id/action_chooseConstraintListFragment_to_appListFragment"
             app:destination="@id/appListFragment" />
+
+        <action
+            android:id="@+id/action_chooseConstraintListFragment_to_bluetoothDevicesFragment"
+            app:destination="@+id/bluetoothDevicesFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/appListFragment"
         android:name="io.github.sds100.keymapper.ui.fragment.AppListFragment"
         android:label="AppListFragment"
+        tools:layout="@layout/fragment_recyclerview" />
+
+    <fragment
+        android:id="@+id/bluetoothDevicesFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.BluetoothDeviceListFragment"
+        android:label="BlutoothDeviceFragment"
         tools:layout="@layout/fragment_recyclerview" />
 </navigation>

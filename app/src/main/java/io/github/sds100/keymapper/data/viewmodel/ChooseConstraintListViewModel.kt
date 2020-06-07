@@ -7,6 +7,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.ChooseConstraintListItemModel
 import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.ConstraintType
+import io.github.sds100.keymapper.data.model.NotifyUserModel
 import io.github.sds100.keymapper.util.Event
 
 /**
@@ -48,7 +49,9 @@ class ChooseConstraintListViewModel : ViewModel() {
     }.toMap()
 
     val choosePackageEvent = MutableLiveData<Event<Unit>>()
+    val chooseBluetoothDeviceEvent = MutableLiveData<Event<Unit>>()
     val selectModelEvent = MutableLiveData<Event<Constraint>>()
+    val notifyUserEvent = MutableLiveData<Event<NotifyUserModel>>()
 
     private var mChosenConstraintType: String? = null
 
@@ -57,11 +60,21 @@ class ChooseConstraintListViewModel : ViewModel() {
 
         when (constraintType) {
             Constraint.APP_FOREGROUND, Constraint.APP_NOT_FOREGROUND -> choosePackageEvent.value = Event(Unit)
+            Constraint.BT_DEVICE_CONNECTED, Constraint.BT_DEVICE_DISCONNECTED -> {
+                notifyUserEvent.value = Event(NotifyUserModel(R.string.dialog_message_bt_constraint_limitation) {
+                    chooseBluetoothDeviceEvent.value = Event(Unit)
+                })
+            }
         }
     }
 
     fun packageChosen(packageName: String) {
         selectModelEvent.value = Event(Constraint.appConstraint(mChosenConstraintType!!, packageName))
+        mChosenConstraintType = null
+    }
+
+    fun bluetoothDeviceChosen(address: String, name: String) {
+        selectModelEvent.value = Event(Constraint.btConstraint(mChosenConstraintType!!, address, name))
         mChosenConstraintType = null
     }
 

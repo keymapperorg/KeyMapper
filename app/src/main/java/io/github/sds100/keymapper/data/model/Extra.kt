@@ -19,7 +19,8 @@ import java.io.Serializable
     Extra.EXTRA_DOUBLE_PRESS_DELAY,
     Extra.EXTRA_HOLD_DOWN_DELAY,
     Extra.EXTRA_REPEAT_DELAY,
-    Extra.EXTRA_VIBRATION_DURATION
+    Extra.EXTRA_VIBRATION_DURATION,
+    Extra.EXTRA_BT_ADDRESS
 ])
 annotation class ExtraId
 
@@ -41,6 +42,9 @@ data class Extra(@ExtraId val id: String, val data: String) : Serializable {
         const val EXTRA_HOLD_DOWN_DELAY = "extra_hold_down_until_repeat_delay"
         const val EXTRA_REPEAT_DELAY = "extra_repeat_delay"
         const val EXTRA_VIBRATION_DURATION = "extra_vibration_duration"
+
+        const val EXTRA_BT_ADDRESS = "extra_bluetooth_device_address"
+        const val EXTRA_BT_NAME = "extra_bluetooth_device_name"
 
         val TRIGGER_EXTRAS = arrayOf(
             EXTRA_SEQUENCE_TRIGGER_TIMEOUT,
