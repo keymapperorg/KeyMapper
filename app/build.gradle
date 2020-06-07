@@ -108,9 +108,7 @@ dependencies {
     implementation "com.airbnb.android:epoxy-databinding:$epoxy_version"
     kapt "com.airbnb.android:epoxy-processor:$epoxy_version"
     implementation "io.noties.markwon:core:$markwonVersion"
-    implementation 'net.cachapa.expandablelayout:expandablelayout:2.9.2'
     implementation 'com.android.volley:volley:1.1.1'
-    implementation 'com.heinrichreimersoftware:material-intro:2.0.0'
     implementation 'com.jakewharton.timber:timber:4.7.1'
 
     // splitties
