@@ -1132,6 +1132,8 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
     }
 
     private fun Array<Constraint>.constraintsSatisfied(@ConstraintMode mode: Int): Boolean {
+        if (this.isEmpty()) return true
+
         return if (mode == MODE_AND) {
             all { it.constraintSatisfied() }
         } else {
