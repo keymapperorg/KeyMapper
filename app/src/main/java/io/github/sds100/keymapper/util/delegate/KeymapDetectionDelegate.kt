@@ -7,6 +7,7 @@ import androidx.collection.valueIterator
 import androidx.lifecycle.MutableLiveData
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.Constraint.Companion.APP_FOREGROUND
+import io.github.sds100.keymapper.data.model.Constraint.Companion.APP_NOT_FOREGROUND
 import io.github.sds100.keymapper.data.model.Constraint.Companion.MODE_AND
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.onSuccess
@@ -239,6 +240,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                         keyMap.constraintList.forEach {
                             val data = when (it.type) {
                                 APP_FOREGROUND -> it.getExtraData(Extra.EXTRA_PACKAGE_NAME).valueOrNull()
+                                APP_NOT_FOREGROUND -> it.getExtraData(Extra.EXTRA_PACKAGE_NAME).valueOrNull()
                                 else -> null
                             } ?: return@forEach
 
@@ -1151,6 +1153,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
     private fun Constraint.constraintSatisfied(): Boolean {
         return when (first) {
             APP_FOREGROUND -> second == currentPackageName
+            APP_NOT_FOREGROUND -> second != currentPackageName
             else -> true
         }
     }

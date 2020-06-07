@@ -4,7 +4,10 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.model.*
+import io.github.sds100.keymapper.data.model.Constraint
+import io.github.sds100.keymapper.data.model.ConstraintModel
+import io.github.sds100.keymapper.data.model.ConstraintType
+import io.github.sds100.keymapper.data.model.Extra
 import io.github.sds100.keymapper.util.result.*
 
 /**
@@ -26,7 +29,7 @@ object ConstraintUtils {
     }
 }
 
-fun Constraint.buildChipModel(ctx: Context): ConstraintModel {
+fun Constraint.buildModel(ctx: Context): ConstraintModel {
     var description: String? = null
     var icon: Drawable? = null
 
@@ -39,14 +42,20 @@ fun Constraint.buildChipModel(ctx: Context): ConstraintModel {
 
 private fun Constraint.getDescription(ctx: Context): Result<String> {
     return when (type) {
-        Constraint.APP_FOREGROUND ->
+        Constraint.APP_FOREGROUND, Constraint.APP_NOT_FOREGROUND ->
             getExtraData(Extra.EXTRA_PACKAGE_NAME).then {
                 try {
                     val applicationInfo = ctx.packageManager.getApplicationInfo(it, PackageManager.GET_META_DATA)
 
                     val applicationLabel = ctx.packageManager.getApplicationLabel(applicationInfo)
 
-                    Success(ctx.str(R.string.constraint_app_description, applicationLabel))
+                    val descriptionRes = if (type == Constraint.APP_FOREGROUND) {
+                        R.string.constraint_app_foreground_description
+                    } else {
+                        R.string.constraint_app_not_foreground_description
+                    }
+
+                    Success(ctx.str(descriptionRes, applicationLabel))
                 } catch (e: PackageManager.NameNotFoundException) {
                     //the app isn't installed
                     AppNotFound(it)
@@ -59,7 +68,7 @@ private fun Constraint.getDescription(ctx: Context): Result<String> {
 
 private fun Constraint.getIcon(ctx: Context): Result<Drawable> {
     return when (type) {
-        Constraint.APP_FOREGROUND ->
+        Constraint.APP_FOREGROUND, Constraint.APP_NOT_FOREGROUND ->
             getExtraData(Extra.EXTRA_PACKAGE_NAME).then {
                 try {
                     Success(ctx.packageManager.getApplicationIcon(it))

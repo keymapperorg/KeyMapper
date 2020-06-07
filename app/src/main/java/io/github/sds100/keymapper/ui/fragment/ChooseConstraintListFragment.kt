@@ -7,12 +7,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.data.model.AppListItemModel
-import io.github.sds100.keymapper.data.model.Constraint
-import io.github.sds100.keymapper.data.model.ConstraintType
 import io.github.sds100.keymapper.data.viewmodel.ChooseConstraintListViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.sectionHeader
 import io.github.sds100.keymapper.simple
+import io.github.sds100.keymapper.util.EventObserver
 import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.observeLiveDataEvent
 import io.github.sds100.keymapper.util.str
@@ -36,6 +35,16 @@ class ChooseConstraintListFragment : RecyclerViewFragment() {
 
         observeFragmentChildrenLiveData()
 
+        mViewModel.choosePackageEvent.observe(viewLifecycleOwner, EventObserver {
+            val direction =
+                ChooseConstraintListFragmentDirections.actionChooseConstraintListFragmentToAppListFragment()
+            findNavController().navigate(direction)
+        })
+
+        mViewModel.selectModelEvent.observe(viewLifecycleOwner, EventObserver {
+            selectModel(it)
+        })
+
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
@@ -54,7 +63,7 @@ class ChooseConstraintListFragment : RecyclerViewFragment() {
                         primaryText(requireContext().str(constraint.description))
 
                         onClick { _ ->
-                            onConstraintClick(constraint.id)
+                            mViewModel.chooseConstraint(constraint.id)
                         }
                     }
                 }
@@ -67,17 +76,7 @@ class ChooseConstraintListFragment : RecyclerViewFragment() {
             viewLifecycleOwner,
             AppListFragment.SAVED_STATE_KEY
         ) {
-            selectModel(Constraint.appConstraint(it.packageName))
-        }
-    }
-
-    private fun onConstraintClick(@ConstraintType id: String) {
-        when (id) {
-            Constraint.APP_FOREGROUND -> {
-                val direction =
-                    ChooseConstraintListFragmentDirections.actionChooseConstraintListFragmentToAppListFragment()
-                findNavController().navigate(direction)
-            }
+            mViewModel.packageChosen(it.packageName)
         }
     }
 }

@@ -6,7 +6,6 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.MyApplication
-import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.KeyMap
@@ -31,8 +30,8 @@ class SeedDatabaseWorker(
                         trigger = createRandomTrigger(),
                         actionList = createRandomActionList(),
                         constraintList = listOf(
-                            Constraint.appConstraint(Constants.PACKAGE_NAME),
-                            Constraint.appConstraint("io.github.sds100.keymapper.ci")
+                            Constraint.appConstraint(Constraint.APP_FOREGROUND, Constants.PACKAGE_NAME),
+                            Constraint.appConstraint(Constraint.APP_NOT_FOREGROUND, "io.github.sds100.keymapper.ci")
                         ),
                         flags = 0.withFlag(KeyMap.KEYMAP_FLAG_VIBRATE)
                     ))

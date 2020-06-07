@@ -13,7 +13,9 @@ import java.io.Serializable
  */
 @StringDef(value = [
     Constraint.APP_FOREGROUND,
-    Constraint.BT_DEVICE_CONNECTED
+    Constraint.APP_NOT_FOREGROUND,
+    Constraint.BT_DEVICE_CONNECTED,
+    Constraint.BT_DEVICE_DISCONNECTED
 ])
 annotation class ConstraintType
 
@@ -39,6 +41,7 @@ data class Constraint(@ConstraintType val type: String, val extras: List<Extra>)
         const val DEFAULT_MODE = MODE_AND
 
         const val APP_FOREGROUND = "constraint_app_foreground"
+        const val APP_NOT_FOREGROUND = "constraint_app_not_foreground"
         const val BT_DEVICE_CONNECTED = "constraint_bt_device_connected"
         const val BT_DEVICE_DISCONNECTED = "constraint_bt_device_disconnected"
 
@@ -51,10 +54,10 @@ data class Constraint(@ConstraintType val type: String, val extras: List<Extra>)
             CATEGORY_BLUETOOTH to R.string.constraint_category_bluetooth
         )
 
-        fun appConstraint(packageName: String): Constraint {
+        fun appConstraint(@ConstraintType type: String, packageName: String): Constraint {
             val extra = Extra(Extra.EXTRA_PACKAGE_NAME, packageName)
 
-            return Constraint(APP_FOREGROUND, extra)
+            return Constraint(type, extra)
         }
     }
 

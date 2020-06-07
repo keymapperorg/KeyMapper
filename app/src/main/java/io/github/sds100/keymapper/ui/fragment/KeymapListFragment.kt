@@ -298,7 +298,7 @@ class KeymapListFragment : Fragment() {
                     id = keymap.id,
                     actionList = keymap.actionList.map { it.buildChipModel(requireContext()) },
                     triggerDescription = keymap.trigger.buildDescription(requireContext(), mViewModel.getDeviceInfoList()),
-                    constraintList = keymap.constraintList.map { it.buildChipModel(requireContext()) },
+                    constraintList = keymap.constraintList.map { it.buildModel(requireContext()) },
                     constraintMode = keymap.constraintMode,
                     flagsDescription = keymap.flags.buildKeymapFlagsDescription(requireContext()),
                     isEnabled = keymap.isEnabled

@@ -15,7 +15,7 @@ import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentKeymapConstraintsBinding
 import io.github.sds100.keymapper.util.InjectorUtils
-import io.github.sds100.keymapper.util.buildChipModel
+import io.github.sds100.keymapper.util.buildModel
 import io.github.sds100.keymapper.util.observeLiveDataEvent
 import splitties.toast.toast
 
@@ -32,7 +32,7 @@ class KeymapConstraintsFragment(private val mKeymapId: Long) : Fragment() {
         mViewModel.constraintList.map { constraintList ->
             sequence {
                 constraintList.forEach {
-                    yield(it.buildChipModel(requireContext()))
+                    yield(it.buildModel(requireContext()))
                 }
             }.toList()
         }
