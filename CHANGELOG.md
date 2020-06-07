@@ -1,7 +1,3 @@
-All notable changes to this project will be documented in this file. This project adheres to semantic versioning.
- 
-## [Unreleased](https://github.com/sds100/KeyMapper/tree/develop)
-
 ## [1.1.7](https://github.com/sds100/KeyMapper/releases/tag/v1.1.7)
 #### 07 Jan 2020
 
