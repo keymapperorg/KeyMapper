@@ -98,7 +98,7 @@ class AppIntroActivity : IntroActivity() {
             description(R.string.showcase_dnd_access_description)
             background(R.color.red)
             backgroundDark(R.color.redDark)
-            image(R.drawable.ic_do_not_disturb_white_64dp)
+            image(R.drawable.ic_outline_dnd_circle_outline_64)
             canGoBackward(true)
             scrollable(true)
 
