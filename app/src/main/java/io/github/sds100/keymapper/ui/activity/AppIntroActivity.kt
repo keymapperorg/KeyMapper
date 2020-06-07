@@ -171,12 +171,10 @@ class AppIntroActivity : IntroActivity() {
             powerManager.isIgnoringBatteryOptimizations(Constants.PACKAGE_NAME) &&
             currentSlide == mBatteryOptimisationSlide) {
             nextSlide()
-            removeSlide(mBatteryOptimisationSlide)
         }
 
         if (currentSlide == mAccessibilityServiceSlide && AccessibilityUtils.isServiceEnabled(this)) {
             nextSlide()
-            removeSlide(mAccessibilityServiceSlide)
         }
     }
 }
