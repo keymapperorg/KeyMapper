@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="no_action_chosen">无选择动作</string>
     <string name="triggers_header">触发器</string>
     <string name="accessibility_service_description"> Key Mapper 需要使用无障碍服务时期能够监听按键并执行您选择的操作。
@@ -8,31 +8,97 @@
     <string name="selection_count">已选择 %d 个</string>
     <string name="enable">启用</string>
     <string name="open">打开</string>
+    <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNothing here!</string>
+    <string name="triggers_recyclerview_placeholder">Record a trigger!</string>
+    <string name="actions_recyclerview_placeholder">Add an action!</string>
+    <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nCreate a keymap!</string>
     <string name="no_key_maps">您还没有创建任何 Key Mapper 。</string>
-    <string name="performing_action"> Key Mapper 正在执行一个操作…</string>
-    <string name="email_subject"> Key Mapper 查询</string>
     <string name="log_is_empty">日志为空！</string>
     <string name="everything_looks_good">一切正常！</string>
     <string name="warning_the_app_will_work">应用将正常工作，但有些东西可能需要修复，取决于你做什么。</string>
     <string name="your_device_doesnt_support_some_actions">您的设备不支持一些操作。</string>
     <string name="tab_unsupported_actions">不支持的动作</string>
     <string name="requires_root">需要 ROOT</string>
-    <string name="caption_action_type_key">点击键盘上您想要输入的键。
-        \n\n重要！
-        只有在您选择了 Key Mapper 键盘的情况下生效。 此操作最好用硬件键盘。</string>
-    <string name="caption_action_type_keycode">重要！
-        仅在您选择了 Key Mapper 键盘后生效。此动作最好用在硬件键盘上。</string>
+    <string name="press_dot_dot_dot">Press…</string>
+    <string name="no_actions">No Actions</string>
+    <string name="no_trigger">No Trigger</string>
+    <string name="unknown_keycode">Unknown keycode: %s</string>
+    <string name="chip_while">while</string>
+    <string name="google_app_package_name">com.google.android.googlequicksearchbox</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+    <string name="follow_system">Follow system</string>
+    <string name="this_device">This Device</string>
+    <string name="any_device">Any Device</string>
+    <string name="trigger_device_name_not_found">The name for this device isn\'t known</string>
+    <string name="performing_action"> Key Mapper 正在执行一个操作…</string>
+    <string name="slider_default">Default</string>
+    <string name="whats_new">What\'s New</string>
+    <string name="caption_action_type_key">Click the key on the device which you want to be entered.
+        \n\nIMPORTANT!
+        Inputting this key as an action will only work if you have selected the Key Mapper keyboard.</string>
+    <string name="caption_action_type_keycode">IMPORTANT!
+        Inputting this keycode as an action will only work if you have selected the Key Mapper keyboard.</string>
     <string name="caption_action_type_text">Type some text you want to be inserted when you perform this action.</string>
     <string name="caption_action_type_url">Type a url which you want to be opened. The http://, https:// or www. isn\'t required.</string>
+    <string name="caption_no_paired_bt_devices">Can\'t find any paired devices. Is Bluetooth turned on?</string>
     <string name="switch_enabled">已启用</string>
     <string name="disabled">已禁用</string>
     <string name="key_map_adapter_flags">标志</string>
     <string name="description_open_app">打开 %s</string>
     <string name="description_key">按 \'%s\' 键</string>
     <string name="description_text_block">输入 \'%s\'</string>
-    <string name="description_keycode">%s</string>
+    <string name="description_keycode">Input %s</string>
     <string name="description_url">Open %s</string>
-    <string name="enable_device_admin_message">一旦您启用了设备管理器，您必须禁用它才能卸载该应用。</string>
+    <string name="enable_device_admin_message">Once you have enabled the device admin, you must DEACTIVATE it if you want to uninstall the app.</string>
+    <string name="debug_trigger_chip_name">Long Press <b>Volume Down</b> • USB Keyboard</string>
+    <string name="debug_trigger_chip_name2">Single Tap  <b>Home</b> • This Device</string>
+    <string name="constraints_recyclerview_placeholder">No constraints!</string>
+    <string name="option_list_header">Options</string>
+    <string name="action_list_header">Actions</string>
+    <string name="trigger_list_header">Trigger</string>
+    <string name="constraint_list_header">Constraints</string>
+    <string name="keymap_flags_header">Options</string>
+    <string name="radio_button_parallel">At the same time</string>
+    <string name="radio_button_sequence">In sequence</string>
+    <string name="radio_button_and">AND</string>
+    <string name="radio_button_or">OR</string>
+    <string name="tab_trigger_and_actions">Trigger and Actions</string>
+    <string name="tab_constraints_and_more">Constraints and More</string>
+    <string name="tab_keymap_flags">Options</string>
+    <string name="tab_keymap_constraints">Constraints</string>
+    <string name="tab_actions">Actions</string>
+    <string name="tab_trigger">Trigger</string>
+    <string name="email_subject"> Key Mapper 查询</string>
+    <string name="email_default_message">Does the help page solve your problem? What is your device?\n\n Which OEM skin or ROM are you using?\n\n Please describe the issue you\'re having:</string>
+    <string name="nav_arg_header">io.github.sds100.keymapper.ui.fragment.OnlineFileFragment.header</string>
+    <string name="nav_arg_file_url">io.github.sds100.keymapper.ui.fragment.OnlineFileFragment.header.file_url</string>
+    <string name="nav_arg_file_url_alt">file_url_alt</string>
+    <string name="extra_label_sequence_trigger_timeout">Sequence trigger timeout (ms)</string>
+    <string name="extra_label_long_press_delay_timeout">Long press delay (ms)</string>
+    <string name="extra_label_double_press_delay_timeout">Double press duration (ms)</string>
+    <string name="extra_label_hold_down_delay_label">Hold down until repeat delay (ms)</string>
+    <string name="extra_label_repeat_delay">Repeat delay (ms)</string>
+    <string name="extra_label_vibration_duration">Vibration duration (ms)</string>
+    <!-- Constraints -->
+    <string name="constraint_app_foreground_description">%s is in foreground</string>
+    <string name="constraint_app_not_foreground_description">%s is not in foreground</string>
+    <string name="constraint_bt_device_connected_description">%s is connected</string>
+    <string name="constraint_bt_device_disconnected_description">%s is disconnected</string>
+    <string name="constraint_mode_and">and</string>
+    <string name="constraint_mode_or">or</string>
+    <string name="constraint_category_app">App</string>
+    <string name="constraint_category_bluetooth">Bluetooth</string>
+    <string name="constraint_choose_app_foreground">App in Foreground</string>
+    <string name="constraint_choose_app_not_foreground">App not in Foreground</string>
+    <string name="constraint_choose_bluetooth_device_connected">Bluetooth Device is Connected</string>
+    <string name="constraint_choose_bluetooth_device_disconnected">Bluetooth Device is Disconnected</string>
+    <!-- Constraints -->
+    <!-- Click types -->
+    <string name="clicktype_short_press">Short Press</string>
+    <string name="clicktype_long_press">Long Press</string>
+    <string name="clicktype_double_press">Double Press</string>
+    <!-- Click types -->
     <!-- URLs -->
     <!-- URLs -->
     <!-- Activity titles -->
@@ -60,19 +126,24 @@
     <string name="action_log">日志</string>
     <string name="action_send_log">发送日志</string>
     <string name="action_change_keyboard">更改键盘</string>
+    <string name="action_toggle_dark_theme">Toggle dark theme</string>
+    <string name="action_seed_database">Seed database</string>
+    <string name="action_save">Save</string>
     <!-- Menu action titles-->
     <!-- Button titles -->
-    <string name="button_choose_action">选择动作</string>
+    <string name="button_add_action">Add Action</string>
     <string name="button_record_trigger">录制触发器</string>
     <string name="button_clear">清除</string>
     <string name="button_add_trigger">添加触发器</string>
     <string name="button_test">测试</string>
     <string name="button_done">完成</string>
+    <string name="button_save">Done</string>
     <string name="button_fix">修复</string>
     <string name="button_recording_trigger">录制触发器…</string>
     <string name="button_recording_trigger_countdown">%d…</string>
-    <string name="button_flags">更多</string>
-    <string name="buttonView">查看</string>
+    <string name="button_flags">Options</string>
+    <string name="button_help">Help</string>
+    <string name="button_add_constraint">Add Constraint</string>
     <!-- Button titles -->
     <!-- Content descriptions -->
     <string name="content_description_record_trigger_key_combination">录制触发器组合键</string>
@@ -99,6 +170,11 @@
     <string name="dialog_message_write_secure_settings">若要授予 Key Mapper  WRITE_SECURE_SETTINGS 权限，请在设置中启用\"root 功能\"。 如果您的设备未 root，请前往帮助页面并按照指南使用 PC/Mac 授予权限。</string>
     <string name="dialog_message_write_secure_settings_for_accessibility_service">为授予 Key Mapper  WRITE_SECURE_SETTINGS 权限，如果您的设备已 root，请在设置中启用\"root 功能\"。 如果您的设备未 root，请前往帮助页面并按照指南使用 PC/Mac 授予权限。</string>
     <string name="dialog_message_cant_find_accessibility_settings_page">您的设备似乎没有无障碍服务设置页面。 您可以通过授予应用 WRITE_SECURE_SETTINGS 权限来启用无障碍服务。当您点击“确定”后，弹出窗口将指导您如何操作。</string>
+    <string name="dialog_message_double_press_restricted_to_single_key">"Multiple keys can't be double pressed at the same time."</string>
+    <string name="dialog_message_parallel_trigger_order">The keys need to be listed from top to bottom in the order that they will be held down.</string>
+    <string name="dialog_message_sequence_trigger_explanation">A \"sequence\" trigger has a timeout unlike parallel triggers. This means after you press the first key, you will have a set amount of time to input the rest of the keys in the trigger. All the keys that you have added to the trigger won\'t do their usual action until the timeout has been reached. You can change this timeout in the \"Options\" tab.</string>
+    <string name="dialog_message_view_faq_and_use_discord_over_email">Please check out the Help page to see if your question has already been answered. If not then the developer would prefer it if you ask for help and suggest features in the Discord server. If you don\'t have Discord, you can email the developer directly.</string>
+    <string name="dialog_message_bt_constraint_limitation">Android doesn\'t allow apps to get a list of connected (not paired) Bluetooth devices. Apps can only detect when they are connected and disconnected. So if your Bluetooth device is already connected to your device when the accessibility service starts, you will have to reconnect it for the app to know it is connected.</string>
     <!-- Dialog messages -->
     <!-- Dialog buttons -->
     <string name="pos_yes">是</string>
@@ -107,14 +183,20 @@
     <string name="pos_help_page">帮助页</string>
     <string name="pos_enable_root_features">启用 root 功能</string>
     <string name="pos_grant">授权</string>
+    <string name="pos_join">Join</string>
     <string name="neg_stay_out">Stay out</string>
     <string name="neg_no">否</string>
     <string name="neg_cancel">取消</string>
     <string name="neg_dont_show_again">不再显示</string>
+    <string name="neg_email">Email</string>
+    <string name="neutral_discord">Discord</string>
+    <string name="snackbar_cancel">Cancel</string>
+    <string name="snackbar_fix">Fix</string>
     <!-- Dialog buttons -->
     <!-- Notification strings -->
-    <string name="notification_channel_persistent">常驻通知</string>
-    <string name="notification_channel_warnings">警告</string>
+    <string name="notification_channel_ime_picker">Keyboard picker</string>
+    <string name="notification_channel_toggle_remaps">Pause/Resume remaps</string>
+    <string name="notification_channel_keyboard_hidden">Keyboard is hidden warning</string>
     <string name="notification_ime_persistent_text">点击更改您的键盘。</string>
     <string name="notification_ime_persistent_title">键盘选择器</string>
     <string name="notification_remappings_pause_title">暂停</string>
@@ -129,10 +211,18 @@
     <string name="notification_keyboard_hidden_text">点击重新显示键盘。</string>
     <!-- Notification strings -->
     <!--Preference titles and summaries-->
-    <string name="title_pref_long_press_delay">长按延迟</string>
-    <string name="summary_pref_long_press_delay">检测为长按所需按键时间（毫秒）。默认值为 500 毫秒。</string>
-    <string name="summary_pref_vibrate_duration">如果映射启用振动，振动时间（毫秒）。默认值为 200 毫秒。</string>
-    <string name="title_pref_vibrate_duration">振动持续时间</string>
+    <string name="title_pref_long_press_delay">Default long press delay (ms)</string>
+    <string name="summary_pref_long_press_delay">How long a button should be pressed for it to be detected as a long press. Default is 500ms. Can be overridden in a keymap\'s options.</string>
+    <string name="title_pref_double_press_delay">Default double press duration (ms)</string>
+    <string name="summary_pref_double_press_delay">How fast does a button have to be double pressed for it to be detected as a double press. Default is 300ms. Can be overridden in a keymap\'s options.</string>
+    <string name="summary_pref_vibrate_duration">How long to vibrate if vibrating is enabled for a remap. Default is 200ms. Can be overridden in a keymap\'s options.</string>
+    <string name="title_pref_vibrate_duration">Default vibrate duration (ms)</string>
+    <string name="summary_pref_hold_down_delay">How long a key map needs to be held down for the action to start repeat. Default is 400ms. Can be overridden in a keymap\'s options.</string>
+    <string name="title_pref_hold_down_delay">Default hold down delay (ms)</string>
+    <string name="summary_pref_repeat_delay">The delay between every time an action is repeated. Default is 50ms. Can be overridden in a keymap\'s options.</string>
+    <string name="title_pref_repeat_delay">Default repeat delay (ms)</string>
+    <string name="summary_pref_sequence_trigger_timeout">The time allowed to complete a sequence trigger. Default is 1000ms. Can be overridden in a keymap\'s options.</string>
+    <string name="title_pref_sequence_trigger_timeout">Default sequence trigger timeout (ms)</string>
     <string name="summary_pref_force_vibrate">强制所有映射振动。</string>
     <string name="title_pref_force_vibrate">强制振动</string>
     <string name="title_pref_show_ime_notification">键盘选择器通知</string>
@@ -156,6 +246,8 @@
         只在您知道您的设备已经 root 并且您已经授予 Key Mapper root 权限的情况下才打开它。</string>
     <string name="title_pref_show_toast_on_action_error">Show a toast message when performing an action fails</string>
     <string name="summary_pref_toast_on_action_error">A little message will popup when an error is encountered while performing an action.</string>
+    <string name="title_pref_dark_theme">Dark Theme</string>
+    <string name="title_pref_notification_settings">Notification Settings</string>
     <!--Preference titles and summaries-->
     <!--Preference categories-->
     <string name="title_pref_category_ime_picker">键盘选择器</string>
@@ -178,8 +270,13 @@
     <string name="pref_title_version">版本</string>
     <string name="pref_title_developer_email">给开发者发送电子邮件</string>
     <string name="pref_title_translate">翻译</string>
-    <string name="pref_title_telegram_channel">Telegram 频道</string>
+    <string name="pref_title_discord">Discord Server</string>
     <!-- About activity-->
+    <string-array name="pref_dark_theme_entries">
+        <item>@string/on</item>
+        <item>@string/off</item>
+        <item>@string/follow_system</item>
+    </string-array>
     <!--Action Types Titles-->
     <string name="action_type_title_application">应用</string>
     <string name="action_type_title_application_shortcut">应用快捷方式</string>
@@ -189,10 +286,31 @@
     <string name="action_type_title_text_block">文本</string>
     <string name="action_type_url">URL</string>
     <!--Action Types Titles-->
+    <!-- Action Type tab title order-->
+    <string-array name="choose_action_tab_titles">
+        <item>@string/action_type_title_application</item>
+        <item>@string/action_type_title_application_shortcut</item>
+        <item>@string/action_type_title_key</item>
+        <item>@string/action_type_title_keycode</item>
+        <item>@string/action_type_title_text_block</item>
+        <item>@string/action_type_url</item>
+        <item>@string/action_type_title_system_action</item>
+        <item>@string/tab_unsupported_actions</item>
+    </string-array>
+    <!-- Action Type tab title order-->
+    <!-- The tabs which should be shown when configuring a keymap -->
+    <string-array name="config_keymap_tab_titles" tools:ignore="InconsistentArrays">
+        <item>@string/tab_trigger</item>
+        <item>@string/tab_actions</item>
+        <item>@string/tab_keymap_constraints</item>
+        <item>@string/tab_keymap_flags</item>
+    </string-array>
+    <!-- The fragments which should be shown when configuring a keymap -->
     <!--flags-->
     <string name="flag_show_volume_dialog">显示音量对话框</string>
     <string name="flag_long_press">长按</string>
     <string name="flag_vibrate">振动</string>
+    <string name="flag_performing_action_toast">Show a toast message when performing actions</string>
     <!--flags-->
     <!-- Showcase -->
     <string name="showcase_accessibility_service_title">启用无障碍服务</string>
@@ -200,14 +318,17 @@
     <string name="showcase_record_trigger_title">无障碍服务已禁用</string>
     <string name="showcase_record_trigger_description">如果启用辅助功能，您只能录制触发器。</string>
     <string name="showcase_note_from_the_developer_title">开发者提醒</string>
-    <string name="showcase_note_from_the_developer_message">无法保证您的设备上的每个操作都能正常运行，每个按钮都会被检测到。 其中一个原因是 Android 系统有许多版本，厂商可能无意或故意破坏功能。 如果什么不起作用, 请通知开发者，不要给应用评分太低，因为问题常常超出开发者控制。=)</string>
+    <string name="showcase_note_from_the_developer_message">There is no guarantee that every action will work on your device and that every button can be detected. This is because there are many flavours of Android, and OEMs can break features by accident or intentionally. If something doesn\'t work, please notify the developer and refrain from giving the app a poor rating since the issue is often out of the developer\'s control. =)</string>
     <string name="showcase_disable_battery_optimisation_title">禁用电池优化</string>
     <string name="showcase_disable_battery_optimisation_message">点击\"关机\"以阻止 Android 系统在后台停止应用。 您的厂商定制，如 MIUI 或 Samsung Experience，可能有其他“节电”功能，因此建议也为 Key Mapper 关闭它们。</string>
     <string name="showcase_disable_battery_optimisation_button">关闭</string>
     <string name="showcase_dex_mode_supported_title">您的设备似乎支持 Samsung Dex</string>
     <string name="showcase_dex_mode_supported_message">三星不允许在 Dex 模式下打开第三方键盘的应用。 因此，这个应用不会打开，当您处于 Dex 模式时，键盘将无法使用。 您不需要 Key Mapper 键盘的键映射在您处于 Dex 模式时仍然有效。</string>
-    <string name="showcase_dnd_access_title">勿扰权限</string>
-    <string name="showcase_dnd_access_description">如果您想要在“勿扰”模式下更改音量和重新映射音量按钮的动作，应用需要“勿扰”权限。</string>
+    <string name="showcase_dnd_access_title">Remapping Volume Buttons?</string>
+    <string name="showcase_dnd_access_description">The app needs Do Not Disturb access if you want actions which change the volume and remapped volume buttons to work.</string>
+    <string name="showcase_contributing_title">Contributing</string>
+    <string name="showcase_contributing_description">"This app is open source! You can start contributing by heading over to the sds100/KeyMapper repo on GitHub and by joining the Discord server. Even you if you can't code, you can contribute by helping others and testing the latest cutting-edge features."</string>
+    <string name="showcase_tap_action_to_test_message">You can test an action and fix action errors by tapping it.</string>
     <!-- Showcase -->
     <!-- system action options -->
     <string name="stream_accessibility">无障碍</string>
@@ -231,7 +352,8 @@
     <string name="error_must_have_a_title">快捷键必须有一个标题！</string>
     <string name="error_ime_must_be_chosen">您必须选择 Key Mapper 键盘才能正常工作！</string>
     <string name="error_shortcut_not_found">找不到快捷方式。应用是否已安装或启用？</string>
-    <string name="error_app_isnt_installed">应用未安装！</string>
+    <string name="error_app_isnt_installed">The app with package name %s isn\'t installed!</string>
+    <string name="error_app_isnt_installed_brief">App isn\'t installed!</string>
     <string name="error_app_is_disabled">应用已禁用！</string>
     <string name="error_action_requires_write_settings_permission">您需要授予 Key Mapper 权限以修改系统设置才能使用此操作。</string>
     <string name="error_action_requires_root">此操作需要 root 权限！</string>
@@ -265,20 +387,37 @@
     <string name="error_camera_access_exception">无法访问相机！</string>
     <string name="error_front_flash_not_found">No front flash</string>
     <string name="error_back_flash_not_found">No back flash</string>
-    <string name="error_accessibility_service_disabled">此应用必须启用无障碍服务才能正常工作！</string>
+    <string name="error_accessibility_service_disabled_home_screen">The accessibility service must be enabled for this app to work!</string>
+    <string name="error_accessibility_service_disabled_record_trigger">The accessibility service needs to be enabled!</string>
     <string name="error_accessibility_service_enabled">无障碍服务已启用！</string>
     <string name="warning_need_write_secure_settings_permission">某些功能需要 WRITE_SECURE_SETTINGS 权限。</string>
     <string name="fixed_need_write_secure_settings_permission">已授予 WRITE_SECURE_SETTTINGS 权限。</string>
-    <string name="error_ime_service_disabled_status_layout">“键码”、“键”、“文本”和其他一些动作需要启用键盘才能起作用。</string>
-    <string name="error_ime_service_enabled">键盘已启用！</string>
-    <string name="error_ime_service_disabled">键盘已禁用！</string>
-    <string name="error_critical_ime_service_disabled">必须启用键盘并选择您的一些动作才能正常工作！</string>
+    <string name="error_ime_service_disabled_status_layout">The Key Mapper keyboard needs to be enabled for “Keycode”, “Key”, “Text” and some other actions to work.</string>
+    <string name="error_ime_service_enabled">Key Mapper Keyboard is enabled!</string>
+    <string name="error_ime_service_disabled">Key Mapper Keyboard is disabled!</string>
+    <string name="error_critical_ime_service_disabled">The Key Mapper keyboard must be enabled and selected for some of your actions to work!</string>
     <string name="error_ime_not_found">Can\'t find the %s input method</string>
     <string name="error_no_enabled_imes">This device has no enabled input methods!</string>
     <string name="error_the_app_wont_work">您的 Key Mapper 无法正常工作！有些东西需要修复！</string>
     <string name="error_cant_move_to_end_of_text_in_this_field">您不能移动到这个字段的文本结尾！</string>
     <string name="error_battery_optimisation_activity_not_found">Battery optimisation settings not found! If it exists, open it manually.</string>
     <string name="error_cant_find_option_label">error: Can\'t find a label for this option \"%s\"</string>
+    <string name="error_system_action_not_found">System action not found %s!</string>
+    <string name="error_no_action_data">No Action data!</string>
+    <string name="error_extra_not_found">Extra (%s) not found!</string>
+    <string name="error_constraint_not_found">Constraint not found</string>
+    <string name="error_constraint_exists">This keymap already has this constraint!</string>
+    <string name="error_action_exists">This keymap already has this action!</string>
+    <string name="error_cant_be_empty">Can\'t be empty!</string>
+    <string name="error_invalid_action_type">Invalid Action Type: %s</string>
+    <string name="error_options_not_required">Options not required</string>
+    <string name="error_key_mapper_ime_not_found">Can\'t find the Key Mapper input method!</string>
+    <string name="error_download_failed">Download Failed!</string>
+    <string name="error_file_not_exists">File doesn\'t exist!</string>
+    <string name="error_ssl_handshake_exception">SSL handshake error</string>
+    <string name="error_file_not_cached">File isn\'t cached! Connect to internet to download it.</string>
+    <string name="error_this_is_unsupported">This is unsupported. :(</string>
+    <string name="error_device_not_found">Device not found!</string>
     <!-- Error messages -->
     <!-- System action labels -->
     <string name="action_toggle_wifi">切换 WiFi</string>
