@@ -75,6 +75,8 @@ class KeymapDetectionDelegateTest {
         val iConstraintState = object : IConstraintState {
             override val currentPackageName: String
                 get() = FAKE_PACKAGE_NAME
+
+            override fun isBluetoothDeviceConnected(address: String) = true
         }
 
         val preferences = KeymapDetectionPreferences(
