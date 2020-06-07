@@ -4,7 +4,6 @@ on:
   push:
     branches: 
       - 'develop'
-      - 'develop-2.0'
 
 jobs:
   apk:
