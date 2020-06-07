@@ -16,6 +16,8 @@ import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.DexUtils.isDexSupported
 import io.github.sds100.keymapper.util.PermissionUtils
+import io.github.sds100.keymapper.util.openUrl
+import io.github.sds100.keymapper.util.str
 import splitties.toast.longToast
 
 /**
@@ -92,6 +94,23 @@ class AppIntroActivity : IntroActivity() {
         }.build()
     }
 
+    private val mContributingSlide: Slide by lazy {
+        SimpleSlide.Builder().apply {
+            title(R.string.showcase_contributing_title)
+            description(R.string.showcase_contributing_description)
+            background(R.color.green)
+            backgroundDark(R.color.greenDark)
+            image(R.drawable.ic_outline_feedback_64)
+            canGoBackward(true)
+            scrollable(true)
+
+            buttonCtaLabel(R.string.pos_join)
+            buttonCtaClickListener {
+                openUrl(str(R.string.url_discord_server_invite))
+            }
+        }.build()
+    }
+
     private val currentSlide: Slide
         get() = getSlide(currentSlidePosition)
 
@@ -116,6 +135,8 @@ class AppIntroActivity : IntroActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             addSlide(mDndAccessSlide)
         }
+
+        addSlide(mContributingSlide)
     }
 
     override fun onResume() {
