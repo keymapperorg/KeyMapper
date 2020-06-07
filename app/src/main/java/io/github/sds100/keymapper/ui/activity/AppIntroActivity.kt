@@ -2,11 +2,9 @@ package io.github.sds100.keymapper.ui.activity
 
 import android.Manifest
 import android.content.ActivityNotFoundException
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.os.PowerManager
 import android.provider.Settings
 import androidx.annotation.RequiresApi
 import com.heinrichreimersoftware.materialintro.app.IntroActivity
@@ -152,7 +150,8 @@ class AppIntroActivity : IntroActivity() {
             addSlide(mDexSlide)
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+            && !PermissionUtils.isPermissionGranted(Manifest.permission.ACCESS_NOTIFICATION_POLICY)) {
             addSlide(mDndAccessSlide)
         }
 
@@ -161,8 +160,6 @@ class AppIntroActivity : IntroActivity() {
 
     override fun onResume() {
         super.onResume()
-
-        val powerManager = (getSystemService(Context.POWER_SERVICE)) as PowerManager
 
         /* when the user returns back from changing battery optimisation settings, go to the next page if they
             have turned it off */
