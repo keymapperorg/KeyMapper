@@ -36,7 +36,6 @@ class AppIntroActivity : IntroActivity() {
             background(R.color.red)
             backgroundDark(R.color.redDark)
             image(R.mipmap.ic_launcher_round)
-            canGoBackward(true)
             scrollable(true)
         }.build()
     }
@@ -48,7 +47,7 @@ class AppIntroActivity : IntroActivity() {
             background(R.color.purple)
             backgroundDark(R.color.purpleDark)
             image(R.drawable.ic_outline_error_outline_64)
-            canGoBackward(true)
+            canGoBackward(false)
             scrollable(true)
 
             buttonCtaLabel(R.string.enable)
