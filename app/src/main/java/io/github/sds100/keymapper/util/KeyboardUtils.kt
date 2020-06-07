@@ -5,116 +5,108 @@ import android.accessibilityservice.AccessibilityService
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Build.VERSION_CODES.O_MR1
 import android.provider.Settings
-import android.view.inputmethod.InputMethodManager
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
-import androidx.core.content.edit
-import io.github.sds100.keymapper.*
-import io.github.sds100.keymapper.service.MyIMEService
-import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_IME_NOT_FOUND
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.defaultSharedPreferences
-import org.jetbrains.anko.okButton
-import org.jetbrains.anko.toast
+import io.github.sds100.keymapper.Constants
+import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.WidgetsManager
+import io.github.sds100.keymapper.service.KeyMapperImeService
+import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
+import io.github.sds100.keymapper.util.result.*
+import splitties.experimental.ExperimentalSplittiesApi
+import splitties.init.appCtx
+import splitties.systemservices.inputMethodManager
+import splitties.toast.toast
+import timber.log.Timber
 
 /**
  * Created by sds100 on 28/12/2018.
  */
 
 object KeyboardUtils {
-    @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
-    fun switchToKeyMapperIme(ctx: Context) = ctx.apply {
-        val shownWarningDialog = defaultSharedPreferences.getBoolean(
-            str(R.string.key_pref_shown_cant_use_virtual_keyboard_message),
-            bool(R.bool.default_value_shown_cant_use_virtual_keyboard_message)
-        )
 
-        fun switch() {
-            if (!haveWriteSecureSettingsPermission) {
-                toast(R.string.error_need_write_secure_settings_permission).show()
-                return
+    fun enableKeyMapperIme() {
+        if (isPermissionGranted(Constants.PERMISSION_ROOT)) {
+            KeyMapperImeService.getImeId().onSuccess {
+                Timber.d(it)
+                RootUtils.executeRootCommand("ime enable $it")
+            }.onFailure {
+                Timber.d("failure")
             }
-
-            if (MyIMEService.getImeId(ctx).result().isSuccess) {
-                switchIme(ctx, MyIMEService.getImeId(ctx)!!)
-            }
-        }
-
-        if (!shownWarningDialog) {
-            alert {
-                messageResource = R.string.dialog_message_cant_use_virtual_keyboard
-                okButton {
-                    defaultSharedPreferences.edit {
-                        putBoolean(str(R.string.key_pref_shown_cant_use_virtual_keyboard_message), true)
-                    }
-
-                    switch()
-                }
-            }.show()
         } else {
-            switch()
+            openImeSettings()
+        }
+    }
+
+    @ExperimentalSplittiesApi
+    @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
+    fun switchToKeyMapperIme(ctx: Context) {
+        if (!isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
+            ctx.toast(R.string.error_need_write_secure_settings_permission)
+            return
+        }
+
+        KeyMapperImeService.getImeId().onSuccess {
+            switchIme(it)
         }
     }
 
     @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
-    fun switchIme(ctx: Context, imeId: String) {
-        ctx.putSecureSetting(Settings.Secure.DEFAULT_INPUT_METHOD, imeId)
+    fun switchIme(imeId: String) {
+        appCtx.putSecureSetting(Settings.Secure.DEFAULT_INPUT_METHOD, imeId)
     }
 
-    fun openImeSettings(ctx: Context) {
-        try {
-            val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)
-            intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
-
-            ctx.startActivity(intent)
-        } catch (e: Exception) {
-            ctx.toast(R.string.error_cant_find_ime_settings)
-        }
+    fun showInputMethodPicker() {
+        inputMethodManager.showInputMethodPicker()
     }
 
-    fun showInputMethodPicker(ctx: Context) {
-        val imeManager = ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imeManager.showInputMethodPicker()
-    }
-
-    fun showInputMethodPickerDialogOutsideApp(ctx: Context) {
+    fun showInputMethodPickerDialogOutsideApp() {
         /* Android 8.1 and higher don't seem to allow you to open the input method picker dialog
              * from outside the app :( but it can be achieved by sending a broadcast with a
              * system process id (requires root access) */
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1) {
-            val imeManager = ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-
-            imeManager.showInputMethodPicker()
-        } else {
+        if (Build.VERSION.SDK_INT < O_MR1) {
+            inputMethodManager.showInputMethodPicker()
+        } else if ((O_MR1..Build.VERSION_CODES.P).contains(Build.VERSION.SDK_INT)) {
             val command = "am broadcast -a com.android.server.InputMethodManagerService.SHOW_INPUT_METHOD_PICKER"
             RootUtils.executeRootCommand(command)
+        } else {
+            appCtx.toast(R.string.error_this_is_unsupported)
         }
     }
 
-    fun getInputMethodIds(ctx: Context): Result<List<String>> {
-        val imeManager = ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    fun getInputMethodLabel(id: String): Result<String> {
+        val label = inputMethodManager.enabledInputMethodList.find { it.id == id }
+            ?.loadLabel(appCtx.packageManager)?.toString() ?: return InputMethodNotFound(id)
 
-        if (imeManager.enabledInputMethodList.isEmpty()) {
-            return null.result(ErrorCodeUtils.ERROR_CODE_NO_ENABLED_IMES)
+        return Success(label)
+    }
+
+    fun getInputMethodIds(): Result<List<String>> {
+        if (inputMethodManager.enabledInputMethodList.isEmpty()) {
+            return NoEnabledInputMethods()
         }
 
-        return imeManager.enabledInputMethodList.map { it.id }.result()
+        return Success(inputMethodManager.enabledInputMethodList.map { it.id })
     }
 
-    fun getInputMethodLabel(ctx: Context, id: String): Result<String> {
-        val imeManager = ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-
-        return imeManager.enabledInputMethodList.find { it.id == id }
-            ?.loadLabel(ctx.packageManager)?.toString()
-            .result(ERROR_CODE_IME_NOT_FOUND, id)
-    }
-
-    fun inputMethodExists(ctx: Context, imeId: String) = getInputMethodIds(ctx).handle(
+    fun inputMethodExists(imeId: String): Boolean = getInputMethodIds().handle(
         onSuccess = { it.contains(imeId) },
         onFailure = { false }
     )
+
+    fun openImeSettings() {
+        try {
+            val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)
+            intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_NEW_TASK
+
+            appCtx.startActivity(intent)
+        } catch (e: Exception) {
+            toast(R.string.error_cant_find_ime_settings)
+        }
+    }
 }
 
 @RequiresApi(Build.VERSION_CODES.N)

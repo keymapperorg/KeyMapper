@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <import type="com.google.android.material.bottomappbar.BottomAppBar" />
+
+        <import type="io.github.sds100.keymapper.ui.view.StatusLayout.State" />
+
+        <import type="androidx.lifecycle.LiveData" />
+
+        <variable
+            name="expanded"
+            type="LiveData&lt;Boolean>" />
+
+        <variable
+            name="onConfirmSelectionClick"
+            type="View.OnClickListener" />
+
+        <variable
+            name="onNewKeymapClick"
+            type="View.OnClickListener" />
+
+        <variable
+            name="viewModel"
+            type="io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel" />
+
+        <variable
+            name="collapsedStatusLayoutState"
+            type="LiveData&lt;State>" />
+
+        <variable
+            name="accessibilityServiceStatusState"
+            type="LiveData&lt;State>" />
+
+        <variable
+            name="imeServiceStatusState"
+            type="LiveData&lt;State>" />
+
+        <variable
+            name="dndAccessStatusState"
+            type="LiveData&lt;State>" />
+
+        <variable
+            name="writeSettingsStatusState"
+            type="LiveData&lt;State>" />
+
+        <variable
+            name="enableAccessibilityService"
+            type="View.OnClickListener" />
+
+        <variable
+            name="enableImeService"
+            type="View.OnClickListener" />
+
+        <variable
+            name="grantWriteSecureSettingsPermission"
+            type="View.OnClickListener" />
+
+        <variable
+            name="grantDndAccess"
+            type="View.OnClickListener" />
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinatorLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="?attr/actionBarSize"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <FrameLayout
+                android:id="@+id/headerLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/layoutCollapsed"
+                    style="@style/MyCardView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:visibility="@{expanded ? View.GONE : View.VISIBLE}"
+                    tools:visibility="gone">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <io.github.sds100.keymapper.ui.view.StatusLayout
+                            android:id="@+id/statusLayout"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            app:errorText="@{@string/error_the_app_wont_work}"
+                            app:fixedText="@{@string/everything_looks_good}"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/buttonExpand"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:showFixButton="@{false}"
+                            app:statusLayoutState="@{collapsedStatusLayoutState}"
+                            app:warningText="@{@string/warning_the_app_will_work}" />
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/buttonExpand"
+                            android:layout_width="48dp"
+                            android:layout_height="0dp"
+                            android:minHeight="48dp"
+                            android:scaleType="centerInside"
+                            android:tint="?attr/colorOnSurface"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:srcCompat="@drawable/ic_outline_expand_more_24" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <net.cachapa.expandablelayout.ExpandableLayout
+                    android:id="@+id/expandableLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    tools:el_expanded="true"
+                    tools:visibility="visible">
+
+                    <androidx.core.widget.NestedScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/cardView"
+                                style="@style/MyCardView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <include
+                                    layout="@layout/keymap_list_header_expanded"
+                                    bind:accessibilityServiceStatusState="@{accessibilityServiceStatusState}"
+                                    bind:dndAccessStatusState="@{dndAccessStatusState}"
+                                    bind:enableAccessibilityService="@{enableAccessibilityService}"
+                                    bind:enableImeService="@{enableImeService}"
+                                    bind:grantDndAccess="@{grantDndAccess}"
+                                    bind:grantWriteSecureSettingsPermission="@{grantWriteSecureSettingsPermission}"
+                                    bind:imeServiceStatusState="@{imeServiceStatusState}"
+                                    bind:writeSettingsStatusState="@{writeSettingsStatusState}" />
+
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <FrameLayout
+                                android:id="@+id/buttonCollapse"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <androidx.appcompat.widget.AppCompatImageView
+                                    android:layout_width="48dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="end"
+                                    android:minHeight="48dp"
+                                    android:scaleType="centerInside"
+                                    android:tint="?attr/colorOnSurface"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:srcCompat="@drawable/ic_baseline_expand_less_24" />
+                            </FrameLayout>
+                        </LinearLayout>
+                    </androidx.core.widget.NestedScrollView>
+                </net.cachapa.expandablelayout.ExpandableLayout>
+            </FrameLayout>
+
+            <com.airbnb.epoxy.EpoxyRecyclerView
+                android:id="@+id/epoxyRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:visibility="@{viewModel.loadingContent  || viewModel.keymapModelList.empty ? View.GONE : View.VISIBLE}"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/headerLayout"
+                tools:visibility="visible" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:visibility="@{viewModel.loadingContent ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/headerLayout"
+                tools:visibility="visible" />
+
+            <TextView
+                style="@style/RecyclerViewPlaceholderTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:text="@string/keymap_recyclerview_placeholder"
+                android:visibility="@{viewModel.keymapModelList.empty &amp;&amp; !viewModel.loadingContent ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/headerLayout" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:visibility="@{viewModel.selectionProvider.isSelectable() ? View.VISIBLE : View.GONE}"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/colorSurface"
+                    android:paddingStart="16dp"
+                    android:paddingTop="8dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="8dp"
+                    android:text='@{@string/selection_count(viewModel.selectionProvider.selectedCount)}'
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+                    android:textSize="17sp"
+                    tools:text="0 Selected" />
+
+            </com.google.android.material.card.MaterialCardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{viewModel.selectionProvider.isSelectable() ? onConfirmSelectionClick : onNewKeymapClick}"
+            android:src='@{viewModel.selectionProvider.isSelectable() ? @drawable/ic_baseline_delete_outline_24 : @drawable/ic_baseline_add_24}'
+            app:layout_anchor="@id/appBar" />
+
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/appBar"
+            style="@style/BottomAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:gravity="center"
+            app:fabAlignmentMode="@{viewModel.selectionProvider.isSelectable() ? BottomAppBar.FAB_ALIGNMENT_MODE_END : BottomAppBar.FAB_ALIGNMENT_MODE_CENTER}"
+            app:fabAnimationMode="slide"
+            app:menu="@menu/menu_keymap_list"
+            app:navigationIcon='@{viewModel.selectionProvider.isSelectable() ? @drawable/ic_baseline_arrow_back_24 : @drawable/ic_baseline_menu_24}'>
+
+        </com.google.android.material.bottomappbar.BottomAppBar>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

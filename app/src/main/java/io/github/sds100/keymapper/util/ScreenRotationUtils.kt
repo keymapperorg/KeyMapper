@@ -27,9 +27,9 @@ object ScreenRotationUtils {
 
     fun switchOrientation(ctx: Context) {
 
-        if (isPortrait(ctx).isNotNullAndTrue()) {
+        if (isPortrait(ctx) == true) {
             forceLandscapeMode(ctx)
-        } else if (isLandscape(ctx).isNotNullAndTrue()) {
+        } else if (isLandscape(ctx) == true) {
             forcePortraitMode(ctx)
         }
     }

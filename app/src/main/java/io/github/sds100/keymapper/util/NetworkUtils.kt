@@ -1,77 +1,67 @@
 package io.github.sds100.keymapper.util
 
 import android.content.Context
+import android.content.Intent
 import android.net.ConnectivityManager
+import android.net.Uri
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.telephony.TelephonyManager
-import android.util.Log
-import io.github.sds100.keymapper.StateChange
-import org.jetbrains.anko.toast
-import java.io.BufferedInputStream
-import java.io.FileOutputStream
-import java.io.IOException
-import java.net.URL
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.nio.file.StandardCopyOption
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
+import io.github.sds100.keymapper.util.result.DownloadFailed
+import io.github.sds100.keymapper.util.result.Result
+import io.github.sds100.keymapper.util.result.SSLHandshakeError
+import io.github.sds100.keymapper.util.result.Success
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.suspendCancellableCoroutine
+import splitties.init.appCtx
+import java.io.File
+import javax.net.ssl.SSLHandshakeException
+import kotlin.coroutines.resume
 
 /**
- * Created by sds100 on 12/12/2018.
+ * Created by sds100 on 04/04/2020.
  */
-
 object NetworkUtils {
 
-    /**
-     * Download a file from a specified [url] to a specified path.
-     * @return whether the file was downloaded successfully
-     */
-    fun downloadFile(ctx: Context, url: String, downloadPath: String): Boolean {
-        if (!isNetworkAvailable(ctx)) return false
+    @ExperimentalCoroutinesApi
+    suspend fun downloadFile(
+        url: String,
+        filePath: String
+    ): Result<File> = suspendCancellableCoroutine {
 
-        val inputStream = URL(url).openStream()
+        val queue = Volley.newRequestQueue(appCtx)
 
-        inputStream.use {
-            //only available in Java 7 and higher
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                Files.copy(inputStream, Paths.get(downloadPath), StandardCopyOption.REPLACE_EXISTING)
-            } else {
+        val request = StringRequest(Request.Method.GET, url,
+            Response.Listener { response ->
+                val file = File(filePath)
+                file.writeText(response)
 
-                try {
-                    val bufferedInputStream = BufferedInputStream(inputStream)
-                    val fileOutputStream = FileOutputStream(downloadPath)
+                it.resume(Success(file))
+            },
 
-                    bufferedInputStream.use {
-                        fileOutputStream.use {
-                            val dataBuffer = ByteArray(1024)
-                            var bytesRead: Int
-
-                            while (true) {
-                                bytesRead = bufferedInputStream.read(dataBuffer, 0, 1024)
-
-                                //if at the end of the file, break out of the loop
-                                if (bytesRead == -1) break
-
-                                fileOutputStream.write(dataBuffer, 0, bytesRead)
-                            }
-                        }
-                    }
-
-                } catch (e: IOException) {
-                    Log.e(this::class.java.simpleName, e.toString())
-                    ctx.toast("IO Exception when downloading file")
-                    return false
+            Response.ErrorListener { error ->
+                if (error.cause is SSLHandshakeException) {
+                    it.resume(SSLHandshakeError())
+                } else {
+                    it.resume(DownloadFailed())
                 }
-            }
+            })
+
+        it.invokeOnCancellation {
+            request.cancel()
         }
 
-        return true
+        queue.add(request)
     }
 
     //WiFi stuff
     fun changeWifiState(ctx: Context, stateChange: StateChange) {
         val wifiManager = ctx.applicationContext
-                .getSystemService(Context.WIFI_SERVICE) as WifiManager
+            .getSystemService(Context.WIFI_SERVICE) as WifiManager
 
         when (stateChange) {
             StateChange.ENABLE -> wifiManager.isWifiEnabled = true
@@ -121,5 +111,11 @@ object NetworkUtils {
         }
 
         return false
+    }
+}
+
+fun Context.openUrl(url: String) {
+    Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+        startActivity(this)
     }
 }

@@ -1,13 +1,9 @@
 package io.github.sds100.keymapper.util
 
-import android.content.Context
-import android.content.Intent
+import androidx.fragment.app.FragmentActivity
+import androidx.navigation.findNavController
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.activity.SettingsActivity
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.cancelButton
-import org.jetbrains.anko.defaultSharedPreferences
-import org.jetbrains.anko.okButton
+import splitties.alertdialog.appcompat.*
 
 /**
  * Created by sds100 on 01/10/2018.
@@ -20,22 +16,17 @@ object RootUtils {
         return Shell.run("su", "-c", command)
     }
 
-    fun checkAppHasRootPermission(ctx: Context): Boolean {
-        return ctx.defaultSharedPreferences.getBoolean(
-            ctx.str(R.string.key_pref_root_permission),
-            ctx.bool(R.bool.default_value_root_permission))
-    }
+    fun promptForRootPermission(activity: FragmentActivity) = activity.alertDialog {
+        titleResource = R.string.dialog_title_root_prompt
+        messageResource = R.string.dialog_message_root_prompt
+        setIcon(R.drawable.ic_baseline_warning_24)
+        okButton {
+            activity.findNavController(R.id.container).navigate(R.id.action_global_settingsFragment)
+            Shell.run("su")
+        }
 
-    fun promptForRootPermission(ctx: Context) {
-        ctx.alert {
-            titleResource = R.string.dialog_title_root_prompt
-            messageResource = R.string.dialog_message_root_prompt
-            iconResource = R.drawable.ic_warning_black_24dp
-            okButton {
-                ctx.startActivity(Intent(ctx, SettingsActivity::class.java))
-                Shell.run("su")
-            }
-            cancelButton { dialog -> dialog.cancel() }
-        }.show()
+        cancelButton()
+
+        show()
     }
 }

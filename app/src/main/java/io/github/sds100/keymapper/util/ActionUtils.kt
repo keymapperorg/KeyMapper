@@ -6,203 +6,213 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.KeyEvent
-import io.github.sds100.keymapper.*
-import io.github.sds100.keymapper.service.MyIMEService
-import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_ACTION_IS_NULL
-import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_APP_DISABLED
-import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_APP_UNINSTALLED
-import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_BACK_FLASH_NOT_FOUND
-import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_FEATURE_NOT_AVAILABLE
-import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_FRONT_FLASH_NOT_FOUND
-import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_GOOGLE_APP_NOT_INSTALLED
-import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_IME_NOT_FOUND
-import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_IME_SERVICE_DISABLED
-import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_IME_SERVICE_NOT_CHOSEN
-import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_NO_ACTION_DATA
-import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_PERMISSION_DENIED
-import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_SDK_VERSION_TOO_LOW
-import io.github.sds100.keymapper.util.ErrorCodeUtils.ERROR_CODE_SHORTCUT_NOT_FOUND
+import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.data.model.Action
+import io.github.sds100.keymapper.data.model.ActionChipModel
+import io.github.sds100.keymapper.data.model.ActionModel
+import io.github.sds100.keymapper.data.model.Option
+import io.github.sds100.keymapper.service.KeyMapperImeService
+import io.github.sds100.keymapper.util.SystemActionUtils.getDescriptionWithOption
+import io.github.sds100.keymapper.util.result.*
+import splitties.bitflags.hasFlag
 
 /**
  * Created by sds100 on 03/09/2018.
  */
 
-/**
- * Provides functions commonly used with [Action]s
- */
-object ActionUtils {
+@Suppress("EXPERIMENTAL_API_USAGE")
+fun Action.buildModel(ctx: Context): ActionModel {
+    var title: String? = null
+    var icon: Drawable? = null
 
-    /**
-     * Get a description for an action. E.g if the user chose an app, then the description will
-     * be 'Open <app>'
-     */
-    fun getDescription(ctx: Context, action: Action?): ActionDescription {
-        val errorResult = getError(ctx, action)
+    val error = getTitle(ctx).onSuccess { title = it }
+        .then { getIcon(ctx).onSuccess { icon = it } }
+        .then { canBePerformed(ctx) }
+        .failureOrNull()
 
-        //If the errorResult is null, errorMessage will be null
-        val errorMessage = errorResult?.let { ErrorCodeUtils.getErrorCodeDescription(ctx, it) }
+    val flags = if (flags == 0) {
+        null
+    } else {
+        buildString {
+            val flagLabels = getFlagLabelList(ctx)
 
-        val title = getTitle(ctx, action)
-        val icon = getIcon(ctx, action)
+            flagLabels.forEachIndexed { index, label ->
+                if (index != 0) {
+                    append(ctx.str(R.string.interpunct))
+                }
 
-        return ActionDescription(
-            icon, title, errorMessage, errorResult
-        )
+                append(label)
+            }
+        }
     }
 
-    private fun getTitle(ctx: Context, action: Action?): String? {
-        action ?: return null
+    return ActionModel(uniqueId, type, title, icon, flags, error, error?.getBriefMessage(ctx))
+}
 
-        when (action.type) {
-            ActionType.APP -> {
-                try {
-                    val applicationInfo = ctx.packageManager.getApplicationInfo(
-                        action.data,
-                        PackageManager.GET_META_DATA
-                    )
+fun Action.buildChipModel(ctx: Context): ActionChipModel {
+    var title: String? = null
+    var icon: Drawable? = null
 
-                    val applicationLabel = ctx.packageManager.getApplicationLabel(applicationInfo)
+    val error = getTitle(ctx).onSuccess { title = it }
+        .then { getIcon(ctx).onSuccess { icon = it } }
+        .then { canBePerformed(ctx) }
+        .failureOrNull()
 
-                    return ctx.getString(R.string.description_open_app, applicationLabel.toString())
-                } catch (e: PackageManager.NameNotFoundException) {
-                    //the app isn't installed
-                    return null
-                }
-            }
+    val description = buildString {
+        val flagLabels = getFlagLabelList(ctx)
 
-            ActionType.APP_SHORTCUT -> {
-                return action.getExtraData(Action.EXTRA_SHORTCUT_TITLE).onSuccess { it }
-            }
+        if (title == null) {
+            append(error?.getBriefMessage(ctx))
+        } else {
+            append(title)
+        }
 
-            ActionType.SYSTEM_ACTION -> {
-                val systemActionId = action.data
+        flagLabels.forEach {
+            append(" • $it")
+        }
+    }
 
-                return SystemActionUtils.getSystemActionDef(systemActionId).handle(
-                    onSuccess = { systemActionDef ->
+    return ActionChipModel(uniqueId, type, description, error, icon)
+}
 
-                        if (systemActionDef.getOptions(ctx).isFailure) {
-                            systemActionDef.getDescription(ctx)
-                        } else {
-                            var optionLabel = Option.getOptionLabel(ctx, systemActionId, action.getOptionId())
+private fun Action.getTitle(ctx: Context): Result<String> = when (type) {
+    ActionType.APP -> {
+        try {
+            val applicationInfo = ctx.packageManager.getApplicationInfo(data, PackageManager.GET_META_DATA)
 
-                            //get a saved label for the option if it can't find one
-                            if (optionLabel == null) {
-                                when (systemActionId) {
-                                    SystemAction.SWITCH_KEYBOARD -> {
-                                        action.getExtraData(Action.EXTRA_IME_NAME).onSuccess { optionLabel = it }
-                                    }
-                                }
-                            }
+            val applicationLabel = ctx.packageManager.getApplicationLabel(applicationInfo)
 
-                            optionLabel ?: return@handle systemActionDef.getDescription(ctx)
+            Success(ctx.str(R.string.description_open_app, applicationLabel.toString()))
+        } catch (e: PackageManager.NameNotFoundException) {
+            //the app isn't installed
+            AppNotFound(data)
+        }
+    }
 
-                            systemActionDef.getDescriptionWithOption(ctx, optionLabel!!)
+    ActionType.APP_SHORTCUT -> {
+        getExtraData(Action.EXTRA_SHORTCUT_TITLE)
+    }
+
+    ActionType.KEY_EVENT -> {
+        val key = KeyEvent.keyCodeToString(data.toInt())
+        Success(ctx.str(R.string.description_keycode, key))
+    }
+
+    ActionType.TEXT_BLOCK -> {
+        val text = data
+        Success(ctx.str(R.string.description_text_block, text))
+    }
+
+    ActionType.URL -> {
+        Success(ctx.str(R.string.description_url, data))
+    }
+
+    ActionType.SYSTEM_ACTION -> {
+        val systemActionId = data
+
+        SystemActionUtils.getSystemActionDef(systemActionId) then { systemActionDef ->
+            if (systemActionDef.hasOptions) {
+
+                getExtraData(Option.getExtraIdForOption(systemActionId)) then {
+                    Option.getOptionLabel(ctx, systemActionId, it)
+
+                } then {
+                    Success(systemActionDef.getDescriptionWithOption(ctx, it))
+
+                } otherwise {
+                    if (systemActionId == SystemAction.SWITCH_KEYBOARD) {
+
+                        getExtraData(Action.EXTRA_IME_NAME) then {
+                            Success(systemActionDef.getDescriptionWithOption(ctx, it))
                         }
-                    },
-                    onFailure = { null })
-            }
 
-            ActionType.URL -> {
-                return ctx.str(R.string.description_url, action.data)
-            }
-
-            ActionType.KEYCODE -> {
-                val key = KeyEvent.keyCodeToString(action.data.toInt())
-                return ctx.str(R.string.description_keycode, key)
-            }
-
-            ActionType.KEY -> {
-                val keyCode = action.data.toInt()
-                val key = KeycodeUtils.keycodeToString(keyCode)
-
-                return ctx.str(R.string.description_key, key)
-            }
-
-            ActionType.TEXT_BLOCK -> {
-                val text = action.data
-                return ctx.str(R.string.description_text_block, text)
+                    } else {
+                        Success(ctx.str(systemActionDef.descriptionRes))
+                    }
+                }
+            } else {
+                Success(ctx.str(systemActionDef.descriptionRes))
             }
         }
     }
+}
 
-    /**
-     * Get the icon for any Action
-     */
-    private fun getIcon(ctx: Context, action: Action?): Drawable? {
-        action ?: return null
-
-        return when (action.type) {
-            ActionType.APP -> {
-                try {
-                    return ctx.packageManager.getApplicationIcon(action.data)
-                } catch (e: PackageManager.NameNotFoundException) {
-                    //if the app isn't installed, it can't find the icon for it
-                    return null
-                }
-            }
-
-            ActionType.SYSTEM_ACTION -> {
-                //convert the string representation of the enum entry into an enum object
-                val systemActionId = action.data
-
-                SystemActionUtils.getSystemActionDef(systemActionId).onSuccess {
-                    return@onSuccess it.getIcon(ctx)
-                }
-            }
-
-            //return null if no icon should be used
-            else -> null
+/**
+ * Get the icon for any Action
+ */
+private fun Action.getIcon(ctx: Context): Result<Drawable?> = when (type) {
+    ActionType.APP -> {
+        try {
+            Success(ctx.packageManager.getApplicationIcon(data))
+        } catch (e: PackageManager.NameNotFoundException) {
+            //if the app isn't installed, it can't find the icon for it
+            AppNotFound(data)
         }
     }
 
-    /**
-     * @return if the action can't be performed, it returns an error code.
-     * returns null if their if the action can be performed.
-     */
-    fun getError(ctx: Context, action: Action?): ErrorResult? {
-        //action is null
-        action ?: return ErrorResult(ERROR_CODE_ACTION_IS_NULL)
+    ActionType.APP_SHORTCUT -> getExtraData(Action.EXTRA_PACKAGE_NAME).then {
+        Success(ctx.packageManager.getApplicationIcon(it))
+    }
 
-        //the action has not data
-        if (action.data.isEmpty()) return ErrorResult(ERROR_CODE_NO_ACTION_DATA)
+    ActionType.SYSTEM_ACTION -> {
+        //convert the string representation of the enum entry into an enum object
+        val systemActionId = data
 
-        if (action.requiresIME) {
-            if (!MyIMEService.isServiceEnabled(ctx)) {
-                return ErrorResult(ERROR_CODE_IME_SERVICE_DISABLED)
-            }
+        SystemActionUtils.getSystemActionDef(systemActionId).then {
+            Success(null)
+            Success(ctx.drawable(it.iconRes))
+        }
+    }
 
-            if (!MyIMEService.isInputMethodChosen(ctx)) {
-                return ErrorResult(ERROR_CODE_IME_SERVICE_NOT_CHOSEN)
-            }
+    else -> Success(null)
+}
+
+/**
+ * @return if the action can't be performed, it returns an error code.
+ * returns null if their if the action can be performed.
+ */
+fun Action.canBePerformed(ctx: Context): Result<Action> {
+    //the action has no data
+    if (data.isEmpty()) return NoActionData()
+
+    if (requiresIME) {
+        if (!KeyMapperImeService.isServiceEnabled()) {
+            return ImeServiceDisabled()
         }
 
-        when (action.type) {
-            ActionType.APP -> {
+        if (!KeyMapperImeService.isInputMethodChosen()) {
+            return ImeServiceNotChosen()
+        }
+    }
+
+    when (type) {
+        ActionType.APP, ActionType.APP_SHORTCUT -> {
+            val packageName: Result<String> =
+                if (type == ActionType.APP) {
+                    Success(data)
+                } else {
+                    getExtraData(Action.EXTRA_PACKAGE_NAME)
+                }
+
+            return packageName.then {
                 try {
-                    val appInfo = ctx.packageManager.getApplicationInfo(action.data, 0)
+                    val appInfo = ctx.packageManager.getApplicationInfo(it, 0)
 
                     //if the app is disabled, show an error message because it won't open
                     if (!appInfo.enabled) {
-                        return ErrorResult(ERROR_CODE_APP_DISABLED, appInfo.packageName)
+                        return@then AppDisabled(data)
                     }
 
-                    return null
+                    return@then Success(this)
+
                 } catch (e: Exception) {
-                    return ErrorResult(ERROR_CODE_APP_UNINSTALLED, action.data)
+                    return@then AppNotFound(data)
                 }
             }
+        }
 
-            ActionType.APP_SHORTCUT -> {
-                val intent = Intent.parseUri(action.data, 0)
-                val activityExists = intent.resolveActivityInfo(ctx.packageManager, 0) != null
-
-                if (!activityExists) {
-                    return ErrorResult(ERROR_CODE_SHORTCUT_NOT_FOUND, action.data)
-                }
-            }
-
-            ActionType.SYSTEM_ACTION -> {
-                val systemActionDef = SystemActionUtils.getSystemActionDef(action.data).data ?: return null
+        ActionType.SYSTEM_ACTION -> {
+            SystemActionUtils.getSystemActionDef(data).onSuccess { systemActionDef ->
 
                 //If an activity to open doesn't exist, the app crashes.
                 if (systemActionDef.id == SystemAction.OPEN_ASSISTANT) {
@@ -210,23 +220,27 @@ object ActionUtils {
                         Intent(Intent.ACTION_VOICE_COMMAND).resolveActivityInfo(ctx.packageManager, 0) != null
 
                     if (!activityExists) {
-                        return ErrorResult(ERROR_CODE_GOOGLE_APP_NOT_INSTALLED)
+                        return GoogleAppNotFound()
                     }
                 }
 
                 if (Build.VERSION.SDK_INT < systemActionDef.minApi) {
-                    return ErrorResult(ERROR_CODE_SDK_VERSION_TOO_LOW, systemActionDef.minApi.toString())
+                    return SdkVersionTooLow(systemActionDef.minApi)
+                }
+
+                if (Build.VERSION.SDK_INT > systemActionDef.maxApi) {
+                    return SdkVersionTooHigh(systemActionDef.maxApi)
                 }
 
                 systemActionDef.permissions.forEach { permission ->
-                    if (!ctx.isPermissionGranted(permission)) {
-                        return ErrorResult(ERROR_CODE_PERMISSION_DENIED, permission)
+                    if (!PermissionUtils.isPermissionGranted(permission)) {
+                        return PermissionDenied(permission)
                     }
                 }
 
                 for (feature in systemActionDef.features) {
                     if (!ctx.packageManager.hasSystemFeature(feature)) {
-                        return ErrorResult(ERROR_CODE_FEATURE_NOT_AVAILABLE, feature)
+                        return FeatureUnavailable(feature)
                     }
                 }
 
@@ -235,15 +249,15 @@ object ActionUtils {
                         || systemActionDef.id == SystemAction.ENABLE_FLASHLIGHT
                         || systemActionDef.id == SystemAction.DISABLE_FLASHLIGHT) {
 
-                        action.getExtraData(Action.EXTRA_LENS).onSuccess { lensOptionId ->
+                        getExtraData(Action.EXTRA_LENS).onSuccess { lensOptionId ->
                             val sdkLensId = Option.OPTION_ID_SDK_ID_MAP[lensOptionId]
                                 ?: error("Can't find sdk id for that option id")
 
-                            if (!CameraUtils.hasFlashFacing(ctx, sdkLensId)) {
+                            if (!CameraUtils.hasFlashFacing(sdkLensId)) {
 
                                 when (lensOptionId) {
-                                    Option.LENS_FRONT -> return@getError ErrorResult(ERROR_CODE_FRONT_FLASH_NOT_FOUND)
-                                    Option.LENS_BACK -> return@getError ErrorResult(ERROR_CODE_BACK_FLASH_NOT_FOUND)
+                                    Option.LENS_FRONT -> FrontFlashNotFound()
+                                    Option.LENS_BACK -> BackFlashNotFound()
                                 }
                             }
                         }
@@ -252,25 +266,59 @@ object ActionUtils {
 
                 if (systemActionDef.id == SystemAction.SWITCH_KEYBOARD) {
 
-                    action.getExtraData(Action.EXTRA_IME_ID).onSuccess { imeId ->
-                        if (!KeyboardUtils.inputMethodExists(ctx, imeId)) {
+                    getExtraData(Action.EXTRA_IME_ID).onSuccess { imeId ->
+                        if (!KeyboardUtils.inputMethodExists(imeId)) {
                             var errorData = imeId
 
-                            action.getExtraData(Action.EXTRA_IME_NAME).onSuccess { imeName ->
+                            getExtraData(Action.EXTRA_IME_NAME).onSuccess { imeName ->
                                 errorData = imeName
                             }
 
-                            return@getError ErrorResult(ERROR_CODE_IME_NOT_FOUND, errorData)
+                            return ImeNotFound(errorData)
                         }
                     }
                 }
-
-                return null
             }
-
-            else -> return null
         }
-
-        return null
     }
+
+    return Success(this)
 }
+
+val Action.availableFlags: List<Int>
+    get() = sequence {
+        if (isVolumeAction && data != SystemAction.VOLUME_SHOW_DIALOG) {
+            yield(Action.ACTION_FLAG_SHOW_VOLUME_UI)
+        }
+    }.toList()
+
+val Action.requiresIME: Boolean
+    get() {
+        return type == ActionType.KEY_EVENT ||
+            type == ActionType.TEXT_BLOCK ||
+            data == SystemAction.MOVE_CURSOR_TO_END
+    }
+
+val Action.isVolumeAction: Boolean
+    get() {
+        return listOf(
+            SystemAction.VOLUME_DECREASE_STREAM,
+            SystemAction.VOLUME_INCREASE_STREAM,
+            SystemAction.VOLUME_DOWN,
+            SystemAction.VOLUME_UP,
+            SystemAction.VOLUME_MUTE,
+            SystemAction.VOLUME_TOGGLE_MUTE,
+            SystemAction.VOLUME_UNMUTE
+        ).contains(data)
+    }
+
+fun Action.getFlagLabelList(ctx: Context): List<String> = sequence {
+    Action.ACTION_FLAG_LABEL_MAP.keys.forEach { flag ->
+        if (flags.hasFlag(flag)) {
+            yield(ctx.str(Action.ACTION_FLAG_LABEL_MAP.getValue(flag)))
+        }
+    }
+}.toList()
+
+val Action.repeatable: Boolean
+    get() = type in arrayOf(ActionType.KEY_EVENT, ActionType.TEXT_BLOCK) || isVolumeAction

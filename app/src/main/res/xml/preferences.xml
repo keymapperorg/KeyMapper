@@ -1,23 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?><!--Android 8.1+ is much more strict so a lot of stuff only works on rooted devices. :( -->
 <androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <androidx.preference.SwitchPreference
-        android:defaultValue="@bool/default_value_show_toast"
-        android:key="@string/key_pref_show_toast_when_action_performed"
-        android:summary="@string/summary_pref_show_toast_when_action_performed"
-        android:title="@string/title_pref_show_toast_when_action_performed" />
+    <DropDownPreference
+        android:defaultValue="@string/default_value_dark_theme_mode"
+        android:entries="@array/pref_dark_theme_entries"
+        android:entryValues="@array/pref_dark_theme_values"
+        android:key="@string/key_pref_dark_theme_mode"
+        android:title="@string/title_pref_dark_theme" />
 
     <androidx.preference.SwitchPreference
         android:defaultValue="@bool/default_value_show_toast_on_action_error"
         android:key="@string/key_pref_show_toast_on_action_error"
         android:summary="@string/summary_pref_toast_on_action_error"
         android:title="@string/title_pref_show_toast_on_action_error" />
-
-    <androidx.preference.SwitchPreference
-        android:defaultValue="@bool/default_value_show_ime_notification"
-        android:key="@string/key_pref_show_ime_notification"
-        android:summary="@string/summary_pref_show_ime_notification"
-        android:title="@string/title_pref_show_ime_notification" />
 
     <androidx.preference.SwitchPreference
         android:defaultValue="@bool/default_value_force_vibrate"
@@ -38,7 +33,15 @@
         android:summary="@string/summary_pref_long_press_delay"
         android:title="@string/title_pref_long_press_delay"
         app:min="@integer/long_press_delay_min"
-        app:seekBarIncrement="@integer/long_press_delay_increment"
+        app:showSeekBarValue="true" />
+
+    <androidx.preference.SeekBarPreference
+        android:defaultValue="@integer/default_value_double_press_delay"
+        android:key="@string/key_pref_double_press_delay"
+        android:max="@integer/double_press_delay_max"
+        android:summary="@string/summary_pref_double_press_delay"
+        android:title="@string/title_pref_double_press_delay"
+        app:min="@integer/double_press_delay_min"
         app:showSeekBarValue="true" />
 
     <androidx.preference.SeekBarPreference
@@ -48,25 +51,45 @@
         android:summary="@string/summary_pref_vibrate_duration"
         android:title="@string/title_pref_vibrate_duration"
         app:min="@integer/vibrate_duration_min"
-        app:seekBarIncrement="@integer/vibrate_duration_increment"
+        app:seekBarIncrement="@integer/vibrate_duration_step_size"
         app:showSeekBarValue="true" />
 
-    <androidx.preference.PreferenceCategory android:title="@string/title_pref_category_debug">
-        <androidx.preference.SwitchPreference
-            android:defaultValue="@bool/default_value_debug"
-            android:key="@string/key_pref_debug"
-            android:layout="@layout/preference_material_no_max_lines"
-            android:summary="@string/summary_pref_debug"
-            android:title="@string/title_pref_debug" />
+    <androidx.preference.SeekBarPreference
+        android:defaultValue="@integer/default_value_hold_down_delay"
+        android:key="@string/key_pref_hold_down_delay"
+        android:max="@integer/hold_down_delay_max"
+        android:summary="@string/summary_pref_hold_down_delay"
+        android:title="@string/title_pref_hold_down_delay"
+        app:min="@integer/hold_down_delay_min"
+        app:showSeekBarValue="true" />
 
-        <androidx.preference.SwitchPreference
-            android:defaultValue="@bool/default_value_show_toast_when_error_encountered"
-            android:key="@string/key_pref_show_toast_when_error_encountered"
-            android:summary="@string/summary_pref_show_toast_when_error_encountered"
-            android:title="@string/title_pref_show_toast_when_error_encountered" />
-    </androidx.preference.PreferenceCategory>
+    <androidx.preference.SeekBarPreference
+        android:defaultValue="@integer/default_value_repeat_delay"
+        android:key="@string/key_pref_repeat_delay"
+        android:max="@integer/repeat_delay_max"
+        android:summary="@string/summary_pref_repeat_delay"
+        android:title="@string/title_pref_repeat_delay"
+        app:min="@integer/repeat_delay_min"
+        app:seekBarIncrement="@integer/repeat_delay_step_size"
+        app:showSeekBarValue="true" />
 
+    <androidx.preference.SeekBarPreference
+        android:defaultValue="@integer/default_value_sequence_trigger_timeout"
+        android:key="@string/key_pref_sequence_trigger_timeout"
+        android:max="@integer/sequence_trigger_timeout_max"
+        android:summary="@string/summary_pref_sequence_trigger_timeout"
+        android:title="@string/title_pref_sequence_trigger_timeout"
+        app:min="@integer/sequence_trigger_timeout_min"
+        app:seekBarIncrement="@integer/sequence_trigger_timeout_step_size"
+        app:showSeekBarValue="true" />
     <androidx.preference.PreferenceCategory android:title="@string/title_pref_category_ime_picker">
+
+        <androidx.preference.SwitchPreference
+            android:defaultValue="@bool/default_value_show_ime_notification"
+            android:key="@string/key_pref_show_ime_notification"
+            android:summary="@string/summary_pref_show_ime_notification"
+            android:title="@string/title_pref_show_ime_notification" />
+
         <androidx.preference.SwitchPreference
             android:defaultValue="@bool/default_value_auto_show_ime_picker"
             android:key="@string/key_pref_auto_show_ime_picker"
@@ -109,7 +132,8 @@
 
     </androidx.preference.PreferenceCategory>
 
-    <io.github.sds100.keymapper.view.CancellableMultiSelectListPreference
+    <io.github.sds100.keymapper.ui.view.CancellableMultiSelectListPreference
         android:key="@string/key_pref_bluetooth_devices"
         android:title="@string/title_pref_bluetooth_devices" />
+
 </androidx.preference.PreferenceScreen>

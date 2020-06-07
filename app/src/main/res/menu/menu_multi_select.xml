@@ -1,18 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
-
-    <item
-        android:id="@+id/selection_count"
-        android:title="0 Selected"
-        app:showAsAction="always"
-        tools:ignore="HardcodedText" />
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/action_select_all"
         android:contentDescription="@string/action_select_all"
-        android:icon="@drawable/ic_select_all_white_24dp"
+        android:icon="@drawable/ic_baseline_select_all_24"
         android:title="@string/action_select_all"
         app:showAsAction="ifRoom" />
 

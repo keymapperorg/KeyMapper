@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="isLoggingEnabled"
+            type="Boolean" />
+
+        <variable
+            name="openAbout"
+            type="View.OnClickListener" />
+
+        <variable
+            name="openSettings"
+            type="View.OnClickListener" />
+
+        <variable
+            name="sendFeedback"
+            type="View.OnClickListener" />
+
+        <variable
+            name="changeKeyboard"
+            type="View.OnClickListener" />
+
+        <variable
+            name="enableAll"
+            type="View.OnClickListener" />
+
+        <variable
+            name="disableAll"
+            type="View.OnClickListener" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@+id/buttonEnableAll">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/menuItemChangeKeyboard"
+                style="@style/BottomSheetMenuItem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:onClick="@{changeKeyboard}"
+                android:text="@string/action_change_keyboard"
+                app:icon="@drawable/ic_notification_keyboard"
+                app:iconTint="?attr/colorOnSurface" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/menuItemSendFeedback"
+                style="@style/BottomSheetMenuItem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:onClick="@{sendFeedback}"
+                android:text="@string/action_send_feedback"
+                app:icon="@drawable/ic_outline_feedback_24"
+                app:iconTint="?attr/colorOnSurface" />
+
+            <com.google.android.material.button.MaterialButton
+                style="@style/BottomSheetMenuItem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:onClick="@{openAbout}"
+                android:text="@string/action_about"
+                app:icon="@drawable/ic_outline_info_24"
+                app:iconTint="?attr/colorOnSurface" />
+
+            <com.google.android.material.button.MaterialButton
+                style="@style/BottomSheetMenuItem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:onClick="@{openSettings}"
+                android:text="@string/action_settings"
+                app:icon="@drawable/ic_outline_settings_24"
+                app:iconTint="?attr/colorOnSurface" />
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonEnableAll"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:onClick="@{enableAll}"
+            android:text="@string/action_enable_all_keymaps"
+            app:backgroundTint="@color/green"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/buttonDisableAll"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonDisableAll"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:onClick="@{disableAll}"
+            android:text="@string/action_disable_all_keymaps"
+            app:backgroundTint="@color/red"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/buttonEnableAll" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

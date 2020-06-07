@@ -29,57 +29,27 @@
         android:required="false" />
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
+        android:theme="@style/AppTheme.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name=".activity.HomeActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.LightStatusBar">
+            android:name=".ui.activity.SplashActivity"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name=".activity.IntroActivity"
-            android:theme="@style/Theme.Intro" />
+            android:name=".ui.activity.HomeActivity"
+            android:label="@string/app_name" />
 
-        <activity
-            android:name=".activity.NewKeymapActivity"
-            android:label="@string/title_activity_new_key_map"
-            android:theme="@style/AppTheme.NoActionBar" />
-
-        <activity
-            android:name=".activity.EditKeymapActivity"
-            android:label="@string/title_activity_edit_key_map"
-            android:theme="@style/AppTheme.NoActionBar" />
-
-        <activity
-            android:name=".activity.ChooseActionActivity"
-            android:label="@string/title_choose_action"
-            android:theme="@style/AppTheme.NoActionBar" />
-
-        <activity
-            android:name=".activity.SettingsActivity"
-            android:label="@string/title_settings" />
-
-        <activity
-            android:name=".activity.AboutActivity"
-            android:label="@string/title_about" />
-
-        <activity
-            android:name=".activity.HelpActivity"
-            android:label="@string/title_help" />
-
-        <activity
-            android:name=".activity.LogActivity"
-            android:label="@string/title_log" />
+        <activity android:name=".ui.activity.AppIntroActivity" />
 
         <receiver android:name=".broadcastreceiver.KeyMapperBroadcastReceiver" />
 
@@ -97,7 +67,7 @@
         </receiver>
 
         <receiver
-            android:name=".DeviceAdmin"
+            android:name=".service.DeviceAdmin"
             android:permission="android.permission.BIND_DEVICE_ADMIN">
             <meta-data
                 android:name="android.app.device_admin"
@@ -108,7 +78,6 @@
             </intent-filter>
         </receiver>
 
-        <!-- Services -->
         <service
             android:name=".service.MyAccessibilityService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
@@ -122,7 +91,7 @@
         </service>
 
         <service
-            android:name=".service.MyIMEService"
+            android:name=".service.KeyMapperImeService"
             android:label="@string/ime_service_label"
             android:permission="android.permission.BIND_INPUT_METHOD">
             <intent-filter>
@@ -130,7 +99,7 @@
             </intent-filter>
             <meta-data
                 android:name="android.view.im"
-                android:resource="@xml/method" />
+                android:resource="@xml/input_method" />
         </service>
     </application>
 </manifest>

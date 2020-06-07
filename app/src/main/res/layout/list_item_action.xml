@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <import type="io.github.sds100.keymapper.util.ActionType" />
+
+        <import type="io.github.sds100.keymapper.util.TintType" />
+
+        <variable
+            name="model"
+            type="io.github.sds100.keymapper.data.model.ActionModel" />
+
+        <variable
+            name="icon"
+            type="android.graphics.drawable.Drawable" />
+
+        <variable
+            name="flagsAreAvailable"
+            type="Boolean" />
+
+        <variable
+            name="onRemoveClick"
+            type="View.OnClickListener" />
+
+        <variable
+            name="onClick"
+            type="View.OnClickListener" />
+
+        <variable
+            name="onMoreClick"
+            type="View.OnClickListener" />
+
+        <variable
+            name="onDragClick"
+            type="View.OnClickListener" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardView"
+        style="@style/SecondaryCardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/cardview_padding_left"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="@dimen/cardview_padding_right"
+        android:layout_marginBottom="8dp"
+        android:onClick="@{onClick}"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraint_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp">
+
+            <LinearLayout
+                android:id="@+id/layoutDescription"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:gravity="center_vertical"
+                android:minHeight="40dp"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toStartOf="@+id/buttonMore"
+                app:layout_constraintStart_toEndOf="@+id/imageView"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/textViewTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{model.title == null ? model.briefErrorMessage : model.title}"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="?attr/colorOnSurface"
+                    tools:text="Increase Volume" />
+
+                <TextView
+                    android:id="@+id/textViewSecondary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{model.flags}"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                    android:visibility='@{model.hasFlags ? View.VISIBLE : View.GONE}'
+                    tools:text="Show Volume Dialog"
+                    tools:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/textViewError"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{model.briefErrorMessage}"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                    android:textColor="?attr/colorError"
+                    android:visibility='@{model.hasError ? View.VISIBLE : View.GONE}'
+                    tools:text="Needs Do Not Disturb permission!"
+                    tools:visibility="visible" />
+            </LinearLayout>
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imageView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="4dp"
+                android:src="@{model.hasError ? @drawable/ic_baseline_error_outline_24 : icon}"
+                app:layout_constraintBottom_toBottomOf="@id/layoutDescription"
+                app:layout_constraintEnd_toStartOf="@+id/layoutDescription"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/layoutDescription"
+                app:layout_constraintVertical_bias="0.0"
+                app:tintType="@{model.hasError ? TintType.ERROR : model.type == ActionType.SYSTEM_ACTION ? TintType.ON_SURFACE : TintType.NONE}"
+                tools:srcCompat="@mipmap/ic_launcher"
+                tools:visibility="visible" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/buttonMore"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="36dp"
+                android:layout_height="0dp"
+                android:onClick="@{onMoreClick}"
+                app:srcCompat="@drawable/ic_outline_more_vert_24"
+                android:tint="?attr/colorOnSurface"
+                android:visibility="@{flagsAreAvailable ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="@+id/buttonRemove"
+                app:layout_constraintEnd_toStartOf="@+id/buttonRemove"
+                app:layout_constraintTop_toTopOf="@id/buttonRemove" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/buttonRemove"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="36dp"
+                android:layout_height="0dp"
+                android:onClick="@{onRemoveClick}"
+                app:srcCompat="@drawable/ic_outline_clear_24"
+                android:tint="?attr/colorOnSurface"
+                app:layout_constraintBottom_toBottomOf="@id/imageView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/imageView"
+                app:layout_constraintVertical_bias="0.0" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

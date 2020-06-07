@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.util
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.media.AudioManager
@@ -50,10 +51,10 @@ object AudioUtils {
                      @AdjustMode adjustMode: Int,
                      showVolumeUi: Boolean = false) {
 
-        if (ctx.accessNotificationPolicyGranted) {
+        if (PermissionUtils.isPermissionGranted(Manifest.permission.ACCESS_NOTIFICATION_POLICY)) {
 
             val audioManager = ctx.applicationContext.getSystemService(Context.AUDIO_SERVICE)
-                    as AudioManager
+                as AudioManager
 
             val flag = if (showVolumeUi) {
                 AudioManager.FLAG_SHOW_UI
@@ -70,9 +71,9 @@ object AudioUtils {
                              showVolumeUi: Boolean = false,
                              @StreamType streamType: Int) {
 
-        if (ctx.accessNotificationPolicyGranted) {
+        if (PermissionUtils.isPermissionGranted(Manifest.permission.ACCESS_NOTIFICATION_POLICY)) {
             val audioManager = ctx.applicationContext.getSystemService(Context.AUDIO_SERVICE)
-                    as AudioManager
+                as AudioManager
 
             val flag = if (showVolumeUi) {
                 AudioManager.FLAG_SHOW_UI
@@ -86,7 +87,7 @@ object AudioUtils {
 
     fun cycleThroughRingerModes(ctx: Context) {
         (ctx.applicationContext.getSystemService(Context.AUDIO_SERVICE)
-                as AudioManager).apply {
+            as AudioManager).apply {
 
             when (ringerMode) {
                 AudioManager.RINGER_MODE_NORMAL -> changeRingerMode(ctx, AudioManager.RINGER_MODE_VIBRATE)
@@ -97,9 +98,9 @@ object AudioUtils {
     }
 
     fun changeRingerMode(ctx: Context, @RingerMode ringerMode: Int) {
-        if (ctx.accessNotificationPolicyGranted) {
+        if (PermissionUtils.isPermissionGranted(Manifest.permission.ACCESS_NOTIFICATION_POLICY)) {
             val audioManager = ctx.applicationContext.getSystemService(Context.AUDIO_SERVICE)
-                    as AudioManager
+                as AudioManager
 
             audioManager.ringerMode = ringerMode
         }

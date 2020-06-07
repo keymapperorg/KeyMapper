@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2018 Google LLC
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     https://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_app"
+    app:startDestination="@id/keymap_list_fragment">
+
+    <fragment
+        android:id="@+id/keymap_list_fragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.KeymapListFragment"
+        tools:layout="@layout/fragment_keymap_list">
+
+        <action
+            android:id="@+id/action_keymap_list_fragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+    </fragment>
+
+    <action
+        android:id="@+id/action_to_config_keymap"
+        app:destination="@id/nav_config_keymap"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right">
+        <argument
+            android:name="keymapId"
+            app:argType="long" />
+    </action>
+
+    <include app:graph="@navigation/nav_config_keymap" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_about" />
+    <action
+        android:id="@+id/action_global_settingsFragment"
+        app:destination="@id/settingsFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right" />
+
+    <dialog
+        android:id="@+id/onlineFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.OnlineFileFragment"
+        android:label="help_fragment"
+        tools:layout="@layout/fragment_online_file">
+        <argument
+            android:name="@string/nav_arg_header"
+            app:argType="reference" />
+        <argument
+            android:name="@string/nav_arg_file_url"
+            app:argType="reference" />
+        <argument
+            android:name="@string/nav_arg_file_url_alt"
+            android:defaultValue="0"
+            app:argType="reference" />
+    </dialog>
+
+    <action
+        android:id="@+id/action_global_onlineFileFragment"
+        app:destination="@id/onlineFragment"
+        app:enterAnim="@anim/slide_in_bottom">
+        <argument
+            android:name="@string/nav_arg_header"
+            app:argType="reference" />
+        <argument
+            android:name="@string/nav_arg_file_url"
+            app:argType="reference" />
+    </action>
+
+    <action
+        android:id="@+id/action_global_helpFragment"
+        app:destination="@id/onlineFragment"
+        app:enterAnim="@anim/slide_in_bottom">
+        <argument
+            android:name="@string/nav_arg_header"
+            android:defaultValue="@string/title_help"
+            app:argType="reference" />
+        <argument
+            android:name="@string/nav_arg_file_url"
+            android:defaultValue="@string/url_help"
+            app:argType="reference" />
+        <argument
+            android:name="@string/nav_arg_file_url_alt"
+            android:defaultValue="@string/url_help_alternate"
+            app:argType="reference" />
+    </action>
+
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.AboutFragment"
+        android:label="fragment_about"
+        tools:layout="@layout/fragment_about" />
+
+    <action
+        android:id="@+id/action_global_aboutFragment"
+        app:destination="@id/aboutFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right" />
+
+    <dialog
+        android:id="@+id/menuFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.MenuFragment"
+        android:label="fragment_menu"
+        tools:layout="@layout/fragment_menu" />
+    <action
+        android:id="@+id/action_global_menuFragment"
+        app:destination="@id/menuFragment"
+        app:enterAnim="@anim/slide_in_bottom" />
+</navigation>
