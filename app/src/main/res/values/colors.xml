@@ -28,6 +28,9 @@
     <color name="orange">#ef6c00</color>
     <color name="orangeDark">#b53d00</color>
 
+    <color name="purple">#9C27B0</color>
+    <color name="purpleDark">#4A148C</color>
+
     <color name="ic_launcher_background">#ffffff</color>
     <color name="cardview_stroke">@color/mtrl_btn_stroke_color_selector</color>
 </resources>

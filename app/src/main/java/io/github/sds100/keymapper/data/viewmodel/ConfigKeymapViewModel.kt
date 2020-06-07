@@ -108,7 +108,16 @@ class ConfigKeymapViewModel internal constructor(
     val constraintAndMode: MutableLiveData<Boolean> = MutableLiveData()
     val constraintOrMode: MutableLiveData<Boolean> = MutableLiveData()
 
-    val showOnboardingPrompt: MutableLiveData<Event<NotifyUserModel>> = MutableLiveData()
+    val showOnboardingPrompt = MediatorLiveData<Event<NotifyUserModel>>().apply {
+        addSource(actionList) {
+            if (!getShownPrompt(R.string.key_pref_showcase_tap_action_to_test) && it.isNotEmpty()) {
+
+                this.value = Event(NotifyUserModel(R.string.showcase_tap_action_to_test_message) {
+                    onboardingState.setShownPrompt(R.string.key_pref_showcase_tap_action_to_test)
+                })
+            }
+        }
+    }
     val promptToEnableAccessibilityService: MutableLiveData<Event<Unit>> = MutableLiveData()
 
     private val mAllowedTriggerExtras: MutableLiveData<Set<String>>
