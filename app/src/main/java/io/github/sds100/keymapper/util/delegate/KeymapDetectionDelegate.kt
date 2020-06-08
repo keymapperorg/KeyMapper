@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.util.delegate
 
 import android.view.KeyEvent
+import androidx.annotation.MainThread
 import androidx.collection.SparseArrayCompat
 import androidx.collection.keyIterator
 import androidx.collection.valueIterator
@@ -1052,10 +1053,12 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         return false
     }
 
+    @MainThread
     private fun performAction(action: Action, showToast: Boolean) {
         val metaState = mMetaStateFromKeyEvent.withFlag(mMetaStateFromActions)
         Timber.d("current metastate = $metaState")
-        performAction.postValue(Event(PerformActionModel(action, metaState, showToast)))
+        //Don't use postValue because multiple actions can't be performed at the same time
+        performAction.value = Event(PerformActionModel(action, metaState, showToast))
     }
 
     private val Int.clickType
