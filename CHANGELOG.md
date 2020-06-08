@@ -1,3 +1,41 @@
+## [2.0.0](https://github.com/sds100/KeyMapper/releases/tag/v2.0.0) 🎉
+#### 08 Jun 2020
+### Added
+
+- Dark mode! 🕶
+
+- A keymap can have multiple actions.
+- Triggers
+  - 2 modes. The keys can all be pressed at the same time or one after each other in a sequence.
+  - Keys can be limited to a specific external device, any device or the device the app is installed on.
+  - Double press support.
+- Constraints. Keymaps can be restricted to only work in certain situations. Constraints can be mixed in OR mode or AND mode.
+  - App in foreground
+  - App not in foreground
+  - Bluetooth device connected
+  - Bluetooth device not connected
+- The option to show the "performing action" toast has been moved to a toggle in each keymap.
+- The long press delay, double press timeout, sequence trigger timeout, action repeat delay, hold-down delay until actions are repeated and vibrate delay can be changed per keymap.
+- Modifier keys now affect Key and Keycode actions.
+- Keymaps which have modifier key actions now affect other keymaps and keys which aren't mapped.
+- Show the keycode number when picking a Keycode action.
+- Link to the Discord server in About.
+
+### Bug Fixes
+
+- App Shortcut actions now work properly!
+
+- The code base has completely changed so some bugs in 1.1.7 could have been fixed.
+
+### Changes
+
+- Keymaps can only have one trigger. Any keymaps with multiple triggers will be split up into multiple keymaps.
+
+### Removed
+
+- The in-app logger. Send Android bug reports instead.
+- Showing the Input Method picker on Android 10 and newer because Android dropped support.
+
 ## [1.1.7](https://github.com/sds100/KeyMapper/releases/tag/v1.1.7)
 #### 07 Jan 2020
 
@@ -133,7 +171,7 @@ Changes from 1.1.0 Beta 8:
  - Option to log events and send them to the developer so it is easier to debug issues with the app.
  - Button to Help page on homescreen.
  - Translation instuctions to the About activity.
- 
+
 ### Changes
  - Add the trigger after the 5 seconds rather than having to press the button so the app can work with devices which only have remotes as input.
  - Cleanup Settings strings.
@@ -141,7 +179,7 @@ Changes from 1.1.0 Beta 8:
  - Don't show the "Key mapper is performing an action" toast message by default.
  - Allow the volume to be changed while in Do Not Disturb mode.
  - Minimum vibration duration is 1ms rather than 100ms
- 
+
 ### Bug Fixes
 - The landscape mode action wouldn't work.
 - Would potentially crash when trying to open the write-settings permission page.
