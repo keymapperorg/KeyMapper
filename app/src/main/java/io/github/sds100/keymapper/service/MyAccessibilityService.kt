@@ -205,6 +205,8 @@ class MyAccessibilityService : AccessibilityService(),
         })
 
         mKeymapDetectionDelegate.performAction.observe(this, EventObserver { model ->
+            Timber.d("perform action ${model.action.uniqueId}")
+
             model.action.canBePerformed(this).onSuccess {
                 mActionPerformerDelegate.performAction(model)
             }.onFailure {
