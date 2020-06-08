@@ -1,4 +1,4 @@
-## [2.0.0](https://github.com/sds100/KeyMapper/releases/tag/v2.0.0) 🎉
+## [2.0.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v2.0.0-beta.1) 🎉
 #### 08 Jun 2020
 ### Added
 
