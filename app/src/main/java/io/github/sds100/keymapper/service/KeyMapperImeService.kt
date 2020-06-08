@@ -1,16 +1,19 @@
 package io.github.sds100.keymapper.service
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.inputmethodservice.InputMethodService
 import android.os.SystemClock
 import android.provider.Settings
 import android.view.KeyEvent
 import android.view.inputmethod.ExtractedTextRequest
 import android.view.inputmethod.InputConnection
+import androidx.annotation.MainThread
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.MutableLiveData
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
+import io.github.sds100.keymapper.util.Event
+import io.github.sds100.keymapper.util.EventObserver
 import io.github.sds100.keymapper.util.result.KeyMapperImeNotFound
 import io.github.sds100.keymapper.util.result.Result
 import io.github.sds100.keymapper.util.result.Success
@@ -22,15 +25,10 @@ import timber.log.Timber
  * Created by sds100 on 31/03/2020.
  */
 
-class KeyMapperImeService : InputMethodService() {
+class KeyMapperImeService : InputMethodService(), LifecycleOwner {
     companion object {
-        const val ACTION_INPUT_KEYCODE = "$PACKAGE_NAME.INPUT_KEYCODE"
-        const val ACTION_INPUT_DOWN_UP = "$PACKAGE_NAME.INPUT_DOWN_UP"
-        const val ACTION_INPUT_TEXT = "$PACKAGE_NAME.INPUT_TEXT"
-
-        const val EXTRA_KEYCODE = "extra_keycode"
-        const val EXTRA_META_STATE = "extra_meta_state"
-        const val EXTRA_TEXT = "extra_text"
+        const val EVENT_INPUT_DOWN_UP = "input_down_up"
+        const val EVENT_INPUT_TEXT = "input_text"
 
         fun isServiceEnabled(): Boolean {
             val enabledMethods = inputMethodManager.enabledInputMethodList ?: return false
@@ -61,67 +59,64 @@ class KeyMapperImeService : InputMethodService() {
 
             return inputMethodManager.inputMethodList.find { it.id == chosenImeId }?.packageName == PACKAGE_NAME
         }
-    }
 
-    private val mBroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent != null) {
-                when (intent.action!!) {
-                    ACTION_INPUT_KEYCODE -> {
-                        val keyCode = intent.getIntExtra(EXTRA_KEYCODE, 0)
+        private lateinit var BUS: MutableLiveData<Event<Pair<String, Any?>>>
 
-                        sendDownUpKeyEvents(keyCode)
-                    }
+        @MainThread
+        fun provideBus(): MutableLiveData<Event<Pair<String, Any?>>> {
+            BUS = if (::BUS.isInitialized) BUS else MutableLiveData()
 
-                    ACTION_INPUT_TEXT -> {
-                        val text = intent.getStringExtra(EXTRA_TEXT)
-
-                        currentInputConnection.commitText(text, 1)
-                    }
-
-                    ACTION_INPUT_DOWN_UP -> {
-                        val keyCode = intent.getIntExtra(EXTRA_KEYCODE, -1)
-                        val metaState = intent.getIntExtra(EXTRA_META_STATE, 0)
-
-                        if (keyCode == -1) return
-
-                        val eventTime = SystemClock.uptimeMillis()
-
-                        val downEvent = KeyEvent(eventTime, eventTime,
-                            KeyEvent.ACTION_DOWN, keyCode, 0, metaState)
-
-                        currentInputConnection.sendKeyEvent(downEvent)
-
-                        Timber.d("input $downEvent")
-
-                        val upEvent = KeyEvent(eventTime, SystemClock.uptimeMillis(),
-                            KeyEvent.ACTION_UP, keyCode, 0)
-
-                        currentInputConnection.sendKeyEvent(upEvent)
-
-                        Timber.d("input $upEvent")
-                    }
-                }
-            }
+            return BUS
         }
     }
+
+    private lateinit var mLifecycleRegistry: LifecycleRegistry
 
     override fun onCreate() {
         super.onCreate()
 
-        val intentFilter = IntentFilter()
-        intentFilter.addAction(ACTION_INPUT_KEYCODE)
-        intentFilter.addAction(ACTION_INPUT_TEXT)
-        intentFilter.addAction(ACTION_INPUT_DOWN_UP)
+        mLifecycleRegistry = LifecycleRegistry(this)
+        mLifecycleRegistry.currentState = Lifecycle.State.STARTED
 
-        registerReceiver(mBroadcastReceiver, intentFilter)
+        provideBus().observe(this, EventObserver {
+            when (it.first) {
+                EVENT_INPUT_TEXT -> {
+                    val text = it.second as String
+
+                    currentInputConnection.commitText(text, 1)
+                }
+
+                EVENT_INPUT_DOWN_UP -> {
+                    val keyCode = (it.second as IntArray)[0]
+                    val metaState = (it.second as IntArray)[1]
+
+                    val eventTime = SystemClock.uptimeMillis()
+
+                    val downEvent = KeyEvent(eventTime, eventTime,
+                        KeyEvent.ACTION_DOWN, keyCode, 0, metaState)
+
+                    currentInputConnection.sendKeyEvent(downEvent)
+
+                    Timber.d("input $downEvent")
+
+                    val upEvent = KeyEvent(eventTime, SystemClock.uptimeMillis(),
+                        KeyEvent.ACTION_UP, keyCode, 0)
+
+                    currentInputConnection.sendKeyEvent(upEvent)
+
+                    Timber.d("input $upEvent")
+                }
+            }
+        })
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
-        unregisterReceiver(mBroadcastReceiver)
+        mLifecycleRegistry.currentState = Lifecycle.State.DESTROYED
     }
+
+    override fun getLifecycle() = mLifecycleRegistry
 
     private val InputConnection.charCount: Int
         get() {

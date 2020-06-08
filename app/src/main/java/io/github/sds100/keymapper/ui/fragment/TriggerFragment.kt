@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.navigation.navGraphViewModels
@@ -20,15 +21,10 @@ import com.airbnb.epoxy.EpoxyTouchHelper
 import com.google.android.material.card.MaterialCardView
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.TriggerKeyBindingModel_
-import io.github.sds100.keymapper.data.model.Extra
-import io.github.sds100.keymapper.data.model.SeekBarListItemModel
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentTriggerBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
-import io.github.sds100.keymapper.service.MyAccessibilityService.Companion.ACTION_RECORD_TRIGGER_KEY
-import io.github.sds100.keymapper.service.MyAccessibilityService.Companion.ACTION_RECORD_TRIGGER_TIMER_INCREMENTED
-import io.github.sds100.keymapper.service.MyAccessibilityService.Companion.ACTION_STOP_RECORDING_TRIGGER
 import io.github.sds100.keymapper.triggerKey
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.launch
@@ -54,28 +50,6 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
 
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
-                ACTION_RECORD_TRIGGER_KEY -> {
-                    val keyEvent = intent.getParcelableExtra<KeyEvent>(Intent.EXTRA_KEY_EVENT) ?: return
-
-                    lifecycleScope.launchWhenCreated {
-                        val deviceName = keyEvent.device.name
-                        val deviceDescriptor = keyEvent.device.descriptor
-                        val isExternal = keyEvent.device.isExternalCompat
-
-                        mViewModel.addTriggerKey(keyEvent.keyCode, deviceDescriptor, deviceName, isExternal)
-                    }
-                }
-
-                ACTION_RECORD_TRIGGER_TIMER_INCREMENTED -> {
-                    mViewModel.recordingTrigger.value = true
-                    val timeLeft = intent.getIntExtra(MyAccessibilityService.EXTRA_TIME_LEFT, 5)
-
-                    mViewModel.recordTriggerTimeLeft.value = timeLeft
-                }
-
-                ACTION_STOP_RECORDING_TRIGGER -> {
-                    mViewModel.recordingTrigger.value = false
-                }
 
                 Intent.ACTION_INPUT_METHOD_CHANGED -> {
                     mViewModel.rebuildActionModels()
@@ -88,9 +62,6 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
         super.onCreate(savedInstanceState)
 
         IntentFilter().apply {
-            addAction(ACTION_RECORD_TRIGGER_KEY)
-            addAction(ACTION_STOP_RECORDING_TRIGGER)
-            addAction(ACTION_RECORD_TRIGGER_TIMER_INCREMENTED)
             addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
 
             requireActivity().registerReceiver(mBroadcastReceiver, this)
@@ -137,6 +108,36 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
                     }.toList()
 
                     mViewModel.triggerKeyModelList.value = modelList
+                }
+            })
+
+            MyAccessibilityService.provideBus().observe(viewLifecycleOwner, Observer {
+
+                when (it.peekContent().first) {
+                    MyAccessibilityService.EVENT_RECORD_TRIGGER_KEY -> {
+                        val keyEvent = it.getContentIfNotHandled()?.second as KeyEvent
+
+                        lifecycleScope.launchWhenCreated {
+                            val deviceName = keyEvent.device.name
+                            val deviceDescriptor = keyEvent.device.descriptor
+                            val isExternal = keyEvent.device.isExternalCompat
+
+                            mViewModel.addTriggerKey(keyEvent.keyCode, deviceDescriptor, deviceName, isExternal)
+                        }
+                    }
+
+                    MyAccessibilityService.EVENT_RECORD_TRIGGER_TIMER_INCREMENTED -> {
+                        val data = it.getContentIfNotHandled()?.second ?: return@Observer
+                        val timeLeft = data as Int
+
+                        mViewModel.recordingTrigger.value = true
+                        mViewModel.recordTriggerTimeLeft.value = timeLeft
+                    }
+
+                    MyAccessibilityService.EVENT_STOP_RECORDING_TRIGGER -> {
+                        it.handled()
+                        mViewModel.recordingTrigger.value = false
+                    }
                 }
             })
         }

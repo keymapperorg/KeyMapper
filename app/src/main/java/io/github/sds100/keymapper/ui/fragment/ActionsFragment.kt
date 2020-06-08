@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.ui.fragment
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -66,11 +65,8 @@ class ActionsFragment(private val mKeymapId: Long) : Fragment() {
             subscribeActionList()
 
             mViewModel.testAction.observe(viewLifecycleOwner, EventObserver {
-                if (AccessibilityUtils.isServiceEnabled(requireContext())){
-                    Intent(MyAccessibilityService.ACTION_TEST_ACTION).apply {
-                        putExtra(MyAccessibilityService.EXTRA_ACTION, it)
-                        requireContext().sendBroadcast(this)
-                    }
+                if (AccessibilityUtils.isServiceEnabled(requireContext())) {
+                    MyAccessibilityService.provideBus().value = Event(MyAccessibilityService.EVENT_TEST_ACTION to it)
                 } else {
                     mViewModel.promptToEnableAccessibilityService.value = Event(Unit)
                 }

@@ -10,6 +10,7 @@ import io.github.sds100.keymapper.broadcastreceiver.KeyMapperBroadcastReceiver
  */
 
 object IntentUtils {
+
     fun createPendingBroadcastIntent(
         ctx: Context,
         action: String,
