@@ -6,7 +6,7 @@
 
 - A keymap can have multiple actions.
 - Triggers
-  - 2 modes. The keys can all be pressed at the same time or one after each other in a sequence.
+  - 2 modes. The keys can all be pressed at the same time or one after another in a sequence.
   - Keys can be limited to a specific external device, any device or the device the app is installed on.
   - Double press support.
 - Constraints. Keymaps can be restricted to only work in certain situations. Constraints can be mixed in OR mode or AND mode.
