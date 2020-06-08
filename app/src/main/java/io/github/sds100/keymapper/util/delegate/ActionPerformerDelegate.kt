@@ -91,11 +91,8 @@ class ActionPerformerDelegate(context: Context,
                 }
 
                 ActionType.TEXT_BLOCK -> {
-                    val intent = Intent(KeyMapperImeService.ACTION_INPUT_TEXT)
-                    //put the text in the intent
-                    intent.putExtra(KeyMapperImeService.EXTRA_TEXT, action.data)
-
-                    sendBroadcast(intent)
+                    KeyMapperImeService.provideBus().value =
+                        Event(KeyMapperImeService.EVENT_INPUT_TEXT to action.data)
                 }
 
                 ActionType.URL -> {
@@ -116,7 +113,7 @@ class ActionPerformerDelegate(context: Context,
 
                 else -> {
                     if (action.type == ActionType.KEY_EVENT) {
-                        mCtx.sendDownUpFromImeService(
+                        KeyboardUtils.sendDownUpFromImeService(
                             keyCode = action.data.toInt(),
                             metaState = metaState.withFlag(
                                 action.getExtraData(Action.EXTRA_KEY_EVENT_META_STATE).valueOrNull()?.toInt() ?: 0
@@ -260,7 +257,7 @@ class ActionPerformerDelegate(context: Context,
                     dpm.lockNow()
                 }
 
-                SystemAction.MOVE_CURSOR_TO_END -> sendDownUpFromImeService(
+                SystemAction.MOVE_CURSOR_TO_END -> KeyboardUtils.sendDownUpFromImeService(
                     keyCode = KeyEvent.KEYCODE_MOVE_END,
                     metaState = KeyEvent.META_CTRL_ON
                 )
@@ -339,13 +336,5 @@ class ActionPerformerDelegate(context: Context,
                 }
             }
         }
-    }
-
-    private fun Context.inputKeyCode(keyCode: Int) {
-        val intent = Intent(KeyMapperImeService.ACTION_INPUT_KEYCODE)
-        //put the keycode in the intent
-        intent.putExtra(KeyMapperImeService.EXTRA_KEYCODE, keyCode)
-
-        sendBroadcast(intent)
     }
 }

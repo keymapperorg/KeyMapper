@@ -39,6 +39,10 @@ open class Event<out T>(private val content: T) : Serializable {
         }
     }
 
+    fun handled() {
+        hasBeenHandled = true
+    }
+
     /**
      * Returns the content, even if it's already been handled.
      */

@@ -107,6 +107,11 @@ object KeyboardUtils {
             toast(R.string.error_cant_find_ime_settings)
         }
     }
+
+    fun sendDownUpFromImeService(keyCode: Int, metaState: Int = 0) {
+        KeyMapperImeService.provideBus().value =
+            Event(KeyMapperImeService.EVENT_INPUT_DOWN_UP to intArrayOf(keyCode, metaState))
+    }
 }
 
 @RequiresApi(Build.VERSION_CODES.N)

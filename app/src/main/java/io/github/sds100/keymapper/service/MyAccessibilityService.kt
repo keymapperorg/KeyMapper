@@ -10,6 +10,7 @@ import android.os.VibrationEffect
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import androidx.annotation.MainThread
 import androidx.lifecycle.*
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.MyApplication
@@ -41,22 +42,30 @@ class MyAccessibilityService : AccessibilityService(),
     IConstraintState {
 
     companion object {
-        const val EXTRA_ACTION = "action"
-        const val EXTRA_TIME_LEFT = "time"
 
-        const val ACTION_RECORD_TRIGGER = "$PACKAGE_NAME.RECORD_TRIGGER"
-        const val ACTION_TEST_ACTION = "$PACKAGE_NAME.TEST_ACTION"
-        const val ACTION_STOP_RECORDING_TRIGGER = "$PACKAGE_NAME.STOP_RECORDING_TRIGGER"
-        const val ACTION_RECORD_TRIGGER_TIMER_INCREMENTED = "$PACKAGE_NAME.TIMER_INCREMENTED"
-        const val ACTION_RECORD_TRIGGER_KEY = "$PACKAGE_NAME.RECORD_TRIGGER_KEY"
         const val ACTION_PAUSE_REMAPPINGS = "$PACKAGE_NAME.PAUSE_REMAPPINGS"
         const val ACTION_RESUME_REMAPPINGS = "$PACKAGE_NAME.RESUME_REMAPPINGS"
-        const val ACTION_UPDATE_NOTIFICATION = "$PACKAGE_NAME.UPDATE_NOTIFICATION"
         const val ACTION_START = "$PACKAGE_NAME.START_ACCESSIBILITY_SERVICE"
         const val ACTION_STOP = "$PACKAGE_NAME.STOP_ACCESSIBILITY_SERVICE"
-        const val ACTION_ON_SERVICE_START = "$PACKAGE_NAME.ON_START_ACCESSIBILITY_SERVICE"
-        const val ACTION_ON_SERVICE_STOP = "$PACKAGE_NAME.ON_STOP_ACCESSIBILITY_SERVICE"
         const val ACTION_SHOW_KEYBOARD = "$PACKAGE_NAME.SHOW_KEYBOARD"
+        const val ACTION_UPDATE_NOTIFICATION = "$PACKAGE_NAME.UPDATE_NOTIFICATION"
+
+        const val EVENT_RECORD_TRIGGER = "record_trigger"
+        const val EVENT_RECORD_TRIGGER_KEY = "record_trigger_key"
+        const val EVENT_RECORD_TRIGGER_TIMER_INCREMENTED = "record_trigger_timer_incremented"
+        const val EVENT_STOP_RECORDING_TRIGGER = "stop_recording_trigger"
+        const val EVENT_TEST_ACTION = "test_action"
+        const val EVENT_ON_SERVICE_STOPPED = "accessibility_service_stopped"
+        const val EVENT_ON_SERVICE_STARTED = "accessibility_service_started"
+
+        private lateinit var BUS: MutableLiveData<Event<Pair<String, Any?>>>
+
+        @MainThread
+        fun provideBus(): MutableLiveData<Event<Pair<String, Any?>>> {
+            BUS = if (::BUS.isInitialized) BUS else MutableLiveData()
+
+            return BUS
+        }
 
         /**
          * How long should the accessibility service record a trigger in seconds.
@@ -70,22 +79,6 @@ class MyAccessibilityService : AccessibilityService(),
     private val mBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
-                ACTION_RECORD_TRIGGER -> {
-                    //don't start recording if a trigger is being recorded
-                    if (!mRecordingTrigger) {
-                        mRecordingTrigger = true
-
-                        lifecycleScope.launchWhenCreated {
-                            recordTrigger()
-                        }
-                    }
-                }
-
-                ACTION_TEST_ACTION -> {
-                    intent.getSerializableExtra(EXTRA_ACTION)?.let { action ->
-                        mActionPerformerDelegate.performAction(action as Action)
-                    }
-                }
 
                 ACTION_PAUSE_REMAPPINGS -> {
                     mKeymapDetectionDelegate.reset()
@@ -99,23 +92,6 @@ class MyAccessibilityService : AccessibilityService(),
                     WidgetsManager.onEvent(this@MyAccessibilityService, WidgetsManager.EVENT_RESUME_REMAPS)
                 }
 
-                ACTION_UPDATE_NOTIFICATION -> {
-                    if (mPaused) {
-                        WidgetsManager.onEvent(this@MyAccessibilityService, WidgetsManager.EVENT_PAUSE_REMAPS)
-                    } else {
-                        WidgetsManager.onEvent(this@MyAccessibilityService, WidgetsManager.EVENT_RESUME_REMAPS)
-                    }
-                }
-
-                Intent.ACTION_SCREEN_ON -> {
-                    mKeymapDetectionDelegate.reset()
-                }
-
-                ACTION_SHOW_KEYBOARD ->
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        softKeyboardController.show(baseContext)
-                    }
-
                 BluetoothDevice.ACTION_ACL_CONNECTED, BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
                     val device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE) ?: return
 
@@ -123,6 +99,20 @@ class MyAccessibilityService : AccessibilityService(),
                         mConnectedBtAddresses.remove(device.address)
                     } else {
                         mConnectedBtAddresses.add(device.address)
+                    }
+                }
+
+                ACTION_SHOW_KEYBOARD -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        softKeyboardController.show(baseContext)
+                    }
+                }
+
+                ACTION_UPDATE_NOTIFICATION -> {
+                    if (mPaused) {
+                        WidgetsManager.onEvent(this@MyAccessibilityService, WidgetsManager.EVENT_PAUSE_REMAPS)
+                    } else {
+                        WidgetsManager.onEvent(this@MyAccessibilityService, WidgetsManager.EVENT_RESUME_REMAPS)
                     }
                 }
             }
@@ -173,13 +163,11 @@ class MyAccessibilityService : AccessibilityService(),
             lifecycle = lifecycle)
 
         IntentFilter().apply {
-            addAction(ACTION_TEST_ACTION)
             addAction(ACTION_PAUSE_REMAPPINGS)
             addAction(ACTION_RESUME_REMAPPINGS)
             addAction(ACTION_UPDATE_NOTIFICATION)
-            addAction(Intent.ACTION_SCREEN_ON)
-            addAction(ACTION_RECORD_TRIGGER)
             addAction(ACTION_SHOW_KEYBOARD)
+            addAction(Intent.ACTION_SCREEN_ON)
             addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
             addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
 
@@ -193,7 +181,7 @@ class MyAccessibilityService : AccessibilityService(),
         defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
 
         WidgetsManager.onEvent(this, EVENT_SERVICE_START)
-        sendBroadcast(Intent(ACTION_ON_SERVICE_START))
+        provideBus().value = Event(EVENT_ON_SERVICE_STARTED to null)
 
         mKeymapDetectionDelegate.imitateButtonPress.observe(this, EventObserver {
             Timber.d("imitate button press")
@@ -209,7 +197,7 @@ class MyAccessibilityService : AccessibilityService(),
                 KeyEvent.KEYCODE_APP_SWITCH -> performGlobalAction(GLOBAL_ACTION_RECENTS)
                 KeyEvent.KEYCODE_MENU -> mActionPerformerDelegate.performSystemAction(SystemAction.OPEN_MENU)
 
-                else -> sendDownUpFromImeService(
+                else -> KeyboardUtils.sendDownUpFromImeService(
                     keyCode = it.keyCode,
                     metaState = it.metaState
                 )
@@ -234,6 +222,35 @@ class MyAccessibilityService : AccessibilityService(),
                 vibrator.vibrate(it)
             }
         })
+
+        provideBus().observe(this, Observer {
+            it ?: return@Observer
+
+            when (it.peekContent().first) {
+                EVENT_RECORD_TRIGGER -> {
+                    //don't start recording if a trigger is being recorded
+                    if (!mRecordingTrigger) {
+                        mRecordingTrigger = true
+
+                        lifecycleScope.launchWhenCreated {
+                            recordTrigger()
+                        }
+                    }
+
+                    it.handled()
+                }
+
+                EVENT_TEST_ACTION -> {
+                    val action = it.getContentIfNotHandled()?.second as Action
+                    mActionPerformerDelegate.performAction(action)
+                }
+
+                Intent.ACTION_SCREEN_ON -> {
+                    mKeymapDetectionDelegate.reset()
+                    it.handled()
+                }
+            }
+        })
     }
 
     override fun onInterrupt() {}
@@ -244,7 +261,7 @@ class MyAccessibilityService : AccessibilityService(),
         mLifecycleRegistry.currentState = Lifecycle.State.DESTROYED
 
         WidgetsManager.onEvent(this, EVENT_SERVICE_STOPPED)
-        sendBroadcast(Intent(ACTION_ON_SERVICE_STOP))
+        provideBus().value = Event(EVENT_ON_SERVICE_STOPPED to null)
         defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
 
         unregisterReceiver(mBroadcastReceiver)
@@ -259,11 +276,7 @@ class MyAccessibilityService : AccessibilityService(),
             if (event.action == KeyEvent.ACTION_DOWN) {
 
                 //tell the UI that a key has been pressed
-
-                Intent(ACTION_RECORD_TRIGGER_KEY).apply {
-                    putExtra(Intent.EXTRA_KEY_EVENT, event)
-                    sendBroadcast(this)
-                }
+                provideBus().value = Event(EVENT_RECORD_TRIGGER_KEY to event)
             }
 
             return true
@@ -325,16 +338,12 @@ class MyAccessibilityService : AccessibilityService(),
         repeat(RECORD_TRIGGER_TIMER_LENGTH) { iteration ->
             val timeLeft = RECORD_TRIGGER_TIMER_LENGTH - iteration
 
-            Intent(ACTION_RECORD_TRIGGER_TIMER_INCREMENTED).apply {
-                putExtra(EXTRA_TIME_LEFT, timeLeft)
-
-                sendBroadcast(this)
-            }
+            provideBus().value = Event(EVENT_RECORD_TRIGGER_TIMER_INCREMENTED to timeLeft)
 
             delay(1000)
         }
 
-        sendBroadcast(Intent(ACTION_STOP_RECORDING_TRIGGER))
+        provideBus().value = Event(EVENT_STOP_RECORDING_TRIGGER to null)
 
         mRecordingTrigger = false
     }
