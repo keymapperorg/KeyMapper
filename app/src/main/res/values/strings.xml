@@ -310,7 +310,7 @@
     <string name="title_pref_show_toast_when_error_encountered">Show a message when an error is encountered in the app</string>
     <string name="summary_pref_show_toast_when_error_encountered">A message will be shown on the screen prompting you to log it when the app encounters an error it is aware of.</string>
 
-    <string name="title_pref_auto_change_ime_on_connection">Automatically change the keyboard.</string>
+    <string name="title_pref_auto_change_ime_on_connection">Automatically change the keyboard on Bluetooth connection</string>
     <string name="summary_pref_auto_change_ime_on_connection">The Key Mapper keyboard will be automatically selected when a chosen bluetooth device is connected. Your old keyboard will be automatically selected when the device disconnects.
         There may be a 5-10 second delay after disconnecting your device for the keyboard to change.</string>
 
@@ -324,6 +324,9 @@
     <string name="title_pref_dark_theme">Dark Theme</string>
 
     <string name="title_pref_notification_settings">Notification Settings</string>
+
+    <string name="title_pref_toggle_keyboard_on_toggle_keymaps">Automatically change the keyboard when toggling keymaps</string>
+    <string name="summary_pref_toggle_keyboard_on_toggle_keymaps">Automatically select the Key Mapper keyboard when you resume your keymaps and select your default keyboard when pausing them.</string>
     <!--Preference titles and summaries-->
 
     <!--Preference categories-->
