@@ -41,7 +41,6 @@ object KeyboardUtils {
     }
 
     @ExperimentalSplittiesApi
-    @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
     fun switchToKeyMapperIme(ctx: Context) {
         if (!isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
             ctx.toast(R.string.error_need_write_secure_settings_permission)
