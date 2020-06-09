@@ -403,6 +403,12 @@ class ConfigKeymapViewModel internal constructor(
             triggerInSequence.value = true
         }
 
+        /* Automatically make it a parallel trigger when the user makes a trigger with more than one key
+        because this is what most users are expecting when they make a trigger with multiple keys */
+        if (triggerKeys.value!!.size == 2) {
+            triggerInParallel.value = true
+        }
+
         return true
     }
 
