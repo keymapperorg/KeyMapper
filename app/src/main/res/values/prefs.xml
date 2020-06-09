@@ -41,6 +41,7 @@
     <string name="key_pref_trigger_device_names">key_trigger_device_names</string>
     <string name="key_pref_showcase_tap_action_to_test">key_showcase_tap_action_to_test</string>
     <string name="key_pref_last_installed_version">key_last_installed_version</string>
+    <string name="key_pref_toggle_keyboard_on_toggle_keymaps">key_toggle_keyboard_on_pause_resume_keymaps</string>
 
     <string name="key_pref_category_notifications" translatable="false">pref_category_notifications</string>
     <string name="key_pref_category_secure_settings" translatable="false">pref_category_secure_settings</string>

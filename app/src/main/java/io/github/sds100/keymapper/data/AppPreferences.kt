@@ -113,6 +113,11 @@ object AppPreferences : DefaultPreferences() {
         -1
     )
 
+    val toggleKeyboardOnToggleKeymaps by BoolPref(
+        appCtx.str(R.string.key_pref_toggle_keyboard_on_toggle_keymaps),
+        appCtx.bool(R.bool.default_value_toggle_keyboard_on_toggle_keymaps)
+    )
+
     @NightMode
     fun getSdkNightMode(darkThemePrefValue: String): Int {
         return when (darkThemePrefValue) {

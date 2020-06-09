@@ -5,17 +5,18 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Build.VERSION.SDK_INT
+import android.provider.Settings
 import androidx.annotation.DrawableRes
 import androidx.annotation.IntDef
 import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import io.github.sds100.keymapper.data.AppPreferences
+import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.activity.HomeActivity
-import io.github.sds100.keymapper.util.AccessibilityUtils
-import io.github.sds100.keymapper.util.IntentUtils
-import io.github.sds100.keymapper.util.NotificationUtils
-import io.github.sds100.keymapper.util.str
+import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.result.onSuccess
+import splitties.experimental.ExperimentalSplittiesApi
 
 /**
  * Created by sds100 on 24/03/2019.
@@ -24,6 +25,7 @@ import io.github.sds100.keymapper.util.str
 /**
  * Tells widgets (notifications, quick settings) what to display
  */
+@ExperimentalSplittiesApi
 object WidgetsManager {
     @IntDef(value = [
         EVENT_PAUSE_REMAPS,
@@ -117,6 +119,12 @@ object WidgetsManager {
                     ctx,
                     MyAccessibilityService.ACTION_RESUME_REMAPPINGS
                 )
+
+                if (AppPreferences.toggleKeyboardOnToggleKeymaps) {
+                    AppPreferences.defaultIme?.let {
+                        KeyboardUtils.switchIme(it)
+                    }
+                }
             }
 
             EVENT_RESUME_REMAPS, EVENT_SERVICE_START -> {
@@ -128,6 +136,20 @@ object WidgetsManager {
                     ctx,
                     MyAccessibilityService.ACTION_PAUSE_REMAPPINGS
                 )
+
+                if (event == EVENT_RESUME_REMAPS) {
+                    val defaultIme = Settings.Secure.getString(ctx.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD)
+
+                    KeyMapperImeService.getImeId().onSuccess {
+                        if (defaultIme != it) {
+                            AppPreferences.defaultIme = defaultIme
+                        }
+                    }
+
+                    if (AppPreferences.toggleKeyboardOnToggleKeymaps) {
+                        KeyboardUtils.switchToKeyMapperIme(ctx)
+                    }
+                }
             }
 
             EVENT_SERVICE_STOPPED -> {
