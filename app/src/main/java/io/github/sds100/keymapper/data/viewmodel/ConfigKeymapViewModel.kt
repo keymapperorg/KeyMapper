@@ -207,8 +207,8 @@ class ConfigKeymapViewModel internal constructor(
                     allowedExtras.add(Extra.EXTRA_DOUBLE_PRESS_DELAY)
                 }
 
-                if (!triggerKeys.value.isNullOrEmpty() &&
-                    !KeymapDetectionDelegate.performActionOnDown(triggerKeys.value!!, triggerMode.value!!)) {
+                if (!triggerKeys.value.isNullOrEmpty() && triggerKeys.value!!.size > 1
+                    && triggerMode.value == Trigger.SEQUENCE) {
                     allowedExtras.add(Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT)
                 }
 
