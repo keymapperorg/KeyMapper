@@ -238,7 +238,7 @@
     <string name="summary_pref_debug">启用记录应用中的重要事件，这样开发者（或您）就更容易调试您在应用中遇到的任何问题。该应用将记录一些潜在的敏感信息，例如何时和何种按键被按下因此在您完成记录后禁用它。日志将永远不会在未经您许可的情况下离开您的设备，无法被其他应用或您在文本编辑器中阅读。如果您卸载该应用，它将消失。 显示日志的按钮将出现在主屏幕上的菜单中。您可以从这里删除日志，并在您需要时发送给开发者。</string>
     <string name="title_pref_show_toast_when_error_encountered">在应用中遇到错误时显示消息</string>
     <string name="summary_pref_show_toast_when_error_encountered">当应用遇到错误时，将在屏幕上显示提示您登录的消息。</string>
-    <string name="title_pref_auto_change_ime_on_connection">自动更改键盘。</string>
+    <string name="title_pref_auto_change_ime_on_connection">Automatically change the keyboard on Bluetooth connection</string>
     <string name="summary_pref_auto_change_ime_on_connection">当选定的蓝牙设备连接时，将自动选择 Key Mapper 键盘。 当设备断开连接时，将自动选择您的旧键盘。
         在断开您的设备以更改键盘后，可能会有 5-10 秒的延迟。</string>
     <string name="title_pref_root_permission">Key Mapper 拥有 root 权限</string>
@@ -248,6 +248,8 @@
     <string name="summary_pref_toast_on_action_error">A little message will popup when an error is encountered while performing an action.</string>
     <string name="title_pref_dark_theme">Dark Theme</string>
     <string name="title_pref_notification_settings">Notification Settings</string>
+    <string name="title_pref_toggle_keyboard_on_toggle_keymaps">Automatically change the keyboard when toggling keymaps</string>
+    <string name="summary_pref_toggle_keyboard_on_toggle_keymaps">Automatically select the Key Mapper keyboard when you resume your keymaps and select your default keyboard when pausing them.</string>
     <!--Preference titles and summaries-->
     <!--Preference categories-->
     <string name="title_pref_category_ime_picker">键盘选择器</string>
