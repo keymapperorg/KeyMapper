@@ -238,7 +238,7 @@
     <string name="summary_pref_debug">Enable logging of important events inside the app so it is easier for the developer (or you) to debug any issues you are having with the app. The app will log some potentially sensitive information, such as when and which keys are being pressed so disable this once you have finished logging. The log will never leave your device without your permission and it can\'t be read by another app or you in a text editor. It will disappear if you uninstall the app. A button to see the log will appear in the menu on the home screen. From here you can delete the log and send it to the developer if you need.</string>
     <string name="title_pref_show_toast_when_error_encountered">Show a message when an error is encountered in the app</string>
     <string name="summary_pref_show_toast_when_error_encountered">A message will be shown on the screen prompting you to log it when the app encounters an error it is aware of.</string>
-    <string name="title_pref_auto_change_ime_on_connection">Automatically change the keyboard.</string>
+    <string name="title_pref_auto_change_ime_on_connection">Automatically change the keyboard on Bluetooth connection</string>
     <string name="summary_pref_auto_change_ime_on_connection">The Key Mapper keyboard will be automatically selected when a chosen bluetooth device is connected. Your old keyboard will be automatically selected when the device disconnects.
         There may be a 5-10 second delay after disconnecting your device for the keyboard to change.</string>
     <string name="title_pref_root_permission">Key Mapper has root permission</string>
@@ -248,6 +248,8 @@
     <string name="summary_pref_toast_on_action_error">A little message will popup when an error is encountered while performing an action.</string>
     <string name="title_pref_dark_theme">Dark Theme</string>
     <string name="title_pref_notification_settings">Notification Settings</string>
+    <string name="title_pref_toggle_keyboard_on_toggle_keymaps">Automatically change the keyboard when toggling keymaps</string>
+    <string name="summary_pref_toggle_keyboard_on_toggle_keymaps">Automatically select the Key Mapper keyboard when you resume your keymaps and select your default keyboard when pausing them.</string>
     <!--Preference titles and summaries-->
     <!--Preference categories-->
     <string name="title_pref_category_ime_picker">Keyboard Picker</string>
