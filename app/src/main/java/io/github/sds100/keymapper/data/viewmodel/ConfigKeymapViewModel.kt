@@ -222,12 +222,17 @@ class ConfigKeymapViewModel internal constructor(
                     allowedExtras.add(Extra.EXTRA_VIBRATION_DURATION)
                 }
 
-                this.value = this.value?.toMutableSet()?.apply {
-                    Extra.TRIGGER_EXTRAS.forEach {
-                        if (allowedExtras.contains(it)) {
-                            add(it)
-                        } else {
-                            remove(it)
+                /* only change this value if it is a different value because it can be invalidated up to 4 times whenever
+                anything changes in the keymap.
+                 */
+                if (this.value != allowedExtras) {
+                    this.value = this.value?.toMutableSet()?.apply {
+                        Extra.TRIGGER_EXTRAS.forEach {
+                            if (allowedExtras.contains(it)) {
+                                add(it)
+                            } else {
+                                remove(it)
+                            }
                         }
                     }
                 }
