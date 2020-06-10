@@ -237,9 +237,16 @@ class ActionPerformerDelegate(context: Context,
                     }
                 }
 
-                SystemAction.OPEN_ASSISTANT -> {
+                SystemAction.OPEN_VOICE_ASSISTANT -> {
                     val intent = Intent(Intent.ACTION_VOICE_COMMAND).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(intent)
+                }
+
+                SystemAction.OPEN_DEVICE_ASSISTANT -> {
+                    Intent(Intent.ACTION_ASSIST).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                        startActivity(this)
+                    }
                 }
 
                 SystemAction.OPEN_CAMERA -> {

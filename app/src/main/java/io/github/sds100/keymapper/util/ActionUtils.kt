@@ -215,7 +215,7 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
             SystemActionUtils.getSystemActionDef(data).onSuccess { systemActionDef ->
 
                 //If an activity to open doesn't exist, the app crashes.
-                if (systemActionDef.id == SystemAction.OPEN_ASSISTANT) {
+                if (systemActionDef.id == SystemAction.OPEN_VOICE_ASSISTANT) {
                     val activityExists =
                         Intent(Intent.ACTION_VOICE_COMMAND).resolveActivityInfo(ctx.packageManager, 0) != null
 

@@ -49,11 +49,12 @@ import io.github.sds100.keymapper.util.SystemAction.LOCK_DEVICE
 import io.github.sds100.keymapper.util.SystemAction.LOCK_DEVICE_ROOT
 import io.github.sds100.keymapper.util.SystemAction.MOVE_CURSOR_TO_END
 import io.github.sds100.keymapper.util.SystemAction.NEXT_TRACK
-import io.github.sds100.keymapper.util.SystemAction.OPEN_ASSISTANT
 import io.github.sds100.keymapper.util.SystemAction.OPEN_CAMERA
+import io.github.sds100.keymapper.util.SystemAction.OPEN_DEVICE_ASSISTANT
 import io.github.sds100.keymapper.util.SystemAction.OPEN_MENU
 import io.github.sds100.keymapper.util.SystemAction.OPEN_RECENTS
 import io.github.sds100.keymapper.util.SystemAction.OPEN_SETTINGS
+import io.github.sds100.keymapper.util.SystemAction.OPEN_VOICE_ASSISTANT
 import io.github.sds100.keymapper.util.SystemAction.PAUSE_MEDIA
 import io.github.sds100.keymapper.util.SystemAction.PLAY_PAUSE_MEDIA
 import io.github.sds100.keymapper.util.SystemAction.PORTRAIT_MODE
@@ -564,10 +565,16 @@ object SystemActionUtils {
             descriptionRes = R.string.action_screenshot
         ),
         SystemActionDef(
-            id = OPEN_ASSISTANT,
+            id = OPEN_VOICE_ASSISTANT,
             category = CATEGORY_OTHER,
             iconRes = R.drawable.ic_outline_assistant_24,
             descriptionRes = R.string.action_open_assistant
+        ),
+        SystemActionDef(
+            id = OPEN_DEVICE_ASSISTANT,
+            category = CATEGORY_OTHER,
+            iconRes = R.drawable.ic_outline_assistant_24,
+            descriptionRes = R.string.action_open_device_assistant
         ),
         SystemActionDef(
             id = OPEN_CAMERA,
