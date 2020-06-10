@@ -544,9 +544,13 @@
     <!-- Error messages -->
 
     <!-- System action labels -->
-    <string name="action_toggle_wifi">Toggle WiFi</string>
-    <string name="action_enable_wifi">Enable WiFi</string>
-    <string name="action_disable_wifi">Disable WiFi</string>
+    <string name="action_toggle_wifi">Toggle WiFi (non-root)</string>
+    <string name="action_enable_wifi">Enable WiFi (non-root)</string>
+    <string name="action_disable_wifi">Disable WiFi (non-root)</string>
+
+    <string name="action_toggle_wifi_root">Toggle WiFi (root)</string>
+    <string name="action_enable_wifi_root">Enable WiFi (root)</string>
+    <string name="action_disable_wifi_root">Disable WiFi (root)</string>
 
     <string name="action_toggle_bluetooth">Toggle Bluetooth</string>
     <string name="action_enable_bluetooth">Enable Bluetooth</string>

@@ -31,12 +31,14 @@ import io.github.sds100.keymapper.util.SystemAction.DISABLE_BLUETOOTH
 import io.github.sds100.keymapper.util.SystemAction.DISABLE_MOBILE_DATA
 import io.github.sds100.keymapper.util.SystemAction.DISABLE_NFC
 import io.github.sds100.keymapper.util.SystemAction.DISABLE_WIFI
+import io.github.sds100.keymapper.util.SystemAction.DISABLE_WIFI_ROOT
 import io.github.sds100.keymapper.util.SystemAction.ENABLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.util.SystemAction.ENABLE_AUTO_ROTATE
 import io.github.sds100.keymapper.util.SystemAction.ENABLE_BLUETOOTH
 import io.github.sds100.keymapper.util.SystemAction.ENABLE_MOBILE_DATA
 import io.github.sds100.keymapper.util.SystemAction.ENABLE_NFC
 import io.github.sds100.keymapper.util.SystemAction.ENABLE_WIFI
+import io.github.sds100.keymapper.util.SystemAction.ENABLE_WIFI_ROOT
 import io.github.sds100.keymapper.util.SystemAction.EXPAND_NOTIFICATION_DRAWER
 import io.github.sds100.keymapper.util.SystemAction.EXPAND_QUICK_SETTINGS
 import io.github.sds100.keymapper.util.SystemAction.FAST_FORWARD
@@ -76,6 +78,7 @@ import io.github.sds100.keymapper.util.SystemAction.TOGGLE_MOBILE_DATA
 import io.github.sds100.keymapper.util.SystemAction.TOGGLE_NFC
 import io.github.sds100.keymapper.util.SystemAction.TOGGLE_SPLIT_SCREEN
 import io.github.sds100.keymapper.util.SystemAction.TOGGLE_WIFI
+import io.github.sds100.keymapper.util.SystemAction.TOGGLE_WIFI_ROOT
 import io.github.sds100.keymapper.util.SystemAction.VOLUME_MUTE
 import io.github.sds100.keymapper.util.SystemAction.VOLUME_TOGGLE_MUTE
 import io.github.sds100.keymapper.util.SystemAction.VOLUME_UNMUTE
@@ -167,19 +170,49 @@ object SystemActionUtils {
             id = TOGGLE_WIFI,
             category = CATEGORY_WIFI,
             iconRes = R.drawable.ic_outline_wifi_24,
+            maxApi = Build.VERSION_CODES.P,
             descriptionRes = R.string.action_toggle_wifi
         ),
         SystemActionDef(
             id = ENABLE_WIFI,
             category = CATEGORY_WIFI,
+            maxApi = Build.VERSION_CODES.P,
             iconRes = R.drawable.ic_outline_wifi_24,
             descriptionRes = R.string.action_enable_wifi
         ),
         SystemActionDef(
             id = DISABLE_WIFI,
             category = CATEGORY_WIFI,
+            maxApi = Build.VERSION_CODES.P,
             iconRes = R.drawable.ic_outline_wifi_off_24,
             descriptionRes = R.string.action_disable_wifi
+        ),
+
+        SystemActionDef(
+            id = TOGGLE_WIFI_ROOT,
+            category = CATEGORY_WIFI,
+            minApi = Build.VERSION_CODES.Q,
+            iconRes = R.drawable.ic_outline_wifi_24,
+            descriptionRes = R.string.action_toggle_wifi_root,
+            permissions = arrayOf(Constants.PERMISSION_ROOT)
+        ),
+
+        SystemActionDef(
+            id = ENABLE_WIFI_ROOT,
+            category = CATEGORY_WIFI,
+            minApi = Build.VERSION_CODES.Q,
+            iconRes = R.drawable.ic_outline_wifi_24,
+            descriptionRes = R.string.action_enable_wifi_root,
+            permissions = arrayOf(Constants.PERMISSION_ROOT)
+        ),
+
+        SystemActionDef(
+            id = DISABLE_WIFI_ROOT,
+            category = CATEGORY_WIFI,
+            minApi = Build.VERSION_CODES.Q,
+            iconRes = R.drawable.ic_outline_wifi_off_24,
+            descriptionRes = R.string.action_toggle_wifi_root,
+            permissions = arrayOf(Constants.PERMISSION_ROOT)
         ),
         //WIFI
 
