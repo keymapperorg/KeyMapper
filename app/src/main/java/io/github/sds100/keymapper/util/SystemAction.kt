@@ -104,7 +104,8 @@ object SystemAction {
     //other
     const val SCREENSHOT = "screenshot"
 
-    const val OPEN_ASSISTANT = "open_assistant"
+    const val OPEN_VOICE_ASSISTANT = "open_assistant"
+    const val OPEN_DEVICE_ASSISTANT = "open_device_assistant"
     const val OPEN_CAMERA = "open_camera"
     const val LOCK_DEVICE = "lock_device_no_root"
     const val LOCK_DEVICE_ROOT = "lock_device"

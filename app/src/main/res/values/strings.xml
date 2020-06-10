@@ -613,7 +613,8 @@
     <string name="action_nfc_toggle">Toggle NFC</string>
 
     <string name="action_screenshot">Screenshot</string>
-    <string name="action_open_assistant">Open Google Assistant</string>
+    <string name="action_open_assistant">Launch Voice Assistant</string>
+    <string name="action_open_device_assistant">Launch Device Assistant</string>
     <string name="action_open_camera">Open Camera</string>
 
     <string name="action_lock_device">Lock Device (non-root)</string>
