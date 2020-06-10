@@ -76,7 +76,7 @@
     <string name="nav_arg_file_url_alt">file_url_alt</string>
     <string name="extra_label_sequence_trigger_timeout">Sequence trigger timeout (ms)</string>
     <string name="extra_label_long_press_delay_timeout">Long press delay (ms)</string>
-    <string name="extra_label_double_press_delay_timeout">Double press duration (ms)</string>
+    <string name="extra_label_double_press_delay_timeout">Double press timeout (ms)</string>
     <string name="extra_label_hold_down_delay_label">Hold down until repeat delay (ms)</string>
     <string name="extra_label_repeat_delay">Repeat delay (ms)</string>
     <string name="extra_label_vibration_duration">Vibration duration (ms)</string>
