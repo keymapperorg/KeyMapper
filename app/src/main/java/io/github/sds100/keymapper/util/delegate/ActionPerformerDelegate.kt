@@ -151,6 +151,10 @@ class ActionPerformerDelegate(context: Context,
                 SystemAction.DISABLE_WIFI -> NetworkUtils.changeWifiState(this, StateChange.DISABLE)
                 SystemAction.TOGGLE_WIFI -> NetworkUtils.changeWifiState(this, StateChange.TOGGLE)
 
+                SystemAction.TOGGLE_WIFI_ROOT -> NetworkUtils.toggleWifiRoot()
+                SystemAction.ENABLE_WIFI_ROOT -> NetworkUtils.enableWifiRoot()
+                SystemAction.DISABLE_WIFI_ROOT -> NetworkUtils.disableWifiRoot()
+
                 SystemAction.TOGGLE_BLUETOOTH -> BluetoothUtils.changeBluetoothState(StateChange.TOGGLE)
                 SystemAction.ENABLE_BLUETOOTH -> BluetoothUtils.changeBluetoothState(StateChange.ENABLE)
                 SystemAction.DISABLE_BLUETOOTH -> BluetoothUtils.changeBluetoothState(StateChange.DISABLE)

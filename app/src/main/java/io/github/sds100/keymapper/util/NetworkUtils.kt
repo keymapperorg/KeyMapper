@@ -18,6 +18,7 @@ import io.github.sds100.keymapper.util.result.Success
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import splitties.init.appCtx
+import splitties.systemservices.wifiManager
 import java.io.File
 import javax.net.ssl.SSLHandshakeException
 import kotlin.coroutines.resume
@@ -66,10 +67,34 @@ object NetworkUtils {
         when (stateChange) {
             StateChange.ENABLE -> wifiManager.isWifiEnabled = true
             StateChange.DISABLE -> wifiManager.isWifiEnabled = false
-            StateChange.TOGGLE -> wifiManager.isWifiEnabled = !wifiManager.isWifiEnabled
+            StateChange.TOGGLE -> wifiManager.isWifiEnabled = !isWifiEnabled()
         }
     }
 
+    /**
+     * REQUIRES ROOT!!
+     */
+    fun enableWifiRoot() {
+        RootUtils.executeRootCommand("svc wifi enable")
+    }
+
+    /**
+     * REQUIRES ROOT!!!
+     */
+    fun disableWifiRoot() {
+        RootUtils.executeRootCommand("svc wifi disable")
+    }
+
+    /**
+     * REQUIRES ROOT!!!
+     */
+    fun toggleWifiRoot() {
+        if (isWifiEnabled()) {
+            disableWifiRoot()
+        } else {
+            enableWifiRoot()
+        }
+    }
     //Mobile data stuff
 
     /**
@@ -86,6 +111,9 @@ object NetworkUtils {
         RootUtils.executeRootCommand("svc data disable")
     }
 
+    /**
+     * REQUIRES ROOT!!!
+     */
     fun toggleMobileData(ctx: Context) {
         if (isMobileDataEnabled(ctx)) {
             disableMobileData()
@@ -112,6 +140,8 @@ object NetworkUtils {
 
         return false
     }
+
+    private fun isWifiEnabled(): Boolean = wifiManager?.isWifiEnabled ?: false
 }
 
 fun Context.openUrl(url: String) {

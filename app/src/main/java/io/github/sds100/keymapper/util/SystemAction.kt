@@ -9,6 +9,10 @@ object SystemAction {
     const val ENABLE_WIFI = "enable_wifi"
     const val DISABLE_WIFI = "disable_wifi"
 
+    const val TOGGLE_WIFI_ROOT = "toggle_wifi_root"
+    const val ENABLE_WIFI_ROOT = "enable_wifi_root"
+    const val DISABLE_WIFI_ROOT = "disable_wifi_root"
+
     //bluetooth
     const val TOGGLE_BLUETOOTH = "toggle_bluetooth"
     const val ENABLE_BLUETOOTH = "enable_bluetooth"
