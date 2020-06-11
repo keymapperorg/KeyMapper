@@ -38,12 +38,12 @@ class MenuFragment : BottomSheetDialogFragment() {
                         findNavController().navigate(MenuFragmentDirections.actionGlobalHelpFragment())
                     }
 
-                    neutralButton(R.string.neutral_discord) {
+                    negativeButton(R.string.neutral_discord) {
                         dismiss()
                         requireContext().openUrl(str(R.string.url_discord_server_invite))
                     }
 
-                    negativeButton(R.string.neg_email) {
+                    neutralButton(R.string.neg_email) {
                         dismiss()
                         FeedbackUtils.emailDeveloper(requireContext())
                     }
