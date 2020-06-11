@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.util.result
 
-import android.content.Context
 import androidx.fragment.app.FragmentActivity
 
 /**
@@ -63,6 +62,12 @@ fun <T> Result<T>.valueOrNull(): T? {
 
     return null
 }
+
+val <T> Result<T>.isFailure: Boolean
+    get() = this is Failure
+
+val <T> Result<T>.isSuccess: Boolean
+    get() = this is Success
 
 fun <T, U> Result<T>.handle(onSuccess: (value: T) -> U, onFailure: (failure: Failure) -> U): U {
     return when (this) {

@@ -25,6 +25,7 @@ import io.github.sds100.keymapper.util.delegate.ActionPerformerDelegate
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionPreferences
 import io.github.sds100.keymapper.util.result.getBriefMessage
+import io.github.sds100.keymapper.util.result.isSuccess
 import io.github.sds100.keymapper.util.result.onFailure
 import io.github.sds100.keymapper.util.result.onSuccess
 import kotlinx.coroutines.delay
@@ -36,9 +37,11 @@ import timber.log.Timber
  * Created by sds100 on 05/04/2020.
  */
 class MyAccessibilityService : AccessibilityService(),
-    LifecycleOwner, SharedPreferences.OnSharedPreferenceChangeListener,
+    LifecycleOwner,
+    SharedPreferences.OnSharedPreferenceChangeListener,
     IClock,
     IPerformAccessibilityAction,
+    IActionError,
     IConstraintState {
 
     companion object {
@@ -155,7 +158,8 @@ class MyAccessibilityService : AccessibilityService(),
             lifecycleScope,
             preferences,
             iClock = this,
-            iConstraintState = this)
+            iConstraintState = this,
+            iActionError = this)
 
         mActionPerformerDelegate = ActionPerformerDelegate(
             context = this,
@@ -335,6 +339,8 @@ class MyAccessibilityService : AccessibilityService(),
     }
 
     override fun isBluetoothDeviceConnected(address: String) = mConnectedBtAddresses.contains(address)
+
+    override fun canActionBePerformed(action: Action) = action.canBePerformed(this).isSuccess
 
     private suspend fun recordTrigger() {
         repeat(RECORD_TRIGGER_TIMER_LENGTH) { iteration ->

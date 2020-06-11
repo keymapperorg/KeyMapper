@@ -30,8 +30,10 @@ import timber.log.Timber
 
 class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                               val preferences: KeymapDetectionPreferences,
+                              iActionError: IActionError,
                               iClock: IClock,
-                              iConstraintState: IConstraintState) : IClock by iClock, IConstraintState by iConstraintState {
+                              iConstraintState: IConstraintState
+) : IClock by iClock, IConstraintState by iConstraintState, IActionError by iActionError {
 
     companion object {
 
@@ -507,11 +509,19 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         val vibrateDurations = mutableListOf<Long>()
 
         if (mDetectParallelTriggers) {
-            for ((triggerIndex, lastMatchedIndex) in mLastMatchedParallelEventIndices.withIndex()) {
+            triggerLoop@ for ((triggerIndex, lastMatchedIndex) in mLastMatchedParallelEventIndices.withIndex()) {
                 val constraints = mParallelTriggerConstraints[triggerIndex]
                 val constraintMode = mParallelTriggerConstraintMode[triggerIndex]
 
                 if (!constraints.constraintsSatisfied(constraintMode)) continue
+
+                for (actionKey in mParallelTriggerActions[triggerIndex]) {
+                    val action = mActionMap[actionKey] ?: continue
+
+                    if (!canActionBePerformed(action)) {
+                        continue@triggerLoop
+                    }
+                }
 
                 val nextIndex = lastMatchedIndex + 1
 
