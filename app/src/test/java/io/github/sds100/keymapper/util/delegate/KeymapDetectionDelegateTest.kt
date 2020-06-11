@@ -92,6 +92,35 @@ class KeymapDetectionDelegateTest {
     }
 
     @Test
+    fun shortPressTriggerDoublePressTrigger_holdDown_onlyDetectDoublePressTrigger() {
+        val shortPressTrigger = sequenceTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = SHORT_PRESS))
+        val longPressTrigger = sequenceTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = DOUBLE_PRESS))
+
+        mDelegate.keyMapListCache = listOf(
+            KeyMap(0, shortPressTrigger, listOf(TEST_ACTION)),
+            KeyMap(1, longPressTrigger, listOf(TEST_ACTION_2))
+        )
+
+        runBlocking {
+            mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = DOUBLE_PRESS))
+        }
+
+        //the first action performed shouldn't be the short press action
+        assertEquals(TEST_ACTION_2, mDelegate.performAction.getOrAwaitValue().getContentIfNotHandled()?.action)
+
+        //rerun the test to see if the short press trigger action is performed correctly.
+        runBlocking {
+            mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = SHORT_PRESS))
+        }
+
+        Thread.sleep(1000)
+
+        val action = mDelegate.performAction.getOrAwaitValue()
+        //the first action performed shouldn't be the short press action
+        assertEquals(TEST_ACTION, action.getContentIfNotHandled()?.action)
+    }
+
+    @Test
     fun shortPressTriggerLongPressTrigger_holdDown_onlyDetectLongPressTrigger() {
         val shortPressTrigger = sequenceTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = SHORT_PRESS))
         val longPressTrigger = sequenceTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = LONG_PRESS))
