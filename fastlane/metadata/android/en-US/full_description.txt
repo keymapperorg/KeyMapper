@@ -7,6 +7,7 @@ There is NO GUARANTEE any of these buttons will work and this app isn't designed
  * Navigation buttons.
  * Bluetooth/wired keyboards.
  * Buttons on other connected devices should also work.
+ * Nintendo Switch JoyCons. 
 
 You can combine multiple keys from a specific device or any device to form a "trigger". Each trigger can have multiple actions. The keys can be setto be pressed at the same time or one after another in a sequence. Keys can be remapped when they are short pressed, long pressed or double pressed. A keymap can have a set of "constraints" so it only has an effect in certain situations.
 
