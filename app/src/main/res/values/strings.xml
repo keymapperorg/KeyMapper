@@ -459,6 +459,12 @@
     <string name="lens_back">Back</string>
     <!-- system action options -->
 
+    <!-- Tiles -->
+    <string name="tile_pause">Pause Keymaps</string>
+    <string name="tile_resume">Resume Keymaps</string>
+    <string name="tile_service_disabled">Service Disabled</string>
+    <!-- Tiles -->
+
     <!-- Error messages -->
     <string name="error_must_type_a_key">You must type a key!</string>
     <string name="error_must_have_atleast_one_trigger">You must have at least one trigger</string>

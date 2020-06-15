@@ -16,6 +16,8 @@ import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.MyApplication
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.WidgetsManager
+import io.github.sds100.keymapper.WidgetsManager.EVENT_PAUSE_REMAPS
+import io.github.sds100.keymapper.WidgetsManager.EVENT_RESUME_REMAPS
 import io.github.sds100.keymapper.WidgetsManager.EVENT_SERVICE_START
 import io.github.sds100.keymapper.WidgetsManager.EVENT_SERVICE_STOPPED
 import io.github.sds100.keymapper.data.AppPreferences
@@ -62,12 +64,20 @@ class MyAccessibilityService : AccessibilityService(),
         const val EVENT_ON_SERVICE_STARTED = "accessibility_service_started"
 
         private lateinit var BUS: MutableLiveData<Event<Pair<String, Any?>>>
+        private lateinit var KEYMAPS_PAUSED: MutableLiveData<Boolean>
 
         @MainThread
         fun provideBus(): MutableLiveData<Event<Pair<String, Any?>>> {
             BUS = if (::BUS.isInitialized) BUS else MutableLiveData()
 
             return BUS
+        }
+
+        @MainThread
+        fun provideIsPaused(): MutableLiveData<Boolean> {
+            KEYMAPS_PAUSED = if (::KEYMAPS_PAUSED.isInitialized) KEYMAPS_PAUSED else MutableLiveData(false)
+
+            return KEYMAPS_PAUSED
         }
 
         /**
@@ -85,14 +95,14 @@ class MyAccessibilityService : AccessibilityService(),
 
                 ACTION_PAUSE_REMAPPINGS -> {
                     mKeymapDetectionDelegate.reset()
-                    mPaused = true
-                    WidgetsManager.onEvent(this@MyAccessibilityService, WidgetsManager.EVENT_PAUSE_REMAPS)
+                    provideIsPaused().value = true
+                    WidgetsManager.onEvent(this@MyAccessibilityService, EVENT_PAUSE_REMAPS)
                 }
 
                 ACTION_RESUME_REMAPPINGS -> {
                     mKeymapDetectionDelegate.reset()
-                    mPaused = false
-                    WidgetsManager.onEvent(this@MyAccessibilityService, WidgetsManager.EVENT_RESUME_REMAPS)
+                    provideIsPaused().value = false
+                    WidgetsManager.onEvent(this@MyAccessibilityService, EVENT_RESUME_REMAPS)
                 }
 
                 BluetoothDevice.ACTION_ACL_CONNECTED, BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
@@ -112,10 +122,10 @@ class MyAccessibilityService : AccessibilityService(),
                 }
 
                 ACTION_UPDATE_NOTIFICATION -> {
-                    if (mPaused) {
-                        WidgetsManager.onEvent(this@MyAccessibilityService, WidgetsManager.EVENT_PAUSE_REMAPS)
+                    if (provideIsPaused().value == true) {
+                        WidgetsManager.onEvent(this@MyAccessibilityService, EVENT_PAUSE_REMAPS)
                     } else {
-                        WidgetsManager.onEvent(this@MyAccessibilityService, WidgetsManager.EVENT_RESUME_REMAPS)
+                        WidgetsManager.onEvent(this@MyAccessibilityService, EVENT_RESUME_REMAPS)
                     }
                 }
             }
@@ -124,7 +134,6 @@ class MyAccessibilityService : AccessibilityService(),
 
     private var mRecordingTrigger = false
 
-    private var mPaused = false
     private lateinit var mLifecycleRegistry: LifecycleRegistry
 
     private lateinit var mKeymapDetectionDelegate: KeymapDetectionDelegate
@@ -257,6 +266,16 @@ class MyAccessibilityService : AccessibilityService(),
                 }
             }
         })
+
+        provideIsPaused().observe(this) {
+            if (it == true) {
+                WidgetsManager.onEvent(this, EVENT_PAUSE_REMAPS)
+            } else {
+                WidgetsManager.onEvent(this, EVENT_RESUME_REMAPS)
+            }
+        }
+
+        provideIsPaused().value = false
     }
 
     override fun onInterrupt() {}
@@ -288,7 +307,7 @@ class MyAccessibilityService : AccessibilityService(),
             return true
         }
 
-        if (!mPaused) {
+        if (provideIsPaused().value == false) {
             try {
                 Timber.d(event.toString())
                 return mKeymapDetectionDelegate.onKeyEvent(
