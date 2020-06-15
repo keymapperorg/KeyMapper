@@ -70,7 +70,8 @@ class SliderWithLabel(context: Context,
         setSliderValueTextViewText(mSlider.value)
     }
 
-    fun addOnChangeListener(onChangeListener: Slider.OnChangeListener) {
+    fun setListener(onChangeListener: Slider.OnChangeListener) {
+        mSlider.clearOnChangeListeners()
         mSlider.addOnChangeListener(onChangeListener)
     }
 
@@ -101,5 +102,5 @@ fun SliderWithLabel.setModel(model: SliderModel) {
 
 @BindingAdapter("app:onChangeListener")
 fun SliderWithLabel.setOnChangeListener(onChangeListener: Slider.OnChangeListener) {
-    addOnChangeListener(onChangeListener)
+    setListener(onChangeListener)
 }

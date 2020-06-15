@@ -126,9 +126,7 @@ class ConfigKeymapViewModel internal constructor(
     }
     val promptToEnableAccessibilityService: MutableLiveData<Event<Unit>> = MutableLiveData()
 
-    private val mAllowedTriggerExtras: MutableLiveData<Set<String>>
-    val triggerOptions: MutableLiveData<List<TriggerOption>>
-
+    val triggerOptions = MutableLiveData<List<TriggerOption>>()
     val keymapOptions = MutableLiveData<List<KeymapOption>>()
 
     init {
@@ -201,97 +199,10 @@ class ConfigKeymapViewModel internal constructor(
 
                     invalidateOptions()
                 }
-            }
-        }
 
-        mAllowedTriggerExtras = MediatorLiveData<Set<String>>().apply {
-            this.value = setOf()
-
-            fun invalidate() {
-                val allowedExtras = mutableListOf<String>()
-
-                if (triggerKeys.value?.any { it.clickType == Trigger.LONG_PRESS } == true) {
-                    allowedExtras.add(Extra.EXTRA_LONG_PRESS_DELAY)
+                triggerMode.observeForever {
+                    invalidateOptions()
                 }
-
-                if (triggerKeys.value?.any { it.clickType == Trigger.DOUBLE_PRESS } == true) {
-                    allowedExtras.add(Extra.EXTRA_DOUBLE_PRESS_DELAY)
-                }
-
-                if (!triggerKeys.value.isNullOrEmpty() && triggerKeys.value!!.size > 1
-                    && triggerMode.value == Trigger.SEQUENCE) {
-                    allowedExtras.add(Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT)
-                }
-
-                if (actionList.value?.any { it.repeatable } == true &&
-                    KeymapDetectionDelegate.performActionOnDown(triggerKeys.value!!, triggerMode.value!!)) {
-                    allowedExtras.add(Extra.EXTRA_HOLD_DOWN_DELAY)
-                    allowedExtras.add(Extra.EXTRA_REPEAT_DELAY)
-                }
-
-                if (mKeymapFlags.value?.hasFlag(KeyMap.KEYMAP_FLAG_VIBRATE) == true ||
-                    mKeymapFlags.value?.hasFlag(KeyMap.KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION) == true) {
-                    allowedExtras.add(Extra.EXTRA_VIBRATION_DURATION)
-                }
-
-                /* only change this value if it is a different value because it can be invalidated up to 4 times whenever
-                anything changes in the keymap.
-                 */
-                if (this.value != allowedExtras) {
-                    this.value = this.value?.toMutableSet()?.apply {
-                        Extra.TRIGGER_EXTRAS.forEach {
-                            if (allowedExtras.contains(it)) {
-                                add(it)
-                            } else {
-                                remove(it)
-                            }
-                        }
-                    }
-                }
-            }
-
-            addSource(triggerInSequence) {
-                invalidate()
-            }
-
-            addSource(triggerKeys) {
-                invalidate()
-            }
-
-            addSource(actionList) {
-                invalidate()
-            }
-
-            addSource(mKeymapFlags) {
-                invalidate()
-            }
-        }
-
-        triggerOptions = MediatorLiveData<List<TriggerOption>>().apply {
-            this.value = listOf()
-
-            addSource(mAllowedTriggerExtras) { allowedExtras ->
-                allowedExtras ?: return@addSource
-
-                //remove all extras which aren't allowed
-                mTriggerExtras.value = mTriggerExtras.value?.toMutableList()?.apply {
-                    removeAll { extra -> allowedExtras.none { extra.id == it } }
-                }
-            }
-
-            addSource(mTriggerExtras) { extras ->
-                val modelList = mutableListOf<TriggerOption>()
-
-                //Iterate over the list of ALL trigger extra IDs to keep the order consistent.
-                Extra.TRIGGER_EXTRAS.forEach { extraId ->
-                    if (mAllowedTriggerExtras.value?.contains(extraId) == true) {
-                        val currentValue = extras.find { extra -> extra.id == extraId }?.data?.toInt()
-
-                        modelList.add(TriggerOption(extraId, currentValue))
-                    }
-                }
-
-                this.value = modelList
             }
         }
     }
@@ -440,12 +351,8 @@ class ConfigKeymapViewModel internal constructor(
                 add(Extra(id, value.toString()))
             }
         }
-    }
 
-    fun removeTriggerExtra(@ExtraId id: String) {
-        mTriggerExtras.value = mTriggerExtras.value?.toMutableList()?.apply {
-            removeAll { it.id == id }
-        }
+        invalidateOptions()
     }
 
     fun removeTriggerKey(keycode: Int) {
@@ -593,6 +500,36 @@ class ConfigKeymapViewModel internal constructor(
         return allowedFlags.toIntArray()
     }
 
+    private fun allowedTriggerOptions(): Set<String> {
+        val allowedExtras = mutableListOf<String>()
+
+        if (triggerKeys.value?.any { it.clickType == Trigger.LONG_PRESS } == true) {
+            allowedExtras.add(Extra.EXTRA_LONG_PRESS_DELAY)
+        }
+
+        if (triggerKeys.value?.any { it.clickType == Trigger.DOUBLE_PRESS } == true) {
+            allowedExtras.add(Extra.EXTRA_DOUBLE_PRESS_DELAY)
+        }
+
+        if (!triggerKeys.value.isNullOrEmpty() && triggerKeys.value!!.size > 1
+            && triggerMode.value == Trigger.SEQUENCE) {
+            allowedExtras.add(Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT)
+        }
+
+        if (actionList.value?.any { it.repeatable } == true &&
+            KeymapDetectionDelegate.performActionOnDown(triggerKeys.value!!, triggerMode.value!!)) {
+            allowedExtras.add(Extra.EXTRA_HOLD_DOWN_DELAY)
+            allowedExtras.add(Extra.EXTRA_REPEAT_DELAY)
+        }
+
+        if (mKeymapFlags.value?.hasFlag(KeyMap.KEYMAP_FLAG_VIBRATE) == true ||
+            mKeymapFlags.value?.hasFlag(KeyMap.KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION) == true) {
+            allowedExtras.add(Extra.EXTRA_VIBRATION_DURATION)
+        }
+
+        return allowedExtras.toSet()
+    }
+
     private fun removeDeniedFlags() {
 
         var newKeymapFlags = mKeymapFlags.value ?: 0
@@ -607,15 +544,39 @@ class ConfigKeymapViewModel internal constructor(
         mKeymapFlags.value = newKeymapFlags
     }
 
+    private fun removeDeniedTriggerOptions() {
+        //remove all extras which aren't allowed
+        mTriggerExtras.value = mTriggerExtras.value?.toMutableList()?.apply {
+            val allowedOptions = allowedTriggerOptions()
+            removeAll { extra -> allowedOptions.none { extra.id == it } }
+        }
+    }
+
     private fun invalidateOptions() {
         removeDeniedFlags()
+        removeDeniedTriggerOptions()
+
+        val allowedFlags = allowedFlags()
 
         keymapOptions.value = sequence {
             KeyMap.KEYMAP_FLAG_LABEL_MAP.keys.forEach { flagId ->
-                if (allowedFlags().contains(flagId)) {
+                if (allowedFlags.contains(flagId)) {
                     val enabled = mKeymapFlags.value?.hasFlag(flagId) == true
 
                     yield(flagId to enabled)
+                }
+            }
+        }.toList()
+
+        //Iterate over the list of ALL trigger extra IDs to keep the order consistent.
+        val allowedTriggerOptions = allowedTriggerOptions()
+
+        triggerOptions.value = sequence {
+            Extra.TRIGGER_EXTRAS.forEach { extraId ->
+                if (allowedTriggerOptions.contains(extraId)) {
+                    val currentValue = mTriggerExtras.value?.find { extra -> extra.id == extraId }?.data?.toInt()
+
+                    yield(TriggerOption(extraId, currentValue))
                 }
             }
         }.toList()
