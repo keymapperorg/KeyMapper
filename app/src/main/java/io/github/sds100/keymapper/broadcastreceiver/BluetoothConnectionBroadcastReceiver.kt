@@ -6,13 +6,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.provider.Settings
-import android.util.Log
 import io.github.sds100.keymapper.data.AppPreferences
-import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.util.KeyboardUtils
 import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
-import io.github.sds100.keymapper.util.result.onSuccess
 
 /**
  * Created by sds100 on 28/12/2018.
@@ -59,13 +55,9 @@ class BluetoothConnectionBroadcastReceiver : BroadcastReceiver() {
         when (intentAction) {
             //when a device is connected, change to the Key Mapper ime
             BluetoothDevice.ACTION_ACL_CONNECTED -> {
-                val defaultIme = Settings.Secure.getString(ctx.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD)
 
-                AppPreferences.defaultIme = defaultIme
-
-                KeyMapperImeService.getImeId().onSuccess {
-                    KeyboardUtils.switchIme(it)
-                }
+                AppPreferences.defaultIme = KeyboardUtils.getChosenImeId(ctx)
+                KeyboardUtils.switchToKeyMapperIme(ctx)
             }
 
             //when a device is disconnected, change back to the old ime

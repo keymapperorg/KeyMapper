@@ -15,7 +15,6 @@ import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
 import io.github.sds100.keymapper.util.result.*
-import splitties.experimental.ExperimentalSplittiesApi
 import splitties.init.appCtx
 import splitties.systemservices.inputMethodManager
 import splitties.toast.toast
@@ -40,7 +39,6 @@ object KeyboardUtils {
         }
     }
 
-    @ExperimentalSplittiesApi
     fun switchToKeyMapperIme(ctx: Context) {
         if (!isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
             ctx.toast(R.string.error_need_write_secure_settings_permission)
@@ -110,6 +108,10 @@ object KeyboardUtils {
     fun sendDownUpFromImeService(keyCode: Int, metaState: Int = 0) {
         KeyMapperImeService.provideBus().value =
             Event(KeyMapperImeService.EVENT_INPUT_DOWN_UP to intArrayOf(keyCode, metaState))
+    }
+
+    fun getChosenImeId(ctx: Context): String {
+        return Settings.Secure.getString(ctx.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD)
     }
 }
 

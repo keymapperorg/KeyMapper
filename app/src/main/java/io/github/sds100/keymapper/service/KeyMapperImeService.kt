@@ -29,6 +29,8 @@ class KeyMapperImeService : InputMethodService(), LifecycleOwner {
     companion object {
         const val EVENT_INPUT_DOWN_UP = "input_down_up"
         const val EVENT_INPUT_TEXT = "input_text"
+        const val EVENT_ON_SERVICE_STARTED = "ime_service_started"
+        const val EVENT_ON_SERVICE_STOPPED = "ime_service_stopped"
 
         fun isServiceEnabled(): Boolean {
             val enabledMethods = inputMethodManager.enabledInputMethodList ?: return false
@@ -78,6 +80,8 @@ class KeyMapperImeService : InputMethodService(), LifecycleOwner {
         mLifecycleRegistry = LifecycleRegistry(this)
         mLifecycleRegistry.currentState = Lifecycle.State.STARTED
 
+        provideBus().value = Event(EVENT_ON_SERVICE_STARTED to null)
+
         provideBus().observe(this, EventObserver {
             when (it.first) {
                 EVENT_INPUT_TEXT -> {
@@ -113,6 +117,7 @@ class KeyMapperImeService : InputMethodService(), LifecycleOwner {
     override fun onDestroy() {
         super.onDestroy()
 
+        provideBus().value = Event(EVENT_ON_SERVICE_STOPPED to null)
         mLifecycleRegistry.currentState = Lifecycle.State.DESTROYED
     }
 
