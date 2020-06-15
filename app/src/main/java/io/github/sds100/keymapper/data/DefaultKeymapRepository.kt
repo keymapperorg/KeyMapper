@@ -24,6 +24,12 @@ class DefaultKeymapRepository internal constructor(private val mKeymapDao: KeyMa
         mKeymapDao.update(keymap)
     }
 
+    override suspend fun duplicateKeymap(vararg id: Long) {
+        id.forEach { keymapId ->
+            insertKeymap(getKeymap(keymapId).clone())
+        }
+    }
+
     override suspend fun enableKeymapById(vararg id: Long) {
         mKeymapDao.enableKeymapById(*id)
     }

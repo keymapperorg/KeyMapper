@@ -78,4 +78,6 @@ class KeyMap(
 
         return true
     }
+
+    fun clone(): KeyMap = KeyMap(0, trigger, actionList, constraintList, constraintMode, flags, folderName, isEnabled)
 }

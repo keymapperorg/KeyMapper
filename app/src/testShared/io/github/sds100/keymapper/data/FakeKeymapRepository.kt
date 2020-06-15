@@ -37,6 +37,10 @@ class FakeKeymapRepository : KeymapRepository {
         keymapList.postValue(mKeymapList.values.toList())
     }
 
+    override suspend fun duplicateKeymap(vararg id: Long) {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun enableKeymapById(vararg id: Long) {
         TODO("Not yet implemented")
     }
