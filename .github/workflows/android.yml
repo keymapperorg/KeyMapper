@@ -36,11 +36,11 @@ jobs:
 
       - name: Make .android folder
         run: mkdir /home/runner/.android
-        
+
       - name: Create debug keystore
         run: |
-           echo "${{ secrets.CI_KEYSTORE }}" > debug.keystore.asc
-           gpg -d --passphrase "${{ secrets.CI_KEYSTORE_DECRYPT }}" --batch debug.keystore.asc > /home/runner/.android/debug.keystore
+          echo "${{ secrets.CI_KEYSTORE }}" > debug.keystore.asc
+          gpg -d --passphrase "${{ secrets.CI_KEYSTORE_DECRYPT }}" --batch debug.keystore.asc > /home/runner/.android/debug.keystore
 
       - name: Build debug APK
         run: bash ./gradlew assembleCi --stacktrace
