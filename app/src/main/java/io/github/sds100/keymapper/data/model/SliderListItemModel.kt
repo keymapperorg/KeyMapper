@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.data.model
 
-import androidx.annotation.IntegerRes
 import androidx.annotation.StringRes
 
 /**
