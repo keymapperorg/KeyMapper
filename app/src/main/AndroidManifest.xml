@@ -112,5 +112,15 @@
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
         </service>
+
+        <service
+            android:name=".service.tiles.ToggleKeyMapperKeyboardTile"
+            android:icon="@drawable/ic_tile_keyboard"
+            android:label="@string/tile_toggle_keymapper_keyboard"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
     </application>
 </manifest>
