@@ -46,7 +46,7 @@ class ConfigKeymapViewModel internal constructor(
                         setShownPrompt(R.string.key_pref_shown_parallel_trigger_order_dialog)
                     }
 
-                    showOnboardingPrompt.value = Event(notifyUser)
+                    showPrompt(notifyUser)
                 }
 
                 // set all the keys to a short press because they must all be the same click type and
@@ -74,7 +74,7 @@ class ConfigKeymapViewModel internal constructor(
                         setShownPrompt(R.string.key_pref_shown_sequence_trigger_explanation_dialog)
                     }
 
-                    showOnboardingPrompt.value = Event(notifyUser)
+                    showPrompt(notifyUser)
                 }
             }
         }
@@ -112,9 +112,11 @@ class ConfigKeymapViewModel internal constructor(
         addSource(actionList) {
             if (!getShownPrompt(R.string.key_pref_showcase_tap_action_to_test) && it.isNotEmpty()) {
 
-                this.value = Event(NotifyUserModel(R.string.showcase_tap_action_to_test_message) {
-                    onboardingState.setShownPrompt(R.string.key_pref_showcase_tap_action_to_test)
-                })
+                showPrompt(
+                    NotifyUserModel(R.string.showcase_tap_action_to_test_message) {
+                        onboardingState.setShownPrompt(R.string.key_pref_showcase_tap_action_to_test)
+                    }
+                )
             }
         }
     }
@@ -326,7 +328,7 @@ class ConfigKeymapViewModel internal constructor(
                 chooseParallelTriggerClickType.value = Event(Unit)
             }
 
-            showOnboardingPrompt.value = Event(notifyUser)
+            showPrompt(notifyUser)
         } else {
             chooseParallelTriggerClickType.value = Event(Unit)
         }
@@ -534,6 +536,12 @@ class ConfigKeymapViewModel internal constructor(
 
     fun rebuildActionModels() {
         actionList.value = actionList.value
+    }
+
+    private fun showPrompt(notifyUserModel: NotifyUserModel) {
+        if (showOnboardingPrompt.value?.peekContent()?.message != notifyUserModel.message) {
+            showOnboardingPrompt.value = Event(notifyUserModel)
+        }
     }
 
     suspend fun getDeviceInfoList() = mDeviceInfoRepository.getAll()
