@@ -36,6 +36,15 @@ jobs:
 
       - name: Build debug APK
         run: bash ./gradlew assembleCi --stacktrace
+        
+      - name: Sign build
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: app/build/outputs/apk/ci
+          signingKeyBase64: ${{ secrets.CI_SIGNING_KEY }}
+          alias: ${{ secrets.CI_ALIAS }}
+          keyStorePassword: ${{ secrets.CI_KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.CI_KEY_PASSWORD }}
 
       - name: set apk name env
         run: echo ::set-env name=APK_NAME::$(basename app/build/outputs/apk/ci/*.apk .apk)
