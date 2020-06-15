@@ -45,7 +45,6 @@ class AppIntroActivity : IntroActivity() {
             background(R.color.purple)
             backgroundDark(R.color.purpleDark)
             image(R.drawable.ic_outline_error_outline_64)
-            canGoBackward(false)
             scrollable(true)
 
             buttonCtaLabel(R.string.enable)
@@ -62,7 +61,6 @@ class AppIntroActivity : IntroActivity() {
             background(R.color.blue)
             backgroundDark(R.color.blueDark)
             image(R.drawable.ic_battery_std_white_64dp)
-            canGoBackward(false)
             scrollable(true)
 
             buttonCtaLabel(R.string.showcase_disable_battery_optimisation_button)
@@ -84,7 +82,6 @@ class AppIntroActivity : IntroActivity() {
             background(R.color.orange)
             backgroundDark(R.color.orangeDark)
             image(R.drawable.ic_dock_white_64dp)
-            canGoBackward(true)
             scrollable(true)
         }.build()
     }
@@ -96,7 +93,6 @@ class AppIntroActivity : IntroActivity() {
             background(R.color.red)
             backgroundDark(R.color.redDark)
             image(R.drawable.ic_outline_dnd_circle_outline_64)
-            canGoBackward(false)
             scrollable(true)
 
             buttonCtaLabel(R.string.pos_grant)
@@ -117,7 +113,6 @@ class AppIntroActivity : IntroActivity() {
             background(R.color.green)
             backgroundDark(R.color.greenDark)
             image(R.drawable.ic_outline_feedback_64)
-            canGoBackward(false)
             scrollable(true)
 
             buttonCtaLabel(R.string.pos_join)
