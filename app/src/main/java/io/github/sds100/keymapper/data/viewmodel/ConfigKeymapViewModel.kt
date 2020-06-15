@@ -14,6 +14,7 @@ import io.github.sds100.keymapper.util.toggleFlag
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import splitties.bitflags.hasFlag
+import splitties.bitflags.minusFlag
 import java.util.*
 
 class ConfigKeymapViewModel internal constructor(
@@ -98,7 +99,7 @@ class ConfigKeymapViewModel internal constructor(
     val startRecordingTriggerInService: MutableLiveData<Event<Unit>> = MutableLiveData()
     val chooseParallelTriggerClickType: MutableLiveData<Event<Unit>> = MutableLiveData()
 
-    val flags: MutableLiveData<Int> = MutableLiveData(0)
+    private val mKeymapFlags: MutableLiveData<Int> = MutableLiveData(0)
     val isEnabled: MutableLiveData<Boolean> = MutableLiveData()
 
     val actionList: MutableLiveData<List<Action>> = MutableLiveData(listOf())
@@ -126,14 +127,15 @@ class ConfigKeymapViewModel internal constructor(
     val promptToEnableAccessibilityService: MutableLiveData<Event<Unit>> = MutableLiveData()
 
     private val mAllowedTriggerExtras: MutableLiveData<Set<String>>
-
     val triggerOptions: MutableLiveData<List<TriggerOption>>
+
+    val keymapOptions = MutableLiveData<List<KeymapOption>>()
 
     init {
         if (mId == NEW_KEYMAP_ID) {
             triggerKeys.value = listOf()
             actionList.value = listOf()
-            flags.value = 0
+            mKeymapFlags.value = 0
             isEnabled.value = true
             constraintList.value = listOf()
 
@@ -161,13 +163,15 @@ class ConfigKeymapViewModel internal constructor(
                 }
             }
 
+            invalidateOptions()
+
         } else {
             viewModelScope.launch {
                 mKeymapRepository.getKeymap(mId).let { keymap ->
                     triggerKeys.value = keymap.trigger.keys
                     mTriggerExtras.value = keymap.trigger.extras
                     actionList.value = keymap.actionList
-                    flags.value = keymap.flags
+                    mKeymapFlags.value = keymap.flags
                     isEnabled.value = keymap.isEnabled
                     constraintList.value = keymap.constraintList
 
@@ -194,6 +198,8 @@ class ConfigKeymapViewModel internal constructor(
                             triggerInParallel.value = false
                         }
                     }
+
+                    invalidateOptions()
                 }
             }
         }
@@ -223,7 +229,8 @@ class ConfigKeymapViewModel internal constructor(
                     allowedExtras.add(Extra.EXTRA_REPEAT_DELAY)
                 }
 
-                if (flags.value?.hasFlag(KeyMap.KEYMAP_FLAG_VIBRATE) == true) {
+                if (mKeymapFlags.value?.hasFlag(KeyMap.KEYMAP_FLAG_VIBRATE) == true ||
+                    mKeymapFlags.value?.hasFlag(KeyMap.KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION) == true) {
                     allowedExtras.add(Extra.EXTRA_VIBRATION_DURATION)
                 }
 
@@ -255,7 +262,7 @@ class ConfigKeymapViewModel internal constructor(
                 invalidate()
             }
 
-            addSource(flags) {
+            addSource(mKeymapFlags) {
                 invalidate()
             }
         }
@@ -309,7 +316,7 @@ class ConfigKeymapViewModel internal constructor(
             actionList = actionList.value!!,
             constraintList = constraintList.value!!,
             constraintMode = constraintMode,
-            flags = flags.value!!,
+            flags = mKeymapFlags.value!!,
             isEnabled = isEnabled.value!!
         )
 
@@ -343,6 +350,8 @@ class ConfigKeymapViewModel internal constructor(
 
             it
         }
+
+        invalidateOptions()
     }
 
     fun setTriggerKeyClickType(keyCode: Int, @Trigger.ClickType clickType: Int) {
@@ -353,6 +362,8 @@ class ConfigKeymapViewModel internal constructor(
 
             it
         }
+
+        invalidateOptions()
     }
 
     fun setTriggerKeyDevice(keyCode: Int, descriptor: String) {
@@ -363,6 +374,8 @@ class ConfigKeymapViewModel internal constructor(
 
             it
         }
+
+        invalidateOptions()
     }
 
     /**
@@ -414,6 +427,8 @@ class ConfigKeymapViewModel internal constructor(
             triggerInParallel.value = true
         }
 
+        invalidateOptions()
+
         return true
     }
 
@@ -441,6 +456,8 @@ class ConfigKeymapViewModel internal constructor(
         if (triggerKeys.value!!.size <= 1) {
             triggerInSequence.value = true
         }
+
+        invalidateOptions()
     }
 
     fun moveTriggerKey(fromIndex: Int, toIndex: Int) {
@@ -455,6 +472,8 @@ class ConfigKeymapViewModel internal constructor(
                 }
             }
         }
+
+        invalidateOptions()
     }
 
     fun recordTrigger() {
@@ -464,13 +483,17 @@ class ConfigKeymapViewModel internal constructor(
     }
 
     fun toggleFlag(flagId: Int) {
-        flags.value = flags.value?.toggleFlag(flagId)
+        mKeymapFlags.value = mKeymapFlags.value?.toggleFlag(flagId)
+
+        invalidateOptions()
     }
 
     fun removeConstraint(id: String) {
         constraintList.value = constraintList.value?.toMutableList()?.apply {
             removeAll { it.uniqueId == id }
         }
+
+        invalidateOptions()
     }
 
     fun chooseAction() {
@@ -489,6 +512,8 @@ class ConfigKeymapViewModel internal constructor(
             add(action)
         }
 
+        invalidateOptions()
+
         return true
     }
 
@@ -500,6 +525,8 @@ class ConfigKeymapViewModel internal constructor(
 
             it
         }
+
+        invalidateOptions()
     }
 
     fun onActionModelClick(model: ActionModel) {
@@ -520,6 +547,8 @@ class ConfigKeymapViewModel internal constructor(
         actionList.value = actionList.value?.toMutableList()?.apply {
             removeAll { it.uniqueId == id }
         }
+
+        invalidateOptions()
     }
 
     /**
@@ -534,6 +563,8 @@ class ConfigKeymapViewModel internal constructor(
             add(constraint)
         }
 
+        invalidateOptions()
+
         return true
     }
 
@@ -545,6 +576,49 @@ class ConfigKeymapViewModel internal constructor(
         if (showOnboardingPrompt.value?.peekContent()?.message != notifyUserModel.message) {
             showOnboardingPrompt.value = Event(notifyUserModel)
         }
+    }
+
+    private fun allowedFlags(): IntArray {
+        val allowedFlags = mutableListOf(KeyMap.KEYMAP_FLAG_VIBRATE)
+
+        if (actionList.value?.isNotEmpty() == true) {
+            allowedFlags.add(KeyMap.KEYMAP_FLAG_SHOW_PERFORMING_ACTION_TOAST)
+
+            if ((triggerKeys.value?.size == 1 || (triggerInParallel.value == true))
+                && triggerKeys.value?.getOrNull(0)?.clickType == Trigger.LONG_PRESS) {
+                allowedFlags.add(KeyMap.KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION)
+            }
+        }
+
+        return allowedFlags.toIntArray()
+    }
+
+    private fun removeDeniedFlags() {
+
+        var newKeymapFlags = mKeymapFlags.value ?: 0
+
+        KeyMap.KEYMAP_FLAG_LABEL_MAP.keys.forEach { flagId ->
+            //remove the flag if it isn't allowed anymore
+            if (newKeymapFlags.hasFlag(flagId) && !allowedFlags().contains(flagId)) {
+                newKeymapFlags = newKeymapFlags.minusFlag(flagId)
+            }
+        }
+
+        mKeymapFlags.value = newKeymapFlags
+    }
+
+    private fun invalidateOptions() {
+        removeDeniedFlags()
+
+        keymapOptions.value = sequence {
+            KeyMap.KEYMAP_FLAG_LABEL_MAP.keys.forEach { flagId ->
+                if (allowedFlags().contains(flagId)) {
+                    val enabled = mKeymapFlags.value?.hasFlag(flagId) == true
+
+                    yield(flagId to enabled)
+                }
+            }
+        }.toList()
     }
 
     suspend fun getDeviceInfoList() = mDeviceInfoRepository.getAll()
@@ -562,3 +636,4 @@ class ConfigKeymapViewModel internal constructor(
 }
 
 typealias TriggerOption = Pair<String, Int?>
+typealias KeymapOption = Pair<Int, Boolean>

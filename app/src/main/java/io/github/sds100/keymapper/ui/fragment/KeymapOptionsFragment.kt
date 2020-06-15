@@ -15,13 +15,12 @@ import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.SliderListItemModel
 import io.github.sds100.keymapper.data.model.SliderModel
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
+import io.github.sds100.keymapper.data.viewmodel.KeymapOption
 import io.github.sds100.keymapper.databinding.FragmentKeymapOptionsBinding
 import io.github.sds100.keymapper.slider
 import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.int
 import io.github.sds100.keymapper.util.str
-import splitties.bitflags.hasFlag
-import timber.log.Timber
 
 /**
  * Created by sds100 on 19/03/2020.
@@ -39,8 +38,8 @@ class KeymapOptionsFragment(private val mKeymapId: Long) : Fragment() {
             lifecycleOwner = viewLifecycleOwner
             epoxyRecyclerViewFlags.adapter = mController.adapter
 
-            mViewModel.flags.observe(viewLifecycleOwner) {
-                mController.flags = it
+            mViewModel.keymapOptions.observe(viewLifecycleOwner) {
+                mController.keymapOptions = it
             }
 
             mViewModel.triggerOptions.observe(viewLifecycleOwner) { options ->
@@ -69,20 +68,24 @@ class KeymapOptionsFragment(private val mKeymapId: Long) : Fragment() {
     }
 
     private inner class OptionsListController : EpoxyController() {
-        var flags: Int = 0
-            set(value) {
-                field = value
-                requestModelBuild()
-            }
-
         var triggerOptions: List<SliderListItemModel> = listOf()
             set(value) {
                 field = value
                 requestModelBuild()
             }
 
+        var keymapOptions: List<KeymapOption> = listOf()
+            set(value) {
+                field = value
+                requestModelBuild()
+            }
+
         override fun buildModels() {
-            KeyMap.KEYMAP_FLAG_LABEL_MAP.keys.forEach { flagId ->
+
+            keymapOptions.forEach {
+                val flagId = it.first
+                val isChecked = it.second
+
                 checkbox {
                     id(flagId)
 
@@ -92,7 +95,7 @@ class KeymapOptionsFragment(private val mKeymapId: Long) : Fragment() {
                         primaryText(str(labelResId))
                     }
 
-                    isSelected(flags.hasFlag(flagId))
+                    isSelected(isChecked)
 
                     onClick { _ ->
                         mViewModel.toggleFlag(flagId)

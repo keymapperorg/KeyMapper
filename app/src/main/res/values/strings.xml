@@ -419,6 +419,7 @@
     <string name="flag_long_press">Long press</string>
     <string name="flag_vibrate">Vibrate</string>
     <string name="flag_performing_action_toast">Show a toast message when performing actions</string>
+    <string name="flag_long_press_double_vibration">Vibrate when keys are initially pressed and again when long-pressed.</string>
     <!--flags-->
 
     <!-- Showcase -->

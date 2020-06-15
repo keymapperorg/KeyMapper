@@ -585,6 +585,11 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                     if (nextIndex == mParallelTriggerEvents[triggerIndex].lastIndex) {
                         awaitingLongPress = true
 
+                        if (mParallelTriggerKeymapFlags[triggerIndex]
+                                .hasFlag(KeyMap.KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION)) {
+                            vibrate.value = Event(vibrateDuration(mParallelTriggerOptions[triggerIndex]))
+                        }
+
                         val oldJob = mParallelTriggerLongPressJobs[triggerIndex]
                         oldJob?.cancel()
                         mParallelTriggerLongPressJobs.put(triggerIndex, performActionsAfterLongPressDelay(triggerIndex))
@@ -1160,7 +1165,8 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
             performAction(action, showToast)
 
-            if (mParallelTriggerKeymapFlags.vibrate(triggerIndex) || preferences.forceVibrate) {
+            if (mParallelTriggerKeymapFlags.vibrate(triggerIndex) || preferences.forceVibrate
+                || mParallelTriggerKeymapFlags[triggerIndex].hasFlag(KeyMap.KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION)) {
                 vibrate.value = Event(vibrateDuration(mParallelTriggerOptions[triggerIndex]))
             }
         }
