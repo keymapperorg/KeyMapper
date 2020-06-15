@@ -16,7 +16,6 @@ import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.activity.HomeActivity
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.onSuccess
-import splitties.experimental.ExperimentalSplittiesApi
 
 /**
  * Created by sds100 on 24/03/2019.
@@ -25,7 +24,6 @@ import splitties.experimental.ExperimentalSplittiesApi
 /**
  * Tells widgets (notifications, quick settings) what to display
  */
-@ExperimentalSplittiesApi
 object WidgetsManager {
     @IntDef(value = [
         EVENT_PAUSE_REMAPS,
