@@ -28,6 +28,12 @@ class KeymapListViewModel internal constructor(
 
     override val loadingContent = MutableLiveData(true)
 
+    fun duplicate(vararg id: Long) {
+        viewModelScope.launch {
+            mKeymapRepository.duplicateKeymap(*id)
+        }
+    }
+
     fun delete(vararg id: Long) {
         viewModelScope.launch {
             mKeymapRepository.deleteKeymap(*id)

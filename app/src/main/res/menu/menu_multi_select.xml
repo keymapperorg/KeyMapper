@@ -10,6 +10,13 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/action_duplicate_keymap"
+        android:contentDescription="@string/action_duplicate_keymap"
+        android:icon="@drawable/ic_outline_file_copy_24"
+        android:title="@string/action_duplicate_keymap"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/action_enable"
         android:contentDescription="@string/action_enable"
         android:title="@string/action_enable"

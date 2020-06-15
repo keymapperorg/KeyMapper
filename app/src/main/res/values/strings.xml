@@ -171,6 +171,7 @@
     <string name="action_toggle_dark_theme">Toggle dark theme</string>
     <string name="action_seed_database">Seed database</string>
     <string name="action_save">Save</string>
+    <string name="action_duplicate_keymap">Duplicate</string>
     <!-- Menu action titles-->
 
     <!-- Button titles -->

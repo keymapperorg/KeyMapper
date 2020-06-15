@@ -144,6 +144,11 @@ class KeymapListFragment : Fragment() {
                         true
                     }
 
+                    R.id.action_duplicate_keymap -> {
+                        mViewModel.duplicate(*selectionProvider.selectedIds)
+                        true
+                    }
+
                     else -> false
                 }
             }

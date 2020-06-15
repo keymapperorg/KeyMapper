@@ -16,6 +16,7 @@ interface KeymapRepository {
 
     suspend fun insertKeymap(vararg keymap: KeyMap)
     suspend fun updateKeymap(keymap: KeyMap)
+    suspend fun duplicateKeymap(vararg id: Long)
 
     suspend fun enableKeymapById(vararg id: Long)
     suspend fun disableKeymapById(vararg id: Long)
