@@ -37,7 +37,6 @@ android {
         }
         ci {
             debuggable = true
-            zipAlignEnabled = true
 
             applicationIdSuffix ".ci"
             versionNameSuffix "-ci.$RUN_NUMBER"
