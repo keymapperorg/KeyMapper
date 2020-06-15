@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.util
 
 import android.content.Context
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.FlagModel
 import io.github.sds100.keymapper.data.model.KeyMap
 import splitties.bitflags.hasFlag
@@ -26,7 +27,7 @@ object FlagUtils {
 fun Int.buildKeymapFlagsDescription(ctx: Context): String = buildString {
     KeyMap.getFlagLabelList(ctx, this@buildKeymapFlagsDescription).forEachIndexed { index, label ->
         if (index > 0) {
-            append(" , ")
+            append(" ${ctx.str(R.string.interpunct)} ")
         }
 
         append(label)
