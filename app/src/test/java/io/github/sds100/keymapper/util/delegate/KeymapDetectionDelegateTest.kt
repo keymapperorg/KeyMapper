@@ -79,6 +79,10 @@ class KeymapDetectionDelegateTest {
             override fun isBluetoothDeviceConnected(address: String) = true
         }
 
+        val iActionError = object : IActionError {
+            override fun canActionBePerformed(action: Action) = true
+        }
+
         val preferences = KeymapDetectionPreferences(
             LONG_PRESS_DELAY,
             DOUBLE_PRESS_DELAY,
@@ -88,7 +92,7 @@ class KeymapDetectionDelegateTest {
             VIBRATION_DURATION,
             FORCE_VIBRATE)
 
-        mDelegate = KeymapDetectionDelegate(GlobalScope, preferences, iClock, iConstraintState)
+        mDelegate = KeymapDetectionDelegate(GlobalScope, preferences, iActionError, iClock, iConstraintState)
     }
 
     @Test
