@@ -34,7 +34,6 @@ class ConfigKeymapViewModel internal constructor(
     val triggerMode: MediatorLiveData<Int> = MediatorLiveData<Int>().apply {
         addSource(triggerInParallel) {
             if (it == true) {
-                value = Trigger.PARALLEL
 
                 /* when the user first chooses to make parallel a trigger, show a dialog informing them that
                 the order in which they list the keys is the order in which they will need to be held down.
@@ -49,18 +48,22 @@ class ConfigKeymapViewModel internal constructor(
                     showPrompt(notifyUser)
                 }
 
-                // set all the keys to a short press because they must all be the same click type and
-                // can't all be double pressed
-                triggerKeys.value?.let { keys ->
-                    if (keys.isEmpty()) {
-                        return@let
-                    }
+                // set all the keys to a short press if coming from a sequence trigger
+                // because they must all be the same click type and can't all be double pressed
+                if (it == true && value == Trigger.SEQUENCE) {
+                    triggerKeys.value?.let { keys ->
+                        if (keys.isEmpty()) {
+                            return@let
+                        }
 
-                    triggerKeys.value = keys.map { key ->
-                        key.clickType = Trigger.SHORT_PRESS
-                        key
+                        triggerKeys.value = keys.map { key ->
+                            key.clickType = Trigger.SHORT_PRESS
+                            key
+                        }
                     }
                 }
+
+                value = Trigger.PARALLEL
             }
         }
 
