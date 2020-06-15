@@ -35,13 +35,13 @@ jobs:
           java-version: 1.8
 
       - name: Remove old debug keystore
-        run: rm ${{ env.HOME }}/.android/debug.keystore
+        run: rm /home/runner/.android/debug.keystore
 
       - name: Generating debug keystore
-        run: bash keytool -genkey -dname "cn=Seth Schroeder, ou=UNKNOWN, o=UNKNOWN, l=UNKNOWN, st=UNKNOWN, c=UNKNOWN" -keystore ${{ env.HOME }}/.android/debug.keystore -storepass ${{ secrets.CI_KEY_STORE_PASSWORD }} -alias ${{ secrets.CI_ALIAS }} -keyalg RSA -keysize 4096 -validity 10000 -v
+        run: bash keytool -genkey -dname "cn=Seth Schroeder, ou=UNKNOWN, o=UNKNOWN, l=UNKNOWN, st=UNKNOWN, c=UNKNOWN" -keystore /home/runner/.android/debug.keystore -storepass ${{ secrets.CI_KEY_STORE_PASSWORD }} -alias ${{ secrets.CI_ALIAS }} -keyalg RSA -keysize 4096 -validity 10000 -v
 
       - name: Generate signing key
-        run: bash keytool -list -v -keystore ${{ env.HOME }}/.android/debug.keystore -alias ${{ secrets.CI_ALIAS }} -storepass ${{ secrets.CI_KEY_STORE_PASSWORD }} -keypass ${{ secrets.CI_KEY_PASSWORD }}
+        run: bash keytool -list -v -keystore /home/runner/.android/debug.keystore -alias ${{ secrets.CI_ALIAS }} -storepass ${{ secrets.CI_KEY_STORE_PASSWORD }} -keypass ${{ secrets.CI_KEY_PASSWORD }}
 
       - name: Build debug APK
         run: bash ./gradlew assembleCi --stacktrace
