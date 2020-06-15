@@ -70,6 +70,10 @@ class ConfigKeymapPagerAdapter(fragment: Fragment, private val mKeymapId: Long) 
                     tabFragmentsCreators[index] = { KeymapConstraintsFragment(mKeymapId) }
                 }
 
+                ctx.int(R.integer.fragment_id_config_keymap_all) -> {
+                    tabFragmentsCreators[index] = { ConfigKeymapAllFragment() }
+                }
+
                 else -> throw Exception("Don't know how to instantiate a fragment for this id $id")
             }
 

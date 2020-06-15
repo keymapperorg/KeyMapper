@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string-array name="config_keymap_tab_titles" tools:ignore="InconsistentArrays">
+        <item>all</item>
+    </string-array>
+
+    <integer-array name="config_keymap_fragments" tools:ignore="InconsistentArrays">
+        <item>@integer/fragment_id_config_keymap_all</item>
+    </integer-array>
+
+</resources>

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.lifecycleScope
@@ -70,6 +71,8 @@ class ConfigKeymapFragment : Fragment() {
             TabLayoutMediator(tabLayout, viewPager) { tab, position ->
                 tab.text = strArray(R.array.config_keymap_tab_titles)[position]
             }.attach()
+
+            tabLayout.isVisible = tabLayout.tabCount > 1
 
             requireActivity().onBackPressedDispatcher.addCallback {
                 findNavController().navigateUp()

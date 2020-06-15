@@ -407,6 +407,7 @@
     <integer name="fragment_id_constraints_and_more">13</integer>
     <integer name="fragment_id_keymap_constraints">14</integer>
     <integer name="fragment_id_keymap_flags">15</integer>
+    <integer name="fragment_id_config_keymap_all">16</integer>
     <!-- The fragments which should be shown when configuring a keymap -->
 
     <!--flags-->
