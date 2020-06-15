@@ -74,6 +74,8 @@
     <string name="nav_arg_header">io.github.sds100.keymapper.ui.fragment.OnlineFileFragment.header</string>
     <string name="nav_arg_file_url">io.github.sds100.keymapper.ui.fragment.OnlineFileFragment.header.file_url</string>
     <string name="nav_arg_file_url_alt">file_url_alt</string>
+    <string name="toast_chose_keymapper_keyboard">Chose Key Mapper keyboard</string>
+    <string name="toast_chose_keyboard">Chose %s</string>
     <string name="extra_label_sequence_trigger_timeout">Sequence trigger timeout (ms)</string>
     <string name="extra_label_long_press_delay_timeout">Long press delay (ms)</string>
     <string name="extra_label_double_press_delay_timeout">Double press timeout (ms)</string>
@@ -129,6 +131,7 @@
     <string name="action_toggle_dark_theme">Toggle dark theme</string>
     <string name="action_seed_database">Seed database</string>
     <string name="action_save">Save</string>
+    <string name="action_duplicate_keymap">Duplicate</string>
     <!-- Menu action titles-->
     <!-- Button titles -->
     <string name="button_add_action">Add Action</string>
@@ -313,6 +316,7 @@
     <string name="flag_long_press">长按</string>
     <string name="flag_vibrate">振动</string>
     <string name="flag_performing_action_toast">Show a toast message when performing actions</string>
+    <string name="flag_long_press_double_vibration">Vibrate when keys are initially pressed and again when long-pressed.</string>
     <!--flags-->
     <!-- Showcase -->
     <string name="showcase_accessibility_service_title">启用无障碍服务</string>
@@ -347,6 +351,12 @@
     <string name="lens_front">前</string>
     <string name="lens_back">后</string>
     <!-- system action options -->
+    <!-- Tiles -->
+    <string name="tile_pause">Pause Keymaps</string>
+    <string name="tile_resume">Resume Keymaps</string>
+    <string name="tile_service_disabled">Service Disabled</string>
+    <string name="tile_toggle_keymapper_keyboard">Toggle Key Mapper Keyboard</string>
+    <!-- Tiles -->
     <!-- Error messages -->
     <string name="error_must_type_a_key">您必须输入一个键！</string>
     <string name="error_must_have_atleast_one_trigger">您必须至少有一个触发器</string>
