@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.data.model
 
+import android.app.NotificationManager
 import android.content.Context
 import android.hardware.camera2.CameraCharacteristics
 import android.media.AudioManager
@@ -35,6 +36,10 @@ object Option {
     const val RINGER_MODE_VIBRATE = "option_ringer_mode_vibrate"
     const val RINGER_MODE_SILENT = "option_ringer_mode_silent"
 
+    const val DND_ALARMS = "do_not_disturb_alarms"
+    const val DND_PRIORITY = "do_not_disturb_priority"
+    const val DND_NONE = "do_not_disturb_none"
+
     val STREAMS = sequence {
         yieldAll(listOf(STREAM_ALARM,
             STREAM_DTMF,
@@ -53,6 +58,12 @@ object Option {
     val LENSES = listOf(
         LENS_FRONT,
         LENS_BACK
+    )
+
+    val DND_MODES = listOf(
+        DND_ALARMS,
+        DND_PRIORITY,
+        DND_NONE
     )
 
     val OPTION_ID_SDK_ID_MAP = sequence {
@@ -77,6 +88,12 @@ object Option {
             yield(LENS_FRONT to CameraCharacteristics.LENS_FACING_FRONT)
             yield(LENS_BACK to CameraCharacteristics.LENS_FACING_BACK)
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            yield(DND_ALARMS to NotificationManager.INTERRUPTION_FILTER_ALARMS)
+            yield(DND_PRIORITY to NotificationManager.INTERRUPTION_FILTER_PRIORITY)
+            yield(DND_NONE to NotificationManager.INTERRUPTION_FILTER_NONE)
+        }
     }.toMap()
 
     /**
@@ -95,6 +112,10 @@ object Option {
             SystemAction.CHANGE_RINGER_MODE -> Action.EXTRA_RINGER_MODE
 
             SystemAction.SWITCH_KEYBOARD -> Action.EXTRA_IME_ID
+
+            SystemAction.TOGGLE_DND_MODE,
+            SystemAction.ENABLE_DND_MODE,
+            SystemAction.DISABLE_DND_MODE -> Action.EXTRA_DND_MODE
 
             else -> throw Exception("Can't find an extra id for that system action $systemActionId")
         }
@@ -124,6 +145,10 @@ object Option {
             LENS_FRONT -> ctx.str(R.string.lens_front)
 
             STREAM_ACCESSIBILITY -> ctx.str(R.string.stream_accessibility)
+
+            DND_ALARMS -> ctx.str(R.string.dnd_mode_alarms)
+            DND_PRIORITY -> ctx.str(R.string.dnd_mode_priority)
+            DND_NONE -> ctx.str(R.string.dnd_mode_none)
 
             else -> return OptionLabelNotFound(optionId)
         }

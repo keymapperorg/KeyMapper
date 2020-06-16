@@ -60,6 +60,7 @@ data class Action(
         const val EXTRA_STREAM_TYPE = "extra_stream_type"
         const val EXTRA_LENS = "extra_flash"
         const val EXTRA_RINGER_MODE = "extra_ringer_mode"
+        const val EXTRA_DND_MODE = "extra_do_not_disturb_mode"
 
         /**
          * The KeyEvent meta state is stored as bit flags.

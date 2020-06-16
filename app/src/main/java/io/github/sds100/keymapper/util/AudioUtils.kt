@@ -2,10 +2,14 @@ package io.github.sds100.keymapper.util
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.NotificationManager
 import android.content.Context
 import android.media.AudioManager
+import android.os.Build
 import androidx.annotation.IntDef
+import androidx.annotation.RequiresApi
 import splitties.systemservices.audioManager
+import splitties.systemservices.notificationManager
 
 /**
  * Created by sds100 on 21/10/2018.
@@ -114,5 +118,24 @@ object AudioUtils {
 
             audioManager.ringerMode = ringerMode
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun toggleDndMode(mode: Int) {
+        if (notificationManager.currentInterruptionFilter != NotificationManager.INTERRUPTION_FILTER_ALL) {
+            notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
+        } else {
+            notificationManager.setInterruptionFilter(mode)
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun enableDndMode(mode: Int) {
+        notificationManager.setInterruptionFilter(mode)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun disableDnd() {
+        notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
     }
 }
