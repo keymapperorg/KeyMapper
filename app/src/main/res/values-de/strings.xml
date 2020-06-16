@@ -200,6 +200,7 @@
     <string name="notification_channel_ime_picker">Keyboard picker</string>
     <string name="notification_channel_toggle_remaps">Pause/Resume remaps</string>
     <string name="notification_channel_keyboard_hidden">Keyboard is hidden warning</string>
+    <string name="notification_channel_toggle_keyboard">Toggle Key Mapper Keyboard</string>
     <string name="notification_ime_persistent_text">Tap to change your keyboard.</string>
     <string name="notification_ime_persistent_title">Keyboard Picker</string>
     <string name="notification_remappings_pause_title">Pausieren</string>
@@ -212,6 +213,10 @@
     <string name="notification_action_stop_acc_service">Stop Accessibility Service</string>
     <string name="notification_keyboard_hidden_title">Keyboard is hidden!</string>
     <string name="notification_keyboard_hidden_text">Tap to start showing the keyboard again.</string>
+    <string name="notification_toggle_keyboard_title">Toggle Key Mapper Keyboard</string>
+    <string name="notification_toggle_keyboard_text">Tap to switch to and from the Key Mapper keyboard.</string>
+    <string name="notification_ime_service_disabled_title">Key Mapper Keyboard disabled!</string>
+    <string name="notification_ime_service_disabled_text">Tap to enable the Key Mapper keyboard.</string>
     <!-- Notification strings -->
     <!--Preference titles and summaries-->
     <string name="title_pref_long_press_delay">Default long press delay (ms)</string>
@@ -251,6 +256,8 @@
     <string name="summary_pref_toast_on_action_error">A little message will popup when an error is encountered while performing an action.</string>
     <string name="title_pref_dark_theme">Dark Theme</string>
     <string name="title_pref_notification_settings">Notification Settings</string>
+    <string name="summary_pref_toggle_keyboard_notification">Switch between the Key Mapper keyboard and your default keyboard when you tap the notification.</string>
+    <string name="title_pref_toggle_keyboard_notification">Toggle Key Mapper keyboard notification</string>
     <string name="title_pref_toggle_keyboard_on_toggle_keymaps">Automatically change the keyboard when toggling keymaps</string>
     <string name="summary_pref_toggle_keyboard_on_toggle_keymaps">Automatically select the Key Mapper keyboard when you resume your keymaps and select your default keyboard when pausing them.</string>
     <!--Preference titles and summaries-->
@@ -350,6 +357,9 @@
     <string name="ringer_mode_silent">Silent</string>
     <string name="lens_front">Front</string>
     <string name="lens_back">Back</string>
+    <string name="dnd_mode_alarms">Alarms</string>
+    <string name="dnd_mode_priority">Priority</string>
+    <string name="dnd_mode_none">Nothing</string>
     <!-- system action options -->
     <!-- Tiles -->
     <string name="tile_pause">Pause Keymaps</string>
@@ -452,8 +462,14 @@
     <string name="action_decrease_stream">Decrease Stream</string>
     <string name="action_decrease_stream_formatted">Decrease %s Stream</string>
     <string name="action_cycle_ringer_mode">Cycle Through Ringer Modes (Ring, Vibrate, Silent)</string>
+    <string name="action_cycle_vibrate_ring">Cycle Through Ringer Modes (Ring, Vibrate)</string>
     <string name="action_change_ringer_mode">Change Ringer Mode</string>
     <string name="action_change_ringer_mode_formatted">Change To %s Mode</string>
+    <string name="action_toggle_dnd_mode">Toggle Do Not Disturb Mode</string>
+    <string name="action_toggle_dnd_mode_formatted">Toggle %s Only DND Mode</string>
+    <string name="action_enable_dnd_mode">Enable Do Not Disturb Mode</string>
+    <string name="action_enable_dnd_mode_formatted">Enable %s Only DND Mode</string>
+    <string name="action_disable_dnd_mode">Disable Do Not Disturb Mode</string>
     <string name="action_enable_auto_rotate">Enable Auto Rotate</string>
     <string name="action_disable_auto_rotate">Disable Auto Rotate</string>
     <string name="action_toggle_auto_rotate">Toggle Auto Rotate</string>
@@ -515,6 +531,9 @@
     <string name="action_switch_keyboard_formatted">Switch to %s</string>
     <string name="action_open_settings">Open Settings</string>
     <string name="action_show_power_menu">Show Power Menu</string>
+    <string name="action_toggle_airplane_mode">Toggle Airplane Mode</string>
+    <string name="action_enable_airplane_mode">Enable Airplane Mode</string>
+    <string name="action_disable_airplane_mode">Disable Airplane Mode</string>
     <!-- System action labels -->
     <!-- System action category labels -->
     <string name="system_action_cat_wifi">WiFi</string>
@@ -530,5 +549,6 @@
     <string name="system_action_cat_nfc">NFC</string>
     <string name="system_action_cat_other">Other</string>
     <string name="system_action_cat_keyboard">Keyboard</string>
+    <string name="system_action_cat_airplane_mode">Airplane Mode</string>
     <!-- System action category labels -->
 </resources>
