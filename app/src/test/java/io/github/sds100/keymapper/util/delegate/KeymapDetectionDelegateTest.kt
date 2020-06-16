@@ -96,6 +96,42 @@ class KeymapDetectionDelegateTest {
     }
 
     @Test
+    fun `stop repeating key when another trigger containing the same key is pressed`() {
+        val trigger1 = sequenceTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN))
+        val trigger2 = parallelTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN), Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP))
+
+        val action1 = Action.keycodeAction(KeyEvent.KEYCODE_0)
+        val action2 = Action.keycodeAction(KeyEvent.KEYCODE_1)
+
+        mDelegate.keyMapListCache = listOf(
+            KeyMap(0, trigger1, listOf(action1)),
+            KeyMap(1, trigger2, listOf(action2))
+        )
+
+        inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN, null)
+
+        Thread.sleep(HOLD_DOWN_DELAY.toLong())
+        fun action() = mDelegate.performAction.getOrAwaitValue().getContentIfNotHandled()?.action
+
+        assertEquals(action(), action1)
+
+        inputKeyEvent(KeyEvent.KEYCODE_VOLUME_UP, KeyEvent.ACTION_DOWN, null)
+
+        Thread.sleep(HOLD_DOWN_DELAY.toLong())
+
+        var action1PerformedWhileRepeating = false
+
+        for (i in 0..50) {
+            Thread.sleep(REPEAT_DELAY.toLong())
+            if (action() == action1) {
+                action1PerformedWhileRepeating = true
+            }
+        }
+
+        assertEquals(false, action1PerformedWhileRepeating)
+    }
+
+    @Test
     fun shortPressTriggerDoublePressTrigger_holdDown_onlyDetectDoublePressTrigger() {
         val shortPressTrigger = sequenceTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = SHORT_PRESS))
         val longPressTrigger = sequenceTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = DOUBLE_PRESS))
