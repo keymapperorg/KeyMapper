@@ -7,7 +7,7 @@ There is NO GUARANTEE any of these buttons will work and this app isn't designed
  * Navigation buttons.
  * Bluetooth/wired keyboards.
  * Buttons on other connected devices should also work.
- * Nintendo Switch JoyCons. 
+ * Nintendo Switch JoyCons.
 
 You can combine multiple keys from a specific device or any device to form a "trigger". Each trigger can have multiple actions. The keys can be setto be pressed at the same time or one after another in a sequence. Keys can be remapped when they are short pressed, long pressed or double pressed. A keymap can have a set of "constraints" so it only has an effect in certain situations.
 
@@ -25,21 +25,17 @@ What can I remap my keys to do?
  * Open an app
  * Open an app shortcut. This feature is very useful since you can tell another app to do something Key Mapper can’t. E.g If your launcher has a shortcut to open the app drawer, you can select that shortcut in this app and make any button open the app drawer.
  * Open a URL
-
  * Go back
  * Go home
  * Open recents
  * Open menu
  * Toggle split screen (Android 7.0+)
-
  * Expand notification drawer
  * Expand quick settings
  * Collapse status bar
-
  * Toggle/enable/disable WiFi (ROOT only for Android 10+)
  * Toggle/enable/disable Bluetooth
  * Toggle/enable/disable mobile data (ROOT only)
-
  * Toggle Play/pause media
  * Pause/play media
  * Fast forward/rewind
@@ -49,14 +45,15 @@ What can I remap my keys to do?
  * Show the volume dialog
  * Cycle through and change the ringer mode
  * Mute/unmute/toggle mute (Android 6.0+)
- 
  * Toggle/enable/disable auto-rotate
  * Switch between portrait and landscape mode
  * Force portrait/landscape mode
  * Toggle/enable/disable auto-brightness
  * Increase/decrease brightness
  * Toggle/enable/disable flashlight (Android 6.0+)
- 
+ * Toggle/enable/disable airplane mode (ROOT only)
+ * Toggle/enable/disable a dnd mode (Android 6.0+)
+ * Switch between vibrate and ring
  * Take a screenshot (Android 9.0+)
  * Open the Voice Assistant
  * Open the Device Assistant
@@ -64,7 +61,6 @@ What can I remap my keys to do?
  * Consume key event. (Do nothing)
  * Lock the device
  * Show the power dialog (Android 5.0+)
-
  * Move the cursor to the end of a file
  * Toggle, show and hide the keyboard
  * Show the keyboard picker (ROOT only for Android 8.1+)
@@ -76,8 +72,9 @@ The Key Mapper keyboard needs to be selected for these to work and you can’t u
  * Insert a block of text
 
 What other things can the app do?
- * Option to show a persistent notification which can pause/resume your keymaps. It can also open the accessibility settings on the device to enable/disable the service. Rooted devices can start/stop the accessibility service without going into settings and just tap the notification.
+ * Option to show a persistent notification which can pause/resume your keymaps.
  * Automatically change the keyboard to the Key Mapper one and/or show the keyboard picker when a chosen Bluetooth device is connected and switch back to the old one when it is disconnected.
+ * Quick settings to pause/resume keymaps and toggle the Key Mapper keyboard.
 
 Permissions
 You don't have to grant all the permissions for the app to work. The app will tell you if a permission needs to be granted for a feature to work.
@@ -88,5 +85,5 @@ You don't have to grant all the permissions for the app to work. The app will te
  * Camera: To control the flashlight.
 
  On some devices, enabling the accessibility service will disable "enhanced data encryption".
- 
+
 Discord: https://discord.gg/Suj6nyw
