@@ -397,6 +397,31 @@ object SystemActionUtils {
             descriptionRes = R.string.action_toggle_mute,
             permissions = arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY)
         ),
+
+        SystemActionDef(id = SystemAction.TOGGLE_DND_MODE,
+            category = CATEGORY_VOLUME,
+            minApi = Build.VERSION_CODES.M,
+            iconRes = R.drawable.dnd_circle_outline,
+            descriptionRes = R.string.action_toggle_dnd_mode,
+            descriptionFormattedRes = R.string.action_toggle_dnd_mode_formatted,
+            permissions = arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY),
+            options = Option.DND_MODES),
+
+        SystemActionDef(id = SystemAction.ENABLE_DND_MODE,
+            category = CATEGORY_VOLUME,
+            minApi = Build.VERSION_CODES.M,
+            iconRes = R.drawable.dnd_circle_outline,
+            descriptionRes = R.string.action_enable_dnd_mode,
+            descriptionFormattedRes = R.string.action_enable_dnd_mode_formatted,
+            permissions = arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY),
+            options = Option.DND_MODES),
+
+        SystemActionDef(id = SystemAction.DISABLE_DND_MODE,
+            category = CATEGORY_VOLUME,
+            minApi = Build.VERSION_CODES.M,
+            iconRes = R.drawable.dnd_circle_off_outline,
+            descriptionRes = R.string.action_disable_dnd_mode,
+            permissions = arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY)),
         //VOLUME
 
         //SCREEN ORIENTATION

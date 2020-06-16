@@ -472,6 +472,10 @@
 
     <string name="lens_front">Front</string>
     <string name="lens_back">Back</string>
+
+    <string name="dnd_mode_alarms">Alarms</string>
+    <string name="dnd_mode_priority">Priority</string>
+    <string name="dnd_mode_none">Nothing</string>
     <!-- system action options -->
 
     <!-- Tiles -->
@@ -592,6 +596,11 @@
     <string name="action_cycle_vibrate_ring">Cycle Through Ringer Modes (Ring, Vibrate)</string>
     <string name="action_change_ringer_mode">Change Ringer Mode</string>
     <string name="action_change_ringer_mode_formatted">Change To %s Mode</string>
+    <string name="action_toggle_dnd_mode">Toggle Do Not Disturb Mode</string>
+    <string name="action_toggle_dnd_mode_formatted">Toggle %s Only DND Mode</string>
+    <string name="action_enable_dnd_mode">Enable Do Not Disturb Mode</string>
+    <string name="action_enable_dnd_mode_formatted">Enable %s Only DND Mode</string>
+    <string name="action_disable_dnd_mode">Disable Do Not Disturb Mode</string>
 
     <string name="action_enable_auto_rotate">Enable Auto Rotate</string>
     <string name="action_disable_auto_rotate">Disable Auto Rotate</string>

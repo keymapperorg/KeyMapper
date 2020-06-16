@@ -322,6 +322,20 @@ class ActionPerformerDelegate(context: Context,
                             SystemAction.TOGGLE_FLASHLIGHT -> mFlashlightController.toggleFlashlight(lensFacing)
                             SystemAction.ENABLE_FLASHLIGHT -> mFlashlightController.setFlashlightMode(true, lensFacing)
                             SystemAction.DISABLE_FLASHLIGHT -> mFlashlightController.setFlashlightMode(false, lensFacing)
+
+                            SystemAction.TOGGLE_DND_MODE,
+                            SystemAction.ENABLE_DND_MODE -> {
+                                action.getExtraData(Action.EXTRA_DND_MODE).onSuccess {
+                                    val mode = Option.OPTION_ID_SDK_ID_MAP[it] ?: return@onSuccess
+
+                                    when (id) {
+                                        SystemAction.TOGGLE_DND_MODE -> AudioUtils.toggleDndMode(mode)
+                                        SystemAction.ENABLE_DND_MODE -> AudioUtils.enableDndMode(mode)
+                                    }
+                                }
+                            }
+
+                            SystemAction.DISABLE_DND_MODE -> AudioUtils.disableDnd()
                         }
                     }
 

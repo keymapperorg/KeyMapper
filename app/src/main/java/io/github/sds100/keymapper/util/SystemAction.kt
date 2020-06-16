@@ -58,6 +58,9 @@ object SystemAction {
     const val CYCLE_RINGER_MODE = "ringer_mode_cycle"
     const val CHANGE_RINGER_MODE = "ringer_mode_change"
     const val CYCLE_VIBRATE_RING = "ringer_mode_cycle_vibrate_ring"
+    const val TOGGLE_DND_MODE = "toggle_do_not_disturb_mode"
+    const val ENABLE_DND_MODE = "set_do_not_disturb_mode"
+    const val DISABLE_DND_MODE = "disable_do_not_disturb_mode"
 
     const val VOLUME_UNMUTE = "volume_unmute"
     const val VOLUME_MUTE = "volume_mute"
