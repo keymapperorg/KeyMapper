@@ -204,7 +204,8 @@ class ActionPerformerDelegate(context: Context,
                     )
                 }
 
-                SystemAction.CYCLE_RINGER_MODE -> AudioUtils.cycleThroughRingerModes(this)
+                SystemAction.CYCLE_VIBRATE_RING -> AudioUtils.cycleBetweenVibrateAndRing(this)
+                SystemAction.CYCLE_RINGER_MODE -> AudioUtils.cycleThroughAllRingerModes(this)
 
                 SystemAction.CHANGE_RINGER_MODE -> getSdkValueForOption(id) { ringerMode ->
                     AudioUtils.changeRingerMode(this, ringerMode)

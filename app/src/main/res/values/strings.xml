@@ -589,6 +589,7 @@
     <string name="action_decrease_stream">Decrease Stream</string>
     <string name="action_decrease_stream_formatted">Decrease %s Stream</string>
     <string name="action_cycle_ringer_mode">Cycle Through Ringer Modes (Ring, Vibrate, Silent)</string>
+    <string name="action_cycle_vibrate_ring">Cycle Through Ringer Modes (Ring, Vibrate)</string>
     <string name="action_change_ringer_mode">Change Ringer Mode</string>
     <string name="action_change_ringer_mode_formatted">Change To %s Mode</string>
 

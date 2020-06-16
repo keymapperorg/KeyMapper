@@ -57,6 +57,7 @@ object SystemAction {
     const val VOLUME_INCREASE_STREAM = "volume_increase_stream"
     const val CYCLE_RINGER_MODE = "ringer_mode_cycle"
     const val CHANGE_RINGER_MODE = "ringer_mode_change"
+    const val CYCLE_VIBRATE_RING = "ringer_mode_cycle_vibrate_ring"
 
     const val VOLUME_UNMUTE = "volume_unmute"
     const val VOLUME_MUTE = "volume_mute"
