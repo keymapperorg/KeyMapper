@@ -1,4 +1,36 @@
+## [2.0.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v2.0.0-beta.2) 
+
+#### 16 Jun 2020
+
+### Added
+
+- Action to toggle/enable/disable a Do Not Disturb mode (Android 6.0+).
+- Action to toggle/enable/disable airplane mode (ROOT only).
+- Action to switch between vibrate and ring.
+- Action to launch the device assistant rather than the voice assistant.
+- Notification to toggle the Key Mapper keyboard.
+- Quick Settings to toggle the Key Mapper keyboard and pause/resume keymaps.
+- Keymap option to vibrate twice for long press actions. Once when initially pressing the keys and again when the action is performed.
+- Duplicate keymaps.
+- Screen to configure keymaps is more optimised for very large screens.
+- Preference to switch to and from the Key Mapper keyboard when pausing/resuming keymaps.
+
+### Bug Fixes
+
+- Stop repeating actions when another key is pressed.
+- Parallel triggers would be forced to short press when its keymap was edited.
+- Don't show the same dialog multiple times when configuring keymaps.
+- Automatically expand Bottom Sheet menus.
+- Don't consume keyevents when actions for parallel triggers fail.
+- Short press and long press triggers don't cross over.
+- Short press and double press triggers don't cross over.
+- Wifi actions didn't work on Android Pie. Android doesn't allow apps to control WiFi anymore so these actions have been restricted to rooted devices on Android 9.0+ .
+- Crash when sometimes changing keymap options with a slider.
+- Sequence trigger timeout option was shown for a single key double press trigger.
+- Crash when launching the app for the first time in landscape.
+
 ## [2.0.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v2.0.0-beta.1) 🎉
+
 #### 08 Jun 2020
 ### Added
 
