@@ -478,8 +478,6 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         val isModifierKeyCode = isModifierKey(keyCode)
         var mappedToParallelTriggerAction = false
 
-        stopAllRepeatingActions()
-
         //consume sequence trigger keys until their timeout has been reached
         mSequenceTriggersTimeoutTimes.forEachIndexed { triggerIndex, timeoutTime ->
             if (!areSequenceTriggerConstraintsSatisfied(triggerIndex)) return@forEachIndexed
@@ -996,7 +994,11 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         mMetaStateFromKeyEvent = 0
         mUnmappedKeycodesToConsumeOnUp = mutableSetOf()
 
-        stopAllRepeatingActions()
+        mRepeatJobs.valueIterator().forEach {
+            it.cancel()
+        }
+
+        mRepeatJobs.clear()
 
         mParallelTriggerLongPressJobs.valueIterator().forEach {
             it.cancel()
@@ -1145,7 +1147,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                     }
                 }
 
-                delay(repeatDelay(mParallelTriggerOptions[triggerIndex]))
+                delay(repeatDelay(mParallelTriggerOptions[triggerIndex]).toLong())
             }
         }
     }
@@ -1172,14 +1174,6 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         val job = mRepeatJobs[triggerIndex]
         job?.cancel()
         mRepeatJobs.put(triggerIndex, repeatActions(triggerIndex))
-    }
-
-    private fun stopAllRepeatingActions() {
-        mRepeatJobs.valueIterator().forEach {
-            it.cancel()
-        }
-
-        mRepeatJobs.clear()
     }
 
     private val Int.internalDevice
