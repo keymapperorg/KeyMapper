@@ -14,7 +14,7 @@ Key Mapper is a free and open source Android app that can map a single or multip
 <a href='https://f-droid.org/en/packages/io.github.sds100.keymapper/'><img alt='Get it on F-Droid' src='https://fdroid.gitlab.io/artwork/badge/get-it-on.png' height=75px/> </a>
 
 ### How do I contribute?
-You can help by suggesting ideas, notifying me of any bugs or contributing to the code directly. You can post suggestions and bug fixes in the Discord server, XDA thread, GitHub issues page for this repo. The latest cutting edge builds are uploaded to the #testing channel in the Discord server everytime someone pushes to this repo. 
+You can help by suggesting ideas, notifying me of any bugs or contributing to the code directly. You can post suggestions and bug fixes in the Discord server, XDA thread, GitHub issues page for this repo. The latest cutting edge builds are uploaded to the #testing-builds channel in the Discord server everytime someone pushes to this repo. 
 
 [![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/M4M41032E)
 
