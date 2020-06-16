@@ -678,6 +678,10 @@
 
     <string name="action_open_settings">Open Settings</string>
     <string name="action_show_power_menu">Show Power Menu</string>
+
+    <string name="action_toggle_airplane_mode">Toggle Airplane Mode</string>
+    <string name="action_enable_airplane_mode">Enable Airplane Mode</string>
+    <string name="action_disable_airplane_mode">Disable Airplane Mode</string>
     <!-- System action labels -->
 
     <!-- System action category labels -->
@@ -694,6 +698,7 @@
     <string name="system_action_cat_nfc">NFC</string>
     <string name="system_action_cat_other">Other</string>
     <string name="system_action_cat_keyboard">Keyboard</string>
+    <string name="system_action_cat_airplane_mode">Airplane Mode</string>
     <!-- System action category labels -->
 
 </resources>
