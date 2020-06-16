@@ -252,6 +252,7 @@
     <string name="notification_channel_ime_picker">Keyboard picker</string>
     <string name="notification_channel_toggle_remaps">Pause/Resume remaps</string>
     <string name="notification_channel_keyboard_hidden">Keyboard is hidden warning</string>
+    <string name="notification_channel_toggle_keyboard">Toggle Key Mapper Keyboard</string>
 
     <string name="notification_ime_persistent_text">Tap to change your keyboard.</string>
     <string name="notification_ime_persistent_title">Keyboard Picker</string>
@@ -270,6 +271,11 @@
 
     <string name="notification_keyboard_hidden_title">Keyboard is hidden!</string>
     <string name="notification_keyboard_hidden_text">Tap to start showing the keyboard again.</string>
+
+    <string name="notification_toggle_keyboard_title">Toggle Key Mapper Keyboard</string>
+    <string name="notification_toggle_keyboard_text">Tap to switch to and from the Key Mapper keyboard.</string>
+    <string name="notification_ime_service_disabled_title">Key Mapper Keyboard disabled!</string>
+    <string name="notification_ime_service_disabled_text">Tap to enable the Key Mapper keyboard.</string>
     <!-- Notification strings -->
 
     <!--Preference titles and summaries-->
@@ -328,6 +334,9 @@
     <string name="title_pref_dark_theme">Dark Theme</string>
 
     <string name="title_pref_notification_settings">Notification Settings</string>
+
+    <string name="summary_pref_toggle_keyboard_notification">Switch between the Key Mapper keyboard and your default keyboard when you tap the notification.</string>
+    <string name="title_pref_toggle_keyboard_notification">Toggle Key Mapper keyboard notification</string>
 
     <string name="title_pref_toggle_keyboard_on_toggle_keymaps">Automatically change the keyboard when toggling keymaps</string>
     <string name="summary_pref_toggle_keyboard_on_toggle_keymaps">Automatically select the Key Mapper keyboard when you resume your keymaps and select your default keyboard when pausing them.</string>

@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.util
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -32,10 +33,12 @@ object NotificationUtils {
     const val ID_IME_PICKER = 123
     const val ID_KEYBOARD_HIDDEN = 747
     const val ID_TOGGLE_REMAPS = 231
+    const val ID_TOGGLE_KEYBOARD = 143
 
     const val CHANNEL_TOGGLE_REMAPS = "channel_toggle_remaps"
     const val CHANNEL_IME_PICKER = "channel_ime_picker"
     const val CHANNEL_KEYBOARD_HIDDEN = "channel_warning_keyboard_hidden"
+    const val CHANNEL_TOGGLE_KEYBOARD = "channel_toggle_keymapper_keyboard"
 
     @Deprecated("Removed in 2.0. This channel shouldn't exist")
     const val CHANNEL_ID_WARNINGS = "channel_warnings"
@@ -57,6 +60,25 @@ object NotificationUtils {
             R.drawable.ic_notification_keyboard,
             R.string.notification_ime_persistent_title,
             R.string.notification_ime_persistent_text,
+            priority = NotificationCompat.PRIORITY_MIN,
+            onGoing = true
+        )
+    }
+
+    fun showToggleKeyboardNotification(ctx: Context) {
+        val pendingIntent = IntentUtils.createPendingBroadcastIntent(
+            ctx,
+            KeyMapperBroadcastReceiver.ACTION_TOGGLE_KEYBOARD
+        )
+
+        showNotification(
+            ctx,
+            ID_TOGGLE_KEYBOARD,
+            CHANNEL_TOGGLE_KEYBOARD,
+            pendingIntent,
+            R.drawable.ic_notification_keyboard,
+            R.string.notification_toggle_keyboard_title,
+            R.string.notification_toggle_keyboard_text,
             priority = NotificationCompat.PRIORITY_MIN,
             onGoing = true
         )
@@ -132,6 +154,18 @@ object NotificationUtils {
                 NotificationManager.IMPORTANCE_DEFAULT
             )
         )
+
+        if (PermissionUtils.isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
+            val toggleKeyboardChannel = NotificationChannel(
+                CHANNEL_TOGGLE_KEYBOARD,
+                ctx.str(R.string.notification_channel_toggle_keyboard),
+                NotificationManager.IMPORTANCE_MIN
+            )
+
+            channels.add(toggleKeyboardChannel)
+        } else {
+            notificationManager.deleteNotificationChannel(CHANNEL_TOGGLE_KEYBOARD)
+        }
 
         if ((AppPreferences.hasRootPermission && SDK_INT >= O_MR1 && SDK_INT < Q) || SDK_INT < O_MR1) {
 

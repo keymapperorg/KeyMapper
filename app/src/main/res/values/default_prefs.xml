@@ -12,6 +12,7 @@
     <bool name="default_value_shown_cant_use_virtual_keyboard_message">false</bool>
     <bool name="default_value_show_toast_on_action_error">true</bool>
     <bool name="default_value_toggle_keyboard_on_toggle_keymaps">false</bool>
+    <bool name="default_value_toggle_keyboard_notification">false</bool>
 
     <string name="default_value_dark_theme_mode">@string/value_pref_dark_theme_follow_system</string>
     <integer name="default_value_long_press_delay">500</integer>

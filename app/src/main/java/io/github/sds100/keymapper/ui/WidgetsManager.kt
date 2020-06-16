@@ -1,8 +1,8 @@
 package io.github.sds100.keymapper
 
+import android.Manifest
 import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.provider.Settings
@@ -28,20 +28,22 @@ object WidgetsManager {
     @IntDef(value = [
         EVENT_PAUSE_REMAPS,
         EVENT_RESUME_REMAPS,
-        EVENT_SERVICE_START,
-        EVENT_SERVICE_STOPPED])
+        EVENT_ACCESSIBILITY_SERVICE_START,
+        EVENT_ACCESSIBILITY_SERVICE_STOPPED,
+        EVENT_HIDE_KEYBOARD,
+        EVENT_SHOW_KEYBOARD])
     annotation class Event
 
     const val EVENT_PAUSE_REMAPS = 0
     const val EVENT_RESUME_REMAPS = 1
-    const val EVENT_SERVICE_START = 2
-    const val EVENT_SERVICE_STOPPED = 3
+    const val EVENT_ACCESSIBILITY_SERVICE_START = 2
+    const val EVENT_ACCESSIBILITY_SERVICE_STOPPED = 3
     const val EVENT_HIDE_KEYBOARD = 4
     const val EVENT_SHOW_KEYBOARD = 5
 
     fun onEvent(ctx: Context, @Event event: Int) {
         when (event) {
-            EVENT_SHOW_KEYBOARD, EVENT_SERVICE_STOPPED -> {
+            EVENT_SHOW_KEYBOARD, EVENT_ACCESSIBILITY_SERVICE_STOPPED -> {
                 NotificationUtils.dismissNotification(NotificationUtils.ID_KEYBOARD_HIDDEN)
             }
 
@@ -71,9 +73,13 @@ object WidgetsManager {
 
     fun invalidateNotifications(ctx: Context) {
         if (AccessibilityUtils.isServiceEnabled(ctx)) {
-            ctx.sendBroadcast(Intent(MyAccessibilityService.ACTION_UPDATE_NOTIFICATION))
+            if (MyAccessibilityService.provideIsPaused().value == true) {
+                onEvent(ctx, EVENT_PAUSE_REMAPS)
+            } else {
+                onEvent(ctx, EVENT_RESUME_REMAPS)
+            }
         } else {
-            onEvent(ctx, EVENT_SERVICE_STOPPED)
+            onEvent(ctx, EVENT_ACCESSIBILITY_SERVICE_STOPPED)
         }
 
         if (SDK_INT >= Build.VERSION_CODES.O) {
@@ -87,6 +93,14 @@ object WidgetsManager {
             NotificationUtils.showIMEPickerNotification(ctx)
         } else if (SDK_INT < Build.VERSION_CODES.O) {
             NotificationUtils.dismissNotification(NotificationUtils.ID_IME_PICKER)
+        }
+
+        if (PermissionUtils.isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)
+            || AppPreferences.showToggleKeyboardNotification) {
+            NotificationUtils.showToggleKeyboardNotification(ctx)
+
+        } else {
+            NotificationUtils.dismissNotification(NotificationUtils.ID_TOGGLE_KEYBOARD)
         }
     }
 
@@ -125,7 +139,7 @@ object WidgetsManager {
                 }
             }
 
-            EVENT_RESUME_REMAPS, EVENT_SERVICE_START -> {
+            EVENT_RESUME_REMAPS, EVENT_ACCESSIBILITY_SERVICE_START -> {
                 titleRes = R.string.notification_remappings_pause_title
                 textRes = R.string.notification_remappings_pause_text
                 iconRes = R.drawable.ic_notification_pause
@@ -150,7 +164,7 @@ object WidgetsManager {
                 }
             }
 
-            EVENT_SERVICE_STOPPED -> {
+            EVENT_ACCESSIBILITY_SERVICE_STOPPED -> {
                 titleRes = R.string.notification_accessibility_service_disabled_title
                 textRes = R.string.notification_accessibility_service_disabled_text
                 iconRes = R.drawable.ic_notification_error
@@ -165,7 +179,7 @@ object WidgetsManager {
         }
 
         if ((event == EVENT_RESUME_REMAPS)
-            or (event == EVENT_SERVICE_START)
+            or (event == EVENT_ACCESSIBILITY_SERVICE_START)
             or (event == EVENT_PAUSE_REMAPS)) {
 
             val actionPendingIntent = IntentUtils.createPendingBroadcastIntent(

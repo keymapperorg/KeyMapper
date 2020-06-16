@@ -16,10 +16,10 @@ import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.MyApplication
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.WidgetsManager
+import io.github.sds100.keymapper.WidgetsManager.EVENT_ACCESSIBILITY_SERVICE_START
+import io.github.sds100.keymapper.WidgetsManager.EVENT_ACCESSIBILITY_SERVICE_STOPPED
 import io.github.sds100.keymapper.WidgetsManager.EVENT_PAUSE_REMAPS
 import io.github.sds100.keymapper.WidgetsManager.EVENT_RESUME_REMAPS
-import io.github.sds100.keymapper.WidgetsManager.EVENT_SERVICE_START
-import io.github.sds100.keymapper.WidgetsManager.EVENT_SERVICE_STOPPED
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.util.*
@@ -53,7 +53,6 @@ class MyAccessibilityService : AccessibilityService(),
         const val ACTION_START = "$PACKAGE_NAME.START_ACCESSIBILITY_SERVICE"
         const val ACTION_STOP = "$PACKAGE_NAME.STOP_ACCESSIBILITY_SERVICE"
         const val ACTION_SHOW_KEYBOARD = "$PACKAGE_NAME.SHOW_KEYBOARD"
-        const val ACTION_UPDATE_NOTIFICATION = "$PACKAGE_NAME.UPDATE_NOTIFICATION"
 
         const val EVENT_RECORD_TRIGGER = "record_trigger"
         const val EVENT_RECORD_TRIGGER_KEY = "record_trigger_key"
@@ -120,14 +119,6 @@ class MyAccessibilityService : AccessibilityService(),
                         softKeyboardController.show(baseContext)
                     }
                 }
-
-                ACTION_UPDATE_NOTIFICATION -> {
-                    if (provideIsPaused().value == true) {
-                        WidgetsManager.onEvent(this@MyAccessibilityService, EVENT_PAUSE_REMAPS)
-                    } else {
-                        WidgetsManager.onEvent(this@MyAccessibilityService, EVENT_RESUME_REMAPS)
-                    }
-                }
             }
         }
     }
@@ -178,7 +169,6 @@ class MyAccessibilityService : AccessibilityService(),
         IntentFilter().apply {
             addAction(ACTION_PAUSE_REMAPPINGS)
             addAction(ACTION_RESUME_REMAPPINGS)
-            addAction(ACTION_UPDATE_NOTIFICATION)
             addAction(ACTION_SHOW_KEYBOARD)
             addAction(Intent.ACTION_SCREEN_ON)
             addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
@@ -193,7 +183,7 @@ class MyAccessibilityService : AccessibilityService(),
 
         defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
 
-        WidgetsManager.onEvent(this, EVENT_SERVICE_START)
+        WidgetsManager.onEvent(this, EVENT_ACCESSIBILITY_SERVICE_START)
         provideBus().value = Event(EVENT_ON_SERVICE_STARTED to null)
 
         mKeymapDetectionDelegate.imitateButtonPress.observe(this, EventObserver {
@@ -285,7 +275,7 @@ class MyAccessibilityService : AccessibilityService(),
 
         mLifecycleRegistry.currentState = Lifecycle.State.DESTROYED
 
-        WidgetsManager.onEvent(this, EVENT_SERVICE_STOPPED)
+        WidgetsManager.onEvent(this, EVENT_ACCESSIBILITY_SERVICE_STOPPED)
         provideBus().value = Event(EVENT_ON_SERVICE_STOPPED to null)
         defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
 

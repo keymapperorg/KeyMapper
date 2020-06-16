@@ -61,6 +61,10 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
         findPreference<SwitchPreference>(str(R.string.key_pref_show_toggle_remappings_notification))
     }
 
+    private val mToggleKeyboardNotificationPref by lazy {
+        findPreference<Preference>(str(R.string.key_pref_toggle_keyboard_notification))
+    }
+
     private val mBluetoothDevicesPreferences by lazy {
         findPreference<MultiSelectListPreference>(str(R.string.key_pref_bluetooth_devices))!!
     }
@@ -110,9 +114,17 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
 
                 true
             }
+
+            mToggleKeyboardNotificationPref?.setOnPreferenceClickListener {
+                NotificationUtils.openChannelSettings(NotificationUtils.CHANNEL_TOGGLE_KEYBOARD)
+
+                true
+            }
+
         } else {
             mToggleRemappingsNotificationPref?.onPreferenceChangeListener = this
             mShowImeNotificationPreference?.onPreferenceChangeListener = this
+            mToggleKeyboardNotificationPref?.onPreferenceChangeListener = this
         }
 
         mBluetoothDevicesPreferences.setOnPreferenceClickListener {
@@ -172,6 +184,15 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
                     NotificationUtils.showIMEPickerNotification(requireContext())
                 } else {
                     NotificationUtils.dismissNotification(NotificationUtils.ID_IME_PICKER)
+                }
+            }
+
+            mToggleKeyboardNotificationPref -> {
+                //show/hide the notification when the preference is toggled
+                if (newValue as Boolean) {
+                    WidgetsManager.invalidateNotifications(requireContext())
+                } else {
+                    NotificationUtils.dismissNotification(NotificationUtils.ID_TOGGLE_KEYBOARD)
                 }
             }
 

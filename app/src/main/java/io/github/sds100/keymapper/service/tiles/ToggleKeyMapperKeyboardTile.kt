@@ -1,31 +1,20 @@
 package io.github.sds100.keymapper.service.tiles
 
-import android.Manifest
 import android.graphics.drawable.Icon
 import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
-import androidx.lifecycle.observe
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.util.KeyboardUtils
-import io.github.sds100.keymapper.util.PermissionUtils
-import io.github.sds100.keymapper.util.result.onSuccess
 import io.github.sds100.keymapper.util.str
-import splitties.toast.toast
 
 /**
  * Created by sds100 on 12/06/2020.
  */
 @RequiresApi(Build.VERSION_CODES.N)
-class ToggleKeyMapperKeyboardTile : TileService(), LifecycleOwner {
-
-    private val mLifecycleRegistry = LifecycleRegistry(this)
+class ToggleKeyMapperKeyboardTile : TileService() {
 
     private val mState: State
         get() = if (KeyMapperImeService.isServiceEnabled()) {
@@ -35,15 +24,6 @@ class ToggleKeyMapperKeyboardTile : TileService(), LifecycleOwner {
         }
 
     override fun onCreate() {
-
-        mLifecycleRegistry.currentState = Lifecycle.State.STARTED
-
-        KeyMapperImeService.provideBus().observe(this) {
-            if (it?.peekContent()?.first == KeyMapperImeService.EVENT_ON_SERVICE_STARTED
-                || it?.peekContent()?.first == KeyMapperImeService.EVENT_ON_SERVICE_STOPPED) {
-                invalidateTile()
-            }
-        }
 
         invalidateTile()
         super.onCreate()
@@ -73,37 +53,13 @@ class ToggleKeyMapperKeyboardTile : TileService(), LifecycleOwner {
         super.onStopListening()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-
-        mLifecycleRegistry.currentState = Lifecycle.State.DESTROYED
-    }
-
     override fun onClick() {
         super.onClick()
 
         invalidateTile()
 
         when (mState) {
-            State.DEFAULT ->
-                if (KeyMapperImeService.isInputMethodChosen()) {
-                    AppPreferences.defaultIme?.let {
-                        KeyboardUtils.switchIme(it)
-
-                        KeyboardUtils.getInputMethodLabel(it).onSuccess { imeLabel ->
-                            toast(str(R.string.toast_chose_keyboard, imeLabel))
-                        }
-                    }
-
-                } else {
-                    if (PermissionUtils.isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
-                        AppPreferences.defaultIme = KeyboardUtils.getChosenImeId(this)
-                        KeyboardUtils.switchToKeyMapperIme(this)
-                        toast(R.string.toast_chose_keymapper_keyboard)
-                    } else {
-                        toast(R.string.error_need_write_secure_settings_permission)
-                    }
-                }
+            State.DEFAULT -> KeyboardUtils.toggleKeyboard(this)
 
             State.DISABLED -> {
                 KeyboardUtils.enableKeyMapperIme()
@@ -130,8 +86,6 @@ class ToggleKeyMapperKeyboardTile : TileService(), LifecycleOwner {
 
         qsTile.updateTile()
     }
-
-    override fun getLifecycle() = mLifecycleRegistry
 
     private enum class State {
         DEFAULT, DISABLED
