@@ -109,6 +109,11 @@ object SystemAction {
      */
     const val SWITCH_KEYBOARD = "switch_keyboard"
 
+    //airplane mode
+    const val TOGGLE_AIRPLANE_MODE = "toggle_airplane_mode"
+    const val ENABLE_AIRPLANE_MODE = "enable_airplane_mode"
+    const val DISABLE_AIRPLANE_MODE = "disable_airplane_mode"
+
     //other
     const val SCREENSHOT = "screenshot"
 
@@ -139,5 +144,6 @@ object SystemAction {
     const val CATEGORY_FLASHLIGHT = "flashlight"
     const val CATEGORY_NFC = "nfc"
     const val CATEGORY_KEYBOARD = "keyboard"
+    const val CATEGORY_AIRPLANE_MODE = "airplane_mode"
     const val CATEGORY_OTHER = "other"
 }

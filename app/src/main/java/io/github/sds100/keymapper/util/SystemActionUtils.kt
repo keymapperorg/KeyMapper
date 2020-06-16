@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Option
 import io.github.sds100.keymapper.data.model.SystemActionDef
+import io.github.sds100.keymapper.util.SystemAction.CATEGORY_AIRPLANE_MODE
 import io.github.sds100.keymapper.util.SystemAction.CATEGORY_BLUETOOTH
 import io.github.sds100.keymapper.util.SystemAction.CATEGORY_BRIGHTNESS
 import io.github.sds100.keymapper.util.SystemAction.CATEGORY_FLASHLIGHT
@@ -25,6 +26,7 @@ import io.github.sds100.keymapper.util.SystemAction.CATEGORY_WIFI
 import io.github.sds100.keymapper.util.SystemAction.COLLAPSE_STATUS_BAR
 import io.github.sds100.keymapper.util.SystemAction.CONSUME_KEY_EVENT
 import io.github.sds100.keymapper.util.SystemAction.DECREASE_BRIGHTNESS
+import io.github.sds100.keymapper.util.SystemAction.DISABLE_AIRPLANE_MODE
 import io.github.sds100.keymapper.util.SystemAction.DISABLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.util.SystemAction.DISABLE_AUTO_ROTATE
 import io.github.sds100.keymapper.util.SystemAction.DISABLE_BLUETOOTH
@@ -32,6 +34,7 @@ import io.github.sds100.keymapper.util.SystemAction.DISABLE_MOBILE_DATA
 import io.github.sds100.keymapper.util.SystemAction.DISABLE_NFC
 import io.github.sds100.keymapper.util.SystemAction.DISABLE_WIFI
 import io.github.sds100.keymapper.util.SystemAction.DISABLE_WIFI_ROOT
+import io.github.sds100.keymapper.util.SystemAction.ENABLE_AIRPLANE_MODE
 import io.github.sds100.keymapper.util.SystemAction.ENABLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.util.SystemAction.ENABLE_AUTO_ROTATE
 import io.github.sds100.keymapper.util.SystemAction.ENABLE_BLUETOOTH
@@ -70,6 +73,7 @@ import io.github.sds100.keymapper.util.SystemAction.SHOW_KEYBOARD_PICKER_ROOT
 import io.github.sds100.keymapper.util.SystemAction.SHOW_POWER_MENU
 import io.github.sds100.keymapper.util.SystemAction.SWITCH_KEYBOARD
 import io.github.sds100.keymapper.util.SystemAction.SWITCH_ORIENTATION
+import io.github.sds100.keymapper.util.SystemAction.TOGGLE_AIRPLANE_MODE
 import io.github.sds100.keymapper.util.SystemAction.TOGGLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.util.SystemAction.TOGGLE_AUTO_ROTATE
 import io.github.sds100.keymapper.util.SystemAction.TOGGLE_BLUETOOTH
@@ -106,6 +110,7 @@ object SystemActionUtils {
         CATEGORY_FLASHLIGHT to R.string.system_action_cat_flashlight,
         CATEGORY_KEYBOARD to R.string.system_action_cat_keyboard,
         CATEGORY_NFC to R.string.system_action_cat_nfc,
+        CATEGORY_AIRPLANE_MODE to R.string.system_action_cat_airplane_mode,
         CATEGORY_OTHER to R.string.system_action_cat_other
     )
 
@@ -618,6 +623,26 @@ object SystemActionUtils {
             getOptions = {
                 KeyboardUtils.getInputMethodIds()
             }
+        ),
+
+        //AIRPLANE MODE
+        SystemActionDef(id = TOGGLE_AIRPLANE_MODE,
+            category = CATEGORY_AIRPLANE_MODE,
+            iconRes = R.drawable.ic_outline_airplanemode_active_24,
+            descriptionRes = R.string.action_toggle_airplane_mode,
+            permissions = arrayOf(Constants.PERMISSION_ROOT)
+        ),
+        SystemActionDef(id = ENABLE_AIRPLANE_MODE,
+            category = CATEGORY_AIRPLANE_MODE,
+            iconRes = R.drawable.ic_outline_airplanemode_active_24,
+            descriptionRes = R.string.action_enable_airplane_mode,
+            permissions = arrayOf(Constants.PERMISSION_ROOT)
+        ),
+        SystemActionDef(id = DISABLE_AIRPLANE_MODE,
+            category = CATEGORY_AIRPLANE_MODE,
+            iconRes = R.drawable.ic_outline_airplanemode_inactive_24,
+            descriptionRes = R.string.action_disable_airplane_mode,
+            permissions = arrayOf(Constants.PERMISSION_ROOT)
         ),
 
         //OTHER

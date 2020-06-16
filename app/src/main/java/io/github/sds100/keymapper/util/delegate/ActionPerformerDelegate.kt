@@ -287,6 +287,10 @@ class ActionPerformerDelegate(context: Context,
                     }
                 }
 
+                SystemAction.TOGGLE_AIRPLANE_MODE -> AirplaneModeUtils.toggleAirplaneMode(this)
+                SystemAction.ENABLE_AIRPLANE_MODE -> AirplaneModeUtils.enableAirplaneMode()
+                SystemAction.DISABLE_AIRPLANE_MODE -> AirplaneModeUtils.disableAirplaneMode()
+
                 else -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         when (id) {
