@@ -47,6 +47,11 @@ object AppPreferences : DefaultPreferences() {
         appCtx.bool(R.bool.default_value_show_toggle_remappings_notification)
     )
 
+    var showToggleKeyboardNotification by BoolPref(
+        appCtx.str(R.string.key_pref_toggle_keyboard_notification),
+        appCtx.bool(R.bool.default_value_toggle_keyboard_notification)
+    )
+
     var bluetoothDevices by StringSetOrNullPref(
         appCtx.str(R.string.key_pref_bluetooth_devices)
     )

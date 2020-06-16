@@ -12,6 +12,7 @@ import androidx.annotation.RequiresPermission
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.WidgetsManager
+import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
 import io.github.sds100.keymapper.util.result.*
@@ -112,6 +113,28 @@ object KeyboardUtils {
 
     fun getChosenImeId(ctx: Context): String {
         return Settings.Secure.getString(ctx.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD)
+    }
+
+    fun toggleKeyboard(ctx: Context) {
+        if (!KeyMapperImeService.isServiceEnabled()) {
+            ctx.toast(R.string.error_ime_service_disabled)
+            return
+        }
+
+        if (KeyMapperImeService.isInputMethodChosen()) {
+            AppPreferences.defaultIme?.let {
+                switchIme(it)
+
+                getInputMethodLabel(it).onSuccess { imeLabel ->
+                    toast(ctx.str(R.string.toast_chose_keyboard, imeLabel))
+                }
+            }
+
+        } else {
+            AppPreferences.defaultIme = getChosenImeId(ctx)
+            switchToKeyMapperIme(ctx)
+            toast(R.string.toast_chose_keymapper_keyboard)
+        }
     }
 }
 

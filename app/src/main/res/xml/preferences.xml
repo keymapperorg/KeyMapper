@@ -119,6 +119,11 @@
             android:summary="@string/summary_pref_toggle_keyboard_on_toggle_keymaps"
             android:title="@string/title_pref_toggle_keyboard_on_toggle_keymaps" />
 
+        <androidx.preference.SwitchPreference
+            android:defaultValue="@bool/default_value_toggle_keyboard_notification"
+            android:key="@string/key_pref_toggle_keyboard_notification"
+            android:summary="@string/summary_pref_toggle_keyboard_notification"
+            android:title="@string/title_pref_toggle_keyboard_notification" />
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory

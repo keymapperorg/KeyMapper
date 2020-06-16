@@ -17,11 +17,13 @@ class KeyMapperBroadcastReceiver : BroadcastReceiver() {
          * Only send this action if the app isn't the active window.
          */
         const val ACTION_SHOW_IME_PICKER = "action_show_ime_picker"
+        const val ACTION_TOGGLE_KEYBOARD = "action_toggle_keyboard"
     }
 
     override fun onReceive(context: Context, intent: Intent?) {
         when (intent?.action) {
             ACTION_SHOW_IME_PICKER -> KeyboardUtils.showInputMethodPickerDialogOutsideApp()
+            ACTION_TOGGLE_KEYBOARD -> KeyboardUtils.toggleKeyboard(context)
 
             MyAccessibilityService.ACTION_START -> AccessibilityUtils.enableService(context)
 
