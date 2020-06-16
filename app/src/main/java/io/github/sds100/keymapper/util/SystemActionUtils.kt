@@ -354,6 +354,12 @@ object SystemActionUtils {
             descriptionRes = R.string.action_cycle_ringer_mode,
             permissions = arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY)
         ),
+        SystemActionDef(
+            id = SystemAction.CYCLE_VIBRATE_RING,
+            category = CATEGORY_VOLUME,
+            descriptionRes = R.string.action_cycle_vibrate_ring,
+            permissions = arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY)
+        ),
         SystemActionDef(id = SystemAction.CHANGE_RINGER_MODE,
             category = CATEGORY_VOLUME,
             descriptionRes = R.string.action_change_ringer_mode,

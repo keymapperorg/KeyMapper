@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.media.AudioManager
 import androidx.annotation.IntDef
+import splitties.systemservices.audioManager
 
 /**
  * Created by sds100 on 21/10/2018.
@@ -85,9 +86,18 @@ object AudioUtils {
         }
     }
 
-    fun cycleThroughRingerModes(ctx: Context) {
-        (ctx.applicationContext.getSystemService(Context.AUDIO_SERVICE)
-            as AudioManager).apply {
+    fun cycleBetweenVibrateAndRing(ctx: Context) {
+        audioManager.apply {
+            when (ringerMode) {
+                AudioManager.RINGER_MODE_NORMAL -> changeRingerMode(ctx, AudioManager.RINGER_MODE_VIBRATE)
+                AudioManager.RINGER_MODE_VIBRATE -> changeRingerMode(ctx, AudioManager.RINGER_MODE_NORMAL)
+                AudioManager.RINGER_MODE_SILENT -> changeRingerMode(ctx, AudioManager.RINGER_MODE_NORMAL)
+            }
+        }
+    }
+
+    fun cycleThroughAllRingerModes(ctx: Context) {
+        audioManager.apply {
 
             when (ringerMode) {
                 AudioManager.RINGER_MODE_NORMAL -> changeRingerMode(ctx, AudioManager.RINGER_MODE_VIBRATE)
