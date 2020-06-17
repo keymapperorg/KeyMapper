@@ -43,6 +43,11 @@ fun Failure.getFullMessage(ctx: Context) = when (this) {
     is FileNotCached -> ctx.str(R.string.error_file_not_cached)
     is SSLHandshakeError -> ctx.str(R.string.error_ssl_handshake_exception)
     is DeviceNotFound -> ctx.str(R.string.error_device_not_found)
+    is GenericFailure -> exception.toString()
+    is EmptyJson -> ctx.str(R.string.error_empty_json)
+    is ClientVersionTooOld -> ctx.str(R.string.error_key_mapper_version_too_old)
+    is BackupVersionTooOld -> ctx.str(R.string.error_backup_version_too_old)
+    is FileAccessDenied -> ctx.str(R.string.error_file_access_denied)
 
     else -> throw Exception("Can't find error message for ${this::class.simpleName}")
 }
@@ -107,6 +112,11 @@ class ImeServiceNotChosen : RecoverableFailure() {
     }
 }
 
+class FileAccessDenied : Failure()
+class GenericFailure(val exception: Exception) : Failure()
+class EmptyJson : Failure()
+class ClientVersionTooOld : Failure()
+class BackupVersionTooOld : Failure()
 class OptionsNotRequired : Failure()
 class SystemFeatureNotSupported(val feature: String) : Failure()
 class ConstraintNotFound : Failure()
@@ -133,7 +143,7 @@ class GoogleAppNotFound : RecoverableFailure() {
 class FrontFlashNotFound : Failure()
 class BackFlashNotFound : Failure()
 class ImeNotFound(val id: String) : Failure()
-class DownloadFailed() : Failure()
-class FileNotCached() : Failure()
-class SSLHandshakeError() : Failure()
-class DeviceNotFound() : Failure()
+class DownloadFailed : Failure()
+class FileNotCached : Failure()
+class SSLHandshakeError : Failure()
+class DeviceNotFound : Failure()

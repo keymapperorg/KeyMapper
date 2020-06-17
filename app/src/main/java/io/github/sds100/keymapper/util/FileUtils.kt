@@ -3,11 +3,14 @@ package io.github.sds100.keymapper.util
 import android.content.Context
 import java.io.FileOutputStream
 
+
 /**
  * Created by sds100 on 15/12/2018.
  */
 
 object FileUtils {
+
+    const val MIME_TYPE_JSON = "application/json"
 
     fun getTextFromAppFiles(ctx: Context, fileName: String): String {
         ctx.openFileInput(fileName).bufferedReader().use {

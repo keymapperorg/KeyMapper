@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.data
 
 import androidx.lifecycle.LiveData
 import io.github.sds100.keymapper.data.model.KeyMap
+import io.github.sds100.keymapper.util.Event
 
 /**
  * Created by sds100 on 17/05/2020.
@@ -9,6 +10,7 @@ import io.github.sds100.keymapper.data.model.KeyMap
 interface KeymapRepository {
 
     val keymapList: LiveData<List<KeyMap>>
+    val requestBackup: LiveData<Event<List<KeyMap>>>
 
     suspend fun getKeymaps(): List<KeyMap>
 

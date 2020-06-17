@@ -5,6 +5,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import io.github.sds100.keymapper.data.db.AppDatabase.Companion.DATABASE_VERSION
 import io.github.sds100.keymapper.data.db.dao.DeviceInfoDao
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 import io.github.sds100.keymapper.data.db.migration.Migration_1_2
@@ -18,7 +19,7 @@ import io.github.sds100.keymapper.data.model.KeyMap
 /**
  * Created by sds100 on 24/01/2020.
  */
-@Database(entities = [KeyMap::class, DeviceInfo::class], version = 2, exportSchema = true)
+@Database(entities = [KeyMap::class, DeviceInfo::class], version = DATABASE_VERSION, exportSchema = true)
 @TypeConverters(
     ActionListTypeConverter::class,
     ExtraListTypeConverter::class,
@@ -28,6 +29,7 @@ import io.github.sds100.keymapper.data.model.KeyMap
 abstract class AppDatabase : RoomDatabase() {
     companion object {
         const val DATABASE_NAME = "key_map_database"
+        const val DATABASE_VERSION = 2
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {

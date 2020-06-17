@@ -57,6 +57,7 @@
     <string name="disabled">Disabled</string>
     <string name="key_map_adapter_flags">Flags</string>
 
+    <string name="reset">Reset</string>
     <string name="description_open_app">Open %s</string>
     <string name="description_key">Press \'%s\' key</string>
     <string name="description_text_block">Type \'%s\'</string>
@@ -98,6 +99,7 @@
 
     <string name="toast_chose_keymapper_keyboard">Chose Key Mapper keyboard</string>
     <string name="toast_chose_keyboard">Chose %s</string>
+    <string name="toast_backup_successful">Backup Successful!</string>
 
     <string name="extra_label_sequence_trigger_timeout">Sequence trigger timeout (ms)</string>
     <string name="extra_label_long_press_delay_timeout">Long press delay (ms)</string>
@@ -175,6 +177,8 @@
     <string name="action_seed_database">Seed database</string>
     <string name="action_save">Save</string>
     <string name="action_duplicate_keymap">Duplicate</string>
+    <string name="action_backup">Backup</string>
+    <string name="action_restore">Restore</string>
     <!-- Menu action titles-->
 
     <!-- Button titles -->
@@ -305,6 +309,9 @@
 
     <string name="title_pref_show_toggle_remappings_notification">Pause/resume remappings notification</string>
     <string name="summary_pref_show_toggle_remappings_notification">Show a persistent notification which starts/pauses your remaps and has a link to start/stop the accessibility service.</string>
+
+    <string name="title_pref_automatic_backup_location">Automatically backup keymaps to a specified location</string>
+    <string name="summary_pref_automatic_backup_location_default">Disabled</string>
 
     <string name="title_pref_bluetooth_devices">Choose bluetooth devices…</string>
 
@@ -566,6 +573,13 @@
     <string name="error_file_not_cached">File isn\'t cached! Connect to internet to download it.</string>
     <string name="error_this_is_unsupported">This is unsupported. :(</string>
     <string name="error_device_not_found">Device not found!</string>
+    <string name="error_no_keymaps">No Keymaps!</string>
+    <string name="error_failed_to_pick_file">Failed to pick file</string>
+    <string name="error_empty_json">Empty JSON file!</string>
+    <string name="error_key_mapper_version_too_old">Key Mapper version is too old!</string>
+    <string name="error_backup_version_too_old">Backup version is too old!</string>
+    <string name="error_file_access_denied">File access denied! Is it deleted?</string>
+    <string name="error_file_access_denied_automatic_backup">Failed to backup to file. Is it deleted?</string>
 
     <!-- Error messages -->
 

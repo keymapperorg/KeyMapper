@@ -75,3 +75,10 @@ fun <T, U> Result<T>.handle(onSuccess: (value: T) -> U, onFailure: (failure: Fai
         is Failure -> onFailure(this)
     }
 }
+
+suspend fun <T, U> Result<T>.handleAsync(onSuccess: suspend (value: T) -> U, onFailure: suspend (failure: Failure) -> U): U {
+    return when (this) {
+        is Success -> onSuccess(value)
+        is Failure -> onFailure(this)
+    }
+}

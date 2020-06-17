@@ -123,6 +123,11 @@ object AppPreferences : DefaultPreferences() {
         appCtx.bool(R.bool.default_value_toggle_keyboard_on_toggle_keymaps)
     )
 
+    var automaticBackupLocation by StringPref(
+        appCtx.str(R.string.key_pref_automatic_backup_location),
+        appCtx.str(R.string.default_value_automatic_backup_location)
+    )
+
     @NightMode
     fun getSdkNightMode(darkThemePrefValue: String): Int {
         return when (darkThemePrefValue) {
