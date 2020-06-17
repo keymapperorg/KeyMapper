@@ -617,7 +617,7 @@ object SystemActionUtils {
         SystemActionDef(id = SWITCH_KEYBOARD,
             category = CATEGORY_KEYBOARD,
             iconRes = R.drawable.ic_notification_keyboard,
-            permissions = arrayOf(Constants.PERMISSION_ROOT),
+            permissions = arrayOf(Manifest.permission.WRITE_SECURE_SETTINGS),
             descriptionRes = R.string.action_switch_keyboard,
             descriptionFormattedRes = R.string.action_switch_keyboard_formatted,
             getOptions = {
