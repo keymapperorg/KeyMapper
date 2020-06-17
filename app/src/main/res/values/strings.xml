@@ -57,6 +57,7 @@
     <string name="disabled">Disabled</string>
     <string name="key_map_adapter_flags">Flags</string>
 
+    <string name="reset">Reset</string>
     <string name="description_open_app">Open %s</string>
     <string name="description_key">Press \'%s\' key</string>
     <string name="description_text_block">Type \'%s\'</string>
@@ -577,6 +578,8 @@
     <string name="error_empty_json">Empty JSON file!</string>
     <string name="error_key_mapper_version_too_old">Key Mapper version is too old!</string>
     <string name="error_backup_version_too_old">Backup version is too old!</string>
+    <string name="error_file_access_denied">File access denied! Is it deleted?</string>
+    <string name="error_file_access_denied_automatic_backup">Failed to backup to file. Is it deleted?</string>
 
     <!-- Error messages -->
 

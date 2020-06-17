@@ -56,7 +56,7 @@ class BackupRestoreViewModel internal constructor(
         }
     }
 
-    private fun backup(outputStream: OutputStream?, keymapList: List<KeyMap>?) {
+    fun backup(outputStream: OutputStream?, keymapList: List<KeyMap>?) {
         if (outputStream == null) {
             showMessageStringRes.value = Event(R.string.error_failed_to_pick_file)
         }

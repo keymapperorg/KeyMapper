@@ -13,12 +13,12 @@ import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.util.result.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.OutputStream
 import java.io.StringReader
 import java.text.SimpleDateFormat
 import java.util.*
-
 
 /**
  * Created by sds100 on 17/06/2020.
@@ -27,10 +27,16 @@ object BackupUtils {
 
     const val DEFAULT_AUTOMATIC_BACKUP_NAME = "keymapper_keymaps.json"
 
+    val backupAutomatically: Boolean
+        get() = AppPreferences.automaticBackupLocation.isNotBlank()
+
     suspend fun backup(outputStream: OutputStream,
                        keymapList: List<KeyMap>): Result<Unit> = withContext(Dispatchers.IO) {
 
         try {
+            //delete the contents of the file
+            (outputStream as FileOutputStream).channel.truncate(0)
+
             keymapList.forEach {
                 it.id = 0
             }
@@ -90,6 +96,23 @@ object BackupUtils {
         val uri = Uri.parse(AppPreferences.automaticBackupLocation)
 
         return Success(uri.path!!)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
+    fun createAutomaticBackupOutputStream(context: Context): Result<OutputStream> {
+        val uri = Uri.parse(AppPreferences.automaticBackupLocation)
+        val contentResolver = context.contentResolver
+
+        return try {
+            val outputStream = contentResolver.openOutputStream(uri)!!
+
+            Success(outputStream)
+        } catch (e: Exception) {
+            when (e) {
+                is SecurityException -> FileAccessDenied()
+                else -> GenericFailure(e)
+            }
+        }
     }
 
     //DON'T CHANGE THE PROPERTY NAMES

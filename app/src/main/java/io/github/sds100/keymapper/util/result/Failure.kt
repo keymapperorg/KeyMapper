@@ -47,6 +47,7 @@ fun Failure.getFullMessage(ctx: Context) = when (this) {
     is EmptyJson -> ctx.str(R.string.error_empty_json)
     is ClientVersionTooOld -> ctx.str(R.string.error_key_mapper_version_too_old)
     is BackupVersionTooOld -> ctx.str(R.string.error_backup_version_too_old)
+    is FileAccessDenied -> ctx.str(R.string.error_file_access_denied)
 
     else -> throw Exception("Can't find error message for ${this::class.simpleName}")
 }
@@ -111,6 +112,7 @@ class ImeServiceNotChosen : RecoverableFailure() {
     }
 }
 
+class FileAccessDenied : Failure()
 class GenericFailure(val exception: Exception) : Failure()
 class EmptyJson : Failure()
 class ClientVersionTooOld : Failure()
