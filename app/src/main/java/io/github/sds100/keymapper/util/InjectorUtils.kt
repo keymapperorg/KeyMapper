@@ -40,6 +40,12 @@ object InjectorUtils {
         return KeymapListViewModel.Factory(keymapRepository, deviceInfoRepository)
     }
 
+    fun provideBackupRestoreViewModel(context: Context): BackupRestoreViewModel.Factory {
+        val keymapRepository = (context.applicationContext as MyApplication).keymapRepository
+
+        return BackupRestoreViewModel.Factory(keymapRepository)
+    }
+
     fun provideChooseConstraintListViewModel(): ChooseConstraintListViewModel.Factory {
         return ChooseConstraintListViewModel.Factory()
     }

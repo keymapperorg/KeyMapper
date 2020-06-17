@@ -98,6 +98,7 @@
 
     <string name="toast_chose_keymapper_keyboard">Chose Key Mapper keyboard</string>
     <string name="toast_chose_keyboard">Chose %s</string>
+    <string name="toast_backup_successful">Backup Successful!</string>
 
     <string name="extra_label_sequence_trigger_timeout">Sequence trigger timeout (ms)</string>
     <string name="extra_label_long_press_delay_timeout">Long press delay (ms)</string>
@@ -175,6 +176,8 @@
     <string name="action_seed_database">Seed database</string>
     <string name="action_save">Save</string>
     <string name="action_duplicate_keymap">Duplicate</string>
+    <string name="action_backup">Backup</string>
+    <string name="action_restore">Restore</string>
     <!-- Menu action titles-->
 
     <!-- Button titles -->
@@ -566,6 +569,11 @@
     <string name="error_file_not_cached">File isn\'t cached! Connect to internet to download it.</string>
     <string name="error_this_is_unsupported">This is unsupported. :(</string>
     <string name="error_device_not_found">Device not found!</string>
+    <string name="error_no_keymaps">No Keymaps!</string>
+    <string name="error_failed_to_pick_file">Failed to pick file</string>
+    <string name="error_empty_json">Empty JSON file!</string>
+    <string name="error_key_mapper_version_too_old">Key Mapper version is too old!</string>
+    <string name="error_backup_version_too_old">Backup version is too old!</string>
 
     <!-- Error messages -->
 

@@ -11,8 +11,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
@@ -28,6 +29,7 @@ import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.OnboardingState
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
+import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
 import io.github.sds100.keymapper.databinding.FragmentKeymapListBinding
@@ -52,6 +54,7 @@ import splitties.alertdialog.appcompat.messageResource
 import splitties.experimental.ExperimentalSplittiesApi
 import splitties.snackbar.action
 import splitties.snackbar.longSnack
+import splitties.toast.toast
 
 /**
  * A placeholder fragment containing a simple view.
@@ -59,7 +62,7 @@ import splitties.snackbar.longSnack
 @ExperimentalSplittiesApi
 class KeymapListFragment : Fragment() {
 
-    private val mViewModel: KeymapListViewModel by viewModels {
+    private val mViewModel: KeymapListViewModel by activityViewModels {
         InjectorUtils.provideKeymapListViewModel(requireContext())
     }
 
@@ -87,6 +90,27 @@ class KeymapListFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private val mRestoreLauncher by lazy {
+        requireActivity().registerForActivityResult(ActivityResultContracts.GetContent()) {
+            it ?: return@registerForActivityResult
+
+            mBackupRestoreViewModel.restore(requireContext().contentResolver.openInputStream(it))
+        }
+    }
+
+    private val mBackupLauncher by lazy {
+        requireActivity().registerForActivityResult(ActivityResultContracts.CreateDocument()) {
+            it ?: return@registerForActivityResult
+
+            mBackupRestoreViewModel.backup(requireActivity().contentResolver.openOutputStream(it),
+                *selectionProvider.selectedIds)
+        }
+    }
+
+    private val mBackupRestoreViewModel: BackupRestoreViewModel by activityViewModels {
+        InjectorUtils.provideBackupRestoreViewModel(requireContext())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -149,6 +173,15 @@ class KeymapListFragment : Fragment() {
                         true
                     }
 
+                    R.id.action_backup -> {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                            mBackupLauncher.launch(BackupUtils.createFileName())
+                            selectionProvider.stopSelecting()
+                        }
+
+                        true
+                    }
+
                     else -> false
                 }
             }
@@ -205,6 +238,20 @@ class KeymapListFragment : Fragment() {
                 })
             }
 
+            mBackupRestoreViewModel.showMessageStringRes.observe(viewLifecycleOwner, EventObserver { messageRes ->
+                when (messageRes) {
+                    else -> toast(messageRes)
+                }
+            })
+
+            mBackupRestoreViewModel.showErrorMessage.observe(viewLifecycleOwner, EventObserver { failure ->
+                toast(failure.getFullMessage(requireContext()))
+            })
+
+            mBackupRestoreViewModel.requestRestore.observe(viewLifecycleOwner, EventObserver {
+                mRestoreLauncher.launch(FileUtils.MIME_TYPE_JSON)
+            })
+
             MyAccessibilityService.provideBus().observe(viewLifecycleOwner, Observer {
                 when (it.peekContent().first) {
                     MyAccessibilityService.EVENT_ON_SERVICE_STARTED -> {
@@ -227,7 +274,6 @@ class KeymapListFragment : Fragment() {
             writeSettingsStatusState = mWriteSettingsStatusState
 
             buttonCollapse.setOnClickListener {
-
                 mExpanded.value = false
             }
 

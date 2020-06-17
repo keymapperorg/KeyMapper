@@ -1,15 +1,17 @@
 package io.github.sds100.keymapper.ui.fragment
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
 import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
 import io.github.sds100.keymapper.databinding.FragmentMenuBinding
 import io.github.sds100.keymapper.util.*
@@ -17,8 +19,12 @@ import splitties.alertdialog.appcompat.*
 
 class MenuFragment : BottomSheetDialogFragment() {
 
-    private val mViewModel: KeymapListViewModel by viewModels {
+    private val mViewModel: KeymapListViewModel by activityViewModels {
         InjectorUtils.provideKeymapListViewModel(requireContext())
+    }
+
+    private val mBackupRestoreViewModel: BackupRestoreViewModel by activityViewModels {
+        InjectorUtils.provideBackupRestoreViewModel(requireContext())
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -72,6 +78,13 @@ class MenuFragment : BottomSheetDialogFragment() {
             setDisableAll {
                 mViewModel.disableAll()
                 dismiss()
+            }
+
+            setRestore {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    mBackupRestoreViewModel.requestRestore.value = Event(Unit)
+                    dismiss()
+                }
             }
 
             return this.root
