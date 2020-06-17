@@ -1,8 +1,13 @@
 package io.github.sds100.keymapper.util
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.net.Uri
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
+import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.util.result.*
@@ -14,10 +19,13 @@ import java.io.StringReader
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 /**
  * Created by sds100 on 17/06/2020.
  */
 object BackupUtils {
+
+    const val DEFAULT_AUTOMATIC_BACKUP_NAME = "keymapper_keymaps.json"
 
     suspend fun backup(outputStream: OutputStream,
                        keymapList: List<KeyMap>): Result<Unit> = withContext(Dispatchers.IO) {
@@ -75,6 +83,13 @@ object BackupUtils {
 
         val formattedDate = format.format(date)
         return "keymaps_$formattedDate.json"
+    }
+
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
+    fun getAutomaticBackupLocation(context: Context): Result<String> {
+        val uri = Uri.parse(AppPreferences.automaticBackupLocation)
+
+        return Success(uri.path!!)
     }
 
     //DON'T CHANGE THE PROPERTY NAMES

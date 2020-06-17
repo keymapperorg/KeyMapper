@@ -309,6 +309,9 @@
     <string name="title_pref_show_toggle_remappings_notification">Pause/resume remappings notification</string>
     <string name="summary_pref_show_toggle_remappings_notification">Show a persistent notification which starts/pauses your remaps and has a link to start/stop the accessibility service.</string>
 
+    <string name="title_pref_automatic_backup_location">Automatically backup keymaps to a specified location</string>
+    <string name="summary_pref_automatic_backup_location_default">Disabled</string>
+
     <string name="title_pref_bluetooth_devices">Choose bluetooth devices…</string>
 
     <string name="title_pref_auto_show_ime_picker">Automatically show keyboard picker</string>

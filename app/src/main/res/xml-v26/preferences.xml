@@ -12,6 +12,12 @@
         android:key="@string/key_pref_notification_settings"
         android:title="@string/title_pref_notification_settings" />
 
+    <androidx.preference.Preference
+        android:defaultValue="@string/default_value_automatic_backup_location"
+        android:key="@string/key_pref_automatic_backup_location"
+        android:summary="@string/summary_pref_automatic_backup_location_default"
+        android:title="@string/title_pref_automatic_backup_location" />
+
     <androidx.preference.SwitchPreference
         android:defaultValue="@bool/default_value_show_toast_on_action_error"
         android:key="@string/key_pref_show_toast_on_action_error"

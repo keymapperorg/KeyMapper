@@ -10,21 +10,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.preference.*
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.data.AppPreferences
+import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
 import io.github.sds100.keymapper.databinding.FragmentSettingsBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
-import io.github.sds100.keymapper.util.BluetoothUtils
-import io.github.sds100.keymapper.util.NotificationUtils
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
-import io.github.sds100.keymapper.util.defaultSharedPreferences
-import io.github.sds100.keymapper.util.str
+import io.github.sds100.keymapper.util.result.valueOrNull
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.message
 import splitties.alertdialog.appcompat.okButton
@@ -93,7 +94,32 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
         findPreference<DropDownPreference>(str(R.string.key_pref_dark_theme_mode))
     }
 
+    private val mAutomaticBackupLocation by lazy {
+        findPreference<Preference>(str(R.string.key_pref_automatic_backup_location))
+    }
+
     private var mShowingNoPairedDevicesDialog = false
+
+    private val mBackupRestoreViewModel: BackupRestoreViewModel by activityViewModels {
+        InjectorUtils.provideBackupRestoreViewModel(requireContext())
+    }
+
+    private val mChooseAutomaticBackupLocationLauncher by lazy {
+        requireActivity().registerForActivityResult(ActivityResultContracts.CreateDocument()) {
+            it ?: return@registerForActivityResult
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                AppPreferences.automaticBackupLocation = it.toString()
+
+                val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+
+                requireContext().contentResolver.takePersistableUriPermission(it, takeFlags)
+
+                mBackupRestoreViewModel.backupAll(requireContext().contentResolver.openOutputStream(it))
+            }
+        }
+    }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.preferences)
@@ -159,6 +185,16 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
             true
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            mAutomaticBackupLocation?.summary = BackupUtils.getAutomaticBackupLocation(requireContext()).valueOrNull()
+
+            mAutomaticBackupLocation?.setOnPreferenceClickListener {
+                mChooseAutomaticBackupLocationLauncher.launch(BackupUtils.DEFAULT_AUTOMATIC_BACKUP_NAME)
+
+                true
+            }
+        }
+
         enableRootPreferences(mRootPermissionPreference.isChecked)
 
         mAutoShowIMEDialogPreference?.onPreferenceChangeListener = this
@@ -219,6 +255,13 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
             mDarkThemePreference -> {
                 val mode = AppPreferences.getSdkNightMode(newValue as String)
                 AppCompatDelegate.setDefaultNightMode(mode)
+            }
+
+            mAutomaticBackupLocation -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    mAutomaticBackupLocation?.summary =
+                        BackupUtils.getAutomaticBackupLocation(requireContext()).valueOrNull()
+                }
             }
         }
 

@@ -9,10 +9,6 @@
         android:title="@string/title_pref_dark_theme" />
 
     <androidx.preference.Preference
-        android:key="@string/key_pref_notification_settings"
-        android:title="@string/title_pref_notification_settings" />
-
-    <androidx.preference.Preference
         android:defaultValue="@string/default_value_automatic_backup_location"
         android:key="@string/key_pref_automatic_backup_location"
         android:summary="@string/summary_pref_automatic_backup_location_default"
@@ -30,6 +26,12 @@
         android:summary="@string/summary_pref_force_vibrate"
         android:title="@string/title_pref_force_vibrate" />
 
+    <androidx.preference.SwitchPreference
+        android:defaultValue="@bool/default_value_show_toggle_remappings_notification"
+        android:key="@string/key_pref_show_toggle_remappings_notification"
+        android:summary="@string/summary_pref_show_toggle_remappings_notification"
+        android:title="@string/title_pref_show_toggle_remappings_notification" />
+
     <androidx.preference.SeekBarPreference
         android:defaultValue="@integer/default_value_long_press_delay"
         android:key="@string/key_pref_long_press_delay"
@@ -37,7 +39,6 @@
         android:summary="@string/summary_pref_long_press_delay"
         android:title="@string/title_pref_long_press_delay"
         app:min="@integer/long_press_delay_min"
-        app:seekBarIncrement="@integer/long_press_delay_step_size"
         app:showSeekBarValue="true" />
 
     <androidx.preference.SeekBarPreference
@@ -88,6 +89,21 @@
         app:seekBarIncrement="@integer/sequence_trigger_timeout_step_size"
         app:showSeekBarValue="true" />
 
+    <androidx.preference.PreferenceCategory android:title="@string/title_pref_category_ime_picker">
+
+        <androidx.preference.SwitchPreference
+            android:defaultValue="@bool/default_value_show_ime_notification"
+            android:key="@string/key_pref_show_ime_notification"
+            android:summary="@string/summary_pref_show_ime_notification"
+            android:title="@string/title_pref_show_ime_notification" />
+
+        <androidx.preference.SwitchPreference
+            android:defaultValue="@bool/default_value_auto_show_ime_picker"
+            android:key="@string/key_pref_auto_show_ime_picker"
+            android:summary="@string/summary_pref_auto_show_ime_picker"
+            android:title="@string/title_pref_auto_show_ime_picker" />
+    </androidx.preference.PreferenceCategory>
+
     <androidx.preference.PreferenceCategory
         android:key="@string/key_pref_category_secure_settings"
         android:title="@string/title_pref_category_secure_settings">
@@ -109,15 +125,17 @@
             android:summary="@string/summary_pref_toggle_keyboard_on_toggle_keymaps"
             android:title="@string/title_pref_toggle_keyboard_on_toggle_keymaps" />
 
-        <androidx.preference.Preference
+        <androidx.preference.SwitchPreference
             android:defaultValue="@bool/default_value_toggle_keyboard_notification"
             android:key="@string/key_pref_toggle_keyboard_notification"
+            android:summary="@string/summary_pref_toggle_keyboard_notification"
             android:title="@string/title_pref_toggle_keyboard_notification" />
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory
         android:key="@string/key_pref_category_root"
-        android:title="@string/title_pref_category_root">
+        android:title="@string/title_pref_category_root"
+        android:visibility="gone">
 
         <!-- This must be at the top of the category-->
         <androidx.preference.Preference
