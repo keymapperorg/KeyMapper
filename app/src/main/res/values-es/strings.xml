@@ -45,6 +45,7 @@
     <string name="switch_enabled">Activado</string>
     <string name="disabled">Desactivado</string>
     <string name="key_map_adapter_flags">Otros</string>
+    <string name="reset">Reset</string>
     <string name="description_open_app">Abrir %s</string>
     <string name="description_key">Presiona la tecla \"%s\"</string>
     <string name="description_text_block">Type \'%s\'</string>
@@ -76,6 +77,7 @@
     <string name="nav_arg_file_url_alt">file_url_alt</string>
     <string name="toast_chose_keymapper_keyboard">Chose Key Mapper keyboard</string>
     <string name="toast_chose_keyboard">Chose %s</string>
+    <string name="toast_backup_successful">Backup Successful!</string>
     <string name="extra_label_sequence_trigger_timeout">Sequence trigger timeout (ms)</string>
     <string name="extra_label_long_press_delay_timeout">Long press delay (ms)</string>
     <string name="extra_label_double_press_delay_timeout">Double press timeout (ms)</string>
@@ -132,6 +134,8 @@
     <string name="action_seed_database">Seed database</string>
     <string name="action_save">Save</string>
     <string name="action_duplicate_keymap">Duplicate</string>
+    <string name="action_backup">Backup</string>
+    <string name="action_restore">Restore</string>
     <!-- Menu action titles-->
     <!-- Button titles -->
     <string name="button_add_action">Add Action</string>
@@ -237,6 +241,8 @@
     <string name="summary_pref_show_ime_notification">Show a persistent notification to allow you to pick a keyboard.</string>
     <string name="title_pref_show_toggle_remappings_notification">Pause/resume remappings notification</string>
     <string name="summary_pref_show_toggle_remappings_notification">Show a persistent notification which starts/pauses your remaps and has a link to start/stop the accessibility service.</string>
+    <string name="title_pref_automatic_backup_location">Automatically backup keymaps to a specified location</string>
+    <string name="summary_pref_automatic_backup_location_default">Disabled</string>
     <string name="title_pref_bluetooth_devices">Choose bluetooth devices…</string>
     <string name="title_pref_auto_show_ime_picker">Automatically show keyboard picker</string>
     <string name="summary_pref_auto_show_ime_picker">When a Bluetooth device you have chosen connects or disconnects, the keyboard picker will show automatically. Choose the devices below.</string>
@@ -440,6 +446,13 @@
     <string name="error_file_not_cached">File isn\'t cached! Connect to internet to download it.</string>
     <string name="error_this_is_unsupported">This is unsupported. :(</string>
     <string name="error_device_not_found">Device not found!</string>
+    <string name="error_no_keymaps">No Keymaps!</string>
+    <string name="error_failed_to_pick_file">Failed to pick file</string>
+    <string name="error_empty_json">Empty JSON file!</string>
+    <string name="error_key_mapper_version_too_old">Key Mapper version is too old!</string>
+    <string name="error_backup_version_too_old">Backup version is too old!</string>
+    <string name="error_file_access_denied">File access denied! Is it deleted?</string>
+    <string name="error_file_access_denied_automatic_backup">Failed to backup to file. Is it deleted?</string>
     <!-- Error messages -->
     <!-- System action labels -->
     <string name="action_toggle_wifi">Toggle WiFi (non-root)</string>
@@ -511,6 +524,7 @@
     <string name="action_nfc_disable">Disable NFC</string>
     <string name="action_nfc_toggle">Toggle NFC</string>
     <string name="action_screenshot">Screenshot</string>
+    <string name="action_screenshot_root">Screenshot (root)</string>
     <string name="action_open_assistant">Launch Voice Assistant</string>
     <string name="action_open_device_assistant">Launch Device Assistant</string>
     <string name="action_open_camera">Open Camera</string>
