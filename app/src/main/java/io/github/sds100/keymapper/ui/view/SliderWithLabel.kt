@@ -62,7 +62,11 @@ class SliderWithLabel(context: Context,
         mIsDefaultStepEnabled = model.isDefaultStepEnabled
 
         if (model.value != null) {
-            mSlider.value = model.value.toFloat()
+            when {
+                model.value > model.max -> mSlider.value = model.max.toFloat()
+                model.value < model.min -> mSlider.value = model.min.toFloat()
+                else -> mSlider.value = model.value.toFloat()
+            }
         } else {
             mSlider.value = defaultStepValue
         }
