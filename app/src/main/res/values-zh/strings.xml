@@ -45,6 +45,7 @@
     <string name="switch_enabled">已启用</string>
     <string name="disabled">已禁用</string>
     <string name="key_map_adapter_flags">标志</string>
+    <string name="reset">Reset</string>
     <string name="description_open_app">打开 %s</string>
     <string name="description_key">按 \'%s\' 键</string>
     <string name="description_text_block">输入 \'%s\'</string>
@@ -76,6 +77,7 @@
     <string name="nav_arg_file_url_alt">file_url_alt</string>
     <string name="toast_chose_keymapper_keyboard">Chose Key Mapper keyboard</string>
     <string name="toast_chose_keyboard">Chose %s</string>
+    <string name="toast_backup_successful">Backup Successful!</string>
     <string name="extra_label_sequence_trigger_timeout">Sequence trigger timeout (ms)</string>
     <string name="extra_label_long_press_delay_timeout">Long press delay (ms)</string>
     <string name="extra_label_double_press_delay_timeout">Double press timeout (ms)</string>
@@ -132,6 +134,8 @@
     <string name="action_seed_database">Seed database</string>
     <string name="action_save">Save</string>
     <string name="action_duplicate_keymap">Duplicate</string>
+    <string name="action_backup">Backup</string>
+    <string name="action_restore">Restore</string>
     <!-- Menu action titles-->
     <!-- Button titles -->
     <string name="button_add_action">Add Action</string>
@@ -237,6 +241,8 @@
     <string name="summary_pref_show_ime_notification">显示常驻通知以允许您选择键盘。</string>
     <string name="title_pref_show_toggle_remappings_notification">暂停/继续映射通知</string>
     <string name="summary_pref_show_toggle_remappings_notification">显示启动/暂停您的映射及开始/停止无障碍服务链接的常驻通知。</string>
+    <string name="title_pref_automatic_backup_location">Automatically backup keymaps to a specified location</string>
+    <string name="summary_pref_automatic_backup_location_default">Disabled</string>
     <string name="title_pref_bluetooth_devices">选择蓝牙设备…</string>
     <string name="title_pref_auto_show_ime_picker">自动显示键盘选择器</string>
     <string name="summary_pref_auto_show_ime_picker">当您选择连接或断开连接时，键盘选择器将自动显示。选择下面的设备。</string>
@@ -440,6 +446,13 @@
     <string name="error_file_not_cached">File isn\'t cached! Connect to internet to download it.</string>
     <string name="error_this_is_unsupported">This is unsupported. :(</string>
     <string name="error_device_not_found">Device not found!</string>
+    <string name="error_no_keymaps">No Keymaps!</string>
+    <string name="error_failed_to_pick_file">Failed to pick file</string>
+    <string name="error_empty_json">Empty JSON file!</string>
+    <string name="error_key_mapper_version_too_old">Key Mapper version is too old!</string>
+    <string name="error_backup_version_too_old">Backup version is too old!</string>
+    <string name="error_file_access_denied">File access denied! Is it deleted?</string>
+    <string name="error_file_access_denied_automatic_backup">Failed to backup to file. Is it deleted?</string>
     <!-- Error messages -->
     <!-- System action labels -->
     <string name="action_toggle_wifi">Toggle WiFi (non-root)</string>
@@ -511,6 +524,7 @@
     <string name="action_nfc_disable">禁用 NFC</string>
     <string name="action_nfc_toggle">切换 NFC</string>
     <string name="action_screenshot">屏幕截图</string>
+    <string name="action_screenshot_root">Screenshot (root)</string>
     <string name="action_open_assistant">Launch Voice Assistant</string>
     <string name="action_open_device_assistant">Launch Device Assistant</string>
     <string name="action_open_camera">打开相机</string>
