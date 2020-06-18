@@ -9,6 +9,7 @@ import com.google.gson.Gson
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.model.KeyMap
+import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.util.result.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -34,8 +35,11 @@ object BackupUtils {
             //delete the contents of the file
             (outputStream as FileOutputStream).channel.truncate(0)
 
-            keymapList.forEach {
-                it.id = 0
+            keymapList.forEach { keymap ->
+                keymap.id = 0
+                keymap.trigger.keys.forEach {
+                    it.deviceId = Trigger.Key.DEVICE_ID_ANY_DEVICE
+                }
             }
 
             outputStream.bufferedWriter().use { bufferedWriter ->
@@ -71,6 +75,13 @@ object BackupUtils {
                 }
 
                 val backupModel = gson.fromJson<BackupModel>(json)
+
+                backupModel.keymapList.forEach { keymap ->
+                    keymap.trigger.keys.forEach {
+                        it.deviceId = Trigger.Key.DEVICE_ID_ANY_DEVICE
+                    }
+                }
+
                 return@withContext Success(backupModel.keymapList)
             }
 
