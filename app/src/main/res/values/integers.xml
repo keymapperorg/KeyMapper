@@ -21,6 +21,6 @@
     <integer name="hold_down_delay_step_size">5</integer>
 
     <integer name="repeat_delay_min">5</integer>
-    <integer name="repeat_delay_max">5000</integer>
+    <integer name="repeat_delay_max">1000</integer>
     <integer name="repeat_delay_step_size">5</integer>
 </resources>
