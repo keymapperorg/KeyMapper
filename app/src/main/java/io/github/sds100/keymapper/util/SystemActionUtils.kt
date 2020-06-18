@@ -66,6 +66,7 @@ import io.github.sds100.keymapper.util.SystemAction.PORTRAIT_MODE
 import io.github.sds100.keymapper.util.SystemAction.PREVIOUS_TRACK
 import io.github.sds100.keymapper.util.SystemAction.REWIND
 import io.github.sds100.keymapper.util.SystemAction.SCREENSHOT
+import io.github.sds100.keymapper.util.SystemAction.SCREENSHOT_ROOT
 import io.github.sds100.keymapper.util.SystemAction.SECURE_LOCK_DEVICE
 import io.github.sds100.keymapper.util.SystemAction.SHOW_KEYBOARD
 import io.github.sds100.keymapper.util.SystemAction.SHOW_KEYBOARD_PICKER
@@ -653,6 +654,16 @@ object SystemActionUtils {
             iconRes = R.drawable.ic_outline_fullscreen_24,
             descriptionRes = R.string.action_screenshot
         ),
+
+        SystemActionDef(
+            id = SCREENSHOT_ROOT,
+            category = CATEGORY_OTHER,
+            maxApi = Build.VERSION_CODES.O_MR1,
+            iconRes = R.drawable.ic_outline_fullscreen_24,
+            descriptionRes = R.string.action_screenshot_root,
+            permissions = arrayOf(Constants.PERMISSION_ROOT)
+        ),
+
         SystemActionDef(
             id = OPEN_VOICE_ASSISTANT,
             category = CATEGORY_OTHER,

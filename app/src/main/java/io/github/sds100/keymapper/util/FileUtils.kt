@@ -1,7 +1,10 @@
 package io.github.sds100.keymapper.util
 
+import android.annotation.SuppressLint
 import android.content.Context
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 /**
@@ -27,4 +30,12 @@ object FileUtils {
     }
 
     fun getPathToFileInAppData(ctx: Context, fileName: String) = "${ctx.filesDir.path}/$fileName"
+
+    @SuppressLint("SimpleDateFormat")
+    fun createFileDate(): String {
+        val date = Calendar.getInstance().time
+        val format = SimpleDateFormat("yyyyMMdd-HHmmss")
+
+        return format.format(date)
+    }
 }

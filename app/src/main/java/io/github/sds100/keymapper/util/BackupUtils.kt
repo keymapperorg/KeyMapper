@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.util
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.os.Build
@@ -17,8 +16,6 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.OutputStream
 import java.io.StringReader
-import java.text.SimpleDateFormat
-import java.util.*
 
 /**
  * Created by sds100 on 17/06/2020.
@@ -82,12 +79,8 @@ object BackupUtils {
         }
     }
 
-    @SuppressLint("SimpleDateFormat")
     fun createFileName(): String {
-        val date = Calendar.getInstance().time
-        val format = SimpleDateFormat("yyyyMMdd_HHmmss")
-
-        val formattedDate = format.format(date)
+        val formattedDate = FileUtils.createFileDate()
         return "keymaps_$formattedDate.json"
     }
 
