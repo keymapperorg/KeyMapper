@@ -33,6 +33,7 @@
     <string name="trigger_device_name_not_found">The name for this device isn\'t known</string>
     <string name="performing_action"> Key Mapper 正在执行一个操作…</string>
     <string name="slider_default">Default</string>
+    <string name="button_accessibility_service_disabled">Accessibility Service Disabled!</string>
     <string name="whats_new">What\'s New</string>
     <string name="caption_action_type_key">Click the key on the device which you want to be entered.
         \n\nIMPORTANT!
@@ -136,6 +137,8 @@
     <string name="action_duplicate_keymap">Duplicate</string>
     <string name="action_backup">Backup</string>
     <string name="action_restore">Restore</string>
+    <string name="action_pause_keymaps">Pause Keymaps</string>
+    <string name="action_resume_keymaps">Resume Keymaps</string>
     <!-- Menu action titles-->
     <!-- Button titles -->
     <string name="button_add_action">Add Action</string>
@@ -182,6 +185,7 @@
     <string name="dialog_message_sequence_trigger_explanation">A \"sequence\" trigger has a timeout unlike parallel triggers. This means after you press the first key, you will have a set amount of time to input the rest of the keys in the trigger. All the keys that you have added to the trigger won\'t do their usual action until the timeout has been reached. You can change this timeout in the \"Options\" tab.</string>
     <string name="dialog_message_view_faq_and_use_discord_over_email">Please check out the Help page to see if your question has already been answered. If not, then the developer would prefer it if you ask for help and suggest features in the Discord server. If you don\'t have Discord, you can email the developer directly.</string>
     <string name="dialog_message_bt_constraint_limitation">Android doesn\'t allow apps to get a list of connected (not paired) Bluetooth devices. Apps can only detect when they are connected and disconnected. So if your Bluetooth device is already connected to your device when the accessibility service starts, you will have to reconnect it for the app to know it is connected.</string>
+    <string name="dialog_message_change_location_or_disable">Change location or turn off automatic backup?</string>
     <!-- Dialog messages -->
     <!-- Dialog buttons -->
     <string name="pos_yes">是</string>
@@ -191,6 +195,8 @@
     <string name="pos_enable_root_features">启用 root 功能</string>
     <string name="pos_grant">授权</string>
     <string name="pos_join">Join</string>
+    <string name="pos_change_location">Change</string>
+    <string name="neg_turn_off">Turn Off</string>
     <string name="neg_stay_out">Stay out</string>
     <string name="neg_no">否</string>
     <string name="neg_cancel">取消</string>
@@ -242,7 +248,7 @@
     <string name="title_pref_show_toggle_remappings_notification">暂停/继续映射通知</string>
     <string name="summary_pref_show_toggle_remappings_notification">显示启动/暂停您的映射及开始/停止无障碍服务链接的常驻通知。</string>
     <string name="title_pref_automatic_backup_location">Automatically backup keymaps to a specified location</string>
-    <string name="summary_pref_automatic_backup_location_default">Disabled</string>
+    <string name="summary_pref_automatic_backup_location_disabled">No location chosen.</string>
     <string name="title_pref_bluetooth_devices">选择蓝牙设备…</string>
     <string name="title_pref_auto_show_ime_picker">自动显示键盘选择器</string>
     <string name="summary_pref_auto_show_ime_picker">当您选择连接或断开连接时，键盘选择器将自动显示。选择下面的设备。</string>
