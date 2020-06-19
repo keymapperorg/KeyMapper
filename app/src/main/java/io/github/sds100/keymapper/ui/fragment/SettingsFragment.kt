@@ -19,7 +19,6 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.databinding.FragmentSettingsBinding
-import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.util.BluetoothUtils
 import io.github.sds100.keymapper.util.NotificationUtils
 import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
@@ -201,9 +200,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
                 if (newValue as Boolean) {
                     WidgetsManager.invalidateNotifications(requireContext())
                 } else {
-                    //when the user turns this off, resume the remappings because otherwise they can't without
-                    //the notification
-                    requireContext().sendBroadcast(Intent(MyAccessibilityService.ACTION_RESUME_REMAPPINGS))
+
                     NotificationUtils.dismissNotification(NotificationUtils.ID_TOGGLE_REMAPS)
                 }
             }
