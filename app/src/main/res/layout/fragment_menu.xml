@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -8,6 +9,14 @@
         <variable
             name="isLoggingEnabled"
             type="Boolean" />
+
+        <variable
+            name="keymapsPaused"
+            type="androidx.lifecycle.LiveData&lt;Boolean>" />
+
+        <variable
+            name="accessibilityServiceEnabled"
+            type="androidx.lifecycle.LiveData&lt;Boolean>" />
 
         <variable
             name="openAbout"
@@ -32,6 +41,10 @@
         <variable
             name="disableAll"
             type="View.OnClickListener" />
+
+        <variable
+            name="toggleKeymaps"
+            type="View.OnClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -45,7 +58,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:orientation="vertical"
-            app:layout_constraintBottom_toTopOf="@+id/buttonEnableAll">
+            app:layout_constraintBottom_toTopOf="@+id/buttonToggleKeymaps">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/menuItemChangeKeyboard"
@@ -91,15 +104,32 @@
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonEnableAll"
-            android:layout_width="0dp"
+            android:id="@+id/buttonToggleKeymaps"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
+            android:enabled="@{accessibilityServiceEnabled}"
+            android:onClick="@{toggleKeymaps}"
+            android:text="@{!accessibilityServiceEnabled ? @string/button_accessibility_service_disabled : keymapsPaused ? @string/action_resume_keymaps : @string/action_pause_keymaps}"
+            app:customBackgroundTint="@{!accessibilityServiceEnabled ? @color/red : keymapsPaused ? @color/red : @color/green}"
+            app:layout_constraintBottom_toTopOf="@+id/buttonEnableAll"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:backgroundTint="@color/red"
+            tools:text="Resume Keymaps" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonEnableAll"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginBottom="16dp"
             android:onClick="@{enableAll}"
             android:text="@string/action_enable_all_keymaps"
-            app:backgroundTint="@color/green"
+            android:textColor="@color/green"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/buttonDisableAll"
             app:layout_constraintHorizontal_bias="0.5"
@@ -107,14 +137,15 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonDisableAll"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="8dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:onClick="@{disableAll}"
             android:text="@string/action_disable_all_keymaps"
-            app:backgroundTint="@color/red"
+            android:textColor="@color/red"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"

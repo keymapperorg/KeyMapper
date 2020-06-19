@@ -5,11 +5,13 @@ import android.view.View
 import android.widget.CompoundButton
 import android.widget.SeekBar
 import android.widget.TextView
+import androidx.annotation.ColorInt
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.view.isVisible
 import androidx.core.widget.TextViewCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.BindingAdapter
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.slider.Slider
@@ -327,4 +329,9 @@ fun Slider.setOnChangeListener(onChangeListener: Slider.OnChangeListener) {
 @BindingAdapter("app:seekBarEnabled")
 fun Slider.enabled(enabled: Boolean) {
     isEnabled = enabled
+}
+
+@BindingAdapter("app:customBackgroundTint")
+fun MaterialButton.backgroundTint(@ColorInt color: Int) {
+    backgroundTintList = ColorStateList.valueOf(color)
 }

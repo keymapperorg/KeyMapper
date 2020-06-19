@@ -1,23 +1,28 @@
 package io.github.sds100.keymapper.ui.fragment
 
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
 import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
 import io.github.sds100.keymapper.databinding.FragmentMenuBinding
+import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.util.*
 import splitties.alertdialog.appcompat.*
 
-class MenuFragment : BottomSheetDialogFragment() {
+class MenuFragment : BottomSheetDialogFragment(), SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val mViewModel: KeymapListViewModel by activityViewModels {
         InjectorUtils.provideKeymapListViewModel(requireContext())
@@ -27,10 +32,24 @@ class MenuFragment : BottomSheetDialogFragment() {
         InjectorUtils.provideBackupRestoreViewModel(requireContext())
     }
 
+    private val mKeymapsPaused = MutableLiveData(AppPreferences.keymapsPaused)
+    private val mAccessibilityServiceEnabled by lazy {
+        MutableLiveData(AccessibilityUtils.isServiceEnabled(requireContext()))
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        requireContext().defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         FragmentMenuBinding.inflate(inflater, container, false).apply {
 
             lifecycleOwner = viewLifecycleOwner
+
+            keymapsPaused = mKeymapsPaused
+            accessibilityServiceEnabled = mAccessibilityServiceEnabled
 
             setChangeKeyboard {
                 KeyboardUtils.showInputMethodPicker()
@@ -80,10 +99,24 @@ class MenuFragment : BottomSheetDialogFragment() {
                 dismiss()
             }
 
+            setToggleKeymaps {
+                AppPreferences.keymapsPaused = !AppPreferences.keymapsPaused
+            }
+
             setRestore {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     mBackupRestoreViewModel.requestRestore.value = Event(Unit)
                     dismiss()
+                }
+            }
+
+            MyAccessibilityService.provideBus().observe(viewLifecycleOwner) {
+                when (it.peekContent().first) {
+                    MyAccessibilityService.EVENT_ON_SERVICE_STARTED ->
+                        mAccessibilityServiceEnabled.value = true
+
+                    MyAccessibilityService.EVENT_ON_SERVICE_STOPPED ->
+                        mAccessibilityServiceEnabled.value = false
                 }
             }
 
@@ -96,5 +129,17 @@ class MenuFragment : BottomSheetDialogFragment() {
 
         val dialog = requireDialog() as BottomSheetDialog
         dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        requireContext().defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        if (key == str(R.string.key_pref_keymaps_paused)) {
+            mKeymapsPaused.value = AppPreferences.keymapsPaused
+        }
     }
 }
