@@ -9,8 +9,11 @@ class FakeDeviceInfoRepository : DeviceInfoRepository {
     private val mDeviceInfoList = mutableMapOf<String, String>()
 
     override suspend fun getAll() = mDeviceInfoList.map { DeviceInfo(it.key, it.value) }
-    override suspend fun createDeviceInfo(deviceInfo: DeviceInfo) {
-        mDeviceInfoList[deviceInfo.descriptor] = deviceInfo.name
+
+    override suspend fun insertDeviceInfo(vararg deviceInfo: DeviceInfo) {
+        deviceInfo.forEach {
+            mDeviceInfoList[it.descriptor] = it.name
+        }
     }
 
     override suspend fun getDeviceInfo(descriptor: String) {

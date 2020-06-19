@@ -293,7 +293,7 @@ class ConfigKeymapViewModel internal constructor(
      * @return whether the key already exists has been added to the list
      */
     suspend fun addTriggerKey(keyCode: Int, deviceDescriptor: String, deviceName: String, isExternal: Boolean): Boolean {
-        mDeviceInfoRepository.createDeviceInfo(DeviceInfo(deviceDescriptor, deviceName))
+        mDeviceInfoRepository.insertDeviceInfo(DeviceInfo(deviceDescriptor, deviceName))
 
         val containsKey = triggerKeys.value?.any {
             val sameKeyCode = keyCode == it.keyCode

@@ -106,6 +106,8 @@ class KeymapListFragment : Fragment() {
 
             mBackupRestoreViewModel.backup(requireActivity().contentResolver.openOutputStream(it),
                 *selectionProvider.selectedIds)
+
+            selectionProvider.stopSelecting()
         }
     }
 
@@ -176,7 +178,6 @@ class KeymapListFragment : Fragment() {
                     R.id.action_backup -> {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                             mBackupLauncher.launch(BackupUtils.createFileName())
-                            selectionProvider.stopSelecting()
                         }
 
                         true

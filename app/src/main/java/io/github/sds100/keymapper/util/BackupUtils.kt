@@ -8,6 +8,7 @@ import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.db.AppDatabase
+import io.github.sds100.keymapper.data.model.DeviceInfo
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.util.result.*
@@ -29,21 +30,29 @@ object BackupUtils {
         get() = AppPreferences.automaticBackupLocation.isNotBlank()
 
     suspend fun backup(outputStream: OutputStream,
-                       keymapList: List<KeyMap>): Result<Unit> = withContext(Dispatchers.IO) {
+                       keymapList: List<KeyMap>,
+                       allDeviceInfo: List<DeviceInfo>): Result<Unit> = withContext(Dispatchers.IO) {
 
         try {
             //delete the contents of the file
             (outputStream as FileOutputStream).channel.truncate(0)
+            val deviceInfoIdsToBackup = mutableSetOf<String>()
 
             keymapList.forEach { keymap ->
                 keymap.id = 0
-                keymap.trigger.keys.forEach {
-                    it.deviceId = Trigger.Key.DEVICE_ID_ANY_DEVICE
+
+                keymap.trigger.keys.forEach { key ->
+                    if (key.deviceId != Trigger.Key.DEVICE_ID_ANY_DEVICE
+                        && key.deviceId != Trigger.Key.DEVICE_ID_THIS_DEVICE) {
+                        deviceInfoIdsToBackup.add(key.deviceId)
+                    }
                 }
             }
 
+            val deviceInfoList = deviceInfoIdsToBackup.map { id -> allDeviceInfo.single { it.descriptor == id } }
+
             outputStream.bufferedWriter().use { bufferedWriter ->
-                val json = Gson().toJson(BackupModel(AppDatabase.DATABASE_VERSION, keymapList))
+                val json = Gson().toJson(BackupModel(AppDatabase.DATABASE_VERSION, keymapList, deviceInfoList))
 
                 bufferedWriter.write(json)
             }
@@ -54,7 +63,7 @@ object BackupUtils {
         return@withContext Success(Unit)
     }
 
-    suspend fun restore(inputStream: InputStream): Result<List<KeyMap>> = withContext(Dispatchers.IO) {
+    suspend fun restore(inputStream: InputStream): Result<RestoreModel> = withContext(Dispatchers.IO) {
         try {
             inputStream.bufferedReader().use { bufferedReader ->
 
@@ -76,13 +85,7 @@ object BackupUtils {
 
                 val backupModel = gson.fromJson<BackupModel>(json)
 
-                backupModel.keymapList.forEach { keymap ->
-                    keymap.trigger.keys.forEach {
-                        it.deviceId = Trigger.Key.DEVICE_ID_ANY_DEVICE
-                    }
-                }
-
-                return@withContext Success(backupModel.keymapList)
+                return@withContext Success(RestoreModel(backupModel.keymapList, backupModel.deviceInfo))
             }
 
         } catch (e: Exception) {
@@ -119,6 +122,8 @@ object BackupUtils {
         }
     }
 
+    class RestoreModel(val keymapList: List<KeyMap>, val deviceInfo: List<DeviceInfo>)
+
     //DON'T CHANGE THE PROPERTY NAMES
-    private class BackupModel(val dbVersion: Int, val keymapList: List<KeyMap>)
+    private class BackupModel(val dbVersion: Int, val keymapList: List<KeyMap>, val deviceInfo: List<DeviceInfo>)
 }
