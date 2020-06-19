@@ -73,7 +73,7 @@ object WidgetsManager {
 
     fun invalidateNotifications(ctx: Context) {
         if (AccessibilityUtils.isServiceEnabled(ctx)) {
-            if (MyAccessibilityService.provideIsPaused().value == true) {
+            if (AppPreferences.keymapsPaused) {
                 onEvent(ctx, EVENT_PAUSE_REMAPS)
             } else {
                 onEvent(ctx, EVENT_RESUME_REMAPS)
@@ -139,7 +139,7 @@ object WidgetsManager {
                 }
             }
 
-            EVENT_RESUME_REMAPS, EVENT_ACCESSIBILITY_SERVICE_START -> {
+            EVENT_RESUME_REMAPS -> {
                 titleRes = R.string.notification_remappings_pause_title
                 textRes = R.string.notification_remappings_pause_text
                 iconRes = R.drawable.ic_notification_pause
@@ -178,9 +178,7 @@ object WidgetsManager {
             else -> return
         }
 
-        if ((event == EVENT_RESUME_REMAPS)
-            or (event == EVENT_ACCESSIBILITY_SERVICE_START)
-            or (event == EVENT_PAUSE_REMAPS)) {
+        if ((event == EVENT_RESUME_REMAPS) or (event == EVENT_PAUSE_REMAPS)) {
 
             val actionPendingIntent = IntentUtils.createPendingBroadcastIntent(
                 ctx,

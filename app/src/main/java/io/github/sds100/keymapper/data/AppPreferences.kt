@@ -128,6 +128,11 @@ object AppPreferences : DefaultPreferences() {
         appCtx.str(R.string.default_value_automatic_backup_location)
     )
 
+    var keymapsPaused by BoolPref(
+        appCtx.str(R.string.key_pref_keymaps_paused),
+        appCtx.bool(R.bool.default_value_keymaps_paused)
+    )
+
     @NightMode
     fun getSdkNightMode(darkThemePrefValue: String): Int {
         return when (darkThemePrefValue) {

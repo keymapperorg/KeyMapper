@@ -63,20 +63,12 @@ class MyAccessibilityService : AccessibilityService(),
         const val EVENT_ON_SERVICE_STARTED = "accessibility_service_started"
 
         private lateinit var BUS: MutableLiveData<Event<Pair<String, Any?>>>
-        private lateinit var KEYMAPS_PAUSED: MutableLiveData<Boolean>
 
         @MainThread
         fun provideBus(): MutableLiveData<Event<Pair<String, Any?>>> {
             BUS = if (::BUS.isInitialized) BUS else MutableLiveData()
 
             return BUS
-        }
-
-        @MainThread
-        fun provideIsPaused(): MutableLiveData<Boolean> {
-            KEYMAPS_PAUSED = if (::KEYMAPS_PAUSED.isInitialized) KEYMAPS_PAUSED else MutableLiveData(false)
-
-            return KEYMAPS_PAUSED
         }
 
         /**
@@ -94,13 +86,13 @@ class MyAccessibilityService : AccessibilityService(),
 
                 ACTION_PAUSE_REMAPPINGS -> {
                     mKeymapDetectionDelegate.reset()
-                    provideIsPaused().value = true
+                    AppPreferences.keymapsPaused = true
                     WidgetsManager.onEvent(this@MyAccessibilityService, EVENT_PAUSE_REMAPS)
                 }
 
                 ACTION_RESUME_REMAPPINGS -> {
                     mKeymapDetectionDelegate.reset()
-                    provideIsPaused().value = false
+                    AppPreferences.keymapsPaused = false
                     WidgetsManager.onEvent(this@MyAccessibilityService, EVENT_RESUME_REMAPS)
                 }
 
@@ -256,16 +248,6 @@ class MyAccessibilityService : AccessibilityService(),
                 }
             }
         })
-
-        provideIsPaused().observe(this) {
-            if (it == true) {
-                WidgetsManager.onEvent(this, EVENT_PAUSE_REMAPS)
-            } else {
-                WidgetsManager.onEvent(this, EVENT_RESUME_REMAPS)
-            }
-        }
-
-        provideIsPaused().value = false
     }
 
     override fun onInterrupt() {}
@@ -297,7 +279,7 @@ class MyAccessibilityService : AccessibilityService(),
             return true
         }
 
-        if (provideIsPaused().value == false) {
+        if (!AppPreferences.keymapsPaused) {
             try {
                 Timber.d(event.toString())
                 return mKeymapDetectionDelegate.onKeyEvent(
@@ -343,6 +325,14 @@ class MyAccessibilityService : AccessibilityService(),
 
             str(R.string.key_pref_force_vibrate) -> {
                 mKeymapDetectionDelegate.preferences.forceVibrate = AppPreferences.forceVibrate
+            }
+
+            str(R.string.key_pref_keymaps_paused) -> {
+                if (AppPreferences.keymapsPaused) {
+                    WidgetsManager.onEvent(this, EVENT_PAUSE_REMAPS)
+                } else {
+                    WidgetsManager.onEvent(this, EVENT_RESUME_REMAPS)
+                }
             }
         }
     }

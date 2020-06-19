@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.service.tiles
 
+import android.content.SharedPreferences
 import android.graphics.drawable.Icon
 import android.os.Build
 import android.service.quicksettings.Tile
@@ -10,15 +11,17 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.observe
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.util.AccessibilityUtils
+import io.github.sds100.keymapper.util.defaultSharedPreferences
 import io.github.sds100.keymapper.util.str
 
 /**
  * Created by sds100 on 12/06/2020.
  */
 @RequiresApi(Build.VERSION_CODES.N)
-class ToggleKeymapsTile : TileService(), LifecycleOwner {
+class ToggleKeymapsTile : TileService(), LifecycleOwner, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val mLifecycleRegistry = LifecycleRegistry(this)
 
@@ -26,7 +29,7 @@ class ToggleKeymapsTile : TileService(), LifecycleOwner {
         get() = when {
             !AccessibilityUtils.isServiceEnabled(this) -> State.DISABLED
 
-            else -> if (MyAccessibilityService.provideIsPaused().value == true) {
+            else -> if (AppPreferences.keymapsPaused) {
                 State.PAUSED
             } else {
                 State.RESUMED
@@ -37,9 +40,7 @@ class ToggleKeymapsTile : TileService(), LifecycleOwner {
 
         mLifecycleRegistry.currentState = Lifecycle.State.STARTED
 
-        MyAccessibilityService.provideIsPaused().observe(this) {
-            invalidateTile()
-        }
+        defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
 
         MyAccessibilityService.provideBus().observe(this) {
             if (it?.peekContent()?.first == MyAccessibilityService.EVENT_ON_SERVICE_STARTED
@@ -66,11 +67,15 @@ class ToggleKeymapsTile : TileService(), LifecycleOwner {
 
     override fun onStartListening() {
 
+        defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
+
         invalidateTile()
         super.onStartListening()
     }
 
     override fun onStopListening() {
+
+        defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
 
         invalidateTile()
         super.onStopListening()
@@ -79,19 +84,24 @@ class ToggleKeymapsTile : TileService(), LifecycleOwner {
     override fun onDestroy() {
         super.onDestroy()
 
+        defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
         mLifecycleRegistry.currentState = Lifecycle.State.DESTROYED
     }
 
     override fun onClick() {
         super.onClick()
 
-        invalidateTile()
+        AppPreferences.keymapsPaused = !AppPreferences.keymapsPaused
 
         if (!AccessibilityUtils.isServiceEnabled(this)) {
             return
         }
+    }
 
-        MyAccessibilityService.provideIsPaused().value = mState != State.PAUSED
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        if (key == str(R.string.key_pref_keymaps_paused)) {
+            invalidateTile()
+        }
     }
 
     private fun invalidateTile() {
