@@ -123,6 +123,11 @@ object AppPreferences : DefaultPreferences() {
         appCtx.bool(R.bool.default_value_toggle_keyboard_on_toggle_keymaps)
     )
 
+    var keymapsPaused by BoolPref(
+        appCtx.str(R.string.key_pref_keymaps_paused),
+        appCtx.bool(R.bool.default_value_keymaps_paused)
+    )
+
     @NightMode
     fun getSdkNightMode(darkThemePrefValue: String): Int {
         return when (darkThemePrefValue) {
