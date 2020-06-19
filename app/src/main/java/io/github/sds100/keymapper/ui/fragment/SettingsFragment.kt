@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -25,10 +26,7 @@ import io.github.sds100.keymapper.databinding.FragmentSettingsBinding
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
 import io.github.sds100.keymapper.util.result.valueOrNull
-import splitties.alertdialog.appcompat.alertDialog
-import splitties.alertdialog.appcompat.message
-import splitties.alertdialog.appcompat.okButton
-import splitties.alertdialog.appcompat.title
+import splitties.alertdialog.appcompat.*
 
 class SettingsFragment : Fragment() {
 
@@ -185,10 +183,29 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            mAutomaticBackupLocation?.summary = BackupUtils.getAutomaticBackupLocation(requireContext()).valueOrNull()
+            invalidateAutomaticBackupLocationSummary()
 
             mAutomaticBackupLocation?.setOnPreferenceClickListener {
-                mChooseAutomaticBackupLocationLauncher.launch(BackupUtils.DEFAULT_AUTOMATIC_BACKUP_NAME)
+                val backupLocation = BackupUtils.getAutomaticBackupLocation(requireContext()).valueOrNull()
+
+                if (backupLocation.isNullOrBlank()) {
+                    mChooseAutomaticBackupLocationLauncher.launch(BackupUtils.DEFAULT_AUTOMATIC_BACKUP_NAME)
+
+                } else {
+                    requireContext().alertDialog {
+                        messageResource = R.string.dialog_message_change_location_or_disable
+
+                        positiveButton(R.string.pos_change_location) {
+                            mChooseAutomaticBackupLocationLauncher.launch(BackupUtils.DEFAULT_AUTOMATIC_BACKUP_NAME)
+                        }
+
+                        negativeButton(R.string.neg_turn_off) {
+                            AppPreferences.automaticBackupLocation = ""
+                        }
+
+                        show()
+                    }
+                }
 
                 true
             }
@@ -256,8 +273,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
 
             mAutomaticBackupLocation -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    mAutomaticBackupLocation?.summary =
-                        BackupUtils.getAutomaticBackupLocation(requireContext()).valueOrNull()
+                    invalidateAutomaticBackupLocationSummary()
                 }
             }
         }
@@ -318,6 +334,17 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
             }
 
             preference.isEnabled = enabled
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
+    private fun invalidateAutomaticBackupLocationSummary() {
+        val backupLocation = BackupUtils.getAutomaticBackupLocation(requireContext()).valueOrNull()
+
+        if (backupLocation.isNullOrBlank()) {
+            mAutomaticBackupLocation?.summary = str(R.string.summary_pref_automatic_backup_location_disabled)
+        } else {
+            mAutomaticBackupLocation?.summary = backupLocation
         }
     }
 }

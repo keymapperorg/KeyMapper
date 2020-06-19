@@ -15,7 +15,7 @@
     <androidx.preference.Preference
         android:defaultValue="@string/default_value_automatic_backup_location"
         android:key="@string/key_pref_automatic_backup_location"
-        android:summary="@string/summary_pref_automatic_backup_location_default"
+        android:summary="@string/summary_pref_automatic_backup_location_disabled"
         android:title="@string/title_pref_automatic_backup_location" />
 
     <androidx.preference.SwitchPreference
