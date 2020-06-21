@@ -61,6 +61,7 @@ class KeymapDetectionDelegateTest {
     }
 
     private lateinit var mDelegate: KeymapDetectionDelegate
+    private var mCurrentPackage = ""
 
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
@@ -74,7 +75,7 @@ class KeymapDetectionDelegateTest {
 
         val iConstraintState = object : IConstraintState {
             override val currentPackageName: String
-                get() = FAKE_PACKAGE_NAME
+                get() = mCurrentPackage
 
             override fun isBluetoothDeviceConnected(address: String) = true
         }
@@ -93,6 +94,31 @@ class KeymapDetectionDelegateTest {
             FORCE_VIBRATE)
 
         mDelegate = KeymapDetectionDelegate(GlobalScope, preferences, iActionError, iClock, iConstraintState)
+    }
+
+    @Test
+    fun `two constraints in OR mode, don't perform action when one isn't satisfied`() {
+        val trigger = sequenceTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN))
+        val constraintList = listOf(
+            Constraint.appConstraint(Constraint.APP_NOT_FOREGROUND, "package1"),
+            Constraint.appConstraint(Constraint.APP_NOT_FOREGROUND, "package2")
+        )
+
+        mDelegate.keyMapListCache = listOf(KeyMap(
+            0,
+            trigger,
+            listOf(TEST_ACTION),
+            constraintList = constraintList,
+            constraintMode = Constraint.MODE_OR
+        ))
+
+        mCurrentPackage = "package1"
+
+        runBlocking {
+            mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN))
+        }
+
+        val performedAction = mDelegate.performAction
     }
 
     @Test

@@ -24,6 +24,7 @@ import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.ActionPerformerDelegate
+import io.github.sds100.keymapper.util.delegate.GetEventDelegate
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionPreferences
 import io.github.sds100.keymapper.util.result.getBriefMessage
@@ -111,6 +112,14 @@ class MyAccessibilityService : AccessibilityService(),
                         softKeyboardController.show(baseContext)
                     }
                 }
+
+                Intent.ACTION_SCREEN_ON -> {
+                    mGetEventDelegate.stopListening()
+                }
+
+                Intent.ACTION_SCREEN_OFF -> {
+                    mGetEventDelegate.startListening(lifecycleScope, listOf())
+                }
             }
         }
     }
@@ -129,6 +138,10 @@ class MyAccessibilityService : AccessibilityService(),
         get() = rootInActiveWindow.packageName.toString()
 
     private val mConnectedBtAddresses = mutableSetOf<String>()
+
+    private val mGetEventDelegate = GetEventDelegate {
+
+    }
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -163,6 +176,7 @@ class MyAccessibilityService : AccessibilityService(),
             addAction(ACTION_RESUME_REMAPPINGS)
             addAction(ACTION_SHOW_KEYBOARD)
             addAction(Intent.ACTION_SCREEN_ON)
+            addAction(Intent.ACTION_SCREEN_OFF)
             addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
             addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
 
@@ -334,6 +348,7 @@ class MyAccessibilityService : AccessibilityService(),
                     WidgetsManager.onEvent(this, EVENT_RESUME_REMAPS)
                 }
             }
+
         }
     }
 

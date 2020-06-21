@@ -1,8 +1,7 @@
 package io.github.sds100.keymapper.util
 
-import java.io.BufferedReader
 import java.io.IOException
-import java.io.InputStreamReader
+import java.io.InputStream
 
 
 /**
@@ -21,17 +20,10 @@ object Shell {
         }
     }
 
-    @Throws(IOException::class)
-    fun getCommandOutput(vararg command: String): List<String> {
-        val process = Runtime.getRuntime().exec(command)
-
-        val bufferedReader = BufferedReader(InputStreamReader(process.errorStream))
-        val line = bufferedReader.readLines()
-
-        process.waitFor()
-
-        bufferedReader.close()
-
-        return line
+    /**
+     * Remember to close it after using it.
+     */
+    fun getShellCommandOutput(vararg command: String): InputStream {
+        return Runtime.getRuntime().exec(command).inputStream
     }
 }

@@ -4,6 +4,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.navigation.findNavController
 import io.github.sds100.keymapper.R
 import splitties.alertdialog.appcompat.*
+import java.io.InputStream
 
 /**
  * Created by sds100 on 01/10/2018.
@@ -14,6 +15,13 @@ object RootUtils {
      */
     fun executeRootCommand(command: String): Boolean {
         return Shell.run("su", "-c", command)
+    }
+
+    /**
+     * Remember to close it after using it.
+     */
+    fun getRootCommandOutput(command: String): InputStream {
+        return Shell.getShellCommandOutput("su", "-c", command)
     }
 
     fun promptForRootPermission(activity: FragmentActivity) = activity.alertDialog {
