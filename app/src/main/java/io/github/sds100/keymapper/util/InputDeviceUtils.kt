@@ -25,6 +25,14 @@ object InputDeviceUtils {
         return DeviceNotFound()
     }
 
+    fun getConnectedDeviceNames() = sequence {
+        InputDevice.getDeviceIds().forEach {
+            val device = InputDevice.getDevice(it)
+
+            yield(device.name)
+        }
+    }
+
     fun getExternalDeviceDescriptors() = sequence {
         InputDevice.getDeviceIds().forEach {
             val device = InputDevice.getDevice(it)
