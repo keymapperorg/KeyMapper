@@ -336,6 +336,7 @@
     <string name="flag_vibrate">Vibrate</string>
     <string name="flag_performing_action_toast">Show a toast message when performing actions</string>
     <string name="flag_long_press_double_vibration">Vibrate when keys are initially pressed and again when long-pressed.</string>
+    <string name="flag_detect_triggers_screen_off">Detect trigger when screen is off. ROOT only.</string>
     <!--flags-->
     <!-- Showcase -->
     <string name="showcase_accessibility_service_title">Enable the accessibility service</string>
@@ -354,6 +355,7 @@
     <string name="showcase_contributing_title">Contributing</string>
     <string name="showcase_contributing_description">"This app is open source! You can start contributing by heading over to the sds100/KeyMapper repo on GitHub and by joining the Discord server. Even you if you can't code, you can contribute by helping others and testing the latest cutting-edge features."</string>
     <string name="showcase_tap_action_to_test_message">You can test an action and fix action errors by tapping it.</string>
+    <string name="showcase_screen_off_triggers">This option will only work if your device is rooted and you have told Key Mapper that it has root permission in the Key Mapper settings. If you don\'t know what root is then this option will not work.</string>
     <!-- Showcase -->
     <!-- system action options -->
     <string name="stream_accessibility">Accessibility</string>
