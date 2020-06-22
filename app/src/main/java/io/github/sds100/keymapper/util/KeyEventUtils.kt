@@ -666,9 +666,9 @@ object KeyEventUtils {
         KeyEvent.KEYCODE_ALL_APPS
     )
 
-    val KEY_EVENT_LABEL_TO_GET_EVENT_LABEL = mapOf(
-        KeyEvent.KEYCODE_VOLUME_DOWN to "KEY_VOLUMEDOWN",
-        KeyEvent.KEYCODE_VOLUME_UP to "KEY_VOLUMEUP"
+    val GET_EVENT_LABEL_TO_KEYCODE = mapOf(
+        "KEY_VOLUMEDOWN" to KeyEvent.KEYCODE_VOLUME_DOWN,
+        "KEY_VOLUMEUP" to KeyEvent.KEYCODE_VOLUME_UP
     )
 
     /**

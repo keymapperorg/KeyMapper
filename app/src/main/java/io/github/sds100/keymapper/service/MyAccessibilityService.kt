@@ -22,6 +22,7 @@ import io.github.sds100.keymapper.WidgetsManager.EVENT_PAUSE_REMAPS
 import io.github.sds100.keymapper.WidgetsManager.EVENT_RESUME_REMAPS
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Action
+import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.ActionPerformerDelegate
 import io.github.sds100.keymapper.util.delegate.GetEventDelegate
@@ -31,7 +32,10 @@ import io.github.sds100.keymapper.util.result.getBriefMessage
 import io.github.sds100.keymapper.util.result.isSuccess
 import io.github.sds100.keymapper.util.result.onFailure
 import io.github.sds100.keymapper.util.result.onSuccess
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
+import splitties.bitflags.hasFlag
 import splitties.systemservices.vibrator
 import splitties.toast.toast
 import timber.log.Timber
@@ -114,14 +118,12 @@ class MyAccessibilityService : AccessibilityService(),
                 }
 
                 Intent.ACTION_SCREEN_ON -> {
-                    if (AppPreferences.hasRootPermission) {
-                        mGetEventDelegate.stopListening()
-                    }
+                    mGetEventDelegate.stopListening()
                 }
 
                 Intent.ACTION_SCREEN_OFF -> {
-                    if (AppPreferences.hasRootPermission) {
-                        mGetEventDelegate.startListening(lifecycleScope, listOf(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.KEYCODE_VOLUME_UP))
+                    if (AppPreferences.hasRootPermission && mScreenOffTriggersEnabled) {
+                        mGetEventDelegate.startListening(lifecycleScope)
                     }
                 }
             }
@@ -129,6 +131,7 @@ class MyAccessibilityService : AccessibilityService(),
     }
 
     private var mRecordingTrigger = false
+    private var mScreenOffTriggersEnabled = false
 
     private lateinit var mLifecycleRegistry: LifecycleRegistry
 
@@ -144,7 +147,9 @@ class MyAccessibilityService : AccessibilityService(),
     private val mConnectedBtAddresses = mutableSetOf<String>()
 
     private val mGetEventDelegate = GetEventDelegate { keyCode, action, deviceDescriptor, isExternal ->
-        mKeymapDetectionDelegate.onKeyEvent(keyCode, action, deviceDescriptor, isExternal, 0)
+        withContext(Dispatchers.Main.immediate) {
+            mKeymapDetectionDelegate.onKeyEvent(keyCode, action, deviceDescriptor, isExternal, 0)
+        }
     }
 
     override fun onServiceConnected() {
@@ -189,6 +194,9 @@ class MyAccessibilityService : AccessibilityService(),
 
         (application as MyApplication).keymapRepository.keymapList.observe(this) {
             mKeymapDetectionDelegate.keyMapListCache = it
+            mScreenOffTriggersEnabled = it.any { keymap ->
+                keymap.flags.hasFlag(KeyMap.KEYMAP_FLAG_SCREEN_OFF_TRIGGERS)
+            }
         }
 
         defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
