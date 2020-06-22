@@ -23,7 +23,14 @@ object Shell {
     /**
      * Remember to close it after using it.
      */
-    fun getShellCommandOutput(vararg command: String): InputStream {
+    fun getShellCommandStdOut(vararg command: String): InputStream {
         return Runtime.getRuntime().exec(command).inputStream
+    }
+
+    /**
+     * Remember to close it after using it.
+     */
+    fun getShellCommandStdErr(vararg command: String): InputStream {
+        return Runtime.getRuntime().exec(command).errorStream
     }
 }

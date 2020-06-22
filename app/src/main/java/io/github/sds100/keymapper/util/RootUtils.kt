@@ -21,7 +21,7 @@ object RootUtils {
      * Remember to close it after using it.
      */
     fun getRootCommandOutput(command: String): InputStream {
-        return Shell.getShellCommandOutput("su", "-c", command)
+        return Shell.getShellCommandStdOut("su", "-c", command)
     }
 
     fun promptForRootPermission(activity: FragmentActivity) = activity.alertDialog {

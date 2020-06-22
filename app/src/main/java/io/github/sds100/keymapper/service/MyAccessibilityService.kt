@@ -114,11 +114,15 @@ class MyAccessibilityService : AccessibilityService(),
                 }
 
                 Intent.ACTION_SCREEN_ON -> {
-                    mGetEventDelegate.stopListening()
+                    if (AppPreferences.hasRootPermission) {
+                        mGetEventDelegate.stopListening()
+                    }
                 }
 
                 Intent.ACTION_SCREEN_OFF -> {
-                    mGetEventDelegate.startListening(lifecycleScope, listOf())
+                    if (AppPreferences.hasRootPermission) {
+                        mGetEventDelegate.startListening(lifecycleScope, listOf(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.KEYCODE_VOLUME_UP))
+                    }
                 }
             }
         }
@@ -139,8 +143,8 @@ class MyAccessibilityService : AccessibilityService(),
 
     private val mConnectedBtAddresses = mutableSetOf<String>()
 
-    private val mGetEventDelegate = GetEventDelegate {
-
+    private val mGetEventDelegate = GetEventDelegate { keyCode, action, deviceDescriptor, isExternal ->
+        mKeymapDetectionDelegate.onKeyEvent(keyCode, action, deviceDescriptor, isExternal, 0)
     }
 
     override fun onServiceConnected() {
