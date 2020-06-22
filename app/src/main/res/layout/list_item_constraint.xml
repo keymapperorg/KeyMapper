@@ -18,6 +18,10 @@
             type="View.OnClickListener" />
 
         <variable
+            name="onFixClick"
+            type="View.OnClickListener" />
+
+        <variable
             name="tintType"
             type="TintType" />
     </data>
@@ -31,6 +35,7 @@
         android:layout_marginTop="2dp"
         android:layout_marginEnd="@dimen/cardview_padding_right"
         android:layout_marginBottom="8dp"
+        android:onClick="@{onFixClick}"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -96,12 +101,12 @@
                 android:layout_width="36dp"
                 android:layout_height="0dp"
                 android:onClick="@{onRemoveClick}"
-                app:srcCompat="@drawable/ic_outline_clear_24"
                 android:tint="?attr/colorOnSurface"
                 app:layout_constraintBottom_toBottomOf="@id/imageView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/imageView"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintVertical_bias="0.0"
+                app:srcCompat="@drawable/ic_outline_clear_24" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 </layout>

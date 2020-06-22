@@ -6,4 +6,5 @@ package io.github.sds100.keymapper.util
 interface IConstraintState {
     val currentPackageName: String
     fun isBluetoothDeviceConnected(address: String): Boolean
+    val isScreenOn: Boolean
 }

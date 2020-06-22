@@ -14,6 +14,7 @@ import io.github.sds100.keymapper.constraint
 import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentKeymapConstraintsBinding
+import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.buildModel
 import io.github.sds100.keymapper.util.observeLiveDataEvent
@@ -64,6 +65,12 @@ class KeymapConstraintsFragment(private val mKeymapId: Long) : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        mViewModel.rebuildConstraintModels()
+    }
+
     private fun FragmentKeymapConstraintsBinding.subscribeConstraintsList() {
         mConstraintModelList.observe(viewLifecycleOwner) { constraintList ->
             epoxyRecyclerViewConstraints.withModels {
@@ -74,6 +81,14 @@ class KeymapConstraintsFragment(private val mKeymapId: Long) : Fragment() {
 
                         onRemoveClick { _ ->
                             mViewModel.removeConstraint(constraint.id)
+                        }
+
+                        onFixClick { _ ->
+                            val model = mConstraintModelList.value?.find { it.hasError } ?: return@onFixClick
+
+                            if (model.hasError) {
+                                mViewModel.showFixPrompt.value = Event(model.failure!!)
+                            }
                         }
                     }
                 }

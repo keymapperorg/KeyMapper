@@ -12,6 +12,8 @@ import io.github.sds100.keymapper.data.model.Constraint.Companion.APP_NOT_FOREGR
 import io.github.sds100.keymapper.data.model.Constraint.Companion.BT_DEVICE_CONNECTED
 import io.github.sds100.keymapper.data.model.Constraint.Companion.BT_DEVICE_DISCONNECTED
 import io.github.sds100.keymapper.data.model.Constraint.Companion.MODE_AND
+import io.github.sds100.keymapper.data.model.Constraint.Companion.SCREEN_OFF
+import io.github.sds100.keymapper.data.model.Constraint.Companion.SCREEN_ON
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.onSuccess
 import io.github.sds100.keymapper.util.result.valueOrNull
@@ -249,6 +251,8 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
                                 BT_DEVICE_CONNECTED, BT_DEVICE_DISCONNECTED ->
                                     it.getExtraData(Extra.EXTRA_BT_ADDRESS).valueOrNull()
+
+                                SCREEN_ON, SCREEN_OFF -> ""
                                 else -> null
                             } ?: return@forEach
 
@@ -1344,6 +1348,8 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             APP_NOT_FOREGROUND -> second != currentPackageName
             BT_DEVICE_CONNECTED -> isBluetoothDeviceConnected(second)
             BT_DEVICE_DISCONNECTED -> !isBluetoothDeviceConnected(second)
+            SCREEN_ON -> isScreenOn
+            SCREEN_OFF -> !isScreenOn
             else -> true
         }
     }
