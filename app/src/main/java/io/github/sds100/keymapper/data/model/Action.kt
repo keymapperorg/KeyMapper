@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.data.model
 import android.content.Context
 import android.hardware.camera2.CameraCharacteristics
 import android.media.AudioManager
+import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.SystemAction
@@ -31,6 +32,7 @@ import java.io.Serializable
  * - System actions/settings
  */
 data class Action(
+    @SerializedName(NAME_ACTION_TYPE)
     val type: ActionType,
 
     /**
@@ -42,12 +44,24 @@ data class Action(
      * - Block of text: text to insert
      * - System action: the system action id
      */
+    @SerializedName(NAME_DATA)
     val data: String,
+
+    @SerializedName(NAME_EXTRAS)
     val extras: MutableList<Extra> = mutableListOf(),
+
+    @SerializedName(NAME_FLAGS)
     var flags: Int = 0
 
 ) : Serializable {
     companion object {
+
+        //DON'T CHANGE THESE. Used for JSON serialization and parsing.
+        const val NAME_ACTION_TYPE = "type"
+        const val NAME_DATA = "data"
+        const val NAME_EXTRAS = "extras"
+        const val NAME_FLAGS = "flags"
+
         const val ACTION_FLAG_SHOW_VOLUME_UI = 1
 
         val ACTION_FLAG_LABEL_MAP = mapOf(
