@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.data.model
 
 import androidx.annotation.StringDef
+import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.R
 import java.io.Serializable
 
@@ -24,10 +25,19 @@ import java.io.Serializable
 ])
 annotation class ExtraId
 
-data class Extra(@ExtraId val id: String, val data: String) : Serializable {
-    companion object {
-        //DON'T CHANGE THESE IDs!!!!
+data class Extra(@ExtraId
+                 @SerializedName(NAME_ID)
+                 val id: String,
 
+                 @SerializedName(NAME_DATA)
+                 val data: String) : Serializable {
+    companion object {
+
+        //DON'T CHANGE THESE. Used for JSON serialization and parsing.
+        const val NAME_ID = "id"
+        const val NAME_DATA = "data"
+
+        //DON'T CHANGE THESE IDs!!!!
         //Actions
         const val EXTRA_SHORTCUT_TITLE = "extra_title"
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
