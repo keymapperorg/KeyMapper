@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.data.model
 
 import androidx.annotation.IntDef
 import androidx.annotation.StringDef
+import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.result.ExtraNotFound
 import io.github.sds100.keymapper.util.result.Result
@@ -34,11 +35,20 @@ annotation class ConstraintMode
 )
 annotation class ConstraintCategory
 
-data class Constraint(@ConstraintType val type: String, val extras: List<Extra>) : Serializable {
+data class Constraint(@ConstraintType
+                      @SerializedName(NAME_TYPE)
+                      val type: String,
+
+                      @SerializedName(NAME_EXTRAS)
+                      val extras: List<Extra>) : Serializable {
 
     constructor(type: String, vararg extra: Extra) : this(type, extra.toList())
 
     companion object {
+        //DON'T CHANGE THESE. Used for JSON serialization and parsing.
+        const val NAME_TYPE = "type"
+        const val NAME_EXTRAS = "extras"
+
         const val MODE_OR = 0
         const val MODE_AND = 1
         const val DEFAULT_MODE = MODE_AND
