@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.data.model
 
 import android.view.KeyEvent
 import androidx.annotation.IntDef
+import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.util.isExternalCompat
 import io.github.sds100.keymapper.util.result.ExtraNotFound
 import io.github.sds100.keymapper.util.result.Result
@@ -14,9 +15,18 @@ import io.github.sds100.keymapper.util.result.Success
 /**
  * @property [keys] The key codes which will trigger the action
  */
-class Trigger(var keys: List<Key> = listOf(), val extras: List<Extra> = listOf()) {
+class Trigger(
+    @SerializedName(NAME_KEYS)
+    var keys: List<Key> = listOf(),
+
+    @SerializedName(NAME_EXTRAS)
+    val extras: List<Extra> = listOf()) {
 
     companion object {
+        //DON'T CHANGE THESE. Used for JSON serialization and parsing.
+        const val NAME_KEYS = "keys"
+        const val NAME_EXTRAS = "extras"
+
         const val PARALLEL = 0
         const val SEQUENCE = 1
 
