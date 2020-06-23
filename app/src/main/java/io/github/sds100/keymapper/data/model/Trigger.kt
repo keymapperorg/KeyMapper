@@ -54,7 +54,7 @@ class Trigger(
 
         companion object {
             //DON'T CHANGE THESE. Used for JSON serialization and parsing.
-            const val NAME_KEYCODE = "keycode"
+            const val NAME_KEYCODE = "keyCode"
             const val NAME_DEVICE_ID = "deviceId"
             const val NAME_CLICK_TYPE = "clickType"
 
