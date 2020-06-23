@@ -590,8 +590,6 @@
     <string name="error_no_keymaps">No Keymaps!</string>
     <string name="error_failed_to_pick_file">Failed to pick file</string>
     <string name="error_empty_json">Empty JSON file!</string>
-    <string name="error_key_mapper_version_too_old">Key Mapper version is too old!</string>
-    <string name="error_backup_version_too_old">Backup version is too old!</string>
     <string name="error_file_access_denied">File access denied! Is it deleted?</string>
     <string name="error_file_access_denied_automatic_backup">Failed to backup to file. Is it deleted?</string>
 
