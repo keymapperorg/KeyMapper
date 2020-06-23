@@ -90,14 +90,19 @@
     <string name="constraint_app_not_foreground_description">%s is not in foreground</string>
     <string name="constraint_bt_device_connected_description">%s is connected</string>
     <string name="constraint_bt_device_disconnected_description">%s is disconnected</string>
+    <string name="constraint_screen_on_description">Screen is on</string>
+    <string name="constraint_screen_off_description">Screen is off</string>
     <string name="constraint_mode_and">and</string>
     <string name="constraint_mode_or">or</string>
     <string name="constraint_category_app">App</string>
     <string name="constraint_category_bluetooth">Bluetooth</string>
+    <string name="constraint_category_screen">Screen</string>
     <string name="constraint_choose_app_foreground">App in Foreground</string>
     <string name="constraint_choose_app_not_foreground">App not in Foreground</string>
     <string name="constraint_choose_bluetooth_device_connected">Bluetooth Device is Connected</string>
     <string name="constraint_choose_bluetooth_device_disconnected">Bluetooth Device is Disconnected</string>
+    <string name="constraint_choose_screen_on_description">Screen is on</string>
+    <string name="constraint_choose_screen_off_description">Screen is off</string>
     <!-- Constraints -->
     <!-- Click types -->
     <string name="clicktype_short_press">Short Press</string>
@@ -186,6 +191,7 @@
     <string name="dialog_message_view_faq_and_use_discord_over_email">Please check out the Help page to see if your question has already been answered. If not, then the developer would prefer it if you ask for help and suggest features in the Discord server. If you don\'t have Discord, you can email the developer directly.</string>
     <string name="dialog_message_bt_constraint_limitation">Android doesn\'t allow apps to get a list of connected (not paired) Bluetooth devices. Apps can only detect when they are connected and disconnected. So if your Bluetooth device is already connected to your device when the accessibility service starts, you will have to reconnect it for the app to know it is connected.</string>
     <string name="dialog_message_change_location_or_disable">Change location or turn off automatic backup?</string>
+    <string name="dialog_message_screen_constraints_limitation">Screen on/off constraints will only work if you have turned on the \"detect trigger when screen is off\" keymap option. This option will only show for some keys (e.g volume buttons) and if you are rooted. See a list of supported keys on the Help page.</string>
     <!-- Dialog messages -->
     <!-- Dialog buttons -->
     <string name="pos_yes">是</string>
@@ -355,7 +361,7 @@
     <string name="showcase_contributing_title">Contributing</string>
     <string name="showcase_contributing_description">"This app is open source! You can start contributing by heading over to the sds100/KeyMapper repo on GitHub and by joining the Discord server. Even you if you can't code, you can contribute by helping others and testing the latest cutting-edge features."</string>
     <string name="showcase_tap_action_to_test_message">You can test an action and fix action errors by tapping it.</string>
-    <string name="showcase_screen_off_triggers">This option will only work if your device is rooted and you have told Key Mapper that it has root permission in the Key Mapper settings. If you don\'t know what root is then this option will not work.</string>
+    <string name="showcase_screen_off_triggers">This option will only work if your device is rooted and you have told Key Mapper that it has root permission in the Key Mapper settings. If you don\'t know what root is then this option will not work. It will also only work for some keys (e.g volume buttons) so see the Help page for a list of supported keys.</string>
     <!-- Showcase -->
     <!-- system action options -->
     <string name="stream_accessibility">无障碍</string>
@@ -457,8 +463,6 @@
     <string name="error_no_keymaps">No Keymaps!</string>
     <string name="error_failed_to_pick_file">Failed to pick file</string>
     <string name="error_empty_json">Empty JSON file!</string>
-    <string name="error_key_mapper_version_too_old">Key Mapper version is too old!</string>
-    <string name="error_backup_version_too_old">Backup version is too old!</string>
     <string name="error_file_access_denied">File access denied! Is it deleted?</string>
     <string name="error_file_access_denied_automatic_backup">Failed to backup to file. Is it deleted?</string>
     <!-- Error messages -->
