@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 import io.github.sds100.keymapper.util.str
@@ -15,35 +16,54 @@ import splitties.bitflags.hasFlag
 
 @Entity(tableName = KeyMapDao.TABLE_NAME)
 class KeyMap(
+    @SerializedName(NAME_ID)
     @PrimaryKey(autoGenerate = true)
     var id: Long,
 
+    @SerializedName(NAME_TRIGGER)
     @ColumnInfo(name = KeyMapDao.KEY_TRIGGER)
     var trigger: Trigger = Trigger(),
 
+    @SerializedName(NAME_ACTION_LIST)
     @ColumnInfo(name = KeyMapDao.KEY_ACTION_LIST)
     var actionList: List<Action> = listOf(),
 
+    @SerializedName(NAME_CONSTRAINT_LIST)
     @ColumnInfo(name = KeyMapDao.KEY_CONSTRAINT_LIST)
     var constraintList: List<Constraint> = listOf(),
 
     @ConstraintMode
+    @SerializedName(NAME_CONSTRAINT_MODE)
     @ColumnInfo(name = KeyMapDao.KEY_CONSTRAINT_MODE)
     var constraintMode: Int = Constraint.DEFAULT_MODE,
 
+    @SerializedName(NAME_FLAGS)
     @ColumnInfo(name = KeyMapDao.KEY_FLAGS)
     /**
      * Flags are stored as bits.
      */
     var flags: Int = 0,
 
+    @SerializedName(NAME_FOLDER_NAME)
     @ColumnInfo(name = KeyMapDao.KEY_FOLDER_NAME)
     var folderName: String? = null,
 
+    @SerializedName(NAME_IS_ENABLED)
     @ColumnInfo(name = KeyMapDao.KEY_ENABLED)
     var isEnabled: Boolean = true
 ) {
     companion object {
+
+        //DON'T CHANGE THESE. Used for JSON serialization and parsing.
+        const val NAME_ID = "id"
+        const val NAME_TRIGGER = "trigger"
+        const val NAME_ACTION_LIST = "actionList"
+        const val NAME_CONSTRAINT_LIST = "constraintList"
+        const val NAME_CONSTRAINT_MODE = "constraintMode"
+        const val NAME_FLAGS = "flags"
+        const val NAME_FOLDER_NAME = "folderName"
+        const val NAME_IS_ENABLED = "isEnabled"
+
         //DON'T CHANGE THESE AND THEY MUST BE POWERS OF 2!!
         const val KEYMAP_FLAG_VIBRATE = 1
         const val KEYMAP_FLAG_SHOW_PERFORMING_ACTION_TOAST = 2
