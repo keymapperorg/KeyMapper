@@ -125,6 +125,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonRestore"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="8dp"
@@ -138,7 +139,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonEnableAll"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -146,7 +147,7 @@
             android:layout_marginBottom="16dp"
             android:onClick="@{enableAll}"
             android:text="@string/action_enable_all_keymaps"
-            android:textColor="@color/green"
+            android:textColor="@color/greenVibrant"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/buttonDisableAll"
             app:layout_constraintHorizontal_bias="0.5"
@@ -154,7 +155,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonDisableAll"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"

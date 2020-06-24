@@ -16,6 +16,7 @@
     <color name="actionModeBackground">#424242</color>
     <color name="actionModeStatusBar">#212121</color>
 
+    <color name="greenVibrant">#00C853</color>
     <color name="green">#4CAF50</color>
     <color name="greenDark">#087f23</color>
 
