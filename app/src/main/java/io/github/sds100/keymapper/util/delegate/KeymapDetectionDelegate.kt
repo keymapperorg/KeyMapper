@@ -1143,22 +1143,23 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
     }
 
     private fun repeatActions(triggerIndex: Int) = mCoroutineScope.launch {
+        val repeat = mParallelTriggerKeymapFlags[triggerIndex].hasFlag(KeyMap.KEYMAP_FLAG_REPEAT_ACTIONS)
+        if (!repeat) return@launch
+
         holdDownDelay(mParallelTriggerOptions[triggerIndex])
 
         while (true) {
             mParallelTriggerActions[triggerIndex].forEach {
                 mActionMap[it]?.let { action ->
-                    if (action.repeatable) {
 
-                        if (action.type == ActionType.KEY_EVENT) {
-                            if (isModifierKey(action.data.toInt())) return@let
-                        }
-
-                        performAction(action, false)
+                    if (action.type == ActionType.KEY_EVENT) {
+                        if (isModifierKey(action.data.toInt())) return@let
                     }
+
+                    performAction(action, false)
                 }
 
-                delay(repeatDelay(mParallelTriggerOptions[triggerIndex]).toLong())
+                delay(repeatDelay(mParallelTriggerOptions[triggerIndex]))
             }
         }
     }
