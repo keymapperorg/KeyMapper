@@ -343,6 +343,7 @@
     <string name="flag_performing_action_toast">Show a toast message when performing actions</string>
     <string name="flag_long_press_double_vibration">Vibrate when keys are initially pressed and again when long-pressed.</string>
     <string name="flag_detect_triggers_screen_off">Detect trigger when screen is off. ROOT only.</string>
+    <string name="flag_repeat_actions">Repeat actions</string>
     <!--flags-->
     <!-- Showcase -->
     <string name="showcase_accessibility_service_title">Enable the accessibility service</string>
