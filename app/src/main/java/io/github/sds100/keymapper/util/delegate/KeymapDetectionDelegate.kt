@@ -578,7 +578,14 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
                 if (mParallelTriggerEvents[triggerIndex].hasEventAtIndex(encodedWithLongPress, nextIndex)) {
 
-                    consumeEvent = true
+                    /*
+                    To prevent the home and recents button from doing their normal action, ONLY the up event should
+                    be consumed.
+                     */
+                    if (keyCode != KeyEvent.KEYCODE_HOME && keyCode != KeyEvent.KEYCODE_APP_SWITCH) {
+                        consumeEvent = true
+                    }
+
                     mLastMatchedParallelEventIndices[triggerIndex] = nextIndex
                     mParallelTriggerEventsAwaitingRelease[triggerIndex][nextIndex] = true
 

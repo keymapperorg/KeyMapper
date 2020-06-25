@@ -77,6 +77,7 @@ class KeymapDetectionDelegateTest {
                 get() = FAKE_PACKAGE_NAME
 
             override fun isBluetoothDeviceConnected(address: String) = true
+            override val isScreenOn = true
         }
 
         val iActionError = object : IActionError {
@@ -93,6 +94,49 @@ class KeymapDetectionDelegateTest {
             FORCE_VIBRATE)
 
         mDelegate = KeymapDetectionDelegate(GlobalScope, preferences, iActionError, iClock, iConstraintState)
+    }
+
+    @Test
+    fun `2x key long press parallel trigger with HOME or RECENTS keycode, trigger successfully, don't do normal action by not consuming down`() {
+        val keysHome = arrayOf(
+            Trigger.Key(KeyEvent.KEYCODE_HOME, clickType = LONG_PRESS),
+            Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = LONG_PRESS))
+
+        mDelegate.keyMapListCache = listOf(
+            createValidKeymapFromTriggerKey(0, *keysHome, triggerMode = Trigger.PARALLEL)
+        )
+
+        runBlocking {
+            val consumedDown = inputKeyEvent(KeyEvent.KEYCODE_HOME, KeyEvent.ACTION_DOWN, null)
+            inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN, null)
+
+            delay(LONG_PRESS_DELAY.toLong())
+
+            inputKeyEvent(KeyEvent.KEYCODE_HOME, KeyEvent.ACTION_UP, null)
+            inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP, null)
+
+            assertEquals(false, consumedDown)
+        }
+
+        val keysRecents = arrayOf(
+            Trigger.Key(KeyEvent.KEYCODE_APP_SWITCH, clickType = LONG_PRESS),
+            Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = LONG_PRESS))
+
+        mDelegate.keyMapListCache = listOf(
+            createValidKeymapFromTriggerKey(0, *keysRecents, triggerMode = Trigger.PARALLEL)
+        )
+
+        runBlocking {
+            val consumedDown = inputKeyEvent(KeyEvent.KEYCODE_APP_SWITCH, KeyEvent.ACTION_DOWN, null)
+            inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN, null)
+
+            delay(LONG_PRESS_DELAY.toLong())
+
+            inputKeyEvent(KeyEvent.KEYCODE_APP_SWITCH, KeyEvent.ACTION_UP, null)
+            inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP, null)
+
+            assertEquals(false, consumedDown)
+        }
     }
 
     @Test
