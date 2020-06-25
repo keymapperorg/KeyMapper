@@ -8,13 +8,14 @@ import io.github.sds100.keymapper.data.KeymapRepository
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
-import io.github.sds100.keymapper.util.repeatable
+import io.github.sds100.keymapper.util.repeatableByDefault
 import io.github.sds100.keymapper.util.result.Failure
 import io.github.sds100.keymapper.util.toggleFlag
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import splitties.bitflags.hasFlag
 import splitties.bitflags.minusFlag
+import splitties.bitflags.withFlag
 import java.util.*
 
 class ConfigKeymapViewModel internal constructor(
@@ -419,6 +420,10 @@ class ConfigKeymapViewModel internal constructor(
             add(action)
         }
 
+        if (action.repeatableByDefault) {
+            mKeymapFlags.value = mKeymapFlags.value?.withFlag(KeyMap.KEYMAP_FLAG_REPEAT_ACTIONS)
+        }
+
         invalidateOptions()
 
         return true
@@ -495,6 +500,10 @@ class ConfigKeymapViewModel internal constructor(
                 && triggerKeys.value?.getOrNull(0)?.clickType == Trigger.LONG_PRESS) {
                 allowedFlags.add(KeyMap.KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION)
             }
+
+            if (KeymapDetectionDelegate.performActionOnDown(triggerKeys.value!!, triggerMode.value!!)) {
+                allowedFlags.add(KeyMap.KEYMAP_FLAG_REPEAT_ACTIONS)
+            }
         }
 
         return allowedFlags.toIntArray()
@@ -516,8 +525,7 @@ class ConfigKeymapViewModel internal constructor(
             allowedExtras.add(Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT)
         }
 
-        if (actionList.value?.any { it.repeatable } == true &&
-            KeymapDetectionDelegate.performActionOnDown(triggerKeys.value!!, triggerMode.value!!)) {
+        if (mKeymapFlags.value?.hasFlag(KeyMap.KEYMAP_FLAG_REPEAT_ACTIONS) == true) {
             allowedExtras.add(Extra.EXTRA_HOLD_DOWN_DELAY)
             allowedExtras.add(Extra.EXTRA_REPEAT_DELAY)
         }

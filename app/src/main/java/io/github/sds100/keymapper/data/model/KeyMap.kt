@@ -68,11 +68,13 @@ class KeyMap(
         const val KEYMAP_FLAG_VIBRATE = 1
         const val KEYMAP_FLAG_SHOW_PERFORMING_ACTION_TOAST = 2
         const val KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION = 4
+        const val KEYMAP_FLAG_REPEAT_ACTIONS = 16
 
         val KEYMAP_FLAG_LABEL_MAP = mapOf(
             KEYMAP_FLAG_VIBRATE to R.string.flag_vibrate,
             KEYMAP_FLAG_SHOW_PERFORMING_ACTION_TOAST to R.string.flag_performing_action_toast,
-            KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION to R.string.flag_long_press_double_vibration
+            KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION to R.string.flag_long_press_double_vibration,
+            KEYMAP_FLAG_REPEAT_ACTIONS to R.string.flag_repeat_actions
         )
 
         val KEYMAP_FLAG_ICON_MAP = mapOf(

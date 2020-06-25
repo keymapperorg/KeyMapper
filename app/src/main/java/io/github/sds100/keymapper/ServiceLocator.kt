@@ -92,7 +92,7 @@ object ServiceLocator {
         val result = Room.databaseBuilder(
             context.applicationContext,
             AppDatabase::class.java, AppDatabase.DATABASE_NAME
-        ).addMigrations(AppDatabase.MIGRATION_1_2).build()
+        ).addMigrations(AppDatabase.MIGRATION_1_2, AppDatabase.MIGRATION_2_3).build()
         database = result
         return result
     }
