@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.util.ActionType
+import io.github.sds100.keymapper.util.Event
 import splitties.bitflags.withFlag
 
 /**
@@ -20,7 +21,7 @@ class FakeKeymapRepository : KeymapRepository {
 
     override val keymapList: MutableLiveData<List<KeyMap>> = MutableLiveData(mKeymapList.values.toList())
 
-    override val requestBackup: LiveData<List<KeyMap>>
+    override val requestBackup: LiveData<Event<List<KeyMap>>>
         get() = TODO("Not yet implemented")
 
     override suspend fun getKeymaps(): List<KeyMap> = mKeymapList.values.toList()

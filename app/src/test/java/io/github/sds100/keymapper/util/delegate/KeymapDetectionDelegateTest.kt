@@ -78,6 +78,7 @@ class KeymapDetectionDelegateTest {
                 get() = mCurrentPackage
 
             override fun isBluetoothDeviceConnected(address: String) = true
+            override val isScreenOn = true
         }
 
         val iActionError = object : IActionError {
@@ -97,28 +98,46 @@ class KeymapDetectionDelegateTest {
     }
 
     @Test
-    fun `two constraints in OR mode, don't perform action when one isn't satisfied`() {
-        val trigger = sequenceTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN))
-        val constraintList = listOf(
-            Constraint.appConstraint(Constraint.APP_NOT_FOREGROUND, "package1"),
-            Constraint.appConstraint(Constraint.APP_NOT_FOREGROUND, "package2")
+    fun `2x key long press parallel trigger with HOME or RECENTS keycode, trigger successfully, don't do normal action by not consuming down`() {
+        val keysHome = arrayOf(
+            Trigger.Key(KeyEvent.KEYCODE_HOME, clickType = LONG_PRESS),
+            Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = LONG_PRESS))
+
+        mDelegate.keyMapListCache = listOf(
+            createValidKeymapFromTriggerKey(0, *keysHome, triggerMode = Trigger.PARALLEL)
         )
 
-        mDelegate.keyMapListCache = listOf(KeyMap(
-            0,
-            trigger,
-            listOf(TEST_ACTION),
-            constraintList = constraintList,
-            constraintMode = Constraint.MODE_OR
-        ))
-
-        mCurrentPackage = "package1"
-
         runBlocking {
-            mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN))
+            val consumedDown = inputKeyEvent(KeyEvent.KEYCODE_HOME, KeyEvent.ACTION_DOWN, null)
+            inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN, null)
+
+            delay(LONG_PRESS_DELAY.toLong())
+
+            inputKeyEvent(KeyEvent.KEYCODE_HOME, KeyEvent.ACTION_UP, null)
+            inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP, null)
+
+            assertEquals(false, consumedDown)
         }
 
-        val performedAction = mDelegate.performAction
+        val keysRecents = arrayOf(
+            Trigger.Key(KeyEvent.KEYCODE_APP_SWITCH, clickType = LONG_PRESS),
+            Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = LONG_PRESS))
+
+        mDelegate.keyMapListCache = listOf(
+            createValidKeymapFromTriggerKey(0, *keysRecents, triggerMode = Trigger.PARALLEL)
+        )
+
+        runBlocking {
+            val consumedDown = inputKeyEvent(KeyEvent.KEYCODE_APP_SWITCH, KeyEvent.ACTION_DOWN, null)
+            inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN, null)
+
+            delay(LONG_PRESS_DELAY.toLong())
+
+            inputKeyEvent(KeyEvent.KEYCODE_APP_SWITCH, KeyEvent.ACTION_UP, null)
+            inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP, null)
+
+            assertEquals(false, consumedDown)
+        }
     }
 
     @Test
