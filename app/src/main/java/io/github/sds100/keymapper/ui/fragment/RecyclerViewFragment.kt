@@ -6,16 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import androidx.savedstate.SavedStateRegistry
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.ui.callback.ProgressCallback
-import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.observeCurrentDestinationLiveData
-import io.github.sds100.keymapper.util.setLiveDataEvent
 import java.io.Serializable
 
 /**
@@ -28,7 +28,7 @@ abstract class RecyclerViewFragment : Fragment() {
 
         private const val KEY_IS_APPBAR_VISIBLE = "key_is_app_visible"
         private const val KEY_IS_IN_PAGER_ADAPTER = "key_is_in_pager_adapter"
-        private const val KEY_SELECTED_MODEL_KEY = "key_selected_model_key"
+        private const val KEY_RESULT_DATA = "key_result_data"
         private const val KEY_SEARCH_STATE_KEY = "key_search_state_key"
     }
 
@@ -38,7 +38,7 @@ abstract class RecyclerViewFragment : Fragment() {
         Bundle().apply {
             putBoolean(KEY_IS_APPBAR_VISIBLE, isAppBarVisible)
             putBoolean(KEY_IS_IN_PAGER_ADAPTER, isInPagerAdapter)
-            putString(KEY_SELECTED_MODEL_KEY, selectedModelKey)
+            putSerializable(KEY_RESULT_DATA, resultData)
             putString(KEY_SEARCH_STATE_KEY, searchStateKey)
         }
     }
@@ -48,7 +48,7 @@ abstract class RecyclerViewFragment : Fragment() {
 
     var isAppBarVisible = true
     var isInPagerAdapter = false
-    open var selectedModelKey: String? = null
+    open var resultData: ResultData? = null
     open var searchStateKey: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,7 +59,7 @@ abstract class RecyclerViewFragment : Fragment() {
         savedStateRegistry.consumeRestoredStateForKey(KEY_SAVED_STATE)?.apply {
             isAppBarVisible = getBoolean(KEY_IS_APPBAR_VISIBLE)
             isInPagerAdapter = getBoolean(KEY_IS_IN_PAGER_ADAPTER)
-            selectedModelKey = getString(KEY_SELECTED_MODEL_KEY)
+            resultData = getSerializable(KEY_RESULT_DATA) as ResultData
             searchStateKey = getString(KEY_SEARCH_STATE_KEY)
         }
     }
@@ -91,18 +91,10 @@ abstract class RecyclerViewFragment : Fragment() {
         }
     }
 
-    fun <T : Serializable> selectModel(model: T) {
-        findNavController().apply {
-            if (selectedModelKey != null) {
-                // this livedata could be observed from a fragment on the backstack or in the same position on the
-                // backstack as this fragment
-                if (isInPagerAdapter) {
-                    currentBackStackEntry?.setLiveDataEvent(selectedModelKey!!, model)
-                } else {
-                    previousBackStackEntry?.setLiveDataEvent(selectedModelKey!!, model)
-                    navigateUp()
-                }
-            }
+    fun selectModel(model: Serializable) {
+        resultData?.let {
+            setFragmentResult(it.requestKey, bundleOf(it.resultExtraKey to model))
+            findNavController().navigateUp()
         }
     }
 
@@ -131,4 +123,6 @@ abstract class RecyclerViewFragment : Fragment() {
 
     open fun onSearchQuery(query: String?) {}
     abstract fun subscribeList(binding: FragmentRecyclerviewBinding)
+
+    class ResultData(val requestKey: String, val resultExtraKey: String) : Serializable
 }

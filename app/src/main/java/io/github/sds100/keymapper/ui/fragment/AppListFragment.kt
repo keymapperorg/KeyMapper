@@ -13,7 +13,8 @@ import io.github.sds100.keymapper.util.InjectorUtils
 class AppListFragment : RecyclerViewFragment() {
 
     companion object {
-        const val SAVED_STATE_KEY = "key_app"
+        const val REQUEST_KEY = "request_app"
+        const val EXTRA_APP_MODEL = "extra_app"
         const val SEARCH_STATE_KEY = "key_app_search_state"
     }
 
@@ -21,7 +22,7 @@ class AppListFragment : RecyclerViewFragment() {
         get() = mViewModel
 
     override var searchStateKey: String? = SEARCH_STATE_KEY
-    override var selectedModelKey: String? = SAVED_STATE_KEY
+    override var resultData: ResultData? = ResultData(REQUEST_KEY, EXTRA_APP_MODEL)
 
     private val mViewModel: AppListViewModel by viewModels {
         InjectorUtils.provideAppListViewModel(requireContext())

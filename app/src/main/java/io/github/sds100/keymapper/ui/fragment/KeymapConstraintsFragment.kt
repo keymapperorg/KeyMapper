@@ -11,13 +11,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.constraint
-import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentKeymapConstraintsBinding
 import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.buildModel
-import io.github.sds100.keymapper.util.observeLiveDataEvent
-import splitties.toast.toast
 
 /**
  * Created by sds100 on 19/03/2020.
@@ -48,15 +45,6 @@ class KeymapConstraintsFragment(private val mKeymapId: Long) : Fragment() {
             findNavController().apply {
                 setOnAddConstraintClick {
                     navigate(ConfigKeymapFragmentDirections.actionConfigKeymapFragmentToChooseConstraint())
-                }
-
-                currentBackStackEntry?.observeLiveDataEvent<Constraint>(
-                    viewLifecycleOwner,
-                    ChooseConstraintListFragment.SAVED_STATE_KEY) {
-
-                    if (!mViewModel.addConstraint(it)) {
-                        toast(R.string.error_constraint_exists)
-                    }
                 }
             }
 

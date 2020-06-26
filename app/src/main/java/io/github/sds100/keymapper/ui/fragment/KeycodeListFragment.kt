@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.ui.fragment
 
-import android.graphics.drawable.Drawable
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.observe
 import io.github.sds100.keymapper.data.viewmodel.KeycodeListViewModel
@@ -14,12 +13,13 @@ import io.github.sds100.keymapper.util.InjectorUtils
 
 class KeycodeListFragment : RecyclerViewFragment() {
     companion object {
-        const val SAVED_STATE_KEY = "key_keycode_saved_state"
+        const val REQUEST_KEY = "request_keycode"
+        const val EXTRA_KEYCODE = "extra_keycode"
         const val SEARCH_STATE_KEY = "key_keycode_search_state"
     }
 
     override var searchStateKey: String? = SEARCH_STATE_KEY
-    override var selectedModelKey: String? = SAVED_STATE_KEY
+    override var resultData: ResultData? = ResultData(REQUEST_KEY, EXTRA_KEYCODE)
 
     private val mViewModel: KeycodeListViewModel by activityViewModels {
         InjectorUtils.provideKeycodeListViewModel()

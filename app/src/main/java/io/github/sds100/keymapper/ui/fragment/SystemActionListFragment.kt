@@ -41,7 +41,8 @@ import kotlin.coroutines.suspendCoroutine
 class SystemActionListFragment : RecyclerViewFragment(), StringResourceProvider {
 
     companion object {
-        const val SAVED_STATE_KEY = "key_system_action"
+        const val REQUEST_KEY = "request_system_action"
+        const val EXTRA_SYSTEM_ACTION = "extra_system_action"
         const val SEARCH_STATE_KEY = "key_system_action_search_state"
     }
 
@@ -50,7 +51,7 @@ class SystemActionListFragment : RecyclerViewFragment(), StringResourceProvider 
     }
 
     override var searchStateKey: String? = SEARCH_STATE_KEY
-    override var selectedModelKey: String? = SAVED_STATE_KEY
+    override var resultData: ResultData? = ResultData(REQUEST_KEY, EXTRA_SYSTEM_ACTION)
 
     override val progressCallback: ProgressCallback?
         get() = mViewModel

@@ -13,10 +13,11 @@ import java.io.Serializable
 class BluetoothDeviceListFragment : RecyclerViewFragment() {
 
     companion object {
-        const val SAVED_STATE_KEY = "key_bt_device"
+        const val REQUEST_KEY = "request_key_bluetooth_device"
+        const val EXTRA_BLUETOOTH_DEVICE = "extra_bluetooth_device"
     }
 
-    override var selectedModelKey: String? = SAVED_STATE_KEY
+    override var resultData: ResultData? = ResultData(REQUEST_KEY, EXTRA_BLUETOOTH_DEVICE)
 
     override fun subscribeList(binding: FragmentRecyclerviewBinding) {
         binding.epoxyRecyclerView.withModels {

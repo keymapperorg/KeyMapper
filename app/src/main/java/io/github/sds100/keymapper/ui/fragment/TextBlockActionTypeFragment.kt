@@ -4,15 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.viewmodel.TextBlockActionTypeViewModel
 import io.github.sds100.keymapper.databinding.FragmentEdittextBinding
-import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.InjectorUtils
-import io.github.sds100.keymapper.util.setLiveDataEvent
 import io.github.sds100.keymapper.util.str
 
 /**
@@ -21,7 +21,8 @@ import io.github.sds100.keymapper.util.str
 
 class TextBlockActionTypeFragment : Fragment() {
     companion object {
-        const val SAVED_STATE_KEY = "key_text_block_saved_state"
+        const val REQUEST_KEY = "request_text_block"
+        const val EXTRA_TEXT_BLOCk = "extra_text_block"
     }
 
     private val mViewModel: TextBlockActionTypeViewModel by activityViewModels {
@@ -37,9 +38,8 @@ class TextBlockActionTypeFragment : Fragment() {
             caption = str(R.string.caption_action_type_text)
 
             setOnDoneClick {
-                findNavController().apply {
-                    currentBackStackEntry?.setLiveDataEvent(SAVED_STATE_KEY, mViewModel.text.value)
-                }
+                setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_TEXT_BLOCk to mViewModel.text.value))
+                findNavController().navigateUp()
             }
 
             return this.root

@@ -4,14 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.data.viewmodel.KeyActionTypeViewModel
 import io.github.sds100.keymapper.databinding.FragmentKeyActionTypeBinding
-import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.InjectorUtils
-import io.github.sds100.keymapper.util.setLiveDataEvent
 
 /**
  * Created by sds100 on 30/03/2020.
@@ -19,7 +19,8 @@ import io.github.sds100.keymapper.util.setLiveDataEvent
 
 class KeyActionTypeFragment : Fragment() {
     companion object {
-        const val SAVED_STATE_KEY = "key_key_saved_state"
+        const val REQUEST_KEY = "request_key"
+        const val EXTRA_KEYCODE = "extra_keycode"
     }
 
     private val mViewModel: KeyActionTypeViewModel by activityViewModels {
@@ -35,9 +36,8 @@ class KeyActionTypeFragment : Fragment() {
             viewModel = mViewModel
 
             setOnDoneClick {
-                findNavController().apply {
-                    currentBackStackEntry?.setLiveDataEvent(SAVED_STATE_KEY, mViewModel.keyEvent.value?.keyCode)
-                }
+                setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_KEYCODE to mViewModel.keyEvent.value?.keyCode))
+                findNavController().navigateUp()
             }
 
             return this.root
