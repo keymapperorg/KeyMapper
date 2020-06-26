@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.data.model.AppListItemModel
@@ -11,8 +12,11 @@ import io.github.sds100.keymapper.data.viewmodel.ChooseConstraintListViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.sectionHeader
 import io.github.sds100.keymapper.simple
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.ConstraintUtils
+import io.github.sds100.keymapper.util.EventObserver
+import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.result.getFullMessage
+import io.github.sds100.keymapper.util.str
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.messageResource
 import splitties.alertdialog.appcompat.okButton
@@ -23,18 +27,34 @@ import splitties.alertdialog.appcompat.okButton
 class ChooseConstraintListFragment : RecyclerViewFragment() {
 
     companion object {
-        const val SAVED_STATE_KEY = "key_constraint"
+        const val REQUEST_KEY = "request_constraint"
+        const val EXTRA_CONSTRAINT = "extra_constraint"
     }
 
     private val mViewModel: ChooseConstraintListViewModel by viewModels {
         InjectorUtils.provideChooseConstraintListViewModel()
     }
 
-    override var selectedModelKey: String? = SAVED_STATE_KEY
+    override var resultData: ResultData? = ResultData(REQUEST_KEY, EXTRA_CONSTRAINT)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setFragmentResultListener(AppListFragment.REQUEST_KEY) { _, result ->
+            val appModel = result.getSerializable(AppListFragment.EXTRA_APP_MODEL) as AppListItemModel
+
+            mViewModel.packageChosen(appModel.packageName)
+        }
+
+        setFragmentResultListener(BluetoothDeviceListFragment.REQUEST_KEY) { _, result ->
+            val model = result.getSerializable(BluetoothDeviceListFragment.EXTRA_BLUETOOTH_DEVICE)
+                as BluetoothDeviceListFragment.Model
+
+            mViewModel.bluetoothDeviceChosen(model.address, model.name)
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-
-        observeFragmentChildrenLiveData()
 
         mViewModel.choosePackageEvent.observe(viewLifecycleOwner, EventObserver {
             val direction = ChooseConstraintListFragmentDirections.actionChooseConstraintListFragmentToAppListFragment()
@@ -96,22 +116,6 @@ class ChooseConstraintListFragment : RecyclerViewFragment() {
                     }
                 }
             }
-        }
-    }
-
-    private fun observeFragmentChildrenLiveData() = findNavController().currentBackStackEntry?.apply {
-        observeLiveDataEvent<AppListItemModel>(
-            viewLifecycleOwner,
-            AppListFragment.SAVED_STATE_KEY
-        ) {
-            mViewModel.packageChosen(it.packageName)
-        }
-
-        observeLiveDataEvent<BluetoothDeviceListFragment.Model>(
-            viewLifecycleOwner,
-            BluetoothDeviceListFragment.SAVED_STATE_KEY
-        ) {
-            mViewModel.bluetoothDeviceChosen(it.address, it.name)
         }
     }
 }

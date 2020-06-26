@@ -8,12 +8,15 @@ import androidx.activity.addCallback
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.data.model.Action
+import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentConfigKeymapBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
@@ -29,6 +32,7 @@ import splitties.experimental.ExperimentalSplittiesApi
 import splitties.snackbar.action
 import splitties.snackbar.longSnack
 import splitties.snackbar.snack
+import splitties.toast.toast
 
 /**
  * Created by sds100 on 19/02/2020.
@@ -58,6 +62,22 @@ class ConfigKeymapFragment : Fragment() {
         childFragmentManager.fragmentFactory = mFragmentFactory
 
         super.onCreate(savedInstanceState)
+
+        setFragmentResultListener(ChooseActionFragment.REQUEST_KEY) { _, result ->
+            val action = result.getSerializable(ChooseActionFragment.EXTRA_ACTION) as Action
+
+            if (!mViewModel.addAction(action)) {
+                toast(R.string.error_action_exists)
+            }
+        }
+
+        setFragmentResultListener(ChooseConstraintListFragment.REQUEST_KEY) { _, result ->
+            val constraint = result.getSerializable(ChooseConstraintListFragment.EXTRA_CONSTRAINT) as Constraint
+
+            if (!mViewModel.addConstraint(constraint)) {
+                toast(R.string.error_constraint_exists)
+            }
+        }
     }
 
     @ExperimentalSplittiesApi

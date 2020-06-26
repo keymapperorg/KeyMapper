@@ -21,7 +21,6 @@ import splitties.alertdialog.appcompat.cancelButton
 import splitties.alertdialog.appcompat.okButton
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
-import splitties.toast.toast
 
 /**
  * Created by sds100 on 18/05/2020.
@@ -46,16 +45,6 @@ class ActionsFragment(private val mKeymapId: Long) : Fragment() {
         FragmentActionsBinding.inflate(inflater, container, false).apply {
             viewModel = mViewModel
             lifecycleOwner = viewLifecycleOwner
-
-            findNavController().observeCurrentDestinationEvent<Action>(
-                viewLifecycleOwner,
-                ChooseActionFragment.SAVED_STATE_KEY
-            ) {
-
-                if (!mViewModel.addAction(it)) {
-                    toast(R.string.error_action_exists)
-                }
-            }
 
             mViewModel.chooseAction.observe(viewLifecycleOwner, EventObserver {
                 val direction = ConfigKeymapFragmentDirections.actionConfigKeymapFragmentToChooseActionFragment()

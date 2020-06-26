@@ -6,8 +6,11 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
@@ -18,10 +21,9 @@ import io.github.sds100.keymapper.data.model.AppShortcutModel
 import io.github.sds100.keymapper.data.model.SelectedSystemActionModel
 import io.github.sds100.keymapper.databinding.FragmentChooseActionBinding
 import io.github.sds100.keymapper.ui.adapter.ChooseActionPagerAdapter
-import io.github.sds100.keymapper.util.observeLiveDataEvent
 import io.github.sds100.keymapper.util.setCurrentDestinationLiveData
-import io.github.sds100.keymapper.util.setLiveDataEvent
 import io.github.sds100.keymapper.util.strArray
+import java.io.Serializable
 
 /**
  * A placeholder fragment containing a simple view.
@@ -29,10 +31,48 @@ import io.github.sds100.keymapper.util.strArray
 class ChooseActionFragment : Fragment() {
 
     companion object {
-        const val SAVED_STATE_KEY = "key_choose_action"
+        const val REQUEST_KEY = "request_choose_action"
+        const val EXTRA_ACTION = "extra_action"
     }
 
     private val mPagerAdapter: ChooseActionPagerAdapter by lazy { ChooseActionPagerAdapter(this) }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setResultListener<AppListItemModel>(AppListFragment.REQUEST_KEY, AppListFragment.EXTRA_APP_MODEL) {
+            Action.appAction(it.packageName)
+        }
+
+        setResultListener<AppShortcutModel>(AppShortcutListFragment.REQUEST_KEY,
+            AppShortcutListFragment.EXTRA_APP_SHORTCUT) {
+            Action.appShortcutAction(it)
+        }
+
+        setResultListener<Int>(KeyActionTypeFragment.REQUEST_KEY, KeyActionTypeFragment.EXTRA_KEYCODE) {
+            Action.keyAction(it)
+        }
+
+        setResultListener<Int>(KeycodeListFragment.REQUEST_KEY, KeycodeListFragment.EXTRA_KEYCODE) {
+            Action.keycodeAction(it)
+        }
+
+        setResultListener<String>(TextBlockActionTypeFragment.REQUEST_KEY,
+            TextBlockActionTypeFragment.EXTRA_TEXT_BLOCk) {
+            Action.textBlockAction(it)
+        }
+
+        setResultListener<String>(UrlActionTypeFragment.REQUEST_KEY, UrlActionTypeFragment.EXTRA_URL) {
+            Action.urlAction(it)
+        }
+
+        setResultListener<SelectedSystemActionModel>(
+            SystemActionListFragment.REQUEST_KEY,
+            SystemActionListFragment.EXTRA_SYSTEM_ACTION
+        ) {
+            Action.systemAction(requireContext(), it)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,47 +89,24 @@ class ChooseActionFragment : Fragment() {
                 findNavController().navigateUp()
             }
 
-            onModelSelected<AppListItemModel>(AppListFragment.SAVED_STATE_KEY) {
-                Action.appAction(it.packageName)
-            }
-
-            onModelSelected<AppShortcutModel>(AppShortcutListFragment.SAVED_STATE_KEY) {
-                Action.appShortcutAction(it)
-            }
-
-            onModelSelected<Int>(KeyActionTypeFragment.SAVED_STATE_KEY) {
-                Action.keyAction(it)
-            }
-
-            onModelSelected<Int>(KeycodeListFragment.SAVED_STATE_KEY) {
-                Action.keycodeAction(it)
-            }
-
-            onModelSelected<String>(TextBlockActionTypeFragment.SAVED_STATE_KEY) {
-                Action.textBlockAction(it)
-            }
-
-            onModelSelected<String>(UrlActionTypeFragment.SAVED_STATE_KEY) {
-                Action.urlAction(it)
-            }
-
-            onModelSelected<SelectedSystemActionModel>(SystemActionListFragment.SAVED_STATE_KEY) {
-                Action.systemAction(requireContext(), it)
-            }
-
             subscribeSearchView()
 
             return this.root
         }
     }
 
-    private fun <T> onModelSelected(key: String, createAction: (model: T) -> Action) = findNavController().apply {
+    @Suppress("UNCHECKED_CAST")
+    private fun <T : Serializable> setResultListener(
+        requestKey: String,
+        extraKey: String,
+        createAction: (model: T) -> Action
+    ) {
+        childFragmentManager.setFragmentResultListener(requestKey, this) { _, result ->
+            val model = result.get(extraKey) as T
 
-        currentBackStackEntry?.observeLiveDataEvent<T>(viewLifecycleOwner, key) {
-            val action = createAction(it)
+            val action = createAction(model)
 
-            previousBackStackEntry?.setLiveDataEvent(SAVED_STATE_KEY, action)
-            navigateUp()
+            setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_ACTION to action))
         }
     }
 

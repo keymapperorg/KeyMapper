@@ -30,11 +30,12 @@ class AppShortcutListFragment : RecyclerViewFragment() {
     companion object {
         private const val REQUEST_CODE_SHORTCUT_CONFIG = 837
 
-        const val SAVED_STATE_KEY = "key_app_shortcut"
+        const val REQUEST_KEY = "request_app_shortcut"
+        const val EXTRA_APP_SHORTCUT = "extra_app_shortcut"
         const val SEARCH_STATE_KEY = "key_app_shortcut_search_state"
     }
 
-    override var selectedModelKey: String? = SAVED_STATE_KEY
+    override var resultData: ResultData? = ResultData(REQUEST_KEY, EXTRA_APP_SHORTCUT)
     override var searchStateKey: String? = SEARCH_STATE_KEY
 
     private val mViewModel: AppShortcutListViewModel by viewModels {
