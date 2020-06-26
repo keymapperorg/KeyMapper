@@ -133,6 +133,11 @@ object AppPreferences : DefaultPreferences() {
         appCtx.bool(R.bool.default_value_keymaps_paused)
     )
 
+    val hideHomeScreenAlerts by BoolPref(
+        appCtx.str(R.string.key_pref_hide_home_screen_alerts),
+        appCtx.bool(R.bool.default_value_hide_home_screen_alerts)
+    )
+
     @NightMode
     fun getSdkNightMode(darkThemePrefValue: String): Int {
         return when (darkThemePrefValue) {

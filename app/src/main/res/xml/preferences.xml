@@ -15,6 +15,12 @@
         android:title="@string/title_pref_show_toast_on_action_error" />
 
     <androidx.preference.SwitchPreference
+        android:defaultValue="@bool/default_value_hide_home_screen_alerts"
+        android:key="@string/key_pref_hide_home_screen_alerts"
+        android:summary="@string/summary_pref_hide_home_screen_alerts"
+        android:title="@string/title_pref_hide_home_screen_alerts" />
+
+    <androidx.preference.SwitchPreference
         android:defaultValue="@bool/default_value_force_vibrate"
         android:key="@string/key_pref_force_vibrate"
         android:summary="@string/summary_pref_force_vibrate"
