@@ -1,3 +1,5 @@
+@file:Suppress("ClassName")
+
 package io.github.sds100.keymapper.data.db.migration
 
 import androidx.sqlite.db.SupportSQLiteDatabase

@@ -28,8 +28,9 @@ class Trigger(
 
         const val PARALLEL = 0
         const val SEQUENCE = 1
+        const val UNDEFINED = 2
 
-        const val DEFAULT_TRIGGER_MODE = SEQUENCE
+        const val DEFAULT_TRIGGER_MODE = UNDEFINED
 
         const val UNDETERMINED = -1
         const val SHORT_PRESS = 0
@@ -82,7 +83,7 @@ class Trigger(
         }
     }
 
-    @IntDef(value = [PARALLEL, SEQUENCE])
+    @IntDef(value = [PARALLEL, SEQUENCE, UNDEFINED])
     annotation class Mode
 
     @IntDef(value = [UNDETERMINED, SHORT_PRESS, LONG_PRESS, DOUBLE_PRESS])

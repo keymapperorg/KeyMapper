@@ -82,7 +82,6 @@
             android:layout_marginBottom="@dimen/cardview_padding_bottom"
             android:gravity="bottom"
             android:orientation="horizontal"
-            android:visibility="@{viewModel.triggerKeys.size() > 1 ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toTopOf="@+id/buttonRecordKeys"
             app:layout_constraintEnd_toStartOf="@id/buttonTriggerOptions"
             app:layout_constraintStart_toStartOf="parent">
@@ -93,6 +92,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
                 android:checked="@={viewModel.triggerInParallel}"
+                android:enabled="@{viewModel.triggerKeys.size() &lt;= 1 ? false : true}"
                 android:text="@string/radio_button_parallel" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
@@ -100,6 +100,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0.5"
+                android:enabled="@{viewModel.triggerKeys.size() &lt;= 1 ? false : true}"
                 android:checked="@={viewModel.triggerInSequence}"
                 android:text="@string/radio_button_sequence" />
         </RadioGroup>

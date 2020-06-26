@@ -50,6 +50,20 @@ class MigrationTest {
             arrayOf(3, "{\"extras\":[],\"keys\":[{\"clickType\":0,\"deviceId\":\"io.github.sds100.keymapper.THIS_DEVICE\",\"keyCode\":25},{\"clickType\":0,\"deviceId\":\"io.github.sds100.keymapper.THIS_DEVICE\",\"keyCode\":24}],\"mode\":0}", "[{\"data\":\"enable_mobile_data\",\"extras\":[],\"flags\":0,\"type\":\"SYSTEM_ACTION\"}]", "[]", 1, 0, "NULL", 1),
             arrayOf(4, "{\"extras\":[],\"keys\":[{\"clickType\":1,\"deviceId\":\"io.github.sds100.keymapper.THIS_DEVICE\",\"keyCode\":25},{\"clickType\":1,\"deviceId\":\"io.github.sds100.keymapper.THIS_DEVICE\",\"keyCode\":24}],\"mode\":0}", "[{\"data\":\"14\",\"extras\":[],\"flags\":0,\"type\":\"KEY_EVENT\"}]", "[]", 1, 16, "NULL", 1)
         )
+
+        private val MIGRATION_3_4_TEST_DATA = arrayOf(
+            arrayOf(1, "{\"extras\":[{\"data\":\"610\",\"id\":\"extra_repeat_delay\"}],\"keys\":[{\"clickType\":0,\"deviceId\":\"io.github.sds100.keymapper.THIS_DEVICE\",\"keyCode\":25}],\"mode\":1}", "[{\"data\":\"10\",\"extras\":[],\"flags\":0,\"type\":\"KEY_EVENT\"}]", "[]", 1, 17, "NULL", 1),
+            arrayOf(2, "{\"extras\":[],\"keys\":[],\"mode\":1}", "[]", "[]", 1, 0, "NULL", 1),
+            arrayOf(3, "{\"extras\":[],\"keys\":[{\"clickType\":0,\"deviceId\":\"io.github.sds100.keymapper.THIS_DEVICE\",\"keyCode\":25},{\"clickType\":0,\"deviceId\":\"io.github.sds100.keymapper.THIS_DEVICE\",\"keyCode\":24}],\"mode\":0}", "[{\"data\":\"enable_mobile_data\",\"extras\":[],\"flags\":0,\"type\":\"SYSTEM_ACTION\"}]", "[]", 1, 0, "NULL", 1),
+            arrayOf(4, "{\"extras\":[],\"keys\":[{\"clickType\":1,\"deviceId\":\"io.github.sds100.keymapper.THIS_DEVICE\",\"keyCode\":25},{\"clickType\":1,\"deviceId\":\"io.github.sds100.keymapper.THIS_DEVICE\",\"keyCode\":24}],\"mode\":0}", "[{\"data\":\"14\",\"extras\":[],\"flags\":0,\"type\":\"KEY_EVENT\"}]", "[]", 1, 16, "NULL", 1)
+        )
+
+        private val MIGRATION_3_4_EXPECTED_DATA = arrayOf(
+            arrayOf(1, "{\"extras\":[{\"data\":\"610\",\"id\":\"extra_repeat_delay\"}],\"keys\":[{\"clickType\":0,\"deviceId\":\"io.github.sds100.keymapper.THIS_DEVICE\",\"keyCode\":25}],\"mode\":2}", "[{\"data\":\"10\",\"extras\":[],\"flags\":0,\"type\":\"KEY_EVENT\"}]", "[]", 1, 17, "NULL", 1),
+            arrayOf(2, "{\"extras\":[],\"keys\":[],\"mode\":2}", "[]", "[]", 1, 0, "NULL", 1),
+            arrayOf(3, "{\"extras\":[],\"keys\":[{\"clickType\":0,\"deviceId\":\"io.github.sds100.keymapper.THIS_DEVICE\",\"keyCode\":25},{\"clickType\":0,\"deviceId\":\"io.github.sds100.keymapper.THIS_DEVICE\",\"keyCode\":24}],\"mode\":0}", "[{\"data\":\"enable_mobile_data\",\"extras\":[],\"flags\":0,\"type\":\"SYSTEM_ACTION\"}]", "[]", 1, 0, "NULL", 1),
+            arrayOf(4, "{\"extras\":[],\"keys\":[{\"clickType\":1,\"deviceId\":\"io.github.sds100.keymapper.THIS_DEVICE\",\"keyCode\":25},{\"clickType\":1,\"deviceId\":\"io.github.sds100.keymapper.THIS_DEVICE\",\"keyCode\":24}],\"mode\":0}", "[{\"data\":\"14\",\"extras\":[],\"flags\":0,\"type\":\"KEY_EVENT\"}]", "[]", 1, 16, "NULL", 1)
+        )
     }
 
     @get:Rule
@@ -58,6 +72,38 @@ class MigrationTest {
         AppDatabase::class.java.canonicalName,
         FrameworkSQLiteOpenHelperFactory()
     )
+
+    @Suppress("VARIABLE_WITH_REDUNDANT_INITIALIZER")
+    @Test
+    @Throws(IOException::class)
+    fun migrate3to4() {
+        var db = helper.createDatabase(TEST_DB, 3).apply {
+
+            MIGRATION_3_4_TEST_DATA.forEach { row ->
+
+                execSQL(
+                    """
+                    INSERT INTO keymaps (id, trigger, action_list, constraint_list, constraint_mode, flags, folder_name, is_enabled)
+                    VALUES (${row.joinToString { "'$it'" }})
+                    """)
+            }
+            close()
+        }
+
+        db = helper.runMigrationsAndValidate(TEST_DB, 4, true, AppDatabase.MIGRATION_3_4)
+
+        val cursor = db.query("SELECT trigger FROM keymaps")
+
+        MIGRATION_3_4_EXPECTED_DATA.forEachIndexed { row, expectedData ->
+            val expectedTrigger = expectedData[1]
+
+            cursor.moveToNext()
+            val triggerColumnIndex = cursor.getColumnIndex("trigger")
+            val actualTrigger = cursor.getString(triggerColumnIndex)
+
+            assertThat("trigger at row $row", actualTrigger, `is`(expectedTrigger))
+        }
+    }
 
     @Suppress("VARIABLE_WITH_REDUNDANT_INITIALIZER")
     @Test

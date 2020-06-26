@@ -33,6 +33,7 @@ class ConfigKeymapViewModel internal constructor(
 
     val triggerInParallel: MutableLiveData<Boolean> = MutableLiveData(false)
     val triggerInSequence: MutableLiveData<Boolean> = MutableLiveData(false)
+    val triggerModeUndefined: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val triggerMode: MediatorLiveData<Int> = MediatorLiveData<Int>().apply {
         addSource(triggerInParallel) {
@@ -82,6 +83,15 @@ class ConfigKeymapViewModel internal constructor(
 
                     showPrompt(notifyUser)
                 }
+            }
+        }
+
+        addSource(triggerModeUndefined) {
+            if (it == true) {
+                value = Trigger.UNDEFINED
+
+                triggerInSequence.value = false
+                triggerInParallel.value = false
             }
         }
     }
@@ -155,11 +165,19 @@ class ConfigKeymapViewModel internal constructor(
                 Trigger.PARALLEL -> {
                     triggerInParallel.value = true
                     triggerInSequence.value = false
+                    triggerModeUndefined.value = false
                 }
 
                 Trigger.SEQUENCE -> {
                     triggerInSequence.value = true
                     triggerInParallel.value = false
+                    triggerModeUndefined.value = false
+                }
+
+                Trigger.UNDEFINED -> {
+                    triggerInSequence.value = false
+                    triggerInParallel.value = false
+                    triggerModeUndefined.value = true
                 }
             }
 
@@ -191,11 +209,19 @@ class ConfigKeymapViewModel internal constructor(
                         Trigger.PARALLEL -> {
                             triggerInParallel.value = true
                             triggerInSequence.value = false
+                            triggerModeUndefined.value = false
                         }
 
                         Trigger.SEQUENCE -> {
                             triggerInSequence.value = true
                             triggerInParallel.value = false
+                            triggerModeUndefined.value = false
+                        }
+
+                        Trigger.UNDEFINED -> {
+                            triggerInSequence.value = false
+                            triggerInParallel.value = false
+                            triggerModeUndefined.value = true
                         }
                     }
 
@@ -331,7 +357,7 @@ class ConfigKeymapViewModel internal constructor(
         }
 
         if (triggerKeys.value!!.size <= 1) {
-            triggerInSequence.value = true
+            triggerModeUndefined.value = true
         }
 
         /* Automatically make it a parallel trigger when the user makes a trigger with more than one key
@@ -363,7 +389,7 @@ class ConfigKeymapViewModel internal constructor(
         }
 
         if (triggerKeys.value!!.size <= 1) {
-            triggerInSequence.value = true
+            triggerModeUndefined.value = true
         }
 
         invalidateOptions()
