@@ -147,6 +147,7 @@ data class Action(
             extras.forEach {
                 append("${it.id}${it.data}")
             }
+            append(flags)
         }
 
     fun getExtraData(extraId: String): Result<String> {
