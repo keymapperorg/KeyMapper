@@ -32,9 +32,7 @@ import io.github.sds100.keymapper.util.result.getBriefMessage
 import io.github.sds100.keymapper.util.result.isSuccess
 import io.github.sds100.keymapper.util.result.onFailure
 import io.github.sds100.keymapper.util.result.onSuccess
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import splitties.bitflags.hasFlag
 import splitties.systemservices.vibrator
 import splitties.toast.toast
@@ -132,7 +130,11 @@ class MyAccessibilityService : AccessibilityService(),
         }
     }
 
-    private var mRecordingTrigger = false
+    private var mRecordingTriggerJob: Job? = null
+
+    private val mRecordingTrigger: Boolean
+        get() = mRecordingTriggerJob != null
+
     private var mScreenOffTriggersEnabled = false
 
     private lateinit var mLifecycleRegistry: LifecycleRegistry
@@ -259,11 +261,7 @@ class MyAccessibilityService : AccessibilityService(),
                 EVENT_RECORD_TRIGGER -> {
                     //don't start recording if a trigger is being recorded
                     if (!mRecordingTrigger) {
-                        mRecordingTrigger = true
-
-                        lifecycleScope.launchWhenCreated {
-                            recordTrigger()
-                        }
+                        mRecordingTriggerJob = recordTrigger()
                     }
 
                     it.handled()
@@ -272,6 +270,11 @@ class MyAccessibilityService : AccessibilityService(),
                 EVENT_TEST_ACTION -> {
                     val action = it.getContentIfNotHandled()?.second as Action
                     mActionPerformerDelegate.performAction(action)
+                }
+
+                EVENT_STOP_RECORDING_TRIGGER -> {
+                    mRecordingTriggerJob?.cancel()
+                    mRecordingTriggerJob = null
                 }
 
                 Intent.ACTION_SCREEN_ON -> {
@@ -374,18 +377,18 @@ class MyAccessibilityService : AccessibilityService(),
 
     override fun canActionBePerformed(action: Action) = action.canBePerformed(this).isSuccess
 
-    private suspend fun recordTrigger() {
+    private fun recordTrigger() = lifecycleScope.launch {
         repeat(RECORD_TRIGGER_TIMER_LENGTH) { iteration ->
-            val timeLeft = RECORD_TRIGGER_TIMER_LENGTH - iteration
+            if (isActive) {
+                val timeLeft = RECORD_TRIGGER_TIMER_LENGTH - iteration
 
-            provideBus().value = Event(EVENT_RECORD_TRIGGER_TIMER_INCREMENTED to timeLeft)
+                provideBus().value = Event(EVENT_RECORD_TRIGGER_TIMER_INCREMENTED to timeLeft)
 
-            delay(1000)
+                delay(1000)
+            }
         }
 
         provideBus().value = Event(EVENT_STOP_RECORDING_TRIGGER to null)
-
-        mRecordingTrigger = false
     }
 
     override fun getLifecycle() = mLifecycleRegistry

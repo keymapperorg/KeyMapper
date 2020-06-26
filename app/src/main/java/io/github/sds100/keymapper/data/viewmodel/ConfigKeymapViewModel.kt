@@ -109,6 +109,7 @@ class ConfigKeymapViewModel internal constructor(
     val recordTriggerTimeLeft = MutableLiveData(0)
     val recordingTrigger = MutableLiveData(false)
     val startRecordingTriggerInService: MutableLiveData<Event<Unit>> = MutableLiveData()
+    val stopRecordingTrigger: MutableLiveData<Event<Unit>> = MutableLiveData()
     val chooseParallelTriggerClickType: MutableLiveData<Event<Unit>> = MutableLiveData()
 
     private val mKeymapFlags: MutableLiveData<Int> = MutableLiveData(0)
@@ -414,6 +415,12 @@ class ConfigKeymapViewModel internal constructor(
     fun recordTrigger() {
         if (!recordingTrigger.value!!) {
             startRecordingTriggerInService.value = Event(Unit)
+        }
+    }
+
+    fun stopRecording() {
+        if (recordingTrigger.value == true) {
+            stopRecordingTrigger.value = Event(Unit)
         }
     }
 
