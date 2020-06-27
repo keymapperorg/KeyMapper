@@ -198,7 +198,12 @@ class KeymapDetectionDelegateTest {
     @Test
     @Parameters(method = "params_repeatAction")
     fun parallelTrigger_holdDown_repeatAction10Times(description: String, trigger: Trigger) {
-        val action = Action(type = ActionType.SYSTEM_ACTION, data = SystemAction.VOLUME_UP)
+        val action = Action(
+            type = ActionType.SYSTEM_ACTION,
+            data = SystemAction.VOLUME_UP,
+            flags = Action.ACTION_FLAG_REPEAT
+        )
+
         val keymap = KeyMap(0, trigger, actionList = listOf(action))
         mDelegate.keyMapListCache = listOf(keymap)
 
