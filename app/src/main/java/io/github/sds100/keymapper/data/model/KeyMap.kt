@@ -70,14 +70,11 @@ class KeyMap(
 
         val KEYMAP_FLAG_LABEL_MAP = mapOf(
             KEYMAP_FLAG_VIBRATE to R.string.flag_vibrate,
-            KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION to R.string.flag_long_press_double_vibration,
-            KEYMAP_FLAG_SCREEN_OFF_TRIGGERS to R.string.flag_detect_triggers_screen_off,
-            KEYMAP_FLAG_REPEAT_ACTIONS to R.string.flag_repeat_actions
+            KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION to R.string.flag_long_press_double_vibration
         )
 
         val KEYMAP_FLAG_ICON_MAP = mapOf(
             KEYMAP_FLAG_VIBRATE to R.drawable.ic_outline_vibration_24,
-            KEYMAP_FLAG_SHOW_PERFORMING_ACTION_TOAST to R.drawable.ic_baseline_announcement_24,
             KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION to R.drawable.ic_outline_vibration_24
         )
 

@@ -6,8 +6,7 @@ import io.github.sds100.keymapper.data.DeviceInfoRepository
 import io.github.sds100.keymapper.data.IOnboardingState
 import io.github.sds100.keymapper.data.KeymapRepository
 import io.github.sds100.keymapper.data.model.*
-import io.github.sds100.keymapper.util.Event
-import io.github.sds100.keymapper.util.KeyEventUtils
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
 import io.github.sds100.keymapper.util.result.Failure
 import kotlinx.coroutines.CoroutineScope
@@ -558,18 +557,6 @@ class ConfigKeymapViewModel internal constructor(
             if ((triggerKeys.value?.size == 1 || (triggerInParallel.value == true))
                 && triggerKeys.value?.getOrNull(0)?.clickType == Trigger.LONG_PRESS) {
                 allowedFlags.add(KeyMap.KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION)
-            }
-
-            //If all the keys can be detected when the screen is off
-            if (triggerKeys.value?.isNotEmpty() == true
-                && triggerKeys.value?.all {
-                    KeyEventUtils.GET_EVENT_LABEL_TO_KEYCODE.containsValue(it.keyCode)
-                } == true) {
-                allowedFlags.add(KeyMap.KEYMAP_FLAG_SCREEN_OFF_TRIGGERS)
-            }
-
-            if (KeymapDetectionDelegate.performActionOnDown(triggerKeys.value!!, triggerMode.value!!)) {
-                allowedFlags.add(KeyMap.KEYMAP_FLAG_REPEAT_ACTIONS)
             }
         }
 
