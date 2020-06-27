@@ -460,7 +460,7 @@
 
     <string name="showcase_contributing_title">Contributing</string>
     <string name="showcase_contributing_description">"This app is open source! You can start contributing by heading over to the sds100/KeyMapper repo on GitHub and by joining the Discord server. Even you if you can\'t code, you can contribute by helping others and testing the latest cutting-edge features."</string>
-    <string name="showcase_tap_action_to_test_message">You can test an action and fix action errors by tapping it.</string>
+    <string name="showcase_action_list">Tap the 3 dots to change the repeat behaviour and more. You can test an action and fix action errors by tapping it.</string>
     <!-- Showcase -->
 
     <!-- system action options -->

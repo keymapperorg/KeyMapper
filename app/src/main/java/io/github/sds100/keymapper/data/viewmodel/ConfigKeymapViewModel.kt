@@ -124,11 +124,11 @@ class ConfigKeymapViewModel internal constructor(
 
     val showOnboardingPrompt = MediatorLiveData<Event<NotifyUserModel>>().apply {
         addSource(actionList) {
-            if (!getShownPrompt(R.string.key_pref_showcase_tap_action_to_test) && it.isNotEmpty()) {
+            if (!getShownPrompt(R.string.key_pref_showcase_action_list) && it.isNotEmpty()) {
 
                 showPrompt(
-                    NotifyUserModel(R.string.showcase_tap_action_to_test_message) {
-                        onboardingState.setShownPrompt(R.string.key_pref_showcase_tap_action_to_test)
+                    NotifyUserModel(R.string.showcase_action_list) {
+                        onboardingState.setShownPrompt(R.string.key_pref_showcase_action_list)
                     }
                 )
             }

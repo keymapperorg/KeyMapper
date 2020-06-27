@@ -57,10 +57,6 @@ object Migration_4_5 {
                     }
                 }
 
-                if (flags.hasFlag(OLD_KEYMAP_FLAG_SCREEN_OFF_TRIGGERS)) {
-                    newFlags = newFlags.withFlag(KeyMap.KEYMAP_FLAG_SCREEN_OFF_TRIGGERS)
-                }
-
                 if (flags.hasFlag(OLD_KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION)) {
                     newFlags = newFlags.withFlag(KeyMap.KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION)
                 }
