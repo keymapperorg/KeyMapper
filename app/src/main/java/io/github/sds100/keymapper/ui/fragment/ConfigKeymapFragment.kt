@@ -179,6 +179,17 @@ class ConfigKeymapFragment : Fragment() {
                 }
             })
 
+            mViewModel.stopRecordingTrigger.observe(viewLifecycleOwner, EventObserver {
+                val serviceEnabled = AccessibilityUtils.isServiceEnabled(requireContext())
+
+                if (serviceEnabled) {
+                    MyAccessibilityService.provideBus().value =
+                        Event(MyAccessibilityService.EVENT_STOP_RECORDING_TRIGGER to null)
+                } else {
+                    mViewModel.promptToEnableAccessibilityService.value = Event(Unit)
+                }
+            })
+
             return this.root
         }
     }

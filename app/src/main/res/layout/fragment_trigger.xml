@@ -100,8 +100,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0.5"
-                android:enabled="@{viewModel.triggerKeys.size() &lt;= 1 ? false : true}"
                 android:checked="@={viewModel.triggerInSequence}"
+                android:enabled="@{viewModel.triggerKeys.size() &lt;= 1 ? false : true}"
                 android:text="@string/radio_button_sequence" />
         </RadioGroup>
 
@@ -112,7 +112,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="4dp"
-            android:onClick="@{() -> viewModel.recordTrigger()}"
+            android:onClick="@{() -> viewModel.recordingTrigger ? viewModel.stopRecording() : viewModel.recordTrigger()}"
             android:text="@{viewModel.recordingTrigger ? @string/button_recording_trigger_countdown(viewModel.recordTriggerTimeLeft) : @string/button_record_trigger}"
             app:backgroundTint="@color/red"
             app:layout_constraintBottom_toBottomOf="parent"
