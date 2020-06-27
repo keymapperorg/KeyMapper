@@ -7,10 +7,7 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.KeyEvent
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.model.Action
-import io.github.sds100.keymapper.data.model.ActionChipModel
-import io.github.sds100.keymapper.data.model.ActionModel
-import io.github.sds100.keymapper.data.model.Option
+import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.util.SystemActionUtils.getDescriptionWithOption
 import io.github.sds100.keymapper.util.result.*
@@ -19,6 +16,15 @@ import splitties.bitflags.hasFlag
 /**
  * Created by sds100 on 03/09/2018.
  */
+
+object ActionUtils {
+    fun allowedExtraIds(actionFlags: Int): List<String> = sequence {
+        if (actionFlags.hasFlag(Action.ACTION_FLAG_REPEAT)) {
+            yield(Extra.EXTRA_REPEAT_DELAY)
+            yield(Extra.EXTRA_HOLD_DOWN_DELAY)
+        }
+    }.toList()
+}
 
 @Suppress("EXPERIMENTAL_API_USAGE")
 fun Action.buildModel(ctx: Context): ActionModel {
@@ -38,7 +44,7 @@ fun Action.buildModel(ctx: Context): ActionModel {
 
             flagLabels.forEachIndexed { index, label ->
                 if (index != 0) {
-                    append(ctx.str(R.string.interpunct))
+                    append(" ${ctx.str(R.string.interpunct)} ")
                 }
 
                 append(label)
@@ -284,13 +290,6 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
 
     return Success(this)
 }
-
-val Action.availableFlags: List<Int>
-    get() = sequence {
-        if (isVolumeAction && data != SystemAction.VOLUME_SHOW_DIALOG) {
-            yield(Action.ACTION_FLAG_SHOW_VOLUME_UI)
-        }
-    }.toList()
 
 val Action.requiresIME: Boolean
     get() {

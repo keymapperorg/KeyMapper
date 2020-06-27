@@ -6,12 +6,9 @@ import io.github.sds100.keymapper.data.DeviceInfoRepository
 import io.github.sds100.keymapper.data.IOnboardingState
 import io.github.sds100.keymapper.data.KeymapRepository
 import io.github.sds100.keymapper.data.model.*
-import io.github.sds100.keymapper.util.Event
-import io.github.sds100.keymapper.util.KeyEventUtils
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
-import io.github.sds100.keymapper.util.repeatableByDefault
 import io.github.sds100.keymapper.util.result.Failure
-import io.github.sds100.keymapper.util.toggleFlag
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import splitties.bitflags.hasFlag
@@ -28,7 +25,7 @@ class ConfigKeymapViewModel internal constructor(
 
     companion object {
         const val NEW_KEYMAP_ID = -2L
-        const val TRIGGER_EXTRA_USE_DEFAULT = -1
+        const val EXTRA_USE_DEFAULT = -1
     }
 
     val triggerInParallel: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -119,6 +116,7 @@ class ConfigKeymapViewModel internal constructor(
     val chooseAction: MutableLiveData<Event<Unit>> = MutableLiveData()
     val showFixPrompt: MutableLiveData<Event<Failure>> = MutableLiveData()
     val testAction: MutableLiveData<Event<Action>> = MutableLiveData()
+    val chooseActionOptions: MutableLiveData<Event<ChooseActionOptions>> = MutableLiveData()
 
     val constraintList: MutableLiveData<List<Constraint>> = MutableLiveData(listOf())
 
@@ -139,8 +137,8 @@ class ConfigKeymapViewModel internal constructor(
     }
     val promptToEnableAccessibilityService: MutableLiveData<Event<Unit>> = MutableLiveData()
 
-    val triggerOptions = MutableLiveData<List<TriggerOption>>()
-    val keymapOptions = MutableLiveData<List<KeymapOption>>()
+    val sliderOptions = MutableLiveData<List<SliderOption>>()
+    val checkBoxOptions = MutableLiveData<List<CheckBoxOption>>()
 
     init {
         if (mId == NEW_KEYMAP_ID) {
@@ -376,7 +374,7 @@ class ConfigKeymapViewModel internal constructor(
         mTriggerExtras.value = mTriggerExtras.value?.toMutableList()?.apply {
             removeAll { it.id == id }
 
-            if (value != TRIGGER_EXTRA_USE_DEFAULT) {
+            if (value != EXTRA_USE_DEFAULT) {
                 add(Extra(id, value.toString()))
             }
         }
@@ -462,7 +460,7 @@ class ConfigKeymapViewModel internal constructor(
         }
 
         if (action.repeatableByDefault) {
-            mKeymapFlags.value = mKeymapFlags.value?.withFlag(KeyMap.KEYMAP_FLAG_REPEAT_ACTIONS)
+            setActionFlags(action.uniqueId, action.flags.withFlag(Action.ACTION_FLAG_REPEAT))
         }
 
         invalidateOptions()
@@ -470,7 +468,21 @@ class ConfigKeymapViewModel internal constructor(
         return true
     }
 
-    fun setActionFlags(actionId: String, flags: Int) {
+    fun setActionOptions(actionOptions: ActionOptions) {
+        actionList.value = actionList.value?.map {
+            if (it.uniqueId == actionOptions.actionId) {
+                it.flags = actionOptions.flags
+                it.extras.clear()
+                it.extras.addAll(actionOptions.extras)
+            }
+
+            it
+        }
+
+        invalidateOptions()
+    }
+
+    private fun setActionFlags(actionId: String, flags: Int) {
         actionList.value = actionList.value?.map {
             if (it.uniqueId == actionId) {
                 it.flags = flags
@@ -504,6 +516,13 @@ class ConfigKeymapViewModel internal constructor(
         invalidateOptions()
     }
 
+    fun chooseActionOptions(id: String) {
+        val action = actionList.value?.find { it.uniqueId == id } ?: return
+        val model = ChooseActionOptions(id, action.flags, action.extras, allowedActionFlags(id))
+
+        chooseActionOptions.value = Event(model)
+    }
+
     /**
      * @return whether the constraint already exists and has been added to the list
      */
@@ -535,12 +554,24 @@ class ConfigKeymapViewModel internal constructor(
         }
     }
 
-    private fun allowedFlags(): IntArray {
+    private fun allowedActionFlags(actionId: String): List<Int> = sequence {
+        val action = actionList.value?.find { it.uniqueId == actionId } ?: return@sequence
+
+        if (action.isVolumeAction && action.data != SystemAction.VOLUME_SHOW_DIALOG) {
+            yield(Action.ACTION_FLAG_SHOW_VOLUME_UI)
+        }
+
+        yield(Action.ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST)
+
+        if (KeymapDetectionDelegate.performActionOnDown(triggerKeys.value!!, triggerMode.value!!)) {
+            yield(Action.ACTION_FLAG_REPEAT)
+        }
+    }.toList()
+
+    private fun allowedKeymapFlags(): IntArray {
         val allowedFlags = mutableListOf(KeyMap.KEYMAP_FLAG_VIBRATE)
 
         if (actionList.value?.isNotEmpty() == true) {
-            allowedFlags.add(KeyMap.KEYMAP_FLAG_SHOW_PERFORMING_ACTION_TOAST)
-
             if ((triggerKeys.value?.size == 1 || (triggerInParallel.value == true))
                 && triggerKeys.value?.getOrNull(0)?.clickType == Trigger.LONG_PRESS) {
                 allowedFlags.add(KeyMap.KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION)
@@ -552,10 +583,6 @@ class ConfigKeymapViewModel internal constructor(
                     KeyEventUtils.GET_EVENT_LABEL_TO_KEYCODE.containsValue(it.keyCode)
                 } == true) {
                 allowedFlags.add(KeyMap.KEYMAP_FLAG_SCREEN_OFF_TRIGGERS)
-            }
-
-            if (KeymapDetectionDelegate.performActionOnDown(triggerKeys.value!!, triggerMode.value!!)) {
-                allowedFlags.add(KeyMap.KEYMAP_FLAG_REPEAT_ACTIONS)
             }
         }
 
@@ -578,11 +605,6 @@ class ConfigKeymapViewModel internal constructor(
             allowedExtras.add(Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT)
         }
 
-        if (mKeymapFlags.value?.hasFlag(KeyMap.KEYMAP_FLAG_REPEAT_ACTIONS) == true) {
-            allowedExtras.add(Extra.EXTRA_HOLD_DOWN_DELAY)
-            allowedExtras.add(Extra.EXTRA_REPEAT_DELAY)
-        }
-
         if (mKeymapFlags.value?.hasFlag(KeyMap.KEYMAP_FLAG_VIBRATE) == true ||
             mKeymapFlags.value?.hasFlag(KeyMap.KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION) == true) {
             allowedExtras.add(Extra.EXTRA_VIBRATION_DURATION)
@@ -597,7 +619,7 @@ class ConfigKeymapViewModel internal constructor(
 
         KeyMap.KEYMAP_FLAG_LABEL_MAP.keys.forEach { flagId ->
             //remove the flag if it isn't allowed anymore
-            if (newKeymapFlags.hasFlag(flagId) && !allowedFlags().contains(flagId)) {
+            if (newKeymapFlags.hasFlag(flagId) && !allowedKeymapFlags().contains(flagId)) {
                 newKeymapFlags = newKeymapFlags.minusFlag(flagId)
             }
         }
@@ -613,18 +635,36 @@ class ConfigKeymapViewModel internal constructor(
         }
     }
 
+    private fun removeDeniedActionOptions() {
+        actionList.value = actionList.value?.toMutableList()?.apply {
+            forEach { action ->
+                val allowedFlags = allowedActionFlags(action.uniqueId)
+                val allowedExtras = ActionUtils.allowedExtraIds(action.flags)
+
+                Action.ACTION_FLAG_LABEL_MAP.keys.forEach { flagId ->
+                    if (action.flags.hasFlag(flagId) && !allowedFlags.contains(flagId)) {
+                        action.flags = action.flags.minusFlag(flagId)
+                    }
+                }
+
+                action.extras.removeAll { extra -> allowedExtras.none { extra.id == it } }
+            }
+        }
+    }
+
     private fun invalidateOptions() {
         removeDeniedFlags()
         removeDeniedTriggerOptions()
+        removeDeniedActionOptions()
 
-        val allowedFlags = allowedFlags()
+        val allowedFlags = allowedKeymapFlags()
 
-        keymapOptions.value = sequence {
+        checkBoxOptions.value = sequence {
             KeyMap.KEYMAP_FLAG_LABEL_MAP.keys.forEach { flagId ->
                 if (allowedFlags.contains(flagId)) {
-                    val enabled = mKeymapFlags.value?.hasFlag(flagId) == true
+                    val isChecked = mKeymapFlags.value?.hasFlag(flagId) == true
 
-                    yield(flagId to enabled)
+                    yield(CheckBoxOption(flagId, isChecked))
                 }
             }
         }.toList()
@@ -632,12 +672,12 @@ class ConfigKeymapViewModel internal constructor(
         //Iterate over the list of ALL trigger extra IDs to keep the order consistent.
         val allowedTriggerOptions = allowedTriggerOptions()
 
-        triggerOptions.value = sequence {
+        sliderOptions.value = sequence {
             Extra.TRIGGER_EXTRAS.forEach { extraId ->
                 if (allowedTriggerOptions.contains(extraId)) {
                     val currentValue = mTriggerExtras.value?.find { extra -> extra.id == extraId }?.data?.toInt()
 
-                    yield(TriggerOption(extraId, currentValue))
+                    yield(SliderOption(extraId, currentValue))
                 }
             }
         }.toList()
@@ -656,6 +696,3 @@ class ConfigKeymapViewModel internal constructor(
             ConfigKeymapViewModel(mKeymapRepository, mDeviceInfoRepository, mIOnboardingState, mId) as T
     }
 }
-
-typealias TriggerOption = Pair<String, Int?>
-typealias KeymapOption = Pair<Int, Boolean>

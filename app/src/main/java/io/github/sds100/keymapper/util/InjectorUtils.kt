@@ -71,6 +71,10 @@ object InjectorUtils {
         return SystemActionListViewModel.Factory(getDefaultSystemActionRepository(context))
     }
 
+    fun provideActionOptionsViewModel(): ActionOptionsViewModel.Factory {
+        return ActionOptionsViewModel.Factory()
+    }
+
     fun provideOnlineViewModel(context: Context,
                                fileUrl: String,
                                alternateUrl: String? = null,

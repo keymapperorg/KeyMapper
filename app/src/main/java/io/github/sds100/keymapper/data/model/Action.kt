@@ -63,9 +63,13 @@ data class Action(
         const val NAME_FLAGS = "flags"
 
         const val ACTION_FLAG_SHOW_VOLUME_UI = 1
+        const val ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST = 2
+        const val ACTION_FLAG_REPEAT = 4
 
         val ACTION_FLAG_LABEL_MAP = mapOf(
-            ACTION_FLAG_SHOW_VOLUME_UI to R.string.flag_show_volume_dialog
+            ACTION_FLAG_SHOW_VOLUME_UI to R.string.flag_show_volume_dialog,
+            ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST to R.string.flag_performing_action_toast,
+            ACTION_FLAG_REPEAT to R.string.flag_repeat_actions
         )
 
         //DON'T CHANGE THESE IDs!!!!

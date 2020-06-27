@@ -10,12 +10,8 @@ import androidx.navigation.navGraphViewModels
 import com.airbnb.epoxy.EpoxyController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.checkbox
-import io.github.sds100.keymapper.data.model.Extra
-import io.github.sds100.keymapper.data.model.KeyMap
-import io.github.sds100.keymapper.data.model.SliderListItemModel
-import io.github.sds100.keymapper.data.model.SliderModel
+import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
-import io.github.sds100.keymapper.data.viewmodel.KeymapOption
 import io.github.sds100.keymapper.databinding.FragmentKeymapOptionsBinding
 import io.github.sds100.keymapper.slider
 import io.github.sds100.keymapper.util.InjectorUtils
@@ -38,25 +34,25 @@ class KeymapOptionsFragment(private val mKeymapId: Long) : Fragment() {
             lifecycleOwner = viewLifecycleOwner
             epoxyRecyclerViewFlags.adapter = mController.adapter
 
-            mViewModel.keymapOptions.observe(viewLifecycleOwner) {
+            mViewModel.checkBoxOptions.observe(viewLifecycleOwner) {
                 mController.keymapOptions = it
             }
 
-            mViewModel.triggerOptions.observe(viewLifecycleOwner) { options ->
+            mViewModel.sliderOptions.observe(viewLifecycleOwner) { options ->
                 val models = options.map {
-                    val id = it.first
-                    val value = it.second
+                    val id = it.extraId
+                    val value = it.value
 
                     SliderListItemModel(
                         id = id,
-                        label = Extra.TRIGGER_EXTRA_LABELS[id]!!,
+                        label = Extra.EXTRA_LABELS[id]!!,
 
                         sliderModel = SliderModel(
                             value = value,
                             isDefaultStepEnabled = true,
-                            min = int(Extra.TRIGGER_EXTRA_MIN_VALUES[id]!!),
-                            max = int(Extra.TRIGGER_EXTRA_MAX_VALUES[id]!!),
-                            stepSize = int(Extra.TRIGGER_EXTRA_STEP_SIZE_VALUES[id]!!))
+                            min = int(Extra.EXTRA_MIN_VALUES[id]!!),
+                            max = int(Extra.EXTRA_MAX_VALUES[id]!!),
+                            stepSize = int(Extra.EXTRA_STEP_SIZE_VALUES[id]!!))
                     )
                 }
 
@@ -74,7 +70,7 @@ class KeymapOptionsFragment(private val mKeymapId: Long) : Fragment() {
                 requestModelBuild()
             }
 
-        var keymapOptions: List<KeymapOption> = listOf()
+        var keymapOptions: List<CheckBoxOption> = listOf()
             set(value) {
                 field = value
                 requestModelBuild()
@@ -83,8 +79,8 @@ class KeymapOptionsFragment(private val mKeymapId: Long) : Fragment() {
         override fun buildModels() {
 
             keymapOptions.forEach {
-                val flagId = it.first
-                val isChecked = it.second
+                val flagId = it.flagId
+                val isChecked = it.isChecked
 
                 checkbox {
                     id(flagId)
@@ -114,7 +110,7 @@ class KeymapOptionsFragment(private val mKeymapId: Long) : Fragment() {
 
                         //If the user has selected to use the default value
                         if (value < it.sliderModel.min) {
-                            mViewModel.setTriggerExtraValue(it.id, ConfigKeymapViewModel.TRIGGER_EXTRA_USE_DEFAULT)
+                            mViewModel.setTriggerExtraValue(it.id, ConfigKeymapViewModel.EXTRA_USE_DEFAULT)
                         } else {
                             mViewModel.setTriggerExtraValue(it.id, value.toInt())
                         }

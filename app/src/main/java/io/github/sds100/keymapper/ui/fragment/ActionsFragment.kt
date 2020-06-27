@@ -11,16 +11,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.action
-import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentActionsBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.util.*
-import splitties.alertdialog.appcompat.alertDialog
-import splitties.alertdialog.appcompat.cancelButton
-import splitties.alertdialog.appcompat.okButton
-import splitties.bitflags.hasFlag
-import splitties.bitflags.withFlag
 
 /**
  * Created by sds100 on 18/05/2020.
@@ -61,6 +55,11 @@ class ActionsFragment(private val mKeymapId: Long) : Fragment() {
                 }
             })
 
+            mViewModel.chooseActionOptions.observe(viewLifecycleOwner, EventObserver {
+                val direction = ConfigKeymapFragmentDirections.actionConfigKeymapFragmentToActionOptionsFragment(it)
+                findNavController().navigate(direction)
+            })
+
             return this.root
         }
     }
@@ -75,21 +74,18 @@ class ActionsFragment(private val mKeymapId: Long) : Fragment() {
         mActionModelList.observe(viewLifecycleOwner) { actionList ->
             epoxyRecyclerViewActions.withModels {
 
-                actionList.forEachIndexed { index, model ->
+                actionList.forEachIndexed { _, model ->
                     action {
-                        val action = mViewModel.actionList.value?.get(index)
-
                         id(model.id)
                         model(model)
                         icon(model.icon)
-                        flagsAreAvailable(action?.availableFlags?.isNotEmpty())
 
                         onRemoveClick { _ ->
                             mViewModel.removeAction(model.id)
                         }
 
                         onMoreClick { _ ->
-                            action?.chooseFlags()
+                            mViewModel.chooseActionOptions(model.id)
                         }
 
                         onClick { _ ->
@@ -100,43 +96,6 @@ class ActionsFragment(private val mKeymapId: Long) : Fragment() {
                     }
                 }
             }
-        }
-    }
-
-    private fun Action.chooseFlags() {
-        requireActivity().alertDialog {
-            val flagIds = availableFlags
-            val labels = sequence {
-                flagIds.forEach { flagId ->
-                    val label = str(Action.ACTION_FLAG_LABEL_MAP.getValue(flagId))
-                    yield(label)
-                }
-            }.toList().toTypedArray()
-
-            val checkedArray = sequence {
-                flagIds.forEach {
-                    yield(flags.hasFlag(it))
-                }
-            }.toList().toBooleanArray()
-
-            setMultiChoiceItems(labels, checkedArray) { _, index, checked ->
-                checkedArray[index] = checked
-            }
-
-            okButton {
-                var flags = 0
-
-                flagIds.forEachIndexed { index, flag ->
-                    if (checkedArray[index]) {
-                        flags = flags.withFlag(flag)
-                    }
-                }
-
-                mViewModel.setActionFlags(uniqueId, flags)
-            }
-
-            cancelButton()
-            show()
         }
     }
 }

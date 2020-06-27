@@ -66,17 +66,13 @@ class KeyMap(
 
         //DON'T CHANGE THESE AND THEY MUST BE POWERS OF 2!!
         const val KEYMAP_FLAG_VIBRATE = 1
-        const val KEYMAP_FLAG_SHOW_PERFORMING_ACTION_TOAST = 2
-        const val KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION = 4
-        const val KEYMAP_FLAG_SCREEN_OFF_TRIGGERS = 8
-        const val KEYMAP_FLAG_REPEAT_ACTIONS = 16
+        const val KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION = 2
+        const val KEYMAP_FLAG_SCREEN_OFF_TRIGGERS = 4
 
         val KEYMAP_FLAG_LABEL_MAP = mapOf(
             KEYMAP_FLAG_VIBRATE to R.string.flag_vibrate,
-            KEYMAP_FLAG_SHOW_PERFORMING_ACTION_TOAST to R.string.flag_performing_action_toast,
             KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION to R.string.flag_long_press_double_vibration,
-            KEYMAP_FLAG_SCREEN_OFF_TRIGGERS to R.string.flag_detect_triggers_screen_off,
-            KEYMAP_FLAG_REPEAT_ACTIONS to R.string.flag_repeat_actions
+            KEYMAP_FLAG_SCREEN_OFF_TRIGGERS to R.string.flag_detect_triggers_screen_off
         )
 
         fun getFlagLabelList(ctx: Context, flags: Int): List<String> = sequence {

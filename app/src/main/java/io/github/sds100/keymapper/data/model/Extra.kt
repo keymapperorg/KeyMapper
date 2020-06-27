@@ -60,12 +60,15 @@ data class Extra(@ExtraId
             EXTRA_SEQUENCE_TRIGGER_TIMEOUT,
             EXTRA_LONG_PRESS_DELAY,
             EXTRA_DOUBLE_PRESS_DELAY,
-            EXTRA_HOLD_DOWN_DELAY,
-            EXTRA_REPEAT_DELAY,
             EXTRA_VIBRATION_DURATION
         )
 
-        val TRIGGER_EXTRA_MAX_VALUES = mapOf(
+        val ACTION_EXTRAS = arrayOf(
+            EXTRA_HOLD_DOWN_DELAY,
+            EXTRA_REPEAT_DELAY
+        )
+
+        val EXTRA_MAX_VALUES = mapOf(
             EXTRA_SEQUENCE_TRIGGER_TIMEOUT to R.integer.sequence_trigger_timeout_max,
             EXTRA_LONG_PRESS_DELAY to R.integer.long_press_delay_max,
             EXTRA_DOUBLE_PRESS_DELAY to R.integer.double_press_delay_max,
@@ -74,7 +77,7 @@ data class Extra(@ExtraId
             EXTRA_VIBRATION_DURATION to R.integer.vibrate_duration_max
         )
 
-        val TRIGGER_EXTRA_MIN_VALUES = mapOf(
+        val EXTRA_MIN_VALUES = mapOf(
             EXTRA_SEQUENCE_TRIGGER_TIMEOUT to R.integer.sequence_trigger_timeout_min,
             EXTRA_LONG_PRESS_DELAY to R.integer.long_press_delay_min,
             EXTRA_DOUBLE_PRESS_DELAY to R.integer.double_press_delay_min,
@@ -83,7 +86,7 @@ data class Extra(@ExtraId
             EXTRA_VIBRATION_DURATION to R.integer.vibrate_duration_min
         )
 
-        val TRIGGER_EXTRA_STEP_SIZE_VALUES = mapOf(
+        val EXTRA_STEP_SIZE_VALUES = mapOf(
             EXTRA_SEQUENCE_TRIGGER_TIMEOUT to R.integer.sequence_trigger_timeout_step_size,
             EXTRA_LONG_PRESS_DELAY to R.integer.long_press_delay_step_size,
             EXTRA_DOUBLE_PRESS_DELAY to R.integer.double_press_delay_step_size,
@@ -92,7 +95,7 @@ data class Extra(@ExtraId
             EXTRA_VIBRATION_DURATION to R.integer.vibrate_duration_step_size
         )
 
-        val TRIGGER_EXTRA_LABELS = mapOf(
+        val EXTRA_LABELS = mapOf(
             EXTRA_SEQUENCE_TRIGGER_TIMEOUT to R.string.extra_label_sequence_trigger_timeout,
             EXTRA_LONG_PRESS_DELAY to R.string.extra_label_long_press_delay_timeout,
             EXTRA_DOUBLE_PRESS_DELAY to R.string.extra_label_double_press_delay_timeout,
@@ -101,7 +104,7 @@ data class Extra(@ExtraId
             EXTRA_VIBRATION_DURATION to R.string.extra_label_vibration_duration
         )
 
-        val TRIGGER_EXTRA_DEFAULTS = mapOf(
+        val EXTRA_DEFAULTS = mapOf(
             EXTRA_SEQUENCE_TRIGGER_TIMEOUT to R.integer.default_value_sequence_trigger_timeout,
             EXTRA_LONG_PRESS_DELAY to R.integer.default_value_long_press_delay,
             EXTRA_DOUBLE_PRESS_DELAY to R.integer.default_value_double_press_delay,
