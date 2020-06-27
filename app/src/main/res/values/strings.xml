@@ -478,7 +478,7 @@
 
     <string name="showcase_contributing_title">Contributing</string>
     <string name="showcase_contributing_description">"This app is open source! You can start contributing by heading over to the sds100/KeyMapper repo on GitHub and by joining the Discord server. Even you if you can\'t code, you can contribute by helping others and testing the latest cutting-edge features."</string>
-    <string name="showcase_tap_action_to_test_message">You can test an action and fix action errors by tapping it.</string>
+    <string name="showcase_action_list">Tap the 3 dots to change the repeat behaviour and more. You can test an action and fix action errors by tapping it.</string>
     <string name="showcase_screen_off_triggers">This option will only work if your device is rooted and you have told Key Mapper that it has root permission in the Key Mapper settings. If you don\'t know what root is then this option will not work. It will also only work for some keys (e.g volume buttons) so see the Help page for a list of supported keys.</string>
     <!-- Showcase -->
 
