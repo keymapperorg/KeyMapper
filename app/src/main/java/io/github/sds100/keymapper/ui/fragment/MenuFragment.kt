@@ -103,6 +103,10 @@ class MenuFragment : BottomSheetDialogFragment(), SharedPreferences.OnSharedPref
                 AppPreferences.keymapsPaused = !AppPreferences.keymapsPaused
             }
 
+            setEnableAccessibilityService {
+                AccessibilityUtils.enableService(requireContext())
+            }
+
             setRestore {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     mBackupRestoreViewModel.requestRestore.value = Event(Unit)

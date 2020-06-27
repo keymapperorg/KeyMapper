@@ -49,6 +49,10 @@
         <variable
             name="toggleKeymaps"
             type="View.OnClickListener" />
+
+        <variable
+            name="enableAccessibilityService"
+            type="View.OnClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -113,9 +117,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
-            android:enabled="@{accessibilityServiceEnabled}"
-            android:onClick="@{toggleKeymaps}"
-            android:text="@{!accessibilityServiceEnabled ? @string/button_accessibility_service_disabled : keymapsPaused ? @string/action_resume_keymaps : @string/action_pause_keymaps}"
+            android:onClick="@{accessibilityServiceEnabled ? toggleKeymaps : enableAccessibilityService}"
+            android:text="@{!accessibilityServiceEnabled ? @string/button_enable_accessibility_service : keymapsPaused ? @string/action_resume_keymaps : @string/action_pause_keymaps}"
             app:customBackgroundTint="@{!accessibilityServiceEnabled ? @color/red : keymapsPaused ? @color/red : @color/green}"
             app:layout_constraintBottom_toTopOf="@+id/buttonEnableAll"
             app:layout_constraintEnd_toStartOf="@id/buttonRestore"
