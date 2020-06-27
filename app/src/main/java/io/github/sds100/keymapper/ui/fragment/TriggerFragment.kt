@@ -27,7 +27,9 @@ import io.github.sds100.keymapper.databinding.FragmentTriggerBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.triggerKey
 import io.github.sds100.keymapper.util.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
 import kotlin.coroutines.resume
@@ -84,7 +86,7 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
             lifecycleOwner = viewLifecycleOwner
 
             mViewModel.chooseParallelTriggerClickType.observe(viewLifecycleOwner, EventObserver {
-                lifecycleScope.launchWhenCreated {
+                lifecycleScope.launch {
                     val newClickType = showClickTypeDialog()
                     mViewModel.setParallelTriggerClickType(newClickType)
                 }
@@ -97,17 +99,19 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
             }
 
             mViewModel.buildTriggerKeyModelListEvent.observe(viewLifecycleOwner, EventObserver { triggerKeys ->
-                lifecycleScope.launchWhenCreated {
-                    val deviceInfoList = mViewModel.getDeviceInfoList()
+                lifecycleScope.launch {
+                    withContext(lifecycleScope.coroutineContext + Dispatchers.Default) {
+                        val deviceInfoList = mViewModel.getDeviceInfoList()
 
-                    val modelList = sequence {
-                        triggerKeys.forEach {
-                            val model = it.buildModel(requireContext(), deviceInfoList)
-                            yield(model)
-                        }
-                    }.toList()
+                        val modelList = sequence {
+                            triggerKeys.forEach {
+                                val model = it.buildModel(requireContext(), deviceInfoList)
+                                yield(model)
+                            }
+                        }.toList()
 
-                    mViewModel.triggerKeyModelList.value = modelList
+                        mViewModel.triggerKeyModelList.postValue(modelList)
+                    }
                 }
             })
 
@@ -117,7 +121,7 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
                     MyAccessibilityService.EVENT_RECORD_TRIGGER_KEY -> {
                         val keyEvent = it.getContentIfNotHandled()?.second as KeyEvent
 
-                        lifecycleScope.launchWhenCreated {
+                        lifecycleScope.launch {
                             val deviceName = keyEvent.device.name
                             val deviceDescriptor = keyEvent.device.descriptor
                             val isExternal = keyEvent.device.isExternalCompat
