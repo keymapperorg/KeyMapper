@@ -98,6 +98,10 @@ class MenuFragment : BottomSheetDialogFragment(), SharedPreferences.OnSharedPref
                 AppPreferences.keymapsPaused = !AppPreferences.keymapsPaused
             }
 
+            setEnableAccessibilityService {
+                AccessibilityUtils.enableService(requireContext())
+            }
+
             MyAccessibilityService.provideBus().observe(viewLifecycleOwner) {
                 when (it.peekContent().first) {
                     MyAccessibilityService.EVENT_ON_SERVICE_STARTED ->
