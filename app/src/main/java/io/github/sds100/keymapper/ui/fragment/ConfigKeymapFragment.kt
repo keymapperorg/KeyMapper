@@ -16,6 +16,7 @@ import androidx.navigation.navGraphViewModels
 import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Action
+import io.github.sds100.keymapper.data.model.ActionOptions
 import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentConfigKeymapBinding
@@ -77,6 +78,11 @@ class ConfigKeymapFragment : Fragment() {
             if (!mViewModel.addConstraint(constraint)) {
                 toast(R.string.error_constraint_exists)
             }
+        }
+
+        setFragmentResultListener(ActionOptionsFragment.REQUEST_KEY) { _, result ->
+            mViewModel.setActionOptions(
+                result.getSerializable(ActionOptionsFragment.EXTRA_ACTION_OPTIONS) as ActionOptions)
         }
     }
 

@@ -9,6 +9,11 @@
         android:name="io.github.sds100.keymapper.ui.fragment.ConfigKeymapFragment"
         android:label="Edit Keymap"
         tools:layout="@layout/fragment_config_keymap">
+
+        <argument
+            android:name="keymapId"
+            app:argType="long" />
+
         <action
             android:id="@+id/action_config_keymap_fragment_to_choose_action_fragment"
             app:destination="@id/choose_action_fragment"
@@ -17,9 +22,6 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
 
-        <argument
-            android:name="keymapId"
-            app:argType="long" />
         <action
             android:id="@+id/action_config_keymap_fragment_to_choose_constraint"
             app:destination="@id/nav_choose_constraint"
@@ -27,6 +29,11 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+
+        <action
+            android:id="@+id/action_config_keymap_fragment_to_actionOptionsFragment"
+            app:destination="@id/actionOptionsFragment"
+            app:enterAnim="@anim/slide_in_bottom" />
     </fragment>
 
     <fragment
@@ -54,4 +61,14 @@
             android:defaultValue="@string/url_help_alternate"
             app:argType="reference" />
     </action>
+
+    <dialog
+        android:id="@+id/actionOptionsFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.ActionOptionsFragment"
+        android:label="ActionOptionsFragment">
+
+        <argument
+            android:name="@string/nav_arg_choose_action_options_model"
+            app:argType="io.github.sds100.keymapper.data.model.ChooseActionOptions" />
+    </dialog>
 </navigation>

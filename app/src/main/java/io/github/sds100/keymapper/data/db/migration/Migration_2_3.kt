@@ -7,7 +7,6 @@ import androidx.sqlite.db.SupportSQLiteQueryBuilder
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import io.github.sds100.keymapper.data.model.Action
-import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
@@ -19,6 +18,8 @@ import splitties.bitflags.withFlag
  */
 
 object Migration_2_3 {
+
+    private val KEYMAP_FLAG_REPEAT_ACTIONS = 16
 
     fun migrate(database: SupportSQLiteDatabase) = database.apply {
         val query = SupportSQLiteQueryBuilder
@@ -46,7 +47,7 @@ object Migration_2_3 {
                 var newFlags = flags
 
                 if (isRepeatable(trigger, actionList)) {
-                    newFlags = flags.withFlag(KeyMap.KEYMAP_FLAG_REPEAT_ACTIONS)
+                    newFlags = flags.withFlag(KEYMAP_FLAG_REPEAT_ACTIONS)
                 }
 
                 newFlagsMap[id] = newFlags
