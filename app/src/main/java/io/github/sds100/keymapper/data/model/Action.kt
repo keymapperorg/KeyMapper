@@ -62,6 +62,8 @@ data class Action(
         const val NAME_EXTRAS = "extras"
         const val NAME_FLAGS = "flags"
 
+        const val STOP_REPEAT_BEHAVIOUR_TRIGGER_AGAIN = 0
+
         const val ACTION_FLAG_SHOW_VOLUME_UI = 1
         const val ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST = 2
         const val ACTION_FLAG_REPEAT = 4
@@ -73,6 +75,7 @@ data class Action(
         )
 
         //DON'T CHANGE THESE IDs!!!!
+        //Data Extras. Extras that are required to perform an action.
         const val EXTRA_SHORTCUT_TITLE = "extra_title"
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
         const val EXTRA_STREAM_TYPE = "extra_stream_type"
@@ -87,6 +90,31 @@ data class Action(
 
         const val EXTRA_IME_ID = "extra_ime_id"
         const val EXTRA_IME_NAME = "extra_ime_name"
+
+        //Behaviour extras. Extras that tweak how and when an action is performed.
+        const val EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR = "extra_custom_stop_repeat_behaviour"
+        const val EXTRA_HOLD_DOWN_DELAY = "extra_hold_down_until_repeat_delay"
+        const val EXTRA_REPEAT_DELAY = "extra_repeat_delay"
+
+        val DATA_EXTRAS = arrayOf(
+            EXTRA_SHORTCUT_TITLE,
+            EXTRA_PACKAGE_NAME,
+            EXTRA_STREAM_TYPE,
+            EXTRA_LENS,
+            EXTRA_RINGER_MODE,
+            EXTRA_DND_MODE,
+            EXTRA_KEY_EVENT_META_STATE,
+            EXTRA_IME_ID,
+            EXTRA_IME_NAME
+        )
+
+        val BEHAVIOUR_EXTRAS = arrayOf(
+            EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR,
+            EXTRA_HOLD_DOWN_DELAY,
+            EXTRA_REPEAT_DELAY
+        )
+
+        val EXTRAS = DATA_EXTRAS.plus(BEHAVIOUR_EXTRAS)
 
         fun appAction(packageName: String): Action {
             return Action(ActionType.APP, packageName)

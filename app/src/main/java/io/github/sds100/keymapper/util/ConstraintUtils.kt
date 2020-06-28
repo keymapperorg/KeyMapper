@@ -43,7 +43,7 @@ fun Constraint.buildModel(ctx: Context): ConstraintModel {
 private fun Constraint.getDescription(ctx: Context): Result<String> {
     return when (type) {
         Constraint.APP_FOREGROUND, Constraint.APP_NOT_FOREGROUND ->
-            getExtraData(Extra.EXTRA_PACKAGE_NAME).then {
+            getExtraData(Constraint.EXTRA_PACKAGE_NAME).then {
                 try {
                     val applicationInfo = ctx.packageManager.getApplicationInfo(it, PackageManager.GET_META_DATA)
 
@@ -62,7 +62,7 @@ private fun Constraint.getDescription(ctx: Context): Result<String> {
                 }
             }
 
-        Constraint.BT_DEVICE_CONNECTED, Constraint.BT_DEVICE_DISCONNECTED -> getExtraData(Extra.EXTRA_BT_NAME).then {
+        Constraint.BT_DEVICE_CONNECTED, Constraint.BT_DEVICE_DISCONNECTED -> getExtraData(Constraint.EXTRA_BT_NAME).then {
             val descriptionRes = if (type == Constraint.BT_DEVICE_CONNECTED) {
                 R.string.constraint_bt_device_connected_description
             } else {
@@ -79,7 +79,7 @@ private fun Constraint.getDescription(ctx: Context): Result<String> {
 private fun Constraint.getIcon(ctx: Context): Result<Drawable> {
     return when (type) {
         Constraint.APP_FOREGROUND, Constraint.APP_NOT_FOREGROUND ->
-            getExtraData(Extra.EXTRA_PACKAGE_NAME).then {
+            getExtraData(Constraint.EXTRA_PACKAGE_NAME).then {
                 try {
                     Success(ctx.packageManager.getApplicationIcon(it))
                 } catch (e: PackageManager.NameNotFoundException) {

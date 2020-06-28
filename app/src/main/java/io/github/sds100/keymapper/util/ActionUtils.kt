@@ -19,9 +19,11 @@ import splitties.bitflags.hasFlag
 
 object ActionUtils {
     fun allowedExtraIds(actionFlags: Int): List<String> = sequence {
+        yieldAll(Action.DATA_EXTRAS.toList())
+
         if (actionFlags.hasFlag(Action.ACTION_FLAG_REPEAT)) {
-            yield(Extra.EXTRA_REPEAT_DELAY)
-            yield(Extra.EXTRA_HOLD_DOWN_DELAY)
+            yield(Action.EXTRA_REPEAT_DELAY)
+            yield(Action.EXTRA_HOLD_DOWN_DELAY)
         }
     }.toList()
 }
@@ -291,6 +293,18 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
     return Success(this)
 }
 
+/**
+ * A string representation of all the extras in an [Action] that are necessary to perform it.
+ */
+val Action.dataExtraString: String
+    get() = buildString {
+        Action.DATA_EXTRAS.forEach {
+            getExtraData(it).onSuccess { data ->
+                append("$it$data")
+            }
+        }
+    }
+
 val Action.requiresIME: Boolean
     get() {
         return type == ActionType.KEY_EVENT ||
@@ -318,6 +332,3 @@ fun Action.getFlagLabelList(ctx: Context): List<String> = sequence {
         }
     }
 }.toList()
-
-val Action.repeatableByDefault: Boolean
-    get() = type in arrayOf(ActionType.KEY_EVENT, ActionType.TEXT_BLOCK) || isVolumeAction

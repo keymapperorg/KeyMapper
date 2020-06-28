@@ -55,6 +55,10 @@ data class Constraint(@ConstraintType
         const val BT_DEVICE_CONNECTED = "constraint_bt_device_connected"
         const val BT_DEVICE_DISCONNECTED = "constraint_bt_device_disconnected"
 
+        const val EXTRA_PACKAGE_NAME = "extra_package_name"
+        const val EXTRA_BT_ADDRESS = "extra_bluetooth_device_address"
+        const val EXTRA_BT_NAME = "extra_bluetooth_device_name"
+
         //Categories
         const val CATEGORY_APP = 0
         const val CATEGORY_BLUETOOTH = 1
@@ -65,11 +69,11 @@ data class Constraint(@ConstraintType
         )
 
         fun appConstraint(@ConstraintType type: String, packageName: String): Constraint {
-            return Constraint(type, Extra(Extra.EXTRA_PACKAGE_NAME, packageName))
+            return Constraint(type, Extra(EXTRA_PACKAGE_NAME, packageName))
         }
 
         fun btConstraint(@ConstraintType type: String, address: String, name: String): Constraint {
-            return Constraint(type, Extra(Extra.EXTRA_BT_ADDRESS, address), Extra(Extra.EXTRA_BT_NAME, name))
+            return Constraint(type, Extra(EXTRA_BT_ADDRESS, address), Extra(EXTRA_BT_NAME, name))
         }
     }
 

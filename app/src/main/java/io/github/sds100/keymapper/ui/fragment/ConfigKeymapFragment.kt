@@ -66,18 +66,12 @@ class ConfigKeymapFragment : Fragment() {
 
         setFragmentResultListener(ChooseActionFragment.REQUEST_KEY) { _, result ->
             val action = result.getSerializable(ChooseActionFragment.EXTRA_ACTION) as Action
-
-            if (!mViewModel.addAction(action)) {
-                toast(R.string.error_action_exists)
-            }
+            mViewModel.addAction(action)
         }
 
         setFragmentResultListener(ChooseConstraintListFragment.REQUEST_KEY) { _, result ->
             val constraint = result.getSerializable(ChooseConstraintListFragment.EXTRA_CONSTRAINT) as Constraint
-
-            if (!mViewModel.addConstraint(constraint)) {
-                toast(R.string.error_constraint_exists)
-            }
+            mViewModel.addConstraint(constraint)
         }
 
         setFragmentResultListener(ActionOptionsFragment.REQUEST_KEY) { _, result ->
@@ -127,6 +121,14 @@ class ConfigKeymapFragment : Fragment() {
                     else -> false
                 }
             }
+
+            mViewModel.duplicateActionsEvent.observe(viewLifecycleOwner, EventObserver {
+                toast(R.string.error_action_exists)
+            })
+
+            mViewModel.duplicateConstraintsEvent.observe(viewLifecycleOwner, EventObserver {
+                toast(R.string.error_constraint_exists)
+            })
 
             mViewModel.showOnboardingPrompt.observe(viewLifecycleOwner, EventObserver {
 

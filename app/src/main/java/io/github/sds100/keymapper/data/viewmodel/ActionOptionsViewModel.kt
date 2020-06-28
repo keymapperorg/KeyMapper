@@ -28,7 +28,7 @@ class ActionOptionsViewModel : ViewModel() {
         val allowedExtras = ActionUtils.allowedExtraIds(mFlags.value ?: 0)
 
         mExtras.value = mExtras.value?.toMutableList()?.apply {
-            Extra.ACTION_EXTRAS.forEach { extraId ->
+            Action.EXTRAS.forEach { extraId ->
                 if (allowedExtras.none { it == extraId }) {
                     removeAll { it.id == extraId }
                 }

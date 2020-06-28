@@ -3,6 +3,19 @@ package io.github.sds100.keymapper.data.model
 import androidx.annotation.StringDef
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.data.model.Action.Companion.EXTRA_HOLD_DOWN_DELAY
+import io.github.sds100.keymapper.data.model.Action.Companion.EXTRA_LENS
+import io.github.sds100.keymapper.data.model.Action.Companion.EXTRA_PACKAGE_NAME
+import io.github.sds100.keymapper.data.model.Action.Companion.EXTRA_REPEAT_DELAY
+import io.github.sds100.keymapper.data.model.Action.Companion.EXTRA_RINGER_MODE
+import io.github.sds100.keymapper.data.model.Action.Companion.EXTRA_SHORTCUT_TITLE
+import io.github.sds100.keymapper.data.model.Action.Companion.EXTRA_STREAM_TYPE
+import io.github.sds100.keymapper.data.model.Constraint.Companion.EXTRA_BT_ADDRESS
+import io.github.sds100.keymapper.data.model.Constraint.Companion.EXTRA_BT_NAME
+import io.github.sds100.keymapper.data.model.Trigger.Companion.EXTRA_DOUBLE_PRESS_DELAY
+import io.github.sds100.keymapper.data.model.Trigger.Companion.EXTRA_LONG_PRESS_DELAY
+import io.github.sds100.keymapper.data.model.Trigger.Companion.EXTRA_SEQUENCE_TRIGGER_TIMEOUT
+import io.github.sds100.keymapper.data.model.Trigger.Companion.EXTRA_VIBRATION_DURATION
 import java.io.Serializable
 
 /**
@@ -10,18 +23,19 @@ import java.io.Serializable
  */
 
 @StringDef(value = [
-    Extra.EXTRA_PACKAGE_NAME,
-    Extra.EXTRA_SHORTCUT_TITLE,
-    Extra.EXTRA_STREAM_TYPE,
-    Extra.EXTRA_LENS,
-    Extra.EXTRA_RINGER_MODE,
-    Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT,
-    Extra.EXTRA_LONG_PRESS_DELAY,
-    Extra.EXTRA_DOUBLE_PRESS_DELAY,
-    Extra.EXTRA_HOLD_DOWN_DELAY,
-    Extra.EXTRA_REPEAT_DELAY,
-    Extra.EXTRA_VIBRATION_DURATION,
-    Extra.EXTRA_BT_ADDRESS
+    EXTRA_PACKAGE_NAME,
+    EXTRA_SHORTCUT_TITLE,
+    EXTRA_STREAM_TYPE,
+    EXTRA_LENS,
+    EXTRA_RINGER_MODE,
+    EXTRA_SEQUENCE_TRIGGER_TIMEOUT,
+    EXTRA_LONG_PRESS_DELAY,
+    EXTRA_DOUBLE_PRESS_DELAY,
+    EXTRA_HOLD_DOWN_DELAY,
+    EXTRA_REPEAT_DELAY,
+    EXTRA_VIBRATION_DURATION,
+    EXTRA_BT_ADDRESS,
+    EXTRA_BT_NAME
 ])
 annotation class ExtraId
 
@@ -36,37 +50,6 @@ data class Extra(@ExtraId
         //DON'T CHANGE THESE. Used for JSON serialization and parsing.
         const val NAME_ID = "id"
         const val NAME_DATA = "data"
-
-        //DON'T CHANGE THESE IDs!!!!
-        //Actions
-        const val EXTRA_SHORTCUT_TITLE = "extra_title"
-        const val EXTRA_PACKAGE_NAME = "extra_package_name"
-        const val EXTRA_STREAM_TYPE = "extra_stream_type"
-        const val EXTRA_LENS = "extra_flash"
-        const val EXTRA_RINGER_MODE = "extra_ringer_mode"
-
-        //Trigger
-        const val EXTRA_SEQUENCE_TRIGGER_TIMEOUT = "extra_sequence_trigger_timeout"
-        const val EXTRA_LONG_PRESS_DELAY = "extra_long_press_delay"
-        const val EXTRA_DOUBLE_PRESS_DELAY = "extra_double_press_timeout"
-        const val EXTRA_HOLD_DOWN_DELAY = "extra_hold_down_until_repeat_delay"
-        const val EXTRA_REPEAT_DELAY = "extra_repeat_delay"
-        const val EXTRA_VIBRATION_DURATION = "extra_vibration_duration"
-
-        const val EXTRA_BT_ADDRESS = "extra_bluetooth_device_address"
-        const val EXTRA_BT_NAME = "extra_bluetooth_device_name"
-
-        val TRIGGER_EXTRAS = arrayOf(
-            EXTRA_SEQUENCE_TRIGGER_TIMEOUT,
-            EXTRA_LONG_PRESS_DELAY,
-            EXTRA_DOUBLE_PRESS_DELAY,
-            EXTRA_VIBRATION_DURATION
-        )
-
-        val ACTION_EXTRAS = arrayOf(
-            EXTRA_HOLD_DOWN_DELAY,
-            EXTRA_REPEAT_DELAY
-        )
 
         val EXTRA_MAX_VALUES = mapOf(
             EXTRA_SEQUENCE_TRIGGER_TIMEOUT to R.integer.sequence_trigger_timeout_max,

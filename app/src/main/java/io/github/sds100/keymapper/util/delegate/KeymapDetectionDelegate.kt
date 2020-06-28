@@ -55,18 +55,18 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         private const val INDEX_TRIGGER_VIBRATE_DURATION = 3
 
         private val TRIGGER_EXTRA_INDEX_MAP = mapOf(
-            Extra.EXTRA_LONG_PRESS_DELAY to INDEX_TRIGGER_LONG_PRESS_DELAY,
-            Extra.EXTRA_DOUBLE_PRESS_DELAY to INDEX_TRIGGER_DOUBLE_PRESS_DELAY,
-            Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT to INDEX_TRIGGER_SEQUENCE_TRIGGER_TIMEOUT,
-            Extra.EXTRA_VIBRATION_DURATION to INDEX_TRIGGER_VIBRATE_DURATION
+            Trigger.EXTRA_LONG_PRESS_DELAY to INDEX_TRIGGER_LONG_PRESS_DELAY,
+            Trigger.EXTRA_DOUBLE_PRESS_DELAY to INDEX_TRIGGER_DOUBLE_PRESS_DELAY,
+            Trigger.EXTRA_SEQUENCE_TRIGGER_TIMEOUT to INDEX_TRIGGER_SEQUENCE_TRIGGER_TIMEOUT,
+            Trigger.EXTRA_VIBRATION_DURATION to INDEX_TRIGGER_VIBRATE_DURATION
         )
 
         private const val INDEX_ACTION_REPEAT_DELAY = 0
         private const val INDEX_ACTION_HOLD_DOWN_DELAY = 1
 
         private val ACTION_EXTRA_INDEX_MAP = mapOf(
-            Extra.EXTRA_REPEAT_DELAY to INDEX_ACTION_REPEAT_DELAY,
-            Extra.EXTRA_HOLD_DOWN_DELAY to INDEX_ACTION_HOLD_DOWN_DELAY
+            Action.EXTRA_REPEAT_DELAY to INDEX_ACTION_REPEAT_DELAY,
+            Action.EXTRA_HOLD_DOWN_DELAY to INDEX_ACTION_HOLD_DOWN_DELAY
         )
 
         private fun createDeviceDescriptorMap(descriptors: Set<String>): SparseArrayCompat<String> {
@@ -237,10 +237,12 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                         keyMap.constraintList.forEach {
                             val data = when (it.type) {
                                 APP_FOREGROUND, APP_NOT_FOREGROUND ->
-                                    it.getExtraData(Extra.EXTRA_PACKAGE_NAME).valueOrNull()
+                                    it.getExtraData(
+                                        io.github.sds100.keymapper.data.model.Constraint.EXTRA_PACKAGE_NAME).valueOrNull()
 
                                 BT_DEVICE_CONNECTED, BT_DEVICE_DISCONNECTED ->
-                                    it.getExtraData(Extra.EXTRA_BT_ADDRESS).valueOrNull()
+                                    it.getExtraData(
+                                        io.github.sds100.keymapper.data.model.Constraint.EXTRA_BT_ADDRESS).valueOrNull()
                                 else -> null
                             } ?: return@forEach
 
