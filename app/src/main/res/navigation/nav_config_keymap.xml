@@ -32,7 +32,7 @@
 
         <action
             android:id="@+id/action_config_keymap_fragment_to_actionOptionsFragment"
-            app:destination="@id/actionOptionsFragment"
+            app:destination="@id/actionBehaviorFragment"
             app:enterAnim="@anim/slide_in_bottom" />
     </fragment>
 
@@ -63,12 +63,12 @@
     </action>
 
     <dialog
-        android:id="@+id/actionOptionsFragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.ActionOptionsFragment"
-        android:label="ActionOptionsFragment">
+        android:id="@+id/actionBehaviorFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.ActionBehaviorFragment"
+        android:label="ActionBehaviorFragment">
 
         <argument
-            android:name="@string/nav_arg_choose_action_options_model"
-            app:argType="io.github.sds100.keymapper.data.model.ChooseActionOptions" />
+            android:name="@string/nav_arg_action_behavior"
+            app:argType="io.github.sds100.keymapper.data.model.ActionBehavior" />
     </dialog>
 </navigation>

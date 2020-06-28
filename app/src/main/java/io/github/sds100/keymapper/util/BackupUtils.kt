@@ -125,7 +125,7 @@ object BackupUtils {
 
                         val mode by it.json.byInt(Trigger.NAME_MODE)
 
-                        Trigger(keys, extraList).apply { this.mode = mode }
+                        Trigger(keys, extraList, mode)
                     }
                 }.registerTypeAdapter<Action> {
 

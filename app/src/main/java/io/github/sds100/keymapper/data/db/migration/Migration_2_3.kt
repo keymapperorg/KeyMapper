@@ -9,8 +9,8 @@ import com.google.gson.Gson
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.util.ActionType
+import io.github.sds100.keymapper.util.SystemAction
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
-import io.github.sds100.keymapper.util.isVolumeAction
 import splitties.bitflags.withFlag
 
 /**
@@ -65,7 +65,18 @@ object Migration_2_3 {
     }
 
     private fun isRepeatable(trigger: Trigger, actionList: List<Action>): Boolean {
-        return actionList.any { it.type in arrayOf(ActionType.KEY_EVENT, ActionType.TEXT_BLOCK) || it.isVolumeAction }
+        return actionList.any {
+            it.type in arrayOf(ActionType.KEY_EVENT, ActionType.TEXT_BLOCK) ||
+                listOf(
+                    SystemAction.VOLUME_DECREASE_STREAM,
+                    SystemAction.VOLUME_INCREASE_STREAM,
+                    SystemAction.VOLUME_DOWN,
+                    SystemAction.VOLUME_UP,
+                    SystemAction.VOLUME_MUTE,
+                    SystemAction.VOLUME_TOGGLE_MUTE,
+                    SystemAction.VOLUME_UNMUTE
+                ).contains(it.data)
+        }
             && KeymapDetectionDelegate.performActionOnDown(trigger.keys, trigger.mode)
     }
 }

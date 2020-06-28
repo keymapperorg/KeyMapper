@@ -6,9 +6,11 @@ import io.github.sds100.keymapper.data.DeviceInfoRepository
 import io.github.sds100.keymapper.data.IOnboardingState
 import io.github.sds100.keymapper.data.KeymapRepository
 import io.github.sds100.keymapper.data.model.*
-import io.github.sds100.keymapper.util.*
-import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
+import io.github.sds100.keymapper.util.Event
+import io.github.sds100.keymapper.util.KeyEventUtils
+import io.github.sds100.keymapper.util.dataExtraString
 import io.github.sds100.keymapper.util.result.Failure
+import io.github.sds100.keymapper.util.toggleFlag
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import splitties.bitflags.hasFlag
@@ -117,7 +119,7 @@ class ConfigKeymapViewModel internal constructor(
     val duplicateActionsEvent: MutableLiveData<Event<Unit>> = MutableLiveData()
     val duplicateConstraintsEvent: MutableLiveData<Event<Unit>> = MutableLiveData()
     val testAction: MutableLiveData<Event<Action>> = MutableLiveData()
-    val chooseActionOptions: MutableLiveData<Event<ChooseActionOptions>> = MutableLiveData()
+    val chooseActionBehavior: MutableLiveData<Event<ActionBehavior>> = MutableLiveData()
 
     val constraintList: MutableLiveData<List<Constraint>> = MutableLiveData(listOf())
 
@@ -252,7 +254,7 @@ class ConfigKeymapViewModel internal constructor(
 
         val keymap = KeyMap(
             id = actualId,
-            trigger = Trigger(triggerKeys.value!!, mTriggerExtras.value!!).apply { mode = triggerMode.value!! },
+            trigger = Trigger(triggerKeys.value!!, mTriggerExtras.value!!, mode = triggerMode.value!!),
             actionList = actionList.value!!,
             constraintList = constraintList.value!!,
             constraintMode = constraintMode,
@@ -467,12 +469,11 @@ class ConfigKeymapViewModel internal constructor(
         invalidateOptions()
     }
 
-    fun setActionOptions(actionOptions: ActionOptions) {
+    fun setActionBehavior(actionBehavior: ActionBehavior) {
         actionList.value = actionList.value?.map {
-            if (it.uniqueId == actionOptions.actionId) {
-                it.flags = actionOptions.flags
-                it.extras.clear()
-                it.extras.addAll(actionOptions.extras)
+
+            if (it.uniqueId == actionBehavior.actionId) {
+                return@map actionBehavior.applyToAction(it)
             }
 
             it
@@ -503,11 +504,11 @@ class ConfigKeymapViewModel internal constructor(
         invalidateOptions()
     }
 
-    fun chooseActionOptions(id: String) {
+    fun chooseActionBehavior(id: String) {
         val action = actionList.value?.find { it.uniqueId == id } ?: return
-        val model = ChooseActionOptions(id, action.flags, action.extras, allowedActionFlags(id))
+        val behavior = ActionBehavior(action, triggerMode.value!!, triggerKeys.value!!)
 
-        chooseActionOptions.value = Event(model)
+        chooseActionBehavior.value = Event(behavior)
     }
 
     /**
@@ -539,20 +540,6 @@ class ConfigKeymapViewModel internal constructor(
             showOnboardingPrompt.value = Event(notifyUserModel)
         }
     }
-
-    private fun allowedActionFlags(actionId: String): List<Int> = sequence {
-        val action = actionList.value?.find { it.uniqueId == actionId } ?: return@sequence
-
-        if (action.isVolumeAction && action.data != SystemAction.VOLUME_SHOW_DIALOG) {
-            yield(Action.ACTION_FLAG_SHOW_VOLUME_UI)
-        }
-
-        yield(Action.ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST)
-
-        if (KeymapDetectionDelegate.performActionOnDown(triggerKeys.value!!, triggerMode.value!!)) {
-            yield(Action.ACTION_FLAG_REPEAT)
-        }
-    }.toList()
 
     private fun allowedKeymapFlags(): IntArray {
         val allowedFlags = mutableListOf(KeyMap.KEYMAP_FLAG_VIBRATE)
@@ -621,27 +608,19 @@ class ConfigKeymapViewModel internal constructor(
         }
     }
 
-    private fun removeDeniedActionOptions() {
-        actionList.value = actionList.value?.toMutableList()?.apply {
-            forEach { action ->
-                val allowedFlags = allowedActionFlags(action.uniqueId)
-                val allowedExtras = ActionUtils.allowedExtraIds(action.flags)
-
-                Action.ACTION_FLAG_LABEL_MAP.keys.forEach { flagId ->
-                    if (action.flags.hasFlag(flagId) && !allowedFlags.contains(flagId)) {
-                        action.flags = action.flags.minusFlag(flagId)
-                    }
-                }
-
-                action.extras.removeAll { extra -> allowedExtras.none { extra.id == it } }
-            }
-        }
-    }
-
     private fun invalidateOptions() {
         removeDeniedFlags()
         removeDeniedTriggerOptions()
-        removeDeniedActionOptions()
+
+        actionList.value = actionList.value?.map { action ->
+            val newBehavior = ActionBehavior(
+                action,
+                triggerMode.value ?: Trigger.DEFAULT_TRIGGER_MODE,
+                triggerKeys.value ?: listOf()
+            )
+
+            newBehavior.applyToAction(action)
+        }
 
         val allowedFlags = allowedKeymapFlags()
 

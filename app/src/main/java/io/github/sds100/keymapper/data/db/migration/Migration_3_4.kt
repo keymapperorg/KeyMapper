@@ -30,10 +30,10 @@ object Migration_3_4 {
                 val id = getLong(0)
 
                 val triggerJson = getString(1)
-                val trigger = gson.fromJson<Trigger>(triggerJson)
+                var trigger = gson.fromJson<Trigger>(triggerJson)
 
                 if (trigger.keys.size <= 1) {
-                    trigger.mode = Trigger.UNDEFINED
+                    trigger = trigger.clone(mode = Trigger.UNDEFINED)
                 }
 
                 newTriggerMap[id] = gson.toJson(trigger)

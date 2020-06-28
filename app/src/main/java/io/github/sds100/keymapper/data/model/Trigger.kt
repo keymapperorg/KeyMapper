@@ -15,10 +15,15 @@ import io.github.sds100.keymapper.util.result.Success
  */
 class Trigger(
     @SerializedName(NAME_KEYS)
-    var keys: List<Key> = listOf(),
+    val keys: List<Key> = listOf(),
 
     @SerializedName(NAME_EXTRAS)
-    val extras: List<Extra> = listOf()) {
+    val extras: List<Extra> = listOf(),
+
+    @Mode
+    @SerializedName(NAME_MODE)
+    val mode: Int = DEFAULT_TRIGGER_MODE
+) {
 
     companion object {
         //DON'T CHANGE THESE. Used for JSON serialization and parsing.
@@ -49,10 +54,6 @@ class Trigger(
             EXTRA_VIBRATION_DURATION
         )
     }
-
-    @Mode
-    @SerializedName(NAME_MODE)
-    var mode: Int = DEFAULT_TRIGGER_MODE
 
     class Key(
         @SerializedName(NAME_KEYCODE)
@@ -95,6 +96,9 @@ class Trigger(
         }
     }
 
+    fun clone(keys: List<Key> = this.keys, extras: List<Extra> = this.extras, @Mode mode: Int = this.mode) =
+        Trigger(keys, extras, mode)
+
     @IntDef(value = [PARALLEL, SEQUENCE, UNDEFINED])
     annotation class Mode
 
@@ -102,5 +106,5 @@ class Trigger(
     annotation class ClickType
 }
 
-fun sequenceTrigger(vararg key: Trigger.Key) = Trigger(key.toList()).apply { mode = Trigger.SEQUENCE }
-fun parallelTrigger(vararg key: Trigger.Key) = Trigger(key.toList()).apply { mode = Trigger.PARALLEL }
+fun sequenceTrigger(vararg key: Trigger.Key) = Trigger(key.toList(), mode = Trigger.SEQUENCE)
+fun parallelTrigger(vararg key: Trigger.Key) = Trigger(key.toList(), mode = Trigger.PARALLEL)

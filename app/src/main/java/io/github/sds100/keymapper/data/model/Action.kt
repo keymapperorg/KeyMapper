@@ -1,13 +1,11 @@
 package io.github.sds100.keymapper.data.model
 
 import android.content.Context
-import android.hardware.camera2.CameraCharacteristics
-import android.media.AudioManager
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.ActionType
+import io.github.sds100.keymapper.util.ActionUtils
 import io.github.sds100.keymapper.util.SystemAction
-import io.github.sds100.keymapper.util.isVolumeAction
 import io.github.sds100.keymapper.util.result.ExtraNotFound
 import io.github.sds100.keymapper.util.result.Result
 import io.github.sds100.keymapper.util.result.Success
@@ -48,10 +46,10 @@ data class Action(
     val data: String,
 
     @SerializedName(NAME_EXTRAS)
-    val extras: MutableList<Extra> = mutableListOf(),
+    val extras: List<Extra> = listOf(),
 
     @SerializedName(NAME_FLAGS)
-    var flags: Int = 0
+    val flags: Int = 0
 
 ) : Serializable {
     companion object {
@@ -64,6 +62,7 @@ data class Action(
 
         const val STOP_REPEAT_BEHAVIOUR_TRIGGER_AGAIN = 0
 
+        //Behaviour flags
         const val ACTION_FLAG_SHOW_VOLUME_UI = 1
         const val ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST = 2
         const val ACTION_FLAG_REPEAT = 4
@@ -114,6 +113,12 @@ data class Action(
             EXTRA_REPEAT_DELAY
         )
 
+        val BEHAVIOUR_FLAGS = arrayOf(
+            ACTION_FLAG_SHOW_VOLUME_UI,
+            ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST,
+            ACTION_FLAG_SHOW_VOLUME_UI
+        )
+
         val EXTRAS = DATA_EXTRAS.plus(BEHAVIOUR_EXTRAS)
 
         fun appAction(packageName: String): Action {
@@ -150,23 +155,26 @@ data class Action(
         }
 
         fun systemAction(ctx: Context, model: SelectedSystemActionModel): Action {
-            val action = Action(ActionType.SYSTEM_ACTION, model.id)
+            val data = model.id
+            val extras = mutableListOf<Extra>()
+            var flags = 0
 
             model.optionData?.let {
-                action.extras.add(Extra(Option.getExtraIdForOption(model.id), it))
+                extras.add(Extra(Option.getExtraIdForOption(model.id), it))
 
                 if (model.id == SystemAction.SWITCH_KEYBOARD) {
                     Option.getOptionLabel(ctx, model.id, it).onSuccess { imeName ->
-                        action.extras.add(Extra(EXTRA_IME_NAME, imeName))
+                        extras.add(Extra(EXTRA_IME_NAME, imeName))
                     }
                 }
             }
 
             //show the volume UI by default when the user chooses a volume action.
-            if (action.isVolumeAction) {
-                action.flags = action.flags.withFlag(ACTION_FLAG_SHOW_VOLUME_UI).withFlag(ACTION_FLAG_REPEAT)
+            if (ActionUtils.isVolumeAction(data)) {
+                flags = flags.withFlag(ACTION_FLAG_SHOW_VOLUME_UI).withFlag(ACTION_FLAG_REPEAT)
             }
 
+            val action = Action(ActionType.SYSTEM_ACTION, data, extras, flags)
             return action
         }
     }
@@ -187,8 +195,6 @@ data class Action(
         }
 
     fun getExtraData(extraId: String): Result<String> {
-        migrateExtra(extraId)
-
         return extras.find { it.id == extraId }.let {
             it ?: return@let ExtraNotFound(extraId)
 
@@ -196,43 +202,12 @@ data class Action(
         }
     }
 
-    fun putExtraData(id: String, data: String) {
-        extras.removeAll { it.id == id }
-        extras.add(Extra(id, data))
-    }
-
-    private fun migrateExtra(extraId: String) {
-        //migrate old system action options to new ones (SDK int to key mapper string id)
-        extras.find { it.id == extraId }?.data?.toIntOrNull().let { extraValueInt ->
-            when (data) {
-                SystemAction.VOLUME_DECREASE_STREAM, SystemAction.VOLUME_INCREASE_STREAM ->
-                    when (extraValueInt) {
-                        AudioManager.STREAM_ALARM -> Option.STREAM_ALARM
-                        AudioManager.STREAM_DTMF -> Option.STREAM_DTMF
-                        AudioManager.STREAM_MUSIC -> Option.STREAM_MUSIC
-                        AudioManager.STREAM_NOTIFICATION -> Option.STREAM_NOTIFICATION
-                        AudioManager.STREAM_RING -> Option.STREAM_RING
-                        AudioManager.STREAM_SYSTEM -> Option.STREAM_SYSTEM
-                        AudioManager.STREAM_VOICE_CALL -> Option.STREAM_VOICE_CALL
-                        AudioManager.STREAM_ACCESSIBILITY -> Option.STREAM_ACCESSIBILITY
-                        else -> null
-                    }
-
-                SystemAction.TOGGLE_FLASHLIGHT, SystemAction.ENABLE_FLASHLIGHT, SystemAction.DISABLE_FLASHLIGHT ->
-                    when (extraValueInt) {
-                        CameraCharacteristics.LENS_FACING_FRONT -> Option.LENS_FRONT
-                        CameraCharacteristics.LENS_FACING_BACK -> Option.LENS_BACK
-                        else -> null
-                    }
-
-                else -> null
-
-            }?.let { newExtraValue ->
-                extras.removeAll { it.id == extraId }
-                extras.add(Extra(extraId, newExtraValue))
-            }
-        }
-    }
+    fun clone(
+        type: ActionType = this.type,
+        data: String = this.data,
+        flags: Int = this.flags,
+        extras: List<Extra> = this.extras
+    ) = Action(type, data, extras, flags)
 
     override fun equals(other: Any?) = this.uniqueId == (other as Action?)?.uniqueId
 }

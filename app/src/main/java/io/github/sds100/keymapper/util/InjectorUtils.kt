@@ -71,8 +71,8 @@ object InjectorUtils {
         return SystemActionListViewModel.Factory(getDefaultSystemActionRepository(context))
     }
 
-    fun provideActionOptionsViewModel(): ActionOptionsViewModel.Factory {
-        return ActionOptionsViewModel.Factory()
+    fun provideActionBehaviorViewModel(): ActionBehaviorViewModel.Factory {
+        return ActionBehaviorViewModel.Factory()
     }
 
     fun provideOnlineViewModel(context: Context,

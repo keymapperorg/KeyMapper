@@ -7,9 +7,9 @@ import androidx.sqlite.db.SupportSQLiteQueryBuilder
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import io.github.sds100.keymapper.data.model.Action
-import io.github.sds100.keymapper.data.model.Extra
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Trigger
+import io.github.sds100.keymapper.data.model.putExtraData
 import io.github.sds100.keymapper.util.result.valueOrNull
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
@@ -39,7 +39,7 @@ object Migration_4_5 {
                 val id = getLong(0)
 
                 val actionListJson = getString(1)
-                val actionList = gson.fromJson<List<Action>>(actionListJson)
+                var actionList = gson.fromJson<List<Action>>(actionListJson)
 
                 val triggerJson = getString(2)
                 val trigger = gson.fromJson<Trigger>(triggerJson)
@@ -52,8 +52,8 @@ object Migration_4_5 {
                 }
 
                 if (flags.hasFlag(OLD_KEYMAP_FLAG_SHOW_PERFORMING_ACTION_TOAST)) {
-                    actionList.forEach {
-                        it.flags = it.flags.withFlag(Action.ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST)
+                    actionList = actionList.map {
+                        it.clone(flags = it.flags.withFlag(Action.ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST))
                     }
                 }
 
@@ -69,16 +69,19 @@ object Migration_4_5 {
                     val repeatDelay = trigger.getExtraData(Action.EXTRA_REPEAT_DELAY).valueOrNull()
                     val holdDownDelay = trigger.getExtraData(Action.EXTRA_HOLD_DOWN_DELAY).valueOrNull()
 
-                    actionList.forEach {
-                        it.flags = it.flags.withFlag(Action.ACTION_FLAG_REPEAT)
+                    actionList = actionList.map {
+                        val newFlags = it.flags.withFlag(Action.ACTION_FLAG_REPEAT)
+                        var newExtras = it.extras
 
                         if (holdDownDelay != null) {
-                            it.putExtraData(Action.EXTRA_HOLD_DOWN_DELAY, holdDownDelay)
+                            newExtras = it.extras.putExtraData(Action.EXTRA_HOLD_DOWN_DELAY, holdDownDelay)
                         }
 
                         if (repeatDelay != null) {
-                            it.putExtraData(Action.EXTRA_REPEAT_DELAY, repeatDelay)
+                            newExtras = it.extras.putExtraData(Action.EXTRA_REPEAT_DELAY, repeatDelay)
                         }
+
+                        it.clone(flags = newFlags, extras = newExtras)
                     }
                 }
 
@@ -86,9 +89,7 @@ object Migration_4_5 {
                     removeAll { it.id == Action.EXTRA_REPEAT_DELAY || it.id == Action.EXTRA_HOLD_DOWN_DELAY }
                 }
 
-                val newTrigger = Trigger(trigger.keys, newTriggerExtras.toList()).apply {
-                    mode = trigger.mode
-                }
+                val newTrigger = Trigger(trigger.keys, newTriggerExtras.toList(), mode = trigger.mode)
 
                 execSQL("UPDATE keymaps SET trigger='${newTrigger.json}', action_list='${actionList.json}', flags='$newFlags' WHERE id=$id")
             }

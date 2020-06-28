@@ -7,7 +7,10 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.KeyEvent
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.model.*
+import io.github.sds100.keymapper.data.model.Action
+import io.github.sds100.keymapper.data.model.ActionChipModel
+import io.github.sds100.keymapper.data.model.ActionModel
+import io.github.sds100.keymapper.data.model.Option
 import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.util.SystemActionUtils.getDescriptionWithOption
 import io.github.sds100.keymapper.util.result.*
@@ -18,15 +21,18 @@ import splitties.bitflags.hasFlag
  */
 
 object ActionUtils {
-    fun allowedExtraIds(actionFlags: Int): List<String> = sequence {
-        yieldAll(Action.DATA_EXTRAS.toList())
 
-        if (actionFlags.hasFlag(Action.ACTION_FLAG_REPEAT)) {
-            yield(Action.EXTRA_REPEAT_DELAY)
-            yield(Action.EXTRA_HOLD_DOWN_DELAY)
-            yield(Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR)
-        }
-    }.toList()
+    fun isVolumeAction(actionData: String): Boolean {
+        return listOf(
+            SystemAction.VOLUME_DECREASE_STREAM,
+            SystemAction.VOLUME_INCREASE_STREAM,
+            SystemAction.VOLUME_DOWN,
+            SystemAction.VOLUME_UP,
+            SystemAction.VOLUME_MUTE,
+            SystemAction.VOLUME_TOGGLE_MUTE,
+            SystemAction.VOLUME_UNMUTE
+        ).contains(actionData)
+    }
 }
 
 @Suppress("EXPERIMENTAL_API_USAGE")
@@ -311,19 +317,6 @@ val Action.requiresIME: Boolean
         return type == ActionType.KEY_EVENT ||
             type == ActionType.TEXT_BLOCK ||
             data == SystemAction.MOVE_CURSOR_TO_END
-    }
-
-val Action.isVolumeAction: Boolean
-    get() {
-        return listOf(
-            SystemAction.VOLUME_DECREASE_STREAM,
-            SystemAction.VOLUME_INCREASE_STREAM,
-            SystemAction.VOLUME_DOWN,
-            SystemAction.VOLUME_UP,
-            SystemAction.VOLUME_MUTE,
-            SystemAction.VOLUME_TOGGLE_MUTE,
-            SystemAction.VOLUME_UNMUTE
-        ).contains(data)
     }
 
 fun Action.getFlagLabelList(ctx: Context): List<String> = sequence {

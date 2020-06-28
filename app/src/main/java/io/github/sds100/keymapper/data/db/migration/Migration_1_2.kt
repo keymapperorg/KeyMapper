@@ -101,14 +101,13 @@ object Migration_1_2 {
                             Trigger.Key(it, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType)
                         }
 
-                        val triggerNew = Trigger(newTriggerKeys).apply {
-                            mode = if (newTriggerKeys.size <= 1) {
-                                Trigger.SEQUENCE
-                            } else {
-                                Trigger.PARALLEL
-                            }
+                        val triggerMode = if (newTriggerKeys.size <= 1) {
+                            Trigger.SEQUENCE
+                        } else {
+                            Trigger.PARALLEL
                         }
 
+                        val triggerNew = Trigger(newTriggerKeys, mode = triggerMode)
                         newTriggerJsonList.add(triggerNew.json())
                     }
 

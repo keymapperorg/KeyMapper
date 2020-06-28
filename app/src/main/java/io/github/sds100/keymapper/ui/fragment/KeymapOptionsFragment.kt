@@ -10,12 +10,13 @@ import androidx.navigation.navGraphViewModels
 import com.airbnb.epoxy.EpoxyController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.checkbox
-import io.github.sds100.keymapper.data.model.*
+import io.github.sds100.keymapper.data.model.CheckBoxOption
+import io.github.sds100.keymapper.data.model.KeyMap
+import io.github.sds100.keymapper.data.model.SliderListItemModel
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentKeymapOptionsBinding
 import io.github.sds100.keymapper.slider
 import io.github.sds100.keymapper.util.InjectorUtils
-import io.github.sds100.keymapper.util.int
 import io.github.sds100.keymapper.util.str
 
 /**
@@ -39,24 +40,24 @@ class KeymapOptionsFragment(private val mKeymapId: Long) : Fragment() {
             }
 
             mViewModel.sliderOptions.observe(viewLifecycleOwner) { options ->
-                val models = options.map {
-                    val id = it.extraId
-                    val value = it.value
-
-                    SliderListItemModel(
-                        id = id,
-                        label = Extra.EXTRA_LABELS[id]!!,
-
-                        sliderModel = SliderModel(
-                            value = value,
-                            isDefaultStepEnabled = true,
-                            min = int(Extra.EXTRA_MIN_VALUES[id]!!),
-                            max = int(Extra.EXTRA_MAX_VALUES[id]!!),
-                            stepSize = int(Extra.EXTRA_STEP_SIZE_VALUES[id]!!))
-                    )
-                }
-
-                mController.triggerOptions = models
+//                val models = options.map {
+//                    val id = it.extraId
+//                    val value = it.value
+//
+//                    SliderListItemModel(
+//                        id = id,
+//                        label = Extra.EXTRA_LABELS[id]!!,
+//
+//                        sliderModel = SliderModel(
+//                            value = value,
+//                            isDefaultStepEnabled = true,
+//                            min = int(Extra.EXTRA_MIN_VALUES[id]!!),
+//                            max = int(Extra.EXTRA_MAX_VALUES[id]!!),
+//                            stepSize = int(Extra.EXTRA_STEP_SIZE_VALUES[id]!!))
+//                    )
+//                }
+//
+//                mController.triggerOptions = models
             }
 
             return this.root
