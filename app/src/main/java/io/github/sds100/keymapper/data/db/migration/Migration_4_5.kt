@@ -66,24 +66,24 @@ object Migration_4_5 {
                 }
 
                 if (flags.hasFlag(OLD_KEYMAP_FLAG_REPEAT_ACTIONS)) {
-                    val repeatDelay = trigger.getExtraData(Extra.EXTRA_REPEAT_DELAY).valueOrNull()
-                    val holdDownDelay = trigger.getExtraData(Extra.EXTRA_HOLD_DOWN_DELAY).valueOrNull()
+                    val repeatDelay = trigger.getExtraData(Action.EXTRA_REPEAT_DELAY).valueOrNull()
+                    val holdDownDelay = trigger.getExtraData(Action.EXTRA_HOLD_DOWN_DELAY).valueOrNull()
 
                     actionList.forEach {
                         it.flags = it.flags.withFlag(Action.ACTION_FLAG_REPEAT)
 
                         if (holdDownDelay != null) {
-                            it.putExtraData(Extra.EXTRA_HOLD_DOWN_DELAY, holdDownDelay)
+                            it.putExtraData(Action.EXTRA_HOLD_DOWN_DELAY, holdDownDelay)
                         }
 
                         if (repeatDelay != null) {
-                            it.putExtraData(Extra.EXTRA_REPEAT_DELAY, repeatDelay)
+                            it.putExtraData(Action.EXTRA_REPEAT_DELAY, repeatDelay)
                         }
                     }
                 }
 
                 val newTriggerExtras = trigger.extras.toMutableList().apply {
-                    removeAll { it.id == Extra.EXTRA_REPEAT_DELAY || it.id == Extra.EXTRA_HOLD_DOWN_DELAY }
+                    removeAll { it.id == Action.EXTRA_REPEAT_DELAY || it.id == Action.EXTRA_HOLD_DOWN_DELAY }
                 }
 
                 val newTrigger = Trigger(trigger.keys, newTriggerExtras.toList()).apply {

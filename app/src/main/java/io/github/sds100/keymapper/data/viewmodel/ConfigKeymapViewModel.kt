@@ -13,7 +13,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import splitties.bitflags.hasFlag
 import splitties.bitflags.minusFlag
-import splitties.bitflags.withFlag
 import java.util.*
 
 class ConfigKeymapViewModel internal constructor(
@@ -115,6 +114,8 @@ class ConfigKeymapViewModel internal constructor(
     val actionList: MutableLiveData<List<Action>> = MutableLiveData(listOf())
     val chooseAction: MutableLiveData<Event<Unit>> = MutableLiveData()
     val showFixPrompt: MutableLiveData<Event<Failure>> = MutableLiveData()
+    val duplicateActionsEvent: MutableLiveData<Event<Unit>> = MutableLiveData()
+    val duplicateConstraintsEvent: MutableLiveData<Event<Unit>> = MutableLiveData()
     val testAction: MutableLiveData<Event<Action>> = MutableLiveData()
     val chooseActionOptions: MutableLiveData<Event<ChooseActionOptions>> = MutableLiveData()
 
@@ -135,6 +136,7 @@ class ConfigKeymapViewModel internal constructor(
             }
         }
     }
+
     val promptToEnableAccessibilityService: MutableLiveData<Event<Unit>> = MutableLiveData()
 
     val sliderOptions = MutableLiveData<List<SliderOption>>()
@@ -450,9 +452,12 @@ class ConfigKeymapViewModel internal constructor(
     /**
      * @return whether the action already exists has been added to the list
      */
-    fun addAction(action: Action): Boolean {
-        if (actionList.value?.find { it.uniqueId == action.uniqueId } != null) {
-            return false
+    fun addAction(action: Action) {
+        if (actionList.value?.find {
+                it.type == action.type && it.data == action.data && it.dataExtraString == action.dataExtraString
+            } != null) {
+            duplicateActionsEvent.value = Event(Unit)
+            return
         }
 
         actionList.value = actionList.value?.toMutableList()?.apply {
@@ -460,8 +465,6 @@ class ConfigKeymapViewModel internal constructor(
         }
 
         invalidateOptions()
-
-        return true
     }
 
     fun setActionOptions(actionOptions: ActionOptions) {
@@ -470,18 +473,6 @@ class ConfigKeymapViewModel internal constructor(
                 it.flags = actionOptions.flags
                 it.extras.clear()
                 it.extras.addAll(actionOptions.extras)
-            }
-
-            it
-        }
-
-        invalidateOptions()
-    }
-
-    private fun setActionFlags(actionId: String, flags: Int) {
-        actionList.value = actionList.value?.map {
-            if (it.uniqueId == actionId) {
-                it.flags = flags
             }
 
             it
@@ -522,9 +513,10 @@ class ConfigKeymapViewModel internal constructor(
     /**
      * @return whether the constraint already exists and has been added to the list
      */
-    fun addConstraint(constraint: Constraint): Boolean {
+    fun addConstraint(constraint: Constraint) {
         if (constraintList.value?.any { it.uniqueId == constraint.uniqueId } == true) {
-            return false
+            duplicateConstraintsEvent.value = Event(Unit)
+            return
         }
 
         constraintList.value = constraintList.value?.toMutableList()?.apply {
@@ -532,8 +524,6 @@ class ConfigKeymapViewModel internal constructor(
         }
 
         invalidateOptions()
-
-        return true
     }
 
     fun rebuildActionModels() {
@@ -589,21 +579,21 @@ class ConfigKeymapViewModel internal constructor(
         val allowedExtras = mutableListOf<String>()
 
         if (triggerKeys.value?.any { it.clickType == Trigger.LONG_PRESS } == true) {
-            allowedExtras.add(Extra.EXTRA_LONG_PRESS_DELAY)
+            allowedExtras.add(Trigger.EXTRA_LONG_PRESS_DELAY)
         }
 
         if (triggerKeys.value?.any { it.clickType == Trigger.DOUBLE_PRESS } == true) {
-            allowedExtras.add(Extra.EXTRA_DOUBLE_PRESS_DELAY)
+            allowedExtras.add(Trigger.EXTRA_DOUBLE_PRESS_DELAY)
         }
 
         if (!triggerKeys.value.isNullOrEmpty() && triggerKeys.value?.let { it.size > 1 } == true
             && triggerMode.value == Trigger.SEQUENCE) {
-            allowedExtras.add(Extra.EXTRA_SEQUENCE_TRIGGER_TIMEOUT)
+            allowedExtras.add(Trigger.EXTRA_SEQUENCE_TRIGGER_TIMEOUT)
         }
 
         if (mKeymapFlags.value?.hasFlag(KeyMap.KEYMAP_FLAG_VIBRATE) == true ||
             mKeymapFlags.value?.hasFlag(KeyMap.KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION) == true) {
-            allowedExtras.add(Extra.EXTRA_VIBRATION_DURATION)
+            allowedExtras.add(Trigger.EXTRA_VIBRATION_DURATION)
         }
 
         return allowedExtras.toSet()
@@ -669,7 +659,7 @@ class ConfigKeymapViewModel internal constructor(
         val allowedTriggerOptions = allowedTriggerOptions()
 
         sliderOptions.value = sequence {
-            Extra.TRIGGER_EXTRAS.forEach { extraId ->
+            Trigger.EXTRAS.forEach { extraId ->
                 if (allowedTriggerOptions.contains(extraId)) {
                     val currentValue = mTriggerExtras.value?.find { extra -> extra.id == extraId }?.data?.toInt()
 

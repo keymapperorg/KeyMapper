@@ -28,13 +28,13 @@ class ActionOptionsViewModel : ViewModel() {
     private val mExtras = MediatorLiveData<List<Extra>>().apply {
         addSource(stopRepeatingTriggerAgain) {
             if (it == true) {
-                setOptionValue(Extra.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR, Action.STOP_REPEAT_BEHAVIOUR_TRIGGER_AGAIN)
+                setOptionValue(Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR, Action.STOP_REPEAT_BEHAVIOUR_TRIGGER_AGAIN)
             }
         }
 
         addSource(stopRepeatingTriggerReleased) {
             if (it == true) {
-                setOptionValue(Extra.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR, ConfigKeymapViewModel.EXTRA_USE_DEFAULT)
+                setOptionValue(Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR, ConfigKeymapViewModel.EXTRA_USE_DEFAULT)
             }
         }
     }
@@ -45,11 +45,11 @@ class ActionOptionsViewModel : ViewModel() {
         val allowedExtras = ActionUtils.allowedExtraIds(mFlags.value ?: 0)
 
         mExtras.value = mExtras.value?.toMutableList()?.apply {
-            Extra.ACTION_EXTRAS.forEach { extraId ->
+            Action.EXTRAS.forEach { extraId ->
                 if (allowedExtras.none { it == extraId }) {
                     removeAll { it.id == extraId }
 
-                    if (extraId == Extra.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR) {
+                    if (extraId == Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR) {
                         stopRepeatingTriggerAgain.value = false
                         stopRepeatingTriggerReleased.value = true
                     }
@@ -88,7 +88,7 @@ class ActionOptionsViewModel : ViewModel() {
         fun invalidate() {
             value = sequence {
                 mAllowedExtras.value?.forEach { extraId ->
-                    if (extraId == Extra.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR) return@forEach
+                    if (extraId == Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR) return@forEach
 
                     val value = mExtras.value?.find { it.id == extraId }?.data?.toInt()
 
@@ -133,7 +133,7 @@ class ActionOptionsViewModel : ViewModel() {
 
         mExtras.value = model.currentExtras
 
-        model.currentExtras.find { it.id == Extra.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR }.let {
+        model.currentExtras.find { it.id == Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR }.let {
             if (it == null) {
                 stopRepeatingTriggerReleased.value = true
                 stopRepeatingTriggerAgain.value = false
