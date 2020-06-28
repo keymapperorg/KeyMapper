@@ -62,8 +62,6 @@ data class Action(
         const val NAME_EXTRAS = "extras"
         const val NAME_FLAGS = "flags"
 
-        const val STOP_REPEAT_BEHAVIOUR_TRIGGER_AGAIN = 0
-
         const val ACTION_FLAG_SHOW_VOLUME_UI = 1
         const val ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST = 2
         const val ACTION_FLAG_REPEAT = 4
@@ -104,15 +102,19 @@ data class Action(
         }
 
         fun keyAction(keyCode: Int): Action {
-            return Action(ActionType.KEY_EVENT, keyCode.toString())
+            return keyEventAction(keyCode)
         }
 
         fun keycodeAction(keyCode: Int): Action {
-            return Action(ActionType.KEY_EVENT, keyCode.toString())
+            return keyEventAction(keyCode)
+        }
+
+        private fun keyEventAction(keyCode: Int): Action {
+            return Action(ActionType.KEY_EVENT, keyCode.toString(), flags = ACTION_FLAG_REPEAT)
         }
 
         fun textBlockAction(text: String): Action {
-            return Action(ActionType.TEXT_BLOCK, text)
+            return Action(ActionType.TEXT_BLOCK, text, flags = ACTION_FLAG_REPEAT)
         }
 
         fun urlAction(url: String): Action {
@@ -134,7 +136,7 @@ data class Action(
 
             //show the volume UI by default when the user chooses a volume action.
             if (action.isVolumeAction) {
-                action.flags = action.flags.withFlag(ACTION_FLAG_SHOW_VOLUME_UI)
+                action.flags = action.flags.withFlag(ACTION_FLAG_SHOW_VOLUME_UI).withFlag(ACTION_FLAG_REPEAT)
             }
 
             return action
