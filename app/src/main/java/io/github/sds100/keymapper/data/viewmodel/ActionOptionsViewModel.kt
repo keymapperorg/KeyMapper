@@ -20,10 +20,27 @@ class ActionOptionsViewModel : ViewModel() {
 
     val onSaveEvent: MutableLiveData<Event<ActionOptions>> = MutableLiveData()
 
+    val stopRepeatingTriggerReleased: MutableLiveData<Boolean> = MutableLiveData(false)
+    val stopRepeatingTriggerAgain: MutableLiveData<Boolean> = MutableLiveData(false)
+
     private val mActionId: MutableLiveData<String> = MutableLiveData()
     private val mFlags: MutableLiveData<Int> = MutableLiveData()
-    private val mExtras: MutableLiveData<List<Extra>> = MutableLiveData()
+    private val mExtras = MediatorLiveData<List<Extra>>().apply {
+        addSource(stopRepeatingTriggerAgain) {
+            if (it == true) {
+                setOptionValue(Extra.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR, Action.STOP_REPEAT_BEHAVIOUR_TRIGGER_AGAIN)
+            }
+        }
+
+        addSource(stopRepeatingTriggerReleased) {
+            if (it == true) {
+                setOptionValue(Extra.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR, ConfigKeymapViewModel.EXTRA_USE_DEFAULT)
+            }
+        }
+    }
+
     private val mAllowedFlags: MutableLiveData<List<Int>> = MutableLiveData()
+
     private val mAllowedExtras = mFlags.map {
         val allowedExtras = ActionUtils.allowedExtraIds(mFlags.value ?: 0)
 
@@ -31,11 +48,20 @@ class ActionOptionsViewModel : ViewModel() {
             Extra.ACTION_EXTRAS.forEach { extraId ->
                 if (allowedExtras.none { it == extraId }) {
                     removeAll { it.id == extraId }
+
+                    if (extraId == Extra.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR) {
+                        stopRepeatingTriggerAgain.value = false
+                        stopRepeatingTriggerReleased.value = true
+                    }
                 }
             }
         }
 
         allowedExtras
+    }
+
+    val repeatEnabled = mFlags.map {
+        it.hasFlag(Action.ACTION_FLAG_REPEAT)
     }
 
     val checkBoxModels = MediatorLiveData<List<CheckBoxOption>>().apply {
@@ -62,6 +88,8 @@ class ActionOptionsViewModel : ViewModel() {
         fun invalidate() {
             value = sequence {
                 mAllowedExtras.value?.forEach { extraId ->
+                    if (extraId == Extra.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR) return@forEach
+
                     val value = mExtras.value?.find { it.id == extraId }?.data?.toInt()
 
                     yield(SliderOption(extraId, value))
@@ -104,6 +132,18 @@ class ActionOptionsViewModel : ViewModel() {
         mAllowedFlags.value = model.allowedFlags
 
         mExtras.value = model.currentExtras
+
+        model.currentExtras.find { it.id == Extra.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR }.let {
+            if (it == null) {
+                stopRepeatingTriggerReleased.value = true
+                stopRepeatingTriggerAgain.value = false
+            } else {
+                if (it.data == Action.STOP_REPEAT_BEHAVIOUR_TRIGGER_AGAIN.toString()) {
+                    stopRepeatingTriggerAgain.value = true
+                    stopRepeatingTriggerReleased.value = false
+                }
+            }
+        }
     }
 
     fun save() {
@@ -112,7 +152,6 @@ class ActionOptionsViewModel : ViewModel() {
         val extras = mExtras.value ?: return
 
         onSaveEvent.value = Event(ActionOptions(id, flags, extras))
-        reset()
     }
 
     fun saveState(outState: Bundle) {

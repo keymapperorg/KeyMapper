@@ -44,6 +44,7 @@ data class Extra(@ExtraId
         const val EXTRA_STREAM_TYPE = "extra_stream_type"
         const val EXTRA_LENS = "extra_flash"
         const val EXTRA_RINGER_MODE = "extra_ringer_mode"
+        const val EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR = "extra_custom_stop_repeat_behaviour"
 
         //Trigger
         const val EXTRA_SEQUENCE_TRIGGER_TIMEOUT = "extra_sequence_trigger_timeout"
@@ -65,7 +66,8 @@ data class Extra(@ExtraId
 
         val ACTION_EXTRAS = arrayOf(
             EXTRA_HOLD_DOWN_DELAY,
-            EXTRA_REPEAT_DELAY
+            EXTRA_REPEAT_DELAY,
+            EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR
         )
 
         val EXTRA_MAX_VALUES = mapOf(

@@ -22,6 +22,7 @@ object ActionUtils {
         if (actionFlags.hasFlag(Action.ACTION_FLAG_REPEAT)) {
             yield(Extra.EXTRA_REPEAT_DELAY)
             yield(Extra.EXTRA_HOLD_DOWN_DELAY)
+            yield(Extra.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR)
         }
     }.toList()
 }

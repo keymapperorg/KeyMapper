@@ -62,6 +62,8 @@ data class Action(
         const val NAME_EXTRAS = "extras"
         const val NAME_FLAGS = "flags"
 
+        const val STOP_REPEAT_BEHAVIOUR_TRIGGER_AGAIN = 0
+
         const val ACTION_FLAG_SHOW_VOLUME_UI = 1
         const val ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST = 2
         const val ACTION_FLAG_REPEAT = 4
