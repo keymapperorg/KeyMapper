@@ -452,10 +452,6 @@ class ConfigKeymapViewModel internal constructor(
             add(action)
         }
 
-        if (action.repeatableByDefault) {
-            setActionFlags(action.uniqueId, action.flags.withFlag(Action.ACTION_FLAG_REPEAT))
-        }
-
         invalidateOptions()
 
         return true
