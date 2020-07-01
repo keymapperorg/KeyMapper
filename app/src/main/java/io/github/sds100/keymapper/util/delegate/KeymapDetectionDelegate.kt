@@ -63,10 +63,12 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
         private const val INDEX_ACTION_REPEAT_DELAY = 0
         private const val INDEX_ACTION_HOLD_DOWN_DELAY = 1
+        private const val INDEX_STOP_REPEAT_BEHAVIOUR = 2
 
         private val ACTION_EXTRA_INDEX_MAP = mapOf(
             Action.EXTRA_REPEAT_DELAY to INDEX_ACTION_REPEAT_DELAY,
-            Action.EXTRA_HOLD_DOWN_DELAY to INDEX_ACTION_HOLD_DOWN_DELAY
+            Action.EXTRA_HOLD_DOWN_DELAY to INDEX_ACTION_HOLD_DOWN_DELAY,
+            Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR to INDEX_STOP_REPEAT_BEHAVIOUR
         )
 
         private fun createDeviceDescriptorMap(descriptors: Set<String>): SparseArrayCompat<String> {
@@ -433,7 +435,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
     /**
      * Maps repeat jobs to their corresponding parallel trigger index.
      */
-    private val mRepeatJobs = SparseArrayCompat<List<Job>>()
+    private val mRepeatJobs = SparseArrayCompat<List<RepeatJob>>()
 
     /**
      * Maps jobs to perform an action after a long press to their corresponding parallel trigger index
@@ -573,11 +575,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                             vibrateDurations.add(vibrateDuration)
                         }
 
-                        mRepeatJobs[triggerIndex]?.forEach {
-                            it.cancel()
-                        }
-
-                        mRepeatJobs.put(triggerIndex, actionKeys.map { repeatAction(it) })
+                        initialiseRepeating(triggerIndex, actionKeys)
                     }
                 }
 
@@ -712,7 +710,6 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         var successfulLongPress = false
         var successfulDoublePress = false
         var mappedToDoublePress = false
-        performAction
         var matchedDoublePressEventIndex = -1
         var shortPressSingleKeyTriggerJustReleased = false
         var longPressSingleKeyTriggerJustReleased = false
@@ -913,7 +910,9 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
                 if (lastHeldDownEventIndex != mParallelTriggerEvents[triggerIndex].lastIndex) {
                     mRepeatJobs[triggerIndex]?.forEach {
-                        it.cancel()
+                        if (!stopRepeatingWhenPressedAgain(it.actionKey)) {
+                            it.cancel()
+                        }
                     }
                 }
             }
@@ -1150,28 +1149,30 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         }
     }
 
-    private fun repeatAction(actionKey: Int) = mCoroutineScope.launch {
-        val repeat = mActionFlags[actionKey].hasFlag(Action.ACTION_FLAG_REPEAT)
-        if (!repeat) return@launch
+    private fun repeatAction(actionKey: Int) = RepeatJob(actionKey) {
+        mCoroutineScope.launch {
+            val repeat = mActionFlags[actionKey].hasFlag(Action.ACTION_FLAG_REPEAT)
+            if (!repeat) return@launch
 
-        delay(holdDownDelay(actionKey))
+            delay(holdDownDelay(actionKey))
 
-        while (true) {
-            mActionMap[actionKey]?.let { action ->
+            while (true) {
+                mActionMap[actionKey]?.let { action ->
 
-                if (action.type == ActionType.KEY_EVENT) {
-                    if (isModifierKey(action.data.toInt())) return@let
+                    if (action.type == ActionType.KEY_EVENT) {
+                        if (isModifierKey(action.data.toInt())) return@let
+                    }
+
+                    performAction(action, false)
                 }
 
-                performAction(action, false)
+                delay(repeatDelay(actionKey))
             }
-
-            delay(repeatDelay(actionKey))
         }
     }
 
     /**
-     * for parallel triggers only
+     * For parallel triggers only.
      */
     private fun performActionsAfterLongPressDelay(triggerIndex: Int) = mCoroutineScope.launch {
         delay(longPressDelay(mParallelTriggerOptions[triggerIndex]))
@@ -1189,11 +1190,30 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             }
         }
 
+        initialiseRepeating(triggerIndex, actionKeys)
+    }
+
+    /**
+     * For parallel triggers only.
+     */
+    private fun initialiseRepeating(triggerIndex: Int, actionKeys: IntArray) {
+        val actionKeysToStartRepeating = actionKeys.toMutableSet()
+
         mRepeatJobs[triggerIndex]?.forEach {
+            if (stopRepeatingWhenPressedAgain(it.actionKey)) {
+                actionKeysToStartRepeating.remove(it.actionKey)
+            }
+
             it.cancel()
         }
 
-        mRepeatJobs.put(triggerIndex, actionKeys.map { repeatAction(it) })
+        val repeatJobs = mutableListOf<RepeatJob>()
+
+        actionKeysToStartRepeating.forEach {
+            repeatJobs.add(repeatAction(it))
+        }
+
+        mRepeatJobs.put(triggerIndex, repeatJobs)
     }
 
     private val Int.internalDevice
@@ -1305,6 +1325,9 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
     private fun IntArray.vibrate(triggerIndex: Int) = this[triggerIndex].hasFlag(KeyMap.KEYMAP_FLAG_VIBRATE)
 
+    private fun stopRepeatingWhenPressedAgain(actionKey: Int) =
+        mActionOptions[actionKey][INDEX_STOP_REPEAT_BEHAVIOUR] == Action.STOP_REPEAT_BEHAVIOUR_TRIGGER_AGAIN
+
     private fun showPerformingActionToast(actionKey: Int) =
         mActionFlags[actionKey].hasFlag(Action.ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST)
 
@@ -1400,6 +1423,8 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             else -> true
         }
     }
+
+    private class RepeatJob(val actionKey: Int, launch: () -> Job) : Job by launch.invoke()
 }
 
 /**

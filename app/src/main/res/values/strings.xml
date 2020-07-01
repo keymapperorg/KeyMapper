@@ -40,7 +40,9 @@
     <string name="trigger_device_name_not_found">The name for this device isn\'t known</string>
     <string name="performing_action">Key Mapper is performing an action…</string>
     <string name="slider_default">Default</string>
-    <string name="button_accessibility_service_disabled">Accessibility Service Disabled!</string>
+    <string name="stop_repeating_dot_dot_dot">Stop repeating when trigger is…</string>
+    <string name="trigger_released">Released</string>
+    <string name="trigger_pressed_again">Pressed again</string>
 
     <string name="whats_new">What\'s New</string>
     <string name="caption_action_type_key">Click the key on the device which you want to be entered.
