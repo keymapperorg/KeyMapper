@@ -1,14 +1,10 @@
 package io.github.sds100.keymapper.data.model
 
-import android.content.Context
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
-import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
-import io.github.sds100.keymapper.util.str
-import splitties.bitflags.hasFlag
 
 /**
  * Created by sds100 on 12/07/2018.
@@ -63,25 +59,6 @@ class KeyMap(
         const val NAME_FLAGS = "flags"
         const val NAME_FOLDER_NAME = "folderName"
         const val NAME_IS_ENABLED = "isEnabled"
-
-        //DON'T CHANGE THESE AND THEY MUST BE POWERS OF 2!!
-        const val KEYMAP_FLAG_VIBRATE = 1
-        const val KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION = 2
-        const val KEYMAP_FLAG_SCREEN_OFF_TRIGGERS = 4
-
-        val KEYMAP_FLAG_LABEL_MAP = mapOf(
-            KEYMAP_FLAG_VIBRATE to R.string.flag_vibrate,
-            KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION to R.string.flag_long_press_double_vibration,
-            KEYMAP_FLAG_SCREEN_OFF_TRIGGERS to R.string.flag_detect_triggers_screen_off
-        )
-
-        fun getFlagLabelList(ctx: Context, flags: Int): List<String> = sequence {
-            KEYMAP_FLAG_LABEL_MAP.keys.forEach { flag ->
-                if (flags.hasFlag(flag)) {
-                    yield(ctx.str(KEYMAP_FLAG_LABEL_MAP.getValue(flag)))
-                }
-            }
-        }.toList()
     }
 
     override fun hashCode() = id.toInt()

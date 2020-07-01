@@ -125,7 +125,9 @@ object BackupUtils {
 
                         val mode by it.json.byInt(Trigger.NAME_MODE)
 
-                        Trigger(keys, extraList, mode)
+                        val flags by it.json.byNullableInt(Trigger.NAME_FLAGS)
+
+                        Trigger(keys, extraList, mode, flags ?: 0)
                     }
                 }.registerTypeAdapter<Action> {
 

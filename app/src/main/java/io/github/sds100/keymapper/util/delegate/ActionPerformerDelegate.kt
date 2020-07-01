@@ -21,6 +21,7 @@ import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Option
 import io.github.sds100.keymapper.data.model.PerformActionModel
+import io.github.sds100.keymapper.data.model.getData
 import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.onSuccess
@@ -116,7 +117,7 @@ class ActionPerformerDelegate(context: Context,
                         KeyboardUtils.sendDownUpFromImeService(
                             keyCode = action.data.toInt(),
                             metaState = metaState.withFlag(
-                                action.getExtraData(Action.EXTRA_KEY_EVENT_META_STATE).valueOrNull()?.toInt() ?: 0
+                                action.extras.getData(Action.EXTRA_KEY_EVENT_META_STATE).valueOrNull()?.toInt() ?: 0
                             )
                         )
                     }
@@ -132,7 +133,7 @@ class ActionPerformerDelegate(context: Context,
         fun getSdkValueForOption(systemActionId: String, onSuccess: (sdkOptionValue: Int) -> Unit) {
             val extraId = Option.getExtraIdForOption(systemActionId)
 
-            action.getExtraData(extraId).onSuccess { option ->
+            action.extras.getData(extraId).onSuccess { option ->
                 val sdkOptionValue = Option.OPTION_ID_SDK_ID_MAP[option]
 
                 if (sdkOptionValue != null) {
@@ -282,7 +283,7 @@ class ActionPerformerDelegate(context: Context,
                 }
 
                 SystemAction.SWITCH_KEYBOARD -> {
-                    action.getExtraData(Action.EXTRA_IME_ID).onSuccess {
+                    action.extras.getData(Action.EXTRA_IME_ID).onSuccess {
                         KeyboardUtils.switchIme(it)
                     }
                 }
@@ -303,7 +304,7 @@ class ActionPerformerDelegate(context: Context,
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         var lensFacing = CameraCharacteristics.LENS_FACING_BACK
 
-                        action.getExtraData(Action.EXTRA_LENS).onSuccess {
+                        action.extras.getData(Action.EXTRA_LENS).onSuccess {
                             val sdkLensFacing = Option.OPTION_ID_SDK_ID_MAP[it]!!
 
                             lensFacing = sdkLensFacing
@@ -331,7 +332,7 @@ class ActionPerformerDelegate(context: Context,
 
                             SystemAction.TOGGLE_DND_MODE,
                             SystemAction.ENABLE_DND_MODE -> {
-                                action.getExtraData(Action.EXTRA_DND_MODE).onSuccess {
+                                action.extras.getData(Action.EXTRA_DND_MODE).onSuccess {
                                     val mode = Option.OPTION_ID_SDK_ID_MAP[it] ?: return@onSuccess
 
                                     when (id) {

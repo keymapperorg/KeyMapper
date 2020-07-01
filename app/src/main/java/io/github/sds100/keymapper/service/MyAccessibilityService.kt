@@ -22,7 +22,7 @@ import io.github.sds100.keymapper.WidgetsManager.EVENT_PAUSE_REMAPS
 import io.github.sds100.keymapper.WidgetsManager.EVENT_RESUME_REMAPS
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Action
-import io.github.sds100.keymapper.data.model.KeyMap
+import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.ActionPerformerDelegate
 import io.github.sds100.keymapper.util.delegate.GetEventDelegate
@@ -203,7 +203,7 @@ class MyAccessibilityService : AccessibilityService(),
         (application as MyApplication).keymapRepository.keymapList.observe(this) {
             mKeymapDetectionDelegate.keyMapListCache = it
             mScreenOffTriggersEnabled = it.any { keymap ->
-                keymap.flags.hasFlag(KeyMap.KEYMAP_FLAG_SCREEN_OFF_TRIGGERS)
+                keymap.trigger.flags.hasFlag(Trigger.TRIGGER_FLAG_SCREEN_OFF_TRIGGERS)
             }
         }
 

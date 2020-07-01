@@ -1,7 +1,19 @@
 package io.github.sds100.keymapper.data.model
 
 import io.github.sds100.keymapper.data.model.BehaviorOption.Companion.applyBehaviorOption
+import io.github.sds100.keymapper.data.model.Trigger.Companion.DOUBLE_PRESS
+import io.github.sds100.keymapper.data.model.Trigger.Companion.EXTRA_DOUBLE_PRESS_DELAY
+import io.github.sds100.keymapper.data.model.Trigger.Companion.EXTRA_LONG_PRESS_DELAY
+import io.github.sds100.keymapper.data.model.Trigger.Companion.EXTRA_SEQUENCE_TRIGGER_TIMEOUT
+import io.github.sds100.keymapper.data.model.Trigger.Companion.EXTRA_VIBRATION_DURATION
+import io.github.sds100.keymapper.data.model.Trigger.Companion.LONG_PRESS
+import io.github.sds100.keymapper.data.model.Trigger.Companion.PARALLEL
+import io.github.sds100.keymapper.data.model.Trigger.Companion.SEQUENCE
+import io.github.sds100.keymapper.data.model.Trigger.Companion.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION
+import io.github.sds100.keymapper.data.model.Trigger.Companion.TRIGGER_FLAG_SCREEN_OFF_TRIGGERS
+import io.github.sds100.keymapper.data.model.Trigger.Companion.TRIGGER_FLAG_VIBRATE
 import io.github.sds100.keymapper.util.ActionUtils
+import io.github.sds100.keymapper.util.KeyEventUtils
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
 import io.github.sds100.keymapper.util.result.onSuccess
 import io.github.sds100.keymapper.util.result.valueOrNull
@@ -49,6 +61,139 @@ class BehaviorOption<T>(val id: String, var value: T, var isAllowed: Boolean) {
     }
 }
 
+class TriggerBehavior(keys: List<Trigger.Key>, @Trigger.Mode mode: Int, flags: Int, extras: List<Extra>) {
+    companion object {
+        const val ID_LONG_PRESS_DELAY = "long_press_delay"
+        const val ID_DOUBLE_PRESS_DELAY = "double_press_delay"
+        const val ID_SEQUENCE_TRIGGER_TIMEOUT = "sequence_trigger_timeout"
+        const val ID_VIBRATE_DURATION = "vibrate_duration"
+        const val ID_VIBRATE = "vibrate"
+        const val ID_LONG_PRESS_DOUBLE_VIBRATION = "long_press_double_vibration"
+        const val ID_SCREEN_OFF_TRIGGER = "screen_off_trigger"
+    }
+
+    val vibrate = BehaviorOption(
+        id = ID_VIBRATE,
+        value = flags.hasFlag(TRIGGER_FLAG_VIBRATE),
+        isAllowed = true
+    )
+
+    val longPressDoubleVibration = BehaviorOption(
+        id = ID_LONG_PRESS_DOUBLE_VIBRATION,
+        value = flags.hasFlag(TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION),
+        isAllowed = (keys.size == 1 || (mode == PARALLEL))
+            && keys.getOrNull(0)?.clickType == LONG_PRESS
+    )
+
+    val screenOffTrigger = BehaviorOption(
+        id = ID_SCREEN_OFF_TRIGGER,
+        value = flags.hasFlag(TRIGGER_FLAG_SCREEN_OFF_TRIGGERS),
+        isAllowed = keys.isNotEmpty() && keys.all {
+            KeyEventUtils.GET_EVENT_LABEL_TO_KEYCODE.containsValue(it.keyCode)
+        }
+    )
+
+    val longPressDelay: BehaviorOption<Int>
+    val doublePressDelay: BehaviorOption<Int>
+    val vibrateDuration: BehaviorOption<Int>
+    val sequenceTriggerTimeout: BehaviorOption<Int>
+
+    init {
+
+        val longPressDelayValue = extras.getData(EXTRA_LONG_PRESS_DELAY).valueOrNull()?.toInt()
+
+        longPressDelay = BehaviorOption(
+            id = ID_LONG_PRESS_DELAY,
+            value = longPressDelayValue ?: BehaviorOption.DEFAULT,
+            isAllowed = keys.any { it.clickType == LONG_PRESS }
+        )
+
+        val doublePressDelayValue = extras.getData(EXTRA_DOUBLE_PRESS_DELAY).valueOrNull()?.toInt()
+
+        doublePressDelay = BehaviorOption(
+            id = ID_DOUBLE_PRESS_DELAY,
+            value = doublePressDelayValue ?: BehaviorOption.DEFAULT,
+            isAllowed = keys.any { it.clickType == DOUBLE_PRESS }
+        )
+
+        val vibrateDurationValue = extras.getData(EXTRA_VIBRATION_DURATION).valueOrNull()?.toInt()
+
+        vibrateDuration = BehaviorOption(
+            id = ID_VIBRATE_DURATION,
+            value = vibrateDurationValue ?: BehaviorOption.DEFAULT,
+            isAllowed = vibrate.value || longPressDoubleVibration.value
+        )
+
+        val sequenceTriggerTimeoutValue =
+            extras.getData(EXTRA_SEQUENCE_TRIGGER_TIMEOUT).valueOrNull()?.toInt()
+
+        sequenceTriggerTimeout = BehaviorOption(
+            id = ID_SEQUENCE_TRIGGER_TIMEOUT,
+            value = sequenceTriggerTimeoutValue ?: BehaviorOption.DEFAULT,
+            isAllowed = !keys.isNullOrEmpty() && keys.size > 1 && mode == SEQUENCE
+        )
+    }
+
+    fun dependentDataChanged(keys: List<Trigger.Key>, @Trigger.Mode mode: Int): TriggerBehavior {
+        val flags = applyToTriggerFlags(0)
+        val extras = applyToTriggerExtras(listOf())
+
+        return TriggerBehavior(keys, mode, flags, extras)
+    }
+
+    fun applyToTrigger(trigger: Trigger): Trigger {
+        val newFlags = applyToTriggerFlags(trigger.flags)
+        val newExtras = applyToTriggerExtras(trigger.extras)
+
+        return trigger.clone(extras = newExtras, flags = newFlags)
+    }
+
+    fun setValue(id: String, value: Int): TriggerBehavior {
+        when (id) {
+            ID_VIBRATE_DURATION -> vibrateDuration.value = value
+            ID_SEQUENCE_TRIGGER_TIMEOUT -> sequenceTriggerTimeout.value = value
+            ID_LONG_PRESS_DELAY -> longPressDelay.value = value
+            ID_DOUBLE_PRESS_DELAY -> doublePressDelay.value = value
+        }
+
+        return this
+    }
+
+    fun setValue(id: String, value: Boolean): TriggerBehavior {
+        when (id) {
+            ID_VIBRATE -> {
+                vibrate.value = value
+
+                vibrateDuration.isAllowed = value || longPressDoubleVibration.value
+            }
+
+            ID_LONG_PRESS_DOUBLE_VIBRATION -> {
+                longPressDoubleVibration.value = value
+
+                vibrateDuration.isAllowed = value || longPressDoubleVibration.value
+            }
+
+            ID_SCREEN_OFF_TRIGGER -> screenOffTrigger.value = value
+        }
+
+        return this
+    }
+
+    private fun applyToTriggerFlags(flags: Int): Int {
+        return flags.applyBehaviorOption(vibrate, TRIGGER_FLAG_VIBRATE)
+            .applyBehaviorOption(longPressDoubleVibration, TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION)
+            .applyBehaviorOption(screenOffTrigger, TRIGGER_FLAG_SCREEN_OFF_TRIGGERS)
+    }
+
+    private fun applyToTriggerExtras(extras: List<Extra>): List<Extra> {
+        return extras
+            .applyBehaviorOption(vibrateDuration, EXTRA_VIBRATION_DURATION)
+            .applyBehaviorOption(longPressDelay, EXTRA_LONG_PRESS_DELAY)
+            .applyBehaviorOption(doublePressDelay, EXTRA_DOUBLE_PRESS_DELAY)
+            .applyBehaviorOption(sequenceTriggerTimeout, EXTRA_SEQUENCE_TRIGGER_TIMEOUT)
+    }
+}
+
 class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys: List<Trigger.Key>) : Serializable {
     companion object {
         const val ID_REPEAT_DELAY = "repeat_delay"
@@ -89,7 +234,7 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
     val holdDownDelay: BehaviorOption<Int>
 
     init {
-        val repeatDelayValue = action.getExtraData(Action.EXTRA_REPEAT_DELAY).valueOrNull()?.toInt()
+        val repeatDelayValue = action.extras.getData(Action.EXTRA_REPEAT_DELAY).valueOrNull()?.toInt()
 
         repeatDelay = BehaviorOption(
             id = ID_REPEAT_DELAY,
@@ -97,7 +242,7 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
             isAllowed = repeat.value
         )
 
-        val holdDownDelayValue = action.getExtraData(Action.EXTRA_HOLD_DOWN_DELAY).valueOrNull()?.toInt()
+        val holdDownDelayValue = action.extras.getData(Action.EXTRA_HOLD_DOWN_DELAY).valueOrNull()?.toInt()
 
         holdDownDelay = BehaviorOption(
             id = ID_HOLD_DOWN_DELAY,
@@ -107,7 +252,7 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
 
         var stopRepeatingTriggerPressedAgain = false
 
-        action.getExtraData(Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR).onSuccess {
+        action.extras.getData(Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR).onSuccess {
             if (it.toInt() == Action.STOP_REPEAT_BEHAVIOUR_TRIGGER_AGAIN) {
                 stopRepeatingTriggerPressedAgain = true
             }

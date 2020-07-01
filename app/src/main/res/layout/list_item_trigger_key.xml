@@ -138,7 +138,7 @@
                     android:layout_height="0dp"
                     android:onClick="@{onMoreClick}"
                     android:tint="?attr/colorOnSurface"
-                    android:visibility="@{triggerMode == Trigger.SEQUENCE ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{triggerMode == Trigger.SEQUENCE || triggerMode == Trigger.UNDEFINED ? View.VISIBLE : View.GONE}"
                     app:layout_constraintBottom_toBottomOf="@+id/buttonRemove"
                     app:layout_constraintEnd_toStartOf="@+id/buttonRemove"
                     app:layout_constraintTop_toTopOf="@id/buttonRemove"
