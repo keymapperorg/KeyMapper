@@ -132,14 +132,14 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 val deviceDescriptors = mutableSetOf<String>()
                 val sequenceTriggerEvents = mutableListOf<IntArray>()
                 val sequenceTriggerActions = mutableListOf<IntArray>()
-                val sequenceTriggerKeymapFlags = mutableListOf<Int>()
+                val sequenceTriggerFlags = mutableListOf<Int>()
                 val sequenceTriggerOptions = mutableListOf<IntArray>()
                 val sequenceTriggerConstraints = mutableListOf<Array<Constraint>>()
                 val sequenceTriggerConstraintMode = mutableListOf<Int>()
 
                 val parallelTriggerEvents = mutableListOf<IntArray>()
                 val parallelTriggerActions = mutableListOf<IntArray>()
-                val parallelTriggerKeymapFlags = mutableListOf<Int>()
+                val parallelTriggerFlags = mutableListOf<Int>()
                 val parallelTriggerOptions = mutableListOf<IntArray>()
                 val parallelTriggerConstraints = mutableListOf<Array<Constraint>>()
                 val parallelTriggerConstraintMode = mutableListOf<Int>()
@@ -259,7 +259,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                     if (performActionOnDown(keyMap.trigger.keys, keyMap.trigger.mode)) {
                         parallelTriggerEvents.add(encodedTriggerList.toIntArray())
                         parallelTriggerActions.add(encodedActionList)
-                        parallelTriggerKeymapFlags.add(keyMap.flags)
+                        parallelTriggerFlags.add(keyMap.trigger.flags)
                         parallelTriggerOptions.add(triggerOptionsArray)
                         parallelTriggerConstraints.add(constraints)
                         parallelTriggerConstraintMode.add(keyMap.constraintMode)
@@ -267,7 +267,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                     } else {
                         sequenceTriggerEvents.add(encodedTriggerList.toIntArray())
                         sequenceTriggerActions.add(encodedActionList)
-                        sequenceTriggerKeymapFlags.add(keyMap.flags)
+                        sequenceTriggerFlags.add(keyMap.trigger.flags)
                         sequenceTriggerOptions.add(triggerOptionsArray)
                         sequenceTriggerConstraints.add(constraints)
                         sequenceTriggerConstraintMode.add(keyMap.constraintMode)
@@ -277,7 +277,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 mDetectSequenceTriggers = sequenceTriggerEvents.isNotEmpty()
                 mSequenceTriggerEvents = sequenceTriggerEvents.toTypedArray()
                 mSequenceTriggerActions = sequenceTriggerActions.toTypedArray()
-                mSequenceTriggerKeymapFlags = sequenceTriggerKeymapFlags.toIntArray()
+                mSequenceTriggerFlags = sequenceTriggerFlags.toIntArray()
                 mSequenceTriggerOptions = sequenceTriggerOptions.toTypedArray()
                 mSequenceTriggerConstraints = sequenceTriggerConstraints.toTypedArray()
                 mSequenceTriggerConstraintMode = sequenceTriggerConstraintMode.toIntArray()
@@ -285,7 +285,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 mDetectParallelTriggers = parallelTriggerEvents.isNotEmpty()
                 mParallelTriggerEvents = parallelTriggerEvents.toTypedArray()
                 mParallelTriggerActions = parallelTriggerActions.toTypedArray()
-                mParallelTriggerKeymapFlags = parallelTriggerKeymapFlags.toIntArray()
+                mParallelTriggerFlags = parallelTriggerFlags.toIntArray()
                 mParallelTriggerOptions = parallelTriggerOptions.toTypedArray()
                 mParallelTriggerConstraints = parallelTriggerConstraints.toTypedArray()
                 mParallelTriggerConstraintMode = parallelTriggerConstraintMode.toIntArray()
@@ -352,7 +352,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
      */
     private var mSequenceTriggerEvents = arrayOf<IntArray>()
 
-    private var mSequenceTriggerKeymapFlags = intArrayOf()
+    private var mSequenceTriggerFlags = intArrayOf()
 
     /**
      * The actions to perform when each trigger is detected. The order matches with
@@ -386,7 +386,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
      */
     private var mParallelTriggerEvents = arrayOf<IntArray>()
 
-    private var mParallelTriggerKeymapFlags = intArrayOf()
+    private var mParallelTriggerFlags = intArrayOf()
 
     /**
      * The actions to perform when each trigger is detected. The order matches with
@@ -568,7 +568,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                             detectedShortPressTriggers.add(triggerIndex)
 
                             val vibrateDuration = when {
-                                mParallelTriggerKeymapFlags.vibrate(triggerIndex) -> {
+                                mParallelTriggerFlags.vibrate(triggerIndex) -> {
                                     vibrateDuration(mParallelTriggerOptions[triggerIndex])
                                 }
 
@@ -602,7 +602,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                     if (nextIndex == mParallelTriggerEvents[triggerIndex].lastIndex) {
                         awaitingLongPress = true
 
-                        if (mParallelTriggerKeymapFlags[triggerIndex]
+                        if (mParallelTriggerFlags[triggerIndex]
                                 .hasFlag(Trigger.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION)) {
                             vibrate.value = Event(vibrateDuration(mParallelTriggerOptions[triggerIndex]))
                         }
@@ -813,7 +813,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                             actionKeysToPerform.add(key)
 
                             val vibrateDuration =
-                                if (mSequenceTriggerKeymapFlags[triggerIndex].hasFlag(Trigger.TRIGGER_FLAG_VIBRATE)) {
+                                if (mSequenceTriggerFlags[triggerIndex].hasFlag(Trigger.TRIGGER_FLAG_VIBRATE)) {
                                     vibrateDuration(mSequenceTriggerOptions[triggerIndex])
                                 } else {
                                     -1
@@ -933,7 +933,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                     mParallelTriggerActions[it].forEachIndexed { index, key ->
                         actionKeysToPerform.add(key)
 
-                        val vibrateDuration = if (mParallelTriggerKeymapFlags[it].hasFlag(Trigger.TRIGGER_FLAG_VIBRATE)) {
+                        val vibrateDuration = if (mParallelTriggerFlags[it].hasFlag(Trigger.TRIGGER_FLAG_VIBRATE)) {
                             vibrateDuration(mParallelTriggerOptions[it])
                         } else {
                             -1
@@ -1048,7 +1048,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                     }
 
                     val vibrateDuration =
-                        if (mParallelTriggerKeymapFlags[triggerIndex].hasFlag(Trigger.TRIGGER_FLAG_VIBRATE)) {
+                        if (mParallelTriggerFlags[triggerIndex].hasFlag(Trigger.TRIGGER_FLAG_VIBRATE)) {
                             vibrateDuration(mParallelTriggerOptions[triggerIndex])
                         } else {
                             -1
@@ -1188,8 +1188,8 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
             performAction(action, showPerformingActionToast(actionKey))
 
-            if (mParallelTriggerKeymapFlags.vibrate(triggerIndex) || preferences.forceVibrate
-                || mParallelTriggerKeymapFlags[triggerIndex].hasFlag(Trigger.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION)) {
+            if (mParallelTriggerFlags.vibrate(triggerIndex) || preferences.forceVibrate
+                || mParallelTriggerFlags[triggerIndex].hasFlag(Trigger.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION)) {
                 vibrate.value = Event(vibrateDuration(mParallelTriggerOptions[triggerIndex]))
             }
         }

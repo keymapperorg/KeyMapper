@@ -772,5 +772,5 @@ class KeymapDetectionDelegateTest {
     }
 
     private fun createValidKeymapFromTriggerKey(id: Long, vararg key: Trigger.Key, triggerMode: Int = Trigger.SEQUENCE) =
-        KeyMap(id, Trigger(keys = key.toList()).apply { mode = triggerMode }, actionList = listOf(TEST_ACTION))
+        KeyMap(id, Trigger(keys = key.toList(), mode = triggerMode), actionList = listOf(TEST_ACTION))
 }
