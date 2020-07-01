@@ -144,7 +144,7 @@ class ConfigKeymapFragment : Fragment() {
                 }
             })
 
-            mViewModel.showFixActionPrompt.observe(viewLifecycleOwner, EventObserver {
+            mViewModel.showFixPrompt.observe(viewLifecycleOwner, EventObserver {
                 coordinatorLayout.longSnack(it.getFullMessage(requireContext())) {
 
                     //only add an action to fix the error if the error can be recovered from

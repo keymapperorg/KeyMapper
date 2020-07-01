@@ -115,7 +115,7 @@ class ConfigKeymapViewModel internal constructor(
 
     val actionList: MutableLiveData<List<Action>> = MutableLiveData(listOf())
     val chooseAction: MutableLiveData<Event<Unit>> = MutableLiveData()
-    val showFixActionPrompt: MutableLiveData<Event<Failure>> = MutableLiveData()
+    val showFixPrompt: MutableLiveData<Event<Failure>> = MutableLiveData()
     val duplicateActionsEvent: MutableLiveData<Event<Unit>> = MutableLiveData()
     val duplicateConstraintsEvent: MutableLiveData<Event<Unit>> = MutableLiveData()
     val testAction: MutableLiveData<Event<Action>> = MutableLiveData()
@@ -484,10 +484,10 @@ class ConfigKeymapViewModel internal constructor(
 
     fun onActionModelClick(model: ActionModel) {
         if (model.hasError) {
-            showFixActionPrompt.value = Event(model.failure!!)
+            showFixPrompt.value = Event(model.failure!!)
         } else {
             if (model.hasError) {
-                showFixActionPrompt.value = Event(model.failure!!)
+                showFixPrompt.value = Event(model.failure!!)
             } else {
                 actionList.value?.single { it.uniqueId == model.id }?.let {
                     testAction.value = Event(it)
@@ -529,6 +529,10 @@ class ConfigKeymapViewModel internal constructor(
 
     fun rebuildActionModels() {
         actionList.value = actionList.value
+    }
+
+    fun rebuildConstraintModels() {
+        constraintList.value = constraintList.value
     }
 
     private fun showPrompt(notifyUserModel: NotifyUserModel) {

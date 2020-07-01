@@ -116,10 +116,12 @@ class MyAccessibilityService : AccessibilityService(),
                 }
 
                 Intent.ACTION_SCREEN_ON -> {
+                    mIsScreenOn = true
                     mGetEventDelegate.stopListening()
                 }
 
                 Intent.ACTION_SCREEN_OFF -> {
+                    mIsScreenOn = false
                     if (AppPreferences.hasRootPermission && mScreenOffTriggersEnabled) {
                         mGetEventDelegate.startListening(lifecycleScope)
                     }
@@ -146,6 +148,10 @@ class MyAccessibilityService : AccessibilityService(),
     override val currentPackageName: String
         get() = rootInActiveWindow.packageName.toString()
 
+    override val isScreenOn: Boolean
+        get() = mIsScreenOn
+
+    private var mIsScreenOn = true
     private val mConnectedBtAddresses = mutableSetOf<String>()
 
     private val mGetEventDelegate = GetEventDelegate { keyCode, action, deviceDescriptor, isExternal ->

@@ -37,6 +37,17 @@ class ChooseConstraintListViewModel : ViewModel() {
             Constraint.BT_DEVICE_DISCONNECTED,
             Constraint.CATEGORY_BLUETOOTH,
             R.string.constraint_choose_bluetooth_device_disconnected
+        ),
+
+        ChooseConstraintListItemModel(
+            Constraint.SCREEN_ON,
+            Constraint.CATEGORY_SCREEN,
+            R.string.constraint_choose_screen_on_description
+        ),
+        ChooseConstraintListItemModel(
+            Constraint.SCREEN_OFF,
+            Constraint.CATEGORY_SCREEN,
+            R.string.constraint_choose_screen_off_description
         )
     )
 
@@ -63,6 +74,16 @@ class ChooseConstraintListViewModel : ViewModel() {
             Constraint.BT_DEVICE_CONNECTED, Constraint.BT_DEVICE_DISCONNECTED -> {
                 notifyUserEvent.value = Event(NotifyUserModel(R.string.dialog_message_bt_constraint_limitation) {
                     chooseBluetoothDeviceEvent.value = Event(Unit)
+                })
+            }
+            Constraint.SCREEN_ON -> {
+                notifyUserEvent.value = Event(NotifyUserModel(R.string.dialog_message_screen_constraints_limitation) {
+                    selectModelEvent.value = Event(Constraint.screenOnConstraint())
+                })
+            }
+            Constraint.SCREEN_OFF -> {
+                notifyUserEvent.value = Event(NotifyUserModel(R.string.dialog_message_screen_constraints_limitation) {
+                    selectModelEvent.value = Event(Constraint.screenOffConstraint())
                 })
             }
         }

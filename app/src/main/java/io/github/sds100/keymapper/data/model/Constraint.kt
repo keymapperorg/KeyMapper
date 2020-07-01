@@ -16,7 +16,9 @@ import java.io.Serializable
     Constraint.APP_FOREGROUND,
     Constraint.APP_NOT_FOREGROUND,
     Constraint.BT_DEVICE_CONNECTED,
-    Constraint.BT_DEVICE_DISCONNECTED
+    Constraint.BT_DEVICE_DISCONNECTED,
+    Constraint.SCREEN_ON,
+    Constraint.SCREEN_OFF
 ])
 annotation class ConstraintType
 
@@ -28,7 +30,8 @@ annotation class ConstraintMode
 
 @IntDef(value = [
     Constraint.CATEGORY_APP,
-    Constraint.CATEGORY_BLUETOOTH]
+    Constraint.CATEGORY_BLUETOOTH,
+    Constraint.CATEGORY_SCREEN]
 )
 annotation class ConstraintCategory
 
@@ -54,6 +57,8 @@ data class Constraint(@ConstraintType
         const val APP_NOT_FOREGROUND = "constraint_app_not_foreground"
         const val BT_DEVICE_CONNECTED = "constraint_bt_device_connected"
         const val BT_DEVICE_DISCONNECTED = "constraint_bt_device_disconnected"
+        const val SCREEN_ON = "constraint_screen_on"
+        const val SCREEN_OFF = "constraint_screen_off"
 
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
         const val EXTRA_BT_ADDRESS = "extra_bluetooth_device_address"
@@ -62,10 +67,12 @@ data class Constraint(@ConstraintType
         //Categories
         const val CATEGORY_APP = 0
         const val CATEGORY_BLUETOOTH = 1
+        const val CATEGORY_SCREEN = 2
 
         val CATEGORY_LABEL_MAP = mapOf(
             CATEGORY_APP to R.string.constraint_category_app,
-            CATEGORY_BLUETOOTH to R.string.constraint_category_bluetooth
+            CATEGORY_BLUETOOTH to R.string.constraint_category_bluetooth,
+            CATEGORY_SCREEN to R.string.constraint_category_screen
         )
 
         fun appConstraint(@ConstraintType type: String, packageName: String): Constraint {
@@ -74,6 +81,14 @@ data class Constraint(@ConstraintType
 
         fun btConstraint(@ConstraintType type: String, address: String, name: String): Constraint {
             return Constraint(type, Extra(EXTRA_BT_ADDRESS, address), Extra(EXTRA_BT_NAME, name))
+        }
+
+        fun screenOnConstraint(): Constraint {
+            return Constraint(SCREEN_ON)
+        }
+
+        fun screenOffConstraint(): Constraint {
+            return Constraint(SCREEN_OFF)
         }
     }
 
