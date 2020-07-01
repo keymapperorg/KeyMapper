@@ -7,6 +7,7 @@ import android.view.KeyEvent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import io.github.sds100.keymapper.BuildConfig
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
@@ -22,6 +23,7 @@ import io.github.sds100.keymapper.util.result.GenericFailure
 import io.github.sds100.keymapper.util.result.onFailure
 import io.github.sds100.keymapper.util.result.onSuccess
 import kotlinx.android.synthetic.main.activity_home.*
+import kotlinx.coroutines.launch
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.messageResource
 import splitties.alertdialog.appcompat.okButton
@@ -76,14 +78,16 @@ class HomeActivity : AppCompatActivity() {
 
                 BackupUtils.createAutomaticBackupOutputStream(this)
                     .onSuccess {
-                        mBackupRestoreViewModel.backup(it, keymapList)
+                        lifecycleScope.launch {
+                            mBackupRestoreViewModel.backup(it, keymapList)
+                        }
                     }.onFailure {
                         if (it is FileAccessDenied) {
                             coordinatorLayout.snack(R.string.error_file_access_denied_automatic_backup).apply {
                                 setAction(R.string.reset) {
                                     container.findNavController().navigate(R.id.action_global_settingsFragment)
                                 }
-                                
+
                                 show()
                             }
                         }

@@ -14,7 +14,9 @@ import io.github.sds100.keymapper.util.result.Failure
 import io.github.sds100.keymapper.util.result.GenericFailure
 import io.github.sds100.keymapper.util.result.handle
 import io.github.sds100.keymapper.util.result.handleAsync
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.InputStream
 import java.io.OutputStream
@@ -29,12 +31,23 @@ class BackupRestoreViewModel internal constructor(
     val requestRestore = MutableLiveData<Event<Unit>>()
 
     fun backup(outputStream: OutputStream?, vararg keymapId: Long) {
-        val keymaps = mKeymapRepository.keymapList.value?.filter { keymapId.contains(it.id) }
-        backup(outputStream, keymaps)
+        viewModelScope.launch {
+            val keymaps = withContext(Dispatchers.Default) {
+                mKeymapRepository.getKeymaps().filter { keymapId.contains(it.id) }
+            }
+
+            backup(outputStream, keymaps)
+        }
     }
 
     fun backupAll(outputStream: OutputStream?) {
-        backup(outputStream, mKeymapRepository.keymapList.value)
+        viewModelScope.launch {
+            val keymaps = withContext(Dispatchers.Default) {
+                mKeymapRepository.getKeymaps()
+            }
+
+            backup(outputStream, keymaps)
+        }
     }
 
     fun restore(inputStream: InputStream?) {
@@ -59,7 +72,7 @@ class BackupRestoreViewModel internal constructor(
         }
     }
 
-    fun backup(outputStream: OutputStream?, keymapList: List<KeyMap>?) {
+    suspend fun backup(outputStream: OutputStream?, keymapList: List<KeyMap>?) {
         if (outputStream == null) {
             showMessageStringRes.value = Event(R.string.error_failed_to_pick_file)
         }
@@ -69,17 +82,15 @@ class BackupRestoreViewModel internal constructor(
             return
         }
 
-        viewModelScope.launch {
-            val deviceInfo = mDeviceInfoRepository.getAll()
+        val deviceInfo = mDeviceInfoRepository.getAll()
 
-            BackupUtils.backup(outputStream!!, keymapList, deviceInfo).handle(
-                onSuccess = {
-                    showMessageStringRes.value = Event(R.string.toast_backup_successful)
-                },
-                onFailure = {
-                    showErrorMessage.value = Event(it)
-                })
-        }
+        BackupUtils.backup(outputStream!!, keymapList, deviceInfo).handle(
+            onSuccess = {
+                showMessageStringRes.value = Event(R.string.toast_backup_successful)
+            },
+            onFailure = {
+                showErrorMessage.value = Event(it)
+            })
     }
 
     @Suppress("UNCHECKED_CAST")
