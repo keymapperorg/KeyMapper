@@ -55,7 +55,7 @@ class ActionsFragment(private val mKeymapId: Long) : Fragment() {
                 }
             })
 
-            mViewModel.chooseActionOptions.observe(viewLifecycleOwner, EventObserver {
+            mViewModel.chooseActionBehavior.observe(viewLifecycleOwner, EventObserver {
                 val direction = ConfigKeymapFragmentDirections.actionConfigKeymapFragmentToActionOptionsFragment(it)
                 findNavController().navigate(direction)
             })
@@ -85,7 +85,7 @@ class ActionsFragment(private val mKeymapId: Long) : Fragment() {
                         }
 
                         onMoreClick { _ ->
-                            mViewModel.chooseActionOptions(model.id)
+                            mViewModel.chooseActionBehavior(model.id)
                         }
 
                         onClick { _ ->

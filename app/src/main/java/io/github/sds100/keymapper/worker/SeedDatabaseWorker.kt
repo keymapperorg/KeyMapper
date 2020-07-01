@@ -65,7 +65,7 @@ class SeedDatabaseWorker(
             ))
         }.toList()
 
-        return Trigger(keys).apply { mode = Trigger.SEQUENCE }
+        return Trigger(keys, mode = Trigger.SEQUENCE)
     }
 
     private fun createRandomActionList(): List<Action> {

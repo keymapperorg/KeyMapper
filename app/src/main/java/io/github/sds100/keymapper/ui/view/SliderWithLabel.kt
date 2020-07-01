@@ -8,6 +8,7 @@ import androidx.databinding.BindingAdapter
 import com.google.android.material.slider.Slider
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.SliderModel
+import io.github.sds100.keymapper.util.int
 import io.github.sds100.keymapper.util.str
 
 /**
@@ -48,23 +49,27 @@ class SliderWithLabel(context: Context,
     }
 
     fun applyModel(model: SliderModel) {
-        val defaultStepValue = calculateDefaultStepValue(model.min.toFloat(), model.stepSize.toFloat())
+        val min = context.int(model.min)
+        val max = context.int(model.max)
+        val stepSize = context.int(model.stepSize)
+
+        val defaultStepValue = calculateDefaultStepValue(min.toFloat(), stepSize.toFloat())
 
         mSlider.valueFrom = if (model.isDefaultStepEnabled) {
             defaultStepValue
         } else {
-            model.min.toFloat()
+            min.toFloat()
         }
 
-        mSlider.valueTo = model.max.toFloat()
-        mSlider.stepSize = model.stepSize.toFloat()
+        mSlider.valueTo = max.toFloat()
+        mSlider.stepSize = stepSize.toFloat()
 
         mIsDefaultStepEnabled = model.isDefaultStepEnabled
 
         if (model.value != null) {
             when {
-                model.value > model.max -> mSlider.value = model.max.toFloat()
-                model.value < model.min -> mSlider.value = model.min.toFloat()
+                model.value > max -> mSlider.value = max.toFloat()
+                model.value < min -> mSlider.value = min.toFloat()
                 else -> mSlider.value = model.value.toFloat()
             }
         } else {

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
@@ -15,10 +16,11 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.github.sds100.keymapper.checkbox
-import io.github.sds100.keymapper.data.model.*
-import io.github.sds100.keymapper.data.viewmodel.ActionOptionsViewModel
-import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
-import io.github.sds100.keymapper.databinding.FragmentActionOptionsBinding
+import io.github.sds100.keymapper.data.model.BehaviorOption
+import io.github.sds100.keymapper.data.model.CheckBoxListItemModel
+import io.github.sds100.keymapper.data.model.SliderListItemModel
+import io.github.sds100.keymapper.data.viewmodel.ActionBehaviorViewModel
+import io.github.sds100.keymapper.databinding.FragmentActionBehaviorBinding
 import io.github.sds100.keymapper.slider
 import io.github.sds100.keymapper.util.EventObserver
 import io.github.sds100.keymapper.util.InjectorUtils
@@ -28,50 +30,38 @@ import io.github.sds100.keymapper.util.str
 /**
  * Created by sds100 on 27/06/2020.
  */
-class ActionOptionsFragment : BottomSheetDialogFragment() {
+class ActionBehaviorFragment : BottomSheetDialogFragment() {
 
     companion object {
         const val REQUEST_KEY = "request_choose_action_options"
-        const val EXTRA_ACTION_OPTIONS = "extra_action_options"
+        const val EXTRA_ACTION_BEHAVIOR = "extra_action_behavior"
     }
 
-    private val mViewModel: ActionOptionsViewModel by viewModels {
-        InjectorUtils.provideActionOptionsViewModel()
+    private val mViewModel: ActionBehaviorViewModel by viewModels {
+        InjectorUtils.provideActionBehaviorViewModel()
     }
 
     private val mController by lazy { Controller() }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        FragmentActionOptionsBinding.inflate(layoutInflater).apply {
+        FragmentActionBehaviorBinding.inflate(layoutInflater).apply {
             lifecycleOwner = viewLifecycleOwner
             viewModel = mViewModel
 
-            mViewModel.setInitialOptions(navArgs<ActionOptionsFragmentArgs>().value.StringNavArgChooseActionOptionsModel)
+            mViewModel.setBehavior(navArgs<ActionBehaviorFragmentArgs>().value.StringNavArgActionBehavior)
 
             epoxyRecyclerView.adapter = mController.adapter
 
-            mViewModel.checkBoxModels.observe(viewLifecycleOwner) { models ->
-                mController.checkBoxModels = models
+            mViewModel.checkBoxModels.observe(viewLifecycleOwner) {
+                mController.checkBoxModels = it
             }
 
-            mViewModel.sliderModels.observe(viewLifecycleOwner) { models ->
-                mController.sliderModels = models.map {
-                    SliderListItemModel(
-                        id = it.extraId,
-                        label = Extra.EXTRA_LABELS[it.extraId]!!,
-
-                        sliderModel = SliderModel(
-                            value = it.value,
-                            isDefaultStepEnabled = true,
-                            min = int(Extra.EXTRA_MIN_VALUES[it.extraId]!!),
-                            max = int(Extra.EXTRA_MAX_VALUES[it.extraId]!!),
-                            stepSize = int(Extra.EXTRA_STEP_SIZE_VALUES[it.extraId]!!))
-                    )
-                }
+            mViewModel.sliderModels.observe(viewLifecycleOwner) {
+                mController.sliderModels = it
             }
 
             mViewModel.onSaveEvent.observe(viewLifecycleOwner, EventObserver {
-                setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_ACTION_OPTIONS to it))
+                setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_ACTION_BEHAVIOR to it))
                 findNavController().navigateUp()
             })
 
@@ -102,7 +92,7 @@ class ActionOptionsFragment : BottomSheetDialogFragment() {
 
     private inner class Controller : EpoxyController() {
 
-        var checkBoxModels: List<CheckBoxOption> = listOf()
+        var checkBoxModels: List<CheckBoxListItemModel> = listOf()
             set(value) {
                 field = value
                 requestModelBuild()
@@ -115,15 +105,14 @@ class ActionOptionsFragment : BottomSheetDialogFragment() {
             }
 
         override fun buildModels() {
-
             checkBoxModels.forEach {
                 checkbox {
-                    id(it.flagId)
-                    primaryText(str(Action.ACTION_FLAG_LABEL_MAP[it.flagId]!!))
+                    id(it.id)
+                    primaryText(str(it.label))
                     isSelected(it.isChecked)
 
-                    onClick { _ ->
-                        mViewModel.toggleFlag(it.flagId)
+                    onClick { view ->
+                        mViewModel.setValue(it.id, (view as CheckBox).isChecked)
                     }
                 }
             }
@@ -138,10 +127,10 @@ class ActionOptionsFragment : BottomSheetDialogFragment() {
                         if (!fromUser) return@onSliderChangeListener
 
                         //If the user has selected to use the default value
-                        if (value < it.sliderModel.min) {
-                            mViewModel.setOptionValue(it.id, ConfigKeymapViewModel.EXTRA_USE_DEFAULT)
+                        if (value < int(it.sliderModel.min)) {
+                            mViewModel.setValue(it.id, BehaviorOption.DEFAULT)
                         } else {
-                            mViewModel.setOptionValue(it.id, value.toInt())
+                            mViewModel.setValue(it.id, value.toInt())
                         }
                     }
                 }

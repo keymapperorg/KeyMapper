@@ -82,7 +82,7 @@ data class Extra(@ExtraId
             EXTRA_SEQUENCE_TRIGGER_TIMEOUT to R.string.extra_label_sequence_trigger_timeout,
             EXTRA_LONG_PRESS_DELAY to R.string.extra_label_long_press_delay_timeout,
             EXTRA_DOUBLE_PRESS_DELAY to R.string.extra_label_double_press_delay_timeout,
-            EXTRA_HOLD_DOWN_DELAY to R.string.extra_label_hold_down_delay_label,
+            EXTRA_HOLD_DOWN_DELAY to R.string.extra_label_hold_down_delay,
             EXTRA_REPEAT_DELAY to R.string.extra_label_repeat_delay,
             EXTRA_VIBRATION_DURATION to R.string.extra_label_vibration_duration
         )
@@ -95,5 +95,12 @@ data class Extra(@ExtraId
             EXTRA_REPEAT_DELAY to R.integer.default_value_repeat_delay,
             EXTRA_VIBRATION_DURATION to R.integer.default_value_vibrate_duration
         )
+    }
+}
+
+fun List<Extra>.putExtraData(id: String, data: String): List<Extra> {
+    return this.toMutableList().apply {
+        removeAll { it.id == id }
+        add(Extra(id, data))
     }
 }
