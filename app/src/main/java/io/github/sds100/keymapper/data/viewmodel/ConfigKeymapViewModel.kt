@@ -6,15 +6,12 @@ import io.github.sds100.keymapper.data.DeviceInfoRepository
 import io.github.sds100.keymapper.data.IOnboardingState
 import io.github.sds100.keymapper.data.KeymapRepository
 import io.github.sds100.keymapper.data.model.*
+import io.github.sds100.keymapper.data.model.BehaviorOption.Companion.nullIfDefault
 import io.github.sds100.keymapper.util.Event
-import io.github.sds100.keymapper.util.KeyEventUtils
 import io.github.sds100.keymapper.util.dataExtraString
 import io.github.sds100.keymapper.util.result.Failure
-import io.github.sds100.keymapper.util.toggleFlag
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import splitties.bitflags.hasFlag
-import splitties.bitflags.minusFlag
 import java.util.*
 
 class ConfigKeymapViewModel internal constructor(
@@ -95,14 +92,13 @@ class ConfigKeymapViewModel internal constructor(
     }
 
     val triggerKeys: MutableLiveData<List<Trigger.Key>> = MutableLiveData(listOf())
-
     val triggerKeyModelList = MutableLiveData(listOf<TriggerKeyModel>())
 
     val buildTriggerKeyModelListEvent = triggerKeys.map {
         Event(it)
     }
 
-    private val mTriggerExtras: MutableLiveData<List<Extra>> = MutableLiveData(listOf())
+    val triggerBehavior: MutableLiveData<TriggerBehavior> = MutableLiveData()
 
     val recordTriggerTimeLeft = MutableLiveData(0)
     val recordingTrigger = MutableLiveData(false)
@@ -110,9 +106,7 @@ class ConfigKeymapViewModel internal constructor(
     val stopRecordingTrigger: MutableLiveData<Event<Unit>> = MutableLiveData()
     val chooseParallelTriggerClickType: MutableLiveData<Event<Unit>> = MutableLiveData()
 
-    private val mKeymapFlags: MutableLiveData<Int> = MutableLiveData(0)
     val isEnabled: MutableLiveData<Boolean> = MutableLiveData()
-
     val actionList: MutableLiveData<List<Action>> = MutableLiveData(listOf())
     val chooseAction: MutableLiveData<Event<Unit>> = MutableLiveData()
     val showFixPrompt: MutableLiveData<Event<Failure>> = MutableLiveData()
@@ -141,14 +135,103 @@ class ConfigKeymapViewModel internal constructor(
 
     val promptToEnableAccessibilityService: MutableLiveData<Event<Unit>> = MutableLiveData()
 
-    val sliderOptions = MutableLiveData<List<SliderOption>>()
-    val checkBoxOptions = MutableLiveData<List<CheckBoxOption>>()
+    val sliderModels = triggerBehavior.map {
+        it ?: return@map listOf<SliderListItemModel>()
+
+        sequence {
+            if (it.vibrateDuration.isAllowed) {
+                yield(SliderListItemModel(
+                    id = it.vibrateDuration.id,
+                    label = R.string.extra_label_vibration_duration,
+                    sliderModel = SliderModel(
+                        value = it.vibrateDuration.value.nullIfDefault,
+                        isDefaultStepEnabled = true,
+                        min = R.integer.vibrate_duration_min,
+                        max = R.integer.vibrate_duration_max,
+                        stepSize = R.integer.vibrate_duration_step_size
+                    )
+                ))
+            }
+
+            if (it.longPressDelay.isAllowed) {
+                yield(SliderListItemModel(
+                    id = it.longPressDelay.id,
+                    label = R.string.extra_label_long_press_delay_timeout,
+                    sliderModel = SliderModel(
+                        value = it.longPressDelay.value.nullIfDefault,
+                        isDefaultStepEnabled = true,
+                        min = R.integer.long_press_delay_min,
+                        max = R.integer.long_press_delay_max,
+                        stepSize = R.integer.long_press_delay_step_size
+                    )
+                ))
+            }
+
+            if (it.doublePressDelay.isAllowed) {
+                yield(SliderListItemModel(
+                    id = it.doublePressDelay.id,
+                    label = R.string.extra_label_double_press_delay_timeout,
+                    sliderModel = SliderModel(
+                        value = it.doublePressDelay.value.nullIfDefault,
+                        isDefaultStepEnabled = true,
+                        min = R.integer.double_press_delay_min,
+                        max = R.integer.double_press_delay_max,
+                        stepSize = R.integer.double_press_delay_step_size
+                    )
+                ))
+            }
+
+            if (it.sequenceTriggerTimeout.isAllowed) {
+                yield(SliderListItemModel(
+                    id = it.sequenceTriggerTimeout.id,
+                    label = R.string.extra_label_sequence_trigger_timeout,
+                    sliderModel = SliderModel(
+                        value = it.sequenceTriggerTimeout.value.nullIfDefault,
+                        isDefaultStepEnabled = true,
+                        min = R.integer.sequence_trigger_timeout_min,
+                        max = R.integer.sequence_trigger_timeout_max,
+                        stepSize = R.integer.sequence_trigger_timeout_step_size
+                    )
+                ))
+            }
+        }.toList()
+    }
+
+    val checkBoxModels = triggerBehavior.map {
+
+        it ?: return@map listOf<CheckBoxListItemModel>()
+
+        sequence {
+            if (it.vibrate.isAllowed) {
+                yield(CheckBoxListItemModel(
+                    id = it.vibrate.id,
+                    label = R.string.flag_vibrate,
+                    isChecked = it.vibrate.value
+                ))
+            }
+
+            if (it.screenOffTrigger.isAllowed) {
+                yield(CheckBoxListItemModel(
+                    id = it.screenOffTrigger.id,
+                    label = R.string.flag_detect_triggers_screen_off,
+                    isChecked = it.screenOffTrigger.value
+                ))
+            }
+
+            if (it.longPressDoubleVibration.isAllowed) {
+                yield(CheckBoxListItemModel(
+                    id = it.longPressDoubleVibration.id,
+                    label = R.string.flag_long_press_double_vibration,
+                    isChecked = it.longPressDoubleVibration.value
+                ))
+            }
+        }.toList()
+    }
 
     init {
         if (mId == NEW_KEYMAP_ID) {
             triggerKeys.value = listOf()
             actionList.value = listOf()
-            mKeymapFlags.value = 0
             isEnabled.value = true
             constraintList.value = listOf()
 
@@ -184,15 +267,20 @@ class ConfigKeymapViewModel internal constructor(
                 }
             }
 
+            triggerBehavior.value = TriggerBehavior(
+                listOf(),
+                Trigger.DEFAULT_TRIGGER_MODE,
+                0,
+                listOf()
+            )
+
             invalidateOptions()
 
         } else {
             viewModelScope.launch {
                 mKeymapRepository.getKeymap(mId).let { keymap ->
                     triggerKeys.value = keymap.trigger.keys
-                    mTriggerExtras.value = keymap.trigger.extras
                     actionList.value = keymap.actionList
-                    mKeymapFlags.value = keymap.flags
                     isEnabled.value = keymap.isEnabled
                     constraintList.value = keymap.constraintList
 
@@ -228,6 +316,13 @@ class ConfigKeymapViewModel internal constructor(
                         }
                     }
 
+                    triggerBehavior.value = TriggerBehavior(
+                        keymap.trigger.keys,
+                        keymap.trigger.mode,
+                        keymap.trigger.flags,
+                        keymap.trigger.extras
+                    )
+
                     invalidateOptions()
                 }
 
@@ -252,13 +347,15 @@ class ConfigKeymapViewModel internal constructor(
                 mId
             }
 
+        val trigger =
+            triggerBehavior.value!!.applyToTrigger(Trigger(keys = triggerKeys.value!!, mode = triggerMode.value!!))
+
         val keymap = KeyMap(
             id = actualId,
-            trigger = Trigger(triggerKeys.value!!, mTriggerExtras.value!!, mode = triggerMode.value!!),
+            trigger = trigger,
             actionList = actionList.value!!,
             constraintList = constraintList.value!!,
             constraintMode = constraintMode,
-            flags = mKeymapFlags.value!!,
             isEnabled = isEnabled.value!!
         )
 
@@ -374,15 +471,21 @@ class ConfigKeymapViewModel internal constructor(
         return true
     }
 
-    fun setTriggerExtraValue(@ExtraId id: String, value: Int) {
-        mTriggerExtras.value = mTriggerExtras.value?.toMutableList()?.apply {
-            removeAll { it.id == id }
+    fun setTriggerOption(id: String, newValue: Int) {
+        triggerBehavior.value = triggerBehavior.value?.setValue(id, newValue)
+        invalidateOptions()
+    }
 
-            if (value != EXTRA_USE_DEFAULT) {
-                add(Extra(id, value.toString()))
-            }
+    fun setTriggerOption(id: String, newValue: Boolean) {
+
+        if (id == TriggerBehavior.ID_SCREEN_OFF_TRIGGER &&
+            !getShownPrompt(R.string.key_pref_shown_screen_off_triggers_explanation)) {
+            showPrompt(NotifyUserModel(R.string.showcase_screen_off_triggers) {
+                setShownPrompt(R.string.key_pref_shown_screen_off_triggers_explanation)
+            })
         }
 
+        triggerBehavior.value = triggerBehavior.value?.setValue(id, newValue)
         invalidateOptions()
     }
 
@@ -424,19 +527,6 @@ class ConfigKeymapViewModel internal constructor(
         if (recordingTrigger.value == true) {
             stopRecordingTrigger.value = Event(Unit)
         }
-    }
-
-    fun toggleFlag(flagId: Int) {
-        if (flagId == KeyMap.KEYMAP_FLAG_SCREEN_OFF_TRIGGERS &&
-            !getShownPrompt(R.string.key_pref_shown_screen_off_triggers_explanation)) {
-            showPrompt(NotifyUserModel(R.string.showcase_screen_off_triggers) {
-                setShownPrompt(R.string.key_pref_shown_screen_off_triggers_explanation)
-            })
-        }
-
-        mKeymapFlags.value = mKeymapFlags.value?.toggleFlag(flagId)
-
-        invalidateOptions()
     }
 
     fun removeConstraint(id: String) {
@@ -541,76 +631,7 @@ class ConfigKeymapViewModel internal constructor(
         }
     }
 
-    private fun allowedKeymapFlags(): IntArray {
-        val allowedFlags = mutableListOf(KeyMap.KEYMAP_FLAG_VIBRATE)
-
-        if (actionList.value?.isNotEmpty() == true) {
-            if ((triggerKeys.value?.size == 1 || (triggerInParallel.value == true))
-                && triggerKeys.value?.getOrNull(0)?.clickType == Trigger.LONG_PRESS) {
-                allowedFlags.add(KeyMap.KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION)
-            }
-
-            //If all the keys can be detected when the screen is off
-            if (triggerKeys.value?.isNotEmpty() == true
-                && triggerKeys.value?.all {
-                    KeyEventUtils.GET_EVENT_LABEL_TO_KEYCODE.containsValue(it.keyCode)
-                } == true) {
-                allowedFlags.add(KeyMap.KEYMAP_FLAG_SCREEN_OFF_TRIGGERS)
-            }
-        }
-
-        return allowedFlags.toIntArray()
-    }
-
-    private fun allowedTriggerOptions(): Set<String> {
-        val allowedExtras = mutableListOf<String>()
-
-        if (triggerKeys.value?.any { it.clickType == Trigger.LONG_PRESS } == true) {
-            allowedExtras.add(Trigger.EXTRA_LONG_PRESS_DELAY)
-        }
-
-        if (triggerKeys.value?.any { it.clickType == Trigger.DOUBLE_PRESS } == true) {
-            allowedExtras.add(Trigger.EXTRA_DOUBLE_PRESS_DELAY)
-        }
-
-        if (!triggerKeys.value.isNullOrEmpty() && triggerKeys.value?.let { it.size > 1 } == true
-            && triggerMode.value == Trigger.SEQUENCE) {
-            allowedExtras.add(Trigger.EXTRA_SEQUENCE_TRIGGER_TIMEOUT)
-        }
-
-        if (mKeymapFlags.value?.hasFlag(KeyMap.KEYMAP_FLAG_VIBRATE) == true ||
-            mKeymapFlags.value?.hasFlag(KeyMap.KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION) == true) {
-            allowedExtras.add(Trigger.EXTRA_VIBRATION_DURATION)
-        }
-
-        return allowedExtras.toSet()
-    }
-
-    private fun removeDeniedFlags() {
-
-        var newKeymapFlags = mKeymapFlags.value ?: 0
-
-        KeyMap.KEYMAP_FLAG_LABEL_MAP.keys.forEach { flagId ->
-            //remove the flag if it isn't allowed anymore
-            if (newKeymapFlags.hasFlag(flagId) && !allowedKeymapFlags().contains(flagId)) {
-                newKeymapFlags = newKeymapFlags.minusFlag(flagId)
-            }
-        }
-
-        mKeymapFlags.value = newKeymapFlags
-    }
-
-    private fun removeDeniedTriggerOptions() {
-        //remove all extras which aren't allowed
-        mTriggerExtras.value = mTriggerExtras.value?.toMutableList()?.apply {
-            val allowedOptions = allowedTriggerOptions()
-            removeAll { extra -> allowedOptions.none { extra.id == it } }
-        }
-    }
-
     private fun invalidateOptions() {
-        removeDeniedFlags()
-        removeDeniedTriggerOptions()
 
         actionList.value = actionList.value?.map { action ->
             val newBehavior = ActionBehavior(
@@ -622,30 +643,10 @@ class ConfigKeymapViewModel internal constructor(
             newBehavior.applyToAction(action)
         }
 
-        val allowedFlags = allowedKeymapFlags()
-
-        checkBoxOptions.value = sequence {
-            KeyMap.KEYMAP_FLAG_LABEL_MAP.keys.forEach { flagId ->
-                if (allowedFlags.contains(flagId)) {
-                    val isChecked = mKeymapFlags.value?.hasFlag(flagId) == true
-
-                    yield(CheckBoxOption(flagId, isChecked))
-                }
-            }
-        }.toList()
-
-        //Iterate over the list of ALL trigger extra IDs to keep the order consistent.
-        val allowedTriggerOptions = allowedTriggerOptions()
-
-        sliderOptions.value = sequence {
-            Trigger.EXTRAS.forEach { extraId ->
-                if (allowedTriggerOptions.contains(extraId)) {
-                    val currentValue = mTriggerExtras.value?.find { extra -> extra.id == extraId }?.data?.toInt()
-
-                    yield(SliderOption(extraId, currentValue))
-                }
-            }
-        }.toList()
+        triggerBehavior.value = triggerBehavior.value?.dependentDataChanged(
+            triggerKeys.value ?: listOf(),
+            triggerMode.value ?: Trigger.DEFAULT_TRIGGER_MODE
+        )
     }
 
     suspend fun getDeviceInfoList() = mDeviceInfoRepository.getAll()

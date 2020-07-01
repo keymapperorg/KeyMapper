@@ -232,7 +232,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                         val extraId = pair.key
                         val indexToStore = pair.value
 
-                        keyMap.trigger.getExtraData(extraId).onSuccess {
+                        keyMap.trigger.extras.getData(extraId).onSuccess {
                             triggerOptionsArray[indexToStore] = it.toInt()
                         }
                     }
@@ -603,7 +603,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                         awaitingLongPress = true
 
                         if (mParallelTriggerKeymapFlags[triggerIndex]
-                                .hasFlag(KeyMap.KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION)) {
+                                .hasFlag(Trigger.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION)) {
                             vibrate.value = Event(vibrateDuration(mParallelTriggerOptions[triggerIndex]))
                         }
 
@@ -813,7 +813,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                             actionKeysToPerform.add(key)
 
                             val vibrateDuration =
-                                if (mSequenceTriggerKeymapFlags[triggerIndex].hasFlag(KeyMap.KEYMAP_FLAG_VIBRATE)) {
+                                if (mSequenceTriggerKeymapFlags[triggerIndex].hasFlag(Trigger.TRIGGER_FLAG_VIBRATE)) {
                                     vibrateDuration(mSequenceTriggerOptions[triggerIndex])
                                 } else {
                                     -1
@@ -933,7 +933,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                     mParallelTriggerActions[it].forEachIndexed { index, key ->
                         actionKeysToPerform.add(key)
 
-                        val vibrateDuration = if (mParallelTriggerKeymapFlags[it].hasFlag(KeyMap.KEYMAP_FLAG_VIBRATE)) {
+                        val vibrateDuration = if (mParallelTriggerKeymapFlags[it].hasFlag(Trigger.TRIGGER_FLAG_VIBRATE)) {
                             vibrateDuration(mParallelTriggerOptions[it])
                         } else {
                             -1
@@ -1048,7 +1048,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                     }
 
                     val vibrateDuration =
-                        if (mParallelTriggerKeymapFlags[triggerIndex].hasFlag(KeyMap.KEYMAP_FLAG_VIBRATE)) {
+                        if (mParallelTriggerKeymapFlags[triggerIndex].hasFlag(Trigger.TRIGGER_FLAG_VIBRATE)) {
                             vibrateDuration(mParallelTriggerOptions[triggerIndex])
                         } else {
                             -1
@@ -1189,7 +1189,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             performAction(action, showPerformingActionToast(actionKey))
 
             if (mParallelTriggerKeymapFlags.vibrate(triggerIndex) || preferences.forceVibrate
-                || mParallelTriggerKeymapFlags[triggerIndex].hasFlag(KeyMap.KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION)) {
+                || mParallelTriggerKeymapFlags[triggerIndex].hasFlag(Trigger.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION)) {
                 vibrate.value = Event(vibrateDuration(mParallelTriggerOptions[triggerIndex]))
             }
         }
@@ -1301,7 +1301,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 val extraId = it.key
                 val index = it.value
 
-                action.getExtraData(extraId).onSuccess { value ->
+                action.extras.getData(extraId).onSuccess { value ->
                     optionValues[index] = value.toInt()
                 }
             }
@@ -1327,7 +1327,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
     private val Action.mappedToModifier
         get() = type == ActionType.KEY_EVENT && isModifierKey(data.toInt())
 
-    private fun IntArray.vibrate(triggerIndex: Int) = this[triggerIndex].hasFlag(KeyMap.KEYMAP_FLAG_VIBRATE)
+    private fun IntArray.vibrate(triggerIndex: Int) = this[triggerIndex].hasFlag(Trigger.TRIGGER_FLAG_VIBRATE)
 
     private fun stopRepeatingWhenPressedAgain(actionKey: Int) =
         mActionOptions[actionKey][INDEX_STOP_REPEAT_BEHAVIOUR] == Action.STOP_REPEAT_BEHAVIOUR_TRIGGER_AGAIN

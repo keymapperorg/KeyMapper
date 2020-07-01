@@ -2,9 +2,7 @@ package io.github.sds100.keymapper.data.model
 
 import androidx.annotation.IntDef
 import com.google.gson.annotations.SerializedName
-import io.github.sds100.keymapper.util.result.ExtraNotFound
-import io.github.sds100.keymapper.util.result.Result
-import io.github.sds100.keymapper.util.result.Success
+import io.github.sds100.keymapper.R
 
 /**
  * Created by sds100 on 16/07/2018.
@@ -22,7 +20,10 @@ class Trigger(
 
     @Mode
     @SerializedName(NAME_MODE)
-    val mode: Int = DEFAULT_TRIGGER_MODE
+    val mode: Int = DEFAULT_TRIGGER_MODE,
+
+    @SerializedName(NAME_FLAGS)
+    val flags: Int = 0
 ) {
 
     companion object {
@@ -30,6 +31,7 @@ class Trigger(
         const val NAME_KEYS = "keys"
         const val NAME_EXTRAS = "extras"
         const val NAME_MODE = "mode"
+        const val NAME_FLAGS = "flags"
 
         const val PARALLEL = 0
         const val SEQUENCE = 1
@@ -52,6 +54,17 @@ class Trigger(
             EXTRA_LONG_PRESS_DELAY,
             EXTRA_DOUBLE_PRESS_DELAY,
             EXTRA_VIBRATION_DURATION
+        )
+
+        //DON'T CHANGE THESE AND THEY MUST BE POWERS OF 2!!
+        const val TRIGGER_FLAG_VIBRATE = 1
+        const val TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION = 2
+        const val TRIGGER_FLAG_SCREEN_OFF_TRIGGERS = 4
+
+        val TRIGGER_FLAG_LABEL_MAP = mapOf(
+            TRIGGER_FLAG_VIBRATE to R.string.flag_vibrate,
+            TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION to R.string.flag_long_press_double_vibration,
+            TRIGGER_FLAG_SCREEN_OFF_TRIGGERS to R.string.flag_detect_triggers_screen_off
         )
     }
 
@@ -87,17 +100,13 @@ class Trigger(
         override fun hashCode() = keyCode
     }
 
-    fun getExtraData(extraId: String): Result<String> {
-
-        return extras.find { it.id == extraId }.let {
-            it ?: return@let ExtraNotFound(extraId)
-
-            Success(it.data)
-        }
-    }
-
-    fun clone(keys: List<Key> = this.keys, extras: List<Extra> = this.extras, @Mode mode: Int = this.mode) =
-        Trigger(keys, extras, mode)
+    fun clone(
+        keys: List<Key> = this.keys,
+        extras: List<Extra> = this.extras,
+        @Mode mode: Int = this.mode,
+        flags: Int = this.flags
+    ) =
+        Trigger(keys, extras, mode, flags)
 
     @IntDef(value = [PARALLEL, SEQUENCE, UNDEFINED])
     annotation class Mode

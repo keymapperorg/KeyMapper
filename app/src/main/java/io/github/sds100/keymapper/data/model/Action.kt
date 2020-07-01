@@ -6,9 +6,6 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.ActionUtils
 import io.github.sds100.keymapper.util.SystemAction
-import io.github.sds100.keymapper.util.result.ExtraNotFound
-import io.github.sds100.keymapper.util.result.Result
-import io.github.sds100.keymapper.util.result.Success
 import io.github.sds100.keymapper.util.result.onSuccess
 import splitties.bitflags.withFlag
 import java.io.Serializable
@@ -107,20 +104,6 @@ data class Action(
             EXTRA_IME_NAME
         )
 
-        val BEHAVIOUR_EXTRAS = arrayOf(
-            EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR,
-            EXTRA_HOLD_DOWN_DELAY,
-            EXTRA_REPEAT_DELAY
-        )
-
-        val BEHAVIOUR_FLAGS = arrayOf(
-            ACTION_FLAG_SHOW_VOLUME_UI,
-            ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST,
-            ACTION_FLAG_SHOW_VOLUME_UI
-        )
-
-        val EXTRAS = DATA_EXTRAS.plus(BEHAVIOUR_EXTRAS)
-
         fun appAction(packageName: String): Action {
             return Action(ActionType.APP, packageName)
         }
@@ -193,14 +176,6 @@ data class Action(
             }
             append(flags)
         }
-
-    fun getExtraData(extraId: String): Result<String> {
-        return extras.find { it.id == extraId }.let {
-            it ?: return@let ExtraNotFound(extraId)
-
-            Success(it.data)
-        }
-    }
 
     fun clone(
         type: ActionType = this.type,

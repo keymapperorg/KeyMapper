@@ -8,11 +8,31 @@ import io.github.sds100.keymapper.data.model.Trigger.Companion.DOUBLE_PRESS
 import io.github.sds100.keymapper.data.model.Trigger.Companion.LONG_PRESS
 import io.github.sds100.keymapper.data.model.Trigger.Companion.PARALLEL
 import io.github.sds100.keymapper.data.model.Trigger.Companion.SEQUENCE
+import io.github.sds100.keymapper.data.model.Trigger.Companion.TRIGGER_FLAG_LABEL_MAP
 import io.github.sds100.keymapper.data.model.TriggerKeyModel
+import splitties.bitflags.hasFlag
 
 /**
  * Created by sds100 on 02/03/2020.
  */
+
+fun Trigger.getFlagLabelList(ctx: Context): List<String> = sequence {
+    TRIGGER_FLAG_LABEL_MAP.keys.forEach { flag ->
+        if (flags.hasFlag(flag)) {
+            yield(ctx.str(TRIGGER_FLAG_LABEL_MAP.getValue(flag)))
+        }
+    }
+}.toList()
+
+fun Trigger.buildTriggerFlagsDescription(ctx: Context): String = buildString {
+    getFlagLabelList(ctx).forEachIndexed { index, label ->
+        if (index > 0) {
+            append(" ${ctx.str(R.string.interpunct)} ")
+        }
+
+        append(label)
+    }
+}
 
 fun Trigger.buildDescription(ctx: Context, deviceInfoList: List<DeviceInfo>): String = buildString {
     val separator = when (mode) {

@@ -7,10 +7,7 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.KeyEvent
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.model.Action
-import io.github.sds100.keymapper.data.model.ActionChipModel
-import io.github.sds100.keymapper.data.model.ActionModel
-import io.github.sds100.keymapper.data.model.Option
+import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.util.SystemActionUtils.getDescriptionWithOption
 import io.github.sds100.keymapper.util.result.*
@@ -105,7 +102,7 @@ private fun Action.getTitle(ctx: Context): Result<String> = when (type) {
     }
 
     ActionType.APP_SHORTCUT -> {
-        getExtraData(Action.EXTRA_SHORTCUT_TITLE)
+        extras.getData(Action.EXTRA_SHORTCUT_TITLE)
     }
 
     ActionType.KEY_EVENT -> {
@@ -128,7 +125,7 @@ private fun Action.getTitle(ctx: Context): Result<String> = when (type) {
         SystemActionUtils.getSystemActionDef(systemActionId) then { systemActionDef ->
             if (systemActionDef.hasOptions) {
 
-                getExtraData(Option.getExtraIdForOption(systemActionId)) then {
+                extras.getData(Option.getExtraIdForOption(systemActionId)) then {
                     Option.getOptionLabel(ctx, systemActionId, it)
 
                 } then {
@@ -137,7 +134,7 @@ private fun Action.getTitle(ctx: Context): Result<String> = when (type) {
                 } otherwise {
                     if (systemActionId == SystemAction.SWITCH_KEYBOARD) {
 
-                        getExtraData(Action.EXTRA_IME_NAME) then {
+                        extras.getData(Action.EXTRA_IME_NAME) then {
                             Success(systemActionDef.getDescriptionWithOption(ctx, it))
                         }
 
@@ -165,7 +162,7 @@ private fun Action.getIcon(ctx: Context): Result<Drawable?> = when (type) {
         }
     }
 
-    ActionType.APP_SHORTCUT -> getExtraData(Action.EXTRA_PACKAGE_NAME).then {
+    ActionType.APP_SHORTCUT -> extras.getData(Action.EXTRA_PACKAGE_NAME).then {
         Success(ctx.packageManager.getApplicationIcon(it))
     }
 
@@ -206,7 +203,7 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
                 if (type == ActionType.APP) {
                     Success(data)
                 } else {
-                    getExtraData(Action.EXTRA_PACKAGE_NAME)
+                    extras.getData(Action.EXTRA_PACKAGE_NAME)
                 }
 
             return packageName.then {
@@ -264,7 +261,7 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
                         || systemActionDef.id == SystemAction.ENABLE_FLASHLIGHT
                         || systemActionDef.id == SystemAction.DISABLE_FLASHLIGHT) {
 
-                        getExtraData(Action.EXTRA_LENS).onSuccess { lensOptionId ->
+                        extras.getData(Action.EXTRA_LENS).onSuccess { lensOptionId ->
                             val sdkLensId = Option.OPTION_ID_SDK_ID_MAP[lensOptionId]
                                 ?: error("Can't find sdk id for that option id")
 
@@ -281,11 +278,11 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
 
                 if (systemActionDef.id == SystemAction.SWITCH_KEYBOARD) {
 
-                    getExtraData(Action.EXTRA_IME_ID).onSuccess { imeId ->
+                    extras.getData(Action.EXTRA_IME_ID).onSuccess { imeId ->
                         if (!KeyboardUtils.inputMethodExists(imeId)) {
                             var errorData = imeId
 
-                            getExtraData(Action.EXTRA_IME_NAME).onSuccess { imeName ->
+                            extras.getData(Action.EXTRA_IME_NAME).onSuccess { imeName ->
                                 errorData = imeName
                             }
 
@@ -306,7 +303,7 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
 val Action.dataExtraString: String
     get() = buildString {
         Action.DATA_EXTRAS.forEach {
-            getExtraData(it).onSuccess { data ->
+            extras.getData(it).onSuccess { data ->
                 append("$it$data")
             }
         }

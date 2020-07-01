@@ -7,6 +7,7 @@ import androidx.sqlite.db.SupportSQLiteQueryBuilder
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import io.github.sds100.keymapper.data.model.Action
+import io.github.sds100.keymapper.data.model.Extra
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.SystemAction
@@ -17,7 +18,15 @@ import splitties.bitflags.withFlag
  * Created by sds100 on 25/06/20.
  */
 
+
 object Migration_2_3 {
+
+    private data class Trigger2(val keys: List<Trigger.Key> = listOf(),
+
+                                val extras: List<Extra> = listOf(),
+
+                                @Trigger.Mode
+                                val mode: Int = Trigger.SEQUENCE)
 
     private val KEYMAP_FLAG_REPEAT_ACTIONS = 16
 
@@ -37,7 +46,7 @@ object Migration_2_3 {
                 val id = getLong(0)
 
                 val triggerJson = getString(1)
-                val trigger = gson.fromJson<Trigger>(triggerJson)
+                val trigger = gson.fromJson<Trigger2>(triggerJson)
 
                 val actionListJson = getString(2)
                 val actionList = gson.fromJson<List<Action>>(actionListJson)
@@ -64,7 +73,7 @@ object Migration_2_3 {
         }
     }
 
-    private fun isRepeatable(trigger: Trigger, actionList: List<Action>): Boolean {
+    private fun isRepeatable(trigger: Trigger2, actionList: List<Action>): Boolean {
         return actionList.any {
             it.type in arrayOf(ActionType.KEY_EVENT, ActionType.TEXT_BLOCK) ||
                 listOf(

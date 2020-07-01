@@ -12,7 +12,6 @@ import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.util.ActionType
 import kotlinx.coroutines.coroutineScope
-import splitties.bitflags.withFlag
 
 /**
  * Created by sds100 on 26/01/2020.
@@ -33,7 +32,7 @@ class SeedDatabaseWorker(
                             Constraint.appConstraint(Constraint.APP_FOREGROUND, Constants.PACKAGE_NAME),
                             Constraint.appConstraint(Constraint.APP_NOT_FOREGROUND, "io.github.sds100.keymapper.ci")
                         ),
-                        flags = 0.withFlag(KeyMap.KEYMAP_FLAG_VIBRATE)
+                        flags = 0
                     ))
                 }
             }.toList().toTypedArray()
@@ -65,7 +64,7 @@ class SeedDatabaseWorker(
             ))
         }.toList()
 
-        return Trigger(keys, mode = Trigger.SEQUENCE)
+        return Trigger(keys, mode = Trigger.SEQUENCE, flags = Trigger.TRIGGER_FLAG_VIBRATE)
     }
 
     private fun createRandomActionList(): List<Action> {

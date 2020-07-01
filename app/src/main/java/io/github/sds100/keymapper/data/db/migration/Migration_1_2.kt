@@ -8,7 +8,6 @@ import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Extra
-import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.util.ActionType
 import splitties.bitflags.hasFlag
@@ -32,10 +31,19 @@ private enum class ActionType1 {
 
 private data class Extra1(val id: String, val data: String)
 
+private data class Trigger2(val keys: List<Trigger.Key> = listOf(),
+
+                            val extras: List<Extra> = listOf(),
+
+                            @Trigger.Mode
+                            val mode: Int = Trigger.SEQUENCE)
+
 object Migration_1_2 {
     private const val FLAG_VIBRATE_1 = 4
     private const val FLAG_LONG_PRESS_1 = 1
     private const val FLAG_SHOW_VOLUME_UI_1 = 2
+
+    private const val FLAG_VIBRATE_2 = 1
 
     fun migrate(database: SupportSQLiteDatabase) = database.apply {
         execSQL("""
@@ -87,7 +95,7 @@ object Migration_1_2 {
                     val newTriggerJsonList = mutableListOf<String>()
 
                     if (triggerListOld.isEmpty()) {
-                        newTriggerJsonList.add(Trigger().json())
+                        newTriggerJsonList.add(Trigger2().json())
                     }
 
                     triggerListOld.forEach { trigger ->
@@ -107,7 +115,7 @@ object Migration_1_2 {
                             Trigger.PARALLEL
                         }
 
-                        val triggerNew = Trigger(newTriggerKeys, mode = triggerMode)
+                        val triggerNew = Trigger2(newTriggerKeys, mode = triggerMode)
                         newTriggerJsonList.add(triggerNew.json())
                     }
 
@@ -138,7 +146,7 @@ object Migration_1_2 {
                     }
 
                     val flagsNew = if (flagsOld.hasFlag(FLAG_VIBRATE_1)) {
-                        KeyMap.KEYMAP_FLAG_VIBRATE
+                        FLAG_VIBRATE_2
                     } else {
                         0
                     }
