@@ -666,6 +666,11 @@ object KeyEventUtils {
         KeyEvent.KEYCODE_ALL_APPS
     )
 
+    val GET_EVENT_LABEL_TO_KEYCODE = mapOf(
+        "KEY_VOLUMEDOWN" to KeyEvent.KEYCODE_VOLUME_DOWN,
+        "KEY_VOLUMEUP" to KeyEvent.KEYCODE_VOLUME_UP
+    )
+
     /**
      * Create a text representation of a key event. E.g if the control key was pressed,
      * "Ctrl" will be returned
@@ -674,10 +679,6 @@ object KeyEventUtils {
         return NON_CHARACTER_KEY_LABELS[keyCode].let {
             it ?: "unknown keycode $keyCode"
         }
-    }
-
-    fun keyEventToString(event: KeyEvent): String {
-        return keycodeToString(event.keyCode)
     }
 
     /**

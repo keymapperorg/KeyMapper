@@ -427,6 +427,13 @@ class ConfigKeymapViewModel internal constructor(
     }
 
     fun toggleFlag(flagId: Int) {
+        if (flagId == KeyMap.KEYMAP_FLAG_SCREEN_OFF_TRIGGERS &&
+            !getShownPrompt(R.string.key_pref_shown_screen_off_triggers_explanation)) {
+            showPrompt(NotifyUserModel(R.string.showcase_screen_off_triggers) {
+                setShownPrompt(R.string.key_pref_shown_screen_off_triggers_explanation)
+            })
+        }
+
         mKeymapFlags.value = mKeymapFlags.value?.toggleFlag(flagId)
 
         invalidateOptions()
@@ -538,6 +545,14 @@ class ConfigKeymapViewModel internal constructor(
                 && triggerKeys.value?.getOrNull(0)?.clickType == Trigger.LONG_PRESS) {
                 allowedFlags.add(KeyMap.KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION)
             }
+
+            //If all the keys can be detected when the screen is off
+            if (triggerKeys.value?.isNotEmpty() == true
+                && triggerKeys.value?.all {
+                    KeyEventUtils.GET_EVENT_LABEL_TO_KEYCODE.containsValue(it.keyCode)
+                } == true) {
+                allowedFlags.add(KeyMap.KEYMAP_FLAG_SCREEN_OFF_TRIGGERS)
+            }
         }
 
         return allowedFlags.toIntArray()
@@ -554,7 +569,7 @@ class ConfigKeymapViewModel internal constructor(
             allowedExtras.add(Trigger.EXTRA_DOUBLE_PRESS_DELAY)
         }
 
-        if (!triggerKeys.value.isNullOrEmpty() && triggerKeys.value!!.size > 1
+        if (!triggerKeys.value.isNullOrEmpty() && triggerKeys.value?.let { it.size > 1 } == true
             && triggerMode.value == Trigger.SEQUENCE) {
             allowedExtras.add(Trigger.EXTRA_SEQUENCE_TRIGGER_TIMEOUT)
         }

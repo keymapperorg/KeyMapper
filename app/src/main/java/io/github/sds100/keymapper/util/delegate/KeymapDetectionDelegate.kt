@@ -701,7 +701,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
      * @return whether to consume the event.
      */
     private fun onKeyUp(keyCode: Int, encodedEvent: Int): Boolean {
-        val downTime = mEventDownTimeMap[encodedEvent]!!
+        val downTime = mEventDownTimeMap[encodedEvent] ?: currentTime
         mEventDownTimeMap.remove(encodedEvent)
 
         var consumeEvent = false
