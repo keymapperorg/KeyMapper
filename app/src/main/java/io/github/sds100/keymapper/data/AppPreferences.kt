@@ -103,11 +103,6 @@ object AppPreferences : DefaultPreferences() {
         appCtx.int(R.integer.default_value_sequence_trigger_timeout)
     )
 
-    val showToastOnActionError by BoolPref(
-        appCtx.str(R.string.key_pref_show_toast_on_action_error),
-        appCtx.bool(R.bool.default_value_show_toast_on_action_error)
-    )
-
     var shownAppIntro by BoolPref(
         appCtx.str(R.string.key_pref_first_time),
         false

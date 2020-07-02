@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.util
 import android.content.Context
 import android.provider.Settings
 import io.github.sds100.keymapper.data.AppPreferences
-import timber.log.Timber
 
 /**
  * Created by sds100 on 16/06/2020.
@@ -35,7 +34,6 @@ object AirplaneModeUtils {
     }
 
     private fun broadcastAirplaneModeChanged(enabled: Boolean) {
-        Timber.d("am broadcast -a android.intent.action.AIRPLANE_MODE -ez state $enabled")
         RootUtils.executeRootCommand("am broadcast -a android.intent.action.AIRPLANE_MODE --ez state $enabled")
     }
 }

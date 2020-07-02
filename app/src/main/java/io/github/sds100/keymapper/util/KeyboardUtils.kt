@@ -19,7 +19,6 @@ import io.github.sds100.keymapper.util.result.*
 import splitties.init.appCtx
 import splitties.systemservices.inputMethodManager
 import splitties.toast.toast
-import timber.log.Timber
 
 /**
  * Created by sds100 on 28/12/2018.
@@ -30,10 +29,8 @@ object KeyboardUtils {
     fun enableKeyMapperIme() {
         if (isPermissionGranted(Constants.PERMISSION_ROOT)) {
             KeyMapperImeService.getImeId().onSuccess {
-                Timber.d(it)
                 RootUtils.executeRootCommand("ime enable $it")
             }.onFailure {
-                Timber.d("failure")
             }
         } else {
             openImeSettings()

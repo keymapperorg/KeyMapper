@@ -342,9 +342,6 @@
     <string name="summary_pref_root_permission">Enable this if you want to use features/actions which only work on rooted devices. Key Mapper must have root permission from your root-access-management app (e.g Magisk, SuperSU) for these features to work.
         Only turn this on if you know your device is rooted and you have given Key Mapper root permission.</string>
 
-    <string name="title_pref_show_toast_on_action_error">Show a toast message when performing an action fails</string>
-    <string name="summary_pref_toast_on_action_error">A little message will popup when an error is encountered while performing an action.</string>
-
     <string name="title_pref_dark_theme">Dark Theme</string>
 
     <string name="title_pref_notification_settings">Notification Settings</string>
