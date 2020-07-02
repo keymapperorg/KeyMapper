@@ -15,8 +15,7 @@ import io.github.sds100.keymapper.data.model.Constraint.Companion.MODE_AND
 import io.github.sds100.keymapper.data.model.Constraint.Companion.SCREEN_OFF
 import io.github.sds100.keymapper.data.model.Constraint.Companion.SCREEN_ON
 import io.github.sds100.keymapper.util.*
-import io.github.sds100.keymapper.util.result.onSuccess
-import io.github.sds100.keymapper.util.result.valueOrNull
+import io.github.sds100.keymapper.util.result.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -24,7 +23,6 @@ import kotlinx.coroutines.launch
 import splitties.bitflags.hasFlag
 import splitties.bitflags.minusFlag
 import splitties.bitflags.withFlag
-import timber.log.Timber
 
 /**
  * Created by sds100 on 05/05/2020.
@@ -32,9 +30,9 @@ import timber.log.Timber
 
 class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                               val preferences: KeymapDetectionPreferences,
-                              iActionError: IActionError,
                               iClock: IClock,
-                              iConstraintState: IConstraintState
+                              iConstraintState: IConstraintState,
+                              iActionError: IActionError
 ) : IClock by iClock, IConstraintState by iConstraintState, IActionError by iActionError {
 
     companion object {
@@ -454,7 +452,6 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
      * @return whether to consume the [KeyEvent].
      */
     fun onKeyEvent(keyCode: Int, action: Int, descriptor: String, isExternal: Boolean, metaState: Int): Boolean {
-        Timber.d("onKeyEvent $keyCode $action $descriptor $isExternal $metaState")
         if (!mDetectKeymaps) return false
 
         if ((isExternal && !mDetectExternalEvents) || (!isExternal && !mDetectInternalEvents)) {
@@ -518,7 +515,13 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         val detectedShortPressTriggers = mutableSetOf<Int>()
         val vibrateDurations = mutableListOf<Long>()
 
+        /* cache whether an action can be performed to avoid repeatedly checking when multiple triggers have the
+        same action */
+        val canActionBePerformed = SparseArrayCompat<Result<Action>>()
+
         if (mDetectParallelTriggers) {
+
+            //only process keymaps if an action can be performed
             triggerLoop@ for ((triggerIndex, lastMatchedIndex) in mLastMatchedParallelEventIndices.withIndex()) {
                 val constraints = mParallelTriggerConstraints[triggerIndex]
                 val constraintMode = mParallelTriggerConstraintMode[triggerIndex]
@@ -526,9 +529,16 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 if (!constraints.constraintsSatisfied(constraintMode)) continue
 
                 for (actionKey in mParallelTriggerActions[triggerIndex]) {
-                    val action = mActionMap[actionKey] ?: continue
+                    if (canActionBePerformed[actionKey] == null) {
+                        val action = mActionMap[actionKey] ?: continue
 
-                    if (!canActionBePerformed(action)) {
+                        val result = canActionBePerformed(action)
+                        canActionBePerformed.put(actionKey, result)
+
+                        if (result.isFailure) {
+                            continue@triggerLoop
+                        }
+                    } else if (canActionBePerformed.get(actionKey, null) is Failure) {
                         continue@triggerLoop
                     }
                 }
@@ -589,9 +599,9 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 if (mParallelTriggerEvents[triggerIndex].hasEventAtIndex(encodedWithLongPress, nextIndex)) {
 
                     /*
-                    To prevent the home and recents button from doing their normal action, ONLY the up event should
-                    be consumed.
-                     */
+                To prevent the home and recents button from doing their normal action, ONLY the up event should
+                be consumed.
+                 */
                     if (keyCode != KeyEvent.KEYCODE_HOME && keyCode != KeyEvent.KEYCODE_APP_SWITCH) {
                         consumeEvent = true
                     }
@@ -629,7 +639,6 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             }
         }
 
-
         if (detectedShortPressTriggers.isNotEmpty()) {
             val matchingDoublePressEvent = mDoublePressEvents.any {
                 it.first.matchesEvent(encodedEvent.withFlag(FLAG_DOUBLE_PRESS))
@@ -664,36 +673,25 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         }
 
         if (consumeEvent) {
-            Timber.d("consume down $keyCode")
             return true
         }
 
-        if (mDetectSequenceDoublePresses) {
-            mDoublePressEvents.forEach {
-                val triggerIndex = it.second
+        if (mDetectSequenceTriggers) {
+            mSequenceTriggerEvents.forEachIndexed { triggerIndex, events ->
+                if (!areSequenceTriggerConstraintsSatisfied(triggerIndex)) return@forEachIndexed
 
-                if (!areSequenceTriggerConstraintsSatisfied(triggerIndex)) return@forEach
+                events.forEach { event ->
+                    val matchingEvent = when {
+                        event.matchesEvent(encodedEvent.withFlag(FLAG_SHORT_PRESS)) -> true
+                        event.matchesEvent(encodedEvent.withFlag(FLAG_LONG_PRESS)) -> true
+                        event.matchesEvent(encodedEvent.withFlag(FLAG_DOUBLE_PRESS)) -> true
 
-                val event = it.first
+                        else -> false
+                    }
 
-                if (event.matchesEvent(encodedEvent.withFlag(FLAG_DOUBLE_PRESS))) {
-                    Timber.d("consume down $keyCode")
-                    return true
-                }
-            }
-        }
-
-        if (mDetectSequenceLongPresses) {
-            mLongPressSequenceEvents.forEach {
-                val triggerIndex = it.second
-
-                if (!areSequenceTriggerConstraintsSatisfied(triggerIndex)) return@forEach
-
-                val event = it.first
-
-                if (event.matchesEvent(encodedEvent.withFlag(FLAG_LONG_PRESS))) {
-                    Timber.d("consume down $keyCode")
-                    return true
+                    if (matchingEvent) {
+                        return true
+                    }
                 }
             }
         }
@@ -991,10 +989,6 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             this.imitateButtonPress.value = Event(ImitateKeyModel(keyCode))
         }
 
-        if (consumeEvent) {
-            Timber.d("consume up $keyCode")
-        }
-
         return consumeEvent
     }
 
@@ -1280,7 +1274,6 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
     @MainThread
     private fun performAction(action: Action, showToast: Boolean) {
         val metaState = mMetaStateFromKeyEvent.withFlag(mMetaStateFromActions)
-        Timber.d("current metastate = $metaState")
         //Don't use postValue because multiple actions can't be performed at the same time
         performAction.value = Event(PerformActionModel(action, metaState, showToast))
     }
