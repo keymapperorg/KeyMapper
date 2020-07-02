@@ -79,6 +79,8 @@ class KeymapDetectionDelegateTest {
                 get() = mCurrentPackage
 
             override fun isBluetoothDeviceConnected(address: String) = true
+
+            override val isScreenOn = true
         }
 
         val iActionError = object : IActionError {
