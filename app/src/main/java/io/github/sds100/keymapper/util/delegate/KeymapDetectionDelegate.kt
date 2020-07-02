@@ -529,9 +529,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 if (!constraints.constraintsSatisfied(constraintMode)) continue
 
                 for (actionKey in mParallelTriggerActions[triggerIndex]) {
-                    if (canActionBePerformed.get(actionKey, null) is Failure) {
-                        continue@triggerLoop
-                    } else {
+                    if (canActionBePerformed[actionKey] == null) {
                         val action = mActionMap[actionKey] ?: continue
 
                         val result = canActionBePerformed(action)
@@ -540,6 +538,8 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                         if (result.isFailure) {
                             continue@triggerLoop
                         }
+                    } else if (canActionBePerformed.get(actionKey, null) is Failure) {
+                        continue@triggerLoop
                     }
                 }
 
