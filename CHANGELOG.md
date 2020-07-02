@@ -1,3 +1,32 @@
+## [2.0.0 Beta 3](https://github.com/sds100/KeyMapper/releases/tag/v2.0.0-beta.3) 
+
+#### 02 July 2020
+
+Significantly improved the input latency.
+
+### Added
+- Actions can now have unique repeat options and any action is allowed to be repeated now.
+- Screen on/off constraints (ROOT only).
+- Option for keymaps with volume key triggers to be detected when the screen is off (ROOT only).
+- Option to stop repeating an action when the trigger is pressed again.
+- Button in the homescreen menu to resume/pause keymaps and enable the accessibility service.
+- Setting to hide the alerts at the top of the homescreen.
+- Action to take screenshots on rooted devices older than Pie.
+
+### Bug Fixes
+- Triggers with the Recents and Home button would sometimes open Recents and go Home.
+- Increase the screen width threshold to put all the cards in one tab to 1000dp.
+- Don't crash when sometimes changing a slider.
+- Lower the max repeat delay to 1000ms to make it easier to pick tiny values.
+- Increase the min repeat delay to 5ms because 0ms caused crashes.
+
+### Changes
+- Persist whether keymaps are paused.
+- The "Switch Keyboard" action now works when the app has WRITE_SECURE_SETTINGS permission rather than just rooted devices.
+
+### Removed
+- Setting to show a toast message when an action fails. Removing this made improving the input latency much easier.
+
 ## [2.0.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v2.0.0-beta.2) 
 
 #### 16 Jun 2020
