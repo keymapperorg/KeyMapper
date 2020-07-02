@@ -292,6 +292,8 @@ class ActionPerformerDelegate(context: Context,
                 SystemAction.ENABLE_AIRPLANE_MODE -> AirplaneModeUtils.enableAirplaneMode()
                 SystemAction.DISABLE_AIRPLANE_MODE -> AirplaneModeUtils.disableAirplaneMode()
 
+                SystemAction.SCREENSHOT_ROOT -> ScreenshotUtils.takeScreenshotRoot()
+
                 else -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         when (id) {

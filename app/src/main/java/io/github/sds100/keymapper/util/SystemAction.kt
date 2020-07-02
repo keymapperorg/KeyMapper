@@ -116,6 +116,7 @@ object SystemAction {
 
     //other
     const val SCREENSHOT = "screenshot"
+    const val SCREENSHOT_ROOT = "screenshot_root"
 
     const val OPEN_VOICE_ASSISTANT = "open_assistant"
     const val OPEN_DEVICE_ASSISTANT = "open_device_assistant"
