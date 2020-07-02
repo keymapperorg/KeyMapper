@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.data.model.Trigger.Companion.DOUBLE_PRESS
 import io.github.sds100.keymapper.data.model.Trigger.Companion.LONG_PRESS
 import io.github.sds100.keymapper.data.model.Trigger.Companion.SHORT_PRESS
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.result.Success
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertNull
 import junitparams.JUnitParamsRunner
@@ -82,7 +83,7 @@ class KeymapDetectionDelegateTest {
         }
 
         val iActionError = object : IActionError {
-            override fun canActionBePerformed(action: Action) = true
+            override fun canActionBePerformed(action: Action) = Success(action)
         }
 
         val preferences = KeymapDetectionPreferences(
@@ -94,7 +95,7 @@ class KeymapDetectionDelegateTest {
             VIBRATION_DURATION,
             FORCE_VIBRATE)
 
-        mDelegate = KeymapDetectionDelegate(GlobalScope, preferences, iActionError, iClock, iConstraintState)
+        mDelegate = KeymapDetectionDelegate(GlobalScope, preferences, iClock, iConstraintState, iActionError)
     }
 
     @Test
