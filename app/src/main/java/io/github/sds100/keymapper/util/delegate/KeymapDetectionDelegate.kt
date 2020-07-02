@@ -676,30 +676,22 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             return true
         }
 
-        if (mDetectSequenceDoublePresses) {
-            mDoublePressEvents.forEach {
-                val triggerIndex = it.second
+        if (mDetectSequenceTriggers) {
+            mSequenceTriggerEvents.forEachIndexed { triggerIndex, events ->
+                if (!areSequenceTriggerConstraintsSatisfied(triggerIndex)) return@forEachIndexed
 
-                if (!areSequenceTriggerConstraintsSatisfied(triggerIndex)) return@forEach
+                events.forEach { event ->
+                    val matchingEvent = when {
+                        event.matchesEvent(encodedEvent.withFlag(FLAG_SHORT_PRESS)) -> true
+                        event.matchesEvent(encodedEvent.withFlag(FLAG_LONG_PRESS)) -> true
+                        event.matchesEvent(encodedEvent.withFlag(FLAG_DOUBLE_PRESS)) -> true
 
-                val event = it.first
+                        else -> false
+                    }
 
-                if (event.matchesEvent(encodedEvent.withFlag(FLAG_DOUBLE_PRESS))) {
-                    return true
-                }
-            }
-        }
-
-        if (mDetectSequenceLongPresses) {
-            mLongPressSequenceEvents.forEach {
-                val triggerIndex = it.second
-
-                if (!areSequenceTriggerConstraintsSatisfied(triggerIndex)) return@forEach
-
-                val event = it.first
-
-                if (event.matchesEvent(encodedEvent.withFlag(FLAG_LONG_PRESS))) {
-                    return true
+                    if (matchingEvent) {
+                        return true
+                    }
                 }
             }
         }
