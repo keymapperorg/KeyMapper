@@ -31,10 +31,9 @@ import splitties.bitflags.withFlag
 
 class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                               val preferences: KeymapDetectionPreferences,
-                              iActionError: IActionError,
                               iClock: IClock,
                               iConstraintState: IConstraintState
-) : IClock by iClock, IConstraintState by iConstraintState, IActionError by iActionError {
+) : IClock by iClock, IConstraintState by iConstraintState {
 
     companion object {
 
@@ -522,14 +521,6 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 val constraintMode = mParallelTriggerConstraintMode[triggerIndex]
 
                 if (!constraints.constraintsSatisfied(constraintMode)) continue
-
-                for (actionKey in mParallelTriggerActions[triggerIndex]) {
-                    val action = mActionMap[actionKey] ?: continue
-
-                    if (!canActionBePerformed(action)) {
-                        continue@triggerLoop
-                    }
-                }
 
                 val nextIndex = lastMatchedIndex + 1
 
