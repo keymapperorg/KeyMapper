@@ -28,13 +28,9 @@ import io.github.sds100.keymapper.util.delegate.ActionPerformerDelegate
 import io.github.sds100.keymapper.util.delegate.GetEventDelegate
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionPreferences
-import io.github.sds100.keymapper.util.result.getBriefMessage
-import io.github.sds100.keymapper.util.result.onFailure
-import io.github.sds100.keymapper.util.result.onSuccess
 import kotlinx.coroutines.*
 import splitties.bitflags.hasFlag
 import splitties.systemservices.vibrator
-import splitties.toast.toast
 import timber.log.Timber
 
 /**
@@ -45,7 +41,8 @@ class MyAccessibilityService : AccessibilityService(),
     SharedPreferences.OnSharedPreferenceChangeListener,
     IClock,
     IPerformAccessibilityAction,
-    IConstraintState {
+    IConstraintState,
+    IActionError {
 
     companion object {
 
@@ -178,7 +175,8 @@ class MyAccessibilityService : AccessibilityService(),
             lifecycleScope,
             preferences,
             iClock = this,
-            iConstraintState = this)
+            iConstraintState = this,
+            iActionError = this)
 
         mActionPerformerDelegate = ActionPerformerDelegate(
             context = this,
@@ -230,13 +228,7 @@ class MyAccessibilityService : AccessibilityService(),
         })
 
         mKeymapDetectionDelegate.performAction.observe(this, EventObserver { model ->
-            model.action.canBePerformed(this).onSuccess {
-                mActionPerformerDelegate.performAction(model)
-            }.onFailure {
-                if (AppPreferences.showToastOnActionError) {
-                    toast(it.getBriefMessage(this))
-                }
-            }
+            mActionPerformerDelegate.performAction(model)
         })
 
         mKeymapDetectionDelegate.vibrate.observe(this, EventObserver {
@@ -362,11 +354,12 @@ class MyAccessibilityService : AccessibilityService(),
                     WidgetsManager.onEvent(this, EVENT_RESUME_REMAPS)
                 }
             }
-
         }
     }
 
     override fun isBluetoothDeviceConnected(address: String) = mConnectedBtAddresses.contains(address)
+
+    override fun canActionBePerformed(action: Action) = action.canBePerformed(this)
 
     private fun recordTrigger() = lifecycleScope.launch {
         repeat(RECORD_TRIGGER_TIMER_LENGTH) { iteration ->

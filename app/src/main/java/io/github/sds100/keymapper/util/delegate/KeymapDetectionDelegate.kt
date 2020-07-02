@@ -15,8 +15,7 @@ import io.github.sds100.keymapper.data.model.Constraint.Companion.MODE_AND
 import io.github.sds100.keymapper.data.model.Constraint.Companion.SCREEN_OFF
 import io.github.sds100.keymapper.data.model.Constraint.Companion.SCREEN_ON
 import io.github.sds100.keymapper.util.*
-import io.github.sds100.keymapper.util.result.onSuccess
-import io.github.sds100.keymapper.util.result.valueOrNull
+import io.github.sds100.keymapper.util.result.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -32,8 +31,9 @@ import splitties.bitflags.withFlag
 class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                               val preferences: KeymapDetectionPreferences,
                               iClock: IClock,
-                              iConstraintState: IConstraintState
-) : IClock by iClock, IConstraintState by iConstraintState {
+                              iConstraintState: IConstraintState,
+                              iActionError: IActionError
+) : IClock by iClock, IConstraintState by iConstraintState, IActionError by iActionError {
 
     companion object {
 
@@ -515,12 +515,33 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         val detectedShortPressTriggers = mutableSetOf<Int>()
         val vibrateDurations = mutableListOf<Long>()
 
+        /* cache whether an action can be performed to avoid repeatedly checking when multiple triggers have the
+        same action */
+        val canActionBePerformed = SparseArrayCompat<Result<Action>>()
+
         if (mDetectParallelTriggers) {
+
+            //only process keymaps if an action can be performed
             triggerLoop@ for ((triggerIndex, lastMatchedIndex) in mLastMatchedParallelEventIndices.withIndex()) {
                 val constraints = mParallelTriggerConstraints[triggerIndex]
                 val constraintMode = mParallelTriggerConstraintMode[triggerIndex]
 
                 if (!constraints.constraintsSatisfied(constraintMode)) continue
+
+                for (actionKey in mParallelTriggerActions[triggerIndex]) {
+                    if (canActionBePerformed.get(actionKey, null) is Failure) {
+                        continue@triggerLoop
+                    } else {
+                        val action = mActionMap[actionKey] ?: continue
+
+                        val result = canActionBePerformed(action)
+                        canActionBePerformed.put(actionKey, result)
+
+                        if (result.isFailure) {
+                            continue@triggerLoop
+                        }
+                    }
+                }
 
                 val nextIndex = lastMatchedIndex + 1
 
@@ -578,9 +599,9 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 if (mParallelTriggerEvents[triggerIndex].hasEventAtIndex(encodedWithLongPress, nextIndex)) {
 
                     /*
-                    To prevent the home and recents button from doing their normal action, ONLY the up event should
-                    be consumed.
-                     */
+                To prevent the home and recents button from doing their normal action, ONLY the up event should
+                be consumed.
+                 */
                     if (keyCode != KeyEvent.KEYCODE_HOME && keyCode != KeyEvent.KEYCODE_APP_SWITCH) {
                         consumeEvent = true
                     }
@@ -617,7 +638,6 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 repeatImitatingKey(keyCode)
             }
         }
-
 
         if (detectedShortPressTriggers.isNotEmpty()) {
             val matchingDoublePressEvent = mDoublePressEvents.any {
