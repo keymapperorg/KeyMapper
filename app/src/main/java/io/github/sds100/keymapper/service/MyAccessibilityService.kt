@@ -213,7 +213,6 @@ class MyAccessibilityService : AccessibilityService(),
         provideBus().value = Event(EVENT_ON_SERVICE_STARTED to null)
 
         mKeymapDetectionDelegate.imitateButtonPress.observe(this, EventObserver {
-            Timber.d("imitate button press")
             when (it.keyCode) {
                 KeyEvent.KEYCODE_VOLUME_UP -> AudioUtils.adjustVolume(this, AudioManager.ADJUST_RAISE,
                     showVolumeUi = true)
@@ -234,8 +233,6 @@ class MyAccessibilityService : AccessibilityService(),
         })
 
         mKeymapDetectionDelegate.performAction.observe(this, EventObserver { model ->
-            Timber.d("perform action ${model.action.uniqueId}")
-
             model.action.canBePerformed(this).onSuccess {
                 mActionPerformerDelegate.performAction(model)
             }.onFailure {
@@ -316,7 +313,6 @@ class MyAccessibilityService : AccessibilityService(),
 
         if (!AppPreferences.keymapsPaused) {
             try {
-                Timber.d(event.toString())
                 return mKeymapDetectionDelegate.onKeyEvent(
                     event.keyCode,
                     event.action,

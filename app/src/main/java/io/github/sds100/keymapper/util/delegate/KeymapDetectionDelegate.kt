@@ -24,7 +24,6 @@ import kotlinx.coroutines.launch
 import splitties.bitflags.hasFlag
 import splitties.bitflags.minusFlag
 import splitties.bitflags.withFlag
-import timber.log.Timber
 
 /**
  * Created by sds100 on 05/05/2020.
@@ -454,7 +453,6 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
      * @return whether to consume the [KeyEvent].
      */
     fun onKeyEvent(keyCode: Int, action: Int, descriptor: String, isExternal: Boolean, metaState: Int): Boolean {
-        Timber.d("onKeyEvent $keyCode $action $descriptor $isExternal $metaState")
         if (!mDetectKeymaps) return false
 
         if ((isExternal && !mDetectExternalEvents) || (!isExternal && !mDetectInternalEvents)) {
@@ -664,7 +662,6 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         }
 
         if (consumeEvent) {
-            Timber.d("consume down $keyCode")
             return true
         }
 
@@ -677,7 +674,6 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 val event = it.first
 
                 if (event.matchesEvent(encodedEvent.withFlag(FLAG_DOUBLE_PRESS))) {
-                    Timber.d("consume down $keyCode")
                     return true
                 }
             }
@@ -692,7 +688,6 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 val event = it.first
 
                 if (event.matchesEvent(encodedEvent.withFlag(FLAG_LONG_PRESS))) {
-                    Timber.d("consume down $keyCode")
                     return true
                 }
             }
@@ -991,10 +986,6 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             this.imitateButtonPress.value = Event(ImitateKeyModel(keyCode))
         }
 
-        if (consumeEvent) {
-            Timber.d("consume up $keyCode")
-        }
-
         return consumeEvent
     }
 
@@ -1280,7 +1271,6 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
     @MainThread
     private fun performAction(action: Action, showToast: Boolean) {
         val metaState = mMetaStateFromKeyEvent.withFlag(mMetaStateFromActions)
-        Timber.d("current metastate = $metaState")
         //Don't use postValue because multiple actions can't be performed at the same time
         performAction.value = Event(PerformActionModel(action, metaState, showToast))
     }

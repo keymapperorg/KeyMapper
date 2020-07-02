@@ -19,7 +19,6 @@ import io.github.sds100.keymapper.util.result.Result
 import io.github.sds100.keymapper.util.result.Success
 import splitties.init.appCtx
 import splitties.systemservices.inputMethodManager
-import timber.log.Timber
 
 /**
  * Created by sds100 on 31/03/2020.
@@ -97,14 +96,10 @@ class KeyMapperImeService : InputMethodService(), LifecycleOwner {
 
                     currentInputConnection.sendKeyEvent(downEvent)
 
-                    Timber.d("input $downEvent")
-
                     val upEvent = KeyEvent(eventTime, SystemClock.uptimeMillis(),
                         KeyEvent.ACTION_UP, keyCode, 0)
 
                     currentInputConnection.sendKeyEvent(upEvent)
-
-                    Timber.d("input $upEvent")
                 }
             }
         })
