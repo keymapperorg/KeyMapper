@@ -15,6 +15,10 @@
         <import type="androidx.lifecycle.LiveData" />
 
         <variable
+            name="hideAlerts"
+            type="Boolean" />
+
+        <variable
             name="expanded"
             type="LiveData&lt;Boolean>" />
 
@@ -82,7 +86,9 @@
             <FrameLayout
                 android:id="@+id/headerLayout"
                 android:layout_width="match_parent"
+                android:visibility="@{hideAlerts ? View.GONE : View.VISIBLE}"
                 android:layout_height="wrap_content"
+                tools:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">

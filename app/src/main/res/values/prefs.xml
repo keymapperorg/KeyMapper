@@ -43,6 +43,7 @@
     <string name="key_pref_keymaps_paused">pref_keymaps_paused</string>
     <string name="key_pref_showcase_action_list">pref_showcase_action_list</string>
     <string name="key_pref_shown_screen_off_triggers_explanation">pref_screen_off_triggers_explanation</string>
+    <string name="key_pref_hide_home_screen_alerts">pref_hide_home_screen_alerts</string>
 
     <string name="key_pref_category_notifications" translatable="false">pref_category_notifications</string>
     <string name="key_pref_category_secure_settings" translatable="false">pref_category_secure_settings</string>

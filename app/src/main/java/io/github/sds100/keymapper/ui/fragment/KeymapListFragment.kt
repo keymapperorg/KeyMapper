@@ -338,6 +338,8 @@ class KeymapListFragment : Fragment() {
     }
 
     private fun updateStatusLayouts() {
+        mBinding.hideAlerts = AppPreferences.hideHomeScreenAlerts
+
         if (AccessibilityUtils.isServiceEnabled(requireActivity())) {
             mAccessibilityServiceStatusState.value = StatusLayout.State.POSITIVE
 
