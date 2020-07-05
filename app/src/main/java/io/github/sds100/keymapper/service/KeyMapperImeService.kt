@@ -29,6 +29,10 @@ class KeyMapperImeService : InputMethodService(), LifecycleOwner {
         const val EVENT_INPUT_DOWN_UP = "input_down_up"
         const val EVENT_INPUT_TEXT = "input_text"
 
+        const val ACTION_DOWN_UP = -1
+        const val ACTION_DOWN = 0
+        const val ACTION_UP = 1
+
         fun isServiceEnabled(): Boolean {
             val enabledMethods = inputMethodManager.enabledInputMethodList ?: return false
 
@@ -88,18 +92,37 @@ class KeyMapperImeService : InputMethodService(), LifecycleOwner {
                 EVENT_INPUT_DOWN_UP -> {
                     val keyCode = (it.second as IntArray)[0]
                     val metaState = (it.second as IntArray)[1]
+                    val keyEventAction = (it.second as IntArray)[2]
 
                     val eventTime = SystemClock.uptimeMillis()
 
-                    val downEvent = KeyEvent(eventTime, eventTime,
-                        KeyEvent.ACTION_DOWN, keyCode, 0, metaState)
+                    when (keyEventAction) {
+                        ACTION_DOWN_UP -> {
+                            val downEvent = KeyEvent(eventTime, eventTime,
+                                KeyEvent.ACTION_DOWN, keyCode, 0, metaState)
 
-                    currentInputConnection.sendKeyEvent(downEvent)
+                            currentInputConnection.sendKeyEvent(downEvent)
 
-                    val upEvent = KeyEvent(eventTime, SystemClock.uptimeMillis(),
-                        KeyEvent.ACTION_UP, keyCode, 0)
+                            val upEvent = KeyEvent(eventTime, SystemClock.uptimeMillis(),
+                                KeyEvent.ACTION_UP, keyCode, 0)
 
-                    currentInputConnection.sendKeyEvent(upEvent)
+                            currentInputConnection.sendKeyEvent(upEvent)
+                        }
+
+                        ACTION_DOWN -> {
+                            val downEvent = KeyEvent(eventTime, eventTime,
+                                KeyEvent.ACTION_DOWN, keyCode, 0, metaState)
+
+                            currentInputConnection.sendKeyEvent(downEvent)
+                        }
+
+                        ACTION_UP -> {
+                            val upEvent = KeyEvent(eventTime, SystemClock.uptimeMillis(),
+                                KeyEvent.ACTION_UP, keyCode, 0)
+
+                            currentInputConnection.sendKeyEvent(upEvent)
+                        }
+                    }
                 }
             }
         })

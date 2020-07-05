@@ -56,11 +56,11 @@ class ActionPerformerDelegate(context: Context,
     fun performAction(action: Action) = performAction(PerformActionModel(action))
 
     fun performAction(performActionModel: PerformActionModel) {
-        val (action, metaState) = performActionModel
+        val (action, showToast, additionalMetaState, keyEventAction) = performActionModel
 
         mCtx.apply {
             //Only show a toast message that Key Mapper is performing an action if the user has enabled it
-            if (performActionModel.showToast) {
+            if (showToast) {
                 toast(R.string.performing_action)
             }
 
@@ -116,9 +116,10 @@ class ActionPerformerDelegate(context: Context,
                     if (action.type == ActionType.KEY_EVENT) {
                         KeyboardUtils.sendDownUpFromImeService(
                             keyCode = action.data.toInt(),
-                            metaState = metaState.withFlag(
+                            metaState = additionalMetaState.withFlag(
                                 action.extras.getData(Action.EXTRA_KEY_EVENT_META_STATE).valueOrNull()?.toInt() ?: 0
-                            )
+                            ),
+                            keyEventAction = keyEventAction
                         )
                     }
                 }

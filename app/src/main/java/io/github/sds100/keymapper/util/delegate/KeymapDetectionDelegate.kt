@@ -14,6 +14,7 @@ import io.github.sds100.keymapper.data.model.Constraint.Companion.BT_DEVICE_DISC
 import io.github.sds100.keymapper.data.model.Constraint.Companion.MODE_AND
 import io.github.sds100.keymapper.data.model.Constraint.Companion.SCREEN_OFF
 import io.github.sds100.keymapper.data.model.Constraint.Companion.SCREEN_ON
+import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.*
 import kotlinx.coroutines.CoroutineScope
@@ -660,7 +661,14 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                     mParallelTriggerActions[triggerIndex].forEachIndexed { index, key ->
                         val action = mActionMap[key] ?: return@forEachIndexed
 
-                        performAction(action, showPerformingActionToast)
+                        val keyEventAction =
+                            if (action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)) {
+                                KeyMapperImeService.ACTION_DOWN
+                            } else {
+                                KeyMapperImeService.ACTION_DOWN_UP
+                            }
+
+                        performAction(action, showPerformingActionToast, keyEventAction)
 
                         val vibrateDuration = vibrateDurations[index]
 
@@ -847,7 +855,6 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
                     //short press
                     if (awaitingRelease && events.hasEventAtIndex(encodedWithShortPress, eventIndex)) {
-
                         if (singleKeyTrigger) {
                             shortPressSingleKeyTriggerJustReleased = true
                         }
@@ -914,6 +921,17 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                     mRepeatJobs[triggerIndex]?.forEach {
                         if (!stopRepeatingWhenPressedAgain(it.actionKey)) {
                             it.cancel()
+                        }
+                    }
+
+                    val actionKeys = mParallelTriggerActions[triggerIndex]
+                    actionKeys.forEach { actionKey ->
+                        val action = mActionMap[actionKey] ?: return@forEach
+
+                        if (action.type == ActionType.KEY_EVENT
+                            && action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)) {
+
+                            performAction(action, showPerformingActionToast, KeyMapperImeService.ACTION_UP)
                         }
                     }
                 }
@@ -1180,7 +1198,14 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         actionKeys.forEach { actionKey ->
             val action = mActionMap[actionKey] ?: return@forEach
 
-            performAction(action, showPerformingActionToast(actionKey))
+            val keyEventAction =
+                if (action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)) {
+                    KeyMapperImeService.ACTION_DOWN
+                } else {
+                    KeyMapperImeService.ACTION_DOWN_UP
+                }
+
+            performAction(action, showPerformingActionToast(actionKey), keyEventAction)
 
             if (mParallelTriggerFlags.vibrate(triggerIndex) || preferences.forceVibrate
                 || mParallelTriggerFlags[triggerIndex].hasFlag(Trigger.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION)) {
@@ -1272,10 +1297,16 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
     }
 
     @MainThread
-    private fun performAction(action: Action, showToast: Boolean) {
-        val metaState = mMetaStateFromKeyEvent.withFlag(mMetaStateFromActions)
-        //Don't use postValue because multiple actions can't be performed at the same time
-        performAction.value = Event(PerformActionModel(action, metaState, showToast))
+    private fun performAction(
+        action: Action,
+        showPerformingActionToast: Boolean,
+        keyEventAction: Int = KeyMapperImeService.ACTION_DOWN_UP
+    ) {
+        val additionalMetaState = mMetaStateFromKeyEvent.withFlag(mMetaStateFromActions)
+
+        performAction.value = Event(
+            PerformActionModel(action, showPerformingActionToast, additionalMetaState, keyEventAction)
+        )
     }
 
     private fun setActionMapAndOptions(actions: Set<Action>) {
