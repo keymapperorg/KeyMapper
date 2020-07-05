@@ -1,7 +1,6 @@
-package com.example.architecturetest.data
+package io.github.sds100.keymapper.data
 
 import androidx.lifecycle.LiveData
-import io.github.sds100.keymapper.data.KeymapRepository
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 import io.github.sds100.keymapper.data.model.KeyMap
 
