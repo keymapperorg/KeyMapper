@@ -25,7 +25,7 @@ import java.io.Serializable
 /**
  * Created by sds100 on 27/06/20.
  */
-class BehaviorOption<T>(val id: String, var value: T, var isAllowed: Boolean) {
+class BehaviorOption<T>(val id: String, var value: T, var isAllowed: Boolean) : Serializable {
     companion object {
         const val DEFAULT = -1
 
