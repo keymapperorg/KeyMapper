@@ -88,14 +88,14 @@ object AppPreferences : DefaultPreferences() {
         appCtx.int(R.integer.default_value_vibrate_duration)
     )
 
-    val holdDownDelay by IntPref(
-        appCtx.str(R.string.key_pref_hold_down_delay),
+    val repeatDelay by IntPref(
+        appCtx.str(R.string.key_pref_repeat_delay),
         appCtx.int(R.integer.default_value_vibrate_duration)
     )
 
-    val repeatDelay by IntPref(
-        appCtx.str(R.string.key_pref_repeat_delay),
-        appCtx.int(R.integer.default_value_repeat_delay)
+    val repeatRate by IntPref(
+        appCtx.str(R.string.key_pref_repeat_rate),
+        appCtx.int(R.integer.default_value_repeat_rate)
     )
 
     val sequenceTriggerTimeout by IntPref(

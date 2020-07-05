@@ -164,8 +164,8 @@ class MyAccessibilityService : AccessibilityService(),
         val preferences = KeymapDetectionPreferences(
             AppPreferences.longPressDelay,
             AppPreferences.doublePressDelay,
-            AppPreferences.holdDownDelay,
             AppPreferences.repeatDelay,
+            AppPreferences.repeatRate,
             AppPreferences.sequenceTriggerTimeout,
             AppPreferences.vibrateDuration,
             AppPreferences.forceVibrate
@@ -326,12 +326,12 @@ class MyAccessibilityService : AccessibilityService(),
                 mKeymapDetectionDelegate.preferences.defaultDoublePressDelay = AppPreferences.doublePressDelay
             }
 
-            str(R.string.key_pref_hold_down_delay) -> {
-                mKeymapDetectionDelegate.preferences.defaultHoldDownDelay = AppPreferences.holdDownDelay
-            }
-
             str(R.string.key_pref_repeat_delay) -> {
                 mKeymapDetectionDelegate.preferences.defaultRepeatDelay = AppPreferences.repeatDelay
+            }
+
+            str(R.string.key_pref_repeat_rate) -> {
+                mKeymapDetectionDelegate.preferences.defaultRepeatRate = AppPreferences.repeatRate
             }
 
             str(R.string.key_pref_sequence_trigger_timeout) -> {
