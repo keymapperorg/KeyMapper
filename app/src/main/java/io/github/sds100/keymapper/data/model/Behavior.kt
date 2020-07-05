@@ -255,7 +255,7 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
 
         repeatDelay = BehaviorOption(
             id = ID_REPEAT_DELAY,
-            value = repeatDelayValue ?: BehaviorOption.DEFAULT,
+            value = repeatDelayValue ?: BehaviorOption.DEFAULT
             isAllowed = repeat.value
         )
 
