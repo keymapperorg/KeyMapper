@@ -1348,7 +1348,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
     private fun repeatDelay(actionKey: Int): Long {
         return if (mActionOptions[actionKey][INDEX_ACTION_REPEAT_DELAY] == -1) {
-            preferences.defaultHoldDownDelay.toLong()
+            preferences.defaultRepeatDelay.toLong()
         } else {
             mActionOptions[actionKey][INDEX_ACTION_REPEAT_DELAY].toLong()
         }
@@ -1356,7 +1356,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
     private fun repeatRate(actionKey: Int): Long {
         return if (mActionOptions[actionKey][INDEX_ACTION_REPEAT_RATE] == -1) {
-            preferences.defaultRepeatDelay.toLong()
+            preferences.defaultRepeatRate.toLong()
         } else {
             mActionOptions[actionKey][INDEX_ACTION_REPEAT_RATE].toLong()
         }

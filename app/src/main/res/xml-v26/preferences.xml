@@ -48,20 +48,20 @@
         app:showSeekBarValue="true" />
 
     <androidx.preference.SeekBarPreference
-        android:defaultValue="@integer/default_value_hold_down_delay"
-        android:key="@string/key_pref_hold_down_delay"
+        android:defaultValue="@integer/default_value_repeat_delay"
+        android:key="@string/key_pref_repeat_delay"
         android:max="@integer/repeat_delay_max"
-        android:summary="@string/summary_pref_hold_down_delay"
-        android:title="@string/title_pref_hold_down_delay"
+        android:summary="@string/summary_pref_repeat_delay"
+        android:title="@string/title_pref_repeat_delay"
         app:min="@integer/repeat_delay_min"
         app:showSeekBarValue="true" />
 
     <androidx.preference.SeekBarPreference
-        android:defaultValue="@integer/default_value_repeat_delay"
-        android:key="@string/key_pref_repeat_delay"
+        android:defaultValue="@integer/default_value_repeat_rate"
+        android:key="@string/key_pref_repeat_rate"
         android:max="@integer/repeat_rate_max"
-        android:summary="@string/summary_pref_repeat_delay"
-        android:title="@string/title_pref_repeat_delay"
+        android:summary="@string/summary_pref_repeat_rate"
+        android:title="@string/title_pref_repeat_rate"
         app:min="@integer/repeat_rate_min"
         app:seekBarIncrement="@integer/repeat_rate_step_size"
         app:showSeekBarValue="true" />
