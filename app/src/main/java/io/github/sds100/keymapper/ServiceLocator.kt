@@ -4,11 +4,7 @@ import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.room.Room
 import com.example.architecturetest.data.DefaultDeviceInfoRepository
-import com.example.architecturetest.data.DefaultKeymapRepository
-import io.github.sds100.keymapper.data.DeviceInfoRepository
-import io.github.sds100.keymapper.data.IOnboardingState
-import io.github.sds100.keymapper.data.KeymapRepository
-import io.github.sds100.keymapper.data.OnboardingState
+import io.github.sds100.keymapper.data.*
 import io.github.sds100.keymapper.data.db.AppDatabase
 import kotlinx.coroutines.runBlocking
 
