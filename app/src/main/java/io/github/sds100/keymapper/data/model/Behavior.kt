@@ -12,6 +12,7 @@ import io.github.sds100.keymapper.data.model.Trigger.Companion.SEQUENCE
 import io.github.sds100.keymapper.data.model.Trigger.Companion.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION
 import io.github.sds100.keymapper.data.model.Trigger.Companion.TRIGGER_FLAG_SCREEN_OFF_TRIGGERS
 import io.github.sds100.keymapper.data.model.Trigger.Companion.TRIGGER_FLAG_VIBRATE
+import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.ActionUtils
 import io.github.sds100.keymapper.util.KeyEventUtils
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
@@ -203,6 +204,7 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
         const val ID_STOP_REPEATING_TRIGGER_RELEASED = "stop_repeating_trigger_released"
         const val ID_STOP_REPEATING_TRIGGER_PRESSED_AGAIN = "stop_repeating_trigger_pressed_again"
         const val ID_REPEAT_DELAY = "repeat_delay"
+        const val ID_HOLD_DOWN = "hold_down"
     }
 
     val actionId = action.uniqueId
@@ -225,6 +227,13 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
         isAllowed = true
     )
 
+    val holdDown = BehaviorOption(
+        id = ID_HOLD_DOWN,
+        value = action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN),
+        isAllowed = action.type == ActionType.KEY_EVENT
+            && KeymapDetectionDelegate.performActionOnDown(triggerKeys, triggerMode)
+    )
+
     val stopRepeatingWhenTriggerReleased: BehaviorOption<Boolean>
 
     val stopRepeatingWhenTriggerPressedAgain: BehaviorOption<Boolean>
@@ -234,19 +243,19 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
     val repeatDelay: BehaviorOption<Int>
 
     init {
-        val repeatDelayValue = action.extras.getData(Action.EXTRA_REPEAT_RATE).valueOrNull()?.toInt()
+        val repeatRateValue = action.extras.getData(Action.EXTRA_REPEAT_RATE).valueOrNull()?.toInt()
 
         repeatRate = BehaviorOption(
             id = ID_REPEAT_RATE,
-            value = repeatDelayValue ?: BehaviorOption.DEFAULT,
+            value = repeatRateValue ?: BehaviorOption.DEFAULT,
             isAllowed = repeat.value
         )
 
-        val holdDownDelayValue = action.extras.getData(Action.EXTRA_REPEAT_DELAY).valueOrNull()?.toInt()
+        val repeatDelayValue = action.extras.getData(Action.EXTRA_REPEAT_DELAY).valueOrNull()?.toInt()
 
         repeatDelay = BehaviorOption(
             id = ID_REPEAT_DELAY,
-            value = holdDownDelayValue ?: BehaviorOption.DEFAULT,
+            value = repeatDelayValue ?: BehaviorOption.DEFAULT,
             isAllowed = repeat.value
         )
 
@@ -276,6 +285,7 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
             .applyBehaviorOption(repeat, Action.ACTION_FLAG_REPEAT)
             .applyBehaviorOption(showVolumeUi, Action.ACTION_FLAG_SHOW_VOLUME_UI)
             .applyBehaviorOption(showPerformingActionToast, Action.ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST)
+            .applyBehaviorOption(holdDown, Action.ACTION_FLAG_HOLD_DOWN)
 
         val newExtras = action.extras
             .applyBehaviorOption(repeatRate, Action.EXTRA_REPEAT_RATE)
@@ -323,6 +333,10 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
                 stopRepeatingWhenTriggerReleased.value = value
 
                 stopRepeatingWhenTriggerPressedAgain.value = !stopRepeatingWhenTriggerReleased.value
+            }
+
+            ID_HOLD_DOWN -> {
+                holdDown.value = value
             }
         }
 
