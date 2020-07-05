@@ -63,6 +63,7 @@ data class Action(
         const val ACTION_FLAG_SHOW_VOLUME_UI = 1
         const val ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST = 2
         const val ACTION_FLAG_REPEAT = 4
+        const val ACTION_FLAG_HOLD_DOWN = 8
 
         val ACTION_FLAG_LABEL_MAP = mapOf(
             ACTION_FLAG_SHOW_VOLUME_UI to R.string.flag_show_volume_dialog,
