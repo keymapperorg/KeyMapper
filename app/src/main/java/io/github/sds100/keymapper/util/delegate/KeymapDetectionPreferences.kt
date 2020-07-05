@@ -5,8 +5,8 @@ package io.github.sds100.keymapper.util.delegate
  */
 data class KeymapDetectionPreferences(var defaultLongPressDelay: Int,
                                       var defaultDoublePressDelay: Int,
-                                      var defaultHoldDownDelay: Int,
                                       var defaultRepeatDelay: Int,
+                                      var defaultRepeatRate: Int,
                                       var defaultSequenceTriggerTimeout: Int,
                                       var defaultVibrateDuration: Int,
                                       var forceVibrate: Boolean)
