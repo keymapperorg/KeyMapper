@@ -454,6 +454,7 @@
     <string name="flag_long_press_double_vibration">Vibrate when keys are initially pressed and again when long-pressed.</string>
     <string name="flag_detect_triggers_screen_off">Detect trigger when screen is off. ROOT only.</string>
     <string name="flag_repeat_actions">Repeat</string>
+    <string name="flag_hold_down">Hold down</string>
     <!--flags-->
 
     <!-- Showcase -->

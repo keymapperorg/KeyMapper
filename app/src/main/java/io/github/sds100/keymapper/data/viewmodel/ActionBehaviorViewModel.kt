@@ -78,6 +78,14 @@ class ActionBehaviorViewModel : ViewModel() {
                     isChecked = it.repeat.value
                 ))
             }
+
+            if (it.holdDown.isAllowed) {
+                yield(CheckBoxListItemModel(
+                    id = it.holdDown.id,
+                    label = R.string.flag_hold_down,
+                    isChecked = it.holdDown.value
+                ))
+            }
         }.toList()
     }
 

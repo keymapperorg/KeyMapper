@@ -103,9 +103,13 @@ object KeyboardUtils {
         }
     }
 
-    fun sendDownUpFromImeService(keyCode: Int, metaState: Int = 0) {
+    fun sendDownUpFromImeService(
+        keyCode: Int,
+        metaState: Int = 0,
+        keyEventAction: Int = KeyMapperImeService.ACTION_DOWN_UP
+    ) {
         KeyMapperImeService.provideBus().value =
-            Event(KeyMapperImeService.EVENT_INPUT_DOWN_UP to intArrayOf(keyCode, metaState))
+            Event(KeyMapperImeService.EVENT_INPUT_DOWN_UP to intArrayOf(keyCode, metaState, keyEventAction))
     }
 
     fun getChosenImeId(ctx: Context): String {
