@@ -68,7 +68,8 @@ data class Action(
         val ACTION_FLAG_LABEL_MAP = mapOf(
             ACTION_FLAG_SHOW_VOLUME_UI to R.string.flag_show_volume_dialog,
             ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST to R.string.flag_performing_action_toast,
-            ACTION_FLAG_REPEAT to R.string.flag_repeat_actions
+            ACTION_FLAG_REPEAT to R.string.flag_repeat_actions,
+            ACTION_FLAG_HOLD_DOWN to R.string.flag_hold_down
         )
 
         //DON'T CHANGE THESE IDs!!!!
