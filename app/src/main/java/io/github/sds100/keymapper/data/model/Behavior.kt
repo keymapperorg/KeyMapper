@@ -196,13 +196,13 @@ class TriggerBehavior(keys: List<Trigger.Key>, @Trigger.Mode mode: Int, flags: I
 
 class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys: List<Trigger.Key>) : Serializable {
     companion object {
-        const val ID_REPEAT_DELAY = "repeat_delay"
+        const val ID_REPEAT_RATE = "repeat_rate"
         const val ID_REPEAT = "repeat"
         const val ID_SHOW_VOLUME_UI = "show_volume_ui"
         const val ID_SHOW_PERFORMING_ACTION_TOAST = "show_performing_action_toast"
         const val ID_STOP_REPEATING_TRIGGER_RELEASED = "stop_repeating_trigger_released"
         const val ID_STOP_REPEATING_TRIGGER_PRESSED_AGAIN = "stop_repeating_trigger_pressed_again"
-        const val ID_HOLD_DOWN_DELAY = "hold_down_delay"
+        const val ID_REPEAT_DELAY = "repeat_delay"
     }
 
     val actionId = action.uniqueId
@@ -229,23 +229,23 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
 
     val stopRepeatingWhenTriggerPressedAgain: BehaviorOption<Boolean>
 
+    val repeatRate: BehaviorOption<Int>
+
     val repeatDelay: BehaviorOption<Int>
 
-    val holdDownDelay: BehaviorOption<Int>
-
     init {
-        val repeatDelayValue = action.extras.getData(Action.EXTRA_REPEAT_DELAY).valueOrNull()?.toInt()
+        val repeatDelayValue = action.extras.getData(Action.EXTRA_REPEAT_RATE).valueOrNull()?.toInt()
 
-        repeatDelay = BehaviorOption(
-            id = ID_REPEAT_DELAY,
+        repeatRate = BehaviorOption(
+            id = ID_REPEAT_RATE,
             value = repeatDelayValue ?: BehaviorOption.DEFAULT,
             isAllowed = repeat.value
         )
 
-        val holdDownDelayValue = action.extras.getData(Action.EXTRA_HOLD_DOWN_DELAY).valueOrNull()?.toInt()
+        val holdDownDelayValue = action.extras.getData(Action.EXTRA_REPEAT_DELAY).valueOrNull()?.toInt()
 
-        holdDownDelay = BehaviorOption(
-            id = ID_HOLD_DOWN_DELAY,
+        repeatDelay = BehaviorOption(
+            id = ID_REPEAT_DELAY,
             value = holdDownDelayValue ?: BehaviorOption.DEFAULT,
             isAllowed = repeat.value
         )
@@ -278,8 +278,8 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
             .applyBehaviorOption(showPerformingActionToast, Action.ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST)
 
         val newExtras = action.extras
+            .applyBehaviorOption(repeatRate, Action.EXTRA_REPEAT_RATE)
             .applyBehaviorOption(repeatDelay, Action.EXTRA_REPEAT_DELAY)
-            .applyBehaviorOption(holdDownDelay, Action.EXTRA_HOLD_DOWN_DELAY)
 
         newExtras.removeAll { it.id == Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR }
         if (stopRepeatingWhenTriggerPressedAgain.value) {
@@ -292,8 +292,8 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
 
     fun setValue(id: String, value: Int): ActionBehavior {
         when (id) {
+            ID_REPEAT_RATE -> repeatRate.value = value
             ID_REPEAT_DELAY -> repeatDelay.value = value
-            ID_HOLD_DOWN_DELAY -> holdDownDelay.value = value
         }
 
         return this
@@ -302,8 +302,8 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
     fun setValue(id: String, value: Boolean): ActionBehavior {
         when (id) {
             ID_REPEAT -> {
+                repeatRate.isAllowed = value
                 repeatDelay.isAllowed = value
-                holdDownDelay.isAllowed = value
                 stopRepeatingWhenTriggerPressedAgain.isAllowed = value
                 stopRepeatingWhenTriggerReleased.isAllowed = value
 

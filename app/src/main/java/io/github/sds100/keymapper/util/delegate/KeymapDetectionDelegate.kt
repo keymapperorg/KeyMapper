@@ -61,13 +61,13 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             Trigger.EXTRA_VIBRATION_DURATION to INDEX_TRIGGER_VIBRATE_DURATION
         )
 
-        private const val INDEX_ACTION_REPEAT_DELAY = 0
-        private const val INDEX_ACTION_HOLD_DOWN_DELAY = 1
+        private const val INDEX_ACTION_REPEAT_RATE = 0
+        private const val INDEX_ACTION_REPEAT_DELAY = 1
         private const val INDEX_STOP_REPEAT_BEHAVIOUR = 2
 
         private val ACTION_EXTRA_INDEX_MAP = mapOf(
+            Action.EXTRA_REPEAT_RATE to INDEX_ACTION_REPEAT_RATE,
             Action.EXTRA_REPEAT_DELAY to INDEX_ACTION_REPEAT_DELAY,
-            Action.EXTRA_HOLD_DOWN_DELAY to INDEX_ACTION_HOLD_DOWN_DELAY,
             Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR to INDEX_STOP_REPEAT_BEHAVIOUR
         )
 
@@ -1152,7 +1152,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             val repeat = mActionFlags[actionKey].hasFlag(Action.ACTION_FLAG_REPEAT)
             if (!repeat) return@launch
 
-            delay(holdDownDelay(actionKey))
+            delay(repeatDelay(actionKey))
 
             while (true) {
                 mActionMap[actionKey]?.let { action ->
@@ -1164,7 +1164,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                     performAction(action, false)
                 }
 
-                delay(repeatDelay(actionKey))
+                delay(repeatRate(actionKey))
             }
         }
     }
@@ -1346,19 +1346,19 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         }
     }
 
-    private fun holdDownDelay(actionKey: Int): Long {
-        return if (mActionOptions[actionKey][INDEX_ACTION_HOLD_DOWN_DELAY] == -1) {
+    private fun repeatDelay(actionKey: Int): Long {
+        return if (mActionOptions[actionKey][INDEX_ACTION_REPEAT_DELAY] == -1) {
             preferences.defaultHoldDownDelay.toLong()
         } else {
-            mActionOptions[actionKey][INDEX_ACTION_HOLD_DOWN_DELAY].toLong()
+            mActionOptions[actionKey][INDEX_ACTION_REPEAT_DELAY].toLong()
         }
     }
 
-    private fun repeatDelay(actionKey: Int): Long {
-        return if (mActionOptions[actionKey][INDEX_ACTION_REPEAT_DELAY] == -1) {
+    private fun repeatRate(actionKey: Int): Long {
+        return if (mActionOptions[actionKey][INDEX_ACTION_REPEAT_RATE] == -1) {
             preferences.defaultRepeatDelay.toLong()
         } else {
-            mActionOptions[actionKey][INDEX_ACTION_REPEAT_DELAY].toLong()
+            mActionOptions[actionKey][INDEX_ACTION_REPEAT_RATE].toLong()
         }
     }
 

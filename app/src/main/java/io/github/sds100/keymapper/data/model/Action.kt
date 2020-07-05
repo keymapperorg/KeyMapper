@@ -89,8 +89,8 @@ data class Action(
 
         //Behaviour extras. Extras that tweak how and when an action is performed.
         const val EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR = "extra_custom_stop_repeat_behaviour"
-        const val EXTRA_HOLD_DOWN_DELAY = "extra_hold_down_until_repeat_delay"
-        const val EXTRA_REPEAT_DELAY = "extra_repeat_delay"
+        const val EXTRA_REPEAT_DELAY = "extra_hold_down_until_repeat_delay"
+        const val EXTRA_REPEAT_RATE = "extra_repeat_delay"
 
         val DATA_EXTRAS = arrayOf(
             EXTRA_SHORTCUT_TITLE,
