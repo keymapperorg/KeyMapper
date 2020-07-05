@@ -106,8 +106,8 @@
     <string name="extra_label_sequence_trigger_timeout">Sequence trigger timeout (ms)</string>
     <string name="extra_label_long_press_delay_timeout">Long press delay (ms)</string>
     <string name="extra_label_double_press_delay_timeout">Double press timeout (ms)</string>
-    <string name="extra_label_hold_down_delay">Hold down until repeat delay (ms)</string>
     <string name="extra_label_repeat_delay">Repeat delay (ms)</string>
+    <string name="extra_label_repeat_rate">Repeat rate (ms)</string>
     <string name="extra_label_vibration_duration">Vibration duration (ms)</string>
     <!-- Constraints -->
     <string name="constraint_app_foreground_description">%s is in foreground</string>

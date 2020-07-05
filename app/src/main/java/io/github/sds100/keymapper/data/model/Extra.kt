@@ -2,10 +2,10 @@ package io.github.sds100.keymapper.data.model
 
 import androidx.annotation.StringDef
 import com.google.gson.annotations.SerializedName
-import io.github.sds100.keymapper.data.model.Action.Companion.EXTRA_HOLD_DOWN_DELAY
 import io.github.sds100.keymapper.data.model.Action.Companion.EXTRA_LENS
 import io.github.sds100.keymapper.data.model.Action.Companion.EXTRA_PACKAGE_NAME
 import io.github.sds100.keymapper.data.model.Action.Companion.EXTRA_REPEAT_DELAY
+import io.github.sds100.keymapper.data.model.Action.Companion.EXTRA_REPEAT_RATE
 import io.github.sds100.keymapper.data.model.Action.Companion.EXTRA_RINGER_MODE
 import io.github.sds100.keymapper.data.model.Action.Companion.EXTRA_SHORTCUT_TITLE
 import io.github.sds100.keymapper.data.model.Action.Companion.EXTRA_STREAM_TYPE
@@ -33,8 +33,8 @@ import java.io.Serializable
     EXTRA_SEQUENCE_TRIGGER_TIMEOUT,
     EXTRA_LONG_PRESS_DELAY,
     EXTRA_DOUBLE_PRESS_DELAY,
-    EXTRA_HOLD_DOWN_DELAY,
     EXTRA_REPEAT_DELAY,
+    EXTRA_REPEAT_RATE,
     EXTRA_VIBRATION_DURATION,
     EXTRA_BT_ADDRESS,
     EXTRA_BT_NAME

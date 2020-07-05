@@ -75,19 +75,19 @@ object Migration_4_5 {
                 }
 
                 if (flags.hasFlag(OLD_KEYMAP_FLAG_REPEAT_ACTIONS)) {
-                    val repeatDelay = trigger.extras.getData(Action.EXTRA_REPEAT_DELAY).valueOrNull()
-                    val holdDownDelay = trigger.extras.getData(Action.EXTRA_HOLD_DOWN_DELAY).valueOrNull()
+                    val repeatDelay = trigger.extras.getData(Action.EXTRA_REPEAT_RATE).valueOrNull()
+                    val holdDownDelay = trigger.extras.getData(Action.EXTRA_REPEAT_DELAY).valueOrNull()
 
                     actionList = actionList.map {
                         val newFlags = it.flags.withFlag(Action.ACTION_FLAG_REPEAT)
                         var newExtras = it.extras
 
                         if (holdDownDelay != null) {
-                            newExtras = newExtras.putExtraData(Action.EXTRA_HOLD_DOWN_DELAY, holdDownDelay)
+                            newExtras = newExtras.putExtraData(Action.EXTRA_REPEAT_DELAY, holdDownDelay)
                         }
 
                         if (repeatDelay != null) {
-                            newExtras = newExtras.putExtraData(Action.EXTRA_REPEAT_DELAY, repeatDelay)
+                            newExtras = newExtras.putExtraData(Action.EXTRA_REPEAT_RATE, repeatDelay)
                         }
 
                         it.clone(flags = newFlags, extras = newExtras)
@@ -95,7 +95,7 @@ object Migration_4_5 {
                 }
 
                 val newTriggerExtras = trigger.extras.toMutableList().apply {
-                    removeAll { it.id == Action.EXTRA_REPEAT_DELAY || it.id == Action.EXTRA_HOLD_DOWN_DELAY }
+                    removeAll { it.id == Action.EXTRA_REPEAT_RATE || it.id == Action.EXTRA_REPEAT_DELAY }
                 }
 
                 val newTrigger = Trigger4(trigger.keys, newTriggerExtras.toList(), mode = trigger.mode)

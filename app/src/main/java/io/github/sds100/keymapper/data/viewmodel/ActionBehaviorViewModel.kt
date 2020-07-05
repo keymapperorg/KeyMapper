@@ -23,6 +23,20 @@ class ActionBehaviorViewModel : ViewModel() {
 
     val sliderModels = behavior.map {
         sequence {
+            if (it.repeatRate.isAllowed) {
+                yield(SliderListItemModel(
+                    id = it.repeatRate.id,
+                    label = R.string.extra_label_repeat_rate,
+                    sliderModel = SliderModel(
+                        value = it.repeatRate.value.nullIfDefault,
+                        isDefaultStepEnabled = true,
+                        min = R.integer.repeat_rate_min,
+                        max = R.integer.repeat_rate_max,
+                        stepSize = R.integer.repeat_rate_step_size
+                    )
+                ))
+            }
+
             if (it.repeatDelay.isAllowed) {
                 yield(SliderListItemModel(
                     id = it.repeatDelay.id,
@@ -33,20 +47,6 @@ class ActionBehaviorViewModel : ViewModel() {
                         min = R.integer.repeat_delay_min,
                         max = R.integer.repeat_delay_max,
                         stepSize = R.integer.repeat_delay_step_size
-                    )
-                ))
-            }
-
-            if (it.holdDownDelay.isAllowed) {
-                yield(SliderListItemModel(
-                    id = it.holdDownDelay.id,
-                    label = R.string.extra_label_hold_down_delay,
-                    sliderModel = SliderModel(
-                        value = it.holdDownDelay.value.nullIfDefault,
-                        isDefaultStepEnabled = true,
-                        min = R.integer.hold_down_delay_min,
-                        max = R.integer.hold_down_delay_max,
-                        stepSize = R.integer.hold_down_delay_step_size
                     )
                 ))
             }
