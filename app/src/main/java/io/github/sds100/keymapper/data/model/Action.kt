@@ -110,25 +110,26 @@ data class Action(
             return Action(ActionType.APP, packageName)
         }
 
-        fun appShortcutAction(model: AppShortcutModel): Action {
+        fun appShortcutAction(name: String, packageName: String, uri: String): Action {
             val extras = mutableListOf(
-                Extra(EXTRA_SHORTCUT_TITLE, model.name),
-                Extra(EXTRA_PACKAGE_NAME, model.packageName)
+                Extra(EXTRA_SHORTCUT_TITLE, name),
+                Extra(EXTRA_PACKAGE_NAME, packageName)
             )
 
-            return Action(ActionType.APP_SHORTCUT, data = model.uri, extras = extras)
+            return Action(ActionType.APP_SHORTCUT, data = uri, extras = extras)
         }
 
         fun keyAction(keyCode: Int): Action {
-            return keyEventAction(keyCode)
+            return keyEventAction(keyCode, metaState = 0)
         }
 
-        fun keycodeAction(keyCode: Int): Action {
-            return keyEventAction(keyCode)
-        }
-
-        private fun keyEventAction(keyCode: Int): Action {
-            return Action(ActionType.KEY_EVENT, keyCode.toString(), flags = ACTION_FLAG_REPEAT)
+        fun keyEventAction(keyCode: Int, metaState: Int): Action {
+            return Action(
+                ActionType.KEY_EVENT,
+                keyCode.toString(),
+                flags = ACTION_FLAG_REPEAT,
+                extras = listOf(Extra(EXTRA_KEY_EVENT_META_STATE, metaState.toString()))
+            )
         }
 
         fun textBlockAction(text: String): Action {
@@ -139,27 +140,26 @@ data class Action(
             return Action(ActionType.URL, url)
         }
 
-        fun systemAction(ctx: Context, model: SelectedSystemActionModel): Action {
-            val data = model.id
+        fun systemAction(ctx: Context, id: String, optionData: String?): Action {
             val extras = mutableListOf<Extra>()
             var flags = 0
 
-            model.optionData?.let {
-                extras.add(Extra(Option.getExtraIdForOption(model.id), it))
+            optionData?.let {
+                extras.add(Extra(Option.getExtraIdForOption(id), it))
 
-                if (model.id == SystemAction.SWITCH_KEYBOARD) {
-                    Option.getOptionLabel(ctx, model.id, it).onSuccess { imeName ->
+                if (id == SystemAction.SWITCH_KEYBOARD) {
+                    Option.getOptionLabel(ctx, id, it).onSuccess { imeName ->
                         extras.add(Extra(EXTRA_IME_NAME, imeName))
                     }
                 }
             }
 
             //show the volume UI by default when the user chooses a volume action.
-            if (ActionUtils.isVolumeAction(data)) {
+            if (ActionUtils.isVolumeAction(id)) {
                 flags = flags.withFlag(ACTION_FLAG_SHOW_VOLUME_UI).withFlag(ACTION_FLAG_REPEAT)
             }
 
-            val action = Action(ActionType.SYSTEM_ACTION, data, extras, flags)
+            val action = Action(ActionType.SYSTEM_ACTION, id, extras, flags)
             return action
         }
     }

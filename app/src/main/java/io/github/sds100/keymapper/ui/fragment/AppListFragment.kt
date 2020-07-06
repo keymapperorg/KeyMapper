@@ -17,7 +17,7 @@ class AppListFragment : RecyclerViewFragment<FragmentAppListBinding>() {
 
     companion object {
         const val REQUEST_KEY = "request_app"
-        const val EXTRA_APP_MODEL = "extra_app"
+        const val EXTRA_PACKAGE_NAME = "extra_package_name"
         const val SEARCH_STATE_KEY = "key_app_search_state"
     }
 
@@ -25,7 +25,7 @@ class AppListFragment : RecyclerViewFragment<FragmentAppListBinding>() {
         get() = mViewModel
 
     override var searchStateKey: String? = SEARCH_STATE_KEY
-    override var resultData: ResultData? = ResultData(REQUEST_KEY, EXTRA_APP_MODEL)
+    override var requestKey: String? = REQUEST_KEY
 
     override val appBar: BottomAppBar
         get() = binding.appBar
@@ -44,7 +44,7 @@ class AppListFragment : RecyclerViewFragment<FragmentAppListBinding>() {
                         icon(it.icon)
 
                         onClick { _ ->
-                            selectModel(it)
+                            returnResult(EXTRA_PACKAGE_NAME to it.packageName)
                         }
                     }
                 }

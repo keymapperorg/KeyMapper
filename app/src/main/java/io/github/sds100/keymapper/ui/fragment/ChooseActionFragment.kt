@@ -9,6 +9,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
@@ -16,14 +17,12 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Action
-import io.github.sds100.keymapper.data.model.AppListItemModel
-import io.github.sds100.keymapper.data.model.AppShortcutModel
-import io.github.sds100.keymapper.data.model.SelectedSystemActionModel
+import io.github.sds100.keymapper.data.viewmodel.KeyEventActionTypeViewModel
 import io.github.sds100.keymapper.databinding.FragmentChooseActionBinding
 import io.github.sds100.keymapper.ui.adapter.ChooseActionPagerAdapter
+import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.setCurrentDestinationLiveData
 import io.github.sds100.keymapper.util.strArray
-import java.io.Serializable
 
 /**
  * A placeholder fragment containing a simple view.
@@ -35,42 +34,64 @@ class ChooseActionFragment : Fragment() {
         const val EXTRA_ACTION = "extra_action"
     }
 
-    private val mPagerAdapter: ChooseActionPagerAdapter by lazy { ChooseActionPagerAdapter(this) }
+    private lateinit var mPagerAdapter: ChooseActionPagerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setResultListener<AppListItemModel>(AppListFragment.REQUEST_KEY, AppListFragment.EXTRA_APP_MODEL) {
-            Action.appAction(it.packageName)
+        setResultListener(AppListFragment.REQUEST_KEY) {
+            val packageName = it.getString(AppListFragment.EXTRA_PACKAGE_NAME)
+            Action.appAction(packageName!!)
         }
 
-        setResultListener<AppShortcutModel>(AppShortcutListFragment.REQUEST_KEY,
-            AppShortcutListFragment.EXTRA_APP_SHORTCUT) {
-            Action.appShortcutAction(it)
+        setResultListener(AppShortcutListFragment.REQUEST_KEY) {
+            val name = it.getString(AppShortcutListFragment.EXTRA_NAME)
+            val packageName = it.getString(AppShortcutListFragment.EXTRA_NAME)
+            val uri = it.getString(AppShortcutListFragment.EXTRA_URI)
+
+            Action.appShortcutAction(name!!, packageName!!, uri!!)
         }
 
-        setResultListener<Int>(KeyActionTypeFragment.REQUEST_KEY, KeyActionTypeFragment.EXTRA_KEYCODE) {
-            Action.keyAction(it)
+        setResultListener(KeyActionTypeFragment.REQUEST_KEY) {
+            val keyCode = it.getInt(KeyActionTypeFragment.EXTRA_KEYCODE)
+
+            Action.keyAction(keyCode)
         }
 
-        setResultListener<Int>(KeycodeListFragment.REQUEST_KEY, KeycodeListFragment.EXTRA_KEYCODE) {
-            Action.keycodeAction(it)
+        setResultListener(KeyEventActionTypeFragment.REQUEST_KEY) {
+            val keyCode = it.getInt(KeyEventActionTypeFragment.EXTRA_KEYCODE)
+            val metaState = it.getInt(KeyEventActionTypeFragment.EXTRA_META_STATE)
+
+            Action.keyEventAction(keyCode, metaState)
         }
 
-        setResultListener<String>(TextBlockActionTypeFragment.REQUEST_KEY,
-            TextBlockActionTypeFragment.EXTRA_TEXT_BLOCk) {
-            Action.textBlockAction(it)
+        setResultListener(TextBlockActionTypeFragment.REQUEST_KEY) {
+            val text = it.getString(TextBlockActionTypeFragment.EXTRA_TEXT_BLOCK)
+
+            Action.textBlockAction(text!!)
         }
 
-        setResultListener<String>(UrlActionTypeFragment.REQUEST_KEY, UrlActionTypeFragment.EXTRA_URL) {
-            Action.urlAction(it)
+        setResultListener(UrlActionTypeFragment.REQUEST_KEY) {
+            val url = it.getString(UrlActionTypeFragment.EXTRA_URL)
+
+            Action.urlAction(url!!)
         }
 
-        setResultListener<SelectedSystemActionModel>(
-            SystemActionListFragment.REQUEST_KEY,
-            SystemActionListFragment.EXTRA_SYSTEM_ACTION
-        ) {
-            Action.systemAction(requireContext(), it)
+        setResultListener(SystemActionListFragment.REQUEST_KEY) {
+            val id = it.getString(SystemActionListFragment.EXTRA_SYSTEM_ACTION_ID)
+            val optionData = it.getString(SystemActionListFragment.EXTRA_SYSTEM_ACTION_OPTION_DATA)
+
+            Action.systemAction(requireContext(), id!!, optionData)
+        }
+
+        setFragmentResultListener(KeycodeListFragment.REQUEST_KEY) { _, result ->
+            val keyEventViewModel by activityViewModels<KeyEventActionTypeViewModel> {
+                InjectorUtils.provideKeyEventActionTypeViewModel()
+            }
+
+            result.getInt(KeycodeListFragment.EXTRA_KEYCODE).let {
+                keyEventViewModel.keyCode.value = it.toString()
+            }
         }
     }
 
@@ -79,6 +100,9 @@ class ChooseActionFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         FragmentChooseActionBinding.inflate(inflater, container, false).apply {
+            lifecycleOwner = viewLifecycleOwner
+
+            mPagerAdapter = ChooseActionPagerAdapter(this@ChooseActionFragment)
             viewPager.adapter = mPagerAdapter
 
             TabLayoutMediator(tabLayout, viewPager) { tab, position ->
@@ -96,15 +120,12 @@ class ChooseActionFragment : Fragment() {
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun <T : Serializable> setResultListener(
+    private fun setResultListener(
         requestKey: String,
-        extraKey: String,
-        createAction: (model: T) -> Action
+        createAction: (bundle: Bundle) -> Action
     ) {
         childFragmentManager.setFragmentResultListener(requestKey, this) { _, result ->
-            val model = result.get(extraKey) as T
-
-            val action = createAction(model)
+            val action = createAction(result)
 
             setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_ACTION to action))
         }

@@ -10,7 +10,6 @@ import androidx.lifecycle.observe
 import com.airbnb.epoxy.EpoxyController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Option
-import io.github.sds100.keymapper.data.model.SelectedSystemActionModel
 import io.github.sds100.keymapper.data.model.SystemActionDef
 import io.github.sds100.keymapper.data.model.SystemActionListItemModel
 import io.github.sds100.keymapper.data.viewmodel.SystemActionListViewModel
@@ -42,7 +41,8 @@ class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourcePr
 
     companion object {
         const val REQUEST_KEY = "request_system_action"
-        const val EXTRA_SYSTEM_ACTION = "extra_system_action"
+        const val EXTRA_SYSTEM_ACTION_ID = "extra_system_action_id"
+        const val EXTRA_SYSTEM_ACTION_OPTION_DATA = "extra_system_action_option_data"
         const val SEARCH_STATE_KEY = "key_system_action_search_state"
     }
 
@@ -51,7 +51,7 @@ class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourcePr
     }
 
     override var searchStateKey: String? = SEARCH_STATE_KEY
-    override var resultData: ResultData? = ResultData(REQUEST_KEY, EXTRA_SYSTEM_ACTION)
+    override var requestKey: String? = REQUEST_KEY
 
     override val progressCallback: ProgressCallback?
         get() = mViewModel
@@ -139,7 +139,10 @@ class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourcePr
             }
         }
 
-        selectModel(SelectedSystemActionModel(systemActionDef.id, selectedOptionData))
+        returnResult(
+            EXTRA_SYSTEM_ACTION_ID to systemActionDef.id,
+            EXTRA_SYSTEM_ACTION_OPTION_DATA to selectedOptionData
+        )
     }
 
     @ExperimentalSplittiesApi

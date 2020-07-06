@@ -19,7 +19,7 @@ class KeycodeListFragment : DefaultRecyclerViewFragment() {
     }
 
     override var searchStateKey: String? = SEARCH_STATE_KEY
-    override var resultData: ResultData? = ResultData(REQUEST_KEY, EXTRA_KEYCODE)
+    override var requestKey: String? = REQUEST_KEY
 
     private val mViewModel: KeycodeListViewModel by activityViewModels {
         InjectorUtils.provideKeycodeListViewModel()
@@ -37,7 +37,7 @@ class KeycodeListFragment : DefaultRecyclerViewFragment() {
                         primaryText(label)
 
                         onClick { _ ->
-                            selectModel(keycode)
+                            returnResult(EXTRA_KEYCODE to keycode)
                         }
                     }
                 }
