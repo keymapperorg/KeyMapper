@@ -106,8 +106,27 @@ private fun Action.getTitle(ctx: Context): Result<String> = when (type) {
     }
 
     ActionType.KEY_EVENT -> {
-        val key = KeyEvent.keyCodeToString(data.toInt())
-        Success(ctx.str(R.string.description_keycode, key))
+        val key = if (data.toInt() > KeyEvent.getMaxKeyCode()) {
+            "Key Code $data"
+        } else {
+            KeyEvent.keyCodeToString(data.toInt())
+        }
+
+        val metaStateString = buildString {
+
+            extras.getData(Action.EXTRA_KEY_EVENT_META_STATE).onSuccess { metaState ->
+                KeyEventUtils.MODIFIER_LABELS.entries.forEach {
+                    val modifier = it.key
+                    val labelRes = it.value
+
+                    if (metaState.toInt().hasFlag(modifier)) {
+                        append("${ctx.str(labelRes)} + ")
+                    }
+                }
+            }
+        }
+
+        Success(ctx.str(R.string.description_keyevent, formatArgArray = arrayOf(metaStateString, key)))
     }
 
     ActionType.TEXT_BLOCK -> {

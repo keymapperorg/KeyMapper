@@ -3,18 +3,12 @@ package io.github.sds100.keymapper.util
 import android.os.Build
 import android.view.KeyEvent
 import androidx.annotation.RequiresApi
+import io.github.sds100.keymapper.R
 import splitties.bitflags.withFlag
 
 /**
  * Created by sds100 on 17/07/2018.
  */
-
-val KeyEvent.isVolumeKey: Boolean
-    get() = keyCode == KeyEvent.KEYCODE_VOLUME_DOWN
-        || keyCode == KeyEvent.KEYCODE_VOLUME_UP
-        || keyCode == KeyEvent.KEYCODE_VOLUME_MUTE
-        || keyCode == KeyEvent.KEYCODE_MUTE
-
 object KeyEventUtils {
     /**
      * Maps keys which aren't single characters like the Control keys to a string representation
@@ -741,4 +735,24 @@ object KeyEventUtils {
 
         else -> throw Exception("can't convert modifier $modifier to meta state")
     }
+
+    val MODIFIER_LABELS = mapOf(
+        KeyEvent.META_CTRL_ON to R.string.meta_state_ctrl,
+        KeyEvent.META_CTRL_LEFT_ON to R.string.meta_state_ctrl_left,
+        KeyEvent.META_CTRL_RIGHT_ON to R.string.meta_state_ctrl_right,
+
+        KeyEvent.META_ALT_ON to R.string.meta_state_alt,
+        KeyEvent.META_ALT_LEFT_ON to R.string.meta_state_alt_left,
+        KeyEvent.META_ALT_RIGHT_ON to R.string.meta_state_alt_right,
+
+        KeyEvent.META_SHIFT_ON to R.string.meta_state_shift,
+        KeyEvent.META_SHIFT_LEFT_ON to R.string.meta_state_shift_left,
+        KeyEvent.META_SHIFT_RIGHT_ON to R.string.meta_state_shift_right,
+
+        KeyEvent.META_SYM_ON to R.string.meta_state_sym,
+        KeyEvent.META_CAPS_LOCK_ON to R.string.meta_state_caps_lock,
+        KeyEvent.META_NUM_LOCK_ON to R.string.meta_state_num_lock,
+        KeyEvent.META_SCROLL_LOCK_ON to R.string.meta_state_scroll_lock,
+        KeyEvent.META_FUNCTION_ON to R.string.meta_state_function
+    )
 }

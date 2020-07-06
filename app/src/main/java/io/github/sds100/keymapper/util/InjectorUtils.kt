@@ -55,6 +55,10 @@ object InjectorUtils {
         return KeyActionTypeViewModel.Factory()
     }
 
+    fun provideKeyEventActionTypeViewModel(): KeyEventActionTypeViewModel.Factory {
+        return KeyEventActionTypeViewModel.Factory()
+    }
+
     fun provideKeycodeListViewModel(): KeycodeListViewModel.Factory {
         return KeycodeListViewModel.Factory()
     }

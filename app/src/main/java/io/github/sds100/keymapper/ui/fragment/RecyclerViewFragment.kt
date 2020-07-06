@@ -17,7 +17,6 @@ import com.google.android.material.bottomappbar.BottomAppBar
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ui.callback.ProgressCallback
 import io.github.sds100.keymapper.util.observeCurrentDestinationLiveData
-import java.io.Serializable
 
 /**
  * Created by sds100 on 22/02/2020.
@@ -29,7 +28,7 @@ abstract class RecyclerViewFragment<BINDING : ViewDataBinding> : Fragment() {
 
         private const val KEY_IS_APPBAR_VISIBLE = "key_is_app_visible"
         private const val KEY_IS_IN_PAGER_ADAPTER = "key_is_in_pager_adapter"
-        private const val KEY_RESULT_DATA = "key_result_data"
+        private const val KEY_REQUEST_KEY = "key_request_key"
         private const val KEY_SEARCH_STATE_KEY = "key_search_state_key"
     }
 
@@ -37,7 +36,7 @@ abstract class RecyclerViewFragment<BINDING : ViewDataBinding> : Fragment() {
         Bundle().apply {
             putBoolean(KEY_IS_APPBAR_VISIBLE, isAppBarVisible)
             putBoolean(KEY_IS_IN_PAGER_ADAPTER, isInPagerAdapter)
-            putSerializable(KEY_RESULT_DATA, resultData)
+            putSerializable(KEY_REQUEST_KEY, requestKey)
             putString(KEY_SEARCH_STATE_KEY, searchStateKey)
         }
     }
@@ -47,7 +46,7 @@ abstract class RecyclerViewFragment<BINDING : ViewDataBinding> : Fragment() {
 
     var isAppBarVisible = true
     var isInPagerAdapter = false
-    open var resultData: ResultData? = null
+    open var requestKey: String? = null
     open var searchStateKey: String? = null
     open val progressCallback: ProgressCallback? = null
     abstract val appBar: BottomAppBar
@@ -61,7 +60,7 @@ abstract class RecyclerViewFragment<BINDING : ViewDataBinding> : Fragment() {
         savedStateRegistry.consumeRestoredStateForKey(KEY_SAVED_STATE)?.apply {
             isAppBarVisible = getBoolean(KEY_IS_APPBAR_VISIBLE)
             isInPagerAdapter = getBoolean(KEY_IS_IN_PAGER_ADAPTER)
-            resultData = getSerializable(KEY_RESULT_DATA) as ResultData
+            requestKey = getString(KEY_REQUEST_KEY)
             searchStateKey = getString(KEY_SEARCH_STATE_KEY)
         }
     }
@@ -89,9 +88,9 @@ abstract class RecyclerViewFragment<BINDING : ViewDataBinding> : Fragment() {
         return binding.root
     }
 
-    fun selectModel(model: Serializable) {
-        resultData?.let {
-            setFragmentResult(it.requestKey, bundleOf(it.resultExtraKey to model))
+    fun returnResult(vararg extras: Pair<String, Any?>) {
+        requestKey?.let {
+            setFragmentResult(it, bundleOf(*extras))
             findNavController().navigateUp()
         }
     }
@@ -123,6 +122,4 @@ abstract class RecyclerViewFragment<BINDING : ViewDataBinding> : Fragment() {
     abstract fun subscribeList(binding: BINDING)
     abstract fun bind(inflater: LayoutInflater,
                       container: ViewGroup?): BINDING
-
-    class ResultData(val requestKey: String, val resultExtraKey: String) : Serializable
 }

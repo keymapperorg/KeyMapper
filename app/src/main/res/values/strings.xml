@@ -45,6 +45,8 @@
     <string name="trigger_released">Released</string>
     <string name="trigger_pressed_again">Pressed again</string>
     <string name="show_hidden_apps">Show hidden apps</string>
+    <string name="modifiers">Modifiers</string>
+    <string name="hint_keycode">Key Code</string>
 
     <string name="whats_new">What\'s New</string>
     <string name="caption_action_type_key">Click the key on the device which you want to be entered.
@@ -66,7 +68,7 @@
     <string name="description_open_app">Open %s</string>
     <string name="description_key">Press \'%s\' key</string>
     <string name="description_text_block">Type \'%s\'</string>
-    <string name="description_keycode">Input %s</string>
+    <string name="description_keyevent">Input %s%s</string>
     <string name="description_url">Open %s</string>
 
     <string name="exception_accessibility_service" translatable="false">Exception in onKeyEvent. Look in logcat.</string>
@@ -208,6 +210,7 @@
     <string name="button_flags">Options</string>
     <string name="button_help">Help</string>
     <string name="button_add_constraint">Add Constraint</string>
+    <string name="button_choose_keycode">Choose Key Code</string>
     <!-- Button titles -->
 
     <!-- Content descriptions -->
@@ -403,7 +406,7 @@
     <string name="action_type_title_application">App</string>
     <string name="action_type_title_application_shortcut">App shortcut</string>
     <string name="action_type_title_key">Key</string>
-    <string name="action_type_title_keycode">Key code</string>
+    <string name="action_type_title_keyevent">Key Event</string>
     <string name="action_type_title_system_action">Other</string>
     <string name="action_type_title_text_block">Text</string>
     <string name="action_type_url">URL</string>
@@ -414,7 +417,7 @@
         <item>@string/action_type_title_application</item>
         <item>@string/action_type_title_application_shortcut</item>
         <item>@string/action_type_title_key</item>
-        <item>@string/action_type_title_keycode</item>
+        <item>@string/action_type_title_keyevent</item>
         <item>@string/action_type_title_text_block</item>
         <item>@string/action_type_url</item>
         <item>@string/action_type_title_system_action</item>
@@ -512,6 +515,30 @@
     <string name="tile_service_disabled">Service Disabled</string>
     <string name="tile_toggle_keymapper_keyboard">Toggle Key Mapper Keyboard</string>
     <!-- Tiles -->
+
+    <!-- Meta States -->
+    <string name="meta_state_ctrl">Ctrl</string>
+    <string name="meta_state_ctrl_left">Ctrl Left</string>
+    <string name="meta_state_ctrl_right">Ctrl Right</string>
+
+    <string name="meta_state_alt">Alt</string>
+    <string name="meta_state_alt_left">Alt Left</string>
+    <string name="meta_state_alt_right">Alt Right</string>
+
+    <string name="meta_state_shift">Shift</string>
+    <string name="meta_state_shift_left">Shift Left</string>
+    <string name="meta_state_shift_right">Shift Right</string>
+
+    <string name="meta_state_meta">Meta</string>
+    <string name="meta_state_meta_left">Meta Left</string>
+    <string name="meta_state_meta_right">Meta Right</string>
+
+    <string name="meta_state_sym">Sym</string>
+    <string name="meta_state_function">Func</string>
+    <string name="meta_state_caps_lock">Caps Lock</string>
+    <string name="meta_state_num_lock">Num Lock</string>
+    <string name="meta_state_scroll_lock">Scroll Lock</string>
+    <!-- Meta States -->
 
     <!-- Error messages -->
     <string name="error_must_type_a_key">You must type a key!</string>

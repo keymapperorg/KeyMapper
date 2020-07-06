@@ -9,7 +9,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.SystemRepository
-import io.github.sds100.keymapper.data.model.AppShortcutModel
 import io.github.sds100.keymapper.data.viewmodel.AppShortcutListViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.simple
@@ -31,11 +30,13 @@ class AppShortcutListFragment : DefaultRecyclerViewFragment() {
         private const val REQUEST_CODE_SHORTCUT_CONFIG = 837
 
         const val REQUEST_KEY = "request_app_shortcut"
-        const val EXTRA_APP_SHORTCUT = "extra_app_shortcut"
+        const val EXTRA_NAME = "extra_name"
+        const val EXTRA_PACKAGE_NAME = "extra_package_name"
+        const val EXTRA_URI = "extra_uri"
         const val SEARCH_STATE_KEY = "key_app_shortcut_search_state"
     }
 
-    override var resultData: ResultData? = ResultData(REQUEST_KEY, EXTRA_APP_SHORTCUT)
+    override var requestKey: String? = REQUEST_KEY
     override var searchStateKey: String? = SEARCH_STATE_KEY
 
     private val mViewModel: AppShortcutListViewModel by viewModels {
@@ -93,9 +94,11 @@ class AppShortcutListFragment : DefaultRecyclerViewFragment() {
                 val shortcutName = getShortcutName(data)
                 val appName = SystemRepository.getInstance(requireContext()).getAppName(packageName)
 
-                val model = AppShortcutModel("$appName: $shortcutName", packageName, uri)
-
-                selectModel(model)
+                returnResult(
+                    EXTRA_NAME to "$appName: $shortcutName",
+                    EXTRA_PACKAGE_NAME to packageName,
+                    EXTRA_URI to uri
+                )
             }
         }
     }

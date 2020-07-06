@@ -40,7 +40,11 @@
         android:id="@+id/choose_action_fragment"
         android:name="io.github.sds100.keymapper.ui.fragment.ChooseActionFragment"
         android:label="@string/title_choose_action"
-        tools:layout="@layout/fragment_choose_action" />
+        tools:layout="@layout/fragment_choose_action">
+        <action
+            android:id="@+id/action_choose_action_fragment_to_keycodeListFragment"
+            app:destination="@id/keycodeListFragment" />
+    </fragment>
 
     <include app:graph="@navigation/nav_choose_constraint" />
 
@@ -71,4 +75,8 @@
             android:name="@string/nav_arg_action_behavior"
             app:argType="io.github.sds100.keymapper.data.model.ActionBehavior" />
     </dialog>
+    <fragment
+        android:id="@+id/keycodeListFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.KeycodeListFragment"
+        android:label="KeycodeListFragment" />
 </navigation>

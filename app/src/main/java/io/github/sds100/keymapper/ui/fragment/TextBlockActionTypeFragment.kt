@@ -22,7 +22,7 @@ import io.github.sds100.keymapper.util.str
 class TextBlockActionTypeFragment : Fragment() {
     companion object {
         const val REQUEST_KEY = "request_text_block"
-        const val EXTRA_TEXT_BLOCk = "extra_text_block"
+        const val EXTRA_TEXT_BLOCK = "extra_text_block"
     }
 
     private val mViewModel: TextBlockActionTypeViewModel by activityViewModels {
@@ -38,7 +38,7 @@ class TextBlockActionTypeFragment : Fragment() {
             caption = str(R.string.caption_action_type_text)
 
             setOnDoneClick {
-                setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_TEXT_BLOCk to mViewModel.text.value))
+                setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_TEXT_BLOCK to mViewModel.text.value))
                 findNavController().navigateUp()
             }
 
