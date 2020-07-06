@@ -25,7 +25,7 @@ import splitties.toast.toast
  * Created by sds100 on 29/03/2020.
  */
 
-class AppShortcutListFragment : RecyclerViewFragment() {
+class AppShortcutListFragment : DefaultRecyclerViewFragment() {
 
     companion object {
         private const val REQUEST_CODE_SHORTCUT_CONFIG = 837

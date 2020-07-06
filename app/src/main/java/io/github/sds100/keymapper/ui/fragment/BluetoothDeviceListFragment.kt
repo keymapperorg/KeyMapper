@@ -10,7 +10,7 @@ import java.io.Serializable
 /**
  * Created by sds100 on 22/02/2020.
  */
-class BluetoothDeviceListFragment : RecyclerViewFragment() {
+class BluetoothDeviceListFragment : DefaultRecyclerViewFragment() {
 
     companion object {
         const val REQUEST_KEY = "request_key_bluetooth_device"

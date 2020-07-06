@@ -38,7 +38,7 @@ import kotlin.coroutines.suspendCoroutine
 /**
  * Created by sds100 on 31/03/2020.
  */
-class SystemActionListFragment : RecyclerViewFragment(), StringResourceProvider {
+class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourceProvider {
 
     companion object {
         const val REQUEST_KEY = "request_system_action"
