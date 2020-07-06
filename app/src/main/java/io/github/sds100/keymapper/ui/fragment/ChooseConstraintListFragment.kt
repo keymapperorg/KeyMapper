@@ -24,7 +24,7 @@ import splitties.alertdialog.appcompat.okButton
 /**
  * A placeholder fragment containing a simple view.
  */
-class ChooseConstraintListFragment : RecyclerViewFragment() {
+class ChooseConstraintListFragment : DefaultRecyclerViewFragment() {
 
     companion object {
         const val REQUEST_KEY = "request_constraint"

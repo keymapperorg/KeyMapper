@@ -11,7 +11,7 @@ import io.github.sds100.keymapper.util.InjectorUtils
  * Created by sds100 on 30/03/2020.
  */
 
-class KeycodeListFragment : RecyclerViewFragment() {
+class KeycodeListFragment : DefaultRecyclerViewFragment() {
     companion object {
         const val REQUEST_KEY = "request_keycode"
         const val EXTRA_KEYCODE = "extra_keycode"

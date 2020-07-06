@@ -15,7 +15,7 @@ import io.github.sds100.keymapper.util.str
 /**
  * Created by sds100 on 31/03/2020.
  */
-class UnsupportedSystemActionListFragment : RecyclerViewFragment() {
+class UnsupportedSystemActionListFragment : DefaultRecyclerViewFragment() {
 
     private val mViewModel: SystemActionListViewModel by activityViewModels {
         InjectorUtils.provideSystemActionListViewModel(requireContext())

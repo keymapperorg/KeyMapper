@@ -14,14 +14,28 @@ import kotlinx.coroutines.withContext
  */
 class SystemRepository private constructor(private val mContext: Context) {
 
-    suspend fun getAppList() = withContext(Dispatchers.Default) {
+    suspend fun getAllAppList() = withContext(Dispatchers.Default) {
         sequence {
             mContext.packageManager.apply {
 
                 val installedApps = getInstalledApplications(GET_META_DATA)
 
                 installedApps.forEach { app ->
-                    //only allow apps which can be launched by the user
+                    yield(app)
+                }
+            }
+
+        }.toList()
+    }
+
+    suspend fun getLaunchableAppList() = withContext(Dispatchers.Default) {
+        sequence {
+            mContext.packageManager.apply {
+
+                val installedApps = getInstalledApplications(GET_META_DATA)
+
+                installedApps.forEach { app ->
+//                    //only allow apps that can be launched by the user
                     if (getLaunchIntentForPackage(app.packageName) != null) {
                         yield(app)
                     }
