@@ -28,6 +28,9 @@ import io.github.sds100.keymapper.util.delegate.ActionPerformerDelegate
 import io.github.sds100.keymapper.util.delegate.GetEventDelegate
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionPreferences
+import io.github.sds100.keymapper.util.result.ImeServiceNotChosen
+import io.github.sds100.keymapper.util.result.Result
+import io.github.sds100.keymapper.util.result.Success
 import kotlinx.coroutines.*
 import splitties.bitflags.hasFlag
 import splitties.systemservices.vibrator
@@ -110,6 +113,10 @@ class MyAccessibilityService : AccessibilityService(),
                     }
                 }
 
+                Intent.ACTION_INPUT_METHOD_CHANGED -> {
+                    mIsKeyMapperKeyboardChosen = KeyMapperImeService.isInputMethodChosen()
+                }
+
                 Intent.ACTION_SCREEN_ON -> {
                     mIsScreenOn = true
                     mGetEventDelegate.stopListening()
@@ -148,6 +155,7 @@ class MyAccessibilityService : AccessibilityService(),
 
     private var mIsScreenOn = true
     private val mConnectedBtAddresses = mutableSetOf<String>()
+    private var mIsKeyMapperKeyboardChosen = false
 
     private val mGetEventDelegate = GetEventDelegate { keyCode, action, deviceDescriptor, isExternal ->
         withContext(Dispatchers.Main.immediate) {
@@ -191,6 +199,7 @@ class MyAccessibilityService : AccessibilityService(),
             addAction(Intent.ACTION_SCREEN_OFF)
             addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
             addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
+            addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
 
             registerReceiver(mBroadcastReceiver, this)
         }
@@ -269,6 +278,8 @@ class MyAccessibilityService : AccessibilityService(),
                 }
             }
         })
+
+        mIsKeyMapperKeyboardChosen = KeyMapperImeService.isInputMethodChosen()
     }
 
     override fun onInterrupt() {}
@@ -359,7 +370,17 @@ class MyAccessibilityService : AccessibilityService(),
 
     override fun isBluetoothDeviceConnected(address: String) = mConnectedBtAddresses.contains(address)
 
-    override fun canActionBePerformed(action: Action) = action.canBePerformed(this)
+    override fun canActionBePerformed(action: Action): Result<Action> {
+        if (action.requiresIME) {
+            return if (mIsKeyMapperKeyboardChosen) {
+                Success(action)
+            } else {
+                ImeServiceNotChosen()
+            }
+        }
+
+        return action.canBePerformed(this)
+    }
 
     private fun recordTrigger() = lifecycleScope.launch {
         repeat(RECORD_TRIGGER_TIMER_LENGTH) { iteration ->
