@@ -137,9 +137,13 @@ fun AccessibilityNodeInfo?.findNodeRecursively(
     return null
 }
 
+fun AccessibilityNodeInfo?.focusedNode(func: (node: AccessibilityNodeInfo?) -> Unit) {
+    func.invoke(findNodeRecursively { it.isFocused })
+}
+
 fun AccessibilityNodeInfo?.performActionOnFocusedNode(action: Int) {
-    findNodeRecursively { it.isFocused }?.let {
-        it.performAction(action)
-        it.recycle()
+    focusedNode {
+        it?.performAction(action)
+        it?.recycle()
     }
 }
