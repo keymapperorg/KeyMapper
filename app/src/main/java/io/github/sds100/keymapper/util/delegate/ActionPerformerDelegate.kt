@@ -297,9 +297,6 @@ class ActionPerformerDelegate(context: Context,
 
                 SystemAction.SCREENSHOT_ROOT -> ScreenshotUtils.takeScreenshotRoot()
 
-                SystemAction.SCROLL_FORWARD ->
-                    rootNode.performActionOnFocusedNode(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD)
-
                 else -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                         when (id) {
