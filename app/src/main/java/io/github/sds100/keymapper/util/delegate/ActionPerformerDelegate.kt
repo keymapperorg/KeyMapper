@@ -13,6 +13,7 @@ import android.os.Build
 import android.provider.MediaStore
 import android.provider.Settings
 import android.view.KeyEvent
+import android.view.accessibility.AccessibilityNodeInfo
 import android.webkit.URLUtil
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.lifecycle.Lifecycle
@@ -296,6 +297,14 @@ class ActionPerformerDelegate(context: Context,
                 SystemAction.SCREENSHOT_ROOT -> ScreenshotUtils.takeScreenshotRoot()
 
                 else -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                        when (id) {
+                            SystemAction.TEXT_COPY -> {
+                                performActionOnFocusedNode(AccessibilityNodeInfo.ACTION_COPY)
+                            }
+                        }
+                    }
+
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         when (id) {
                             SystemAction.SHOW_POWER_MENU -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_POWER_DIALOG)
@@ -370,5 +379,9 @@ class ActionPerformerDelegate(context: Context,
                 }
             }
         }
+    }
+
+    private fun performActionOnFocusedNode(action: Int) {
+        rootNode.findNodeRecursively { it.isFocused }?.performAction(action)
     }
 }
