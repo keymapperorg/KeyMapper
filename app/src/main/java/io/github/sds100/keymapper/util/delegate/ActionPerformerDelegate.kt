@@ -299,9 +299,11 @@ class ActionPerformerDelegate(context: Context,
                 else -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                         when (id) {
-                            SystemAction.TEXT_COPY -> {
-                                performActionOnFocusedNode(AccessibilityNodeInfo.ACTION_COPY)
-                            }
+                            SystemAction.TEXT_CUT ->
+                                rootNode.performActionOnFocusedNode(AccessibilityNodeInfo.ACTION_CUT)
+
+                            SystemAction.TEXT_COPY ->
+                                rootNode.performActionOnFocusedNode(AccessibilityNodeInfo.ACTION_COPY)
                         }
                     }
 
@@ -379,9 +381,5 @@ class ActionPerformerDelegate(context: Context,
                 }
             }
         }
-    }
-
-    private fun performActionOnFocusedNode(action: Int) {
-        rootNode.findNodeRecursively { it.isFocused }?.performAction(action)
     }
 }

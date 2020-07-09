@@ -75,6 +75,7 @@ import io.github.sds100.keymapper.util.SystemAction.SHOW_POWER_MENU
 import io.github.sds100.keymapper.util.SystemAction.SWITCH_KEYBOARD
 import io.github.sds100.keymapper.util.SystemAction.SWITCH_ORIENTATION
 import io.github.sds100.keymapper.util.SystemAction.TEXT_COPY
+import io.github.sds100.keymapper.util.SystemAction.TEXT_CUT
 import io.github.sds100.keymapper.util.SystemAction.TOGGLE_AIRPLANE_MODE
 import io.github.sds100.keymapper.util.SystemAction.TOGGLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.util.SystemAction.TOGGLE_AUTO_ROTATE
@@ -626,6 +627,12 @@ object SystemActionUtils {
                 KeyboardUtils.getInputMethodIds()
             }
         ),
+
+        SystemActionDef(id = TEXT_CUT,
+            category = CATEGORY_KEYBOARD,
+            iconRes = R.drawable.ic_content_cut,
+            descriptionRes = R.string.action_text_cut,
+            minApi = Build.VERSION_CODES.JELLY_BEAN_MR2),
 
         SystemActionDef(id = TEXT_COPY,
             category = CATEGORY_KEYBOARD,

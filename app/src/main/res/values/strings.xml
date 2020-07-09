@@ -737,6 +737,7 @@
     <string name="action_switch_keyboard">Switch Keyboard</string>
     <string name="action_switch_keyboard_formatted">Switch to %s</string>
 
+    <string name="action_text_cut">Cut</string>
     <string name="action_text_copy">Copy</string>
 
     <string name="action_open_settings">Open Settings</string>
