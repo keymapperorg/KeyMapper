@@ -16,16 +16,20 @@ class AppListViewModel internal constructor(
     private val repository: SystemRepository
 ) : ViewModel(), ProgressCallback {
 
-    val searchQuery: MutableLiveData<String> = MutableLiveData("")
-
-    val showHiddenApps = MutableLiveData<Boolean>(false)
-
     private val mLaunchableAppModelList = liveData {
         emit(repository.getLaunchableAppList().createModels())
     }
 
     private val mAllAppModelList = liveData {
         emit(repository.getAllAppList().createModels())
+    }
+
+    val searchQuery: MutableLiveData<String> = MutableLiveData("")
+
+    val showHiddenApps = MutableLiveData<Boolean>(false)
+
+    val haveHiddenApps = mLaunchableAppModelList.map {
+        it.isNotEmpty()
     }
 
     val filteredAppModelList = MediatorLiveData<List<AppListItemModel>>().apply {
