@@ -106,6 +106,7 @@ object SystemAction {
     const val TEXT_CUT = "text_cut"
     const val TEXT_COPY = "text_copy"
     const val TEXT_PASTE = "text_paste"
+    const val SELECT_WORD_AT_CURSOR = "select_word_at_cursor"
 
     /**
      * REQUIRES ROOT

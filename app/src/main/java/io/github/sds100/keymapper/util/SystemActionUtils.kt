@@ -68,6 +68,7 @@ import io.github.sds100.keymapper.util.SystemAction.REWIND
 import io.github.sds100.keymapper.util.SystemAction.SCREENSHOT
 import io.github.sds100.keymapper.util.SystemAction.SCREENSHOT_ROOT
 import io.github.sds100.keymapper.util.SystemAction.SECURE_LOCK_DEVICE
+import io.github.sds100.keymapper.util.SystemAction.SELECT_WORD_AT_CURSOR
 import io.github.sds100.keymapper.util.SystemAction.SHOW_KEYBOARD
 import io.github.sds100.keymapper.util.SystemAction.SHOW_KEYBOARD_PICKER
 import io.github.sds100.keymapper.util.SystemAction.SHOW_KEYBOARD_PICKER_ROOT
@@ -645,6 +646,11 @@ object SystemActionUtils {
             category = CATEGORY_KEYBOARD,
             iconRes = R.drawable.ic_content_paste,
             descriptionRes = R.string.action_text_paste,
+            minApi = Build.VERSION_CODES.JELLY_BEAN_MR2),
+
+        SystemActionDef(id = SELECT_WORD_AT_CURSOR,
+            category = CATEGORY_KEYBOARD,
+            descriptionRes = R.string.action_select_word_at_cursor,
             minApi = Build.VERSION_CODES.JELLY_BEAN_MR2),
 
         //AIRPLANE MODE

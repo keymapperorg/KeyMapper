@@ -15,6 +15,7 @@ import android.provider.Settings
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.webkit.URLUtil
+import androidx.core.os.bundleOf
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.lifecycle.Lifecycle
 import io.github.sds100.keymapper.R
@@ -308,12 +309,38 @@ class ActionPerformerDelegate(context: Context,
 
                             SystemAction.TEXT_PASTE ->
                                 rootNode.performActionOnFocusedNode(AccessibilityNodeInfo.ACTION_PASTE)
+
+                            SystemAction.SELECT_WORD_AT_CURSOR -> {
+                                rootNode.focusedNode {
+                                    it ?: return@focusedNode
+
+                                    //it is the cursor position if they both return the same value
+                                    if (it.textSelectionStart == it.textSelectionEnd) {
+                                        val cursorPosition = it.textSelectionStart
+
+                                        val wordBoundary =
+                                            it.text.toString().getWordBoundaries(cursorPosition) ?: return@focusedNode
+
+                                        val bundle = bundleOf(
+                                            AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT
+                                                to wordBoundary.first,
+
+                                            //The index of the cursor is the index of the last char in the word + 1
+                                            AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT
+                                                to wordBoundary.second + 1
+                                        )
+
+                                        it.performAction(AccessibilityNodeInfo.ACTION_SET_SELECTION, bundle)
+                                    }
+                                }
+                            }
                         }
                     }
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         when (id) {
-                            SystemAction.SHOW_POWER_MENU -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_POWER_DIALOG)
+                            SystemAction.SHOW_POWER_MENU ->
+                                performGlobalAction(AccessibilityService.GLOBAL_ACTION_POWER_DIALOG)
                         }
                     }
 
