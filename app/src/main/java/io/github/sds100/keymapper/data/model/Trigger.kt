@@ -116,4 +116,5 @@ class Trigger(
 }
 
 fun sequenceTrigger(vararg key: Trigger.Key) = Trigger(key.toList(), mode = Trigger.SEQUENCE)
+fun undefinedTrigger(key: Trigger.Key) = Trigger(listOf(key), mode = Trigger.UNDEFINED)
 fun parallelTrigger(vararg key: Trigger.Key) = Trigger(key.toList(), mode = Trigger.PARALLEL)
