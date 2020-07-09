@@ -176,24 +176,21 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
                     val encodedTriggerList = mutableListOf<Int>()
 
-                    keyMap.trigger.keys.forEachIndexed { keyIndex, key ->
+                    keyMap.trigger.keys.forEachIndexed { _, key ->
+                        val sequenceTriggerIndex = sequenceTriggerEvents.size
 
-                        if (keyMap.trigger.mode == Trigger.SEQUENCE) {
-                            val sequenceTriggerIndex = sequenceTriggerEvents.size
+                        if (keyMap.trigger.mode == Trigger.SEQUENCE && key.clickType == Trigger.LONG_PRESS) {
 
-                            when (key.clickType) {
-                                Trigger.LONG_PRESS -> {
-                                    if (keyMap.trigger.keys.size > 1) {
-                                        longPressSequenceEvents.add(
-                                            encodeEvent(key.keyCode, key.clickType, key.deviceId) to sequenceTriggerIndex)
-                                    }
-                                }
-
-                                Trigger.DOUBLE_PRESS -> {
-                                    doublePressEvents.add(
-                                        encodeEvent(key.keyCode, key.clickType, key.deviceId) to sequenceTriggerIndex)
-                                }
+                            if (keyMap.trigger.keys.size > 1) {
+                                longPressSequenceEvents.add(
+                                    encodeEvent(key.keyCode, key.clickType, key.deviceId) to sequenceTriggerIndex)
                             }
+                        }
+
+                        if ((keyMap.trigger.mode == Trigger.SEQUENCE || keyMap.trigger.mode == Trigger.UNDEFINED)
+                            && key.clickType == Trigger.DOUBLE_PRESS) {
+                            doublePressEvents.add(
+                                encodeEvent(key.keyCode, key.clickType, key.deviceId) to sequenceTriggerIndex)
                         }
 
                         when (key.deviceId) {
