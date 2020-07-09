@@ -304,6 +304,9 @@ class ActionPerformerDelegate(context: Context,
 
                             SystemAction.TEXT_COPY ->
                                 rootNode.performActionOnFocusedNode(AccessibilityNodeInfo.ACTION_COPY)
+
+                            SystemAction.TEXT_PASTE ->
+                                rootNode.performActionOnFocusedNode(AccessibilityNodeInfo.ACTION_PASTE)
                         }
                     }
 

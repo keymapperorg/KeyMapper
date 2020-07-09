@@ -105,6 +105,7 @@ object SystemAction {
     const val SHOW_KEYBOARD_PICKER_ROOT = "show_keyboard_picker_root"
     const val TEXT_CUT = "text_cut"
     const val TEXT_COPY = "text_copy"
+    const val TEXT_PASTE = "text_paste"
 
     /**
      * REQUIRES ROOT
