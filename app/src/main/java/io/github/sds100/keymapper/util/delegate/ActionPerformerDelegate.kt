@@ -241,6 +241,7 @@ class ActionPerformerDelegate(context: Context,
                             it.contentDescription == OVERFLOW_MENU_CONTENT_DESCRIPTION
                         }?.let {
                             it.performAction(AccessibilityNodeInfoCompat.ACTION_CLICK)
+                            it.recycle()
                         }
                     }
                 }
@@ -295,6 +296,9 @@ class ActionPerformerDelegate(context: Context,
                 SystemAction.DISABLE_AIRPLANE_MODE -> AirplaneModeUtils.disableAirplaneMode()
 
                 SystemAction.SCREENSHOT_ROOT -> ScreenshotUtils.takeScreenshotRoot()
+
+                SystemAction.SCROLL_FORWARD ->
+                    rootNode.performActionOnFocusedNode(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD)
 
                 else -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
