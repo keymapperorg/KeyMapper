@@ -1,3 +1,17 @@
+## [2.0.0 Beta 4](https://github.com/sds100/KeyMapper/releases/tag/v2.0.0-beta.4) 
+
+#### 17 July 2020
+
+Only big fixes.
+
+### Changes
+- Renamed "Repeat Delay" to "Repeat Rate".
+- Renamed "Hold Down Delay" to "Repeat Delay"
+
+### Bug Fixes
+- Crash when leaving app the menu to tweak an action showing.
+- Double press triggers aren't detected.
+
 ## [2.0.0 Beta 3](https://github.com/sds100/KeyMapper/releases/tag/v2.0.0-beta.3) 
 
 #### 02 July 2020
