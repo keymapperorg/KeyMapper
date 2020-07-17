@@ -2,7 +2,7 @@
 
 #### 17 July 2020
 
-Only big fixes.
+Only bug fixes.
 
 ### Changes
 - Renamed "Repeat Delay" to "Repeat Rate".
