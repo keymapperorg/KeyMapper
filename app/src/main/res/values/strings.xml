@@ -282,10 +282,10 @@
     <string name="notification_ime_persistent_title">Keyboard Picker</string>
 
     <string name="notification_remappings_pause_title">Running</string>
-    <string name="notification_remappings_pause_text">Tap to pause your keymaps.</string>
+    <string name="notification_remappings_pause_text">Tap to pause your remaps.</string>
 
     <string name="notification_remappings_start_title">Paused</string>
-    <string name="notification_remappings_start_text">Tap to resume your keymaps.</string>
+    <string name="notification_remappings_start_text">Tap to resume your remaps.</string>
 
     <string name="notification_accessibility_service_disabled_title">Accessibility service disabled</string>
     <string name="notification_accessibility_service_disabled_text">Tap to start the accessibility service.</string>
