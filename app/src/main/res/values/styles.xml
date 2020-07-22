@@ -1,27 +1,118 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="AppTheme" parent="Base.AppTheme" />
-
-    <style name="AppTheme.LightStatusBar" parent="AppTheme.NoActionBar" />
-
-    <!-- Base application theme. -->
-    <style name="Base.AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
+    <!--  Using a base theme makes it easier to add attributes for different API versions  -->
+    <style name="Base.AppTheme" parent="Theme.MaterialComponents.DayNight">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
+        <item name="colorOnPrimary">@color/colorOnPrimary</item>
         <item name="colorSecondary">@color/colorSecondary</item>
         <item name="colorOnSecondary">@color/colorOnSecondary</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorHomeBackground">#FAFAFA</item>
-        <item name="bottomSheetDialogTheme">@style/BottomSheetDialogTheme</item>
-        <item name="android:alertDialogTheme">@style/AnkoSupportAlertDialog</item>
-        <item name="bottomSheetMenuItemStyle">@style/BottomSheetMenuItem</item>
-        <item name="iconColorOnSurface">@color/colorIconDark</item>
     </style>
+
+    <style name="AppTheme" parent="Base.AppTheme" />
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="MyCardView" parent="Widget.MaterialComponents.CardView">
+        <item name="cardElevation">0dp</item>
+        <item name="strokeColor">@color/cardview_stroke</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <style name="SecondaryCardView" parent="Widget.MaterialComponents.CardView">
+        <item name="cardElevation">1dp</item>
+    </style>
+
+    <style name="ActionChipGroup" parent="Widget.MaterialComponents.ChipGroup">
+        <item name="chipStyle">@style/KeymapListChip.Action</item>
+    </style>
+
+    <style name="TriggerChipGroup" parent="Widget.MaterialComponents.ChipGroup">
+        <item name="chipStyle">@style/KeymapListChip.TriggerKey</item>
+    </style>
+
+    <style name="OptionChipGroup" parent="Widget.MaterialComponents.ChipGroup">
+        <item name="chipStyle">@style/KeymapListChip.Option</item>
+    </style>
+
+    <style name="ConstraintChipGroup" parent="Widget.MaterialComponents.ChipGroup">
+        <item name="chipStyle">@style/KeymapListChip.Constraint</item>
+    </style>
+
+    <style name="KeymapListChip" parent="Widget.MaterialComponents.Chip.Entry">
+        <item name="chipBackgroundColor">?attr/colorSurface</item>
+        <item name="chipStrokeColor" tools:ignore="PrivateResource">@color/mtrl_btn_stroke_color_selector</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="android:checkable">false</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="KeymapListChip.TriggerKey">
+        <item name="closeIconVisible">false</item>
+        <item name="chipIconTint">?attr/colorOnSurface</item>
+        <item name="android:clickable">false</item>
+    </style>
+
+    <style name="KeymapListChip.TriggerKey.Separator">
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="textEndPadding">0dp</item>
+        <item name="textStartPadding">0dp</item>
+    </style>
+
+    <style name="KeymapListChip.Option">
+        <item name="closeIconVisible">false</item>
+        <item name="android:clickable">false</item>
+        <item name="chipIconTint">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="KeymapListChip.Constraint">
+        <item name="closeIconVisible">false</item>
+        <item name="android:clickable">false</item>
+        <item name="closeIcon">@drawable/ic_baseline_error_outline_24</item>
+        <item name="closeIconTint">?attr/colorError</item>
+    </style>
+
+    <style name="KeymapListChip.Action">
+        <item name="closeIcon">@drawable/ic_baseline_error_outline_24</item>
+        <item name="closeIconTint">?attr/colorError</item>
+        <item name="closeIconVisible">false</item>
+        <item name="android:clickable">false</item>
+    </style>
+
+    <style name="KeymapListHeader" parent="TextAppearance.MaterialComponents.Subtitle2">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor" tools:ignore="PrivateResource">@color/mtrl_chip_text_color</item>
+    </style>
+
+    <style name="RecyclerViewPlaceholderTextView" parent="Widget.AppCompat.TextView">
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="AppTabLayout" parent="Widget.MaterialComponents.TabLayout">
+        <item name="android:background">?attr/colorSurface</item>
+        <item name="tabIndicatorColor">@color/colorAccent</item>
+        <item name="tabSelectedTextColor">@color/colorAccent</item>
+        <item name="tabTextColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="ErrorTextAppearance">
+        <item name="android:textColor">?attr/colorError</item>
+    </style>
+
+    <style name="BottomAppBar" parent="Widget.MaterialComponents.BottomAppBar.PrimarySurface">
+        <item name="theme">@style/BottomAppBar.Theme</item>
+    </style>
+
+    <style name="BottomAppBar.Theme" parent="ThemeOverlay.MaterialComponents.BottomAppBar.Primary">
+        <item name="iconTint">?attr/colorOnPrimarySurface</item>
+        <item name="tint">?attr/colorOnPrimarySurface</item>
+        <item name="android:editTextColor">?attr/colorOnPrimarySurface</item>
     </style>
 
     <style name="ShapeAppearanceOverlay.BottomSheetMenuItem">
@@ -40,33 +131,4 @@
         <item name="iconTint">?attr/colorOnSurface</item>
         <item name="shapeAppearance">@style/ShapeAppearanceOverlay.BottomSheetMenuItem</item>
     </style>
-
-    <style name="BottomSheet" parent="@style/Widget.Design.BottomSheet.Modal">
-        <item name="android:background">@drawable/bg_bottom_sheet</item>
-    </style>
-
-    <style name="BaseBottomSheetDialog" parent="@style/Theme.Design.Light.BottomSheetDialog">
-        <item name="android:windowIsFloating">false</item>
-        <item name="bottomSheetStyle">@style/BottomSheet</item>
-    </style>
-
-    <style name="BottomSheetDialogTheme" parent="BaseBottomSheetDialog" />
-
-    <!--Fix bug where dialog buttons from the anko library don't style correctly.-->
-    <style name="AnkoSupportAlertDialog" parent="Theme.MaterialComponents.Light.Dialog">
-
-        <!-- Forces the dialog to fill up more of the screen-->
-        <item name="android:windowMinWidthMajor">90%</item>
-        <item name="android:windowMinWidthMinor">90%</item>
-
-        <item name="android:buttonBarButtonStyle">
-            @style/Widget.MaterialComponents.Button.TextButton.Dialog
-        </item>
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="dialogCornerRadius">@dimen/dialog_corner_radius</item>
-    </style>
-
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
-
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light" />
 </resources>

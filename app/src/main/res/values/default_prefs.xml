@@ -3,7 +3,6 @@
     <bool name="default_value_show_ime_notification">false</bool>
     <bool name="default_value_show_toggle_remappings_notification">true</bool>
     <bool name="default_value_auto_show_ime_picker">false</bool>
-    <bool name="default_value_show_toast">false</bool>
     <bool name="default_value_show_volume_dialog_on_adjust">true</bool>
     <bool name="default_value_auto_change_ime_on_connection">false</bool>
     <bool name="default_value_root_permission">false</bool>
@@ -11,8 +10,16 @@
     <bool name="default_value_debug">false</bool>
     <bool name="default_value_show_toast_when_error_encountered">true</bool>
     <bool name="default_value_shown_cant_use_virtual_keyboard_message">false</bool>
-    <bool name="default_value_show_toast_on_action_error">true</bool>
+    <bool name="default_value_toggle_keyboard_on_toggle_keymaps">false</bool>
+    <bool name="default_value_toggle_keyboard_notification">false</bool>
+    <bool name="default_value_keymaps_paused">false</bool>
+    <bool name="default_value_hide_home_screen_alerts">false</bool>
 
+    <string name="default_value_dark_theme_mode">@string/value_pref_dark_theme_follow_system</string>
     <integer name="default_value_long_press_delay">500</integer>
+    <integer name="default_value_double_press_delay">300</integer>
     <integer name="default_value_vibrate_duration">200</integer>
+    <integer name="default_value_repeat_delay">400</integer>
+    <integer name="default_value_repeat_rate">50</integer>
+    <integer name="default_value_sequence_trigger_timeout">1000</integer>
 </resources>

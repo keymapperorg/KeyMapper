@@ -24,6 +24,7 @@ object BuildUtils {
             O -> "Oreo 8.0"
             O_MR1 -> "Oreo 8.1"
             P -> "Pie 9.0"
+            Q -> "10"
             else -> throw Exception("No name found for this sdk version: $version")
         }
     }

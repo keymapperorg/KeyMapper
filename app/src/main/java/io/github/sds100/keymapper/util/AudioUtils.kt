@@ -1,9 +1,15 @@
 package io.github.sds100.keymapper.util
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.app.NotificationManager
 import android.content.Context
 import android.media.AudioManager
+import android.os.Build
 import androidx.annotation.IntDef
+import androidx.annotation.RequiresApi
+import splitties.systemservices.audioManager
+import splitties.systemservices.notificationManager
 
 /**
  * Created by sds100 on 21/10/2018.
@@ -50,10 +56,10 @@ object AudioUtils {
                      @AdjustMode adjustMode: Int,
                      showVolumeUi: Boolean = false) {
 
-        if (ctx.accessNotificationPolicyGranted) {
+        if (PermissionUtils.isPermissionGranted(Manifest.permission.ACCESS_NOTIFICATION_POLICY)) {
 
             val audioManager = ctx.applicationContext.getSystemService(Context.AUDIO_SERVICE)
-                    as AudioManager
+                as AudioManager
 
             val flag = if (showVolumeUi) {
                 AudioManager.FLAG_SHOW_UI
@@ -70,9 +76,9 @@ object AudioUtils {
                              showVolumeUi: Boolean = false,
                              @StreamType streamType: Int) {
 
-        if (ctx.accessNotificationPolicyGranted) {
+        if (PermissionUtils.isPermissionGranted(Manifest.permission.ACCESS_NOTIFICATION_POLICY)) {
             val audioManager = ctx.applicationContext.getSystemService(Context.AUDIO_SERVICE)
-                    as AudioManager
+                as AudioManager
 
             val flag = if (showVolumeUi) {
                 AudioManager.FLAG_SHOW_UI
@@ -84,9 +90,18 @@ object AudioUtils {
         }
     }
 
-    fun cycleThroughRingerModes(ctx: Context) {
-        (ctx.applicationContext.getSystemService(Context.AUDIO_SERVICE)
-                as AudioManager).apply {
+    fun cycleBetweenVibrateAndRing(ctx: Context) {
+        audioManager.apply {
+            when (ringerMode) {
+                AudioManager.RINGER_MODE_NORMAL -> changeRingerMode(ctx, AudioManager.RINGER_MODE_VIBRATE)
+                AudioManager.RINGER_MODE_VIBRATE -> changeRingerMode(ctx, AudioManager.RINGER_MODE_NORMAL)
+                AudioManager.RINGER_MODE_SILENT -> changeRingerMode(ctx, AudioManager.RINGER_MODE_NORMAL)
+            }
+        }
+    }
+
+    fun cycleThroughAllRingerModes(ctx: Context) {
+        audioManager.apply {
 
             when (ringerMode) {
                 AudioManager.RINGER_MODE_NORMAL -> changeRingerMode(ctx, AudioManager.RINGER_MODE_VIBRATE)
@@ -97,11 +112,30 @@ object AudioUtils {
     }
 
     fun changeRingerMode(ctx: Context, @RingerMode ringerMode: Int) {
-        if (ctx.accessNotificationPolicyGranted) {
+        if (PermissionUtils.isPermissionGranted(Manifest.permission.ACCESS_NOTIFICATION_POLICY)) {
             val audioManager = ctx.applicationContext.getSystemService(Context.AUDIO_SERVICE)
-                    as AudioManager
+                as AudioManager
 
             audioManager.ringerMode = ringerMode
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun toggleDndMode(mode: Int) {
+        if (notificationManager.currentInterruptionFilter != NotificationManager.INTERRUPTION_FILTER_ALL) {
+            notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
+        } else {
+            notificationManager.setInterruptionFilter(mode)
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun enableDndMode(mode: Int) {
+        notificationManager.setInterruptionFilter(mode)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun disableDnd() {
+        notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
     }
 }

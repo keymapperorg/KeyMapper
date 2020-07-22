@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_choose_constraint"
+    app:startDestination="@id/chooseConstraintListFragment">
+
+    <fragment
+        android:id="@+id/chooseConstraintListFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.ChooseConstraintListFragment"
+        android:label="ChooseConstraintListFragment"
+        tools:layout="@layout/fragment_recyclerview">
+
+        <action
+            android:id="@+id/action_chooseConstraintListFragment_to_appListFragment"
+            app:destination="@id/appListFragment" />
+
+        <action
+            android:id="@+id/action_chooseConstraintListFragment_to_bluetoothDevicesFragment"
+            app:destination="@+id/bluetoothDevicesFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/appListFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.AppListFragment"
+        android:label="AppListFragment"
+        tools:layout="@layout/fragment_recyclerview" />
+
+    <fragment
+        android:id="@+id/bluetoothDevicesFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.BluetoothDeviceListFragment"
+        android:label="BlutoothDeviceFragment"
+        tools:layout="@layout/fragment_recyclerview" />
+</navigation>

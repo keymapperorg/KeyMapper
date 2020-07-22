@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?><!--Android 8.1+ is much more strict so a lot of stuff only works on rooted devices. :( -->
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <DropDownPreference
+        android:defaultValue="@string/default_value_dark_theme_mode"
+        android:entries="@array/pref_dark_theme_entries"
+        android:entryValues="@array/pref_dark_theme_values"
+        android:key="@string/key_pref_dark_theme_mode"
+        android:title="@string/title_pref_dark_theme" />
+
+    <androidx.preference.Preference
+        android:key="@string/key_pref_notification_settings"
+        android:title="@string/title_pref_notification_settings" />
+
+    <androidx.preference.SwitchPreference
+        android:defaultValue="@bool/default_value_hide_home_screen_alerts"
+        android:key="@string/key_pref_hide_home_screen_alerts"
+        android:summary="@string/summary_pref_hide_home_screen_alerts"
+        android:title="@string/title_pref_hide_home_screen_alerts" />
+
+    <androidx.preference.SeekBarPreference
+        android:defaultValue="@integer/default_value_long_press_delay"
+        android:key="@string/key_pref_long_press_delay"
+        android:max="@integer/long_press_delay_max"
+        android:summary="@string/summary_pref_long_press_delay"
+        android:title="@string/title_pref_long_press_delay"
+        app:min="@integer/long_press_delay_min"
+        app:seekBarIncrement="@integer/long_press_delay_step_size"
+        app:showSeekBarValue="true" />
+
+    <androidx.preference.SeekBarPreference
+        android:defaultValue="@integer/default_value_double_press_delay"
+        android:key="@string/key_pref_double_press_delay"
+        android:max="@integer/double_press_delay_max"
+        android:summary="@string/summary_pref_double_press_delay"
+        android:title="@string/title_pref_double_press_delay"
+        app:min="@integer/double_press_delay_min"
+        app:showSeekBarValue="true" />
+
+    <androidx.preference.SeekBarPreference
+        android:defaultValue="@integer/default_value_vibrate_duration"
+        android:key="@string/key_pref_vibrate_duration"
+        android:max="@integer/vibrate_duration_max"
+        android:summary="@string/summary_pref_vibrate_duration"
+        android:title="@string/title_pref_vibrate_duration"
+        app:min="@integer/vibrate_duration_min"
+        app:seekBarIncrement="@integer/vibrate_duration_step_size"
+        app:showSeekBarValue="true" />
+
+    <androidx.preference.SeekBarPreference
+        android:defaultValue="@integer/default_value_repeat_delay"
+        android:key="@string/key_pref_repeat_delay"
+        android:max="@integer/repeat_delay_max"
+        android:summary="@string/summary_pref_repeat_delay"
+        android:title="@string/title_pref_repeat_delay"
+        app:min="@integer/repeat_delay_min"
+        app:showSeekBarValue="true" />
+
+    <androidx.preference.SeekBarPreference
+        android:defaultValue="@integer/default_value_repeat_rate"
+        android:key="@string/key_pref_repeat_rate"
+        android:max="@integer/repeat_rate_max"
+        android:summary="@string/summary_pref_repeat_rate"
+        android:title="@string/title_pref_repeat_rate"
+        app:min="@integer/repeat_rate_min"
+        app:seekBarIncrement="@integer/repeat_rate_step_size"
+        app:showSeekBarValue="true" />
+
+    <androidx.preference.SeekBarPreference
+        android:defaultValue="@integer/default_value_sequence_trigger_timeout"
+        android:key="@string/key_pref_sequence_trigger_timeout"
+        android:max="@integer/sequence_trigger_timeout_max"
+        android:summary="@string/summary_pref_sequence_trigger_timeout"
+        android:title="@string/title_pref_sequence_trigger_timeout"
+        app:min="@integer/sequence_trigger_timeout_min"
+        app:seekBarIncrement="@integer/sequence_trigger_timeout_step_size"
+        app:showSeekBarValue="true" />
+    <androidx.preference.PreferenceCategory android:title="@string/title_pref_category_ime_picker">
+
+        <androidx.preference.Preference
+            android:key="@string/key_pref_show_ime_notification"
+            android:summary="@string/summary_pref_show_ime_notification"
+            android:title="@string/title_pref_show_ime_notification" />
+
+        <androidx.preference.SwitchPreference
+            android:defaultValue="@bool/default_value_auto_show_ime_picker"
+            android:key="@string/key_pref_auto_show_ime_picker"
+            android:summary="@string/summary_pref_auto_show_ime_picker"
+            android:title="@string/title_pref_auto_show_ime_picker" />
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:key="@string/key_pref_category_secure_settings"
+        android:title="@string/title_pref_category_secure_settings">
+
+        <!-- This must be at the top of the category-->
+        <androidx.preference.Preference
+            android:selectable="false"
+            android:summary="@string/summary_pref_category_secure_settings" />
+
+        <androidx.preference.SwitchPreference
+            android:defaultValue="@bool/default_value_auto_change_ime_on_connection"
+            android:key="@string/key_pref_auto_change_ime_on_connection"
+            android:summary="@string/summary_pref_auto_change_ime_on_connection"
+            android:title="@string/title_pref_auto_change_ime_on_connection" />
+
+        <androidx.preference.SwitchPreference
+            android:defaultValue="@bool/default_value_toggle_keyboard_on_toggle_keymaps"
+            android:key="@string/key_pref_toggle_keyboard_on_toggle_keymaps"
+            android:summary="@string/summary_pref_toggle_keyboard_on_toggle_keymaps"
+            android:title="@string/title_pref_toggle_keyboard_on_toggle_keymaps" />
+
+        <androidx.preference.Preference
+            android:defaultValue="@bool/default_value_toggle_keyboard_notification"
+            android:key="@string/key_pref_toggle_keyboard_notification"
+            android:title="@string/title_pref_toggle_keyboard_notification" />
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:key="@string/key_pref_category_root"
+        android:title="@string/title_pref_category_root">
+
+        <!-- This must be at the top of the category-->
+        <androidx.preference.Preference
+            android:selectable="false"
+            android:summary="@string/summary_pref_category_root" />
+
+        <androidx.preference.SwitchPreference
+            android:defaultValue="@bool/default_value_root_permission"
+            android:key="@string/key_pref_root_permission"
+            android:summary="@string/summary_pref_root_permission"
+            android:title="@string/title_pref_root_permission" />
+    </androidx.preference.PreferenceCategory>
+
+    <io.github.sds100.keymapper.ui.view.CancellableMultiSelectListPreference
+        android:key="@string/key_pref_bluetooth_devices"
+        android:title="@string/title_pref_bluetooth_devices" />
+
+</androidx.preference.PreferenceScreen>

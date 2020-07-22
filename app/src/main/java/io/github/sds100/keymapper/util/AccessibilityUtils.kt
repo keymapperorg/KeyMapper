@@ -7,20 +7,20 @@ import android.content.Intent
 import android.provider.Settings
 import android.view.accessibility.AccessibilityNodeInfo
 import io.github.sds100.keymapper.Constants
-import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.service.MyAccessibilityService
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.okButton
+import io.github.sds100.keymapper.ui.activity.HomeActivity
+import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
+import splitties.init.appCtx
 
 /**
  * Created by sds100 on 06/08/2019.
  */
 
 object AccessibilityUtils {
-    fun enableService(ctx: Context) {
+    fun enableService(context: Context) {
         when {
-            ctx.isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS) -> {
-                val enabledServices = ctx.getSecureSetting<String>(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
+            isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS) -> {
+                val enabledServices = appCtx.getSecureSetting<String>(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
 
                 val className = MyAccessibilityService::class.java.name
 
@@ -32,17 +32,17 @@ object AccessibilityUtils {
                     //append the keymapper entry to the rest of the other services.
                     "$keyMapperEntry:$enabledServices"
                 }
-                ctx.putSecureSetting(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, newEnabledServices)
+                appCtx.putSecureSetting(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, newEnabledServices)
             }
 
-            else -> openAccessibilitySettings(ctx)
+            else -> openAccessibilitySettings(context)
         }
     }
 
-    fun disableService(ctx: Context) {
+    fun disableService(context: Context) {
         when {
-            ctx.isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS) -> {
-                val enabledServices = ctx.getSecureSetting<String>(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
+            isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS) -> {
+                val enabledServices = appCtx.getSecureSetting<String>(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
 
                 enabledServices ?: return
 
@@ -58,14 +58,14 @@ object AccessibilityUtils {
                 } else {
                     enabledServices
                 }
-                ctx.putSecureSetting(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, newEnabledServices)
+                appCtx.putSecureSetting(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, newEnabledServices)
             }
 
-            else -> openAccessibilitySettings(ctx)
+            else -> openAccessibilitySettings(context)
         }
     }
 
-    private fun openAccessibilitySettings(ctx: Context) {
+    private fun openAccessibilitySettings(context: Context) {
         try {
             val settingsIntent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
 
@@ -73,16 +73,16 @@ object AccessibilityUtils {
                 or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
 
-            ctx.startActivity(settingsIntent)
-        } catch (e: ActivityNotFoundException) {
-            ctx.alert {
-                titleResource = R.string.dialog_title_cant_find_accessibility_settings_page
-                messageResource = R.string.dialog_message_cant_find_accessibility_settings_page
+            appCtx.startActivity(settingsIntent)
 
-                okButton {
-                    PermissionUtils.requestWriteSecureSettingsPermission(ctx)
-                }
-            }.show()
+        } catch (e: ActivityNotFoundException) {
+            //open the app to show a dialog to tell the user to give the app WRITE_SECURE_SETTINGS permission
+            Intent(context, HomeActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                putExtra(HomeActivity.KEY_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG, true)
+
+                context.startActivity(this)
+            }
         }
     }
 

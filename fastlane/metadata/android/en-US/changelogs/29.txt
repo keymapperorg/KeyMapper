@@ -1,0 +1,7 @@
+Changes
+- Renamed "Repeat Delay" to "Repeat Rate".
+- Renamed "Hold Down Delay" to "Repeat Delay"
+
+Bug Fixes
+- Crash when leaving app the menu to tweak an action showing.
+- Double press triggers aren't detected

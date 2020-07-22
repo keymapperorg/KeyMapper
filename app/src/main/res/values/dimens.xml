@@ -1,8 +1,9 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
-    <dimen name="text_size_keymap_adapter_error">16sp</dimen>
-    <dimen name="left_margin_subheading">16dp</dimen>
-    <dimen name="dialog_corner_radius">8dp</dimen>
-    <dimen name="bottom_sheet_corner_radius">@dimen/dialog_corner_radius</dimen>
-    <dimen name="bottom_sheet_top_padding">16dp</dimen>
+    <dimen name="cardview_padding_left">16dp</dimen>
+    <dimen name="cardview_padding_right">16dp</dimen>
+    <dimen name="cardview_padding_top">16dp</dimen>
+    <dimen name="cardview_padding_bottom">16dp</dimen>
+    <dimen name="cardview_header_bottom_padding">8dp</dimen>
+    <dimen name="cardview_separation">8dp</dimen>
 </resources>

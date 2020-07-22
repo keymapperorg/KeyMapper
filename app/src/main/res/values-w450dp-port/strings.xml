@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string-array name="config_keymap_tab_titles" tools:ignore="InconsistentArrays">
+        <item>@string/tab_trigger_and_actions</item>
+        <item>@string/tab_constraints_and_more</item>
+    </string-array>
+
+    <integer-array name="config_keymap_fragments" tools:ignore="InconsistentArrays">
+        <item>@integer/fragment_id_trigger_and_actions</item>
+        <item>@integer/fragment_id_constraints_and_more</item>
+    </integer-array>
+
+</resources>
