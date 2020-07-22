@@ -68,7 +68,7 @@ object WidgetsManager {
             }
         }
 
-        updateToggleRemappingsNotification(ctx, event)
+        updateToggleKeymapsNotification(ctx, event)
     }
 
     fun invalidateNotifications(ctx: Context) {
@@ -104,9 +104,9 @@ object WidgetsManager {
         }
     }
 
-    private fun updateToggleRemappingsNotification(ctx: Context, @Event event: Int) {
+    private fun updateToggleKeymapsNotification(ctx: Context, @Event event: Int) {
         if (SDK_INT < Build.VERSION_CODES.O) {
-            val showNotification = AppPreferences.showToggleRemapsNotification
+            val showNotification = AppPreferences.showToggleKeymapsNotification
 
             if (!showNotification) {
                 NotificationUtils.dismissNotification(NotificationUtils.ID_TOGGLE_REMAPS)

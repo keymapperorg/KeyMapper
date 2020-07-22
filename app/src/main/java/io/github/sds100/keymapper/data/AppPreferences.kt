@@ -42,7 +42,7 @@ object AppPreferences : DefaultPreferences() {
         appCtx.bool(R.bool.default_value_show_ime_notification)
     )
 
-    var showToggleRemapsNotification by BoolPref(
+    var showToggleKeymapsNotification by BoolPref(
         appCtx.str(R.string.key_pref_show_toggle_remappings_notification),
         appCtx.bool(R.bool.default_value_show_toggle_remappings_notification)
     )
