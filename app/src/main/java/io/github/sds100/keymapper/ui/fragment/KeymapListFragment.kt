@@ -243,15 +243,15 @@ class KeymapListFragment : Fragment() {
                 lifecycleScope.launchWhenCreated {
                     val onboardingState = OnboardingState(requireContext())
 
-                    if (!onboardingState.getShownPrompt(R.string.key_pref_shown_cant_use_virtual_keyboard_message)) {
+                    if (!onboardingState.getShownPrompt(R.string.key_pref_shown_password_screen_lock_warning)) {
                         val approvedWarning = requireActivity().alertDialog {
-                            messageResource = R.string.dialog_message_cant_use_virtual_keyboard
+                            messageResource = R.string.dialog_message_password_screen_lock_warning
                         }.showAndAwait(okValue = true,
                             cancelValue = false,
                             dismissValue = false)
 
                         if (approvedWarning) {
-                            onboardingState.setShownPrompt(R.string.key_pref_shown_cant_use_virtual_keyboard_message)
+                            onboardingState.setShownPrompt(R.string.key_pref_shown_password_screen_lock_warning)
 
                             KeyboardUtils.enableKeyMapperIme()
                         }
