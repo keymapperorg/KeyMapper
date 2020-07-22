@@ -79,8 +79,10 @@ object NotificationUtils {
             R.drawable.ic_notification_keyboard,
             R.string.notification_toggle_keyboard_title,
             R.string.notification_toggle_keyboard_text,
+            showOnLockscreen = true,
             priority = NotificationCompat.PRIORITY_MIN,
-            onGoing = true
+            onGoing = true,
+            actions = *arrayOf(NotificationCompat.Action(0, ctx.str(R.string.toggle), pendingIntent))
         )
     }
 

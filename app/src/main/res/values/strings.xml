@@ -236,7 +236,6 @@
     <string name="dialog_message_downloading">Downloading…</string>
     <string name="dialog_message_describe_your_issue_in_the_email">Can you please describe the issue you are having in the email, otherwise I can\'t help you. Thanks!</string>
     <string name="dialog_message_long_press_warning">Long pressing only works for physical volume and navigation buttons. If you enable it for other keys, the keys won\'t work when they aren\'t long pressed.</string>
-    <string name="dialog_message_cant_use_virtual_keyboard">The Key Mapper keyboard is designed to be used with a hardware keyboard, which is why it doesn\'t have a GUI. You can\'t use your preferred virtual keyboard while the Key Mapper keyboard is chosen.</string>
     <string name="dialog_message_write_secure_settings">To grant Key Mapper WRITE_SECURE_SETTINGS permission, enable "root features" in the settings if your device is rooted. If your device isn\'t rooted, go to the Help page and follow the guide on how to use a PC/Mac to grant permission.</string>
     <string name="dialog_message_write_secure_settings_for_accessibility_service">To grant Key Mapper WRITE_SECURE_SETTINGS permission, enable "root features" in the settings if your device is rooted. If your device isn\'t rooted, go to the Help page and follow the guide on how to use a PC/Mac to grant permission.</string>
     <string name="dialog_message_cant_find_accessibility_settings_page">Your device doesn\'t seem to have an accessibility services settings page. You can enable the accessibility service by giving the app WRITE_SECURE_SETTINGS permission. After you tap \'okay\' a popup will guide you how to do it.</string>
@@ -247,6 +246,7 @@
     <string name="dialog_message_bt_constraint_limitation">Android doesn\'t allow apps to get a list of connected (not paired) Bluetooth devices. Apps can only detect when they are connected and disconnected. So if your Bluetooth device is already connected to your device when the accessibility service starts, you will have to reconnect it for the app to know it is connected.</string>
     <string name="dialog_message_change_location_or_disable">Change location or turn off automatic backup?</string>
     <string name="dialog_message_screen_constraints_limitation">Screen on/off constraints will only work if you have turned on the \"detect trigger when screen is off\" keymap option. This option will only show for some keys (e.g volume buttons) and if you are rooted. See a list of supported keys on the Help page.</string>
+    <string name="dialog_message_password_screen_lock_warning">If you have any other screen lock chosen, such as PIN or Pattern then you don\'t have to worry. But if you have a Password screen lock you will *NOT* be able to unlock your phone if you use the Key Mapper keyboard because it doesn\'t have a GUI yet. You can grant Key Mapper WRITE_SECURE_SETTINGS permission so it can show a notification to switch to and from the keyboard. There is a guide on how to do this if you tap the question mark at the bottom of the screen.</string>
     <!-- Dialog messages -->
 
     <!-- Dialog buttons -->
@@ -765,6 +765,7 @@
     <string name="system_action_cat_other">Other</string>
     <string name="system_action_cat_keyboard">Keyboard</string>
     <string name="system_action_cat_airplane_mode">Airplane Mode</string>
+    <string name="toggle">Toggle</string>
     <!-- System action category labels -->
 
 </resources>
