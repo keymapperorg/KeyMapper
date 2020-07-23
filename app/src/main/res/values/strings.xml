@@ -48,6 +48,8 @@
     <string name="modifiers">Modifiers</string>
     <string name="hint_keycode">Key Code</string>
 
+    <string name="permission_description_key_mapper_input_method">perform Key Mapper actions that require a keyboard</string>
+
     <string name="whats_new">What\'s New</string>
     <string name="caption_action_type_key">Click the key on the device which you want to be entered.
         \n\nIMPORTANT!
