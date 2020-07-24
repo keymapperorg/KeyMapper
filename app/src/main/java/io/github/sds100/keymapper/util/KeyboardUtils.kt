@@ -25,6 +25,13 @@ import splitties.toast.toast
  */
 
 object KeyboardUtils {
+    
+    val COMPATIBLE_KEY_MAPPER_IME = arrayOf(
+        "io.github.sds100.keymapper",
+        "io.github.sds100.keymapper.debug",
+        "io.github.sds100.keymapper.ci",
+        "io.github.sds100.keymapper.inputmethod.latin"
+    )
 
     fun enableKeyMapperIme() {
         if (isPermissionGranted(Constants.PERMISSION_ROOT)) {
