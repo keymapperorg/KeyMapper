@@ -25,8 +25,8 @@ import splitties.toast.toast
  */
 
 object KeyboardUtils {
-    
-    val COMPATIBLE_KEY_MAPPER_IME = arrayOf(
+
+    private val COMPATIBLE_KEY_MAPPER_IME = arrayOf(
         "io.github.sds100.keymapper",
         "io.github.sds100.keymapper.debug",
         "io.github.sds100.keymapper.ci",
@@ -143,6 +143,25 @@ object KeyboardUtils {
             switchToKeyMapperIme(ctx)
             toast(R.string.toast_chose_keymapper_keyboard)
         }
+    }
+
+    fun isCompatibleImeEnabled(): Boolean {
+        val enabledMethods = inputMethodManager.enabledInputMethodList ?: return false
+
+        return enabledMethods.any { COMPATIBLE_KEY_MAPPER_IME.contains(it.packageName) }
+    }
+
+    fun isCompatibleImeChosen(): Boolean {
+        //get the current input input_method
+        val chosenImeId = Settings.Secure.getString(
+            appCtx.contentResolver,
+            Settings.Secure.DEFAULT_INPUT_METHOD
+        )
+
+        val chosenImePackageName =
+            inputMethodManager.inputMethodList.find { it.id == chosenImeId }?.packageName
+
+        return COMPATIBLE_KEY_MAPPER_IME.contains(chosenImePackageName)
     }
 }
 
