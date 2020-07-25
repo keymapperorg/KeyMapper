@@ -14,9 +14,7 @@ import androidx.lifecycle.MutableLiveData
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.EventObserver
-import io.github.sds100.keymapper.util.result.KeyMapperImeNotFound
-import io.github.sds100.keymapper.util.result.Result
-import io.github.sds100.keymapper.util.result.Success
+import io.github.sds100.keymapper.util.KeyboardUtils
 import splitties.init.appCtx
 import splitties.systemservices.inputMethodManager
 
@@ -42,13 +40,7 @@ class KeyMapperImeService : InputMethodService(), LifecycleOwner {
         /**
          * Get the id for the Key Mapper input input_method.
          */
-        fun getImeId(): Result<String> {
-
-            val inputMethod = inputMethodManager.inputMethodList.find { it.packageName == PACKAGE_NAME }
-                ?: return KeyMapperImeNotFound()
-
-            return Success(inputMethod.id)
-        }
+        fun getImeId() = KeyboardUtils.getImeId(PACKAGE_NAME)
 
         /**
          * @return whether the Key Mapper input input_method is chosen

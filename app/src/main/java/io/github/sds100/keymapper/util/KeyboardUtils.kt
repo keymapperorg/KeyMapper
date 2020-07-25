@@ -9,16 +9,23 @@ import android.os.Build.VERSION_CODES.O_MR1
 import android.provider.Settings
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
+import androidx.fragment.app.FragmentActivity
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.WidgetsManager
+import io.github.sds100.keymapper.compatibleIme
 import io.github.sds100.keymapper.data.AppPreferences
+import io.github.sds100.keymapper.data.model.CompatibleImeListItemModel
+import io.github.sds100.keymapper.databinding.FragmentSelectInputMethodBinding
 import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
 import io.github.sds100.keymapper.util.result.*
+import splitties.alertdialog.appcompat.*
 import splitties.init.appCtx
 import splitties.systemservices.inputMethodManager
 import splitties.toast.toast
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * Created by sds100 on 28/12/2018.
@@ -27,11 +34,24 @@ import splitties.toast.toast
 object KeyboardUtils {
 
     private val COMPATIBLE_KEY_MAPPER_IME = arrayOf(
-        "io.github.sds100.keymapper",
-        "io.github.sds100.keymapper.debug",
-        "io.github.sds100.keymapper.ci",
+        Constants.PACKAGE_NAME,
         "io.github.sds100.keymapper.inputmethod.latin"
     )
+
+    suspend fun enableSelectedIme(activity: FragmentActivity) {
+
+        if (!AppPreferences.approvedSelectCompatibleImePrompt) {
+            selectCompatibleIme(activity)
+        }
+
+        if (isPermissionGranted(Constants.PERMISSION_ROOT)) {
+            getImeId(AppPreferences.selectedCompatibleIme).onSuccess {
+                RootUtils.executeRootCommand("ime enable $it")
+            }
+        } else {
+            openImeSettings()
+        }
+    }
 
     fun enableKeyMapperIme() {
         if (isPermissionGranted(Constants.PERMISSION_ROOT)) {
@@ -145,10 +165,17 @@ object KeyboardUtils {
         }
     }
 
+    fun getImeId(packageName: String): Result<String> {
+        val inputMethod = inputMethodManager.inputMethodList.find { it.packageName == packageName }
+            ?: return KeyMapperImeNotFound()
+
+        return Success(inputMethod.id)
+    }
+
     fun isCompatibleImeEnabled(): Boolean {
         val enabledMethods = inputMethodManager.enabledInputMethodList ?: return false
 
-        return enabledMethods.any { COMPATIBLE_KEY_MAPPER_IME.contains(it.packageName) }
+        return enabledMethods.any { it.packageName == AppPreferences.selectedCompatibleIme }
     }
 
     fun isCompatibleImeChosen(): Boolean {
@@ -162,6 +189,63 @@ object KeyboardUtils {
             inputMethodManager.inputMethodList.find { it.id == chosenImeId }?.packageName
 
         return COMPATIBLE_KEY_MAPPER_IME.contains(chosenImePackageName)
+    }
+
+    suspend fun selectCompatibleIme(activity: FragmentActivity, showDontShowAgainButton: Boolean = true
+    ) = suspendCoroutine<Unit> { block ->
+        activity.apply {
+            alertDialog {
+                FragmentSelectInputMethodBinding.inflate(layoutInflater).apply {
+                    setView(this.root)
+
+                    val callback = object : OpenUrlCallback {
+                        override fun openUrl(url: String) = context.openUrl(url)
+                    }
+
+                    val models = arrayOf(
+                        CompatibleImeListItemModel(
+                            packageName = Constants.PACKAGE_NAME,
+                            imeName = str(R.string.ime_service_label),
+                            description = str(R.string.ime_key_mapper_description)
+                            //Don't have links to the app stores because this app is already installed
+                        )
+                    )
+
+                    epoxyRecyclerView.withModels {
+
+                        models.forEach {
+                            compatibleIme {
+                                id(it.packageName)
+                                model(it)
+                                openUrlCallback(callback)
+
+                                onClick { _ ->
+                                    if (it.isSupported) {
+                                        AppPreferences.selectedCompatibleIme = it.packageName
+                                    }
+                                }
+
+                                isSelected(AppPreferences.selectedCompatibleIme == it.packageName)
+                            }
+                        }
+                    }
+
+                    titleResource = R.string.dialog_title_select_compatible_ime
+                    messageResource = R.string.dialog_message_select_compatible_ime
+
+                    if (showDontShowAgainButton) {
+                        negativeButton(R.string.neg_dont_show_again) {
+                            AppPreferences.approvedSelectCompatibleImePrompt = true
+                            block.resume(Unit)
+                        }
+                    }
+
+                    okButton {
+                        block.resume(Unit)
+                    }
+                }
+            }.show()
+        }
     }
 }
 

@@ -44,13 +44,20 @@
         <item name="chipStyle">@style/KeymapListChip.Constraint</item>
     </style>
 
-    <style name="KeymapListChip" parent="Widget.MaterialComponents.Chip.Entry">
-        <item name="chipBackgroundColor">?attr/colorSurface</item>
+    <style name="OutlineChip" parent="Widget.MaterialComponents.Chip.Entry">
+        <item name="chipBackgroundColor">@android:color/transparent</item>
         <item name="chipStrokeColor" tools:ignore="PrivateResource">@color/mtrl_btn_stroke_color_selector</item>
         <item name="chipStrokeWidth">1dp</item>
         <item name="android:checkable">false</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
+
+    <style name="UrlLinkChip" parent="OutlineChip">
+        <item name="closeIconVisible">false</item>
+        <item name="chipIconTint">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="KeymapListChip" parent="OutlineChip" />
 
     <style name="KeymapListChip.TriggerKey">
         <item name="closeIconVisible">false</item>

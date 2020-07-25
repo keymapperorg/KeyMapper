@@ -8,7 +8,6 @@ import android.os.Build
 import android.view.KeyEvent
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.*
-import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.util.SystemActionUtils.getDescriptionWithOption
 import io.github.sds100.keymapper.util.result.*
 import splitties.bitflags.hasFlag
@@ -207,12 +206,12 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
     if (data.isEmpty()) return NoActionData()
 
     if (requiresIME) {
-        if (!KeyMapperImeService.isServiceEnabled()) {
-            return ImeServiceDisabled()
+        if (!KeyboardUtils.isCompatibleImeEnabled()) {
+            return NoCompatibleImeServiceEnabled()
         }
 
-        if (!KeyMapperImeService.isInputMethodChosen()) {
-            return ImeServiceNotChosen()
+        if (!KeyboardUtils.isCompatibleImeChosen()) {
+            return NoCompatibleImeServiceChosen()
         }
     }
 

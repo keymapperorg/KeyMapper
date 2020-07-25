@@ -47,6 +47,11 @@
     <string name="show_hidden_apps">Show hidden apps</string>
     <string name="modifiers">Modifiers</string>
     <string name="hint_keycode">Key Code</string>
+    <string name="toggle">Toggle</string>
+    <string name="chip_play_store">Play Store</string>
+    <string name="chip_fdroid">F-Droid</string>
+    <string name="chip_github">GitHub</string>
+    <string name="chip_xda_labs">XDA Labs</string>
 
     <string name="permission_description_key_mapper_input_method">perform Key Mapper actions that require a keyboard</string>
 
@@ -138,6 +143,8 @@
     <string name="constraint_choose_bluetooth_device_disconnected">Bluetooth Device is Disconnected</string>
     <string name="constraint_choose_screen_on_description">Screen is on</string>
     <string name="constraint_choose_screen_off_description">Screen is off</string>
+
+    <string name="ime_key_mapper_description">This is the input method built-in to Key Mapper. It has *NO* GUI. Therefore, if you have a password screen lock you will *NOT* be able to unlock your phone.</string>
     <!-- Constraints -->
 
     <!-- Click types -->
@@ -160,6 +167,9 @@
     <string name="url_xda_thread" translatable="false">https://forum.xda-developers.com/android/apps-games/app-keyboard-button-mapper-t3914005</string>
     <string name="url_google_app_listing" translatable="false">https://play.google.com/store/apps/details?id=</string>
     <string name="url_discord_server_invite" translatable="false">https://discord.gg/Suj6nyw</string>
+    <string name="url_xda_labs_key_mapper" translatable="false">https://labs.xda-developers.com/store/app/io.github.sds100.keymapper</string>
+    <string name="url_fdroid_key_mapper" translatable="false">https://f-droid.org/en/packages/io.github.sds100.keymapper/</string>
+    <string name="url_github_releases_key_mapper" translatable="false">https://github.com/sds100/KeyMapper/releases</string>
     <!-- URLs -->
 
     <!-- Activity titles -->
@@ -228,6 +238,7 @@
     <string name="dialog_title_pick_stream">Pick stream</string>
     <string name="dialog_title_choose_flash">Choose flash</string>
     <string name="dialog_title_cant_find_accessibility_settings_page">Can\'t find the Accessibility settings page</string>
+    <string name="dialog_title_select_compatible_ime">Select the input method for actions that require one</string>
     <!-- Dialog titles -->
 
     <!-- Dialog messages -->
@@ -249,6 +260,7 @@
     <string name="dialog_message_change_location_or_disable">Change location or turn off automatic backup?</string>
     <string name="dialog_message_screen_constraints_limitation">Screen on/off constraints will only work if you have turned on the \"detect trigger when screen is off\" keymap option. This option will only show for some keys (e.g volume buttons) and if you are rooted. See a list of supported keys on the Help page.</string>
     <string name="dialog_message_password_screen_lock_warning">If you have any other screen lock chosen, such as PIN or Pattern then you don\'t have to worry. But if you have a Password screen lock you will *NOT* be able to unlock your phone if you use the Key Mapper keyboard because it doesn\'t have a GUI yet. You can grant Key Mapper WRITE_SECURE_SETTINGS permission so it can show a notification to switch to and from the keyboard. There is a guide on how to do this if you tap the question mark at the bottom of the screen.</string>
+    <string name="dialog_message_select_compatible_ime">You can change this later by tapping \"Select compatible keyboard\" in the bottom menu of the homescreen.</string>
     <!-- Dialog messages -->
 
     <!-- Dialog buttons -->
@@ -547,7 +559,7 @@
     <string name="error_must_have_atleast_one_trigger">You must have at least one trigger</string>
     <string name="error_must_choose_action">You must choose an action!</string>
     <string name="error_must_have_a_title">The shortcut must have a title!</string>
-    <string name="error_ime_must_be_chosen">You must choose the Key Mapper keyboard for this action to work!</string>
+    <string name="error_ime_must_be_chosen">You must be using a compatible keyboard for this action to work!</string>
     <string name="error_shortcut_not_found">Can\'t find the shortcut. Is the app installed or enabled?</string>
 
     <string name="error_app_isnt_installed">The app with package name %s isn\'t installed!</string>
@@ -597,7 +609,7 @@
 
     <string name="error_ime_service_disabled_status_layout">The Key Mapper keyboard needs to be enabled for “Keycode”, “Key”, “Text” and some other actions to work.</string>
     <string name="error_ime_service_enabled">Key Mapper Keyboard is enabled!</string>
-    <string name="error_ime_service_disabled">Key Mapper Keyboard is disabled!</string>
+    <string name="error_ime_service_disabled">No compatible keyboards are enabled!</string>
     <string name="error_critical_ime_service_disabled">The Key Mapper keyboard must be enabled and selected for some of your actions to work!</string>
     <string name="error_ime_not_found">Can\'t find the %s input method</string>
     <string name="error_no_enabled_imes">This device has no enabled input methods!</string>
@@ -767,7 +779,6 @@
     <string name="system_action_cat_other">Other</string>
     <string name="system_action_cat_keyboard">Keyboard</string>
     <string name="system_action_cat_airplane_mode">Airplane Mode</string>
-    <string name="toggle">Toggle</string>
     <!-- System action category labels -->
 
 </resources>
