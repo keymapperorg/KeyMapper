@@ -116,9 +116,9 @@ class ActionPerformerDelegate(context: Context,
                 else -> {
                     if (action.type == ActionType.KEY_EVENT) {
                         Intent(Constants.INPUT_METHOD_ACTION_INPUT_DOWN_UP).apply {
-                            //put package of the chosen keyboard to improve performance so the intent isn't sent to all apps that have the permission
+                            `package` = AppPreferences.selectedCompatibleIme
                             putExtra(Constants.INPUT_METHOD_EXTRA_KEYCODE, action.data.toInt())
-                            sendBroadcast(this, Constants.PERMISSION_KEY_MAPPER_INPUT_METHOD)
+                            sendBroadcast(this)
                         }
 
 //                        KeyboardUtils.sendDownUpFromImeService(

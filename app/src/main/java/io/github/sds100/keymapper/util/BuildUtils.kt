@@ -15,6 +15,9 @@ object BuildUtils {
      */
     fun getSdkVersionName(version: Int): String {
         return when (version) {
+            JELLY_BEAN -> "Jelly Bean 4.1"
+            JELLY_BEAN_MR1 -> "Jelly Bean 4.2"
+            JELLY_BEAN_MR2 -> "Jelly Bean 4.3"
             KITKAT -> "KitKat 4.4"
             LOLLIPOP -> "Lollipop 5.0"
             LOLLIPOP_MR1 -> "Lollipop 5.1"

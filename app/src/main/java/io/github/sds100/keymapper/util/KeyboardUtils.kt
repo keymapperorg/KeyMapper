@@ -20,7 +20,10 @@ import io.github.sds100.keymapper.databinding.FragmentSelectInputMethodBinding
 import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
 import io.github.sds100.keymapper.util.result.*
-import splitties.alertdialog.appcompat.*
+import splitties.alertdialog.appcompat.alertDialog
+import splitties.alertdialog.appcompat.negativeButton
+import splitties.alertdialog.appcompat.okButton
+import splitties.alertdialog.appcompat.titleResource
 import splitties.init.appCtx
 import splitties.systemservices.inputMethodManager
 import splitties.toast.toast
@@ -33,9 +36,12 @@ import kotlin.coroutines.suspendCoroutine
 
 object KeyboardUtils {
 
+    private const val KEY_MAPPER_GUI_IME_PACKAGE = "io.github.sds100.keymapper.inputmethod.latin"
+    private const val KEY_MAPPER_GUI_IME_MIN_API = Build.VERSION_CODES.KITKAT
+
     private val COMPATIBLE_KEY_MAPPER_IME = arrayOf(
         Constants.PACKAGE_NAME,
-        "io.github.sds100.keymapper.inputmethod.latin"
+        KEY_MAPPER_GUI_IME_PACKAGE
     )
 
     suspend fun enableSelectedIme(activity: FragmentActivity) {
@@ -200,62 +206,80 @@ object KeyboardUtils {
         return chosenImePackageName == AppPreferences.selectedCompatibleIme
     }
 
-    suspend fun selectCompatibleIme(activity: FragmentActivity, showDontShowAgainButton: Boolean = true
-    ) = suspendCoroutine<Unit> { block ->
-        activity.apply {
-            alertDialog {
-                FragmentSelectInputMethodBinding.inflate(layoutInflater).apply {
-                    setView(this.root)
+    suspend fun selectCompatibleIme(activity: FragmentActivity, showDontShowAgainButton: Boolean = true) =
+        suspendCoroutine<Unit> { block ->
+            activity.apply {
+                alertDialog {
+                    FragmentSelectInputMethodBinding.inflate(layoutInflater).apply {
 
-                    val callback = object : OpenUrlCallback {
-                        override fun openUrl(url: String) = context.openUrl(url)
-                    }
+                        val callback = object : OpenUrlCallback {
+                            override fun openUrl(url: String) = context.openUrl(url)
+                        }
 
-                    val models = arrayOf(
-                        CompatibleImeListItemModel(
-                            packageName = Constants.PACKAGE_NAME,
-                            imeName = str(R.string.ime_service_label),
-                            description = str(R.string.ime_key_mapper_description)
-                            //Don't have links to the app stores because this app is already installed
+                        val models = arrayOf(
+                            CompatibleImeListItemModel(
+                                packageName = Constants.PACKAGE_NAME,
+                                imeName = str(R.string.ime_service_label),
+                                description = str(R.string.ime_key_mapper_description)
+                            ),
+                            CompatibleImeListItemModel(
+                                packageName = KEY_MAPPER_GUI_IME_PACKAGE,
+                                imeName = str(R.string.ime_key_mapper_gui_name),
+                                description = str(R.string.ime_key_mapper_gui_description),
+                                playStoreLink = str(R.string.url_play_store_keymapper_gui_keyboard),
+                                githubLink = str(R.string.url_github_keymapper_gui_keyboard),
+                                fdroidLink = str(R.string.url_fdroid_keymapper_gui_keyboard),
+                                errorMessage = when {
+                                    Build.VERSION.SDK_INT < KEY_MAPPER_GUI_IME_MIN_API ->
+                                        str(R.string.error_sdk_version_too_low,
+                                            BuildUtils.getSdkVersionName(KEY_MAPPER_GUI_IME_MIN_API))
+
+                                    PackageUtils.isAppInstalled(packageName) ->
+                                        str(R.string.error_app_isnt_installed_brief)
+
+                                    else -> null
+                                })
                         )
-                    )
 
-                    epoxyRecyclerView.withModels {
+                        epoxyRecyclerView.withModels {
 
-                        models.forEach {
-                            compatibleIme {
-                                id(it.packageName)
-                                model(it)
-                                openUrlCallback(callback)
+                            models.forEach {
+                                compatibleIme {
+                                    id(it.packageName)
+                                    model(it)
+                                    openUrlCallback(callback)
 
-                                onClick { _ ->
-                                    if (it.isSupported) {
-                                        AppPreferences.selectedCompatibleIme = it.packageName
+                                    onClick { _ ->
+                                        if (it.isSupported) {
+                                            AppPreferences.selectedCompatibleIme = it.packageName
+                                        }
+
+                                        epoxyRecyclerView.requestModelBuild()
                                     }
-                                }
 
-                                isSelected(AppPreferences.selectedCompatibleIme == it.packageName)
+                                    isSelected(AppPreferences.selectedCompatibleIme == it.packageName)
+                                }
                             }
                         }
-                    }
 
-                    titleResource = R.string.dialog_title_select_compatible_ime
-                    messageResource = R.string.dialog_message_select_compatible_ime
+                        titleResource = R.string.dialog_title_select_compatible_ime
 
-                    if (showDontShowAgainButton) {
-                        negativeButton(R.string.neg_dont_show_again) {
-                            AppPreferences.approvedSelectCompatibleImePrompt = true
+                        if (showDontShowAgainButton) {
+                            negativeButton(R.string.neg_dont_show_again) {
+                                AppPreferences.approvedSelectCompatibleImePrompt = true
+                                block.resume(Unit)
+                            }
+                        }
+
+                        okButton {
                             block.resume(Unit)
                         }
-                    }
 
-                    okButton {
-                        block.resume(Unit)
+                        setView(this.root)
                     }
-                }
-            }.show()
+                }.show()
+            }
         }
-    }
 }
 
 @RequiresApi(Build.VERSION_CODES.N)

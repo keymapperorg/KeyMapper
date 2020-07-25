@@ -10,7 +10,6 @@ object Constants {
     const val MAX_API = Build.VERSION_CODES.Q
     const val PACKAGE_NAME = BuildConfig.APPLICATION_ID
     const val PERMISSION_ROOT = "io.github.sds100.keymapper.ROOT"
-    const val PERMISSION_KEY_MAPPER_INPUT_METHOD = "io.github.sds100.keymapper.KEY_MAPPER_INPUT_METHOD"
     const val VERSION = BuildConfig.VERSION_NAME
     const val VERSION_CODE = BuildConfig.VERSION_CODE
 

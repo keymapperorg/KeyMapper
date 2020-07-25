@@ -24,4 +24,15 @@ object PackageUtils {
             appCtx.startActivity(intent)
         }
     }
+
+    fun isAppInstalled(packageName: String): Boolean {
+        try {
+            appCtx.packageManager.getApplicationInfo(packageName, 0)
+
+            return true
+
+        } catch (e: Exception) {
+            return false
+        }
+    }
 }
