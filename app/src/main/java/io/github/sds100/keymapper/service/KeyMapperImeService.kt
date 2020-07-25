@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.service
 
 import android.inputmethodservice.InputMethodService
 import android.os.SystemClock
-import android.provider.Settings
 import android.view.KeyEvent
 import android.view.inputmethod.ExtractedTextRequest
 import android.view.inputmethod.InputConnection
@@ -15,8 +14,6 @@ import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.EventObserver
 import io.github.sds100.keymapper.util.KeyboardUtils
-import splitties.init.appCtx
-import splitties.systemservices.inputMethodManager
 
 /**
  * Created by sds100 on 31/03/2020.
@@ -31,29 +28,10 @@ class KeyMapperImeService : InputMethodService(), LifecycleOwner {
         const val ACTION_DOWN = 0
         const val ACTION_UP = 1
 
-        fun isServiceEnabled(): Boolean {
-            val enabledMethods = inputMethodManager.enabledInputMethodList ?: return false
-
-            return enabledMethods.any { it.packageName == PACKAGE_NAME }
-        }
-
         /**
          * Get the id for the Key Mapper input input_method.
          */
         fun getImeId() = KeyboardUtils.getImeId(PACKAGE_NAME)
-
-        /**
-         * @return whether the Key Mapper input input_method is chosen
-         */
-        fun isInputMethodChosen(): Boolean {
-            //get the current input input_method
-            val chosenImeId = Settings.Secure.getString(
-                appCtx.contentResolver,
-                Settings.Secure.DEFAULT_INPUT_METHOD
-            )
-
-            return inputMethodManager.inputMethodList.find { it.id == chosenImeId }?.packageName == PACKAGE_NAME
-        }
 
         private lateinit var BUS: MutableLiveData<Event<Pair<String, Any?>>>
 

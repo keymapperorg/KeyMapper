@@ -206,11 +206,11 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
     if (data.isEmpty()) return NoActionData()
 
     if (requiresIME) {
-        if (!KeyboardUtils.isCompatibleImeEnabled()) {
+        if (!KeyboardUtils.isSelectedImeEnabled()) {
             return NoCompatibleImeServiceEnabled()
         }
 
-        if (!KeyboardUtils.isCompatibleImeChosen()) {
+        if (!KeyboardUtils.isSelectedImeChosen()) {
             return NoCompatibleImeServiceChosen()
         }
     }

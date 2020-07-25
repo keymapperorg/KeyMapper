@@ -8,6 +8,7 @@ import android.provider.Settings
 import androidx.fragment.app.FragmentActivity
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
 import splitties.experimental.ExperimentalSplittiesApi
@@ -105,8 +106,7 @@ class NoCompatibleImeServiceChosen : RecoverableFailure() {
     @ExperimentalSplittiesApi
     override suspend fun recover(activity: FragmentActivity, onSuccess: () -> Unit) {
         if (isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
-            //TODO switch to the keyboard of the user's choice
-            KeyboardUtils.switchToKeyMapperIme(activity)
+            KeyboardUtils.switchIme(activity, AppPreferences.selectedCompatibleIme)
         } else {
             KeyboardUtils.showInputMethodPicker()
         }

@@ -380,7 +380,7 @@ class KeymapListFragment : Fragment() {
             mWriteSettingsStatusState.value = StatusLayout.State.WARN
         }
 
-        if (KeyboardUtils.isCompatibleImeEnabled()) {
+        if (KeyboardUtils.isSelectedImeEnabled()) {
             mImeServiceStatusState.value = StatusLayout.State.POSITIVE
 
         } else if (mViewModel.keymapModelList.value?.any { keymap ->

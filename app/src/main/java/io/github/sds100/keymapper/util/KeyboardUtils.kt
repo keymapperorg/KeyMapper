@@ -64,20 +64,14 @@ object KeyboardUtils {
         }
     }
 
-    fun switchToKeyMapperIme(ctx: Context) {
+    @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
+    fun switchIme(ctx: Context, imeId: String) {
         if (!isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
             ctx.toast(R.string.error_need_write_secure_settings_permission)
             return
         }
 
-        KeyMapperImeService.getImeId().onSuccess {
-            switchIme(it)
-        }
-    }
-
-    @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
-    fun switchIme(imeId: String) {
-        appCtx.putSecureSetting(Settings.Secure.DEFAULT_INPUT_METHOD, imeId)
+        ctx.putSecureSetting(Settings.Secure.DEFAULT_INPUT_METHOD, imeId)
     }
 
     fun showInputMethodPicker() {
@@ -143,25 +137,28 @@ object KeyboardUtils {
         return Settings.Secure.getString(ctx.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD)
     }
 
-    fun toggleKeyboard(ctx: Context) {
-        if (!KeyMapperImeService.isServiceEnabled()) {
+    fun toggleSelectedCompatibleIme(ctx: Context) {
+        if (!isSelectedImeEnabled()) {
             ctx.toast(R.string.error_ime_service_disabled)
             return
         }
 
-        if (KeyMapperImeService.isInputMethodChosen()) {
-            AppPreferences.defaultIme?.let {
-                switchIme(it)
+        val imeId: String?
 
-                getInputMethodLabel(it).onSuccess { imeLabel ->
-                    toast(ctx.str(R.string.toast_chose_keyboard, imeLabel))
-                }
-            }
+        if (isSelectedImeChosen()) {
+            imeId = AppPreferences.defaultIme
 
         } else {
             AppPreferences.defaultIme = getChosenImeId(ctx)
-            switchToKeyMapperIme(ctx)
-            toast(R.string.toast_chose_keymapper_keyboard)
+
+            imeId = AppPreferences.selectedCompatibleIme
+        }
+
+        imeId ?: return
+
+        switchIme(ctx, imeId)
+        getInputMethodLabel(imeId).onSuccess { imeLabel ->
+            toast(ctx.str(R.string.toast_chose_keyboard, imeLabel))
         }
     }
 
@@ -172,13 +169,13 @@ object KeyboardUtils {
         return Success(inputMethod.id)
     }
 
-    fun isCompatibleImeEnabled(): Boolean {
+    fun isSelectedImeEnabled(): Boolean {
         val enabledMethods = inputMethodManager.enabledInputMethodList ?: return false
 
         return enabledMethods.any { it.packageName == AppPreferences.selectedCompatibleIme }
     }
 
-    fun isCompatibleImeChosen(): Boolean {
+    fun isSelectedImeChosen(): Boolean {
         //get the current input input_method
         val chosenImeId = Settings.Secure.getString(
             appCtx.contentResolver,
@@ -188,7 +185,7 @@ object KeyboardUtils {
         val chosenImePackageName =
             inputMethodManager.inputMethodList.find { it.id == chosenImeId }?.packageName
 
-        return COMPATIBLE_KEY_MAPPER_IME.contains(chosenImePackageName)
+        return chosenImePackageName == AppPreferences.selectedCompatibleIme
     }
 
     suspend fun selectCompatibleIme(activity: FragmentActivity, showDontShowAgainButton: Boolean = true

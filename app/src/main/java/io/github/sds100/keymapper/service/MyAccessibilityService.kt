@@ -114,7 +114,7 @@ class MyAccessibilityService : AccessibilityService(),
                 }
 
                 Intent.ACTION_INPUT_METHOD_CHANGED -> {
-                    mIsCompatibleImeChosen = KeyboardUtils.isCompatibleImeChosen()
+                    mIsCompatibleImeChosen = KeyboardUtils.isSelectedImeChosen()
                 }
 
                 Intent.ACTION_SCREEN_ON -> {
@@ -279,7 +279,7 @@ class MyAccessibilityService : AccessibilityService(),
             }
         })
 
-        mIsCompatibleImeChosen = KeyMapperImeService.isInputMethodChosen()
+        mIsCompatibleImeChosen = KeyboardUtils.isSelectedImeChosen()
     }
 
     override fun onInterrupt() {}
