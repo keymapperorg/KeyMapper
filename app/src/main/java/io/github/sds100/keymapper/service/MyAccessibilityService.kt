@@ -28,8 +28,8 @@ import io.github.sds100.keymapper.util.delegate.ActionPerformerDelegate
 import io.github.sds100.keymapper.util.delegate.GetEventDelegate
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionPreferences
-import io.github.sds100.keymapper.util.result.NoCompatibleImeServiceChosen
 import io.github.sds100.keymapper.util.result.Result
+import io.github.sds100.keymapper.util.result.SelectedCompatibleImeNotChosen
 import io.github.sds100.keymapper.util.result.Success
 import kotlinx.coroutines.*
 import splitties.bitflags.hasFlag
@@ -375,7 +375,7 @@ class MyAccessibilityService : AccessibilityService(),
             return if (mIsCompatibleImeChosen) {
                 Success(action)
             } else {
-                NoCompatibleImeServiceChosen()
+                SelectedCompatibleImeNotChosen()
             }
         }
 

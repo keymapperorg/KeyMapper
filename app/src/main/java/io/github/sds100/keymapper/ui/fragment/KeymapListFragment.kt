@@ -38,8 +38,8 @@ import io.github.sds100.keymapper.ui.callback.SelectionCallback
 import io.github.sds100.keymapper.ui.view.StatusLayout
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.Failure
-import io.github.sds100.keymapper.util.result.NoCompatibleImeServiceEnabled
 import io.github.sds100.keymapper.util.result.RecoverableFailure
+import io.github.sds100.keymapper.util.result.SelectedCompatibleImeIsDisabled
 import io.github.sds100.keymapper.util.result.getFullMessage
 import io.github.sds100.keymapper.worker.SeedDatabaseWorker
 import kotlinx.coroutines.Dispatchers
@@ -384,7 +384,7 @@ class KeymapListFragment : Fragment() {
             mImeServiceStatusState.value = StatusLayout.State.POSITIVE
 
         } else if (mViewModel.keymapModelList.value?.any { keymap ->
-                keymap.actionList.any { it.error is NoCompatibleImeServiceEnabled }
+                keymap.actionList.any { it.error is SelectedCompatibleImeIsDisabled }
             } == true) {
 
             mImeServiceStatusState.value = StatusLayout.State.ERROR

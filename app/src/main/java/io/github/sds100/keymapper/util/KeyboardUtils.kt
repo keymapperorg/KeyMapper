@@ -64,6 +64,18 @@ object KeyboardUtils {
         }
     }
 
+    suspend fun chooseSelectedIme(activity: FragmentActivity) {
+        if (!AppPreferences.approvedSelectCompatibleImePrompt) {
+            selectCompatibleIme(activity)
+        }
+
+        if (isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
+            switchIme(activity, AppPreferences.selectedCompatibleIme)
+        } else {
+            showInputMethodPicker()
+        }
+    }
+
     @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
     fun switchIme(ctx: Context, imeId: String) {
         if (!isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
