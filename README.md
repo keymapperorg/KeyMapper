@@ -5,7 +5,7 @@
 ![GitHub release](https://img.shields.io/github/release/sds100/KeyMapper.svg)
 ![fdroid release](https://img.shields.io/f-droid/v/io.github.sds100.keymapper.svg)
 
-Key Mapper is a free and open source Android app that can map a single or multiple key events to a custom action. The aim of this project is to allow anyone to make any button they use with their Android device do whatever they want.
+Key Mapper is a free and open source Android app that can map a single or multiple key events to a custom action. The aim of this project is to allow anyone to map their buttons in any combination to anything.
 
 [XDA Developers thread](https://forum.xda-developers.com/android/apps-games/app-keyboard-button-mapper-t3914005)  
 
