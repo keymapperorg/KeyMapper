@@ -56,18 +56,18 @@ The version code in the develop branch should always be the highest. Therefore, 
 
 Format:
 ```
-<type>: <subject [issue it is related to including the #]
+<issue id> <type>: <subject>
 
 body
 
 footer
 ```
 
-Every feature or bug fix commit should have an issue associated with it. This forces the developer to plan what they are doing, which improves efficiency. A feature should be split up into multiple tasks and each task should have its own commit. The feature should be developd on a sepearate branch and these commits should be squashed into a single commit when the branch is merged.
+Every feature or bug fix commit should have an issue associated with it. This is a cue for the developer to plan what they are doing, which improves efficiency. A feature should be split up into multiple tasks and each task should have its own commit. The feature should be developed on a sepearate branch and these commits should be squashed into a single commit when the branch is merged.
 
 #### Example
 ```
-feat: This a new feature #100
+#100 feat: This a new feature
 
 Extra information about the feature goes in here. It should be wrapped to
 roughly 80 characters.
@@ -81,6 +81,6 @@ roughly 80 characters.
 - refactor: refactoring production code
 - test: adding tests, refactoring test; no production code change
 - chore: updating build tasks, package manager configs, version name changes, etc; no production code change
-- release: a new release. Put issues it resolves in the footer. E.g "Resolves: #543"
+- release: a new release.
 
 The README, License, Credits, Changelog and Privacy Policy files should just be changed in the master branch.
