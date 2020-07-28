@@ -203,7 +203,7 @@
     <string name="action_send_feedback">Send feedback</string>
     <string name="action_log">Log</string>
     <string name="action_send_log">Send log</string>
-    <string name="action_change_keyboard">Change Keyboard</string>
+    <string name="action_change_keyboard">Show Input Method Picker</string>
     <string name="action_toggle_dark_theme">Toggle dark theme</string>
     <string name="action_seed_database">Seed database</string>
     <string name="action_save">Save</string>
@@ -212,6 +212,7 @@
     <string name="action_restore">Restore</string>
     <string name="action_tap_to_pause_keymaps">Tap to pause</string>
     <string name="action_tap_to_resume_keymaps">Tap to resume</string>
+    <string name="action_select_compatible_ime">Select Compatible Input Method</string>
     <!-- Menu action titles-->
 
     <!-- Button titles -->

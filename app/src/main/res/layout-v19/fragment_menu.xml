@@ -53,6 +53,10 @@
         <variable
             name="enableAccessibilityService"
             type="View.OnClickListener" />
+
+        <variable
+            name="selectCompatibleIme"
+            type="View.OnClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -76,6 +80,17 @@
                 android:layout_marginStart="8dp"
                 android:onClick="@{changeKeyboard}"
                 android:text="@string/action_change_keyboard"
+                app:icon="@drawable/ic_notification_keyboard"
+                app:iconTint="?attr/colorOnSurface" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/menuItemSelectCompatibleIme"
+                style="@style/BottomSheetMenuItem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:onClick="@{selectCompatibleIme}"
+                android:text="@string/action_select_compatible_ime"
                 app:icon="@drawable/ic_notification_keyboard"
                 app:iconTint="?attr/colorOnSurface" />
 

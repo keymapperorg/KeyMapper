@@ -1,10 +1,7 @@
 package io.github.sds100.keymapper.ui.fragment
 
 import android.Manifest
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -55,7 +52,7 @@ import splitties.toast.toast
  * A placeholder fragment containing a simple view.
  */
 @ExperimentalSplittiesApi
-class KeymapListFragment : Fragment() {
+class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val mViewModel: KeymapListViewModel by activityViewModels {
         InjectorUtils.provideKeymapListViewModel(requireContext())
@@ -117,6 +114,8 @@ class KeymapListFragment : Fragment() {
             addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
             requireActivity().registerReceiver(mBroadcastReceiver, this)
         }
+
+        requireContext().defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
     }
 
     override fun onCreateView(
@@ -361,7 +360,15 @@ class KeymapListFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
 
+        requireContext().defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
         requireActivity().unregisterReceiver(mBroadcastReceiver)
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        if (key == str(R.string.key_pref_selected_compatible_ime)) {
+            updateStatusLayouts()
+            mViewModel.rebuildModels()
+        }
     }
 
     private fun updateStatusLayouts() {
