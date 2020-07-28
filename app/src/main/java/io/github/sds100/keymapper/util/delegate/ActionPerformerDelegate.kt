@@ -18,17 +18,17 @@ import android.webkit.URLUtil
 import androidx.core.os.bundleOf
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.lifecycle.Lifecycle
-import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Option
 import io.github.sds100.keymapper.data.model.PerformActionModel
 import io.github.sds100.keymapper.data.model.getData
-import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.onSuccess
+import io.github.sds100.keymapper.util.result.valueOrNull
 import splitties.bitflags.hasFlag
+import splitties.bitflags.withFlag
 import splitties.toast.toast
 
 
@@ -92,10 +92,7 @@ class ActionPerformerDelegate(context: Context,
                     }
                 }
 
-                ActionType.TEXT_BLOCK -> {
-                    KeyMapperImeService.provideBus().value =
-                        Event(KeyMapperImeService.EVENT_INPUT_TEXT to action.data)
-                }
+                ActionType.TEXT_BLOCK -> KeyboardUtils.inputTextFromImeService(action.data)
 
                 ActionType.URL -> {
                     val guessedUrl = URLUtil.guessUrl(action.data)
@@ -115,19 +112,13 @@ class ActionPerformerDelegate(context: Context,
 
                 else -> {
                     if (action.type == ActionType.KEY_EVENT) {
-                        Intent(Constants.INPUT_METHOD_ACTION_INPUT_DOWN_UP).apply {
-                            `package` = AppPreferences.selectedCompatibleIme
-                            putExtra(Constants.INPUT_METHOD_EXTRA_KEYCODE, action.data.toInt())
-                            sendBroadcast(this)
-                        }
-
-//                        KeyboardUtils.sendDownUpFromImeService(
-//                            keyCode = action.data.toInt(),
-//                            metaState = additionalMetaState.withFlag(
-//                                action.extras.getData(Action.EXTRA_KEY_EVENT_META_STATE).valueOrNull()?.toInt() ?: 0
-//                            ),
-//                            keyEventAction = keyEventAction
-//                        )
+                        KeyboardUtils.inputKeyEventFromImeService(
+                            keyCode = action.data.toInt(),
+                            metaState = additionalMetaState.withFlag(
+                                action.extras.getData(Action.EXTRA_KEY_EVENT_META_STATE).valueOrNull()?.toInt() ?: 0
+                            ),
+                            keyEventAction = keyEventAction
+                        )
                     }
                 }
             }
@@ -279,7 +270,7 @@ class ActionPerformerDelegate(context: Context,
                     dpm.lockNow()
                 }
 
-                SystemAction.MOVE_CURSOR_TO_END -> KeyboardUtils.sendDownUpFromImeService(
+                SystemAction.MOVE_CURSOR_TO_END -> KeyboardUtils.inputKeyEventFromImeService(
                     keyCode = KeyEvent.KEYCODE_MOVE_END,
                     metaState = KeyEvent.META_CTRL_ON
                 )

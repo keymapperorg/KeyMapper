@@ -229,7 +229,7 @@ class MyAccessibilityService : AccessibilityService(),
                 KeyEvent.KEYCODE_APP_SWITCH -> performGlobalAction(GLOBAL_ACTION_RECENTS)
                 KeyEvent.KEYCODE_MENU -> mActionPerformerDelegate.performSystemAction(SystemAction.OPEN_MENU)
 
-                else -> KeyboardUtils.sendDownUpFromImeService(
+                else -> KeyboardUtils.inputKeyEventFromImeService(
                     keyCode = it.keyCode,
                     metaState = it.metaState
                 )

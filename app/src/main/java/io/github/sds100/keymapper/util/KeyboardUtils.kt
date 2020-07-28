@@ -35,6 +35,15 @@ import kotlin.coroutines.suspendCoroutine
  */
 
 object KeyboardUtils {
+    //DON'T CHANGE THESE!!!
+    const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN_UP = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_DOWN_UP"
+    const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_DOWN"
+    const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_UP = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_UP"
+    const val KEY_MAPPER_INPUT_METHOD_ACTION_TEXT = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_TEXT"
+
+    const val KEY_MAPPER_INPUT_METHOD_EXTRA_KEYCODE = "io.github.sds100.keymapper.inputmethod.EXTRA_KEYCODE"
+    const val KEY_MAPPER_INPUT_METHOD_EXTRA_METASTATE = "io.github.sds100.keymapper.inputmethod.EXTRA_METASTATE"
+    const val KEY_MAPPER_INPUT_METHOD_EXTRA_TEXT = "io.github.sds100.keymapper.inputmethod.EXTRA_TEXT"
 
     private const val KEY_MAPPER_GUI_IME_PACKAGE = "io.github.sds100.keymapper.inputmethod.latin"
     private const val KEY_MAPPER_GUI_IME_MIN_API = Build.VERSION_CODES.KITKAT
@@ -137,13 +146,33 @@ object KeyboardUtils {
         }
     }
 
-    fun sendDownUpFromImeService(
+    fun inputTextFromImeService(text: String) {
+        Intent(KEY_MAPPER_INPUT_METHOD_ACTION_TEXT).apply {
+            setPackage(AppPreferences.selectedCompatibleIme)
+
+            putExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_TEXT, text)
+            appCtx.sendBroadcast(this)
+        }
+    }
+
+    fun inputKeyEventFromImeService(
         keyCode: Int,
         metaState: Int = 0,
-        keyEventAction: Int = KeyMapperImeService.ACTION_DOWN_UP
+        keyEventAction: KeyEventAction = KeyEventAction.DOWN_UP
     ) {
-        KeyMapperImeService.provideBus().value =
-            Event(KeyMapperImeService.EVENT_INPUT_DOWN_UP to intArrayOf(keyCode, metaState, keyEventAction))
+        val intentAction = when (keyEventAction) {
+            KeyEventAction.DOWN -> KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN
+            KeyEventAction.DOWN_UP -> KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN_UP
+            KeyEventAction.UP -> KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_UP
+        }
+
+        Intent(intentAction).apply {
+            setPackage(AppPreferences.selectedCompatibleIme)
+            putExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_KEYCODE, keyCode)
+            putExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_METASTATE, metaState)
+
+            appCtx.sendBroadcast(this)
+        }
     }
 
     fun getChosenImeId(ctx: Context): String {

@@ -14,7 +14,6 @@ import io.github.sds100.keymapper.data.model.Constraint.Companion.BT_DEVICE_DISC
 import io.github.sds100.keymapper.data.model.Constraint.Companion.MODE_AND
 import io.github.sds100.keymapper.data.model.Constraint.Companion.SCREEN_OFF
 import io.github.sds100.keymapper.data.model.Constraint.Companion.SCREEN_ON
-import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.*
 import kotlinx.coroutines.CoroutineScope
@@ -660,9 +659,9 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
                         val keyEventAction =
                             if (action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)) {
-                                KeyMapperImeService.ACTION_DOWN
+                                KeyEventAction.DOWN
                             } else {
-                                KeyMapperImeService.ACTION_DOWN_UP
+                                KeyEventAction.DOWN_UP
                             }
 
                         performAction(action, showPerformingActionToast, keyEventAction)
@@ -928,7 +927,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                         if (action.type == ActionType.KEY_EVENT
                             && action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)) {
 
-                            performAction(action, showPerformingActionToast, KeyMapperImeService.ACTION_UP)
+                            performAction(action, showPerformingActionToast, KeyEventAction.UP)
                         }
                     }
                 }
@@ -1197,9 +1196,9 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
             val keyEventAction =
                 if (action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)) {
-                    KeyMapperImeService.ACTION_DOWN
+                    KeyEventAction.DOWN_UP
                 } else {
-                    KeyMapperImeService.ACTION_DOWN_UP
+                    KeyEventAction.DOWN_UP
                 }
 
             performAction(action, showPerformingActionToast(actionKey), keyEventAction)
@@ -1297,7 +1296,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
     private fun performAction(
         action: Action,
         showPerformingActionToast: Boolean,
-        keyEventAction: Int = KeyMapperImeService.ACTION_DOWN_UP
+        keyEventAction: KeyEventAction = KeyEventAction.DOWN_UP
     ) {
         val additionalMetaState = mMetaStateFromKeyEvent.withFlag(mMetaStateFromActions)
 
