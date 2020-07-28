@@ -65,7 +65,7 @@
                     android:layout_marginEnd="16dp"
                     android:text="@{viewModel.keyCodeLabel}"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-                    android:visibility='@{viewModel.keyCode == null || viewModel.keyCode == "" ? View.GONE : View.VISIBLE}'
+                    android:visibility='@{viewModel.isValidKeyCode() ? View.VISIBLE : View.GONE}'
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textInputLayoutKeyCode"
@@ -122,7 +122,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
-            android:enabled='@{viewModel.keyCode == null || viewModel.keyCode == "" ? false : true}'
+            android:enabled='@{viewModel.isValidKeyCode() ? true : false}'
             android:onClick="@{onDoneClick}"
             android:text="@string/button_done"
             app:layout_constraintBottom_toBottomOf="parent"
