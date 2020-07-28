@@ -39,11 +39,6 @@ object KeyboardUtils {
     private const val KEY_MAPPER_GUI_IME_PACKAGE = "io.github.sds100.keymapper.inputmethod.latin"
     private const val KEY_MAPPER_GUI_IME_MIN_API = Build.VERSION_CODES.KITKAT
 
-    private val COMPATIBLE_KEY_MAPPER_IME = arrayOf(
-        Constants.PACKAGE_NAME,
-        KEY_MAPPER_GUI_IME_PACKAGE
-    )
-
     suspend fun enableSelectedIme(activity: FragmentActivity) {
 
         if (!AppPreferences.approvedSelectCompatibleImePrompt) {
@@ -234,7 +229,7 @@ object KeyboardUtils {
                                         str(R.string.error_sdk_version_too_low,
                                             BuildUtils.getSdkVersionName(KEY_MAPPER_GUI_IME_MIN_API))
 
-                                    PackageUtils.isAppInstalled(packageName) ->
+                                    !PackageUtils.isAppInstalled(KEY_MAPPER_GUI_IME_PACKAGE) ->
                                         str(R.string.error_app_isnt_installed_brief)
 
                                     else -> null
