@@ -2,6 +2,7 @@
 
 Many thanks to...
 
+ - @[dslul](https://github.com/dslul) for their [OpenBoard](https://github.com/dslul/openboard) fork of the AOSP keyboard! This made adding a GUI keyboard for Key Mapper _much_ easier. 🎉
  - @[salomonbrys] for his [Kotson] library so I can easily use Gson in Kotlin.
  - Hannes Dorfmann (@[sockeqwe]) for his [AdapterDelegates] library. You can read his [article] demonstrating why delegation is better than inheritance.
  - The [Material Design Icons] community for various icons that are not provided by Google.
