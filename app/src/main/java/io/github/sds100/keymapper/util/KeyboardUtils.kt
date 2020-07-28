@@ -212,28 +212,22 @@ object KeyboardUtils {
                         }
 
                         val models = arrayOf(
-                            CompatibleImeListItemModel(
+                            CompatibleImeListItemModel.build(
+                                ctx = activity,
                                 packageName = Constants.PACKAGE_NAME,
                                 imeName = str(R.string.ime_service_label),
                                 description = str(R.string.ime_key_mapper_description)
                             ),
-                            CompatibleImeListItemModel(
+                            CompatibleImeListItemModel.build(
+                                ctx = activity,
                                 packageName = KEY_MAPPER_GUI_IME_PACKAGE,
+                                minApi = KEY_MAPPER_GUI_IME_MIN_API,
                                 imeName = str(R.string.ime_key_mapper_gui_name),
                                 description = str(R.string.ime_key_mapper_gui_description),
                                 playStoreLink = str(R.string.url_play_store_keymapper_gui_keyboard),
                                 githubLink = str(R.string.url_github_keymapper_gui_keyboard),
-                                fdroidLink = str(R.string.url_fdroid_keymapper_gui_keyboard),
-                                errorMessage = when {
-                                    Build.VERSION.SDK_INT < KEY_MAPPER_GUI_IME_MIN_API ->
-                                        str(R.string.error_sdk_version_too_low,
-                                            BuildUtils.getSdkVersionName(KEY_MAPPER_GUI_IME_MIN_API))
-
-                                    !PackageUtils.isAppInstalled(KEY_MAPPER_GUI_IME_PACKAGE) ->
-                                        str(R.string.error_app_isnt_installed_brief)
-
-                                    else -> null
-                                })
+                                fdroidLink = str(R.string.url_fdroid_keymapper_gui_keyboard)
+                            )
                         )
 
                         epoxyRecyclerView.withModels {

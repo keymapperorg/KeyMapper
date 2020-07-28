@@ -93,7 +93,7 @@
                 android:id="@+id/buttonChipGroup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="@{model.supported ? View.GONE : View.VISIBLE}"
+                android:visibility="@{model.showLinks ? View.VISIBLE : View.GONE}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/layoutDescription">
