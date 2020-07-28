@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.util.delegate
 
 import android.view.KeyEvent
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.Observer
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.Trigger.Companion.DOUBLE_PRESS
@@ -96,6 +97,48 @@ class KeymapDetectionDelegateTest {
             FORCE_VIBRATE)
 
         mDelegate = KeymapDetectionDelegate(GlobalScope, preferences, iClock, iConstraintState, iActionError)
+    }
+
+    @Test
+    fun `2x key sequence trigger and 3x key sequence trigger with the last 2 keys being the same,trigger 3x key trigger, ignore the first 2x key trigger`() {
+
+        val firstTrigger = sequenceTrigger(
+            Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, deviceId = Trigger.Key.DEVICE_ID_ANY_DEVICE),
+            Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP)
+        )
+
+        val secondTrigger = sequenceTrigger(
+            Trigger.Key(KeyEvent.KEYCODE_HOME),
+            Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN),
+            Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP)
+        )
+
+        mDelegate.keyMapListCache = listOf(
+            KeyMap(0, trigger = firstTrigger, actionList = listOf(TEST_ACTION)),
+            KeyMap(1, trigger = secondTrigger, actionList = listOf(TEST_ACTION_2))
+        )
+
+        val performedActions = mutableSetOf<Action>()
+
+        val observer = Observer<Event<PerformActionModel>> {
+            it.getContentIfNotHandled()?.action?.let { action ->
+                performedActions.add(action)
+            }
+        }
+
+        mDelegate.performAction.observeForever(observer)
+
+        runBlocking {
+            mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_HOME))
+            mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, deviceId = Trigger.Key.DEVICE_ID_ANY_DEVICE))
+            mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP))
+        }
+
+        Thread.sleep(1000)
+
+        assertThat(performedActions, `is`(mutableSetOf(TEST_ACTION_2)))
+
+        mDelegate.performAction.removeObserver(observer)
     }
 
     @Test
