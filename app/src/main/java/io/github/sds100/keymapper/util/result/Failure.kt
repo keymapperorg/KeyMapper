@@ -6,10 +6,11 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.lifecycleScope
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.*
-import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
+import kotlinx.coroutines.launch
 import splitties.experimental.ExperimentalSplittiesApi
 
 /**
@@ -20,8 +21,8 @@ fun Failure.getFullMessage(ctx: Context) = when (this) {
     is PermissionDenied -> PermissionDenied.getMessageForPermission(ctx, permission)
     is AppNotFound -> ctx.str(R.string.error_app_isnt_installed, packageName)
     is AppDisabled -> ctx.str(R.string.error_app_isnt_installed)
-    is ImeServiceDisabled -> ctx.str(R.string.error_ime_service_disabled)
-    is ImeServiceNotChosen -> ctx.str(R.string.error_ime_must_be_chosen)
+    is SelectedCompatibleImeIsDisabled -> ctx.str(R.string.error_ime_service_disabled)
+    is SelectedCompatibleImeNotChosen -> ctx.str(R.string.error_ime_must_be_chosen)
     is OptionsNotRequired -> ctx.str(R.string.error_options_not_required)
     is SystemFeatureNotSupported -> ctx.str(R.string.error_feature_not_available, feature)
     is ConstraintNotFound -> ctx.str(R.string.error_constraint_not_found)
@@ -94,19 +95,19 @@ class AppDisabled(val packageName: String) : RecoverableFailure() {
     }
 }
 
-class ImeServiceDisabled : RecoverableFailure() {
+class SelectedCompatibleImeIsDisabled : RecoverableFailure() {
     override suspend fun recover(activity: FragmentActivity, onSuccess: () -> Unit) {
-        KeyboardUtils.openImeSettings()
+        activity.lifecycleScope.launch {
+            KeyboardUtils.enableSelectedIme(activity)
+        }
     }
 }
 
-class ImeServiceNotChosen : RecoverableFailure() {
+class SelectedCompatibleImeNotChosen : RecoverableFailure() {
     @ExperimentalSplittiesApi
     override suspend fun recover(activity: FragmentActivity, onSuccess: () -> Unit) {
-        if (isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
-            KeyboardUtils.switchToKeyMapperIme(activity)
-        } else {
-            KeyboardUtils.showInputMethodPicker()
+        activity.lifecycleScope.launch {
+            KeyboardUtils.chooseSelectedIme(activity)
         }
     }
 }

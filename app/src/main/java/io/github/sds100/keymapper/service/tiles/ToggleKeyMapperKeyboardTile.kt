@@ -6,7 +6,6 @@ import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.util.KeyboardUtils
 import io.github.sds100.keymapper.util.str
 
@@ -17,7 +16,7 @@ import io.github.sds100.keymapper.util.str
 class ToggleKeyMapperKeyboardTile : TileService() {
 
     private val mState: State
-        get() = if (KeyMapperImeService.isServiceEnabled()) {
+        get() = if (KeyboardUtils.isSelectedImeEnabled()) {
             State.DEFAULT
         } else {
             State.DISABLED
@@ -59,7 +58,7 @@ class ToggleKeyMapperKeyboardTile : TileService() {
         invalidateTile()
 
         when (mState) {
-            State.DEFAULT -> KeyboardUtils.toggleKeyboard(this)
+            State.DEFAULT -> KeyboardUtils.toggleSelectedCompatibleIme(this)
 
             State.DISABLED -> {
                 KeyboardUtils.enableKeyMapperIme()

@@ -134,7 +134,7 @@ object WidgetsManager {
 
                 if (AppPreferences.toggleKeyboardOnToggleKeymaps) {
                     AppPreferences.defaultIme?.let {
-                        KeyboardUtils.switchIme(it)
+                        KeyboardUtils.switchIme(ctx, it)
                     }
                 }
             }
@@ -159,7 +159,7 @@ object WidgetsManager {
                     }
 
                     if (AppPreferences.toggleKeyboardOnToggleKeymaps) {
-                        KeyboardUtils.switchToKeyMapperIme(ctx)
+                        KeyboardUtils.switchIme(ctx, AppPreferences.selectedCompatibleIme)
                     }
                 }
             }

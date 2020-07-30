@@ -9,7 +9,6 @@ import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.BehaviorOption.Companion.nullIfDefault
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.dataExtraString
-import io.github.sds100.keymapper.util.requiresIME
 import io.github.sds100.keymapper.util.result.Failure
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -554,14 +553,6 @@ class ConfigKeymapViewModel internal constructor(
 
         actionList.value = actionList.value?.toMutableList()?.apply {
             add(action)
-        }
-
-        if (action.requiresIME && !getShownPrompt(R.string.key_pref_shown_password_screen_lock_warning)) {
-            showPrompt(NotifyUserModel(
-                message = R.string.dialog_message_password_screen_lock_warning
-            ) {
-                setShownPrompt(R.string.key_pref_shown_password_screen_lock_warning)
-            })
         }
 
         invalidateOptions()

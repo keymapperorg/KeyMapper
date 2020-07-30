@@ -1,10 +1,7 @@
 package io.github.sds100.keymapper.ui.fragment
 
 import android.Manifest
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -26,31 +23,26 @@ import androidx.work.WorkManager
 import com.airbnb.epoxy.EpoxyController
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.data.AppPreferences
-import io.github.sds100.keymapper.data.OnboardingState
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
 import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
 import io.github.sds100.keymapper.databinding.FragmentKeymapListBinding
-import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
 import io.github.sds100.keymapper.ui.callback.SelectionCallback
 import io.github.sds100.keymapper.ui.view.StatusLayout
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.Failure
-import io.github.sds100.keymapper.util.result.ImeServiceDisabled
 import io.github.sds100.keymapper.util.result.RecoverableFailure
+import io.github.sds100.keymapper.util.result.SelectedCompatibleImeIsDisabled
 import io.github.sds100.keymapper.util.result.getFullMessage
 import io.github.sds100.keymapper.worker.SeedDatabaseWorker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import splitties.alertdialog.appcompat.alertDialog
-import splitties.alertdialog.appcompat.coroutines.showAndAwait
-import splitties.alertdialog.appcompat.messageResource
 import splitties.experimental.ExperimentalSplittiesApi
 import splitties.snackbar.action
 import splitties.snackbar.longSnack
@@ -60,7 +52,7 @@ import splitties.toast.toast
  * A placeholder fragment containing a simple view.
  */
 @ExperimentalSplittiesApi
-class KeymapListFragment : Fragment() {
+class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val mViewModel: KeymapListViewModel by activityViewModels {
         InjectorUtils.provideKeymapListViewModel(requireContext())
@@ -122,6 +114,8 @@ class KeymapListFragment : Fragment() {
             addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
             requireActivity().registerReceiver(mBroadcastReceiver, this)
         }
+
+        requireContext().defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
     }
 
     override fun onCreateView(
@@ -288,28 +282,13 @@ class KeymapListFragment : Fragment() {
 
             setEnableImeService {
                 lifecycleScope.launchWhenCreated {
-                    val onboardingState = OnboardingState(requireContext())
 
-                    if (!onboardingState.getShownPrompt(R.string.key_pref_shown_password_screen_lock_warning)) {
-                        val approvedWarning = requireActivity().alertDialog {
-                            messageResource = R.string.dialog_message_password_screen_lock_warning
-                        }.showAndAwait(okValue = true,
-                            cancelValue = false,
-                            dismissValue = false)
+                    KeyboardUtils.enableSelectedIme(requireActivity())
 
-                        if (approvedWarning) {
-                            onboardingState.setShownPrompt(R.string.key_pref_shown_password_screen_lock_warning)
+                    lifecycleScope.launch {
+                        delay(3000)
 
-                            KeyboardUtils.enableKeyMapperIme()
-                        }
-                    } else {
-                        KeyboardUtils.enableKeyMapperIme()
-
-                        lifecycleScope.launch {
-                            delay(3000)
-
-                            updateStatusLayouts()
-                        }
+                        updateStatusLayouts()
                     }
                 }
             }
@@ -381,7 +360,15 @@ class KeymapListFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
 
+        requireContext().defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
         requireActivity().unregisterReceiver(mBroadcastReceiver)
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        if (key == str(R.string.key_pref_selected_compatible_ime)) {
+            updateStatusLayouts()
+            mViewModel.rebuildModels()
+        }
     }
 
     private fun updateStatusLayouts() {
@@ -400,11 +387,11 @@ class KeymapListFragment : Fragment() {
             mWriteSettingsStatusState.value = StatusLayout.State.WARN
         }
 
-        if (KeyMapperImeService.isServiceEnabled()) {
+        if (KeyboardUtils.isSelectedImeEnabled()) {
             mImeServiceStatusState.value = StatusLayout.State.POSITIVE
 
         } else if (mViewModel.keymapModelList.value?.any { keymap ->
-                keymap.actionList.any { it.error is ImeServiceDisabled }
+                keymap.actionList.any { it.error is SelectedCompatibleImeIsDisabled }
             } == true) {
 
             mImeServiceStatusState.value = StatusLayout.State.ERROR

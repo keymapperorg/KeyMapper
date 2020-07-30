@@ -3,6 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="io.github.sds100.keymapper">
 
+    <permission
+        android:name="io.github.sds100.keymapper.KEY_MAPPER_INPUT_METHOD"
+        android:description="@string/permission_description_key_mapper_input_method"
+        android:icon="@drawable/ic_permission_input_method"
+        android:label="Key Mapper Input Method"
+        android:protectionLevel="dangerous" />
+
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -15,6 +22,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="io.github.sds100.keymapper.KEY_MAPPER_INPUT_METHOD" />
 
     <uses-permission
         android:name="android.permission.WRITE_SETTINGS"

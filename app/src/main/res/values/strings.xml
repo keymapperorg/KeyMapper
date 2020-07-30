@@ -8,7 +8,7 @@
     The accessibility service only listens for key events and nothing else. Look at the source code, which is linked to in the About section inside the app, if you are paranoid I\'m spying. :)</string>
     <string name="record_trigger_help">When you click \"record trigger\", you have 5 seconds to press the keys/buttons which will trigger the action. Your trigger will be added after the 5 seconds. Press \"clear\" to clear the keys you have already typed. If a button isn\'t detected here, the device vendor is probably blocking accessibility services from seeing it. Therefore, it can\'t be remapped.</string>
     <string name="selection_count">%d selected</string>
-    <string name="ime_service_label" translatable="false">Key Mapper Keyboard</string>
+    <string name="ime_service_label" translatable="false">Key Mapper Basic Input Method</string>
     <string name="enable">Enable</string>
     <string name="open">Open</string>
     <string name="shrug" translatable="false">¯\\_(ツ)_/¯</string>
@@ -47,6 +47,13 @@
     <string name="show_hidden_apps">Show hidden apps</string>
     <string name="modifiers">Modifiers</string>
     <string name="hint_keycode">Key Code</string>
+    <string name="toggle">Toggle</string>
+    <string name="chip_play_store">Play Store</string>
+    <string name="chip_fdroid">F-Droid</string>
+    <string name="chip_github">GitHub</string>
+    <string name="chip_xda_labs">XDA Labs</string>
+
+    <string name="permission_description_key_mapper_input_method">perform Key Mapper actions that require a keyboard</string>
 
     <string name="whats_new">What\'s New</string>
     <string name="caption_action_type_key">Click the key on the device which you want to be entered.
@@ -105,7 +112,6 @@
     <string name="nav_arg_file_url_alt">file_url_alt</string>
     <string name="nav_arg_action_behavior">action_behavior</string>
 
-    <string name="toast_chose_keymapper_keyboard">Chose Key Mapper keyboard</string>
     <string name="toast_chose_keyboard">Chose %s</string>
     <string name="toast_backup_successful">Backup Successful!</string>
 
@@ -136,6 +142,11 @@
     <string name="constraint_choose_bluetooth_device_disconnected">Bluetooth Device is Disconnected</string>
     <string name="constraint_choose_screen_on_description">Screen is on</string>
     <string name="constraint_choose_screen_off_description">Screen is off</string>
+
+    <string name="ime_key_mapper_description">This is the input method built-in to Key Mapper. It has *NO* interface. Therefore, if you have a password screen lock you will *NOT* be able to unlock your phone.</string>
+
+    <string name="ime_key_mapper_gui_name">Key Mapper GUI Keyboard</string>
+    <string name="ime_key_mapper_gui_description">An AOSP keyboard forked from the OpenBoard project by @dslul. This is the recommended Key Mapper compatible keyboard with a GUI.</string>
     <!-- Constraints -->
 
     <!-- Click types -->
@@ -158,6 +169,13 @@
     <string name="url_xda_thread" translatable="false">https://forum.xda-developers.com/android/apps-games/app-keyboard-button-mapper-t3914005</string>
     <string name="url_google_app_listing" translatable="false">https://play.google.com/store/apps/details?id=</string>
     <string name="url_discord_server_invite" translatable="false">https://discord.gg/Suj6nyw</string>
+    <string name="url_xda_labs_key_mapper" translatable="false">https://labs.xda-developers.com/store/app/io.github.sds100.keymapper</string>
+    <string name="url_fdroid_key_mapper" translatable="false">https://f-droid.org/en/packages/io.github.sds100.keymapper/</string>
+    <string name="url_github_releases_key_mapper" translatable="false">https://github.com/sds100/KeyMapper/releases</string>
+
+    <string name="url_play_store_keymapper_gui_keyboard" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin</string>
+    <string name="url_fdroid_keymapper_gui_keyboard" translatable="false">https://f-droid.org/en/packages/io.github.sds100.keymapper.inputmethod.latin/</string>
+    <string name="url_github_keymapper_gui_keyboard" translatable="false">https://github.com/sds100/KeyMapperKeyboard/releases</string>
     <!-- URLs -->
 
     <!-- Activity titles -->
@@ -185,7 +203,7 @@
     <string name="action_send_feedback">Send feedback</string>
     <string name="action_log">Log</string>
     <string name="action_send_log">Send log</string>
-    <string name="action_change_keyboard">Change Keyboard</string>
+    <string name="action_change_keyboard">Show Input Method Picker</string>
     <string name="action_toggle_dark_theme">Toggle dark theme</string>
     <string name="action_seed_database">Seed database</string>
     <string name="action_save">Save</string>
@@ -194,6 +212,7 @@
     <string name="action_restore">Restore</string>
     <string name="action_tap_to_pause_keymaps">Tap to pause</string>
     <string name="action_tap_to_resume_keymaps">Tap to resume</string>
+    <string name="action_select_compatible_ime">Select Compatible Input Method</string>
     <!-- Menu action titles-->
 
     <!-- Button titles -->
@@ -226,6 +245,7 @@
     <string name="dialog_title_pick_stream">Pick stream</string>
     <string name="dialog_title_choose_flash">Choose flash</string>
     <string name="dialog_title_cant_find_accessibility_settings_page">Can\'t find the Accessibility settings page</string>
+    <string name="dialog_title_select_compatible_ime">Select the input method for actions that require one</string>
     <!-- Dialog titles -->
 
     <!-- Dialog messages -->
@@ -247,6 +267,7 @@
     <string name="dialog_message_change_location_or_disable">Change location or turn off automatic backup?</string>
     <string name="dialog_message_screen_constraints_limitation">Screen on/off constraints will only work if you have turned on the \"detect trigger when screen is off\" keymap option. This option will only show for some keys (e.g volume buttons) and if you are rooted. See a list of supported keys on the Help page.</string>
     <string name="dialog_message_password_screen_lock_warning">If you have any other screen lock chosen, such as PIN or Pattern then you don\'t have to worry. But if you have a Password screen lock you will *NOT* be able to unlock your phone if you use the Key Mapper keyboard because it doesn\'t have a GUI yet. You can grant Key Mapper WRITE_SECURE_SETTINGS permission so it can show a notification to switch to and from the keyboard. There is a guide on how to do this if you tap the question mark at the bottom of the screen.</string>
+    <string name="dialog_message_select_compatible_ime">You can change this later by tapping \"Select compatible keyboard\" in the bottom menu of the homescreen.</string>
     <!-- Dialog messages -->
 
     <!-- Dialog buttons -->
@@ -545,7 +566,7 @@
     <string name="error_must_have_atleast_one_trigger">You must have at least one trigger</string>
     <string name="error_must_choose_action">You must choose an action!</string>
     <string name="error_must_have_a_title">The shortcut must have a title!</string>
-    <string name="error_ime_must_be_chosen">You must choose the Key Mapper keyboard for this action to work!</string>
+    <string name="error_ime_must_be_chosen">You must be using your selected keyboard for this action to work!</string>
     <string name="error_shortcut_not_found">Can\'t find the shortcut. Is the app installed or enabled?</string>
 
     <string name="error_app_isnt_installed">The app with package name %s isn\'t installed!</string>
@@ -555,8 +576,8 @@
     <string name="error_action_requires_write_settings_permission">You need to grant Key Mapper permission to modify system settings to use this action.</string>
     <string name="error_action_requires_root">This action requires root permission!</string>
     <string name="error_action_requires_camera_permission">This action requires camera permission!</string>
-    <string name="error_sdk_version_too_low">This action requires Android %s</string>
-    <string name="error_sdk_version_too_high">This action is only supported up to Android %s</string>
+    <string name="error_sdk_version_too_low">This requires Android %s</string>
+    <string name="error_sdk_version_too_high">This is only supported up to Android %s</string>
     <string name="error_feature_not_available">Your device doesn\'t support %s.</string>
     <string name="error_flag_not_found">Flag "%s" not found!</string>
     <string name="error_google_app_not_installed">Google app not installed!</string>
@@ -593,10 +614,10 @@
     <string name="warning_need_write_secure_settings_permission">Some features need WRITE_SECURE_SETTINGS permission.</string>
     <string name="fixed_need_write_secure_settings_permission">WRITE_SECURE_SETTINGS permission granted.</string>
 
-    <string name="error_ime_service_disabled_status_layout">The Key Mapper keyboard needs to be enabled for “Keycode”, “Key”, “Text” and some other actions to work.</string>
-    <string name="error_ime_service_enabled">Key Mapper Keyboard is enabled!</string>
-    <string name="error_ime_service_disabled">Key Mapper Keyboard is disabled!</string>
-    <string name="error_critical_ime_service_disabled">The Key Mapper keyboard must be enabled and selected for some of your actions to work!</string>
+    <string name="error_ime_service_disabled_status_layout">Your selected input method needs to be enabled for “Key Event”, “Key”, “Text” and some other actions to work.</string>
+    <string name="error_ime_service_disabled">The selected input method is disabled!</string>
+    <string name="error_ime_service_enabled">Your selected input method is enabled!</string>
+    <string name="error_critical_ime_service_disabled">Your selected keyboard must be enabled and selected for some of your actions to work!</string>
     <string name="error_ime_not_found">Can\'t find the %s input method</string>
     <string name="error_no_enabled_imes">This device has no enabled input methods!</string>
 
@@ -765,7 +786,6 @@
     <string name="system_action_cat_other">Other</string>
     <string name="system_action_cat_keyboard">Keyboard</string>
     <string name="system_action_cat_airplane_mode">Airplane Mode</string>
-    <string name="toggle">Toggle</string>
     <!-- System action category labels -->
 
 </resources>

@@ -57,13 +57,13 @@ class BluetoothConnectionBroadcastReceiver : BroadcastReceiver() {
             BluetoothDevice.ACTION_ACL_CONNECTED -> {
 
                 AppPreferences.defaultIme = KeyboardUtils.getChosenImeId(ctx)
-                KeyboardUtils.switchToKeyMapperIme(ctx)
+                KeyboardUtils.switchIme(ctx, AppPreferences.selectedCompatibleIme)
             }
 
             //when a device is disconnected, change back to the old ime
             BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
                 AppPreferences.defaultIme?.let {
-                    KeyboardUtils.switchIme(it)
+                    KeyboardUtils.switchIme(ctx, it)
                 }
             }
         }

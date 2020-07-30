@@ -28,8 +28,8 @@ import io.github.sds100.keymapper.util.delegate.ActionPerformerDelegate
 import io.github.sds100.keymapper.util.delegate.GetEventDelegate
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionPreferences
-import io.github.sds100.keymapper.util.result.ImeServiceNotChosen
 import io.github.sds100.keymapper.util.result.Result
+import io.github.sds100.keymapper.util.result.SelectedCompatibleImeNotChosen
 import io.github.sds100.keymapper.util.result.Success
 import kotlinx.coroutines.*
 import splitties.bitflags.hasFlag
@@ -114,7 +114,7 @@ class MyAccessibilityService : AccessibilityService(),
                 }
 
                 Intent.ACTION_INPUT_METHOD_CHANGED -> {
-                    mIsKeyMapperKeyboardChosen = KeyMapperImeService.isInputMethodChosen()
+                    mIsCompatibleImeChosen = KeyboardUtils.isSelectedImeChosen()
                 }
 
                 Intent.ACTION_SCREEN_ON -> {
@@ -155,7 +155,7 @@ class MyAccessibilityService : AccessibilityService(),
 
     private var mIsScreenOn = true
     private val mConnectedBtAddresses = mutableSetOf<String>()
-    private var mIsKeyMapperKeyboardChosen = false
+    private var mIsCompatibleImeChosen = false
 
     private val mGetEventDelegate = GetEventDelegate { keyCode, action, deviceDescriptor, isExternal ->
         withContext(Dispatchers.Main.immediate) {
@@ -229,7 +229,7 @@ class MyAccessibilityService : AccessibilityService(),
                 KeyEvent.KEYCODE_APP_SWITCH -> performGlobalAction(GLOBAL_ACTION_RECENTS)
                 KeyEvent.KEYCODE_MENU -> mActionPerformerDelegate.performSystemAction(SystemAction.OPEN_MENU)
 
-                else -> KeyboardUtils.sendDownUpFromImeService(
+                else -> KeyboardUtils.inputKeyEventFromImeService(
                     keyCode = it.keyCode,
                     metaState = it.metaState
                 )
@@ -279,7 +279,7 @@ class MyAccessibilityService : AccessibilityService(),
             }
         })
 
-        mIsKeyMapperKeyboardChosen = KeyMapperImeService.isInputMethodChosen()
+        mIsCompatibleImeChosen = KeyboardUtils.isSelectedImeChosen()
     }
 
     override fun onInterrupt() {}
@@ -372,10 +372,10 @@ class MyAccessibilityService : AccessibilityService(),
 
     override fun canActionBePerformed(action: Action): Result<Action> {
         if (action.requiresIME) {
-            return if (mIsKeyMapperKeyboardChosen) {
+            return if (mIsCompatibleImeChosen) {
                 Success(action)
             } else {
-                ImeServiceNotChosen()
+                SelectedCompatibleImeNotChosen()
             }
         }
 

@@ -8,6 +8,8 @@
     <color name="colorSecondary">@color/red</color>
     <color name="colorOnSecondary">#ffffff</color>
     <color name="colorIconDark">#424242</color>
+    <color name="cardTintGreen">#2C00C853</color>
+    <color name="cardTintRed">#2CFF5252</color>
 
     <color name="iconTintTriggerKeySeparator">#666666</color>
     <color name="divider">#1F000000</color>

@@ -9,22 +9,59 @@ import android.os.Build.VERSION_CODES.O_MR1
 import android.provider.Settings
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
+import androidx.fragment.app.FragmentActivity
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.WidgetsManager
+import io.github.sds100.keymapper.compatibleIme
 import io.github.sds100.keymapper.data.AppPreferences
+import io.github.sds100.keymapper.data.model.CompatibleImeListItemModel
+import io.github.sds100.keymapper.databinding.FragmentSelectInputMethodBinding
 import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
 import io.github.sds100.keymapper.util.result.*
+import splitties.alertdialog.appcompat.alertDialog
+import splitties.alertdialog.appcompat.negativeButton
+import splitties.alertdialog.appcompat.okButton
+import splitties.alertdialog.appcompat.titleResource
 import splitties.init.appCtx
 import splitties.systemservices.inputMethodManager
 import splitties.toast.toast
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * Created by sds100 on 28/12/2018.
  */
 
 object KeyboardUtils {
+    //DON'T CHANGE THESE!!!
+    const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN_UP = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_DOWN_UP"
+    const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_DOWN"
+    const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_UP = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_UP"
+    const val KEY_MAPPER_INPUT_METHOD_ACTION_TEXT = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_TEXT"
+
+    const val KEY_MAPPER_INPUT_METHOD_EXTRA_KEYCODE = "io.github.sds100.keymapper.inputmethod.EXTRA_KEYCODE"
+    const val KEY_MAPPER_INPUT_METHOD_EXTRA_METASTATE = "io.github.sds100.keymapper.inputmethod.EXTRA_METASTATE"
+    const val KEY_MAPPER_INPUT_METHOD_EXTRA_TEXT = "io.github.sds100.keymapper.inputmethod.EXTRA_TEXT"
+
+    private const val KEY_MAPPER_GUI_IME_PACKAGE = "io.github.sds100.keymapper.inputmethod.latin"
+    private const val KEY_MAPPER_GUI_IME_MIN_API = Build.VERSION_CODES.KITKAT
+
+    suspend fun enableSelectedIme(activity: FragmentActivity) {
+
+        if (!AppPreferences.approvedSelectCompatibleImePrompt) {
+            selectCompatibleIme(activity)
+        }
+
+        if (isPermissionGranted(Constants.PERMISSION_ROOT)) {
+            getImeId(AppPreferences.selectedCompatibleIme).onSuccess {
+                RootUtils.executeRootCommand("ime enable $it")
+            }
+        } else {
+            openImeSettings()
+        }
+    }
 
     fun enableKeyMapperIme() {
         if (isPermissionGranted(Constants.PERMISSION_ROOT)) {
@@ -37,20 +74,26 @@ object KeyboardUtils {
         }
     }
 
-    fun switchToKeyMapperIme(ctx: Context) {
+    suspend fun chooseSelectedIme(activity: FragmentActivity) {
+        if (!AppPreferences.approvedSelectCompatibleImePrompt) {
+            selectCompatibleIme(activity)
+        }
+
+        if (isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
+            switchIme(activity, AppPreferences.selectedCompatibleIme)
+        } else {
+            showInputMethodPicker()
+        }
+    }
+
+    @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
+    fun switchIme(ctx: Context, imeId: String) {
         if (!isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
             ctx.toast(R.string.error_need_write_secure_settings_permission)
             return
         }
 
-        KeyMapperImeService.getImeId().onSuccess {
-            switchIme(it)
-        }
-    }
-
-    @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
-    fun switchIme(imeId: String) {
-        appCtx.putSecureSetting(Settings.Secure.DEFAULT_INPUT_METHOD, imeId)
+        ctx.putSecureSetting(Settings.Secure.DEFAULT_INPUT_METHOD, imeId)
     }
 
     fun showInputMethodPicker() {
@@ -103,40 +146,158 @@ object KeyboardUtils {
         }
     }
 
-    fun sendDownUpFromImeService(
+    fun inputTextFromImeService(text: String) {
+        Intent(KEY_MAPPER_INPUT_METHOD_ACTION_TEXT).apply {
+            setPackage(AppPreferences.selectedCompatibleIme)
+
+            putExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_TEXT, text)
+            appCtx.sendBroadcast(this)
+        }
+    }
+
+    fun inputKeyEventFromImeService(
         keyCode: Int,
         metaState: Int = 0,
-        keyEventAction: Int = KeyMapperImeService.ACTION_DOWN_UP
+        keyEventAction: KeyEventAction = KeyEventAction.DOWN_UP
     ) {
-        KeyMapperImeService.provideBus().value =
-            Event(KeyMapperImeService.EVENT_INPUT_DOWN_UP to intArrayOf(keyCode, metaState, keyEventAction))
+        val intentAction = when (keyEventAction) {
+            KeyEventAction.DOWN -> KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN
+            KeyEventAction.DOWN_UP -> KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN_UP
+            KeyEventAction.UP -> KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_UP
+        }
+
+        Intent(intentAction).apply {
+            setPackage(AppPreferences.selectedCompatibleIme)
+            putExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_KEYCODE, keyCode)
+            putExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_METASTATE, metaState)
+
+            appCtx.sendBroadcast(this)
+        }
     }
 
     fun getChosenImeId(ctx: Context): String {
         return Settings.Secure.getString(ctx.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD)
     }
 
-    fun toggleKeyboard(ctx: Context) {
-        if (!KeyMapperImeService.isServiceEnabled()) {
+    fun toggleSelectedCompatibleIme(ctx: Context) {
+        if (!isSelectedImeEnabled()) {
             ctx.toast(R.string.error_ime_service_disabled)
             return
         }
 
-        if (KeyMapperImeService.isInputMethodChosen()) {
-            AppPreferences.defaultIme?.let {
-                switchIme(it)
+        val imeId: String?
 
-                getInputMethodLabel(it).onSuccess { imeLabel ->
-                    toast(ctx.str(R.string.toast_chose_keyboard, imeLabel))
-                }
-            }
+        if (isSelectedImeChosen()) {
+            imeId = AppPreferences.defaultIme
 
         } else {
             AppPreferences.defaultIme = getChosenImeId(ctx)
-            switchToKeyMapperIme(ctx)
-            toast(R.string.toast_chose_keymapper_keyboard)
+
+            imeId = AppPreferences.selectedCompatibleIme
+        }
+
+        imeId ?: return
+
+        switchIme(ctx, imeId)
+        getInputMethodLabel(imeId).onSuccess { imeLabel ->
+            toast(ctx.str(R.string.toast_chose_keyboard, imeLabel))
         }
     }
+
+    fun getImeId(packageName: String): Result<String> {
+        val inputMethod = inputMethodManager.inputMethodList.find { it.packageName == packageName }
+            ?: return KeyMapperImeNotFound()
+
+        return Success(inputMethod.id)
+    }
+
+    fun isSelectedImeEnabled(): Boolean {
+        val enabledMethods = inputMethodManager.enabledInputMethodList ?: return false
+
+        return enabledMethods.any { it.packageName == AppPreferences.selectedCompatibleIme }
+    }
+
+    fun isSelectedImeChosen(): Boolean {
+        //get the current input input_method
+        val chosenImeId = Settings.Secure.getString(
+            appCtx.contentResolver,
+            Settings.Secure.DEFAULT_INPUT_METHOD
+        )
+
+        val chosenImePackageName =
+            inputMethodManager.inputMethodList.find { it.id == chosenImeId }?.packageName
+
+        return chosenImePackageName == AppPreferences.selectedCompatibleIme
+    }
+
+    suspend fun selectCompatibleIme(activity: FragmentActivity, showDontShowAgainButton: Boolean = true) =
+        suspendCoroutine<Unit> { block ->
+            activity.apply {
+                alertDialog {
+                    FragmentSelectInputMethodBinding.inflate(layoutInflater).apply {
+
+                        val callback = object : OpenUrlCallback {
+                            override fun openUrl(url: String) = context.openUrl(url)
+                        }
+
+                        val models = arrayOf(
+                            CompatibleImeListItemModel.build(
+                                ctx = activity,
+                                packageName = Constants.PACKAGE_NAME,
+                                imeName = str(R.string.ime_service_label),
+                                description = str(R.string.ime_key_mapper_description)
+                            ),
+                            CompatibleImeListItemModel.build(
+                                ctx = activity,
+                                packageName = KEY_MAPPER_GUI_IME_PACKAGE,
+                                minApi = KEY_MAPPER_GUI_IME_MIN_API,
+                                imeName = str(R.string.ime_key_mapper_gui_name),
+                                description = str(R.string.ime_key_mapper_gui_description),
+                                playStoreLink = str(R.string.url_play_store_keymapper_gui_keyboard),
+                                githubLink = str(R.string.url_github_keymapper_gui_keyboard),
+                                fdroidLink = str(R.string.url_fdroid_keymapper_gui_keyboard)
+                            )
+                        )
+
+                        epoxyRecyclerView.withModels {
+
+                            models.forEach {
+                                compatibleIme {
+                                    id(it.packageName)
+                                    model(it)
+                                    openUrlCallback(callback)
+
+                                    onClick { _ ->
+                                        if (it.isSupported) {
+                                            AppPreferences.selectedCompatibleIme = it.packageName
+                                        }
+
+                                        epoxyRecyclerView.requestModelBuild()
+                                    }
+
+                                    isSelected(AppPreferences.selectedCompatibleIme == it.packageName)
+                                }
+                            }
+                        }
+
+                        titleResource = R.string.dialog_title_select_compatible_ime
+
+                        if (showDontShowAgainButton) {
+                            negativeButton(R.string.neg_dont_show_again) {
+                                AppPreferences.approvedSelectCompatibleImePrompt = true
+                                block.resume(Unit)
+                            }
+                        }
+
+                        okButton {
+                            block.resume(Unit)
+                        }
+
+                        setView(this.root)
+                    }
+                }.show()
+            }
+        }
 }
 
 @RequiresApi(Build.VERSION_CODES.N)
