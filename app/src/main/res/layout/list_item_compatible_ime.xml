@@ -142,6 +142,7 @@
                 android:layout_height="0dp"
                 android:checked="@{isSelected}"
                 android:enabled="@{model.supported}"
+                android:onClick="@{onClick}"
                 android:padding="4dp"
                 app:layout_constraintBottom_toBottomOf="@id/layoutDescription"
                 app:layout_constraintEnd_toStartOf="@+id/layoutDescription"
