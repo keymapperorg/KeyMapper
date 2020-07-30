@@ -566,7 +566,7 @@
     <string name="error_must_have_atleast_one_trigger">You must have at least one trigger</string>
     <string name="error_must_choose_action">You must choose an action!</string>
     <string name="error_must_have_a_title">The shortcut must have a title!</string>
-    <string name="error_ime_must_be_chosen">You must be using your selected for this action to work!</string>
+    <string name="error_ime_must_be_chosen">You must be using your selected keyboard for this action to work!</string>
     <string name="error_shortcut_not_found">Can\'t find the shortcut. Is the app installed or enabled?</string>
 
     <string name="error_app_isnt_installed">The app with package name %s isn\'t installed!</string>
