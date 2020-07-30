@@ -614,7 +614,7 @@
     <string name="warning_need_write_secure_settings_permission">Some features need WRITE_SECURE_SETTINGS permission.</string>
     <string name="fixed_need_write_secure_settings_permission">WRITE_SECURE_SETTINGS permission granted.</string>
 
-    <string name="error_ime_service_disabled_status_layout">A compatible input method needs to be enabled for “Key Event”, “Key”, “Text” and some other actions to work.</string>
+    <string name="error_ime_service_disabled_status_layout">Your selected input method needs to be enabled for “Key Event”, “Key”, “Text” and some other actions to work.</string>
     <string name="error_ime_service_disabled">The selected input method is disabled!</string>
     <string name="error_ime_service_enabled">Your selected input method is enabled!</string>
     <string name="error_critical_ime_service_disabled">The Key Mapper keyboard must be enabled and selected for some of your actions to work!</string>
