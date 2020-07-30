@@ -566,7 +566,7 @@
     <string name="error_must_have_atleast_one_trigger">You must have at least one trigger</string>
     <string name="error_must_choose_action">You must choose an action!</string>
     <string name="error_must_have_a_title">The shortcut must have a title!</string>
-    <string name="error_ime_must_be_chosen">You must be using a compatible keyboard for this action to work!</string>
+    <string name="error_ime_must_be_chosen">You must be using your selected for this action to work!</string>
     <string name="error_shortcut_not_found">Can\'t find the shortcut. Is the app installed or enabled?</string>
 
     <string name="error_app_isnt_installed">The app with package name %s isn\'t installed!</string>
@@ -617,7 +617,7 @@
     <string name="error_ime_service_disabled_status_layout">Your selected input method needs to be enabled for “Key Event”, “Key”, “Text” and some other actions to work.</string>
     <string name="error_ime_service_disabled">The selected input method is disabled!</string>
     <string name="error_ime_service_enabled">Your selected input method is enabled!</string>
-    <string name="error_critical_ime_service_disabled">The Key Mapper keyboard must be enabled and selected for some of your actions to work!</string>
+    <string name="error_critical_ime_service_disabled">Your selected keyboard must be enabled and selected for some of your actions to work!</string>
     <string name="error_ime_not_found">Can\'t find the %s input method</string>
     <string name="error_no_enabled_imes">This device has no enabled input methods!</string>
 
