@@ -7,7 +7,7 @@ import android.os.Build
  */
 object Constants {
     const val MIN_API = Build.VERSION_CODES.JELLY_BEAN_MR1
-    const val MAX_API = Build.VERSION_CODES.Q
+    const val MAX_API = 1000
     const val PACKAGE_NAME = BuildConfig.APPLICATION_ID
     const val PERMISSION_ROOT = "$PACKAGE_NAME.ROOT"
     const val VERSION = BuildConfig.VERSION_NAME
