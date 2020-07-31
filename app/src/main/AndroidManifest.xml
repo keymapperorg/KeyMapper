@@ -15,7 +15,6 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="io.github.sds100.keymapper.KEY_MAPPER_INPUT_METHOD" />
 
     <uses-permission
         android:name="android.permission.WRITE_SETTINGS"
