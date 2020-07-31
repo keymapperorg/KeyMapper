@@ -84,6 +84,12 @@ class ChooseActionFragment : Fragment() {
             Action.systemAction(requireContext(), id!!, optionData)
         }
 
+        setResultListener(KeycodeListFragment.REQUEST_KEY) {
+            val keyCode = it.getInt(KeycodeListFragment.EXTRA_KEYCODE)
+
+            Action.keyCodeAction(keyCode)
+        }
+
         setFragmentResultListener(KeycodeListFragment.REQUEST_KEY) { _, result ->
             val keyEventViewModel by activityViewModels<KeyEventActionTypeViewModel> {
                 InjectorUtils.provideKeyEventActionTypeViewModel()

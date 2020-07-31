@@ -123,6 +123,10 @@ data class Action(
             return keyEventAction(keyCode, metaState = 0)
         }
 
+        fun keyCodeAction(keyCode: Int): Action {
+            return keyEventAction(keyCode, metaState = 0)
+        }
+
         fun keyEventAction(keyCode: Int, metaState: Int): Action {
             return Action(
                 ActionType.KEY_EVENT,

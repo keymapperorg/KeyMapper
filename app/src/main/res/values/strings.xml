@@ -427,6 +427,7 @@
     <string name="action_type_title_application">App</string>
     <string name="action_type_title_application_shortcut">App shortcut</string>
     <string name="action_type_title_key">Key</string>
+    <string name="action_type_title_key_code">Keycode</string>
     <string name="action_type_title_keyevent">Key Event</string>
     <string name="action_type_title_system_action">Other</string>
     <string name="action_type_title_text_block">Text</string>
@@ -437,6 +438,7 @@
     <string-array name="choose_action_tab_titles">
         <item>@string/action_type_title_application</item>
         <item>@string/action_type_title_application_shortcut</item>
+        <item>@string/action_type_title_key_code</item>
         <item>@string/action_type_title_key</item>
         <item>@string/action_type_title_keyevent</item>
         <item>@string/action_type_title_text_block</item>
