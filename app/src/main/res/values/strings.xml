@@ -58,9 +58,9 @@
     <string name="whats_new">What\'s New</string>
     <string name="caption_action_type_key">Click the key on the device which you want to be entered.
         \n\nIMPORTANT!
-        Inputting this key as an action will only work if you have selected the Key Mapper keyboard.</string>
+        Inputting this key as an action will only work if you are using a Key Mapper compatible keyboard.</string>
     <string name="caption_action_type_keycode">IMPORTANT!
-        Inputting this keycode as an action will only work if you have selected the Key Mapper keyboard.</string>
+        Inputting this keycode as an action will only work if you are using a Key Mapper compatible keyboard.</string>
 
     <string name="caption_action_type_text">Type some text you want to be inserted when you perform this action.</string>
     <string name="caption_action_type_url">Type a url which you want to be opened. The http://, https:// or www. isn\'t required.</string>
