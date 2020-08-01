@@ -270,6 +270,10 @@ class ActionPerformerDelegate(context: Context,
                     dpm.lockNow()
                 }
 
+                SystemAction.POWER_ON_OFF_DEVICE -> {
+                    RootUtils.executeRootCommand("input keyevent ${KeyEvent.KEYCODE_POWER}")
+                }
+
                 SystemAction.MOVE_CURSOR_TO_END -> KeyboardUtils.inputKeyEventFromImeService(
                     keyCode = KeyEvent.KEYCODE_MOVE_END,
                     metaState = KeyEvent.META_CTRL_ON

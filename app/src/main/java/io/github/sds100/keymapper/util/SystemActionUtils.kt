@@ -63,6 +63,7 @@ import io.github.sds100.keymapper.util.SystemAction.OPEN_VOICE_ASSISTANT
 import io.github.sds100.keymapper.util.SystemAction.PAUSE_MEDIA
 import io.github.sds100.keymapper.util.SystemAction.PLAY_PAUSE_MEDIA
 import io.github.sds100.keymapper.util.SystemAction.PORTRAIT_MODE
+import io.github.sds100.keymapper.util.SystemAction.POWER_ON_OFF_DEVICE
 import io.github.sds100.keymapper.util.SystemAction.PREVIOUS_TRACK
 import io.github.sds100.keymapper.util.SystemAction.REWIND
 import io.github.sds100.keymapper.util.SystemAction.SCREENSHOT
@@ -732,6 +733,14 @@ object SystemActionUtils {
             features = arrayOf(PackageManager.FEATURE_DEVICE_ADMIN),
             permissions = arrayOf(Manifest.permission.BIND_DEVICE_ADMIN),
             messageOnSelection = R.string.action_secure_lock_device_message
+        ),
+        SystemActionDef(
+            id = POWER_ON_OFF_DEVICE,
+            category = CATEGORY_OTHER,
+            iconRes = R.drawable.ic_outline_power_settings_new_24,
+            descriptionRes = R.string.action_power_on_off_device,
+            permissions = arrayOf(Constants.PERMISSION_ROOT),
+            messageOnSelection = R.string.action_power_on_off_device_message
         ),
         SystemActionDef(
             id = CONSUME_KEY_EVENT,
