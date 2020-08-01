@@ -269,7 +269,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                     }
                 }
 
-                val sequenceTriggersOverlappingAfterFirst =
+                val sequenceTriggersOverlappingSequenceTriggers =
                     MutableList(sequenceTriggerEvents.size) { mutableSetOf<Int>() }
 
                 for ((triggerIndex, trigger) in sequenceTriggerEvents.withIndex()) {
@@ -291,7 +291,39 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                                     }
 
                                     if (eventIndex == trigger.lastIndex) {
-                                        sequenceTriggersOverlappingAfterFirst[triggerIndex].add(otherTriggerIndex)
+                                        sequenceTriggersOverlappingSequenceTriggers[triggerIndex].add(otherTriggerIndex)
+                                    }
+
+                                    lastMatchedIndex = otherIndex
+                                }
+                            }
+                        }
+                    }
+                }
+
+                val sequenceTriggersOverlappingParallelTriggers =
+                    MutableList(parallelTriggerEvents.size) { mutableSetOf<Int>() }
+
+                for ((triggerIndex, trigger) in parallelTriggerEvents.withIndex()) {
+
+                    otherTriggerLoop@ for ((otherTriggerIndex, otherTrigger) in sequenceTriggerEvents.withIndex()) {
+
+                        for ((eventIndex, event) in trigger.withIndex()) {
+                            var lastMatchedIndex: Int? = null
+
+                            for (otherIndex in otherTrigger.indices) {
+                                if (otherTrigger.hasEventAtIndex(event, otherIndex)) {
+
+                                    //the other trigger doesn't overlap after the first element
+                                    if (otherIndex == 0) continue@otherTriggerLoop
+
+                                    //make sure the overlap retains the order of the trigger
+                                    if (lastMatchedIndex != null && lastMatchedIndex != otherIndex - 1) {
+                                        continue@otherTriggerLoop
+                                    }
+
+                                    if (eventIndex == trigger.lastIndex) {
+                                        sequenceTriggersOverlappingParallelTriggers[triggerIndex].add(otherTriggerIndex)
                                     }
 
                                     lastMatchedIndex = otherIndex
@@ -308,8 +340,11 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 mSequenceTriggerOptions = sequenceTriggerOptions.toTypedArray()
                 mSequenceTriggerConstraints = sequenceTriggerConstraints.toTypedArray()
                 mSequenceTriggerConstraintMode = sequenceTriggerConstraintMode.toIntArray()
-                mSequenceTriggersOverlappingAfterFirst =
-                    sequenceTriggersOverlappingAfterFirst.map { it.toIntArray() }.toTypedArray()
+                mSequenceTriggersOverlappingSequenceTriggers =
+                    sequenceTriggersOverlappingSequenceTriggers.map { it.toIntArray() }.toTypedArray()
+
+                mSequenceTriggersOverlappingParallelTriggers =
+                    sequenceTriggersOverlappingParallelTriggers.map { it.toIntArray() }.toTypedArray()
 
                 mDetectParallelTriggers = parallelTriggerEvents.isNotEmpty()
                 mParallelTriggerEvents = parallelTriggerEvents.toTypedArray()
@@ -399,7 +434,9 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
     /**
      * The indexes of triggers that overlap after the first element with each trigger in [mSequenceTriggerEvents]
      */
-    private var mSequenceTriggersOverlappingAfterFirst = arrayOf<IntArray>()
+    private var mSequenceTriggersOverlappingSequenceTriggers = arrayOf<IntArray>()
+
+    private var mSequenceTriggersOverlappingParallelTriggers = arrayOf<IntArray>()
 
     /**
      * An array of the index of the last matched event in each sequence trigger.
@@ -559,6 +596,13 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
             //only process keymaps if an action can be performed
             triggerLoop@ for ((triggerIndex, lastMatchedIndex) in mLastMatchedParallelEventIndices.withIndex()) {
+
+                for (overlappingTriggerIndex in mSequenceTriggersOverlappingParallelTriggers[triggerIndex]) {
+                    if (mLastMatchedSequenceEventIndices[overlappingTriggerIndex] != -1) {
+                        continue@triggerLoop
+                    }
+                }
+
                 val constraints = mParallelTriggerConstraints[triggerIndex]
                 val constraintMode = mParallelTriggerConstraintMode[triggerIndex]
 
@@ -828,7 +872,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                     else -> encodedEvent.withFlag(FLAG_SHORT_PRESS)
                 }
 
-                for (overlappingTriggerIndex in mSequenceTriggersOverlappingAfterFirst[triggerIndex]) {
+                for (overlappingTriggerIndex in mSequenceTriggersOverlappingSequenceTriggers[triggerIndex]) {
                     if (mLastMatchedSequenceEventIndices[overlappingTriggerIndex] != -1) {
                         continue@triggerLoop
                     }
