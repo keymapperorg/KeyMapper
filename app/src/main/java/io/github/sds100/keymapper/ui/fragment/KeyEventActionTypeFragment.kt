@@ -37,7 +37,6 @@ class KeyEventActionTypeFragment : Fragment() {
         FragmentKeyeventActionTypeBinding.inflate(inflater, container, false).apply {
 
             lifecycleOwner = viewLifecycleOwner
-            mViewModel.clearKeyEvent()
 
             viewModel = mViewModel
 

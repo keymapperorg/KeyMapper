@@ -43,11 +43,6 @@ class KeyEventActionTypeViewModel : ViewModel() {
         }
     }
 
-    fun clearKeyEvent() {
-        keyCode.value = null
-        metaState.value = 0
-    }
-
     fun chooseKeycode() {
         chooseKeycode.value = Event(Unit)
     }
