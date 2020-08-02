@@ -3,13 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="io.github.sds100.keymapper">
 
-    <permission
-        android:name="io.github.sds100.keymapper.KEY_MAPPER_INPUT_METHOD"
-        android:description="@string/permission_description_key_mapper_input_method"
-        android:icon="@drawable/ic_permission_input_method"
-        android:label="Key Mapper Input Method"
-        android:protectionLevel="dangerous" />
-
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -22,7 +15,6 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="io.github.sds100.keymapper.KEY_MAPPER_INPUT_METHOD" />
 
     <uses-permission
         android:name="android.permission.WRITE_SETTINGS"
@@ -60,7 +52,14 @@
 
         <activity android:name=".ui.activity.AppIntroActivity" />
 
-        <receiver android:name=".broadcastreceiver.KeyMapperBroadcastReceiver" />
+        <receiver android:name=".broadcastreceiver.KeyMapperBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.hardware.input.action.QUERY_KEYBOARD_LAYOUTS" />
+            </intent-filter>
+            <meta-data
+                android:name="android.hardware.input.metadata.KEYBOARD_LAYOUTS"
+                android:resource="@xml/keyboard_layouts" />
+        </receiver>
 
         <receiver android:name=".broadcastreceiver.BootBroadcastReceiver">
             <intent-filter>
