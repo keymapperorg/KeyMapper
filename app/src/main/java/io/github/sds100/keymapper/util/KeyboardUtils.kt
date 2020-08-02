@@ -55,8 +55,8 @@ object KeyboardUtils {
             ) ?: Constants.PACKAGE_NAME
 
             if (!PackageUtils.isAppInstalled(packageName)) {
-                selectedImePackageName = packageName
                 packageName = Constants.PACKAGE_NAME
+                selectedImePackageName = packageName
             }
 
             return packageName
