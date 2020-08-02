@@ -8,7 +8,6 @@ import io.github.sds100.keymapper.util.KeyEventUtils
 import splitties.bitflags.hasFlag
 import splitties.bitflags.minusFlag
 import splitties.bitflags.withFlag
-import timber.log.Timber
 
 /**
  * Created by sds100 on 30/03/2020.
@@ -19,7 +18,6 @@ class KeyEventActionTypeViewModel : ViewModel() {
     val keyCode = MutableLiveData<String>()
 
     val keyCodeLabel: LiveData<String> = keyCode.map {
-        Timber.d("keycode = '$it'")
         if (it.isNullOrEmpty()) return@map ""
 
         return@map if (it.toInt() > KeyEvent.getMaxKeyCode()) {
