@@ -365,7 +365,7 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        if (key == str(R.string.key_pref_selected_compatible_ime)) {
+        if (key == str(R.string.key_pref_selected_compatible_ime_package_name)) {
             updateStatusLayouts()
             mViewModel.rebuildModels()
         }

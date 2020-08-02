@@ -44,7 +44,7 @@
     <string name="key_pref_shown_screen_off_triggers_explanation">pref_screen_off_triggers_explanation</string>
     <string name="key_pref_hide_home_screen_alerts">pref_hide_home_screen_alerts</string>
     <string name="key_pref_showcase_action_list">pref_showcase_action_list</string>
-    <string name="key_pref_selected_compatible_ime">pref_selected_compatible_ime</string>
+    <string name="key_pref_selected_compatible_ime_package_name">pref_selected_compatible_ime</string>
     <string name="key_pref_approved_select_compatible_ime_prompt">pref_approved_select_compatible_ime_prompt</string>
 
     <string name="key_pref_category_notifications" translatable="false">pref_category_notifications</string>

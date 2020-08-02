@@ -9,6 +9,7 @@ import android.os.Build.VERSION_CODES.O_MR1
 import android.provider.Settings
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
+import androidx.core.content.edit
 import androidx.fragment.app.FragmentActivity
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
@@ -17,7 +18,6 @@ import io.github.sds100.keymapper.compatibleIme
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.CompatibleImeListItemModel
 import io.github.sds100.keymapper.databinding.FragmentSelectInputMethodBinding
-import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
 import io.github.sds100.keymapper.util.result.*
 import splitties.alertdialog.appcompat.alertDialog
@@ -48,6 +48,26 @@ object KeyboardUtils {
     private const val KEY_MAPPER_GUI_IME_PACKAGE = "io.github.sds100.keymapper.inputmethod.latin"
     private const val KEY_MAPPER_GUI_IME_MIN_API = Build.VERSION_CODES.KITKAT
 
+    var selectedImePackageName: String
+        get() {
+            var packageName = appCtx.defaultSharedPreferences.getString(
+                appCtx.str(R.string.key_pref_selected_compatible_ime_package_name), Constants.PACKAGE_NAME
+            ) ?: Constants.PACKAGE_NAME
+
+            if (!PackageUtils.isAppInstalled(packageName)) {
+                selectedImePackageName = packageName
+                packageName = Constants.PACKAGE_NAME
+            }
+
+            return packageName
+        }
+        set(value) {
+            appCtx.defaultSharedPreferences.edit {
+                putString(appCtx.str(R.string.key_pref_selected_compatible_ime_package_name), value)
+                apply()
+            }
+        }
+
     suspend fun enableSelectedIme(activity: FragmentActivity) {
 
         if (!AppPreferences.approvedSelectCompatibleImePrompt) {
@@ -55,22 +75,15 @@ object KeyboardUtils {
         }
 
         if (isPermissionGranted(Constants.PERMISSION_ROOT)) {
-            getImeId(AppPreferences.selectedCompatibleIme).onSuccess {
-                RootUtils.executeRootCommand("ime enable $it")
-            }
+            enableSelectedImeRoot()
         } else {
             openImeSettings()
         }
     }
 
-    fun enableKeyMapperIme() {
-        if (isPermissionGranted(Constants.PERMISSION_ROOT)) {
-            KeyMapperImeService.getImeId().onSuccess {
-                RootUtils.executeRootCommand("ime enable $it")
-            }.onFailure {
-            }
-        } else {
-            openImeSettings()
+    fun enableSelectedImeRoot() {
+        getImeId(selectedImePackageName).onSuccess {
+            RootUtils.executeRootCommand("ime enable $it")
         }
     }
 
@@ -80,7 +93,9 @@ object KeyboardUtils {
         }
 
         if (isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
-            switchIme(activity, AppPreferences.selectedCompatibleIme)
+            getImeId(selectedImePackageName).onSuccess {
+                switchIme(activity, it)
+            }
         } else {
             showInputMethodPicker()
         }
@@ -148,7 +163,7 @@ object KeyboardUtils {
 
     fun inputTextFromImeService(text: String) {
         Intent(KEY_MAPPER_INPUT_METHOD_ACTION_TEXT).apply {
-            setPackage(AppPreferences.selectedCompatibleIme)
+            setPackage(selectedImePackageName)
 
             putExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_TEXT, text)
             appCtx.sendBroadcast(this)
@@ -167,7 +182,7 @@ object KeyboardUtils {
         }
 
         Intent(intentAction).apply {
-            setPackage(AppPreferences.selectedCompatibleIme)
+            setPackage(selectedImePackageName)
             putExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_KEYCODE, keyCode)
             putExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_METASTATE, metaState)
 
@@ -193,7 +208,7 @@ object KeyboardUtils {
         } else {
             AppPreferences.defaultIme = getChosenImeId(ctx)
 
-            imeId = AppPreferences.selectedCompatibleIme
+            imeId = getImeId(selectedImePackageName).valueOrNull()
         }
 
         imeId ?: return
@@ -214,7 +229,7 @@ object KeyboardUtils {
     fun isSelectedImeEnabled(): Boolean {
         val enabledMethods = inputMethodManager.enabledInputMethodList ?: return false
 
-        return enabledMethods.any { it.packageName == AppPreferences.selectedCompatibleIme }
+        return enabledMethods.any { it.packageName == selectedImePackageName }
     }
 
     fun isSelectedImeChosen(): Boolean {
@@ -227,7 +242,7 @@ object KeyboardUtils {
         val chosenImePackageName =
             inputMethodManager.inputMethodList.find { it.id == chosenImeId }?.packageName
 
-        return chosenImePackageName == AppPreferences.selectedCompatibleIme
+        return chosenImePackageName == selectedImePackageName
     }
 
     suspend fun selectCompatibleIme(activity: FragmentActivity, showDontShowAgainButton: Boolean = true) =
@@ -269,13 +284,13 @@ object KeyboardUtils {
 
                                     onClick { _ ->
                                         if (it.isSupported) {
-                                            AppPreferences.selectedCompatibleIme = it.packageName
+                                            selectedImePackageName = it.packageName
                                         }
 
                                         epoxyRecyclerView.requestModelBuild()
                                     }
 
-                                    isSelected(AppPreferences.selectedCompatibleIme == it.packageName)
+                                    isSelected(selectedImePackageName == it.packageName)
                                 }
                             }
                         }

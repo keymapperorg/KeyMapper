@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.data
 
 import androidx.appcompat.app.AppCompatDelegate.*
-import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.bool
 import io.github.sds100.keymapper.util.int
@@ -132,11 +131,6 @@ object AppPreferences : DefaultPreferences() {
     val hideHomeScreenAlerts by BoolPref(
         appCtx.str(R.string.key_pref_hide_home_screen_alerts),
         appCtx.bool(R.bool.default_value_hide_home_screen_alerts)
-    )
-
-    var selectedCompatibleIme by StringPref(
-        appCtx.str(R.string.key_pref_selected_compatible_ime),
-        Constants.PACKAGE_NAME //use the built-in keyboard by default
     )
 
     var approvedSelectCompatibleImePrompt by BoolPref(

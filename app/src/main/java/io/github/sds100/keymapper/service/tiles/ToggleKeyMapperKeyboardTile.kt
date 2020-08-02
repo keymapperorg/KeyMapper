@@ -61,7 +61,7 @@ class ToggleKeyMapperKeyboardTile : TileService() {
             State.DEFAULT -> KeyboardUtils.toggleSelectedCompatibleIme(this)
 
             State.DISABLED -> {
-                KeyboardUtils.enableKeyMapperIme()
+                KeyboardUtils.enableSelectedImeRoot()
             }
         }
     }

@@ -11,7 +11,6 @@ import androidx.annotation.IntDef
 import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import io.github.sds100.keymapper.data.AppPreferences
-import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.activity.HomeActivity
 import io.github.sds100.keymapper.util.*
@@ -152,14 +151,16 @@ object WidgetsManager {
                 if (event == EVENT_RESUME_REMAPS) {
                     val defaultIme = Settings.Secure.getString(ctx.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD)
 
-                    KeyMapperImeService.getImeId().onSuccess {
+                    KeyboardUtils.getImeId(KeyboardUtils.selectedImePackageName).onSuccess {
                         if (defaultIme != it) {
                             AppPreferences.defaultIme = defaultIme
                         }
                     }
 
                     if (AppPreferences.toggleKeyboardOnToggleKeymaps) {
-                        KeyboardUtils.switchIme(ctx, AppPreferences.selectedCompatibleIme)
+                        KeyboardUtils.getImeId(KeyboardUtils.selectedImePackageName).onSuccess {
+                            KeyboardUtils.switchIme(ctx, it)
+                        }
                     }
                 }
             }

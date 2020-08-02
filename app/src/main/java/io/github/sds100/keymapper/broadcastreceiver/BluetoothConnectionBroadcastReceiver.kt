@@ -9,6 +9,7 @@ import android.os.Build
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.util.KeyboardUtils
 import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
+import io.github.sds100.keymapper.util.result.onSuccess
 
 /**
  * Created by sds100 on 28/12/2018.
@@ -57,7 +58,10 @@ class BluetoothConnectionBroadcastReceiver : BroadcastReceiver() {
             BluetoothDevice.ACTION_ACL_CONNECTED -> {
 
                 AppPreferences.defaultIme = KeyboardUtils.getChosenImeId(ctx)
-                KeyboardUtils.switchIme(ctx, AppPreferences.selectedCompatibleIme)
+
+                KeyboardUtils.getImeId(KeyboardUtils.selectedImePackageName).onSuccess {
+                    KeyboardUtils.switchIme(ctx, it)
+                }
             }
 
             //when a device is disconnected, change back to the old ime

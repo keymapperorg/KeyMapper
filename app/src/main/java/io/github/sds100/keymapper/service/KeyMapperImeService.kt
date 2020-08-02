@@ -7,8 +7,6 @@ import android.content.IntentFilter
 import android.inputmethodservice.InputMethodService
 import android.os.SystemClock
 import android.view.KeyEvent
-import io.github.sds100.keymapper.Constants.PACKAGE_NAME
-import io.github.sds100.keymapper.util.KeyboardUtils
 
 /**
  * Created by sds100 on 31/03/2020.
@@ -26,11 +24,6 @@ class KeyMapperImeService : InputMethodService() {
         private const val KEY_MAPPER_INPUT_METHOD_EXTRA_KEYCODE = "io.github.sds100.keymapper.inputmethod.EXTRA_KEYCODE"
         private const val KEY_MAPPER_INPUT_METHOD_EXTRA_METASTATE = "io.github.sds100.keymapper.inputmethod.EXTRA_METASTATE"
         private const val KEY_MAPPER_INPUT_METHOD_EXTRA_TEXT = "io.github.sds100.keymapper.inputmethod.EXTRA_TEXT"
-
-        /**
-         * Get the id for the Key Mapper input input_method.
-         */
-        fun getImeId() = KeyboardUtils.getImeId(PACKAGE_NAME)
     }
 
     private val mBroadcastReceiver = object : BroadcastReceiver() {
