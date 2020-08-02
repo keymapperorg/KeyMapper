@@ -29,6 +29,8 @@ import kotlinx.coroutines.launch
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.coroutines.showAndAwait
 import splitties.alertdialog.appcompat.message
+import splitties.alertdialog.appcompat.messageResource
+import splitties.alertdialog.appcompat.okButton
 import splitties.experimental.ExperimentalSplittiesApi
 import splitties.snackbar.action
 import splitties.snackbar.longSnack
@@ -189,6 +191,16 @@ class ConfigKeymapFragment : Fragment() {
                         Event(MyAccessibilityService.EVENT_STOP_RECORDING_TRIGGER to null)
                 } else {
                     mViewModel.promptToEnableAccessibilityService.value = Event(Unit)
+                }
+            })
+
+            mViewModel.promptToEnableCapsLockKeyboardLayout.observe(viewLifecycleOwner, EventObserver {
+                requireActivity().alertDialog {
+                    messageResource = R.string.dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout
+
+                    okButton()
+
+                    show()
                 }
             })
 

@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.data.viewmodel
 
+import android.view.KeyEvent
 import androidx.lifecycle.*
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.DeviceInfoRepository
@@ -132,6 +133,7 @@ class ConfigKeymapViewModel internal constructor(
         }
     }
 
+    val promptToEnableCapsLockKeyboardLayout: MutableLiveData<Event<Unit>> = MutableLiveData()
     val promptToEnableAccessibilityService: MutableLiveData<Event<Unit>> = MutableLiveData()
 
     val sliderModels = triggerBehavior.map {
@@ -463,6 +465,10 @@ class ConfigKeymapViewModel internal constructor(
         because this is what most users are expecting when they make a trigger with multiple keys */
         if (triggerKeys.value!!.size == 2) {
             triggerInParallel.value = true
+        }
+
+        if (keyCode == KeyEvent.KEYCODE_CAPS_LOCK) {
+            promptToEnableCapsLockKeyboardLayout.value = Event(Unit)
         }
 
         invalidateOptions()
