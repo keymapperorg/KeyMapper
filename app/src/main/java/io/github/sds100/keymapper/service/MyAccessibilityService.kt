@@ -150,8 +150,10 @@ class MyAccessibilityService : AccessibilityService(),
     private val mConnectedBtAddresses = mutableSetOf<String>()
 
     private val mGetEventDelegate = GetEventDelegate { keyCode, action, deviceDescriptor, isExternal ->
-        withContext(Dispatchers.Main.immediate) {
-            mKeymapDetectionDelegate.onKeyEvent(keyCode, action, deviceDescriptor, isExternal, 0)
+        if (!AppPreferences.keymapsPaused) {
+            withContext(Dispatchers.Main.immediate) {
+                mKeymapDetectionDelegate.onKeyEvent(keyCode, action, deviceDescriptor, isExternal, 0)
+            }
         }
     }
 
