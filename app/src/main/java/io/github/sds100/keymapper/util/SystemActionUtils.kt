@@ -8,6 +8,7 @@ import android.os.Build
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Option
+import io.github.sds100.keymapper.data.model.OptionType
 import io.github.sds100.keymapper.data.model.SystemActionDef
 import io.github.sds100.keymapper.util.SystemAction.CATEGORY_AIRPLANE_MODE
 import io.github.sds100.keymapper.util.SystemAction.CATEGORY_BLUETOOTH
@@ -25,6 +26,7 @@ import io.github.sds100.keymapper.util.SystemAction.CATEGORY_VOLUME
 import io.github.sds100.keymapper.util.SystemAction.CATEGORY_WIFI
 import io.github.sds100.keymapper.util.SystemAction.COLLAPSE_STATUS_BAR
 import io.github.sds100.keymapper.util.SystemAction.CONSUME_KEY_EVENT
+import io.github.sds100.keymapper.util.SystemAction.CYCLE_ROTATIONS
 import io.github.sds100.keymapper.util.SystemAction.DECREASE_BRIGHTNESS
 import io.github.sds100.keymapper.util.SystemAction.DISABLE_AIRPLANE_MODE
 import io.github.sds100.keymapper.util.SystemAction.DISABLE_AUTO_BRIGHTNESS
@@ -478,6 +480,16 @@ object SystemActionUtils {
             iconRes = R.drawable.ic_outline_screen_rotation_24,
             descriptionRes = R.string.action_switch_orientation
         ),
+        SystemActionDef(
+            id = CYCLE_ROTATIONS,
+            category = CATEGORY_SCREEN_ROTATION,
+            permissions = arrayOf(Manifest.permission.WRITE_SETTINGS),
+            iconRes = R.drawable.ic_outline_screen_rotation_24,
+            descriptionRes = R.string.action_cycle_rotations,
+            descriptionFormattedRes = R.string.action_cycle_rotations_formatted,
+            optionType = OptionType.MULTIPLE,
+            options = Option.ROTATIONS
+        ),
         //SCREEN ORIENTATION
 
         //BRIGHTNESS
@@ -812,5 +824,12 @@ object SystemActionUtils {
             ?: throw Exception("System action $id has options and doesn't have a formatted description")
 
         return ctx.str(descriptionFormattedRes, optionText)
+    }
+
+    fun SystemActionDef.getDescriptionWithOptionSet(ctx: Context, optionSetLabels: Set<String>): String {
+        descriptionFormattedRes
+            ?: throw Exception("System action $id has options and doesn't have a formatted description")
+
+        return ctx.str(descriptionFormattedRes, optionSetLabels.joinToString())
     }
 }

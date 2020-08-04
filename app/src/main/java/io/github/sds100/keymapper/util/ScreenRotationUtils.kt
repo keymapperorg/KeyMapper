@@ -14,7 +14,7 @@ object ScreenRotationUtils {
 
         //auto rotate must be disabled for this to work
         disableAutoRotate(ctx)
-        ctx.putSystemSetting(Settings.System.USER_ROTATION, Surface.ROTATION_0)
+        setRotation(ctx, Surface.ROTATION_180)
     }
 
     fun forceLandscapeMode(ctx: Context) {
@@ -22,14 +22,30 @@ object ScreenRotationUtils {
 
         //auto rotate must be disabled for this to work
         disableAutoRotate(ctx)
-        ctx.putSystemSetting(Settings.System.USER_ROTATION, Surface.ROTATION_90)
+        setRotation(ctx, Surface.ROTATION_90)
+    }
+
+    fun cycleRotations(ctx: Context, rotations: List<Int>) {
+        disableAutoRotate(ctx)
+
+        val currentRotation = getRotation(ctx)
+
+        val index = rotations.indexOf(currentRotation)
+
+        val nextRotation = if (index == rotations.lastIndex) {
+            rotations[0]
+        } else {
+            rotations[index + 1]
+        }
+
+        setRotation(ctx, nextRotation)
     }
 
     fun switchOrientation(ctx: Context) {
 
-        if (isPortrait(ctx) == true) {
+        if (isPortrait(ctx)) {
             forceLandscapeMode(ctx)
-        } else if (isLandscape(ctx) == true) {
+        } else if (isLandscape(ctx)) {
             forcePortraitMode(ctx)
         }
     }
@@ -62,16 +78,19 @@ object ScreenRotationUtils {
     /**
      * @return If the rotation setting can't be found, it returns null
      */
-    fun isPortrait(ctx: Context): Boolean? {
-        val setting = ctx.getSystemSetting<Int>(Settings.System.USER_ROTATION)
-        return setting == Surface.ROTATION_0 || setting == Surface.ROTATION_180
+    private fun isPortrait(ctx: Context): Boolean {
+        val rotation = ctx.getSystemSetting<Int>(Settings.System.USER_ROTATION)
+        return rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180
     }
 
     /**
      * @return If the rotation setting can't be found, it returns null
      */
-    fun isLandscape(ctx: Context): Boolean? {
-        val setting = ctx.getSystemSetting<Int>(Settings.System.USER_ROTATION)
-        return setting == Surface.ROTATION_90 || setting == Surface.ROTATION_270
+    private fun isLandscape(ctx: Context): Boolean {
+        val rotation = getRotation(ctx)
+        return rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270
     }
+
+    private fun getRotation(ctx: Context) = ctx.getSystemSetting<Int>(Settings.System.USER_ROTATION)
+    private fun setRotation(ctx: Context, rotation: Int) = ctx.putSystemSetting(Settings.System.USER_ROTATION, rotation)
 }

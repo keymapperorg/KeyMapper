@@ -9,6 +9,7 @@ import android.view.KeyEvent
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.util.SystemActionUtils.getDescriptionWithOption
+import io.github.sds100.keymapper.util.SystemActionUtils.getDescriptionWithOptionSet
 import io.github.sds100.keymapper.util.result.*
 import splitties.bitflags.hasFlag
 
@@ -142,22 +143,36 @@ private fun Action.getTitle(ctx: Context): Result<String> = when (type) {
 
         SystemActionUtils.getSystemActionDef(systemActionId) then { systemActionDef ->
             if (systemActionDef.hasOptions) {
+                val optionData = extras.getData(Option.getExtraIdForOption(systemActionId))
 
-                extras.getData(Option.getExtraIdForOption(systemActionId)) then {
-                    Option.getOptionLabel(ctx, systemActionId, it)
-
-                } then {
-                    Success(systemActionDef.getDescriptionWithOption(ctx, it))
-
-                } otherwise {
-                    if (systemActionId == SystemAction.SWITCH_KEYBOARD) {
-
-                        extras.getData(Action.EXTRA_IME_NAME) then {
+                when (systemActionDef.optionType) {
+                    OptionType.SINGLE -> {
+                        optionData then {
+                            Option.getOptionLabel(ctx, systemActionId, it)
+                        } then {
                             Success(systemActionDef.getDescriptionWithOption(ctx, it))
-                        }
 
-                    } else {
-                        Success(ctx.str(systemActionDef.descriptionRes))
+                        } otherwise {
+                            if (systemActionId == SystemAction.SWITCH_KEYBOARD) {
+
+                                extras.getData(Action.EXTRA_IME_NAME) then {
+                                    Success(systemActionDef.getDescriptionWithOption(ctx, it))
+                                }
+
+                            } else {
+                                Success(ctx.str(systemActionDef.descriptionRes))
+                            }
+                        }
+                    }
+
+                    OptionType.MULTIPLE -> {
+                        optionData then {
+                            Option.optionSetFromString(it)
+                        } then {
+                            Option.labelsFromOptionSet(ctx, systemActionId, it)
+                        } then {
+                            Success(systemActionDef.getDescriptionWithOptionSet(ctx, it))
+                        }
                     }
                 }
             } else {

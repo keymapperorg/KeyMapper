@@ -10,6 +10,7 @@ import androidx.lifecycle.observe
 import com.airbnb.epoxy.EpoxyController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Option
+import io.github.sds100.keymapper.data.model.OptionType
 import io.github.sds100.keymapper.data.model.SystemActionDef
 import io.github.sds100.keymapper.data.model.SystemActionListItemModel
 import io.github.sds100.keymapper.data.viewmodel.SystemActionListViewModel
@@ -25,11 +26,8 @@ import io.github.sds100.keymapper.util.result.onSuccess
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import splitties.alertdialog.appcompat.alertDialog
-import splitties.alertdialog.appcompat.cancelButton
+import splitties.alertdialog.appcompat.*
 import splitties.alertdialog.appcompat.coroutines.showAndAwaitOkOrDismiss
-import splitties.alertdialog.appcompat.messageResource
-import splitties.alertdialog.appcompat.titleResource
 import splitties.experimental.ExperimentalSplittiesApi
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -124,14 +122,37 @@ class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourcePr
 
             selectedOptionData = suspendCoroutine<String> {
                 requireActivity().alertDialog {
-                    setItems(optionLabels.toTypedArray()) { _, which ->
-                        val option = options[which]
 
-                        it.resume(option)
+                    when (systemActionDef.optionType) {
+                        OptionType.SINGLE -> {
+                            setItems(optionLabels.toTypedArray()) { _, which ->
+                                val option = options[which]
 
-                        cancelButton {
-                            cancel()
+                                it.resume(option)
+                            }
                         }
+
+                        OptionType.MULTIPLE -> {
+                            val checkedOptions = BooleanArray(optionLabels.size) { false }
+
+                            setMultiChoiceItems(
+                                optionLabels.toTypedArray(),
+                                checkedOptions
+                            ) { _, which, checked ->
+                                checkedOptions[which] = checked
+                            }
+
+                            okButton { _ ->
+                                val data = Option.optionSetToString(
+                                    options.filterIndexed { index, _ -> checkedOptions[index] }.toSet())
+
+                                it.resume(data)
+                            }
+                        }
+                    }
+
+                    cancelButton {
+                        cancel()
                     }
 
                     show()

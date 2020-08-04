@@ -129,8 +129,10 @@ class ActionPerformerDelegate(context: Context,
 
     private fun performSystemAction(action: Action) {
 
-        fun getSdkValueForOption(systemActionId: String, onSuccess: (sdkOptionValue: Int) -> Unit) {
-            val extraId = Option.getExtraIdForOption(systemActionId)
+        val id = action.data
+
+        fun getSdkValueForOption(onSuccess: (sdkOptionValue: Int) -> Unit) {
+            val extraId = Option.getExtraIdForOption(id)
 
             action.extras.getData(extraId).onSuccess { option ->
                 val sdkOptionValue = Option.OPTION_ID_SDK_ID_MAP[option]
@@ -141,7 +143,19 @@ class ActionPerformerDelegate(context: Context,
             }
         }
 
-        val id = action.data
+        fun getSdkValuesForOptionSet(onSuccess: (values: List<Int>) -> Unit) {
+            val extraId = Option.getExtraIdForOption(id)
+
+            action.extras.getData(extraId).onSuccess { data ->
+                val optionIds = data.split(',')
+
+                val sdkValues = optionIds.map { Option.OPTION_ID_SDK_ID_MAP[it] }
+
+                if (sdkValues.all { it != null }) {
+                    onSuccess(sdkValues.map { it!! })
+                }
+            }
+        }
 
         val showVolumeUi = action.flags.hasFlag(Action.ACTION_FLAG_SHOW_VOLUME_UI)
 
@@ -180,13 +194,17 @@ class ActionPerformerDelegate(context: Context,
                 SystemAction.LANDSCAPE_MODE -> ScreenRotationUtils.forceLandscapeMode(this)
                 SystemAction.SWITCH_ORIENTATION -> ScreenRotationUtils.switchOrientation(this)
 
+                SystemAction.CYCLE_ROTATIONS -> getSdkValuesForOptionSet {
+                    ScreenRotationUtils.cycleRotations(this, it)
+                }
+
                 SystemAction.VOLUME_UP -> AudioUtils.adjustVolume(this, AudioManager.ADJUST_RAISE, showVolumeUi)
                 SystemAction.VOLUME_DOWN -> AudioUtils.adjustVolume(this, AudioManager.ADJUST_LOWER, showVolumeUi)
 
                 //the volume UI should always be shown for this action
                 SystemAction.VOLUME_SHOW_DIALOG -> AudioUtils.adjustVolume(this, AudioManager.ADJUST_SAME, true)
 
-                SystemAction.VOLUME_DECREASE_STREAM -> getSdkValueForOption(id) { stream ->
+                SystemAction.VOLUME_DECREASE_STREAM -> getSdkValueForOption { stream ->
                     AudioUtils.adjustSpecificStream(
                         this,
                         AudioManager.ADJUST_LOWER,
@@ -195,7 +213,7 @@ class ActionPerformerDelegate(context: Context,
                     )
                 }
 
-                SystemAction.VOLUME_INCREASE_STREAM -> getSdkValueForOption(id) { stream ->
+                SystemAction.VOLUME_INCREASE_STREAM -> getSdkValueForOption { stream ->
                     AudioUtils.adjustSpecificStream(
                         this,
                         AudioManager.ADJUST_RAISE,
@@ -207,7 +225,7 @@ class ActionPerformerDelegate(context: Context,
                 SystemAction.CYCLE_VIBRATE_RING -> AudioUtils.cycleBetweenVibrateAndRing(this)
                 SystemAction.CYCLE_RINGER_MODE -> AudioUtils.cycleThroughAllRingerModes(this)
 
-                SystemAction.CHANGE_RINGER_MODE -> getSdkValueForOption(id) { ringerMode ->
+                SystemAction.CHANGE_RINGER_MODE -> getSdkValueForOption { ringerMode ->
                     AudioUtils.changeRingerMode(this, ringerMode)
                 }
 

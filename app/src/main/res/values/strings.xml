@@ -143,6 +143,11 @@
     <string name="constraint_choose_screen_on_description">Screen is on</string>
     <string name="constraint_choose_screen_off_description">Screen is off</string>
 
+    <string name="orientation_0">Portrait (0°)</string>
+    <string name="orientation_90">Landscape (90°)</string>
+    <string name="orientation_180">Portrait (180°)</string>
+    <string name="orientation_270">Landscape (270°)</string>
+
     <string name="ime_key_mapper_description">This is the input method built-in to Key Mapper. It has *NO* interface. Therefore, if you have a password screen lock you will *NOT* be able to unlock your phone.</string>
 
     <string name="ime_key_mapper_gui_name">Key Mapper GUI Keyboard</string>
@@ -650,6 +655,7 @@
     <string name="error_empty_json">Empty JSON file!</string>
     <string name="error_file_access_denied">File access denied! Is it deleted?</string>
     <string name="error_file_access_denied_automatic_backup">Failed to backup to file. Is it deleted?</string>
+    <string name="error_failed_to_split_string">Failed to split string %s</string>
 
     <!-- Error messages -->
 
@@ -692,6 +698,8 @@
     <string name="action_portrait_mode">Portrait Mode</string>
     <string name="action_landscape_mode">Landscape Mode</string>
     <string name="action_switch_orientation">Switch Orientation</string>
+    <string name="action_cycle_rotations">Cycle Through Rotations</string>
+    <string name="action_cycle_rotations_formatted">Cycle Through %s Rotations</string>
 
     <string name="action_toggle_mobile_data">Toggle Mobile Data</string>
     <string name="action_enable_mobile_data">Enable Mobile Data</string>

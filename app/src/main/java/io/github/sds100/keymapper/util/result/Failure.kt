@@ -47,6 +47,7 @@ fun Failure.getFullMessage(ctx: Context) = when (this) {
     is GenericFailure -> exception.toString()
     is EmptyJson -> ctx.str(R.string.error_empty_json)
     is FileAccessDenied -> ctx.str(R.string.error_file_access_denied)
+    is FailedToSplitString -> ctx.str(R.string.error_failed_to_split_string, string)
 
     else -> throw Exception("Can't find error message for ${this::class.simpleName}")
 }
@@ -145,3 +146,4 @@ class DownloadFailed : Failure()
 class FileNotCached : Failure()
 class SSLHandshakeError : Failure()
 class DeviceNotFound : Failure()
+class FailedToSplitString(val string: String) : Failure()

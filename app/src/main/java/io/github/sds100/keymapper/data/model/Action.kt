@@ -80,6 +80,7 @@ data class Action(
         const val EXTRA_LENS = "extra_flash"
         const val EXTRA_RINGER_MODE = "extra_ringer_mode"
         const val EXTRA_DND_MODE = "extra_do_not_disturb_mode"
+        const val EXTRA_ORIENTATIONS = "extra_orientations"
 
         /**
          * The KeyEvent meta state is stored as bit flags.
@@ -103,7 +104,8 @@ data class Action(
             EXTRA_DND_MODE,
             EXTRA_KEY_EVENT_META_STATE,
             EXTRA_IME_ID,
-            EXTRA_IME_NAME
+            EXTRA_IME_NAME,
+            EXTRA_ORIENTATIONS
         )
 
         fun appAction(packageName: String): Action {

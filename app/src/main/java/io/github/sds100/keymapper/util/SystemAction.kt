@@ -30,7 +30,7 @@ object SystemAction {
     const val ENABLE_MOBILE_DATA = "enable_mobile_data"
 
     /**
-     * REQUIRES ROOT
+     * REQUIRES ROOTCYCLE_ORIENTATION
      */
     const val DISABLE_MOBILE_DATA = "disable_mobile_data"
 
@@ -48,6 +48,7 @@ object SystemAction {
     const val PORTRAIT_MODE = "portrait_mode"
     const val LANDSCAPE_MODE = "landscape_mode"
     const val SWITCH_ORIENTATION = "switch_orientation"
+    const val CYCLE_ROTATIONS = "cycle_rotations"
 
     //volume
     const val VOLUME_UP = "volume_up"
