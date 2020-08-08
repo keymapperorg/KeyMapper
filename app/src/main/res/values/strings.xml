@@ -81,6 +81,7 @@
     <string name="description_text_block">Type \'%s\'</string>
     <string name="description_keyevent">Input %s%s</string>
     <string name="description_url">Open %s</string>
+    <string name="description_tap_coordinate_default">Tap Coordinates %s, %s</string>
 
     <string name="exception_accessibility_service" translatable="false">Exception in onKeyEvent. Look in logcat.</string>
     <string name="enable_device_admin_message">Once you have enabled the device admin, you must DEACTIVATE it if you want to uninstall the app.</string>

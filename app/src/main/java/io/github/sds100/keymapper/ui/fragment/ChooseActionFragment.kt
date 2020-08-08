@@ -90,6 +90,13 @@ class ChooseActionFragment : Fragment() {
             Action.keyCodeAction(keyCode)
         }
 
+        setResultListener(TapCoordinateActionTypeFragment.REQUEST_KEY) {
+            val x = it.getInt(TapCoordinateActionTypeFragment.EXTRA_X)
+            val y = it.getInt(TapCoordinateActionTypeFragment.EXTRA_Y)
+
+            Action.tapCoordinateAction(x, y)
+        }
+
         setFragmentResultListener(KeycodeListFragment.REQUEST_KEY) { _, result ->
             val keyEventViewModel by activityViewModels<KeyEventActionTypeViewModel> {
                 InjectorUtils.provideKeyEventActionTypeViewModel()

@@ -38,6 +38,7 @@ data class Action(
      * - Key Event: the keycode. Any extra information is stored in [extras]
      * - Block of text: text to insert
      * - System action: the system action id
+     * - Tap coordinate: comma separated x and y values
      */
     @SerializedName(NAME_DATA)
     val data: String,
@@ -165,6 +166,13 @@ data class Action(
 
             val action = Action(ActionType.SYSTEM_ACTION, id, extras, flags)
             return action
+        }
+
+        fun tapCoordinateAction(x: Int, y: Int): Action {
+            return Action(
+                ActionType.TAP_COORDINATE,
+                "$x,$y"
+            )
         }
     }
 

@@ -167,7 +167,10 @@ private fun Action.getTitle(ctx: Context): Result<String> = when (type) {
     }
 
     ActionType.TAP_COORDINATE -> {
-        Success("")
+        val x = data.split(',')[0]
+        val y = data.split(',')[1]
+
+        Success(ctx.str(resId = R.string.description_tap_coordinate_default, formatArgArray = arrayOf(x, y)))
     }
 }
 

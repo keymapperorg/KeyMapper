@@ -11,9 +11,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.decodeBitmap
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.observe
+import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.viewmodel.TapCoordinateActionTypeViewModel
 import io.github.sds100.keymapper.databinding.FragmentTapCoordinateActionTypeBinding
@@ -81,6 +84,16 @@ class TapCoordinateActionTypeFragment : Fragment() {
                     it.x.toFloat() / imageViewScreenshot.width,
                     it.y.toFloat() / imageViewScreenshot.height
                 )
+            }
+
+            setOnDoneClick {
+                setFragmentResult(REQUEST_KEY,
+                    bundleOf(
+                        EXTRA_X to mViewModel.x.value,
+                        EXTRA_Y to mViewModel.y.value
+                    ))
+
+                findNavController().navigateUp()
             }
 
             return this.root
