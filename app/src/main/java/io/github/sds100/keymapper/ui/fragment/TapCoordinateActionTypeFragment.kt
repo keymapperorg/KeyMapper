@@ -71,7 +71,7 @@ class TapCoordinateActionTypeFragment : Fragment() {
             }
 
             mViewModel.selectScreenshotEvent.observe(viewLifecycleOwner, EventObserver {
-                mScreenshotLauncher.launch(FileUtils.MIME_TYPE_PNG)
+                mScreenshotLauncher.launch(FileUtils.MIME_TYPE_IMAGES)
             })
 
             mViewModel.incorrectScreenshotResolutionEvent.observe(viewLifecycleOwner, EventObserver {
