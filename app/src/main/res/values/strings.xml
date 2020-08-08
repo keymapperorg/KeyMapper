@@ -437,7 +437,7 @@
     <string name="action_type_title_system_action">Other</string>
     <string name="action_type_title_text_block">Text</string>
     <string name="action_type_url">URL</string>
-    <string name="action_type_tap_coordinate">Tap Coordinate</string>
+    <string name="action_type_tap_coordinate">Tap Screen</string>
     <!--Action Types Titles-->
 
     <!-- Action Type tab title order-->
