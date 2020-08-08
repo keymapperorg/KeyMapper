@@ -46,7 +46,7 @@ class ChooseActionFragment : Fragment() {
 
         setResultListener(AppShortcutListFragment.REQUEST_KEY) {
             val name = it.getString(AppShortcutListFragment.EXTRA_NAME)
-            val packageName = it.getString(AppShortcutListFragment.EXTRA_NAME)
+            val packageName = it.getString(AppShortcutListFragment.EXTRA_PACKAGE_NAME)
             val uri = it.getString(AppShortcutListFragment.EXTRA_URI)
 
             Action.appShortcutAction(name!!, packageName!!, uri!!)
@@ -88,6 +88,14 @@ class ChooseActionFragment : Fragment() {
             val keyCode = it.getInt(KeycodeListFragment.EXTRA_KEYCODE)
 
             Action.keyCodeAction(keyCode)
+        }
+
+        setResultListener(TapCoordinateActionTypeFragment.REQUEST_KEY) {
+            val x = it.getInt(TapCoordinateActionTypeFragment.EXTRA_X)
+            val y = it.getInt(TapCoordinateActionTypeFragment.EXTRA_Y)
+            val description = it.getString(TapCoordinateActionTypeFragment.EXTRA_DESCRIPTION)
+
+            Action.tapCoordinateAction(x, y, description)
         }
 
         setFragmentResultListener(KeycodeListFragment.REQUEST_KEY) { _, result ->

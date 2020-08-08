@@ -38,6 +38,7 @@ data class Action(
      * - Key Event: the keycode. Any extra information is stored in [extras]
      * - Block of text: text to insert
      * - System action: the system action id
+     * - Tap coordinate: comma separated x and y values
      */
     @SerializedName(NAME_DATA)
     val data: String,
@@ -81,6 +82,7 @@ data class Action(
         const val EXTRA_RINGER_MODE = "extra_ringer_mode"
         const val EXTRA_DND_MODE = "extra_do_not_disturb_mode"
         const val EXTRA_ORIENTATIONS = "extra_orientations"
+        const val EXTRA_COORDINATE_DESCRIPTION = "extra_coordinate_description"
 
         /**
          * The KeyEvent meta state is stored as bit flags.
@@ -167,6 +169,20 @@ data class Action(
 
             val action = Action(ActionType.SYSTEM_ACTION, id, extras, flags)
             return action
+        }
+
+        fun tapCoordinateAction(x: Int, y: Int, coordinateDescription: String?): Action {
+            val extras = mutableListOf<Extra>()
+
+            if (!coordinateDescription.isNullOrBlank()) {
+                extras.add(Extra(EXTRA_COORDINATE_DESCRIPTION, coordinateDescription))
+            }
+
+            return Action(
+                ActionType.TAP_COORDINATE,
+                "$x,$y",
+                extras = extras
+            )
         }
     }
 

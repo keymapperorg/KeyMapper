@@ -180,6 +180,17 @@ private fun Action.getTitle(ctx: Context): Result<String> = when (type) {
             }
         }
     }
+
+    ActionType.TAP_COORDINATE -> {
+        val x = data.split(',')[0]
+        val y = data.split(',')[1]
+
+        extras.getData(Action.EXTRA_COORDINATE_DESCRIPTION) then {
+            Success(ctx.str(resId = R.string.description_tap_coordinate_with_description, formatArgArray = arrayOf(x, y, it)))
+        } otherwise {
+            Success(ctx.str(resId = R.string.description_tap_coordinate_default, formatArgArray = arrayOf(x, y)))
+        }
+    }
 }
 
 /**
@@ -253,6 +264,12 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
                 } catch (e: Exception) {
                     return@then AppNotFound(data)
                 }
+            }
+        }
+
+        ActionType.TAP_COORDINATE -> {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                return SdkVersionTooLow(Build.VERSION_CODES.N)
             }
         }
 

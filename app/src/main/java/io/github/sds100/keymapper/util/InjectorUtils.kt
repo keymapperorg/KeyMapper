@@ -71,8 +71,16 @@ object InjectorUtils {
         return UrlActionTypeViewModel.Factory()
     }
 
+    fun provideTapCoordinateActionTypeViewModel(): TapCoordinateActionTypeViewModel.Factory {
+        return TapCoordinateActionTypeViewModel.Factory()
+    }
+
     fun provideSystemActionListViewModel(context: Context): SystemActionListViewModel.Factory {
         return SystemActionListViewModel.Factory(getDefaultSystemActionRepository(context))
+    }
+
+    fun provideUnsupportedActionListViewModel(context: Context): UnsupportedActionListViewModel.Factory {
+        return UnsupportedActionListViewModel.Factory(getDefaultSystemActionRepository(context))
     }
 
     fun provideActionBehaviorViewModel(): ActionBehaviorViewModel.Factory {

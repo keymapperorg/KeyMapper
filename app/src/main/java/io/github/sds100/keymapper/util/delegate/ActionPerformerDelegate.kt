@@ -1,11 +1,13 @@
 package io.github.sds100.keymapper.util.delegate
 
 import android.accessibilityservice.AccessibilityService
+import android.accessibilityservice.GestureDescription
 import android.app.admin.DevicePolicyManager
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Context.DEVICE_POLICY_SERVICE
 import android.content.Intent
+import android.graphics.Path
 import android.hardware.camera2.CameraCharacteristics
 import android.media.AudioManager
 import android.net.Uri
@@ -109,6 +111,27 @@ class ActionPerformerDelegate(context: Context,
                 }
 
                 ActionType.SYSTEM_ACTION -> performSystemAction(action)
+
+                ActionType.TAP_COORDINATE -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        val x = action.data.split(',')[0]
+                        val y = action.data.split(',')[1]
+
+                        val duration = 1L //ms
+
+                        val path = Path().apply {
+                            moveTo(x.toFloat(), y.toFloat())
+                        }
+
+                        val strokeDescription = GestureDescription.StrokeDescription(path, 0, duration)
+
+                        val gestureDescription = GestureDescription.Builder().apply {
+                            addStroke(strokeDescription)
+                        }.build()
+
+                        dispatchGesture(gestureDescription, null, null)
+                    }
+                }
 
                 else -> {
                     if (action.type == ActionType.KEY_EVENT) {

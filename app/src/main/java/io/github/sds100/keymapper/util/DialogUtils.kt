@@ -18,13 +18,14 @@ import kotlin.coroutines.suspendCoroutine
  * Created by sds100 on 30/03/2020.
  */
 
-suspend fun FragmentActivity.editTextAlertDialog(hint: String) = suspendCoroutine<String> {
+suspend fun FragmentActivity.editTextAlertDialog(hint: String, allowEmpty: Boolean = false) = suspendCoroutine<String> {
     alertDialog {
         DialogEdittextBinding.inflate(layoutInflater).apply {
             val text = MutableLiveData("")
 
             setHint(hint)
             setText(text)
+            setAllowEmpty(allowEmpty)
 
             setView(this.root)
 
@@ -36,7 +37,12 @@ suspend fun FragmentActivity.editTextAlertDialog(hint: String) = suspendCoroutin
 
             show().apply {
                 text.observe(this@editTextAlertDialog) {
-                    getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = !it.isNullOrBlank()
+                    getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
+                        if (allowEmpty) {
+                            true
+                        } else {
+                            !it.isNullOrBlank()
+                        }
                 }
             }
         }
