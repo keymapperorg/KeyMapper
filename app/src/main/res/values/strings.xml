@@ -444,13 +444,12 @@
     <!--Action Types Titles-->
 
     <!-- Action Type tab title order-->
-    <string-array name="choose_action_tab_titles">
+    <string-array name="choose_action_tab_titles" tools:ignore="InconsistentArrays">
         <item>@string/action_type_title_application</item>
         <item>@string/action_type_title_application_shortcut</item>
         <item>@string/action_type_title_key_code</item>
         <item>@string/action_type_title_key</item>
         <item>@string/action_type_title_keyevent</item>
-        <item>@string/action_type_tap_coordinate</item>
         <item>@string/action_type_title_text_block</item>
         <item>@string/action_type_url</item>
         <item>@string/action_type_title_system_action</item>
