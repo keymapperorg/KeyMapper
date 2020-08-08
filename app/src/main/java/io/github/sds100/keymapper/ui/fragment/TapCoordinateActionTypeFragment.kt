@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
@@ -57,7 +56,6 @@ class TapCoordinateActionTypeFragment : Fragment() {
         }
     }
 
-
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
@@ -78,19 +76,11 @@ class TapCoordinateActionTypeFragment : Fragment() {
                 toast(R.string.toast_incorrect_screenshot_resolution)
             })
 
-            imageViewScreenshot.setOnTouchListener { _, event ->
-
-                when (event.action) {
-                    MotionEvent.ACTION_DOWN -> {
-                        mViewModel.onScreenshotTouch(
-                            event.x / imageViewScreenshot.width,
-                            event.y / imageViewScreenshot.height
-                        )
-                    }
-                }
-
-                //Don't consume the event
-                false
+            imageViewScreenshot.pointCoordinates.observe(viewLifecycleOwner) {
+                mViewModel.onScreenshotTouch(
+                    it.x.toFloat() / imageViewScreenshot.width,
+                    it.y.toFloat() / imageViewScreenshot.height
+                )
             }
 
             return this.root
