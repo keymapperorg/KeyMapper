@@ -111,7 +111,6 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="32dp"
                     android:adjustViewBounds="true"
-                    android:background="@drawable/image_border"
                     android:scaleType="fitStart"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
