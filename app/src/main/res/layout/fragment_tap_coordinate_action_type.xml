@@ -7,6 +7,8 @@
 
         <import type="android.view.View" />
 
+        <import type="io.github.sds100.keymapper.util.Converter" />
+
         <variable
             name="onDoneClick"
             type="View.OnClickListener" />
@@ -52,7 +54,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="number"
-                        android:text="@={viewModel.xString}"
+                        android:text="@={Converter.intToString(viewModel.x)}"
                         tools:text="241" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -76,7 +78,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="number"
-                        android:text="@={viewModel.yString}"
+                        android:text="@={Converter.intToString(viewModel.y)}"
                         tools:text="241" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -130,7 +132,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
-            android:enabled='@{viewModel.isValidCoordinate() ? true : false}'
+            android:enabled='@{viewModel.isValid() ? true : false}'
             android:onClick="@{onDoneClick}"
             android:text="@string/button_done"
             app:layout_constraintBottom_toBottomOf="parent"

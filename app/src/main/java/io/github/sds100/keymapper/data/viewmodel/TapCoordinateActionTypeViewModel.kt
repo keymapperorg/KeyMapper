@@ -14,31 +14,30 @@ import kotlin.math.roundToInt
  */
 
 class TapCoordinateActionTypeViewModel : ViewModel() {
-    private val mX = MediatorLiveData<Int>().apply {
-        addSource(xString) {
-            this.value = it.toIntOrNull()
+
+    val x = MutableLiveData<Int>()
+    val y = MutableLiveData<Int>()
+
+    val isValid = MediatorLiveData<Boolean>().apply {
+        fun invalidate() {
+            value = x.value?.let { it > 0 } == true && y.value?.let { it > 0 } == true
+        }
+
+        addSource(x) {
+            invalidate()
+        }
+
+        addSource(y) {
+            invalidate()
         }
     }
-
-    private val mY = MediatorLiveData<Int>().apply {
-        addSource(yString) {
-            this.value = it.toIntOrNull()
-        }
-    }
-
-    val xString = MutableLiveData<String>(null)
-    val yString = MutableLiveData<String>(null)
 
     val bitmap = MutableLiveData<Bitmap>()
 
     val selectScreenshotEvent = MutableLiveData<Event<Unit>>()
     val incorrectScreenshotResolutionEvent = MutableLiveData<Event<Unit>>()
 
-    fun isValidCoordinate(): Boolean {
-        return mX.value?.let { it > 0 } == true && mY.value?.let { it > 0 } == true
-    }
-
-    fun selectedBitmap(newBitmap: Bitmap, displaySize: Point) {
+    fun selectedScreenshot(newBitmap: Bitmap, displaySize: Point) {
         //check whether the height and width of the bitmap match the display size, even when it is rotated.
         if (
             (displaySize.x != newBitmap.width
@@ -80,8 +79,8 @@ class TapCoordinateActionTypeViewModel : ViewModel() {
                 it.height * screenshotYRatio
             }
 
-            xString.value = displayX.roundToInt().toString()
-            yString.value = displayY.roundToInt().toString()
+            x.value = displayX.roundToInt()
+            y.value = displayY.roundToInt()
         }
     }
 

@@ -52,7 +52,7 @@ class TapCoordinateActionTypeFragment : Fragment() {
                 windowManager.defaultDisplay.getRealSize(this)
             }
 
-            mViewModel.selectedBitmap(bitmap, displaySize)
+            mViewModel.selectedScreenshot(bitmap, displaySize)
         }
     }
 
