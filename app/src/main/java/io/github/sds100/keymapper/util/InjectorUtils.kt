@@ -79,6 +79,10 @@ object InjectorUtils {
         return SystemActionListViewModel.Factory(getDefaultSystemActionRepository(context))
     }
 
+    fun provideUnsupportedActionListViewModel(context: Context): UnsupportedActionListViewModel.Factory {
+        return UnsupportedActionListViewModel.Factory(getDefaultSystemActionRepository(context))
+    }
+
     fun provideActionBehaviorViewModel(): ActionBehaviorViewModel.Factory {
         return ActionBehaviorViewModel.Factory()
     }
