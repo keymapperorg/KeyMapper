@@ -15,14 +15,14 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.viewmodel.TapCoordinateActionTypeViewModel
 import io.github.sds100.keymapper.databinding.FragmentTapCoordinateActionTypeBinding
-import io.github.sds100.keymapper.util.EventObserver
-import io.github.sds100.keymapper.util.FileUtils
-import io.github.sds100.keymapper.util.InjectorUtils
+import io.github.sds100.keymapper.util.*
+import kotlinx.coroutines.launch
 import splitties.systemservices.windowManager
 import splitties.toast.toast
 
@@ -35,6 +35,7 @@ class TapCoordinateActionTypeFragment : Fragment() {
         const val REQUEST_KEY = "request_coordinate"
         const val EXTRA_X = "extra_x"
         const val EXTRA_Y = "extra_y"
+        const val EXTRA_DESCRIPTION = "extra_description"
     }
 
     private val mViewModel: TapCoordinateActionTypeViewModel by activityViewModels {
@@ -87,13 +88,21 @@ class TapCoordinateActionTypeFragment : Fragment() {
             }
 
             setOnDoneClick {
-                setFragmentResult(REQUEST_KEY,
-                    bundleOf(
-                        EXTRA_X to mViewModel.x.value,
-                        EXTRA_Y to mViewModel.y.value
-                    ))
+                lifecycleScope.launch {
+                    val description = requireActivity().editTextAlertDialog(
+                        str(R.string.hint_tap_coordinate_title),
+                        allowEmpty = true
+                    )
 
-                findNavController().navigateUp()
+                    setFragmentResult(REQUEST_KEY,
+                        bundleOf(
+                            EXTRA_X to mViewModel.x.value,
+                            EXTRA_Y to mViewModel.y.value,
+                            EXTRA_DESCRIPTION to description
+                        ))
+
+                    findNavController().navigateUp()
+                }
             }
 
             return this.root

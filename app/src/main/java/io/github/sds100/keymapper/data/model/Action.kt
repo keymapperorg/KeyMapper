@@ -81,6 +81,7 @@ data class Action(
         const val EXTRA_LENS = "extra_flash"
         const val EXTRA_RINGER_MODE = "extra_ringer_mode"
         const val EXTRA_DND_MODE = "extra_do_not_disturb_mode"
+        const val EXTRA_COORDINATE_DESCRIPTION = "extra_coordinate_description"
 
         /**
          * The KeyEvent meta state is stored as bit flags.
@@ -168,10 +169,17 @@ data class Action(
             return action
         }
 
-        fun tapCoordinateAction(x: Int, y: Int): Action {
+        fun tapCoordinateAction(x: Int, y: Int, coordinateDescription: String?): Action {
+            val extras = mutableListOf<Extra>()
+
+            if (!coordinateDescription.isNullOrBlank()) {
+                extras.add(Extra(EXTRA_COORDINATE_DESCRIPTION, coordinateDescription))
+            }
+
             return Action(
                 ActionType.TAP_COORDINATE,
-                "$x,$y"
+                "$x,$y",
+                extras = extras
             )
         }
     }

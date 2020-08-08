@@ -170,7 +170,11 @@ private fun Action.getTitle(ctx: Context): Result<String> = when (type) {
         val x = data.split(',')[0]
         val y = data.split(',')[1]
 
-        Success(ctx.str(resId = R.string.description_tap_coordinate_default, formatArgArray = arrayOf(x, y)))
+        extras.getData(Action.EXTRA_COORDINATE_DESCRIPTION) then {
+            Success(ctx.str(resId = R.string.description_tap_coordinate_with_description, formatArgArray = arrayOf(x, y, it)))
+        } otherwise {
+            Success(ctx.str(resId = R.string.description_tap_coordinate_default, formatArgArray = arrayOf(x, y)))
+        }
     }
 }
 

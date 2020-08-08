@@ -11,6 +11,10 @@
         <variable
             name="text"
             type="androidx.lifecycle.MutableLiveData&lt;String>" />
+
+        <variable
+            name="allowEmpty"
+            type="Boolean" />
     </data>
 
     <com.google.android.material.textfield.TextInputLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -20,7 +24,7 @@
         android:layout_height="wrap_content"
         android:hint="@{hint}"
         android:padding="8dp"
-        app:errorWhenEmpty="@{true}"
+        app:errorWhenEmpty="@{allowEmpty}"
         tools:hint="Hint">
 
         <com.google.android.material.textfield.TextInputEditText

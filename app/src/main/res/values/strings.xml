@@ -56,6 +56,7 @@
     <string name="hint_y">Y</string>
     <string name="toast_incorrect_screenshot_resolution">Screenshot resolution doesn\'t match this device\'s resolution!</string>
     <string name="tap_coordinate_screenshot_message">If you need help finding the coordinates of a point on your screen take a screenshot and then tap on the screenshot where you want this action to press.</string>
+    <string name="hint_tap_coordinate_title">Coordinate description (optional)</string>
 
     <string name="permission_description_key_mapper_input_method">perform Key Mapper actions that require a keyboard</string>
 
@@ -82,6 +83,7 @@
     <string name="description_keyevent">Input %s%s</string>
     <string name="description_url">Open %s</string>
     <string name="description_tap_coordinate_default">Tap Coordinates %s, %s</string>
+    <string name="description_tap_coordinate_with_description">Tap Coordinates %s, %s (%s)</string>
 
     <string name="exception_accessibility_service" translatable="false">Exception in onKeyEvent. Look in logcat.</string>
     <string name="enable_device_admin_message">Once you have enabled the device admin, you must DEACTIVATE it if you want to uninstall the app.</string>
