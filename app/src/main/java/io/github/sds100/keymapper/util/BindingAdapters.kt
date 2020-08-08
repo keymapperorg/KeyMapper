@@ -118,7 +118,11 @@ fun TextInputLayout.errorWhenEmpty(enabled: Boolean) {
 
     //need to set it up when the view is created
     if (editText?.text.isNullOrBlank()) {
-        error = str(R.string.error_cant_be_empty)
+        error = if (enabled) {
+            str(R.string.error_cant_be_empty)
+        } else {
+            null
+        }
     }
 
     editText?.addTextChangedListener {
