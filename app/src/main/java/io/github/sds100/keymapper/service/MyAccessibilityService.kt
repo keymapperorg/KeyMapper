@@ -367,6 +367,10 @@ class MyAccessibilityService : AccessibilityService(),
                     WidgetsManager.onEvent(this, EVENT_RESUME_REMAPS)
                 }
             }
+
+            str(R.string.key_pref_selected_compatible_ime_package_name) -> {
+                mIsCompatibleImeChosen = KeyboardUtils.isSelectedImeChosen()
+            }
         }
     }
 
