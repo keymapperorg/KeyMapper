@@ -252,6 +252,12 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
             }
         }
 
+        ActionType.TAP_COORDINATE -> {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                return SdkVersionTooLow(Build.VERSION_CODES.N)
+            }
+        }
+
         ActionType.SYSTEM_ACTION -> {
             SystemActionUtils.getSystemActionDef(data).onSuccess { systemActionDef ->
 
