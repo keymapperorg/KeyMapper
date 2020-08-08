@@ -257,7 +257,6 @@
     <string name="dialog_title_pick_stream">Pick stream</string>
     <string name="dialog_title_choose_flash">Choose flash</string>
     <string name="dialog_title_cant_find_accessibility_settings_page">Can\'t find the Accessibility settings page</string>
-    <string name="dialog_title_select_compatible_ime">Select the input method for actions that require one</string>
     <!-- Dialog titles -->
 
     <!-- Dialog messages -->
@@ -279,7 +278,7 @@
     <string name="dialog_message_change_location_or_disable">Change location or turn off automatic backup?</string>
     <string name="dialog_message_screen_constraints_limitation">Screen on/off constraints will only work if you have turned on the \"detect trigger when screen is off\" keymap option. This option will only show for some keys (e.g volume buttons) and if you are rooted. See a list of supported keys on the Help page.</string>
     <string name="dialog_message_password_screen_lock_warning">If you have any other screen lock chosen, such as PIN or Pattern then you don\'t have to worry. But if you have a Password screen lock you will *NOT* be able to unlock your phone if you use the Key Mapper keyboard because it doesn\'t have a GUI yet. You can grant Key Mapper WRITE_SECURE_SETTINGS permission so it can show a notification to switch to and from the keyboard. There is a guide on how to do this if you tap the question mark at the bottom of the screen.</string>
-    <string name="dialog_message_select_compatible_ime">You can change this later by tapping \"Select compatible keyboard\" in the bottom menu of the homescreen.</string>
+    <string name="dialog_message_select_compatible_ime">Select the input method for actions that require one. You can change this later by tapping \"Select Keyboard For Actions\" in the bottom menu of the homescreen.</string>
     <string name="dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout">You need to choose the \"Caps Lock to Camera\" keyboard layout for your keyboard otherwise the Caps Lock key will still caps lock. You can find this setting in your device settings -> Languages and Input -> Physical Keyboard -> Tap on your keyboard -> Set Up Keyboard Layouts. This will remap the Caps Lock key to KEYCODE_CAMERA so Key Mapper can remap it properly.\n\nAfter you\'ve done this you must remove the Caps Lock trigger key and record the Caps Lock key again. It should say \"Camera\" instead of \"Caps Lock\" if you did the steps correctly.</string>
     <!-- Dialog messages -->
 

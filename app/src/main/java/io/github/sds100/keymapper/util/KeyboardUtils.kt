@@ -23,7 +23,6 @@ import io.github.sds100.keymapper.util.result.*
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.negativeButton
 import splitties.alertdialog.appcompat.okButton
-import splitties.alertdialog.appcompat.titleResource
 import splitties.init.appCtx
 import splitties.systemservices.inputMethodManager
 import splitties.toast.toast
@@ -295,7 +294,6 @@ object KeyboardUtils {
                             }
                         }
 
-                        titleResource = R.string.dialog_title_select_compatible_ime
 
                         if (showDontShowAgainButton) {
                             negativeButton(R.string.neg_dont_show_again) {
