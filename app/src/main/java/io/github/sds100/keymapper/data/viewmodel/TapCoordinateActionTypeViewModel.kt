@@ -63,21 +63,9 @@ class TapCoordinateActionTypeViewModel : ViewModel() {
      */
     fun onScreenshotTouch(screenshotXRatio: Float, screenshotYRatio: Float) {
         bitmap.value?.let {
-            //origin is top left of the device's display
 
-            val isBitmapLandscape = it.width > it.height
-
-            val displayX = if (isBitmapLandscape) {
-                it.height * screenshotYRatio
-            } else {
-                it.width * screenshotXRatio
-            }
-
-            val displayY = if (isBitmapLandscape) {
-                it.width * screenshotXRatio
-            } else {
-                it.height * screenshotYRatio
-            }
+            val displayX = it.width * screenshotXRatio
+            val displayY = it.height * screenshotYRatio
 
             x.value = displayX.roundToInt()
             y.value = displayY.roundToInt()
