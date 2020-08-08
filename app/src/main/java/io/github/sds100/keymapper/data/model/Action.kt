@@ -107,7 +107,8 @@ data class Action(
             EXTRA_KEY_EVENT_META_STATE,
             EXTRA_IME_ID,
             EXTRA_IME_NAME,
-            EXTRA_ORIENTATIONS
+            EXTRA_ORIENTATIONS,
+            EXTRA_COORDINATE_DESCRIPTION
         )
 
         fun appAction(packageName: String): Action {
