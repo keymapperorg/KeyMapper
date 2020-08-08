@@ -20,7 +20,7 @@ class TapCoordinateActionTypeViewModel : ViewModel() {
 
     val isValid = MediatorLiveData<Boolean>().apply {
         fun invalidate() {
-            value = x.value?.let { it > 0 } == true && y.value?.let { it > 0 } == true
+            value = x.value?.let { it >= 0 } == true && y.value?.let { it >= 0 } == true
         }
 
         addSource(x) {
