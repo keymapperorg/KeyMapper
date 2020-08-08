@@ -14,6 +14,7 @@ import java.util.*
 object FileUtils {
 
     const val MIME_TYPE_JSON = "application/json"
+    const val MIME_TYPE_PNG = "image/png"
 
     fun getTextFromAppFiles(ctx: Context, fileName: String): String {
         ctx.openFileInput(fileName).bufferedReader().use {

@@ -52,6 +52,10 @@
     <string name="chip_fdroid">F-Droid</string>
     <string name="chip_github">GitHub</string>
     <string name="chip_xda_labs">XDA Labs</string>
+    <string name="hint_x">X</string>
+    <string name="hint_y">Y</string>
+    <string name="toast_incorrect_screenshot_resolution">Screenshot resolution doesn\'t match this device\'s resolution!</string>
+    <string name="tap_coordinate_screenshot_message">If you need help finding the coordinates of a point on your screen take a screenshot and then tap on the screenshot where you want this action to press.</string>
 
     <string name="permission_description_key_mapper_input_method">perform Key Mapper actions that require a keyboard</string>
 
@@ -433,6 +437,7 @@
     <string name="action_type_title_system_action">Other</string>
     <string name="action_type_title_text_block">Text</string>
     <string name="action_type_url">URL</string>
+    <string name="action_type_tap_coordinate">Tap Coordinate</string>
     <!--Action Types Titles-->
 
     <!-- Action Type tab title order-->
@@ -442,6 +447,7 @@
         <item>@string/action_type_title_key_code</item>
         <item>@string/action_type_title_key</item>
         <item>@string/action_type_title_keyevent</item>
+        <item>@string/action_type_tap_coordinate</item>
         <item>@string/action_type_title_text_block</item>
         <item>@string/action_type_url</item>
         <item>@string/action_type_title_system_action</item>

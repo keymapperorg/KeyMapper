@@ -37,6 +37,9 @@ class ChooseActionPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragme
             KeyEventActionTypeFragment()
         },
         {
+            TapCoordinateActionTypeFragment()
+        },
+        {
             TextBlockActionTypeFragment()
         },
         {

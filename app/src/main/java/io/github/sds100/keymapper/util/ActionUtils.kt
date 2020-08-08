@@ -165,6 +165,10 @@ private fun Action.getTitle(ctx: Context): Result<String> = when (type) {
             }
         }
     }
+
+    ActionType.TAP_COORDINATE -> {
+        Success("")
+    }
 }
 
 /**
