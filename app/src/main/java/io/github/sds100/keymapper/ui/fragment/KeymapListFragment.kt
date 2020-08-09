@@ -21,7 +21,9 @@ import androidx.transition.TransitionManager
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.airbnb.epoxy.EpoxyController
-import io.github.sds100.keymapper.*
+import io.github.sds100.keymapper.Constants
+import io.github.sds100.keymapper.NavAppDirections
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
@@ -29,6 +31,7 @@ import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
 import io.github.sds100.keymapper.databinding.FragmentKeymapListBinding
+import io.github.sds100.keymapper.keymapSimple
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
 import io.github.sds100.keymapper.ui.callback.SelectionCallback
@@ -219,7 +222,7 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
                             appBar.replaceMenu(R.menu.menu_keymap_list)
 
                             // only show the button to seed the database in debug builds.
-                            appBar.menu.findItem(R.id.action_seed_database).isVisible = BuildConfig.DEBUG
+                            appBar.menu.findItem(R.id.action_seed_database).isVisible = false
                         }
                     })
 
