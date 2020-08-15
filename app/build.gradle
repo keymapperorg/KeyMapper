@@ -14,6 +14,7 @@ android {
         targetSdkVersion 29
         versionCode 32
         versionName "2.1.0-alpha"
+        multiDexEnabled true
 
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -89,10 +90,11 @@ dependencies {
     def epoxy_version = "3.9.0"
     def splitties_version = "3.0.0-alpha06"
     def markwonVersion = "4.3.1"
+    def multidex_version = "2.0.1"
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    // kotlin stuff
+// kotlin stuff
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutine_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutine_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
@@ -129,6 +131,7 @@ dependencies {
     implementation "androidx.work:work-runtime-ktx:$work_version"
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+    implementation "androidx.multidex:multidex:$multidex_version"
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.0-alpha05'
