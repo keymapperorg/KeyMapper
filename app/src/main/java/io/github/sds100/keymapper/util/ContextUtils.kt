@@ -77,10 +77,13 @@ inline fun <reified T> Context.getGlobalSetting(name: String): T? {
     }
 }
 
+/**
+ * @return whether the setting was changed successfully
+ */
 @RequiresPermission(Manifest.permission.WRITE_SETTINGS)
-inline fun <reified T> Context.putSystemSetting(name: String, value: T) {
+inline fun <reified T> Context.putSystemSetting(name: String, value: T): Boolean {
 
-    when (T::class) {
+    return when (T::class) {
 
         Int::class -> Settings.System.putInt(contentResolver, name, value as Int)
         String::class -> Settings.System.putString(contentResolver, name, value as String)
@@ -93,10 +96,13 @@ inline fun <reified T> Context.putSystemSetting(name: String, value: T) {
     }
 }
 
+/**
+ * @return whether the setting was changed successfully
+ */
 @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
-inline fun <reified T> Context.putSecureSetting(name: String, value: T) {
+inline fun <reified T> Context.putSecureSetting(name: String, value: T): Boolean {
 
-    when (T::class) {
+    return when (T::class) {
         Int::class -> Settings.Secure.putInt(contentResolver, name, value as Int)
         String::class -> Settings.Secure.putString(contentResolver, name, value as String)
         Float::class -> Settings.Secure.putFloat(contentResolver, name, value as Float)
@@ -108,10 +114,13 @@ inline fun <reified T> Context.putSecureSetting(name: String, value: T) {
     }
 }
 
+/**
+ * @return whether the setting was changed successfully
+ */
 @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
-inline fun <reified T> Context.putGlobalSetting(name: String, value: T) {
+inline fun <reified T> Context.putGlobalSetting(name: String, value: T): Boolean {
 
-    when (T::class) {
+    return when (T::class) {
         Int::class -> Settings.Global.putInt(contentResolver, name, value as Int)
         String::class -> Settings.Global.putString(contentResolver, name, value as String)
         Float::class -> Settings.Global.putFloat(contentResolver, name, value as Float)
