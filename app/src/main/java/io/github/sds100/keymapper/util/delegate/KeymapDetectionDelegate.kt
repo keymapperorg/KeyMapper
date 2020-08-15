@@ -1042,9 +1042,9 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                     vibrateDurations.add(vibrateDuration)
                 }
             }
-
-            mPerformActionsOnFailedDoublePress.remove(triggerIndex)
         }
+
+        mPerformActionsOnFailedDoublePress.clear()
 
         actionKeys.forEachIndexed { index, actionKey ->
             val action = mActionMap[actionKey] ?: return@forEachIndexed
