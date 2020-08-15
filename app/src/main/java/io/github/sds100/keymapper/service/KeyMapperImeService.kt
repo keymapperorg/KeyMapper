@@ -37,7 +37,7 @@ class KeyMapperImeService : InputMethodService() {
                 KEY_MAPPER_INPUT_METHOD_ACTION_TEXT -> {
                     val text = intent.getStringExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_TEXT) ?: return
 
-                    currentInputConnection.commitText(text, 1)
+                    currentInputConnection?.commitText(text, 1)
                 }
 
                 KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN_UP -> {
@@ -49,12 +49,12 @@ class KeyMapperImeService : InputMethodService() {
                     val downEvent = KeyEvent(eventTime, eventTime,
                         KeyEvent.ACTION_DOWN, keyCode, 0, getMetaState())
 
-                    currentInputConnection.sendKeyEvent(downEvent)
+                    currentInputConnection?.sendKeyEvent(downEvent)
 
                     val upEvent = KeyEvent(eventTime, SystemClock.uptimeMillis(),
                         KeyEvent.ACTION_UP, keyCode, 0)
 
-                    currentInputConnection.sendKeyEvent(upEvent)
+                    currentInputConnection?.sendKeyEvent(upEvent)
                 }
 
                 KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN -> {
@@ -66,7 +66,7 @@ class KeyMapperImeService : InputMethodService() {
                     val downEvent = KeyEvent(eventTime, eventTime,
                         KeyEvent.ACTION_DOWN, keyCode, 0, getMetaState())
 
-                    currentInputConnection.sendKeyEvent(downEvent)
+                    currentInputConnection?.sendKeyEvent(downEvent)
                 }
 
                 KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_UP -> {
@@ -78,7 +78,7 @@ class KeyMapperImeService : InputMethodService() {
                     val upEvent = KeyEvent(eventTime, SystemClock.uptimeMillis(),
                         KeyEvent.ACTION_UP, keyCode, 0)
 
-                    currentInputConnection.sendKeyEvent(upEvent)
+                    currentInputConnection?.sendKeyEvent(upEvent)
                 }
             }
         }
