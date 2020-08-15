@@ -100,7 +100,7 @@ class KeymapDetectionDelegateTest {
     }
 
     @Test
-    fun `2x key long press parallel trigger with HOME or RECENTS keycode, trigger successfully, don't do normal action by not consuming down`() {
+    fun `2x key long press parallel trigger with HOME or RECENTS keycode, trigger successfully, don't do normal action`() {
         val keysHome = arrayOf(
             Trigger.Key(KeyEvent.KEYCODE_HOME, clickType = LONG_PRESS),
             Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = LONG_PRESS))
@@ -118,7 +118,7 @@ class KeymapDetectionDelegateTest {
             inputKeyEvent(KeyEvent.KEYCODE_HOME, KeyEvent.ACTION_UP, null)
             inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP, null)
 
-            assertEquals(false, consumedDown)
+            assertEquals(true, consumedDown)
         }
 
         val keysRecents = arrayOf(
@@ -138,7 +138,7 @@ class KeymapDetectionDelegateTest {
             inputKeyEvent(KeyEvent.KEYCODE_APP_SWITCH, KeyEvent.ACTION_UP, null)
             inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP, null)
 
-            assertEquals(false, consumedDown)
+            assertEquals(true, consumedDown)
         }
     }
 
