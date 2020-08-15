@@ -100,14 +100,18 @@ object KeyboardUtils {
         }
     }
 
+    /**
+     * @return whether the ime was changed successfully
+     */
     @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
-    fun switchIme(ctx: Context, imeId: String) {
+    fun switchIme(ctx: Context, imeId: String): Boolean {
         if (!isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
             ctx.toast(R.string.error_need_write_secure_settings_permission)
-            return
+            return false
         }
 
         ctx.putSecureSetting(Settings.Secure.DEFAULT_INPUT_METHOD, imeId)
+        return true
     }
 
     fun showInputMethodPicker() {
@@ -193,6 +197,7 @@ object KeyboardUtils {
         return Settings.Secure.getString(ctx.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD)
     }
 
+
     fun toggleSelectedCompatibleIme(ctx: Context) {
         if (!isSelectedImeEnabled()) {
             ctx.toast(R.string.error_ime_service_disabled)
@@ -212,9 +217,11 @@ object KeyboardUtils {
 
         imeId ?: return
 
-        switchIme(ctx, imeId)
-        getInputMethodLabel(imeId).onSuccess { imeLabel ->
-            toast(ctx.str(R.string.toast_chose_keyboard, imeLabel))
+        //only show the toast message if it is successful
+        if (switchIme(ctx, imeId)) {
+            getInputMethodLabel(imeId).onSuccess { imeLabel ->
+                toast(ctx.str(R.string.toast_chose_keyboard, imeLabel))
+            }
         }
     }
 
