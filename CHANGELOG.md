@@ -1,3 +1,18 @@
+## [2.0.1](https://github.com/sds100/KeyMapper/releases/tag/v2.0.1) 
+
+#### 16 Aug 2020
+
+### Bug Fixes
+- Choosing app shortcut actions didn't work
+- Remapping the Home and Recents buttons wouldn't stop them from doing their default Home/Recents actions.
+- All titles for flashlight actions are the same.
+- Actions didn't work on Android 11.
+- Screen off triggers didn't pause.
+- Screen on/off constraints showed "this action requires root" even though they weren't actions.
+- Some list items weren't aligned properly if system fonts were forced to a larger size.
+- Toggle Keyboard tile: Crash when switching keyboard without WRITE_SECURE_SETTINGS permission.
+- A few more random crashes.
+
 ## [2.0.0](https://github.com/sds100/KeyMapper/releases/tag/v2.0.0) 
 
 #### 22 July 2020
