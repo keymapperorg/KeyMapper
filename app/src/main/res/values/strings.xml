@@ -516,7 +516,7 @@
 
     <string name="error_app_is_disabled">App is disabled!</string>
     <string name="error_action_requires_write_settings_permission">You need to grant Key Mapper permission to modify system settings to use this action.</string>
-    <string name="error_action_requires_root">This action requires root permission!</string>
+    <string name="error_requires_root">This requires root permission!</string>
     <string name="error_action_requires_camera_permission">This action requires camera permission!</string>
     <string name="error_sdk_version_too_low">This action requires Android %s</string>
     <string name="error_sdk_version_too_high">This action is only supported up to Android %s</string>

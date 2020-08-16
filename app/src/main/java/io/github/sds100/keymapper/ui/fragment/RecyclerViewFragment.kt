@@ -59,7 +59,11 @@ abstract class RecyclerViewFragment : Fragment() {
         savedStateRegistry.consumeRestoredStateForKey(KEY_SAVED_STATE)?.apply {
             isAppBarVisible = getBoolean(KEY_IS_APPBAR_VISIBLE)
             isInPagerAdapter = getBoolean(KEY_IS_IN_PAGER_ADAPTER)
-            resultData = getSerializable(KEY_RESULT_DATA) as ResultData
+
+            getSerializable(KEY_RESULT_DATA)?.let {
+                resultData = it as ResultData
+            }
+
             searchStateKey = getString(KEY_SEARCH_STATE_KEY)
         }
     }

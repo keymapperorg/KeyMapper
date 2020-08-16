@@ -82,7 +82,7 @@ class KeyMapperImeService : InputMethodService(), LifecycleOwner {
                 EVENT_INPUT_TEXT -> {
                     val text = it.second as String
 
-                    currentInputConnection.commitText(text, 1)
+                    currentInputConnection?.commitText(text, 1)
                 }
 
                 EVENT_INPUT_DOWN_UP -> {
@@ -94,12 +94,12 @@ class KeyMapperImeService : InputMethodService(), LifecycleOwner {
                     val downEvent = KeyEvent(eventTime, eventTime,
                         KeyEvent.ACTION_DOWN, keyCode, 0, metaState)
 
-                    currentInputConnection.sendKeyEvent(downEvent)
+                    currentInputConnection?.sendKeyEvent(downEvent)
 
                     val upEvent = KeyEvent(eventTime, SystemClock.uptimeMillis(),
                         KeyEvent.ACTION_UP, keyCode, 0)
 
-                    currentInputConnection.sendKeyEvent(upEvent)
+                    currentInputConnection?.sendKeyEvent(upEvent)
                 }
             }
         })

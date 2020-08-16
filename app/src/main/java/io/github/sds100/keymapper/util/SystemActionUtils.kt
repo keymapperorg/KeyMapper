@@ -532,7 +532,7 @@ object SystemActionUtils {
             minApi = Build.VERSION_CODES.M,
             iconRes = R.drawable.ic_flashlight,
             descriptionRes = R.string.action_enable_flashlight,
-            descriptionFormattedRes = R.string.action_toggle_flashlight_formatted,
+            descriptionFormattedRes = R.string.action_enable_flashlight_formatted,
             options = Option.LENSES
         ),
         SystemActionDef(
@@ -543,7 +543,7 @@ object SystemActionUtils {
             minApi = Build.VERSION_CODES.M,
             iconRes = R.drawable.ic_flashlight_off,
             descriptionRes = R.string.action_disable_flashlight,
-            descriptionFormattedRes = R.string.action_toggle_flashlight_formatted,
+            descriptionFormattedRes = R.string.action_disable_flashlight_formatted,
             options = Option.LENSES
         ),
 

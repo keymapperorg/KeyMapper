@@ -37,20 +37,36 @@ object KeyboardUtils {
         }
     }
 
-    fun switchToKeyMapperIme(ctx: Context) {
+    /**
+     * @return whether the ime was changed successfully
+     */
+    fun switchToKeyMapperIme(ctx: Context): Boolean {
         if (!isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
             ctx.toast(R.string.error_need_write_secure_settings_permission)
-            return
+            return false
         }
 
-        KeyMapperImeService.getImeId().onSuccess {
-            switchIme(it)
+        KeyMapperImeService.getImeId().apply {
+            onSuccess {
+                switchIme(it)
+            }
+
+            return isSuccess
         }
     }
 
+    /**
+     * @return whether the ime was changed successfully
+     */
     @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
-    fun switchIme(imeId: String) {
+    fun switchIme(imeId: String): Boolean {
+        if (!isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
+            appCtx.toast(R.string.error_need_write_secure_settings_permission)
+            return false
+        }
+
         appCtx.putSecureSetting(Settings.Secure.DEFAULT_INPUT_METHOD, imeId)
+        return true
     }
 
     fun showInputMethodPicker() {
@@ -120,17 +136,21 @@ object KeyboardUtils {
 
         if (KeyMapperImeService.isInputMethodChosen()) {
             AppPreferences.defaultIme?.let {
-                switchIme(it)
-
-                getInputMethodLabel(it).onSuccess { imeLabel ->
-                    toast(ctx.str(R.string.toast_chose_keyboard, imeLabel))
+                //only show the toast message if it is successful
+                if (switchIme(it)) {
+                    getInputMethodLabel(it).onSuccess { imeLabel ->
+                        toast(ctx.str(R.string.toast_chose_keyboard, imeLabel))
+                    }
                 }
             }
 
         } else {
             AppPreferences.defaultIme = getChosenImeId(ctx)
-            switchToKeyMapperIme(ctx)
-            toast(R.string.toast_chose_keymapper_keyboard)
+
+            //only show the toast message if it is successful
+            if (switchToKeyMapperIme(ctx)) {
+                toast(R.string.toast_chose_keymapper_keyboard)
+            }
         }
     }
 }
