@@ -132,7 +132,7 @@ class ConfigKeymapFragment : Fragment() {
 
             mViewModel.showOnboardingPrompt.observe(viewLifecycleOwner, EventObserver {
 
-                lifecycleScope.launchWhenCreated {
+                lifecycleScope.launchWhenStarted {
                     val approvedWarning = requireActivity().alertDialog {
                         message = str(it.message)
 
