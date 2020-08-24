@@ -34,6 +34,7 @@ import io.github.sds100.keymapper.util.result.Success
 import kotlinx.coroutines.*
 import splitties.bitflags.hasFlag
 import splitties.systemservices.vibrator
+import splitties.toast.toast
 import timber.log.Timber
 
 /**
@@ -125,7 +126,9 @@ class MyAccessibilityService : AccessibilityService(),
                 Intent.ACTION_SCREEN_OFF -> {
                     mIsScreenOn = false
                     if (AppPreferences.hasRootPermission && mScreenOffTriggersEnabled) {
-                        mGetEventDelegate.startListening(lifecycleScope)
+                        if (!mGetEventDelegate.startListening(lifecycleScope)) {
+                            toast(R.string.error_failed_execute_getevent)
+                        }
                     }
                 }
             }

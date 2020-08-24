@@ -612,6 +612,7 @@
     <string name="error_look_in_log">Key Mapper encountered an error! Look in the Log.</string>
     <string name="error_need_write_secure_settings_permission">Key Mapper needs WRITE_SECURE_SETTINGS permission.</string>
     <string name="error_no_app_found_to_open_url">No app can be found to open that url</string>
+    <string name="error_failed_execute_getevent">Failed to execute "getevent" command. Are you sure you\'re rooted?</string>
 
     <string name="error_camera_in_use">Camera is in use!</string>
     <string name="error_camera_disconnected">Camera Disconnected!</string>
