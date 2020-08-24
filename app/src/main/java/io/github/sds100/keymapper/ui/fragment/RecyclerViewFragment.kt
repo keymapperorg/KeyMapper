@@ -84,7 +84,7 @@ abstract class RecyclerViewFragment : Fragment() {
                 findNavController().navigateUp()
             }
 
-            requireActivity().onBackPressedDispatcher.addCallback {
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
                 findNavController().navigateUp()
             }
 

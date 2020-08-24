@@ -153,7 +153,7 @@ class KeymapListFragment : Fragment() {
                 }
             }
 
-            requireActivity().onBackPressedDispatcher.addCallback {
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
                 if (selectionProvider.isSelectable.value == true) {
                     selectionProvider.stopSelecting()
                 } else {

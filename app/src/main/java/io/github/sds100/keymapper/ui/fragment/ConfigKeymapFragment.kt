@@ -94,7 +94,7 @@ class ConfigKeymapFragment : Fragment() {
 
             tabLayout.isVisible = tabLayout.tabCount > 1
 
-            requireActivity().onBackPressedDispatcher.addCallback {
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
                 findNavController().navigateUp()
             }
 
