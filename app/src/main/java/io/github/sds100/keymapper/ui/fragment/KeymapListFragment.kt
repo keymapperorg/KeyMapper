@@ -42,6 +42,7 @@ import io.github.sds100.keymapper.util.result.ImeServiceDisabled
 import io.github.sds100.keymapper.util.result.RecoverableFailure
 import io.github.sds100.keymapper.util.result.getFullMessage
 import io.github.sds100.keymapper.worker.SeedDatabaseWorker
+import kotlinx.android.synthetic.main.fragment_keymap_list.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -106,7 +107,6 @@ class KeymapListFragment : Fragment() {
             mBinding = this
             lifecycleOwner = this@KeymapListFragment
             viewModel = mViewModel
-            epoxyRecyclerView.adapter = mController.adapter
 
             setOnNewKeymapClick {
                 val direction =
@@ -307,6 +307,13 @@ class KeymapListFragment : Fragment() {
 
             return this.root
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        //assign in onViewCreated in case context is required when building the models.
+        epoxyRecyclerView.adapter = mController.adapter
     }
 
     private suspend fun buildModelList(keymapList: List<KeyMap>) =
