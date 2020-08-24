@@ -20,6 +20,7 @@ import io.github.sds100.keymapper.slider
 import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.int
 import io.github.sds100.keymapper.util.str
+import kotlinx.android.synthetic.main.fragment_keymap_options.*
 
 /**
  * Created by sds100 on 19/03/2020.
@@ -35,7 +36,6 @@ class KeymapOptionsFragment(private val mKeymapId: Long) : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         FragmentKeymapOptionsBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
-            epoxyRecyclerViewFlags.adapter = mController.adapter
 
             mViewModel.checkBoxModels.observe(viewLifecycleOwner) {
                 mController.checkBoxModels = it
@@ -46,6 +46,13 @@ class KeymapOptionsFragment(private val mKeymapId: Long) : Fragment() {
             }
             return this.root
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        //assign in onViewCreated in case context is required when building the models.
+        epoxyRecyclerViewFlags.adapter = mController.adapter
     }
 
     private inner class Controller : EpoxyController() {

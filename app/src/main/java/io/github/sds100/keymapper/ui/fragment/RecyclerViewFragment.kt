@@ -120,6 +120,5 @@ abstract class RecyclerViewFragment<BINDING : ViewDataBinding> : Fragment() {
 
     open fun onSearchQuery(query: String?) {}
     abstract fun subscribeList(binding: BINDING)
-    abstract fun bind(inflater: LayoutInflater,
-                      container: ViewGroup?): BINDING
+    abstract fun bind(inflater: LayoutInflater, container: ViewGroup?): BINDING
 }
