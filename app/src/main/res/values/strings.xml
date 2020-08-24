@@ -44,6 +44,7 @@
     <string name="trigger_released">Released</string>
     <string name="trigger_pressed_again">Pressed again</string>
 
+    <string name="dont_know_device_name">Don\'t know device name!</string>
     <string name="whats_new">What\'s New</string>
     <string name="caption_action_type_key">Click the key on the device which you want to be entered.
         \n\nIMPORTANT!
