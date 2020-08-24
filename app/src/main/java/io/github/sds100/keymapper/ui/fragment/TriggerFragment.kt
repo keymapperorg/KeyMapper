@@ -119,14 +119,15 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
 
                 when (it.peekContent().first) {
                     MyAccessibilityService.EVENT_RECORD_TRIGGER_KEY -> {
-                        val keyEvent = it.getContentIfNotHandled()?.second as KeyEvent
+                        (it.getContentIfNotHandled()?.second as KeyEvent?)?.let { keyEvent ->
 
-                        lifecycleScope.launch {
-                            val deviceName = keyEvent.device.name
-                            val deviceDescriptor = keyEvent.device.descriptor
-                            val isExternal = keyEvent.device.isExternalCompat
+                            lifecycleScope.launch {
+                                val deviceName = keyEvent.device.name
+                                val deviceDescriptor = keyEvent.device.descriptor
+                                val isExternal = keyEvent.device.isExternalCompat
 
-                            mViewModel.addTriggerKey(keyEvent.keyCode, deviceDescriptor, deviceName, isExternal)
+                                mViewModel.addTriggerKey(keyEvent.keyCode, deviceDescriptor, deviceName, isExternal)
+                            }
                         }
                     }
 
