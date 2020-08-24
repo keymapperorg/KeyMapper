@@ -184,7 +184,7 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
                 }
             }
 
-            requireActivity().onBackPressedDispatcher.addCallback {
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
                 if (selectionProvider.isSelectable.value == true) {
                     selectionProvider.stopSelecting()
                 } else {
