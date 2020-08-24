@@ -268,8 +268,9 @@ class MyAccessibilityService : AccessibilityService(),
                 }
 
                 EVENT_TEST_ACTION -> {
-                    val action = it.getContentIfNotHandled()?.second as Action
-                    mActionPerformerDelegate.performAction(action)
+                    (it.getContentIfNotHandled()?.second as Action?)?.let { action ->
+                        mActionPerformerDelegate.performAction(action)
+                    }
                 }
 
                 EVENT_STOP_RECORDING_TRIGGER -> {
