@@ -293,7 +293,9 @@ class MyAccessibilityService : AccessibilityService(),
     override fun onDestroy() {
         super.onDestroy()
 
-        mLifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+        if (::mLifecycleRegistry.isInitialized) {
+            mLifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+        }
 
         WidgetsManager.onEvent(this, EVENT_ACCESSIBILITY_SERVICE_STOPPED)
         provideBus().value = Event(EVENT_ON_SERVICE_STOPPED to null)
