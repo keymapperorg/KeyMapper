@@ -26,6 +26,14 @@ import splitties.toast.toast
 
 object KeyboardUtils {
 
+    //DON'T CHANGE THESE!!!
+    const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN_UP = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_DOWN_UP"
+    const val KEY_MAPPER_INPUT_METHOD_ACTION_TEXT = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_TEXT"
+
+    const val KEY_MAPPER_INPUT_METHOD_EXTRA_KEYCODE = "io.github.sds100.keymapper.inputmethod.EXTRA_KEYCODE"
+    const val KEY_MAPPER_INPUT_METHOD_EXTRA_METASTATE = "io.github.sds100.keymapper.inputmethod.EXTRA_METASTATE"
+    const val KEY_MAPPER_INPUT_METHOD_EXTRA_TEXT = "io.github.sds100.keymapper.inputmethod.EXTRA_TEXT"
+
     fun enableKeyMapperIme() {
         if (isPermissionGranted(Constants.PERMISSION_ROOT)) {
             KeyMapperImeService.getImeId().onSuccess {
@@ -119,9 +127,28 @@ object KeyboardUtils {
         }
     }
 
-    fun sendDownUpFromImeService(keyCode: Int, metaState: Int = 0) {
-        KeyMapperImeService.provideBus().value =
-            Event(KeyMapperImeService.EVENT_INPUT_DOWN_UP to intArrayOf(keyCode, metaState))
+    fun inputTextFromImeService(text: String) {
+        Intent(KEY_MAPPER_INPUT_METHOD_ACTION_TEXT).apply {
+            setPackage(Constants.PACKAGE_NAME)
+
+            putExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_TEXT, text)
+            appCtx.sendBroadcast(this)
+        }
+    }
+
+    fun inputKeyEventFromImeService(
+        keyCode: Int,
+        metaState: Int = 0
+    ) {
+        val intentAction = KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN_UP
+
+        Intent(intentAction).apply {
+            setPackage(Constants.PACKAGE_NAME)
+            putExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_KEYCODE, keyCode)
+            putExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_METASTATE, metaState)
+
+            appCtx.sendBroadcast(this)
+        }
     }
 
     fun getChosenImeId(ctx: Context): String {
