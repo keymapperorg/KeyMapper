@@ -168,8 +168,8 @@ class ConfigKeymapFragment : Fragment() {
                 val serviceEnabled = AccessibilityUtils.isServiceEnabled(requireContext())
 
                 if (serviceEnabled) {
-                    MyAccessibilityService.provideBus().value =
-                        Event(MyAccessibilityService.EVENT_RECORD_TRIGGER to null)
+                    requireContext().sendPackageBroadcast(MyAccessibilityService.ACTION_RECORD_TRIGGER)
+
                 } else {
                     mViewModel.promptToEnableAccessibilityService.value = Event(Unit)
                 }
@@ -187,8 +187,9 @@ class ConfigKeymapFragment : Fragment() {
                 val serviceEnabled = AccessibilityUtils.isServiceEnabled(requireContext())
 
                 if (serviceEnabled) {
-                    MyAccessibilityService.provideBus().value =
-                        Event(MyAccessibilityService.EVENT_STOP_RECORDING_TRIGGER to null)
+
+                    requireContext().sendPackageBroadcast(MyAccessibilityService.ACTION_STOPPED_RECORDING_TRIGGER)
+
                 } else {
                     mViewModel.promptToEnableAccessibilityService.value = Event(Unit)
                 }

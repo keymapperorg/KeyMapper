@@ -78,11 +78,21 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
 
     private val mBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            when (intent!!.action) {
+            intent ?: return
+
+            when (intent.action) {
                 /*when the input method changes, update the action descriptions in case any need to show an error
                 * that they need the input method to be enabled. */
                 Intent.ACTION_INPUT_METHOD_CHANGED -> {
                     mViewModel.rebuildModels()
+                }
+
+                MyAccessibilityService.ACTION_ON_START -> {
+                    mAccessibilityServiceStatusState.value = StatusLayout.State.POSITIVE
+                }
+
+                MyAccessibilityService.ACTION_ON_STOP -> {
+                    mAccessibilityServiceStatusState.value = StatusLayout.State.ERROR
                 }
             }
         }
@@ -116,6 +126,9 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
 
         IntentFilter().apply {
             addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
+            addAction(MyAccessibilityService.ACTION_ON_START)
+            addAction(MyAccessibilityService.ACTION_ON_STOP)
+
             requireActivity().registerReceiver(mBroadcastReceiver, this)
         }
 
@@ -248,20 +261,6 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
 
             mBackupRestoreViewModel.requestRestore.observe(viewLifecycleOwner, EventObserver {
                 mRestoreLauncher.launch(FileUtils.MIME_TYPE_JSON)
-            })
-
-            MyAccessibilityService.provideBus().observe(viewLifecycleOwner, Observer {
-                when (it.peekContent().first) {
-                    MyAccessibilityService.EVENT_ON_SERVICE_STARTED -> {
-                        mAccessibilityServiceStatusState.value = StatusLayout.State.POSITIVE
-                        it.handled()
-                    }
-
-                    MyAccessibilityService.EVENT_ON_SERVICE_STOPPED -> {
-                        mAccessibilityServiceStatusState.value = StatusLayout.State.ERROR
-                        it.handled()
-                    }
-                }
             })
 
             expanded = mExpanded
