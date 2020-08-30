@@ -1,13 +1,12 @@
 package io.github.sds100.keymapper.ui.fragment
 
-import android.content.SharedPreferences
+import android.content.*
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -31,9 +30,32 @@ class MenuFragment : BottomSheetDialogFragment(), SharedPreferences.OnSharedPref
     private val mAccessibilityServiceEnabled by lazy {
         MutableLiveData(AccessibilityUtils.isServiceEnabled(requireContext()))
     }
-    
+
+    private val mBroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            intent ?: return
+
+            when (intent.action) {
+                MyAccessibilityService.ACTION_ON_START -> {
+                    mAccessibilityServiceEnabled.value = true
+                }
+
+                MyAccessibilityService.ACTION_ON_STOP -> {
+                    mAccessibilityServiceEnabled.value = false
+                }
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        IntentFilter().apply {
+            addAction(MyAccessibilityService.ACTION_ON_START)
+            addAction(MyAccessibilityService.ACTION_ON_STOP)
+
+            requireActivity().registerReceiver(mBroadcastReceiver, this)
+        }
 
         requireContext().defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
     }
@@ -102,16 +124,6 @@ class MenuFragment : BottomSheetDialogFragment(), SharedPreferences.OnSharedPref
                 AccessibilityUtils.enableService(requireContext())
             }
 
-            MyAccessibilityService.provideBus().observe(viewLifecycleOwner) {
-                when (it.peekContent().first) {
-                    MyAccessibilityService.EVENT_ON_SERVICE_STARTED ->
-                        mAccessibilityServiceEnabled.value = true
-
-                    MyAccessibilityService.EVENT_ON_SERVICE_STOPPED ->
-                        mAccessibilityServiceEnabled.value = false
-                }
-            }
-
             return this.root
         }
     }
@@ -126,6 +138,7 @@ class MenuFragment : BottomSheetDialogFragment(), SharedPreferences.OnSharedPref
     override fun onDestroy() {
         super.onDestroy()
 
+        requireContext().unregisterReceiver(mBroadcastReceiver)
         requireContext().defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
     }
 
