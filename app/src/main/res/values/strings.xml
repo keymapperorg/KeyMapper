@@ -501,6 +501,7 @@
     <string name="tile_pause">Pause Keymaps</string>
     <string name="tile_resume">Resume Keymaps</string>
     <string name="tile_service_disabled">Service Disabled</string>
+    <string name="tile_accessibility_service_disabled_content_description">Key Mapper accessibility service is disabled</string>
     <string name="tile_toggle_keymapper_keyboard">Toggle Key Mapper Keyboard</string>
     <!-- Tiles -->
 

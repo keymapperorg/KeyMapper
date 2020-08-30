@@ -114,18 +114,21 @@ class ToggleKeymapsTile : TileService(), SharedPreferences.OnSharedPreferenceCha
         when (mState) {
             State.PAUSED -> {
                 qsTile.label = str(R.string.tile_resume)
+                qsTile.contentDescription = str(R.string.tile_resume)
                 qsTile.icon = Icon.createWithResource(this, R.drawable.ic_tile_resume)
                 qsTile.state = Tile.STATE_ACTIVE
             }
 
             State.RESUMED -> {
                 qsTile.label = str(R.string.tile_pause)
+                qsTile.contentDescription = str(R.string.tile_pause)
                 qsTile.icon = Icon.createWithResource(this, R.drawable.ic_tile_pause)
                 qsTile.state = Tile.STATE_INACTIVE
             }
 
             State.DISABLED -> {
                 qsTile.label = str(R.string.tile_service_disabled)
+                qsTile.contentDescription = str(R.string.tile_accessibility_service_disabled_content_description)
                 qsTile.icon = Icon.createWithResource(this, R.drawable.ic_tile_error)
                 qsTile.state = Tile.STATE_UNAVAILABLE
             }
