@@ -74,12 +74,14 @@ class ToggleKeyMapperKeyboardTile : TileService() {
             State.DEFAULT -> {
                 qsTile.icon = Icon.createWithResource(this, R.drawable.ic_tile_keyboard)
                 qsTile.label = str(R.string.tile_toggle_keymapper_keyboard)
+                qsTile.contentDescription = str(R.string.tile_toggle_keymapper_keyboard)
                 qsTile.state = Tile.STATE_INACTIVE
             }
 
             State.DISABLED -> {
                 qsTile.icon = Icon.createWithResource(this, R.drawable.ic_tile_error)
                 qsTile.label = str(R.string.tile_service_disabled)
+                qsTile.contentDescription = str(R.string.tile_keymapper_keyboard_service_disabled_content_description)
                 qsTile.state = Tile.STATE_INACTIVE
             }
         }
