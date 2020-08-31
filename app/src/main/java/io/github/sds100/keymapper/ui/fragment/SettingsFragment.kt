@@ -35,7 +35,7 @@ class SettingsFragment : Fragment() {
         FragmentSettingsBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
 
-            requireActivity().onBackPressedDispatcher.addCallback {
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
                 findNavController().navigateUp()
             }
 
@@ -175,47 +175,53 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
     }
 
     override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
-        when (preference) {
+        if (newValue is Boolean) {
+            when (preference) {
 
-            mShowImeNotificationPreference -> {
-                //show/hide the notification when the preference is toggled
-                if (newValue as Boolean) {
-                    NotificationUtils.showIMEPickerNotification(requireContext())
-                } else {
-                    NotificationUtils.dismissNotification(NotificationUtils.ID_IME_PICKER)
+                mShowImeNotificationPreference -> {
+                    //show/hide the notification when the preference is toggled
+                    if (newValue) {
+                        NotificationUtils.showIMEPickerNotification(requireContext())
+                    } else {
+                        NotificationUtils.dismissNotification(NotificationUtils.ID_IME_PICKER)
+                    }
                 }
-            }
 
-            mToggleKeyboardNotificationPref -> {
-                //show/hide the notification when the preference is toggled
-                if (newValue as Boolean) {
+                mToggleKeyboardNotificationPref -> {
+                    //show/hide the notification when the preference is toggled
+                    if (newValue) {
+                        WidgetsManager.invalidateNotifications(requireContext())
+                    } else {
+                        NotificationUtils.dismissNotification(NotificationUtils.ID_TOGGLE_KEYBOARD)
+                    }
+                }
+
+                mToggleRemappingsNotificationPref -> {
+
+                    if (newValue) {
+                        WidgetsManager.invalidateNotifications(requireContext())
+                    } else {
+
+                        NotificationUtils.dismissNotification(NotificationUtils.ID_TOGGLE_REMAPS)
+                    }
+                }
+
+                //Only enable the root preferences if the user has enabled root features
+                mRootPermissionPreference -> {
+                    enableRootPreferences(newValue)
+
+                    //the pending intents need to be updated so they don't use the root methods
                     WidgetsManager.invalidateNotifications(requireContext())
-                } else {
-                    NotificationUtils.dismissNotification(NotificationUtils.ID_TOGGLE_KEYBOARD)
                 }
             }
+        }
 
-            mToggleRemappingsNotificationPref -> {
-
-                if (newValue as Boolean) {
-                    WidgetsManager.invalidateNotifications(requireContext())
-                } else {
-
-                    NotificationUtils.dismissNotification(NotificationUtils.ID_TOGGLE_REMAPS)
+        if (newValue is String) {
+            when (preference) {
+                mDarkThemePreference -> {
+                    val mode = AppPreferences.getSdkNightMode(newValue)
+                    AppCompatDelegate.setDefaultNightMode(mode)
                 }
-            }
-
-            //Only enable the root preferences if the user has enabled root features
-            mRootPermissionPreference -> {
-                enableRootPreferences(newValue as Boolean)
-
-                //the pending intents need to be updated so they don't use the root methods
-                WidgetsManager.invalidateNotifications(requireContext())
-            }
-
-            mDarkThemePreference -> {
-                val mode = AppPreferences.getSdkNightMode(newValue as String)
-                AppCompatDelegate.setDefaultNightMode(mode)
             }
         }
 

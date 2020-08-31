@@ -42,6 +42,7 @@ import io.github.sds100.keymapper.util.result.ImeServiceDisabled
 import io.github.sds100.keymapper.util.result.RecoverableFailure
 import io.github.sds100.keymapper.util.result.getFullMessage
 import io.github.sds100.keymapper.worker.SeedDatabaseWorker
+import kotlinx.android.synthetic.main.fragment_keymap_list.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -79,11 +80,21 @@ class KeymapListFragment : Fragment() {
 
     private val mBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            when (intent!!.action) {
+            intent ?: return
+
+            when (intent.action) {
                 /*when the input method changes, update the action descriptions in case any need to show an error
                 * that they need the input method to be enabled. */
                 Intent.ACTION_INPUT_METHOD_CHANGED -> {
                     mViewModel.rebuildModels()
+                }
+
+                MyAccessibilityService.ACTION_ON_START -> {
+                    mAccessibilityServiceStatusState.value = StatusLayout.State.POSITIVE
+                }
+
+                MyAccessibilityService.ACTION_ON_STOP -> {
+                    mAccessibilityServiceStatusState.value = StatusLayout.State.ERROR
                 }
             }
         }
@@ -94,6 +105,9 @@ class KeymapListFragment : Fragment() {
 
         IntentFilter().apply {
             addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
+            addAction(MyAccessibilityService.ACTION_ON_START)
+            addAction(MyAccessibilityService.ACTION_ON_STOP)
+
             requireActivity().registerReceiver(mBroadcastReceiver, this)
         }
     }
@@ -106,7 +120,6 @@ class KeymapListFragment : Fragment() {
             mBinding = this
             lifecycleOwner = this@KeymapListFragment
             viewModel = mViewModel
-            epoxyRecyclerView.adapter = mController.adapter
 
             setOnNewKeymapClick {
                 val direction =
@@ -153,7 +166,7 @@ class KeymapListFragment : Fragment() {
                 }
             }
 
-            requireActivity().onBackPressedDispatcher.addCallback {
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
                 if (selectionProvider.isSelectable.value == true) {
                     selectionProvider.stopSelecting()
                 } else {
@@ -204,20 +217,6 @@ class KeymapListFragment : Fragment() {
                     }
                 })
             }
-
-            MyAccessibilityService.provideBus().observe(viewLifecycleOwner, Observer {
-                when (it.peekContent().first) {
-                    MyAccessibilityService.EVENT_ON_SERVICE_STARTED -> {
-                        mAccessibilityServiceStatusState.value = StatusLayout.State.POSITIVE
-                        it.handled()
-                    }
-
-                    MyAccessibilityService.EVENT_ON_SERVICE_STOPPED -> {
-                        mAccessibilityServiceStatusState.value = StatusLayout.State.ERROR
-                        it.handled()
-                    }
-                }
-            })
 
             expanded = mExpanded
             collapsedStatusLayoutState = mCollapsedStatusState
@@ -307,6 +306,13 @@ class KeymapListFragment : Fragment() {
 
             return this.root
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        //assign in onViewCreated in case context is required when building the models.
+        epoxyRecyclerView.adapter = mController.adapter
     }
 
     private suspend fun buildModelList(keymapList: List<KeyMap>) =

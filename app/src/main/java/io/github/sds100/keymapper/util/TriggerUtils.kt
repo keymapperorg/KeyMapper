@@ -72,9 +72,9 @@ fun Trigger.Key.buildModel(ctx: Context, deviceInfoList: List<DeviceInfo>): Trig
     )
 }
 
-fun Trigger.Key.getDeviceName(ctx: Context, deviceInfoList: List<DeviceInfo>) =
+fun Trigger.Key.getDeviceName(ctx: Context, deviceInfoList: List<DeviceInfo>): String =
     when (deviceId) {
         Trigger.Key.DEVICE_ID_THIS_DEVICE -> ctx.str(R.string.this_device)
         Trigger.Key.DEVICE_ID_ANY_DEVICE -> ctx.str(R.string.any_device)
-        else -> deviceInfoList.single { it.descriptor == deviceId }.name
+        else -> deviceInfoList.find { it.descriptor == deviceId }?.name ?: ctx.str(R.string.dont_know_device_name)
     }

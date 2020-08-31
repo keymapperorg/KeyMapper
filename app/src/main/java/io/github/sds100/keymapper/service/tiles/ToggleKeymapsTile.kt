@@ -1,15 +1,11 @@
 package io.github.sds100.keymapper.service.tiles
 
-import android.content.SharedPreferences
+import android.content.*
 import android.graphics.drawable.Icon
 import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
-import androidx.lifecycle.observe
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.service.MyAccessibilityService
@@ -21,9 +17,7 @@ import io.github.sds100.keymapper.util.str
  * Created by sds100 on 12/06/2020.
  */
 @RequiresApi(Build.VERSION_CODES.N)
-class ToggleKeymapsTile : TileService(), LifecycleOwner, SharedPreferences.OnSharedPreferenceChangeListener {
-
-    private val mLifecycleRegistry = LifecycleRegistry(this)
+class ToggleKeymapsTile : TileService(), SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val mState: State
         get() = when {
@@ -36,17 +30,25 @@ class ToggleKeymapsTile : TileService(), LifecycleOwner, SharedPreferences.OnSha
             }
         }
 
-    override fun onCreate() {
+    private val mBroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            intent ?: return
 
-        mLifecycleRegistry.currentState = Lifecycle.State.STARTED
+            when (intent.action) {
+                MyAccessibilityService.ACTION_ON_START, MyAccessibilityService.ACTION_ON_STOP -> invalidateTile()
+            }
+        }
+    }
+
+    override fun onCreate() {
 
         defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
 
-        MyAccessibilityService.provideBus().observe(this) {
-            if (it?.peekContent()?.first == MyAccessibilityService.EVENT_ON_SERVICE_STARTED
-                || it?.peekContent()?.first == MyAccessibilityService.EVENT_ON_SERVICE_STOPPED) {
-                invalidateTile()
-            }
+        IntentFilter().apply {
+            addAction(MyAccessibilityService.ACTION_ON_START)
+            addAction(MyAccessibilityService.ACTION_ON_STOP)
+
+            registerReceiver(mBroadcastReceiver, this)
         }
 
         invalidateTile()
@@ -85,17 +87,19 @@ class ToggleKeymapsTile : TileService(), LifecycleOwner, SharedPreferences.OnSha
         super.onDestroy()
 
         defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
-        mLifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+        unregisterReceiver(mBroadcastReceiver)
     }
 
     override fun onClick() {
         super.onClick()
 
-        AppPreferences.keymapsPaused = !AppPreferences.keymapsPaused
-
         if (!AccessibilityUtils.isServiceEnabled(this)) {
             return
         }
+
+        AppPreferences.keymapsPaused = !AppPreferences.keymapsPaused
+
+        qsTile?.updateTile()
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
@@ -110,18 +114,21 @@ class ToggleKeymapsTile : TileService(), LifecycleOwner, SharedPreferences.OnSha
         when (mState) {
             State.PAUSED -> {
                 qsTile.label = str(R.string.tile_resume)
+                qsTile.contentDescription = str(R.string.tile_resume)
                 qsTile.icon = Icon.createWithResource(this, R.drawable.ic_tile_resume)
                 qsTile.state = Tile.STATE_ACTIVE
             }
 
             State.RESUMED -> {
                 qsTile.label = str(R.string.tile_pause)
+                qsTile.contentDescription = str(R.string.tile_pause)
                 qsTile.icon = Icon.createWithResource(this, R.drawable.ic_tile_pause)
                 qsTile.state = Tile.STATE_INACTIVE
             }
 
             State.DISABLED -> {
                 qsTile.label = str(R.string.tile_service_disabled)
+                qsTile.contentDescription = str(R.string.tile_accessibility_service_disabled_content_description)
                 qsTile.icon = Icon.createWithResource(this, R.drawable.ic_tile_error)
                 qsTile.state = Tile.STATE_UNAVAILABLE
             }
@@ -129,8 +136,6 @@ class ToggleKeymapsTile : TileService(), LifecycleOwner, SharedPreferences.OnSha
 
         qsTile.updateTile()
     }
-
-    override fun getLifecycle() = mLifecycleRegistry
 
     private enum class State {
         PAUSED, RESUMED, DISABLED

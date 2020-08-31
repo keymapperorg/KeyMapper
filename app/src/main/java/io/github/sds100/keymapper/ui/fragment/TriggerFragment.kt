@@ -11,7 +11,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.navigation.navGraphViewModels
@@ -51,10 +50,37 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
     private val mBroadcastReceiver = object : BroadcastReceiver() {
 
         override fun onReceive(context: Context?, intent: Intent?) {
-            when (intent?.action) {
+            intent ?: return
+
+            when (intent.action) {
 
                 Intent.ACTION_INPUT_METHOD_CHANGED -> {
                     mViewModel.rebuildActionModels()
+                }
+
+                MyAccessibilityService.ACTION_RECORDED_TRIGGER_KEY -> {
+                    intent.getParcelableExtra<KeyEvent>(MyAccessibilityService.EXTRA_KEY_EVENT)?.let { keyEvent ->
+                        lifecycleScope.launch {
+                            val deviceName = keyEvent.device.name
+                            val deviceDescriptor = keyEvent.device.descriptor
+                            val isExternal = keyEvent.device.isExternalCompat
+
+                            mViewModel.addTriggerKey(keyEvent.keyCode, deviceDescriptor, deviceName, isExternal)
+                        }
+                    }
+                }
+
+                MyAccessibilityService.ACTION_RECORD_TRIGGER_TIMER_INCREMENTED -> {
+                    val timeLeft = intent.getIntExtra(MyAccessibilityService.EXTRA_TIME_LEFT, -1)
+
+                    if (timeLeft != -1) {
+                        mViewModel.recordingTrigger.value = true
+                        mViewModel.recordTriggerTimeLeft.value = timeLeft
+                    }
+                }
+
+                MyAccessibilityService.ACTION_STOPPED_RECORDING_TRIGGER -> {
+                    mViewModel.recordingTrigger.value = false
                 }
             }
         }
@@ -65,6 +91,9 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
 
         IntentFilter().apply {
             addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
+            addAction(MyAccessibilityService.ACTION_RECORD_TRIGGER_TIMER_INCREMENTED)
+            addAction(MyAccessibilityService.ACTION_RECORDED_TRIGGER_KEY)
+            addAction(MyAccessibilityService.ACTION_STOPPED_RECORDING_TRIGGER)
 
             requireActivity().registerReceiver(mBroadcastReceiver, this)
         }
@@ -111,36 +140,6 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
                         }.toList()
 
                         mViewModel.triggerKeyModelList.postValue(modelList)
-                    }
-                }
-            })
-
-            MyAccessibilityService.provideBus().observe(viewLifecycleOwner, Observer {
-
-                when (it.peekContent().first) {
-                    MyAccessibilityService.EVENT_RECORD_TRIGGER_KEY -> {
-                        val keyEvent = it.getContentIfNotHandled()?.second as KeyEvent
-
-                        lifecycleScope.launch {
-                            val deviceName = keyEvent.device.name
-                            val deviceDescriptor = keyEvent.device.descriptor
-                            val isExternal = keyEvent.device.isExternalCompat
-
-                            mViewModel.addTriggerKey(keyEvent.keyCode, deviceDescriptor, deviceName, isExternal)
-                        }
-                    }
-
-                    MyAccessibilityService.EVENT_RECORD_TRIGGER_TIMER_INCREMENTED -> {
-                        val data = it.getContentIfNotHandled()?.second ?: return@Observer
-                        val timeLeft = data as Int
-
-                        mViewModel.recordingTrigger.value = true
-                        mViewModel.recordTriggerTimeLeft.value = timeLeft
-                    }
-
-                    MyAccessibilityService.EVENT_STOP_RECORDING_TRIGGER -> {
-                        it.handled()
-                        mViewModel.recordingTrigger.value = false
                     }
                 }
             })
