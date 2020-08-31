@@ -263,6 +263,8 @@ class MyAccessibilityService : AccessibilityService(),
 
         mKeymapDetectionDelegate.vibrate.observe(this, EventObserver {
 
+            if (it <= 0) return@EventObserver
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 vibrator.vibrate(VibrationEffect.createOneShot(it, VibrationEffect.DEFAULT_AMPLITUDE))
             } else {
