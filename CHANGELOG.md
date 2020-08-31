@@ -1,3 +1,13 @@
+## [2.0.2](https://github.com/sds100/KeyMapper/releases/tag/v2.0.2) 
+
+#### 31 Aug 2020
+
+### Bug Fixes
+- Fixed many crashes throughout the app. See the commit history for more detail.
+
+### Changes
+- Make the functionality to fix actions by pressing on them more discoverable. The top of the keymap on the homescreen will show "Tap actions to fix!" and the broken actions have a red tint.
+
 ## [2.0.1](https://github.com/sds100/KeyMapper/releases/tag/v2.0.1) 
 
 #### 16 Aug 2020
