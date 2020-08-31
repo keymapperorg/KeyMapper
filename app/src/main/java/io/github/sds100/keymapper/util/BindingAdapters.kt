@@ -162,6 +162,7 @@ fun ChipGroup.bindActions(actions: List<ActionChipModel>, callback: ErrorClickCa
                 setOnClickListener { _ ->
                     callback.onErrorClick(it.error!!)
                 }
+                setChipBackgroundColorResource(R.color.cardTintRed)
             } else {
                 isClickable = false
             }
