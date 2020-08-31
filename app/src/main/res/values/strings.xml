@@ -5,7 +5,7 @@
     <string name="no_action_chosen">No Action Chosen</string>
     <string name="triggers_header">Triggers</string>
     <string name="accessibility_service_description">Key Mapper needs to use an accessibility service so it can listen to button/key presses and perform the actions you\'ve chosen.
-    The accessibility service only listens for key events and nothing else. Look at the source code, which is linked to in the About section inside the app, if you are paranoid I\'m spying. :)</string>
+    The accessibility service only listens for key events and detects which app you are in. You can look at the source code, which is linked in the About screen, to verify this.</string>
     <string name="record_trigger_help">When you click \"record trigger\", you have 5 seconds to press the keys/buttons which will trigger the action. Your trigger will be added after the 5 seconds. Press \"clear\" to clear the keys you have already typed. If a button isn\'t detected here, the device vendor is probably blocking accessibility services from seeing it. Therefore, it can\'t be remapped.</string>
     <string name="selection_count">%d selected</string>
     <string name="ime_service_label" translatable="false">Key Mapper Basic Input Method</string>
