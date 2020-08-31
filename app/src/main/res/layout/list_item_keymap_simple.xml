@@ -73,13 +73,14 @@
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
                     android:textColor="?attr/colorError"
                     android:textSize="14sp"
-                    android:visibility="@{model.isEnabled &amp;&amp; model.hasActions &amp;&amp; model.hasTrigger? View.GONE : View.VISIBLE}"
+                    android:visibility="@{model.isEnabled &amp;&amp; model.hasActions &amp;&amp; model.hasTrigger &amp;&amp; !model.actionsHaveErrors ? View.GONE : View.VISIBLE}"
                     app:isKeymapEnabled="@{model.isEnabled}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:noActions="@{!model.hasActions}"
                     app:noTrigger="@{!model.hasTrigger}"
+                    app:actionsHaveErrors="@{model.actionsHaveErrors}"
                     tools:text="Disabled • No Actions • No Triggers"
                     tools:visibility="gone" />
 

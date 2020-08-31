@@ -43,6 +43,7 @@
     <string name="stop_repeating_dot_dot_dot">Stop repeating when trigger is…</string>
     <string name="trigger_released">Released</string>
     <string name="trigger_pressed_again">Pressed again</string>
+    <string name="tap_actions_to_fix">Tap actions to fix!</string>
 
     <string name="dont_know_device_name">Don\'t know device name!</string>
     <string name="whats_new">What\'s New</string>

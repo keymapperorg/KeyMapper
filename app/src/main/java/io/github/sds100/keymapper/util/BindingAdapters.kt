@@ -195,13 +195,21 @@ fun ChipGroup.bindActionsAndConstraints(
     bindConstraints(constraints, constraintMode, callback)
 }
 
-@BindingAdapter("app:isKeymapEnabled", "app:noActions", "app:noTrigger", requireAll = false)
-fun TextView.setKeymapExtraInfo(isKeymapEnabled: Boolean = false, noActions: Boolean = false, noTrigger: Boolean = false) {
+@BindingAdapter("app:isKeymapEnabled", "app:noActions", "app:noTrigger", "app:actionsHaveErrors", requireAll = false)
+fun TextView.setKeymapExtraInfo(isKeymapEnabled: Boolean = false, noActions: Boolean = false, noTrigger: Boolean = false, actionsHaveErrors: Boolean = false) {
     text = buildString {
         val interpunct = str(R.string.interpunct)
 
         if (!isKeymapEnabled) {
             append(str(R.string.disabled))
+        }
+
+        if (actionsHaveErrors) {
+            if (this.isNotEmpty()) {
+                append(" $interpunct ")
+            }
+
+            append(str(R.string.tap_actions_to_fix))
         }
 
         if (noActions) {

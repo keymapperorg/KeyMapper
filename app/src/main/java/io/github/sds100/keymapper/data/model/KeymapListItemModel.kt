@@ -23,4 +23,7 @@ data class KeymapListItemModel(
 
     val hasFlags: Boolean
         get() = flagsDescription.isNotBlank()
+
+    val actionsHaveErrors: Boolean
+        get() = actionList.any { it.hasError }
 }
