@@ -16,7 +16,7 @@ import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.MyApplication
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.WidgetsManager
-import io.github.sds100.keymapper.WidgetsManager.EVENT_ACCESSIBILITY_SERVICE_START
+import io.github.sds100.keymapper.WidgetsManager.EVENT_ACCESSIBILITY_SERVICE_STARTED
 import io.github.sds100.keymapper.WidgetsManager.EVENT_ACCESSIBILITY_SERVICE_STOPPED
 import io.github.sds100.keymapper.WidgetsManager.EVENT_PAUSE_REMAPS
 import io.github.sds100.keymapper.WidgetsManager.EVENT_RESUME_REMAPS
@@ -233,7 +233,7 @@ class MyAccessibilityService : AccessibilityService(),
 
         defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
 
-        WidgetsManager.onEvent(this, EVENT_ACCESSIBILITY_SERVICE_START)
+        WidgetsManager.onEvent(this, EVENT_ACCESSIBILITY_SERVICE_STARTED)
 
         sendPackageBroadcast(ACTION_ON_START)
 

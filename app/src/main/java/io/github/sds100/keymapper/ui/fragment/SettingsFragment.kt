@@ -255,7 +255,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
                         WidgetsManager.invalidateNotifications(requireContext())
                     } else {
 
-                        NotificationUtils.dismissNotification(NotificationUtils.ID_TOGGLE_REMAPS)
+                        NotificationUtils.dismissNotification(NotificationUtils.ID_TOGGLE_KEYMAPS)
                     }
                 }
 

@@ -321,6 +321,8 @@
     <string name="notification_remappings_start_title">Paused</string>
     <string name="notification_remappings_start_text">Tap to resume your keymaps.</string>
 
+    <string name="notification_action_dismiss">Dismiss</string>
+
     <string name="notification_accessibility_service_disabled_title">Accessibility service disabled</string>
     <string name="notification_accessibility_service_disabled_text">Tap to start the accessibility service.</string>
 
