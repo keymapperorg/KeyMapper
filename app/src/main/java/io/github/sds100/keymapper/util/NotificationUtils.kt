@@ -69,8 +69,8 @@ object NotificationUtils {
 
         when (event) {
             WidgetsManager.EVENT_PAUSE_REMAPS -> {
-                titleRes = R.string.notification_remappings_start_title
-                textRes = R.string.notification_remappings_start_text
+                titleRes = R.string.notification_keymaps_start_title
+                textRes = R.string.notification_keymaps_start_text
                 iconRes = R.drawable.ic_notification_play
 
                 onClickPendingIntent = IntentUtils.createPendingBroadcastIntent(
@@ -86,8 +86,8 @@ object NotificationUtils {
             }
 
             WidgetsManager.EVENT_RESUME_REMAPS -> {
-                titleRes = R.string.notification_remappings_pause_title
-                textRes = R.string.notification_remappings_pause_text
+                titleRes = R.string.notification_keymaps_pause_title
+                textRes = R.string.notification_keymaps_pause_text
                 iconRes = R.drawable.ic_notification_pause
 
                 onClickPendingIntent = IntentUtils.createPendingBroadcastIntent(
