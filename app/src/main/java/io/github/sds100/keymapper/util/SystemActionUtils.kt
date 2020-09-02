@@ -49,6 +49,7 @@ import io.github.sds100.keymapper.util.SystemAction.EXPAND_QUICK_SETTINGS
 import io.github.sds100.keymapper.util.SystemAction.FAST_FORWARD
 import io.github.sds100.keymapper.util.SystemAction.GO_BACK
 import io.github.sds100.keymapper.util.SystemAction.GO_HOME
+import io.github.sds100.keymapper.util.SystemAction.GO_LAST_APP
 import io.github.sds100.keymapper.util.SystemAction.HIDE_KEYBOARD
 import io.github.sds100.keymapper.util.SystemAction.INCREASE_BRIGHTNESS
 import io.github.sds100.keymapper.util.SystemAction.LANDSCAPE_MODE
@@ -156,6 +157,12 @@ object SystemActionUtils {
             id = TOGGLE_SPLIT_SCREEN,
             category = CATEGORY_NAVIGATION,
             descriptionRes = R.string.action_toggle_split_screen,
+            minApi = Build.VERSION_CODES.N
+        ),
+        SystemActionDef(
+            id = GO_LAST_APP,
+            category = CATEGORY_NAVIGATION,
+            descriptionRes = R.string.action_go_last_app,
             minApi = Build.VERSION_CODES.N
         ),
         //NAVIGATION

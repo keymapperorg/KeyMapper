@@ -29,6 +29,8 @@ import io.github.sds100.keymapper.data.model.getData
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.onSuccess
 import io.github.sds100.keymapper.util.result.valueOrNull
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
 import splitties.toast.toast
@@ -281,6 +283,15 @@ class ActionPerformerDelegate(context: Context,
                             it.performAction(AccessibilityNodeInfoCompat.ACTION_CLICK)
                             it.recycle()
                         }
+                    }
+                }
+
+                SystemAction.GO_LAST_APP -> {
+                    runBlocking {
+                        performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
+
+                        delay(100)
+                        performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
                     }
                 }
 

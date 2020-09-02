@@ -86,6 +86,7 @@ object SystemAction {
     const val GO_HOME = "go_home"
     const val OPEN_RECENTS = "open_recents"
     const val TOGGLE_SPLIT_SCREEN = "toggle_split_screen"
+    const val GO_LAST_APP = "go_last_app"
 
     //flashlight
     const val TOGGLE_FLASHLIGHT = "toggle_flashlight"
