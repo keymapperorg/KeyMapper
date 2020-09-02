@@ -186,7 +186,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
             invalidateAutomaticBackupLocationSummary()
 
             mAutomaticBackupLocation?.setOnPreferenceClickListener {
-                val backupLocation = BackupUtils.getAutomaticBackupLocation(requireContext()).valueOrNull()
+                val backupLocation = BackupUtils.getAutomaticBackupLocation().valueOrNull()
 
                 if (backupLocation.isNullOrBlank()) {
                     mChooseAutomaticBackupLocationLauncher.launch(BackupUtils.DEFAULT_AUTOMATIC_BACKUP_NAME)
@@ -345,7 +345,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
     private fun invalidateAutomaticBackupLocationSummary() {
-        val backupLocation = BackupUtils.getAutomaticBackupLocation(requireContext()).valueOrNull()
+        val backupLocation = BackupUtils.getAutomaticBackupLocation().valueOrNull()
 
         if (backupLocation.isNullOrBlank()) {
             mAutomaticBackupLocation?.summary = str(R.string.summary_pref_automatic_backup_location_disabled)
