@@ -6,8 +6,8 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.SystemRepository
 import io.github.sds100.keymapper.data.viewmodel.AppShortcutListViewModel
@@ -51,6 +51,7 @@ class AppShortcutListFragment : DefaultRecyclerViewFragment() {
                     val uri: String
 
                     //the shortcut intents seem to be returned in 2 different formats.
+                    @Suppress("DEPRECATION")
                     if (data?.extras != null &&
                         data?.extras!!.containsKey(Intent.EXTRA_SHORTCUT_INTENT)) {
                         //get intent from selected shortcut
@@ -82,7 +83,7 @@ class AppShortcutListFragment : DefaultRecyclerViewFragment() {
     }
 
     override fun subscribeList(binding: FragmentRecyclerviewBinding) {
-        mViewModel.filteredAppShortcutModelList.observe(viewLifecycleOwner) { appShortcutList ->
+        mViewModel.filteredAppShortcutModelList.observe(viewLifecycleOwner, Observer { appShortcutList ->
 
             binding.epoxyRecyclerView.withModels {
                 appShortcutList.forEach {
@@ -97,7 +98,7 @@ class AppShortcutListFragment : DefaultRecyclerViewFragment() {
                     }
                 }
             }
-        }
+        })
     }
 
     override fun onSearchQuery(query: String?) {
@@ -119,7 +120,7 @@ class AppShortcutListFragment : DefaultRecyclerViewFragment() {
     }
 
     private suspend fun getShortcutName(data: Intent): String {
-        var shortcutName: String? = data.getStringExtra(Intent.EXTRA_SHORTCUT_NAME)
+        @Suppress("DEPRECATION") var shortcutName: String? = data.getStringExtra(Intent.EXTRA_SHORTCUT_NAME)
 
         if (shortcutName.isNullOrBlank()) {
             shortcutName = requireActivity().editTextAlertDialog(str(R.string.dialog_title_create_shortcut_title))
