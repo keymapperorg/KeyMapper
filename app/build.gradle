@@ -5,13 +5,13 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion = '29.0.3'
+    compileSdkVersion 30
+    buildToolsVersion = '30.0.2'
 
     defaultConfig {
         applicationId "io.github.sds100.keymapper"
         minSdkVersion 17
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 33
         versionName "2.1.0-alpha"
         multiDexEnabled true
