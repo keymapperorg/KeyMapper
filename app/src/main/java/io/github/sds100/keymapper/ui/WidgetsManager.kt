@@ -68,6 +68,13 @@ object WidgetsManager {
         }
 
         updateToggleKeymapsNotification(ctx, event)
+        if (event == EVENT_ACCESSIBILITY_SERVICE_STARTED) {
+            if (AppPreferences.keymapsPaused) {
+                onEvent(ctx, EVENT_PAUSE_REMAPS)
+            } else {
+                onEvent(ctx, EVENT_RESUME_REMAPS)
+            }
+        }
     }
 
     fun invalidateNotifications(ctx: Context) {
