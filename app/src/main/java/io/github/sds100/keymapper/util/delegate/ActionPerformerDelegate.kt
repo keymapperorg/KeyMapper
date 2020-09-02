@@ -184,9 +184,9 @@ class ActionPerformerDelegate(context: Context,
 
         mCtx.apply {
             when (id) {
-                SystemAction.ENABLE_WIFI -> NetworkUtils.changeWifiState(this, StateChange.ENABLE)
-                SystemAction.DISABLE_WIFI -> NetworkUtils.changeWifiState(this, StateChange.DISABLE)
-                SystemAction.TOGGLE_WIFI -> NetworkUtils.changeWifiState(this, StateChange.TOGGLE)
+                SystemAction.ENABLE_WIFI -> NetworkUtils.changeWifiStatePreQ(this, StateChange.ENABLE)
+                SystemAction.DISABLE_WIFI -> NetworkUtils.changeWifiStatePreQ(this, StateChange.DISABLE)
+                SystemAction.TOGGLE_WIFI -> NetworkUtils.changeWifiStatePreQ(this, StateChange.TOGGLE)
 
                 SystemAction.TOGGLE_WIFI_ROOT -> NetworkUtils.toggleWifiRoot()
                 SystemAction.ENABLE_WIFI_ROOT -> NetworkUtils.enableWifiRoot()
