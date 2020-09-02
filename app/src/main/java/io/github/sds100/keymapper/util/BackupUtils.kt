@@ -16,6 +16,7 @@ import io.github.sds100.keymapper.util.result.GenericFailure
 import io.github.sds100.keymapper.util.result.Result
 import io.github.sds100.keymapper.util.result.Success
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -38,30 +39,33 @@ object BackupUtils {
     suspend fun backup(outputStream: OutputStream,
                        keymapList: List<KeyMap>,
                        allDeviceInfo: List<DeviceInfo>): Result<Unit> = withContext(Dispatchers.IO) {
-
         try {
-            //delete the contents of the file
-            (outputStream as FileOutputStream).channel.truncate(0)
-            val deviceInfoIdsToBackup = mutableSetOf<String>()
+            val deferred = async(Dispatchers.IO) {
+                //delete the contents of the file
+                (outputStream as FileOutputStream).channel.truncate(0)
+                val deviceInfoIdsToBackup = mutableSetOf<String>()
 
-            keymapList.forEach { keymap ->
-                keymap.id = 0
+                keymapList.forEach { keymap ->
+                    keymap.id = 0
 
-                keymap.trigger.keys.forEach { key ->
-                    if (key.deviceId != Trigger.Key.DEVICE_ID_ANY_DEVICE
-                        && key.deviceId != Trigger.Key.DEVICE_ID_THIS_DEVICE) {
-                        deviceInfoIdsToBackup.add(key.deviceId)
+                    keymap.trigger.keys.forEach { key ->
+                        if (key.deviceId != Trigger.Key.DEVICE_ID_ANY_DEVICE
+                            && key.deviceId != Trigger.Key.DEVICE_ID_THIS_DEVICE) {
+                            deviceInfoIdsToBackup.add(key.deviceId)
+                        }
                     }
+                }
+
+                val deviceInfoList = deviceInfoIdsToBackup.map { id -> allDeviceInfo.single { it.descriptor == id } }
+
+                outputStream.bufferedWriter().use { bufferedWriter ->
+                    val json = Gson().toJson(BackupModel(keymapList, deviceInfoList))
+
+                    bufferedWriter.write(json)
                 }
             }
 
-            val deviceInfoList = deviceInfoIdsToBackup.map { id -> allDeviceInfo.single { it.descriptor == id } }
-
-            outputStream.bufferedWriter().use { bufferedWriter ->
-                val json = Gson().toJson(BackupModel(keymapList, deviceInfoList))
-
-                bufferedWriter.write(json)
-            }
+            deferred.await()
         } catch (e: Exception) {
             return@withContext GenericFailure(e)
         }
@@ -194,7 +198,7 @@ object BackupUtils {
     }
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
-    fun getAutomaticBackupLocation(context: Context): Result<String> {
+    fun getAutomaticBackupLocation(): Result<String> {
         val uri = Uri.parse(AppPreferences.automaticBackupLocation)
 
         return Success(uri.path!!)
