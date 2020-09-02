@@ -308,7 +308,7 @@
 
     <!-- Notification strings -->
     <string name="notification_channel_ime_picker">Keyboard picker</string>
-    <string name="notification_channel_toggle_remaps">Pause/Resume remaps</string>
+    <string name="notification_channel_toggle_remaps">Pause/Resume keymaps</string>
     <string name="notification_channel_keyboard_hidden">Keyboard is hidden warning</string>
     <string name="notification_channel_toggle_keyboard">Toggle Key Mapper Keyboard</string>
 
@@ -316,10 +316,10 @@
     <string name="notification_ime_persistent_title">Keyboard Picker</string>
 
     <string name="notification_remappings_pause_title">Running</string>
-    <string name="notification_remappings_pause_text">Tap to pause your remaps.</string>
+    <string name="notification_remappings_pause_text">Tap to pause your keymaps.</string>
 
     <string name="notification_remappings_start_title">Paused</string>
-    <string name="notification_remappings_start_text">Tap to resume your remaps.</string>
+    <string name="notification_remappings_start_text">Tap to resume your keymaps.</string>
 
     <string name="notification_accessibility_service_disabled_title">Accessibility service disabled</string>
     <string name="notification_accessibility_service_disabled_text">Tap to start the accessibility service.</string>
@@ -355,14 +355,14 @@
     <string name="summary_pref_sequence_trigger_timeout">The time allowed to complete a sequence trigger. Default is 1000ms. Can be overridden in a keymap\'s options.</string>
     <string name="title_pref_sequence_trigger_timeout">Default sequence trigger timeout (ms)</string>
 
-    <string name="summary_pref_force_vibrate">Force all remaps to vibrate.</string>
+    <string name="summary_pref_force_vibrate">Force all keymaps to vibrate.</string>
     <string name="title_pref_force_vibrate">Force vibrate</string>
 
     <string name="title_pref_show_ime_notification">Keyboard picker notification</string>
     <string name="summary_pref_show_ime_notification">Show a persistent notification to allow you to pick a keyboard.</string>
 
     <string name="title_pref_show_toggle_remappings_notification">Pause/resume remappings notification</string>
-    <string name="summary_pref_show_toggle_remappings_notification">Show a persistent notification which starts/pauses your remaps and has a link to start/stop the accessibility service.</string>
+    <string name="summary_pref_show_toggle_remappings_notification">Show a persistent notification which starts/pauses your keymaps and has a link to start/stop the accessibility service.</string>
 
     <string name="title_pref_automatic_backup_location">Automatically backup keymaps to a specified location</string>
     <string name="summary_pref_automatic_backup_location_disabled">No location chosen.</string>
