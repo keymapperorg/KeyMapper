@@ -88,7 +88,10 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
          * rather than the up event.
          */
         fun performActionOnDown(triggerKeys: List<Trigger.Key>, triggerMode: Int): Boolean {
-            return (triggerKeys.size == 1 && triggerKeys.getOrNull(0)?.clickType != Trigger.DOUBLE_PRESS)
+            return (triggerKeys.size <= 1
+                && triggerKeys.getOrNull(0)?.clickType != Trigger.DOUBLE_PRESS
+                && triggerMode == Trigger.UNDEFINED)
+
                 || triggerMode == Trigger.PARALLEL
         }
     }
