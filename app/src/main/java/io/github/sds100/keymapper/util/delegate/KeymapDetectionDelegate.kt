@@ -1459,10 +1459,10 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         !this[triggerIndex].hasFlag(Trigger.TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION)
 
     private fun stopRepeatingWhenPressedAgain(actionKey: Int) =
-        mActionOptions[actionKey][INDEX_STOP_REPEAT_BEHAVIOUR] == Action.STOP_REPEAT_BEHAVIOUR_TRIGGER_AGAIN
+        mActionOptions.getOrNull(actionKey)?.getOrNull(INDEX_STOP_REPEAT_BEHAVIOUR) == Action.STOP_REPEAT_BEHAVIOUR_TRIGGER_AGAIN
 
     private fun showPerformingActionToast(actionKey: Int) =
-        mActionFlags[actionKey].hasFlag(Action.ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST)
+        mActionFlags.getOrNull(actionKey)?.hasFlag(Action.ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST) ?: false
 
     private fun isModifierKey(keyCode: Int): Boolean {
         return when (keyCode) {
