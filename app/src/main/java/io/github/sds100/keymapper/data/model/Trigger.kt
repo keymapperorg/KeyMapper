@@ -37,7 +37,21 @@ class Trigger(
         const val SEQUENCE = 1
         const val UNDEFINED = 2
 
+        //DON'T CHANGE THESE AND THEY MUST BE POWERS OF 2!!
+        const val TRIGGER_FLAG_VIBRATE = 1
+        const val TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION = 2
+        const val TRIGGER_FLAG_SCREEN_OFF_TRIGGERS = 4
+        const val TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION = 8
+
+        val TRIGGER_FLAG_LABEL_MAP = mapOf(
+            TRIGGER_FLAG_VIBRATE to R.string.flag_vibrate,
+            TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION to R.string.flag_long_press_double_vibration,
+            TRIGGER_FLAG_SCREEN_OFF_TRIGGERS to R.string.flag_detect_triggers_screen_off,
+            TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION to R.string.flag_dont_override_default_action
+        )
+
         const val DEFAULT_TRIGGER_MODE = UNDEFINED
+        const val DEFAULT_FLAGS = 0
 
         const val UNDETERMINED = -1
         const val SHORT_PRESS = 0
@@ -54,17 +68,6 @@ class Trigger(
             EXTRA_LONG_PRESS_DELAY,
             EXTRA_DOUBLE_PRESS_DELAY,
             EXTRA_VIBRATION_DURATION
-        )
-
-        //DON'T CHANGE THESE AND THEY MUST BE POWERS OF 2!!
-        const val TRIGGER_FLAG_VIBRATE = 1
-        const val TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION = 2
-        const val TRIGGER_FLAG_SCREEN_OFF_TRIGGERS = 4
-
-        val TRIGGER_FLAG_LABEL_MAP = mapOf(
-            TRIGGER_FLAG_VIBRATE to R.string.flag_vibrate,
-            TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION to R.string.flag_long_press_double_vibration,
-            TRIGGER_FLAG_SCREEN_OFF_TRIGGERS to R.string.flag_detect_triggers_screen_off
         )
     }
 
@@ -115,6 +118,6 @@ class Trigger(
     annotation class ClickType
 }
 
-fun sequenceTrigger(vararg key: Trigger.Key) = Trigger(key.toList(), mode = Trigger.SEQUENCE)
-fun undefinedTrigger(key: Trigger.Key) = Trigger(listOf(key), mode = Trigger.UNDEFINED)
-fun parallelTrigger(vararg key: Trigger.Key) = Trigger(key.toList(), mode = Trigger.PARALLEL)
+fun sequenceTrigger(vararg key: Trigger.Key, flags: Int = 0) = Trigger(key.toList(), mode = Trigger.SEQUENCE, flags = flags)
+fun undefinedTrigger(key: Trigger.Key, flags: Int = 0) = Trigger(listOf(key), mode = Trigger.UNDEFINED, flags = flags)
+fun parallelTrigger(vararg key: Trigger.Key, flags: Int = 0) = Trigger(key.toList(), mode = Trigger.PARALLEL, flags = flags)

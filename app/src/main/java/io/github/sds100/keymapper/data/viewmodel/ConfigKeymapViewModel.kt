@@ -226,6 +226,14 @@ class ConfigKeymapViewModel internal constructor(
                     isChecked = it.longPressDoubleVibration.value
                 ))
             }
+
+            if (it.doNotOverrideDefaultAction.isAllowed) {
+                yield(CheckBoxListItemModel(
+                    id = it.doNotOverrideDefaultAction.id,
+                    label = R.string.flag_dont_override_default_action,
+                    isChecked = it.doNotOverrideDefaultAction.value
+                ))
+            }
         }.toList()
     }
 
@@ -271,7 +279,7 @@ class ConfigKeymapViewModel internal constructor(
             triggerBehavior.value = TriggerBehavior(
                 listOf(),
                 Trigger.DEFAULT_TRIGGER_MODE,
-                0,
+                Trigger.DEFAULT_FLAGS,
                 listOf()
             )
 

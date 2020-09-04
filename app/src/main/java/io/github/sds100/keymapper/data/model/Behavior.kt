@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.data.model.Trigger.Companion.EXTRA_VIBRATION_D
 import io.github.sds100.keymapper.data.model.Trigger.Companion.LONG_PRESS
 import io.github.sds100.keymapper.data.model.Trigger.Companion.PARALLEL
 import io.github.sds100.keymapper.data.model.Trigger.Companion.SEQUENCE
+import io.github.sds100.keymapper.data.model.Trigger.Companion.TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION
 import io.github.sds100.keymapper.data.model.Trigger.Companion.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION
 import io.github.sds100.keymapper.data.model.Trigger.Companion.TRIGGER_FLAG_SCREEN_OFF_TRIGGERS
 import io.github.sds100.keymapper.data.model.Trigger.Companion.TRIGGER_FLAG_VIBRATE
@@ -71,6 +72,7 @@ class TriggerBehavior(keys: List<Trigger.Key>, @Trigger.Mode mode: Int, flags: I
         const val ID_VIBRATE = "vibrate"
         const val ID_LONG_PRESS_DOUBLE_VIBRATION = "long_press_double_vibration"
         const val ID_SCREEN_OFF_TRIGGER = "screen_off_trigger"
+        const val ID_DONT_OVERRIDE_DEFAULT_ACTION = "dont_override_default_action"
     }
 
     val vibrate = BehaviorOption(
@@ -92,6 +94,12 @@ class TriggerBehavior(keys: List<Trigger.Key>, @Trigger.Mode mode: Int, flags: I
         isAllowed = keys.isNotEmpty() && keys.all {
             KeyEventUtils.GET_EVENT_LABEL_TO_KEYCODE.containsValue(it.keyCode)
         }
+    )
+
+    val doNotOverrideDefaultAction = BehaviorOption(
+        id = ID_DONT_OVERRIDE_DEFAULT_ACTION,
+        value = flags.hasFlag(TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION),
+        isAllowed = true
     )
 
     val longPressDelay: BehaviorOption<Int>
@@ -175,6 +183,7 @@ class TriggerBehavior(keys: List<Trigger.Key>, @Trigger.Mode mode: Int, flags: I
             }
 
             ID_SCREEN_OFF_TRIGGER -> screenOffTrigger.value = value
+            ID_DONT_OVERRIDE_DEFAULT_ACTION -> doNotOverrideDefaultAction.value = value
         }
 
         return this
@@ -184,6 +193,7 @@ class TriggerBehavior(keys: List<Trigger.Key>, @Trigger.Mode mode: Int, flags: I
         return flags.applyBehaviorOption(vibrate, TRIGGER_FLAG_VIBRATE)
             .applyBehaviorOption(longPressDoubleVibration, TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION)
             .applyBehaviorOption(screenOffTrigger, TRIGGER_FLAG_SCREEN_OFF_TRIGGERS)
+            .applyBehaviorOption(doNotOverrideDefaultAction, TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION)
     }
 
     private fun applyToTriggerExtras(extras: List<Extra>): List<Extra> {
