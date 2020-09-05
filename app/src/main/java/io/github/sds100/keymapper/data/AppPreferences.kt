@@ -137,6 +137,11 @@ object AppPreferences : DefaultPreferences() {
         appCtx.str(R.string.key_pref_last_used_compatible_ime)
     )
 
+    var showGuiKeyboardAd by BoolPref(
+        appCtx.str(R.string.key_pref_show_gui_keyboard_ad),
+        true
+    )
+
     @NightMode
     fun getSdkNightMode(darkThemePrefValue: String): Int {
         return when (darkThemePrefValue) {

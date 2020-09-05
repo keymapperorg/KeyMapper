@@ -34,8 +34,8 @@ object KeyboardUtils {
     private const val KEY_MAPPER_INPUT_METHOD_EXTRA_METASTATE = "io.github.sds100.keymapper.inputmethod.EXTRA_METASTATE"
     private const val KEY_MAPPER_INPUT_METHOD_EXTRA_TEXT = "io.github.sds100.keymapper.inputmethod.EXTRA_TEXT"
 
-    private const val KEY_MAPPER_GUI_IME_PACKAGE = "io.github.sds100.keymapper.inputmethod.latin"
-    private const val KEY_MAPPER_GUI_IME_MIN_API = Build.VERSION_CODES.KITKAT
+    const val KEY_MAPPER_GUI_IME_PACKAGE = "io.github.sds100.keymapper.inputmethod.latin"
+    const val KEY_MAPPER_GUI_IME_MIN_API = Build.VERSION_CODES.KITKAT
 
     val KEY_MAPPER_IME_PACKAGE_LIST = arrayOf(
         Constants.PACKAGE_NAME,

@@ -45,6 +45,7 @@
     <string name="key_pref_hide_home_screen_alerts">pref_hide_home_screen_alerts</string>
     <string name="key_pref_showcase_action_list">pref_showcase_action_list</string>
     <string name="key_pref_last_used_compatible_ime">pref_last_used_compatible_ime</string>
+    <string name="key_pref_show_gui_keyboard_ad">pref_show_gui_keyboard_ad</string>
 
     <string name="key_pref_category_notifications" translatable="false">pref_category_notifications</string>
     <string name="key_pref_category_secure_settings" translatable="false">pref_category_secure_settings</string>

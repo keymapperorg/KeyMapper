@@ -1,10 +1,7 @@
 package io.github.sds100.keymapper.ui.fragment
 
 import android.Manifest
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -28,11 +25,13 @@ import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
+import io.github.sds100.keymapper.data.model.ChooseAppStoreModel
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
 import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
+import io.github.sds100.keymapper.databinding.DialogChooseAppStoreBinding
 import io.github.sds100.keymapper.databinding.FragmentKeymapListBinding
 import io.github.sds100.keymapper.keymapSimple
 import io.github.sds100.keymapper.service.MyAccessibilityService
@@ -50,6 +49,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import splitties.alertdialog.appcompat.alertDialog
+import splitties.alertdialog.appcompat.cancelButton
+import splitties.alertdialog.appcompat.messageResource
 import splitties.experimental.ExperimentalSplittiesApi
 import splitties.snackbar.action
 import splitties.snackbar.longSnack
@@ -59,7 +61,7 @@ import splitties.toast.toast
  * A placeholder fragment containing a simple view.
  */
 @ExperimentalSplittiesApi
-class KeymapListFragment : Fragment() {
+class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val mViewModel: KeymapListViewModel by activityViewModels {
         InjectorUtils.provideKeymapListViewModel(requireContext())
@@ -334,6 +336,32 @@ class KeymapListFragment : Fragment() {
                 AppPreferences.lastInstalledVersionCode = Constants.VERSION_CODE
             }
 
+            setGetNewGuiKeyboard {
+                requireContext().alertDialog {
+                    messageResource = R.string.dialog_message_select_app_store
+
+                    DialogChooseAppStoreBinding.inflate(layoutInflater).apply {
+                        model = ChooseAppStoreModel(
+                            playStoreLink = str(R.string.url_play_store_keymapper_gui_keyboard),
+                            githubLink = str(R.string.url_github_keymapper_gui_keyboard),
+                            fdroidLink = str(R.string.url_fdroid_keymapper_gui_keyboard)
+                        )
+
+                        setView(this.root)
+                    }
+
+                    cancelButton()
+
+                    show()
+                }
+            }
+
+            setDismissNewGuiKeyboardAd {
+                AppPreferences.showGuiKeyboardAd = false
+            }
+
+            showNewGuiKeyboardAd = AppPreferences.showGuiKeyboardAd
+
             return this.root
         }
     }
@@ -365,12 +393,26 @@ class KeymapListFragment : Fragment() {
 
         mViewModel.rebuildModels()
         updateStatusLayouts()
+        requireContext().defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
+
+        if (PackageUtils.isAppInstalled(KeyboardUtils.KEY_MAPPER_GUI_IME_PACKAGE)
+            || Build.VERSION.SDK_INT < KeyboardUtils.KEY_MAPPER_GUI_IME_MIN_API) {
+            AppPreferences.showGuiKeyboardAd = false
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
         requireActivity().unregisterReceiver(mBroadcastReceiver)
+        requireContext().defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+    }
+
+    override fun onSharedPreferenceChanged(preferences: SharedPreferences?, key: String?) {
+        when (key) {
+            str(R.string.key_pref_show_gui_keyboard_ad) ->
+                mBinding.showNewGuiKeyboardAd = AppPreferences.showGuiKeyboardAd
+        }
     }
 
     private fun updateStatusLayouts() {

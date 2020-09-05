@@ -60,6 +60,7 @@
     <string name="dont_know_device_name">Don\'t know device name!</string>
     <string name="permission_description_key_mapper_input_method">perform Key Mapper actions that require a keyboard</string>
     <string name="tap_actions_to_fix">Tap actions to fix!</string>
+    <string name="new_gui_keyboard_ad_message">Get the new Key Mapper Keyboard that actually has a keyboard!</string>
 
     <string name="whats_new">What\'s New</string>
     <string name="caption_action_type_key">Click the key on the device which you want to be entered.
@@ -243,6 +244,7 @@
     <string name="button_help">Help</string>
     <string name="button_add_constraint">Add Constraint</string>
     <string name="button_choose_keycode">Choose Key Code</string>
+    <string name="button_yes">Yes!</string>
     <!-- Button titles -->
 
     <!-- Content descriptions -->
@@ -281,6 +283,7 @@
     <string name="dialog_message_password_screen_lock_warning">If you have any other screen lock chosen, such as PIN or Pattern then you don\'t have to worry. But if you have a Password screen lock you will *NOT* be able to unlock your phone if you use the Key Mapper keyboard because it doesn\'t have a GUI yet. You can grant Key Mapper WRITE_SECURE_SETTINGS permission so it can show a notification to switch to and from the keyboard. There is a guide on how to do this if you tap the question mark at the bottom of the screen.</string>
     <string name="dialog_message_select_compatible_ime">Select the input method for actions that require one. You can change this later by tapping \"Select Keyboard For Actions\" in the bottom menu of the homescreen.</string>
     <string name="dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout">You need to choose the \"Caps Lock to Camera\" keyboard layout for your keyboard otherwise the Caps Lock key will still caps lock. You can find this setting in your device settings -> Languages and Input -> Physical Keyboard -> Tap on your keyboard -> Set Up Keyboard Layouts. This will remap the Caps Lock key to KEYCODE_CAMERA so Key Mapper can remap it properly.\n\nAfter you\'ve done this you must remove the Caps Lock trigger key and record the Caps Lock key again. It should say \"Camera\" instead of \"Caps Lock\" if you did the steps correctly.</string>
+    <string name="dialog_message_select_app_store">Where do you want to get the app?</string>
     <!-- Dialog messages -->
 
     <!-- Dialog buttons -->
