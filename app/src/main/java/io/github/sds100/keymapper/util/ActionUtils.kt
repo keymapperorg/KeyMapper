@@ -232,11 +232,11 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
     if (data.isEmpty()) return NoActionData()
 
     if (requiresIME) {
-        if (!KeyboardUtils.isCompatibleInputMethodEnabled()) {
+        if (!KeyboardUtils.isCompatibleImeEnabled()) {
             return NoCompatibleImeEnabled()
         }
 
-        if (!KeyboardUtils.isCompatibleInputMethodChosen(ctx)) {
+        if (!KeyboardUtils.isCompatibleImeChosen(ctx)) {
             return NoCompatibleImeChosen()
         }
     }
@@ -329,7 +329,7 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
                 if (systemActionDef.id == SystemAction.SWITCH_KEYBOARD) {
 
                     extras.getData(Action.EXTRA_IME_ID).onSuccess { imeId ->
-                        if (!KeyboardUtils.inputMethodExists(imeId)) {
+                        if (!KeyboardUtils.isImeEnabled(imeId)) {
                             var errorData = imeId
 
                             extras.getData(Action.EXTRA_IME_NAME).onSuccess { imeName ->

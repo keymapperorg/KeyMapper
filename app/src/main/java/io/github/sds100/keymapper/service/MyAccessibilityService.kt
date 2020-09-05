@@ -110,7 +110,7 @@ class MyAccessibilityService : AccessibilityService(),
                     mChosenImePackageName =
                         KeyboardUtils.getChosenInputMethodPackageName(this@MyAccessibilityService).valueOrNull()
 
-                    if (KeyboardUtils.isCompatibleInputMethodChosen(this@MyAccessibilityService)) {
+                    if (KeyboardUtils.isCompatibleImeChosen(this@MyAccessibilityService)) {
                         KeyboardUtils.getChosenInputMethodPackageName(this@MyAccessibilityService).onSuccess {
                             AppPreferences.lastUsedCompatibleImePackage = it
                         }
@@ -373,8 +373,17 @@ class MyAccessibilityService : AccessibilityService(),
             str(R.string.key_pref_keymaps_paused) -> {
                 if (AppPreferences.keymapsPaused) {
                     WidgetsManager.onEvent(this, EVENT_PAUSE_REMAPS)
+
+                    if (AppPreferences.toggleKeyboardOnToggleKeymaps) {
+                        KeyboardUtils.chooseLastUsedIncompatibleInputMethod(this)
+                    }
                 } else {
                     WidgetsManager.onEvent(this, EVENT_RESUME_REMAPS)
+
+                    if (AppPreferences.toggleKeyboardOnToggleKeymaps) {
+                        KeyboardUtils.saveLastUsedIncompatibleIme(this)
+                        KeyboardUtils.chooseCompatibleInputMethod(this)
+                    }
                 }
             }
         }

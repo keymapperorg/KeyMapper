@@ -431,7 +431,7 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
             mWriteSettingsStatusState.value = StatusLayout.State.WARN
         }
 
-        if (KeyboardUtils.isCompatibleInputMethodEnabled()) {
+        if (KeyboardUtils.isCompatibleImeEnabled()) {
             mImeServiceStatusState.value = StatusLayout.State.POSITIVE
 
         } else if (mViewModel.keymapModelList.value?.any { keymap ->

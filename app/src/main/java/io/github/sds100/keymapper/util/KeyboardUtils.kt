@@ -61,7 +61,7 @@ object KeyboardUtils {
 
     fun chooseCompatibleInputMethod(ctx: Context) {
 
-        if (isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
+        if (ctx.haveWriteSecureSettingsPermission) {
             AppPreferences.lastUsedCompatibleImePackage?.let {
                 getImeId(it).valueOrNull()?.let { imeId ->
                     switchIme(ctx, imeId)
@@ -78,12 +78,55 @@ object KeyboardUtils {
         showInputMethodPicker()
     }
 
+    fun chooseLastUsedIncompatibleInputMethod(ctx: Context) {
+        if (isCompatibleImeChosen(ctx)) {
+            getChosenInputMethodPackageName(ctx).onSuccess {
+                AppPreferences.lastUsedCompatibleImePackage = it
+            }
+        }
+
+        val imeId = AppPreferences.lastUsedIncompatibleImeId ?: getFirstIncompatibleImeId(ctx)
+
+        imeId?.let { switchIme(ctx, it) }
+    }
+
+    fun toggleCompatibleIme(ctx: Context) {
+        if (!isCompatibleImeEnabled()) {
+            ctx.toast(R.string.error_ime_service_disabled)
+            return
+        }
+
+        val imeId: String?
+
+        if (isCompatibleImeChosen(ctx)) {
+            getChosenInputMethodPackageName(ctx).onSuccess {
+                AppPreferences.lastUsedCompatibleImePackage = it
+            }
+
+            imeId = AppPreferences.lastUsedIncompatibleImeId ?: getFirstIncompatibleImeId(ctx)
+
+        } else {
+            saveLastUsedIncompatibleIme(ctx)
+
+            imeId = getLastUsedCompatibleImeId().valueOrNull()
+        }
+
+        imeId ?: return
+
+        //only show the toast message if it is successful
+        if (switchIme(ctx, imeId)) {
+            getInputMethodLabel(imeId).onSuccess { imeLabel ->
+                toast(ctx.str(R.string.toast_chose_keyboard, imeLabel))
+            }
+        }
+    }
+
     /**
      * @return whether the ime was changed successfully
      */
     @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
     fun switchIme(ctx: Context, imeId: String): Boolean {
-        if (!isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
+        if (!ctx.haveWriteSecureSettingsPermission) {
             ctx.toast(R.string.error_need_write_secure_settings_permission)
             return false
         }
@@ -126,10 +169,67 @@ object KeyboardUtils {
         return Success(inputMethodManager.enabledInputMethodList.map { it.id })
     }
 
-    fun inputMethodExists(imeId: String): Boolean = getInputMethodIds().handle(
+    fun getChosenInputMethodPackageName(ctx: Context): Result<String> {
+        val chosenImeId = getChosenImeId(ctx)
+
+        return getImePackageName(chosenImeId)
+    }
+
+    fun getLastUsedCompatibleImeId(): Result<String> {
+        val packageName = AppPreferences.lastUsedCompatibleImePackage ?: Constants.PACKAGE_NAME
+
+        return getImeId(packageName)
+    }
+
+    fun getImePackageName(imeId: String): Result<String> {
+        val packageName = inputMethodManager.inputMethodList.find { it.id == imeId }?.packageName
+
+        return if (packageName == null) {
+            ImeNotFound(imeId)
+        } else {
+            Success(packageName)
+        }
+    }
+
+    fun getFirstIncompatibleImeId(ctx: Context): String? {
+        var incompatibleImeId: String? = null
+
+        getInputMethodIds().onSuccess { imeList ->
+            for (imeId in imeList) {
+                var breakLoop = false
+
+                getImePackageName(imeId).onSuccess {
+                    if (!KEY_MAPPER_IME_PACKAGE_LIST.contains(it)) {
+                        incompatibleImeId = imeId
+                        breakLoop = true
+                    }
+                }
+
+                if (breakLoop) {
+                    break
+                }
+            }
+        }
+
+        return incompatibleImeId
+    }
+
+    fun isImeEnabled(imeId: String): Boolean = getInputMethodIds().handle(
         onSuccess = { it.contains(imeId) },
         onFailure = { false }
     )
+
+    fun isCompatibleImeEnabled(): Boolean {
+        val enabledMethods = inputMethodManager.enabledInputMethodList ?: return false
+
+        return enabledMethods.any { KEY_MAPPER_IME_PACKAGE_LIST.contains(it.packageName) }
+    }
+
+    fun isCompatibleImeChosen(ctx: Context): Boolean {
+        return getChosenInputMethodPackageName(ctx)
+            .then { Success(KEY_MAPPER_IME_PACKAGE_LIST.contains(it)) }
+            .valueOrNull() ?: false
+    }
 
     fun openImeSettings() {
         try {
@@ -182,76 +282,11 @@ object KeyboardUtils {
         return Settings.Secure.getString(ctx.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD)
     }
 
-    fun toggleCompatibleIme(ctx: Context) {
-        if (!isCompatibleInputMethodEnabled()) {
-            ctx.toast(R.string.error_ime_service_disabled)
-            return
-        }
-
-        val imeId: String?
-
-        if (isCompatibleInputMethodChosen(ctx)) {
-            getChosenInputMethodPackageName(ctx).onSuccess {
-                AppPreferences.lastUsedCompatibleImePackage = it
-            }
-
-            imeId = AppPreferences.lastUsedIncompatibleImeId ?: getFirstIncompatibleImeId(ctx)
-
-        } else {
-            saveLastUsedIncompatibleIme(ctx)
-
-            imeId = getLastUsedCompatibleImeId().valueOrNull()
-        }
-
-        imeId ?: return
-
-        //only show the toast message if it is successful
-        if (switchIme(ctx, imeId)) {
-            getInputMethodLabel(imeId).onSuccess { imeLabel ->
-                toast(ctx.str(R.string.toast_chose_keyboard, imeLabel))
-            }
-        }
-    }
-
     fun getImeId(packageName: String): Result<String> {
         val inputMethod = inputMethodManager.inputMethodList.find { it.packageName == packageName }
             ?: return KeyMapperImeNotFound()
 
         return Success(inputMethod.id)
-    }
-
-    fun isCompatibleInputMethodEnabled(): Boolean {
-        val enabledMethods = inputMethodManager.enabledInputMethodList ?: return false
-
-        return enabledMethods.any { KEY_MAPPER_IME_PACKAGE_LIST.contains(it.packageName) }
-    }
-
-    fun isCompatibleInputMethodChosen(ctx: Context): Boolean {
-        return getChosenInputMethodPackageName(ctx)
-            .then { Success(KEY_MAPPER_IME_PACKAGE_LIST.contains(it)) }
-            .valueOrNull() ?: false
-    }
-
-    fun getChosenInputMethodPackageName(ctx: Context): Result<String> {
-        val chosenImeId = getChosenImeId(ctx)
-
-        return getImePackageName(chosenImeId)
-    }
-
-    fun getLastUsedCompatibleImeId(): Result<String> {
-        val packageName = AppPreferences.lastUsedCompatibleImePackage ?: Constants.PACKAGE_NAME
-
-        return getImeId(packageName)
-    }
-
-    fun getImePackageName(imeId: String): Result<String> {
-        val packageName = inputMethodManager.inputMethodList.find { it.id == imeId }?.packageName
-
-        return if (packageName == null) {
-            ImeNotFound(imeId)
-        } else {
-            Success(packageName)
-        }
     }
 
     fun saveLastUsedIncompatibleIme(ctx: Context) {
@@ -267,29 +302,6 @@ object KeyboardUtils {
 
             AppPreferences.lastUsedIncompatibleImeId = chosenImeId
         }
-    }
-
-    fun getFirstIncompatibleImeId(ctx: Context): String? {
-        var incompatibleImeId: String? = null
-
-        getInputMethodIds().onSuccess { imeList ->
-            for (imeId in imeList) {
-                var breakLoop = false
-
-                getImePackageName(imeId).onSuccess {
-                    if (!KEY_MAPPER_IME_PACKAGE_LIST.contains(it)) {
-                        incompatibleImeId = imeId
-                        breakLoop = true
-                    }
-                }
-
-                if (breakLoop) {
-                    break
-                }
-            }
-        }
-
-        return incompatibleImeId
     }
 }
 

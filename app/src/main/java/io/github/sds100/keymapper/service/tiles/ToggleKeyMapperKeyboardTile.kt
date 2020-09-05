@@ -16,7 +16,7 @@ import io.github.sds100.keymapper.util.str
 class ToggleKeyMapperKeyboardTile : TileService() {
 
     private val mState: State
-        get() = if (KeyboardUtils.isCompatibleInputMethodEnabled()) {
+        get() = if (KeyboardUtils.isCompatibleImeEnabled()) {
             State.DEFAULT
         } else {
             State.DISABLED

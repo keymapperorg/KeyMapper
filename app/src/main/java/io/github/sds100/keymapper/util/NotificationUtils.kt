@@ -76,12 +76,6 @@ object NotificationUtils {
                     ctx,
                     MyAccessibilityService.ACTION_RESUME_REMAPPINGS
                 )
-
-                if (AppPreferences.toggleKeyboardOnToggleKeymaps) {
-                    AppPreferences.lastUsedIncompatibleImeId?.let {
-                        KeyboardUtils.switchIme(ctx, it)
-                    }
-                }
             }
 
             WidgetsManager.EVENT_RESUME_REMAPS -> {
@@ -93,12 +87,6 @@ object NotificationUtils {
                     ctx,
                     MyAccessibilityService.ACTION_PAUSE_REMAPPINGS
                 )
-
-                if (event == WidgetsManager.EVENT_RESUME_REMAPS) {
-
-                    KeyboardUtils.saveLastUsedIncompatibleIme(ctx)
-                    KeyboardUtils.chooseCompatibleInputMethod(ctx)
-                }
             }
 
             WidgetsManager.EVENT_ACCESSIBILITY_SERVICE_STOPPED -> {
