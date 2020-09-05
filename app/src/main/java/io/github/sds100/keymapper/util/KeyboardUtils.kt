@@ -9,25 +9,15 @@ import android.os.Build.VERSION_CODES.O_MR1
 import android.provider.Settings
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
-import androidx.core.content.edit
-import androidx.fragment.app.FragmentActivity
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.WidgetsManager
-import io.github.sds100.keymapper.compatibleIme
 import io.github.sds100.keymapper.data.AppPreferences
-import io.github.sds100.keymapper.data.model.CompatibleImeListItemModel
-import io.github.sds100.keymapper.databinding.FragmentSelectInputMethodBinding
 import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
 import io.github.sds100.keymapper.util.result.*
-import splitties.alertdialog.appcompat.alertDialog
-import splitties.alertdialog.appcompat.negativeButton
-import splitties.alertdialog.appcompat.okButton
 import splitties.init.appCtx
 import splitties.systemservices.inputMethodManager
 import splitties.toast.toast
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 /**
  * Created by sds100 on 28/12/2018.
@@ -35,69 +25,57 @@ import kotlin.coroutines.suspendCoroutine
 
 object KeyboardUtils {
     //DON'T CHANGE THESE!!!
-    const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN_UP = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_DOWN_UP"
-    const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_DOWN"
-    const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_UP = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_UP"
-    const val KEY_MAPPER_INPUT_METHOD_ACTION_TEXT = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_TEXT"
+    private const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN_UP = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_DOWN_UP"
+    private const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_DOWN"
+    private const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_UP = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_UP"
+    private const val KEY_MAPPER_INPUT_METHOD_ACTION_TEXT = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_TEXT"
 
-    const val KEY_MAPPER_INPUT_METHOD_EXTRA_KEYCODE = "io.github.sds100.keymapper.inputmethod.EXTRA_KEYCODE"
-    const val KEY_MAPPER_INPUT_METHOD_EXTRA_METASTATE = "io.github.sds100.keymapper.inputmethod.EXTRA_METASTATE"
-    const val KEY_MAPPER_INPUT_METHOD_EXTRA_TEXT = "io.github.sds100.keymapper.inputmethod.EXTRA_TEXT"
+    private const val KEY_MAPPER_INPUT_METHOD_EXTRA_KEYCODE = "io.github.sds100.keymapper.inputmethod.EXTRA_KEYCODE"
+    private const val KEY_MAPPER_INPUT_METHOD_EXTRA_METASTATE = "io.github.sds100.keymapper.inputmethod.EXTRA_METASTATE"
+    private const val KEY_MAPPER_INPUT_METHOD_EXTRA_TEXT = "io.github.sds100.keymapper.inputmethod.EXTRA_TEXT"
 
     private const val KEY_MAPPER_GUI_IME_PACKAGE = "io.github.sds100.keymapper.inputmethod.latin"
     private const val KEY_MAPPER_GUI_IME_MIN_API = Build.VERSION_CODES.KITKAT
 
-    var selectedImePackageName: String
-        get() {
-            var packageName = appCtx.defaultSharedPreferences.getString(
-                appCtx.str(R.string.key_pref_selected_compatible_ime_package_name), Constants.PACKAGE_NAME
-            ) ?: Constants.PACKAGE_NAME
+    val KEY_MAPPER_IME_PACKAGE_LIST = arrayOf(
+        Constants.PACKAGE_NAME,
+        KEY_MAPPER_GUI_IME_PACKAGE
+    )
 
-            if (!PackageUtils.isAppInstalled(packageName)) {
-                packageName = Constants.PACKAGE_NAME
-                selectedImePackageName = packageName
-            }
-
-            return packageName
-        }
-        set(value) {
-            appCtx.defaultSharedPreferences.edit {
-                putString(appCtx.str(R.string.key_pref_selected_compatible_ime_package_name), value)
-                apply()
-            }
-        }
-
-    suspend fun enableSelectedIme(activity: FragmentActivity) {
-
-        if (!AppPreferences.approvedSelectCompatibleImePrompt) {
-            selectCompatibleIme(activity)
-        }
+    fun enableCompatibleInputMethods() {
 
         if (isPermissionGranted(Constants.PERMISSION_ROOT)) {
-            enableSelectedImeRoot()
+            enableCompatibleInputMethodsRoot()
         } else {
             openImeSettings()
         }
     }
 
-    fun enableSelectedImeRoot() {
-        getImeId(selectedImePackageName).onSuccess {
-            RootUtils.executeRootCommand("ime enable $it")
+    fun enableCompatibleInputMethodsRoot() {
+        KEY_MAPPER_IME_PACKAGE_LIST.forEach {
+            getImeId(it).onSuccess { imeId ->
+                RootUtils.executeRootCommand("ime enable $imeId")
+            }
         }
     }
 
-    suspend fun chooseSelectedIme(activity: FragmentActivity) {
-        if (!AppPreferences.approvedSelectCompatibleImePrompt) {
-            selectCompatibleIme(activity)
-        }
+    fun chooseCompatibleInputMethod(ctx: Context) {
 
         if (isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
-            getImeId(selectedImePackageName).onSuccess {
-                switchIme(activity, it)
+            AppPreferences.lastUsedCompatibleImePackage?.let {
+                getImeId(it).valueOrNull()?.let { imeId ->
+                    switchIme(ctx, imeId)
+                    return
+                }
             }
-        } else {
-            showInputMethodPicker()
+
+            getImeId(Constants.PACKAGE_NAME).valueOrNull()?.let {
+                switchIme(ctx, it)
+                return
+            }
         }
+
+        showInputMethodPicker()
     }
 
     /**
@@ -164,16 +142,23 @@ object KeyboardUtils {
         }
     }
 
-    fun inputTextFromImeService(text: String) {
+    /**
+     * Must verify that a compatible ime is being used before calling this.
+     */
+    fun inputTextFromImeService(imePackageName: String, text: String) {
         Intent(KEY_MAPPER_INPUT_METHOD_ACTION_TEXT).apply {
-            setPackage(selectedImePackageName)
+            setPackage(imePackageName)
 
             putExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_TEXT, text)
             appCtx.sendBroadcast(this)
         }
     }
 
+    /**
+     * Must verify that a compatible ime is being used before calling this.
+     */
     fun inputKeyEventFromImeService(
+        imePackageName: String,
         keyCode: Int,
         metaState: Int = 0,
         keyEventAction: KeyEventAction = KeyEventAction.DOWN_UP
@@ -185,7 +170,7 @@ object KeyboardUtils {
         }
 
         Intent(intentAction).apply {
-            setPackage(selectedImePackageName)
+            setPackage(imePackageName)
             putExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_KEYCODE, keyCode)
             putExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_METASTATE, metaState)
 
@@ -197,22 +182,25 @@ object KeyboardUtils {
         return Settings.Secure.getString(ctx.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD)
     }
 
-
-    fun toggleSelectedCompatibleIme(ctx: Context) {
-        if (!isSelectedImeEnabled()) {
+    fun toggleCompatibleIme(ctx: Context) {
+        if (!isCompatibleInputMethodEnabled()) {
             ctx.toast(R.string.error_ime_service_disabled)
             return
         }
 
         val imeId: String?
 
-        if (isSelectedImeChosen()) {
-            imeId = AppPreferences.defaultIme
+        if (isCompatibleInputMethodChosen(ctx)) {
+            getChosenInputMethodPackageName(ctx).onSuccess {
+                AppPreferences.lastUsedCompatibleImePackage = it
+            }
+
+            imeId = AppPreferences.lastUsedIncompatibleImeId ?: getFirstIncompatibleImeId(ctx)
 
         } else {
-            AppPreferences.defaultIme = getChosenImeId(ctx)
+            saveLastUsedIncompatibleIme(ctx)
 
-            imeId = getImeId(selectedImePackageName).valueOrNull()
+            imeId = getLastUsedCompatibleImeId().valueOrNull()
         }
 
         imeId ?: return
@@ -232,92 +220,77 @@ object KeyboardUtils {
         return Success(inputMethod.id)
     }
 
-    fun isSelectedImeEnabled(): Boolean {
+    fun isCompatibleInputMethodEnabled(): Boolean {
         val enabledMethods = inputMethodManager.enabledInputMethodList ?: return false
 
-        return enabledMethods.any { it.packageName == selectedImePackageName }
+        return enabledMethods.any { KEY_MAPPER_IME_PACKAGE_LIST.contains(it.packageName) }
     }
 
-    fun isSelectedImeChosen(): Boolean {
-        //get the current input input_method
-        val chosenImeId = Settings.Secure.getString(
-            appCtx.contentResolver,
-            Settings.Secure.DEFAULT_INPUT_METHOD
-        )
-
-        val chosenImePackageName =
-            inputMethodManager.inputMethodList.find { it.id == chosenImeId }?.packageName
-
-        return chosenImePackageName == selectedImePackageName
+    fun isCompatibleInputMethodChosen(ctx: Context): Boolean {
+        return getChosenInputMethodPackageName(ctx)
+            .then { Success(KEY_MAPPER_IME_PACKAGE_LIST.contains(it)) }
+            .valueOrNull() ?: false
     }
 
-    suspend fun selectCompatibleIme(activity: FragmentActivity, showDontShowAgainButton: Boolean = true) =
-        suspendCoroutine<Unit> { block ->
-            activity.apply {
-                alertDialog {
-                    FragmentSelectInputMethodBinding.inflate(layoutInflater).apply {
+    fun getChosenInputMethodPackageName(ctx: Context): Result<String> {
+        val chosenImeId = getChosenImeId(ctx)
 
-                        val callback = object : OpenUrlCallback {
-                            override fun openUrl(url: String) = context.openUrl(url)
-                        }
+        return getImePackageName(chosenImeId)
+    }
 
-                        val models = arrayOf(
-                            CompatibleImeListItemModel.build(
-                                ctx = activity,
-                                packageName = Constants.PACKAGE_NAME,
-                                imeName = str(R.string.ime_service_label),
-                                description = str(R.string.ime_key_mapper_description)
-                            ),
-                            CompatibleImeListItemModel.build(
-                                ctx = activity,
-                                packageName = KEY_MAPPER_GUI_IME_PACKAGE,
-                                minApi = KEY_MAPPER_GUI_IME_MIN_API,
-                                imeName = str(R.string.ime_key_mapper_gui_name),
-                                description = str(R.string.ime_key_mapper_gui_description),
-                                playStoreLink = str(R.string.url_play_store_keymapper_gui_keyboard),
-                                githubLink = str(R.string.url_github_keymapper_gui_keyboard),
-                                fdroidLink = str(R.string.url_fdroid_keymapper_gui_keyboard)
-                            )
-                        )
+    fun getLastUsedCompatibleImeId(): Result<String> {
+        val packageName = AppPreferences.lastUsedCompatibleImePackage ?: Constants.PACKAGE_NAME
 
-                        epoxyRecyclerView.withModels {
+        return getImeId(packageName)
+    }
 
-                            models.forEach {
-                                compatibleIme {
-                                    id(it.packageName)
-                                    model(it)
-                                    openUrlCallback(callback)
+    fun getImePackageName(imeId: String): Result<String> {
+        val packageName = inputMethodManager.inputMethodList.find { it.id == imeId }?.packageName
 
-                                    onClick { _ ->
-                                        if (it.isSupported) {
-                                            selectedImePackageName = it.packageName
-                                        }
+        return if (packageName == null) {
+            ImeNotFound(imeId)
+        } else {
+            Success(packageName)
+        }
+    }
 
-                                        epoxyRecyclerView.requestModelBuild()
-                                    }
+    fun saveLastUsedIncompatibleIme(ctx: Context) {
+        var chosenImeId = getChosenImeId(ctx)
 
-                                    isSelected(selectedImePackageName == it.packageName)
-                                }
-                            }
-                        }
+        getImePackageName(chosenImeId).onSuccess { chosenPackageName ->
 
+            if (KEY_MAPPER_IME_PACKAGE_LIST.contains(chosenPackageName)) {
+                getFirstIncompatibleImeId(ctx)?.let {
+                    chosenImeId = it
+                }
+            }
 
-                        if (showDontShowAgainButton) {
-                            negativeButton(R.string.neg_dont_show_again) {
-                                AppPreferences.approvedSelectCompatibleImePrompt = true
-                                block.resume(Unit)
-                            }
-                        }
+            AppPreferences.lastUsedIncompatibleImeId = chosenImeId
+        }
+    }
 
-                        okButton {
-                            block.resume(Unit)
-                        }
+    fun getFirstIncompatibleImeId(ctx: Context): String? {
+        var incompatibleImeId: String? = null
 
-                        setView(this.root)
+        getInputMethodIds().onSuccess { imeList ->
+            for (imeId in imeList) {
+                var breakLoop = false
+
+                getImePackageName(imeId).onSuccess {
+                    if (!KEY_MAPPER_IME_PACKAGE_LIST.contains(it)) {
+                        incompatibleImeId = imeId
+                        breakLoop = true
                     }
-                }.show()
+                }
+
+                if (breakLoop) {
+                    break
+                }
             }
         }
+
+        return incompatibleImeId
+    }
 }
 
 @RequiresApi(Build.VERSION_CODES.N)

@@ -1,7 +1,10 @@
 package io.github.sds100.keymapper.ui.fragment
 
 import android.Manifest
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -38,8 +41,8 @@ import io.github.sds100.keymapper.ui.callback.SelectionCallback
 import io.github.sds100.keymapper.ui.view.StatusLayout
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.Failure
+import io.github.sds100.keymapper.util.result.NoCompatibleImeEnabled
 import io.github.sds100.keymapper.util.result.RecoverableFailure
-import io.github.sds100.keymapper.util.result.SelectedCompatibleImeIsDisabled
 import io.github.sds100.keymapper.util.result.getFullMessage
 import io.github.sds100.keymapper.worker.SeedDatabaseWorker
 import kotlinx.android.synthetic.main.fragment_keymap_list.*
@@ -56,7 +59,7 @@ import splitties.toast.toast
  * A placeholder fragment containing a simple view.
  */
 @ExperimentalSplittiesApi
-class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
+class KeymapListFragment : Fragment() {
 
     private val mViewModel: KeymapListViewModel by activityViewModels {
         InjectorUtils.provideKeymapListViewModel(requireContext())
@@ -131,8 +134,6 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
 
             requireActivity().registerReceiver(mBroadcastReceiver, this)
         }
-
-        requireContext().defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
     }
 
     override fun onCreateView(
@@ -283,9 +284,9 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
             }
 
             setEnableImeService {
-                lifecycleScope.launchWhenCreated {
+                lifecycleScope.launchWhenStarted {
 
-                    KeyboardUtils.enableSelectedIme(requireActivity())
+                    KeyboardUtils.enableCompatibleInputMethods()
 
                     lifecycleScope.launch {
                         delay(3000)
@@ -369,15 +370,7 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
     override fun onDestroy() {
         super.onDestroy()
 
-        requireContext().defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
         requireActivity().unregisterReceiver(mBroadcastReceiver)
-    }
-
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        if (key == str(R.string.key_pref_selected_compatible_ime_package_name)) {
-            updateStatusLayouts()
-            mViewModel.rebuildModels()
-        }
     }
 
     private fun updateStatusLayouts() {
@@ -396,11 +389,11 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
             mWriteSettingsStatusState.value = StatusLayout.State.WARN
         }
 
-        if (KeyboardUtils.isSelectedImeEnabled()) {
+        if (KeyboardUtils.isCompatibleInputMethodEnabled()) {
             mImeServiceStatusState.value = StatusLayout.State.POSITIVE
 
         } else if (mViewModel.keymapModelList.value?.any { keymap ->
-                keymap.actionList.any { it.error is SelectedCompatibleImeIsDisabled }
+                keymap.actionList.any { it.error is NoCompatibleImeEnabled }
             } == true) {
 
             mImeServiceStatusState.value = StatusLayout.State.ERROR

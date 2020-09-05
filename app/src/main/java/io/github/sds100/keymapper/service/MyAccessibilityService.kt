@@ -28,9 +28,7 @@ import io.github.sds100.keymapper.util.delegate.ActionPerformerDelegate
 import io.github.sds100.keymapper.util.delegate.GetEventDelegate
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionPreferences
-import io.github.sds100.keymapper.util.result.Result
-import io.github.sds100.keymapper.util.result.SelectedCompatibleImeNotChosen
-import io.github.sds100.keymapper.util.result.Success
+import io.github.sds100.keymapper.util.result.*
 import kotlinx.coroutines.*
 import splitties.bitflags.hasFlag
 import splitties.systemservices.vibrator
@@ -109,7 +107,14 @@ class MyAccessibilityService : AccessibilityService(),
                 }
 
                 Intent.ACTION_INPUT_METHOD_CHANGED -> {
-                    mIsCompatibleImeChosen = KeyboardUtils.isSelectedImeChosen()
+                    mChosenImePackageName =
+                        KeyboardUtils.getChosenInputMethodPackageName(this@MyAccessibilityService).valueOrNull()
+
+                    if (KeyboardUtils.isCompatibleInputMethodChosen(this@MyAccessibilityService)) {
+                        KeyboardUtils.getChosenInputMethodPackageName(this@MyAccessibilityService).onSuccess {
+                            AppPreferences.lastUsedCompatibleImePackage = it
+                        }
+                    }
                 }
 
                 ACTION_RECORD_TRIGGER -> {
@@ -121,7 +126,7 @@ class MyAccessibilityService : AccessibilityService(),
 
                 ACTION_TEST_ACTION -> {
                     (intent.getSerializableExtra(EXTRA_ACTION) as Action?)?.let {
-                        mActionPerformerDelegate.performAction(it)
+                        mActionPerformerDelegate.performAction(it, mChosenImePackageName)
                     }
                 }
 
@@ -170,7 +175,11 @@ class MyAccessibilityService : AccessibilityService(),
 
     private var mIsScreenOn = true
     private val mConnectedBtAddresses = mutableSetOf<String>()
-    private var mIsCompatibleImeChosen = false
+
+    private var mChosenImePackageName: String? = null
+
+    private val mIsCompatibleImeChosen
+        get() = KeyboardUtils.KEY_MAPPER_IME_PACKAGE_LIST.contains(mChosenImePackageName)
 
     private val mGetEventDelegate = GetEventDelegate { keyCode, action, deviceDescriptor, isExternal ->
         if (!AppPreferences.keymapsPaused) {
@@ -248,17 +257,23 @@ class MyAccessibilityService : AccessibilityService(),
                 KeyEvent.KEYCODE_BACK -> performGlobalAction(GLOBAL_ACTION_BACK)
                 KeyEvent.KEYCODE_HOME -> performGlobalAction(GLOBAL_ACTION_HOME)
                 KeyEvent.KEYCODE_APP_SWITCH -> performGlobalAction(GLOBAL_ACTION_RECENTS)
-                KeyEvent.KEYCODE_MENU -> mActionPerformerDelegate.performSystemAction(SystemAction.OPEN_MENU)
+                KeyEvent.KEYCODE_MENU ->
+                    mActionPerformerDelegate.performSystemAction(SystemAction.OPEN_MENU, mChosenImePackageName)
 
-                else -> KeyboardUtils.inputKeyEventFromImeService(
-                    keyCode = it.keyCode,
-                    metaState = it.metaState
-                )
+                else -> {
+                    mChosenImePackageName?.let { imePackageName ->
+                        KeyboardUtils.inputKeyEventFromImeService(
+                            imePackageName = imePackageName,
+                            keyCode = it.keyCode,
+                            metaState = it.metaState
+                        )
+                    }
+                }
             }
         })
 
         mKeymapDetectionDelegate.performAction.observe(this, EventObserver { model ->
-            mActionPerformerDelegate.performAction(model)
+            mActionPerformerDelegate.performAction(model, mChosenImePackageName)
         })
 
         mKeymapDetectionDelegate.vibrate.observe(this, EventObserver {
@@ -271,6 +286,8 @@ class MyAccessibilityService : AccessibilityService(),
                 vibrator.vibrate(it)
             }
         })
+
+        mChosenImePackageName = KeyboardUtils.getChosenInputMethodPackageName(this).valueOrNull()
     }
 
     override fun onInterrupt() {}
@@ -360,10 +377,6 @@ class MyAccessibilityService : AccessibilityService(),
                     WidgetsManager.onEvent(this, EVENT_RESUME_REMAPS)
                 }
             }
-
-            str(R.string.key_pref_selected_compatible_ime_package_name) -> {
-                mIsCompatibleImeChosen = KeyboardUtils.isSelectedImeChosen()
-            }
         }
     }
 
@@ -374,7 +387,7 @@ class MyAccessibilityService : AccessibilityService(),
             return if (mIsCompatibleImeChosen) {
                 Success(action)
             } else {
-                SelectedCompatibleImeNotChosen()
+                NoCompatibleImeChosen()
             }
         }
 

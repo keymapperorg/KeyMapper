@@ -58,9 +58,9 @@ class ActionPerformerDelegate(context: Context,
         }
     }
 
-    fun performAction(action: Action) = performAction(PerformActionModel(action))
+    fun performAction(action: Action, chosenImePackageName: String?) = performAction(PerformActionModel(action), chosenImePackageName)
 
-    fun performAction(performActionModel: PerformActionModel) {
+    fun performAction(performActionModel: PerformActionModel, chosenImePackageName: String?) {
         val (action, showToast, additionalMetaState, keyEventAction) = performActionModel
 
         mCtx.apply {
@@ -96,7 +96,7 @@ class ActionPerformerDelegate(context: Context,
                     }
                 }
 
-                ActionType.TEXT_BLOCK -> KeyboardUtils.inputTextFromImeService(action.data)
+                ActionType.TEXT_BLOCK -> chosenImePackageName?.let { KeyboardUtils.inputTextFromImeService(it, action.data) }
 
                 ActionType.URL -> {
                     val guessedUrl = URLUtil.guessUrl(action.data)
@@ -112,7 +112,7 @@ class ActionPerformerDelegate(context: Context,
                     }
                 }
 
-                ActionType.SYSTEM_ACTION -> performSystemAction(action)
+                ActionType.SYSTEM_ACTION -> performSystemAction(action, chosenImePackageName)
 
                 ActionType.TAP_COORDINATE -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -137,22 +137,25 @@ class ActionPerformerDelegate(context: Context,
 
                 else -> {
                     if (action.type == ActionType.KEY_EVENT) {
-                        KeyboardUtils.inputKeyEventFromImeService(
-                            keyCode = action.data.toInt(),
-                            metaState = additionalMetaState.withFlag(
-                                action.extras.getData(Action.EXTRA_KEY_EVENT_META_STATE).valueOrNull()?.toInt() ?: 0
-                            ),
-                            keyEventAction = keyEventAction
-                        )
+                        chosenImePackageName?.let {
+                            KeyboardUtils.inputKeyEventFromImeService(
+                                it,
+                                keyCode = action.data.toInt(),
+                                metaState = additionalMetaState.withFlag(
+                                    action.extras.getData(Action.EXTRA_KEY_EVENT_META_STATE).valueOrNull()?.toInt() ?: 0
+                                ),
+                                keyEventAction = keyEventAction
+                            )
+                        }
                     }
                 }
             }
         }
     }
 
-    fun performSystemAction(id: String) = performSystemAction(Action(ActionType.SYSTEM_ACTION, id))
+    fun performSystemAction(id: String, chosenImePackageName: String?) = performSystemAction(Action(ActionType.SYSTEM_ACTION, id), chosenImePackageName)
 
-    private fun performSystemAction(action: Action) {
+    private fun performSystemAction(action: Action, chosenImePackageName: String?) {
 
         val id = action.data
 
@@ -326,10 +329,13 @@ class ActionPerformerDelegate(context: Context,
                     RootUtils.executeRootCommand("input keyevent ${KeyEvent.KEYCODE_POWER}")
                 }
 
-                SystemAction.MOVE_CURSOR_TO_END -> KeyboardUtils.inputKeyEventFromImeService(
-                    keyCode = KeyEvent.KEYCODE_MOVE_END,
-                    metaState = KeyEvent.META_CTRL_ON
-                )
+                SystemAction.MOVE_CURSOR_TO_END -> chosenImePackageName?.let {
+                    KeyboardUtils.inputKeyEventFromImeService(
+                        it,
+                        keyCode = KeyEvent.KEYCODE_MOVE_END,
+                        metaState = KeyEvent.META_CTRL_ON
+                    )
+                }
 
                 SystemAction.OPEN_SETTINGS -> {
                     Intent(Settings.ACTION_SETTINGS).apply {

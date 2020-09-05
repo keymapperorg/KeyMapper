@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -20,7 +19,6 @@ import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
 import io.github.sds100.keymapper.databinding.FragmentMenuBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.util.*
-import kotlinx.coroutines.launch
 import splitties.alertdialog.appcompat.*
 
 class MenuFragment : BottomSheetDialogFragment(), SharedPreferences.OnSharedPreferenceChangeListener {
@@ -129,12 +127,6 @@ class MenuFragment : BottomSheetDialogFragment(), SharedPreferences.OnSharedPref
 
             setEnableAccessibilityService {
                 AccessibilityUtils.enableService(requireContext())
-            }
-
-            setSelectCompatibleIme {
-                lifecycleScope.launch {
-                    KeyboardUtils.selectCompatibleIme(requireActivity(), showDontShowAgainButton = false)
-                }
             }
 
             setRestore {

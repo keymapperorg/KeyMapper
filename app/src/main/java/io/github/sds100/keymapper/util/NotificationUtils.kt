@@ -25,7 +25,6 @@ import io.github.sds100.keymapper.broadcastreceiver.KeyMapperBroadcastReceiver
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.activity.HomeActivity
-import io.github.sds100.keymapper.util.result.onSuccess
 import splitties.init.appCtx
 import splitties.systemservices.notificationManager
 
@@ -79,7 +78,7 @@ object NotificationUtils {
                 )
 
                 if (AppPreferences.toggleKeyboardOnToggleKeymaps) {
-                    AppPreferences.defaultIme?.let {
+                    AppPreferences.lastUsedIncompatibleImeId?.let {
                         KeyboardUtils.switchIme(ctx, it)
                     }
                 }
@@ -96,19 +95,9 @@ object NotificationUtils {
                 )
 
                 if (event == WidgetsManager.EVENT_RESUME_REMAPS) {
-                    val defaultIme = Settings.Secure.getString(ctx.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD)
 
-                    KeyboardUtils.getImeId(KeyboardUtils.selectedImePackageName).onSuccess {
-                        if (defaultIme != it) {
-                            AppPreferences.defaultIme = defaultIme
-                        }
-                    }
-
-                    if (AppPreferences.toggleKeyboardOnToggleKeymaps) {
-                        KeyboardUtils.getImeId(KeyboardUtils.selectedImePackageName).onSuccess {
-                            KeyboardUtils.switchIme(ctx, it)
-                        }
-                    }
+                    KeyboardUtils.saveLastUsedIncompatibleIme(ctx)
+                    KeyboardUtils.chooseCompatibleInputMethod(ctx)
                 }
             }
 

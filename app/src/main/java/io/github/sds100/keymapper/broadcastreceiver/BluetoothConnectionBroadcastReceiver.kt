@@ -9,7 +9,6 @@ import android.os.Build
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.util.KeyboardUtils
 import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
-import io.github.sds100.keymapper.util.result.onSuccess
 
 /**
  * Created by sds100 on 28/12/2018.
@@ -56,17 +55,14 @@ class BluetoothConnectionBroadcastReceiver : BroadcastReceiver() {
         when (intentAction) {
             //when a device is connected, change to the Key Mapper ime
             BluetoothDevice.ACTION_ACL_CONNECTED -> {
+                KeyboardUtils.saveLastUsedIncompatibleIme(ctx)
 
-                AppPreferences.defaultIme = KeyboardUtils.getChosenImeId(ctx)
-
-                KeyboardUtils.getImeId(KeyboardUtils.selectedImePackageName).onSuccess {
-                    KeyboardUtils.switchIme(ctx, it)
-                }
+                KeyboardUtils.chooseCompatibleInputMethod(ctx)
             }
 
             //when a device is disconnected, change back to the old ime
             BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
-                AppPreferences.defaultIme?.let {
+                AppPreferences.lastUsedIncompatibleImeId?.let {
                     KeyboardUtils.switchIme(ctx, it)
                 }
             }

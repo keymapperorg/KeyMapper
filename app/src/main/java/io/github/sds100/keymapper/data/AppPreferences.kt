@@ -66,7 +66,7 @@ object AppPreferences : DefaultPreferences() {
         appCtx.bool(R.bool.default_value_auto_show_ime_picker)
     )
 
-    var defaultIme by StringOrNullPref(KEY_DEFAULT_IME)
+    var lastUsedIncompatibleImeId by StringOrNullPref(KEY_DEFAULT_IME)
 
     val longPressDelay by IntPref(
         appCtx.str(R.string.key_pref_long_press_delay),
@@ -133,9 +133,8 @@ object AppPreferences : DefaultPreferences() {
         appCtx.bool(R.bool.default_value_hide_home_screen_alerts)
     )
 
-    var approvedSelectCompatibleImePrompt by BoolPref(
-        appCtx.str(R.string.key_pref_approved_select_compatible_ime_prompt),
-        false
+    var lastUsedCompatibleImePackage by StringOrNullPref(
+        appCtx.str(R.string.key_pref_last_used_compatible_ime)
     )
 
     @NightMode

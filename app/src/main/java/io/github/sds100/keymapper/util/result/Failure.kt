@@ -6,11 +6,9 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.lifecycleScope
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.*
-import kotlinx.coroutines.launch
 import splitties.experimental.ExperimentalSplittiesApi
 
 /**
@@ -21,8 +19,8 @@ fun Failure.getFullMessage(ctx: Context) = when (this) {
     is PermissionDenied -> PermissionDenied.getMessageForPermission(ctx, permission)
     is AppNotFound -> ctx.str(R.string.error_app_isnt_installed, packageName)
     is AppDisabled -> ctx.str(R.string.error_app_isnt_installed)
-    is SelectedCompatibleImeIsDisabled -> ctx.str(R.string.error_ime_service_disabled)
-    is SelectedCompatibleImeNotChosen -> ctx.str(R.string.error_ime_must_be_chosen)
+    is NoCompatibleImeEnabled -> ctx.str(R.string.error_ime_service_disabled)
+    is NoCompatibleImeChosen -> ctx.str(R.string.error_ime_must_be_chosen)
     is OptionsNotRequired -> ctx.str(R.string.error_options_not_required)
     is SystemFeatureNotSupported -> ctx.str(R.string.error_feature_not_available, feature)
     is ConstraintNotFound -> ctx.str(R.string.error_constraint_not_found)
@@ -96,20 +94,16 @@ class AppDisabled(val packageName: String) : RecoverableFailure() {
     }
 }
 
-class SelectedCompatibleImeIsDisabled : RecoverableFailure() {
+class NoCompatibleImeEnabled : RecoverableFailure() {
     override suspend fun recover(activity: FragmentActivity, onSuccess: () -> Unit) {
-        activity.lifecycleScope.launch {
-            KeyboardUtils.enableSelectedIme(activity)
-        }
+        KeyboardUtils.enableCompatibleInputMethods()
     }
 }
 
-class SelectedCompatibleImeNotChosen : RecoverableFailure() {
+class NoCompatibleImeChosen : RecoverableFailure() {
     @ExperimentalSplittiesApi
     override suspend fun recover(activity: FragmentActivity, onSuccess: () -> Unit) {
-        activity.lifecycleScope.launch {
-            KeyboardUtils.chooseSelectedIme(activity)
-        }
+        KeyboardUtils.chooseCompatibleInputMethod(activity)
     }
 }
 

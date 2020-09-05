@@ -232,12 +232,12 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
     if (data.isEmpty()) return NoActionData()
 
     if (requiresIME) {
-        if (!KeyboardUtils.isSelectedImeEnabled()) {
-            return SelectedCompatibleImeIsDisabled()
+        if (!KeyboardUtils.isCompatibleInputMethodEnabled()) {
+            return NoCompatibleImeEnabled()
         }
 
-        if (!KeyboardUtils.isSelectedImeChosen()) {
-            return SelectedCompatibleImeNotChosen()
+        if (!KeyboardUtils.isCompatibleInputMethodChosen(ctx)) {
+            return NoCompatibleImeChosen()
         }
     }
 
