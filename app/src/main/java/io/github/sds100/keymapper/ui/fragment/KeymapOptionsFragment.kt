@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.navigation.navGraphViewModels
 import com.airbnb.epoxy.EpoxyController
@@ -19,6 +20,7 @@ import io.github.sds100.keymapper.databinding.FragmentKeymapOptionsBinding
 import io.github.sds100.keymapper.slider
 import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.int
+import io.github.sds100.keymapper.util.numberEditTextAlertDialog
 import io.github.sds100.keymapper.util.str
 import kotlinx.android.synthetic.main.fragment_keymap_options.*
 
@@ -96,6 +98,17 @@ class KeymapOptionsFragment(private val mKeymapId: Long) : Fragment() {
                             mViewModel.setTriggerOption(it.id, BehaviorOption.DEFAULT)
                         } else {
                             mViewModel.setTriggerOption(it.id, value.toInt())
+                        }
+                    }
+
+                    onSliderValueClickListener { _ ->
+                        lifecycleScope.launchWhenStarted {
+                            val num = requireActivity().numberEditTextAlertDialog(
+                                hint = str(it.label),
+                                min = int(it.sliderModel.min),
+                                max = int(it.sliderModel.maxSlider))
+
+                            mViewModel.setTriggerOption(it.id, num)
                         }
                     }
                 }

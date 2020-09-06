@@ -148,7 +148,7 @@ class ConfigKeymapViewModel internal constructor(
                         value = it.vibrateDuration.value.nullIfDefault,
                         isDefaultStepEnabled = true,
                         min = R.integer.vibrate_duration_min,
-                        max = R.integer.vibrate_duration_max,
+                        maxSlider = R.integer.vibrate_duration_max,
                         stepSize = R.integer.vibrate_duration_step_size
                     )
                 ))
@@ -162,7 +162,7 @@ class ConfigKeymapViewModel internal constructor(
                         value = it.longPressDelay.value.nullIfDefault,
                         isDefaultStepEnabled = true,
                         min = R.integer.long_press_delay_min,
-                        max = R.integer.long_press_delay_max,
+                        maxSlider = R.integer.long_press_delay_max,
                         stepSize = R.integer.long_press_delay_step_size
                     )
                 ))
@@ -176,7 +176,7 @@ class ConfigKeymapViewModel internal constructor(
                         value = it.doublePressDelay.value.nullIfDefault,
                         isDefaultStepEnabled = true,
                         min = R.integer.double_press_delay_min,
-                        max = R.integer.double_press_delay_max,
+                        maxSlider = R.integer.double_press_delay_max,
                         stepSize = R.integer.double_press_delay_step_size
                     )
                 ))
@@ -190,7 +190,7 @@ class ConfigKeymapViewModel internal constructor(
                         value = it.sequenceTriggerTimeout.value.nullIfDefault,
                         isDefaultStepEnabled = true,
                         min = R.integer.sequence_trigger_timeout_min,
-                        max = R.integer.sequence_trigger_timeout_max,
+                        maxSlider = R.integer.sequence_trigger_timeout_max,
                         stepSize = R.integer.sequence_trigger_timeout_step_size
                     )
                 ))

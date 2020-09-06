@@ -8,6 +8,7 @@ import android.widget.CheckBox
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -22,10 +23,7 @@ import io.github.sds100.keymapper.data.model.SliderListItemModel
 import io.github.sds100.keymapper.data.viewmodel.ActionBehaviorViewModel
 import io.github.sds100.keymapper.databinding.FragmentActionBehaviorBinding
 import io.github.sds100.keymapper.slider
-import io.github.sds100.keymapper.util.EventObserver
-import io.github.sds100.keymapper.util.InjectorUtils
-import io.github.sds100.keymapper.util.int
-import io.github.sds100.keymapper.util.str
+import io.github.sds100.keymapper.util.*
 
 /**
  * Created by sds100 on 27/06/2020.
@@ -131,6 +129,16 @@ class ActionBehaviorFragment : BottomSheetDialogFragment() {
                             mViewModel.setValue(it.id, BehaviorOption.DEFAULT)
                         } else {
                             mViewModel.setValue(it.id, value.toInt())
+                        }
+                    }
+
+                    onSliderValueClickListener { _ ->
+                        lifecycleScope.launchWhenStarted {
+                            val num = requireActivity().numberEditTextAlertDialog(
+                                hint = str(it.label),
+                                min = int(it.sliderModel.min))
+
+                            mViewModel.setValue(it.id, num)
                         }
                     }
                 }

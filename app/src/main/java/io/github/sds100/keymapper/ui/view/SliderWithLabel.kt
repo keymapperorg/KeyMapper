@@ -2,8 +2,9 @@ package io.github.sds100.keymapper.ui.view
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.View
+import android.widget.Button
 import android.widget.FrameLayout
-import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.google.android.material.slider.Slider
 import io.github.sds100.keymapper.R
@@ -23,7 +24,7 @@ class SliderWithLabel(context: Context,
     constructor(context: Context) : this(context, null, 0)
 
     private val mSlider by lazy { findViewById<Slider>(R.id.slider) }
-    private val mSliderValue by lazy { findViewById<TextView>(R.id.textViewSliderValue) }
+    private val mSliderValue by lazy { findViewById<Button>(R.id.textViewSliderValue) }
 
     private var mIsDefaultStepEnabled = false
 
@@ -46,11 +47,15 @@ class SliderWithLabel(context: Context,
                 }
             }
         }
+
+        mSliderValue.setOnClickListener {
+
+        }
     }
 
     fun applyModel(model: SliderModel) {
         val min = context.int(model.min)
-        val max = context.int(model.max)
+        val max = context.int(model.maxSlider)
         val stepSize = context.int(model.stepSize)
 
         val defaultStepValue = calculateDefaultStepValue(min.toFloat(), stepSize.toFloat())
@@ -68,7 +73,14 @@ class SliderWithLabel(context: Context,
 
         if (model.value != null) {
             when {
-                model.value > max -> mSlider.value = max.toFloat()
+                model.value > max -> {
+                    //set the max slider value to a multiple of the step size greater than the value
+                    val remainder = model.value % stepSize
+
+                    mSlider.valueTo = ((model.value + stepSize) - remainder).toFloat()
+                    mSlider.value = model.value.toFloat()
+                }
+
                 model.value < min -> mSlider.value = min.toFloat()
                 else -> mSlider.value = model.value.toFloat()
             }
@@ -79,7 +91,11 @@ class SliderWithLabel(context: Context,
         setSliderValueTextViewText(mSlider.value)
     }
 
-    fun setListener(onChangeListener: Slider.OnChangeListener) {
+    fun setOnSliderValueClickListener(onClickListener: OnClickListener) {
+        mSliderValue.setOnClickListener(onClickListener)
+    }
+
+    fun setOnSliderChangeListener(onChangeListener: Slider.OnChangeListener) {
         mSlider.clearOnChangeListeners()
         mSlider.addOnChangeListener(onChangeListener)
     }
@@ -110,6 +126,11 @@ fun SliderWithLabel.setModel(model: SliderModel) {
 }
 
 @BindingAdapter("app:onChangeListener")
-fun SliderWithLabel.setOnChangeListener(onChangeListener: Slider.OnChangeListener) {
-    setListener(onChangeListener)
+fun SliderWithLabel.onChangeListener(onChangeListener: Slider.OnChangeListener) {
+    setOnSliderChangeListener(onChangeListener)
+}
+
+@BindingAdapter("app:onSliderValueClickListener")
+fun SliderWithLabel.onSliderValueClickListener(clickListener: View.OnClickListener) {
+    setOnSliderValueClickListener(clickListener)
 }

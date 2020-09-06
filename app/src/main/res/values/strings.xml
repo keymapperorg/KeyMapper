@@ -673,6 +673,9 @@
     <string name="error_file_access_denied">File access denied! Is it deleted?</string>
     <string name="error_file_access_denied_automatic_backup">Failed to backup to file. Is it deleted?</string>
     <string name="error_failed_to_split_string">Failed to split string %s</string>
+    <string name="error_invalid_number">Invalid Number!</string>
+    <string name="error_number_too_small">Must be at least %s!</string>
+    <string name="error_number_too_big">Must be at most %s!</string>
 
     <!-- Error messages -->
 

@@ -31,7 +31,7 @@ class ActionBehaviorViewModel : ViewModel() {
                         value = it.repeatRate.value.nullIfDefault,
                         isDefaultStepEnabled = true,
                         min = R.integer.repeat_rate_min,
-                        max = R.integer.repeat_rate_max,
+                        maxSlider = R.integer.repeat_rate_max,
                         stepSize = R.integer.repeat_rate_step_size
                     )
                 ))
@@ -45,7 +45,7 @@ class ActionBehaviorViewModel : ViewModel() {
                         value = it.repeatDelay.value.nullIfDefault,
                         isDefaultStepEnabled = true,
                         min = R.integer.repeat_delay_min,
-                        max = R.integer.repeat_delay_max,
+                        maxSlider = R.integer.repeat_delay_max,
                         stepSize = R.integer.repeat_delay_step_size
                     )
                 ))

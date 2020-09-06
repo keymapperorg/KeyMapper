@@ -6,8 +6,10 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.observe
 import io.github.sds100.keymapper.data.model.SeekBarListItemModel
-import io.github.sds100.keymapper.databinding.DialogEdittextBinding
+import io.github.sds100.keymapper.databinding.DialogEdittextNumberBinding
+import io.github.sds100.keymapper.databinding.DialogEdittextStringBinding
 import io.github.sds100.keymapper.databinding.DialogSeekbarListBinding
+import io.github.sds100.keymapper.util.result.*
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
 import splitties.alertdialog.appcompat.okButton
@@ -20,7 +22,7 @@ import kotlin.coroutines.suspendCoroutine
 
 suspend fun FragmentActivity.editTextAlertDialog(hint: String, allowEmpty: Boolean = false) = suspendCoroutine<String> {
     alertDialog {
-        DialogEdittextBinding.inflate(layoutInflater).apply {
+        DialogEdittextStringBinding.inflate(layoutInflater).apply {
             val text = MutableLiveData("")
 
             setHint(hint)
@@ -43,6 +45,68 @@ suspend fun FragmentActivity.editTextAlertDialog(hint: String, allowEmpty: Boole
                         } else {
                             !it.isNullOrBlank()
                         }
+                }
+            }
+        }
+    }
+}
+
+suspend fun FragmentActivity.numberEditTextAlertDialog(
+    hint: String,
+    min: Int? = null,
+    max: Int? = null
+) = suspendCoroutine<Int> {
+
+    fun isValid(text: String?): Result<Int> {
+        if (text.isNullOrBlank()) {
+            return InvalidNumber()
+        }
+
+        return try {
+            val num = text.toInt()
+
+            min?.let {
+                if (num < min) {
+                    return NumberTooSmall(min)
+                }
+            }
+
+            max?.let {
+                if (num > max) {
+                    return NumberTooBig(max)
+                }
+            }
+
+            Success(num)
+        } catch (e: NumberFormatException) {
+            InvalidNumber()
+        }
+    }
+
+    alertDialog {
+        DialogEdittextNumberBinding.inflate(layoutInflater).apply {
+            val text = MutableLiveData("")
+
+            setHint(hint)
+            setText(text)
+
+            setView(this.root)
+
+            okButton { _ ->
+                isValid(text.value).onSuccess { num ->
+                    it.resume(num)
+                }
+            }
+
+            cancelButton()
+
+            show().apply {
+                text.observe(this@numberEditTextAlertDialog) {
+                    val result = isValid(it)
+
+                    getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = result.isSuccess
+
+                    textInputLayout.error = result.failureOrNull()?.getFullMessage(context)
                 }
             }
         }
