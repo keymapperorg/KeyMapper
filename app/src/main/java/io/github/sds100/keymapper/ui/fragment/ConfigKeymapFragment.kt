@@ -26,11 +26,8 @@ import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.RecoverableFailure
 import io.github.sds100.keymapper.util.result.getFullMessage
 import kotlinx.coroutines.launch
-import splitties.alertdialog.appcompat.alertDialog
+import splitties.alertdialog.appcompat.*
 import splitties.alertdialog.appcompat.coroutines.showAndAwait
-import splitties.alertdialog.appcompat.message
-import splitties.alertdialog.appcompat.messageResource
-import splitties.alertdialog.appcompat.okButton
 import splitties.experimental.ExperimentalSplittiesApi
 import splitties.snackbar.action
 import splitties.snackbar.longSnack
@@ -97,11 +94,11 @@ class ConfigKeymapFragment : Fragment() {
             tabLayout.isVisible = tabLayout.tabCount > 1
 
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-                findNavController().navigateUp()
+                showOnBackPressedWarning()
             }
 
             appBar.setNavigationOnClickListener {
-                findNavController().navigateUp()
+                showOnBackPressedWarning()
             }
 
             appBar.setOnMenuItemClickListener {
@@ -206,6 +203,19 @@ class ConfigKeymapFragment : Fragment() {
             })
 
             return this.root
+        }
+    }
+
+    private fun showOnBackPressedWarning() {
+        requireContext().alertDialog {
+            messageResource = R.string.dialog_message_are_you_sure_want_to_leave_without_saving
+
+            positiveButton(R.string.pos_yes) {
+                findNavController().navigateUp()
+            }
+
+            cancelButton()
+            show()
         }
     }
 }
