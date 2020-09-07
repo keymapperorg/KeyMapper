@@ -12,5 +12,5 @@
         android:id="@+id/action_save"
         android:icon="@drawable/ic_outline_save_24"
         android:title="@string/action_save"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always|withText" />
 </menu>
