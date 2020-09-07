@@ -130,6 +130,8 @@
     <string name="extra_label_repeat_delay">Repeat delay (ms)</string>
     <string name="extra_label_repeat_rate">Repeat rate (ms)</string>
     <string name="extra_label_vibration_duration">Vibration duration (ms)</string>
+    <string name="extra_label_action_multiplier">Multiplier</string>
+
     <!-- Constraints -->
     <string name="constraint_app_foreground_description">%s is in foreground</string>
     <string name="constraint_app_not_foreground_description">%s is not in foreground</string>

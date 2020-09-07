@@ -64,11 +64,13 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         private const val INDEX_ACTION_REPEAT_RATE = 0
         private const val INDEX_ACTION_REPEAT_DELAY = 1
         private const val INDEX_STOP_REPEAT_BEHAVIOUR = 2
+        private const val INDEX_ACTION_MULTIPLIER = 3
 
         private val ACTION_EXTRA_INDEX_MAP = mapOf(
             Action.EXTRA_REPEAT_RATE to INDEX_ACTION_REPEAT_RATE,
             Action.EXTRA_REPEAT_DELAY to INDEX_ACTION_REPEAT_DELAY,
-            Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR to INDEX_STOP_REPEAT_BEHAVIOUR
+            Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR to INDEX_STOP_REPEAT_BEHAVIOUR,
+            Action.EXTRA_MULTIPLIER to INDEX_ACTION_MULTIPLIER
         )
 
         private fun createDeviceDescriptorMap(descriptors: Set<String>): SparseArrayCompat<String> {
@@ -746,8 +748,8 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 }
 
                 else -> detectedShortPressTriggers.forEach { triggerIndex ->
-                    mParallelTriggerActions[triggerIndex].forEachIndexed { index, key ->
-                        val action = mActionMap[key] ?: return@forEachIndexed
+                    mParallelTriggerActions[triggerIndex].forEachIndexed { index, actionKey ->
+                        val action = mActionMap[actionKey] ?: return@forEachIndexed
 
                         val keyEventAction =
                             if (action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)) {
@@ -756,7 +758,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                                 KeyEventAction.DOWN_UP
                             }
 
-                        performAction(action, showPerformingActionToast, keyEventAction)
+                        performAction(action, showPerformingActionToast, actionMultiplier(actionKey), keyEventAction)
 
                         val vibrateDuration = vibrateDurations[index]
 
@@ -1034,7 +1036,12 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                         if (action.type == ActionType.KEY_EVENT
                             && action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)) {
 
-                            performAction(action, showPerformingActionToast, KeyEventAction.UP)
+                            performAction(
+                                action,
+                                showPerformingActionToast,
+                                actionMultiplier(actionKey),
+                                KeyEventAction.UP
+                            )
                         }
                     }
                 }
@@ -1074,7 +1081,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         actionKeysToPerform.forEachIndexed { index, actionKey ->
             val action = mActionMap[actionKey] ?: return@forEachIndexed
 
-            performAction(action, showPerformingActionToast)
+            performAction(action, showPerformingActionToast, actionMultiplier(actionKey))
 
             if (vibrateDurations[index] != -1L || preferences.forceVibrate) {
                 vibrate.value = Event(vibrateDurations[index])
@@ -1179,7 +1186,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         actionKeys.forEachIndexed { index, actionKey ->
             val action = mActionMap[actionKey] ?: return@forEachIndexed
 
-            performAction(action, showPerformingActionToast)
+            performAction(action, showPerformingActionToast, actionMultiplier(actionKey))
 
             if (vibrateDurations[index] != -1L || preferences.forceVibrate) {
                 vibrate.value = Event(vibrateDurations[index])
@@ -1282,7 +1289,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                         if (isModifierKey(action.data.toInt())) return@let
                     }
 
-                    performAction(action, false)
+                    performAction(action, false, actionMultiplier(actionKey))
                 }
 
                 delay(repeatRate(actionKey))
@@ -1308,7 +1315,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                     KeyEventAction.DOWN_UP
                 }
 
-            performAction(action, showPerformingActionToast(actionKey), keyEventAction)
+            performAction(action, showPerformingActionToast(actionKey), actionMultiplier(actionKey), keyEventAction)
 
             if (mParallelTriggerFlags.vibrate(triggerIndex) || preferences.forceVibrate
                 || mParallelTriggerFlags[triggerIndex].hasFlag(Trigger.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION)) {
@@ -1403,13 +1410,16 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
     private fun performAction(
         action: Action,
         showPerformingActionToast: Boolean,
+        multiplier: Int,
         keyEventAction: KeyEventAction = KeyEventAction.DOWN_UP
     ) {
         val additionalMetaState = mMetaStateFromKeyEvent.withFlag(mMetaStateFromActions)
 
-        performAction.value = Event(
-            PerformActionModel(action, showPerformingActionToast, additionalMetaState, keyEventAction)
-        )
+        repeat(multiplier) {
+            performAction.value = Event(
+                PerformActionModel(action, showPerformingActionToast, additionalMetaState, keyEventAction)
+            )
+        }
     }
 
     private fun setActionMapAndOptions(actions: Set<Action>) {
@@ -1479,6 +1489,14 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             KeyEvent.KEYCODE_FUNCTION -> true
 
             else -> false
+        }
+    }
+
+    private fun actionMultiplier(actionKey: Int): Int {
+        return if (mActionOptions[actionKey][INDEX_ACTION_MULTIPLIER] == -1) {
+            1
+        } else {
+            mActionOptions[actionKey][INDEX_ACTION_MULTIPLIER]
         }
     }
 

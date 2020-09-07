@@ -23,6 +23,22 @@ class ActionBehaviorViewModel : ViewModel() {
 
     val sliderModels = behavior.map {
         sequence {
+
+            if (it.multiplier.isAllowed) {
+                yield(SliderListItemModel(
+                    id = it.multiplier.id,
+                    label = R.string.extra_label_action_multiplier,
+
+                    sliderModel = SliderModel(
+                        value = it.multiplier.value.nullIfDefault,
+                        isDefaultStepEnabled = true,
+                        min = R.integer.action_multiplier_min,
+                        maxSlider = R.integer.action_multiplier_max,
+                        stepSize = R.integer.action_multiplier_step_size
+                    )
+                ))
+            }
+
             if (it.repeatRate.isAllowed) {
                 yield(SliderListItemModel(
                     id = it.repeatRate.id,

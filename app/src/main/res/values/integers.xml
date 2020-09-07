@@ -23,4 +23,8 @@
     <integer name="repeat_rate_min">5</integer>
     <integer name="repeat_rate_max">1000</integer>
     <integer name="repeat_rate_step_size">5</integer>
+
+    <integer name="action_multiplier_min">1</integer>
+    <integer name="action_multiplier_max">20</integer>
+    <integer name="action_multiplier_step_size">1</integer>
 </resources>
