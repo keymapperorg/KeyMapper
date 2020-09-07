@@ -212,6 +212,7 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
         const val ID_SHOW_VOLUME_UI = "show_volume_ui"
         const val ID_SHOW_PERFORMING_ACTION_TOAST = "show_performing_action_toast"
         const val ID_STOP_REPEATING_TRIGGER_RELEASED = "stop_repeating_trigger_released"
+        const val ID_MULTIPLIER = "multiplier"
         const val ID_STOP_REPEATING_TRIGGER_PRESSED_AGAIN = "stop_repeating_trigger_pressed_again"
         const val ID_REPEAT_DELAY = "repeat_delay"
         const val ID_HOLD_DOWN = "hold_down"
@@ -251,6 +252,12 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
     val repeatRate: BehaviorOption<Int>
 
     val repeatDelay: BehaviorOption<Int>
+
+    val multiplier = BehaviorOption(
+        id = ID_MULTIPLIER,
+        value = action.extras.getData(Action.EXTRA_MULTIPLIER).valueOrNull()?.toInt() ?: BehaviorOption.DEFAULT,
+        isAllowed = true
+    )
 
     init {
         val repeatRateValue = action.extras.getData(Action.EXTRA_REPEAT_RATE).valueOrNull()?.toInt()
@@ -300,6 +307,7 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
         val newExtras = action.extras
             .applyBehaviorOption(repeatRate, Action.EXTRA_REPEAT_RATE)
             .applyBehaviorOption(repeatDelay, Action.EXTRA_REPEAT_DELAY)
+            .applyBehaviorOption(multiplier, Action.EXTRA_MULTIPLIER)
 
         newExtras.removeAll { it.id == Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR }
         if (stopRepeatingWhenTriggerPressedAgain.value) {
@@ -314,6 +322,7 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
         when (id) {
             ID_REPEAT_RATE -> repeatRate.value = value
             ID_REPEAT_DELAY -> repeatDelay.value = value
+            ID_MULTIPLIER -> multiplier.value = value
         }
 
         return this

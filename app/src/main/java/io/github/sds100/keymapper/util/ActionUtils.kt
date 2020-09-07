@@ -87,109 +87,117 @@ fun Action.buildChipModel(ctx: Context): ActionChipModel {
     return ActionChipModel(uniqueId, type, description, error, icon)
 }
 
-private fun Action.getTitle(ctx: Context): Result<String> = when (type) {
-    ActionType.APP -> {
-        try {
-            val applicationInfo = ctx.packageManager.getApplicationInfo(data, PackageManager.GET_META_DATA)
+private fun Action.getTitle(ctx: Context): Result<String> {
+    return when (type) {
+        ActionType.APP -> {
+            try {
+                val applicationInfo = ctx.packageManager.getApplicationInfo(data, PackageManager.GET_META_DATA)
 
-            val applicationLabel = ctx.packageManager.getApplicationLabel(applicationInfo)
+                val applicationLabel = ctx.packageManager.getApplicationLabel(applicationInfo)
 
-            Success(ctx.str(R.string.description_open_app, applicationLabel.toString()))
-        } catch (e: PackageManager.NameNotFoundException) {
-            //the app isn't installed
-            AppNotFound(data)
-        }
-    }
-
-    ActionType.APP_SHORTCUT -> {
-        extras.getData(Action.EXTRA_SHORTCUT_TITLE)
-    }
-
-    ActionType.KEY_EVENT -> {
-        val key = if (data.toInt() > KeyEvent.getMaxKeyCode()) {
-            "Key Code $data"
-        } else {
-            KeyEvent.keyCodeToString(data.toInt())
-        }
-
-        val metaStateString = buildString {
-
-            extras.getData(Action.EXTRA_KEY_EVENT_META_STATE).onSuccess { metaState ->
-                KeyEventUtils.MODIFIER_LABELS.entries.forEach {
-                    val modifier = it.key
-                    val labelRes = it.value
-
-                    if (metaState.toInt().hasFlag(modifier)) {
-                        append("${ctx.str(labelRes)} + ")
-                    }
-                }
+                Success(ctx.str(R.string.description_open_app, applicationLabel.toString()))
+            } catch (e: PackageManager.NameNotFoundException) {
+                //the app isn't installed
+                AppNotFound(data)
             }
         }
 
-        Success(ctx.str(R.string.description_keyevent, formatArgArray = arrayOf(metaStateString, key)))
-    }
+        ActionType.APP_SHORTCUT -> {
+            extras.getData(Action.EXTRA_SHORTCUT_TITLE)
+        }
 
-    ActionType.TEXT_BLOCK -> {
-        val text = data
-        Success(ctx.str(R.string.description_text_block, text))
-    }
+        ActionType.KEY_EVENT -> {
+            val key = if (data.toInt() > KeyEvent.getMaxKeyCode()) {
+                "Key Code $data"
+            } else {
+                KeyEvent.keyCodeToString(data.toInt())
+            }
 
-    ActionType.URL -> {
-        Success(ctx.str(R.string.description_url, data))
-    }
+            val metaStateString = buildString {
 
-    ActionType.SYSTEM_ACTION -> {
-        val systemActionId = data
+                extras.getData(Action.EXTRA_KEY_EVENT_META_STATE).onSuccess { metaState ->
+                    KeyEventUtils.MODIFIER_LABELS.entries.forEach {
+                        val modifier = it.key
+                        val labelRes = it.value
 
-        SystemActionUtils.getSystemActionDef(systemActionId) then { systemActionDef ->
-            if (systemActionDef.hasOptions) {
-                val optionData = extras.getData(Option.getExtraIdForOption(systemActionId))
+                        if (metaState.toInt().hasFlag(modifier)) {
+                            append("${ctx.str(labelRes)} + ")
+                        }
+                    }
+                }
+            }
 
-                when (systemActionDef.optionType) {
-                    OptionType.SINGLE -> {
-                        optionData then {
-                            Option.getOptionLabel(ctx, systemActionId, it)
-                        } then {
-                            Success(systemActionDef.getDescriptionWithOption(ctx, it))
+            Success(ctx.str(R.string.description_keyevent, formatArgArray = arrayOf(metaStateString, key)))
+        }
 
-                        } otherwise {
-                            if (systemActionId == SystemAction.SWITCH_KEYBOARD) {
+        ActionType.TEXT_BLOCK -> {
+            val text = data
+            Success(ctx.str(R.string.description_text_block, text))
+        }
 
-                                extras.getData(Action.EXTRA_IME_NAME) then {
-                                    Success(systemActionDef.getDescriptionWithOption(ctx, it))
+        ActionType.URL -> {
+            Success(ctx.str(R.string.description_url, data))
+        }
+
+        ActionType.SYSTEM_ACTION -> {
+            val systemActionId = data
+
+            SystemActionUtils.getSystemActionDef(systemActionId) then { systemActionDef ->
+                if (systemActionDef.hasOptions) {
+                    val optionData = extras.getData(Option.getExtraIdForOption(systemActionId))
+
+                    when (systemActionDef.optionType) {
+                        OptionType.SINGLE -> {
+                            optionData then {
+                                Option.getOptionLabel(ctx, systemActionId, it)
+                            } then {
+                                Success(systemActionDef.getDescriptionWithOption(ctx, it))
+
+                            } otherwise {
+                                if (systemActionId == SystemAction.SWITCH_KEYBOARD) {
+
+                                    extras.getData(Action.EXTRA_IME_NAME) then {
+                                        Success(systemActionDef.getDescriptionWithOption(ctx, it))
+                                    }
+
+                                } else {
+                                    Success(ctx.str(systemActionDef.descriptionRes))
                                 }
+                            }
+                        }
 
-                            } else {
-                                Success(ctx.str(systemActionDef.descriptionRes))
+                        OptionType.MULTIPLE -> {
+                            optionData then {
+                                Option.optionSetFromString(it)
+                            } then {
+                                Option.labelsFromOptionSet(ctx, systemActionId, it)
+                            } then {
+                                Success(systemActionDef.getDescriptionWithOptionSet(ctx, it))
                             }
                         }
                     }
-
-                    OptionType.MULTIPLE -> {
-                        optionData then {
-                            Option.optionSetFromString(it)
-                        } then {
-                            Option.labelsFromOptionSet(ctx, systemActionId, it)
-                        } then {
-                            Success(systemActionDef.getDescriptionWithOptionSet(ctx, it))
-                        }
-                    }
+                } else {
+                    Success(ctx.str(systemActionDef.descriptionRes))
                 }
-            } else {
-                Success(ctx.str(systemActionDef.descriptionRes))
             }
         }
-    }
 
-    ActionType.TAP_COORDINATE -> {
-        val x = data.split(',')[0]
-        val y = data.split(',')[1]
+        ActionType.TAP_COORDINATE -> {
+            val x = data.split(',')[0]
+            val y = data.split(',')[1]
 
-        extras.getData(Action.EXTRA_COORDINATE_DESCRIPTION) then {
-            Success(ctx.str(resId = R.string.description_tap_coordinate_with_description, formatArgArray = arrayOf(x, y, it)))
-        } otherwise {
-            Success(ctx.str(resId = R.string.description_tap_coordinate_default, formatArgArray = arrayOf(x, y)))
+            extras.getData(Action.EXTRA_COORDINATE_DESCRIPTION) then {
+                Success(ctx.str(resId = R.string.description_tap_coordinate_with_description, formatArgArray = arrayOf(x, y, it)))
+            } otherwise {
+                Success(ctx.str(resId = R.string.description_tap_coordinate_default, formatArgArray = arrayOf(x, y)))
+            }
         }
+    }.then {
+        extras.getData(Action.EXTRA_MULTIPLIER).valueOrNull()?.toIntOrNull()?.let { multiplier ->
+            return@then Success("(${multiplier}x) $it")
+        }
+
+        Success(it)
     }
 }
 
