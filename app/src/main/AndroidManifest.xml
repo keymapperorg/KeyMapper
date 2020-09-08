@@ -52,6 +52,12 @@
 
         <activity android:name=".ui.activity.AppIntroActivity" />
 
+        <activity android:name=".ui.activity.ActionShortcutActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.CREATE_SHORTCUT" />
+            </intent-filter>
+        </activity>
+
         <receiver android:name=".broadcastreceiver.KeyMapperBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.hardware.input.action.QUERY_KEYBOARD_LAYOUTS" />
