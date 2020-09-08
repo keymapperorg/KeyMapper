@@ -146,11 +146,11 @@ class CreateActionShortcutFragment : Fragment() {
                                 setIcon(icon)
                                 setShortLabel(shortcutLabel)
 
-                                Intent(MyAccessibilityService.ACTION_PERFORM_ACTIONS).apply {
+                                Intent(requireContext(), LaunchActionShortcutActivity::class.java).apply {
+                                    action = MyAccessibilityService.ACTION_PERFORM_ACTIONS
+
                                     putExtra(MyAccessibilityService.EXTRA_ACTION_LIST,
                                         Gson().toJson(mViewModel.actionList.value))
-
-                                    setPackage(Constants.PACKAGE_NAME)
 
                                     setIntent(this)
                                 }

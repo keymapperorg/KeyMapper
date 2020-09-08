@@ -46,11 +46,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".ui.activity.HomeActivity"
             android:label="@string/app_name" />
 
         <activity android:name=".ui.activity.AppIntroActivity" />
+
+        <activity
+            android:name=".ui.activity.LaunchActionShortcutActivity"
+            android:excludeFromRecents="true"
+            android:finishOnTaskLaunch="true"
+            android:launchMode="singleInstance"
+            android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".ui.activity.CreateActionShortcutActivity"
