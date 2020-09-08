@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.SystemRepository
@@ -40,7 +39,7 @@ class AppShortcutListFragment : DefaultRecyclerViewFragment() {
         InjectorUtils.provideAppShortcutListViewModel(requireContext())
     }
 
-    private val mAppShortcutConfigLauncher by lazy {
+    private val mAppShortcutConfigLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             it ?: return@registerForActivityResult
 
@@ -80,10 +79,9 @@ class AppShortcutListFragment : DefaultRecyclerViewFragment() {
                 }
             }
         }
-    }
 
     override fun subscribeList(binding: FragmentRecyclerviewBinding) {
-        mViewModel.filteredAppShortcutModelList.observe(viewLifecycleOwner, Observer { appShortcutList ->
+        mViewModel.filteredAppShortcutModelList.observe(viewLifecycleOwner, { appShortcutList ->
 
             binding.epoxyRecyclerView.withModels {
                 appShortcutList.forEach {
