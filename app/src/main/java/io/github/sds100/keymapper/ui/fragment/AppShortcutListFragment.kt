@@ -13,7 +13,7 @@ import io.github.sds100.keymapper.data.viewmodel.AppShortcutListViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.simple
 import io.github.sds100.keymapper.util.InjectorUtils
-import io.github.sds100.keymapper.util.editTextAlertDialog
+import io.github.sds100.keymapper.util.editTextStringAlertDialog
 import io.github.sds100.keymapper.util.str
 import splitties.toast.toast
 
@@ -134,7 +134,7 @@ class AppShortcutListFragment : DefaultRecyclerViewFragment() {
         @Suppress("DEPRECATION") var shortcutName: String? = data.getStringExtra(Intent.EXTRA_SHORTCUT_NAME)
 
         if (shortcutName.isNullOrBlank()) {
-            shortcutName = requireActivity().editTextAlertDialog(str(R.string.dialog_title_create_shortcut_title))
+            shortcutName = requireActivity().editTextStringAlertDialog(str(R.string.dialog_title_create_shortcut_title))
         }
 
         return shortcutName

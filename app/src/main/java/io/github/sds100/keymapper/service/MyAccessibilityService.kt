@@ -12,6 +12,9 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.os.bundleOf
 import androidx.lifecycle.*
+import com.github.salomonbrys.kotson.fromJson
+import com.github.salomonbrys.kotson.registerTypeAdapter
+import com.google.gson.GsonBuilder
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.MyApplication
 import io.github.sds100.keymapper.R
@@ -60,10 +63,12 @@ class MyAccessibilityService : AccessibilityService(),
         const val ACTION_STOPPED_RECORDING_TRIGGER = "$PACKAGE_NAME.STOPPED_RECORDING_TRIGGER"
         const val ACTION_ON_START = "$PACKAGE_NAME.ON_ACCESSIBILITY_SERVICE_START"
         const val ACTION_ON_STOP = "$PACKAGE_NAME.ON_ACCESSIBILITY_SERVICE_STOP"
+        const val ACTION_PERFORM_ACTIONS = "$PACKAGE_NAME.PERFORM_ACTIONS"
 
         const val EXTRA_KEY_EVENT = "$PACKAGE_NAME.KEY_EVENT"
         const val EXTRA_TIME_LEFT = "$PACKAGE_NAME.TIME_LEFT"
         const val EXTRA_ACTION = "$PACKAGE_NAME.ACTION"
+        const val EXTRA_ACTION_LIST = "$PACKAGE_NAME.ACTION_LIST"
 
         /**
          * How long should the accessibility service record a trigger in seconds.
@@ -133,6 +138,16 @@ class MyAccessibilityService : AccessibilityService(),
                 ACTION_STOPPED_RECORDING_TRIGGER -> {
                     mRecordingTriggerJob?.cancel()
                     mRecordingTriggerJob = null
+                }
+
+                ACTION_PERFORM_ACTIONS -> {
+                    val gson = GsonBuilder().registerTypeAdapter(Action.DESERIALIZER).create()
+                    val actionListJson = intent.getStringExtra(EXTRA_ACTION_LIST) ?: return
+                    val actionList = gson.fromJson<List<Action>>(actionListJson)
+
+                    actionList.forEach {
+                        mActionPerformerDelegate.performAction(it, mChosenImePackageName)
+                    }
                 }
 
                 Intent.ACTION_SCREEN_ON -> {
@@ -224,6 +239,7 @@ class MyAccessibilityService : AccessibilityService(),
             addAction(ACTION_RECORD_TRIGGER)
             addAction(ACTION_TEST_ACTION)
             addAction(ACTION_STOPPED_RECORDING_TRIGGER)
+            addAction(ACTION_PERFORM_ACTIONS)
             addAction(Intent.ACTION_SCREEN_ON)
             addAction(Intent.ACTION_SCREEN_OFF)
             addAction(BluetoothDevice.ACTION_ACL_CONNECTED)

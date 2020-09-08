@@ -16,6 +16,7 @@
     <string name="triggers_recyclerview_placeholder">Record a trigger!</string>
     <string name="actions_recyclerview_placeholder">Add an action!</string>
     <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nCreate a keymap!</string>
+    <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nYou haven\'t chosen any actions for this shortcut!</string>
     <string name="no_key_maps">You haven\'t created any keymaps!</string>
     <string name="log_is_empty">Log is empty!</string>
     <string name="everything_looks_good">Everything looks good!</string>
@@ -61,13 +62,15 @@
     <string name="permission_description_key_mapper_input_method">perform Key Mapper actions that require a keyboard</string>
     <string name="tap_actions_to_fix">Tap actions to fix!</string>
     <string name="new_gui_keyboard_ad_message">Get the new Key Mapper Keyboard that actually has a keyboard!</string>
+    <string name="shortcut_label_action">Perform Actions</string>
+    <string name="hint_shortcut_name">Shortcut Name</string>
 
     <string name="whats_new">What\'s New</string>
     <string name="caption_action_type_key">Click the key on the device which you want to be entered.
-        \n\nIMPORTANT!
-        Inputting this key as an action will only work if you are using a Key Mapper compatible keyboard.</string>
+            \n\nIMPORTANT!
+            Inputting this key as an action will only work if you are using a Key Mapper compatible keyboard.</string>
     <string name="caption_action_type_keycode">IMPORTANT!
-        Inputting this keycode as an action will only work if you are using a Key Mapper compatible keyboard.</string>
+            Inputting this keycode as an action will only work if you are using a Key Mapper compatible keyboard.</string>
 
     <string name="caption_action_type_text">Type some text you want to be inserted when you perform this action.</string>
     <string name="caption_action_type_url">Type a url which you want to be opened. The http://, https:// or www. isn\'t required.</string>
@@ -269,7 +272,7 @@
     <string name="dialog_message_are_you_sure_want_to_leave_without_saving">Are you sure you want to leave without saving?</string>
     <string name="dialog_message_cant_find_paired_devices">Make sure Bluetooth is turned on and you have paired devices. Then try again.</string>
     <string name="dialog_message_root_prompt">When you tap \"OK\", you will be taken to Settings.
-        In the Settings, scroll to the bottom and tap "Enable Root Features" so you can use root features/actions. If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use features which only work on rooted devices.</string>
+            In the Settings, scroll to the bottom and tap "Enable Root Features" so you can use root features/actions. If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use features which only work on rooted devices.</string>
     <string name="dialog_message_downloading">Downloading…</string>
     <string name="dialog_message_describe_your_issue_in_the_email">Can you please describe the issue you are having in the email, otherwise I can\'t help you. Thanks!</string>
     <string name="dialog_message_long_press_warning">Long pressing only works for physical volume and navigation buttons. If you enable it for other keys, the keys won\'t work when they aren\'t long pressed.</string>
@@ -391,11 +394,11 @@
 
     <string name="title_pref_auto_change_ime_on_connection">Automatically change the keyboard on Bluetooth connection</string>
     <string name="summary_pref_auto_change_ime_on_connection">The Key Mapper keyboard will be automatically selected when a chosen bluetooth device is connected. Your old keyboard will be automatically selected when the device disconnects.
-        There may be a 5-10 second delay after disconnecting your device for the keyboard to change.</string>
+            There may be a 5-10 second delay after disconnecting your device for the keyboard to change.</string>
 
     <string name="title_pref_root_permission">Key Mapper has root permission</string>
     <string name="summary_pref_root_permission">Enable this if you want to use features/actions which only work on rooted devices. Key Mapper must have root permission from your root-access-management app (e.g Magisk, SuperSU) for these features to work.
-        Only turn this on if you know your device is rooted and you have given Key Mapper root permission.</string>
+            Only turn this on if you know your device is rooted and you have given Key Mapper root permission.</string>
 
     <string name="title_pref_dark_theme">Dark Theme</string>
 
@@ -639,6 +642,7 @@
     <string name="error_accessibility_service_disabled_home_screen">The accessibility service must be enabled for this app to work!</string>
     <string name="error_accessibility_service_disabled_record_trigger">The accessibility service needs to be enabled!</string>
     <string name="error_accessibility_service_enabled">Accessibility service is enabled!</string>
+    <string name="error_accessibility_service_disabled">Accessibility service needs to be enabled!</string>
 
     <string name="warning_need_write_secure_settings_permission">Some features need WRITE_SECURE_SETTINGS permission.</string>
     <string name="fixed_need_write_secure_settings_permission">WRITE_SECURE_SETTINGS permission granted.</string>

@@ -1,6 +1,8 @@
 package io.github.sds100.keymapper.data.model
 
 import androidx.annotation.StringDef
+import com.github.salomonbrys.kotson.byString
+import com.github.salomonbrys.kotson.jsonDeserializer
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.data.model.Action.Companion.EXTRA_LENS
 import io.github.sds100.keymapper.data.model.Action.Companion.EXTRA_PACKAGE_NAME
@@ -52,6 +54,13 @@ data class Extra(@ExtraId
         //DON'T CHANGE THESE. Used for JSON serialization and parsing.
         const val NAME_ID = "id"
         const val NAME_DATA = "data"
+
+        val DESERIALIZER = jsonDeserializer {
+            val id by it.json.byString(NAME_ID)
+            val data by it.json.byString(NAME_DATA)
+
+            Extra(id, data)
+        }
     }
 }
 

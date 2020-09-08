@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.data.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.github.salomonbrys.kotson.*
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 
@@ -59,6 +60,33 @@ class KeyMap(
         const val NAME_FLAGS = "flags"
         const val NAME_FOLDER_NAME = "folderName"
         const val NAME_IS_ENABLED = "isEnabled"
+
+        val DESERIALIZER = jsonDeserializer {
+            val actionListJsonArray by it.json.byArray(NAME_ACTION_LIST)
+            val actionList = it.context.deserialize<List<Action>>(actionListJsonArray)
+
+            val triggerJsonObject by it.json.byObject(NAME_TRIGGER)
+            val trigger = it.context.deserialize<Trigger>(triggerJsonObject)
+
+            val constraintListJsonArray by it.json.byArray(NAME_CONSTRAINT_LIST)
+            val constraintList = it.context.deserialize<List<Constraint>>(constraintListJsonArray)
+
+            val constraintMode by it.json.byInt(NAME_CONSTRAINT_MODE)
+            val flags by it.json.byInt(NAME_FLAGS)
+            val folderName by it.json.byNullableString(NAME_FOLDER_NAME)
+            val isEnabled by it.json.byBool(NAME_IS_ENABLED)
+
+            KeyMap(
+                0,
+                trigger,
+                actionList,
+                constraintList,
+                constraintMode,
+                flags,
+                folderName,
+                isEnabled
+            )
+        }
     }
 
     override fun hashCode() = id.toInt()

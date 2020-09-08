@@ -4,7 +4,9 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.byArray
+import com.github.salomonbrys.kotson.fromJson
+import com.github.salomonbrys.kotson.registerTypeAdapter
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
@@ -80,102 +82,14 @@ object BackupUtils {
                 val json = bufferedReader.readText()
                 val parser = JsonParser()
 
-                val gson = GsonBuilder().registerTypeAdapter<KeyMap> {
-
-                    deserialize {
-
-                        val actionListJsonArray by it.json.byArray(KeyMap.NAME_ACTION_LIST)
-                        val actionList = it.context.deserialize<List<Action>>(actionListJsonArray)
-
-                        val triggerJsonObject by it.json.byObject(KeyMap.NAME_TRIGGER)
-                        val trigger = it.context.deserialize<Trigger>(triggerJsonObject)
-
-                        val constraintListJsonArray by it.json.byArray(KeyMap.NAME_CONSTRAINT_LIST)
-                        val constraintList = it.context.deserialize<List<Constraint>>(constraintListJsonArray)
-
-                        val constraintMode by it.json.byInt(KeyMap.NAME_CONSTRAINT_MODE)
-                        val flags by it.json.byInt(KeyMap.NAME_FLAGS)
-                        val folderName by it.json.byNullableString(KeyMap.NAME_FOLDER_NAME)
-                        val isEnabled by it.json.byBool(KeyMap.NAME_IS_ENABLED)
-
-                        KeyMap(
-                            0,
-                            trigger,
-                            actionList,
-                            constraintList,
-                            constraintMode,
-                            flags,
-                            folderName,
-                            isEnabled
-                        )
-                    }
-                }.registerTypeAdapter<Trigger.Key> {
-
-                    deserialize {
-                        val keycode by it.json.byInt(Trigger.Key.NAME_KEYCODE)
-                        val deviceId by it.json.byString(Trigger.Key.NAME_DEVICE_ID)
-                        val clickType by it.json.byInt(Trigger.Key.NAME_CLICK_TYPE)
-
-                        Trigger.Key(keycode, deviceId, clickType)
-                    }
-                }.registerTypeAdapter<Trigger> {
-
-                    deserialize {
-                        val triggerKeysJsonArray by it.json.byArray(Trigger.NAME_KEYS)
-                        val keys = it.context.deserialize<List<Trigger.Key>>(triggerKeysJsonArray)
-
-                        val extrasJsonArray by it.json.byArray(Trigger.NAME_EXTRAS)
-                        val extraList = it.context.deserialize<List<Extra>>(extrasJsonArray) ?: listOf()
-
-                        val mode by it.json.byInt(Trigger.NAME_MODE)
-
-                        val flags by it.json.byNullableInt(Trigger.NAME_FLAGS)
-
-                        Trigger(keys, extraList, mode, flags ?: 0)
-                    }
-                }.registerTypeAdapter<Action> {
-
-                    deserialize {
-                        val typeString by it.json.byString(Action.NAME_ACTION_TYPE)
-                        val type = ActionType.valueOf(typeString)
-
-                        val data by it.json.byString(Action.NAME_DATA)
-
-                        val extrasJsonArray by it.json.byArray(Action.NAME_EXTRAS)
-                        val extraList = it.context.deserialize<List<Extra>>(extrasJsonArray) ?: listOf()
-
-                        val flags by it.json.byInt(Action.NAME_FLAGS)
-
-                        Action(type, data, extraList.toMutableList(), flags)
-                    }
-
-                }.registerTypeAdapter<Constraint> {
-
-                    deserialize {
-                        val type by it.json.byString(Constraint.NAME_TYPE)
-
-                        val extrasJsonArray by it.json.byArray(Constraint.NAME_EXTRAS)
-                        val extraList = it.context.deserialize<List<Extra>>(extrasJsonArray) ?: listOf()
-
-                        Constraint(type, extraList)
-                    }
-                }.registerTypeAdapter<DeviceInfo> {
-
-                    deserialize {
-                        val descriptor by it.json.byString(DeviceInfo.NAME_DESCRIPTOR)
-                        val name by it.json.byString(DeviceInfo.NAME_NAME)
-
-                        DeviceInfo(descriptor, name)
-                    }
-                }.registerTypeAdapter<Extra> {
-
-                    deserialize {
-                        val id by it.json.byString(Extra.NAME_ID)
-                        val data by it.json.byString(Extra.NAME_DATA)
-
-                        Extra(id, data)
-                    }
-                }.create()
+                val gson = GsonBuilder()
+                    .registerTypeAdapter(KeyMap.DESERIALIZER)
+                    .registerTypeAdapter(Trigger.Key.DESERIALIZER)
+                    .registerTypeAdapter(Trigger.DESERIALIZER)
+                    .registerTypeAdapter(Action.DESERIALIZER)
+                    .registerTypeAdapter(Constraint.DESERIALIZER)
+                    .registerTypeAdapter(DeviceInfo.DESERIALIZER)
+                    .registerTypeAdapter(Extra.DESERIALIZER).create()
 
                 val rootElement = parser.parse(json)
                 val keymapListJsonArray by rootElement.byArray(NAME_KEYMAP_LIST)
