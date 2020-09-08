@@ -188,6 +188,7 @@
     <string name="url_xda_labs_key_mapper" translatable="false">https://labs.xda-developers.com/store/app/io.github.sds100.keymapper</string>
     <string name="url_fdroid_key_mapper" translatable="false">https://f-droid.org/en/packages/io.github.sds100.keymapper/</string>
     <string name="url_github_releases_key_mapper" translatable="false">https://github.com/sds100/KeyMapper/releases</string>
+    <string name="url_youtube_channel" translatable="false">https://www.youtube.com/channel/UC87daDTKj8hpQQolhB81mYA</string>
 
     <string name="url_play_store_keymapper_gui_keyboard" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin</string>
     <string name="url_fdroid_keymapper_gui_keyboard" translatable="false">https://f-droid.org/en/packages/io.github.sds100.keymapper.inputmethod.latin/</string>
@@ -435,6 +436,7 @@
     <string name="pref_title_developer_email">Email Developer</string>
     <string name="pref_title_translate">Translate</string>
     <string name="pref_title_discord">Discord Server</string>
+    <string name="pref_title_youtube_channel">YouTube Channel (Tutorials)</string>
     <!-- About activity-->
 
     <string-array name="pref_dark_theme_entries">

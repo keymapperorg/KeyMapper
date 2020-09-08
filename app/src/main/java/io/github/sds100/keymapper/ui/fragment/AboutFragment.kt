@@ -125,6 +125,11 @@ class AboutPreferenceFragment : PreferenceFragmentCompat() {
             true
         }
 
+        findPreference<Preference>(str(R.string.key_pref_youtube_channel))?.setOnPreferenceClickListener {
+            requireContext().openUrl(str(R.string.url_youtube_channel))
+            true
+        }
+
         findPreference<Preference>(str(R.string.key_pref_developer_email))?.setOnPreferenceClickListener {
             FeedbackUtils.emailDeveloper(requireContext())
             true

@@ -13,6 +13,7 @@
     <string name="key_pref_license" translatable="false">license</string>
     <string name="key_pref_privacy_policy" translatable="false">privacy_policy</string>
     <string name="key_pref_discord" translatable="false">discord</string>
+    <string name="key_pref_youtube_channel" translatable="false">youtube_channel</string>
 
     <string name="key_pref_first_time" translatable="false">pref_first_time</string>
     <string name="key_pref_show_long_press_warning" translatable="false">key_show_long_press_warning</string>
@@ -32,20 +33,20 @@
     <string name="key_pref_debug" translatable="false">pref_debugging_mode</string>
     <string name="key_pref_dark_theme_mode" translatable="false">pref_dark_theme_mode</string>
     <string name="key_pref_notification_settings">key_notification_settings</string>
-    <string name="key_pref_shown_double_press_restriction_warning">key_shown_double_press_restriction_warning</string>
-    <string name="key_pref_shown_parallel_trigger_order_dialog">key_shown_parallel_trigger_order_warning</string>
-    <string name="key_pref_shown_sequence_trigger_explanation_dialog">key_shown_sequence_trigger_explanation_dialog</string>
-    <string name="key_pref_trigger_device_names">key_trigger_device_names</string>
-    <string name="key_pref_last_installed_version">key_last_installed_version</string>
-    <string name="key_pref_toggle_keyboard_on_toggle_keymaps">key_toggle_keyboard_on_pause_resume_keymaps</string>
-    <string name="key_pref_toggle_keyboard_notification">pref_toggle_key_mapper_keyboard_notification</string>
-    <string name="key_pref_automatic_backup_location">pref_automatic_backup_location</string>
-    <string name="key_pref_keymaps_paused">pref_keymaps_paused</string>
-    <string name="key_pref_shown_screen_off_triggers_explanation">pref_screen_off_triggers_explanation</string>
-    <string name="key_pref_hide_home_screen_alerts">pref_hide_home_screen_alerts</string>
-    <string name="key_pref_showcase_action_list">pref_showcase_action_list</string>
-    <string name="key_pref_last_used_compatible_ime">pref_last_used_compatible_ime</string>
-    <string name="key_pref_show_gui_keyboard_ad">pref_show_gui_keyboard_ad</string>
+    <string name="key_pref_shown_double_press_restriction_warning" translatable="false">key_shown_double_press_restriction_warning</string>
+    <string name="key_pref_shown_parallel_trigger_order_dialog" translatable="false">key_shown_parallel_trigger_order_warning</string>
+    <string name="key_pref_shown_sequence_trigger_explanation_dialog" translatable="false">key_shown_sequence_trigger_explanation_dialog</string>
+    <string name="key_pref_trigger_device_names" translatable="false">key_trigger_device_names</string>
+    <string name="key_pref_last_installed_version" translatable="false">key_last_installed_version</string>
+    <string name="key_pref_toggle_keyboard_on_toggle_keymaps" translatable="false">key_toggle_keyboard_on_pause_resume_keymaps</string>
+    <string name="key_pref_toggle_keyboard_notification" translatable="false">pref_toggle_key_mapper_keyboard_notification</string>
+    <string name="key_pref_automatic_backup_location" translatable="false">pref_automatic_backup_location</string>
+    <string name="key_pref_keymaps_paused" translatable="false">pref_keymaps_paused</string>
+    <string name="key_pref_shown_screen_off_triggers_explanation" translatable="false">pref_screen_off_triggers_explanation</string>
+    <string name="key_pref_hide_home_screen_alerts" translatable="false">pref_hide_home_screen_alerts</string>
+    <string name="key_pref_showcase_action_list" translatable="false">pref_showcase_action_list</string>
+    <string name="key_pref_last_used_compatible_ime" translatable="false">pref_last_used_compatible_ime</string>
+    <string name="key_pref_show_gui_keyboard_ad" translatable="false">pref_show_gui_keyboard_ad</string>
 
     <string name="key_pref_category_notifications" translatable="false">pref_category_notifications</string>
     <string name="key_pref_category_secure_settings" translatable="false">pref_category_secure_settings</string>
