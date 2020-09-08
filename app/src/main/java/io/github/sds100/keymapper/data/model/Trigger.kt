@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.data.model
 
 import androidx.annotation.IntDef
+import com.github.salomonbrys.kotson.*
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.R
 
@@ -69,6 +70,20 @@ class Trigger(
             EXTRA_DOUBLE_PRESS_DELAY,
             EXTRA_VIBRATION_DURATION
         )
+
+        val DESERIALIZER = jsonDeserializer {
+            val triggerKeysJsonArray by it.json.byArray(NAME_KEYS)
+            val keys = it.context.deserialize<List<Key>>(triggerKeysJsonArray)
+
+            val extrasJsonArray by it.json.byArray(NAME_EXTRAS)
+            val extraList = it.context.deserialize<List<Extra>>(extrasJsonArray) ?: listOf()
+
+            val mode by it.json.byInt(NAME_MODE)
+
+            val flags by it.json.byNullableInt(NAME_FLAGS)
+
+            Trigger(keys, extraList, mode, flags ?: 0)
+        }
     }
 
     class Key(
@@ -91,6 +106,14 @@ class Trigger(
             //IDS! DON'T CHANGE
             const val DEVICE_ID_THIS_DEVICE = "io.github.sds100.keymapper.THIS_DEVICE"
             const val DEVICE_ID_ANY_DEVICE = "io.github.sds100.keymapper.ANY_DEVICE"
+
+            val DESERIALIZER = jsonDeserializer {
+                val keycode by it.json.byInt(NAME_KEYCODE)
+                val deviceId by it.json.byString(NAME_DEVICE_ID)
+                val clickType by it.json.byInt(NAME_CLICK_TYPE)
+
+                Key(keycode, deviceId, clickType)
+            }
         }
 
         val uniqueId: String
