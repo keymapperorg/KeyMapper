@@ -6,10 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.viewmodel.CreateActionShortcutViewModel
 import io.github.sds100.keymapper.databinding.FragmentActionShortcutListBinding
+import io.github.sds100.keymapper.util.EventObserver
 import io.github.sds100.keymapper.util.InjectorUtils
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
@@ -41,6 +43,11 @@ class CreateActionShortcutFragment : Fragment() {
 
             mViewModel.actionList.observe(viewLifecycleOwner, {
                 appBar.menu?.findItem(R.id.action_done)?.isVisible = it.isNotEmpty()
+            })
+
+            mViewModel.addActionEvent.observe(viewLifecycleOwner, EventObserver {
+                findNavController().navigate(
+                    CreateActionShortcutFragmentDirections.actionActionShortcutListFragmentToChooseActionFragment())
             })
 
             return this.root
