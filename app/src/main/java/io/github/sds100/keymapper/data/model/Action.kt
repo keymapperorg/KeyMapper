@@ -1,6 +1,10 @@
 package io.github.sds100.keymapper.data.model
 
 import android.content.Context
+import com.github.salomonbrys.kotson.byArray
+import com.github.salomonbrys.kotson.byInt
+import com.github.salomonbrys.kotson.byString
+import com.github.salomonbrys.kotson.jsonDeserializer
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.ActionType
@@ -188,6 +192,20 @@ data class Action(
                 "$x,$y",
                 extras = extras
             )
+        }
+
+        val DESERIALIZER = jsonDeserializer {
+            val typeString by it.json.byString(NAME_ACTION_TYPE)
+            val type = ActionType.valueOf(typeString)
+
+            val data by it.json.byString(NAME_DATA)
+
+            val extrasJsonArray by it.json.byArray(NAME_EXTRAS)
+            val extraList = it.context.deserialize<List<Extra>>(extrasJsonArray) ?: listOf()
+
+            val flags by it.json.byInt(NAME_FLAGS)
+
+            Action(type, data, extraList.toMutableList(), flags)
         }
     }
 
