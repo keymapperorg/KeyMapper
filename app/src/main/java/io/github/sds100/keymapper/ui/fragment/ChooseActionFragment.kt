@@ -49,7 +49,7 @@ class ChooseActionFragment : Fragment() {
             val packageName = it.getString(AppShortcutListFragment.EXTRA_PACKAGE_NAME)
             val uri = it.getString(AppShortcutListFragment.EXTRA_URI)
 
-            Action.appShortcutAction(name!!, packageName!!, uri!!)
+            Action.appShortcutAction(name!!, packageName, uri!!)
         }
 
         setResultListener(KeyActionTypeFragment.REQUEST_KEY) {

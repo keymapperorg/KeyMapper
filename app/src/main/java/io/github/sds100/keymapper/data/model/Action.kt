@@ -116,11 +116,14 @@ data class Action(
             return Action(ActionType.APP, packageName)
         }
 
-        fun appShortcutAction(name: String, packageName: String, uri: String): Action {
+        fun appShortcutAction(name: String, packageName: String?, uri: String): Action {
             val extras = mutableListOf(
                 Extra(EXTRA_SHORTCUT_TITLE, name),
-                Extra(EXTRA_PACKAGE_NAME, packageName)
             )
+
+            packageName?.let {
+                extras.add(Extra(EXTRA_PACKAGE_NAME, packageName))
+            }
 
             return Action(ActionType.APP_SHORTCUT, data = uri, extras = extras)
         }

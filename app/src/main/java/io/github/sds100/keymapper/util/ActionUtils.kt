@@ -216,7 +216,7 @@ private fun Action.getIcon(ctx: Context): Result<Drawable?> = when (type) {
 
     ActionType.APP_SHORTCUT -> extras.getData(Action.EXTRA_PACKAGE_NAME).then {
         Success(ctx.packageManager.getApplicationIcon(it))
-    }
+    } otherwise { Success(null) }
 
     ActionType.SYSTEM_ACTION -> {
         //convert the string representation of the enum entry into an enum object
@@ -271,6 +271,12 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
 
                 } catch (e: Exception) {
                     return@then AppNotFound(data)
+                }
+            }.otherwise {
+                if (type == ActionType.APP_SHORTCUT) {
+                    Success(this)
+                } else {
+                    it
                 }
             }
         }
