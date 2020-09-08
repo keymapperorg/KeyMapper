@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.data.IOnboardingState
 import io.github.sds100.keymapper.data.KeymapRepository
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.BehaviorOption.Companion.nullIfDefault
+import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.dataExtraString
 import io.github.sds100.keymapper.util.result.Failure
@@ -567,6 +568,14 @@ class ConfigKeymapViewModel internal constructor(
 
         actionList.value = actionList.value?.toMutableList()?.apply {
             add(action)
+        }
+
+        if (action.type == ActionType.KEY_EVENT) {
+            ActionBehavior(action, triggerMode.value!!, triggerKeys.value!!).apply {
+                setValue(ActionBehavior.ID_REPEAT, true)
+
+                setActionBehavior(this)
+            }
         }
 
         invalidateOptions()

@@ -5,14 +5,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
+import androidx.lifecycle.Observer
+import androidx.lifecycle.map
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.action
+import io.github.sds100.keymapper.data.model.Action
+import io.github.sds100.keymapper.data.model.ActionBehavior
 import io.github.sds100.keymapper.data.viewmodel.CreateActionShortcutViewModel
-import io.github.sds100.keymapper.databinding.FragmentActionShortcutListBinding
-import io.github.sds100.keymapper.util.EventObserver
-import io.github.sds100.keymapper.util.InjectorUtils
+import io.github.sds100.keymapper.databinding.FragmentCreateActionShortcutBinding
+import io.github.sds100.keymapper.service.MyAccessibilityService
+import io.github.sds100.keymapper.util.*
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
 import splitties.alertdialog.appcompat.messageResource
@@ -28,8 +35,32 @@ class CreateActionShortcutFragment : Fragment() {
         InjectorUtils.provideCreateActionShortcutViewModel()
     }
 
+    private val mActionModelList by lazy {
+        mViewModel.actionList.map { actionList ->
+            sequence {
+                actionList.forEach {
+                    yield(it.buildModel(requireContext()))
+                }
+            }.toList()
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setFragmentResultListener(ChooseActionFragment.REQUEST_KEY) { _, result ->
+            val action = result.getSerializable(ChooseActionFragment.EXTRA_ACTION) as Action
+            mViewModel.addAction(action)
+        }
+
+        setFragmentResultListener(ActionBehaviorFragment.REQUEST_KEY) { _, result ->
+            mViewModel.setActionBehavior(
+                result.getSerializable(ActionBehaviorFragment.EXTRA_ACTION_BEHAVIOR) as ActionBehavior)
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        FragmentActionShortcutListBinding.inflate(inflater).apply {
+        FragmentCreateActionShortcutBinding.inflate(inflater).apply {
             lifecycleOwner = viewLifecycleOwner
             viewModel = mViewModel
 
@@ -41,14 +72,34 @@ class CreateActionShortcutFragment : Fragment() {
                 showOnBackPressedWarning()
             }
 
-            mViewModel.actionList.observe(viewLifecycleOwner, {
+            mViewModel.actionList.observe(viewLifecycleOwner, Observer {
                 appBar.menu?.findItem(R.id.action_done)?.isVisible = it.isNotEmpty()
             })
 
-            mViewModel.addActionEvent.observe(viewLifecycleOwner, EventObserver {
+            mViewModel.chooseActionEvent.observe(viewLifecycleOwner, EventObserver {
                 findNavController().navigate(
                     CreateActionShortcutFragmentDirections.actionActionShortcutListFragmentToChooseActionFragment())
             })
+
+            mViewModel.testAction.observe(viewLifecycleOwner, EventObserver {
+                if (AccessibilityUtils.isServiceEnabled(requireContext())) {
+
+                    requireContext().sendPackageBroadcast(MyAccessibilityService.ACTION_TEST_ACTION,
+                        bundleOf(MyAccessibilityService.EXTRA_ACTION to it))
+
+                } else {
+                    mViewModel.promptToEnableAccessibilityService.value = Event(Unit)
+                }
+            })
+
+            mViewModel.chooseActionBehavior.observe(viewLifecycleOwner, EventObserver {
+                val direction =
+                    CreateActionShortcutFragmentDirections.actionActionShortcutListFragmentToActionBehaviorFragment(it)
+
+                findNavController().navigate(direction)
+            })
+
+            subscribeActionList()
 
             return this.root
         }
@@ -65,5 +116,34 @@ class CreateActionShortcutFragment : Fragment() {
             cancelButton()
             show()
         }
+    }
+
+    private fun FragmentCreateActionShortcutBinding.subscribeActionList() {
+        mActionModelList.observe(viewLifecycleOwner, Observer { actionList ->
+            epoxyRecyclerView.withModels {
+
+                actionList.forEachIndexed { _, model ->
+                    action {
+                        id(model.id)
+                        model(model)
+                        icon(model.icon)
+
+                        onRemoveClick { _ ->
+                            mViewModel.removeAction(model.id)
+                        }
+
+                        onMoreClick { _ ->
+                            mViewModel.chooseActionBehavior(model.id)
+                        }
+
+                        onClick { _ ->
+                            mActionModelList.value?.single { it.id == model.id }?.let {
+                                mViewModel.onActionModelClick(it)
+                            }
+                        }
+                    }
+                }
+            }
+        })
     }
 }

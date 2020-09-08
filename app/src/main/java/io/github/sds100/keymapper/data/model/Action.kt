@@ -137,7 +137,6 @@ data class Action(
             return Action(
                 ActionType.KEY_EVENT,
                 keyCode.toString(),
-                flags = ACTION_FLAG_REPEAT,
                 extras = listOf(Extra(EXTRA_KEY_EVENT_META_STATE, metaState.toString()))
             )
         }

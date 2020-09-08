@@ -205,7 +205,11 @@ class TriggerBehavior(keys: List<Trigger.Key>, @Trigger.Mode mode: Int, flags: I
     }
 }
 
-class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys: List<Trigger.Key>) : Serializable {
+class ActionBehavior(
+    action: Action,
+    @Trigger.Mode triggerMode: Int? = null,
+    triggerKeys: List<Trigger.Key>? = null
+) : Serializable {
     companion object {
         const val ID_REPEAT_RATE = "repeat_rate"
         const val ID_REPEAT = "repeat"
@@ -223,7 +227,11 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
     val repeat = BehaviorOption(
         id = ID_REPEAT,
         value = action.flags.hasFlag(Action.ACTION_FLAG_REPEAT),
-        isAllowed = KeymapDetectionDelegate.performActionOnDown(triggerKeys, triggerMode)
+        isAllowed = if (triggerKeys != null && triggerMode != null) {
+            KeymapDetectionDelegate.performActionOnDown(triggerKeys, triggerMode)
+        } else {
+            false
+        }
     )
 
     val showVolumeUi = BehaviorOption(
@@ -241,8 +249,12 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
     val holdDown = BehaviorOption(
         id = ID_HOLD_DOWN,
         value = action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN),
-        isAllowed = action.type == ActionType.KEY_EVENT
-            && KeymapDetectionDelegate.performActionOnDown(triggerKeys, triggerMode)
+        isAllowed = if (triggerKeys != null && triggerMode != null) {
+            action.type == ActionType.KEY_EVENT
+                && KeymapDetectionDelegate.performActionOnDown(triggerKeys, triggerMode)
+        } else {
+            false
+        }
     )
 
     val stopRepeatingWhenTriggerReleased: BehaviorOption<Boolean>
