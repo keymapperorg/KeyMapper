@@ -20,7 +20,6 @@ import androidx.lifecycle.map
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import com.google.gson.Gson
-import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.action
 import io.github.sds100.keymapper.data.model.Action
@@ -28,12 +27,18 @@ import io.github.sds100.keymapper.data.model.ActionBehavior
 import io.github.sds100.keymapper.data.viewmodel.CreateActionShortcutViewModel
 import io.github.sds100.keymapper.databinding.FragmentCreateActionShortcutBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
+import io.github.sds100.keymapper.ui.activity.LaunchActionShortcutActivity
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.result.RecoverableFailure
+import io.github.sds100.keymapper.util.result.getFullMessage
 import io.github.sds100.keymapper.util.result.valueOrNull
+import kotlinx.coroutines.launch
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
 import splitties.alertdialog.appcompat.messageResource
 import splitties.alertdialog.appcompat.positiveButton
+import splitties.snackbar.action
+import splitties.snackbar.longSnack
 import java.util.*
 
 /**
@@ -108,6 +113,24 @@ class CreateActionShortcutFragment : Fragment() {
                     CreateActionShortcutFragmentDirections.actionActionShortcutListFragmentToActionBehaviorFragment(it)
 
                 findNavController().navigate(direction)
+            })
+
+            mViewModel.showFixPrompt.observe(viewLifecycleOwner, EventObserver {
+                coordinatorLayout.longSnack(it.getFullMessage(requireContext())) {
+
+                    //only add an action to fix the error if the error can be recovered from
+                    if (it is RecoverableFailure) {
+                        action(R.string.snackbar_fix) {
+                            lifecycleScope.launch {
+                                it.recover(requireActivity()) {
+                                    mViewModel.rebuildActionModels()
+                                }
+                            }
+                        }
+                    }
+
+                    show()
+                }
             })
 
             subscribeActionList()

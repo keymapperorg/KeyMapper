@@ -82,6 +82,10 @@ class CreateActionShortcutViewModel : ViewModel() {
         chooseActionBehavior.value = Event(behavior)
     }
 
+    fun rebuildActionModels() {
+        actionList.value = actionList.value
+    }
+
     class Factory : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
