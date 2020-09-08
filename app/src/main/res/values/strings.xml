@@ -62,6 +62,7 @@
     <string name="permission_description_key_mapper_input_method">perform Key Mapper actions that require a keyboard</string>
     <string name="tap_actions_to_fix">Tap actions to fix!</string>
     <string name="new_gui_keyboard_ad_message">Get the new Key Mapper Keyboard that actually has a keyboard!</string>
+    <string name="shortcut_label_action">Perform Actions</string>
 
     <string name="whats_new">What\'s New</string>
     <string name="caption_action_type_key">Click the key on the device which you want to be entered.
