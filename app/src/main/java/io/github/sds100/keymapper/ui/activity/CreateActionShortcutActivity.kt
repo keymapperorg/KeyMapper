@@ -11,7 +11,7 @@ import io.github.sds100.keymapper.databinding.ActivityActionShortcutBinding
 /**
  * Created by sds100 on 08/09/20.
  */
-class ActionShortcutActivity : AppCompatActivity() {
+class CreateActionShortcutActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

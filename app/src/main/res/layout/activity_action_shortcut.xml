@@ -13,6 +13,7 @@
             android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:navGraph="@navigation/nav_action_shortcut"
             app:defaultNavHost="true" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

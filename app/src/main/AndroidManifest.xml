@@ -52,7 +52,7 @@
 
         <activity android:name=".ui.activity.AppIntroActivity" />
 
-        <activity android:name=".ui.activity.ActionShortcutActivity">
+        <activity android:name=".ui.activity.CreateActionShortcutActivity">
             <intent-filter>
                 <action android:name="android.intent.action.CREATE_SHORTCUT" />
             </intent-filter>

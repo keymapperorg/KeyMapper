@@ -103,4 +103,8 @@ object InjectorUtils {
             return ConfigKeymapViewModel.Factory(keymapRepository, deviceInfoRepository, onboardingState, id)
         }
     }
+
+    fun provideCreateActionShortcutViewModel(): CreateActionShortcutViewModel.Factory {
+        return CreateActionShortcutViewModel.Factory()
+    }
 }
