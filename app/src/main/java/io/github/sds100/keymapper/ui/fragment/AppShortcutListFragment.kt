@@ -63,15 +63,28 @@ class AppShortcutListFragment : DefaultRecyclerViewFragment() {
 
                     val packageName = Intent.parseUri(uri, 0).`package`
                         ?: data?.component?.packageName
-                        ?: Intent.parseUri(uri, 0).component?.packageName!!
+                        ?: Intent.parseUri(uri, 0).component?.packageName
 
-                    //must launch when started because setFragmentResult won't work otherwise!
-                    lifecycleScope.launchWhenStarted {
-                        val shortcutName = getShortcutName(data!!)
-                        val appName = SystemRepository.getInstance(requireContext()).getAppName(packageName)
+                    /*
+                    must launch when resumed or started because setFragmentResult won't work otherwise!
+                    don't launch when started because going up the nav tree will cause the parent fragment and this
+                    fragment to overlap
+                     */
+                    lifecycleScope.launchWhenResumed {
+                        val appName = if (packageName == null) {
+                            null
+                        } else {
+                            SystemRepository.getInstance(requireContext()).getAppName(packageName)
+                        }
+
+                        val shortcutName = if (appName == null) {
+                            getShortcutName(data!!)
+                        } else {
+                            "$appName: ${getShortcutName(data!!)}"
+                        }
 
                         returnResult(
-                            EXTRA_NAME to "$appName: $shortcutName",
+                            EXTRA_NAME to shortcutName,
                             EXTRA_PACKAGE_NAME to packageName,
                             EXTRA_URI to uri
                         )
