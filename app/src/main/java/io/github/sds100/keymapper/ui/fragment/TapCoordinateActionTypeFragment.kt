@@ -89,7 +89,7 @@ class TapCoordinateActionTypeFragment : Fragment() {
 
             setOnDoneClick {
                 lifecycleScope.launch {
-                    val description = requireActivity().editTextAlertDialog(
+                    val description = requireActivity().editTextStringAlertDialog(
                         str(R.string.hint_tap_coordinate_title),
                         allowEmpty = true
                     )

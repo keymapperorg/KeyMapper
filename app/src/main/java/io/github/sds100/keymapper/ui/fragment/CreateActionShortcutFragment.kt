@@ -1,17 +1,26 @@
 package io.github.sds100.keymapper.ui.fragment
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
+import androidx.core.content.pm.ShortcutInfoCompat
+import androidx.core.content.pm.ShortcutManagerCompat
+import androidx.core.graphics.drawable.IconCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.map
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
+import com.google.gson.Gson
+import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.action
 import io.github.sds100.keymapper.data.model.Action
@@ -20,10 +29,12 @@ import io.github.sds100.keymapper.data.viewmodel.CreateActionShortcutViewModel
 import io.github.sds100.keymapper.databinding.FragmentCreateActionShortcutBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.result.valueOrNull
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
 import splitties.alertdialog.appcompat.messageResource
 import splitties.alertdialog.appcompat.positiveButton
+import java.util.*
 
 /**
  * Created by sds100 on 08/09/20.
@@ -101,8 +112,73 @@ class CreateActionShortcutFragment : Fragment() {
 
             subscribeActionList()
 
+            appBar.setOnMenuItemClickListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.action_done -> {
+                        lifecycleScope.launchWhenResumed {
+                            ShortcutInfoCompat.Builder(requireContext(), UUID.randomUUID().toString()).apply {
+                                val icon = createShortcutIcon()
+                                val shortcutLabel = createShortcutLabel()
+
+                                setIcon(icon)
+                                setShortLabel(shortcutLabel)
+
+                                Intent(MyAccessibilityService.ACTION_PERFORM_ACTIONS).apply {
+                                    putExtra(MyAccessibilityService.EXTRA_ACTION_LIST,
+                                        Gson().toJson(mViewModel.actionList.value))
+
+                                    setPackage(Constants.PACKAGE_NAME)
+
+                                    setIntent(this)
+                                }
+
+                                ShortcutManagerCompat.createShortcutResultIntent(requireContext(), this.build()).apply {
+                                    requireActivity().setResult(Activity.RESULT_OK, this)
+                                    requireActivity().finish()
+                                }
+                            }
+                        }
+
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+
             return this.root
         }
+    }
+
+    private fun createShortcutIcon(): IconCompat {
+        if (mViewModel.actionList.value?.size == 1) {
+            val action = mViewModel.actionList.value!![0]
+
+            action.getIcon(requireContext()).valueOrNull()?.let {
+                val bitmap = it.toBitmap()
+
+                return IconCompat.createWithBitmap(bitmap)
+            }
+        }
+
+        return IconCompat.createWithResource(
+            requireContext(),
+            R.mipmap.ic_launcher_round)
+    }
+
+    private suspend fun createShortcutLabel(): String {
+        if (mViewModel.actionList.value?.size == 1) {
+            val action = mViewModel.actionList.value!![0]
+
+            action.getTitle(requireContext()).valueOrNull()?.let {
+                return it
+            }
+        }
+
+        return requireActivity().editTextStringAlertDialog(
+            str(R.string.hint_shortcut_name),
+            allowEmpty = false
+        )
     }
 
     private fun showOnBackPressedWarning() {
@@ -119,7 +195,7 @@ class CreateActionShortcutFragment : Fragment() {
     }
 
     private fun FragmentCreateActionShortcutBinding.subscribeActionList() {
-        mActionModelList.observe(viewLifecycleOwner, Observer { actionList ->
+        mActionModelList.observe(viewLifecycleOwner, { actionList ->
             epoxyRecyclerView.withModels {
 
                 actionList.forEachIndexed { _, model ->

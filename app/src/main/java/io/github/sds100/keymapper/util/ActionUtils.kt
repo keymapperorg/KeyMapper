@@ -87,7 +87,7 @@ fun Action.buildChipModel(ctx: Context): ActionChipModel {
     return ActionChipModel(uniqueId, type, description, error, icon)
 }
 
-private fun Action.getTitle(ctx: Context): Result<String> {
+fun Action.getTitle(ctx: Context): Result<String> {
     return when (type) {
         ActionType.APP -> {
             try {
@@ -204,7 +204,7 @@ private fun Action.getTitle(ctx: Context): Result<String> {
 /**
  * Get the icon for any Action
  */
-private fun Action.getIcon(ctx: Context): Result<Drawable?> = when (type) {
+fun Action.getIcon(ctx: Context): Result<Drawable?> = when (type) {
     ActionType.APP -> {
         try {
             Success(ctx.packageManager.getApplicationIcon(data))

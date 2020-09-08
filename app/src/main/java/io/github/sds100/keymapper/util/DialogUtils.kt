@@ -20,7 +20,7 @@ import kotlin.coroutines.suspendCoroutine
  * Created by sds100 on 30/03/2020.
  */
 
-suspend fun FragmentActivity.editTextAlertDialog(hint: String, allowEmpty: Boolean = false) = suspendCoroutine<String> {
+suspend fun FragmentActivity.editTextStringAlertDialog(hint: String, allowEmpty: Boolean = false) = suspendCoroutine<String> {
     alertDialog {
         DialogEdittextStringBinding.inflate(layoutInflater).apply {
             val text = MutableLiveData("")
@@ -38,7 +38,7 @@ suspend fun FragmentActivity.editTextAlertDialog(hint: String, allowEmpty: Boole
             cancelButton()
 
             show().apply {
-                text.observe(this@editTextAlertDialog) {
+                text.observe(this@editTextStringAlertDialog) {
                     getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
                         if (allowEmpty) {
                             true
@@ -51,7 +51,7 @@ suspend fun FragmentActivity.editTextAlertDialog(hint: String, allowEmpty: Boole
     }
 }
 
-suspend fun FragmentActivity.numberEditTextAlertDialog(
+suspend fun FragmentActivity.editTextNumberAlertDialog(
     hint: String,
     min: Int? = null,
     max: Int? = null
@@ -101,7 +101,7 @@ suspend fun FragmentActivity.numberEditTextAlertDialog(
             cancelButton()
 
             show().apply {
-                text.observe(this@numberEditTextAlertDialog) {
+                text.observe(this@editTextNumberAlertDialog) {
                     val result = isValid(it)
 
                     getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = result.isSuccess

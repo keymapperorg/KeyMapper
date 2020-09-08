@@ -134,7 +134,7 @@ class ActionBehaviorFragment : BottomSheetDialogFragment() {
 
                     onSliderValueClickListener { _ ->
                         lifecycleScope.launchWhenStarted {
-                            val num = requireActivity().numberEditTextAlertDialog(
+                            val num = requireActivity().editTextNumberAlertDialog(
                                 hint = str(it.label),
                                 min = int(it.sliderModel.min))
 

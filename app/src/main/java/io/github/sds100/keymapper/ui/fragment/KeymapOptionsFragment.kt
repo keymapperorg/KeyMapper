@@ -19,8 +19,8 @@ import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentKeymapOptionsBinding
 import io.github.sds100.keymapper.slider
 import io.github.sds100.keymapper.util.InjectorUtils
+import io.github.sds100.keymapper.util.editTextNumberAlertDialog
 import io.github.sds100.keymapper.util.int
-import io.github.sds100.keymapper.util.numberEditTextAlertDialog
 import io.github.sds100.keymapper.util.str
 import kotlinx.android.synthetic.main.fragment_keymap_options.*
 
@@ -103,7 +103,7 @@ class KeymapOptionsFragment(private val mKeymapId: Long) : Fragment() {
 
                     onSliderValueClickListener { _ ->
                         lifecycleScope.launchWhenStarted {
-                            val num = requireActivity().numberEditTextAlertDialog(
+                            val num = requireActivity().editTextNumberAlertDialog(
                                 hint = str(it.label),
                                 min = int(it.sliderModel.min),
                                 max = int(it.sliderModel.maxSlider))
