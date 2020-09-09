@@ -338,7 +338,7 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
 
             setGetNewGuiKeyboard {
                 requireContext().alertDialog {
-                    messageResource = R.string.dialog_message_select_app_store
+                    messageResource = R.string.dialog_message_select_app_store_gui_keyboard
 
                     DialogChooseAppStoreBinding.inflate(layoutInflater).apply {
                         model = ChooseAppStoreModel(
