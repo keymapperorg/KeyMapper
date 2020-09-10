@@ -662,7 +662,9 @@ object KeyEventUtils {
 
     val GET_EVENT_LABEL_TO_KEYCODE = mapOf(
         "KEY_VOLUMEDOWN" to KeyEvent.KEYCODE_VOLUME_DOWN,
-        "KEY_VOLUMEUP" to KeyEvent.KEYCODE_VOLUME_UP
+        "KEY_VOLUMEUP" to KeyEvent.KEYCODE_VOLUME_UP,
+        "KEY_MEDIA" to KeyEvent.KEYCODE_HEADSETHOOK,
+        "KEY_HEADSETHOOK" to KeyEvent.KEYCODE_HEADSETHOOK
     )
 
     /**
