@@ -26,6 +26,8 @@ class KeymapListViewModel internal constructor(
 
     val selectionProvider: ISelectionProvider = SelectionProvider()
 
+    val backupEvent = MutableLiveData<Event<Unit>>()
+
     override val loadingContent = MutableLiveData(true)
 
     fun duplicate(vararg id: Long) {
@@ -78,6 +80,10 @@ class KeymapListViewModel internal constructor(
         keymapModelList.value = list
 
         loadingContent.value = false
+    }
+
+    fun backup() {
+        backupEvent.value = Event(Unit)
     }
 
     suspend fun getDeviceInfoList() = mDeviceInfoRepository.getAll()

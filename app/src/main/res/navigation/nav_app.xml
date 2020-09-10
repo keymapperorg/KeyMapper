@@ -22,8 +22,8 @@
 
     <fragment
         android:id="@+id/keymap_list_fragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.KeymapListFragment"
-        tools:layout="@layout/fragment_keymap_list">
+        android:name="io.github.sds100.keymapper.ui.fragment.HomeFragment"
+        tools:layout="@layout/fragment_home">
 
         <action
             android:id="@+id/action_keymap_list_fragment_to_settingsFragment"

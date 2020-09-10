@@ -46,7 +46,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?selectableItemBackground"
             android:orientation="horizontal"
             android:paddingStart="@dimen/cardview_padding_left"
             android:paddingTop="@dimen/cardview_padding_top"

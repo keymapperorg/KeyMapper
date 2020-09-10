@@ -115,6 +115,8 @@
     <string name="tab_keymap_constraints">Constraints</string>
     <string name="tab_actions">Actions</string>
     <string name="tab_trigger">Trigger</string>
+    <string name="tab_keyevents">Key Events</string>
+    <string name="tab_fingerprint">Fingerprint</string>
 
     <string name="email_subject">Key Mapper query</string>
     <string name="email_default_message">Does the help page solve your problem? What is your device?\n\n Which OEM skin or ROM are you using?\n\n Please describe the issue you\'re having:</string>
@@ -474,14 +476,14 @@
     </string-array>
     <!-- Action Type tab title order-->
 
-    <!-- The tabs which should be shown when configuring a keymap -->
-
+    <!-- The tabs that should be shown when configuring a keymap -->
     <string-array name="config_keymap_tab_titles" tools:ignore="InconsistentArrays">
         <item>@string/tab_trigger</item>
         <item>@string/tab_actions</item>
         <item>@string/tab_keymap_constraints</item>
         <item>@string/tab_keymap_flags</item>
     </string-array>
+    <!-- The tabs that should be shown when configuring a keymap -->
 
     <integer-array name="config_keymap_fragments" tools:ignore="InconsistentArrays">
         <item>@integer/fragment_id_trigger</item>
@@ -490,6 +492,7 @@
         <item>@integer/fragment_id_keymap_flags</item>
     </integer-array>
 
+    <!-- The fragments that should be shown when configuring a keymap -->
     <integer name="fragment_id_trigger">10</integer>
     <integer name="fragment_id_actions">11</integer>
     <integer name="fragment_id_trigger_and_actions">12</integer>
@@ -497,7 +500,14 @@
     <integer name="fragment_id_keymap_constraints">14</integer>
     <integer name="fragment_id_keymap_flags">15</integer>
     <integer name="fragment_id_config_keymap_all">16</integer>
-    <!-- The fragments which should be shown when configuring a keymap -->
+    <!-- The fragments that should be shown when configuring a keymap -->
+
+    <!-- The fragments on the homescreen -->
+    <string-array name="home_tab_titles">
+        <item>@string/tab_keyevents</item>
+        <item>@string/tab_fingerprint</item>
+    </string-array>
+    <!-- The fragments on the homescreen -->
 
     <!--flags-->
     <string name="flag_show_volume_dialog">Show volume dialog</string>

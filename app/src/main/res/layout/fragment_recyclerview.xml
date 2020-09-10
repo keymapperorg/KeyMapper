@@ -14,6 +14,14 @@
         <variable
             name="caption"
             type="String" />
+
+        <variable
+            name="noItemsText"
+            type="String" />
+
+        <variable
+            name="itemCount"
+            type="Integer" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -52,9 +60,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
-                android:visibility="@{progressCallback.loadingContent ? View.GONE : View.VISIBLE}"
+                android:visibility="@{itemCount == 0 &amp;&amp; progressCallback.loadingContent ? View.GONE : View.VISIBLE}"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/list_item_simple" />
+                tools:listitem="@layout/list_item_simple"
+                tools:visibility="gone" />
 
             <ProgressBar
                 android:id="@+id/progressBar"
@@ -67,6 +76,14 @@
                 android:layout_marginBottom="16dp"
                 android:visibility="@{progressCallback.loadingContent ? View.VISIBLE : View.GONE}"
                 tools:visibility="gone" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@{noItemsText}"
+                android:visibility="@{itemCount == 0 || progressCallback.loadingContent ? View.VISIBLE : View.GONE}"
+                tools:text="No items!" />
         </FrameLayout>
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout
