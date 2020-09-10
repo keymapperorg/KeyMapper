@@ -199,8 +199,6 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                     appBar.replaceMenu(R.menu.menu_multi_select)
                 } else {
                     appBar.replaceMenu(R.menu.menu_home)
-
-                    appBar.menu.findItem(R.id.action_seed_database).isVisible = false
                 }
             })
 
