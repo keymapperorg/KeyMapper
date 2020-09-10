@@ -33,7 +33,7 @@ class ActionBehaviorViewModel : ViewModel() {
                         value = it.multiplier.value.nullIfDefault,
                         isDefaultStepEnabled = true,
                         min = R.integer.action_multiplier_min,
-                        maxSlider = R.integer.action_multiplier_max,
+                        max = R.integer.action_multiplier_max,
                         stepSize = R.integer.action_multiplier_step_size
                     )
                 ))
