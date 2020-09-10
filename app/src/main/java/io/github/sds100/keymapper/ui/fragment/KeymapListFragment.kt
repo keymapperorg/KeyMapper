@@ -236,9 +236,6 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
                             appBar.replaceMenu(R.menu.menu_multi_select)
                         } else {
                             appBar.replaceMenu(R.menu.menu_keymap_list)
-
-                            // only show the button to seed the database in debug builds.
-                            appBar.menu.findItem(R.id.action_seed_database).isVisible = false
                         }
                     })
 
