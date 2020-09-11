@@ -1049,18 +1049,22 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         }
 
         if (!successfulLongPress) {
-            mPerformActionsOnFailedLongPress.forEach {
+            val iterator = mPerformActionsOnFailedLongPress.iterator()
+
+            while (iterator.hasNext()) {
+                val triggerIndex = iterator.next()
+
                 /*
                 The last event in the trigger
-                 */
-                val lastEvent = mParallelTriggerEvents[it].last()
+                */
+                val lastEvent = mParallelTriggerEvents[triggerIndex].last()
 
                 if (encodedEvent.withFlag(FLAG_SHORT_PRESS).matchesEvent(lastEvent)) {
-                    mParallelTriggerActions[it].forEachIndexed { index, key ->
+                    mParallelTriggerActions[triggerIndex].forEachIndexed { index, key ->
                         actionKeysToPerform.add(key)
 
-                        val vibrateDuration = if (mParallelTriggerFlags[it].hasFlag(Trigger.TRIGGER_FLAG_VIBRATE)) {
-                            vibrateDuration(mParallelTriggerOptions[it])
+                        val vibrateDuration = if (mParallelTriggerFlags[index].hasFlag(Trigger.TRIGGER_FLAG_VIBRATE)) {
+                            vibrateDuration(mParallelTriggerOptions[triggerIndex])
                         } else {
                             -1
                         }
@@ -1074,7 +1078,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                     }
                 }
 
-                mPerformActionsOnFailedLongPress.remove(it)
+                iterator.remove()
             }
         }
 
