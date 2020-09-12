@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
@@ -101,6 +100,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
     }
 
     private lateinit var mPagerAdapter: HomePagerAdapter
+    private lateinit var mTabLayoutMediator: TabLayoutMediator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -125,9 +125,11 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             mPagerAdapter = HomePagerAdapter(this@HomeFragment)
             viewPager.adapter = mPagerAdapter
 
-            TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+            mTabLayoutMediator = TabLayoutMediator(tabLayout, viewPager) { tab, position ->
                 tab.text = strArray(R.array.home_tab_titles)[position]
-            }.attach()
+            }.apply {
+                attach()
+            }
 
             setOnNewKeymapClick {
                 val direction =
@@ -197,7 +199,6 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
 
             mKeyMapListViewModel.selectionProvider.isSelectable.observe(viewLifecycleOwner, Observer { isSelectable ->
                 viewPager.isUserInputEnabled = !isSelectable
-                tabLayout.isVisible = !isSelectable
 
                 if (isSelectable) {
                     appBar.replaceMenu(R.menu.menu_multi_select)
@@ -286,6 +287,8 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                 }
             }
 
+            isFingerprintGestureDetectionAvailable = AppPreferences.isFingerprintGestureDetectionAvailable
+
             updateStatusLayouts()
 
             if (AppPreferences.lastInstalledVersionCode != Constants.VERSION_CODE) {
@@ -351,6 +354,11 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
         when (key) {
             str(R.string.key_pref_show_gui_keyboard_ad) ->
                 mBinding.showNewGuiKeyboardAd = AppPreferences.showGuiKeyboardAd
+
+            str(R.string.key_pref_fingerprint_gesture_available) -> {
+                mBinding.isFingerprintGestureDetectionAvailable = AppPreferences.isFingerprintGestureDetectionAvailable
+                mPagerAdapter.notifyDataSetChanged()
+            }
         }
     }
 

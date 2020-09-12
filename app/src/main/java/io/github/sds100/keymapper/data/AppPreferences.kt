@@ -142,6 +142,11 @@ object AppPreferences : DefaultPreferences() {
         true
     )
 
+    var isFingerprintGestureDetectionAvailable by BoolPref(
+        appCtx.str(R.string.key_pref_fingerprint_gesture_available),
+        false
+    )
+
     @NightMode
     fun getSdkNightMode(darkThemePrefValue: String): Int {
         return when (darkThemePrefValue) {

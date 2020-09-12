@@ -85,6 +85,10 @@
         <variable
             name="selectionCount"
             type="LiveData&lt;Integer>" />
+
+        <variable
+            name="isFingerprintGestureDetectionAvailable"
+            type="Boolean" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -291,6 +295,7 @@
                 android:id="@+id/tabLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="@{!isSelectable &amp;&amp; isFingerprintGestureDetectionAvailable ? View.VISIBLE : View.GONE}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/layoutNewGuiKeyboardAd"

@@ -304,6 +304,10 @@ class MyAccessibilityService : AccessibilityService(),
         })
 
         mChosenImePackageName = KeyboardUtils.getChosenInputMethodPackageName(this).valueOrNull()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            AppPreferences.isFingerprintGestureDetectionAvailable = fingerprintGestureController.isGestureDetectionAvailable
+        }
     }
 
     override fun onInterrupt() {}
