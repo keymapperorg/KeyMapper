@@ -125,13 +125,26 @@ class ActionPerformerDelegate(context: Context,
                             moveTo(x.toFloat(), y.toFloat())
                         }
 
-                        val strokeDescription = GestureDescription.StrokeDescription(path, 0, duration)
+                        val strokeDescription = if (action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)
+                            && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-                        val gestureDescription = GestureDescription.Builder().apply {
-                            addStroke(strokeDescription)
-                        }.build()
+                            when (keyEventAction) {
+                                KeyEventAction.DOWN -> GestureDescription.StrokeDescription(path, 0, duration, true)
+                                KeyEventAction.UP -> GestureDescription.StrokeDescription(path, 59999, duration, false)
+                                else -> null
+                            }
 
-                        dispatchGesture(gestureDescription, null, null)
+                        } else {
+                            GestureDescription.StrokeDescription(path, 0, duration)
+                        }
+
+                        strokeDescription?.let {
+                            val gestureDescription = GestureDescription.Builder().apply {
+                                addStroke(it)
+                            }.build()
+
+                            dispatchGesture(gestureDescription, null, null)
+                        }
                     }
                 }
 

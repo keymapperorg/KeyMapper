@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.data.model
 
+import android.os.Build
 import io.github.sds100.keymapper.data.model.BehaviorOption.Companion.applyBehaviorOption
 import io.github.sds100.keymapper.data.model.Trigger.Companion.DOUBLE_PRESS
 import io.github.sds100.keymapper.data.model.Trigger.Companion.EXTRA_DOUBLE_PRESS_DELAY
@@ -241,8 +242,14 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
     val holdDown = BehaviorOption(
         id = ID_HOLD_DOWN,
         value = action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN),
-        isAllowed = action.type == ActionType.KEY_EVENT
-            && KeymapDetectionDelegate.performActionOnDown(triggerKeys, triggerMode)
+        isAllowed = if (triggerKeys != null && triggerMode != null) {
+            KeymapDetectionDelegate.performActionOnDown(triggerKeys, triggerMode)
+                && (action.type == ActionType.KEY_EVENT
+                || (action.type == ActionType.TAP_COORDINATE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                )
+        } else {
+            false
+        }
     )
 
     val stopRepeatingWhenTriggerReleased: BehaviorOption<Boolean>

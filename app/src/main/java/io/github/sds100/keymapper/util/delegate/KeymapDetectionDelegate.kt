@@ -1033,8 +1033,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                     actionKeys.forEach { actionKey ->
                         val action = mActionMap[actionKey] ?: return@forEach
 
-                        if (action.type == ActionType.KEY_EVENT
-                            && action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)) {
+                        if (action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)) {
 
                             performAction(
                                 action,
