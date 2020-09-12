@@ -25,7 +25,7 @@ object ServiceLocator {
         @VisibleForTesting set
 
     @Volatile
-    var onboardingState: IOnboardingState? = null
+    var preferenceDataStore: IPreferenceDataStore? = null
         @VisibleForTesting set
 
     fun provideKeymapRepository(context: Context): KeymapRepository {
@@ -40,9 +40,9 @@ object ServiceLocator {
         }
     }
 
-    fun provideOnboardingState(context: Context): IOnboardingState {
+    fun provideOnboardingState(context: Context): IPreferenceDataStore {
         synchronized(this) {
-            return onboardingState ?: createOnboardingState(context)
+            return preferenceDataStore ?: createOnboardingState(context)
         }
     }
 
@@ -77,9 +77,9 @@ object ServiceLocator {
         return deviceInfoRepository!!
     }
 
-    private fun createOnboardingState(context: Context): IOnboardingState {
-        val onboardingState = onboardingState ?: OnboardingState(context)
-        this.onboardingState = onboardingState
+    private fun createOnboardingState(context: Context): IPreferenceDataStore {
+        val onboardingState = preferenceDataStore ?: DefaultPreferenceDataStore(context)
+        this.preferenceDataStore = onboardingState
 
         return onboardingState
     }

@@ -10,16 +10,16 @@ import io.github.sds100.keymapper.util.str
  */
 
 @Suppress("EXPERIMENTAL_API_USAGE")
-class OnboardingState(ctx: Context) : IOnboardingState {
+class DefaultPreferenceDataStore(ctx: Context) : IPreferenceDataStore {
     private val mCtx = ctx.applicationContext
 
-    override fun getShownPrompt(key: Int): Boolean {
+    override fun getBoolPref(key: Int): Boolean {
         return mCtx.defaultSharedPreferences.getBoolean(mCtx.str(key), false)
     }
 
-    override fun setShownPrompt(key: Int) {
+    override fun setBoolPref(key: Int, value: Boolean) {
         mCtx.defaultSharedPreferences.edit {
-            putBoolean(mCtx.str(key), true)
+            putBoolean(mCtx.str(key), value)
         }
     }
 }

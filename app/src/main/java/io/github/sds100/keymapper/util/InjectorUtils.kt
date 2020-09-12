@@ -100,7 +100,7 @@ object InjectorUtils {
         id: Long
     ): ConfigKeymapViewModel.Factory {
         (context.applicationContext as MyApplication).apply {
-            return ConfigKeymapViewModel.Factory(keymapRepository, deviceInfoRepository, onboardingState, id)
+            return ConfigKeymapViewModel.Factory(keymapRepository, deviceInfoRepository, preferenceDataStore, id)
         }
     }
 

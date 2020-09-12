@@ -87,7 +87,7 @@ dependencies {
     def nav_version = '2.3.0'
     def work_version = "2.4.0"
     def epoxy_version = "4.0.0"
-    def splitties_version = "3.0.0-alpha06"
+    def splitties_version = "3.0.0-alpha07"
     def markwonVersion = "4.3.1"
     def multidex_version = "2.0.1"
 
@@ -115,6 +115,7 @@ dependencies {
     implementation "com.louiscad.splitties:splitties-alertdialog-appcompat-coroutines:$splitties_version"
     implementation "com.louiscad.splitties:splitties-alertdialog-appcompat:$splitties_version"
     implementation "com.louiscad.splitties:splitties-preferences:$splitties_version"
+    implementation "com.louiscad.splitties:splitties-resources:$splitties_version"
     implementation "com.louiscad.splitties:splitties-snackbar:$splitties_version"
     implementation "com.louiscad.splitties:splitties-systemservices:$splitties_version"
     implementation "com.louiscad.splitties:splitties-toast:$splitties_version"

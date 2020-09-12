@@ -4,7 +4,7 @@ import android.view.KeyEvent
 import androidx.lifecycle.*
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.DeviceInfoRepository
-import io.github.sds100.keymapper.data.IOnboardingState
+import io.github.sds100.keymapper.data.IPreferenceDataStore
 import io.github.sds100.keymapper.data.KeymapRepository
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.BehaviorOption.Companion.nullIfDefault
@@ -19,9 +19,9 @@ import java.util.*
 class ConfigKeymapViewModel internal constructor(
     private val mKeymapRepository: KeymapRepository,
     private val mDeviceInfoRepository: DeviceInfoRepository,
-    onboardingState: IOnboardingState,
+    preferenceDataStore: IPreferenceDataStore,
     private val mId: Long
-) : ViewModel(), IOnboardingState by onboardingState {
+) : ViewModel(), IPreferenceDataStore by preferenceDataStore {
 
     companion object {
         const val NEW_KEYMAP_ID = -2L
@@ -39,10 +39,10 @@ class ConfigKeymapViewModel internal constructor(
                 the order in which they list the keys is the order in which they will need to be held down.
                  */
                 if (triggerKeys.value?.size!! > 1 &&
-                    !getShownPrompt(R.string.key_pref_shown_parallel_trigger_order_dialog)) {
+                    !getBoolPref(R.string.key_pref_shown_parallel_trigger_order_dialog)) {
 
                     val notifyUser = NotifyUserModel(R.string.dialog_message_parallel_trigger_order) {
-                        setShownPrompt(R.string.key_pref_shown_parallel_trigger_order_dialog)
+                        setBoolPref(R.string.key_pref_shown_parallel_trigger_order_dialog, true)
                     }
 
                     showPrompt(notifyUser)
@@ -72,9 +72,9 @@ class ConfigKeymapViewModel internal constructor(
                 value = Trigger.SEQUENCE
 
                 if (triggerKeys.value?.size!! > 1 &&
-                    !getShownPrompt(R.string.key_pref_shown_sequence_trigger_explanation_dialog)) {
+                    !getBoolPref(R.string.key_pref_shown_sequence_trigger_explanation_dialog)) {
                     val notifyUser = NotifyUserModel(R.string.dialog_message_sequence_trigger_explanation) {
-                        setShownPrompt(R.string.key_pref_shown_sequence_trigger_explanation_dialog)
+                        setBoolPref(R.string.key_pref_shown_sequence_trigger_explanation_dialog, true)
                     }
 
                     showPrompt(notifyUser)
@@ -123,11 +123,11 @@ class ConfigKeymapViewModel internal constructor(
 
     val showOnboardingPrompt = MediatorLiveData<Event<NotifyUserModel>>().apply {
         addSource(actionList) {
-            if (!getShownPrompt(R.string.key_pref_showcase_action_list) && it.isNotEmpty()) {
+            if (!getBoolPref(R.string.key_pref_showcase_action_list) && it.isNotEmpty()) {
 
                 showPrompt(
                     NotifyUserModel(R.string.showcase_action_list) {
-                        onboardingState.setShownPrompt(R.string.key_pref_showcase_action_list)
+                        preferenceDataStore.setBoolPref(R.string.key_pref_showcase_action_list, true)
                     }
                 )
             }
@@ -379,10 +379,10 @@ class ConfigKeymapViewModel internal constructor(
     }
 
     fun chooseParallelTriggerClickType() {
-        if (!getShownPrompt(R.string.key_pref_shown_double_press_restriction_warning)
+        if (!getBoolPref(R.string.key_pref_shown_double_press_restriction_warning)
             && triggerInParallel.value == true) {
             val notifyUser = NotifyUserModel(R.string.dialog_message_double_press_restricted_to_single_key) {
-                setShownPrompt(R.string.key_pref_shown_double_press_restriction_warning)
+                setBoolPref(R.string.key_pref_shown_double_press_restriction_warning, true)
 
                 chooseParallelTriggerClickType.value = Event(Unit)
             }
@@ -493,9 +493,9 @@ class ConfigKeymapViewModel internal constructor(
     fun setTriggerOption(id: String, newValue: Boolean) {
 
         if (id == TriggerBehavior.ID_SCREEN_OFF_TRIGGER &&
-            !getShownPrompt(R.string.key_pref_shown_screen_off_triggers_explanation)) {
+            !getBoolPref(R.string.key_pref_shown_screen_off_triggers_explanation)) {
             showPrompt(NotifyUserModel(R.string.showcase_screen_off_triggers) {
-                setShownPrompt(R.string.key_pref_shown_screen_off_triggers_explanation)
+                setBoolPref(R.string.key_pref_shown_screen_off_triggers_explanation, true)
             })
         }
 
@@ -676,11 +676,11 @@ class ConfigKeymapViewModel internal constructor(
     class Factory(
         private val mKeymapRepository: KeymapRepository,
         private val mDeviceInfoRepository: DeviceInfoRepository,
-        private val mIOnboardingState: IOnboardingState,
+        private val mIPreferenceDataStore: IPreferenceDataStore,
         private val mId: Long) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>) =
-            ConfigKeymapViewModel(mKeymapRepository, mDeviceInfoRepository, mIOnboardingState, mId) as T
+            ConfigKeymapViewModel(mKeymapRepository, mDeviceInfoRepository, mIPreferenceDataStore, mId) as T
     }
 }
