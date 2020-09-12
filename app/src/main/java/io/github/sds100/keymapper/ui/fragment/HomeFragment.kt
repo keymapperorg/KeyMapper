@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
@@ -195,6 +196,9 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             }
 
             mKeyMapListViewModel.selectionProvider.isSelectable.observe(viewLifecycleOwner, Observer { isSelectable ->
+                viewPager.isUserInputEnabled = !isSelectable
+                tabLayout.isVisible = !isSelectable
+
                 if (isSelectable) {
                     appBar.replaceMenu(R.menu.menu_multi_select)
                 } else {
