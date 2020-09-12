@@ -133,7 +133,7 @@
     <string name="extra_label_repeat_delay">Delay until repeat (ms)</string>
     <string name="extra_label_repeat_rate">Repeat every… (ms)</string>
     <string name="extra_label_vibration_duration">Vibration duration (ms)</string>
-    <string name="extra_label_action_multiplier">Multiplier</string>
+    <string name="extra_label_action_multiplier">Action count</string>
 
     <!-- Constraints -->
     <string name="constraint_app_foreground_description">%s is in foreground</string>
