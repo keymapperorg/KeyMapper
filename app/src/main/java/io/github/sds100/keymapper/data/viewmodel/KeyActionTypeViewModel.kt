@@ -12,7 +12,7 @@ import io.github.sds100.keymapper.util.KeyEventUtils
  */
 
 class KeyActionTypeViewModel : ViewModel() {
-    val keyEvent = MutableLiveData<KeyEvent>()
+    val keyEvent = MutableLiveData<KeyEvent?>()
 
     val keyLabel = Transformations.map(keyEvent) {
         it ?: return@map null
