@@ -144,7 +144,7 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
     ): View? {
         FragmentKeymapListBinding.inflate(inflater, container, false).apply {
             mBinding = this
-            lifecycleOwner = this@KeymapListFragment
+            lifecycleOwner = viewLifecycleOwner
             viewModel = mViewModel
 
             setOnNewKeymapClick {
