@@ -45,10 +45,8 @@ import io.github.sds100.keymapper.util.result.RecoverableFailure
 import io.github.sds100.keymapper.util.result.getFullMessage
 import io.github.sds100.keymapper.worker.SeedDatabaseWorker
 import kotlinx.android.synthetic.main.fragment_keymap_list.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
 import splitties.alertdialog.appcompat.messageResource
@@ -243,7 +241,7 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
                 }
 
                 rebuildModelsEvent.observe(viewLifecycleOwner, EventObserver {
-                    lifecycleScope.launch {
+                    viewLifecycleOwner.lifecycleScope.launch {
                         mViewModel.setModelList(buildModelList(it))
                     }
                 })
@@ -371,18 +369,16 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
     }
 
     private suspend fun buildModelList(keymapList: List<KeyMap>) =
-        withContext(lifecycleScope.coroutineContext + Dispatchers.Default) {
-            keymapList.map { keymap ->
-                KeymapListItemModel(
-                    id = keymap.id,
-                    actionList = keymap.actionList.map { it.buildChipModel(requireContext()) },
-                    triggerDescription = keymap.trigger.buildDescription(requireContext(), mViewModel.getDeviceInfoList()),
-                    constraintList = keymap.constraintList.map { it.buildModel(requireContext()) },
-                    constraintMode = keymap.constraintMode,
-                    flagsDescription = keymap.trigger.buildTriggerFlagsDescription(requireContext()),
-                    isEnabled = keymap.isEnabled
-                )
-            }
+        keymapList.map { keymap ->
+            KeymapListItemModel(
+                id = keymap.id,
+                actionList = keymap.actionList.map { it.buildChipModel(requireContext()) },
+                triggerDescription = keymap.trigger.buildDescription(requireContext(), mViewModel.getDeviceInfoList()),
+                constraintList = keymap.constraintList.map { it.buildModel(requireContext()) },
+                constraintMode = keymap.constraintMode,
+                flagsDescription = keymap.trigger.buildTriggerFlagsDescription(requireContext()),
+                isEnabled = keymap.isEnabled
+            )
         }
 
     override fun onResume() {
