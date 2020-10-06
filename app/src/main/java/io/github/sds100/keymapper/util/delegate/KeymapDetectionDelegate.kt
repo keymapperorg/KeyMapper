@@ -965,11 +965,13 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                             actionKeys.forEach { actionKey ->
 
                                 mActionMap[actionKey]?.let { action ->
-                                    val actionKeyCode = action.data.toInt()
+                                    if (action.type == ActionType.KEY_EVENT) {
+                                        val actionKeyCode = action.data.toInt()
 
-                                    if (action.type == ActionType.KEY_EVENT && isModifierKey(actionKeyCode)) {
-                                        val actionMetaState = KeyEventUtils.modifierKeycodeToMetaState(actionKeyCode)
-                                        mMetaStateFromActions = mMetaStateFromActions.minusFlag(actionMetaState)
+                                        if (action.type == ActionType.KEY_EVENT && isModifierKey(actionKeyCode)) {
+                                            val actionMetaState = KeyEventUtils.modifierKeycodeToMetaState(actionKeyCode)
+                                            mMetaStateFromActions = mMetaStateFromActions.minusFlag(actionMetaState)
+                                        }
                                     }
                                 }
                             }
