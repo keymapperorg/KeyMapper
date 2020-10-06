@@ -1,3 +1,32 @@
+## [2.1.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v2.1.0-beta.1) 
+
+#### 29 Sept 2020
+
+### Added
+- Support for a proper keyboard. Install the Key Mapper GUI Keyboard.
+- Support for Android 11.
+- Backup/Restore keymaps.
+- Option for keycode actions to simulate holding the key down.
+- Button to show system packages as well in the app list.
+- Action to create Key Event with optional modifiers.
+- Action to select word at cursor.
+- Action to toggle the screen on and off.
+- Action to tap a coordinate on the screen. The user and the app can NOT touch the screen at the same time. This is a
+limitation in Android.
+- Action to double press recents to go to last app.
+- Dismiss button to the notification that pauses/resumes keymaps. It will be shown again when the app is opened.
+- Show a warning dialog when leaving the screen to configure a keymap without saving.
+- Keymaps can have multiple of the same action. There is now a slider in the action options called "Action Count".
+- Can detect the headset button when the screen is off.
+- Option to not override the default behavior of the trigger.
+
+### Changed
+- Don't hide the Repeat option if there is no trigger.
+
+### Fixes
+- Caps Lock key still caps lock when remapped.
+- When making a parallel trigger, the keys don't all have the same click type.
+
 ## [2.0.2](https://github.com/sds100/KeyMapper/releases/tag/v2.0.2) 
 
 #### 31 Aug 2020
