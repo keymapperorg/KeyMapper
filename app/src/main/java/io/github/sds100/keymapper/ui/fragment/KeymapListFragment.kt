@@ -258,7 +258,7 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
             })
 
             mBackupRestoreViewModel.requestRestore.observe(viewLifecycleOwner, EventObserver {
-                mRestoreLauncher.launch(FileUtils.MIME_TYPE_JSON)
+                mRestoreLauncher.launch(FileUtils.MIME_TYPE_ALL)
             })
 
             expanded = mExpanded
