@@ -50,7 +50,7 @@ class ConfigKeymapViewModel internal constructor(
 
                 // set all the keys to a short press if coming from a non-parallel trigger
                 // because they must all be the same click type and can't all be double pressed
-                if (it == true && value != Trigger.PARALLEL) {
+                if (it == true && value != null && value != Trigger.PARALLEL) {
                     triggerKeys.value?.let { keys ->
                         if (keys.isEmpty()) {
                             return@let
