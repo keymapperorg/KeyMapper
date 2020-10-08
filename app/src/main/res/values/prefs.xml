@@ -47,6 +47,7 @@
     <string name="key_pref_showcase_action_list" translatable="false">pref_showcase_action_list</string>
     <string name="key_pref_last_used_compatible_ime" translatable="false">pref_last_used_compatible_ime</string>
     <string name="key_pref_show_gui_keyboard_ad" translatable="false">pref_show_gui_keyboard_ad</string>
+    <string name="key_pref_show_device_descriptors" translatable="false">pref_show_device_descriptors</string>
 
     <string name="key_pref_category_notifications" translatable="false">pref_category_notifications</string>
     <string name="key_pref_category_secure_settings" translatable="false">pref_category_secure_settings</string>

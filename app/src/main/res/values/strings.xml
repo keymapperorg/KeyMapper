@@ -412,6 +412,9 @@
 
     <string name="title_pref_hide_home_screen_alerts">Hide homescreen alerts</string>
     <string name="summary_pref_hide_home_screen_alerts">Hide the alerts at the top of the homescreen.</string>
+
+    <string name="title_pref_show_device_descriptors">Show the first 5 characters of the device id for device specific triggers</string>
+    <string name="summary_pref_show_device_descriptors">This is useful to differentiate between devices that have the same name.</string>
     <!--Preference titles and summaries-->
 
     <!--Preference categories-->

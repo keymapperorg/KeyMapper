@@ -20,12 +20,14 @@ import com.airbnb.epoxy.EpoxyTouchHelper
 import com.google.android.material.card.MaterialCardView
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.TriggerKeyBindingModel_
+import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentTriggerBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.triggerKey
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.result.onSuccess
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -213,7 +215,15 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
                 yield(str(R.string.this_device))
                 yield(str(R.string.any_device))
 
-                yieldAll(InputDeviceUtils.getExternalDeviceNames())
+                if (AppPreferences.showDeviceDescriptors) {
+                    InputDeviceUtils.getExternalDeviceDescriptors().forEach { descriptor ->
+                        InputDeviceUtils.getName(descriptor).onSuccess { name ->
+                            yield("$name ${descriptor.substring(0..4)}")
+                        }
+                    }
+                } else {
+                    yieldAll(InputDeviceUtils.getExternalDeviceNames())
+                }
 
             }.toList().toTypedArray()
 
