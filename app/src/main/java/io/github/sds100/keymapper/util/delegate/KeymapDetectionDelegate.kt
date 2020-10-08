@@ -139,6 +139,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 val sequenceTriggerOptions = mutableListOf<IntArray>()
                 val sequenceTriggerConstraints = mutableListOf<Array<Constraint>>()
                 val sequenceTriggerConstraintMode = mutableListOf<Int>()
+                val sequenceTriggerKeyFlags = mutableListOf<IntArray>()
 
                 val parallelTriggerEvents = mutableListOf<IntArray>()
                 val parallelTriggerActions = mutableListOf<IntArray>()
@@ -146,6 +147,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 val parallelTriggerOptions = mutableListOf<IntArray>()
                 val parallelTriggerConstraints = mutableListOf<Array<Constraint>>()
                 val parallelTriggerConstraintMode = mutableListOf<Int>()
+                val parallelTriggerKeyFlags = mutableListOf<IntArray>()
 
                 for (keyMap in value) {
                     if (!keyMap.isEnabled) {
@@ -263,6 +265,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                         parallelTriggerOptions.add(triggerOptionsArray)
                         parallelTriggerConstraints.add(constraints)
                         parallelTriggerConstraintMode.add(keyMap.constraintMode)
+                        parallelTriggerKeyFlags.add(keyMap.trigger.keys.map { it.flags }.toIntArray())
 
                     } else {
                         sequenceTriggerEvents.add(encodedTriggerList.toIntArray())
@@ -271,6 +274,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                         sequenceTriggerOptions.add(triggerOptionsArray)
                         sequenceTriggerConstraints.add(constraints)
                         sequenceTriggerConstraintMode.add(keyMap.constraintMode)
+                        sequenceTriggerKeyFlags.add(keyMap.trigger.keys.map { it.flags }.toIntArray())
                     }
                 }
 
@@ -351,6 +355,8 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 mSequenceTriggersOverlappingParallelTriggers =
                     sequenceTriggersOverlappingParallelTriggers.map { it.toIntArray() }.toTypedArray()
 
+                mSequenceTriggerKeyFlags = sequenceTriggerKeyFlags.toTypedArray()
+
                 mDetectParallelTriggers = parallelTriggerEvents.isNotEmpty()
                 mParallelTriggerEvents = parallelTriggerEvents.toTypedArray()
                 mParallelTriggerActions = parallelTriggerActions.toTypedArray()
@@ -358,6 +364,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 mParallelTriggerOptions = parallelTriggerOptions.toTypedArray()
                 mParallelTriggerConstraints = parallelTriggerConstraints.toTypedArray()
                 mParallelTriggerConstraintMode = parallelTriggerConstraintMode.toIntArray()
+                mParallelTriggerKeyFlags = parallelTriggerKeyFlags.toTypedArray()
 
                 mDetectSequenceLongPresses = longPressSequenceEvents.isNotEmpty()
                 mLongPressSequenceEvents = longPressSequenceEvents.toTypedArray()
@@ -421,6 +428,11 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
      */
     private var mSequenceTriggerEvents = arrayOf<IntArray>()
 
+    /**
+     * The flags for each key associated with the events in [mSequenceTriggerEvents]
+     */
+    private var mSequenceTriggerKeyFlags = arrayOf<IntArray>()
+
     private var mSequenceTriggerFlags = intArrayOf()
 
     /**
@@ -461,6 +473,11 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
      * The events to detect for each parallel trigger.
      */
     private var mParallelTriggerEvents = arrayOf<IntArray>()
+
+    /**
+     * The flags for each key associated with the events in [mParallelTriggerEvents]
+     */
+    private var mParallelTriggerKeyFlags = arrayOf<IntArray>()
 
     private var mParallelTriggerFlags = intArrayOf()
 
@@ -572,9 +589,8 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 mSequenceTriggersTimeoutTimes[triggerIndex] = -1
             } else {
                 //consume the event if the trigger contains this keycode.
-                if (mSequenceTriggerEvents[triggerIndex].hasKeycode(keyCode)) {
-
-                    if (mSequenceTriggerFlags.consume(triggerIndex)) {
+                mSequenceTriggerEvents[triggerIndex].forEachIndexed { eventIndex, event ->
+                    if (event.keyCode == keyCode && mSequenceTriggerKeyFlags[triggerIndex][eventIndex].consume) {
                         consumeEvent = true
                     }
                 }
@@ -587,10 +603,15 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 mDoublePressEventStates[doublePressEventIndex] = NOT_PRESSED
 
             } else {
+                val doublePressEvent = mDoublePressEvents[doublePressEventIndex].first
                 val triggerIndex = mDoublePressEvents[doublePressEventIndex].second
 
-                if (mSequenceTriggerFlags.consume(triggerIndex)) {
-                    consumeEvent = true
+                mSequenceTriggerEvents[triggerIndex].forEachIndexed { eventIndex, event ->
+                    if (event == doublePressEvent
+                        && mSequenceTriggerKeyFlags[triggerIndex][eventIndex].consume) {
+
+                        consumeEvent = true
+                    }
                 }
             }
         }
@@ -642,7 +663,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
                 if (mParallelTriggerEvents[triggerIndex].hasEventAtIndex(encodedWithShortPress, nextIndex)) {
 
-                    if (mParallelTriggerFlags.consume(triggerIndex)) {
+                    if (mParallelTriggerKeyFlags[triggerIndex][nextIndex].consume) {
                         consumeEvent = true
                     }
 
@@ -693,7 +714,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
                 if (mParallelTriggerEvents[triggerIndex].hasEventAtIndex(encodedWithLongPress, nextIndex)) {
 
-                    if (mParallelTriggerFlags.consume(triggerIndex)) {
+                    if (mParallelTriggerKeyFlags[triggerIndex][nextIndex].consume) {
                         consumeEvent = true
                     }
 
@@ -778,7 +799,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             mSequenceTriggerEvents.forEachIndexed { triggerIndex, events ->
                 if (!areSequenceTriggerConstraintsSatisfied(triggerIndex)) return@forEachIndexed
 
-                events.forEach { event ->
+                events.forEachIndexed { eventIndex, event ->
                     val matchingEvent = when {
                         event.matchesEvent(encodedEvent.withFlag(FLAG_SHORT_PRESS)) -> true
                         event.matchesEvent(encodedEvent.withFlag(FLAG_LONG_PRESS)) -> true
@@ -787,7 +808,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                         else -> false
                     }
 
-                    if (matchingEvent && mSequenceTriggerFlags.consume(triggerIndex)) {
+                    if (matchingEvent && mSequenceTriggerKeyFlags[triggerIndex][eventIndex].consume) {
                         return true
                     }
                 }
@@ -828,12 +849,12 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         if (mDetectSequenceDoublePresses) {
             //iterate over each possible double press event to detect
             for ((index, pair) in mDoublePressEvents.withIndex()) {
-                val event = pair.first
+                val doublePressEvent = pair.first
                 val triggerIndex = pair.second
 
                 if (!areSequenceTriggerConstraintsSatisfied(triggerIndex)) continue
 
-                if (event.matchesEvent(encodedEvent.withFlag(FLAG_DOUBLE_PRESS))) {
+                if (doublePressEvent.matchesEvent(encodedEvent.withFlag(FLAG_DOUBLE_PRESS))) {
                     mappedToDoublePress = true
                     //increment the double press event state.
                     mDoublePressEventStates[index] = mDoublePressEventStates[index] + 1
@@ -848,8 +869,12 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                             imitateKeyAfterDoublePressTimeout.add(doublePressTimeout)
                             matchedDoublePressEventIndex = index
 
-                            if (mSequenceTriggerFlags.consume(triggerIndex)) {
-                                consumeEvent = true
+                            mSequenceTriggerEvents[triggerIndex].forEachIndexed { eventIndex, event ->
+                                if (event == doublePressEvent
+                                    && mSequenceTriggerKeyFlags[triggerIndex][eventIndex].consume) {
+
+                                    consumeEvent = true
+                                }
                             }
                         }
 
@@ -894,7 +919,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 //if the next event matches the event just pressed
                 if (mSequenceTriggerEvents[triggerIndex].hasEventAtIndex(encodedEventWithClickType, nextIndex)) {
 
-                    if (mSequenceTriggerFlags.consume(triggerIndex)) {
+                    if (mSequenceTriggerKeyFlags[triggerIndex][nextIndex].consume) {
                         consumeEvent = true
                     }
 
@@ -979,7 +1004,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
                         mParallelTriggerEventsAwaitingRelease[triggerIndex][eventIndex] = false
 
-                        if (mParallelTriggerFlags.consume(triggerIndex)) {
+                        if (mParallelTriggerKeyFlags[triggerIndex][eventIndex].consume) {
                             consumeEvent = true
                         }
                     }
@@ -995,7 +1020,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
                         mParallelTriggerLongPressJobs[triggerIndex]?.cancel()
 
-                        if (mParallelTriggerFlags.consume(triggerIndex)) {
+                        if (mParallelTriggerKeyFlags[triggerIndex][eventIndex].consume) {
                             consumeEvent = true
                         }
 
@@ -1354,12 +1379,6 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         mRepeatJobs.put(triggerIndex, repeatJobs)
     }
 
-    private val Int.internalDevice
-        get() = this.hasFlag(FLAG_INTERNAL_DEVICE)
-
-    private val Int.externalDevice
-        get() = this > 16384
-
     private val Int.anyDevice
         get() = this < 8192
 
@@ -1466,12 +1485,13 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
     private val Int.deviceDescriptor
         get() = (this shr 13) shl 13
 
+    private val Int.consume
+        get() = !this.hasFlag(Trigger.Key.FLAG_DO_NOT_CONSUME)
+
     private val Action.mappedToModifier
         get() = type == ActionType.KEY_EVENT && isModifierKey(data.toInt())
 
     private fun IntArray.vibrate(triggerIndex: Int) = this[triggerIndex].hasFlag(Trigger.TRIGGER_FLAG_VIBRATE)
-    private fun IntArray.consume(triggerIndex: Int) =
-        !this[triggerIndex].hasFlag(Trigger.TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION)
 
     private fun stopRepeatingWhenPressedAgain(actionKey: Int) =
         mActionOptions.getOrNull(actionKey)?.getOrNull(INDEX_STOP_REPEAT_BEHAVIOUR) == Action.STOP_REPEAT_BEHAVIOUR_TRIGGER_AGAIN
