@@ -94,7 +94,10 @@ class Trigger(
 
         @ClickType
         @SerializedName(NAME_CLICK_TYPE)
-        var clickType: Int = SHORT_PRESS
+        var clickType: Int = SHORT_PRESS,
+
+        @SerializedName(NAME_FLAGS)
+        var flags: Int = 0
     ) {
 
         companion object {
@@ -102,17 +105,23 @@ class Trigger(
             const val NAME_KEYCODE = "keyCode"
             const val NAME_DEVICE_ID = "deviceId"
             const val NAME_CLICK_TYPE = "clickType"
+            const val NAME_FLAGS = "flags"
 
             //IDS! DON'T CHANGE
             const val DEVICE_ID_THIS_DEVICE = "io.github.sds100.keymapper.THIS_DEVICE"
             const val DEVICE_ID_ANY_DEVICE = "io.github.sds100.keymapper.ANY_DEVICE"
+
+            const val FLAG_DONT_OVERRIDE = 1
 
             val DESERIALIZER = jsonDeserializer {
                 val keycode by it.json.byInt(NAME_KEYCODE)
                 val deviceId by it.json.byString(NAME_DEVICE_ID)
                 val clickType by it.json.byInt(NAME_CLICK_TYPE)
 
-                Key(keycode, deviceId, clickType)
+                //nullable because this property was added after backup and restore was released.
+                val flags by it.json.byNullableInt(NAME_FLAGS)
+
+                Key(keycode, deviceId, clickType, flags ?: 0)
             }
         }
 
