@@ -42,13 +42,11 @@ class Trigger(
         const val TRIGGER_FLAG_VIBRATE = 1
         const val TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION = 2
         const val TRIGGER_FLAG_SCREEN_OFF_TRIGGERS = 4
-        const val TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION = 8
 
         val TRIGGER_FLAG_LABEL_MAP = mapOf(
             TRIGGER_FLAG_VIBRATE to R.string.flag_vibrate,
             TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION to R.string.flag_long_press_double_vibration,
             TRIGGER_FLAG_SCREEN_OFF_TRIGGERS to R.string.flag_detect_triggers_screen_off,
-            TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION to R.string.flag_dont_override_default_action
         )
 
         const val DEFAULT_TRIGGER_MODE = UNDEFINED
@@ -111,7 +109,7 @@ class Trigger(
             const val DEVICE_ID_THIS_DEVICE = "io.github.sds100.keymapper.THIS_DEVICE"
             const val DEVICE_ID_ANY_DEVICE = "io.github.sds100.keymapper.ANY_DEVICE"
 
-            const val FLAG_DONT_OVERRIDE = 1
+            const val FLAG_DO_NOT_CONSUME = 1
 
             val DESERIALIZER = jsonDeserializer {
                 val keycode by it.json.byInt(NAME_KEYCODE)

@@ -228,13 +228,6 @@ class ConfigKeymapViewModel internal constructor(
                 ))
             }
 
-            if (it.doNotOverrideDefaultAction.isAllowed) {
-                yield(CheckBoxListItemModel(
-                    id = it.doNotOverrideDefaultAction.id,
-                    label = R.string.flag_dont_override_default_action,
-                    isChecked = it.doNotOverrideDefaultAction.value
-                ))
-            }
         }.toList()
     }
 
