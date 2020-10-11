@@ -1311,7 +1311,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
             val keyEventAction =
                 if (action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)) {
-                    KeyEventAction.DOWN_UP
+                    KeyEventAction.DOWN
                 } else {
                     KeyEventAction.DOWN_UP
                 }
