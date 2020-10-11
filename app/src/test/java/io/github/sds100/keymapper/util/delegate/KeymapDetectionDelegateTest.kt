@@ -23,6 +23,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import splitties.bitflags.hasFlag
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
@@ -98,6 +99,46 @@ class KeymapDetectionDelegateTest {
             FORCE_VIBRATE)
 
         mDelegate = KeymapDetectionDelegate(GlobalScope, preferences, iClock, iConstraintState, iActionError)
+    }
+
+    @Test
+    fun `trigger with modifier key and modifier keycode action, don't include metastate from the trigger modifier key when an unmapped modifier key is pressed`() {
+        val trigger = undefinedTrigger(Trigger.Key(KeyEvent.KEYCODE_CTRL_LEFT))
+
+        mDelegate.keyMapListCache = listOf(
+            KeyMap(0, trigger, actionList = listOf(Action.keyCodeAction(KeyEvent.KEYCODE_ALT_LEFT)))
+        )
+
+        var imitatedKeyMetaState: Int? = null
+
+        val observer = Observer<Event<ImitateKeyModel>> {
+            it.getContentIfNotHandled()?.let { model ->
+                imitatedKeyMetaState = model.metaState
+                println(model.metaState)
+            }
+        }
+
+        mDelegate.imitateButtonPress.observeForever(observer)
+
+        runBlocking {
+            //imitate how modifier keys are sent on Android by also changing the metastate of the keyevent
+
+            inputKeyEvent(KeyEvent.KEYCODE_CTRL_LEFT, KeyEvent.ACTION_DOWN, metaState = KeyEvent.META_CTRL_LEFT_ON + KeyEvent.META_CTRL_ON)
+            inputKeyEvent(KeyEvent.KEYCODE_SHIFT_LEFT, KeyEvent.ACTION_DOWN, metaState = KeyEvent.META_CTRL_LEFT_ON + KeyEvent.META_CTRL_ON + KeyEvent.META_SHIFT_LEFT_ON + KeyEvent.META_SHIFT_ON)
+            inputKeyEvent(KeyEvent.KEYCODE_C, KeyEvent.ACTION_DOWN, metaState = KeyEvent.META_CTRL_LEFT_ON + KeyEvent.META_CTRL_ON + KeyEvent.META_SHIFT_LEFT_ON + KeyEvent.META_SHIFT_ON)
+
+            inputKeyEvent(KeyEvent.KEYCODE_CTRL_LEFT, KeyEvent.ACTION_UP, metaState = KeyEvent.META_CTRL_LEFT_ON + KeyEvent.META_CTRL_ON + KeyEvent.META_SHIFT_LEFT_ON + KeyEvent.META_SHIFT_ON)
+            inputKeyEvent(KeyEvent.KEYCODE_SHIFT_LEFT, KeyEvent.ACTION_UP, metaState = KeyEvent.META_SHIFT_LEFT_ON + KeyEvent.META_SHIFT_ON)
+            inputKeyEvent(KeyEvent.KEYCODE_C, KeyEvent.ACTION_UP)
+        }
+
+        Thread.sleep(1000)
+
+        assert(imitatedKeyMetaState?.hasFlag(KeyEvent.META_CTRL_LEFT_ON + KeyEvent.META_CTRL_ON) == false
+            && imitatedKeyMetaState?.hasFlag(KeyEvent.META_SHIFT_LEFT_ON + KeyEvent.META_SHIFT_ON) == true
+            && imitatedKeyMetaState?.hasFlag(KeyEvent.META_ALT_LEFT_ON + KeyEvent.META_ALT_ON) == true)
+
+        mDelegate.imitateButtonPress.removeObserver(observer)
     }
 
     @Test
@@ -858,13 +899,14 @@ class KeymapDetectionDelegateTest {
         }
     }
 
-    private fun inputKeyEvent(keyCode: Int, action: Int, deviceDescriptor: String?) =
+    private fun inputKeyEvent(keyCode: Int, action: Int, deviceDescriptor: String? = null, metaState: Int? = null) =
         mDelegate.onKeyEvent(
             keyCode,
             action,
             deviceDescriptor ?: "",
             isExternal = deviceDescriptor != null,
-            metaState = 0
+            metaState = metaState ?: 0,
+            deviceId = 0
         )
 
     private fun mockParallelTriggerKeys(

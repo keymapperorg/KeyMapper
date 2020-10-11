@@ -146,6 +146,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 val parallelTriggerOptions = mutableListOf<IntArray>()
                 val parallelTriggerConstraints = mutableListOf<Array<Constraint>>()
                 val parallelTriggerConstraintMode = mutableListOf<Int>()
+                val parallelTriggerModifierKeyIndices = mutableListOf<Pair<Int, Int>>()
 
                 for (keyMap in value) {
                     if (!keyMap.isEnabled) {
@@ -338,6 +339,14 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                     }
                 }
 
+                parallelTriggerEvents.forEachIndexed { triggerIndex, events ->
+                    events.forEachIndexed { eventIndex, event ->
+                        if (isModifierKey(event.keyCode)) {
+                            parallelTriggerModifierKeyIndices.add(triggerIndex to eventIndex)
+                        }
+                    }
+                }
+
                 mDetectSequenceTriggers = sequenceTriggerEvents.isNotEmpty()
                 mSequenceTriggerEvents = sequenceTriggerEvents.toTypedArray()
                 mSequenceTriggerActions = sequenceTriggerActions.toTypedArray()
@@ -358,6 +367,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 mParallelTriggerOptions = parallelTriggerOptions.toTypedArray()
                 mParallelTriggerConstraints = parallelTriggerConstraints.toTypedArray()
                 mParallelTriggerConstraintMode = parallelTriggerConstraintMode.toIntArray()
+                mParallelTriggerModifierKeyIndices = parallelTriggerModifierKeyIndices.toTypedArray()
 
                 mDetectSequenceLongPresses = longPressSequenceEvents.isNotEmpty()
                 mLongPressSequenceEvents = longPressSequenceEvents.toTypedArray()
@@ -490,6 +500,8 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
      */
     private var mParallelTriggerOptions = arrayOf<IntArray>()
 
+    private var mParallelTriggerModifierKeyIndices = arrayOf<Pair<Int, Int>>()
+
     private var mModifierKeyEventActions = false
     private var mNotModifierKeyEventActions = false
     private var mUnmappedKeycodesToConsumeOnUp = mutableSetOf<Int>()
@@ -529,7 +541,14 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
     /**
      * @return whether to consume the [KeyEvent].
      */
-    fun onKeyEvent(keyCode: Int, action: Int, descriptor: String, isExternal: Boolean, metaState: Int): Boolean {
+    fun onKeyEvent(
+        keyCode: Int,
+        action: Int,
+        descriptor: String,
+        isExternal: Boolean,
+        metaState: Int,
+        deviceId: Int
+    ): Boolean {
         if (!mDetectKeymaps) return false
 
         if ((isExternal && !mDetectExternalEvents) || (!isExternal && !mDetectInternalEvents)) {
@@ -537,6 +556,18 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         }
 
         mMetaStateFromKeyEvent = metaState
+
+        //remove the metastate from any modifier keys that remapped and are pressed down
+        mParallelTriggerModifierKeyIndices.forEach {
+            val triggerIndex = it.first
+            val eventIndex = it.second
+            val event = mParallelTriggerEvents[triggerIndex][eventIndex]
+
+            if (mParallelTriggerEventsAwaitingRelease[triggerIndex][eventIndex]) {
+                mMetaStateFromKeyEvent =
+                    mMetaStateFromKeyEvent.minusFlag(KeyEventUtils.modifierKeycodeToMetaState(event.keyCode))
+            }
+        }
 
         val encodedEvent =
             if (isExternal) {
@@ -546,8 +577,8 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             }
 
         when (action) {
-            KeyEvent.ACTION_DOWN -> return onKeyDown(keyCode, encodedEvent)
-            KeyEvent.ACTION_UP -> return onKeyUp(keyCode, encodedEvent)
+            KeyEvent.ACTION_DOWN -> return onKeyDown(keyCode, encodedEvent, deviceId)
+            KeyEvent.ACTION_UP -> return onKeyUp(keyCode, encodedEvent, deviceId)
         }
 
         return false
@@ -556,7 +587,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
     /**
      * @return whether to consume the [KeyEvent].
      */
-    private fun onKeyDown(keyCode: Int, encodedEvent: Int): Boolean {
+    private fun onKeyDown(keyCode: Int, encodedEvent: Int, deviceId: Int): Boolean {
         mEventDownTimeMap[encodedEvent] = currentTime
 
         var consumeEvent = false
@@ -723,10 +754,10 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             mUnmappedKeycodesToConsumeOnUp.add(keyCode)
 
             imitateButtonPress.value = Event(ImitateKeyModel(keyCode,
-                mMetaStateFromKeyEvent.withFlag(mMetaStateFromActions)))
+                mMetaStateFromKeyEvent.withFlag(mMetaStateFromActions), deviceId))
 
             mCoroutineScope.launch {
-                repeatImitatingKey(keyCode)
+                repeatImitatingKey(keyCode, deviceId)
             }
         }
 
@@ -800,7 +831,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
     /**
      * @return whether to consume the event.
      */
-    private fun onKeyUp(keyCode: Int, encodedEvent: Int): Boolean {
+    private fun onKeyUp(keyCode: Int, encodedEvent: Int, deviceId: Int): Boolean {
         val downTime = mEventDownTimeMap[encodedEvent] ?: currentTime
         mEventDownTimeMap.remove(encodedEvent)
 
@@ -1269,12 +1300,12 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         return -1
     }
 
-    private suspend fun repeatImitatingKey(keyCode: Int) {
+    private suspend fun repeatImitatingKey(keyCode: Int, deviceId: Int) {
         delay(400)
 
         while (mUnmappedKeycodesToConsumeOnUp.contains(keyCode)) {
             imitateButtonPress.postValue(Event(ImitateKeyModel(keyCode,
-                mMetaStateFromKeyEvent.withFlag(mMetaStateFromActions))))
+                mMetaStateFromKeyEvent.withFlag(mMetaStateFromActions), deviceId)))
 
             delay(50)
         }

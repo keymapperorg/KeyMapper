@@ -157,8 +157,8 @@ class ActionPerformerDelegate(context: Context,
                                 metaState = additionalMetaState.withFlag(
                                     action.extras.getData(Action.EXTRA_KEY_EVENT_META_STATE).valueOrNull()?.toInt() ?: 0
                                 ),
-                                keyEventAction = keyEventAction
-                            )
+                                keyEventAction = keyEventAction,
+                                deviceId = 0)
                         }
                     }
                 }
@@ -346,7 +346,8 @@ class ActionPerformerDelegate(context: Context,
                     KeyboardUtils.inputKeyEventFromImeService(
                         it,
                         keyCode = KeyEvent.KEYCODE_MOVE_END,
-                        metaState = KeyEvent.META_CTRL_ON
+                        metaState = KeyEvent.META_CTRL_ON,
+                        deviceId = 0
                     )
                 }
 

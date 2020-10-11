@@ -24,6 +24,7 @@ class KeyMapperImeService : InputMethodService() {
         private const val KEY_MAPPER_INPUT_METHOD_EXTRA_KEYCODE = "io.github.sds100.keymapper.inputmethod.EXTRA_KEYCODE"
         private const val KEY_MAPPER_INPUT_METHOD_EXTRA_METASTATE = "io.github.sds100.keymapper.inputmethod.EXTRA_METASTATE"
         private const val KEY_MAPPER_INPUT_METHOD_EXTRA_TEXT = "io.github.sds100.keymapper.inputmethod.EXTRA_TEXT"
+        private const val KEY_MAPPER_INPUT_METHOD_EXTRA_DEVICE_ID = "io.github.sds100.keymapper.inputmethod.EXTRA_DEVICE_ID"
     }
 
     private val mBroadcastReceiver = object : BroadcastReceiver() {
@@ -32,6 +33,7 @@ class KeyMapperImeService : InputMethodService() {
 
             fun getKeyCode() = intent.getIntExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_KEYCODE, -1)
             fun getMetaState() = intent.getIntExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_METASTATE, 0)
+            fun getDeviceId() = intent.getIntExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_DEVICE_ID, 0)
 
             when (action) {
                 KEY_MAPPER_INPUT_METHOD_ACTION_TEXT -> {
@@ -47,12 +49,12 @@ class KeyMapperImeService : InputMethodService() {
                     val eventTime = SystemClock.uptimeMillis()
 
                     val downEvent = KeyEvent(eventTime, eventTime,
-                        KeyEvent.ACTION_DOWN, keyCode, 0, getMetaState())
+                        KeyEvent.ACTION_DOWN, keyCode, 0, getMetaState(), getDeviceId(), 0)
 
                     currentInputConnection?.sendKeyEvent(downEvent)
 
                     val upEvent = KeyEvent(eventTime, SystemClock.uptimeMillis(),
-                        KeyEvent.ACTION_UP, keyCode, 0)
+                        KeyEvent.ACTION_UP, keyCode, 0, getMetaState(), getDeviceId(), 0)
 
                     currentInputConnection?.sendKeyEvent(upEvent)
                 }
@@ -64,7 +66,7 @@ class KeyMapperImeService : InputMethodService() {
                     val eventTime = SystemClock.uptimeMillis()
 
                     val downEvent = KeyEvent(eventTime, eventTime,
-                        KeyEvent.ACTION_DOWN, keyCode, 0, getMetaState())
+                        KeyEvent.ACTION_DOWN, keyCode, 0, getMetaState(), getDeviceId(), 0)
 
                     currentInputConnection?.sendKeyEvent(downEvent)
                 }
@@ -76,7 +78,7 @@ class KeyMapperImeService : InputMethodService() {
                     val eventTime = SystemClock.uptimeMillis()
 
                     val upEvent = KeyEvent(eventTime, SystemClock.uptimeMillis(),
-                        KeyEvent.ACTION_UP, keyCode, 0)
+                        KeyEvent.ACTION_UP, keyCode, 0, getMetaState(), getDeviceId(), 0)
 
                     currentInputConnection?.sendKeyEvent(upEvent)
                 }

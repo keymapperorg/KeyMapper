@@ -196,10 +196,10 @@ class MyAccessibilityService : AccessibilityService(),
     private val mIsCompatibleImeChosen
         get() = KeyboardUtils.KEY_MAPPER_IME_PACKAGE_LIST.contains(mChosenImePackageName)
 
-    private val mGetEventDelegate = GetEventDelegate { keyCode, action, deviceDescriptor, isExternal ->
+    private val mGetEventDelegate = GetEventDelegate { keyCode, action, deviceDescriptor, isExternal, deviceId ->
         if (!AppPreferences.keymapsPaused) {
             withContext(Dispatchers.Main.immediate) {
-                mKeymapDetectionDelegate.onKeyEvent(keyCode, action, deviceDescriptor, isExternal, 0)
+                mKeymapDetectionDelegate.onKeyEvent(keyCode, action, deviceDescriptor, isExternal, 0, deviceId)
             }
         }
     }
@@ -281,7 +281,8 @@ class MyAccessibilityService : AccessibilityService(),
                         KeyboardUtils.inputKeyEventFromImeService(
                             imePackageName = imePackageName,
                             keyCode = it.keyCode,
-                            metaState = it.metaState
+                            metaState = it.metaState,
+                            deviceId = it.deviceId
                         )
                     }
                 }
@@ -346,7 +347,8 @@ class MyAccessibilityService : AccessibilityService(),
                     event.action,
                     event.device.descriptor,
                     event.device.isExternalCompat,
-                    event.metaState)
+                    event.metaState,
+                    event.deviceId)
             } catch (e: Exception) {
                 Timber.e(e)
             }

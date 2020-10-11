@@ -7,6 +7,7 @@ import io.github.sds100.keymapper.util.Shell
 import io.github.sds100.keymapper.util.isExternalCompat
 import kotlinx.coroutines.*
 import splitties.systemservices.inputManager
+import timber.log.Timber
 
 /**
  * Created by sds100 on 21/06/2020.
@@ -14,7 +15,8 @@ import splitties.systemservices.inputManager
 class GetEventDelegate(val onKeyEvent: suspend (keyCode: Int,
                                                 action: Int,
                                                 deviceDescriptor: String,
-                                                isExternal: Boolean) -> Unit) {
+                                                isExternal: Boolean,
+                                                deviceId: Int) -> Unit) {
 
     companion object {
         private const val REGEX_GET_DEVICE_LOCATION = "\\/.*(?=:)"
@@ -43,6 +45,7 @@ class GetEventDelegate(val onKeyEvent: suspend (keyCode: Int,
                     val device = inputManager.getInputDevice(id)
                     val deviceLocation = getDeviceLocation(getEventDevices, device.name) ?: return@forEach
                     deviceLocationToDescriptorMap[deviceLocation] = device.descriptor
+                    Timber.d("id = ${device.id}")
                     descriptorToIsExternalMap[device.descriptor] = device.isExternalCompat
                 }
 
@@ -68,11 +71,11 @@ class GetEventDelegate(val onKeyEvent: suspend (keyCode: Int,
 
                             when (actionString) {
                                 "UP" -> {
-                                    onKeyEvent.invoke(keycode, KeyEvent.ACTION_UP, deviceDescriptor, isExternal)
+                                    onKeyEvent.invoke(keycode, KeyEvent.ACTION_UP, deviceDescriptor, isExternal, 0)
                                 }
 
                                 "DOWN" -> {
-                                    onKeyEvent.invoke(keycode, KeyEvent.ACTION_DOWN, deviceDescriptor, isExternal)
+                                    onKeyEvent.invoke(keycode, KeyEvent.ACTION_DOWN, deviceDescriptor, isExternal, 0)
                                 }
                             }
 
