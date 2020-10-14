@@ -16,6 +16,8 @@ What can’t be remapped?
  * OnePlus Alert Slider
  * Power button
  * Bixby button
+ * Mouse buttons
+ * Dpad, thumb sticks or triggers on game controllers
 
  Your key maps don't work if the screen is OFF.
 
