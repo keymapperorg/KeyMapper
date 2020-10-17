@@ -126,6 +126,7 @@
 
     <string name="toast_chose_keyboard">Chose %s</string>
     <string name="toast_backup_successful">Backup Successful!</string>
+    <string name="toast_screenshot_taken">Screenshot Taken</string>
 
     <string name="extra_label_sequence_trigger_timeout">Sequence trigger timeout (ms)</string>
     <string name="extra_label_long_press_delay_timeout">Long press delay (ms)</string>
