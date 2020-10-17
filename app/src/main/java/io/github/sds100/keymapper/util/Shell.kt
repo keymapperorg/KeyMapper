@@ -11,9 +11,14 @@ object Shell {
     /**
      * @return whether the command was executed successfully
      */
-    fun run(vararg command: String): Boolean {
+    fun run(vararg command: String, waitFor: Boolean = false): Boolean {
         return try {
-            Runtime.getRuntime().exec(command)
+            val process = Runtime.getRuntime().exec(command)
+
+            if (waitFor) {
+                process.waitFor()
+            }
+
             true
         } catch (e: IOException) {
             false
