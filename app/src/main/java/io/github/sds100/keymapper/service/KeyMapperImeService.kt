@@ -45,12 +45,18 @@ class KeyMapperImeService : InputMethodService() {
                 }
 
                 KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN -> {
-                    val downEvent = intent.getParcelableExtra<KeyEvent>(KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT)
+                    var downEvent = intent.getParcelableExtra<KeyEvent>(KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT)
+
+                    downEvent = KeyEvent.changeAction(downEvent, KeyEvent.ACTION_DOWN)
+
                     currentInputConnection?.sendKeyEvent(downEvent)
                 }
 
                 KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_UP -> {
-                    val upEvent = intent.getParcelableExtra<KeyEvent>(KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT)
+                    var upEvent = intent.getParcelableExtra<KeyEvent>(KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT)
+
+                    upEvent = KeyEvent.changeAction(upEvent, KeyEvent.ACTION_UP)
+
                     currentInputConnection?.sendKeyEvent(upEvent)
                 }
             }
