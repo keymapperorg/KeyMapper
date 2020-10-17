@@ -11,7 +11,6 @@ object ScreenshotUtils {
         val screenshotsFolder = "$picturesFolder/Screenshots"
         val fileDate = FileUtils.createFileDate()
 
-        RootUtils.executeRootCommand("mkdir $screenshotsFolder")
-        RootUtils.executeRootCommand("screencap -p $screenshotsFolder/Screenshot_$fileDate.png")
+        RootUtils.executeRootCommand("mkdir -p $screenshotsFolder; screencap -p $screenshotsFolder/Screenshot_$fileDate.png")
     }
 }
