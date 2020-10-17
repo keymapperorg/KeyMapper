@@ -34,6 +34,7 @@ object KeyboardUtils {
 
     private const val KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT = "io.github.sds100.keymapper.inputmethod.EXTRA_KEY_EVENT"
     private const val KEY_MAPPER_INPUT_METHOD_EXTRA_TEXT = "io.github.sds100.keymapper.inputmethod.EXTRA_TEXT"
+    private const val KEY_MAPPER_INPUT_METHOD_EXTRA_DEVICE_ID = "io.github.sds100.keymapper.inputmethod.EXTRA_DEVICE_ID"
 
     const val KEY_MAPPER_GUI_IME_PACKAGE = "io.github.sds100.keymapper.inputmethod.latin"
     const val KEY_MAPPER_GUI_IME_MIN_API = Build.VERSION_CODES.KITKAT
@@ -262,7 +263,8 @@ object KeyboardUtils {
         imePackageName: String,
         keyCode: Int,
         metaState: Int = 0,
-        keyEventAction: KeyEventAction = KeyEventAction.DOWN_UP
+        keyEventAction: KeyEventAction = KeyEventAction.DOWN_UP,
+        deviceId: Int
     ) {
         val intentAction = when (keyEventAction) {
             KeyEventAction.DOWN -> KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN
