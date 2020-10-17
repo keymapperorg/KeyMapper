@@ -4,6 +4,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.navigation.findNavController
 import io.github.sds100.keymapper.R
 import splitties.alertdialog.appcompat.*
+import java.io.IOException
 import java.io.InputStream
 
 /**
@@ -20,6 +21,7 @@ object RootUtils {
     /**
      * Remember to close it after using it.
      */
+    @Throws(IOException::class)
     fun getRootCommandOutput(command: String): InputStream {
         return Shell.getShellCommandStdOut("su", "-c", command)
     }

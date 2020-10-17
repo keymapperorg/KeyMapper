@@ -28,6 +28,7 @@ object Shell {
     /**
      * Remember to close it after using it.
      */
+    @Throws(IOException::class)
     fun getShellCommandStdOut(vararg command: String): InputStream {
         return Runtime.getRuntime().exec(command).inputStream
     }
@@ -35,6 +36,7 @@ object Shell {
     /**
      * Remember to close it after using it.
      */
+    @Throws(IOException::class)
     fun getShellCommandStdErr(vararg command: String): InputStream {
         return Runtime.getRuntime().exec(command).errorStream
     }
