@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.inputmethodservice.InputMethodService
-import android.os.SystemClock
 import android.view.KeyEvent
 
 /**
@@ -21,19 +20,13 @@ class KeyMapperImeService : InputMethodService() {
         private const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_UP = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_UP"
         private const val KEY_MAPPER_INPUT_METHOD_ACTION_TEXT = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_TEXT"
 
-        private const val KEY_MAPPER_INPUT_METHOD_EXTRA_KEYCODE = "io.github.sds100.keymapper.inputmethod.EXTRA_KEYCODE"
-        private const val KEY_MAPPER_INPUT_METHOD_EXTRA_METASTATE = "io.github.sds100.keymapper.inputmethod.EXTRA_METASTATE"
         private const val KEY_MAPPER_INPUT_METHOD_EXTRA_TEXT = "io.github.sds100.keymapper.inputmethod.EXTRA_TEXT"
-        private const val KEY_MAPPER_INPUT_METHOD_EXTRA_DEVICE_ID = "io.github.sds100.keymapper.inputmethod.EXTRA_DEVICE_ID"
+        private const val KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT = "io.github.sds100.keymapper.inputmethod.EXTRA_KEY_EVENT"
     }
 
     private val mBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val action = intent?.action ?: return
-
-            fun getKeyCode() = intent.getIntExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_KEYCODE, -1)
-            fun getMetaState() = intent.getIntExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_METASTATE, 0)
-            fun getDeviceId() = intent.getIntExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_DEVICE_ID, 0)
 
             when (action) {
                 KEY_MAPPER_INPUT_METHOD_ACTION_TEXT -> {
@@ -43,43 +36,21 @@ class KeyMapperImeService : InputMethodService() {
                 }
 
                 KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN_UP -> {
-                    val keyCode = getKeyCode()
-                    if (keyCode == -1) return
 
-                    val eventTime = SystemClock.uptimeMillis()
-
-                    val downEvent = KeyEvent(eventTime, eventTime,
-                        KeyEvent.ACTION_DOWN, keyCode, 0, getMetaState(), getDeviceId(), 0)
-
+                    val downEvent = intent.getParcelableExtra<KeyEvent>(KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT)
                     currentInputConnection?.sendKeyEvent(downEvent)
 
-                    val upEvent = KeyEvent(eventTime, SystemClock.uptimeMillis(),
-                        KeyEvent.ACTION_UP, keyCode, 0, getMetaState(), getDeviceId(), 0)
-
+                    val upEvent = KeyEvent.changeAction(downEvent, KeyEvent.ACTION_UP)
                     currentInputConnection?.sendKeyEvent(upEvent)
                 }
 
                 KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN -> {
-                    val keyCode = getKeyCode()
-                    if (keyCode == -1) return
-
-                    val eventTime = SystemClock.uptimeMillis()
-
-                    val downEvent = KeyEvent(eventTime, eventTime,
-                        KeyEvent.ACTION_DOWN, keyCode, 0, getMetaState(), getDeviceId(), 0)
-
+                    val downEvent = intent.getParcelableExtra<KeyEvent>(KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT)
                     currentInputConnection?.sendKeyEvent(downEvent)
                 }
 
                 KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_UP -> {
-                    val keyCode = getKeyCode()
-                    if (keyCode == -1) return
-
-                    val eventTime = SystemClock.uptimeMillis()
-
-                    val upEvent = KeyEvent(eventTime, SystemClock.uptimeMillis(),
-                        KeyEvent.ACTION_UP, keyCode, 0, getMetaState(), getDeviceId(), 0)
-
+                    val upEvent = intent.getParcelableExtra<KeyEvent>(KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT)
                     currentInputConnection?.sendKeyEvent(upEvent)
                 }
             }

@@ -6,7 +6,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Build.VERSION_CODES.O_MR1
+import android.os.SystemClock
 import android.provider.Settings
+import android.view.KeyEvent
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import io.github.sds100.keymapper.Constants
@@ -30,10 +32,8 @@ object KeyboardUtils {
     private const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_UP = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_UP"
     private const val KEY_MAPPER_INPUT_METHOD_ACTION_TEXT = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_TEXT"
 
-    private const val KEY_MAPPER_INPUT_METHOD_EXTRA_KEYCODE = "io.github.sds100.keymapper.inputmethod.EXTRA_KEYCODE"
-    private const val KEY_MAPPER_INPUT_METHOD_EXTRA_METASTATE = "io.github.sds100.keymapper.inputmethod.EXTRA_METASTATE"
+    private const val KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT = "io.github.sds100.keymapper.inputmethod.EXTRA_KEY_EVENT"
     private const val KEY_MAPPER_INPUT_METHOD_EXTRA_TEXT = "io.github.sds100.keymapper.inputmethod.EXTRA_TEXT"
-    private const val KEY_MAPPER_INPUT_METHOD_EXTRA_DEVICE_ID = "io.github.sds100.keymapper.inputmethod.EXTRA_DEVICE_ID"
 
     const val KEY_MAPPER_GUI_IME_PACKAGE = "io.github.sds100.keymapper.inputmethod.latin"
     const val KEY_MAPPER_GUI_IME_MIN_API = Build.VERSION_CODES.KITKAT
@@ -273,9 +273,17 @@ object KeyboardUtils {
 
         Intent(intentAction).apply {
             setPackage(imePackageName)
-            putExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_KEYCODE, keyCode)
-            putExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_METASTATE, metaState)
-            putExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_DEVICE_ID, deviceId)
+
+            val action = when (keyEventAction) {
+                KeyEventAction.DOWN, KeyEventAction.DOWN_UP -> KeyEvent.ACTION_DOWN
+                KeyEventAction.UP -> KeyEvent.ACTION_UP
+            }
+
+            val eventTime = SystemClock.uptimeMillis()
+
+            val keyEvent = KeyEvent(eventTime, eventTime, action, keyCode, 0, metaState, deviceId, 0)
+
+            putExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT, keyEvent)
 
             appCtx.sendBroadcast(this)
         }
