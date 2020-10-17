@@ -107,6 +107,6 @@ object Migration_4_5 {
         }
     }
 
-    val Any.json: String
+    private val Any.json: String
         get() = Gson().toJson(this)
 }
