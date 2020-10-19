@@ -5,6 +5,8 @@ import androidx.lifecycle.*
 import io.github.sds100.keymapper.data.model.CheckBoxListItemModel
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.KeyEventUtils
+import io.github.sds100.keymapper.util.result.CantBeEmpty
+import io.github.sds100.keymapper.util.result.InvalidNumber
 import splitties.bitflags.hasFlag
 import splitties.bitflags.minusFlag
 import splitties.bitflags.withFlag
@@ -15,10 +17,13 @@ import splitties.bitflags.withFlag
 
 class KeyEventActionTypeViewModel : ViewModel() {
 
-    val keyCode = MutableLiveData<String>()
+    val keyCode = MutableLiveData<String>(null)
 
     val keyCodeLabel: LiveData<String> = keyCode.map {
         if (it.isNullOrEmpty()) return@map ""
+
+        //if it isn't a valid int. E.g if it is too big.
+        it.toIntOrNull() ?: return@map ""
 
         return@map if (it.toInt() > KeyEvent.getMaxKeyCode()) {
             "Key Code $it"
@@ -29,8 +34,18 @@ class KeyEventActionTypeViewModel : ViewModel() {
 
     val metaState = MutableLiveData(0)
     val chooseKeycode = MutableLiveData<Event<Unit>>()
-    val isValidKeyCode = keyCode.map {
-        !it.isNullOrEmpty()
+
+    val failure = keyCode.map {
+        when {
+            it.isNullOrEmpty() -> CantBeEmpty()
+            it.toIntOrNull() == null -> InvalidNumber()
+
+            else -> null
+        }
+    }
+
+    val isValidKeyCode = failure.map {
+        it == null
     }
 
     val modifierKeyModels = metaState.map {
