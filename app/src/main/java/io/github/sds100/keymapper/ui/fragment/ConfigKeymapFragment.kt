@@ -184,9 +184,7 @@ class ConfigKeymapFragment : Fragment() {
                 val serviceEnabled = AccessibilityUtils.isServiceEnabled(requireContext())
 
                 if (serviceEnabled) {
-
-                    requireContext().sendPackageBroadcast(MyAccessibilityService.ACTION_STOPPED_RECORDING_TRIGGER)
-
+                    stopRecordingTrigger()
                 } else {
                     mViewModel.promptToEnableAccessibilityService.value = Event(Unit)
                 }
@@ -206,6 +204,12 @@ class ConfigKeymapFragment : Fragment() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+
+        stopRecordingTrigger()
+    }
+
     private fun showOnBackPressedWarning() {
         requireContext().alertDialog {
             messageResource = R.string.dialog_message_are_you_sure_want_to_leave_without_saving
@@ -217,5 +221,9 @@ class ConfigKeymapFragment : Fragment() {
             cancelButton()
             show()
         }
+    }
+
+    private fun stopRecordingTrigger() {
+        requireContext().sendPackageBroadcast(MyAccessibilityService.ACTION_STOPPED_RECORDING_TRIGGER)
     }
 }
