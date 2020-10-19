@@ -20,6 +20,9 @@ import android.webkit.URLUtil
 import androidx.core.os.bundleOf
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.coroutineScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Action
@@ -29,11 +32,15 @@ import io.github.sds100.keymapper.data.model.getData
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.onSuccess
 import io.github.sds100.keymapper.util.result.valueOrNull
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
 import splitties.toast.toast
+import timber.log.Timber
+import java.io.IOException
 
 
 /**
@@ -42,7 +49,8 @@ import splitties.toast.toast
 
 class ActionPerformerDelegate(context: Context,
                               iPerformAccessibilityAction: IPerformAccessibilityAction,
-                              lifecycle: Lifecycle) : IPerformAccessibilityAction by iPerformAccessibilityAction {
+                              lifecycle: Lifecycle
+) : IPerformAccessibilityAction by iPerformAccessibilityAction, LifecycleObserver {
 
     companion object {
         private const val OVERFLOW_MENU_CONTENT_DESCRIPTION = "More options"
@@ -50,12 +58,33 @@ class ActionPerformerDelegate(context: Context,
 
     private val mCtx = context.applicationContext
     private lateinit var mFlashlightController: FlashlightController
+    private lateinit var mSuProcess: Process
 
     init {
+        lifecycle.addObserver(this)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mFlashlightController = FlashlightController()
             lifecycle.addObserver(mFlashlightController)
         }
+
+        try {
+            mSuProcess = RootUtils.getSuProcess()
+
+            lifecycle.coroutineScope.launch(Dispatchers.IO) {
+                var line: String?
+
+                while (mSuProcess.inputStream.bufferedReader().readLine().also { line = it } != null) {
+                    Timber.e(line)
+                }
+            }
+        } catch (e: IOException) {
+            Timber.e(e)
+        }
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    private fun stopSuProcess() {
+        mSuProcess.destroy()
     }
 
     fun performAction(action: Action, chosenImePackageName: String?) = performAction(PerformActionModel(action), chosenImePackageName)
@@ -291,7 +320,16 @@ class ActionPerformerDelegate(context: Context,
                 SystemAction.OPEN_RECENTS -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
                 SystemAction.OPEN_MENU -> {
                     if (AppPreferences.hasRootPermission) {
-                        RootUtils.executeRootCommand("input keyevent ${KeyEvent.KEYCODE_MENU}")
+
+                        if (::mSuProcess.isInitialized) {
+
+                            //the \n is very important. it is like pressing enter
+
+                            with(mSuProcess.outputStream.bufferedWriter()) {
+                                write("input keyevent ${KeyEvent.KEYCODE_MENU}\n")
+                                flush()
+                            }
+                        }
                     } else {
                         rootNode.findNodeRecursively {
                             it.contentDescription == OVERFLOW_MENU_CONTENT_DESCRIPTION
