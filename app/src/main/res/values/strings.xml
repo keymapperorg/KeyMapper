@@ -108,6 +108,8 @@
     <string name="radio_button_sequence">In sequence</string>
     <string name="radio_button_and">AND</string>
     <string name="radio_button_or">OR</string>
+    <string name="radio_button_short_press">Short press</string>
+    <string name="radio_button_long_press">Long press</string>
 
     <string name="tab_trigger_and_actions">Trigger and Actions</string>
     <string name="tab_constraints_and_more">Constraints and More</string>

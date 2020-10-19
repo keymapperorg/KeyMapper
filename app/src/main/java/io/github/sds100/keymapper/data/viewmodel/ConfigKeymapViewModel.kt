@@ -101,11 +101,26 @@ class ConfigKeymapViewModel internal constructor(
 
     val triggerBehavior: MutableLiveData<TriggerBehavior> = MutableLiveData()
 
+    val isParallelTriggerClickTypeShortPress = triggerKeys.map {
+        if (!it.isNullOrEmpty()) {
+            it[0].clickType == Trigger.SHORT_PRESS
+        } else {
+            false
+        }
+    }
+
+    val isParallelTriggerClickTypeLongPress = triggerKeys.map {
+        if (!it.isNullOrEmpty()) {
+            it[0].clickType == Trigger.LONG_PRESS
+        } else {
+            false
+        }
+    }
+
     val recordTriggerTimeLeft = MutableLiveData(0)
     val recordingTrigger = MutableLiveData(false)
     val startRecordingTriggerInService: MutableLiveData<Event<Unit>> = MutableLiveData()
     val stopRecordingTrigger: MutableLiveData<Event<Unit>> = MutableLiveData()
-    val chooseParallelTriggerClickType: MutableLiveData<Event<Unit>> = MutableLiveData()
 
     val isEnabled: MutableLiveData<Boolean> = MutableLiveData()
     val actionList: MutableLiveData<List<Action>> = MutableLiveData(listOf())
@@ -368,21 +383,6 @@ class ConfigKeymapViewModel internal constructor(
             } else {
                 mKeymapRepository.updateKeymap(keymap)
             }
-        }
-    }
-
-    fun chooseParallelTriggerClickType() {
-        if (!getShownPrompt(R.string.key_pref_shown_double_press_restriction_warning)
-            && triggerInParallel.value == true) {
-            val notifyUser = NotifyUserModel(R.string.dialog_message_double_press_restricted_to_single_key) {
-                setShownPrompt(R.string.key_pref_shown_double_press_restriction_warning)
-
-                chooseParallelTriggerClickType.value = Event(Unit)
-            }
-
-            showPrompt(notifyUser)
-        } else {
-            chooseParallelTriggerClickType.value = Event(Unit)
         }
     }
 

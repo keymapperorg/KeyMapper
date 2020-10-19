@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import com.airbnb.epoxy.EpoxyController
 import com.airbnb.epoxy.EpoxyTouchHelper
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.radiobutton.MaterialRadioButton
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.TriggerKeyBindingModel_
 import io.github.sds100.keymapper.data.AppPreferences
@@ -116,13 +117,6 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
             viewModel = mViewModel
             lifecycleOwner = viewLifecycleOwner
 
-            mViewModel.chooseParallelTriggerClickType.observe(viewLifecycleOwner, EventObserver {
-                lifecycleScope.launch {
-                    val newClickType = showClickTypeDialog()
-                    mViewModel.setParallelTriggerClickType(newClickType)
-                }
-            })
-
             subscribeTriggerList()
 
             mViewModel.triggerMode.observe(viewLifecycleOwner) {
@@ -145,6 +139,18 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
                     }
                 }
             })
+
+            radioButtonShortPress.setOnClickListener { view ->
+                if ((view as MaterialRadioButton).isChecked) {
+                    mViewModel.setParallelTriggerClickType(Trigger.SHORT_PRESS)
+                }
+            }
+
+            radioButtonLongPress.setOnClickListener { view ->
+                if ((view as MaterialRadioButton).isChecked) {
+                    mViewModel.setParallelTriggerClickType(Trigger.LONG_PRESS)
+                }
+            }
         }
     }
 
