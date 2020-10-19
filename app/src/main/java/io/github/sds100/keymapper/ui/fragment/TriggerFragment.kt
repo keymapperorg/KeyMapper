@@ -83,7 +83,12 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
                 }
 
                 MyAccessibilityService.ACTION_STOPPED_RECORDING_TRIGGER -> {
-                    mRecordingTriggerCount++
+                    val stoppedEarly = mViewModel.recordTriggerTimeLeft.value?.let { it > 0 } ?: true
+
+                    if (!stoppedEarly) {
+                        mRecordingTriggerCount++
+                    }
+
                     mViewModel.recordingTrigger.value = false
 
                     if (mRecordingTriggerCount >= 2 && !mSuccessfullyRecordedTrigger) {
