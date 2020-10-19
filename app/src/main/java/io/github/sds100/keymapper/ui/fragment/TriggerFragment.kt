@@ -22,6 +22,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.TriggerKeyBindingModel_
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Trigger
+import io.github.sds100.keymapper.data.model.TriggerKeyModel
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentTriggerBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
@@ -118,6 +119,8 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
      */
     private var mSuccessfullyRecordedTrigger = false
 
+    private val mTriggerKeyController = TriggerKeyController()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -155,8 +158,10 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
 
             subscribeTriggerList()
 
+            epoxyRecyclerViewTriggers.adapter = mTriggerKeyController.adapter
+
             mViewModel.triggerMode.observe(viewLifecycleOwner) {
-                epoxyRecyclerViewTriggers.requestModelBuild()
+                mTriggerKeyController.requestModelBuild()
             }
 
             mViewModel.buildTriggerKeyModelListEvent.observe(viewLifecycleOwner, EventObserver { triggerKeys ->
@@ -193,40 +198,9 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
     @SuppressLint("ClickableViewAccessibility")
     private fun FragmentTriggerBinding.subscribeTriggerList() {
         mViewModel.triggerKeyModelList.observe(viewLifecycleOwner) { triggerKeyList ->
-            epoxyRecyclerViewTriggers.withModels {
-                enableTriggerKeyDragging(this)
 
-                triggerKeyList.forEachIndexed { index, model ->
-                    triggerKey {
-                        id(model.id)
-                        model(model)
-
-                        triggerMode(mViewModel.triggerMode.value)
-                        triggerKeyCount(triggerKeyList.size)
-                        triggerKeyIndex(index)
-
-                        onRemoveClick { _ ->
-                            mViewModel.removeTriggerKey(model.keyCode)
-                        }
-
-                        onMoreClick { _ ->
-                            lifecycleScope.launch {
-                                val newClickType = showClickTypeDialog()
-
-                                mViewModel.setTriggerKeyClickType(model.keyCode, newClickType)
-                            }
-                        }
-
-                        onDeviceClick { _ ->
-                            lifecycleScope.launch {
-                                val deviceId = showChooseDeviceDialog()
-
-                                mViewModel.setTriggerKeyDevice(model.keyCode, deviceId)
-                            }
-                        }
-                    }
-                }
-            }
+            enableTriggerKeyDragging(mTriggerKeyController)
+            mTriggerKeyController.modelList = triggerKeyList
         }
     }
 
@@ -331,5 +305,46 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
                     itemView?.findViewById<MaterialCardView>(R.id.cardView)?.isDragged = false
                 }
             })
+    }
+
+    private inner class TriggerKeyController : EpoxyController() {
+        var modelList: List<TriggerKeyModel> = listOf()
+            set(value) {
+                requestModelBuild()
+                field = value
+            }
+
+        override fun buildModels() {
+            modelList.forEachIndexed { index, model ->
+                triggerKey {
+                    id(model.id)
+                    model(model)
+
+                    triggerMode(mViewModel.triggerMode.value)
+                    triggerKeyCount(modelList.size)
+                    triggerKeyIndex(index)
+
+                    onRemoveClick { _ ->
+                        mViewModel.removeTriggerKey(model.keyCode)
+                    }
+
+                    onMoreClick { _ ->
+                        lifecycleScope.launch {
+                            val newClickType = showClickTypeDialog()
+
+                            mViewModel.setTriggerKeyClickType(model.keyCode, newClickType)
+                        }
+                    }
+
+                    onDeviceClick { _ ->
+                        lifecycleScope.launch {
+                            val deviceId = showChooseDeviceDialog()
+
+                            mViewModel.setTriggerKeyDevice(model.keyCode, deviceId)
+                        }
+                    }
+                }
+            }
+        }
     }
 }
