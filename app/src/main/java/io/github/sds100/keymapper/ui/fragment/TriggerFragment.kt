@@ -29,8 +29,7 @@ import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import splitties.alertdialog.appcompat.alertDialog
-import splitties.alertdialog.appcompat.cancelButton
+import splitties.alertdialog.appcompat.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -60,6 +59,10 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
 
                 MyAccessibilityService.ACTION_RECORDED_TRIGGER_KEY -> {
                     intent.getParcelableExtra<KeyEvent>(MyAccessibilityService.EXTRA_KEY_EVENT)?.let { keyEvent ->
+                        if (!mSuccessfullyRecordedTrigger) {
+                            mSuccessfullyRecordedTrigger = true
+                        }
+
                         lifecycleScope.launch {
                             val deviceName = keyEvent.device.name
                             val deviceDescriptor = keyEvent.device.descriptor
@@ -80,11 +83,33 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
                 }
 
                 MyAccessibilityService.ACTION_STOPPED_RECORDING_TRIGGER -> {
+                    mRecordingTriggerCount++
                     mViewModel.recordingTrigger.value = false
+
+                    if (mRecordingTriggerCount >= 2 && !mSuccessfullyRecordedTrigger) {
+                        requireContext().alertDialog {
+                            titleResource = R.string.dialog_title_cant_record_trigger
+                            messageResource = R.string.dialog_message_cant_record_trigger
+
+                            okButton()
+
+                            show()
+                        }
+                    }
                 }
             }
         }
     }
+
+    /**
+     * The number of times the user has attempted to record a trigger.
+     */
+    private var mRecordingTriggerCount = 0
+
+    /**
+     * Whether the user has successfully recorded a trigger.
+     */
+    private var mSuccessfullyRecordedTrigger = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
