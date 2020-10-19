@@ -49,6 +49,7 @@ fun Failure.getFullMessage(ctx: Context) = when (this) {
     is InvalidNumber -> ctx.str(R.string.error_invalid_number)
     is NumberTooSmall -> ctx.str(R.string.error_number_too_small, min)
     is NumberTooBig -> ctx.str(R.string.error_number_too_big, max)
+    is CantBeEmpty -> ctx.str(R.string.error_cant_be_empty)
 
     else -> throw Exception("Can't find error message for ${this::class.simpleName}")
 }
@@ -147,3 +148,4 @@ class FailedToSplitString(val string: String) : Failure()
 class InvalidNumber : Failure()
 class NumberTooBig(val max: Int) : Failure()
 class NumberTooSmall(val min: Int) : Failure()
+class CantBeEmpty : Failure()
