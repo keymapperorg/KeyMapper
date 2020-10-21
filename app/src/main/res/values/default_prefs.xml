@@ -3,13 +3,9 @@
     <bool name="default_value_show_ime_notification">false</bool>
     <bool name="default_value_show_toggle_remappings_notification">true</bool>
     <bool name="default_value_auto_show_ime_picker">false</bool>
-    <bool name="default_value_show_volume_dialog_on_adjust">true</bool>
     <bool name="default_value_auto_change_ime_on_connection">false</bool>
     <bool name="default_value_root_permission">false</bool>
     <bool name="default_value_force_vibrate">false</bool>
-    <bool name="default_value_debug">false</bool>
-    <bool name="default_value_show_toast_when_error_encountered">true</bool>
-    <bool name="default_value_shown_cant_use_virtual_keyboard_message">false</bool>
     <bool name="default_value_toggle_keyboard_on_toggle_keymaps">false</bool>
     <bool name="default_value_toggle_keyboard_notification">false</bool>
     <string name="default_value_automatic_backup_location" />
