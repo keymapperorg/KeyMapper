@@ -16,7 +16,6 @@
     <string name="key_pref_youtube_channel" translatable="false">youtube_channel</string>
 
     <string name="key_pref_first_time" translatable="false">pref_first_time</string>
-    <string name="key_pref_show_long_press_warning" translatable="false">key_show_long_press_warning</string>
     <string name="key_pref_long_press_delay" translatable="false">pref_long_press_delay</string>
     <string name="key_pref_double_press_delay" translatable="false">pref_double_press_delay</string>
     <string name="key_pref_vibrate_duration" translatable="false">pref_vibrate_duration</string>
@@ -30,13 +29,11 @@
     <string name="key_pref_auto_show_ime_picker" translatable="false">pref_auto_show_ime_picker</string>
     <string name="key_pref_auto_change_ime_on_connection" translatable="false">pref_auto_change_ime_on_connect_disconnect</string>
     <string name="key_pref_root_permission" translatable="false">pref_allow_root_features</string>
-    <string name="key_pref_debug" translatable="false">pref_debugging_mode</string>
     <string name="key_pref_dark_theme_mode" translatable="false">pref_dark_theme_mode</string>
     <string name="key_pref_notification_settings">key_notification_settings</string>
     <string name="key_pref_shown_double_press_restriction_warning" translatable="false">key_shown_double_press_restriction_warning</string>
     <string name="key_pref_shown_parallel_trigger_order_dialog" translatable="false">key_shown_parallel_trigger_order_warning</string>
     <string name="key_pref_shown_sequence_trigger_explanation_dialog" translatable="false">key_shown_sequence_trigger_explanation_dialog</string>
-    <string name="key_pref_trigger_device_names" translatable="false">key_trigger_device_names</string>
     <string name="key_pref_last_installed_version" translatable="false">key_last_installed_version</string>
     <string name="key_pref_toggle_keyboard_on_toggle_keymaps" translatable="false">key_toggle_keyboard_on_pause_resume_keymaps</string>
     <string name="key_pref_toggle_keyboard_notification" translatable="false">pref_toggle_key_mapper_keyboard_notification</string>
@@ -49,7 +46,6 @@
     <string name="key_pref_show_gui_keyboard_ad" translatable="false">pref_show_gui_keyboard_ad</string>
     <string name="key_pref_show_device_descriptors" translatable="false">pref_show_device_descriptors</string>
 
-    <string name="key_pref_category_notifications" translatable="false">pref_category_notifications</string>
     <string name="key_pref_category_secure_settings" translatable="false">pref_category_secure_settings</string>
     <string name="key_pref_category_root" translatable="false">pref_category_root</string>
 

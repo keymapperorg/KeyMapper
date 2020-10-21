@@ -6,7 +6,6 @@
     <string name="triggers_header">Triggers</string>
     <string name="accessibility_service_description">Key Mapper needs to use an accessibility service so it can listen to button/key presses and perform the actions you\'ve chosen.
     The accessibility service only listens for key events and detects which app you are in. You can look at the source code, which is linked in the About screen, to verify this.</string>
-    <string name="record_trigger_help">When you click \"record trigger\", you have 5 seconds to press the keys/buttons which will trigger the action. Your trigger will be added after the 5 seconds. Press \"clear\" to clear the keys you have already typed. If a button isn\'t detected here, the device vendor is probably blocking accessibility services from seeing it. Therefore, it can\'t be remapped.</string>
     <string name="selection_count">%d selected</string>
     <string name="ime_service_label" translatable="false">Key Mapper Basic Input Method</string>
     <string name="enable">Enable</string>
@@ -18,7 +17,6 @@
     <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nCreate a keymap!</string>
     <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nYou haven\'t chosen any actions for this shortcut!</string>
     <string name="no_key_maps">You haven\'t created any keymaps!</string>
-    <string name="log_is_empty">Log is empty!</string>
     <string name="everything_looks_good">Everything looks good!</string>
     <string name="warning_the_app_will_work">The app will work but some things might need fixing depending on what you\'re doing.</string>
     <string name="your_device_doesnt_support_some_actions">Your device doesn\'t support some actions.</string>
@@ -163,11 +161,6 @@
     <string name="orientation_90">Landscape (90°)</string>
     <string name="orientation_180">Portrait (180°)</string>
     <string name="orientation_270">Landscape (270°)</string>
-
-    <string name="ime_key_mapper_description">This is the input method built-in to Key Mapper. It has *NO* interface. Therefore, if you have a password screen lock you will *NOT* be able to unlock your phone.</string>
-
-    <string name="ime_key_mapper_gui_name">Key Mapper GUI Keyboard</string>
-    <string name="ime_key_mapper_gui_description">An AOSP keyboard forked from the OpenBoard project by @dslul. This is the recommended Key Mapper compatible keyboard with a GUI.</string>
     <!-- Constraints -->
 
     <!-- Click types -->
@@ -188,7 +181,6 @@
     <string name="url_translate" translatable="false">https://github.com/sds100/KeyMapper/wiki/Translate</string>
     <string name="url_privacy_policy" translatable="false">https://raw.githubusercontent.com/sds100/KeyMapper/master/PRIVACY_POLICY.md</string>
     <string name="url_xda_thread" translatable="false">https://forum.xda-developers.com/android/apps-games/app-keyboard-button-mapper-t3914005</string>
-    <string name="url_google_app_listing" translatable="false">https://play.google.com/store/apps/details?id=</string>
     <string name="url_discord_server_invite" translatable="false">https://discord.gg/Suj6nyw</string>
     <string name="url_xda_labs_key_mapper" translatable="false">https://labs.xda-developers.com/store/app/io.github.sds100.keymapper</string>
     <string name="url_fdroid_key_mapper" translatable="false">https://f-droid.org/en/packages/io.github.sds100.keymapper/</string>
@@ -201,20 +193,14 @@
     <!-- URLs -->
 
     <!-- Activity titles -->
-    <string name="title_activity_edit_key_map">Edit Keymap</string>
-    <string name="title_activity_new_key_map">New Keymap</string>
     <string name="title_choose_action">Choose Action</string>
-    <string name="title_settings">Settings</string>
-    <string name="title_about">About</string>
     <string name="title_help">Help</string>
-    <string name="title_log">Log</string>
     <!-- Activity titles -->
 
     <!-- Menu action titles-->
     <string name="action_settings">Settings</string>
     <string name="action_done">Done</string>
     <string name="action_select_all">Select all</string>
-    <string name="action_delete">Delete</string>
     <string name="action_about">About</string>
     <string name="action_search">Search</string>
     <string name="action_help">Help</string>
@@ -223,10 +209,7 @@
     <string name="action_disable_all_keymaps">Disable all</string>
     <string name="action_enable_all_keymaps">Enable all</string>
     <string name="action_send_feedback">Send feedback</string>
-    <string name="action_log">Log</string>
-    <string name="action_send_log">Send log</string>
     <string name="action_change_keyboard">Show Input Method Picker</string>
-    <string name="action_toggle_dark_theme">Toggle dark theme</string>
     <string name="action_seed_database">Seed database</string>
     <string name="action_save">Save</string>
     <string name="action_duplicate_keymap">Duplicate</string>
@@ -234,30 +217,19 @@
     <string name="action_restore">Restore</string>
     <string name="action_tap_to_pause_keymaps">Tap to pause</string>
     <string name="action_tap_to_resume_keymaps">Tap to resume</string>
-    <string name="action_select_compatible_ime">Select Keyboard For Actions</string>
     <!-- Menu action titles-->
 
     <!-- Button titles -->
     <string name="button_add_action">Add Action</string>
     <string name="button_record_trigger">Record Trigger</string>
-    <string name="button_clear">Clear</string>
-    <string name="button_add_trigger">Add Trigger</string>
-    <string name="button_test">Test</string>
     <string name="button_done">Done</string>
     <string name="button_save">Save</string>
     <string name="button_fix">Fix</string>
-    <string name="button_recording_trigger">Recording Trigger…</string>
     <string name="button_recording_trigger_countdown">%d…</string>
-    <string name="button_flags">Options</string>
-    <string name="button_help">Help</string>
     <string name="button_add_constraint">Add Constraint</string>
     <string name="button_choose_keycode">Choose Key Code</string>
     <string name="button_yes">Yes!</string>
     <!-- Button titles -->
-
-    <!-- Content descriptions -->
-    <string name="content_description_record_trigger_key_combination">Record trigger key combination</string>
-    <!-- Content descriptions -->
 
     <!-- Dialog titles -->
     <string name="dialog_title_are_you_sure">Are you sure?</string>
@@ -388,15 +360,6 @@
     <string name="title_pref_auto_show_ime_picker">Automatically show keyboard picker</string>
     <string name="summary_pref_auto_show_ime_picker">When a Bluetooth device you have chosen connects or disconnects, the keyboard picker will show automatically. Choose the devices below.</string>
 
-    <string name="title_pref_show_toast_when_action_performed">Show a toast message when you perform an action</string>
-    <string name="summary_pref_show_toast_when_action_performed">A little message will popup when you perform an action.</string>
-
-    <string name="title_pref_debug">Logging</string>
-    <string name="summary_pref_debug">Enable logging of important events inside the app so it is easier for the developer (or you) to debug any issues you are having with the app. The app will log some potentially sensitive information, such as when and which keys are being pressed so disable this once you have finished logging. The log will never leave your device without your permission and it can\'t be read by another app or you in a text editor. It will disappear if you uninstall the app. A button to see the log will appear in the menu on the home screen. From here you can delete the log and send it to the developer if you need.</string>
-
-    <string name="title_pref_show_toast_when_error_encountered">Show a message when an error is encountered in the app</string>
-    <string name="summary_pref_show_toast_when_error_encountered">A message will be shown on the screen prompting you to log it when the app encounters an error it is aware of.</string>
-
     <string name="title_pref_auto_change_ime_on_connection">Automatically change the keyboard on Bluetooth connection</string>
     <string name="summary_pref_auto_change_ime_on_connection">The Key Mapper keyboard will be automatically selected when a chosen bluetooth device is connected. Your old keyboard will be automatically selected when the device disconnects.
             There may be a 5-10 second delay after disconnecting your device for the keyboard to change.</string>
@@ -425,7 +388,6 @@
     <!--Preference categories-->
     <string name="title_pref_category_ime_picker">Keyboard Picker</string>
     <string name="title_pref_category_notifications">Notifications</string>
-    <string name="title_pref_category_debug">Debugging</string>
 
     <string name="title_pref_category_root">ROOT</string>
     <string name="summary_pref_category_root">These options will only work on root devices! If you don\'t know what root is or whether your device is rooted, please don\'t leave a poor review if they don\'t work. :)</string>
@@ -632,8 +594,6 @@
     <string name="error_dnd_access_not_granted">If you are remapping a volume button you need to give the app Do Not Disturb access if you want the buttons to work while in Do Not Disturb mode!</string>
     <string name="dnd_access_granted">Permission to change Do Not Disturb mode granted!</string>
     <string name="error_cant_find_dnd_access_settings">Can\'t find the Do Not Disturb access permission settings!</string>
-    <string name="error_enable_log">Key Mapper encountered an error! Try to reproduce the error, enable logging to see what happened.</string>
-    <string name="error_look_in_log">Key Mapper encountered an error! Look in the Log.</string>
     <string name="error_need_write_secure_settings_permission">Key Mapper needs WRITE_SECURE_SETTINGS permission.</string>
     <string name="error_no_app_found_to_open_url">No app can be found to open that url</string>
     <string name="error_failed_execute_getevent">Failed to execute "getevent" command. Are you sure you\'re rooted?</string>
