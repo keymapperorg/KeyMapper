@@ -1,0 +1,17 @@
+Added
+- Prompt the user to reboot their device if they fail to record a trigger 2 times in a row.
+- Show a toast after using the Screenshot (ROOT) action.
+
+Bug Fixes
+- Dragging trigger keys by the remove button would cause a crash
+- stop recording if the user leaves the Trigger fragment
+- The Menu (ROOT) action was slow
+- Entering an invalid integer into the keycode box when creating a Key Event action would cause a crash.
+- show a toast if there is an IOException when detecting buttons when the screen is off.
+- Remapping modifier keys to modifier keys doesn't work as expected.
+- the Screenshot (ROOT) action didn't create the Pictures and Screenshots directories. Therefore, it didn't save the screenshot.
+- Hold Down action option didn't work for long-press triggers.
+- Opening a keymap with a long-press parallel trigger would set it to short press.
+- JSON files are sometimes greyed out when picking a file to restore. All file types are now shown because Android doens't have a mimetype for JSON files.
+- Crash if a modifier key trigger is not mapped to a Key Event action.
+- Potential crash when showing keymaps on the homescreen.
