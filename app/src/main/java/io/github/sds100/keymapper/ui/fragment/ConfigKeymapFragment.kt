@@ -230,6 +230,6 @@ class ConfigKeymapFragment : Fragment() {
     }
 
     private fun stopRecordingTrigger() {
-        requireContext().sendPackageBroadcast(MyAccessibilityService.ACTION_STOPPED_RECORDING_TRIGGER)
+        requireContext().sendPackageBroadcast(MyAccessibilityService.ACTION_STOP_RECORDING_TRIGGER)
     }
 }
