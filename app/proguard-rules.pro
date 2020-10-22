@@ -23,6 +23,11 @@
 
 -keep class io.github.sds100.keymapper.** { *; }
 -keep interface io.github.sds100.keymapper.** { *; }
+
 -keep class com.google.android.material.** { *; }
+
 -keep class androidx.navigation.** { *; }
 -keep interface androidx.navigation.** { *; }
+
+-keep class androidx.lifecycle.** { *; }
+-keep interface androidx.lifecycle.** { *; }
