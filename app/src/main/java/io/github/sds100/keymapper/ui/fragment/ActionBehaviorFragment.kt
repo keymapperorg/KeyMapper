@@ -8,7 +8,7 @@ import android.widget.CheckBox
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.observe
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyController
@@ -52,13 +52,13 @@ class ActionBehaviorFragment : BottomSheetDialogFragment() {
 
             epoxyRecyclerView.adapter = mController.adapter
 
-            mViewModel.checkBoxModels.observe(viewLifecycleOwner) {
+            mViewModel.checkBoxModels.observe(viewLifecycleOwner, {
                 mController.checkBoxModels = it
-            }
+            })
 
-            mViewModel.sliderModels.observe(viewLifecycleOwner) {
+            mViewModel.sliderModels.observe(viewLifecycleOwner, {
                 mController.sliderModels = it
-            }
+            })
 
             mViewModel.onSaveEvent.observe(viewLifecycleOwner, EventObserver {
                 setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_ACTION_BEHAVIOR to it))

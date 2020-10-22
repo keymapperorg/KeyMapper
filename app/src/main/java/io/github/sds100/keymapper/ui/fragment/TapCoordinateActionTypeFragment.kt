@@ -16,7 +16,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.viewmodel.TapCoordinateActionTypeViewModel
@@ -68,9 +67,9 @@ class TapCoordinateActionTypeFragment : Fragment() {
             lifecycleOwner = viewLifecycleOwner
             viewModel = mViewModel
 
-            mViewModel.bitmap.observe(viewLifecycleOwner) {
+            mViewModel.bitmap.observe(viewLifecycleOwner, {
                 imageViewScreenshot.setImageBitmap(it)
-            }
+            })
 
             mViewModel.selectScreenshotEvent.observe(viewLifecycleOwner, EventObserver {
                 mScreenshotLauncher.launch(FileUtils.MIME_TYPE_IMAGES)
@@ -80,12 +79,12 @@ class TapCoordinateActionTypeFragment : Fragment() {
                 toast(R.string.toast_incorrect_screenshot_resolution)
             })
 
-            imageViewScreenshot.pointCoordinates.observe(viewLifecycleOwner) {
+            imageViewScreenshot.pointCoordinates.observe(viewLifecycleOwner, {
                 mViewModel.onScreenshotTouch(
                     it.x.toFloat() / imageViewScreenshot.width,
                     it.y.toFloat() / imageViewScreenshot.height
                 )
-            }
+            })
 
             setOnDoneClick {
                 lifecycleScope.launch {

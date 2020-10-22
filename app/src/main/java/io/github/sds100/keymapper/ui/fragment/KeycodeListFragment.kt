@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.ui.fragment
 
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.observe
 import io.github.sds100.keymapper.data.viewmodel.KeycodeListViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.simple
@@ -26,7 +25,7 @@ class KeycodeListFragment : DefaultRecyclerViewFragment() {
     }
 
     override fun subscribeList(binding: FragmentRecyclerviewBinding) {
-        mViewModel.filteredKeycodeLabelList.observe(viewLifecycleOwner) { labelList ->
+        mViewModel.filteredKeycodeLabelList.observe(viewLifecycleOwner, { labelList ->
             binding.epoxyRecyclerView.withModels {
                 labelList.forEach {
                     val keycode = it.key
@@ -42,7 +41,7 @@ class KeycodeListFragment : DefaultRecyclerViewFragment() {
                     }
                 }
             }
-        }
+        })
     }
 
     override fun onSearchQuery(query: String?) {

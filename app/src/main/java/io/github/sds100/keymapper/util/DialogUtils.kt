@@ -4,7 +4,6 @@ import android.widget.SeekBar
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.observe
 import io.github.sds100.keymapper.data.model.SeekBarListItemModel
 import io.github.sds100.keymapper.databinding.DialogEdittextBinding
 import io.github.sds100.keymapper.databinding.DialogSeekbarListBinding
@@ -36,14 +35,14 @@ suspend fun FragmentActivity.editTextAlertDialog(hint: String, allowEmpty: Boole
             cancelButton()
 
             show().apply {
-                text.observe(this@editTextAlertDialog) {
+                text.observe(this@editTextAlertDialog, {
                     getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
                         if (allowEmpty) {
                             true
                         } else {
                             !it.isNullOrBlank()
                         }
-                }
+                })
             }
         }
     }

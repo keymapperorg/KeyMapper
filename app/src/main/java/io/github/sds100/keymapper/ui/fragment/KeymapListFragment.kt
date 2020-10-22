@@ -12,9 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
@@ -237,13 +235,13 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
 
             mViewModel.apply {
 
-                keymapModelList.observe(viewLifecycleOwner) { keymapList ->
+                keymapModelList.observe(viewLifecycleOwner, { keymapList ->
                     mController.keymapList = keymapList
-                }
+                })
 
                 selectionProvider.apply {
 
-                    isSelectable.observe(viewLifecycleOwner, Observer { isSelectable ->
+                    isSelectable.observe(viewLifecycleOwner, { isSelectable ->
                         mController.requestModelBuild()
 
                         if (isSelectable) {
@@ -319,7 +317,7 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
                 }
             }
 
-            mExpanded.observe(viewLifecycleOwner, Observer {
+            mExpanded.observe(viewLifecycleOwner, {
                 if (it == true) {
                     expandableLayout.expand()
                 } else {
