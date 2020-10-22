@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="title"
+            type="String" />
+
+        <variable
+            name="description"
+            type="String" />
+
+        <variable
+            name="buttonText"
+            type="String" />
+
+        <variable
+            name="imageDrawable"
+            type="android.graphics.drawable.Drawable" />
+
+        <variable
+            name="backgroundColor"
+            type="Integer" />
+
+        <variable
+            name="onButtonClickListener"
+            type="View.OnClickListener" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@{backgroundColor}"
+        android:paddingTop="@dimen/appintro_statusbar_height"
+        android:paddingBottom="@dimen/appintro2_bottombar_height"
+        tools:background="@color/appintro_background_color">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/image"
+            style="@style/AppIntroDefaultImage"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:contentDescription="@string/app_intro_image_content_description"
+            android:src="@{imageDrawable}"
+            app:layout_constraintBottom_toTopOf="@id/textViewTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="spread"
+            app:layout_constraintVertical_weight="3"
+            tools:src="@mipmap/ic_launcher_round" />
+
+        <TextView
+            android:id="@+id/textViewTitle"
+            style="@style/AppIntroDefaultHeading"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@{title}"
+            app:layout_constraintBottom_toTopOf="@id/scrollViewDescription"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/image"
+            app:layout_constraintVertical_weight="3"
+            tools:text="Welcome bsadflsjfdl jsdlfjsldf " />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollViewDescription"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
+            app:layout_constraintVertical_weight="3">
+
+            <TextView
+                android:id="@+id/textViewDescription"
+                style="@style/AppIntroDefaultText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{description}"
+                tools:text="This is a demo of the AppIntro Library" />
+        </androidx.core.widget.NestedScrollView>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{onButtonClickListener}"
+            android:text="@{buttonText}"
+            android:visibility="@{buttonText == null ? View.GONE : View.VISIBLE}"
+            app:backgroundTint="@color/appintro_default_fab_background_color"
+            app:elevation="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="Button" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
