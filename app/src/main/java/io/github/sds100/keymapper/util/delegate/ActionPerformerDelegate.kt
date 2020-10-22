@@ -66,11 +66,15 @@ class ActionPerformerDelegate(context: Context,
         }
 
         if (AppPreferences.hasRootPermission) {
-            try {
-                mSuProcess = RootUtils.getSuProcess()
-            } catch (e: IOException) {
-                Timber.e(e)
-            }
+            createSuProcess()
+        }
+    }
+
+    private fun createSuProcess() {
+        try {
+            mSuProcess = RootUtils.getSuProcess()
+        } catch (e: IOException) {
+            Timber.e(e)
         }
     }
 
@@ -312,6 +316,10 @@ class ActionPerformerDelegate(context: Context,
                 SystemAction.OPEN_RECENTS -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
                 SystemAction.OPEN_MENU -> {
                     if (AppPreferences.hasRootPermission) {
+
+                        if (mSuProcess == null) {
+                            createSuProcess()
+                        }
 
                         mSuProcess?.let {
                             //the \n is very important. it is like pressing enter
