@@ -34,6 +34,7 @@ import kotlinx.coroutines.runBlocking
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
 import splitties.toast.toast
+import timber.log.Timber
 
 
 /**
@@ -303,9 +304,15 @@ class ActionPerformerDelegate(context: Context,
                         mSuProcessDelegate.process?.let {
                             //the \n is very important. it is like pressing enter
 
-                            with(it.outputStream.bufferedWriter()) {
-                                write("input keyevent ${KeyEvent.KEYCODE_MENU}\n")
-                                flush()
+                            try {
+                                with(it.outputStream.bufferedWriter()) {
+                                    write("input keyevent ${KeyEvent.KEYCODE_MENU}\n")
+                                    flush()
+                                }
+                            } catch (e: Exception) {
+                                Timber.e(e)
+
+                                e.message?.let { message -> toast(message) }
                             }
                         }
 
