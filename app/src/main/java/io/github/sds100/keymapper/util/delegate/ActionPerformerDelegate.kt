@@ -55,25 +55,28 @@ class ActionPerformerDelegate(context: Context,
 
     private val mCtx = context.applicationContext
     private lateinit var mFlashlightController: FlashlightController
-    private lateinit var mSuProcess: Process
+    private var mSuProcess: Process? = null
 
     init {
         lifecycle.addObserver(this)
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mFlashlightController = FlashlightController()
             lifecycle.addObserver(mFlashlightController)
         }
 
-        try {
-            mSuProcess = RootUtils.getSuProcess()
-        } catch (e: IOException) {
-            Timber.e(e)
+        if (AppPreferences.hasRootPermission) {
+            try {
+                mSuProcess = RootUtils.getSuProcess()
+            } catch (e: IOException) {
+                Timber.e(e)
+            }
         }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     private fun stopSuProcess() {
-        mSuProcess.destroy()
+        mSuProcess?.destroy()
     }
 
     fun performAction(action: Action, chosenImePackageName: String?) = performAction(PerformActionModel(action), chosenImePackageName)
@@ -310,11 +313,10 @@ class ActionPerformerDelegate(context: Context,
                 SystemAction.OPEN_MENU -> {
                     if (AppPreferences.hasRootPermission) {
 
-                        if (::mSuProcess.isInitialized) {
-
+                        mSuProcess?.let {
                             //the \n is very important. it is like pressing enter
 
-                            with(mSuProcess.outputStream.bufferedWriter()) {
+                            with(it.outputStream.bufferedWriter()) {
                                 write("input keyevent ${KeyEvent.KEYCODE_MENU}\n")
                                 flush()
                             }
