@@ -1,9 +1,5 @@
 package io.github.sds100.keymapper.util
 
-import androidx.fragment.app.FragmentActivity
-import androidx.navigation.findNavController
-import io.github.sds100.keymapper.R
-import splitties.alertdialog.appcompat.*
 import java.io.IOException
 import java.io.InputStream
 
@@ -30,19 +26,5 @@ object RootUtils {
     @Throws(IOException::class)
     fun getRootCommandOutput(command: String): InputStream {
         return Shell.getShellCommandStdOut("su", "-c", command)
-    }
-
-    fun promptForRootPermission(activity: FragmentActivity) = activity.alertDialog {
-        titleResource = R.string.dialog_title_root_prompt
-        messageResource = R.string.dialog_message_root_prompt
-        setIcon(R.drawable.ic_baseline_warning_24)
-        okButton {
-            activity.findNavController(R.id.container).navigate(R.id.action_global_settingsFragment)
-            Shell.run("su")
-        }
-
-        cancelButton()
-
-        show()
     }
 }

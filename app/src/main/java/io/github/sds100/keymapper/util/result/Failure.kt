@@ -2,14 +2,10 @@ package io.github.sds100.keymapper.util.result
 
 import android.Manifest
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.provider.Settings
-import androidx.fragment.app.FragmentActivity
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.util.*
-import splitties.experimental.ExperimentalSplittiesApi
+import io.github.sds100.keymapper.util.BuildUtils
+import io.github.sds100.keymapper.util.str
 
 /**
  * Created by sds100 on 29/02/2020.
@@ -78,39 +74,12 @@ class PermissionDenied(val permission: String) : RecoverableFailure() {
             return ctx.str(resId)
         }
     }
-
-    override suspend fun recover(activity: FragmentActivity, onSuccess: () -> Unit) {
-        PermissionUtils.requestPermission(activity, permission, onSuccess)
-    }
 }
 
-class AppNotFound(val packageName: String) : RecoverableFailure() {
-    override suspend fun recover(activity: FragmentActivity, onSuccess: () -> Unit) = PackageUtils.viewAppOnline(packageName)
-}
-
-class AppDisabled(val packageName: String) : RecoverableFailure() {
-    override suspend fun recover(activity: FragmentActivity, onSuccess: () -> Unit) {
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-        intent.data = Uri.parse("package:$packageName")
-        intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
-
-        activity.startActivity(intent)
-    }
-}
-
-class NoCompatibleImeEnabled : RecoverableFailure() {
-    override suspend fun recover(activity: FragmentActivity, onSuccess: () -> Unit) {
-        KeyboardUtils.enableCompatibleInputMethods()
-    }
-}
-
-class NoCompatibleImeChosen : RecoverableFailure() {
-    @ExperimentalSplittiesApi
-    override suspend fun recover(activity: FragmentActivity, onSuccess: () -> Unit) {
-        KeyboardUtils.chooseCompatibleInputMethod(activity)
-    }
-}
-
+class AppNotFound(val packageName: String) : RecoverableFailure()
+class AppDisabled(val packageName: String) : RecoverableFailure()
+class NoCompatibleImeEnabled : RecoverableFailure()
+class NoCompatibleImeChosen : RecoverableFailure()
 class FileAccessDenied : Failure()
 class GenericFailure(val exception: Exception) : Failure()
 class EmptyJson : Failure()
@@ -119,24 +88,15 @@ class SystemFeatureNotSupported(val feature: String) : Failure()
 class ConstraintNotFound : Failure()
 class ExtraNotFound(val extraId: String) : Failure()
 class NoActionData : Failure()
-
 class SdkVersionTooLow(val sdkVersion: Int) : Failure()
-
 class SdkVersionTooHigh(val sdkVersion: Int) : Failure()
-
 class FeatureUnavailable(val feature: String) : Failure()
 class SystemActionNotFound(val id: String) : Failure()
 class KeyMapperImeNotFound : Failure()
 class InputMethodNotFound(val id: String) : Failure()
 class OptionLabelNotFound(val id: String) : Failure()
 class NoEnabledInputMethods : Failure()
-class GoogleAppNotFound : RecoverableFailure() {
-    override suspend fun recover(activity: FragmentActivity, onSuccess: () -> Unit) {
-
-        AppNotFound(activity.str(R.string.google_app_package_name)).recover(activity, onSuccess)
-    }
-}
-
+class GoogleAppNotFound : RecoverableFailure()
 class FrontFlashNotFound : Failure()
 class BackFlashNotFound : Failure()
 class ImeNotFound(val id: String) : Failure()

@@ -39,6 +39,7 @@ import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
 import io.github.sds100.keymapper.ui.callback.SelectionCallback
 import io.github.sds100.keymapper.ui.view.StatusLayout
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
 import io.github.sds100.keymapper.util.result.Failure
 import io.github.sds100.keymapper.util.result.NoCompatibleImeEnabled
 import io.github.sds100.keymapper.util.result.RecoverableFailure
@@ -124,8 +125,23 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
         InjectorUtils.provideBackupRestoreViewModel(requireContext())
     }
 
+    private val mRequestAccessNotificationPolicy =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            updateStatusLayouts()
+        }
+
+    private lateinit var mRecoverFailureDelegate: RecoverFailureDelegate
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        mRecoverFailureDelegate = RecoverFailureDelegate(
+            "KeymapListFragment",
+            requireActivity().activityResultRegistry,
+            this) {
+
+            mViewModel.rebuildModels()
+        }
 
         IntentFilter().apply {
             addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
@@ -297,21 +313,16 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
             }
 
             setGrantWriteSecureSettingsPermission {
-                PermissionUtils.requestPermission(requireActivity(), Manifest.permission.WRITE_SECURE_SETTINGS) {
-                    updateStatusLayouts()
-                }
+                PermissionUtils.requestWriteSecureSettingsPermission(requireActivity())
             }
 
             setGrantDndAccess {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    PermissionUtils.requestPermission(requireActivity(),
-                        Manifest.permission.ACCESS_NOTIFICATION_POLICY) {
-                        updateStatusLayouts()
-                    }
+                    PermissionUtils.requestAccessNotificationPolicy(mRequestAccessNotificationPolicy)
                 }
             }
 
-            mExpanded.observe(viewLifecycleOwner) {
+            mExpanded.observe(viewLifecycleOwner, Observer {
                 if (it == true) {
                     expandableLayout.expand()
                 } else {
@@ -320,7 +331,7 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
                     val transition = Fade()
                     TransitionManager.beginDelayedTransition(layoutCollapsed, transition)
                 }
-            }
+            })
 
             updateStatusLayouts()
 
@@ -494,11 +505,7 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
                                 //only add an action to fix the error if the error can be recovered from
                                 if (failure is RecoverableFailure) {
                                     action(R.string.snackbar_fix) {
-                                        lifecycleScope.launch {
-                                            failure.recover(requireActivity()) {
-                                                mViewModel.rebuildModels()
-                                            }
-                                        }
+                                        mRecoverFailureDelegate.recover(requireActivity(), failure)
                                     }
                                 }
 

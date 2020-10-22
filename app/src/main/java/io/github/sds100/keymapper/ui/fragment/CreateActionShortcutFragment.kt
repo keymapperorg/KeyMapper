@@ -29,10 +29,10 @@ import io.github.sds100.keymapper.databinding.FragmentCreateActionShortcutBindin
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.activity.LaunchActionShortcutActivity
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
 import io.github.sds100.keymapper.util.result.RecoverableFailure
 import io.github.sds100.keymapper.util.result.getFullMessage
 import io.github.sds100.keymapper.util.result.valueOrNull
-import kotlinx.coroutines.launch
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
 import splitties.alertdialog.appcompat.messageResource
@@ -61,8 +61,18 @@ class CreateActionShortcutFragment : Fragment() {
         }
     }
 
+    private lateinit var mRecoverFailureDelegate: RecoverFailureDelegate
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        mRecoverFailureDelegate = RecoverFailureDelegate(
+            "CreateActionShortcutFragment",
+            requireActivity().activityResultRegistry,
+            this) {
+
+            mViewModel.rebuildActionModels()
+        }
 
         setFragmentResultListener(ChooseActionFragment.REQUEST_KEY) { _, result ->
             val action = result.getSerializable(ChooseActionFragment.EXTRA_ACTION) as Action
@@ -121,11 +131,7 @@ class CreateActionShortcutFragment : Fragment() {
                     //only add an action to fix the error if the error can be recovered from
                     if (it is RecoverableFailure) {
                         action(R.string.snackbar_fix) {
-                            lifecycleScope.launch {
-                                it.recover(requireActivity()) {
-                                    mViewModel.rebuildActionModels()
-                                }
-                            }
+                            mRecoverFailureDelegate.recover(requireActivity(), it)
                         }
                     }
 

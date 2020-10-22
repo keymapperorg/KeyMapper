@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import com.heinrichreimersoftware.materialintro.app.IntroActivity
 import com.heinrichreimersoftware.materialintro.slide.SimpleSlide
@@ -96,12 +97,9 @@ class AppIntroActivity : IntroActivity() {
             scrollable(true)
 
             buttonCtaLabel(R.string.pos_grant)
+
             buttonCtaClickListener {
-                PermissionUtils.requestPermission(this@AppIntroActivity,
-                    Manifest.permission.ACCESS_NOTIFICATION_POLICY) {
-                    nextSlide()
-                    removeSlide(mDndAccessSlide)
-                }
+                PermissionUtils.requestAccessNotificationPolicy(mRequestAccessNotificationPolicy)
             }
         }.build()
     }
@@ -124,6 +122,12 @@ class AppIntroActivity : IntroActivity() {
 
     private val currentSlide: Slide
         get() = getSlide(currentSlidePosition)
+
+    private val mRequestAccessNotificationPolicy =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            removeSlide(mDndAccessSlide)
+            nextSlide()
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
