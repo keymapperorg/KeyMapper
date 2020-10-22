@@ -16,7 +16,9 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.lifecycleScope
 import com.github.salomonbrys.kotson.fromJson
+import com.github.salomonbrys.kotson.registerTypeAdapter
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.WidgetsManager
