@@ -122,6 +122,7 @@ fun Fragment.drawable(@DrawableRes resId: Int?): Drawable? = requireContext().dr
 
 fun Context.color(@ColorRes resId: Int): Int = ContextCompat.getColor(this, resId)
 fun View.color(@ColorRes resId: Int): Int = context.color(resId)
+fun Fragment.color(@ColorRes resId: Int): Int = requireContext().color(resId)
 
 @ColorInt
 fun Context.styledColor(@AttrRes attr: Int) = withStyledAttributes(attr) { getColor(it, 0) }
