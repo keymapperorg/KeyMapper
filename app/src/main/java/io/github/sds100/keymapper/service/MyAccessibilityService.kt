@@ -11,12 +11,13 @@ import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.os.bundleOf
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.lifecycleScope
 import com.github.salomonbrys.kotson.fromJson
-import com.github.salomonbrys.kotson.registerTypeAdapter
-import com.google.gson.GsonBuilder
+import com.google.gson.Gson
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
-import io.github.sds100.keymapper.MyApplication
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.WidgetsManager.EVENT_ACCESSIBILITY_SERVICE_STARTED
@@ -25,6 +26,7 @@ import io.github.sds100.keymapper.WidgetsManager.EVENT_PAUSE_REMAPS
 import io.github.sds100.keymapper.WidgetsManager.EVENT_RESUME_REMAPS
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Action
+import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.ActionPerformerDelegate
@@ -64,11 +66,13 @@ class MyAccessibilityService : AccessibilityService(),
         const val ACTION_ON_START = "$PACKAGE_NAME.ON_ACCESSIBILITY_SERVICE_START"
         const val ACTION_ON_STOP = "$PACKAGE_NAME.ON_ACCESSIBILITY_SERVICE_STOP"
         const val ACTION_PERFORM_ACTIONS = "$PACKAGE_NAME.PERFORM_ACTIONS"
+        const val ACTION_UPDATE_KEYMAP_LIST_CACHE = "$PACKAGE_NAME.UPDATE_KEYMAP_LIST_CACHE"
 
         const val EXTRA_KEY_EVENT = "$PACKAGE_NAME.KEY_EVENT"
         const val EXTRA_TIME_LEFT = "$PACKAGE_NAME.TIME_LEFT"
         const val EXTRA_ACTION = "$PACKAGE_NAME.ACTION"
         const val EXTRA_ACTION_LIST = "$PACKAGE_NAME.ACTION_LIST"
+        const val EXTRA_KEYMAP_LIST = "$PACKAGE_NAME.KEYMAP_LIST"
 
         /**
          * How long should the accessibility service record a trigger in seconds.
@@ -147,6 +151,18 @@ class MyAccessibilityService : AccessibilityService(),
 
                     actionList.forEach {
                         mActionPerformerDelegate.performAction(it, mChosenImePackageName)
+                    }
+                }
+
+                ACTION_UPDATE_KEYMAP_LIST_CACHE -> {
+                    intent.getStringExtra(EXTRA_KEYMAP_LIST)?.let {
+                        val keymapList = Gson().fromJson<List<KeyMap>>(it)
+
+                        mKeymapDetectionDelegate.keyMapListCache = keymapList
+
+                        mScreenOffTriggersEnabled = keymapList.any { keymap ->
+                            keymap.trigger.flags.hasFlag(Trigger.TRIGGER_FLAG_SCREEN_OFF_TRIGGERS)
+                        }
                     }
                 }
 
@@ -240,6 +256,7 @@ class MyAccessibilityService : AccessibilityService(),
             addAction(ACTION_TEST_ACTION)
             addAction(ACTION_STOPPED_RECORDING_TRIGGER)
             addAction(ACTION_PERFORM_ACTIONS)
+            addAction(ACTION_UPDATE_KEYMAP_LIST_CACHE)
             addAction(Intent.ACTION_SCREEN_ON)
             addAction(Intent.ACTION_SCREEN_OFF)
             addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
@@ -249,17 +266,9 @@ class MyAccessibilityService : AccessibilityService(),
             registerReceiver(mBroadcastReceiver, this)
         }
 
-        (application as MyApplication).keymapRepository.keymapList.observe(this) {
-            mKeymapDetectionDelegate.keyMapListCache = it
-            mScreenOffTriggersEnabled = it.any { keymap ->
-                keymap.trigger.flags.hasFlag(Trigger.TRIGGER_FLAG_SCREEN_OFF_TRIGGERS)
-            }
-        }
-
         defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
 
         WidgetsManager.onEvent(this, EVENT_ACCESSIBILITY_SERVICE_STARTED)
-
         sendPackageBroadcast(ACTION_ON_START)
 
         mKeymapDetectionDelegate.imitateButtonPress.observe(this, EventObserver {
@@ -421,7 +430,7 @@ class MyAccessibilityService : AccessibilityService(),
         return action.canBePerformed(this)
     }
 
-    private fun recordTrigger() = lifecycleScope.launch {
+    private fun recordTrigger() = lifecycleScope.launchWhenStarted {
         repeat(RECORD_TRIGGER_TIMER_LENGTH) { iteration ->
             if (isActive) {
                 val timeLeft = RECORD_TRIGGER_TIMER_LENGTH - iteration

@@ -6,9 +6,12 @@ import android.os.Bundle
 import android.view.KeyEvent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.navigation.findNavController
+import com.google.gson.Gson
 import io.github.sds100.keymapper.BuildConfig
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.MyApplication
@@ -17,6 +20,7 @@ import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
 import io.github.sds100.keymapper.data.viewmodel.KeyActionTypeViewModel
 import io.github.sds100.keymapper.databinding.ActivityHomeBinding
+import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.FileAccessDenied
 import io.github.sds100.keymapper.util.result.GenericFailure
@@ -66,6 +70,14 @@ class HomeActivity : AppCompatActivity() {
 
                 show()
             }
+        }
+
+        (application as MyApplication).keymapRepository.keymapList.observe(this) {
+            sendPackageBroadcast(
+                MyAccessibilityService.ACTION_UPDATE_KEYMAP_LIST_CACHE,
+                bundleOf(
+                    MyAccessibilityService.EXTRA_KEYMAP_LIST to Gson().toJson(it)
+                ))
         }
 
         if (BuildConfig.DEBUG && PermissionUtils.isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
