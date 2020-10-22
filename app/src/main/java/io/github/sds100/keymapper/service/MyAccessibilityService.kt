@@ -63,6 +63,7 @@ class MyAccessibilityService : AccessibilityService(),
         const val ACTION_TEST_ACTION = "$PACKAGE_NAME.TEST_ACTION"
         const val ACTION_RECORDED_TRIGGER_KEY = "$PACKAGE_NAME.RECORDED_TRIGGER_KEY"
         const val ACTION_RECORD_TRIGGER_TIMER_INCREMENTED = "$PACKAGE_NAME.RECORD_TRIGGER_TIMER_INCREMENTED"
+        const val ACTION_STOP_RECORDING_TRIGGER = "$PACKAGE_NAME.STOP_RECORDING_TRIGGER"
         const val ACTION_STOPPED_RECORDING_TRIGGER = "$PACKAGE_NAME.STOPPED_RECORDING_TRIGGER"
         const val ACTION_ON_START = "$PACKAGE_NAME.ON_ACCESSIBILITY_SERVICE_START"
         const val ACTION_ON_STOP = "$PACKAGE_NAME.ON_ACCESSIBILITY_SERVICE_STOP"
@@ -138,9 +139,15 @@ class MyAccessibilityService : AccessibilityService(),
                     }
                 }
 
-                ACTION_STOPPED_RECORDING_TRIGGER -> {
+                ACTION_STOP_RECORDING_TRIGGER -> {
+                    val wasRecordingTrigger = mRecordingTrigger
+
                     mRecordingTriggerJob?.cancel()
                     mRecordingTriggerJob = null
+
+                    if (wasRecordingTrigger) {
+                        sendPackageBroadcast(ACTION_STOPPED_RECORDING_TRIGGER)
+                    }
                 }
 
                 ACTION_UPDATE_KEYMAP_LIST_CACHE -> {
@@ -241,6 +248,7 @@ class MyAccessibilityService : AccessibilityService(),
             addAction(ACTION_TEST_ACTION)
             addAction(ACTION_STOPPED_RECORDING_TRIGGER)
             addAction(ACTION_UPDATE_KEYMAP_LIST_CACHE)
+            addAction(ACTION_STOP_RECORDING_TRIGGER)
             addAction(Intent.ACTION_SCREEN_ON)
             addAction(Intent.ACTION_SCREEN_OFF)
             addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
@@ -447,7 +455,7 @@ class MyAccessibilityService : AccessibilityService(),
             }
         }
 
-        sendPackageBroadcast(ACTION_STOPPED_RECORDING_TRIGGER)
+        sendPackageBroadcast(ACTION_STOP_RECORDING_TRIGGER)
     }
 
     private fun updateKeymapListCache(keymapList: List<KeyMap>) {
