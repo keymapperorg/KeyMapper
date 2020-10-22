@@ -12,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.airbnb.epoxy.EpoxyController
@@ -160,9 +159,9 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
 
             epoxyRecyclerViewTriggers.adapter = mTriggerKeyController.adapter
 
-            mViewModel.triggerMode.observe(viewLifecycleOwner) {
+            mViewModel.triggerMode.observe(viewLifecycleOwner, {
                 mTriggerKeyController.requestModelBuild()
-            }
+            })
 
             mViewModel.buildTriggerKeyModelListEvent.observe(viewLifecycleOwner, EventObserver { triggerKeys ->
                 lifecycleScope.launch {
@@ -197,11 +196,11 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun FragmentTriggerBinding.subscribeTriggerList() {
-        mViewModel.triggerKeyModelList.observe(viewLifecycleOwner) { triggerKeyList ->
+        mViewModel.triggerKeyModelList.observe(viewLifecycleOwner, { triggerKeyList ->
 
             enableTriggerKeyDragging(mTriggerKeyController)
             mTriggerKeyController.modelList = triggerKeyList
-        }
+        })
     }
 
     private suspend fun showChooseDeviceDialog() = suspendCoroutine<String> {

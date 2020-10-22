@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.ui.fragment
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.observe
 import com.google.android.material.bottomappbar.BottomAppBar
 import io.github.sds100.keymapper.data.viewmodel.AppListViewModel
 import io.github.sds100.keymapper.databinding.FragmentAppListBinding
@@ -35,7 +34,7 @@ class AppListFragment : RecyclerViewFragment<FragmentAppListBinding>() {
     }
 
     override fun subscribeList(binding: FragmentAppListBinding) {
-        mViewModel.filteredAppModelList.observe(viewLifecycleOwner) { appModelList ->
+        mViewModel.filteredAppModelList.observe(viewLifecycleOwner, { appModelList ->
             binding.epoxyRecyclerView.withModels {
                 appModelList.forEach {
                     simple {
@@ -49,7 +48,7 @@ class AppListFragment : RecyclerViewFragment<FragmentAppListBinding>() {
                     }
                 }
             }
-        }
+        })
     }
 
     override fun onSearchQuery(query: String?) {

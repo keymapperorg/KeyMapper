@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.ui.fragment
 
 import android.os.Build
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.observe
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.viewmodel.UnsupportedActionListViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
@@ -29,7 +28,7 @@ class UnsupportedActionListFragment : DefaultRecyclerViewFragment() {
 
     override fun subscribeList(binding: FragmentRecyclerviewBinding) {
         binding.apply {
-            mViewModel.unsupportedSystemActions.observe(viewLifecycleOwner) { unsupportedActions ->
+            mViewModel.unsupportedSystemActions.observe(viewLifecycleOwner, { unsupportedActions ->
                 epoxyRecyclerView.withModels {
                     if (!mViewModel.isTapCoordinateActionSupported) {
                         simple {
@@ -49,7 +48,7 @@ class UnsupportedActionListFragment : DefaultRecyclerViewFragment() {
                         }
                     }
                 }
-            }
+            })
         }
     }
 }

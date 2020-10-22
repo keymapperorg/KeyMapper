@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.map
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import io.github.sds100.keymapper.R
@@ -75,7 +74,7 @@ class ActionsFragment(private val mKeymapId: Long) : Fragment() {
     }
 
     private fun FragmentActionsBinding.subscribeActionList() {
-        mActionModelList.observe(viewLifecycleOwner) { actionList ->
+        mActionModelList.observe(viewLifecycleOwner, { actionList ->
             epoxyRecyclerViewActions.withModels {
 
                 actionList.forEachIndexed { _, model ->
@@ -100,6 +99,6 @@ class ActionsFragment(private val mKeymapId: Long) : Fragment() {
                     }
                 }
             }
-        }
+        })
     }
 }
