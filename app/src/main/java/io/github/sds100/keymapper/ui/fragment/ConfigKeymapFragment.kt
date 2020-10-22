@@ -23,9 +23,9 @@ import io.github.sds100.keymapper.databinding.FragmentConfigKeymapBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.adapter.ConfigKeymapPagerAdapter
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
 import io.github.sds100.keymapper.util.result.RecoverableFailure
 import io.github.sds100.keymapper.util.result.getFullMessage
-import kotlinx.coroutines.launch
 import splitties.alertdialog.appcompat.*
 import splitties.alertdialog.appcompat.coroutines.showAndAwait
 import splitties.experimental.ExperimentalSplittiesApi
@@ -58,10 +58,20 @@ class ConfigKeymapFragment : Fragment() {
             }
     }
 
+    private lateinit var mRecoverFailureDelegate: RecoverFailureDelegate
+
     override fun onCreate(savedInstanceState: Bundle?) {
         childFragmentManager.fragmentFactory = mFragmentFactory
 
         super.onCreate(savedInstanceState)
+
+        mRecoverFailureDelegate = RecoverFailureDelegate(
+            "ConfigKeymapFragment",
+            requireActivity().activityResultRegistry,
+            this) {
+
+            mViewModel.rebuildActionModels()
+        }
 
         setFragmentResultListener(ChooseActionFragment.REQUEST_KEY) { _, result ->
             val action = result.getSerializable(ChooseActionFragment.EXTRA_ACTION) as Action
@@ -149,11 +159,7 @@ class ConfigKeymapFragment : Fragment() {
                     //only add an action to fix the error if the error can be recovered from
                     if (it is RecoverableFailure) {
                         action(R.string.snackbar_fix) {
-                            lifecycleScope.launch {
-                                it.recover(requireActivity()) {
-                                    mViewModel.rebuildActionModels()
-                                }
-                            }
+                            mRecoverFailureDelegate.recover(requireActivity(), it)
                         }
                     }
 

@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.util
 
 import android.Manifest
-import android.app.Activity
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
@@ -10,7 +9,8 @@ import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.ActivityResultLauncher
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.findNavController
@@ -30,94 +30,93 @@ import splitties.toast.toast
  */
 
 object PermissionUtils {
-    fun requestPermission(activity: FragmentActivity, permission: String, onSuccess: () -> Unit) = activity.apply {
-        //WRITE_SETTINGS permission only has to be granted on Marshmallow or higher
-        when {
-            permission == Manifest.permission.WRITE_SETTINGS &&
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> {
 
-                //open settings to grant permission{
-                val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
-                intent.data = Uri.parse("package:${Constants.PACKAGE_NAME}")
-                intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+    fun requestStandardPermission(launcher: ActivityResultLauncher<String>, permission: String) {
+        launcher.launch(permission)
+    }
 
-                try {
-                    startActivity(intent)
-                } catch (e: Exception) {
-                    toast(R.string.error_cant_find_write_settings_page)
-                }
+    fun requestDeviceAdmin(ctx: Context, launcher: ActivityResultLauncher<Intent>) {
+        ctx.alertDialog {
+
+            messageResource = R.string.enable_device_admin_message
+
+            okButton {
+                val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
+
+                intent.putExtra(
+                    DevicePolicyManager.EXTRA_DEVICE_ADMIN,
+                    ComponentName(ctx, DeviceAdmin::class.java))
+
+                intent.putExtra(
+                    DevicePolicyManager.EXTRA_ADD_EXPLANATION,
+                    ctx.str(R.string.error_need_to_enable_device_admin))
+
+                launcher.launch(intent)
             }
 
-            permission == Constants.PERMISSION_ROOT -> RootUtils.promptForRootPermission(this)
+            cancelButton()
 
-            permission == Manifest.permission.BIND_DEVICE_ADMIN -> alertDialog {
+            show()
+        }
+    }
 
-                messageResource = R.string.enable_device_admin_message
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun requestAccessNotificationPolicy(launcher: ActivityResultLauncher<Intent>) {
+        val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
 
-                okButton {
-                    val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
+        try {
+            launcher.launch(intent)
+        } catch (e: Exception) {
+            toast(R.string.error_cant_find_dnd_access_settings)
+        }
+    }
 
-                    intent.putExtra(
-                        DevicePolicyManager.EXTRA_DEVICE_ADMIN,
-                        ComponentName(activity, DeviceAdmin::class.java))
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun requestWriteSettings(ctx: Context) {
+        Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
+            data = Uri.parse("package:${Constants.PACKAGE_NAME}")
+            flags = Intent.FLAG_ACTIVITY_NO_HISTORY
 
-                    intent.putExtra(
-                        DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-                        activity.str(R.string.error_need_to_enable_device_admin))
-
-                    registerForActivityResult(ActivityResultContracts.StartActivityForResult(), activity.activityResultRegistry) {
-                        if (it.resultCode == Activity.RESULT_OK) {
-                            onSuccess()
-                        }
-                    }.launch(intent)
-                }
-
-                cancelButton()
-
-                show()
-            }
-
-            permission == Manifest.permission.ACCESS_NOTIFICATION_POLICY
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> {
-
-                val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
-
-                try {
-                    registerForActivityResult(ActivityResultContracts.StartActivityForResult(), activity.activityResultRegistry) {
-                        if (it.resultCode == Activity.RESULT_OK) {
-                            onSuccess()
-                        }
-                    }.launch(intent)
-                } catch (e: Exception) {
-                    toast(R.string.error_cant_find_dnd_access_settings)
-                }
-            }
-
-            permission == Manifest.permission.WRITE_SECURE_SETTINGS -> {
-                requestWriteSecureSettingsPermission(activity)
-            }
-
-            else -> {
-                registerForActivityResult(ActivityResultContracts.RequestPermission(), activityResultRegistry) {
-                    if (it == true) {
-                        onSuccess()
-                    }
-                }.launch(permission)
+            try {
+                ctx.startActivity(this)
+            } catch (e: Exception) {
+                toast(R.string.error_cant_find_write_settings_page)
             }
         }
     }
 
-    fun requestWriteSecureSettingsPermission(activity: FragmentActivity) = activity.alertDialog {
-        messageResource = R.string.dialog_message_write_secure_settings
-        positiveButton(R.string.pos_help_page) {
-            val direction = NavAppDirections.actionGlobalHelpFragment()
-            activity.findNavController(R.id.container).navigate(direction)
-        }
+    fun requestRootPermission(activity: FragmentActivity) {
+        activity.alertDialog {
+            titleResource = R.string.dialog_title_root_prompt
+            messageResource = R.string.dialog_message_root_prompt
+            setIcon(R.drawable.ic_baseline_warning_24)
 
-        negativeButton(R.string.pos_enable_root_features) {
-            activity.findNavController(R.id.container).navigate(R.id.action_global_settingsFragment)
+            okButton {
+                activity.findNavController(R.id.container).navigate(R.id.action_global_settingsFragment)
+                Shell.run("su")
+            }
+
+            cancelButton()
+
+            show()
         }
-        show()
+    }
+
+    fun requestWriteSecureSettingsPermission(activity: FragmentActivity) {
+        activity.alertDialog {
+            messageResource = R.string.dialog_message_write_secure_settings
+
+            positiveButton(R.string.pos_help_page) {
+                val direction = NavAppDirections.actionGlobalHelpFragment()
+                activity.findNavController(R.id.container).navigate(direction)
+            }
+
+            negativeButton(R.string.pos_enable_root_features) {
+                activity.findNavController(R.id.container).navigate(R.id.action_global_settingsFragment)
+            }
+
+            show()
+        }
     }
 
     @Suppress("EXPERIMENTAL_API_USAGE")
