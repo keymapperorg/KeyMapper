@@ -20,6 +20,7 @@ import com.github.salomonbrys.kotson.registerTypeAdapter
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
+import io.github.sds100.keymapper.MyApplication
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.WidgetsManager.EVENT_ACCESSIBILITY_SERVICE_STARTED
@@ -160,11 +161,7 @@ class MyAccessibilityService : AccessibilityService(),
                     intent.getStringExtra(EXTRA_KEYMAP_LIST)?.let {
                         val keymapList = Gson().fromJson<List<KeyMap>>(it)
 
-                        mKeymapDetectionDelegate.keyMapListCache = keymapList
-
-                        mScreenOffTriggersEnabled = keymapList.any { keymap ->
-                            keymap.trigger.flags.hasFlag(Trigger.TRIGGER_FLAG_SCREEN_OFF_TRIGGERS)
-                        }
+                        updateKeymapListCache(keymapList)
                     }
                 }
 
@@ -316,6 +313,16 @@ class MyAccessibilityService : AccessibilityService(),
         })
 
         mChosenImePackageName = KeyboardUtils.getChosenInputMethodPackageName(this).valueOrNull()
+
+        lifecycleScope.launchWhenStarted {
+            val keymapList = withContext(Dispatchers.IO) {
+                (application as MyApplication).keymapRepository.getKeymaps()
+            }
+
+            withContext(Dispatchers.Main) {
+                updateKeymapListCache(keymapList)
+            }
+        }
     }
 
     override fun onInterrupt() {}
@@ -432,6 +439,18 @@ class MyAccessibilityService : AccessibilityService(),
         return action.canBePerformed(this)
     }
 
+    override fun getLifecycle() = mLifecycleRegistry
+
+    override val keyboardController: SoftKeyboardController?
+        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            softKeyboardController
+        } else {
+            null
+        }
+
+    override val rootNode: AccessibilityNodeInfo?
+        get() = rootInActiveWindow
+
     private fun recordTrigger() = lifecycleScope.launchWhenStarted {
         repeat(RECORD_TRIGGER_TIMER_LENGTH) { iteration ->
             if (isActive) {
@@ -446,15 +465,11 @@ class MyAccessibilityService : AccessibilityService(),
         sendPackageBroadcast(ACTION_STOPPED_RECORDING_TRIGGER)
     }
 
-    override fun getLifecycle() = mLifecycleRegistry
+    private fun updateKeymapListCache(keymapList: List<KeyMap>) {
+        mKeymapDetectionDelegate.keyMapListCache = keymapList
 
-    override val keyboardController: SoftKeyboardController?
-        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            softKeyboardController
-        } else {
-            null
+        mScreenOffTriggersEnabled = keymapList.any { keymap ->
+            keymap.trigger.flags.hasFlag(Trigger.TRIGGER_FLAG_SCREEN_OFF_TRIGGERS)
         }
-
-    override val rootNode: AccessibilityNodeInfo?
-        get() = rootInActiveWindow
+    }
 }
