@@ -22,7 +22,6 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import androidx.lifecycle.coroutineScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Action
@@ -32,9 +31,7 @@ import io.github.sds100.keymapper.data.model.getData
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.onSuccess
 import io.github.sds100.keymapper.util.result.valueOrNull
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
@@ -69,14 +66,6 @@ class ActionPerformerDelegate(context: Context,
 
         try {
             mSuProcess = RootUtils.getSuProcess()
-
-            lifecycle.coroutineScope.launch(Dispatchers.IO) {
-                var line: String?
-
-                while (mSuProcess.inputStream.bufferedReader().readLine().also { line = it } != null) {
-                    Timber.e(line)
-                }
-            }
         } catch (e: IOException) {
             Timber.e(e)
         }
