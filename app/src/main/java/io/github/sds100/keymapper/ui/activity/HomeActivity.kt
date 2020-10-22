@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import androidx.navigation.findNavController
 import com.google.gson.Gson
 import io.github.sds100.keymapper.BuildConfig
@@ -72,13 +71,13 @@ class HomeActivity : AppCompatActivity() {
             }
         }
 
-        (application as MyApplication).keymapRepository.keymapList.observe(this) {
+        (application as MyApplication).keymapRepository.keymapList.observe(this, {
             sendPackageBroadcast(
                 MyAccessibilityService.ACTION_UPDATE_KEYMAP_LIST_CACHE,
                 bundleOf(
                     MyAccessibilityService.EXTRA_KEYMAP_LIST to Gson().toJson(it)
                 ))
-        }
+        })
 
         if (BuildConfig.DEBUG && PermissionUtils.isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
             AccessibilityUtils.enableService(this)
