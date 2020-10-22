@@ -20,8 +20,6 @@ import android.webkit.URLUtil
 import androidx.core.os.bundleOf
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Action
@@ -36,8 +34,6 @@ import kotlinx.coroutines.runBlocking
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
 import splitties.toast.toast
-import timber.log.Timber
-import java.io.IOException
 
 
 /**
@@ -47,7 +43,7 @@ import java.io.IOException
 class ActionPerformerDelegate(context: Context,
                               iPerformAccessibilityAction: IPerformAccessibilityAction,
                               lifecycle: Lifecycle
-) : IPerformAccessibilityAction by iPerformAccessibilityAction, LifecycleObserver {
+) : IPerformAccessibilityAction by iPerformAccessibilityAction {
 
     companion object {
         private const val OVERFLOW_MENU_CONTENT_DESCRIPTION = "More options"
@@ -55,32 +51,15 @@ class ActionPerformerDelegate(context: Context,
 
     private val mCtx = context.applicationContext
     private lateinit var mFlashlightController: FlashlightController
-    private var mSuProcess: Process? = null
+    private val mSuProcessDelegate = SuProcessDelegate()
 
     init {
-        lifecycle.addObserver(this)
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mFlashlightController = FlashlightController()
             lifecycle.addObserver(mFlashlightController)
         }
 
-        if (AppPreferences.hasRootPermission) {
-            createSuProcess()
-        }
-    }
-
-    private fun createSuProcess() {
-        try {
-            mSuProcess = RootUtils.getSuProcess()
-        } catch (e: IOException) {
-            Timber.e(e)
-        }
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    private fun stopSuProcess() {
-        mSuProcess?.destroy()
+        lifecycle.addObserver(mSuProcessDelegate)
     }
 
     fun performAction(action: Action, chosenImePackageName: String?) = performAction(PerformActionModel(action), chosenImePackageName)
@@ -317,11 +296,11 @@ class ActionPerformerDelegate(context: Context,
                 SystemAction.OPEN_MENU -> {
                     if (AppPreferences.hasRootPermission) {
 
-                        if (mSuProcess == null) {
-                            createSuProcess()
+                        if (mSuProcessDelegate.process == null) {
+                            mSuProcessDelegate.createSuProcess()
                         }
 
-                        mSuProcess?.let {
+                        mSuProcessDelegate.process?.let {
                             //the \n is very important. it is like pressing enter
 
                             with(it.outputStream.bufferedWriter()) {
@@ -329,6 +308,7 @@ class ActionPerformerDelegate(context: Context,
                                 flush()
                             }
                         }
+
                     } else {
                         rootNode.findNodeRecursively {
                             it.contentDescription == OVERFLOW_MENU_CONTENT_DESCRIPTION
