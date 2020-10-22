@@ -94,8 +94,8 @@
                     app:constraintMode="@{model.constraintMode}"
                     app:constraints="@{model.constraintList}"
                     app:errorClickCallback="@{onErrorClick}"
-                    app:layout_constraintEnd_toEndOf="@id/textViewExtraInfo"
-                    app:layout_constraintStart_toStartOf="@+id/textViewExtraInfo"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/textViewExtraInfo"
                     tools:visibility="visible" />
 
@@ -109,7 +109,7 @@
                     android:textStyle="bold"
                     android:visibility="@{model.hasTrigger ? View.VISIBLE : View.GONE}"
                     app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@+id/textViewExtraInfo"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/chipGroupActionsAndConstraints" />
 
                 <TextView
@@ -120,7 +120,7 @@
                     android:text="@{model.triggerDescription}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     android:visibility="@{model.hasTrigger ? View.VISIBLE : View.GONE}"
-                    app:layout_constraintEnd_toEndOf="@id/textViewExtraInfo"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/textViewTriggerHeader"
                     app:layout_constraintTop_toTopOf="@+id/textViewTriggerHeader"
                     tools:text="Long Press Volume Down → Alt → 1" />
@@ -135,7 +135,7 @@
                     android:textStyle="bold"
                     android:visibility="@{model.hasFlags ? View.VISIBLE : View.GONE}"
                     app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@+id/textViewExtraInfo"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/textViewTrigger" />
 
                 <TextView
@@ -146,7 +146,7 @@
                     android:text="@{model.flagsDescription}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     android:visibility="@{model.hasFlags ? View.VISIBLE : View.GONE}"
-                    app:layout_constraintEnd_toEndOf="@id/textViewExtraInfo"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/textViewFlagsHeader"
                     app:layout_constraintTop_toTopOf="@id/textViewFlagsHeader"
                     tools:text="Vibrate" />
