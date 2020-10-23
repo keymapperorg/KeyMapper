@@ -16,15 +16,6 @@ Many thanks to...
 [salomonbrys]: https://github.com/salomonbrys
 [Kotson]: https://github.com/salomonbrys/Kotson
 
-[sockeqwe]: https://github.com/sockeqwe
-[AdapterDelegates]: https://github.com/sockeqwe/AdapterDelegates
-[article]: http://hannesdorfmann.com/android/adapter-delegates
-
 [Material Design Icons]: https://materialdesignicons.com/
-
-[mukeshsolanki]: https://github.com/mukeshsolanki
-[MarkdownView]: https://github.com/mukeshsolanki/MarkdownView-Android
-
-[heinrichreimer]: https://github.com/heinrichreimer
 
 [App Mockup]: https://app-mockup.com/
