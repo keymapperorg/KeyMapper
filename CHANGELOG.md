@@ -1,3 +1,17 @@
+## [2.1.0 Beta 3](https://github.com/sds100/KeyMapper/releases/tag/v2.1.0-beta.3) 
+
+#### 23 Oct 2020
+
+### Bug Fixes
+
+- App crashed when starting the accessibility service on Android Marshmallow 6.0 and older. OOPS XD.
+- The Menu action wouldn't sometimes work on rooted devices.
+- Attempt to fix the problem of the accessibility service being enabled but broken on some devices.
+- Typo in the dialog message prompting the user to reboot.
+- The dialog prompting the user to reboot would show at the wrong time.
+- Switch to a new App Intro library. Hopefully it is more stable because the old library was crashing for many users.
+
+
 ## [2.1.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v2.1.0-beta.2) 
 
 #### 21 Oct 2020
