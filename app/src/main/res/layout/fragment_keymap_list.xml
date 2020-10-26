@@ -270,7 +270,7 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="16dp"
                         android:layout_marginBottom="8dp"
-                        android:drawableStart="@drawable/ic_outline_star_border_24"
+                        app:drawableStartCompat="@drawable/ic_outline_star_border_24"
                         android:drawablePadding="16dp"
                         android:gravity="center_vertical"
                         android:text="@string/new_gui_keyboard_ad_message"
