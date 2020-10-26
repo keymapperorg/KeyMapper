@@ -652,6 +652,8 @@
     <string name="error_invalid_number">Invalid Number!</string>
     <string name="error_number_too_small">Must be at least %s!</string>
     <string name="error_number_too_big">Must be at most %s!</string>
+    <string name="error_battery_optimisation_enabled">Battery optimisation is turned on! This can stop Key Mapper from working randomly.</string>
+    <string name="error_battery_optimisation_disabled">Battery optimisation is turned off!</string>
 
     <!-- Error messages -->
 

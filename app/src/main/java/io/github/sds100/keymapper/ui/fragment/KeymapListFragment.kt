@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.*
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.transition.Fade
@@ -52,6 +54,8 @@ import splitties.alertdialog.appcompat.messageResource
 import splitties.experimental.ExperimentalSplittiesApi
 import splitties.snackbar.action
 import splitties.snackbar.longSnack
+import splitties.systemservices.powerManager
+import splitties.toast.longToast
 import splitties.toast.toast
 
 /**
@@ -77,6 +81,7 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
     private val mImeServiceStatusState = MutableLiveData(StatusLayout.State.ERROR)
     private val mDndAccessStatusState = MutableLiveData(StatusLayout.State.ERROR)
     private val mWriteSettingsStatusState = MutableLiveData(StatusLayout.State.ERROR)
+    private val mBatteryOptimisationState = MutableLiveData(StatusLayout.State.ERROR)
 
     private val mBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -235,13 +240,13 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
 
             mViewModel.apply {
 
-                keymapModelList.observe(viewLifecycleOwner, { keymapList ->
+                keymapModelList.observe(viewLifecycleOwner, Observer { keymapList ->
                     mController.keymapList = keymapList
                 })
 
                 selectionProvider.apply {
 
-                    isSelectable.observe(viewLifecycleOwner, { isSelectable ->
+                    isSelectable.observe(viewLifecycleOwner, Observer { isSelectable ->
                         mController.requestModelBuild()
 
                         if (isSelectable) {
@@ -284,6 +289,7 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
             imeServiceStatusState = mImeServiceStatusState
             dndAccessStatusState = mDndAccessStatusState
             writeSettingsStatusState = mWriteSettingsStatusState
+            batteryOptimisationState = mBatteryOptimisationState
 
             buttonCollapse.setOnClickListener {
                 mExpanded.value = false
@@ -320,7 +326,18 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
                 }
             }
 
-            mExpanded.observe(viewLifecycleOwner, {
+            setDisableBatteryOptimisation {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    try {
+                        val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                        startActivity(intent)
+                    } catch (e: ActivityNotFoundException) {
+                        longToast(R.string.error_battery_optimisation_activity_not_found)
+                    }
+                }
+            }
+
+            mExpanded.observe(viewLifecycleOwner, Observer {
                 if (it == true) {
                     expandableLayout.expand()
                 } else {
@@ -454,13 +471,20 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
             } else {
                 mDndAccessStatusState.value = StatusLayout.State.WARN
             }
+
+            if (powerManager.isIgnoringBatteryOptimizations(Constants.PACKAGE_NAME)) {
+                mBatteryOptimisationState.value = StatusLayout.State.POSITIVE
+            } else {
+                mBatteryOptimisationState.value = StatusLayout.State.WARN
+            }
         }
 
         val states = listOf(
             mAccessibilityServiceStatusState,
             mWriteSettingsStatusState,
             mImeServiceStatusState,
-            mDndAccessStatusState
+            mDndAccessStatusState,
+            mBatteryOptimisationState
         )
 
         when {

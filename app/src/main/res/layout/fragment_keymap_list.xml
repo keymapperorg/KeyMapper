@@ -55,6 +55,10 @@
             type="LiveData&lt;State>" />
 
         <variable
+            name="batteryOptimisationState"
+            type="LiveData&lt;State>" />
+
+        <variable
             name="enableAccessibilityService"
             type="View.OnClickListener" />
 
@@ -68,6 +72,10 @@
 
         <variable
             name="grantDndAccess"
+            type="View.OnClickListener" />
+
+        <variable
+            name="disableBatteryOptimisation"
             type="View.OnClickListener" />
 
         <variable
@@ -180,11 +188,17 @@
                                 <include
                                     layout="@layout/keymap_list_header_expanded"
                                     bind:accessibilityServiceStatusState="@{accessibilityServiceStatusState}"
-                                    bind:dndAccessStatusState="@{dndAccessStatusState}"
                                     bind:enableAccessibilityService="@{enableAccessibilityService}"
+
                                     bind:enableImeService="@{enableImeService}"
+                                    bind:batteryOptimisationState="@{batteryOptimisationState}"
+
                                     bind:grantDndAccess="@{grantDndAccess}"
+                                    bind:disableBatteryOptimisation="@{disableBatteryOptimisation}"
+
                                     bind:grantWriteSecureSettingsPermission="@{grantWriteSecureSettingsPermission}"
+                                    bind:dndAccessStatusState="@{dndAccessStatusState}"
+
                                     bind:imeServiceStatusState="@{imeServiceStatusState}"
                                     bind:writeSettingsStatusState="@{writeSettingsStatusState}" />
 
