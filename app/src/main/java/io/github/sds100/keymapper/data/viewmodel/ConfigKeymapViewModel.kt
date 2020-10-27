@@ -50,7 +50,7 @@ class ConfigKeymapViewModel internal constructor(
 
                 // set all the keys to a short press if coming from a non-parallel trigger
                 // because they must all be the same click type and can't all be double pressed
-                if (it == true && value != Trigger.PARALLEL) {
+                if (it == true && value != null && value != Trigger.PARALLEL) {
                     triggerKeys.value?.let { keys ->
                         if (keys.isEmpty()) {
                             return@let
@@ -101,11 +101,26 @@ class ConfigKeymapViewModel internal constructor(
 
     val triggerBehavior: MutableLiveData<TriggerBehavior> = MutableLiveData()
 
+    val isParallelTriggerClickTypeShortPress = triggerKeys.map {
+        if (!it.isNullOrEmpty()) {
+            it[0].clickType == Trigger.SHORT_PRESS
+        } else {
+            false
+        }
+    }
+
+    val isParallelTriggerClickTypeLongPress = triggerKeys.map {
+        if (!it.isNullOrEmpty()) {
+            it[0].clickType == Trigger.LONG_PRESS
+        } else {
+            false
+        }
+    }
+
     val recordTriggerTimeLeft = MutableLiveData(0)
     val recordingTrigger = MutableLiveData(false)
     val startRecordingTriggerInService: MutableLiveData<Event<Unit>> = MutableLiveData()
     val stopRecordingTrigger: MutableLiveData<Event<Unit>> = MutableLiveData()
-    val chooseParallelTriggerClickType: MutableLiveData<Event<Unit>> = MutableLiveData()
 
     val isEnabled: MutableLiveData<Boolean> = MutableLiveData()
     val actionList: MutableLiveData<List<Action>> = MutableLiveData(listOf())
@@ -115,6 +130,7 @@ class ConfigKeymapViewModel internal constructor(
     val duplicateConstraintsEvent: MutableLiveData<Event<Unit>> = MutableLiveData()
     val testAction: MutableLiveData<Event<Action>> = MutableLiveData()
     val chooseActionBehavior: MutableLiveData<Event<ActionBehavior>> = MutableLiveData()
+    val editTriggerKeyBehavior: MutableLiveData<Event<TriggerKeyBehavior>> = MutableLiveData()
 
     val constraintList: MutableLiveData<List<Constraint>> = MutableLiveData(listOf())
 
@@ -228,13 +244,6 @@ class ConfigKeymapViewModel internal constructor(
                 ))
             }
 
-            if (it.doNotOverrideDefaultAction.isAllowed) {
-                yield(CheckBoxListItemModel(
-                    id = it.doNotOverrideDefaultAction.id,
-                    label = R.string.flag_dont_override_default_action,
-                    isChecked = it.doNotOverrideDefaultAction.value
-                ))
-            }
         }.toList()
     }
 
@@ -378,36 +387,9 @@ class ConfigKeymapViewModel internal constructor(
         }
     }
 
-    fun chooseParallelTriggerClickType() {
-        if (!getShownPrompt(R.string.key_pref_shown_double_press_restriction_warning)
-            && triggerInParallel.value == true) {
-            val notifyUser = NotifyUserModel(R.string.dialog_message_double_press_restricted_to_single_key) {
-                setShownPrompt(R.string.key_pref_shown_double_press_restriction_warning)
-
-                chooseParallelTriggerClickType.value = Event(Unit)
-            }
-
-            showPrompt(notifyUser)
-        } else {
-            chooseParallelTriggerClickType.value = Event(Unit)
-        }
-    }
-
     fun setParallelTriggerClickType(@Trigger.ClickType clickType: Int) {
         triggerKeys.value = triggerKeys.value?.map {
             it.clickType = clickType
-
-            it
-        }
-
-        invalidateOptions()
-    }
-
-    fun setTriggerKeyClickType(keyCode: Int, @Trigger.ClickType clickType: Int) {
-        triggerKeys.value = triggerKeys.value?.map {
-            if (it.keyCode == keyCode) {
-                it.clickType = clickType
-            }
 
             it
         }
@@ -594,6 +576,19 @@ class ConfigKeymapViewModel internal constructor(
         invalidateOptions()
     }
 
+    fun setTriggerKeyBehavior(triggerKeyBehavior: TriggerKeyBehavior) {
+        triggerKeys.value = triggerKeys.value?.map { triggerKey ->
+
+            if (triggerKey.uniqueId == triggerKeyBehavior.uniqueId) {
+                return@map triggerKeyBehavior.applyToTriggerKey(triggerKey)
+            }
+
+            triggerKey
+        }
+
+        invalidateOptions()
+    }
+
     fun onActionModelClick(model: ActionModel) {
         if (model.hasError) {
             showFixPrompt.value = Event(model.failure!!)
@@ -621,6 +616,14 @@ class ConfigKeymapViewModel internal constructor(
         val behavior = ActionBehavior(action, triggerMode.value!!, triggerKeys.value!!)
 
         chooseActionBehavior.value = Event(behavior)
+    }
+
+    fun editTriggerKeyBehavior(uniqueId: String) {
+        val key = triggerKeys.value?.find { it.uniqueId == uniqueId } ?: return
+
+        val behavior = TriggerKeyBehavior(key, triggerMode.value!!)
+
+        editTriggerKeyBehavior.value = Event(behavior)
     }
 
     /**

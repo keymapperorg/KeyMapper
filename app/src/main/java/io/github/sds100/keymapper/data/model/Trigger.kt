@@ -1,9 +1,11 @@
 package io.github.sds100.keymapper.data.model
 
+import android.view.KeyEvent
 import androidx.annotation.IntDef
 import com.github.salomonbrys.kotson.*
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.R
+import splitties.bitflags.withFlag
 
 /**
  * Created by sds100 on 16/07/2018.
@@ -42,13 +44,11 @@ class Trigger(
         const val TRIGGER_FLAG_VIBRATE = 1
         const val TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION = 2
         const val TRIGGER_FLAG_SCREEN_OFF_TRIGGERS = 4
-        const val TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION = 8
 
         val TRIGGER_FLAG_LABEL_MAP = mapOf(
             TRIGGER_FLAG_VIBRATE to R.string.flag_vibrate,
             TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION to R.string.flag_long_press_double_vibration,
             TRIGGER_FLAG_SCREEN_OFF_TRIGGERS to R.string.flag_detect_triggers_screen_off,
-            TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION to R.string.flag_dont_override_default_action
         )
 
         const val DEFAULT_TRIGGER_MODE = UNDEFINED
@@ -94,7 +94,10 @@ class Trigger(
 
         @ClickType
         @SerializedName(NAME_CLICK_TYPE)
-        var clickType: Int = SHORT_PRESS
+        var clickType: Int = SHORT_PRESS,
+
+        @SerializedName(NAME_FLAGS)
+        var flags: Int = 0
     ) {
 
         companion object {
@@ -102,22 +105,39 @@ class Trigger(
             const val NAME_KEYCODE = "keyCode"
             const val NAME_DEVICE_ID = "deviceId"
             const val NAME_CLICK_TYPE = "clickType"
+            const val NAME_FLAGS = "flags"
 
             //IDS! DON'T CHANGE
             const val DEVICE_ID_THIS_DEVICE = "io.github.sds100.keymapper.THIS_DEVICE"
             const val DEVICE_ID_ANY_DEVICE = "io.github.sds100.keymapper.ANY_DEVICE"
+
+            const val FLAG_DO_NOT_CONSUME_KEY_EVENT = 1
+
+            val TRIGGER_KEY_FLAG_LABEL_MAP = mapOf(
+                FLAG_DO_NOT_CONSUME_KEY_EVENT to R.string.flag_dont_override_default_action
+            )
 
             val DESERIALIZER = jsonDeserializer {
                 val keycode by it.json.byInt(NAME_KEYCODE)
                 val deviceId by it.json.byString(NAME_DEVICE_ID)
                 val clickType by it.json.byInt(NAME_CLICK_TYPE)
 
-                Key(keycode, deviceId, clickType)
+                //nullable because this property was added after backup and restore was released.
+                val flags by it.json.byNullableInt(NAME_FLAGS)
+
+                Key(keycode, deviceId, clickType, flags ?: 0)
             }
         }
 
         val uniqueId: String
             get() = "$keyCode$clickType$deviceId"
+
+        init {
+            KeyEvent.KEYCODE_SHIFT_LEFT
+            if (KeyEvent.isModifierKey(keyCode)) {
+                flags = flags.withFlag(FLAG_DO_NOT_CONSUME_KEY_EVENT)
+            }
+        }
 
         override fun equals(other: Any?): Boolean {
             return (other as Key).keyCode == keyCode
