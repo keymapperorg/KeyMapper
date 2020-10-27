@@ -1,9 +1,11 @@
 package io.github.sds100.keymapper.data.model
 
+import android.view.KeyEvent
 import androidx.annotation.IntDef
 import com.github.salomonbrys.kotson.*
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.R
+import splitties.bitflags.withFlag
 
 /**
  * Created by sds100 on 16/07/2018.
@@ -131,7 +133,10 @@ class Trigger(
             get() = "$keyCode$clickType$deviceId"
 
         init {
-
+            KeyEvent.KEYCODE_SHIFT_LEFT
+            if (KeyEvent.isModifierKey(keyCode)) {
+                flags = flags.withFlag(FLAG_DO_NOT_CONSUME_KEY_EVENT)
+            }
         }
 
         override fun equals(other: Any?): Boolean {
