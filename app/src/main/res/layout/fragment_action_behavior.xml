@@ -74,6 +74,43 @@
                     android:text="@string/trigger_pressed_again" />
             </RadioGroup>
 
+            <TextView
+                android:id="@+id/textViewHoldDownBehavior"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/cardview_padding_left"
+                android:paddingTop="8dp"
+                android:text="@string/hold_down_until_trigger_is_dot_dot_dot"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                android:textSize="14sp"
+                android:visibility="@{viewModel.behavior.holdDown.value ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toTopOf="@+id/radioGroup"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:orientation="horizontal"
+                android:visibility="@{viewModel.behavior.holdDown.value ? View.VISIBLE : View.GONE}">
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:checked="@={viewModel.stopHoldDownWhenTriggerReleased}"
+                    android:text="@string/trigger_released" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:checked="@={viewModel.stopHoldDownWhenTriggerPressedAgain}"
+                    android:text="@string/trigger_pressed_again" />
+            </RadioGroup>
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonSave"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"

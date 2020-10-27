@@ -1524,7 +1524,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
     private fun IntArray.vibrate(triggerIndex: Int) = this[triggerIndex].hasFlag(Trigger.TRIGGER_FLAG_VIBRATE)
 
     private fun stopRepeatingWhenPressedAgain(actionKey: Int) =
-        mActionOptions.getOrNull(actionKey)?.getOrNull(INDEX_STOP_REPEAT_BEHAVIOUR) == Action.STOP_REPEAT_BEHAVIOUR_TRIGGER_AGAIN
+        mActionOptions.getOrNull(actionKey)?.getOrNull(INDEX_STOP_REPEAT_BEHAVIOUR) == Action.STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN
 
     private fun showPerformingActionToast(actionKey: Int) =
         mActionFlags.getOrNull(actionKey)?.hasFlag(Action.ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST) ?: false

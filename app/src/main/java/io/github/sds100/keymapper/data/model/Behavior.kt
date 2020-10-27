@@ -216,6 +216,8 @@ class ActionBehavior(
         const val ID_STOP_REPEATING_TRIGGER_PRESSED_AGAIN = "stop_repeating_trigger_pressed_again"
         const val ID_REPEAT_DELAY = "repeat_delay"
         const val ID_HOLD_DOWN = "hold_down"
+        const val ID_STOP_HOLD_DOWN_WHEN_TRIGGER_RELEASED = "stop_hold_down_when_trigger_released"
+        const val ID_STOP_HOLD_DOWN_WHEN_TRIGGER_PRESSED_AGAIN = "stop_hold_down_when_trigger_pressed_again"
     }
 
     val actionId = action.uniqueId
@@ -259,8 +261,10 @@ class ActionBehavior(
     )
 
     val stopRepeatingWhenTriggerReleased: BehaviorOption<Boolean>
-
     val stopRepeatingWhenTriggerPressedAgain: BehaviorOption<Boolean>
+
+    val stopHoldDownWhenTriggerReleased: BehaviorOption<Boolean>
+    val stopHoldDownWhenTriggerPressedAgain: BehaviorOption<Boolean>
 
     val repeatRate: BehaviorOption<Int>
 
@@ -297,7 +301,7 @@ class ActionBehavior(
         var stopRepeatingTriggerPressedAgain = false
 
         action.extras.getData(Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR).onSuccess {
-            if (it.toInt() == Action.STOP_REPEAT_BEHAVIOUR_TRIGGER_AGAIN) {
+            if (it.toInt() == Action.STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN) {
                 stopRepeatingTriggerPressedAgain = true
             }
         }
@@ -313,6 +317,26 @@ class ActionBehavior(
             value = !stopRepeatingTriggerPressedAgain,
             isAllowed = repeat.value
         )
+
+        var stopHoldDownTriggerPressedAgain = false
+
+        action.extras.getData(Action.EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR).onSuccess {
+            if (it.toInt() == Action.STOP_HOLD_DOWN_BEHAVIOR_TRIGGER_PRESSED_AGAIN) {
+                stopHoldDownTriggerPressedAgain = true
+            }
+        }
+
+        stopHoldDownWhenTriggerPressedAgain = BehaviorOption(
+            id = ID_STOP_HOLD_DOWN_WHEN_TRIGGER_PRESSED_AGAIN,
+            value = stopHoldDownTriggerPressedAgain,
+            isAllowed = holdDown.value
+        )
+
+        stopHoldDownWhenTriggerReleased = BehaviorOption(
+            id = ID_STOP_HOLD_DOWN_WHEN_TRIGGER_RELEASED,
+            value = !stopHoldDownTriggerPressedAgain,
+            isAllowed = holdDown.value
+        )
     }
 
     fun applyToAction(action: Action): Action {
@@ -327,10 +351,24 @@ class ActionBehavior(
             .applyBehaviorOption(repeatDelay, Action.EXTRA_REPEAT_DELAY)
             .applyBehaviorOption(multiplier, Action.EXTRA_MULTIPLIER)
 
-        newExtras.removeAll { it.id == Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR }
+        newExtras.removeAll {
+            it.id in arrayOf(Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR, Action.EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR)
+        }
+
         if (stopRepeatingWhenTriggerPressedAgain.value) {
             newExtras.add(
-                Extra(Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR, Action.STOP_REPEAT_BEHAVIOUR_TRIGGER_AGAIN.toString()))
+                Extra(
+                    Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR,
+                    Action.STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN.toString()
+                ))
+        }
+
+        if (stopHoldDownWhenTriggerPressedAgain.value) {
+            newExtras.add(
+                Extra(
+                    Action.EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR,
+                    Action.STOP_HOLD_DOWN_BEHAVIOR_TRIGGER_PRESSED_AGAIN.toString()
+                ))
         }
 
         return action.clone(flags = newFlags, extras = newExtras)
@@ -368,24 +406,34 @@ class ActionBehavior(
 
             ID_STOP_REPEATING_TRIGGER_PRESSED_AGAIN -> {
                 stopRepeatingWhenTriggerPressedAgain.value = value
-
                 stopRepeatingWhenTriggerReleased.value = !stopRepeatingWhenTriggerPressedAgain.value
             }
 
             ID_STOP_REPEATING_TRIGGER_RELEASED -> {
                 stopRepeatingWhenTriggerReleased.value = value
-
                 stopRepeatingWhenTriggerPressedAgain.value = !stopRepeatingWhenTriggerReleased.value
             }
 
             ID_HOLD_DOWN -> {
                 holdDown.value = value
+                stopHoldDownWhenTriggerPressedAgain.isAllowed = value
+                stopHoldDownWhenTriggerReleased.isAllowed = value
 
                 repeat.isAllowed = !value
 
                 if (value) {
                     setValue(ID_REPEAT, false)
                 }
+            }
+
+            ID_STOP_HOLD_DOWN_WHEN_TRIGGER_RELEASED -> {
+                stopHoldDownWhenTriggerReleased.value = value
+                stopHoldDownWhenTriggerPressedAgain.value = !value
+            }
+
+            ID_STOP_HOLD_DOWN_WHEN_TRIGGER_PRESSED_AGAIN -> {
+                stopHoldDownWhenTriggerPressedAgain.value = value
+                stopHoldDownWhenTriggerReleased.value = !value
             }
         }
 
