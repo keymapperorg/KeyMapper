@@ -111,6 +111,10 @@ class Trigger(
 
             const val FLAG_DO_NOT_CONSUME_KEY_EVENT = 1
 
+            val TRIGGER_KEY_FLAG_LABEL_MAP = mapOf(
+                FLAG_DO_NOT_CONSUME_KEY_EVENT to R.string.flag_dont_override_default_action
+            )
+
             val DESERIALIZER = jsonDeserializer {
                 val keycode by it.json.byInt(NAME_KEYCODE)
                 val deviceId by it.json.byString(NAME_DEVICE_ID)
