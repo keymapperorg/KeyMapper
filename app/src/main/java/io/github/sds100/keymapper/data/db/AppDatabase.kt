@@ -29,7 +29,7 @@ import io.github.sds100.keymapper.data.model.KeyMap
 abstract class AppDatabase : RoomDatabase() {
     companion object {
         const val DATABASE_NAME = "key_map_database"
-        const val DATABASE_VERSION = 7
+        const val DATABASE_VERSION = 8
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
@@ -64,6 +64,12 @@ abstract class AppDatabase : RoomDatabase() {
         val MIGRATION_6_7 = object : Migration(6, 7) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 Migration_6_7.migrate(database)
+            }
+        }
+
+        val MIGRATION_7_8 = object : Migration(7, 8) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                Migration_7_8.migrate(database)
             }
         }
     }
