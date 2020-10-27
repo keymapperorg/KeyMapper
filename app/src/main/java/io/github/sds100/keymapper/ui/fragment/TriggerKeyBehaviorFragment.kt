@@ -8,7 +8,6 @@ import android.widget.CheckBox
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyController
@@ -48,7 +47,7 @@ class TriggerKeyBehaviorFragment : BottomSheetDialogFragment() {
 
             epoxyRecyclerView.adapter = mController.adapter
 
-            mViewModel.checkBoxModels.observe(viewLifecycleOwner, Observer {
+            mViewModel.checkBoxModels.observe(viewLifecycleOwner, {
                 mController.checkBoxModels = it
             })
 
@@ -58,7 +57,7 @@ class TriggerKeyBehaviorFragment : BottomSheetDialogFragment() {
                 findNavController().navigateUp()
             })
 
-            mViewModel.behavior.observe(viewLifecycleOwner, Observer {
+            mViewModel.behavior.observe(viewLifecycleOwner, {
                 behavior = it
             })
 

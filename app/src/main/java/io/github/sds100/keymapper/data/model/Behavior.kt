@@ -369,7 +369,6 @@ class ActionBehavior(
 }
 
 class TriggerKeyBehavior(
-    val keyIndex: Int,
     key: Trigger.Key,
     @Trigger.Mode mode: Int
 ) : Serializable {
@@ -378,6 +377,8 @@ class TriggerKeyBehavior(
         const val ID_DO_NOT_CONSUME_KEY_EVENT = "do_not_consume_key_event"
         const val ID_CLICK_TYPE = "click_type"
     }
+
+    val uniqueId = key.uniqueId
 
     val clickType = BehaviorOption(
         id = ID_CLICK_TYPE,

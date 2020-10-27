@@ -130,6 +130,10 @@ class Trigger(
         val uniqueId: String
             get() = "$keyCode$clickType$deviceId"
 
+        init {
+
+        }
+
         override fun equals(other: Any?): Boolean {
             return (other as Key).keyCode == keyCode
         }

@@ -281,7 +281,7 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
                     }
 
                     onMoreClick { _ ->
-                        mViewModel.editTriggerKeyBehavior(index)
+                        mViewModel.editTriggerKeyBehavior(model.id)
                     }
 
                     onDeviceClick { _ ->
