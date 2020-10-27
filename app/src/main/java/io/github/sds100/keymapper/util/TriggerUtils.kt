@@ -57,18 +57,40 @@ fun Trigger.buildDescription(ctx: Context, deviceInfoList: List<DeviceInfo>): St
         append(" ${KeyEventUtils.keycodeToString(key.keyCode)}")
 
         val deviceName = key.getDeviceName(ctx, deviceInfoList)
-        append(" ($deviceName)")
+        append(" (")
+
+        append(deviceName)
+
+        val flagLabels = key.getFlagLabelList(ctx)
+
+        flagLabels.forEach { label ->
+            append(" ${ctx.str(R.string.interpunct)} ")
+            append(label)
+        }
+
+        append(")")
     }
 }
 
 fun Trigger.Key.buildModel(ctx: Context, deviceInfoList: List<DeviceInfo>): TriggerKeyModel {
+
+    val extraInfo = buildString {
+        append(getDeviceName(ctx, deviceInfoList))
+
+        val flagLabels = getFlagLabelList(ctx)
+
+        flagLabels.forEach { label ->
+            append(" ${ctx.str(R.string.interpunct)} ")
+            append(label)
+        }
+    }
 
     return TriggerKeyModel(
         id = uniqueId,
         keyCode = keyCode,
         name = KeyEventUtils.keycodeToString(keyCode),
         clickType = clickType,
-        deviceName = getDeviceName(ctx, deviceInfoList)
+        extraInfo = extraInfo
     )
 }
 
@@ -78,3 +100,11 @@ fun Trigger.Key.getDeviceName(ctx: Context, deviceInfoList: List<DeviceInfo>): S
         Trigger.Key.DEVICE_ID_ANY_DEVICE -> ctx.str(R.string.any_device)
         else -> deviceInfoList.find { it.descriptor == deviceId }?.name ?: ctx.str(R.string.dont_know_device_name)
     }
+
+fun Trigger.Key.getFlagLabelList(ctx: Context): List<String> = sequence {
+    Trigger.Key.TRIGGER_KEY_FLAG_LABEL_MAP.keys.forEach { flag ->
+        if (flags.hasFlag(flag)) {
+            yield(ctx.str(Trigger.Key.TRIGGER_KEY_FLAG_LABEL_MAP.getValue(flag)))
+        }
+    }
+}.toList()

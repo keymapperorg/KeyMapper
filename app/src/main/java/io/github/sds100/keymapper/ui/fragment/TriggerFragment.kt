@@ -12,11 +12,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.airbnb.epoxy.EpoxyController
 import com.airbnb.epoxy.EpoxyTouchHelper
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.radiobutton.MaterialRadioButton
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.TriggerKeyBindingModel_
 import io.github.sds100.keymapper.data.model.Trigger
@@ -146,20 +149,13 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
             viewModel = mViewModel
             lifecycleOwner = viewLifecycleOwner
 
-            mViewModel.chooseParallelTriggerClickType.observe(viewLifecycleOwner, EventObserver {
-                lifecycleScope.launch {
-                    val newClickType = showClickTypeDialog()
-                    mViewModel.setParallelTriggerClickType(newClickType)
-                }
-            })
-
             subscribeTriggerList()
 
             epoxyRecyclerViewTriggers.adapter = mTriggerKeyController.adapter
 
-            mViewModel.triggerMode.observe(viewLifecycleOwner, {
+            mViewModel.triggerMode.observe(viewLifecycleOwner) {
                 mTriggerKeyController.requestModelBuild()
-            })
+            }
 
             mViewModel.buildTriggerKeyModelListEvent.observe(viewLifecycleOwner, EventObserver { triggerKeys ->
                 lifecycleScope.launch {
@@ -177,6 +173,24 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
                     }
                 }
             })
+
+            mViewModel.editTriggerKeyBehavior.observe(viewLifecycleOwner, EventObserver {
+                val direction = ConfigKeymapFragmentDirections.actionConfigKeymapFragmentToTriggerKeyBehaviorFragment(it)
+
+                findNavController().navigate(direction)
+            })
+
+            radioButtonShortPress.setOnClickListener { view ->
+                if ((view as MaterialRadioButton).isChecked) {
+                    mViewModel.setParallelTriggerClickType(Trigger.SHORT_PRESS)
+                }
+            }
+
+            radioButtonLongPress.setOnClickListener { view ->
+                if ((view as MaterialRadioButton).isChecked) {
+                    mViewModel.setParallelTriggerClickType(Trigger.LONG_PRESS)
+                }
+            }
         }
     }
 
@@ -224,37 +238,6 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
                 val deviceId = deviceIds[index]
 
                 it.resume(deviceId)
-            }
-
-            cancelButton()
-            show()
-        }
-    }
-
-    private suspend fun showClickTypeDialog() = suspendCoroutine<Int> {
-        requireActivity().alertDialog {
-            val labels = if (mViewModel.triggerInParallel.value == true) {
-                arrayOf(
-                    str(R.string.clicktype_short_press),
-                    str(R.string.clicktype_long_press)
-                )
-            } else {
-                arrayOf(
-                    str(R.string.clicktype_short_press),
-                    str(R.string.clicktype_long_press),
-                    str(R.string.clicktype_double_press)
-                )
-            }
-
-            setItems(labels) { _, index ->
-                val clickType = when (index) {
-                    0 -> Trigger.SHORT_PRESS
-                    1 -> Trigger.LONG_PRESS
-                    2 -> Trigger.DOUBLE_PRESS
-                    else -> throw IllegalStateException("Can't find the click type at index: $index")
-                }
-
-                it.resume(clickType)
             }
 
             cancelButton()
@@ -318,11 +301,7 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
                     }
 
                     onMoreClick { _ ->
-                        lifecycleScope.launch {
-                            val newClickType = showClickTypeDialog()
-
-                            mViewModel.setTriggerKeyClickType(model.keyCode, newClickType)
-                        }
+                        mViewModel.editTriggerKeyBehavior(model.id)
                     }
 
                     onDeviceClick { _ ->

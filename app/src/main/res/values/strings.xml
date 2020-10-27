@@ -59,6 +59,7 @@
     <string name="permission_description_key_mapper_input_method">perform Key Mapper actions that require a keyboard</string>
     <string name="tap_actions_to_fix">Tap actions to fix!</string>
     <string name="new_gui_keyboard_ad_message">Get the new Key Mapper Keyboard that actually has a keyboard!</string>
+    <string name="header_click_type">Click Type</string>
 
     <string name="whats_new">What\'s New</string>
     <string name="caption_action_type_key">Click the key on the device which you want to be entered.
@@ -103,6 +104,8 @@
     <string name="radio_button_sequence">In sequence</string>
     <string name="radio_button_and">AND</string>
     <string name="radio_button_or">OR</string>
+    <string name="radio_button_short_press">Short press</string>
+    <string name="radio_button_long_press">Long press</string>
 
     <string name="tab_trigger_and_actions">Trigger and Actions</string>
     <string name="tab_constraints_and_more">Constraints and More</string>
@@ -118,6 +121,7 @@
     <string name="nav_arg_file_url" translatable="false">io.github.sds100.keymapper.ui.fragment.OnlineFileFragment.header.file_url</string>
     <string name="nav_arg_file_url_alt" translatable="false">file_url_alt</string>
     <string name="nav_arg_action_behavior" translatable="false">action_behavior</string>
+    <string name="nav_arg_trigger_key_behavior" translatable="false">trigger_key_behavior</string>
 
     <string name="toast_chose_keyboard">Chose %s</string>
     <string name="toast_backup_successful">Backup Successful!</string>
