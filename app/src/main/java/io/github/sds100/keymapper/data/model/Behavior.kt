@@ -357,6 +357,10 @@ class ActionBehavior(
                 repeat.value = value
 
                 holdDown.isAllowed = !value
+
+                if (value) {
+                    setValue(ID_HOLD_DOWN, false)
+                }
             }
 
             ID_SHOW_VOLUME_UI -> showVolumeUi.value = value
@@ -378,6 +382,10 @@ class ActionBehavior(
                 holdDown.value = value
 
                 repeat.isAllowed = !value
+
+                if (value) {
+                    setValue(ID_REPEAT, false)
+                }
             }
         }
 
