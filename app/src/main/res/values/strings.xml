@@ -64,6 +64,7 @@
     <string name="new_gui_keyboard_ad_message">Get the new Key Mapper Keyboard that actually has a keyboard!</string>
     <string name="shortcut_label_action">Perform Actions</string>
     <string name="hint_shortcut_name">Shortcut Name</string>
+    <string name="header_click_type">Click Type</string>
 
     <string name="whats_new">What\'s New</string>
     <string name="caption_action_type_key">Click the key on the device which you want to be entered.
@@ -125,6 +126,7 @@
     <string name="nav_arg_file_url">io.github.sds100.keymapper.ui.fragment.OnlineFileFragment.header.file_url</string>
     <string name="nav_arg_file_url_alt">file_url_alt</string>
     <string name="nav_arg_action_behavior">action_behavior</string>
+    <string name="nav_arg_trigger_key_behavior">trigger_key_behavior</string>
 
     <string name="toast_chose_keyboard">Chose %s</string>
     <string name="toast_backup_successful">Backup Successful!</string>

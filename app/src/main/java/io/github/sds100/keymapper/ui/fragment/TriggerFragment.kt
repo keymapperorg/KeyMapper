@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.airbnb.epoxy.EpoxyController
@@ -146,6 +147,12 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
                 }
             })
 
+            mViewModel.editTriggerKeyBehavior.observe(viewLifecycleOwner, EventObserver {
+                val direction = ConfigKeymapFragmentDirections.actionConfigKeymapFragmentToTriggerKeyBehaviorFragment(it)
+
+                findNavController().navigate(direction)
+            })
+
             radioButtonShortPress.setOnClickListener { view ->
                 if ((view as MaterialRadioButton).isChecked) {
                     mViewModel.setParallelTriggerClickType(Trigger.SHORT_PRESS)
@@ -219,37 +226,6 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
         }
     }
 
-    private suspend fun showClickTypeDialog() = suspendCoroutine<Int> {
-        requireActivity().alertDialog {
-            val labels = if (mViewModel.triggerInParallel.value == true) {
-                arrayOf(
-                    str(R.string.clicktype_short_press),
-                    str(R.string.clicktype_long_press)
-                )
-            } else {
-                arrayOf(
-                    str(R.string.clicktype_short_press),
-                    str(R.string.clicktype_long_press),
-                    str(R.string.clicktype_double_press)
-                )
-            }
-
-            setItems(labels) { _, index ->
-                val clickType = when (index) {
-                    0 -> Trigger.SHORT_PRESS
-                    1 -> Trigger.LONG_PRESS
-                    2 -> Trigger.DOUBLE_PRESS
-                    else -> throw IllegalStateException("Can't find the click type at index: $index")
-                }
-
-                it.resume(clickType)
-            }
-
-            cancelButton()
-            show()
-        }
-    }
-
     private fun FragmentTriggerBinding.enableTriggerKeyDragging(controller: EpoxyController): ItemTouchHelper {
         Timber.d("enable dragging")
         return EpoxyTouchHelper.initDragging(controller)
@@ -307,11 +283,7 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
                     }
 
                     onMoreClick { _ ->
-                        lifecycleScope.launch {
-                            val newClickType = showClickTypeDialog()
-
-                            mViewModel.setTriggerKeyClickType(model.keyCode, newClickType)
-                        }
+                        mViewModel.editTriggerKeyBehavior(index)
                     }
 
                     onDeviceClick { _ ->

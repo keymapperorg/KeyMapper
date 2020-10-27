@@ -18,6 +18,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.ActionBehavior
 import io.github.sds100.keymapper.data.model.Constraint
+import io.github.sds100.keymapper.data.model.TriggerKeyBehavior
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentConfigKeymapBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
@@ -76,6 +77,11 @@ class ConfigKeymapFragment : Fragment() {
         setFragmentResultListener(ActionBehaviorFragment.REQUEST_KEY) { _, result ->
             mViewModel.setActionBehavior(
                 result.getSerializable(ActionBehaviorFragment.EXTRA_ACTION_BEHAVIOR) as ActionBehavior)
+        }
+
+        setFragmentResultListener(TriggerKeyBehaviorFragment.REQUEST_KEY) { _, result ->
+            mViewModel.setTriggerKeyBehavior(
+                result.getSerializable(TriggerKeyBehaviorFragment.EXTRA_TRIGGER_KEY_BEHAVIOR) as TriggerKeyBehavior)
         }
     }
 

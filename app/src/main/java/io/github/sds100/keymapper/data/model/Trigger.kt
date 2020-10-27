@@ -109,7 +109,7 @@ class Trigger(
             const val DEVICE_ID_THIS_DEVICE = "io.github.sds100.keymapper.THIS_DEVICE"
             const val DEVICE_ID_ANY_DEVICE = "io.github.sds100.keymapper.ANY_DEVICE"
 
-            const val FLAG_DO_NOT_CONSUME = 1
+            const val FLAG_DO_NOT_CONSUME_KEY_EVENT = 1
 
             val DESERIALIZER = jsonDeserializer {
                 val keycode by it.json.byInt(NAME_KEYCODE)

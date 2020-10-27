@@ -72,7 +72,6 @@ class TriggerBehavior(keys: List<Trigger.Key>, @Trigger.Mode mode: Int, flags: I
         const val ID_VIBRATE = "vibrate"
         const val ID_LONG_PRESS_DOUBLE_VIBRATION = "long_press_double_vibration"
         const val ID_SCREEN_OFF_TRIGGER = "screen_off_trigger"
-        const val ID_DONT_OVERRIDE_DEFAULT_ACTION = "dont_override_default_action"
     }
 
     val vibrate = BehaviorOption(
@@ -366,5 +365,53 @@ class ActionBehavior(
         }
 
         return this
+    }
+}
+
+class TriggerKeyBehavior(
+    val keyIndex: Int,
+    key: Trigger.Key,
+    @Trigger.Mode mode: Int
+) : Serializable {
+
+    companion object {
+        const val ID_DO_NOT_CONSUME_KEY_EVENT = "do_not_consume_key_event"
+        const val ID_CLICK_TYPE = "click_type"
+    }
+
+    val clickType = BehaviorOption(
+        id = ID_CLICK_TYPE,
+        value = key.clickType,
+        isAllowed = mode == SEQUENCE || mode == Trigger.UNDEFINED
+    )
+
+    val doNotConsumeKeyEvents = BehaviorOption(
+        id = ID_DO_NOT_CONSUME_KEY_EVENT,
+        value = key.flags.hasFlag(Trigger.Key.FLAG_DO_NOT_CONSUME_KEY_EVENT),
+        isAllowed = true
+    )
+
+    fun setValue(id: String, value: Boolean): TriggerKeyBehavior {
+        when (id) {
+            ID_DO_NOT_CONSUME_KEY_EVENT -> doNotConsumeKeyEvents.value = value
+        }
+
+        return this
+    }
+
+    fun setValue(id: String, value: Int): TriggerKeyBehavior {
+        when (id) {
+            ID_CLICK_TYPE -> clickType.value = value
+        }
+
+        return this
+    }
+
+    fun applyToTriggerKey(key: Trigger.Key): Trigger.Key {
+        key.flags = key.flags.applyBehaviorOption(doNotConsumeKeyEvents, Trigger.Key.FLAG_DO_NOT_CONSUME_KEY_EVENT)
+
+        key.clickType = clickType.value
+
+        return key
     }
 }

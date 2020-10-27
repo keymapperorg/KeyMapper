@@ -1486,7 +1486,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         get() = (this shr 13) shl 13
 
     private val Int.consume
-        get() = !this.hasFlag(Trigger.Key.FLAG_DO_NOT_CONSUME)
+        get() = !this.hasFlag(Trigger.Key.FLAG_DO_NOT_CONSUME_KEY_EVENT)
 
     private val Action.mappedToModifier
         get() = type == ActionType.KEY_EVENT && isModifierKey(data.toInt())

@@ -130,6 +130,7 @@ class ConfigKeymapViewModel internal constructor(
     val duplicateConstraintsEvent: MutableLiveData<Event<Unit>> = MutableLiveData()
     val testAction: MutableLiveData<Event<Action>> = MutableLiveData()
     val chooseActionBehavior: MutableLiveData<Event<ActionBehavior>> = MutableLiveData()
+    val editTriggerKeyBehavior: MutableLiveData<Event<TriggerKeyBehavior>> = MutableLiveData()
 
     val constraintList: MutableLiveData<List<Constraint>> = MutableLiveData(listOf())
 
@@ -396,18 +397,6 @@ class ConfigKeymapViewModel internal constructor(
         invalidateOptions()
     }
 
-    fun setTriggerKeyClickType(keyCode: Int, @Trigger.ClickType clickType: Int) {
-        triggerKeys.value = triggerKeys.value?.map {
-            if (it.keyCode == keyCode) {
-                it.clickType = clickType
-            }
-
-            it
-        }
-
-        invalidateOptions()
-    }
-
     fun setTriggerKeyDevice(keyCode: Int, descriptor: String) {
         triggerKeys.value = triggerKeys.value?.map {
             if (it.keyCode == keyCode) {
@@ -587,6 +576,19 @@ class ConfigKeymapViewModel internal constructor(
         invalidateOptions()
     }
 
+    fun setTriggerKeyBehavior(triggerKeyBehavior: TriggerKeyBehavior) {
+        triggerKeys.value = triggerKeys.value?.mapIndexed { index, triggerKey ->
+
+            if (index == triggerKeyBehavior.keyIndex) {
+                return@mapIndexed triggerKeyBehavior.applyToTriggerKey(triggerKey)
+            }
+
+            triggerKey
+        }
+
+        invalidateOptions()
+    }
+
     fun onActionModelClick(model: ActionModel) {
         if (model.hasError) {
             showFixPrompt.value = Event(model.failure!!)
@@ -614,6 +616,14 @@ class ConfigKeymapViewModel internal constructor(
         val behavior = ActionBehavior(action, triggerMode.value!!, triggerKeys.value!!)
 
         chooseActionBehavior.value = Event(behavior)
+    }
+
+    fun editTriggerKeyBehavior(keyIndex: Int) {
+        val key = triggerKeys.value?.get(keyIndex) ?: return
+
+        val behavior = TriggerKeyBehavior(keyIndex, key, triggerMode.value!!)
+
+        editTriggerKeyBehavior.value = Event(behavior)
     }
 
     /**
