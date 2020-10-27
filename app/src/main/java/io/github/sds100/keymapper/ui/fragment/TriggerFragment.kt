@@ -36,7 +36,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
-import timber.log.Timber
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -227,7 +226,6 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
     }
 
     private fun FragmentTriggerBinding.enableTriggerKeyDragging(controller: EpoxyController): ItemTouchHelper {
-        Timber.d("enable dragging")
         return EpoxyTouchHelper.initDragging(controller)
             .withRecyclerView(epoxyRecyclerViewTriggers)
             .forVerticalList()
