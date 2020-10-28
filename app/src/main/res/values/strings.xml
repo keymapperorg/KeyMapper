@@ -63,6 +63,7 @@
     <string name="shortcut_label_action">Perform Actions</string>
     <string name="hint_shortcut_name">Shortcut Name</string>
     <string name="header_click_type">Click Type</string>
+    <string name="hold_down_until_trigger_is_dot_dot_dot">Hold down until trigger is…</string>
 
     <string name="whats_new">What\'s New</string>
     <string name="caption_action_type_key">Click the key on the device which you want to be entered.

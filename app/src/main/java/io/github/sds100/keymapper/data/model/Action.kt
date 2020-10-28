@@ -62,7 +62,8 @@ data class Action(
         const val NAME_EXTRAS = "extras"
         const val NAME_FLAGS = "flags"
 
-        const val STOP_REPEAT_BEHAVIOUR_TRIGGER_AGAIN = 0
+        const val STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN = 0
+        const val STOP_HOLD_DOWN_BEHAVIOR_TRIGGER_PRESSED_AGAIN = 0
 
         //Behaviour flags
         const val ACTION_FLAG_SHOW_VOLUME_UI = 1
@@ -98,6 +99,7 @@ data class Action(
 
         //Behaviour extras. Extras that tweak how and when an action is performed.
         const val EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR = "extra_custom_stop_repeat_behaviour"
+        const val EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR = "extra_custom_hold_down_behaviour"
         const val EXTRA_REPEAT_DELAY = "extra_hold_down_until_repeat_delay"
         const val EXTRA_REPEAT_RATE = "extra_repeat_delay"
         const val EXTRA_MULTIPLIER = "extra_multiplier"
