@@ -100,6 +100,11 @@ class TriggerBehavior(keys: List<Trigger.Key>, @Trigger.Mode mode: Int, flags: I
     val vibrateDuration: BehaviorOption<Int>
     val sequenceTriggerTimeout: BehaviorOption<Int>
 
+    /*
+     It is very important that any new options are only allowed with a valid combination of other options. Make sure
+     the "isAllowed" property considers all the other options.
+     */
+
     init {
 
         val longPressDelayValue = extras.getData(EXTRA_LONG_PRESS_DELAY).valueOrNull()?.toInt()
@@ -214,7 +219,13 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
     val repeat = BehaviorOption(
         id = ID_REPEAT,
         value = action.flags.hasFlag(Action.ACTION_FLAG_REPEAT),
-        isAllowed = KeymapDetectionDelegate.performActionOnDown(triggerKeys, triggerMode)
+        isAllowed = if (triggerKeys != null && triggerMode != null
+            && !action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)) {
+
+            KeymapDetectionDelegate.performActionOnDown(triggerKeys, triggerMode)
+        } else {
+            false
+        }
     )
 
     val showVolumeUi = BehaviorOption(
@@ -232,7 +243,8 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
     val holdDown = BehaviorOption(
         id = ID_HOLD_DOWN,
         value = action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN),
-        isAllowed = if (triggerKeys != null && triggerMode != null) {
+        isAllowed = if (triggerKeys != null && triggerMode != null
+            && !action.flags.hasFlag(Action.ACTION_FLAG_REPEAT)) {
             KeymapDetectionDelegate.performActionOnDown(triggerKeys, triggerMode)
                 && (action.type == ActionType.KEY_EVENT
                 || (action.type == ActionType.TAP_COORDINATE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
@@ -255,6 +267,11 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
         value = action.extras.getData(Action.EXTRA_MULTIPLIER).valueOrNull()?.toInt() ?: BehaviorOption.DEFAULT,
         isAllowed = true
     )
+
+    /*
+     It is very important that any new options are only allowed with a valid combination of other options. Make sure
+     the "isAllowed" property considers all the other options.
+     */
 
     init {
         val repeatRateValue = action.extras.getData(Action.EXTRA_REPEAT_RATE).valueOrNull()?.toInt()
@@ -334,6 +351,8 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
                 stopRepeatingWhenTriggerReleased.isAllowed = value
 
                 repeat.value = value
+
+                holdDown.isAllowed = !value
             }
 
             ID_SHOW_VOLUME_UI -> showVolumeUi.value = value
@@ -353,6 +372,8 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
 
             ID_HOLD_DOWN -> {
                 holdDown.value = value
+
+                repeat.isAllowed = !value
             }
         }
 
@@ -383,6 +404,11 @@ class TriggerKeyBehavior(
         value = key.flags.hasFlag(Trigger.Key.FLAG_DO_NOT_CONSUME_KEY_EVENT),
         isAllowed = true
     )
+
+    /*
+     It is very important that any new options are only allowed with a valid combination of other options. Make sure
+     the "isAllowed" property considers all the other options.
+     */
 
     fun setValue(id: String, value: Boolean): TriggerKeyBehavior {
         when (id) {
