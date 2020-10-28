@@ -563,6 +563,22 @@ class ConfigKeymapViewModel internal constructor(
         invalidateOptions()
     }
 
+    fun moveAction(fromIndex: Int, toIndex: Int) {
+        actionList.value = actionList.value?.toMutableList()?.apply {
+            if (fromIndex < toIndex) {
+                for (i in fromIndex until toIndex) {
+                    Collections.swap(this, i, i + 1)
+                }
+            } else {
+                for (i in fromIndex downTo toIndex + 1) {
+                    Collections.swap(this, i, i - 1)
+                }
+            }
+        }
+
+        invalidateOptions()
+    }
+
     fun setActionBehavior(actionBehavior: ActionBehavior) {
         actionList.value = actionList.value?.map {
 
