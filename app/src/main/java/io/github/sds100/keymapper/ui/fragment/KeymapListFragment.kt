@@ -105,23 +105,19 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
         }
     }
 
-    private val mRestoreLauncher by lazy {
-        requireActivity().registerForActivityResult(ActivityResultContracts.GetContent()) {
-            it ?: return@registerForActivityResult
+    private val mRestoreLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {
+        it ?: return@registerForActivityResult
 
-            mBackupRestoreViewModel.restore(requireContext().contentResolver.openInputStream(it))
-        }
+        mBackupRestoreViewModel.restore(requireContext().contentResolver.openInputStream(it))
     }
 
-    private val mBackupLauncher by lazy {
-        requireActivity().registerForActivityResult(ActivityResultContracts.CreateDocument()) {
-            it ?: return@registerForActivityResult
+    private val mBackupLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument()) {
+        it ?: return@registerForActivityResult
 
-            mBackupRestoreViewModel.backup(requireActivity().contentResolver.openOutputStream(it),
-                *selectionProvider.selectedIds)
+        mBackupRestoreViewModel.backup(requireActivity().contentResolver.openOutputStream(it),
+            *selectionProvider.selectedIds)
 
-            selectionProvider.stopSelecting()
-        }
+        selectionProvider.stopSelecting()
     }
 
     private val mBackupRestoreViewModel: BackupRestoreViewModel by activityViewModels {

@@ -41,22 +41,20 @@ class TapCoordinateActionTypeFragment : Fragment() {
         InjectorUtils.provideTapCoordinateActionTypeViewModel()
     }
 
-    private val mScreenshotLauncher by lazy {
-        requireActivity().registerForActivityResult(ActivityResultContracts.GetContent()) {
-            it ?: return@registerForActivityResult
+    private val mScreenshotLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {
+        it ?: return@registerForActivityResult
 
-            val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                ImageDecoder.createSource(requireContext().contentResolver, it).decodeBitmap { _, _ -> }
-            } else {
-                MediaStore.Images.Media.getBitmap(requireContext().contentResolver, it)
-            }
+        val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            ImageDecoder.createSource(requireContext().contentResolver, it).decodeBitmap { _, _ -> }
+        } else {
+            MediaStore.Images.Media.getBitmap(requireContext().contentResolver, it)
+        }
 
-            val displaySize = Point().apply {
-                windowManager.defaultDisplay.getRealSize(this)
+        val displaySize = Point().apply {
+            windowManager.defaultDisplay.getRealSize(this)
             }
 
             mViewModel.selectedScreenshot(bitmap, displaySize)
-        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
