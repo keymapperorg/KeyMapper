@@ -334,6 +334,12 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
                 stopRepeatingWhenTriggerReleased.isAllowed = value
 
                 repeat.value = value
+
+                holdDown.isAllowed = !value
+
+                if (value) {
+                    setValue(ID_HOLD_DOWN, false)
+                }
             }
 
             ID_SHOW_VOLUME_UI -> showVolumeUi.value = value
@@ -353,6 +359,12 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
 
             ID_HOLD_DOWN -> {
                 holdDown.value = value
+
+                repeat.isAllowed = !value
+
+                if (value) {
+                    setValue(ID_REPEAT, false)
+                }
             }
         }
 
