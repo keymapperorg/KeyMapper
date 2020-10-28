@@ -82,6 +82,7 @@ class ActionsFragment(private val mKeymapId: Long) : Fragment() {
                         id(model.id)
                         model(model)
                         icon(model.icon)
+                        actionCount(actionList.size)
 
                         onRemoveClick { _ ->
                             mViewModel.removeAction(model.id)
