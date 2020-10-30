@@ -4,6 +4,7 @@ import android.view.KeyEvent
 import androidx.annotation.MainThread
 import androidx.collection.SparseArrayCompat
 import androidx.collection.keyIterator
+import androidx.collection.set
 import androidx.collection.valueIterator
 import androidx.lifecycle.MutableLiveData
 import io.github.sds100.keymapper.data.model.*
@@ -66,13 +67,15 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         private const val INDEX_STOP_REPEAT_BEHAVIOR = 2
         private const val INDEX_ACTION_MULTIPLIER = 3
         private const val INDEX_HOLD_DOWN_BEHAVIOR = 4
+        private const val INDEX_DELAY_BEFORE_NEXT_ACTION = 5
 
         private val ACTION_EXTRA_INDEX_MAP = mapOf(
             Action.EXTRA_REPEAT_RATE to INDEX_ACTION_REPEAT_RATE,
             Action.EXTRA_REPEAT_DELAY to INDEX_ACTION_REPEAT_DELAY,
             Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR to INDEX_STOP_REPEAT_BEHAVIOR,
             Action.EXTRA_MULTIPLIER to INDEX_ACTION_MULTIPLIER,
-            Action.EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR to INDEX_HOLD_DOWN_BEHAVIOR
+            Action.EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR to INDEX_HOLD_DOWN_BEHAVIOR,
+            Action.EXTRA_DELAY_BEFORE_NEXT_ACTION to INDEX_DELAY_BEFORE_NEXT_ACTION
         )
 
         private fun createDeviceDescriptorMap(descriptors: Set<String>): SparseArrayCompat<String> {
@@ -552,6 +555,8 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
      */
     private val mParallelTriggerLongPressJobs = SparseArrayCompat<Job>()
 
+    private val mParallelTriggerActionJobs = SparseArrayCompat<Job>()
+
     /**
      * A list of all the action keys that are being held down.
      */
@@ -806,42 +811,55 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 }
 
                 else -> detectedShortPressTriggers.forEach { triggerIndex ->
-                    mParallelTriggerActions[triggerIndex].forEachIndexed { index, actionKey ->
-                        val action = mActionMap[actionKey] ?: return@forEachIndexed
 
-                        var shouldPerformAction = true
+                    mParallelTriggerActionJobs[triggerIndex]?.cancel()
 
-                        if (holdDownUntilPressedAgain(actionKey)) {
-                            if (mActionsBeingHeldDown.contains(actionKey)) {
-                                mActionsBeingHeldDown.remove(actionKey)
+                    mParallelTriggerActionJobs[triggerIndex] = mCoroutineScope.launch {
+
+                        mParallelTriggerActions[triggerIndex].forEachIndexed { index, actionKey ->
+                            val action = mActionMap[actionKey] ?: return@forEachIndexed
+
+                            var shouldPerformAction = true
+
+                            if (holdDownUntilPressedAgain(actionKey)) {
+                                if (mActionsBeingHeldDown.contains(actionKey)) {
+                                    mActionsBeingHeldDown.remove(actionKey)
+
+                                    performAction(
+                                        action,
+                                        showPerformingActionToast(actionKey),
+                                        keyEventAction = KeyEventAction.UP,
+                                        multiplier = actionMultiplier(actionKey))
+
+                                    shouldPerformAction = false
+                                } else {
+                                    mActionsBeingHeldDown.add(actionKey)
+                                }
+                            }
+
+                            if (shouldPerformAction) {
+                                val keyEventAction =
+                                    if (action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)) {
+                                        KeyEventAction.DOWN
+                                    } else {
+                                        KeyEventAction.DOWN_UP
+                                    }
 
                                 performAction(
                                     action,
-                                    showPerformingActionToast(actionKey),
-                                    keyEventAction = KeyEventAction.UP,
-                                    multiplier = actionMultiplier(actionKey))
+                                    showPerformingActionToast,
+                                    actionMultiplier(actionKey),
+                                    keyEventAction
+                                )
 
-                                shouldPerformAction = false
-                            } else {
-                                mActionsBeingHeldDown.add(actionKey)
-                            }
-                        }
+                                val vibrateDuration = vibrateDurations[index]
 
-                        if (shouldPerformAction) {
-                            val keyEventAction =
-                                if (action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)) {
-                                    KeyEventAction.DOWN
-                                } else {
-                                    KeyEventAction.DOWN_UP
+                                if (vibrateDuration != -1L) {
+                                    vibrate.value = Event(vibrateDuration)
                                 }
-
-                            performAction(action, showPerformingActionToast, actionMultiplier(actionKey), keyEventAction)
-
-                            val vibrateDuration = vibrateDurations[index]
-
-                            if (vibrateDuration != -1L) {
-                                vibrate.value = Event(vibrateDuration)
                             }
+
+                            delay(delayBeforeNextAction(actionKey))
                         }
                     }
                 }
@@ -1251,6 +1269,12 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         }
 
         mParallelTriggerLongPressJobs.clear()
+
+        mParallelTriggerActionJobs.valueIterator().forEach {
+            it.cancel()
+        }
+
+        mParallelTriggerActionJobs.clear()
     }
 
     /**
@@ -1645,6 +1669,14 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             preferences.defaultSequenceTriggerTimeout.toLong()
         } else {
             options[INDEX_TRIGGER_SEQUENCE_TRIGGER_TIMEOUT].toLong()
+        }
+    }
+
+    private fun delayBeforeNextAction(actionKey: Int): Long {
+        return if (mActionOptions[actionKey][INDEX_DELAY_BEFORE_NEXT_ACTION] == -1) {
+            0
+        } else {
+            mActionOptions[actionKey][INDEX_DELAY_BEFORE_NEXT_ACTION].toLong()
         }
     }
 

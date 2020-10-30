@@ -553,7 +553,7 @@ class ConfigKeymapViewModel internal constructor(
         }
 
         if (action.type == ActionType.KEY_EVENT) {
-            ActionBehavior(action, triggerMode.value!!, triggerKeys.value!!).apply {
+            ActionBehavior(action, actionList.value!!.size, triggerMode.value!!, triggerKeys.value!!).apply {
                 setValue(ActionBehavior.ID_REPEAT, true)
 
                 setActionBehavior(this)
@@ -629,7 +629,7 @@ class ConfigKeymapViewModel internal constructor(
 
     fun chooseActionBehavior(id: String) {
         val action = actionList.value?.find { it.uniqueId == id } ?: return
-        val behavior = ActionBehavior(action, triggerMode.value!!, triggerKeys.value!!)
+        val behavior = ActionBehavior(action, actionList.value!!.size, triggerMode.value!!, triggerKeys.value!!)
 
         chooseActionBehavior.value = Event(behavior)
     }
@@ -677,6 +677,7 @@ class ConfigKeymapViewModel internal constructor(
         actionList.value = actionList.value?.map { action ->
             val newBehavior = ActionBehavior(
                 action,
+                actionList.value!!.size,
                 triggerMode.value ?: Trigger.DEFAULT_TRIGGER_MODE,
                 triggerKeys.value ?: listOf()
             )

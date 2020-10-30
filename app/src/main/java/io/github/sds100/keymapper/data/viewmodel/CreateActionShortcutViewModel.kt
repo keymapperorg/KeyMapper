@@ -77,7 +77,7 @@ class CreateActionShortcutViewModel : ViewModel() {
 
     fun chooseActionBehavior(id: String) {
         val action = actionList.value?.find { it.uniqueId == id } ?: return
-        val behavior = ActionBehavior(action)
+        val behavior = ActionBehavior(action, actionList.value!!.size)
 
         chooseActionBehavior.value = Event(behavior)
     }

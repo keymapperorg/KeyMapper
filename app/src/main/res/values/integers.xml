@@ -27,4 +27,8 @@
     <integer name="action_multiplier_min">1</integer>
     <integer name="action_multiplier_max">20</integer>
     <integer name="action_multiplier_step_size">1</integer>
+
+    <integer name="delay_before_next_action_min">0</integer>
+    <integer name="delay_before_next_action_max">2000</integer>
+    <integer name="delay_before_next_action_step_size">10</integer>
 </resources>
