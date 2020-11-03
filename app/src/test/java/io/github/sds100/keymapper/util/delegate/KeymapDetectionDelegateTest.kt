@@ -276,6 +276,11 @@ class KeymapDetectionDelegateTest {
             mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = SHORT_PRESS))
         }
 
+        //actions are performed concurrently so need to wait a tiny bit for it to be performed
+        runBlocking {
+            delay(100)
+        }
+
         //the first action performed shouldn't be the short press action
         assertEquals(TEST_ACTION, mDelegate.performAction.getOrAwaitValue().getContentIfNotHandled()?.action)
     }
