@@ -34,6 +34,7 @@ import kotlinx.coroutines.runBlocking
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
 import splitties.toast.toast
+import timber.log.Timber
 
 
 /**
@@ -42,7 +43,8 @@ import splitties.toast.toast
 
 class ActionPerformerDelegate(context: Context,
                               iPerformAccessibilityAction: IPerformAccessibilityAction,
-                              lifecycle: Lifecycle) : IPerformAccessibilityAction by iPerformAccessibilityAction {
+                              lifecycle: Lifecycle
+) : IPerformAccessibilityAction by iPerformAccessibilityAction {
 
     companion object {
         private const val OVERFLOW_MENU_CONTENT_DESCRIPTION = "More options"
@@ -50,12 +52,15 @@ class ActionPerformerDelegate(context: Context,
 
     private val mCtx = context.applicationContext
     private lateinit var mFlashlightController: FlashlightController
+    private val mSuProcessDelegate = SuProcessDelegate()
 
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mFlashlightController = FlashlightController()
             lifecycle.addObserver(mFlashlightController)
         }
+
+        lifecycle.addObserver(mSuProcessDelegate)
     }
 
     fun performAction(action: Action, chosenImePackageName: String?) = performAction(PerformActionModel(action), chosenImePackageName)
@@ -125,13 +130,26 @@ class ActionPerformerDelegate(context: Context,
                             moveTo(x.toFloat(), y.toFloat())
                         }
 
-                        val strokeDescription = GestureDescription.StrokeDescription(path, 0, duration)
+                        val strokeDescription = if (action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)
+                            && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-                        val gestureDescription = GestureDescription.Builder().apply {
-                            addStroke(strokeDescription)
-                        }.build()
+                            when (keyEventAction) {
+                                KeyEventAction.DOWN -> GestureDescription.StrokeDescription(path, 0, duration, true)
+                                KeyEventAction.UP -> GestureDescription.StrokeDescription(path, 59999, duration, false)
+                                else -> null
+                            }
 
-                        dispatchGesture(gestureDescription, null, null)
+                        } else {
+                            GestureDescription.StrokeDescription(path, 0, duration)
+                        }
+
+                        strokeDescription?.let {
+                            val gestureDescription = GestureDescription.Builder().apply {
+                                addStroke(it)
+                            }.build()
+
+                            dispatchGesture(gestureDescription, null, null)
+                        }
                     }
                 }
 
@@ -144,8 +162,8 @@ class ActionPerformerDelegate(context: Context,
                                 metaState = additionalMetaState.withFlag(
                                     action.extras.getData(Action.EXTRA_KEY_EVENT_META_STATE).valueOrNull()?.toInt() ?: 0
                                 ),
-                                keyEventAction = keyEventAction
-                            )
+                                keyEventAction = keyEventAction,
+                                deviceId = 0)
                         }
                     }
                 }
@@ -278,7 +296,26 @@ class ActionPerformerDelegate(context: Context,
                 SystemAction.OPEN_RECENTS -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
                 SystemAction.OPEN_MENU -> {
                     if (AppPreferences.hasRootPermission) {
-                        RootUtils.executeRootCommand("input keyevent ${KeyEvent.KEYCODE_MENU}")
+
+                        if (mSuProcessDelegate.process == null) {
+                            mSuProcessDelegate.createSuProcess()
+                        }
+
+                        mSuProcessDelegate.process?.let {
+                            //the \n is very important. it is like pressing enter
+
+                            try {
+                                with(it.outputStream.bufferedWriter()) {
+                                    write("input keyevent ${KeyEvent.KEYCODE_MENU}\n")
+                                    flush()
+                                }
+                            } catch (e: Exception) {
+                                Timber.e(e)
+
+                                e.message?.let { message -> toast(message) }
+                            }
+                        }
+
                     } else {
                         rootNode.findNodeRecursively {
                             it.contentDescription == OVERFLOW_MENU_CONTENT_DESCRIPTION
@@ -333,7 +370,8 @@ class ActionPerformerDelegate(context: Context,
                     KeyboardUtils.inputKeyEventFromImeService(
                         it,
                         keyCode = KeyEvent.KEYCODE_MOVE_END,
-                        metaState = KeyEvent.META_CTRL_ON
+                        metaState = KeyEvent.META_CTRL_ON,
+                        deviceId = 0
                     )
                 }
 

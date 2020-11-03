@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.util
 
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.observe
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 
@@ -40,9 +39,9 @@ fun <T> NavController.setCurrentDestinationEvent(key: String, value: T) {
 }
 
 fun <T> NavBackStackEntry.observeLiveData(lifecycleOwner: LifecycleOwner, key: String, observe: (t: T) -> Unit) {
-    savedStateHandle.getLiveData<T>(key).observe(lifecycleOwner) {
+    savedStateHandle.getLiveData<T>(key).observe(lifecycleOwner, {
         observe(it)
-    }
+    })
 }
 
 fun <T> NavBackStackEntry.setLiveData(key: String, value: T) {

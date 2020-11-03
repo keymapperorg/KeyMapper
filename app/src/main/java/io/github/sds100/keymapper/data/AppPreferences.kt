@@ -147,6 +147,11 @@ object AppPreferences : DefaultPreferences() {
         false
     )
 
+    val showDeviceDescriptors by BoolPref(
+        appCtx.str(R.string.key_pref_show_device_descriptors),
+        appCtx.bool(R.bool.default_value_show_device_descriptors)
+    )
+
     @NightMode
     fun getSdkNightMode(darkThemePrefValue: String): Int {
         return when (darkThemePrefValue) {

@@ -51,6 +51,10 @@
             type="LiveData&lt;State>" />
 
         <variable
+            name="batteryOptimisationState"
+            type="LiveData&lt;State>" />
+
+        <variable
             name="enableAccessibilityService"
             type="View.OnClickListener" />
 
@@ -64,6 +68,10 @@
 
         <variable
             name="grantDndAccess"
+            type="View.OnClickListener" />
+
+        <variable
+            name="disableBatteryOptimisation"
             type="View.OnClickListener" />
 
         <variable
@@ -188,11 +196,17 @@
                                 <include
                                     layout="@layout/keymap_list_header_expanded"
                                     bind:accessibilityServiceStatusState="@{accessibilityServiceStatusState}"
-                                    bind:dndAccessStatusState="@{dndAccessStatusState}"
                                     bind:enableAccessibilityService="@{enableAccessibilityService}"
+
                                     bind:enableImeService="@{enableImeService}"
+                                    bind:batteryOptimisationState="@{batteryOptimisationState}"
+
                                     bind:grantDndAccess="@{grantDndAccess}"
+                                    bind:disableBatteryOptimisation="@{disableBatteryOptimisation}"
+
                                     bind:grantWriteSecureSettingsPermission="@{grantWriteSecureSettingsPermission}"
+                                    bind:dndAccessStatusState="@{dndAccessStatusState}"
+
                                     bind:imeServiceStatusState="@{imeServiceStatusState}"
                                     bind:writeSettingsStatusState="@{writeSettingsStatusState}" />
 
@@ -278,7 +292,7 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="16dp"
                         android:layout_marginBottom="8dp"
-                        android:drawableStart="@drawable/ic_outline_star_border_24"
+                        app:drawableStartCompat="@drawable/ic_outline_star_border_24"
                         android:drawablePadding="16dp"
                         android:gravity="center_vertical"
                         android:text="@string/new_gui_keyboard_ad_message"

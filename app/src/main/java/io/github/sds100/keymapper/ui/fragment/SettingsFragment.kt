@@ -101,22 +101,20 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
         InjectorUtils.provideBackupRestoreViewModel(requireContext())
     }
 
-    private val mChooseAutomaticBackupLocationLauncher by lazy {
-        requireActivity().registerForActivityResult(ActivityResultContracts.CreateDocument()) {
-            it ?: return@registerForActivityResult
+    private val mChooseAutomaticBackupLocationLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument()) {
+        it ?: return@registerForActivityResult
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                AppPreferences.automaticBackupLocation = it.toString()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            AppPreferences.automaticBackupLocation = it.toString()
 
-                val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                Intent.FLAG_GRANT_WRITE_URI_PERMISSION
 
-                requireContext().contentResolver.takePersistableUriPermission(it, takeFlags)
+            requireContext().contentResolver.takePersistableUriPermission(it, takeFlags)
 
                 mBackupRestoreViewModel.backupAll(requireContext().contentResolver.openOutputStream(it))
             }
         }
-    }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.preferences)

@@ -125,6 +125,26 @@ class ActionBehaviorViewModel : ViewModel() {
         }
     }
 
+    val stopHoldDownWhenTriggerPressedAgain = MediatorLiveData<Boolean>().apply {
+        addSource(behavior) {
+            val newValue = it.stopHoldDownWhenTriggerPressedAgain.value
+
+            if (newValue != value) {
+                value = newValue
+            }
+        }
+    }
+
+    val stopHoldDownWhenTriggerReleased = MediatorLiveData<Boolean>().apply {
+        addSource(behavior) {
+            val newValue = it.stopHoldDownWhenTriggerReleased.value
+
+            if (newValue != value) {
+                value = newValue
+            }
+        }
+    }
+
     val onSaveEvent: MutableLiveData<Event<ActionBehavior>> = MutableLiveData()
 
     init {
@@ -137,6 +157,18 @@ class ActionBehaviorViewModel : ViewModel() {
         behavior.addSource(stopRepeatWhenTriggerPressedAgain) {
             if (it != behavior.value?.stopRepeatingWhenTriggerPressedAgain?.value) {
                 setValue(ActionBehavior.ID_STOP_REPEATING_TRIGGER_PRESSED_AGAIN, it)
+            }
+        }
+
+        behavior.addSource(stopHoldDownWhenTriggerReleased) {
+            if (it != behavior.value?.stopHoldDownWhenTriggerReleased?.value) {
+                setValue(ActionBehavior.ID_STOP_HOLD_DOWN_WHEN_TRIGGER_RELEASED, it)
+            }
+        }
+
+        behavior.addSource(stopHoldDownWhenTriggerPressedAgain) {
+            if (it != behavior.value?.stopHoldDownWhenTriggerPressedAgain?.value) {
+                setValue(ActionBehavior.ID_STOP_HOLD_DOWN_WHEN_TRIGGER_PRESSED_AGAIN, it)
             }
         }
     }

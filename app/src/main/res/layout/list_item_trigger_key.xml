@@ -107,12 +107,12 @@
                         tools:visibility="visible" />
 
                     <TextView
-                        android:id="@+id/textViewDevice"
+                        android:id="@+id/textViewExtraInfo"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@{model.deviceName}"
+                        android:text="@{model.extraInfo}"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-                        android:visibility='@{model.deviceName == null ? View.GONE : View.VISIBLE}'
+                        android:visibility='@{model.extraInfo == null ? View.GONE : View.VISIBLE}'
                         tools:text="External Keyboard"
                         tools:visibility="visible" />
                 </LinearLayout>
@@ -138,7 +138,6 @@
                     android:layout_height="0dp"
                     android:onClick="@{onMoreClick}"
                     android:tint="?attr/colorOnSurface"
-                    android:visibility="@{triggerMode == Trigger.SEQUENCE || triggerMode == Trigger.UNDEFINED ? View.VISIBLE : View.GONE}"
                     app:layout_constraintBottom_toBottomOf="@+id/buttonRemove"
                     app:layout_constraintEnd_toStartOf="@+id/buttonRemove"
                     app:layout_constraintTop_toTopOf="@id/buttonRemove"

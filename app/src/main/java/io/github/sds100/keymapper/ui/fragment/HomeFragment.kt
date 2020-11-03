@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.*
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,6 +45,8 @@ import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
 import splitties.alertdialog.appcompat.messageResource
 import splitties.experimental.ExperimentalSplittiesApi
+import splitties.systemservices.powerManager
+import splitties.toast.longToast
 import splitties.toast.toast
 
 /**
@@ -64,6 +67,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
     private val mImeServiceStatusState = MutableLiveData(StatusLayout.State.ERROR)
     private val mDndAccessStatusState = MutableLiveData(StatusLayout.State.ERROR)
     private val mWriteSettingsStatusState = MutableLiveData(StatusLayout.State.ERROR)
+    private val mBatteryOptimisationState = MutableLiveData(StatusLayout.State.ERROR)
 
     private val mBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -98,6 +102,11 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
     private val mBackupRestoreViewModel: BackupRestoreViewModel by activityViewModels {
         InjectorUtils.provideBackupRestoreViewModel(requireContext())
     }
+
+    private val mRequestAccessNotificationPolicy =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            updateStatusLayouts()
+        }
 
     private lateinit var mPagerAdapter: HomePagerAdapter
     private lateinit var mTabLayoutMediator: TabLayoutMediator
@@ -226,7 +235,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             })
 
             mBackupRestoreViewModel.requestRestore.observe(viewLifecycleOwner, EventObserver {
-                mRestoreLauncher.launch(FileUtils.MIME_TYPE_JSON)
+                mRestoreLauncher.launch(FileUtils.MIME_TYPE_ALL)
             })
 
             expanded = mExpanded
@@ -235,6 +244,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             imeServiceStatusState = mImeServiceStatusState
             dndAccessStatusState = mDndAccessStatusState
             writeSettingsStatusState = mWriteSettingsStatusState
+            batteryOptimisationState = mBatteryOptimisationState
 
             buttonCollapse.setOnClickListener {
                 mExpanded.value = false
@@ -262,21 +272,27 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             }
 
             setGrantWriteSecureSettingsPermission {
-                PermissionUtils.requestPermission(requireActivity(), Manifest.permission.WRITE_SECURE_SETTINGS) {
-                    updateStatusLayouts()
-                }
+                PermissionUtils.requestWriteSecureSettingsPermission(requireActivity())
             }
 
             setGrantDndAccess {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    PermissionUtils.requestPermission(requireActivity(),
-                        Manifest.permission.ACCESS_NOTIFICATION_POLICY) {
-                        updateStatusLayouts()
+                    PermissionUtils.requestAccessNotificationPolicy(mRequestAccessNotificationPolicy)
+                }
+            }
+
+            setDisableBatteryOptimisation {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    try {
+                        val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                        startActivity(intent)
+                    } catch (e: ActivityNotFoundException) {
+                        longToast(R.string.error_battery_optimisation_activity_not_found)
                     }
                 }
             }
 
-            mExpanded.observe(viewLifecycleOwner) {
+            mExpanded.observe(viewLifecycleOwner, Observer {
                 if (it == true) {
                     expandableLayout.expand()
                 } else {
@@ -285,7 +301,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                     val transition = Fade()
                     TransitionManager.beginDelayedTransition(layoutCollapsed, transition)
                 }
-            }
+            })
 
             isFingerprintGestureDetectionAvailable = AppPreferences.isFingerprintGestureDetectionAvailable
 
@@ -396,13 +412,20 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             } else {
                 mDndAccessStatusState.value = StatusLayout.State.WARN
             }
+
+            if (powerManager.isIgnoringBatteryOptimizations(Constants.PACKAGE_NAME)) {
+                mBatteryOptimisationState.value = StatusLayout.State.POSITIVE
+            } else {
+                mBatteryOptimisationState.value = StatusLayout.State.WARN
+            }
         }
 
         val states = listOf(
             mAccessibilityServiceStatusState,
             mWriteSettingsStatusState,
             mImeServiceStatusState,
-            mDndAccessStatusState
+            mDndAccessStatusState,
+            mBatteryOptimisationState
         )
 
         when {

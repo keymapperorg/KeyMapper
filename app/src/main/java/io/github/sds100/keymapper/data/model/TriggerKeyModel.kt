@@ -8,5 +8,5 @@ data class TriggerKeyModel(
     val keyCode: Int,
     val name: String,
     @Trigger.ClickType val clickType: Int,
-    val deviceName: String
+    val extraInfo: String
 )

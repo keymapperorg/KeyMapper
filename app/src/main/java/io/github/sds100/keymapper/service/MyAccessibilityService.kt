@@ -11,9 +11,13 @@ import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.os.bundleOf
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.lifecycleScope
 import com.github.salomonbrys.kotson.fromJson
 import com.github.salomonbrys.kotson.registerTypeAdapter
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.MyApplication
@@ -25,6 +29,7 @@ import io.github.sds100.keymapper.WidgetsManager.EVENT_PAUSE_REMAPS
 import io.github.sds100.keymapper.WidgetsManager.EVENT_RESUME_REMAPS
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Action
+import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.ActionPerformerDelegate
@@ -60,15 +65,18 @@ class MyAccessibilityService : AccessibilityService(),
         const val ACTION_TEST_ACTION = "$PACKAGE_NAME.TEST_ACTION"
         const val ACTION_RECORDED_TRIGGER_KEY = "$PACKAGE_NAME.RECORDED_TRIGGER_KEY"
         const val ACTION_RECORD_TRIGGER_TIMER_INCREMENTED = "$PACKAGE_NAME.RECORD_TRIGGER_TIMER_INCREMENTED"
+        const val ACTION_STOP_RECORDING_TRIGGER = "$PACKAGE_NAME.STOP_RECORDING_TRIGGER"
         const val ACTION_STOPPED_RECORDING_TRIGGER = "$PACKAGE_NAME.STOPPED_RECORDING_TRIGGER"
         const val ACTION_ON_START = "$PACKAGE_NAME.ON_ACCESSIBILITY_SERVICE_START"
         const val ACTION_ON_STOP = "$PACKAGE_NAME.ON_ACCESSIBILITY_SERVICE_STOP"
         const val ACTION_PERFORM_ACTIONS = "$PACKAGE_NAME.PERFORM_ACTIONS"
+        const val ACTION_UPDATE_KEYMAP_LIST_CACHE = "$PACKAGE_NAME.UPDATE_KEYMAP_LIST_CACHE"
 
         const val EXTRA_KEY_EVENT = "$PACKAGE_NAME.KEY_EVENT"
         const val EXTRA_TIME_LEFT = "$PACKAGE_NAME.TIME_LEFT"
         const val EXTRA_ACTION = "$PACKAGE_NAME.ACTION"
         const val EXTRA_ACTION_LIST = "$PACKAGE_NAME.ACTION_LIST"
+        const val EXTRA_KEYMAP_LIST = "$PACKAGE_NAME.KEYMAP_LIST"
 
         /**
          * How long should the accessibility service record a trigger in seconds.
@@ -135,9 +143,15 @@ class MyAccessibilityService : AccessibilityService(),
                     }
                 }
 
-                ACTION_STOPPED_RECORDING_TRIGGER -> {
+                ACTION_STOP_RECORDING_TRIGGER -> {
+                    val wasRecordingTrigger = mRecordingTrigger
+
                     mRecordingTriggerJob?.cancel()
                     mRecordingTriggerJob = null
+
+                    if (wasRecordingTrigger) {
+                        sendPackageBroadcast(ACTION_STOPPED_RECORDING_TRIGGER)
+                    }
                 }
 
                 ACTION_PERFORM_ACTIONS -> {
@@ -147,6 +161,14 @@ class MyAccessibilityService : AccessibilityService(),
 
                     actionList.forEach {
                         mActionPerformerDelegate.performAction(it, mChosenImePackageName)
+                    }
+                }
+
+                ACTION_UPDATE_KEYMAP_LIST_CACHE -> {
+                    intent.getStringExtra(EXTRA_KEYMAP_LIST)?.let {
+                        val keymapList = Gson().fromJson<List<KeyMap>>(it)
+
+                        updateKeymapListCache(keymapList)
                     }
                 }
 
@@ -196,10 +218,10 @@ class MyAccessibilityService : AccessibilityService(),
     private val mIsCompatibleImeChosen
         get() = KeyboardUtils.KEY_MAPPER_IME_PACKAGE_LIST.contains(mChosenImePackageName)
 
-    private val mGetEventDelegate = GetEventDelegate { keyCode, action, deviceDescriptor, isExternal ->
+    private val mGetEventDelegate = GetEventDelegate { keyCode, action, deviceDescriptor, isExternal, deviceId ->
         if (!AppPreferences.keymapsPaused) {
             withContext(Dispatchers.Main.immediate) {
-                mKeymapDetectionDelegate.onKeyEvent(keyCode, action, deviceDescriptor, isExternal, 0)
+                mKeymapDetectionDelegate.onKeyEvent(keyCode, action, deviceDescriptor, isExternal, 0, deviceId)
             }
         }
     }
@@ -240,6 +262,8 @@ class MyAccessibilityService : AccessibilityService(),
             addAction(ACTION_TEST_ACTION)
             addAction(ACTION_STOPPED_RECORDING_TRIGGER)
             addAction(ACTION_PERFORM_ACTIONS)
+            addAction(ACTION_UPDATE_KEYMAP_LIST_CACHE)
+            addAction(ACTION_STOP_RECORDING_TRIGGER)
             addAction(Intent.ACTION_SCREEN_ON)
             addAction(Intent.ACTION_SCREEN_OFF)
             addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
@@ -249,17 +273,9 @@ class MyAccessibilityService : AccessibilityService(),
             registerReceiver(mBroadcastReceiver, this)
         }
 
-        (application as MyApplication).keymapRepository.keymapList.observe(this) {
-            mKeymapDetectionDelegate.keyMapListCache = it
-            mScreenOffTriggersEnabled = it.any { keymap ->
-                keymap.trigger.flags.hasFlag(Trigger.TRIGGER_FLAG_SCREEN_OFF_TRIGGERS)
-            }
-        }
-
         defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
 
         WidgetsManager.onEvent(this, EVENT_ACCESSIBILITY_SERVICE_STARTED)
-
         sendPackageBroadcast(ACTION_ON_START)
 
         mKeymapDetectionDelegate.imitateButtonPress.observe(this, EventObserver {
@@ -281,7 +297,8 @@ class MyAccessibilityService : AccessibilityService(),
                         KeyboardUtils.inputKeyEventFromImeService(
                             imePackageName = imePackageName,
                             keyCode = it.keyCode,
-                            metaState = it.metaState
+                            metaState = it.metaState,
+                            deviceId = it.deviceId
                         )
                     }
                 }
@@ -307,6 +324,16 @@ class MyAccessibilityService : AccessibilityService(),
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             AppPreferences.isFingerprintGestureDetectionAvailable = fingerprintGestureController.isGestureDetectionAvailable
+        }
+
+        lifecycleScope.launchWhenStarted {
+            val keymapList = withContext(Dispatchers.IO) {
+                (application as MyApplication).keymapRepository.getKeymaps()
+            }
+
+            withContext(Dispatchers.Main) {
+                updateKeymapListCache(keymapList)
+            }
         }
     }
 
@@ -350,7 +377,8 @@ class MyAccessibilityService : AccessibilityService(),
                     event.action,
                     event.device.descriptor,
                     event.device.isExternalCompat,
-                    event.metaState)
+                    event.metaState,
+                    event.deviceId)
             } catch (e: Exception) {
                 Timber.e(e)
             }
@@ -423,20 +451,6 @@ class MyAccessibilityService : AccessibilityService(),
         return action.canBePerformed(this)
     }
 
-    private fun recordTrigger() = lifecycleScope.launch {
-        repeat(RECORD_TRIGGER_TIMER_LENGTH) { iteration ->
-            if (isActive) {
-                val timeLeft = RECORD_TRIGGER_TIMER_LENGTH - iteration
-
-                sendPackageBroadcast(ACTION_RECORD_TRIGGER_TIMER_INCREMENTED, bundleOf(EXTRA_TIME_LEFT to timeLeft))
-
-                delay(1000)
-            }
-        }
-
-        sendPackageBroadcast(ACTION_STOPPED_RECORDING_TRIGGER)
-    }
-
     override fun getLifecycle() = mLifecycleRegistry
 
     override val keyboardController: SoftKeyboardController?
@@ -448,4 +462,26 @@ class MyAccessibilityService : AccessibilityService(),
 
     override val rootNode: AccessibilityNodeInfo?
         get() = rootInActiveWindow
+
+    private fun recordTrigger() = lifecycleScope.launchWhenStarted {
+        repeat(RECORD_TRIGGER_TIMER_LENGTH) { iteration ->
+            if (isActive) {
+                val timeLeft = RECORD_TRIGGER_TIMER_LENGTH - iteration
+
+                sendPackageBroadcast(ACTION_RECORD_TRIGGER_TIMER_INCREMENTED, bundleOf(EXTRA_TIME_LEFT to timeLeft))
+
+                delay(1000)
+            }
+        }
+
+        sendPackageBroadcast(ACTION_STOP_RECORDING_TRIGGER)
+    }
+
+    private fun updateKeymapListCache(keymapList: List<KeyMap>) {
+        mKeymapDetectionDelegate.keyMapListCache = keymapList
+
+        mScreenOffTriggersEnabled = keymapList.any { keymap ->
+            keymap.trigger.flags.hasFlag(Trigger.TRIGGER_FLAG_SCREEN_OFF_TRIGGERS)
+        }
+    }
 }

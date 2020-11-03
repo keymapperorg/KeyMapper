@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import com.airbnb.epoxy.EpoxyController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Option
@@ -65,13 +64,13 @@ class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourcePr
     override fun subscribeList(binding: FragmentRecyclerviewBinding) {
         binding.apply {
 
-            mViewModel.unsupportedSystemActions.observe(viewLifecycleOwner) {
+            mViewModel.unsupportedSystemActions.observe(viewLifecycleOwner, {
                 if (it.isNotEmpty()) {
                     caption = str(R.string.your_device_doesnt_support_some_actions)
                 }
-            }
+            })
 
-            mViewModel.filteredModelList.observe(viewLifecycleOwner) {
+            mViewModel.filteredModelList.observe(viewLifecycleOwner, {
                 epoxyRecyclerView.withModels {
                     for ((sectionHeader, systemActions) in it) {
                         sectionHeader {
@@ -84,7 +83,7 @@ class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourcePr
                         }
                     }
                 }
-            }
+            })
         }
     }
 

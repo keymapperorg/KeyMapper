@@ -8,7 +8,6 @@ import android.widget.CheckBox
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyController
@@ -16,36 +15,35 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.github.sds100.keymapper.checkbox
-import io.github.sds100.keymapper.data.model.BehaviorOption
 import io.github.sds100.keymapper.data.model.CheckBoxListItemModel
-import io.github.sds100.keymapper.data.model.SliderListItemModel
-import io.github.sds100.keymapper.data.viewmodel.ActionBehaviorViewModel
-import io.github.sds100.keymapper.databinding.FragmentActionBehaviorBinding
-import io.github.sds100.keymapper.slider
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.data.viewmodel.TriggerKeyBehaviorViewModel
+import io.github.sds100.keymapper.databinding.FragmentTriggerKeyBehaviorBinding
+import io.github.sds100.keymapper.util.EventObserver
+import io.github.sds100.keymapper.util.InjectorUtils
+import io.github.sds100.keymapper.util.str
 
 /**
  * Created by sds100 on 27/06/2020.
  */
-class ActionBehaviorFragment : BottomSheetDialogFragment() {
+class TriggerKeyBehaviorFragment : BottomSheetDialogFragment() {
 
     companion object {
-        const val REQUEST_KEY = "request_choose_action_options"
-        const val EXTRA_ACTION_BEHAVIOR = "extra_action_behavior"
+        const val REQUEST_KEY = "request_trigger_key_behavior"
+        const val EXTRA_TRIGGER_KEY_BEHAVIOR = "extra_trigger_key_behavior"
     }
 
-    private val mViewModel: ActionBehaviorViewModel by viewModels {
-        InjectorUtils.provideActionBehaviorViewModel()
+    private val mViewModel: TriggerKeyBehaviorViewModel by viewModels {
+        InjectorUtils.provideTriggerKeyBehaviorViewModel()
     }
 
     private val mController by lazy { Controller() }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        FragmentActionBehaviorBinding.inflate(layoutInflater).apply {
+        FragmentTriggerKeyBehaviorBinding.inflate(layoutInflater).apply {
             lifecycleOwner = viewLifecycleOwner
             viewModel = mViewModel
 
-            mViewModel.setBehavior(navArgs<ActionBehaviorFragmentArgs>().value.StringNavArgActionBehavior)
+            mViewModel.setBehavior(navArgs<TriggerKeyBehaviorFragmentArgs>().value.StringNavArgTriggerKeyBehavior)
 
             epoxyRecyclerView.adapter = mController.adapter
 
@@ -53,13 +51,14 @@ class ActionBehaviorFragment : BottomSheetDialogFragment() {
                 mController.checkBoxModels = it
             })
 
-            mViewModel.sliderModels.observe(viewLifecycleOwner, {
-                mController.sliderModels = it
+            mViewModel.onSaveEvent.observe(viewLifecycleOwner, EventObserver {
+                setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_TRIGGER_KEY_BEHAVIOR to it))
+
+                findNavController().navigateUp()
             })
 
-            mViewModel.onSaveEvent.observe(viewLifecycleOwner, EventObserver {
-                setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_ACTION_BEHAVIOR to it))
-                findNavController().navigateUp()
+            mViewModel.behavior.observe(viewLifecycleOwner, {
+                behavior = it
             })
 
             return this.root
@@ -95,12 +94,6 @@ class ActionBehaviorFragment : BottomSheetDialogFragment() {
                 requestModelBuild()
             }
 
-        var sliderModels: List<SliderListItemModel> = listOf()
-            set(value) {
-                field = value
-                requestModelBuild()
-            }
-
         override fun buildModels() {
             checkBoxModels.forEach {
                 checkbox {
@@ -110,35 +103,6 @@ class ActionBehaviorFragment : BottomSheetDialogFragment() {
 
                     onClick { view ->
                         mViewModel.setValue(it.id, (view as CheckBox).isChecked)
-                    }
-                }
-            }
-
-            sliderModels.forEach {
-                slider {
-                    id(it.id)
-                    label(str(it.label))
-                    model(it.sliderModel)
-
-                    onSliderChangeListener { _, value, fromUser ->
-                        if (!fromUser) return@onSliderChangeListener
-
-                        //If the user has selected to use the default value
-                        if (value < int(it.sliderModel.min)) {
-                            mViewModel.setValue(it.id, BehaviorOption.DEFAULT)
-                        } else {
-                            mViewModel.setValue(it.id, value.toInt())
-                        }
-                    }
-
-                    onSliderValueClickListener { _ ->
-                        lifecycleScope.launchWhenStarted {
-                            val num = requireActivity().editTextNumberAlertDialog(
-                                hint = str(it.label),
-                                min = int(it.sliderModel.min))
-
-                            mViewModel.setValue(it.id, num)
-                        }
                     }
                 }
             }

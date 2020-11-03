@@ -5,26 +5,21 @@ package io.github.sds100.keymapper.data.db.migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.SupportSQLiteQueryBuilder
 import com.github.salomonbrys.kotson.fromJson
+import com.github.salomonbrys.kotson.registerTypeAdapter
 import com.google.gson.Gson
-import com.google.gson.annotations.SerializedName
-import io.github.sds100.keymapper.data.model.Extra
+import com.google.gson.GsonBuilder
 import io.github.sds100.keymapper.data.model.Trigger
+import splitties.bitflags.hasFlag
+import splitties.bitflags.minusFlag
+import splitties.bitflags.withFlag
 
 /**
  * Created by sds100 on 25/06/20.
  */
 
-private data class Trigger5(@SerializedName(Trigger.NAME_KEYS)
-                            val keys: List<Trigger.Key> = listOf(),
+object Migration_6_7 {
 
-                            @SerializedName(Trigger.NAME_EXTRAS)
-                            val extras: List<Extra> = listOf(),
-
-                            @Trigger.Mode
-                            @SerializedName(Trigger.NAME_MODE)
-                            val mode: Int = Trigger.DEFAULT_TRIGGER_MODE)
-
-object Migration_5_6 {
+    private const val TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION = 8
 
     fun migrate(database: SupportSQLiteDatabase) = database.apply {
         val query = SupportSQLiteQueryBuilder
@@ -33,19 +28,26 @@ object Migration_5_6 {
             .create()
 
         query(query).apply {
-            val gson = Gson()
+            val gson = GsonBuilder().registerTypeAdapter(Trigger.DESERIALIZER).create()
 
             while (moveToNext()) {
                 val idColumnIndex = getColumnIndex("id")
                 val id = getInt(idColumnIndex)
 
-                val keymapFlagsColumnIndex = getColumnIndex("flags")
-                val keymapFlags = getInt(keymapFlagsColumnIndex)
-
                 val triggerColumnIndex = getColumnIndex("trigger")
-                val trigger = gson.fromJson<Trigger5>(getString(triggerColumnIndex))
 
-                val newTrigger = Trigger(trigger.keys, trigger.extras, trigger.mode, keymapFlags)
+                val trigger = gson.fromJson<Trigger>(getString(triggerColumnIndex))
+
+                val newTriggerKeys = trigger.keys.map {
+                    if (trigger.flags.hasFlag(TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION)) {
+                        it.flags = it.flags.withFlag(Trigger.Key.FLAG_DO_NOT_CONSUME_KEY_EVENT)
+                    }
+
+                    it
+                }
+
+                val newTriggerFlags = trigger.flags.minusFlag(TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION)
+                val newTrigger = trigger.clone(keys = newTriggerKeys, flags = newTriggerFlags)
 
                 execSQL("UPDATE keymaps SET trigger='${newTrigger.json}', flags=0 WHERE id=$id")
             }
@@ -54,6 +56,6 @@ object Migration_5_6 {
         }
     }
 
-    private val Any.json: String
+    val Any.json: String
         get() = Gson().toJson(this)
 }

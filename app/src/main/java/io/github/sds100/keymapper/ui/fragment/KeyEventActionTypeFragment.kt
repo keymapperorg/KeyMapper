@@ -9,13 +9,13 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.checkbox
 import io.github.sds100.keymapper.data.viewmodel.KeyEventActionTypeViewModel
 import io.github.sds100.keymapper.databinding.FragmentKeyeventActionTypeBinding
 import io.github.sds100.keymapper.util.EventObserver
 import io.github.sds100.keymapper.util.InjectorUtils
+import io.github.sds100.keymapper.util.result.getFullMessage
 import io.github.sds100.keymapper.util.str
 
 /**
@@ -50,12 +50,16 @@ class KeyEventActionTypeFragment : Fragment() {
                 findNavController().navigateUp()
             }
 
+            mViewModel.failure.observe(viewLifecycleOwner, {
+                textInputLayoutKeyCode.error = it?.getFullMessage(requireContext())
+            })
+
             mViewModel.chooseKeycode.observe(viewLifecycleOwner, EventObserver {
                 val direction = ChooseActionFragmentDirections.actionChooseActionFragmentToKeycodeListFragment()
                 findNavController().navigate(direction)
             })
 
-            mViewModel.modifierKeyModels.observe(viewLifecycleOwner) { models ->
+            mViewModel.modifierKeyModels.observe(viewLifecycleOwner, { models ->
                 epoxyRecyclerViewModifiers.withModels {
                     models.forEach {
                         checkbox {
@@ -69,7 +73,7 @@ class KeyEventActionTypeFragment : Fragment() {
                         }
                     }
                 }
-            }
+            })
 
             return this.root
         }

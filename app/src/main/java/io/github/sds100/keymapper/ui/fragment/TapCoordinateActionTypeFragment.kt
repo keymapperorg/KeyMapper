@@ -16,7 +16,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.viewmodel.TapCoordinateActionTypeViewModel
@@ -42,22 +41,20 @@ class TapCoordinateActionTypeFragment : Fragment() {
         InjectorUtils.provideTapCoordinateActionTypeViewModel()
     }
 
-    private val mScreenshotLauncher by lazy {
-        requireActivity().registerForActivityResult(ActivityResultContracts.GetContent()) {
-            it ?: return@registerForActivityResult
+    private val mScreenshotLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {
+        it ?: return@registerForActivityResult
 
-            val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                ImageDecoder.createSource(requireContext().contentResolver, it).decodeBitmap { _, _ -> }
-            } else {
-                MediaStore.Images.Media.getBitmap(requireContext().contentResolver, it)
-            }
+        val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            ImageDecoder.createSource(requireContext().contentResolver, it).decodeBitmap { _, _ -> }
+        } else {
+            MediaStore.Images.Media.getBitmap(requireContext().contentResolver, it)
+        }
 
-            val displaySize = Point().apply {
-                windowManager.defaultDisplay.getRealSize(this)
+        val displaySize = Point().apply {
+            windowManager.defaultDisplay.getRealSize(this)
             }
 
             mViewModel.selectedScreenshot(bitmap, displaySize)
-        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -68,9 +65,9 @@ class TapCoordinateActionTypeFragment : Fragment() {
             lifecycleOwner = viewLifecycleOwner
             viewModel = mViewModel
 
-            mViewModel.bitmap.observe(viewLifecycleOwner) {
+            mViewModel.bitmap.observe(viewLifecycleOwner, {
                 imageViewScreenshot.setImageBitmap(it)
-            }
+            })
 
             mViewModel.selectScreenshotEvent.observe(viewLifecycleOwner, EventObserver {
                 mScreenshotLauncher.launch(FileUtils.MIME_TYPE_IMAGES)
@@ -80,12 +77,12 @@ class TapCoordinateActionTypeFragment : Fragment() {
                 toast(R.string.toast_incorrect_screenshot_resolution)
             })
 
-            imageViewScreenshot.pointCoordinates.observe(viewLifecycleOwner) {
+            imageViewScreenshot.pointCoordinates.observe(viewLifecycleOwner, {
                 mViewModel.onScreenshotTouch(
                     it.x.toFloat() / imageViewScreenshot.width,
                     it.y.toFloat() / imageViewScreenshot.height
                 )
-            }
+            })
 
             setOnDoneClick {
                 lifecycleScope.launch {

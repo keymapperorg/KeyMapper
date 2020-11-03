@@ -26,6 +26,10 @@
             type="View.OnClickListener" />
 
         <variable
+            name="disableBatteryOptimisation"
+            type="View.OnClickListener" />
+
+        <variable
             name="collapsedStatusLayoutState"
             type="LiveData&lt;State>" />
 
@@ -44,6 +48,11 @@
         <variable
             name="writeSettingsStatusState"
             type="LiveData&lt;State>" />
+
+        <variable
+            name="batteryOptimisationState"
+            type="LiveData&lt;State>" />
+
     </data>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -76,11 +85,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:errorText="@{null}"
-            app:fixedText="@{@string/fixed_need_write_secure_settings_permission}"
-            app:onFixClick="@{grantWriteSecureSettingsPermission}"
+            app:fixedText="@{@string/error_battery_optimisation_disabled}"
+            app:onFixClick="@{disableBatteryOptimisation}"
             app:showFixButton="@{true}"
-            app:statusLayoutState="@{writeSettingsStatusState}"
-            app:warningText="@{@string/warning_need_write_secure_settings_permission}" />
+            app:statusLayoutState="@{batteryOptimisationState}"
+            app:warningText="@{@string/error_battery_optimisation_enabled}" />
 
         <io.github.sds100.keymapper.ui.view.StatusLayout
             android:layout_width="match_parent"
@@ -91,5 +100,16 @@
             app:showFixButton="@{true}"
             app:statusLayoutState="@{dndAccessStatusState}"
             app:warningText="@{@string/error_dnd_access_not_granted}" />
+
+        <io.github.sds100.keymapper.ui.view.StatusLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:errorText="@{null}"
+            app:fixedText="@{@string/fixed_need_write_secure_settings_permission}"
+            app:onFixClick="@{grantWriteSecureSettingsPermission}"
+            app:showFixButton="@{true}"
+            app:statusLayoutState="@{writeSettingsStatusState}"
+            app:warningText="@{@string/warning_need_write_secure_settings_permission}" />
+
     </LinearLayout>
 </layout>

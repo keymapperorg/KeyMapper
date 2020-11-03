@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.data.model
 
+import android.os.Build
 import io.github.sds100.keymapper.data.model.BehaviorOption.Companion.applyBehaviorOption
 import io.github.sds100.keymapper.data.model.Trigger.Companion.DOUBLE_PRESS
 import io.github.sds100.keymapper.data.model.Trigger.Companion.EXTRA_DOUBLE_PRESS_DELAY
@@ -9,7 +10,6 @@ import io.github.sds100.keymapper.data.model.Trigger.Companion.EXTRA_VIBRATION_D
 import io.github.sds100.keymapper.data.model.Trigger.Companion.LONG_PRESS
 import io.github.sds100.keymapper.data.model.Trigger.Companion.PARALLEL
 import io.github.sds100.keymapper.data.model.Trigger.Companion.SEQUENCE
-import io.github.sds100.keymapper.data.model.Trigger.Companion.TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION
 import io.github.sds100.keymapper.data.model.Trigger.Companion.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION
 import io.github.sds100.keymapper.data.model.Trigger.Companion.TRIGGER_FLAG_SCREEN_OFF_TRIGGERS
 import io.github.sds100.keymapper.data.model.Trigger.Companion.TRIGGER_FLAG_VIBRATE
@@ -72,7 +72,6 @@ class TriggerBehavior(keys: List<Trigger.Key>, @Trigger.Mode mode: Int, flags: I
         const val ID_VIBRATE = "vibrate"
         const val ID_LONG_PRESS_DOUBLE_VIBRATION = "long_press_double_vibration"
         const val ID_SCREEN_OFF_TRIGGER = "screen_off_trigger"
-        const val ID_DONT_OVERRIDE_DEFAULT_ACTION = "dont_override_default_action"
     }
 
     val vibrate = BehaviorOption(
@@ -96,16 +95,15 @@ class TriggerBehavior(keys: List<Trigger.Key>, @Trigger.Mode mode: Int, flags: I
         }
     )
 
-    val doNotOverrideDefaultAction = BehaviorOption(
-        id = ID_DONT_OVERRIDE_DEFAULT_ACTION,
-        value = flags.hasFlag(TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION),
-        isAllowed = true
-    )
-
     val longPressDelay: BehaviorOption<Int>
     val doublePressDelay: BehaviorOption<Int>
     val vibrateDuration: BehaviorOption<Int>
     val sequenceTriggerTimeout: BehaviorOption<Int>
+
+    /*
+     It is very important that any new options are only allowed with a valid combination of other options. Make sure
+     the "isAllowed" property considers all the other options.
+     */
 
     init {
 
@@ -183,7 +181,6 @@ class TriggerBehavior(keys: List<Trigger.Key>, @Trigger.Mode mode: Int, flags: I
             }
 
             ID_SCREEN_OFF_TRIGGER -> screenOffTrigger.value = value
-            ID_DONT_OVERRIDE_DEFAULT_ACTION -> doNotOverrideDefaultAction.value = value
         }
 
         return this
@@ -193,7 +190,6 @@ class TriggerBehavior(keys: List<Trigger.Key>, @Trigger.Mode mode: Int, flags: I
         return flags.applyBehaviorOption(vibrate, TRIGGER_FLAG_VIBRATE)
             .applyBehaviorOption(longPressDoubleVibration, TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION)
             .applyBehaviorOption(screenOffTrigger, TRIGGER_FLAG_SCREEN_OFF_TRIGGERS)
-            .applyBehaviorOption(doNotOverrideDefaultAction, TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION)
     }
 
     private fun applyToTriggerExtras(extras: List<Extra>): List<Extra> {
@@ -220,6 +216,8 @@ class ActionBehavior(
         const val ID_STOP_REPEATING_TRIGGER_PRESSED_AGAIN = "stop_repeating_trigger_pressed_again"
         const val ID_REPEAT_DELAY = "repeat_delay"
         const val ID_HOLD_DOWN = "hold_down"
+        const val ID_STOP_HOLD_DOWN_WHEN_TRIGGER_RELEASED = "stop_hold_down_when_trigger_released"
+        const val ID_STOP_HOLD_DOWN_WHEN_TRIGGER_PRESSED_AGAIN = "stop_hold_down_when_trigger_pressed_again"
     }
 
     val actionId = action.uniqueId
@@ -227,7 +225,9 @@ class ActionBehavior(
     val repeat = BehaviorOption(
         id = ID_REPEAT,
         value = action.flags.hasFlag(Action.ACTION_FLAG_REPEAT),
-        isAllowed = if (triggerKeys != null && triggerMode != null) {
+        isAllowed = if (triggerKeys != null && triggerMode != null
+            && !action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)) {
+
             KeymapDetectionDelegate.performActionOnDown(triggerKeys, triggerMode)
         } else {
             false
@@ -249,17 +249,22 @@ class ActionBehavior(
     val holdDown = BehaviorOption(
         id = ID_HOLD_DOWN,
         value = action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN),
-        isAllowed = if (triggerKeys != null && triggerMode != null) {
-            action.type == ActionType.KEY_EVENT
-                && KeymapDetectionDelegate.performActionOnDown(triggerKeys, triggerMode)
+        isAllowed = if (triggerKeys != null && triggerMode != null
+            && !action.flags.hasFlag(Action.ACTION_FLAG_REPEAT)) {
+            KeymapDetectionDelegate.performActionOnDown(triggerKeys, triggerMode)
+                && (action.type == ActionType.KEY_EVENT
+                || (action.type == ActionType.TAP_COORDINATE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                )
         } else {
             false
         }
     )
 
     val stopRepeatingWhenTriggerReleased: BehaviorOption<Boolean>
-
     val stopRepeatingWhenTriggerPressedAgain: BehaviorOption<Boolean>
+
+    val stopHoldDownWhenTriggerReleased: BehaviorOption<Boolean>
+    val stopHoldDownWhenTriggerPressedAgain: BehaviorOption<Boolean>
 
     val repeatRate: BehaviorOption<Int>
 
@@ -270,6 +275,11 @@ class ActionBehavior(
         value = action.extras.getData(Action.EXTRA_MULTIPLIER).valueOrNull()?.toInt() ?: BehaviorOption.DEFAULT,
         isAllowed = true
     )
+
+    /*
+     It is very important that any new options are only allowed with a valid combination of other options. Make sure
+     the "isAllowed" property considers all the other options.
+     */
 
     init {
         val repeatRateValue = action.extras.getData(Action.EXTRA_REPEAT_RATE).valueOrNull()?.toInt()
@@ -291,7 +301,7 @@ class ActionBehavior(
         var stopRepeatingTriggerPressedAgain = false
 
         action.extras.getData(Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR).onSuccess {
-            if (it.toInt() == Action.STOP_REPEAT_BEHAVIOUR_TRIGGER_AGAIN) {
+            if (it.toInt() == Action.STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN) {
                 stopRepeatingTriggerPressedAgain = true
             }
         }
@@ -307,6 +317,26 @@ class ActionBehavior(
             value = !stopRepeatingTriggerPressedAgain,
             isAllowed = repeat.value
         )
+
+        var stopHoldDownTriggerPressedAgain = false
+
+        action.extras.getData(Action.EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR).onSuccess {
+            if (it.toInt() == Action.STOP_HOLD_DOWN_BEHAVIOR_TRIGGER_PRESSED_AGAIN) {
+                stopHoldDownTriggerPressedAgain = true
+            }
+        }
+
+        stopHoldDownWhenTriggerPressedAgain = BehaviorOption(
+            id = ID_STOP_HOLD_DOWN_WHEN_TRIGGER_PRESSED_AGAIN,
+            value = stopHoldDownTriggerPressedAgain,
+            isAllowed = holdDown.value
+        )
+
+        stopHoldDownWhenTriggerReleased = BehaviorOption(
+            id = ID_STOP_HOLD_DOWN_WHEN_TRIGGER_RELEASED,
+            value = !stopHoldDownTriggerPressedAgain,
+            isAllowed = holdDown.value
+        )
     }
 
     fun applyToAction(action: Action): Action {
@@ -321,10 +351,24 @@ class ActionBehavior(
             .applyBehaviorOption(repeatDelay, Action.EXTRA_REPEAT_DELAY)
             .applyBehaviorOption(multiplier, Action.EXTRA_MULTIPLIER)
 
-        newExtras.removeAll { it.id == Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR }
+        newExtras.removeAll {
+            it.id in arrayOf(Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR, Action.EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR)
+        }
+
         if (stopRepeatingWhenTriggerPressedAgain.value) {
             newExtras.add(
-                Extra(Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR, Action.STOP_REPEAT_BEHAVIOUR_TRIGGER_AGAIN.toString()))
+                Extra(
+                    Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR,
+                    Action.STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN.toString()
+                ))
+        }
+
+        if (stopHoldDownWhenTriggerPressedAgain.value) {
+            newExtras.add(
+                Extra(
+                    Action.EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR,
+                    Action.STOP_HOLD_DOWN_BEHAVIOR_TRIGGER_PRESSED_AGAIN.toString()
+                ))
         }
 
         return action.clone(flags = newFlags, extras = newExtras)
@@ -349,6 +393,12 @@ class ActionBehavior(
                 stopRepeatingWhenTriggerReleased.isAllowed = value
 
                 repeat.value = value
+
+                holdDown.isAllowed = !value
+
+                if (value) {
+                    setValue(ID_HOLD_DOWN, false)
+                }
             }
 
             ID_SHOW_VOLUME_UI -> showVolumeUi.value = value
@@ -356,21 +406,91 @@ class ActionBehavior(
 
             ID_STOP_REPEATING_TRIGGER_PRESSED_AGAIN -> {
                 stopRepeatingWhenTriggerPressedAgain.value = value
-
                 stopRepeatingWhenTriggerReleased.value = !stopRepeatingWhenTriggerPressedAgain.value
             }
 
             ID_STOP_REPEATING_TRIGGER_RELEASED -> {
                 stopRepeatingWhenTriggerReleased.value = value
-
                 stopRepeatingWhenTriggerPressedAgain.value = !stopRepeatingWhenTriggerReleased.value
             }
 
             ID_HOLD_DOWN -> {
                 holdDown.value = value
+                stopHoldDownWhenTriggerPressedAgain.isAllowed = value
+                stopHoldDownWhenTriggerReleased.isAllowed = value
+
+                repeat.isAllowed = !value
+
+                if (value) {
+                    setValue(ID_REPEAT, false)
+                }
+            }
+
+            ID_STOP_HOLD_DOWN_WHEN_TRIGGER_RELEASED -> {
+                stopHoldDownWhenTriggerReleased.value = value
+                stopHoldDownWhenTriggerPressedAgain.value = !value
+            }
+
+            ID_STOP_HOLD_DOWN_WHEN_TRIGGER_PRESSED_AGAIN -> {
+                stopHoldDownWhenTriggerPressedAgain.value = value
+                stopHoldDownWhenTriggerReleased.value = !value
             }
         }
 
         return this
+    }
+}
+
+class TriggerKeyBehavior(
+    key: Trigger.Key,
+    @Trigger.Mode mode: Int
+) : Serializable {
+
+    companion object {
+        const val ID_DO_NOT_CONSUME_KEY_EVENT = "do_not_consume_key_event"
+        const val ID_CLICK_TYPE = "click_type"
+    }
+
+    val uniqueId = key.uniqueId
+
+    val clickType = BehaviorOption(
+        id = ID_CLICK_TYPE,
+        value = key.clickType,
+        isAllowed = mode == SEQUENCE || mode == Trigger.UNDEFINED
+    )
+
+    val doNotConsumeKeyEvents = BehaviorOption(
+        id = ID_DO_NOT_CONSUME_KEY_EVENT,
+        value = key.flags.hasFlag(Trigger.Key.FLAG_DO_NOT_CONSUME_KEY_EVENT),
+        isAllowed = true
+    )
+
+    /*
+     It is very important that any new options are only allowed with a valid combination of other options. Make sure
+     the "isAllowed" property considers all the other options.
+     */
+
+    fun setValue(id: String, value: Boolean): TriggerKeyBehavior {
+        when (id) {
+            ID_DO_NOT_CONSUME_KEY_EVENT -> doNotConsumeKeyEvents.value = value
+        }
+
+        return this
+    }
+
+    fun setValue(id: String, value: Int): TriggerKeyBehavior {
+        when (id) {
+            ID_CLICK_TYPE -> clickType.value = value
+        }
+
+        return this
+    }
+
+    fun applyToTriggerKey(key: Trigger.Key): Trigger.Key {
+        key.flags = key.flags.applyBehaviorOption(doNotConsumeKeyEvents, Trigger.Key.FLAG_DO_NOT_CONSUME_KEY_EVENT)
+
+        key.clickType = clickType.value
+
+        return key
     }
 }

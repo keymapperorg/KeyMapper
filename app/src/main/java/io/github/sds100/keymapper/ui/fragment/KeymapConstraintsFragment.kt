@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.map
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import io.github.sds100.keymapper.R
@@ -60,7 +59,7 @@ class KeymapConstraintsFragment(private val mKeymapId: Long) : Fragment() {
     }
 
     private fun FragmentKeymapConstraintsBinding.subscribeConstraintsList() {
-        mConstraintModelList.observe(viewLifecycleOwner) { constraintList ->
+        mConstraintModelList.observe(viewLifecycleOwner, { constraintList ->
             epoxyRecyclerViewConstraints.withModels {
                 constraintList.forEachIndexed { index, constraint ->
                     constraint {
@@ -81,6 +80,6 @@ class KeymapConstraintsFragment(private val mKeymapId: Long) : Fragment() {
                     }
                 }
             }
-        }
+        })
     }
 }

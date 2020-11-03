@@ -20,12 +20,11 @@ import io.github.sds100.keymapper.keymapSimple
 import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
 import io.github.sds100.keymapper.ui.callback.SelectionCallback
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
 import io.github.sds100.keymapper.util.result.Failure
 import io.github.sds100.keymapper.util.result.RecoverableFailure
 import io.github.sds100.keymapper.util.result.getFullMessage
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import splitties.snackbar.action
 import splitties.snackbar.longSnack
 
@@ -68,6 +67,19 @@ class KeymapListFragment : DefaultRecyclerViewFragment() {
     }
 
     private val mController = KeymapController()
+    private lateinit var mRecoverFailureDelegate: RecoverFailureDelegate
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        mRecoverFailureDelegate = RecoverFailureDelegate(
+            "KeymapListFragment",
+            requireActivity().activityResultRegistry,
+            this) {
+
+            mViewModel.rebuildModels()
+        }
+    }
 
     override fun subscribeList(binding: FragmentRecyclerviewBinding) {
         mViewModel.apply {
@@ -110,18 +122,16 @@ class KeymapListFragment : DefaultRecyclerViewFragment() {
     }
 
     private suspend fun buildModelList(keymapList: List<KeyMap>) =
-        withContext(lifecycleScope.coroutineContext + Dispatchers.Default) {
-            keymapList.map { keymap ->
-                KeymapListItemModel(
-                    id = keymap.id,
-                    actionList = keymap.actionList.map { it.buildChipModel(requireContext()) },
-                    triggerDescription = keymap.trigger.buildDescription(requireContext(), mViewModel.getDeviceInfoList()),
-                    constraintList = keymap.constraintList.map { it.buildModel(requireContext()) },
-                    constraintMode = keymap.constraintMode,
-                    flagsDescription = keymap.trigger.buildTriggerFlagsDescription(requireContext()),
-                    isEnabled = keymap.isEnabled
-                )
-            }
+        keymapList.map { keymap ->
+            KeymapListItemModel(
+                id = keymap.id,
+                actionList = keymap.actionList.map { it.buildChipModel(requireContext()) },
+                triggerDescription = keymap.trigger.buildDescription(requireContext(), mViewModel.getDeviceInfoList()),
+                constraintList = keymap.constraintList.map { it.buildModel(requireContext()) },
+                constraintMode = keymap.constraintMode,
+                flagsDescription = keymap.trigger.buildTriggerFlagsDescription(requireContext()),
+                isEnabled = keymap.isEnabled
+            )
         }
 
     inner class KeymapController : EpoxyController(), SelectionCallback {
@@ -146,11 +156,7 @@ class KeymapListFragment : DefaultRecyclerViewFragment() {
                                 //only add an action to fix the error if the error can be recovered from
                                 if (failure is RecoverableFailure) {
                                     action(R.string.snackbar_fix) {
-                                        lifecycleScope.launch {
-                                            failure.recover(requireActivity()) {
-                                                mViewModel.rebuildModels()
-                                            }
-                                        }
+                                        mRecoverFailureDelegate.recover(requireActivity(), failure)
                                     }
                                 }
 
