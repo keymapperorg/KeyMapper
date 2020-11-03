@@ -650,7 +650,7 @@ class KeymapDetectionDelegateTest {
             "undefined single long-press this-device, dont consume" to undefinedTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = LONG_PRESS, flags = FLAG_DO_NOT_CONSUME_KEY_EVENT)),
             "undefined single double-press this-device, dont consume" to undefinedTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = DOUBLE_PRESS, flags = FLAG_DO_NOT_CONSUME_KEY_EVENT)),
 
-            "undefined single short-press any-device, dont consume" to undefinedTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_ANY_DEVICE)),
+            "undefined single short-press any-device, dont consume" to undefinedTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_ANY_DEVICE, flags = FLAG_DO_NOT_CONSUME_KEY_EVENT)),
             "undefined single long-press any-device, dont consume" to undefinedTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = LONG_PRESS, flags = FLAG_DO_NOT_CONSUME_KEY_EVENT)),
             "undefined single double-press any-device, dont consume" to undefinedTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = DOUBLE_PRESS, flags = FLAG_DO_NOT_CONSUME_KEY_EVENT)),
 
