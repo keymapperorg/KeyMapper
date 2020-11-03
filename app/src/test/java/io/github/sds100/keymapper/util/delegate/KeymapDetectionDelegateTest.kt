@@ -114,7 +114,6 @@ class KeymapDetectionDelegateTest {
         val observer = Observer<Event<ImitateKeyModel>> {
             it.getContentIfNotHandled()?.let { model ->
                 imitatedKeyMetaState = model.metaState
-                println(model.metaState)
             }
         }
 
