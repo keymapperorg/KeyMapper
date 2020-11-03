@@ -1591,6 +1591,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         return false
     }
 
+    @MainThread
     private fun performAction(
         action: Action,
         showPerformingActionToast: Boolean,
