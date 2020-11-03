@@ -379,6 +379,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 mParallelTriggerConstraints = parallelTriggerConstraints.toTypedArray()
                 mParallelTriggerConstraintMode = parallelTriggerConstraintMode.toIntArray()
                 mParallelTriggerKeyFlags = parallelTriggerKeyFlags.toTypedArray()
+                mParallelTriggerModifierKeyIndices = parallelTriggerModifierKeyIndices.toTypedArray()
 
                 mDetectSequenceLongPresses = longPressSequenceEvents.isNotEmpty()
                 mLongPressSequenceEvents = longPressSequenceEvents.toTypedArray()
