@@ -56,7 +56,11 @@ class SliderWithLabel(context: Context,
     fun applyModel(model: SliderModel) {
         val min = context.int(model.min)
         val max = context.int(model.maxSlider)
-        val stepSize = context.int(model.stepSize)
+        var stepSize = context.int(model.stepSize)
+
+        if ((model.value ?: 0) % stepSize != 0 || model.value?.let { it > max } == true) {
+            stepSize = 1
+        }
 
         val defaultStepValue = calculateDefaultStepValue(min.toFloat(), stepSize.toFloat())
 
@@ -67,21 +71,26 @@ class SliderWithLabel(context: Context,
         }
 
         mSlider.valueTo = max.toFloat()
-        mSlider.stepSize = stepSize.toFloat()
 
+        mSlider.stepSize = stepSize.toFloat()
         mIsDefaultStepEnabled = model.isDefaultStepEnabled
 
         if (model.value != null) {
             when {
                 model.value > max -> {
                     //set the max slider value to a multiple of the step size greater than the value
-                    val remainder = model.value % stepSize
+                    val remainder = if (stepSize == 0) {
+                        0
+                    } else {
+                        model.value % stepSize
+                    }
 
                     mSlider.valueTo = ((model.value + stepSize) - remainder).toFloat()
                     mSlider.value = model.value.toFloat()
                 }
 
                 model.value < min -> mSlider.value = min.toFloat()
+
                 else -> mSlider.value = model.value.toFloat()
             }
         } else {

@@ -677,6 +677,22 @@ object KeyEventUtils {
         }
     }
 
+    fun isModifierKey(keyCode: Int): Boolean {
+        return keyCode in arrayOf(
+            KeyEvent.KEYCODE_SHIFT_LEFT,
+            KeyEvent.KEYCODE_SHIFT_RIGHT,
+            KeyEvent.KEYCODE_ALT_LEFT,
+            KeyEvent.KEYCODE_ALT_RIGHT,
+            KeyEvent.KEYCODE_CTRL_LEFT,
+            KeyEvent.KEYCODE_CTRL_RIGHT,
+            KeyEvent.KEYCODE_META_LEFT,
+            KeyEvent.KEYCODE_META_RIGHT,
+            KeyEvent.KEYCODE_SYM,
+            KeyEvent.KEYCODE_NUM,
+            KeyEvent.KEYCODE_FUNCTION
+        )
+    }
+
     /**
      * Get all the valid key codes which work on the Android version for the device.
      */

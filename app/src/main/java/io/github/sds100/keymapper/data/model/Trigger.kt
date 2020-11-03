@@ -5,6 +5,7 @@ import androidx.annotation.IntDef
 import com.github.salomonbrys.kotson.*
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.util.KeyEventUtils
 import splitties.bitflags.withFlag
 
 /**
@@ -133,8 +134,7 @@ class Trigger(
             get() = "$keyCode$clickType$deviceId"
 
         init {
-            KeyEvent.KEYCODE_SHIFT_LEFT
-            if (KeyEvent.isModifierKey(keyCode)) {
+            if (KeyEventUtils.isModifierKey(keyCode)) {
                 flags = flags.withFlag(FLAG_DO_NOT_CONSUME_KEY_EVENT)
             }
         }

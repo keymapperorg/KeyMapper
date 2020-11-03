@@ -66,6 +66,20 @@ class ActionBehaviorViewModel : ViewModel() {
                     )
                 ))
             }
+
+            if (it.delayBeforeNextAction.isAllowed){
+                yield(SliderListItemModel(
+                    id = it.delayBeforeNextAction.id,
+                    label = R.string.extra_label_delay_before_next_action,
+                    sliderModel = SliderModel(
+                        value = it.delayBeforeNextAction.value.nullIfDefault,
+                        isDefaultStepEnabled = true,
+                        min = R.integer.delay_before_next_action_min,
+                        maxSlider = R.integer.delay_before_next_action_max,
+                        stepSize = R.integer.delay_before_next_action_step_size
+                    )
+                ))
+            }
         }.toList()
     }
 

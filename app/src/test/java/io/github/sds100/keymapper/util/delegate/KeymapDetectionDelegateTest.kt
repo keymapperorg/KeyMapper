@@ -8,7 +8,7 @@ import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.Trigger.Companion.DOUBLE_PRESS
 import io.github.sds100.keymapper.data.model.Trigger.Companion.LONG_PRESS
 import io.github.sds100.keymapper.data.model.Trigger.Companion.SHORT_PRESS
-import io.github.sds100.keymapper.data.model.Trigger.Companion.TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION
+import io.github.sds100.keymapper.data.model.Trigger.Key.Companion.FLAG_DO_NOT_CONSUME_KEY_EVENT
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.Success
 import junit.framework.Assert.assertEquals
@@ -647,95 +647,95 @@ class KeymapDetectionDelegateTest {
 
     fun params_allTriggerKeyCombinationsDontConsume(): List<Array<Any>> {
         val triggerAndDescriptions = listOf(
-            "undefined single short-press this-device, dont consume" to undefinedTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE), TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION),
-            "undefined single long-press this-device, dont consume" to undefinedTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = LONG_PRESS), TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION),
-            "undefined single double-press this-device, dont consume" to undefinedTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = DOUBLE_PRESS), TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION),
+            "undefined single short-press this-device, dont consume" to undefinedTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE), FLAG_DO_NOT_CONSUME_KEY_EVENT),
+            "undefined single long-press this-device, dont consume" to undefinedTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = LONG_PRESS), FLAG_DO_NOT_CONSUME_KEY_EVENT),
+            "undefined single double-press this-device, dont consume" to undefinedTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = DOUBLE_PRESS), FLAG_DO_NOT_CONSUME_KEY_EVENT),
 
-            "undefined single short-press any-device, dont consume" to undefinedTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_ANY_DEVICE), TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION),
-            "undefined single long-press any-device, dont consume" to undefinedTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = LONG_PRESS), TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION),
-            "undefined single double-press any-device, dont consume" to undefinedTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = DOUBLE_PRESS), TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION),
+            "undefined single short-press any-device, dont consume" to undefinedTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_ANY_DEVICE), FLAG_DO_NOT_CONSUME_KEY_EVENT),
+            "undefined single long-press any-device, dont consume" to undefinedTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = LONG_PRESS), FLAG_DO_NOT_CONSUME_KEY_EVENT),
+            "undefined single double-press any-device, dont consume" to undefinedTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = DOUBLE_PRESS), FLAG_DO_NOT_CONSUME_KEY_EVENT),
 
             "sequence multiple short-press this-device, dont consume" to sequenceTrigger(
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = SHORT_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = SHORT_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = SHORT_PRESS), flags = TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION),
+                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = SHORT_PRESS), flags = FLAG_DO_NOT_CONSUME_KEY_EVENT),
 
             "sequence multiple long-press this-device, dont consume" to sequenceTrigger(
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = LONG_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = LONG_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = LONG_PRESS), flags = TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION),
+                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = LONG_PRESS), flags = FLAG_DO_NOT_CONSUME_KEY_EVENT),
 
             "sequence multiple double-press this-device, dont consume" to sequenceTrigger(
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = DOUBLE_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = DOUBLE_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = DOUBLE_PRESS), flags = TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION),
+                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = DOUBLE_PRESS), flags = FLAG_DO_NOT_CONSUME_KEY_EVENT),
 
             "sequence multiple mix this-device, dont consume" to sequenceTrigger(
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = LONG_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = SHORT_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = DOUBLE_PRESS), flags = TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION),
+                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = DOUBLE_PRESS), flags = FLAG_DO_NOT_CONSUME_KEY_EVENT),
 
             "sequence multiple mix external-device, dont consume" to sequenceTrigger(
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, FAKE_KEYBOARD_DESCRIPTOR, clickType = LONG_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, FAKE_HEADPHONE_DESCRIPTOR, clickType = SHORT_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, FAKE_HEADPHONE_DESCRIPTOR, clickType = LONG_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_A, FAKE_KEYBOARD_DESCRIPTOR, clickType = DOUBLE_PRESS), flags = TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION),
+                Trigger.Key(KeyEvent.KEYCODE_A, FAKE_KEYBOARD_DESCRIPTOR, clickType = DOUBLE_PRESS), flags = FLAG_DO_NOT_CONSUME_KEY_EVENT),
 
             "sequence multiple short-press mixed-device, dont consume" to sequenceTrigger(
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, FAKE_KEYBOARD_DESCRIPTOR, clickType = SHORT_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = SHORT_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = SHORT_PRESS), flags = TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION),
+                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = SHORT_PRESS), flags = FLAG_DO_NOT_CONSUME_KEY_EVENT),
 
             "sequence multiple long-press mixed-device, dont consume" to sequenceTrigger(
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, FAKE_KEYBOARD_DESCRIPTOR, clickType = LONG_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = LONG_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = LONG_PRESS), flags = TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION),
+                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = LONG_PRESS), flags = FLAG_DO_NOT_CONSUME_KEY_EVENT),
 
             "sequence multiple double-press mixed-device, dont consume" to sequenceTrigger(
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, FAKE_KEYBOARD_DESCRIPTOR, clickType = DOUBLE_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = DOUBLE_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = DOUBLE_PRESS), flags = TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION),
+                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = DOUBLE_PRESS), flags = FLAG_DO_NOT_CONSUME_KEY_EVENT),
 
             "sequence multiple mix mixed-device, dont consume" to sequenceTrigger(
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, FAKE_KEYBOARD_DESCRIPTOR, clickType = LONG_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = SHORT_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = DOUBLE_PRESS), flags = TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION),
+                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = DOUBLE_PRESS), flags = FLAG_DO_NOT_CONSUME_KEY_EVENT),
 
             "sequence multiple mix mixed-device, dont consume" to sequenceTrigger(
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = LONG_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, FAKE_HEADPHONE_DESCRIPTOR, clickType = SHORT_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = LONG_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_A, FAKE_KEYBOARD_DESCRIPTOR, clickType = DOUBLE_PRESS), flags = TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION),
+                Trigger.Key(KeyEvent.KEYCODE_A, FAKE_KEYBOARD_DESCRIPTOR, clickType = DOUBLE_PRESS), flags = FLAG_DO_NOT_CONSUME_KEY_EVENT),
 
             "parallel multiple short-press this-device, dont consume" to parallelTrigger(
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = SHORT_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = SHORT_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = SHORT_PRESS), flags = TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION),
+                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = SHORT_PRESS), flags = FLAG_DO_NOT_CONSUME_KEY_EVENT),
 
             "parallel multiple long-press this-device, dont consume" to parallelTrigger(
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = LONG_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = LONG_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = LONG_PRESS), flags = TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION),
+                Trigger.Key(KeyEvent.KEYCODE_A, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = LONG_PRESS), flags = FLAG_DO_NOT_CONSUME_KEY_EVENT),
 
             "parallel multiple short-press external-device, dont consume" to parallelTrigger(
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, FAKE_KEYBOARD_DESCRIPTOR, clickType = SHORT_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, FAKE_HEADPHONE_DESCRIPTOR, clickType = SHORT_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_A, FAKE_HEADPHONE_DESCRIPTOR, clickType = SHORT_PRESS), flags = TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION),
+                Trigger.Key(KeyEvent.KEYCODE_A, FAKE_HEADPHONE_DESCRIPTOR, clickType = SHORT_PRESS), flags = FLAG_DO_NOT_CONSUME_KEY_EVENT),
 
             "parallel multiple long-press external-device, dont consume" to parallelTrigger(
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, FAKE_HEADPHONE_DESCRIPTOR, clickType = LONG_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, FAKE_HEADPHONE_DESCRIPTOR, clickType = LONG_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_A, FAKE_HEADPHONE_DESCRIPTOR, clickType = LONG_PRESS), flags = TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION),
+                Trigger.Key(KeyEvent.KEYCODE_A, FAKE_HEADPHONE_DESCRIPTOR, clickType = LONG_PRESS), flags = FLAG_DO_NOT_CONSUME_KEY_EVENT),
 
             "parallel multiple short-press mix-device, dont consume" to parallelTrigger(
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = SHORT_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = SHORT_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_A, FAKE_KEYBOARD_DESCRIPTOR, clickType = SHORT_PRESS), flags = TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION),
+                Trigger.Key(KeyEvent.KEYCODE_A, FAKE_KEYBOARD_DESCRIPTOR, clickType = SHORT_PRESS), flags = FLAG_DO_NOT_CONSUME_KEY_EVENT),
 
             "parallel multiple long-press mix-device, dont consume" to parallelTrigger(
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, Trigger.Key.DEVICE_ID_THIS_DEVICE, clickType = LONG_PRESS),
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType = LONG_PRESS),
-                Trigger.Key(KeyEvent.KEYCODE_A, FAKE_KEYBOARD_DESCRIPTOR, clickType = LONG_PRESS), flags = TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION)
+                Trigger.Key(KeyEvent.KEYCODE_A, FAKE_KEYBOARD_DESCRIPTOR, clickType = LONG_PRESS), flags = FLAG_DO_NOT_CONSUME_KEY_EVENT)
         )
 
         return triggerAndDescriptions.mapIndexed { i, triggerAndDescription ->

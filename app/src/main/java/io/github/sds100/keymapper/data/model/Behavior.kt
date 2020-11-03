@@ -203,6 +203,7 @@ class TriggerBehavior(keys: List<Trigger.Key>, @Trigger.Mode mode: Int, flags: I
 
 class ActionBehavior(
     action: Action,
+    actionCount: Int,
     @Trigger.Mode triggerMode: Int? = null,
     triggerKeys: List<Trigger.Key>? = null
 ) : Serializable {
@@ -218,6 +219,7 @@ class ActionBehavior(
         const val ID_HOLD_DOWN = "hold_down"
         const val ID_STOP_HOLD_DOWN_WHEN_TRIGGER_RELEASED = "stop_hold_down_when_trigger_released"
         const val ID_STOP_HOLD_DOWN_WHEN_TRIGGER_PRESSED_AGAIN = "stop_hold_down_when_trigger_pressed_again"
+        const val ID_DELAY_BEFORE_NEXT_ACTION = "delay_before_next_action"
     }
 
     val actionId = action.uniqueId
@@ -269,6 +271,8 @@ class ActionBehavior(
     val repeatRate: BehaviorOption<Int>
 
     val repeatDelay: BehaviorOption<Int>
+
+    val delayBeforeNextAction: BehaviorOption<Int>
 
     val multiplier = BehaviorOption(
         id = ID_MULTIPLIER,
@@ -337,6 +341,15 @@ class ActionBehavior(
             value = !stopHoldDownTriggerPressedAgain,
             isAllowed = holdDown.value
         )
+
+       val delayBeforeNextActionValue =
+           action.extras.getData(Action.EXTRA_DELAY_BEFORE_NEXT_ACTION).valueOrNull()?.toInt()
+
+        delayBeforeNextAction = BehaviorOption(
+            id = ID_DELAY_BEFORE_NEXT_ACTION,
+            value = delayBeforeNextActionValue ?: BehaviorOption.DEFAULT,
+            isAllowed = actionCount > 0
+        )
     }
 
     fun applyToAction(action: Action): Action {
@@ -350,6 +363,7 @@ class ActionBehavior(
             .applyBehaviorOption(repeatRate, Action.EXTRA_REPEAT_RATE)
             .applyBehaviorOption(repeatDelay, Action.EXTRA_REPEAT_DELAY)
             .applyBehaviorOption(multiplier, Action.EXTRA_MULTIPLIER)
+            .applyBehaviorOption(delayBeforeNextAction, Action.EXTRA_DELAY_BEFORE_NEXT_ACTION)
 
         newExtras.removeAll {
             it.id in arrayOf(Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR, Action.EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR)
@@ -379,6 +393,7 @@ class ActionBehavior(
             ID_REPEAT_RATE -> repeatRate.value = value
             ID_REPEAT_DELAY -> repeatDelay.value = value
             ID_MULTIPLIER -> multiplier.value = value
+            ID_DELAY_BEFORE_NEXT_ACTION -> delayBeforeNextAction.value = value
         }
 
         return this
