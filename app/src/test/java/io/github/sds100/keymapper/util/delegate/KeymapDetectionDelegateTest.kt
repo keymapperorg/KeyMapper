@@ -17,8 +17,11 @@ import junitparams.JUnitParamsRunner
 import junitparams.Parameters
 import junitparams.naming.TestCaseName
 import kotlinx.coroutines.*
+import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -70,6 +73,8 @@ class KeymapDetectionDelegateTest {
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
 
+    private val mCoroutineScope = TestCoroutineScope()
+
     @Before
     fun init() {
         val iClock = object : IClock {
@@ -98,7 +103,13 @@ class KeymapDetectionDelegateTest {
             VIBRATION_DURATION,
             FORCE_VIBRATE)
 
-        mDelegate = KeymapDetectionDelegate(GlobalScope, preferences, iClock, iConstraintState, iActionError)
+        mDelegate = KeymapDetectionDelegate(mCoroutineScope, preferences, iClock, iConstraintState, iActionError)
+    }
+
+    @After
+    fun tearDown() {
+        mDelegate.keyMapListCache = listOf()
+        mDelegate.reset()
     }
 
     @Test
@@ -226,7 +237,8 @@ class KeymapDetectionDelegateTest {
     }
 
     @Test
-    fun shortPressTriggerDoublePressTrigger_holdDown_onlyDetectDoublePressTrigger() {
+    fun shortPressTriggerDoublePressTrigger_holdDown_onlyDetectDoublePressTrigger() = mCoroutineScope.runBlockingTest {
+        //given
         val shortPressTrigger = undefinedTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = SHORT_PRESS))
         val longPressTrigger = undefinedTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = DOUBLE_PRESS))
 
@@ -235,23 +247,26 @@ class KeymapDetectionDelegateTest {
             KeyMap(1, longPressTrigger, listOf(TEST_ACTION_2))
         )
 
-        runBlocking {
-            mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = DOUBLE_PRESS))
-        }
+        //when
+        mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = DOUBLE_PRESS))
+        advanceUntilIdle()
 
+        //then
         //the first action performed shouldn't be the short press action
-        assertEquals(TEST_ACTION_2, mDelegate.performAction.getOrAwaitValue().getContentIfNotHandled()?.action)
+        assertEquals(TEST_ACTION_2, mDelegate.performAction.getOrAwaitValueCoroutine()?.getContentIfNotHandled()?.action)
 
-        //rerun the test to see if the short press trigger action is performed correctly.
-        runBlocking {
-            mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = SHORT_PRESS))
-        }
+        /*
+        rerun the test to see if the short press trigger action is performed correctly.
+         */
 
-        Thread.sleep(1000)
+        //when
+        mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = SHORT_PRESS))
+        advanceUntilIdle()
 
-        val action = mDelegate.performAction.getOrAwaitValue()
-        //the first action performed shouldn't be the short press action
-        assertEquals(TEST_ACTION, action.getContentIfNotHandled()?.action)
+        //then
+        val action = mDelegate.performAction.getOrAwaitValueCoroutine()
+
+        assertEquals(TEST_ACTION, action?.getContentIfNotHandled()?.action)
     }
 
     @Test
