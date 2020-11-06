@@ -40,9 +40,7 @@ class ActionBehavior(
     val repeat = BehaviorOption(
         id = ID_REPEAT,
         value = action.flags.hasFlag(Action.ACTION_FLAG_REPEAT),
-        isAllowed = if (triggerKeys != null && triggerMode != null
-            && !action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)) {
-
+        isAllowed = if (triggerKeys != null && triggerMode != null) {
             KeymapDetectionDelegate.performActionOnDown(triggerKeys, triggerMode)
         } else {
             false
@@ -64,8 +62,7 @@ class ActionBehavior(
     val holdDown = BehaviorOption(
         id = ID_HOLD_DOWN,
         value = action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN),
-        isAllowed = if (triggerKeys != null && triggerMode != null
-            && !action.flags.hasFlag(Action.ACTION_FLAG_REPEAT)) {
+        isAllowed = if (triggerKeys != null && triggerMode != null) {
             KeymapDetectionDelegate.performActionOnDown(triggerKeys, triggerMode)
                 && (action.type == ActionType.KEY_EVENT
                 || (action.type == ActionType.TAP_COORDINATE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
@@ -221,12 +218,6 @@ class ActionBehavior(
                 stopRepeatingWhenTriggerReleased.isAllowed = value
 
                 repeat.value = value
-
-                holdDown.isAllowed = !value
-
-                if (value) {
-                    setValue(ID_HOLD_DOWN, false)
-                }
             }
 
             ID_SHOW_VOLUME_UI -> showVolumeUi.value = value
@@ -246,12 +237,6 @@ class ActionBehavior(
                 holdDown.value = value
                 stopHoldDownWhenTriggerPressedAgain.isAllowed = value
                 stopHoldDownWhenTriggerReleased.isAllowed = value
-
-                repeat.isAllowed = !value
-
-                if (value) {
-                    setValue(ID_REPEAT, false)
-                }
             }
 
             ID_STOP_HOLD_DOWN_WHEN_TRIGGER_RELEASED -> {
