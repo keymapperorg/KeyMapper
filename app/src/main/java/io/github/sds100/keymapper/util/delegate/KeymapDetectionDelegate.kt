@@ -1496,18 +1496,38 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             actionKeys.forEach { actionKey ->
                 val action = mActionMap[actionKey] ?: return@forEach
 
-                val keyEventAction =
-                    if (action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)) {
-                        KeyEventAction.DOWN
+                var shouldPerformAction = true
+
+                if (holdDownUntilPressedAgain(actionKey)) {
+                    if (mActionsBeingHeldDown.contains(actionKey)) {
+                        mActionsBeingHeldDown.remove(actionKey)
+
+                        performAction(
+                            action,
+                            showPerformingActionToast(actionKey),
+                            keyEventAction = KeyEventAction.UP,
+                            multiplier = actionMultiplier(actionKey))
+
+                        shouldPerformAction = false
                     } else {
-                        KeyEventAction.DOWN_UP
+                        mActionsBeingHeldDown.add(actionKey)
                     }
+                }
 
-                performAction(action, showPerformingActionToast(actionKey), actionMultiplier(actionKey), keyEventAction)
+                if (shouldPerformAction) {
+                    val keyEventAction =
+                        if (action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)) {
+                            KeyEventAction.DOWN
+                        } else {
+                            KeyEventAction.DOWN_UP
+                        }
 
-                if (mParallelTriggerFlags.vibrate(triggerIndex) || preferences.forceVibrate
-                    || mParallelTriggerFlags[triggerIndex].hasFlag(Trigger.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION)) {
-                    vibrate.value = Event(vibrateDuration(mParallelTriggerOptions[triggerIndex]))
+                    performAction(action, showPerformingActionToast(actionKey), actionMultiplier(actionKey), keyEventAction)
+
+                    if (mParallelTriggerFlags.vibrate(triggerIndex) || preferences.forceVibrate
+                        || mParallelTriggerFlags[triggerIndex].hasFlag(Trigger.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION)) {
+                        vibrate.value = Event(vibrateDuration(mParallelTriggerOptions[triggerIndex]))
+                    }
                 }
 
                 delay(delayBeforeNextAction(actionKey))

@@ -116,6 +116,58 @@ class KeymapDetectionDelegateTest {
     }
 
     @Test
+    fun `long press trigger and action with Hold Down until pressed again flag, input valid long press, hold down until long pressed again`() = mCoroutineScope.runBlockingTest {
+        //GIVEN
+        val trigger = Trigger(
+            keys = listOf(Trigger.Key(KeyEvent.KEYCODE_A, clickType = LONG_PRESS)),
+            mode = Trigger.UNDEFINED
+        )
+
+        val action = Action.keyCodeAction(KeyEvent.KEYCODE_B).clone(
+            flags = Action.ACTION_FLAG_HOLD_DOWN,
+            extras = listOf(Extra(
+                Action.EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR, Action.STOP_HOLD_DOWN_BEHAVIOR_TRIGGER_PRESSED_AGAIN.toString()
+            ))
+        )
+
+        val keymap = KeyMap(0,
+            trigger = trigger,
+            actionList = listOf(action)
+        )
+
+        mDelegate.keyMapListCache = listOf(keymap)
+
+        //WHEN
+        mockTriggerKeyInput(trigger.keys[0])
+        advanceUntilIdle()
+
+        //THEN
+        assertThat(
+            mDelegate.performAction.getOrAwaitValueCoroutine().peekContent().action,
+            `is`(action)
+        )
+
+        assertThat(
+            mDelegate.performAction.getOrAwaitValueCoroutine().peekContent().keyEventAction,
+            `is`(KeyEventAction.DOWN)
+        )
+
+        //WHEN
+        mockTriggerKeyInput(trigger.keys[0])
+        advanceUntilIdle()
+
+        assertThat(
+            mDelegate.performAction.getOrAwaitValueCoroutine().peekContent().action,
+            `is`(action)
+        )
+
+        assertThat(
+            mDelegate.performAction.getOrAwaitValueCoroutine().peekContent().keyEventAction,
+            `is`(KeyEventAction.UP)
+        )
+    }
+
+    @Test
     fun `trigger with modifier key and modifier keycode action, don't include metastate from the trigger modifier key when an unmapped modifier key is pressed`() =
         mCoroutineScope.runBlockingTest {
             val trigger = undefinedTrigger(Trigger.Key(KeyEvent.KEYCODE_CTRL_LEFT))
@@ -877,18 +929,18 @@ class KeymapDetectionDelegateTest {
         mDelegate.keyMapListCache = listOf(keymap)
 
         if (KeymapDetectionDelegate.performActionOnDown(keymap.trigger.keys, keymap.trigger.mode)) {
-                //WHEN
-                mockParallelTriggerKeys(*keymap.trigger.keys.toTypedArray())
-                advanceUntilIdle()
+            //WHEN
+            mockParallelTriggerKeys(*keymap.trigger.keys.toTypedArray())
+            advanceUntilIdle()
 
-                //THEN
-                val value = mDelegate.performAction.value
+            //THEN
+            val value = mDelegate.performAction.value
 
-                assertThat(value?.getContentIfNotHandled()?.action, `is`(TEST_ACTION))
+            assertThat(value?.getContentIfNotHandled()?.action, `is`(TEST_ACTION))
         } else {
             //WHEN
             keymap.trigger.keys.forEach {
-                    mockTriggerKeyInput(it)
+                mockTriggerKeyInput(it)
             }
 
             advanceUntilIdle()
