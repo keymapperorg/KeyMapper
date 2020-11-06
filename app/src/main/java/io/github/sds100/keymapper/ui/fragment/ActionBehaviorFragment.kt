@@ -16,9 +16,9 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.github.sds100.keymapper.checkbox
-import io.github.sds100.keymapper.data.model.BehaviorOption
 import io.github.sds100.keymapper.data.model.CheckBoxListItemModel
 import io.github.sds100.keymapper.data.model.SliderListItemModel
+import io.github.sds100.keymapper.data.model.behavior.BehaviorOption
 import io.github.sds100.keymapper.data.viewmodel.ActionBehaviorViewModel
 import io.github.sds100.keymapper.databinding.FragmentActionBehaviorBinding
 import io.github.sds100.keymapper.slider

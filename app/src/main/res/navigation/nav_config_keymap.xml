@@ -78,7 +78,7 @@
 
         <argument
             android:name="@string/nav_arg_action_behavior"
-            app:argType="io.github.sds100.keymapper.data.model.ActionBehavior" />
+            app:argType="io.github.sds100.keymapper.data.model.behavior.ActionBehavior" />
     </dialog>
 
     <dialog
@@ -88,7 +88,7 @@
 
         <argument
             android:name="@string/nav_arg_trigger_key_behavior"
-            app:argType="io.github.sds100.keymapper.data.model.TriggerKeyBehavior" />
+            app:argType="io.github.sds100.keymapper.data.model.behavior.TriggerKeyBehavior" />
     </dialog>
 
     <fragment

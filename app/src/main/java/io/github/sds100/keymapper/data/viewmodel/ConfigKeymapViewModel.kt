@@ -5,7 +5,10 @@ import androidx.lifecycle.*
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.IOnboardingState
 import io.github.sds100.keymapper.data.model.*
-import io.github.sds100.keymapper.data.model.BehaviorOption.Companion.nullIfDefault
+import io.github.sds100.keymapper.data.model.behavior.ActionBehavior
+import io.github.sds100.keymapper.data.model.behavior.BehaviorOption.Companion.nullIfDefault
+import io.github.sds100.keymapper.data.model.behavior.TriggerBehavior
+import io.github.sds100.keymapper.data.model.behavior.TriggerKeyBehavior
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.data.usecase.ConfigKeymapUseCase
 import io.github.sds100.keymapper.util.ActionType

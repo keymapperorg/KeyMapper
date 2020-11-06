@@ -3,11 +3,11 @@ package io.github.sds100.keymapper.data.viewmodel
 import android.os.Bundle
 import androidx.lifecycle.*
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.model.ActionBehavior
-import io.github.sds100.keymapper.data.model.BehaviorOption.Companion.nullIfDefault
 import io.github.sds100.keymapper.data.model.CheckBoxListItemModel
 import io.github.sds100.keymapper.data.model.SliderListItemModel
 import io.github.sds100.keymapper.data.model.SliderModel
+import io.github.sds100.keymapper.data.model.behavior.ActionBehavior
+import io.github.sds100.keymapper.data.model.behavior.BehaviorOption.Companion.nullIfDefault
 import io.github.sds100.keymapper.util.Event
 
 /**

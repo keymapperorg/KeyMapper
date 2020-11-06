@@ -16,9 +16,9 @@ import androidx.navigation.navGraphViewModels
 import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Action
-import io.github.sds100.keymapper.data.model.ActionBehavior
 import io.github.sds100.keymapper.data.model.Constraint
-import io.github.sds100.keymapper.data.model.TriggerKeyBehavior
+import io.github.sds100.keymapper.data.model.behavior.ActionBehavior
+import io.github.sds100.keymapper.data.model.behavior.TriggerKeyBehavior
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentConfigKeymapBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService

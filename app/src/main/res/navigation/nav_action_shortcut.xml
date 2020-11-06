@@ -44,6 +44,6 @@
 
         <argument
             android:name="@string/nav_arg_action_behavior"
-            app:argType="io.github.sds100.keymapper.data.model.ActionBehavior" />
+            app:argType="io.github.sds100.keymapper.data.model.behavior.ActionBehavior" />
     </dialog>
 </navigation>

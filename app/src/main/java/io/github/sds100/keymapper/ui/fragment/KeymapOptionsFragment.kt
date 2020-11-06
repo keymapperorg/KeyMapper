@@ -11,9 +11,9 @@ import androidx.navigation.navGraphViewModels
 import com.airbnb.epoxy.EpoxyController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.checkbox
-import io.github.sds100.keymapper.data.model.BehaviorOption
 import io.github.sds100.keymapper.data.model.CheckBoxListItemModel
 import io.github.sds100.keymapper.data.model.SliderListItemModel
+import io.github.sds100.keymapper.data.model.behavior.BehaviorOption
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentKeymapOptionsBinding
 import io.github.sds100.keymapper.slider

@@ -6,6 +6,7 @@ import io.github.sds100.keymapper.data.repository.DefaultSystemActionRepository
 import io.github.sds100.keymapper.data.repository.FileRepository
 import io.github.sds100.keymapper.data.repository.SystemRepository
 import io.github.sds100.keymapper.data.viewmodel.*
+import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 
 /**
  * Created by sds100 on 26/01/2020.
