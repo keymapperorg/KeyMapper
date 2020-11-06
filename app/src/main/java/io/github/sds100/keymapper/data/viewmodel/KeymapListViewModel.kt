@@ -4,12 +4,12 @@ import androidx.lifecycle.*
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
-import io.github.sds100.keymapper.data.repository.KeymapRepository
+import io.github.sds100.keymapper.data.usecase.KeymapListUseCase
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.launch
 
 class KeymapListViewModel internal constructor(
-    private val mKeymapRepository: KeymapRepository,
+    private val mKeymapRepository: KeymapListUseCase,
     private val mDeviceInfoRepository: DeviceInfoRepository
 ) : ViewModel() {
 
@@ -79,12 +79,12 @@ class KeymapListViewModel internal constructor(
 
     @Suppress("UNCHECKED_CAST")
     class Factory(
-        private val mKeymapRepository: KeymapRepository,
+        private val mKeymapListUseCase: KeymapListUseCase,
         private val mDeviceInfoRepository: DeviceInfoRepository
     ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return KeymapListViewModel(mKeymapRepository, mDeviceInfoRepository) as T
+            return KeymapListViewModel(mKeymapListUseCase, mDeviceInfoRepository) as T
         }
     }
 }

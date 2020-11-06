@@ -7,7 +7,7 @@ import io.github.sds100.keymapper.data.IOnboardingState
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.BehaviorOption.Companion.nullIfDefault
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
-import io.github.sds100.keymapper.data.repository.KeymapRepository
+import io.github.sds100.keymapper.data.usecase.ConfigKeymapUseCase
 import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.dataExtraString
@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 import java.util.*
 
 class ConfigKeymapViewModel internal constructor(
-    private val mKeymapRepository: KeymapRepository,
+    private val mKeymapRepository: ConfigKeymapUseCase,
     private val mDeviceInfoRepository: DeviceInfoRepository,
     onboardingState: IOnboardingState,
     private val mId: Long
@@ -694,13 +694,13 @@ class ConfigKeymapViewModel internal constructor(
     suspend fun getDeviceInfoList() = mDeviceInfoRepository.getAll()
 
     class Factory(
-        private val mKeymapRepository: KeymapRepository,
+        private val mConfigKeymapUseCase: ConfigKeymapUseCase,
         private val mDeviceInfoRepository: DeviceInfoRepository,
         private val mIOnboardingState: IOnboardingState,
         private val mId: Long) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>) =
-            ConfigKeymapViewModel(mKeymapRepository, mDeviceInfoRepository, mIOnboardingState, mId) as T
+            ConfigKeymapViewModel(mConfigKeymapUseCase, mDeviceInfoRepository, mIOnboardingState, mId) as T
     }
 }

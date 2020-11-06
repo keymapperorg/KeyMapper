@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
-import io.github.sds100.keymapper.data.repository.KeymapRepository
+import io.github.sds100.keymapper.data.usecase.BackupRestoreUseCase
 import io.github.sds100.keymapper.util.BackupUtils
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.result.Failure
@@ -22,7 +22,7 @@ import java.io.InputStream
 import java.io.OutputStream
 
 class BackupRestoreViewModel internal constructor(
-    private val mKeymapRepository: KeymapRepository,
+    private val mKeymapRepository: BackupRestoreUseCase,
     private val mDeviceInfoRepository: DeviceInfoRepository
 ) : ViewModel() {
 
@@ -95,12 +95,12 @@ class BackupRestoreViewModel internal constructor(
 
     @Suppress("UNCHECKED_CAST")
     class Factory(
-        private val mKeymapRepository: KeymapRepository,
+        private val mBackupRestoreUseCase: BackupRestoreUseCase,
         private val mDeviceInfoRepository: DeviceInfoRepository
     ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return BackupRestoreViewModel(mKeymapRepository, mDeviceInfoRepository) as T
+            return BackupRestoreViewModel(mBackupRestoreUseCase, mDeviceInfoRepository) as T
         }
     }
 }

@@ -9,7 +9,6 @@ import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.repository.DefaultDeviceInfoRepository
 import io.github.sds100.keymapper.data.repository.DefaultKeymapRepository
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
-import io.github.sds100.keymapper.data.repository.KeymapRepository
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -21,7 +20,7 @@ object ServiceLocator {
     private var database: AppDatabase? = null
 
     @Volatile
-    var keymapRepository: KeymapRepository? = null
+    var keymapRepository: DefaultKeymapRepository? = null
         @VisibleForTesting set
 
     @Volatile
@@ -32,7 +31,7 @@ object ServiceLocator {
     var onboardingState: IOnboardingState? = null
         @VisibleForTesting set
 
-    fun provideKeymapRepository(context: Context): KeymapRepository {
+    fun provideKeymapRepository(context: Context): DefaultKeymapRepository {
         synchronized(this) {
             return keymapRepository ?: createKeymapRepository(context)
         }
@@ -69,7 +68,7 @@ object ServiceLocator {
         }
     }
 
-    private fun createKeymapRepository(context: Context): KeymapRepository {
+    private fun createKeymapRepository(context: Context): DefaultKeymapRepository {
         val database = database ?: createDatabase(context)
         keymapRepository = DefaultKeymapRepository(database.keymapDao())
         return keymapRepository!!

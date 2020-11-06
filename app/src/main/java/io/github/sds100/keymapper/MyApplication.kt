@@ -2,8 +2,8 @@ package io.github.sds100.keymapper
 
 import androidx.multidex.MultiDexApplication
 import io.github.sds100.keymapper.data.IOnboardingState
+import io.github.sds100.keymapper.data.repository.DefaultKeymapRepository
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
-import io.github.sds100.keymapper.data.repository.KeymapRepository
 import timber.log.Timber
 
 /**
@@ -11,7 +11,7 @@ import timber.log.Timber
  */
 class MyApplication : MultiDexApplication() {
 
-    val keymapRepository: KeymapRepository
+    val keymapRepository: DefaultKeymapRepository
         get() = ServiceLocator.provideKeymapRepository(this)
 
     val deviceInfoRepository: DeviceInfoRepository
