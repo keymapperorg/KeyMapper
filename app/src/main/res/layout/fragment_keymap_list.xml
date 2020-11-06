@@ -10,7 +10,15 @@
 
         <import type="com.google.android.material.bottomappbar.BottomAppBar" />
 
-        <import type="io.github.sds100.keymapper.ui.view.StatusLayout.State" />
+        <import
+            alias="StatusLayoutState"
+            type="io.github.sds100.keymapper.ui.view.StatusLayout.State" />
+
+        <import type="io.github.sds100.keymapper.util.Data" />
+
+        <import type="io.github.sds100.keymapper.util.Loading" />
+
+        <import type="io.github.sds100.keymapper.util.Empty" />
 
         <import type="androidx.lifecycle.LiveData" />
 
@@ -36,27 +44,27 @@
 
         <variable
             name="collapsedStatusLayoutState"
-            type="LiveData&lt;State>" />
+            type="LiveData&lt;StatusLayoutState>" />
 
         <variable
             name="accessibilityServiceStatusState"
-            type="LiveData&lt;State>" />
+            type="LiveData&lt;StatusLayoutState>" />
 
         <variable
             name="imeServiceStatusState"
-            type="LiveData&lt;State>" />
+            type="LiveData&lt;StatusLayoutState>" />
 
         <variable
             name="dndAccessStatusState"
-            type="LiveData&lt;State>" />
+            type="LiveData&lt;StatusLayoutState>" />
 
         <variable
             name="writeSettingsStatusState"
-            type="LiveData&lt;State>" />
+            type="LiveData&lt;StatusLayoutState>" />
 
         <variable
             name="batteryOptimisationState"
-            type="LiveData&lt;State>" />
+            type="LiveData&lt;StatusLayoutState>" />
 
         <variable
             name="enableAccessibilityService"
@@ -302,7 +310,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginTop="8dp"
-                android:visibility="@{viewModel.loadingContent  || viewModel.keymapModelList.empty ? View.GONE : View.VISIBLE}"
+                android:visibility="@{viewModel.keymapModelList instanceof Data ? View.VISIBLE : View.GONE}"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -318,7 +326,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
-                android:visibility="@{viewModel.loadingContent ? View.VISIBLE : View.GONE}"
+                android:visibility="@{viewModel.keymapModelList instanceof Loading ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -330,7 +338,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:text="@string/keymap_recyclerview_placeholder"
-                android:visibility="@{viewModel.keymapModelList.empty &amp;&amp; !viewModel.loadingContent ? View.VISIBLE : View.GONE}"
+                android:visibility="@{viewModel.keymapModelList instanceof Empty ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

@@ -5,9 +5,8 @@ import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.data.SystemActionRepository
 import io.github.sds100.keymapper.data.model.SystemActionListItemModel
 import io.github.sds100.keymapper.data.model.UnsupportedSystemActionListItemModel
-import io.github.sds100.keymapper.ui.callback.ProgressCallback
 import io.github.sds100.keymapper.ui.callback.StringResourceProvider
-import io.github.sds100.keymapper.util.SystemActionUtils
+import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
@@ -18,14 +17,13 @@ import java.util.*
 class SystemActionListViewModel(
     private val mRepository: SystemActionRepository,
     private var mStringResourceProvider: StringResourceProvider? = null
-) : ViewModel(), ProgressCallback {
-
-    override val loadingContent = MutableLiveData(false)
+) : ViewModel() {
 
     val searchQuery = MutableLiveData("")
 
     private val mModelsSortedByCategory = liveData {
-        loadingContent.value = true
+
+        emit(Loading())
 
         val systemActionsSortedByCategory = withContext(viewModelScope.coroutineContext + Dispatchers.Default) {
             val allModels = mRepository.supportedSystemActions.map {
@@ -42,32 +40,38 @@ class SystemActionListViewModel(
                         yield(categoryLabel to systemActions)
                     }
                 }
-            }.toMap()
+            }.toMap().getState()
         }
 
         emit(systemActionsSortedByCategory)
-
-        loadingContent.value = false
     }
 
-    val filteredModelList = MediatorLiveData<Map<Int, List<SystemActionListItemModel>>>().apply {
+    val filteredModelList = MediatorLiveData<State<Map<Int, List<SystemActionListItemModel>>>>().apply {
         fun filter(query: String) {
             mModelsSortedByCategory.value ?: return
             mStringResourceProvider ?: return
 
-            value = sequence {
-                for ((category, systemActionList) in mModelsSortedByCategory.value!!) {
-                    val matchedSystemActions = systemActionList.filter {
-                        val descriptionString = mStringResourceProvider!!.getStringResource(it.descriptionRes)
+            value = Loading()
 
-                        descriptionString.toLowerCase(Locale.getDefault()).contains(query)
-                    }
+            mModelsSortedByCategory.value?.let { modelsSortedByCategory ->
+                if (modelsSortedByCategory is Data) {
+                    val filteredModels = sequence {
+                        for ((category, systemActionList) in modelsSortedByCategory.data) {
+                            val matchedSystemActions = systemActionList.filter {
+                                val descriptionString = mStringResourceProvider!!.getStringResource(it.descriptionRes)
 
-                    if (matchedSystemActions.isNotEmpty()) {
-                        yield(category to matchedSystemActions)
-                    }
+                                descriptionString.toLowerCase(Locale.getDefault()).contains(query)
+                            }
+
+                            if (matchedSystemActions.isNotEmpty()) {
+                                yield(category to matchedSystemActions)
+                            }
+                        }
+                    }.toMap()
+
+                    value = filteredModels.getState()
                 }
-            }.toMap()
+            }
         }
 
         addSource(searchQuery) { query ->
@@ -84,6 +88,8 @@ class SystemActionListViewModel(
     }
 
     val unsupportedSystemActions = liveData {
+        emit(Loading())
+
         val unsupportedActions = withContext(viewModelScope.coroutineContext + Dispatchers.Default) {
             mRepository.unsupportedSystemActions.map {
                 val systemAction = it.key
@@ -93,7 +99,7 @@ class SystemActionListViewModel(
                     systemAction.descriptionRes,
                     systemAction.iconRes,
                     failure)
-            }
+            }.getState()
         }
 
         emit(unsupportedActions)

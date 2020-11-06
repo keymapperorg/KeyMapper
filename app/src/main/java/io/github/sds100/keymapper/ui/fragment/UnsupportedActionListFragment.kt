@@ -6,13 +6,9 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.viewmodel.UnsupportedActionListViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.simple
-import io.github.sds100.keymapper.ui.callback.ProgressCallback
-import io.github.sds100.keymapper.util.InjectorUtils
-import io.github.sds100.keymapper.util.TintType
-import io.github.sds100.keymapper.util.drawable
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.SdkVersionTooLow
 import io.github.sds100.keymapper.util.result.getFullMessage
-import io.github.sds100.keymapper.util.str
 
 /**
  * Created by sds100 on 31/03/2020.
@@ -23,13 +19,14 @@ class UnsupportedActionListFragment : DefaultRecyclerViewFragment() {
         InjectorUtils.provideUnsupportedActionListViewModel(requireContext())
     }
 
-    override val progressCallback: ProgressCallback?
-        get() = mViewModel
-
     override fun subscribeList(binding: FragmentRecyclerviewBinding) {
         binding.apply {
             mViewModel.unsupportedSystemActions.observe(viewLifecycleOwner, { unsupportedActions ->
+                state = unsupportedActions
+
                 epoxyRecyclerView.withModels {
+                    if (unsupportedActions !is Data) return@withModels
+
                     if (!mViewModel.isTapCoordinateActionSupported) {
                         simple {
                             id(0)
@@ -38,7 +35,7 @@ class UnsupportedActionListFragment : DefaultRecyclerViewFragment() {
                         }
                     }
 
-                    unsupportedActions.forEach {
+                    unsupportedActions.data.forEach {
                         simple {
                             id(it.id)
                             icon(drawable(it.icon))

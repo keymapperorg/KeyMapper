@@ -237,7 +237,11 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
             mViewModel.apply {
 
                 keymapModelList.observe(viewLifecycleOwner, Observer { keymapList ->
-                    mController.keymapList = keymapList
+                    mController.keymapList = if (keymapList is Data) {
+                        keymapList.data
+                    } else {
+                        listOf()
+                    }
                 })
 
                 selectionProvider.apply {
@@ -452,11 +456,15 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
         if (KeyboardUtils.isCompatibleImeEnabled()) {
             mImeServiceStatusState.value = StatusLayout.State.POSITIVE
 
-        } else if (mViewModel.keymapModelList.value?.any { keymap ->
-                keymap.actionList.any { it.error is NoCompatibleImeEnabled }
-            } == true) {
+        } else if (mViewModel.keymapModelList.value is Data) {
 
-            mImeServiceStatusState.value = StatusLayout.State.ERROR
+            if ((mViewModel.keymapModelList.value as Data<List<KeymapListItemModel>>).data.any { keymap ->
+                    keymap.actionList.any { it.error is NoCompatibleImeEnabled }
+                }) {
+
+                mImeServiceStatusState.value = StatusLayout.State.ERROR
+            }
+
         } else {
             mImeServiceStatusState.value = StatusLayout.State.WARN
         }

@@ -16,7 +16,6 @@ import io.github.sds100.keymapper.data.viewmodel.SystemActionListViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.sectionHeader
 import io.github.sds100.keymapper.simple
-import io.github.sds100.keymapper.ui.callback.ProgressCallback
 import io.github.sds100.keymapper.ui.callback.StringResourceProvider
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.getFullMessage
@@ -50,9 +49,6 @@ class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourcePr
     override var searchStateKey: String? = SEARCH_STATE_KEY
     override var requestKey: String? = REQUEST_KEY
 
-    override val progressCallback: ProgressCallback?
-        get() = mViewModel
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         mViewModel.registerStringResourceProvider(this)
@@ -65,14 +61,20 @@ class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourcePr
         binding.apply {
 
             mViewModel.unsupportedSystemActions.observe(viewLifecycleOwner, {
-                if (it.isNotEmpty()) {
+                if (it !is Data) return@observe
+
+                if (it.data.isNotEmpty()) {
                     caption = str(R.string.your_device_doesnt_support_some_actions)
                 }
             })
 
             mViewModel.filteredModelList.observe(viewLifecycleOwner, {
+                state = it
+
+                if (it !is Data) return@observe
+
                 epoxyRecyclerView.withModels {
-                    for ((sectionHeader, systemActions) in it) {
+                    for ((sectionHeader, systemActions) in it.data) {
                         sectionHeader {
                             id(sectionHeader)
                             header(str(sectionHeader))

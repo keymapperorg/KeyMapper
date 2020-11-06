@@ -1,10 +1,14 @@
 package io.github.sds100.keymapper.data.viewmodel
 
 import android.os.Build
-import androidx.lifecycle.*
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.liveData
+import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.data.SystemActionRepository
 import io.github.sds100.keymapper.data.model.UnsupportedSystemActionListItemModel
-import io.github.sds100.keymapper.ui.callback.ProgressCallback
+import io.github.sds100.keymapper.util.Loading
+import io.github.sds100.keymapper.util.getState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -13,14 +17,13 @@ import kotlinx.coroutines.withContext
  */
 class UnsupportedActionListViewModel(
     private val mRepository: SystemActionRepository
-) : ViewModel(), ProgressCallback {
+) : ViewModel() {
 
-    override val loadingContent = MutableLiveData(false)
-
-    val isTapCoordinateActionSupported =
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+    val isTapCoordinateActionSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
 
     val unsupportedSystemActions = liveData {
+        emit(Loading())
+
         val unsupportedActions = withContext(viewModelScope.coroutineContext + Dispatchers.Default) {
             mRepository.unsupportedSystemActions.map {
                 val systemAction = it.key
@@ -30,7 +33,7 @@ class UnsupportedActionListViewModel(
                     systemAction.descriptionRes,
                     systemAction.iconRes,
                     failure)
-            }
+            }.getState()
         }
 
         emit(unsupportedActions)

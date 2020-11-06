@@ -12,6 +12,7 @@ import io.github.sds100.keymapper.data.SystemRepository
 import io.github.sds100.keymapper.data.viewmodel.AppShortcutListViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.simple
+import io.github.sds100.keymapper.util.Data
 import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.editTextStringAlertDialog
 import io.github.sds100.keymapper.util.str
@@ -95,9 +96,12 @@ class AppShortcutListFragment : DefaultRecyclerViewFragment() {
 
     override fun subscribeList(binding: FragmentRecyclerviewBinding) {
         mViewModel.filteredAppShortcutModelList.observe(viewLifecycleOwner, { appShortcutList ->
+            binding.state = appShortcutList
 
             binding.epoxyRecyclerView.withModels {
-                appShortcutList.forEach {
+                if (appShortcutList !is Data) return@withModels
+
+                appShortcutList.data.forEach {
                     simple {
                         id(it.activityInfo.name)
                         primaryText(it.label)

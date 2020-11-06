@@ -3,12 +3,15 @@ package io.github.sds100.keymapper.data.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.liveData
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.ChooseConstraintListItemModel
 import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.ConstraintType
 import io.github.sds100.keymapper.data.model.NotifyUserModel
 import io.github.sds100.keymapper.util.Event
+import io.github.sds100.keymapper.util.Loading
+import io.github.sds100.keymapper.util.getState
 
 /**
  * Created by sds100 on 21/03/2020.
@@ -51,13 +54,19 @@ class ChooseConstraintListViewModel : ViewModel() {
         )
     )
 
-    val constraintsSortedByCategory = sequence {
-        for ((id, label) in Constraint.CATEGORY_LABEL_MAP) {
-            val constraints = mConstraintList.filter { it.categoryId == id }
+    val constraintsSortedByCategory = liveData {
+        emit(Loading())
 
-            yield(label to constraints)
-        }
-    }.toMap()
+        emit(
+            sequence {
+                for ((id, label) in Constraint.CATEGORY_LABEL_MAP) {
+                    val constraints = mConstraintList.filter { it.categoryId == id }
+
+                    yield(label to constraints)
+                }
+            }.toMap().getState()
+        )
+    }
 
     val choosePackageEvent = MutableLiveData<Event<Unit>>()
     val chooseBluetoothDeviceEvent = MutableLiveData<Event<Unit>>()

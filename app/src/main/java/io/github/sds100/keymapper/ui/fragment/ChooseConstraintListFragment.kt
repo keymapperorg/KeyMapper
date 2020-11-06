@@ -11,11 +11,8 @@ import io.github.sds100.keymapper.data.viewmodel.ChooseConstraintListViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.sectionHeader
 import io.github.sds100.keymapper.simple
-import io.github.sds100.keymapper.util.ConstraintUtils
-import io.github.sds100.keymapper.util.EventObserver
-import io.github.sds100.keymapper.util.InjectorUtils
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.getFullMessage
-import io.github.sds100.keymapper.util.str
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.messageResource
 import splitties.alertdialog.appcompat.okButton
@@ -87,34 +84,40 @@ class ChooseConstraintListFragment : DefaultRecyclerViewFragment() {
     }
 
     override fun subscribeList(binding: FragmentRecyclerviewBinding) {
-        binding.epoxyRecyclerView.withModels {
-            for ((sectionHeader, constraints) in mViewModel.constraintsSortedByCategory) {
+        mViewModel.constraintsSortedByCategory.observe(viewLifecycleOwner, { modelList ->
+            binding.state = modelList
 
-                sectionHeader {
-                    id(sectionHeader)
-                    header(requireContext().str(sectionHeader))
-                }
+            binding.epoxyRecyclerView.withModels {
+                if (modelList !is Data) return@withModels
 
-                constraints.forEach { constraint ->
-                    simple {
-                        id(constraint.id)
-                        primaryText(requireContext().str(constraint.description))
-                        isSecondaryTextAnError(true)
+                for ((sectionHeader, constraints) in modelList.data) {
 
-                        val isSupported = ConstraintUtils.isSupported(requireContext(), constraint.id)
+                    sectionHeader {
+                        id(sectionHeader)
+                        header(requireContext().str(sectionHeader))
+                    }
 
-                        if (isSupported == null) {
-                            secondaryText(null)
-                        } else {
-                            secondaryText(isSupported.getFullMessage(requireContext()))
-                        }
+                    constraints.forEach { constraint ->
+                        simple {
+                            id(constraint.id)
+                            primaryText(requireContext().str(constraint.description))
+                            isSecondaryTextAnError(true)
 
-                        onClick { _ ->
-                            mViewModel.chooseConstraint(constraint.id)
+                            val isSupported = ConstraintUtils.isSupported(requireContext(), constraint.id)
+
+                            if (isSupported == null) {
+                                secondaryText(null)
+                            } else {
+                                secondaryText(isSupported.getFullMessage(requireContext()))
+                            }
+
+                            onClick { _ ->
+                                mViewModel.chooseConstraint(constraint.id)
+                            }
                         }
                     }
                 }
             }
-        }
+        })
     }
 }

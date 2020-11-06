@@ -5,18 +5,15 @@ import io.github.sds100.keymapper.data.DeviceInfoRepository
 import io.github.sds100.keymapper.data.KeymapRepository
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
-import io.github.sds100.keymapper.ui.callback.ProgressCallback
-import io.github.sds100.keymapper.util.Event
-import io.github.sds100.keymapper.util.ISelectionProvider
-import io.github.sds100.keymapper.util.SelectionProvider
+import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.launch
 
 class KeymapListViewModel internal constructor(
     private val mKeymapRepository: KeymapRepository,
     private val mDeviceInfoRepository: DeviceInfoRepository
-) : ViewModel(), ProgressCallback {
+) : ViewModel() {
 
-    val keymapModelList = MutableLiveData(listOf<KeymapListItemModel>())
+    val keymapModelList: MutableLiveData<State<List<KeymapListItemModel>>> = MutableLiveData(Loading())
 
     val rebuildModelsEvent = MediatorLiveData<Event<List<KeyMap>>>().apply {
         addSource(mKeymapRepository.keymapList) {
@@ -25,8 +22,6 @@ class KeymapListViewModel internal constructor(
     }
 
     val selectionProvider: ISelectionProvider = SelectionProvider()
-
-    override val loadingContent = MutableLiveData(true)
 
     fun duplicate(vararg id: Long) {
         viewModelScope.launch {
@@ -66,18 +61,18 @@ class KeymapListViewModel internal constructor(
 
     fun rebuildModels() = viewModelScope.launch {
         if (mKeymapRepository.keymapList.value.isNullOrEmpty()) return@launch
+        keymapModelList.value = Loading()
 
         rebuildModelsEvent.value = Event(mKeymapRepository.keymapList.value ?: listOf())
     }
 
     fun setModelList(list: List<KeymapListItemModel>) {
-        loadingContent.value = true
-
         selectionProvider.updateIds(list.map { it.id }.toLongArray())
 
-        keymapModelList.value = list
-
-        loadingContent.value = false
+        keymapModelList.value = when {
+            list.isEmpty() -> Empty()
+            else -> Data(list)
+        }
     }
 
     suspend fun getDeviceInfoList() = mDeviceInfoRepository.getAll()

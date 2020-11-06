@@ -7,9 +7,19 @@
 
         <import type="android.view.View" />
 
+        <import type="androidx.lifecycle.LiveData" />
+
+        <import type="io.github.sds100.keymapper.util.State" />
+
+        <import type="io.github.sds100.keymapper.util.Data" />
+
+        <import type="io.github.sds100.keymapper.util.Loading" />
+
+        <import type="io.github.sds100.keymapper.util.Empty" />
+
         <variable
-            name="progressCallback"
-            type="io.github.sds100.keymapper.ui.callback.ProgressCallback" />
+            name="state"
+            type="State" />
 
         <variable
             name="caption"
@@ -52,7 +62,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
-                android:visibility="@{progressCallback.loadingContent ? View.GONE : View.VISIBLE}"
+                android:visibility="@{state instanceof Data ? View.VISIBLE : View.GONE}"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/list_item_simple" />
 
@@ -65,8 +75,20 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
-                android:visibility="@{progressCallback.loadingContent ? View.VISIBLE : View.GONE}"
+                android:visibility="@{state instanceof Loading ? View.VISIBLE : View.GONE}"
                 tools:visibility="gone" />
+
+            <TextView
+                style="@style/RecyclerViewPlaceholderTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/recyclerview_placeholder"
+                android:visibility="@{state instanceof Empty ? View.VISIBLE : View.GONE}" />
         </FrameLayout>
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout
