@@ -1,205 +1,18 @@
-package io.github.sds100.keymapper.data.model
+package io.github.sds100.keymapper.data.model.behavior
 
 import android.os.Build
-import io.github.sds100.keymapper.data.model.BehaviorOption.Companion.applyBehaviorOption
-import io.github.sds100.keymapper.data.model.Trigger.Companion.DOUBLE_PRESS
-import io.github.sds100.keymapper.data.model.Trigger.Companion.EXTRA_DOUBLE_PRESS_DELAY
-import io.github.sds100.keymapper.data.model.Trigger.Companion.EXTRA_LONG_PRESS_DELAY
-import io.github.sds100.keymapper.data.model.Trigger.Companion.EXTRA_SEQUENCE_TRIGGER_TIMEOUT
-import io.github.sds100.keymapper.data.model.Trigger.Companion.EXTRA_VIBRATION_DURATION
-import io.github.sds100.keymapper.data.model.Trigger.Companion.LONG_PRESS
-import io.github.sds100.keymapper.data.model.Trigger.Companion.PARALLEL
-import io.github.sds100.keymapper.data.model.Trigger.Companion.SEQUENCE
-import io.github.sds100.keymapper.data.model.Trigger.Companion.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION
-import io.github.sds100.keymapper.data.model.Trigger.Companion.TRIGGER_FLAG_SCREEN_OFF_TRIGGERS
-import io.github.sds100.keymapper.data.model.Trigger.Companion.TRIGGER_FLAG_VIBRATE
+import io.github.sds100.keymapper.data.model.Action
+import io.github.sds100.keymapper.data.model.Extra
+import io.github.sds100.keymapper.data.model.Trigger
+import io.github.sds100.keymapper.data.model.behavior.BehaviorOption.Companion.applyBehaviorOption
+import io.github.sds100.keymapper.data.model.getData
 import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.ActionUtils
-import io.github.sds100.keymapper.util.KeyEventUtils
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
 import io.github.sds100.keymapper.util.result.onSuccess
 import io.github.sds100.keymapper.util.result.valueOrNull
 import splitties.bitflags.hasFlag
-import splitties.bitflags.minusFlag
-import splitties.bitflags.withFlag
 import java.io.Serializable
-
-/**
- * Created by sds100 on 27/06/20.
- */
-class BehaviorOption<T>(val id: String, var value: T, var isAllowed: Boolean) : Serializable {
-    companion object {
-        const val DEFAULT = -1
-
-        fun List<Extra>.applyBehaviorOption(behaviorOption: BehaviorOption<Int>, @ExtraId extraId: String) =
-            toMutableList().apply {
-                removeAll { it.id == extraId }
-
-                if (behaviorOption.isAllowed) {
-                    if (behaviorOption.value != DEFAULT) {
-                        add(Extra(extraId, behaviorOption.value.toString()))
-                    }
-                }
-            }
-
-        fun Int.applyBehaviorOption(behaviorOption: BehaviorOption<Boolean>, flagId: Int): Int {
-            return if (behaviorOption.isAllowed) {
-                if (behaviorOption.value) {
-                    withFlag(flagId)
-                } else {
-                    minusFlag(flagId)
-                }
-            } else {
-                minusFlag(flagId)
-            }
-        }
-
-        val Int.nullIfDefault: Int?
-            get() = if (this == DEFAULT) {
-                null
-            } else {
-                this
-            }
-    }
-}
-
-class TriggerBehavior(keys: List<Trigger.Key>, @Trigger.Mode mode: Int, flags: Int, extras: List<Extra>) {
-    companion object {
-        const val ID_LONG_PRESS_DELAY = "long_press_delay"
-        const val ID_DOUBLE_PRESS_DELAY = "double_press_delay"
-        const val ID_SEQUENCE_TRIGGER_TIMEOUT = "sequence_trigger_timeout"
-        const val ID_VIBRATE_DURATION = "vibrate_duration"
-        const val ID_VIBRATE = "vibrate"
-        const val ID_LONG_PRESS_DOUBLE_VIBRATION = "long_press_double_vibration"
-        const val ID_SCREEN_OFF_TRIGGER = "screen_off_trigger"
-    }
-
-    val vibrate = BehaviorOption(
-        id = ID_VIBRATE,
-        value = flags.hasFlag(TRIGGER_FLAG_VIBRATE),
-        isAllowed = true
-    )
-
-    val longPressDoubleVibration = BehaviorOption(
-        id = ID_LONG_PRESS_DOUBLE_VIBRATION,
-        value = flags.hasFlag(TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION),
-        isAllowed = (keys.size == 1 || (mode == PARALLEL))
-            && keys.getOrNull(0)?.clickType == LONG_PRESS
-    )
-
-    val screenOffTrigger = BehaviorOption(
-        id = ID_SCREEN_OFF_TRIGGER,
-        value = flags.hasFlag(TRIGGER_FLAG_SCREEN_OFF_TRIGGERS),
-        isAllowed = keys.isNotEmpty() && keys.all {
-            KeyEventUtils.GET_EVENT_LABEL_TO_KEYCODE.containsValue(it.keyCode)
-        }
-    )
-
-    val longPressDelay: BehaviorOption<Int>
-    val doublePressDelay: BehaviorOption<Int>
-    val vibrateDuration: BehaviorOption<Int>
-    val sequenceTriggerTimeout: BehaviorOption<Int>
-
-    /*
-     It is very important that any new options are only allowed with a valid combination of other options. Make sure
-     the "isAllowed" property considers all the other options.
-     */
-
-    init {
-
-        val longPressDelayValue = extras.getData(EXTRA_LONG_PRESS_DELAY).valueOrNull()?.toInt()
-
-        longPressDelay = BehaviorOption(
-            id = ID_LONG_PRESS_DELAY,
-            value = longPressDelayValue ?: BehaviorOption.DEFAULT,
-            isAllowed = keys.any { it.clickType == LONG_PRESS }
-        )
-
-        val doublePressDelayValue = extras.getData(EXTRA_DOUBLE_PRESS_DELAY).valueOrNull()?.toInt()
-
-        doublePressDelay = BehaviorOption(
-            id = ID_DOUBLE_PRESS_DELAY,
-            value = doublePressDelayValue ?: BehaviorOption.DEFAULT,
-            isAllowed = keys.any { it.clickType == DOUBLE_PRESS }
-        )
-
-        val vibrateDurationValue = extras.getData(EXTRA_VIBRATION_DURATION).valueOrNull()?.toInt()
-
-        vibrateDuration = BehaviorOption(
-            id = ID_VIBRATE_DURATION,
-            value = vibrateDurationValue ?: BehaviorOption.DEFAULT,
-            isAllowed = vibrate.value || longPressDoubleVibration.value
-        )
-
-        val sequenceTriggerTimeoutValue =
-            extras.getData(EXTRA_SEQUENCE_TRIGGER_TIMEOUT).valueOrNull()?.toInt()
-
-        sequenceTriggerTimeout = BehaviorOption(
-            id = ID_SEQUENCE_TRIGGER_TIMEOUT,
-            value = sequenceTriggerTimeoutValue ?: BehaviorOption.DEFAULT,
-            isAllowed = !keys.isNullOrEmpty() && keys.size > 1 && mode == SEQUENCE
-        )
-    }
-
-    fun dependentDataChanged(keys: List<Trigger.Key>, @Trigger.Mode mode: Int): TriggerBehavior {
-        val flags = applyToTriggerFlags(0)
-        val extras = applyToTriggerExtras(listOf())
-
-        return TriggerBehavior(keys, mode, flags, extras)
-    }
-
-    fun applyToTrigger(trigger: Trigger): Trigger {
-        val newFlags = applyToTriggerFlags(trigger.flags)
-        val newExtras = applyToTriggerExtras(trigger.extras)
-
-        return trigger.clone(extras = newExtras, flags = newFlags)
-    }
-
-    fun setValue(id: String, value: Int): TriggerBehavior {
-        when (id) {
-            ID_VIBRATE_DURATION -> vibrateDuration.value = value
-            ID_SEQUENCE_TRIGGER_TIMEOUT -> sequenceTriggerTimeout.value = value
-            ID_LONG_PRESS_DELAY -> longPressDelay.value = value
-            ID_DOUBLE_PRESS_DELAY -> doublePressDelay.value = value
-        }
-
-        return this
-    }
-
-    fun setValue(id: String, value: Boolean): TriggerBehavior {
-        when (id) {
-            ID_VIBRATE -> {
-                vibrate.value = value
-
-                vibrateDuration.isAllowed = value || longPressDoubleVibration.value
-            }
-
-            ID_LONG_PRESS_DOUBLE_VIBRATION -> {
-                longPressDoubleVibration.value = value
-
-                vibrateDuration.isAllowed = value || longPressDoubleVibration.value
-            }
-
-            ID_SCREEN_OFF_TRIGGER -> screenOffTrigger.value = value
-        }
-
-        return this
-    }
-
-    private fun applyToTriggerFlags(flags: Int): Int {
-        return flags.applyBehaviorOption(vibrate, TRIGGER_FLAG_VIBRATE)
-            .applyBehaviorOption(longPressDoubleVibration, TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION)
-            .applyBehaviorOption(screenOffTrigger, TRIGGER_FLAG_SCREEN_OFF_TRIGGERS)
-    }
-
-    private fun applyToTriggerExtras(extras: List<Extra>): List<Extra> {
-        return extras
-            .applyBehaviorOption(vibrateDuration, EXTRA_VIBRATION_DURATION)
-            .applyBehaviorOption(longPressDelay, EXTRA_LONG_PRESS_DELAY)
-            .applyBehaviorOption(doublePressDelay, EXTRA_DOUBLE_PRESS_DELAY)
-            .applyBehaviorOption(sequenceTriggerTimeout, EXTRA_SEQUENCE_TRIGGER_TIMEOUT)
-    }
-}
 
 class ActionBehavior(
     action: Action,
@@ -342,8 +155,8 @@ class ActionBehavior(
             isAllowed = holdDown.value
         )
 
-       val delayBeforeNextActionValue =
-           action.extras.getData(Action.EXTRA_DELAY_BEFORE_NEXT_ACTION).valueOrNull()?.toInt()
+        val delayBeforeNextActionValue =
+            action.extras.getData(Action.EXTRA_DELAY_BEFORE_NEXT_ACTION).valueOrNull()?.toInt()
 
         delayBeforeNextAction = BehaviorOption(
             id = ID_DELAY_BEFORE_NEXT_ACTION,
@@ -453,59 +266,5 @@ class ActionBehavior(
         }
 
         return this
-    }
-}
-
-class TriggerKeyBehavior(
-    key: Trigger.Key,
-    @Trigger.Mode mode: Int
-) : Serializable {
-
-    companion object {
-        const val ID_DO_NOT_CONSUME_KEY_EVENT = "do_not_consume_key_event"
-        const val ID_CLICK_TYPE = "click_type"
-    }
-
-    val uniqueId = key.uniqueId
-
-    val clickType = BehaviorOption(
-        id = ID_CLICK_TYPE,
-        value = key.clickType,
-        isAllowed = mode == SEQUENCE || mode == Trigger.UNDEFINED
-    )
-
-    val doNotConsumeKeyEvents = BehaviorOption(
-        id = ID_DO_NOT_CONSUME_KEY_EVENT,
-        value = key.flags.hasFlag(Trigger.Key.FLAG_DO_NOT_CONSUME_KEY_EVENT),
-        isAllowed = true
-    )
-
-    /*
-     It is very important that any new options are only allowed with a valid combination of other options. Make sure
-     the "isAllowed" property considers all the other options.
-     */
-
-    fun setValue(id: String, value: Boolean): TriggerKeyBehavior {
-        when (id) {
-            ID_DO_NOT_CONSUME_KEY_EVENT -> doNotConsumeKeyEvents.value = value
-        }
-
-        return this
-    }
-
-    fun setValue(id: String, value: Int): TriggerKeyBehavior {
-        when (id) {
-            ID_CLICK_TYPE -> clickType.value = value
-        }
-
-        return this
-    }
-
-    fun applyToTriggerKey(key: Trigger.Key): Trigger.Key {
-        key.flags = key.flags.applyBehaviorOption(doNotConsumeKeyEvents, Trigger.Key.FLAG_DO_NOT_CONSUME_KEY_EVENT)
-
-        key.clickType = clickType.value
-
-        return key
     }
 }
