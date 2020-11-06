@@ -16,9 +16,13 @@ import junit.framework.Assert.assertNull
 import junitparams.JUnitParamsRunner
 import junitparams.Parameters
 import junitparams.naming.TestCaseName
-import kotlinx.coroutines.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.withTimeout
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.junit.After
@@ -27,8 +31,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import splitties.bitflags.hasFlag
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
 /**
@@ -73,13 +75,14 @@ class KeymapDetectionDelegateTest {
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
 
-    private val mCoroutineScope = TestCoroutineScope()
+    private val mTestDispatcher = TestCoroutineDispatcher()
+    private val mCoroutineScope = TestCoroutineScope(mTestDispatcher)
 
     @Before
     fun init() {
         val iClock = object : IClock {
             override val currentTime: Long
-                get() = System.currentTimeMillis()
+                get() = mCoroutineScope.currentTime
         }
 
         val iConstraintState = object : IConstraintState {
@@ -113,24 +116,24 @@ class KeymapDetectionDelegateTest {
     }
 
     @Test
-    fun `trigger with modifier key and modifier keycode action, don't include metastate from the trigger modifier key when an unmapped modifier key is pressed`() {
-        val trigger = undefinedTrigger(Trigger.Key(KeyEvent.KEYCODE_CTRL_LEFT))
+    fun `trigger with modifier key and modifier keycode action, don't include metastate from the trigger modifier key when an unmapped modifier key is pressed`() =
+        mCoroutineScope.runBlockingTest {
+            val trigger = undefinedTrigger(Trigger.Key(KeyEvent.KEYCODE_CTRL_LEFT))
 
-        mDelegate.keyMapListCache = listOf(
-            KeyMap(0, trigger, actionList = listOf(Action.keyCodeAction(KeyEvent.KEYCODE_ALT_LEFT)))
-        )
+            mDelegate.keyMapListCache = listOf(
+                KeyMap(0, trigger, actionList = listOf(Action.keyCodeAction(KeyEvent.KEYCODE_ALT_LEFT)))
+            )
 
-        var imitatedKeyMetaState: Int? = null
+            var imitatedKeyMetaState: Int? = null
 
-        val observer = Observer<Event<ImitateKeyModel>> {
-            it.getContentIfNotHandled()?.let { model ->
-                imitatedKeyMetaState = model.metaState
+            val observer = Observer<Event<ImitateKeyModel>> {
+                it.getContentIfNotHandled()?.let { model ->
+                    imitatedKeyMetaState = model.metaState
+                }
             }
-        }
 
-        mDelegate.imitateButtonPress.observeForever(observer)
+            mDelegate.imitateButtonPress.observeForever(observer)
 
-        runBlocking {
             //imitate how modifier keys are sent on Android by also changing the metastate of the keyevent
 
             inputKeyEvent(KeyEvent.KEYCODE_CTRL_LEFT, KeyEvent.ACTION_DOWN, metaState = KeyEvent.META_CTRL_LEFT_ON + KeyEvent.META_CTRL_ON)
@@ -140,101 +143,104 @@ class KeymapDetectionDelegateTest {
             inputKeyEvent(KeyEvent.KEYCODE_CTRL_LEFT, KeyEvent.ACTION_UP, metaState = KeyEvent.META_CTRL_LEFT_ON + KeyEvent.META_CTRL_ON + KeyEvent.META_SHIFT_LEFT_ON + KeyEvent.META_SHIFT_ON)
             inputKeyEvent(KeyEvent.KEYCODE_SHIFT_LEFT, KeyEvent.ACTION_UP, metaState = KeyEvent.META_SHIFT_LEFT_ON + KeyEvent.META_SHIFT_ON)
             inputKeyEvent(KeyEvent.KEYCODE_C, KeyEvent.ACTION_UP)
+
+            advanceUntilIdle()
+
+            assert(imitatedKeyMetaState?.hasFlag(KeyEvent.META_CTRL_LEFT_ON + KeyEvent.META_CTRL_ON) == false
+                && imitatedKeyMetaState?.hasFlag(KeyEvent.META_SHIFT_LEFT_ON + KeyEvent.META_SHIFT_ON) == true
+                && imitatedKeyMetaState?.hasFlag(KeyEvent.META_ALT_LEFT_ON + KeyEvent.META_ALT_ON) == true)
+
+            mDelegate.imitateButtonPress.removeObserver(observer)
         }
-
-        Thread.sleep(1000)
-
-        assert(imitatedKeyMetaState?.hasFlag(KeyEvent.META_CTRL_LEFT_ON + KeyEvent.META_CTRL_ON) == false
-            && imitatedKeyMetaState?.hasFlag(KeyEvent.META_SHIFT_LEFT_ON + KeyEvent.META_SHIFT_ON) == true
-            && imitatedKeyMetaState?.hasFlag(KeyEvent.META_ALT_LEFT_ON + KeyEvent.META_ALT_ON) == true)
-
-        mDelegate.imitateButtonPress.removeObserver(observer)
-    }
 
     @Test
-    fun `2x key sequence trigger and 3x key sequence trigger with the last 2 keys being the same,trigger 3x key trigger, ignore the first 2x key trigger`() {
+    fun `2x key sequence trigger and 3x key sequence trigger with the last 2 keys being the same,trigger 3x key trigger, ignore the first 2x key trigger`() =
+        mCoroutineScope.runBlockingTest {
 
-        val firstTrigger = sequenceTrigger(
-            Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, deviceId = Trigger.Key.DEVICE_ID_ANY_DEVICE),
-            Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP)
-        )
+            val firstTrigger = sequenceTrigger(
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, deviceId = Trigger.Key.DEVICE_ID_ANY_DEVICE),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP)
+            )
 
-        val secondTrigger = sequenceTrigger(
-            Trigger.Key(KeyEvent.KEYCODE_HOME),
-            Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN),
-            Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP)
-        )
+            val secondTrigger = sequenceTrigger(
+                Trigger.Key(KeyEvent.KEYCODE_HOME),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP)
+            )
 
-        mDelegate.keyMapListCache = listOf(
-            KeyMap(0, trigger = firstTrigger, actionList = listOf(TEST_ACTION)),
-            KeyMap(1, trigger = secondTrigger, actionList = listOf(TEST_ACTION_2))
-        )
+            mDelegate.keyMapListCache = listOf(
+                KeyMap(0, trigger = firstTrigger, actionList = listOf(TEST_ACTION)),
+                KeyMap(1, trigger = secondTrigger, actionList = listOf(TEST_ACTION_2))
+            )
 
-        val performedActions = mutableSetOf<Action>()
+            val performedActions = mutableSetOf<Action>()
 
-        val observer = Observer<Event<PerformActionModel>> {
-            it.getContentIfNotHandled()?.action?.let { action ->
-                performedActions.add(action)
+            val observer = Observer<Event<PerformActionModel>> {
+                it.getContentIfNotHandled()?.action?.let { action ->
+                    performedActions.add(action)
+                }
             }
-        }
 
-        mDelegate.performAction.observeForever(observer)
+            mDelegate.performAction.observeForever(observer)
 
-        runBlocking {
             mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_HOME))
             mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, deviceId = Trigger.Key.DEVICE_ID_ANY_DEVICE))
             mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP))
+
+            advanceUntilIdle()
+
+            assertThat(performedActions, `is`(mutableSetOf(TEST_ACTION_2)))
+
+            mDelegate.performAction.removeObserver(observer)
         }
 
-        Thread.sleep(1000)
-
-        assertThat(performedActions, `is`(mutableSetOf(TEST_ACTION_2)))
-
-        mDelegate.performAction.removeObserver(observer)
-    }
-
     @Test
-    fun `2x key long press parallel trigger with HOME or RECENTS keycode, trigger successfully, don't do normal action`() {
-        val keysHome = arrayOf(
-            Trigger.Key(KeyEvent.KEYCODE_HOME, clickType = LONG_PRESS),
-            Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = LONG_PRESS))
+    fun `2x key long press parallel trigger with HOME or RECENTS keycode, trigger successfully, don't do normal action`() =
+        mCoroutineScope.runBlockingTest {
+            /*
+            HOME
+             */
 
-        mDelegate.keyMapListCache = listOf(
-            createValidKeymapFromTriggerKey(0, *keysHome, triggerMode = Trigger.PARALLEL)
-        )
+            val keysHome = arrayOf(
+                Trigger.Key(KeyEvent.KEYCODE_HOME, clickType = LONG_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = LONG_PRESS))
 
-        runBlocking {
-            val consumedDown = inputKeyEvent(KeyEvent.KEYCODE_HOME, KeyEvent.ACTION_DOWN, null)
+            mDelegate.keyMapListCache = listOf(
+                createValidKeymapFromTriggerKey(0, *keysHome, triggerMode = Trigger.PARALLEL)
+            )
+
+            val consumedHomeDown = inputKeyEvent(KeyEvent.KEYCODE_HOME, KeyEvent.ACTION_DOWN, null)
             inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN, null)
 
-            delay(LONG_PRESS_DELAY.toLong())
+            advanceUntilIdle()
 
             inputKeyEvent(KeyEvent.KEYCODE_HOME, KeyEvent.ACTION_UP, null)
             inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP, null)
 
-            assertEquals(true, consumedDown)
-        }
+            assertEquals(true, consumedHomeDown)
 
-        val keysRecents = arrayOf(
-            Trigger.Key(KeyEvent.KEYCODE_APP_SWITCH, clickType = LONG_PRESS),
-            Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = LONG_PRESS))
+            /*
+            RECENTS
+             */
 
-        mDelegate.keyMapListCache = listOf(
-            createValidKeymapFromTriggerKey(0, *keysRecents, triggerMode = Trigger.PARALLEL)
-        )
+            val keysRecents = arrayOf(
+                Trigger.Key(KeyEvent.KEYCODE_APP_SWITCH, clickType = LONG_PRESS),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = LONG_PRESS))
 
-        runBlocking {
-            val consumedDown = inputKeyEvent(KeyEvent.KEYCODE_APP_SWITCH, KeyEvent.ACTION_DOWN, null)
+            mDelegate.keyMapListCache = listOf(
+                createValidKeymapFromTriggerKey(0, *keysRecents, triggerMode = Trigger.PARALLEL)
+            )
+
+            val consumedRecentsDown = inputKeyEvent(KeyEvent.KEYCODE_APP_SWITCH, KeyEvent.ACTION_DOWN, null)
             inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN, null)
 
-            delay(LONG_PRESS_DELAY.toLong())
+            advanceUntilIdle()
 
             inputKeyEvent(KeyEvent.KEYCODE_APP_SWITCH, KeyEvent.ACTION_UP, null)
             inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP, null)
 
-            assertEquals(true, consumedDown)
+            assertEquals(true, consumedRecentsDown)
         }
-    }
 
     @Test
     fun shortPressTriggerDoublePressTrigger_holdDown_onlyDetectDoublePressTrigger() = mCoroutineScope.runBlockingTest {
@@ -270,7 +276,8 @@ class KeymapDetectionDelegateTest {
     }
 
     @Test
-    fun shortPressTriggerLongPressTrigger_holdDown_onlyDetectLongPressTrigger() {
+    fun shortPressTriggerLongPressTrigger_holdDown_onlyDetectLongPressTrigger() = mCoroutineScope.runBlockingTest {
+        //GIVEN
         val shortPressTrigger = undefinedTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = SHORT_PRESS))
         val longPressTrigger = undefinedTrigger(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = LONG_PRESS))
 
@@ -279,30 +286,28 @@ class KeymapDetectionDelegateTest {
             KeyMap(1, longPressTrigger, listOf(TEST_ACTION_2))
         )
 
-        runBlocking {
-            mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = LONG_PRESS))
-        }
+        mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = LONG_PRESS))
+        advanceUntilIdle()
+
+        //THEN
 
         //the first action performed shouldn't be the short press action
-        assertEquals(TEST_ACTION_2, mDelegate.performAction.getOrAwaitValue().getContentIfNotHandled()?.action)
+        assertEquals(TEST_ACTION_2, mDelegate.performAction.getOrAwaitValueCoroutine().getContentIfNotHandled()?.action)
 
+        //WHEN
         //rerun the test to see if the short press trigger action is performed correctly.
-        runBlocking {
-            mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = SHORT_PRESS))
-        }
+        mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = SHORT_PRESS))
+        advanceUntilIdle()
 
-        //actions are performed concurrently so need to wait a tiny bit for it to be performed
-        runBlocking {
-            delay(100)
-        }
-
+        //THEN
         //the first action performed shouldn't be the short press action
-        assertEquals(TEST_ACTION, mDelegate.performAction.getOrAwaitValue().getContentIfNotHandled()?.action)
+        assertEquals(TEST_ACTION, mDelegate.performAction.getOrAwaitValueCoroutine().getContentIfNotHandled()?.action)
     }
 
     @Test
     @Parameters(method = "params_repeatAction")
-    fun parallelTrigger_holdDown_repeatAction10Times(description: String, trigger: Trigger) {
+    fun parallelTrigger_holdDown_repeatAction10Times(description: String, trigger: Trigger) = mCoroutineScope.runBlockingTest {
+        //given
         val action = Action(
             type = ActionType.SYSTEM_ACTION,
             data = SystemAction.VOLUME_UP,
@@ -312,24 +317,25 @@ class KeymapDetectionDelegateTest {
         val keymap = KeyMap(0, trigger, actionList = listOf(action))
         mDelegate.keyMapListCache = listOf(keymap)
 
-        trigger.keys.forEach {
-            inputKeyEvent(it.keyCode, KeyEvent.ACTION_DOWN, deviceIdToDescriptor(it.deviceId))
+        var repeatCount = 0
+
+        //when
+        withTimeout(2000) {
+            trigger.keys.forEach {
+                inputKeyEvent(it.keyCode, KeyEvent.ACTION_DOWN, deviceIdToDescriptor(it.deviceId))
+            }
+
+            //given
+            while (repeatCount < 10) {
+                repeatCount++
+            }
         }
 
-        val latch = CountDownLatch(10)
-
-        val observer = EventObserver<PerformActionModel> {
-            latch.countDown()
-        }
-
-        mDelegate.performAction.observeForever(observer)
-
-        assertThat("Failed to repeat 10 times in 2 seconds", latch.await(2, TimeUnit.SECONDS))
-
-        mDelegate.performAction.removeObserver(observer)
         trigger.keys.forEach {
             inputKeyEvent(it.keyCode, KeyEvent.ACTION_UP, deviceIdToDescriptor(it.deviceId))
         }
+
+        assertThat("Failed to repeat at least 10 times in 2 seconds", repeatCount >= 10)
     }
 
     fun params_repeatAction() = listOf(
@@ -416,7 +422,7 @@ class KeymapDetectionDelegateTest {
     }
 
     @Test
-    fun dualLongPressParallelTrigger_validInput_consumeUp() {
+    fun dualLongPressParallelTrigger_validInput_consumeUp() = mCoroutineScope.runBlockingTest {
         //given
         val trigger = parallelTrigger(
             Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = LONG_PRESS),
@@ -426,31 +432,29 @@ class KeymapDetectionDelegateTest {
         val keymap = KeyMap(0, trigger, actionList = listOf(TEST_ACTION))
         mDelegate.keyMapListCache = listOf(keymap)
 
-        runBlocking {
-            //when
-            trigger.keys.forEach {
-                inputKeyEvent(it.keyCode, KeyEvent.ACTION_DOWN, deviceIdToDescriptor(it.deviceId))
-            }
-
-            delay(600)
-
-            var consumedUpCount = 0
-
-            trigger.keys.forEach {
-                val consumed = inputKeyEvent(it.keyCode, KeyEvent.ACTION_UP, deviceIdToDescriptor(it.deviceId))
-
-                if (consumed) {
-                    consumedUpCount += 1
-                }
-            }
-
-            //then
-            assertEquals(2, consumedUpCount)
+        //when
+        trigger.keys.forEach {
+            inputKeyEvent(it.keyCode, KeyEvent.ACTION_DOWN, deviceIdToDescriptor(it.deviceId))
         }
+
+        advanceUntilIdle()
+
+        var consumedUpCount = 0
+
+        trigger.keys.forEach {
+            val consumed = inputKeyEvent(it.keyCode, KeyEvent.ACTION_UP, deviceIdToDescriptor(it.deviceId))
+
+            if (consumed) {
+                consumedUpCount += 1
+            }
+        }
+
+        //then
+        assertEquals(2, consumedUpCount)
     }
 
     @Test
-    fun keyMappedToSingleLongPressAndDoublePress_invalidLongPress_imitateOnce() {
+    fun keyMappedToLongPressAndDoublePress_invalidLongPress_imitateOnce() = mCoroutineScope.runBlockingTest {
         //given
         val longPressKeymap = createValidKeymapFromTriggerKey(0,
             Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = LONG_PRESS))
@@ -462,13 +466,13 @@ class KeymapDetectionDelegateTest {
 
         //when
 
-        runBlocking {
-            mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN))
-        }
+        mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN))
 
         //then
         assertNull(mDelegate.imitateButtonPress.value?.getContentIfNotHandled())
-        Thread.sleep(500)
+
+        advanceUntilIdle()
+
         assertEquals(KeyEvent.KEYCODE_VOLUME_DOWN, mDelegate.imitateButtonPress.value?.getContentIfNotHandled()?.keyCode)
     }
 
@@ -497,44 +501,43 @@ class KeymapDetectionDelegateTest {
     }
 
     @Test
-    fun keyMappedToSingleShortPressAndDoublePress_validShortPress_onlyPerformActionDontImitateKey() {
-        //given
-        val shortPressKeymap = createValidKeymapFromTriggerKey(0,
-            Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN))
+    fun keyMappedToShortPressAndDoublePress_validShortPress_onlyPerformActionDoNotImitateKey() =
+        mCoroutineScope.runBlockingTest {
+            //given
+            val shortPressKeymap = createValidKeymapFromTriggerKey(0,
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN))
 
-        val doublePressKeymap = createValidKeymapFromTriggerKey(1,
-            Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = DOUBLE_PRESS))
+            val doublePressKeymap = createValidKeymapFromTriggerKey(1,
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = DOUBLE_PRESS))
 
-        mDelegate.keyMapListCache = listOf(shortPressKeymap, doublePressKeymap)
+            mDelegate.keyMapListCache = listOf(shortPressKeymap, doublePressKeymap)
 
-        //when
+            //when
 
-        runBlocking {
             mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN))
+
+            //then
+            val performEvent = mDelegate.performAction.getOrAwaitValueCoroutine()
+
+            assertEquals(TEST_ACTION, performEvent.getContentIfNotHandled()?.action)
+
+            //wait for the double press to try and imitate the key.
+            advanceUntilIdle()
+            assertNull(mDelegate.imitateButtonPress.value?.getContentIfNotHandled())
         }
-
-        //then
-        val performEvent = mDelegate.performAction.getOrAwaitValue()
-
-        assertEquals(TEST_ACTION, performEvent.getContentIfNotHandled()?.action)
-
-        //wait for the double press to try and imitate the key.
-        Thread.sleep(500)
-        assertNull(mDelegate.imitateButtonPress.value?.getContentIfNotHandled())
-    }
 
     @Test
     fun singleKeyTriggerAndShortPressParallelTriggerWithSameInitialKey_validSingleKeyTriggerInput_onlyPerformActionDontImitateKey() {
         //given
         val singleKeyKeymap = createValidKeymapFromTriggerKey(0, Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN))
         val parallelTriggerKeymap = createValidKeymapFromTriggerKey(1,
-            Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN), Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP),
+            Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN),
+            Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP),
             triggerMode = Trigger.PARALLEL)
 
         mDelegate.keyMapListCache = listOf(singleKeyKeymap, parallelTriggerKeymap)
 
         //when
-
         runBlocking {
             mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN))
         }
@@ -574,7 +577,9 @@ class KeymapDetectionDelegateTest {
 
         //WHEN
         if (keymap.trigger.mode == Trigger.PARALLEL) {
-            mockParallelTriggerKeys(*keymap.trigger.keys.toTypedArray())
+            runBlocking {
+                mockParallelTriggerKeys(*keymap.trigger.keys.toTypedArray())
+            }
         } else {
             runBlocking {
                 keymap.trigger.keys.forEach {
@@ -866,30 +871,39 @@ class KeymapDetectionDelegateTest {
     @Test
     @Parameters(method = "params_allTriggerKeyCombinations")
     @TestCaseName("{0}")
-    fun validInput_actionPerformed(description: String, keymap: KeyMap) {
+    fun validInput_actionPerformed(description: String, keymap: KeyMap) = mCoroutineScope.runBlockingTest {
+        //GIVEN
+        mDelegate.reset()
         mDelegate.keyMapListCache = listOf(keymap)
 
-        //WHEN
-        if (keymap.trigger.mode == Trigger.PARALLEL) {
-            mockParallelTriggerKeys(*keymap.trigger.keys.toTypedArray())
+        if (KeymapDetectionDelegate.performActionOnDown(keymap.trigger.keys, keymap.trigger.mode)) {
+                //WHEN
+                mockParallelTriggerKeys(*keymap.trigger.keys.toTypedArray())
+                advanceUntilIdle()
+
+                //THEN
+                val value = mDelegate.performAction.value
+
+                assertThat(value?.getContentIfNotHandled()?.action, `is`(TEST_ACTION))
         } else {
-            runBlocking {
-                keymap.trigger.keys.forEach {
+            //WHEN
+            keymap.trigger.keys.forEach {
                     mockTriggerKeyInput(it)
-                }
             }
+
+            advanceUntilIdle()
+
+            //THEN
+            val value = mDelegate.performAction.getOrAwaitValueCoroutine()
+
+            assertThat(value?.getContentIfNotHandled()?.action, `is`(TEST_ACTION))
         }
-
-        //THEN
-        val value = mDelegate.performAction.getOrAwaitValue()
-
-        assertThat(value.getContentIfNotHandled()?.action, `is`(TEST_ACTION))
     }
 
     private suspend fun mockTriggerKeyInput(key: Trigger.Key, delay: Long? = null) {
         val deviceDescriptor = deviceIdToDescriptor(key.deviceId)
-        val pressDelay: Long = delay ?: when (key.clickType) {
-            LONG_PRESS -> 600L
+        val pressDuration: Long = delay ?: when (key.clickType) {
+            LONG_PRESS -> LONG_PRESS_DELAY + 100L
             else -> 50L
         }
 
@@ -897,22 +911,22 @@ class KeymapDetectionDelegateTest {
 
         when (key.clickType) {
             SHORT_PRESS -> {
-                delay(pressDelay)
+                delay(pressDuration)
                 inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, deviceDescriptor)
             }
 
             LONG_PRESS -> {
-                delay(pressDelay)
+                delay(pressDuration)
                 inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, deviceDescriptor)
             }
 
             DOUBLE_PRESS -> {
-                delay(pressDelay)
+                delay(pressDuration)
                 inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, deviceDescriptor)
-                delay(pressDelay)
+                delay(pressDuration)
 
                 inputKeyEvent(key.keyCode, KeyEvent.ACTION_DOWN, deviceDescriptor)
-                delay(pressDelay)
+                delay(pressDuration)
                 inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, deviceDescriptor)
             }
         }
@@ -928,30 +942,29 @@ class KeymapDetectionDelegateTest {
             deviceId = 0
         )
 
-    private fun mockParallelTriggerKeys(
+    private suspend fun mockParallelTriggerKeys(
         vararg key: Trigger.Key,
         delay: Long? = null) {
+
         key.forEach {
             val deviceDescriptor = deviceIdToDescriptor(it.deviceId)
 
             inputKeyEvent(it.keyCode, KeyEvent.ACTION_DOWN, deviceDescriptor)
         }
 
-        GlobalScope.launch {
-            if (delay != null) {
-                delay(delay)
-            } else {
-                when (key[0].clickType) {
-                    SHORT_PRESS -> delay(50)
-                    LONG_PRESS -> delay(600)
-                }
+        if (delay != null) {
+            delay(delay)
+        } else {
+            when (key[0].clickType) {
+                SHORT_PRESS -> delay(50)
+                LONG_PRESS -> delay(LONG_PRESS_DELAY + 100L)
             }
+        }
 
-            key.forEach {
-                val deviceDescriptor = deviceIdToDescriptor(it.deviceId)
+        key.forEach {
+            val deviceDescriptor = deviceIdToDescriptor(it.deviceId)
 
-                inputKeyEvent(it.keyCode, KeyEvent.ACTION_UP, deviceDescriptor)
-            }
+            inputKeyEvent(it.keyCode, KeyEvent.ACTION_UP, deviceDescriptor)
         }
     }
 

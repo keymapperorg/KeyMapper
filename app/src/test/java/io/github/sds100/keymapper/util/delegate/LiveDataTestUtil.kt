@@ -52,7 +52,7 @@ fun <T> LiveData<T>.getOrAwaitValue(
 suspend fun <T> LiveData<T>.getOrAwaitValueCoroutine(
     time: Long = 2,
     timeUnit: TimeUnit = TimeUnit.SECONDS,
-    afterObserve: () -> Unit = {}
+    onChange: (data: T) -> Unit = {}
 ): T {
     var data: T? = null
 
@@ -71,6 +71,7 @@ suspend fun <T> LiveData<T>.getOrAwaitValueCoroutine(
                     }
 
                     data = o
+                    onChange.invoke(data!!)
                 }
             }
 
@@ -79,7 +80,6 @@ suspend fun <T> LiveData<T>.getOrAwaitValueCoroutine(
         } catch (e: TimeoutCancellationException) {
             throw e
         } finally {
-            afterObserve.invoke()
             observer?.let { removeObserver(it) }
         }
     }
