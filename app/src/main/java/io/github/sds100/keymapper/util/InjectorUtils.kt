@@ -2,9 +2,9 @@ package io.github.sds100.keymapper.util
 
 import android.content.Context
 import io.github.sds100.keymapper.MyApplication
-import io.github.sds100.keymapper.data.DefaultSystemActionRepository
-import io.github.sds100.keymapper.data.FileRepository
-import io.github.sds100.keymapper.data.SystemRepository
+import io.github.sds100.keymapper.data.repository.DefaultSystemActionRepository
+import io.github.sds100.keymapper.data.repository.FileRepository
+import io.github.sds100.keymapper.data.repository.SystemRepository
 import io.github.sds100.keymapper.data.viewmodel.*
 
 /**

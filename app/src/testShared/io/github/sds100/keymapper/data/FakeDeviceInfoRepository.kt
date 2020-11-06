@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.data
 
 import io.github.sds100.keymapper.data.model.DeviceInfo
+import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 
 /**
  * Created by sds100 on 21/05/20.

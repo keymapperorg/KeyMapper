@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Trigger
+import io.github.sds100.keymapper.data.repository.KeymapRepository
 import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.Event
 import splitties.bitflags.withFlag

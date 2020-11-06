@@ -2,9 +2,9 @@ package io.github.sds100.keymapper.data.viewmodel
 
 import androidx.lifecycle.*
 import io.github.sds100.keymapper.Constants
-import io.github.sds100.keymapper.data.SystemActionRepository
 import io.github.sds100.keymapper.data.model.SystemActionListItemModel
 import io.github.sds100.keymapper.data.model.UnsupportedSystemActionListItemModel
+import io.github.sds100.keymapper.data.repository.SystemActionRepository
 import io.github.sds100.keymapper.ui.callback.StringResourceProvider
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.Dispatchers

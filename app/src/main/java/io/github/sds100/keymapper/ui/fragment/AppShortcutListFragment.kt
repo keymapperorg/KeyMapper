@@ -8,7 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.SystemRepository
+import io.github.sds100.keymapper.data.repository.SystemRepository
 import io.github.sds100.keymapper.data.viewmodel.AppShortcutListViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.simple

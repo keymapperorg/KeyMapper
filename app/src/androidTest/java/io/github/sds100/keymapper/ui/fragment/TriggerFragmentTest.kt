@@ -4,7 +4,11 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import io.github.sds100.keymapper.ServiceLocator
-import io.github.sds100.keymapper.data.*
+import io.github.sds100.keymapper.data.FakeDeviceInfoRepository
+import io.github.sds100.keymapper.data.FakeKeymapRepository
+import io.github.sds100.keymapper.data.IOnboardingState
+import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
+import io.github.sds100.keymapper.data.repository.KeymapRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Rule

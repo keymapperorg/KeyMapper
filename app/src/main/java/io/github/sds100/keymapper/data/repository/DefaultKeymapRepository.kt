@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.data
+package io.github.sds100.keymapper.data.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

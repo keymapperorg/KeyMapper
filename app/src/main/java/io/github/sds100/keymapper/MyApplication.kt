@@ -1,12 +1,9 @@
 package io.github.sds100.keymapper
 
-import android.app.Application
-import androidx.fragment.app.FragmentFactory
 import androidx.multidex.MultiDexApplication
-import io.github.sds100.keymapper.data.DeviceInfoRepository
 import io.github.sds100.keymapper.data.IOnboardingState
-import io.github.sds100.keymapper.data.KeymapRepository
-import io.github.sds100.keymapper.ui.fragment.TriggerFragment
+import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
+import io.github.sds100.keymapper.data.repository.KeymapRepository
 import timber.log.Timber
 
 /**

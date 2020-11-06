@@ -1,10 +1,10 @@
 package io.github.sds100.keymapper.data.viewmodel
 
 import androidx.lifecycle.*
-import io.github.sds100.keymapper.data.DeviceInfoRepository
-import io.github.sds100.keymapper.data.KeymapRepository
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
+import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
+import io.github.sds100.keymapper.data.repository.KeymapRepository
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.launch
 

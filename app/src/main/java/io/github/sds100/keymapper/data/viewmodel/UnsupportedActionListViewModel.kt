@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
-import io.github.sds100.keymapper.data.SystemActionRepository
 import io.github.sds100.keymapper.data.model.UnsupportedSystemActionListItemModel
+import io.github.sds100.keymapper.data.repository.SystemActionRepository
 import io.github.sds100.keymapper.util.Loading
 import io.github.sds100.keymapper.util.getState
 import kotlinx.coroutines.Dispatchers

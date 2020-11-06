@@ -3,11 +3,11 @@ package io.github.sds100.keymapper.data.viewmodel
 import android.view.KeyEvent
 import androidx.lifecycle.*
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.DeviceInfoRepository
 import io.github.sds100.keymapper.data.IOnboardingState
-import io.github.sds100.keymapper.data.KeymapRepository
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.BehaviorOption.Companion.nullIfDefault
+import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
+import io.github.sds100.keymapper.data.repository.KeymapRepository
 import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.dataExtraString

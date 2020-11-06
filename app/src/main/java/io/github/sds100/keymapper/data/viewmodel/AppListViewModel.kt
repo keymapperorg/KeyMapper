@@ -2,8 +2,8 @@ package io.github.sds100.keymapper.data.viewmodel
 
 import android.content.pm.ApplicationInfo
 import androidx.lifecycle.*
-import io.github.sds100.keymapper.data.SystemRepository
 import io.github.sds100.keymapper.data.model.AppListItemModel
+import io.github.sds100.keymapper.data.repository.SystemRepository
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

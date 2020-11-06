@@ -3,9 +3,13 @@ package io.github.sds100.keymapper
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.room.Room
-import com.example.architecturetest.data.DefaultDeviceInfoRepository
-import io.github.sds100.keymapper.data.*
+import io.github.sds100.keymapper.data.IOnboardingState
+import io.github.sds100.keymapper.data.OnboardingState
 import io.github.sds100.keymapper.data.db.AppDatabase
+import io.github.sds100.keymapper.data.repository.DefaultDeviceInfoRepository
+import io.github.sds100.keymapper.data.repository.DefaultKeymapRepository
+import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
+import io.github.sds100.keymapper.data.repository.KeymapRepository
 import kotlinx.coroutines.runBlocking
 
 /**

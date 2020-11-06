@@ -1,16 +1,14 @@
 package io.github.sds100.keymapper.data.viewmodel
 
-import android.view.KeyEvent
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import io.github.sds100.keymapper.data.*
-import io.github.sds100.keymapper.data.model.Extra
-import io.github.sds100.keymapper.data.model.KeyMap
-import io.github.sds100.keymapper.data.model.Trigger
-import io.github.sds100.keymapper.util.delegate.getOrAwaitValue
+import io.github.sds100.keymapper.data.FakeDeviceInfoRepository
+import io.github.sds100.keymapper.data.FakeKeymapRepository
+import io.github.sds100.keymapper.data.IOnboardingState
+import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
+import io.github.sds100.keymapper.data.repository.KeymapRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.setMain
-import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Rule
 

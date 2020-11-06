@@ -5,9 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.DeviceInfoRepository
-import io.github.sds100.keymapper.data.KeymapRepository
 import io.github.sds100.keymapper.data.model.KeyMap
+import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
+import io.github.sds100.keymapper.data.repository.KeymapRepository
 import io.github.sds100.keymapper.util.BackupUtils
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.result.Failure

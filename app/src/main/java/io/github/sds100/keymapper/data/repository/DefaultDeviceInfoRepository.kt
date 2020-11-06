@@ -1,6 +1,5 @@
-package com.example.architecturetest.data
+package io.github.sds100.keymapper.data.repository
 
-import io.github.sds100.keymapper.data.DeviceInfoRepository
 import io.github.sds100.keymapper.data.db.dao.DeviceInfoDao
 import io.github.sds100.keymapper.data.model.DeviceInfo
 

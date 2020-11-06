@@ -3,7 +3,7 @@
 package io.github.sds100.keymapper.data.viewmodel
 
 import androidx.lifecycle.*
-import io.github.sds100.keymapper.data.FileRepository
+import io.github.sds100.keymapper.data.repository.FileRepository
 import io.github.sds100.keymapper.util.Data
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.Loading
