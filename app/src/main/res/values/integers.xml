@@ -31,4 +31,8 @@
     <integer name="delay_before_next_action_min">0</integer>
     <integer name="delay_before_next_action_max">2000</integer>
     <integer name="delay_before_next_action_step_size">10</integer>
+
+    <integer name="hold_down_duration_min">0</integer>
+    <integer name="hold_down_duration_max">5000</integer>
+    <integer name="hold_down_duration_step_size">5</integer>
 </resources>

@@ -9,4 +9,5 @@ data class KeymapDetectionPreferences(var defaultLongPressDelay: Int,
                                       var defaultRepeatRate: Int,
                                       var defaultSequenceTriggerTimeout: Int,
                                       var defaultVibrateDuration: Int,
+                                      var defaultHoldDownDuration: Int,
                                       var forceVibrate: Boolean)

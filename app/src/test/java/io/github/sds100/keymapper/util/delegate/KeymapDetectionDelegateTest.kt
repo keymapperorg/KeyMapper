@@ -59,6 +59,7 @@ class KeymapDetectionDelegateTest {
         private const val HOLD_DOWN_DELAY = 400
         private const val SEQUENCE_TRIGGER_TIMEOUT = 2000
         private const val VIBRATION_DURATION = 100
+        private const val HOLD_DOWN_DURATION = 1000
 
         private val TEST_ACTION = Action(ActionType.SYSTEM_ACTION, SystemAction.TOGGLE_FLASHLIGHT)
         private val TEST_ACTION_2 = Action(ActionType.APP, Constants.PACKAGE_NAME)
@@ -104,6 +105,7 @@ class KeymapDetectionDelegateTest {
             REPEAT_DELAY,
             SEQUENCE_TRIGGER_TIMEOUT,
             VIBRATION_DURATION,
+            HOLD_DOWN_DURATION,
             FORCE_VIBRATE)
 
         mDelegate = KeymapDetectionDelegate(mCoroutineScope, preferences, iClock, iConstraintState, iActionError)

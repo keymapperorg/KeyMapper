@@ -104,6 +104,7 @@ data class Action(
         const val EXTRA_REPEAT_RATE = "extra_repeat_delay"
         const val EXTRA_MULTIPLIER = "extra_multiplier"
         const val EXTRA_DELAY_BEFORE_NEXT_ACTION = "extra_delay_before_next_action"
+        const val EXTRA_HOLD_DOWN_DURATION = "extra_hold_down_duration"
 
         val DATA_EXTRAS = arrayOf(
             EXTRA_SHORTCUT_TITLE,

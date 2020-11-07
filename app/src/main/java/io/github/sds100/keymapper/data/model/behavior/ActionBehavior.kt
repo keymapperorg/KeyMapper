@@ -9,6 +9,8 @@ import io.github.sds100.keymapper.data.model.getData
 import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.ActionUtils
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
+import io.github.sds100.keymapper.util.holdDown
+import io.github.sds100.keymapper.util.repeat
 import io.github.sds100.keymapper.util.result.onSuccess
 import io.github.sds100.keymapper.util.result.valueOrNull
 import splitties.bitflags.hasFlag
@@ -33,6 +35,7 @@ class ActionBehavior(
         const val ID_STOP_HOLD_DOWN_WHEN_TRIGGER_RELEASED = "stop_hold_down_when_trigger_released"
         const val ID_STOP_HOLD_DOWN_WHEN_TRIGGER_PRESSED_AGAIN = "stop_hold_down_when_trigger_pressed_again"
         const val ID_DELAY_BEFORE_NEXT_ACTION = "delay_before_next_action"
+        const val ID_HOLD_DOWN_DURATION = "hold_down_duration"
     }
 
     val actionId = action.uniqueId
@@ -88,6 +91,12 @@ class ActionBehavior(
         id = ID_MULTIPLIER,
         value = action.extras.getData(Action.EXTRA_MULTIPLIER).valueOrNull()?.toInt() ?: BehaviorOption.DEFAULT,
         isAllowed = true
+    )
+
+    val holdDownDuration = BehaviorOption(
+        id = ID_HOLD_DOWN_DURATION,
+        value = action.extras.getData(Action.EXTRA_HOLD_DOWN_DURATION).valueOrNull()?.toInt() ?: BehaviorOption.DEFAULT,
+        isAllowed = action.repeat && action.holdDown
     )
 
     /*
@@ -174,6 +183,7 @@ class ActionBehavior(
             .applyBehaviorOption(repeatDelay, Action.EXTRA_REPEAT_DELAY)
             .applyBehaviorOption(multiplier, Action.EXTRA_MULTIPLIER)
             .applyBehaviorOption(delayBeforeNextAction, Action.EXTRA_DELAY_BEFORE_NEXT_ACTION)
+            .applyBehaviorOption(holdDownDuration, Action.EXTRA_HOLD_DOWN_DURATION)
 
         newExtras.removeAll {
             it.id in arrayOf(Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR, Action.EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR)
@@ -204,6 +214,7 @@ class ActionBehavior(
             ID_REPEAT_DELAY -> repeatDelay.value = value
             ID_MULTIPLIER -> multiplier.value = value
             ID_DELAY_BEFORE_NEXT_ACTION -> delayBeforeNextAction.value = value
+            ID_HOLD_DOWN_DURATION -> holdDownDuration.value = value
         }
 
         return this
@@ -225,6 +236,8 @@ class ActionBehavior(
                 if (value && stopHoldDownWhenTriggerPressedAgain.value) {
                     setValue(ID_STOP_HOLD_DOWN_WHEN_TRIGGER_PRESSED_AGAIN, false)
                 }
+
+                holdDownDuration.isAllowed = holdDown.value && repeat.value
             }
 
             ID_SHOW_VOLUME_UI -> showVolumeUi.value = value
@@ -245,6 +258,7 @@ class ActionBehavior(
 
                 stopHoldDownWhenTriggerPressedAgain.isAllowed = holdDown.value && !repeat.value
                 stopHoldDownWhenTriggerReleased.isAllowed = holdDown.value && !repeat.value
+                holdDownDuration.isAllowed = holdDown.value && repeat.value
             }
 
             ID_STOP_HOLD_DOWN_WHEN_TRIGGER_RELEASED -> {

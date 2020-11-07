@@ -68,6 +68,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         private const val INDEX_ACTION_MULTIPLIER = 3
         private const val INDEX_HOLD_DOWN_BEHAVIOR = 4
         private const val INDEX_DELAY_BEFORE_NEXT_ACTION = 5
+        private const val INDEX_HOLD_DOWN_DURATION = 6
 
         private val ACTION_EXTRA_INDEX_MAP = mapOf(
             Action.EXTRA_REPEAT_RATE to INDEX_ACTION_REPEAT_RATE,
@@ -75,7 +76,8 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR to INDEX_STOP_REPEAT_BEHAVIOR,
             Action.EXTRA_MULTIPLIER to INDEX_ACTION_MULTIPLIER,
             Action.EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR to INDEX_HOLD_DOWN_BEHAVIOR,
-            Action.EXTRA_DELAY_BEFORE_NEXT_ACTION to INDEX_DELAY_BEFORE_NEXT_ACTION
+            Action.EXTRA_DELAY_BEFORE_NEXT_ACTION to INDEX_DELAY_BEFORE_NEXT_ACTION,
+            Action.EXTRA_HOLD_DOWN_DURATION to INDEX_HOLD_DOWN_DURATION
         )
 
         private fun createDeviceDescriptorMap(descriptors: Set<String>): SparseArrayCompat<String> {
@@ -819,7 +821,28 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                         mParallelTriggerActions[triggerIndex].forEachIndexed { index, actionKey ->
                             val action = mActionMap[actionKey] ?: return@forEachIndexed
 
-                            var shouldPerformAction = true
+                            var shouldPerformActionNormally = true
+
+                            if (action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)
+                                && action.flags.hasFlag(Action.ACTION_FLAG_REPEAT)
+                                && stopRepeatingWhenPressedAgain(actionKey)) {
+
+                                shouldPerformActionNormally = false
+
+                                if (mActionsBeingHeldDown.contains(actionKey)) {
+                                    mActionsBeingHeldDown.remove(actionKey)
+
+                                    performAction(
+                                        action,
+                                        showPerformingActionToast(actionKey),
+                                        keyEventAction = KeyEventAction.UP,
+                                        multiplier = actionMultiplier(actionKey)
+                                    )
+
+                                } else {
+                                    mActionsBeingHeldDown.add(actionKey)
+                                }
+                            }
 
                             if (holdDownUntilPressedAgain(actionKey)) {
                                 if (mActionsBeingHeldDown.contains(actionKey)) {
@@ -831,13 +854,13 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                                         keyEventAction = KeyEventAction.UP,
                                         multiplier = actionMultiplier(actionKey))
 
-                                    shouldPerformAction = false
+                                    shouldPerformActionNormally = false
                                 } else {
                                     mActionsBeingHeldDown.add(actionKey)
                                 }
                             }
 
-                            if (shouldPerformAction) {
+                            if (shouldPerformActionNormally) {
                                 val keyEventAction =
                                     if (action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)) {
                                         KeyEventAction.DOWN
@@ -856,6 +879,17 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
                                 if (vibrateDuration != -1L) {
                                     vibrate.value = Event(vibrateDuration)
+                                }
+
+                                if (action.repeat && action.holdDown) {
+                                    delay(holdDownDuration(actionKey))
+
+                                    performAction(
+                                        action,
+                                        false,
+                                        1,
+                                        KeyEventAction.UP
+                                    )
                                 }
                             }
 
@@ -1473,7 +1507,15 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                         if (isModifierKey(action.data.toInt())) return@let
                     }
 
-                    performAction(action, false, actionMultiplier(actionKey))
+                    if (action.holdDown && action.repeat) {
+                        val holdDownDuration = holdDownDuration(actionKey)
+
+                        performAction(action, false, actionMultiplier(actionKey), KeyEventAction.DOWN)
+                        delay(holdDownDuration)
+                        performAction(action, false, actionMultiplier(actionKey), KeyEventAction.UP)
+                    } else {
+                        performAction(action, false, actionMultiplier(actionKey))
+                    }
                 }
 
                 delay(repeatRate(actionKey))
@@ -1763,6 +1805,14 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             0
         } else {
             mActionOptions[actionKey][INDEX_DELAY_BEFORE_NEXT_ACTION].toLong()
+        }
+    }
+
+    private fun holdDownDuration(actionKey: Int): Long {
+        return if (mActionOptions[actionKey][INDEX_HOLD_DOWN_DURATION] == -1) {
+            preferences.defaultHoldDownDuration.toLong()
+        } else {
+            mActionOptions[actionKey][INDEX_HOLD_DOWN_DURATION].toLong()
         }
     }
 
