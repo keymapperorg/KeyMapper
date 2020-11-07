@@ -140,6 +140,7 @@
     <string name="extra_label_vibration_duration">Vibration duration (ms)</string>
     <string name="extra_label_action_multiplier">Action count</string>
     <string name="extra_label_delay_before_next_action">Delay before next action</string>
+    <string name="extra_label_hold_down_duration">Hold down duration</string>
 
     <!-- Constraints -->
     <string name="constraint_app_foreground_description">%s is in foreground</string>

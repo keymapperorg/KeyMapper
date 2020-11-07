@@ -67,7 +67,7 @@ class ActionBehaviorViewModel : ViewModel() {
                 ))
             }
 
-            if (it.delayBeforeNextAction.isAllowed){
+            if (it.delayBeforeNextAction.isAllowed) {
                 yield(SliderListItemModel(
                     id = it.delayBeforeNextAction.id,
                     label = R.string.extra_label_delay_before_next_action,
@@ -77,6 +77,20 @@ class ActionBehaviorViewModel : ViewModel() {
                         min = R.integer.delay_before_next_action_min,
                         maxSlider = R.integer.delay_before_next_action_max,
                         stepSize = R.integer.delay_before_next_action_step_size
+                    )
+                ))
+            }
+
+            if (it.holdDownDuration.isAllowed) {
+                yield(SliderListItemModel(
+                    id = it.holdDownDuration.id,
+                    label = R.string.extra_label_hold_down_duration,
+                    sliderModel = SliderModel(
+                        value = it.holdDownDuration.value.nullIfDefault,
+                        isDefaultStepEnabled = true,
+                        min = R.integer.hold_down_duration_min,
+                        maxSlider = R.integer.hold_down_duration_max,
+                        stepSize = R.integer.hold_down_duration_step_size
                     )
                 ))
             }

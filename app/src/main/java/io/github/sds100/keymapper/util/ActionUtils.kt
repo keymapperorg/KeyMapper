@@ -380,6 +380,12 @@ val Action.requiresIME: Boolean
             data == SystemAction.MOVE_CURSOR_TO_END
     }
 
+val Action.repeat: Boolean
+    get() = flags.hasFlag(Action.ACTION_FLAG_REPEAT)
+
+val Action.holdDown: Boolean
+    get() = flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)
+
 fun Action.getFlagLabelList(ctx: Context): List<String> = sequence {
     Action.ACTION_FLAG_LABEL_MAP.keys.forEach { flag ->
         if (flags.hasFlag(flag)) {
