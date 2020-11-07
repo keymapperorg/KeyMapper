@@ -143,7 +143,7 @@ class ActionBehavior(
         stopHoldDownWhenTriggerPressedAgain = BehaviorOption(
             id = ID_STOP_HOLD_DOWN_WHEN_TRIGGER_PRESSED_AGAIN,
             value = stopHoldDownTriggerPressedAgain,
-            isAllowed = holdDown.value
+            isAllowed = holdDown.value && !repeat.value
         )
 
         stopHoldDownWhenTriggerReleased = BehaviorOption(
@@ -218,6 +218,13 @@ class ActionBehavior(
                 stopRepeatingWhenTriggerReleased.isAllowed = value
 
                 repeat.value = value
+
+                stopHoldDownWhenTriggerPressedAgain.isAllowed = !value
+                stopHoldDownWhenTriggerReleased.isAllowed = !value
+
+                if (value && stopHoldDownWhenTriggerPressedAgain.value) {
+                    setValue(ID_STOP_HOLD_DOWN_WHEN_TRIGGER_PRESSED_AGAIN, false)
+                }
             }
 
             ID_SHOW_VOLUME_UI -> showVolumeUi.value = value
@@ -235,8 +242,9 @@ class ActionBehavior(
 
             ID_HOLD_DOWN -> {
                 holdDown.value = value
-                stopHoldDownWhenTriggerPressedAgain.isAllowed = value
-                stopHoldDownWhenTriggerReleased.isAllowed = value
+
+                stopHoldDownWhenTriggerPressedAgain.isAllowed = holdDown.value && !repeat.value
+                stopHoldDownWhenTriggerReleased.isAllowed = holdDown.value && !repeat.value
             }
 
             ID_STOP_HOLD_DOWN_WHEN_TRIGGER_RELEASED -> {
