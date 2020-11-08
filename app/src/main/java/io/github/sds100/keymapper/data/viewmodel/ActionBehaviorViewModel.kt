@@ -3,11 +3,11 @@ package io.github.sds100.keymapper.data.viewmodel
 import android.os.Bundle
 import androidx.lifecycle.*
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.model.ActionBehavior
-import io.github.sds100.keymapper.data.model.BehaviorOption.Companion.nullIfDefault
 import io.github.sds100.keymapper.data.model.CheckBoxListItemModel
 import io.github.sds100.keymapper.data.model.SliderListItemModel
 import io.github.sds100.keymapper.data.model.SliderModel
+import io.github.sds100.keymapper.data.model.behavior.ActionBehavior
+import io.github.sds100.keymapper.data.model.behavior.BehaviorOption.Companion.nullIfDefault
 import io.github.sds100.keymapper.util.Event
 
 /**
@@ -63,6 +63,34 @@ class ActionBehaviorViewModel : ViewModel() {
                         min = R.integer.repeat_delay_min,
                         maxSlider = R.integer.repeat_delay_max,
                         stepSize = R.integer.repeat_delay_step_size
+                    )
+                ))
+            }
+
+            if (it.delayBeforeNextAction.isAllowed) {
+                yield(SliderListItemModel(
+                    id = it.delayBeforeNextAction.id,
+                    label = R.string.extra_label_delay_before_next_action,
+                    sliderModel = SliderModel(
+                        value = it.delayBeforeNextAction.value.nullIfDefault,
+                        isDefaultStepEnabled = true,
+                        min = R.integer.delay_before_next_action_min,
+                        maxSlider = R.integer.delay_before_next_action_max,
+                        stepSize = R.integer.delay_before_next_action_step_size
+                    )
+                ))
+            }
+
+            if (it.holdDownDuration.isAllowed) {
+                yield(SliderListItemModel(
+                    id = it.holdDownDuration.id,
+                    label = R.string.extra_label_hold_down_duration,
+                    sliderModel = SliderModel(
+                        value = it.holdDownDuration.value.nullIfDefault,
+                        isDefaultStepEnabled = true,
+                        min = R.integer.hold_down_duration_min,
+                        maxSlider = R.integer.hold_down_duration_max,
+                        stepSize = R.integer.hold_down_duration_step_size
                     )
                 ))
             }

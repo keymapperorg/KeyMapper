@@ -152,6 +152,11 @@ object AppPreferences : DefaultPreferences() {
         appCtx.bool(R.bool.default_value_show_device_descriptors)
     )
 
+    val holdDownDuration by IntPref(
+        appCtx.str(R.string.key_pref_hold_down_duration),
+        appCtx.int(R.integer.default_value_hold_down_duration)
+    )
+
     @NightMode
     fun getSdkNightMode(darkThemePrefValue: String): Int {
         return when (darkThemePrefValue) {

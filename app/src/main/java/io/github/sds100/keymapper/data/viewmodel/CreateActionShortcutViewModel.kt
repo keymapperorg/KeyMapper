@@ -4,8 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import io.github.sds100.keymapper.data.model.Action
-import io.github.sds100.keymapper.data.model.ActionBehavior
 import io.github.sds100.keymapper.data.model.ActionModel
+import io.github.sds100.keymapper.data.model.behavior.ActionBehavior
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.dataExtraString
 import io.github.sds100.keymapper.util.result.Failure
@@ -77,7 +77,7 @@ class CreateActionShortcutViewModel : ViewModel() {
 
     fun chooseActionBehavior(id: String) {
         val action = actionList.value?.find { it.uniqueId == id } ?: return
-        val behavior = ActionBehavior(action)
+        val behavior = ActionBehavior(action, actionList.value!!.size)
 
         chooseActionBehavior.value = Event(behavior)
     }

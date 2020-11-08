@@ -9,8 +9,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.map
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
+import androidx.recyclerview.widget.ItemTouchHelper
+import com.airbnb.epoxy.EpoxyController
+import com.airbnb.epoxy.EpoxyTouchHelper
+import com.google.android.material.card.MaterialCardView
+import io.github.sds100.keymapper.ActionBindingModel_
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.action
+import io.github.sds100.keymapper.data.model.ActionModel
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentActionsBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
@@ -35,6 +41,8 @@ class ActionsFragment(private val mKeymapId: Long) : Fragment() {
         }
     }
 
+    private val mActionListController = ActionListController()
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         FragmentActionsBinding.inflate(inflater, container, false).apply {
             viewModel = mViewModel
@@ -46,6 +54,7 @@ class ActionsFragment(private val mKeymapId: Long) : Fragment() {
             })
 
             subscribeActionList()
+            epoxyRecyclerViewActions.adapter = mActionListController.adapter
 
             mViewModel.testAction.observe(viewLifecycleOwner, EventObserver {
                 if (AccessibilityUtils.isServiceEnabled(requireContext())) {
@@ -75,30 +84,75 @@ class ActionsFragment(private val mKeymapId: Long) : Fragment() {
 
     private fun FragmentActionsBinding.subscribeActionList() {
         mActionModelList.observe(viewLifecycleOwner, { actionList ->
-            epoxyRecyclerViewActions.withModels {
+            enableActionDragging(mActionListController)
+            mActionListController.modelList = actionList
+        })
+    }
 
-                actionList.forEachIndexed { _, model ->
-                    action {
-                        id(model.id)
-                        model(model)
-                        icon(model.icon)
+    private fun FragmentActionsBinding.enableActionDragging(controller: EpoxyController): ItemTouchHelper {
+        return EpoxyTouchHelper.initDragging(controller)
+            .withRecyclerView(epoxyRecyclerViewActions)
+            .forVerticalList()
+            .withTarget(ActionBindingModel_::class.java)
+            .andCallbacks(object : EpoxyTouchHelper.DragCallbacks<ActionBindingModel_>() {
 
-                        onRemoveClick { _ ->
-                            mViewModel.removeAction(model.id)
-                        }
+                override fun isDragEnabledForModel(model: ActionBindingModel_?): Boolean {
+                    return mViewModel.actionList.value?.size!! > 1
+                }
 
-                        onMoreClick { _ ->
-                            mViewModel.chooseActionBehavior(model.id)
-                        }
+                override fun onModelMoved(
+                    fromPosition: Int,
+                    toPosition: Int,
+                    modelBeingMoved: ActionBindingModel_?,
+                    itemView: View?
+                ) {
+                    mViewModel.moveAction(fromPosition, toPosition)
+                }
 
-                        onClick { _ ->
-                            mActionModelList.value?.single { it.id == model.id }?.let {
-                                mViewModel.onActionModelClick(it)
-                            }
+                override fun onDragStarted(
+                    model: ActionBindingModel_?,
+                    itemView: View?,
+                    adapterPosition: Int
+                ) {
+                    itemView?.findViewById<MaterialCardView>(R.id.cardView)?.isDragged = true
+                }
+
+                override fun onDragReleased(model: ActionBindingModel_?, itemView: View?) {
+                    itemView?.findViewById<MaterialCardView>(R.id.cardView)?.isDragged = false
+                }
+            })
+    }
+
+    private inner class ActionListController : EpoxyController() {
+        var modelList: List<ActionModel> = listOf()
+            set(value) {
+                requestModelBuild()
+                field = value
+            }
+
+        override fun buildModels() {
+            modelList.forEachIndexed { _, model ->
+                action {
+                    id(model.id)
+                    model(model)
+                    icon(model.icon)
+                    actionCount(modelList.size)
+
+                    onRemoveClick { _ ->
+                        mViewModel.removeAction(model.id)
+                    }
+
+                    onMoreClick { _ ->
+                        mViewModel.chooseActionBehavior(model.id)
+                    }
+
+                    onClick { _ ->
+                        mActionModelList.value?.single { it.id == model.id }?.let {
+                            mViewModel.onActionModelClick(it)
                         }
                     }
                 }
             }
-        })
+        }
     }
 }

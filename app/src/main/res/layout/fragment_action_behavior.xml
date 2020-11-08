@@ -6,7 +6,7 @@
 
         <import type="android.view.View" />
 
-        <import type="io.github.sds100.keymapper.data.model.ActionBehavior" />
+        <import type="io.github.sds100.keymapper.data.model.behavior.ActionBehavior" />
 
         <variable
             name="viewModel"
@@ -14,7 +14,7 @@
 
         <variable
             name="behavior"
-            type="io.github.sds100.keymapper.data.model.ActionBehavior" />
+            type="io.github.sds100.keymapper.data.model.behavior.ActionBehavior" />
     </data>
 
     <androidx.core.widget.NestedScrollView
@@ -83,7 +83,7 @@
                 android:text="@string/hold_down_until_trigger_is_dot_dot_dot"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
                 android:textSize="14sp"
-                android:visibility="@{viewModel.behavior.holdDown.value ? View.VISIBLE : View.GONE}"
+                android:visibility="@{viewModel.behavior.holdDown.value &amp;&amp; viewModel.behavior.stopHoldDownWhenTriggerPressedAgain.isAllowed ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toTopOf="@+id/radioGroup"
                 app:layout_constraintStart_toStartOf="parent" />
 
@@ -94,7 +94,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:orientation="horizontal"
-                android:visibility="@{viewModel.behavior.holdDown.value ? View.VISIBLE : View.GONE}">
+                android:visibility="@{viewModel.behavior.holdDown.value &amp;&amp; viewModel.behavior.stopHoldDownWhenTriggerPressedAgain.isAllowed ? View.VISIBLE : View.GONE}">
 
                 <com.google.android.material.radiobutton.MaterialRadioButton
                     android:layout_width="wrap_content"

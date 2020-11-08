@@ -69,7 +69,9 @@ abstract class AppDatabase : RoomDatabase() {
 
         val MIGRATION_7_8 = object : Migration(7, 8) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                Migration_7_8.migrate(database)
+                //DO NOTHING
+                //I added a change and then removed it in a later commit. this will only affect testers so not a big
+                //dela
             }
         }
     }

@@ -6,7 +6,6 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.map
 import androidx.navigation.fragment.findNavController
 import com.airbnb.epoxy.EpoxyController
 import com.google.android.material.bottomappbar.BottomAppBar
@@ -33,16 +32,8 @@ import splitties.snackbar.longSnack
  */
 class KeymapListFragment : DefaultRecyclerViewFragment() {
 
-    override val progressCallback
-        get() = mViewModel
-
     override val appBar: BottomAppBar
         get() = binding.appBar
-
-    override val noItemsText: String?
-        get() = str(R.string.keymap_recyclerview_placeholder)
-
-    override val itemCount by lazy { mViewModel.keymapModelList.map { it.size } }
 
     private val mViewModel: KeymapListViewModel by activityViewModels {
         InjectorUtils.provideKeymapListViewModel(requireContext())
@@ -85,7 +76,13 @@ class KeymapListFragment : DefaultRecyclerViewFragment() {
         mViewModel.apply {
 
             keymapModelList.observe(viewLifecycleOwner, { keymapList ->
-                mController.keymapList = keymapList
+                binding.state = keymapList
+
+                mController.keymapList = if (keymapList is Data) {
+                    keymapList.data
+                } else {
+                    listOf()
+                }
             })
 
             selectionProvider.callback = mController

@@ -5,7 +5,7 @@ import androidx.lifecycle.*
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.CheckBoxListItemModel
 import io.github.sds100.keymapper.data.model.Trigger
-import io.github.sds100.keymapper.data.model.TriggerKeyBehavior
+import io.github.sds100.keymapper.data.model.behavior.TriggerKeyBehavior
 import io.github.sds100.keymapper.util.Event
 
 /**

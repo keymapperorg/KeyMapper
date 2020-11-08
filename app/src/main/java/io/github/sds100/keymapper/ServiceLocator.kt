@@ -3,9 +3,12 @@ package io.github.sds100.keymapper
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.room.Room
-import com.example.architecturetest.data.DefaultDeviceInfoRepository
-import io.github.sds100.keymapper.data.*
+import io.github.sds100.keymapper.data.DefaultPreferenceDataStore
+import io.github.sds100.keymapper.data.IPreferenceDataStore
 import io.github.sds100.keymapper.data.db.AppDatabase
+import io.github.sds100.keymapper.data.repository.DefaultDeviceInfoRepository
+import io.github.sds100.keymapper.data.repository.DefaultKeymapRepository
+import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -17,7 +20,7 @@ object ServiceLocator {
     private var database: AppDatabase? = null
 
     @Volatile
-    var keymapRepository: KeymapRepository? = null
+    var keymapRepository: DefaultKeymapRepository? = null
         @VisibleForTesting set
 
     @Volatile
@@ -28,7 +31,7 @@ object ServiceLocator {
     var preferenceDataStore: IPreferenceDataStore? = null
         @VisibleForTesting set
 
-    fun provideKeymapRepository(context: Context): KeymapRepository {
+    fun provideKeymapRepository(context: Context): DefaultKeymapRepository {
         synchronized(this) {
             return keymapRepository ?: createKeymapRepository(context)
         }
@@ -42,7 +45,7 @@ object ServiceLocator {
 
     fun provideOnboardingState(context: Context): IPreferenceDataStore {
         synchronized(this) {
-            return preferenceDataStore ?: createOnboardingState(context)
+            return preferenceDataStore ?: createPreferenceDataStore(context)
         }
     }
 
@@ -65,7 +68,7 @@ object ServiceLocator {
         }
     }
 
-    private fun createKeymapRepository(context: Context): KeymapRepository {
+    private fun createKeymapRepository(context: Context): DefaultKeymapRepository {
         val database = database ?: createDatabase(context)
         keymapRepository = DefaultKeymapRepository(database.keymapDao())
         return keymapRepository!!
@@ -77,11 +80,11 @@ object ServiceLocator {
         return deviceInfoRepository!!
     }
 
-    private fun createOnboardingState(context: Context): IPreferenceDataStore {
-        val onboardingState = preferenceDataStore ?: DefaultPreferenceDataStore(context)
-        this.preferenceDataStore = onboardingState
+    private fun createPreferenceDataStore(context: Context): IPreferenceDataStore {
+        val preferenceDataStore = preferenceDataStore ?: DefaultPreferenceDataStore(context)
+        this.preferenceDataStore = preferenceDataStore
 
-        return onboardingState
+        return preferenceDataStore
     }
 
     private fun createDatabase(context: Context): AppDatabase {

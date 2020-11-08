@@ -239,6 +239,7 @@ class MyAccessibilityService : AccessibilityService(),
             AppPreferences.repeatRate,
             AppPreferences.sequenceTriggerTimeout,
             AppPreferences.vibrateDuration,
+            AppPreferences.holdDownDuration,
             AppPreferences.forceVibrate
         )
 
@@ -416,6 +417,10 @@ class MyAccessibilityService : AccessibilityService(),
 
             str(R.string.key_pref_force_vibrate) -> {
                 mKeymapDetectionDelegate.preferences.forceVibrate = AppPreferences.forceVibrate
+            }
+
+            str(R.string.key_pref_hold_down_duration) -> {
+                mKeymapDetectionDelegate.preferences.defaultHoldDownDuration = AppPreferences.holdDownDuration
             }
 
             str(R.string.key_pref_keymaps_paused) -> {

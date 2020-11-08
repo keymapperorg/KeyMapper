@@ -18,10 +18,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_app"
-    app:startDestination="@id/keymap_list_fragment">
+    app:startDestination="@id/home_fragment">
 
     <fragment
-        android:id="@+id/keymap_list_fragment"
+        android:id="@+id/home_fragment"
         android:name="io.github.sds100.keymapper.ui.fragment.HomeFragment"
         tools:layout="@layout/fragment_home">
 

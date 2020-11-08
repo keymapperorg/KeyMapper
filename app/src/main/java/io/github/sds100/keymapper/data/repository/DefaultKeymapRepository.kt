@@ -1,9 +1,13 @@
-package io.github.sds100.keymapper.data
+package io.github.sds100.keymapper.data.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 import io.github.sds100.keymapper.data.model.KeyMap
+import io.github.sds100.keymapper.data.usecase.BackupRestoreUseCase
+import io.github.sds100.keymapper.data.usecase.ConfigKeymapUseCase
+import io.github.sds100.keymapper.data.usecase.GlobalKeymapUseCase
+import io.github.sds100.keymapper.data.usecase.KeymapListUseCase
 import io.github.sds100.keymapper.util.Event
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -11,7 +15,8 @@ import kotlinx.coroutines.withContext
 /**
  * Created by sds100 on 26/01/2020.
  */
-class DefaultKeymapRepository internal constructor(private val mKeymapDao: KeyMapDao) : KeymapRepository {
+class DefaultKeymapRepository internal constructor(private val mKeymapDao: KeyMapDao
+) : GlobalKeymapUseCase, KeymapListUseCase, ConfigKeymapUseCase, BackupRestoreUseCase {
 
     override val requestBackup = MutableLiveData<Event<List<KeyMap>>>()
     override val keymapList: LiveData<List<KeyMap>> = mKeymapDao.observeAll()

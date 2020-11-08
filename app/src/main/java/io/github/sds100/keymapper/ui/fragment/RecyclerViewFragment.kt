@@ -15,7 +15,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.savedstate.SavedStateRegistry
 import com.google.android.material.bottomappbar.BottomAppBar
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.ui.callback.ProgressCallback
 import io.github.sds100.keymapper.util.observeCurrentDestinationLiveData
 
 /**
@@ -48,7 +47,6 @@ abstract class RecyclerViewFragment<BINDING : ViewDataBinding> : Fragment() {
     var isInPagerAdapter = false
     open var requestKey: String? = null
     open var searchStateKey: String? = null
-    open val progressCallback: ProgressCallback? = null
     abstract val appBar: BottomAppBar
     lateinit var binding: BINDING
 

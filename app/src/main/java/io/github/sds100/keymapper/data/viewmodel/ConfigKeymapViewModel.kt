@@ -3,11 +3,14 @@ package io.github.sds100.keymapper.data.viewmodel
 import android.view.KeyEvent
 import androidx.lifecycle.*
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.DeviceInfoRepository
 import io.github.sds100.keymapper.data.IPreferenceDataStore
-import io.github.sds100.keymapper.data.KeymapRepository
 import io.github.sds100.keymapper.data.model.*
-import io.github.sds100.keymapper.data.model.BehaviorOption.Companion.nullIfDefault
+import io.github.sds100.keymapper.data.model.behavior.ActionBehavior
+import io.github.sds100.keymapper.data.model.behavior.BehaviorOption.Companion.nullIfDefault
+import io.github.sds100.keymapper.data.model.behavior.TriggerBehavior
+import io.github.sds100.keymapper.data.model.behavior.TriggerKeyBehavior
+import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
+import io.github.sds100.keymapper.data.usecase.ConfigKeymapUseCase
 import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.dataExtraString
@@ -17,7 +20,7 @@ import kotlinx.coroutines.launch
 import java.util.*
 
 class ConfigKeymapViewModel internal constructor(
-    private val mKeymapRepository: KeymapRepository,
+    private val mKeymapRepository: ConfigKeymapUseCase,
     private val mDeviceInfoRepository: DeviceInfoRepository,
     preferenceDataStore: IPreferenceDataStore,
     private val mId: Long
@@ -553,10 +556,26 @@ class ConfigKeymapViewModel internal constructor(
         }
 
         if (action.type == ActionType.KEY_EVENT) {
-            ActionBehavior(action, triggerMode.value!!, triggerKeys.value!!).apply {
+            ActionBehavior(action, actionList.value!!.size, triggerMode.value!!, triggerKeys.value!!).apply {
                 setValue(ActionBehavior.ID_REPEAT, true)
 
                 setActionBehavior(this)
+            }
+        }
+
+        invalidateOptions()
+    }
+
+    fun moveAction(fromIndex: Int, toIndex: Int) {
+        actionList.value = actionList.value?.toMutableList()?.apply {
+            if (fromIndex < toIndex) {
+                for (i in fromIndex until toIndex) {
+                    Collections.swap(this, i, i + 1)
+                }
+            } else {
+                for (i in fromIndex downTo toIndex + 1) {
+                    Collections.swap(this, i, i - 1)
+                }
             }
         }
 
@@ -613,7 +632,7 @@ class ConfigKeymapViewModel internal constructor(
 
     fun chooseActionBehavior(id: String) {
         val action = actionList.value?.find { it.uniqueId == id } ?: return
-        val behavior = ActionBehavior(action, triggerMode.value!!, triggerKeys.value!!)
+        val behavior = ActionBehavior(action, actionList.value!!.size, triggerMode.value!!, triggerKeys.value!!)
 
         chooseActionBehavior.value = Event(behavior)
     }
@@ -661,6 +680,7 @@ class ConfigKeymapViewModel internal constructor(
         actionList.value = actionList.value?.map { action ->
             val newBehavior = ActionBehavior(
                 action,
+                actionList.value!!.size,
                 triggerMode.value ?: Trigger.DEFAULT_TRIGGER_MODE,
                 triggerKeys.value ?: listOf()
             )
@@ -677,13 +697,13 @@ class ConfigKeymapViewModel internal constructor(
     suspend fun getDeviceInfoList() = mDeviceInfoRepository.getAll()
 
     class Factory(
-        private val mKeymapRepository: KeymapRepository,
+        private val mConfigKeymapUseCase: ConfigKeymapUseCase,
         private val mDeviceInfoRepository: DeviceInfoRepository,
         private val mIPreferenceDataStore: IPreferenceDataStore,
         private val mId: Long) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>) =
-            ConfigKeymapViewModel(mKeymapRepository, mDeviceInfoRepository, mIPreferenceDataStore, mId) as T
+            ConfigKeymapViewModel(mConfigKeymapUseCase, mDeviceInfoRepository, mIPreferenceDataStore, mId) as T
     }
 }

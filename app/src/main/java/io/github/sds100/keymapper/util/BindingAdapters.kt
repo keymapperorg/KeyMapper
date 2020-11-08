@@ -87,11 +87,13 @@ fun StatusLayout.setStatusLayoutState(
 }
 
 @BindingAdapter("app:markdown")
-fun TextView.markdown(markdown: String?) {
-    markdown ?: return
+fun TextView.markdown(markdown: State<String>) {
+    when (markdown) {
+        is Data -> Markwon.create(context).apply {
+            setMarkdown(this@markdown, markdown.data)
+        }
 
-    Markwon.create(context).apply {
-        setMarkdown(this@markdown, markdown)
+        is Loading, is Empty -> text = ""
     }
 }
 

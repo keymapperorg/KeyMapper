@@ -6,7 +6,7 @@
 
         <import type="android.view.View" />
 
-        <import type="io.github.sds100.keymapper.data.model.TriggerKeyBehavior" />
+        <import type="io.github.sds100.keymapper.data.model.behavior.TriggerKeyBehavior" />
 
         <variable
             name="viewModel"
@@ -14,7 +14,7 @@
 
         <variable
             name="behavior"
-            type="io.github.sds100.keymapper.data.model.TriggerKeyBehavior" />
+            type="io.github.sds100.keymapper.data.model.behavior.TriggerKeyBehavior" />
     </data>
 
     <androidx.core.widget.NestedScrollView

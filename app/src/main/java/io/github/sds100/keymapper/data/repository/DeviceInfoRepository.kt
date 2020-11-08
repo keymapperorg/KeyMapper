@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.data
+package io.github.sds100.keymapper.data.repository
 
 import io.github.sds100.keymapper.data.model.DeviceInfo
 

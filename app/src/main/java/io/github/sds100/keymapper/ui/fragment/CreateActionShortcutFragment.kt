@@ -23,7 +23,7 @@ import com.google.gson.Gson
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.action
 import io.github.sds100.keymapper.data.model.Action
-import io.github.sds100.keymapper.data.model.ActionBehavior
+import io.github.sds100.keymapper.data.model.behavior.ActionBehavior
 import io.github.sds100.keymapper.data.viewmodel.CreateActionShortcutViewModel
 import io.github.sds100.keymapper.databinding.FragmentCreateActionShortcutBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService

@@ -27,6 +27,7 @@ import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.ChooseAppStoreModel
+import io.github.sds100.keymapper.data.model.KeymapListItemModel
 import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
@@ -397,11 +398,15 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
         if (KeyboardUtils.isCompatibleImeEnabled()) {
             mImeServiceStatusState.value = StatusLayout.State.POSITIVE
 
-        } else if (mKeyMapListViewModel.keymapModelList.value?.any { keymap ->
-                keymap.actionList.any { it.error is NoCompatibleImeEnabled }
-            } == true) {
+        }else if (mKeyMapListViewModel.keymapModelList.value is Data) {
 
-            mImeServiceStatusState.value = StatusLayout.State.ERROR
+            if ((mKeyMapListViewModel.keymapModelList.value as Data<List<KeymapListItemModel>>).data.any { keymap ->
+                    keymap.actionList.any { it.error is NoCompatibleImeEnabled }
+                }) {
+
+                mImeServiceStatusState.value = StatusLayout.State.ERROR
+            }
+
         } else {
             mImeServiceStatusState.value = StatusLayout.State.WARN
         }
@@ -445,5 +450,4 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             }
         }
     }
-
 }

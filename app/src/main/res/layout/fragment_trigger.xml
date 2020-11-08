@@ -11,7 +11,7 @@
 
         <variable
             name="viewModel"
-            type="ConfigKeymapViewModel" />
+            type="io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
