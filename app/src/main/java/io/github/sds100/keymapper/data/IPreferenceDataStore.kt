@@ -8,4 +8,7 @@ import androidx.annotation.StringRes
 interface IPreferenceDataStore {
     fun getBoolPref(@StringRes key: Int): Boolean
     fun setBoolPref(@StringRes key: Int, value: Boolean)
+
+    fun getStringPref(@StringRes key: Int): String?
+    fun setStringPref(@StringRes key: Int, value: String)
 }

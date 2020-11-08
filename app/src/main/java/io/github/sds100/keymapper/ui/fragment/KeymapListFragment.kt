@@ -8,7 +8,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.airbnb.epoxy.EpoxyController
-import com.google.android.material.bottomappbar.BottomAppBar
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
@@ -31,9 +30,6 @@ import splitties.snackbar.longSnack
  * Created by sds100 on 22/02/2020.
  */
 class KeymapListFragment : DefaultRecyclerViewFragment() {
-
-    override val appBar: BottomAppBar
-        get() = binding.appBar
 
     private val mViewModel: KeymapListViewModel by activityViewModels {
         InjectorUtils.provideKeymapListViewModel(requireContext())

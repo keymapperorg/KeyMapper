@@ -242,6 +242,7 @@
     <string name="button_add_constraint">Add Constraint</string>
     <string name="button_choose_keycode">Choose Key Code</string>
     <string name="button_yes">Yes!</string>
+    <string name="button_choose_action">Choose Action</string>
     <!-- Button titles -->
 
     <!-- Dialog titles -->

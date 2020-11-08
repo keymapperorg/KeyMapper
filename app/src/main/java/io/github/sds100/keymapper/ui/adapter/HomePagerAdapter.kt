@@ -22,7 +22,12 @@ class HomePagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
             }
         ).apply {
             if (AppPreferences.isFingerprintGestureDetectionAvailable) {
-                add { FingerprintGestureFragment() }
+                add {
+                    FingerprintGestureFragment().apply {
+                        isAppBarVisible = false
+                        isInPagerAdapter = true
+                    }
+                }
             }
         }
 

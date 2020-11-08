@@ -22,4 +22,14 @@ class DefaultPreferenceDataStore(ctx: Context) : IPreferenceDataStore {
             putBoolean(mCtx.str(key), value)
         }
     }
+
+    override fun getStringPref(key: Int): String? {
+        return mCtx.defaultSharedPreferences.getString(mCtx.str(key), null)
+    }
+
+    override fun setStringPref(key: Int, value: String) {
+        mCtx.defaultSharedPreferences.edit {
+            putString(mCtx.str(key), value)
+        }
+    }
 }
