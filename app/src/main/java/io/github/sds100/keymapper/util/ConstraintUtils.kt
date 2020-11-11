@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.util
 
+import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
@@ -8,7 +9,6 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.ConstraintModel
 import io.github.sds100.keymapper.data.model.ConstraintType
-import io.github.sds100.keymapper.data.model.Extra
 import io.github.sds100.keymapper.util.result.*
 
 /**
@@ -27,6 +27,12 @@ object ConstraintUtils {
             Constraint.SCREEN_OFF, Constraint.SCREEN_ON -> {
                 if (!PermissionUtils.isPermissionGranted(Constants.PERMISSION_ROOT)) {
                     return PermissionDenied(Constants.PERMISSION_ROOT)
+                }
+            }
+
+            in Constraint.ORIENTATION_CONSTRAINTS -> {
+                if (!PermissionUtils.isPermissionGranted(Manifest.permission.WRITE_SETTINGS)) {
+                    return PermissionDenied(Manifest.permission.WRITE_SETTINGS)
                 }
             }
         }
@@ -82,6 +88,13 @@ private fun Constraint.getDescription(ctx: Context): Result<String> {
         Constraint.SCREEN_ON -> Success(ctx.str(R.string.constraint_screen_on_description))
         Constraint.SCREEN_OFF -> Success(ctx.str(R.string.constraint_screen_off_description))
 
+        Constraint.ORIENTATION_PORTRAIT -> Success(ctx.str(R.string.constraint_choose_orientation_portrait))
+        Constraint.ORIENTATION_LANDSCAPE -> Success(ctx.str(R.string.constraint_choose_orientation_landscape))
+        Constraint.ORIENTATION_0 -> Success(ctx.str(R.string.constraint_choose_orientation_0))
+        Constraint.ORIENTATION_90 -> Success(ctx.str(R.string.constraint_choose_orientation_90))
+        Constraint.ORIENTATION_180 -> Success(ctx.str(R.string.constraint_choose_orientation_180))
+        Constraint.ORIENTATION_270 -> Success(ctx.str(R.string.constraint_choose_orientation_270))
+
         else -> ConstraintNotFound()
     }
 }
@@ -100,15 +113,18 @@ private fun Constraint.getIcon(ctx: Context): Result<Drawable> {
 
         Constraint.BT_DEVICE_CONNECTED ->
             Success(ctx.safeVectorDrawable(R.drawable.ic_outline_bluetooth_connected_24)!!)
-
         Constraint.BT_DEVICE_DISCONNECTED ->
             Success(ctx.safeVectorDrawable(R.drawable.ic_outline_bluetooth_disabled_24)!!)
 
         Constraint.SCREEN_ON ->
             Success(ctx.safeVectorDrawable(R.drawable.ic_outline_stay_current_portrait_24)!!)
-
         Constraint.SCREEN_OFF ->
             Success(ctx.safeVectorDrawable(R.drawable.ic_baseline_mobile_off_24)!!)
+
+        Constraint.ORIENTATION_PORTRAIT, Constraint.ORIENTATION_0, Constraint.ORIENTATION_180 ->
+            Success(ctx.safeVectorDrawable(R.drawable.ic_outline_stay_current_portrait_24)!!)
+        Constraint.ORIENTATION_LANDSCAPE, Constraint.ORIENTATION_90, Constraint.ORIENTATION_270 ->
+            Success(ctx.safeVectorDrawable(R.drawable.ic_outline_stay_current_landscape_24)!!)
 
         else -> ConstraintNotFound()
     }

@@ -156,10 +156,6 @@ fun ChipGroup.bindActions(actions: List<ActionChipModel>, callback: ErrorClickCa
             chipIcon = it.icon
             isCloseIconVisible = it.hasError
 
-            if (it.type == ActionType.SYSTEM_ACTION) {
-                chipIconTint = styledColorSL(R.attr.colorOnSurface)
-            }
-
             if (it.description == null && it.hasError) {
                 text = it.error?.getBriefMessage(context)
             }

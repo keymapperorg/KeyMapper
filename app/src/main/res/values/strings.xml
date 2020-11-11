@@ -156,6 +156,7 @@
     <string name="constraint_category_app">App</string>
     <string name="constraint_category_bluetooth">Bluetooth</string>
     <string name="constraint_category_screen">Screen</string>
+    <string name="constraint_category_orientation">Orientation</string>
 
     <string name="constraint_choose_app_foreground">App in Foreground</string>
     <string name="constraint_choose_app_not_foreground">App not in Foreground</string>
@@ -163,6 +164,12 @@
     <string name="constraint_choose_bluetooth_device_disconnected">Bluetooth Device is Disconnected</string>
     <string name="constraint_choose_screen_on_description">Screen is on</string>
     <string name="constraint_choose_screen_off_description">Screen is off</string>
+    <string name="constraint_choose_orientation_0">Portrait (0°)</string>
+    <string name="constraint_choose_orientation_90">Landscape (90°)</string>
+    <string name="constraint_choose_orientation_180">Portrait (180°)</string>
+    <string name="constraint_choose_orientation_270">Landscape (270°)</string>
+    <string name="constraint_choose_orientation_portrait">Portrait (any)</string>
+    <string name="constraint_choose_orientation_landscape">Landscape (any)</string>
 
     <string name="orientation_0">Portrait (0°)</string>
     <string name="orientation_90">Landscape (90°)</string>

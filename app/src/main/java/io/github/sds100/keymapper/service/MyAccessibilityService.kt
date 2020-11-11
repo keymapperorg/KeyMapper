@@ -39,6 +39,7 @@ import io.github.sds100.keymapper.util.delegate.KeymapDetectionPreferences
 import io.github.sds100.keymapper.util.result.*
 import kotlinx.coroutines.*
 import splitties.bitflags.hasFlag
+import splitties.systemservices.displayManager
 import splitties.systemservices.vibrator
 import splitties.toast.toast
 import timber.log.Timber
@@ -209,6 +210,9 @@ class MyAccessibilityService : AccessibilityService(),
 
     override val isScreenOn: Boolean
         get() = mIsScreenOn
+
+    override val orientation: Int?
+        get() = displayManager.displays[0].rotation
 
     private var mIsScreenOn = true
     private val mConnectedBtAddresses = mutableSetOf<String>()

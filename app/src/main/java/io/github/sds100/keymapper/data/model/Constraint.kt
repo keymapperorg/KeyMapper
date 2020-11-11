@@ -21,7 +21,13 @@ import java.io.Serializable
     Constraint.BT_DEVICE_CONNECTED,
     Constraint.BT_DEVICE_DISCONNECTED,
     Constraint.SCREEN_ON,
-    Constraint.SCREEN_OFF
+    Constraint.SCREEN_OFF,
+    Constraint.ORIENTATION_PORTRAIT,
+    Constraint.ORIENTATION_LANDSCAPE,
+    Constraint.ORIENTATION_0,
+    Constraint.ORIENTATION_90,
+    Constraint.ORIENTATION_180,
+    Constraint.ORIENTATION_270
 ])
 annotation class ConstraintType
 
@@ -45,6 +51,7 @@ data class Constraint(@ConstraintType
                       @SerializedName(NAME_EXTRAS)
                       val extras: List<Extra>) : Serializable {
 
+
     constructor(type: String, vararg extra: Extra) : this(type, extra.toList())
 
     companion object {
@@ -62,6 +69,21 @@ data class Constraint(@ConstraintType
         const val BT_DEVICE_DISCONNECTED = "constraint_bt_device_disconnected"
         const val SCREEN_ON = "constraint_screen_on"
         const val SCREEN_OFF = "constraint_screen_off"
+        const val ORIENTATION_0 = "constraint_orientation_0"
+        const val ORIENTATION_90 = "constraint_orientation_90"
+        const val ORIENTATION_180 = "constraint_orientation_180"
+        const val ORIENTATION_270 = "constraint_orientation_270"
+        const val ORIENTATION_PORTRAIT = "constraint_orientation_portrait"
+        const val ORIENTATION_LANDSCAPE = "constraint_orientation_landscape"
+
+        val ORIENTATION_CONSTRAINTS = arrayOf(
+            ORIENTATION_PORTRAIT,
+            ORIENTATION_LANDSCAPE,
+            ORIENTATION_0,
+            ORIENTATION_90,
+            ORIENTATION_180,
+            ORIENTATION_270
+        )
 
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
         const val EXTRA_BT_ADDRESS = "extra_bluetooth_device_address"
@@ -71,11 +93,13 @@ data class Constraint(@ConstraintType
         const val CATEGORY_APP = 0
         const val CATEGORY_BLUETOOTH = 1
         const val CATEGORY_SCREEN = 2
+        const val CATEGORY_ORIENTATION = 3
 
         val CATEGORY_LABEL_MAP = mapOf(
             CATEGORY_APP to R.string.constraint_category_app,
             CATEGORY_BLUETOOTH to R.string.constraint_category_bluetooth,
-            CATEGORY_SCREEN to R.string.constraint_category_screen
+            CATEGORY_SCREEN to R.string.constraint_category_screen,
+            CATEGORY_ORIENTATION to R.string.constraint_category_orientation
         )
 
         fun appConstraint(@ConstraintType type: String, packageName: String): Constraint {
@@ -84,14 +108,6 @@ data class Constraint(@ConstraintType
 
         fun btConstraint(@ConstraintType type: String, address: String, name: String): Constraint {
             return Constraint(type, Extra(EXTRA_BT_ADDRESS, address), Extra(EXTRA_BT_NAME, name))
-        }
-
-        fun screenOnConstraint(): Constraint {
-            return Constraint(SCREEN_ON)
-        }
-
-        fun screenOffConstraint(): Constraint {
-            return Constraint(SCREEN_OFF)
         }
 
         val DESERIALIZER = jsonDeserializer {

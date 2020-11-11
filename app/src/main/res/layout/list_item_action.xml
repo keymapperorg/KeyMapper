@@ -129,7 +129,7 @@
                 app:layout_constraintStart_toEndOf="@id/buttonDrag"
                 app:layout_constraintTop_toTopOf="@id/layoutDescription"
                 app:layout_constraintVertical_bias="0.0"
-                app:tintType="@{model.hasError ? TintType.ERROR : model.type == ActionType.SYSTEM_ACTION ? TintType.ON_SURFACE : TintType.NONE}"
+                app:tintType="@{model.hasError ? TintType.ERROR : TintType.NONE}"
                 tools:srcCompat="@mipmap/ic_launcher"
                 tools:visibility="visible" />
 

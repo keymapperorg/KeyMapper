@@ -51,7 +51,38 @@ class ChooseConstraintListViewModel : ViewModel() {
             Constraint.SCREEN_OFF,
             Constraint.CATEGORY_SCREEN,
             R.string.constraint_choose_screen_off_description
-        )
+        ),
+
+        ChooseConstraintListItemModel(
+            Constraint.ORIENTATION_PORTRAIT,
+            Constraint.CATEGORY_ORIENTATION,
+            R.string.constraint_choose_orientation_portrait
+        ),
+        ChooseConstraintListItemModel(
+            Constraint.ORIENTATION_LANDSCAPE,
+            Constraint.CATEGORY_ORIENTATION,
+            R.string.constraint_choose_orientation_landscape
+        ),
+        ChooseConstraintListItemModel(
+            Constraint.ORIENTATION_0,
+            Constraint.CATEGORY_ORIENTATION,
+            R.string.constraint_choose_orientation_0
+        ),
+        ChooseConstraintListItemModel(
+            Constraint.ORIENTATION_90,
+            Constraint.CATEGORY_ORIENTATION,
+            R.string.constraint_choose_orientation_90
+        ),
+        ChooseConstraintListItemModel(
+            Constraint.ORIENTATION_180,
+            Constraint.CATEGORY_ORIENTATION,
+            R.string.constraint_choose_orientation_180
+        ),
+        ChooseConstraintListItemModel(
+            Constraint.ORIENTATION_270,
+            Constraint.CATEGORY_ORIENTATION,
+            R.string.constraint_choose_orientation_270
+        ),
     )
 
     val constraintsSortedByCategory = liveData {
@@ -87,13 +118,16 @@ class ChooseConstraintListViewModel : ViewModel() {
             }
             Constraint.SCREEN_ON -> {
                 notifyUserEvent.value = Event(NotifyUserModel(R.string.dialog_message_screen_constraints_limitation) {
-                    selectModelEvent.value = Event(Constraint.screenOnConstraint())
+                    selectModelEvent.value = Event(Constraint(Constraint.SCREEN_ON))
                 })
             }
             Constraint.SCREEN_OFF -> {
                 notifyUserEvent.value = Event(NotifyUserModel(R.string.dialog_message_screen_constraints_limitation) {
-                    selectModelEvent.value = Event(Constraint.screenOffConstraint())
+                    selectModelEvent.value = Event(Constraint(Constraint.SCREEN_OFF))
                 })
+            }
+            else -> {
+                selectModelEvent.value = Event(Constraint(constraintType))
             }
         }
     }
