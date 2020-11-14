@@ -50,7 +50,14 @@ fun Constraint.buildModel(ctx: Context): ConstraintModel {
         .then { ConstraintUtils.isSupported(ctx, type) ?: Success(Unit) }
         .failureOrNull()
 
-    return ConstraintModel(uniqueId, description, error, error?.getBriefMessage(ctx), icon)
+    val iconTintOnSurface = when (type) {
+        Constraint.APP_FOREGROUND,
+        Constraint.APP_NOT_FOREGROUND -> false
+
+        else -> true
+    }
+
+    return ConstraintModel(uniqueId, description, error, error?.getBriefMessage(ctx), icon, iconTintOnSurface)
 }
 
 private fun Constraint.getDescription(ctx: Context): Result<String> {
