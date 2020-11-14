@@ -13,31 +13,26 @@ import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Extra
 import io.github.sds100.keymapper.data.model.FingerprintGestureMap
 import io.github.sds100.keymapper.data.model.FingerprintGestureMapListItemModel
-import io.github.sds100.keymapper.util.Data
-import io.github.sds100.keymapper.util.Event
-import io.github.sds100.keymapper.util.Loading
-import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class FingerprintGestureViewModel(
-    @StringRes private val mPrefKey: Int,
-    private val mPreferenceDataStore: IPreferenceDataStore) : ViewModel() {
+class FingerprintGestureViewModel(private val mPreferenceDataStore: IPreferenceDataStore) : ViewModel() {
 
-    val model = MutableLiveData<State<FingerprintGestureMapListItemModel>>()
+    val models = MutableLiveData<State<List<FingerprintGestureMapListItemModel>>>()
 
-    val buildModel = MutableLiveData<Event<FingerprintGestureMap?>>()
+    val buildModels = MutableLiveData<Event<Map<String, FingerprintGestureMap?>>>()
 
     init {
-        rebuildModel()
+        rebuildModels()
     }
 
-    fun setModel(model: FingerprintGestureMapListItemModel) {
-        this.model.value = Data(model)
+    fun setModels(models: List<FingerprintGestureMapListItemModel>) {
+        this.models.value = Data(models)
     }
 
-    private fun getFingerprintMap(@StringRes prefKey: Int): FingerprintGestureMap? {
+    private fun retrieveFingerprintMap(@StringRes prefKey: Int): FingerprintGestureMap? {
         val gson = GsonBuilder()
             .registerTypeAdapter(Action.DESERIALIZER)
             .registerTypeAdapter(Extra.DESERIALIZER).create()
@@ -47,25 +42,25 @@ class FingerprintGestureViewModel(
         return json?.let { gson.fromJson(it) }
     }
 
-    fun rebuildModel() {
-        model.value = Loading()
+    fun rebuildModels() {
+        models.value = Loading()
 
         viewModelScope.launch(Dispatchers.IO) {
-
-            val fingerprintMap = getFingerprintMap(mPrefKey) ?: FingerprintGestureMap()
+            val gestureMaps = FingerprintGestureUtils.GESTURES.map {
+                it to (retrieveFingerprintMap(FingerprintGestureUtils.PREF_KEYS[it]!!) ?: FingerprintGestureMap())
+            }.toMap()
 
             withContext(Dispatchers.Main) {
-                buildModel.value = Event(fingerprintMap)
+                buildModels.value = Event(gestureMaps)
             }
         }
     }
 
     @Suppress("UNCHECKED_CAST")
-    class Factory(private val mPrefKey: Int,
-                  private val mPreferenceDataStore: IPreferenceDataStore) : ViewModelProvider.NewInstanceFactory() {
+    class Factory(private val mPreferenceDataStore: IPreferenceDataStore) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return FingerprintGestureViewModel(mPrefKey, mPreferenceDataStore) as T
+            return FingerprintGestureViewModel(mPreferenceDataStore) as T
         }
     }
 }

@@ -100,9 +100,9 @@ object InjectorUtils {
         return OnlineFileViewModel.Factory(repository, fileUrl, alternateUrl, header)
     }
 
-    fun provideFingerprintGestureViewModel(context: Context, mPrefKey: Int): FingerprintGestureViewModel.Factory {
+    fun provideFingerprintGestureViewModel(context: Context): FingerprintGestureViewModel.Factory {
         val preferenceDataStore = (context.applicationContext as MyApplication).preferenceDataStore
-        return FingerprintGestureViewModel.Factory(mPrefKey, preferenceDataStore)
+        return FingerprintGestureViewModel.Factory(preferenceDataStore)
     }
 
     fun provideConfigKeymapViewModel(
