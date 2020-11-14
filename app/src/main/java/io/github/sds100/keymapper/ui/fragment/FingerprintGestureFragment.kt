@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.ui.fragment
 
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.data.model.FingerprintGestureMapListItemModel
 import io.github.sds100.keymapper.data.viewmodel.FingerprintGestureViewModel
@@ -13,7 +13,7 @@ import io.github.sds100.keymapper.util.*
  */
 class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
 
-    private val mViewModel: FingerprintGestureViewModel by viewModels {
+    private val mViewModel: FingerprintGestureViewModel by activityViewModels {
         InjectorUtils.provideFingerprintGestureViewModel(requireContext())
     }
 
@@ -36,7 +36,9 @@ class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
                         model(it)
 
                         onChooseActionClick { _ ->
-                            val direction = HomeFragmentDirections.actionHomeFragmentToChooseActionFragment()
+                            val direction = HomeFragmentDirections.actionHomeFragmentToChooseActionFragment(
+                                FingerprintGestureUtils.CHOOSE_ACTION_REQUEST_KEYS[it.id]!!)
+
                             findNavController().navigate(direction)
                         }
                     }

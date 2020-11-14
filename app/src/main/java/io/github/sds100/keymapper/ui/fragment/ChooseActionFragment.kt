@@ -13,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.R
@@ -30,10 +31,10 @@ import io.github.sds100.keymapper.util.strArray
 class ChooseActionFragment : Fragment() {
 
     companion object {
-        const val REQUEST_KEY = "request_choose_action"
         const val EXTRA_ACTION = "extra_action"
     }
 
+    private val mRequestKey by lazy { navArgs<ChooseActionFragmentArgs>().value.StringNavArgChooseActionRequestKey }
     private lateinit var mPagerAdapter: ChooseActionPagerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -141,7 +142,7 @@ class ChooseActionFragment : Fragment() {
         childFragmentManager.setFragmentResultListener(requestKey, this) { _, result ->
             val action = createAction(result)
 
-            setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_ACTION to action))
+            setFragmentResult(mRequestKey, bundleOf(EXTRA_ACTION to action))
         }
     }
 

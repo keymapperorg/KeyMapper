@@ -46,6 +46,9 @@ import java.util.*
  */
 
 class CreateActionShortcutFragment : Fragment() {
+    companion object {
+        private const val CHOOSE_ACTION_REQUEST_KEY = "request_choose_action"
+    }
 
     private val mViewModel by navGraphViewModels<CreateActionShortcutViewModel>(R.id.nav_action_shortcut) {
         InjectorUtils.provideCreateActionShortcutViewModel()
@@ -74,7 +77,7 @@ class CreateActionShortcutFragment : Fragment() {
             mViewModel.rebuildActionModels()
         }
 
-        setFragmentResultListener(ChooseActionFragment.REQUEST_KEY) { _, result ->
+        setFragmentResultListener(CHOOSE_ACTION_REQUEST_KEY) { _, result ->
             val action = result.getSerializable(ChooseActionFragment.EXTRA_ACTION) as Action
             mViewModel.addAction(action)
         }
@@ -103,8 +106,9 @@ class CreateActionShortcutFragment : Fragment() {
             })
 
             mViewModel.chooseActionEvent.observe(viewLifecycleOwner, EventObserver {
-                findNavController().navigate(
-                    CreateActionShortcutFragmentDirections.actionActionShortcutListFragmentToChooseActionFragment())
+                val direction = CreateActionShortcutFragmentDirections
+                    .actionActionShortcutListFragmentToChooseActionFragment(CHOOSE_ACTION_REQUEST_KEY)
+                findNavController().navigate(direction)
             })
 
             mViewModel.testAction.observe(viewLifecycleOwner, EventObserver {

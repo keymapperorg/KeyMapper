@@ -132,8 +132,13 @@
         android:id="@+id/action_global_menuFragment"
         app:destination="@id/menuFragment"
         app:enterAnim="@anim/slide_in_bottom" />
+
     <fragment
         android:id="@+id/chooseActionFragmentHome"
         android:name="io.github.sds100.keymapper.ui.fragment.ChooseActionFragment"
-        android:label="ChooseActionFragment" />
+        android:label="ChooseActionFragment">
+        <argument
+            android:name="@string/nav_arg_choose_action_request_key"
+            app:argType="string" />
+    </fragment>
 </navigation>

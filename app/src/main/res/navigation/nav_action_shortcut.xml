@@ -30,6 +30,9 @@
         <action
             android:id="@+id/action_choose_action_fragment_to_keycodeListFragment"
             app:destination="@id/keycodeListFragment" />
+        <argument
+            android:name="@string/nav_arg_choose_action_request_key"
+            app:argType="string" />
     </fragment>
 
     <fragment

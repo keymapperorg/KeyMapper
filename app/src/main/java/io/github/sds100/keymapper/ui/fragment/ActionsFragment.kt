@@ -49,7 +49,8 @@ class ActionsFragment(private val mKeymapId: Long) : Fragment() {
             lifecycleOwner = viewLifecycleOwner
 
             mViewModel.chooseAction.observe(viewLifecycleOwner, EventObserver {
-                val direction = ConfigKeymapFragmentDirections.actionConfigKeymapFragmentToChooseActionFragment()
+                val direction = ConfigKeymapFragmentDirections
+                    .actionConfigKeymapFragmentToChooseActionFragment(ConfigKeymapFragment.CHOOSE_ACTION_REQUEST_KEY)
                 findNavController().navigate(direction)
             })
 

@@ -23,6 +23,9 @@ class FingerprintGestureViewModel(private val mPreferenceDataStore: IPreferenceD
     val models = MutableLiveData<State<List<FingerprintGestureMapListItemModel>>>()
 
     val buildModels = MutableLiveData<Event<Map<String, FingerprintGestureMap?>>>()
+    private val mGson = GsonBuilder()
+        .registerTypeAdapter(Action.DESERIALIZER)
+        .registerTypeAdapter(Extra.DESERIALIZER).create()
 
     init {
         rebuildModels()
@@ -32,14 +35,33 @@ class FingerprintGestureViewModel(private val mPreferenceDataStore: IPreferenceD
         this.models.value = Data(models)
     }
 
+    fun setAction(id: String, action: Action) {
+        val fingerprintGestureMap = retrieveFingerprintMap(FingerprintGestureUtils.PREF_KEYS[id]!!)
+            ?: FingerprintGestureMap()
+
+        fingerprintGestureMap.apply {
+            val prefKey = FingerprintGestureUtils.PREF_KEYS[id]!!
+
+            saveFingerprintMap(prefKey, clone(action = action))
+        }
+    }
+
+    private fun saveFingerprintMap(@StringRes prefKey: Int, gestureMap: FingerprintGestureMap) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val json = mGson.toJson(gestureMap)
+            mPreferenceDataStore.setStringPref(prefKey, json)
+
+            withContext(Dispatchers.Main) {
+                rebuildModels()
+            }
+        }
+    }
+
     private fun retrieveFingerprintMap(@StringRes prefKey: Int): FingerprintGestureMap? {
-        val gson = GsonBuilder()
-            .registerTypeAdapter(Action.DESERIALIZER)
-            .registerTypeAdapter(Extra.DESERIALIZER).create()
 
         val json = mPreferenceDataStore.getStringPref(prefKey)
 
-        return json?.let { gson.fromJson(it) }
+        return json?.let { mGson.fromJson(it) }
     }
 
     fun rebuildModels() {

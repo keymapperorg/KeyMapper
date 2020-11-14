@@ -12,10 +12,10 @@ import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
@@ -26,10 +26,12 @@ import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
+import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.ChooseAppStoreModel
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
 import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
+import io.github.sds100.keymapper.data.viewmodel.FingerprintGestureViewModel
 import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
 import io.github.sds100.keymapper.databinding.DialogChooseAppStoreBinding
 import io.github.sds100.keymapper.databinding.FragmentHomeBinding
@@ -45,7 +47,6 @@ import kotlinx.coroutines.launch
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
 import splitties.alertdialog.appcompat.messageResource
-import splitties.experimental.ExperimentalSplittiesApi
 import splitties.systemservices.powerManager
 import splitties.toast.longToast
 import splitties.toast.toast
@@ -53,11 +54,14 @@ import splitties.toast.toast
 /**
  * A placeholder fragment containing a simple view.
  */
-@ExperimentalSplittiesApi
 class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val mKeyMapListViewModel: KeymapListViewModel by activityViewModels {
         InjectorUtils.provideKeymapListViewModel(requireContext())
+    }
+
+    private val mFingerprintGestureViewModel: FingerprintGestureViewModel by activityViewModels {
+        InjectorUtils.provideFingerprintGestureViewModel(requireContext())
     }
 
     private lateinit var mBinding: FragmentHomeBinding
@@ -121,6 +125,16 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             addAction(MyAccessibilityService.ACTION_ON_STOP)
 
             requireActivity().registerReceiver(mBroadcastReceiver, this)
+        }
+
+        FingerprintGestureUtils.CHOOSE_ACTION_REQUEST_KEYS.entries.forEach {
+            val gestureId = it.key
+            val requestKey = it.value
+
+            setFragmentResultListener(requestKey) { _, result ->
+                val action = result.getSerializable(ChooseActionFragment.EXTRA_ACTION) as Action
+                mFingerprintGestureViewModel.setAction(gestureId, action)
+            }
         }
     }
 
@@ -398,7 +412,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
         if (KeyboardUtils.isCompatibleImeEnabled()) {
             mImeServiceStatusState.value = StatusLayout.State.POSITIVE
 
-        }else if (mKeyMapListViewModel.keymapModelList.value is Data) {
+        } else if (mKeyMapListViewModel.keymapModelList.value is Data) {
 
             if ((mKeyMapListViewModel.keymapModelList.value as Data<List<KeymapListItemModel>>).data.any { keymap ->
                     keymap.actionList.any { it.error is NoCompatibleImeEnabled }

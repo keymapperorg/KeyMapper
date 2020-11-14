@@ -33,4 +33,9 @@ data class FingerprintGestureMap(
             FingerprintGestureMap(action, extras, flags, isEnabled)
         }
     }
+
+    fun clone(action: Action? = this.action,
+              extras: List<Extra> = this.extras,
+              flags: Int = this.flags,
+              isEnabled: Boolean = this.isEnabled) = FingerprintGestureMap(action, extras, flags, isEnabled)
 }

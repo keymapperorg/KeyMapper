@@ -38,8 +38,11 @@ import splitties.toast.toast
 /**
  * Created by sds100 on 19/02/2020.
  */
-@ExperimentalSplittiesApi
 class ConfigKeymapFragment : Fragment() {
+    companion object {
+        const val CHOOSE_ACTION_REQUEST_KEY = "request_choose_action"
+    }
+
     private val mArgs by navArgs<ConfigKeymapFragmentArgs>()
 
     private val mViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap) {
@@ -74,7 +77,7 @@ class ConfigKeymapFragment : Fragment() {
             mViewModel.rebuildActionModels()
         }
 
-        setFragmentResultListener(ChooseActionFragment.REQUEST_KEY) { _, result ->
+        setFragmentResultListener(CHOOSE_ACTION_REQUEST_KEY) { _, result ->
             val action = result.getSerializable(ChooseActionFragment.EXTRA_ACTION) as Action
             mViewModel.addAction(action)
         }
