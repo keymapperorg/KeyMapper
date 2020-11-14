@@ -80,6 +80,7 @@
     <string name="caption_action_type_url">Type a url which you want to be opened. The http://, https:// or www. isn\'t required.</string>
 
     <string name="caption_no_paired_bt_devices">Can\'t find any paired devices. Is Bluetooth turned on?</string>
+    <string name="caption_fingerprint_gesture">Your changes are automatically saved.</string>
 
     <string name="switch_enabled">Enabled</string>
     <string name="disabled">Disabled</string>
