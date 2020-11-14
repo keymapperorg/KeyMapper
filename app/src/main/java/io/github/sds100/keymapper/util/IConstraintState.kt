@@ -8,4 +8,6 @@ interface IConstraintState {
     fun isBluetoothDeviceConnected(address: String): Boolean
     val isScreenOn: Boolean
     val orientation: Int?
+    val highestPriorityPackagePlayingMedia: String?
+    val packagesCurrentlyPlayingMedia: List<String>
 }

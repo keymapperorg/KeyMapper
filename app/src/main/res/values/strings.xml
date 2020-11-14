@@ -145,6 +145,7 @@
     <!-- Constraints -->
     <string name="constraint_app_foreground_description">%s is in foreground</string>
     <string name="constraint_app_not_foreground_description">%s is not in foreground</string>
+    <string name="constraint_app_playing_media_description">%s is playing media</string>
     <string name="constraint_bt_device_connected_description">%s is connected</string>
     <string name="constraint_bt_device_disconnected_description">%s is disconnected</string>
     <string name="constraint_screen_on_description">Screen is on</string>
@@ -170,6 +171,7 @@
     <string name="constraint_choose_orientation_270">Landscape (270°)</string>
     <string name="constraint_choose_orientation_portrait">Portrait (any)</string>
     <string name="constraint_choose_orientation_landscape">Landscape (any)</string>
+    <string name="constraint_choose_app_playing_media">Specific App Playing Media</string>
 
     <string name="orientation_0">Portrait (0°)</string>
     <string name="orientation_90">Landscape (90°)</string>
@@ -668,6 +670,8 @@
     <string name="error_number_too_big">Must be at most %s!</string>
     <string name="error_battery_optimisation_enabled">Battery optimisation is turned on! This can randomly stop Key Mapper from working.</string>
     <string name="error_battery_optimisation_disabled">Battery optimisation is turned off!</string>
+    <string name="error_cant_find_notification_listener_settings">Can\'t find the notification access settings!</string>
+    <string name="error_denied_notification_listener_service_permission">Denied notification access permission!</string>
 
     <!-- Error messages -->
 

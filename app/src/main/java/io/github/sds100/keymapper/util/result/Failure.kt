@@ -66,6 +66,7 @@ class PermissionDenied(val permission: String) : RecoverableFailure() {
                 Manifest.permission.READ_PHONE_STATE -> R.string.error_action_requires_read_phone_state_permission
                 Manifest.permission.ACCESS_NOTIFICATION_POLICY -> R.string.error_action_notification_policy_permission
                 Manifest.permission.WRITE_SECURE_SETTINGS -> R.string.error_need_write_secure_settings_permission
+                Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE -> R.string.error_denied_notification_listener_service_permission
                 Constants.PERMISSION_ROOT -> R.string.error_requires_root
 
                 else -> throw Exception("Couldn't find permission description for $permission")

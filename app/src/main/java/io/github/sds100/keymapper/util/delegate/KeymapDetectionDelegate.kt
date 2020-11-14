@@ -11,6 +11,7 @@ import androidx.lifecycle.MutableLiveData
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.Constraint.Companion.APP_FOREGROUND
 import io.github.sds100.keymapper.data.model.Constraint.Companion.APP_NOT_FOREGROUND
+import io.github.sds100.keymapper.data.model.Constraint.Companion.APP_PLAYING_MEDIA
 import io.github.sds100.keymapper.data.model.Constraint.Companion.BT_DEVICE_CONNECTED
 import io.github.sds100.keymapper.data.model.Constraint.Companion.BT_DEVICE_DISCONNECTED
 import io.github.sds100.keymapper.data.model.Constraint.Companion.MODE_AND
@@ -257,7 +258,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                     val constraints = sequence {
                         keyMap.constraintList.forEach {
                             val data = when (it.type) {
-                                APP_FOREGROUND, APP_NOT_FOREGROUND ->
+                                APP_FOREGROUND, APP_NOT_FOREGROUND, APP_PLAYING_MEDIA ->
                                     it.getExtraData(
                                         io.github.sds100.keymapper.data.model.Constraint.EXTRA_PACKAGE_NAME).valueOrNull()
 
@@ -1847,6 +1848,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         return when (first) {
             APP_FOREGROUND -> second == currentPackageName
             APP_NOT_FOREGROUND -> second != currentPackageName
+            APP_PLAYING_MEDIA -> second == highestPriorityPackagePlayingMedia
 
             BT_DEVICE_CONNECTED -> isBluetoothDeviceConnected(second)
             BT_DEVICE_DISCONNECTED -> !isBluetoothDeviceConnected(second)

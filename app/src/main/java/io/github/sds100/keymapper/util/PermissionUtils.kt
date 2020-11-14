@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.util
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
@@ -11,6 +12,7 @@ import android.os.Build
 import android.provider.Settings
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.RequiresApi
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.findNavController
@@ -57,6 +59,17 @@ object PermissionUtils {
             cancelButton()
 
             show()
+        }
+    }
+
+    @SuppressLint("InlinedApi")
+    fun requestNotificationListenerAccess(launcher: ActivityResultLauncher<Intent>) {
+        Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS).apply {
+            try {
+                launcher.launch(this)
+            } catch (e: Exception) {
+                toast(R.string.error_cant_find_notification_listener_settings)
+            }
         }
     }
 
@@ -139,6 +152,10 @@ object PermissionUtils {
                 } else {
                     true
                 }
+
+            permission == Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE -> {
+                return NotificationManagerCompat.getEnabledListenerPackages(appCtx).contains(Constants.PACKAGE_NAME)
+            }
 
             permission == Manifest.permission.WRITE_SECURE_SETTINGS && AppPreferences.hasRootPermission -> {
                 RootUtils.executeRootCommand("pm grant ${Constants.PACKAGE_NAME} ${Manifest.permission.WRITE_SECURE_SETTINGS}")
