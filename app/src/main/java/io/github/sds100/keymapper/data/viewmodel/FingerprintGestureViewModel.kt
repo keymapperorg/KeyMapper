@@ -22,7 +22,7 @@ class FingerprintGestureViewModel(private val mPreferenceDataStore: IPreferenceD
 
     val models = MutableLiveData<State<List<FingerprintGestureMapListItemModel>>>()
 
-    val buildModels = MutableLiveData<Event<Map<String, FingerprintGestureMap?>>>()
+    val buildModels = MutableLiveData<Event<Map<String, FingerprintGestureMap>>>()
     private val mGson = GsonBuilder()
         .registerTypeAdapter(Action.DESERIALIZER)
         .registerTypeAdapter(Extra.DESERIALIZER).create()
@@ -39,9 +39,12 @@ class FingerprintGestureViewModel(private val mPreferenceDataStore: IPreferenceD
         it.clone(action = action)
     }
 
-
     fun removeAction(id: String) = editFingerprintMap(id) {
         it.clone(action = null)
+    }
+
+    fun setEnabled(id: String, isEnabled: Boolean) = editFingerprintMap(id) {
+        it.clone(isEnabled = isEnabled)
     }
 
     private fun editFingerprintMap(

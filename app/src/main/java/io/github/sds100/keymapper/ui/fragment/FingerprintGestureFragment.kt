@@ -71,6 +71,10 @@ class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
                                 mRecoverFailureDelegate.recover(requireActivity(), it.actionModel.failure)
                             }
                         }
+
+                        onEnabledSwitchChangeListener { _, isChecked ->
+                            mViewModel.setEnabled(it.id, isChecked)
+                        }
                     }
                 }
             }
@@ -81,7 +85,8 @@ class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
                 FingerprintGestureMapListItemModel(
                     id = it.key,
                     header = str(FingerprintGestureUtils.HEADERS[it.key]!!),
-                    actionModel = it.value?.action?.buildModel(requireContext())
+                    actionModel = it.value.action?.buildModel(requireContext()),
+                    isEnabled = it.value.isEnabled
                 )
             }
 
