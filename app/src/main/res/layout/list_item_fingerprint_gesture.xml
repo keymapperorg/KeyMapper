@@ -24,10 +24,6 @@
             type="View.OnClickListener" />
 
         <variable
-            name="header"
-            type="String" />
-
-        <variable
             name="model"
             type="io.github.sds100.keymapper.data.model.FingerprintGestureMapListItemModel" />
     </data>
@@ -53,7 +49,7 @@
                 android:layout_marginTop="@dimen/cardview_padding_top"
                 android:layout_marginEnd="@dimen/cardview_padding_right"
                 android:paddingBottom="@dimen/cardview_header_bottom_padding"
-                android:text="@{header}"
+                android:text="@{model.header}"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
                 android:textColor="?attr/colorAccent"
                 android:textSize="14sp"
