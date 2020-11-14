@@ -60,6 +60,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/cardview_padding_left"
                 android:layout_marginEnd="@dimen/cardview_padding_right"
+                android:onClick="@{onChooseActionClick}"
                 android:text="@string/button_choose_action"
                 android:visibility="@{model.actionModel == null ? View.VISIBLE : View.GONE}" />
 

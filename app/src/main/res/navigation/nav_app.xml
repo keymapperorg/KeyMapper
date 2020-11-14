@@ -28,6 +28,11 @@
         <action
             android:id="@+id/action_keymap_list_fragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_home_fragment_to_chooseActionFragment"
+            app:destination="@id/chooseActionFragmentHome"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_right" />
     </fragment>
 
     <action
@@ -127,4 +132,8 @@
         android:id="@+id/action_global_menuFragment"
         app:destination="@id/menuFragment"
         app:enterAnim="@anim/slide_in_bottom" />
+    <fragment
+        android:id="@+id/chooseActionFragmentHome"
+        android:name="io.github.sds100.keymapper.ui.fragment.ChooseActionFragment"
+        android:label="ChooseActionFragment" />
 </navigation>
