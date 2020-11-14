@@ -19,6 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
+import androidx.viewpager2.widget.ViewPager2
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.google.android.material.tabs.TabLayoutMediator
@@ -42,6 +43,7 @@ import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.NoCompatibleImeEnabled
 import io.github.sds100.keymapper.util.result.getFullMessage
 import io.github.sds100.keymapper.worker.SeedDatabaseWorker
+import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import splitties.alertdialog.appcompat.alertDialog
@@ -116,6 +118,16 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
     private lateinit var mPagerAdapter: HomePagerAdapter
     private lateinit var mTabLayoutMediator: TabLayoutMediator
 
+    private val mOnPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
+        override fun onPageSelected(position: Int) {
+            if (position == 0) {
+                fab.show()
+            } else {
+                fab.hide()
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -154,6 +166,8 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             }.apply {
                 attach()
             }
+
+            viewPager.registerOnPageChangeCallback(mOnPageChangeCallback)
 
             setOnNewKeymapClick {
                 val direction =
@@ -379,6 +393,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
 
         requireActivity().unregisterReceiver(mBroadcastReceiver)
         requireContext().defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+        mBinding.viewPager.unregisterOnPageChangeCallback(mOnPageChangeCallback)
     }
 
     override fun onSharedPreferenceChanged(preferences: SharedPreferences?, key: String?) {
