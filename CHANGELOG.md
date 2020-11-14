@@ -1,3 +1,13 @@
+## [2.1.0 Beta 4](https://github.com/sds100/KeyMapper/releases/tag/v2.1.0-beta.4) 
+
+#### 14 Nov 2020
+
+### Bug Fixes
+
+- Crash on KitKat and older on the home screen.
+- Consuming the key event is optional for each key.
+- There was no search button under the "Other" tab when choosing an action.
+
 ## [2.1.0 Beta 3](https://github.com/sds100/KeyMapper/releases/tag/v2.1.0-beta.3) 
 
 #### 23 Oct 2020
