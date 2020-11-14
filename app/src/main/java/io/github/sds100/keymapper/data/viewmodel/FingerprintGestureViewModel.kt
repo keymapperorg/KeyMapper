@@ -35,14 +35,26 @@ class FingerprintGestureViewModel(private val mPreferenceDataStore: IPreferenceD
         this.models.value = Data(models)
     }
 
-    fun setAction(id: String, action: Action) {
-        val fingerprintGestureMap = retrieveFingerprintMap(FingerprintGestureUtils.PREF_KEYS[id]!!)
+    fun setAction(id: String, action: Action) = editFingerprintMap(id) {
+        it.clone(action = action)
+    }
+
+
+    fun removeAction(id: String) = editFingerprintMap(id) {
+        it.clone(action = null)
+    }
+
+    private fun editFingerprintMap(
+        gestureId: String,
+        block: (old: FingerprintGestureMap) -> FingerprintGestureMap
+    ) {
+        val fingerprintGestureMap = retrieveFingerprintMap(FingerprintGestureUtils.PREF_KEYS[gestureId]!!)
             ?: FingerprintGestureMap()
 
         fingerprintGestureMap.apply {
-            val prefKey = FingerprintGestureUtils.PREF_KEYS[id]!!
+            val prefKey = FingerprintGestureUtils.PREF_KEYS[gestureId]!!
 
-            saveFingerprintMap(prefKey, clone(action = action))
+            saveFingerprintMap(prefKey, block.invoke(fingerprintGestureMap))
         }
     }
 

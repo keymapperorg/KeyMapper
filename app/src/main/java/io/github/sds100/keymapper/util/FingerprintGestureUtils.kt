@@ -10,7 +10,7 @@ object FingerprintGestureUtils {
     const val SWIPE_UP = "swipe_up"
 
     const val CHOOSE_ACTION_SWIPE_DOWN_REQUEST_KEY = "request_choose_action_swipe_down"
-    const val CHOOSE_ACTION_SWIPE_UP_REQUEST_KEY = "request_choose_action_swipe_down"
+    const val CHOOSE_ACTION_SWIPE_UP_REQUEST_KEY = "request_choose_action_swipe_up"
 
     val GESTURES = arrayOf(SWIPE_DOWN, SWIPE_UP)
 

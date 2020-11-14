@@ -41,6 +41,10 @@ class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
 
                             findNavController().navigate(direction)
                         }
+
+                        onRemoveActionClick { _ ->
+                            mViewModel.removeAction(it.id)
+                        }
                     }
                 }
             }
