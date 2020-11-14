@@ -153,7 +153,7 @@
 
         <service
             android:name="io.github.sds100.keymapper.service.NotificationReceiver"
-            android:label=""
+            android:label="Key Mapper Notification Receiver"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
