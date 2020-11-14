@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.ui.fragment
 
+import android.os.Bundle
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.R
@@ -8,6 +9,8 @@ import io.github.sds100.keymapper.data.viewmodel.FingerprintGestureViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.fingerprintGesture
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
+import io.github.sds100.keymapper.util.result.RecoverableFailure
 
 /**
  * Created by sds100 on 22/02/2020.
@@ -16,6 +19,20 @@ class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
 
     private val mViewModel: FingerprintGestureViewModel by activityViewModels {
         InjectorUtils.provideFingerprintGestureViewModel(requireContext())
+    }
+
+    private lateinit var mRecoverFailureDelegate: RecoverFailureDelegate
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        mRecoverFailureDelegate = RecoverFailureDelegate(
+            "FingerprintGestureFragment",
+            requireActivity().activityResultRegistry,
+            this) {
+
+            mViewModel.rebuildModels()
+        }
     }
 
     override fun onResume() {
@@ -47,6 +64,12 @@ class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
 
                         onRemoveActionClick { _ ->
                             mViewModel.removeAction(it.id)
+                        }
+
+                        fixAction { _ ->
+                            if (it.actionModel?.failure is RecoverableFailure) {
+                                mRecoverFailureDelegate.recover(requireActivity(), it.actionModel.failure)
+                            }
                         }
                     }
                 }

@@ -24,6 +24,10 @@
             type="View.OnClickListener" />
 
         <variable
+            name="fixAction"
+            type="View.OnClickListener" />
+
+        <variable
             name="model"
             type="io.github.sds100.keymapper.data.model.FingerprintGestureMapListItemModel" />
     </data>
@@ -155,7 +159,16 @@
                     app:layout_constraintVertical_bias="0.0"
                     app:srcCompat="@drawable/ic_outline_clear_24" />
             </androidx.constraintlayout.widget.ConstraintLayout>
-
+            
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/cardview_padding_left"
+                android:layout_marginEnd="@dimen/cardview_padding_right"
+                android:onClick="@{fixAction}"
+                android:text="@string/button_fix"
+                android:visibility="@{model.actionModel.failure == null ? View.GONE : View.VISIBLE}"
+                app:backgroundTint="?attr/colorError" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 </layout>
