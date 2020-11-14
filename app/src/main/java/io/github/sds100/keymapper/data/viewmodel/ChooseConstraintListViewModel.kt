@@ -32,6 +32,12 @@ class ChooseConstraintListViewModel : ViewModel() {
         ),
 
         ChooseConstraintListItemModel(
+            Constraint.APP_PLAYING_MEDIA,
+            Constraint.CATEGORY_APP,
+            R.string.constraint_choose_app_playing_media
+        ),
+
+        ChooseConstraintListItemModel(
             Constraint.BT_DEVICE_CONNECTED,
             Constraint.CATEGORY_BLUETOOTH,
             R.string.constraint_choose_bluetooth_device_connected
@@ -110,7 +116,11 @@ class ChooseConstraintListViewModel : ViewModel() {
         mChosenConstraintType = constraintType
 
         when (constraintType) {
-            Constraint.APP_FOREGROUND, Constraint.APP_NOT_FOREGROUND -> choosePackageEvent.value = Event(Unit)
+            Constraint.APP_FOREGROUND,
+            Constraint.APP_NOT_FOREGROUND,
+            Constraint.APP_PLAYING_MEDIA,
+            -> choosePackageEvent.value = Event(Unit)
+
             Constraint.BT_DEVICE_CONNECTED, Constraint.BT_DEVICE_DISCONNECTED -> {
                 notifyUserEvent.value = Event(NotifyUserModel(R.string.dialog_message_bt_constraint_limitation) {
                     chooseBluetoothDeviceEvent.value = Event(Unit)

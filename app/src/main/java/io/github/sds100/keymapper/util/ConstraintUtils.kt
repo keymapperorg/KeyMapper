@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
+import android.os.Build
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Constraint
@@ -24,6 +25,7 @@ object ConstraintUtils {
                     return SystemFeatureNotSupported(PackageManager.FEATURE_BLUETOOTH)
                 }
             }
+
             Constraint.SCREEN_OFF, Constraint.SCREEN_ON -> {
                 if (!PermissionUtils.isPermissionGranted(Constants.PERMISSION_ROOT)) {
                     return PermissionDenied(Constants.PERMISSION_ROOT)
@@ -33,6 +35,16 @@ object ConstraintUtils {
             in Constraint.ORIENTATION_CONSTRAINTS -> {
                 if (!PermissionUtils.isPermissionGranted(Manifest.permission.WRITE_SETTINGS)) {
                     return PermissionDenied(Manifest.permission.WRITE_SETTINGS)
+                }
+            }
+
+            Constraint.APP_PLAYING_MEDIA -> {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                    return SdkVersionTooLow(Build.VERSION_CODES.LOLLIPOP)
+                }
+
+                if (!PermissionUtils.isPermissionGranted(Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE)) {
+                    return PermissionDenied(Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE)
                 }
             }
         }
@@ -62,17 +74,18 @@ fun Constraint.buildModel(ctx: Context): ConstraintModel {
 
 private fun Constraint.getDescription(ctx: Context): Result<String> {
     return when (type) {
-        Constraint.APP_FOREGROUND, Constraint.APP_NOT_FOREGROUND ->
+        Constraint.APP_FOREGROUND, Constraint.APP_NOT_FOREGROUND, Constraint.APP_PLAYING_MEDIA ->
             getExtraData(Constraint.EXTRA_PACKAGE_NAME).then {
                 try {
                     val applicationInfo = ctx.packageManager.getApplicationInfo(it, PackageManager.GET_META_DATA)
 
                     val applicationLabel = ctx.packageManager.getApplicationLabel(applicationInfo)
 
-                    val descriptionRes = if (type == Constraint.APP_FOREGROUND) {
-                        R.string.constraint_app_foreground_description
-                    } else {
-                        R.string.constraint_app_not_foreground_description
+                    val descriptionRes = when (type) {
+                        Constraint.APP_FOREGROUND -> R.string.constraint_app_foreground_description
+                        Constraint.APP_NOT_FOREGROUND -> R.string.constraint_app_not_foreground_description
+                        Constraint.APP_PLAYING_MEDIA -> R.string.constraint_app_playing_media_description
+                        else -> return@then ConstraintNotFound()
                     }
 
                     Success(ctx.str(descriptionRes, applicationLabel))
@@ -108,7 +121,7 @@ private fun Constraint.getDescription(ctx: Context): Result<String> {
 
 private fun Constraint.getIcon(ctx: Context): Result<Drawable> {
     return when (type) {
-        Constraint.APP_FOREGROUND, Constraint.APP_NOT_FOREGROUND ->
+        Constraint.APP_FOREGROUND, Constraint.APP_NOT_FOREGROUND, Constraint.APP_PLAYING_MEDIA ->
             getExtraData(Constraint.EXTRA_PACKAGE_NAME).then {
                 try {
                     Success(ctx.packageManager.getApplicationIcon(it))

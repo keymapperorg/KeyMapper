@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.service
 
+import android.Manifest
 import android.accessibilityservice.AccessibilityService
 import android.bluetooth.BluetoothDevice
 import android.content.*
@@ -40,6 +41,7 @@ import io.github.sds100.keymapper.util.result.*
 import kotlinx.coroutines.*
 import splitties.bitflags.hasFlag
 import splitties.systemservices.displayManager
+import splitties.systemservices.mediaSessionManager
 import splitties.systemservices.vibrator
 import splitties.toast.toast
 import timber.log.Timber
@@ -213,6 +215,22 @@ class MyAccessibilityService : AccessibilityService(),
 
     override val orientation: Int?
         get() = displayManager.displays[0].rotation
+
+    override val highestPriorityPackagePlayingMedia: String?
+        get() = packagesCurrentlyPlayingMedia.elementAtOrNull(0)
+
+    override val packagesCurrentlyPlayingMedia: List<String>
+        get() {
+            if (PermissionUtils.isPermissionGranted(Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE)
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+                val component = ComponentName(this, NotificationReceiver::class.java)
+
+                return mediaSessionManager.getActiveSessions(component).map { it.packageName }
+            }
+
+            return listOf()
+        }
 
     private var mIsScreenOn = true
     private val mConnectedBtAddresses = mutableSetOf<String>()

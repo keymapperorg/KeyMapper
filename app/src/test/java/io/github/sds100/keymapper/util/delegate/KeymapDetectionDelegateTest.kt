@@ -94,6 +94,10 @@ class KeymapDetectionDelegateTest {
             override fun isBluetoothDeviceConnected(address: String) = true
             override val isScreenOn = true
             override val orientation = Surface.ROTATION_0
+            override val highestPriorityPackagePlayingMedia: String?
+                get() = packagesCurrentlyPlayingMedia.elementAtOrNull(0)
+
+            override val packagesCurrentlyPlayingMedia = listOf<String>()
         }
 
         val iActionError = object : IActionError {

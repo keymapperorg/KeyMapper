@@ -337,7 +337,7 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
                 }
             }
 
-            mExpanded.observe(viewLifecycleOwner, Observer {
+            mExpanded.observe(viewLifecycleOwner, {
                 if (it == true) {
                     expandableLayout.expand()
                 } else {
