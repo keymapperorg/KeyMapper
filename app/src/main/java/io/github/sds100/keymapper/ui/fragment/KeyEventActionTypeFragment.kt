@@ -39,19 +39,10 @@ class KeyEventActionTypeFragment : Fragment() {
         InjectorUtils.provideKeyEventActionTypeViewModel(requireContext())
     }
 
-    private val mDeviceListAdapter by lazy {
-        ArrayAdapter(
-            requireContext(),
-            R.layout.dropdown_menu_popup_item,
-            mutableListOf(str(R.string.from_no_device))
-        )
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         FragmentKeyeventActionTypeBinding.inflate(inflater, container, false).apply {
 
             lifecycleOwner = viewLifecycleOwner
-
             viewModel = mViewModel
 
             setOnDoneClick {
@@ -104,12 +95,12 @@ class KeyEventActionTypeFragment : Fragment() {
                 dropdownDeviceId.setText(text, false)
             })
 
-            mViewModel.buildDeviceInfoModels.observe(viewLifecycleOwner, {
+            mViewModel.buildDeviceInfoModels.observe(viewLifecycleOwner, EventObserver {
                 mViewModel.setDeviceInfoModels(InputDeviceUtils.createDeviceInfoModelsForAll())
             })
 
             mViewModel.deviceInfoModels.observe(viewLifecycleOwner, { models ->
-                mDeviceListAdapter.apply {
+                ArrayAdapter<String>(requireContext(), R.layout.dropdown_menu_popup_item, mutableListOf()).apply {
                     clear()
                     add(str(R.string.from_no_device))
 
@@ -120,11 +111,12 @@ class KeyEventActionTypeFragment : Fragment() {
                             add(it.name)
                         }
                     }
+
+                    dropdownDeviceId.setAdapter(this)
                 }
             })
 
             dropdownDeviceId.apply {
-                setAdapter(mDeviceListAdapter)
                 //set the default value
                 setText(str(R.string.from_no_device), false)
 
