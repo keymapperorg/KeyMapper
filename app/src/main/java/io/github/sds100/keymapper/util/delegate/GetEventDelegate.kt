@@ -90,7 +90,9 @@ class GetEventDelegate(val onKeyEvent: suspend (keyCode: Int,
                     inputStream.close()
 
                 } catch (e: IOException) {
-                    toast(R.string.toast_io_exception_shrug)
+                    withContext(Dispatchers.Main) {
+                        toast(R.string.toast_io_exception_shrug)
+                    }
                 }
             }
 
