@@ -68,6 +68,12 @@ object InputDeviceUtils {
             }
         }
     }
+
+    fun getDeviceIdFromDescriptor(descriptor: String) =
+        InputDevice.getDeviceIds().find {
+            val device = InputDevice.getDevice(it)
+            device.descriptor == descriptor
+        }
 }
 
 val InputDevice.isExternalCompat: Boolean
