@@ -22,7 +22,6 @@ import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.InputDeviceUtils
 import io.github.sds100.keymapper.util.result.getFullMessage
 import io.github.sds100.keymapper.util.str
-import timber.log.Timber
 
 /**
  * Created by sds100 on 30/03/2020.
@@ -62,7 +61,6 @@ class KeyEventActionTypeFragment : Fragment() {
                         EXTRA_META_STATE to mViewModel.metaState.value
                     ).apply {
                         mViewModel.chosenDevice.value?.let {
-                            Timber.d(it.name)
                             putString(EXTRA_DEVICE_DESCRIPTOR, it.descriptor)
                         }
                     }
