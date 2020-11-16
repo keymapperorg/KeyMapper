@@ -56,8 +56,9 @@ object InjectorUtils {
         return KeyActionTypeViewModel.Factory()
     }
 
-    fun provideKeyEventActionTypeViewModel(): KeyEventActionTypeViewModel.Factory {
-        return KeyEventActionTypeViewModel.Factory()
+    fun provideKeyEventActionTypeViewModel(context: Context): KeyEventActionTypeViewModel.Factory {
+        val deviceInfoRepository = (context.applicationContext as MyApplication).deviceInfoRepository
+        return KeyEventActionTypeViewModel.Factory(deviceInfoRepository)
     }
 
     fun provideKeycodeListViewModel(): KeycodeListViewModel.Factory {
@@ -109,7 +110,9 @@ object InjectorUtils {
         }
     }
 
-    fun provideCreateActionShortcutViewModel(): CreateActionShortcutViewModel.Factory {
-        return CreateActionShortcutViewModel.Factory()
+    fun provideCreateActionShortcutViewModel(context: Context): CreateActionShortcutViewModel.Factory {
+        val deviceInfoRepository = (context.applicationContext as MyApplication).deviceInfoRepository
+
+        return CreateActionShortcutViewModel.Factory(deviceInfoRepository)
     }
 }

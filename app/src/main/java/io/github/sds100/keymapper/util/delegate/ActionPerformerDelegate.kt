@@ -27,6 +27,7 @@ import io.github.sds100.keymapper.data.model.Option
 import io.github.sds100.keymapper.data.model.PerformActionModel
 import io.github.sds100.keymapper.data.model.getData
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.result.handle
 import io.github.sds100.keymapper.util.result.onSuccess
 import io.github.sds100.keymapper.util.result.valueOrNull
 import kotlinx.coroutines.delay
@@ -155,6 +156,15 @@ class ActionPerformerDelegate(context: Context,
 
                 else -> {
                     if (action.type == ActionType.KEY_EVENT) {
+                        val deviceId = action.extras.getData(Action.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR).handle(
+                            onSuccess = {
+                                InputDeviceUtils.getDeviceIdFromDescriptor(it)
+                            },
+                            onFailure = { 0 }
+                        )
+
+                        Timber.d("deviceid = $deviceId")
+
                         chosenImePackageName?.let {
                             KeyboardUtils.inputKeyEventFromImeService(
                                 it,
@@ -163,7 +173,7 @@ class ActionPerformerDelegate(context: Context,
                                     action.extras.getData(Action.EXTRA_KEY_EVENT_META_STATE).valueOrNull()?.toInt() ?: 0
                                 ),
                                 keyEventAction = keyEventAction,
-                                deviceId = 0)
+                                deviceId = deviceId ?: 0)
                         }
                     }
                 }

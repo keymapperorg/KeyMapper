@@ -126,7 +126,11 @@ class ConfigKeymapViewModel internal constructor(
     val stopRecordingTrigger: MutableLiveData<Event<Unit>> = MutableLiveData()
 
     val isEnabled: MutableLiveData<Boolean> = MutableLiveData()
+
     val actionList: MutableLiveData<List<Action>> = MutableLiveData(listOf())
+    val actionModelList: MutableLiveData<List<ActionModel>> = MutableLiveData(listOf())
+    val buildActionModelList = actionList.map { Event(it ?: listOf()) }
+
     val chooseAction: MutableLiveData<Event<Unit>> = MutableLiveData()
     val showFixPrompt: MutableLiveData<Event<Failure>> = MutableLiveData()
     val duplicateActionsEvent: MutableLiveData<Event<Unit>> = MutableLiveData()
@@ -608,14 +612,16 @@ class ConfigKeymapViewModel internal constructor(
         invalidateOptions()
     }
 
-    fun onActionModelClick(model: ActionModel) {
+    fun onActionModelClick(id: String) {
+        val model = actionModelList.value?.find { it.id == id } ?: return
+
         if (model.hasError) {
             showFixPrompt.value = Event(model.failure!!)
         } else {
             if (model.hasError) {
                 showFixPrompt.value = Event(model.failure!!)
             } else {
-                actionList.value?.single { it.uniqueId == model.id }?.let {
+                actionList.value?.find { it.uniqueId == id }?.let {
                     testAction.value = Event(it)
                 }
             }
@@ -659,6 +665,10 @@ class ConfigKeymapViewModel internal constructor(
         }
 
         invalidateOptions()
+    }
+
+    fun setActionModels(models: List<ActionModel>) {
+        actionModelList.value = models
     }
 
     fun rebuildActionModels() {

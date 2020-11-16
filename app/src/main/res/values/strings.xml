@@ -64,6 +64,8 @@
     <string name="hint_shortcut_name">Shortcut Name</string>
     <string name="header_click_type">Click Type</string>
     <string name="hold_down_until_trigger_is_dot_dot_dot">Hold down until trigger is…</string>
+    <string name="hint_from_device">From Device</string>
+    <string name="from_no_device">No Device</string>
 
     <string name="whats_new">What\'s New</string>
     <string name="caption_action_type_key">Click the key on the device which you want to be entered.
@@ -86,6 +88,7 @@
     <string name="description_key">Press \'%s\' key</string>
     <string name="description_text_block">Type \'%s\'</string>
     <string name="description_keyevent">Input %s%s</string>
+    <string name="description_keyevent_from_device">Input %s%s from %s</string>
     <string name="description_url">Open %s</string>
     <string name="description_tap_coordinate_default">Tap Coordinates %s, %s</string>
     <string name="description_tap_coordinate_with_description">Tap Coordinates %s, %s (%s)</string>
