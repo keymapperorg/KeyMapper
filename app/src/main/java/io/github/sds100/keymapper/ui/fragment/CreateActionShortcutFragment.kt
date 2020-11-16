@@ -16,7 +16,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.map
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import com.google.gson.Gson
@@ -48,17 +47,7 @@ import java.util.*
 class CreateActionShortcutFragment : Fragment() {
 
     private val mViewModel by navGraphViewModels<CreateActionShortcutViewModel>(R.id.nav_action_shortcut) {
-        InjectorUtils.provideCreateActionShortcutViewModel()
-    }
-
-    private val mActionModelList by lazy {
-        mViewModel.actionList.map { actionList ->
-            sequence {
-                actionList.forEach {
-                    yield(it.buildModel(requireContext()))
-                }
-            }.toList()
-        }
+        InjectorUtils.provideCreateActionShortcutViewModel(requireContext())
     }
 
     private lateinit var mRecoverFailureDelegate: RecoverFailureDelegate
@@ -199,7 +188,7 @@ class CreateActionShortcutFragment : Fragment() {
         if (mViewModel.actionList.value?.size == 1) {
             val action = mViewModel.actionList.value!![0]
 
-            action.getTitle(requireContext()).valueOrNull()?.let {
+            action.getTitle(requireContext(), mViewModel.getDeviceInfoList()).valueOrNull()?.let {
                 return it
             }
         }
@@ -224,7 +213,21 @@ class CreateActionShortcutFragment : Fragment() {
     }
 
     private fun FragmentCreateActionShortcutBinding.subscribeActionList() {
-        mActionModelList.observe(viewLifecycleOwner, { actionList ->
+        mViewModel.buildActionModelList.observe(viewLifecycleOwner, EventObserver { actionList ->
+            lifecycleScope.launchWhenStarted {
+                val deviceInfoList = mViewModel.getDeviceInfoList()
+
+                val models = sequence {
+                    actionList.forEach {
+                        yield(it.buildModel(requireContext(), deviceInfoList))
+                    }
+                }.toList()
+
+                mViewModel.setActionModels(models)
+            }
+        })
+
+        mViewModel.actionModelList.observe(viewLifecycleOwner, { actionList ->
             epoxyRecyclerView.withModels {
 
                 actionList.forEachIndexed { _, model ->
@@ -242,9 +245,7 @@ class CreateActionShortcutFragment : Fragment() {
                         }
 
                         onClick { _ ->
-                            mActionModelList.value?.single { it.id == model.id }?.let {
-                                mViewModel.onActionModelClick(it)
-                            }
+                            mViewModel.onActionModelClick(model.id)
                         }
                     }
                 }

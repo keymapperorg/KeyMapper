@@ -88,6 +88,7 @@
     <string name="description_key">Press \'%s\' key</string>
     <string name="description_text_block">Type \'%s\'</string>
     <string name="description_keyevent">Input %s%s</string>
+    <string name="description_keyevent_from_device">Input %s%s from %s</string>
     <string name="description_url">Open %s</string>
     <string name="description_tap_coordinate_default">Tap Coordinates %s, %s</string>
     <string name="description_tap_coordinate_with_description">Tap Coordinates %s, %s (%s)</string>

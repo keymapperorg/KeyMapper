@@ -93,6 +93,7 @@ data class Action(
          * The KeyEvent meta state is stored as bit flags.
          */
         const val EXTRA_KEY_EVENT_META_STATE = "extra_meta_state"
+        const val EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR = "extra_device_descriptor"
 
         const val EXTRA_IME_ID = "extra_ime_id"
         const val EXTRA_IME_NAME = "extra_ime_name"
@@ -114,6 +115,7 @@ data class Action(
             EXTRA_RINGER_MODE,
             EXTRA_DND_MODE,
             EXTRA_KEY_EVENT_META_STATE,
+            EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR,
             EXTRA_IME_ID,
             EXTRA_IME_NAME,
             EXTRA_ORIENTATIONS,
@@ -144,11 +146,19 @@ data class Action(
             return keyEventAction(keyCode, metaState = 0)
         }
 
-        fun keyEventAction(keyCode: Int, metaState: Int): Action {
+        fun keyEventAction(keyCode: Int, metaState: Int, deviceDescriptor: String? = null): Action {
+            val extras = sequence {
+                yield(Extra(EXTRA_KEY_EVENT_META_STATE, metaState.toString()))
+
+                deviceDescriptor?.let {
+                    yield(Extra(EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR, it))
+                }
+            }.toList()
+
             return Action(
                 ActionType.KEY_EVENT,
                 keyCode.toString(),
-                extras = listOf(Extra(EXTRA_KEY_EVENT_META_STATE, metaState.toString()))
+                extras = extras
             )
         }
 

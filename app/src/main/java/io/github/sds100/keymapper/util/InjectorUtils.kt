@@ -110,7 +110,9 @@ object InjectorUtils {
         }
     }
 
-    fun provideCreateActionShortcutViewModel(): CreateActionShortcutViewModel.Factory {
-        return CreateActionShortcutViewModel.Factory()
+    fun provideCreateActionShortcutViewModel(context: Context): CreateActionShortcutViewModel.Factory {
+        val deviceInfoRepository = (context.applicationContext as MyApplication).deviceInfoRepository
+
+        return CreateActionShortcutViewModel.Factory(deviceInfoRepository)
     }
 }

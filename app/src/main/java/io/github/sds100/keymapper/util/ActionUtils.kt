@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.KeyEvent
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.util.SystemActionUtils.getDescriptionWithOption
 import io.github.sds100.keymapper.util.SystemActionUtils.getDescriptionWithOptionSet
@@ -33,11 +34,11 @@ object ActionUtils {
 }
 
 @Suppress("EXPERIMENTAL_API_USAGE")
-fun Action.buildModel(ctx: Context): ActionModel {
+fun Action.buildModel(ctx: Context, deviceInfoList: List<DeviceInfo>): ActionModel {
     var title: String? = null
     var icon: Drawable? = null
 
-    val error = getTitle(ctx).onSuccess { title = it }
+    val error = getTitle(ctx, deviceInfoList).onSuccess { title = it }
         .then { getIcon(ctx).onSuccess { icon = it } }
         .then { canBePerformed(ctx) }
         .failureOrNull()
@@ -61,11 +62,11 @@ fun Action.buildModel(ctx: Context): ActionModel {
     return ActionModel(uniqueId, type, title, icon, flags, error, error?.getBriefMessage(ctx))
 }
 
-fun Action.buildChipModel(ctx: Context): ActionChipModel {
+fun Action.buildChipModel(ctx: Context, deviceInfoList: List<DeviceInfo>): ActionChipModel {
     var title: String? = null
     var icon: Drawable? = null
 
-    val error = getTitle(ctx).onSuccess { title = it }
+    val error = getTitle(ctx, deviceInfoList).onSuccess { title = it }
         .then { getIcon(ctx).onSuccess { icon = it } }
         .then { canBePerformed(ctx) }
         .failureOrNull()
@@ -87,7 +88,7 @@ fun Action.buildChipModel(ctx: Context): ActionChipModel {
     return ActionChipModel(uniqueId, type, description, error, icon)
 }
 
-fun Action.getTitle(ctx: Context): Result<String> {
+fun Action.getTitle(ctx: Context, deviceInfoList: List<DeviceInfo>): Result<String> {
     return when (type) {
         ActionType.APP -> {
             try {
@@ -127,7 +128,28 @@ fun Action.getTitle(ctx: Context): Result<String> {
                 }
             }
 
-            Success(ctx.str(R.string.description_keyevent, formatArgArray = arrayOf(metaStateString, key)))
+            val title = extras.getData(Action.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR).handle(
+                onSuccess = { descriptor ->
+                    val deviceName = deviceInfoList.find { it.descriptor == descriptor }?.name?.let { name ->
+                        if (AppPreferences.showDeviceDescriptors) {
+                            "$name (${descriptor.substring(0..4)})"
+                        } else {
+                            name
+                        }
+                    }
+
+                    ctx.str(
+                        R.string.description_keyevent_from_device,
+                        formatArgArray = arrayOf(metaStateString, key, deviceName)
+                    )
+                },
+
+                onFailure = {
+                    ctx.str(R.string.description_keyevent, formatArgArray = arrayOf(metaStateString, key))
+                }
+            )
+
+            Success(title)
         }
 
         ActionType.TEXT_BLOCK -> {

@@ -397,18 +397,21 @@ class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChang
         epoxyRecyclerView.adapter = mController.adapter
     }
 
-    private suspend fun buildModelList(keymapList: List<KeyMap>) =
-        keymapList.map { keymap ->
+    private suspend fun buildModelList(keymapList: List<KeyMap>): List<KeymapListItemModel> {
+        val deviceInfoList = mViewModel.getDeviceInfoList()
+
+        return keymapList.map { keymap ->
             KeymapListItemModel(
                 id = keymap.id,
-                actionList = keymap.actionList.map { it.buildChipModel(requireContext()) },
-                triggerDescription = keymap.trigger.buildDescription(requireContext(), mViewModel.getDeviceInfoList()),
+                actionList = keymap.actionList.map { it.buildChipModel(requireContext(), deviceInfoList) },
+                triggerDescription = keymap.trigger.buildDescription(requireContext(), deviceInfoList),
                 constraintList = keymap.constraintList.map { it.buildModel(requireContext()) },
                 constraintMode = keymap.constraintMode,
                 flagsDescription = keymap.trigger.buildTriggerFlagsDescription(requireContext()),
                 isEnabled = keymap.isEnabled
             )
         }
+    }
 
     override fun onResume() {
         super.onResume()

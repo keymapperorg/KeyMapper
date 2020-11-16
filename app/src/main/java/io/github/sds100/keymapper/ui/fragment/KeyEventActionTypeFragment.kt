@@ -22,6 +22,7 @@ import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.InputDeviceUtils
 import io.github.sds100.keymapper.util.result.getFullMessage
 import io.github.sds100.keymapper.util.str
+import timber.log.Timber
 
 /**
  * Created by sds100 on 30/03/2020.
@@ -32,6 +33,7 @@ class KeyEventActionTypeFragment : Fragment() {
         const val REQUEST_KEY = "request_key_event"
         const val EXTRA_KEYCODE = "extra_keycode"
         const val EXTRA_META_STATE = "extra_meta_state"
+        const val EXTRA_DEVICE_DESCRIPTOR = "extra_device_descriptor"
     }
 
     private val mViewModel: KeyEventActionTypeViewModel by activityViewModels {
@@ -57,7 +59,13 @@ class KeyEventActionTypeFragment : Fragment() {
                 setFragmentResult(REQUEST_KEY,
                     bundleOf(
                         EXTRA_KEYCODE to mViewModel.keyCode.value?.toInt(),
-                        EXTRA_META_STATE to mViewModel.metaState.value)
+                        EXTRA_META_STATE to mViewModel.metaState.value
+                    ).apply {
+                        mViewModel.chosenDevice.value?.let {
+                            Timber.d(it.name)
+                            putString(EXTRA_DEVICE_DESCRIPTOR, it.descriptor)
+                        }
+                    }
                 )
 
                 findNavController().navigateUp()
@@ -122,9 +130,25 @@ class KeyEventActionTypeFragment : Fragment() {
                 //set the default value
                 setText(str(R.string.from_no_device), false)
 
+                setOnItemClickListener { _, _, position, _ ->
+                    if (position == 0) {
+                        mViewModel.chooseNoDevice()
+                        return@setOnItemClickListener
+                    }
+
+                    //subtract the list item that selects no device
+                    mViewModel.chooseDevice(position - 1)
+                }
+
                 onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                        mViewModel.chooseDevice(position)
+                        if (position == 0) {
+                            mViewModel.chooseNoDevice()
+                            return
+                        }
+
+                        //subtract the list item that selects no device
+                        mViewModel.chooseDevice(position - 1)
                     }
 
                     override fun onNothingSelected(parent: AdapterView<*>?) {

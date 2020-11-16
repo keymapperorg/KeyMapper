@@ -61,8 +61,9 @@ class ChooseActionFragment : Fragment() {
         setResultListener(KeyEventActionTypeFragment.REQUEST_KEY) {
             val keyCode = it.getInt(KeyEventActionTypeFragment.EXTRA_KEYCODE)
             val metaState = it.getInt(KeyEventActionTypeFragment.EXTRA_META_STATE)
+            val deviceDescriptor = it.getString(KeyEventActionTypeFragment.EXTRA_DEVICE_DESCRIPTOR)
 
-            Action.keyEventAction(keyCode, metaState)
+            Action.keyEventAction(keyCode, metaState, deviceDescriptor)
         }
 
         setResultListener(TextBlockActionTypeFragment.REQUEST_KEY) {
