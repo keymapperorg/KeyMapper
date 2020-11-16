@@ -1,8 +1,11 @@
 package io.github.sds100.keymapper.data.viewmodel
 
+import android.annotation.SuppressLint
 import android.view.KeyEvent
 import androidx.lifecycle.*
 import io.github.sds100.keymapper.data.model.CheckBoxListItemModel
+import io.github.sds100.keymapper.data.model.DeviceInfo
+import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.KeyEventUtils
 import io.github.sds100.keymapper.util.result.CantBeEmpty
@@ -15,7 +18,7 @@ import splitties.bitflags.withFlag
  * Created by sds100 on 30/03/2020.
  */
 
-class KeyEventActionTypeViewModel : ViewModel() {
+class KeyEventActionTypeViewModel(private val mDeviceInfoRepository: DeviceInfoRepository) : ViewModel() {
 
     val keyCode = MutableLiveData<String>(null)
 
@@ -31,6 +34,11 @@ class KeyEventActionTypeViewModel : ViewModel() {
             KeyEvent.keyCodeToString(it.toInt())
         }
     }
+
+    val chosenDevice = MutableLiveData<DeviceInfo?>(null)
+
+    val deviceInfoModels = MutableLiveData<List<DeviceInfo>>()
+    val buildDeviceInfoModels = MutableLiveData<Event<Unit>>()
 
     val metaState = MutableLiveData(0)
     val chooseKeycode = MutableLiveData<Event<Unit>>()
@@ -58,6 +66,10 @@ class KeyEventActionTypeViewModel : ViewModel() {
         }
     }
 
+    init {
+        refreshDevices()
+    }
+
     fun chooseKeycode() {
         chooseKeycode.value = Event(Unit)
     }
@@ -70,11 +82,30 @@ class KeyEventActionTypeViewModel : ViewModel() {
         }
     }
 
+    @SuppressLint("NullSafeMutableLiveData")
+    fun chooseNoDevice() {
+        chosenDevice.value = null
+    }
+
+    fun chooseDevice(index: Int) {
+        deviceInfoModels.value?.getOrNull(index)?.let {
+            chosenDevice.value = it
+        }
+    }
+
+    fun refreshDevices() {
+        buildDeviceInfoModels.value = Event(Unit)
+    }
+
+    fun setDeviceInfoModels(models: List<DeviceInfo>) {
+        deviceInfoModels.value = models
+    }
+
     @Suppress("UNCHECKED_CAST")
-    class Factory : ViewModelProvider.NewInstanceFactory() {
+    class Factory(private val mDeviceInfoRepository: DeviceInfoRepository) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return KeyEventActionTypeViewModel() as T
+            return KeyEventActionTypeViewModel(mDeviceInfoRepository) as T
         }
     }
 }

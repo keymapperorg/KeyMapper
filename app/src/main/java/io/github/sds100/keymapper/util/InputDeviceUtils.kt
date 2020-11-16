@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.util
 
 import android.os.Build
 import android.view.InputDevice
+import io.github.sds100.keymapper.data.model.DeviceInfo
 import io.github.sds100.keymapper.util.result.DeviceNotFound
 import io.github.sds100.keymapper.util.result.Result
 import io.github.sds100.keymapper.util.result.Success
@@ -25,11 +26,26 @@ object InputDeviceUtils {
         return DeviceNotFound()
     }
 
-    fun getConnectedDeviceNames() = sequence {
+    fun createDeviceInfoModelsForAll() = sequence {
+        InputDevice.getDeviceIds().forEach {
+            val device = InputDevice.getDevice(it)
+
+            yield(DeviceInfo(device.descriptor, device.name))
+        }
+    }.toList()
+
+    fun getDeviceNames() = sequence {
         InputDevice.getDeviceIds().forEach {
             val device = InputDevice.getDevice(it)
 
             yield(device.name)
+        }
+    }.toList()
+
+    fun getAllDeviceDescriptors() = sequence {
+        InputDevice.getDeviceIds().forEach {
+            val device = InputDevice.getDevice(it)
+            yield(device.descriptor)
         }
     }
 
