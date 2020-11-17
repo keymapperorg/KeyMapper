@@ -9,7 +9,6 @@ import io.github.sds100.keymapper.util.str
  * Created by sds100 on 20/02/2020.
  */
 
-@Suppress("EXPERIMENTAL_API_USAGE")
 class DefaultPreferenceDataStore(ctx: Context) : IPreferenceDataStore {
     private val mCtx = ctx.applicationContext
 

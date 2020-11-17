@@ -13,18 +13,18 @@ import io.github.sds100.keymapper.util.FingerprintGestureUtils
 /**
  * Created by sds100 on 17/11/20.
  */
-class FingerprintGestureRepository
-constructor(iPreferenceDataStore: IPreferenceDataStore) : IPreferenceDataStore by iPreferenceDataStore {
+class FingerprintGestureRepository constructor(iPreferenceDataStore: IPreferenceDataStore
+) : IPreferenceDataStore by iPreferenceDataStore {
 
     private val mGson = GsonBuilder()
         .registerTypeAdapter(Action.DESERIALIZER)
         .registerTypeAdapter(Extra.DESERIALIZER).create()
 
-    fun editFingerprintMap(
+    fun edit(
         gestureId: String,
         block: (old: FingerprintGestureMap) -> FingerprintGestureMap
     ) {
-        val fingerprintGestureMap = retrieveFingerprintMap(FingerprintGestureUtils.PREF_KEYS[gestureId]!!)
+        val fingerprintGestureMap = get(FingerprintGestureUtils.PREF_KEYS[gestureId]!!)
             ?: FingerprintGestureMap()
 
         fingerprintGestureMap.apply {
@@ -34,12 +34,12 @@ constructor(iPreferenceDataStore: IPreferenceDataStore) : IPreferenceDataStore b
         }
     }
 
-    fun saveFingerprintMap(@StringRes prefKey: Int, gestureMap: FingerprintGestureMap) {
+    private fun saveFingerprintMap(@StringRes prefKey: Int, gestureMap: FingerprintGestureMap) {
         val json = mGson.toJson(gestureMap)
         setStringPref(prefKey, json)
     }
 
-    fun retrieveFingerprintMap(@StringRes prefKey: Int): FingerprintGestureMap? {
+    fun get(@StringRes prefKey: Int): FingerprintGestureMap? {
         val json = getStringPref(prefKey)
         return json?.let { mGson.fromJson(it) }
     }

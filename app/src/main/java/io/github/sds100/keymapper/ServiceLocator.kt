@@ -101,6 +101,8 @@ object ServiceLocator {
         val fingerprintGestureRepository = fingerprintGestureRepository
             ?: FingerprintGestureRepository(providePreferenceDataStore(context))
 
+        this.fingerprintGestureRepository = fingerprintGestureRepository
+
         return fingerprintGestureRepository
     }
 

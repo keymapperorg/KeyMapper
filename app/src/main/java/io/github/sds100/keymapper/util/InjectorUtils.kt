@@ -105,6 +105,12 @@ object InjectorUtils {
         return FingerprintGestureViewModel.Factory(repository)
     }
 
+    fun provideMenuFragmentViewModel(context: Context): MenuFragmentViewModel.Factory {
+        val keymapUseCase = (context.applicationContext as MyApplication).keymapRepository
+        val fingerprintGestureUseCase = (context.applicationContext as MyApplication).fingerprintGestureRepository
+        return MenuFragmentViewModel.Factory(keymapUseCase, fingerprintGestureUseCase)
+    }
+
     fun provideConfigKeymapViewModel(
         context: Context,
         id: Long

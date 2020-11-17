@@ -28,7 +28,7 @@ class FingerprintGestureViewModel(private val mRepository: FingerprintGestureRep
     }
 
     fun setAction(id: String, action: Action) {
-        mRepository.editFingerprintMap(id) {
+        mRepository.edit(id) {
             it.clone(action = action)
         }
 
@@ -36,7 +36,7 @@ class FingerprintGestureViewModel(private val mRepository: FingerprintGestureRep
     }
 
     fun removeAction(id: String) {
-        mRepository.editFingerprintMap(id) {
+        mRepository.edit(id) {
             it.clone(action = null)
         }
 
@@ -44,7 +44,7 @@ class FingerprintGestureViewModel(private val mRepository: FingerprintGestureRep
     }
 
     fun setEnabled(id: String, isEnabled: Boolean) {
-        mRepository.editFingerprintMap(id) {
+        mRepository.edit(id) {
             it.clone(isEnabled = isEnabled)
         }
 
@@ -56,7 +56,7 @@ class FingerprintGestureViewModel(private val mRepository: FingerprintGestureRep
 
         viewModelScope.launch(Dispatchers.IO) {
             val gestureMaps = FingerprintGestureUtils.GESTURES.map {
-                it to (mRepository.retrieveFingerprintMap(FingerprintGestureUtils.PREF_KEYS[it]!!)
+                it to (mRepository.get(FingerprintGestureUtils.PREF_KEYS[it]!!)
                     ?: FingerprintGestureMap())
             }.toMap()
 

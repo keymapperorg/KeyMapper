@@ -15,7 +15,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
-import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
+import io.github.sds100.keymapper.data.viewmodel.MenuFragmentViewModel
 import io.github.sds100.keymapper.databinding.FragmentMenuBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.util.*
@@ -23,8 +23,8 @@ import splitties.alertdialog.appcompat.*
 
 class MenuFragment : BottomSheetDialogFragment(), SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private val mViewModel: KeymapListViewModel by activityViewModels {
-        InjectorUtils.provideKeymapListViewModel(requireContext())
+    private val mViewModel: MenuFragmentViewModel by activityViewModels {
+        InjectorUtils.provideMenuFragmentViewModel(requireContext())
     }
 
     private val mBackupRestoreViewModel: BackupRestoreViewModel by activityViewModels {
