@@ -101,8 +101,8 @@ object InjectorUtils {
     }
 
     fun provideFingerprintGestureViewModel(context: Context): FingerprintGestureViewModel.Factory {
-        val preferenceDataStore = (context.applicationContext as MyApplication).preferenceDataStore
-        return FingerprintGestureViewModel.Factory(preferenceDataStore)
+        val repository = (context.applicationContext as MyApplication).fingerprintGestureRepository
+        return FingerprintGestureViewModel.Factory(repository)
     }
 
     fun provideConfigKeymapViewModel(

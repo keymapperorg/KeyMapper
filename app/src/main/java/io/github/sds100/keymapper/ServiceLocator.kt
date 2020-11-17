@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.repository.DefaultDeviceInfoRepository
 import io.github.sds100.keymapper.data.repository.DefaultKeymapRepository
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
+import io.github.sds100.keymapper.data.repository.FingerprintGestureRepository
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -31,6 +32,9 @@ object ServiceLocator {
     var preferenceDataStore: IPreferenceDataStore? = null
         @VisibleForTesting set
 
+    @Volatile
+    var fingerprintGestureRepository: FingerprintGestureRepository? = null
+
     fun provideKeymapRepository(context: Context): DefaultKeymapRepository {
         synchronized(this) {
             return keymapRepository ?: createKeymapRepository(context)
@@ -43,9 +47,15 @@ object ServiceLocator {
         }
     }
 
-    fun provideOnboardingState(context: Context): IPreferenceDataStore {
+    fun providePreferenceDataStore(context: Context): IPreferenceDataStore {
         synchronized(this) {
             return preferenceDataStore ?: createPreferenceDataStore(context)
+        }
+    }
+
+    fun provideFingerprintGestureRepository(context: Context): FingerprintGestureRepository {
+        synchronized(this) {
+            return fingerprintGestureRepository ?: createFingerprintGestureRepository(context)
         }
     }
 
@@ -85,6 +95,13 @@ object ServiceLocator {
         this.preferenceDataStore = preferenceDataStore
 
         return preferenceDataStore
+    }
+
+    private fun createFingerprintGestureRepository(context: Context): FingerprintGestureRepository {
+        val fingerprintGestureRepository = fingerprintGestureRepository
+            ?: FingerprintGestureRepository(providePreferenceDataStore(context))
+
+        return fingerprintGestureRepository
     }
 
     private fun createDatabase(context: Context): AppDatabase {

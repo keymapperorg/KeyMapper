@@ -1,9 +1,10 @@
 package io.github.sds100.keymapper
 
 import androidx.multidex.MultiDexApplication
+import io.github.sds100.keymapper.data.IPreferenceDataStore
 import io.github.sds100.keymapper.data.repository.DefaultKeymapRepository
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
-import io.github.sds100.keymapper.data.IPreferenceDataStore
+import io.github.sds100.keymapper.data.repository.FingerprintGestureRepository
 import timber.log.Timber
 
 /**
@@ -18,7 +19,10 @@ class MyApplication : MultiDexApplication() {
         get() = ServiceLocator.provideDeviceInfoRepository(this)
 
     val preferenceDataStore: IPreferenceDataStore
-        get() = ServiceLocator.provideOnboardingState(this)
+        get() = ServiceLocator.providePreferenceDataStore(this)
+
+    val fingerprintGestureRepository: FingerprintGestureRepository
+        get() = ServiceLocator.provideFingerprintGestureRepository(this)
 
     override fun onCreate() {
         super.onCreate()
