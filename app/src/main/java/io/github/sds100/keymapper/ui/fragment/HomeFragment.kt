@@ -393,7 +393,10 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
 
         requireActivity().unregisterReceiver(mBroadcastReceiver)
         requireContext().defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
-        mBinding.viewPager.unregisterOnPageChangeCallback(mOnPageChangeCallback)
+
+        if (::mBinding.isInitialized) {
+            mBinding.viewPager.unregisterOnPageChangeCallback(mOnPageChangeCallback)
+        }
     }
 
     override fun onSharedPreferenceChanged(preferences: SharedPreferences?, key: String?) {
