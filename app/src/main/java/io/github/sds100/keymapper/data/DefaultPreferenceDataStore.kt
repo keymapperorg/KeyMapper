@@ -1,7 +1,9 @@
 package io.github.sds100.keymapper.data
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.core.content.edit
+import androidx.datastore.preferences.createDataStore
 import io.github.sds100.keymapper.util.defaultSharedPreferences
 import io.github.sds100.keymapper.util.str
 
@@ -10,24 +12,30 @@ import io.github.sds100.keymapper.util.str
  */
 
 class DefaultPreferenceDataStore(ctx: Context) : IPreferenceDataStore {
+
     private val mCtx = ctx.applicationContext
 
+    private val mPrefs: SharedPreferences
+        get() = mCtx.defaultSharedPreferences
+
+    override val fingerprintGestureDataStore = ctx.createDataStore("fingerprint_gestures")
+
     override fun getBoolPref(key: Int): Boolean {
-        return mCtx.defaultSharedPreferences.getBoolean(mCtx.str(key), false)
+        return mPrefs.getBoolean(mCtx.str(key), false)
     }
 
     override fun setBoolPref(key: Int, value: Boolean) {
-        mCtx.defaultSharedPreferences.edit {
+        mPrefs.edit {
             putBoolean(mCtx.str(key), value)
         }
     }
 
     override fun getStringPref(key: Int): String? {
-        return mCtx.defaultSharedPreferences.getString(mCtx.str(key), null)
+        return mPrefs.getString(mCtx.str(key), null)
     }
 
     override fun setStringPref(key: Int, value: String) {
-        mCtx.defaultSharedPreferences.edit {
+        mPrefs.edit {
             putString(mCtx.str(key), value)
         }
     }

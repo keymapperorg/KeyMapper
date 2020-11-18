@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.util
 
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.data.DataStoreKeys
 
 /**
  * Created by sds100 on 14/11/20.
@@ -15,8 +16,8 @@ object FingerprintGestureUtils {
     val GESTURES = arrayOf(SWIPE_DOWN, SWIPE_UP)
 
     val PREF_KEYS = mapOf(
-        SWIPE_DOWN to R.string.key_pref_fingerprint_swipe_down_json,
-        SWIPE_UP to R.string.key_pref_fingerprint_swipe_up_json
+        SWIPE_DOWN to DataStoreKeys.FINGERPRINT_GESTURE_SWIPE_DOWN,
+        SWIPE_UP to DataStoreKeys.FINGERPRINT_GESTURE_SWIPE_UP
     )
 
     val HEADERS = mapOf(

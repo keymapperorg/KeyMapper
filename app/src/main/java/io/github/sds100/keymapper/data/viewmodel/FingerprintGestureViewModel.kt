@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.data.viewmodel
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -8,61 +7,65 @@ import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.FingerprintGestureMap
 import io.github.sds100.keymapper.data.model.FingerprintGestureMapListItemModel
 import io.github.sds100.keymapper.data.repository.FingerprintGestureRepository
-import io.github.sds100.keymapper.util.*
-import kotlinx.coroutines.Dispatchers
+import io.github.sds100.keymapper.util.Data
+import io.github.sds100.keymapper.util.FingerprintGestureUtils
+import io.github.sds100.keymapper.util.Loading
+import io.github.sds100.keymapper.util.State
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class FingerprintGestureViewModel(private val mRepository: FingerprintGestureRepository) : ViewModel() {
 
-    val models = MutableLiveData<State<List<FingerprintGestureMapListItemModel>>>()
-
-    val buildModels = MutableLiveData<Event<Map<String, FingerprintGestureMap>>>()
-
-    init {
-        rebuildModels()
+    private val mFingerprintGestureMaps = combine(mRepository.swipeDown, mRepository.swipeUp) { swipeDown, swipeUp ->
+        mapOf(
+            FingerprintGestureUtils.SWIPE_DOWN to swipeDown,
+            FingerprintGestureUtils.SWIPE_UP to swipeUp
+        )
     }
 
-    fun setModels(models: List<FingerprintGestureMapListItemModel>) {
-        this.models.value = Data(models)
+    private val _models: MutableStateFlow<State<List<FingerprintGestureMapListItemModel>>> = MutableStateFlow(Loading())
+    val models = _models.asStateFlow()
+
+    private val _buildModels: MutableSharedFlow<Map<String, FingerprintGestureMap>> = MutableSharedFlow()
+    val buildModels: SharedFlow<Map<String, FingerprintGestureMap>> = _buildModels
+
+    init {
+        viewModelScope.launch {
+            mFingerprintGestureMaps.collect {
+                _buildModels.emit(it)
+            }
+        }
+    }
+
+    fun setModels(models: List<FingerprintGestureMapListItemModel>) = viewModelScope.launch {
+        _models.emit(Data(models))
     }
 
     fun setAction(id: String, action: Action) {
-        mRepository.edit(id) {
-            it.clone(action = action)
+        viewModelScope.launch {
+            mRepository.edit(id) {
+                it.clone(action = action)
+            }
         }
-
-        rebuildModels()
     }
 
-    fun removeAction(id: String) {
+    fun removeAction(id: String) = viewModelScope.launch {
         mRepository.edit(id) {
             it.clone(action = null)
         }
-
-        rebuildModels()
     }
 
-    fun setEnabled(id: String, isEnabled: Boolean) {
+    fun setEnabled(id: String, isEnabled: Boolean) = viewModelScope.launch {
         mRepository.edit(id) {
             it.clone(isEnabled = isEnabled)
         }
-
-        rebuildModels()
     }
 
-    fun rebuildModels() {
-        models.value = Loading()
+    fun rebuildModels() = viewModelScope.launch {
+        _models.emit(Loading())
 
-        viewModelScope.launch(Dispatchers.IO) {
-            val gestureMaps = FingerprintGestureUtils.GESTURES.map {
-                it to (mRepository.get(FingerprintGestureUtils.PREF_KEYS[it]!!)
-                    ?: FingerprintGestureMap())
-            }.toMap()
-
-            withContext(Dispatchers.Main) {
-                buildModels.value = Event(gestureMaps)
-            }
+        mFingerprintGestureMaps.firstOrNull()?.let {
+            _buildModels.emit(it)
         }
     }
 

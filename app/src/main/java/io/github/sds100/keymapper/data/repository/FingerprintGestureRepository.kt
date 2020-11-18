@@ -1,46 +1,55 @@
 package io.github.sds100.keymapper.data.repository
 
-import androidx.annotation.StringRes
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
 import com.github.salomonbrys.kotson.fromJson
 import com.github.salomonbrys.kotson.registerTypeAdapter
 import com.google.gson.GsonBuilder
-import io.github.sds100.keymapper.data.IPreferenceDataStore
+import io.github.sds100.keymapper.data.DataStoreKeys
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Extra
 import io.github.sds100.keymapper.data.model.FingerprintGestureMap
 import io.github.sds100.keymapper.util.FingerprintGestureUtils
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 /**
  * Created by sds100 on 17/11/20.
  */
-class FingerprintGestureRepository constructor(iPreferenceDataStore: IPreferenceDataStore
-) : IPreferenceDataStore by iPreferenceDataStore {
+class FingerprintGestureRepository constructor(private val mDataStore: DataStore<Preferences>) {
 
     private val mGson = GsonBuilder()
         .registerTypeAdapter(Action.DESERIALIZER)
         .registerTypeAdapter(Extra.DESERIALIZER).create()
 
-    fun edit(
+    val swipeDown: Flow<FingerprintGestureMap> = mDataStore.data.map { prefs ->
+        prefs.getGesture(DataStoreKeys.FINGERPRINT_GESTURE_SWIPE_DOWN)
+    }
+
+    val swipeUp: Flow<FingerprintGestureMap> = mDataStore.data.map { prefs ->
+        prefs.getGesture(DataStoreKeys.FINGERPRINT_GESTURE_SWIPE_UP)
+    }
+
+    suspend fun edit(
         gestureId: String,
         block: (old: FingerprintGestureMap) -> FingerprintGestureMap
     ) {
-        val fingerprintGestureMap = get(FingerprintGestureUtils.PREF_KEYS[gestureId]!!)
-            ?: FingerprintGestureMap()
+        mDataStore.edit { prefs ->
+            val key = FingerprintGestureUtils.PREF_KEYS[gestureId]!!
+            val new = block.invoke(prefs.getGesture(key))
 
-        fingerprintGestureMap.apply {
-            val prefKey = FingerprintGestureUtils.PREF_KEYS[gestureId]!!
-
-            saveFingerprintMap(prefKey, block.invoke(fingerprintGestureMap))
+            prefs[key] = mGson.toJson(new)
         }
     }
 
-    private fun saveFingerprintMap(@StringRes prefKey: Int, gestureMap: FingerprintGestureMap) {
-        val json = mGson.toJson(gestureMap)
-        setStringPref(prefKey, json)
-    }
+    private fun Preferences.getGesture(key: Preferences.Key<String>): FingerprintGestureMap {
+        val json = this[key]
 
-    fun get(@StringRes prefKey: Int): FingerprintGestureMap? {
-        val json = getStringPref(prefKey)
-        return json?.let { mGson.fromJson(it) }
+        return if (json == null) {
+            FingerprintGestureMap()
+        } else {
+            mGson.fromJson(json)
+        }
     }
 }

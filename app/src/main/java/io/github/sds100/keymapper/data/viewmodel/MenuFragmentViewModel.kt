@@ -14,10 +14,8 @@ import kotlinx.coroutines.launch
 class MenuFragmentViewModel(private val mKeymapUseCase: MenuKeymapUseCase,
                             private val mFingerprintGestureRepository: FingerprintGestureRepository) : ViewModel() {
 
-    fun enableAll() {
-        viewModelScope.launch {
-            mKeymapUseCase.enableAll()
-        }
+    fun enableAll() = viewModelScope.launch {
+        mKeymapUseCase.enableAll()
 
         FingerprintGestureUtils.GESTURES.forEach { gestureId ->
             mFingerprintGestureRepository.edit(gestureId) {
@@ -26,10 +24,8 @@ class MenuFragmentViewModel(private val mKeymapUseCase: MenuKeymapUseCase,
         }
     }
 
-    fun disableAll() {
-        viewModelScope.launch {
-            mKeymapUseCase.disableAll()
-        }
+    fun disableAll() = viewModelScope.launch {
+        mKeymapUseCase.disableAll()
 
         FingerprintGestureUtils.GESTURES.forEach { gestureId ->
             mFingerprintGestureRepository.edit(gestureId) {

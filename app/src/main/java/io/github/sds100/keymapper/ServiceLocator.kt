@@ -99,7 +99,7 @@ object ServiceLocator {
 
     private fun createFingerprintGestureRepository(context: Context): FingerprintGestureRepository {
         val fingerprintGestureRepository = fingerprintGestureRepository
-            ?: FingerprintGestureRepository(providePreferenceDataStore(context))
+            ?: FingerprintGestureRepository(providePreferenceDataStore(context).fingerprintGestureDataStore)
 
         this.fingerprintGestureRepository = fingerprintGestureRepository
 

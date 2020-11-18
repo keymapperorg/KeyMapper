@@ -85,6 +85,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                 * that they need the input method to be enabled. */
                 Intent.ACTION_INPUT_METHOD_CHANGED -> {
                     mKeyMapListViewModel.rebuildModels()
+                    mFingerprintGestureViewModel.rebuildModels()
                 }
 
                 MyAccessibilityService.ACTION_ON_START -> {
