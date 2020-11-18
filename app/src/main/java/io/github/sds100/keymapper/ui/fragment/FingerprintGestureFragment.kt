@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.ui.fragment
 
 import android.os.Bundle
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.FingerprintGestureMapListItemModel
@@ -46,7 +45,7 @@ class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
     override fun subscribeList(binding: FragmentRecyclerviewBinding) {
         binding.caption = str(R.string.caption_fingerprint_gesture)
 
-        lifecycleScope.launchWhenStarted {
+        viewLifecycleScope.launchWhenStarted {
             mViewModel.models.collect { models ->
                 binding.state = models
 
@@ -84,7 +83,7 @@ class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
             }
         }
 
-        lifecycleScope.launchWhenStarted {
+        viewLifecycleScope.launchWhenStarted {
             mViewModel.buildModels.collect { gestureMaps ->
                 val models = gestureMaps.map {
                     FingerprintGestureMapListItemModel(
