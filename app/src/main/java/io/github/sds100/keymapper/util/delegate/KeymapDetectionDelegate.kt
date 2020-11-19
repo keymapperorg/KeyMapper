@@ -1476,7 +1476,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             }
         }
 
-        throw Exception("Action ${action.uniqueId} not in the action map!")
+        throw Exception("Action $action not in the action map!")
     }
 
     /**

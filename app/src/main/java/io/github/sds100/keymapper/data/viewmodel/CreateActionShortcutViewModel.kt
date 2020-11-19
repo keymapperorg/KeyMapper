@@ -9,22 +9,21 @@ import io.github.sds100.keymapper.data.model.ActionModel
 import io.github.sds100.keymapper.data.model.behavior.ActionBehavior
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.util.Event
-import io.github.sds100.keymapper.util.dataExtraString
 import io.github.sds100.keymapper.util.result.Failure
+import java.util.*
 
 /**
  * Created by sds100 on 08/09/20.
  */
 class CreateActionShortcutViewModel(private val mDeviceInfoRepository: DeviceInfoRepository) : ViewModel() {
 
-    val actionList = MutableLiveData(listOf<Action>())
+    val actionList = MutableLiveData(listOf<Pair<String, Action>>())
     val actionModelList = MutableLiveData<List<ActionModel>>()
     val buildActionModelList = actionList.map { Event(it) }
 
     val chooseActionEvent: MutableLiveData<Event<Unit>> = MutableLiveData()
     val testAction: MutableLiveData<Event<Action>> = MutableLiveData()
     val chooseActionBehavior: MutableLiveData<Event<ActionBehavior>> = MutableLiveData()
-    val duplicateActionsEvent: MutableLiveData<Event<Unit>> = MutableLiveData()
     val showFixPrompt: MutableLiveData<Event<Failure>> = MutableLiveData()
     val promptToEnableAccessibilityService: MutableLiveData<Event<Unit>> = MutableLiveData()
 
@@ -36,23 +35,16 @@ class CreateActionShortcutViewModel(private val mDeviceInfoRepository: DeviceInf
      * @return whether the action already exists has been added to the list
      */
     fun addAction(action: Action) {
-        if (actionList.value?.find {
-                it.type == action.type && it.data == action.data && it.dataExtraString == action.dataExtraString
-            } != null) {
-            duplicateActionsEvent.value = Event(Unit)
-            return
-        }
-
         actionList.value = actionList.value?.toMutableList()?.apply {
-            add(action)
+            add(UUID.randomUUID().toString() to action)
         }
     }
 
     fun setActionBehavior(actionBehavior: ActionBehavior) {
         actionList.value = actionList.value?.map {
 
-            if (it.uniqueId == actionBehavior.actionId) {
-                return@map actionBehavior.applyToAction(it)
+            if (it.first == actionBehavior.id) {
+                return@map it.first to actionBehavior.applyToAction(it.second)
             }
 
             it
@@ -68,8 +60,8 @@ class CreateActionShortcutViewModel(private val mDeviceInfoRepository: DeviceInf
             if (model.hasError) {
                 showFixPrompt.value = Event(model.failure!!)
             } else {
-                actionList.value?.find { it.uniqueId == id }?.let {
-                    testAction.value = Event(it)
+                actionList.value?.find { it.first == id }?.let {
+                    testAction.value = Event(it.second)
                 }
             }
         }
@@ -77,13 +69,13 @@ class CreateActionShortcutViewModel(private val mDeviceInfoRepository: DeviceInf
 
     fun removeAction(id: String) {
         actionList.value = actionList.value?.toMutableList()?.apply {
-            removeAll { it.uniqueId == id }
+            removeAll { it.first == id }
         }
     }
 
     fun chooseActionBehavior(id: String) {
-        val action = actionList.value?.find { it.uniqueId == id } ?: return
-        val behavior = ActionBehavior(action, actionList.value!!.size)
+        val action = actionList.value?.find { it.first == id } ?: return
+        val behavior = ActionBehavior(id, action.second, actionList.value!!.size)
 
         chooseActionBehavior.value = Event(behavior)
     }

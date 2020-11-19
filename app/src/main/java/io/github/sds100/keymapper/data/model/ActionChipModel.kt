@@ -9,7 +9,6 @@ import io.github.sds100.keymapper.util.result.Failure
  */
 
 data class ActionChipModel(
-    val id: String,
     val type: ActionType,
     val description: String? = null,
     val error: Failure? = null,

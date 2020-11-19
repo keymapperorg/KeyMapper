@@ -137,10 +137,6 @@ class ConfigKeymapFragment : Fragment() {
                 }
             }
 
-            mViewModel.duplicateActionsEvent.observe(viewLifecycleOwner, EventObserver {
-                toast(R.string.error_action_exists)
-            })
-
             mViewModel.duplicateConstraintsEvent.observe(viewLifecycleOwner, EventObserver {
                 toast(R.string.error_constraint_exists)
             })

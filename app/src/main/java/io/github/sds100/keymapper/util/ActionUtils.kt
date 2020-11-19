@@ -34,7 +34,7 @@ object ActionUtils {
 }
 
 @Suppress("EXPERIMENTAL_API_USAGE")
-fun Action.buildModel(ctx: Context, deviceInfoList: List<DeviceInfo>): ActionModel {
+fun Action.buildModel(id: String, ctx: Context, deviceInfoList: List<DeviceInfo>): ActionModel {
     var title: String? = null
     var icon: Drawable? = null
 
@@ -59,7 +59,7 @@ fun Action.buildModel(ctx: Context, deviceInfoList: List<DeviceInfo>): ActionMod
         }
     }
 
-    return ActionModel(uniqueId, type, title, icon, flags, error, error?.getBriefMessage(ctx))
+    return ActionModel(id, type, title, icon, flags, error, error?.getBriefMessage(ctx))
 }
 
 fun Action.buildChipModel(ctx: Context, deviceInfoList: List<DeviceInfo>): ActionChipModel {
@@ -85,7 +85,7 @@ fun Action.buildChipModel(ctx: Context, deviceInfoList: List<DeviceInfo>): Actio
         }
     }
 
-    return ActionChipModel(uniqueId, type, description, error, icon)
+    return ActionChipModel(type, description, error, icon)
 }
 
 fun Action.getTitle(ctx: Context, deviceInfoList: List<DeviceInfo>): Result<String> {
@@ -382,18 +382,6 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
 
     return Success(this)
 }
-
-/**
- * A string representation of all the extras in an [Action] that are necessary to perform it.
- */
-val Action.dataExtraString: String
-    get() = buildString {
-        Action.DATA_EXTRAS.forEach {
-            extras.getData(it).onSuccess { data ->
-                append("$it$data")
-            }
-        }
-    }
 
 val Action.requiresIME: Boolean
     get() {

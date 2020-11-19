@@ -68,7 +68,7 @@ class ActionsFragment(private val mKeymapId: Long) : Fragment() {
 
                     val models = sequence {
                         actionList.forEach {
-                            yield(it.buildModel(requireContext(), deviceInfoList))
+                            yield(it.second.buildModel(it.first, requireContext(), deviceInfoList))
                         }
                     }.toList()
 
@@ -136,7 +136,7 @@ class ActionsFragment(private val mKeymapId: Long) : Fragment() {
             }
 
         override fun buildModels() {
-            modelList.forEachIndexed { _, model ->
+            modelList.forEachIndexed { index, model ->
                 action {
                     id(model.id)
                     model(model)

@@ -79,7 +79,6 @@ data class Action(
         )
 
         //DON'T CHANGE THESE IDs!!!!
-        //Data Extras. Extras that are required to perform an action.
         const val EXTRA_SHORTCUT_TITLE = "extra_title"
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
         const val EXTRA_STREAM_TYPE = "extra_stream_type"
@@ -98,7 +97,6 @@ data class Action(
         const val EXTRA_IME_ID = "extra_ime_id"
         const val EXTRA_IME_NAME = "extra_ime_name"
 
-        //Behaviour extras. Extras that tweak how and when an action is performed.
         const val EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR = "extra_custom_stop_repeat_behaviour"
         const val EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR = "extra_custom_hold_down_behaviour"
         const val EXTRA_REPEAT_DELAY = "extra_hold_down_until_repeat_delay"
@@ -106,21 +104,6 @@ data class Action(
         const val EXTRA_MULTIPLIER = "extra_multiplier"
         const val EXTRA_DELAY_BEFORE_NEXT_ACTION = "extra_delay_before_next_action"
         const val EXTRA_HOLD_DOWN_DURATION = "extra_hold_down_duration"
-
-        val DATA_EXTRAS = arrayOf(
-            EXTRA_SHORTCUT_TITLE,
-            EXTRA_PACKAGE_NAME,
-            EXTRA_STREAM_TYPE,
-            EXTRA_LENS,
-            EXTRA_RINGER_MODE,
-            EXTRA_DND_MODE,
-            EXTRA_KEY_EVENT_META_STATE,
-            EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR,
-            EXTRA_IME_ID,
-            EXTRA_IME_NAME,
-            EXTRA_ORIENTATIONS,
-            EXTRA_COORDINATE_DESCRIPTION
-        )
 
         fun appAction(packageName: String): Action {
             return Action(ActionType.APP, packageName)
@@ -224,19 +207,6 @@ data class Action(
 
     constructor(type: ActionType, data: String, extra: Extra) : this(type, data, mutableListOf(extra))
 
-    /**
-     * A unique identifier describing this action
-     */
-    val uniqueId: String
-        get() = buildString {
-            append(type)
-            append(data)
-            extras.forEach {
-                append("${it.id}${it.data}")
-            }
-            append(flags)
-        }
-
     fun clone(
         type: ActionType = this.type,
         data: String = this.data,
@@ -244,5 +214,12 @@ data class Action(
         extras: List<Extra> = this.extras
     ) = Action(type, data, extras, flags)
 
-    override fun equals(other: Any?) = this.uniqueId == (other as Action?)?.uniqueId
+    override fun toString() = buildString {
+        append(type)
+        append(data)
+        extras.forEach {
+            append("${it.id}${it.data}")
+        }
+        append(flags)
+    }
 }
