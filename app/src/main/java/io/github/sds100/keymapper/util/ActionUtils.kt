@@ -43,23 +43,28 @@ fun Action.buildModel(id: String, ctx: Context, deviceInfoList: List<DeviceInfo>
         .then { canBePerformed(ctx) }
         .failureOrNull()
 
-    val flags = if (flags == 0) {
-        null
-    } else {
-        buildString {
-            val flagLabels = getFlagLabelList(ctx)
+    val extraInfo = buildString {
+        val interpunct = ctx.str(R.string.interpunct)
+        val flagLabels = getFlagLabelList(ctx)
 
-            flagLabels.forEachIndexed { index, label ->
-                if (index != 0) {
-                    append(" ${ctx.str(R.string.interpunct)} ")
-                }
-
-                append(label)
+        flagLabels.forEachIndexed { index, label ->
+            if (index != 0) {
+                append(" $interpunct ")
             }
+
+            append(label)
+        }
+
+        extras.getData(Action.EXTRA_DELAY_BEFORE_NEXT_ACTION).onSuccess {
+            if (this.isNotBlank()) {
+                append(" $interpunct ")
+            }
+
+            append(ctx.str(R.string.action_title_wait, it))
         }
     }
 
-    return ActionModel(id, type, title, icon, flags, error, error?.getBriefMessage(ctx))
+    return ActionModel(id, type, title, icon, extraInfo, error, error?.getBriefMessage(ctx))
 }
 
 fun Action.buildChipModel(ctx: Context, deviceInfoList: List<DeviceInfo>): ActionChipModel {
@@ -72,6 +77,8 @@ fun Action.buildChipModel(ctx: Context, deviceInfoList: List<DeviceInfo>): Actio
         .failureOrNull()
 
     val description = buildString {
+        val interpunct = ctx.str(R.string.interpunct)
+
         val flagLabels = getFlagLabelList(ctx)
 
         if (title == null) {
@@ -81,7 +88,11 @@ fun Action.buildChipModel(ctx: Context, deviceInfoList: List<DeviceInfo>): Actio
         }
 
         flagLabels.forEach {
-            append(" • $it")
+            append(" $interpunct $it")
+        }
+
+        extras.getData(Action.EXTRA_DELAY_BEFORE_NEXT_ACTION).onSuccess {
+            append(" $interpunct ${ctx.str(R.string.action_title_wait, it)}")
         }
     }
 
