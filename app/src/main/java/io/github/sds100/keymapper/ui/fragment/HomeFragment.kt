@@ -42,15 +42,20 @@ import io.github.sds100.keymapper.ui.adapter.HomePagerAdapter
 import io.github.sds100.keymapper.ui.fragment.FingerprintGestureMapOptionsFragment.Companion.EXTRA_FINGERPRINT_GESTURE_MAP_OPTIONS
 import io.github.sds100.keymapper.ui.view.StatusLayout
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
 import io.github.sds100.keymapper.util.result.NoCompatibleImeEnabled
+import io.github.sds100.keymapper.util.result.RecoverableFailure
 import io.github.sds100.keymapper.util.result.getFullMessage
 import io.github.sds100.keymapper.worker.SeedDatabaseWorker
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
 import splitties.alertdialog.appcompat.messageResource
+import splitties.snackbar.action
+import splitties.snackbar.longSnack
 import splitties.systemservices.powerManager
 import splitties.toast.longToast
 import splitties.toast.toast
@@ -131,6 +136,8 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
         }
     }
 
+    private lateinit var mRecoverFailureDelegate: RecoverFailureDelegate
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -160,6 +167,14 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                 mFingerprintGestureViewModel.setOptions(
                     result.getSerializable(EXTRA_FINGERPRINT_GESTURE_MAP_OPTIONS) as FingerprintGestureMapOptions)
             }
+        }
+
+        mRecoverFailureDelegate = RecoverFailureDelegate(
+            "KeymapListFragment",
+            requireActivity().activityResultRegistry,
+            this) {
+
+            mKeyMapListViewModel.rebuildModels()
         }
     }
 
@@ -384,6 +399,23 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             }
 
             showNewGuiKeyboardAd = AppPreferences.showGuiKeyboardAd
+
+            viewLifecycleScope.launchWhenStarted {
+                mKeyMapListViewModel.promptFix.collect {
+                    coordinatorLayout.longSnack(it.getFullMessage(requireContext())) {
+
+                        //only add an action to fix the error if the error can be recovered from
+                        if (it is RecoverableFailure) {
+                            action(R.string.snackbar_fix) {
+                                mRecoverFailureDelegate.recover(requireActivity(), it)
+                            }
+                        }
+
+                        setAnchorView(R.id.fab)
+                        show()
+                    }
+                }
+            }
 
             return this.root
         }

@@ -8,7 +8,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.airbnb.epoxy.EpoxyController
-import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
 import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
@@ -20,11 +19,7 @@ import io.github.sds100.keymapper.ui.callback.SelectionCallback
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
 import io.github.sds100.keymapper.util.result.Failure
-import io.github.sds100.keymapper.util.result.RecoverableFailure
-import io.github.sds100.keymapper.util.result.getFullMessage
 import kotlinx.coroutines.launch
-import splitties.snackbar.action
-import splitties.snackbar.longSnack
 
 /**
  * Created by sds100 on 22/02/2020.
@@ -54,19 +49,6 @@ class KeymapListFragment : DefaultRecyclerViewFragment() {
     }
 
     private val mController = KeymapController()
-    private lateinit var mRecoverFailureDelegate: RecoverFailureDelegate
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        mRecoverFailureDelegate = RecoverFailureDelegate(
-            "KeymapListFragment",
-            requireActivity().activityResultRegistry,
-            this) {
-
-            mViewModel.rebuildModels()
-        }
-    }
 
     override fun subscribeList(binding: FragmentRecyclerviewBinding) {
         mViewModel.apply {
@@ -146,18 +128,7 @@ class KeymapListFragment : DefaultRecyclerViewFragment() {
 
                     onErrorClick(object : ErrorClickCallback {
                         override fun onErrorClick(failure: Failure) {
-                            binding.coordinatorLayout.longSnack(failure.getFullMessage(requireContext())) {
-
-                                //only add an action to fix the error if the error can be recovered from
-                                if (failure is RecoverableFailure) {
-                                    action(R.string.snackbar_fix) {
-                                        mRecoverFailureDelegate.recover(requireActivity(), failure)
-                                    }
-                                }
-
-                                setAnchorView(R.id.fab)
-                                show()
-                            }
+                            mViewModel.fixError(failure)
                         }
                     })
 

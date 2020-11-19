@@ -6,6 +6,9 @@ import io.github.sds100.keymapper.data.model.KeymapListItemModel
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.data.usecase.KeymapListUseCase
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.result.Failure
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class KeymapListViewModel internal constructor(
@@ -24,6 +27,9 @@ class KeymapListViewModel internal constructor(
     val selectionProvider: ISelectionProvider = SelectionProvider()
 
     val backupEvent = MutableLiveData<Event<Unit>>()
+
+    private val _promptFix = MutableSharedFlow<Failure>()
+    val promptFix = _promptFix.asSharedFlow()
 
     fun duplicate(vararg id: Long) {
         viewModelScope.launch {
@@ -79,6 +85,10 @@ class KeymapListViewModel internal constructor(
 
     fun backup() {
         backupEvent.value = Event(Unit)
+    }
+
+    fun fixError(failure: Failure) = viewModelScope.launch {
+        _promptFix.emit(failure)
     }
 
     suspend fun getDeviceInfoList() = mDeviceInfoRepository.getAll()
