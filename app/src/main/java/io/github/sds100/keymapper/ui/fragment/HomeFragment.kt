@@ -29,6 +29,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.ChooseAppStoreModel
+import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
 import io.github.sds100.keymapper.data.model.behavior.FingerprintGestureMapOptions
 import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
@@ -149,7 +150,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             requireActivity().registerReceiver(mBroadcastReceiver, this)
         }
 
-        FingerprintGestureUtils.CHOOSE_ACTION_REQUEST_KEYS.entries.forEach {
+        FingerprintGestureUtils.CHOOSE_ACTION_REQUEST_KEYS.forEach {
             val gestureId = it.key
             val requestKey = it.value
 
@@ -157,7 +158,6 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                 val action = result.getSerializable(ChooseActionFragment.EXTRA_ACTION) as Action
                 mFingerprintGestureViewModel.setAction(gestureId, action)
             }
-
         }
 
         FingerprintGestureUtils.OPTIONS_REQUEST_KEYS.forEach {
@@ -169,8 +169,18 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             }
         }
 
+        FingerprintGestureUtils.ADD_CONSTRAINT_REQUEST_KEYS.forEach {
+            val gestureId = it.key
+            val requestKey = it.value
+
+            setFragmentResultListener(requestKey) { _, result ->
+                mFingerprintGestureViewModel.addConstraint(gestureId,
+                    result.getSerializable(ChooseConstraintFragment.EXTRA_CONSTRAINT) as Constraint)
+            }
+        }
+
         mRecoverFailureDelegate = RecoverFailureDelegate(
-            "KeymapListFragment",
+            "HomeFragment",
             requireActivity().activityResultRegistry,
             this) {
 

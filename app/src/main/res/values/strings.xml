@@ -139,6 +139,7 @@
     <string name="nav_arg_action_behavior" translatable="false">action_behavior</string>
     <string name="nav_arg_trigger_key_behavior" translatable="false">trigger_key_behavior</string>
     <string name="nav_arg_choose_action_request_key" translatable="false">choose_action_request_key</string>
+    <string name="nav_arg_choose_constraint_request_key" translatable="false">choose_constraint_request_key</string>
 
     <string name="toast_chose_keyboard">Chose %s</string>
     <string name="toast_backup_successful">Backup Successful!</string>

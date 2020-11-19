@@ -43,10 +43,11 @@ class KeymapConstraintsFragment(private val mKeymapId: Long) : Fragment() {
 
             subscribeConstraintsList()
 
-            findNavController().apply {
-                setOnAddConstraintClick {
-                    navigate(ConfigKeymapFragmentDirections.actionConfigKeymapFragmentToChooseConstraint())
-                }
+            setOnAddConstraintClick {
+                val direction = ConfigKeymapFragmentDirections
+                    .actionConfigKeymapFragmentToChooseConstraint(ConfigKeymapFragment.CHOOSE_CONSTRAINT_REQUEST_KEY)
+
+                findNavController().navigate(direction)
             }
 
             return this.root

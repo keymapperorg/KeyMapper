@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import io.github.sds100.keymapper.data.viewmodel.ChooseConstraintListViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.sectionHeader
@@ -20,10 +21,9 @@ import splitties.alertdialog.appcompat.okButton
 /**
  * A placeholder fragment containing a simple view.
  */
-class ChooseConstraintListFragment : DefaultRecyclerViewFragment() {
+class ChooseConstraintFragment : DefaultRecyclerViewFragment() {
 
     companion object {
-        const val REQUEST_KEY = "request_constraint"
         const val EXTRA_CONSTRAINT = "extra_constraint"
     }
 
@@ -31,7 +31,9 @@ class ChooseConstraintListFragment : DefaultRecyclerViewFragment() {
         InjectorUtils.provideChooseConstraintListViewModel()
     }
 
-    override var requestKey: String? = REQUEST_KEY
+    @Suppress("SuspiciousVarProperty")
+    override var requestKey: String? = null
+        get() = navArgs<ChooseConstraintFragmentArgs>().value.StringNavArgChooseConstraintRequestKey
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,13 +55,13 @@ class ChooseConstraintListFragment : DefaultRecyclerViewFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         mViewModel.choosePackageEvent.observe(viewLifecycleOwner, EventObserver {
-            val direction = ChooseConstraintListFragmentDirections.actionChooseConstraintListFragmentToAppListFragment()
+            val direction = ChooseConstraintFragmentDirections.actionChooseConstraintListFragmentToAppListFragment()
             findNavController().navigate(direction)
         })
 
         mViewModel.chooseBluetoothDeviceEvent.observe(viewLifecycleOwner, EventObserver {
             val direction =
-                ChooseConstraintListFragmentDirections.actionChooseConstraintListFragmentToBluetoothDevicesFragment()
+                ChooseConstraintFragmentDirections.actionChooseConstraintListFragmentToBluetoothDevicesFragment()
 
             findNavController().navigate(direction)
         })

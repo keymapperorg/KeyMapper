@@ -26,6 +26,9 @@ object FingerprintGestureUtils {
     private const val OPTIONS_SWIPE_DOWN_REQUEST_KEY = "request_options_swipe_down"
     private const val OPTIONS_SWIPE_UP_REQUEST_KEY = "request_options_swipe_up"
 
+    private const val ADD_CONSTRAINT_SWIPE_DOWN_REQUEST_KEY = "request_add_constraint_swipe_down"
+    private const val ADD_CONSTRAINT_SWIPE_UP_REQUEST_KEY = "request_add_constraint_swipe_up"
+
     val GESTURES = arrayOf(SWIPE_DOWN, SWIPE_UP)
 
     val PREF_KEYS = mapOf(
@@ -46,6 +49,11 @@ object FingerprintGestureUtils {
     val OPTIONS_REQUEST_KEYS = mapOf(
         SWIPE_DOWN to OPTIONS_SWIPE_DOWN_REQUEST_KEY,
         SWIPE_UP to OPTIONS_SWIPE_UP_REQUEST_KEY
+    )
+
+    val ADD_CONSTRAINT_REQUEST_KEYS = mapOf(
+        SWIPE_DOWN to ADD_CONSTRAINT_SWIPE_DOWN_REQUEST_KEY,
+        SWIPE_UP to ADD_CONSTRAINT_SWIPE_UP_REQUEST_KEY
     )
 }
 

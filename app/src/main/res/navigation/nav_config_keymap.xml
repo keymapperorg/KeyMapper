@@ -28,7 +28,12 @@
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
+            app:popExitAnim="@anim/slide_out_right">
+
+            <argument
+                android:name="@string/nav_arg_choose_constraint_request_key"
+                app:argType="string" />
+        </action>
 
         <action
             android:id="@+id/action_config_keymap_fragment_to_actionOptionsFragment"

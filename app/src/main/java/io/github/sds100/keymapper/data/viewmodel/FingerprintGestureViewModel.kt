@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.data.viewmodel
 
 import androidx.lifecycle.*
 import io.github.sds100.keymapper.data.model.Action
+import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.FingerprintGestureMap
 import io.github.sds100.keymapper.data.model.FingerprintGestureMapListItemModel
 import io.github.sds100.keymapper.data.model.behavior.FingerprintGestureMapOptions
@@ -52,6 +53,16 @@ class FingerprintGestureViewModel(
             mRepository.edit(id) {
                 it.clone(action = action)
             }
+        }
+    }
+
+    fun addConstraint(id: String, constraint: Constraint) = viewModelScope.launch {
+        mRepository.edit(id) {
+            val newConstraintList = it.constraintList.toMutableList().apply {
+                add(constraint)
+            }
+
+            it.clone(constraintList = newConstraintList.toList())
         }
     }
 

@@ -41,6 +41,7 @@ import splitties.toast.toast
 class ConfigKeymapFragment : Fragment() {
     companion object {
         const val CHOOSE_ACTION_REQUEST_KEY = "request_choose_action"
+        const val CHOOSE_CONSTRAINT_REQUEST_KEY = "request_choose_constraint"
     }
 
     private val mArgs by navArgs<ConfigKeymapFragmentArgs>()
@@ -82,8 +83,8 @@ class ConfigKeymapFragment : Fragment() {
             mViewModel.addAction(action)
         }
 
-        setFragmentResultListener(ChooseConstraintListFragment.REQUEST_KEY) { _, result ->
-            val constraint = result.getSerializable(ChooseConstraintListFragment.EXTRA_CONSTRAINT) as Constraint
+        setFragmentResultListener(CHOOSE_CONSTRAINT_REQUEST_KEY) { _, result ->
+            val constraint = result.getSerializable(ChooseConstraintFragment.EXTRA_CONSTRAINT) as Constraint
             mViewModel.addConstraint(constraint)
         }
 
