@@ -92,6 +92,10 @@ object InjectorUtils {
         return TriggerKeyBehaviorViewModel.Factory()
     }
 
+    fun provideFingerprintGestureMapBehaviorViewModel(): FingerprintGestureMapOptionsViewModel.Factory {
+        return FingerprintGestureMapOptionsViewModel.Factory()
+    }
+
     fun provideOnlineViewModel(context: Context,
                                fileUrl: String,
                                alternateUrl: String? = null,

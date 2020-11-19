@@ -30,6 +30,7 @@ import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.ChooseAppStoreModel
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
+import io.github.sds100.keymapper.data.model.behavior.FingerprintGestureMapOptions
 import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.data.viewmodel.FingerprintGestureViewModel
@@ -38,6 +39,7 @@ import io.github.sds100.keymapper.databinding.DialogChooseAppStoreBinding
 import io.github.sds100.keymapper.databinding.FragmentHomeBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.adapter.HomePagerAdapter
+import io.github.sds100.keymapper.ui.fragment.FingerprintGestureMapOptionsFragment.Companion.EXTRA_FINGERPRINT_GESTURE_MAP_OPTIONS
 import io.github.sds100.keymapper.ui.view.StatusLayout
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.NoCompatibleImeEnabled
@@ -147,6 +149,16 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             setFragmentResultListener(requestKey) { _, result ->
                 val action = result.getSerializable(ChooseActionFragment.EXTRA_ACTION) as Action
                 mFingerprintGestureViewModel.setAction(gestureId, action)
+            }
+
+        }
+
+        FingerprintGestureUtils.OPTIONS_REQUEST_KEYS.forEach {
+            val requestKey = it.value
+
+            setFragmentResultListener(requestKey) { _, result ->
+                mFingerprintGestureViewModel.setOptions(
+                    result.getSerializable(EXTRA_FINGERPRINT_GESTURE_MAP_OPTIONS) as FingerprintGestureMapOptions)
             }
         }
     }

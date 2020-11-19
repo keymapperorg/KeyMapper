@@ -32,6 +32,10 @@ data class FingerprintGestureMap(
 
             FingerprintGestureMap(action, extras, flags, isEnabled)
         }
+
+        const val FLAG_VIBRATE = 1
+
+        const val EXTRA_VIBRATION_DURATION = "extra_vibration_duration"
     }
 
     fun clone(action: Action? = this.action,

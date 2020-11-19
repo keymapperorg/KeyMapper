@@ -33,6 +33,11 @@
             app:destination="@id/chooseActionFragmentHome"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_home_fragment_to_fingerprintGestureMapBehaviorFragment"
+            app:destination="@id/fingerprintGestureMapOptionsFragment"
+            app:enterAnim="@anim/slide_in_bottom"
+            app:exitAnim="@anim/slide_out_bottom" />
     </fragment>
 
     <action
@@ -141,4 +146,15 @@
             android:name="@string/nav_arg_choose_action_request_key"
             app:argType="string" />
     </fragment>
+    <dialog
+        android:id="@+id/fingerprintGestureMapOptionsFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.FingerprintGestureMapOptionsFragment"
+        android:label="FingerprintGestureMapOptionsFragment">
+        <argument
+            android:name="options"
+            app:argType="io.github.sds100.keymapper.data.model.behavior.FingerprintGestureMapOptions" />
+        <argument
+            android:name="requestKey"
+            app:argType="string" />
+    </dialog>
 </navigation>

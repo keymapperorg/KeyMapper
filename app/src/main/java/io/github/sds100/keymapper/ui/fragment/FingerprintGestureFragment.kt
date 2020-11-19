@@ -45,43 +45,45 @@ class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
     override fun subscribeList(binding: FragmentRecyclerviewBinding) {
         binding.caption = str(R.string.caption_fingerprint_gesture)
 
-        viewLifecycleScope.launchWhenStarted {
-            mViewModel.models.collect { models ->
-                binding.state = models
+        mViewModel.models.observe(viewLifecycleOwner, { models ->
+            binding.state = models
 
-                if (models !is Data) return@collect
+            if (models !is Data) return@observe
 
-                binding.epoxyRecyclerView.withModels {
-                    models.data.forEach {
-                        fingerprintGesture {
-                            id(it.id)
-                            model(it)
+            binding.epoxyRecyclerView.withModels {
+                models.data.forEach {
+                    fingerprintGesture {
+                        id(it.id)
+                        model(it)
 
-                            onChooseActionClick { _ ->
-                                val direction = HomeFragmentDirections.actionHomeFragmentToChooseActionFragment(
-                                    FingerprintGestureUtils.CHOOSE_ACTION_REQUEST_KEYS[it.id]!!)
+                        onChooseActionClick { _ ->
+                            val direction = HomeFragmentDirections.actionHomeFragmentToChooseActionFragment(
+                                FingerprintGestureUtils.CHOOSE_ACTION_REQUEST_KEYS[it.id]!!)
 
-                                findNavController().navigate(direction)
+                            findNavController().navigate(direction)
+                        }
+
+                        onRemoveActionClick { _ ->
+                            mViewModel.removeAction(it.id)
+                        }
+
+                        fixAction { _ ->
+                            if (it.actionModel?.failure is RecoverableFailure) {
+                                mRecoverFailureDelegate.recover(requireActivity(), it.actionModel.failure)
                             }
+                        }
 
-                            onRemoveActionClick { _ ->
-                                mViewModel.removeAction(it.id)
-                            }
+                        onEnabledSwitchChangeListener { _, isChecked ->
+                            mViewModel.setEnabled(it.id, isChecked)
+                        }
 
-                            fixAction { _ ->
-                                if (it.actionModel?.failure is RecoverableFailure) {
-                                    mRecoverFailureDelegate.recover(requireActivity(), it.actionModel.failure)
-                                }
-                            }
-
-                            onEnabledSwitchChangeListener { _, isChecked ->
-                                mViewModel.setEnabled(it.id, isChecked)
-                            }
+                        onOptionsClick { _ ->
+                            mViewModel.editOptions(it.id)
                         }
                     }
                 }
             }
-        }
+        })
 
         viewLifecycleScope.launchWhenStarted {
             mViewModel.buildModels.collect { gestureMaps ->
@@ -95,6 +97,16 @@ class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
                 }
 
                 mViewModel.setModels(models)
+            }
+        }
+
+        viewLifecycleScope.launchWhenStarted {
+            mViewModel.editOptions.collect {
+                val requestKey = FingerprintGestureUtils.OPTIONS_REQUEST_KEYS[it.gestureId]!!
+
+                val direction =
+                    HomeFragmentDirections.actionHomeFragmentToFingerprintGestureMapBehaviorFragment(it, requestKey)
+                findNavController().navigate(direction)
             }
         }
     }
