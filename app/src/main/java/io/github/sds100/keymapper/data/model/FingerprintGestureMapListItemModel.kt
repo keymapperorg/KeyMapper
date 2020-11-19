@@ -8,5 +8,6 @@ data class FingerprintGestureMapListItemModel(
     val id: String,
     val header: String,
     val actionModel: ActionModel?,
+    val constraintModels: List<ConstraintModel>,
     val isEnabled: Boolean
 )

@@ -8,16 +8,18 @@ import io.github.sds100.keymapper.R
  */
 data class FingerprintGestureMap(
     val action: Action? = null,
+    val constraintList: List<Constraint> = listOf(),
     val extras: List<Extra> = listOf(),
     val flags: Int = 0,
     val isEnabled: Boolean = true
 ) {
     companion object {
         //DON'T CHANGE THESE. Used for JSON serialization and parsing.
-        const val NAME_ACTION = "action"
-        const val NAME_EXTRAS = "extras"
-        const val NAME_FLAGS = "flags"
-        const val NAME_ENABLED = "enabled"
+        private const val NAME_ACTION = "action"
+        private const val NAME_EXTRAS = "extras"
+        private const val NAME_FLAGS = "flags"
+        private const val NAME_ENABLED = "enabled"
+        private const val NAME_CONSTRAINTS = "constraints"
 
         val DESERIALIZER = jsonDeserializer {
 
@@ -27,11 +29,14 @@ data class FingerprintGestureMap(
             val extrasJson by it.json.byArray(NAME_EXTRAS)
             val extras = it.context.deserialize<List<Extra>>(extrasJson)
 
+            val constraintsJson by it.json.byArray(NAME_CONSTRAINTS)
+            val constraints = it.context.deserialize<List<Constraint>>(constraintsJson)
+
             val flags by it.json.byInt(NAME_FLAGS)
 
             val isEnabled by it.json.byBool(NAME_ENABLED)
 
-            FingerprintGestureMap(action, extras, flags, isEnabled)
+            FingerprintGestureMap(action, constraints, extras, flags, isEnabled)
         }
 
         const val FLAG_VIBRATE = 1
@@ -43,7 +48,15 @@ data class FingerprintGestureMap(
     }
 
     fun clone(action: Action? = this.action,
+              constraintList: List<Constraint> = this.constraintList,
               extras: List<Extra> = this.extras,
               flags: Int = this.flags,
-              isEnabled: Boolean = this.isEnabled) = FingerprintGestureMap(action, extras, flags, isEnabled)
+              isEnabled: Boolean = this.isEnabled) =
+        FingerprintGestureMap(
+            action,
+            constraintList,
+            extras,
+            flags,
+            isEnabled
+        )
 }

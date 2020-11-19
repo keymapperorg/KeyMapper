@@ -16,6 +16,10 @@
             type="View.OnClickListener" />
 
         <variable
+            name="onAddConstraintClick"
+            type="View.OnClickListener" />
+
+        <variable
             name="onRemoveActionClick"
             type="View.OnClickListener" />
 
@@ -68,7 +72,7 @@
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/switchEnabled"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_marginEnd="16dp"
                 android:checked="@{model.isEnabled}"
                 app:layout_constraintBottom_toBottomOf="@id/textViewHeader"
@@ -78,7 +82,8 @@
                 app:layout_constraintTop_toTopOf="@id/textViewHeader"
                 app:onCheckedChange="@{onEnabledSwitchChangeListener}" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonChooseAction"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/cardview_padding_left"
@@ -98,7 +103,7 @@
                 android:padding="8dp"
                 android:visibility="@{model.actionModel == null ? View.GONE : View.VISIBLE}"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textViewHeader">
+                app:layout_constraintTop_toBottomOf="@id/buttonChooseAction">
 
                 <LinearLayout
                     android:id="@+id/layoutDescription"
@@ -197,7 +202,35 @@
                 app:backgroundTint="?attr/colorError"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/layoutAction"
+                tools:visibility="gone" />
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:background="@color/divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/layoutAction" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonAddConstraints"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/cardview_padding_left"
+                android:layout_marginEnd="@dimen/cardview_padding_right"
+                android:onClick="@{onAddConstraintClick}"
+                android:text="@string/button_add_constraint"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider"
+                tools:visibility="visible" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 </layout>
