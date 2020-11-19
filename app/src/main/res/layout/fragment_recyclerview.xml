@@ -23,7 +23,7 @@
 
         <variable
             name="caption"
-            type="String" />>
+            type="String" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
