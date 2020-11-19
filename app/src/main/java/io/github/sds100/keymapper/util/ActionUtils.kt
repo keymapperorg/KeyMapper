@@ -62,7 +62,7 @@ fun Action.buildModel(id: String, ctx: Context, deviceInfoList: List<DeviceInfo>
 
             append(ctx.str(R.string.action_title_wait, it))
         }
-    }
+    }.takeIf { it.isNotBlank() }
 
     return ActionModel(id, type, title, icon, extraInfo, error, error?.getBriefMessage(ctx))
 }
@@ -94,7 +94,7 @@ fun Action.buildChipModel(ctx: Context, deviceInfoList: List<DeviceInfo>): Actio
         extras.getData(Action.EXTRA_DELAY_BEFORE_NEXT_ACTION).onSuccess {
             append(" $interpunct ${ctx.str(R.string.action_title_wait, it)}")
         }
-    }
+    }.takeIf { it.isNotBlank() }
 
     return ActionChipModel(type, description, error, icon)
 }
