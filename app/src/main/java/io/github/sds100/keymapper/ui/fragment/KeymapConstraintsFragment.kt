@@ -62,7 +62,7 @@ class KeymapConstraintsFragment(private val mKeymapId: Long) : Fragment() {
     private fun FragmentKeymapConstraintsBinding.subscribeConstraintsList() {
         mConstraintModelList.observe(viewLifecycleOwner, { constraintList ->
             epoxyRecyclerViewConstraints.withModels {
-                constraintList.forEachIndexed { index, constraint ->
+                constraintList.forEach { constraint ->
                     constraint {
                         id(constraint.id)
                         model(constraint)
@@ -71,9 +71,13 @@ class KeymapConstraintsFragment(private val mKeymapId: Long) : Fragment() {
                             mViewModel.removeConstraint(constraint.id)
                         }
 
-                        if (constraint.iconTintOnSurface) {
-                            tintType(TintType.ON_SURFACE)
+                        val tintType = when {
+                            constraint.hasError -> TintType.ERROR
+                            constraint.iconTintOnSurface -> TintType.ON_SURFACE
+                            else -> TintType.NONE
                         }
+
+                        tintType(tintType)
 
                         onFixClick { _ ->
                             val model = mConstraintModelList.value?.find { it.hasError } ?: return@onFixClick
