@@ -62,8 +62,9 @@ class ChooseActionFragment : Fragment() {
         setResultListener(KeyEventActionTypeFragment.REQUEST_KEY) {
             val keyCode = it.getInt(KeyEventActionTypeFragment.EXTRA_KEYCODE)
             val metaState = it.getInt(KeyEventActionTypeFragment.EXTRA_META_STATE)
+            val deviceDescriptor = it.getString(KeyEventActionTypeFragment.EXTRA_DEVICE_DESCRIPTOR)
 
-            Action.keyEventAction(keyCode, metaState)
+            Action.keyEventAction(keyCode, metaState, deviceDescriptor)
         }
 
         setResultListener(TextBlockActionTypeFragment.REQUEST_KEY) {
@@ -101,7 +102,7 @@ class ChooseActionFragment : Fragment() {
 
         setFragmentResultListener(KeycodeListFragment.REQUEST_KEY) { _, result ->
             val keyEventViewModel by activityViewModels<KeyEventActionTypeViewModel> {
-                InjectorUtils.provideKeyEventActionTypeViewModel()
+                InjectorUtils.provideKeyEventActionTypeViewModel(requireContext())
             }
 
             result.getInt(KeycodeListFragment.EXTRA_KEYCODE).let {

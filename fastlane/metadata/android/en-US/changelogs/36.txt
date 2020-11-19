@@ -1,0 +1,5 @@
+Bug Fixes
+
+- Crash on KitKat and older on the home screen.
+- Consuming the key event is optional for each key.
+- There was no search button under the "Other" tab when choosing an action.

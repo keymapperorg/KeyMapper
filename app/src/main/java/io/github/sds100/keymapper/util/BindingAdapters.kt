@@ -302,6 +302,10 @@ fun ChipGroup.bindConstraints(
             chipIcon = model.icon
             isCloseIconVisible = model.hasError
 
+            if (model.iconTintOnSurface) {
+                chipIconTint = styledColorSL(R.attr.colorOnSurface)
+            }
+
             if (model.description == null && model.hasError) {
                 text = model.errorMessage
             }

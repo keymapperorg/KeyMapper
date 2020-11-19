@@ -13,12 +13,12 @@ data class ActionModel(
     val type: ActionType,
     val title: String? = null,
     val icon: Drawable? = null,
-    val flags: String? = null,
+    val extraInfo: String? = null,
     val failure: Failure? = null,
     val briefErrorMessage: String? = null
 ) {
     val hasFlags: Boolean
-        get() = flags != null
+        get() = extraInfo != null
 
     val hasError: Boolean
         get() = failure != null

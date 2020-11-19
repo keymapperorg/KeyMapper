@@ -13,7 +13,6 @@ import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.data.usecase.ConfigKeymapUseCase
 import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.Event
-import io.github.sds100.keymapper.util.dataExtraString
 import io.github.sds100.keymapper.util.result.Failure
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -126,10 +125,13 @@ class ConfigKeymapViewModel internal constructor(
     val stopRecordingTrigger: MutableLiveData<Event<Unit>> = MutableLiveData()
 
     val isEnabled: MutableLiveData<Boolean> = MutableLiveData()
-    val actionList: MutableLiveData<List<Action>> = MutableLiveData(listOf())
+
+    val actionList: MutableLiveData<List<Pair<String, Action>>> = MutableLiveData(listOf())
+    val actionModelList: MutableLiveData<List<ActionModel>> = MutableLiveData(listOf())
+    val buildActionModelList = actionList.map { Event(it ?: listOf()) }
+
     val chooseAction: MutableLiveData<Event<Unit>> = MutableLiveData()
     val showFixPrompt: MutableLiveData<Event<Failure>> = MutableLiveData()
-    val duplicateActionsEvent: MutableLiveData<Event<Unit>> = MutableLiveData()
     val duplicateConstraintsEvent: MutableLiveData<Event<Unit>> = MutableLiveData()
     val testAction: MutableLiveData<Event<Action>> = MutableLiveData()
     val chooseActionBehavior: MutableLiveData<Event<ActionBehavior>> = MutableLiveData()
@@ -302,7 +304,7 @@ class ConfigKeymapViewModel internal constructor(
             viewModelScope.launch {
                 mKeymapRepository.getKeymap(mId).let { keymap ->
                     triggerKeys.value = keymap.trigger.keys
-                    actionList.value = keymap.actionList
+                    actionList.value = keymap.actionList.map { createUUID() to it }
                     isEnabled.value = keymap.isEnabled
                     constraintList.value = keymap.constraintList
 
@@ -375,7 +377,7 @@ class ConfigKeymapViewModel internal constructor(
         val keymap = KeyMap(
             id = actualId,
             trigger = trigger,
-            actionList = actionList.value!!,
+            actionList = actionList.value!!.map { it.second },
             constraintList = constraintList.value!!,
             constraintMode = constraintMode,
             isEnabled = isEnabled.value!!
@@ -544,19 +546,14 @@ class ConfigKeymapViewModel internal constructor(
      * @return whether the action already exists has been added to the list
      */
     fun addAction(action: Action) {
-        if (actionList.value?.find {
-                it.type == action.type && it.data == action.data && it.dataExtraString == action.dataExtraString
-            } != null) {
-            duplicateActionsEvent.value = Event(Unit)
-            return
-        }
+        val id = createUUID()
 
         actionList.value = actionList.value?.toMutableList()?.apply {
-            add(action)
+            add(id to action)
         }
 
         if (action.type == ActionType.KEY_EVENT) {
-            ActionBehavior(action, actionList.value!!.size, triggerMode.value!!, triggerKeys.value!!).apply {
+            ActionBehavior(id, action, actionList.value!!.size, triggerMode.value!!, triggerKeys.value!!).apply {
                 setValue(ActionBehavior.ID_REPEAT, true)
 
                 setActionBehavior(this)
@@ -584,9 +581,11 @@ class ConfigKeymapViewModel internal constructor(
 
     fun setActionBehavior(actionBehavior: ActionBehavior) {
         actionList.value = actionList.value?.map {
+            val id = it.first
+            val action = it.second
 
-            if (it.uniqueId == actionBehavior.actionId) {
-                return@map actionBehavior.applyToAction(it)
+            if (id == actionBehavior.id) {
+                return@map id to actionBehavior.applyToAction(action)
             }
 
             it
@@ -608,15 +607,17 @@ class ConfigKeymapViewModel internal constructor(
         invalidateOptions()
     }
 
-    fun onActionModelClick(model: ActionModel) {
+    fun onActionModelClick(id: String) {
+        val model = actionModelList.value?.find { it.id == id } ?: return
+
         if (model.hasError) {
             showFixPrompt.value = Event(model.failure!!)
         } else {
             if (model.hasError) {
                 showFixPrompt.value = Event(model.failure!!)
             } else {
-                actionList.value?.single { it.uniqueId == model.id }?.let {
-                    testAction.value = Event(it)
+                actionList.value?.find { it.first == id }?.let {
+                    testAction.value = Event(it.second)
                 }
             }
         }
@@ -624,15 +625,15 @@ class ConfigKeymapViewModel internal constructor(
 
     fun removeAction(id: String) {
         actionList.value = actionList.value?.toMutableList()?.apply {
-            removeAll { it.uniqueId == id }
+            removeAll { it.first == id }
         }
 
         invalidateOptions()
     }
 
     fun chooseActionBehavior(id: String) {
-        val action = actionList.value?.find { it.uniqueId == id } ?: return
-        val behavior = ActionBehavior(action, actionList.value!!.size, triggerMode.value!!, triggerKeys.value!!)
+        val action = actionList.value?.find { it.first == id } ?: return
+        val behavior = ActionBehavior(action.first, action.second, actionList.value!!.size, triggerMode.value!!, triggerKeys.value!!)
 
         chooseActionBehavior.value = Event(behavior)
     }
@@ -661,6 +662,10 @@ class ConfigKeymapViewModel internal constructor(
         invalidateOptions()
     }
 
+    fun setActionModels(models: List<ActionModel>) {
+        actionModelList.value = models
+    }
+
     fun rebuildActionModels() {
         actionList.value = actionList.value
     }
@@ -677,15 +682,19 @@ class ConfigKeymapViewModel internal constructor(
 
     private fun invalidateOptions() {
 
-        actionList.value = actionList.value?.map { action ->
+        actionList.value = actionList.value?.map {
+            val id = it.first
+            val action = it.second
+
             val newBehavior = ActionBehavior(
+                id,
                 action,
                 actionList.value!!.size,
                 triggerMode.value ?: Trigger.DEFAULT_TRIGGER_MODE,
                 triggerKeys.value ?: listOf()
             )
 
-            newBehavior.applyToAction(action)
+            id to newBehavior.applyToAction(action)
         }
 
         triggerBehavior.value = triggerBehavior.value?.dependentDataChanged(
@@ -693,6 +702,8 @@ class ConfigKeymapViewModel internal constructor(
             triggerMode.value ?: Trigger.DEFAULT_TRIGGER_MODE
         )
     }
+
+    private fun createUUID() = UUID.randomUUID().toString()
 
     suspend fun getDeviceInfoList() = mDeviceInfoRepository.getAll()
 

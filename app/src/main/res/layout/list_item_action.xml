@@ -86,7 +86,7 @@
                     android:id="@+id/textViewSecondary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@{model.flags}"
+                    android:text="@{model.extraInfo}"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                     android:visibility='@{model.hasFlags ? View.VISIBLE : View.GONE}'
                     tools:text="Show Volume Dialog"

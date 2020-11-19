@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.util.delegate
 
 import android.view.KeyEvent
+import android.view.Surface
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import io.github.sds100.keymapper.Constants
@@ -92,6 +93,11 @@ class KeymapDetectionDelegateTest {
 
             override fun isBluetoothDeviceConnected(address: String) = true
             override val isScreenOn = true
+            override val orientation = Surface.ROTATION_0
+            override val highestPriorityPackagePlayingMedia: String?
+                get() = packagesCurrentlyPlayingMedia.elementAtOrNull(0)
+
+            override val packagesCurrentlyPlayingMedia = listOf<String>()
         }
 
         val iActionError = object : IActionError {

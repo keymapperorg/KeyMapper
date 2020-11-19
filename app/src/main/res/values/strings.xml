@@ -68,6 +68,8 @@
     <string name="header_fingerprint_gesture_right">Swipe Right</string>
     <string name="header_click_type">Click Type</string>
     <string name="hold_down_until_trigger_is_dot_dot_dot">Hold down until trigger is…</string>
+    <string name="hint_from_device">From Device</string>
+    <string name="from_no_device">No Device</string>
 
     <string name="whats_new">What\'s New</string>
     <string name="caption_action_type_key">Click the key on the device which you want to be entered.
@@ -91,6 +93,7 @@
     <string name="description_key">Press \'%s\' key</string>
     <string name="description_text_block">Type \'%s\'</string>
     <string name="description_keyevent">Input %s%s</string>
+    <string name="description_keyevent_from_device">Input %s%s from %s</string>
     <string name="description_url">Open %s</string>
     <string name="description_tap_coordinate_default">Tap Coordinates %s, %s</string>
     <string name="description_tap_coordinate_with_description">Tap Coordinates %s, %s (%s)</string>
@@ -108,6 +111,8 @@
     <string name="trigger_list_header">Trigger</string>
     <string name="constraint_list_header">Constraints</string>
     <string name="keymap_flags_header">Options</string>
+
+    <string name="action_title_wait">Wait %sms</string>
 
     <string name="radio_button_parallel">At the same time</string>
     <string name="radio_button_sequence">In sequence</string>
@@ -147,12 +152,13 @@
     <string name="extra_label_repeat_rate">Repeat every… (ms)</string>
     <string name="extra_label_vibration_duration">Vibration duration (ms)</string>
     <string name="extra_label_action_multiplier">Action count</string>
-    <string name="extra_label_delay_before_next_action">Delay before next action</string>
+    <string name="extra_label_delay_before_next_action">Delay before next action (ms)</string>
     <string name="extra_label_hold_down_duration">Hold down duration</string>
 
     <!-- Constraints -->
     <string name="constraint_app_foreground_description">%s is in foreground</string>
     <string name="constraint_app_not_foreground_description">%s is not in foreground</string>
+    <string name="constraint_app_playing_media_description">%s is playing media</string>
     <string name="constraint_bt_device_connected_description">%s is connected</string>
     <string name="constraint_bt_device_disconnected_description">%s is disconnected</string>
     <string name="constraint_screen_on_description">Screen is on</string>
@@ -164,6 +170,7 @@
     <string name="constraint_category_app">App</string>
     <string name="constraint_category_bluetooth">Bluetooth</string>
     <string name="constraint_category_screen">Screen</string>
+    <string name="constraint_category_orientation">Orientation</string>
 
     <string name="constraint_choose_app_foreground">App in Foreground</string>
     <string name="constraint_choose_app_not_foreground">App not in Foreground</string>
@@ -171,6 +178,13 @@
     <string name="constraint_choose_bluetooth_device_disconnected">Bluetooth Device is Disconnected</string>
     <string name="constraint_choose_screen_on_description">Screen is on</string>
     <string name="constraint_choose_screen_off_description">Screen is off</string>
+    <string name="constraint_choose_orientation_0">Portrait (0°)</string>
+    <string name="constraint_choose_orientation_90">Landscape (90°)</string>
+    <string name="constraint_choose_orientation_180">Portrait (180°)</string>
+    <string name="constraint_choose_orientation_270">Landscape (270°)</string>
+    <string name="constraint_choose_orientation_portrait">Portrait (any)</string>
+    <string name="constraint_choose_orientation_landscape">Landscape (any)</string>
+    <string name="constraint_choose_app_playing_media">Specific App Playing Media</string>
 
     <string name="orientation_0">Portrait (0°)</string>
     <string name="orientation_90">Landscape (90°)</string>
@@ -656,7 +670,6 @@
     <string name="error_extra_not_found">Extra (%s) not found!</string>
     <string name="error_constraint_not_found">Constraint not found</string>
     <string name="error_constraint_exists">This keymap already has this constraint!</string>
-    <string name="error_action_exists">This keymap already has this action!</string>
     <string name="error_cant_be_empty">Can\'t be empty!</string>
     <string name="error_invalid_action_type">Invalid Action Type: %s</string>
     <string name="error_options_not_required">Options not required</string>
@@ -676,8 +689,10 @@
     <string name="error_invalid_number">Invalid Number!</string>
     <string name="error_number_too_small">Must be at least %s!</string>
     <string name="error_number_too_big">Must be at most %s!</string>
-    <string name="error_battery_optimisation_enabled">Battery optimisation is turned on! This can stop Key Mapper from working randomly.</string>
+    <string name="error_battery_optimisation_enabled">Battery optimisation is turned on! This can randomly stop Key Mapper from working.</string>
     <string name="error_battery_optimisation_disabled">Battery optimisation is turned off!</string>
+    <string name="error_cant_find_notification_listener_settings">Can\'t find the notification access settings!</string>
+    <string name="error_denied_notification_listener_service_permission">Denied notification access permission!</string>
 
     <!-- Error messages -->
 

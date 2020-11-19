@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.util.delegate
 
 import android.view.KeyEvent
+import android.view.Surface
 import androidx.annotation.MainThread
 import androidx.collection.SparseArrayCompat
 import androidx.collection.keyIterator
@@ -10,9 +11,16 @@ import androidx.lifecycle.MutableLiveData
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.Constraint.Companion.APP_FOREGROUND
 import io.github.sds100.keymapper.data.model.Constraint.Companion.APP_NOT_FOREGROUND
+import io.github.sds100.keymapper.data.model.Constraint.Companion.APP_PLAYING_MEDIA
 import io.github.sds100.keymapper.data.model.Constraint.Companion.BT_DEVICE_CONNECTED
 import io.github.sds100.keymapper.data.model.Constraint.Companion.BT_DEVICE_DISCONNECTED
 import io.github.sds100.keymapper.data.model.Constraint.Companion.MODE_AND
+import io.github.sds100.keymapper.data.model.Constraint.Companion.ORIENTATION_0
+import io.github.sds100.keymapper.data.model.Constraint.Companion.ORIENTATION_180
+import io.github.sds100.keymapper.data.model.Constraint.Companion.ORIENTATION_270
+import io.github.sds100.keymapper.data.model.Constraint.Companion.ORIENTATION_90
+import io.github.sds100.keymapper.data.model.Constraint.Companion.ORIENTATION_LANDSCAPE
+import io.github.sds100.keymapper.data.model.Constraint.Companion.ORIENTATION_PORTRAIT
 import io.github.sds100.keymapper.data.model.Constraint.Companion.SCREEN_OFF
 import io.github.sds100.keymapper.data.model.Constraint.Companion.SCREEN_ON
 import io.github.sds100.keymapper.util.*
@@ -250,7 +258,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                     val constraints = sequence {
                         keyMap.constraintList.forEach {
                             val data = when (it.type) {
-                                APP_FOREGROUND, APP_NOT_FOREGROUND ->
+                                APP_FOREGROUND, APP_NOT_FOREGROUND, APP_PLAYING_MEDIA ->
                                     it.getExtraData(
                                         io.github.sds100.keymapper.data.model.Constraint.EXTRA_PACKAGE_NAME).valueOrNull()
 
@@ -258,7 +266,10 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                                     it.getExtraData(
                                         io.github.sds100.keymapper.data.model.Constraint.EXTRA_BT_ADDRESS).valueOrNull()
 
-                                SCREEN_ON, SCREEN_OFF -> ""
+                                SCREEN_ON,
+                                SCREEN_OFF,
+                                in io.github.sds100.keymapper.data.model.Constraint.ORIENTATION_CONSTRAINTS -> ""
+
                                 else -> null
                             } ?: return@forEach
 
@@ -1465,7 +1476,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             }
         }
 
-        throw Exception("Action ${action.uniqueId} not in the action map!")
+        throw Exception("Action $action not in the action map!")
     }
 
     /**
@@ -1837,10 +1848,21 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         return when (first) {
             APP_FOREGROUND -> second == currentPackageName
             APP_NOT_FOREGROUND -> second != currentPackageName
+            APP_PLAYING_MEDIA -> second == highestPriorityPackagePlayingMedia
+
             BT_DEVICE_CONNECTED -> isBluetoothDeviceConnected(second)
             BT_DEVICE_DISCONNECTED -> !isBluetoothDeviceConnected(second)
+
             SCREEN_ON -> isScreenOn
             SCREEN_OFF -> !isScreenOn
+
+            ORIENTATION_PORTRAIT -> orientation?.let { ScreenRotationUtils.isPortrait(it) } ?: false
+            ORIENTATION_LANDSCAPE -> orientation?.let { ScreenRotationUtils.isLandscape(it) } ?: false
+            ORIENTATION_0 -> orientation?.let { it == Surface.ROTATION_0 } ?: false
+            ORIENTATION_90 -> orientation?.let { it == Surface.ROTATION_90 } ?: false
+            ORIENTATION_180 -> orientation?.let { it == Surface.ROTATION_180 } ?: false
+            ORIENTATION_270 -> orientation?.let { it == Surface.ROTATION_270 } ?: false
+
             else -> true
         }
     }

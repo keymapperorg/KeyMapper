@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.map
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -29,16 +29,6 @@ class ActionsFragment(private val mKeymapId: Long) : Fragment() {
 
     private val mViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap) {
         InjectorUtils.provideConfigKeymapViewModel(requireContext(), mKeymapId)
-    }
-
-    private val mActionModelList by lazy {
-        mViewModel.actionList.map { actionList ->
-            sequence {
-                actionList.forEach {
-                    yield(it.buildModel(requireContext()))
-                }
-            }.toList()
-        }
     }
 
     private val mActionListController = ActionListController()
@@ -73,6 +63,20 @@ class ActionsFragment(private val mKeymapId: Long) : Fragment() {
                 findNavController().navigate(direction)
             })
 
+            mViewModel.buildActionModelList.observe(viewLifecycleOwner, EventObserver { actionList ->
+                lifecycleScope.launchWhenStarted {
+                    val deviceInfoList = mViewModel.getDeviceInfoList()
+
+                    val models = sequence {
+                        actionList.forEach {
+                            yield(it.second.buildModel(it.first, requireContext(), deviceInfoList))
+                        }
+                    }.toList()
+
+                    mViewModel.setActionModels(models)
+                }
+            })
+
             return this.root
         }
     }
@@ -84,8 +88,9 @@ class ActionsFragment(private val mKeymapId: Long) : Fragment() {
     }
 
     private fun FragmentActionsBinding.subscribeActionList() {
-        mActionModelList.observe(viewLifecycleOwner, { actionList ->
+        mViewModel.actionModelList.observe(viewLifecycleOwner, { actionList ->
             enableActionDragging(mActionListController)
+
             mActionListController.modelList = actionList
         })
     }
@@ -132,7 +137,7 @@ class ActionsFragment(private val mKeymapId: Long) : Fragment() {
             }
 
         override fun buildModels() {
-            modelList.forEachIndexed { _, model ->
+            modelList.forEachIndexed { index, model ->
                 action {
                     id(model.id)
                     model(model)
@@ -148,9 +153,7 @@ class ActionsFragment(private val mKeymapId: Long) : Fragment() {
                     }
 
                     onClick { _ ->
-                        mActionModelList.value?.single { it.id == model.id }?.let {
-                            mViewModel.onActionModelClick(it)
-                        }
+                        mViewModel.onActionModelClick(model.id)
                     }
                 }
             }

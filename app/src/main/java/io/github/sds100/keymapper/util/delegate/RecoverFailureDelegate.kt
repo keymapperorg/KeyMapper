@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.provider.Settings
 import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.contract.ActivityResultContracts
@@ -55,7 +56,7 @@ class RecoverFailureDelegate(
             is PermissionDenied -> {
                 when (failure.permission) {
                     Manifest.permission.WRITE_SETTINGS ->
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             PermissionUtils.requestWriteSettings(activity)
                         }
 
@@ -72,7 +73,7 @@ class RecoverFailureDelegate(
                         )
 
                     Manifest.permission.ACCESS_NOTIFICATION_POLICY ->
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             PermissionUtils.requestAccessNotificationPolicy(mStartActivityForResultLauncher)
                         }
 
@@ -80,6 +81,9 @@ class RecoverFailureDelegate(
                         PermissionUtils.requestWriteSecureSettingsPermission(activity)
 
                     Constants.PERMISSION_ROOT -> PermissionUtils.requestRootPermission(activity)
+
+                    Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE ->
+                        PermissionUtils.requestNotificationListenerAccess(mStartActivityForResultLauncher)
 
                     else -> throw Exception("Don't know how to ask for permission ${failure.permission}")
                 }

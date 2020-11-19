@@ -14,6 +14,7 @@ import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentKeymapConstraintsBinding
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.InjectorUtils
+import io.github.sds100.keymapper.util.TintType
 import io.github.sds100.keymapper.util.buildModel
 
 /**
@@ -68,6 +69,10 @@ class KeymapConstraintsFragment(private val mKeymapId: Long) : Fragment() {
 
                         onRemoveClick { _ ->
                             mViewModel.removeConstraint(constraint.id)
+                        }
+
+                        if (constraint.iconTintOnSurface) {
+                            tintType(TintType.ON_SURFACE)
                         }
 
                         onFixClick { _ ->

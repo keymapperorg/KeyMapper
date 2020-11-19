@@ -84,6 +84,41 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/textViewKeycodeLabel" />
 
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/menuFromDevice"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:hint="@string/hint_from_device"
+                    app:layout_constraintEnd_toStartOf="@id/buttonRefreshDevices"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/buttonChooseKeycode">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/dropdownDeviceId"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        tools:ignore="LabelFor" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <io.github.sds100.keymapper.ui.view.SquareImageButton
+                    android:id="@+id/buttonRefreshDevices"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="16dp"
+                    android:onClick="@{() -> viewModel.refreshDevices()}"
+                    android:tint="?attr/colorOnSurface"
+                    app:layout_constraintBottom_toBottomOf="@id/menuFromDevice"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/menuFromDevice"
+                    app:srcCompat="@drawable/ic_baseline_refresh_24" />
+
                 <TextView
                     android:id="@+id/headerModifiers"
                     android:layout_width="match_parent"
@@ -98,7 +133,7 @@
                     android:textSize="14sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/buttonChooseKeycode" />
+                    app:layout_constraintTop_toBottomOf="@+id/menuFromDevice" />
 
                 <com.airbnb.epoxy.EpoxyRecyclerView
                     android:id="@+id/epoxyRecyclerViewModifiers"
