@@ -5,6 +5,7 @@ import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.FingerprintGestureMap
 import io.github.sds100.keymapper.data.model.FingerprintGestureMapListItemModel
 import io.github.sds100.keymapper.data.model.behavior.FingerprintGestureMapOptions
+import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.data.repository.FingerprintGestureRepository
 import io.github.sds100.keymapper.util.Data
 import io.github.sds100.keymapper.util.FingerprintGestureUtils
@@ -13,7 +14,10 @@ import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class FingerprintGestureViewModel(private val mRepository: FingerprintGestureRepository) : ViewModel() {
+class FingerprintGestureViewModel(
+    private val mRepository: FingerprintGestureRepository,
+    private val mDeviceInfoRepository: DeviceInfoRepository
+) : ViewModel() {
 
     private val mFingerprintGestureMaps = combine(mRepository.swipeDown, mRepository.swipeUp) { swipeDown, swipeUp ->
         mapOf(
@@ -86,11 +90,16 @@ class FingerprintGestureViewModel(private val mRepository: FingerprintGestureRep
         }
     }
 
+    suspend fun getDeviceInfoList() = mDeviceInfoRepository.getAll()
+
     @Suppress("UNCHECKED_CAST")
-    class Factory(private val mRepository: FingerprintGestureRepository) : ViewModelProvider.NewInstanceFactory() {
+    class Factory(
+        private val mRepository: FingerprintGestureRepository,
+        private val mDeviceInfoRepository: DeviceInfoRepository
+    ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return FingerprintGestureViewModel(mRepository) as T
+            return FingerprintGestureViewModel(mRepository, mDeviceInfoRepository) as T
         }
     }
 }

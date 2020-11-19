@@ -91,7 +91,7 @@ class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
                     FingerprintGestureMapListItemModel(
                         id = it.key,
                         header = str(FingerprintGestureUtils.HEADERS[it.key]!!),
-                        actionModel = it.value.action?.buildModel(requireContext()),
+                        actionModel = it.value.buildActionModel(requireContext(), it.key, mViewModel.getDeviceInfoList()),
                         isEnabled = it.value.isEnabled
                     )
                 }

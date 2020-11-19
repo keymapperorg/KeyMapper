@@ -107,7 +107,9 @@ object InjectorUtils {
 
     fun provideFingerprintGestureViewModel(context: Context): FingerprintGestureViewModel.Factory {
         val repository = (context.applicationContext as MyApplication).fingerprintGestureRepository
-        return FingerprintGestureViewModel.Factory(repository)
+        val deviceInforRepository = (context.applicationContext as MyApplication).deviceInfoRepository
+
+        return FingerprintGestureViewModel.Factory(repository, deviceInforRepository)
     }
 
     fun provideMenuFragmentViewModel(context: Context): MenuFragmentViewModel.Factory {

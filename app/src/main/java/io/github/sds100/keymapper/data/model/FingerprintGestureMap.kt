@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.data.model
 
 import com.github.salomonbrys.kotson.*
+import io.github.sds100.keymapper.R
 
 /**
  * Created by sds100 on 08/11/20.
@@ -34,8 +35,11 @@ data class FingerprintGestureMap(
         }
 
         const val FLAG_VIBRATE = 1
-
         const val EXTRA_VIBRATION_DURATION = "extra_vibration_duration"
+
+        val FLAG_LABEL_MAP = mapOf(
+            FLAG_VIBRATE to R.string.flag_vibrate
+        )
     }
 
     fun clone(action: Action? = this.action,
