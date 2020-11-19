@@ -80,7 +80,8 @@ class KeymapConstraintsFragment(private val mKeymapId: Long) : Fragment() {
                         tintType(tintType)
 
                         onFixClick { _ ->
-                            val model = mConstraintModelList.value?.find { it.hasError } ?: return@onFixClick
+                            val model = mConstraintModelList.value?.find { it.id == constraint.id && it.hasError }
+                                ?: return@onFixClick
 
                             if (model.hasError) {
                                 mViewModel.showFixPrompt.value = Event(model.failure!!)
