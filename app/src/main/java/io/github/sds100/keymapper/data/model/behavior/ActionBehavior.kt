@@ -17,7 +17,6 @@ import splitties.bitflags.hasFlag
 import java.io.Serializable
 
 class ActionBehavior(
-    val id: String,
     action: Action,
     actionCount: Int,
     @Trigger.Mode triggerMode: Int? = null,
@@ -38,6 +37,8 @@ class ActionBehavior(
         const val ID_DELAY_BEFORE_NEXT_ACTION = "delay_before_next_action"
         const val ID_HOLD_DOWN_DURATION = "hold_down_duration"
     }
+
+    val id = action.uid
 
     val repeat = BehaviorOption(
         id = ID_REPEAT,

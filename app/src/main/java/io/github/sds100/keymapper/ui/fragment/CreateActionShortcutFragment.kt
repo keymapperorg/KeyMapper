@@ -172,7 +172,7 @@ class CreateActionShortcutFragment : Fragment() {
         if (mViewModel.actionList.value?.size == 1) {
             val action = mViewModel.actionList.value!![0]
 
-            action.second.getIcon(requireContext()).valueOrNull()?.let {
+            action.getIcon(requireContext()).valueOrNull()?.let {
                 val bitmap = it.toBitmap()
 
                 return IconCompat.createWithBitmap(bitmap)
@@ -188,7 +188,7 @@ class CreateActionShortcutFragment : Fragment() {
         if (mViewModel.actionList.value?.size == 1) {
             val action = mViewModel.actionList.value!![0]
 
-            action.second.getTitle(requireContext(), mViewModel.getDeviceInfoList()).valueOrNull()?.let {
+            action.getTitle(requireContext(), mViewModel.getDeviceInfoList()).valueOrNull()?.let {
                 return it
             }
         }
@@ -219,7 +219,7 @@ class CreateActionShortcutFragment : Fragment() {
 
                 val models = sequence {
                     actionList.forEach {
-                        yield(it.second.buildModel(it.first, requireContext(), deviceInfoList))
+                        yield(it.buildModel(requireContext(), deviceInfoList))
                     }
                 }.toList()
 

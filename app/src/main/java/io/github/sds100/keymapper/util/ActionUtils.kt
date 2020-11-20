@@ -34,7 +34,7 @@ object ActionUtils {
 }
 
 @Suppress("EXPERIMENTAL_API_USAGE")
-fun Action.buildModel(id: String, ctx: Context, deviceInfoList: List<DeviceInfo>): ActionModel {
+fun Action.buildModel(ctx: Context, deviceInfoList: List<DeviceInfo>): ActionModel {
     var title: String? = null
     var icon: Drawable? = null
 
@@ -64,7 +64,7 @@ fun Action.buildModel(id: String, ctx: Context, deviceInfoList: List<DeviceInfo>
         }
     }.takeIf { it.isNotBlank() }
 
-    return ActionModel(id, type, title, icon, extraInfo, error, error?.getBriefMessage(ctx))
+    return ActionModel(uid, type, title, icon, extraInfo, error, error?.getBriefMessage(ctx))
 }
 
 fun Action.buildChipModel(ctx: Context, deviceInfoList: List<DeviceInfo>): ActionChipModel {

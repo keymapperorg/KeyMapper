@@ -68,7 +68,7 @@ class ActionsFragment(private val mKeymapId: Long) : Fragment() {
 
                     val models = sequence {
                         actionList.forEach {
-                            yield(it.second.buildModel(it.first, requireContext(), deviceInfoList))
+                            yield(it.buildModel(requireContext(), deviceInfoList))
                         }
                     }.toList()
 

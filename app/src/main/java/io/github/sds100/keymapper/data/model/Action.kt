@@ -5,6 +5,7 @@ import com.github.salomonbrys.kotson.byArray
 import com.github.salomonbrys.kotson.byInt
 import com.github.salomonbrys.kotson.byString
 import com.github.salomonbrys.kotson.jsonDeserializer
+import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.ActionType
@@ -13,6 +14,7 @@ import io.github.sds100.keymapper.util.SystemAction
 import io.github.sds100.keymapper.util.result.onSuccess
 import splitties.bitflags.withFlag
 import java.io.Serializable
+import java.util.*
 
 /**
  * Created by sds100 on 16/07/2018.
@@ -31,6 +33,7 @@ import java.io.Serializable
  * - System actions/settings
  */
 data class Action(
+    @Expose
     @SerializedName(NAME_ACTION_TYPE)
     val type: ActionType,
 
@@ -44,14 +47,20 @@ data class Action(
      * - System action: the system action id
      * - Tap coordinate: comma separated x and y values
      */
+    @Expose
     @SerializedName(NAME_DATA)
     val data: String,
 
+    @Expose
     @SerializedName(NAME_EXTRAS)
     val extras: List<Extra> = listOf(),
 
+    @Expose
     @SerializedName(NAME_FLAGS)
-    val flags: Int = 0
+    val flags: Int = 0,
+
+    @Expose(deserialize = true, serialize = false)
+    val uid: String = UUID.randomUUID().toString()
 
 ) : Serializable {
     companion object {
@@ -212,7 +221,7 @@ data class Action(
         data: String = this.data,
         flags: Int = this.flags,
         extras: List<Extra> = this.extras
-    ) = Action(type, data, extras, flags)
+    ) = Action(type, data, extras, flags, uid)
 
     override fun toString() = buildString {
         append(type)
