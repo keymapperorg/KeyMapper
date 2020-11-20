@@ -1,11 +1,7 @@
 package io.github.sds100.keymapper.data.model
 
 import android.content.Context
-import com.github.salomonbrys.kotson.byArray
-import com.github.salomonbrys.kotson.byInt
-import com.github.salomonbrys.kotson.byString
-import com.github.salomonbrys.kotson.jsonDeserializer
-import com.google.gson.annotations.Expose
+import com.github.salomonbrys.kotson.*
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.ActionType
@@ -33,7 +29,6 @@ import java.util.*
  * - System actions/settings
  */
 data class Action(
-    @Expose
     @SerializedName(NAME_ACTION_TYPE)
     val type: ActionType,
 
@@ -45,21 +40,18 @@ data class Action(
      * - Key Event: the keycode. Any extra information is stored in [extras]
      * - Block of text: text to insert
      * - System action: the system action id
-     * - Tap coordinate: comma separated x and y values
+     * - Tap coordinate: comma separated x and y valuesk
      */
-    @Expose
     @SerializedName(NAME_DATA)
     val data: String,
 
-    @Expose
     @SerializedName(NAME_EXTRAS)
     val extras: List<Extra> = listOf(),
 
-    @Expose
     @SerializedName(NAME_FLAGS)
     val flags: Int = 0,
 
-    @Expose(deserialize = true, serialize = false)
+    @SerializedName(NAME_UID)
     val uid: String = UUID.randomUUID().toString()
 
 ) : Serializable {
@@ -70,6 +62,7 @@ data class Action(
         const val NAME_DATA = "data"
         const val NAME_EXTRAS = "extras"
         const val NAME_FLAGS = "flags"
+        const val NAME_UID = "uid"
 
         const val STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN = 0
         const val STOP_HOLD_DOWN_BEHAVIOR_TRIGGER_PRESSED_AGAIN = 0
@@ -210,7 +203,9 @@ data class Action(
 
             val flags by it.json.byInt(NAME_FLAGS)
 
-            Action(type, data, extraList.toMutableList(), flags)
+            val uid by it.json.byNullableString(NAME_UID)
+
+            Action(type, data, extraList.toMutableList(), flags, uid ?: UUID.randomUUID().toString())
         }
     }
 
