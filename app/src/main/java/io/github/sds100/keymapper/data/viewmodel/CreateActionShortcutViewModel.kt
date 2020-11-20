@@ -10,14 +10,13 @@ import io.github.sds100.keymapper.data.model.behavior.ActionBehavior
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.result.Failure
-import java.util.*
 
 /**
  * Created by sds100 on 08/09/20.
  */
 class CreateActionShortcutViewModel(private val mDeviceInfoRepository: DeviceInfoRepository) : ViewModel() {
 
-    val actionList = MutableLiveData(listOf<Pair<String, Action>>())
+    val actionList = MutableLiveData(listOf<Action>())
     val actionModelList = MutableLiveData<List<ActionModel>>()
     val buildActionModelList = actionList.map { Event(it) }
 
@@ -36,15 +35,15 @@ class CreateActionShortcutViewModel(private val mDeviceInfoRepository: DeviceInf
      */
     fun addAction(action: Action) {
         actionList.value = actionList.value?.toMutableList()?.apply {
-            add(UUID.randomUUID().toString() to action)
+            add(action)
         }
     }
 
     fun setActionBehavior(actionBehavior: ActionBehavior) {
         actionList.value = actionList.value?.map {
 
-            if (it.first == actionBehavior.id) {
-                return@map it.first to actionBehavior.applyToAction(it.second)
+            if (it.uid == actionBehavior.id) {
+                return@map actionBehavior.applyToAction(it)
             }
 
             it
@@ -60,8 +59,8 @@ class CreateActionShortcutViewModel(private val mDeviceInfoRepository: DeviceInf
             if (model.hasError) {
                 showFixPrompt.value = Event(model.failure!!)
             } else {
-                actionList.value?.find { it.first == id }?.let {
-                    testAction.value = Event(it.second)
+                actionList.value?.find { it.uid == id }?.let {
+                    testAction.value = Event(it)
                 }
             }
         }
@@ -69,13 +68,13 @@ class CreateActionShortcutViewModel(private val mDeviceInfoRepository: DeviceInf
 
     fun removeAction(id: String) {
         actionList.value = actionList.value?.toMutableList()?.apply {
-            removeAll { it.first == id }
+            removeAll { it.uid == id }
         }
     }
 
     fun chooseActionBehavior(id: String) {
-        val action = actionList.value?.find { it.first == id } ?: return
-        val behavior = ActionBehavior(id, action.second, actionList.value!!.size)
+        val action = actionList.value?.find { it.uid == id } ?: return
+        val behavior = ActionBehavior(action, actionList.value!!.size)
 
         chooseActionBehavior.value = Event(behavior)
     }
