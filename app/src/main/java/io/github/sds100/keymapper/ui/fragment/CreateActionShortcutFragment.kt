@@ -234,11 +234,10 @@ class CreateActionShortcutFragment : Fragment() {
         mViewModel.actionModelList.observe(viewLifecycleOwner, { actionList ->
             epoxyRecyclerView.withModels {
 
-                actionList.forEachIndexed { _, model ->
+                actionList.forEach { model ->
                     action {
                         id(model.id)
                         model(model)
-                        icon(model.icon)
 
                         onRemoveClick { _ ->
                             mViewModel.removeAction(model.id)

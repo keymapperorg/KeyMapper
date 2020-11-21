@@ -14,6 +14,7 @@ import io.github.sds100.keymapper.util.Loading
 import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class FingerprintGestureViewModel(
     private val mRepository: FingerprintGestureRepository,
@@ -21,6 +22,7 @@ class FingerprintGestureViewModel(
 ) : ViewModel() {
 
     private val mFingerprintGestureMaps = combine(mRepository.swipeDown, mRepository.swipeUp) { swipeDown, swipeUp ->
+        Timber.d(swipeDown.actionList.joinToString { it.uid })
         mapOf(
             FingerprintGestureUtils.SWIPE_DOWN to swipeDown,
             FingerprintGestureUtils.SWIPE_UP to swipeUp
@@ -48,33 +50,42 @@ class FingerprintGestureViewModel(
         _models.value = Data(models)
     }
 
-    fun setAction(id: String, action: Action) {
-        viewModelScope.launch {
-            mRepository.edit(id) {
-                it.clone(action = action)
+    fun addAction(gestureId: String, action: Action) = viewModelScope.launch {
+        mRepository.editGesture(gestureId) {
+            val newActionList = it.actionList.toMutableList().apply {
+                add(action)
             }
+
+            it.copy(actionList = newActionList)
         }
     }
 
-    fun addConstraint(id: String, constraint: Constraint) = viewModelScope.launch {
-        mRepository.edit(id) {
+    fun addConstraint(gestureId: String, constraint: Constraint) = viewModelScope.launch {
+        mRepository.editGesture(gestureId) {
             val newConstraintList = it.constraintList.toMutableList().apply {
                 add(constraint)
             }
 
-            it.clone(constraintList = newConstraintList.toList())
+            it.copy(constraintList = newConstraintList.toList())
         }
     }
 
-    fun removeAction(id: String) = viewModelScope.launch {
-        mRepository.edit(id) {
-            it.clone(action = null)
+    fun removeAction(gestureId: String, actionId: String) = viewModelScope.launch {
+        mRepository.editGesture(gestureId) {
+            val newActionList = it.actionList.toMutableList().apply {
+                removeAll { action ->
+                    Timber.d("${action.uid} $actionId")
+                    action.uid == actionId
+                }
+            }
+
+            it.copy(actionList = newActionList)
         }
     }
 
     fun setEnabled(id: String, isEnabled: Boolean) = viewModelScope.launch {
-        mRepository.edit(id) {
-            it.clone(isEnabled = isEnabled)
+        mRepository.editGesture(id) {
+            it.copy(isEnabled = isEnabled)
         }
     }
 
@@ -97,7 +108,7 @@ class FingerprintGestureViewModel(
         mFingerprintGestureMaps.firstOrNull()?.get(options.gestureId)?.let {
             val newMap = options.applyToFingerprintGestureMap(it)
 
-            mRepository.edit(options.gestureId) { newMap }
+            mRepository.editGesture(options.gestureId) { newMap }
         }
     }
 

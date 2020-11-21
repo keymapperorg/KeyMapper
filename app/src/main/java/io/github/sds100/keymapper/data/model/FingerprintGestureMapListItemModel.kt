@@ -7,7 +7,7 @@ package io.github.sds100.keymapper.data.model
 data class FingerprintGestureMapListItemModel(
     val id: String,
     val header: String,
-    val actionModel: ActionModel?,
+    val actionModels: List<ActionModel>,
     val constraintModels: List<ConstraintModel>,
     val isEnabled: Boolean
 )

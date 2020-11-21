@@ -16,10 +16,6 @@
             type="io.github.sds100.keymapper.data.model.ActionModel" />
 
         <variable
-            name="icon"
-            type="android.graphics.drawable.Drawable" />
-
-        <variable
             name="actionCount"
             type="Integer" />
 
@@ -123,7 +119,7 @@
                 android:layout_height="40dp"
                 android:padding="4dp"
                 android:layout_marginStart="8dp"
-                android:src="@{model.hasError ? @drawable/ic_baseline_error_outline_24 : icon}"
+                android:src="@{model.hasError ? @drawable/ic_baseline_error_outline_24 : model.icon}"
                 app:layout_constraintBottom_toBottomOf="@id/layoutDescription"
                 app:layout_constraintEnd_toStartOf="@+id/layoutDescription"
                 app:layout_constraintStart_toEndOf="@id/buttonDrag"

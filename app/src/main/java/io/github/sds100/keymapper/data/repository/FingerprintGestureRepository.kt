@@ -8,6 +8,7 @@ import com.github.salomonbrys.kotson.registerTypeAdapter
 import com.google.gson.GsonBuilder
 import io.github.sds100.keymapper.data.DataStoreKeys
 import io.github.sds100.keymapper.data.model.Action
+import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.Extra
 import io.github.sds100.keymapper.data.model.FingerprintGestureMap
 import io.github.sds100.keymapper.util.FingerprintGestureUtils
@@ -20,8 +21,10 @@ import kotlinx.coroutines.flow.map
 class FingerprintGestureRepository constructor(private val mDataStore: DataStore<Preferences>) {
 
     private val mGson = GsonBuilder()
+        .registerTypeAdapter(FingerprintGestureMap.DESERIALIZER)
         .registerTypeAdapter(Action.DESERIALIZER)
-        .registerTypeAdapter(Extra.DESERIALIZER).create()
+        .registerTypeAdapter(Extra.DESERIALIZER)
+        .registerTypeAdapter(Constraint.DESERIALIZER).create()
 
     val swipeDown: Flow<FingerprintGestureMap> = mDataStore.data.map { prefs ->
         prefs.getGesture(DataStoreKeys.FINGERPRINT_GESTURE_SWIPE_DOWN)
@@ -31,7 +34,7 @@ class FingerprintGestureRepository constructor(private val mDataStore: DataStore
         prefs.getGesture(DataStoreKeys.FINGERPRINT_GESTURE_SWIPE_UP)
     }
 
-    suspend fun edit(
+    suspend fun editGesture(
         gestureId: String,
         block: (old: FingerprintGestureMap) -> FingerprintGestureMap
     ) {

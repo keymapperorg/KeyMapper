@@ -137,11 +137,10 @@ class ActionsFragment(private val mKeymapId: Long) : Fragment() {
             }
 
         override fun buildModels() {
-            modelList.forEachIndexed { index, model ->
+            modelList.forEach { model ->
                 action {
                     id(model.id)
                     model(model)
-                    icon(model.icon)
                     actionCount(modelList.size)
 
                     onRemoveClick { _ ->

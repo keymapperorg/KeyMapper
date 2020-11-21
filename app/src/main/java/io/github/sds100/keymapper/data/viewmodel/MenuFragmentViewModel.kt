@@ -18,8 +18,8 @@ class MenuFragmentViewModel(private val mKeymapUseCase: MenuKeymapUseCase,
         mKeymapUseCase.enableAll()
 
         FingerprintGestureUtils.GESTURES.forEach { gestureId ->
-            mFingerprintGestureRepository.edit(gestureId) {
-                it.clone(isEnabled = true)
+            mFingerprintGestureRepository.editGesture(gestureId) {
+                it.copy(isEnabled = true)
             }
         }
     }
@@ -28,8 +28,8 @@ class MenuFragmentViewModel(private val mKeymapUseCase: MenuKeymapUseCase,
         mKeymapUseCase.disableAll()
 
         FingerprintGestureUtils.GESTURES.forEach { gestureId ->
-            mFingerprintGestureRepository.edit(gestureId) {
-                it.clone(isEnabled = false)
+            mFingerprintGestureRepository.editGesture(gestureId) {
+                it.copy(isEnabled = false)
             }
         }
     }

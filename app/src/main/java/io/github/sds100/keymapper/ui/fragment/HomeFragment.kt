@@ -156,7 +156,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
 
             setFragmentResultListener(requestKey) { _, result ->
                 val action = result.getSerializable(ChooseActionFragment.EXTRA_ACTION) as Action
-                mFingerprintGestureViewModel.setAction(gestureId, action)
+                mFingerprintGestureViewModel.addAction(gestureId, action)
             }
         }
 

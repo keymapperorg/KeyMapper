@@ -131,7 +131,7 @@ class KeymapDetectionDelegateTest {
             mode = Trigger.UNDEFINED
         )
 
-        val action = Action.keyCodeAction(KeyEvent.KEYCODE_B).clone(
+        val action = Action.keyCodeAction(KeyEvent.KEYCODE_B).copy(
             flags = Action.ACTION_FLAG_HOLD_DOWN,
             extras = listOf(Extra(
                 Action.EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR, Action.STOP_HOLD_DOWN_BEHAVIOR_TRIGGER_PRESSED_AGAIN.toString()

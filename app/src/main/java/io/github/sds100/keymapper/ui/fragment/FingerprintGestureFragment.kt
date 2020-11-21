@@ -5,7 +5,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.action
 import io.github.sds100.keymapper.constraint
+import io.github.sds100.keymapper.data.model.ActionModel
 import io.github.sds100.keymapper.data.model.ConstraintModel
 import io.github.sds100.keymapper.data.model.FingerprintGestureMapListItemModel
 import io.github.sds100.keymapper.data.viewmodel.FingerprintGestureViewModel
@@ -67,22 +69,8 @@ class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
                             findNavController().navigate(direction)
                         }
 
-                        onRemoveActionClick { _ ->
-                            mViewModel.removeAction(it.id)
-                        }
-
-                        fixAction { _ ->
-                            if (it.actionModel?.failure is RecoverableFailure) {
-                                mRecoverFailureDelegate.recover(requireActivity(), it.actionModel.failure)
-                            }
-                        }
-
                         onEnabledSwitchChangeListener { _, isChecked ->
                             mViewModel.setEnabled(it.id, isChecked)
-                        }
-
-                        onOptionsClick { _ ->
-                            mViewModel.editOptions(it.id)
                         }
 
                         onAddConstraintClick { _ ->
@@ -93,8 +81,10 @@ class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
                         }
 
                         onBind { _, view, _ ->
-                            (view.dataBinding as ListItemFingerprintGestureBinding)
-                                .epoxyRecyclerViewConstraints.bindConstraints(it.constraintModels)
+                            (view.dataBinding as ListItemFingerprintGestureBinding).apply {
+                                epoxyRecyclerViewActions.bindActions(it.id, it.actionModels)
+                                epoxyRecyclerViewConstraints.bindConstraints(it.constraintModels)
+                            }
                         }
                     }
                 }
@@ -108,8 +98,9 @@ class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
                         id = it.key,
                         header = str(FingerprintGestureUtils.HEADERS[it.key]!!),
 
-                        actionModel =
-                        it.value.buildActionModel(requireContext(), it.key, mViewModel.getDeviceInfoList()),
+                        actionModels = it.value.actionList.map { action ->
+                            action.buildModel(requireContext(), mViewModel.getDeviceInfoList())
+                        },
 
                         constraintModels = it.value.constraintList.map { constraint ->
                             constraint.buildModel(requireContext())
@@ -130,6 +121,21 @@ class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
                 val direction =
                     HomeFragmentDirections.actionHomeFragmentToFingerprintGestureMapBehaviorFragment(it, requestKey)
                 findNavController().navigate(direction)
+            }
+        }
+    }
+
+    private fun EpoxyRecyclerView.bindActions(gestureId: String, models: List<ActionModel>) = withModels {
+        models.forEach {
+            action {
+                id(it.id)
+                model(it)
+
+                actionCount(models.size)
+
+                onRemoveClick { _ ->
+                    mViewModel.removeAction(gestureId, it.id)
+                }
             }
         }
     }

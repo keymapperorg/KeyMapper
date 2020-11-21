@@ -60,7 +60,7 @@
                 android:layout_marginBottom="@dimen/cardview_padding_bottom"
                 android:orientation="horizontal"
                 android:visibility="@{viewModel.constraintList.size() &lt; 2 ? View.GONE : View.VISIBLE}"
-                app:layout_constraintBottom_toTopOf="@+id/buttonAddConstraints"
+                app:layout_constraintBottom_toTopOf="@+id/buttonAddConstraint"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
 
@@ -82,7 +82,7 @@
             </RadioGroup>
 
             <Button
-                android:id="@+id/buttonAddConstraints"
+                android:id="@+id/buttonAddConstraint"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"

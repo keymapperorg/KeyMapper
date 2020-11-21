@@ -63,6 +63,6 @@ class FingerprintGestureMapOptions(val gestureId: String, fingerprintGestureMap:
         val newExtras = fingerprintGestureMap.extras
             .applyBehaviorOption(vibrateDuration, FingerprintGestureMap.EXTRA_VIBRATION_DURATION)
 
-        return fingerprintGestureMap.clone(flags = newFlags, extras = newExtras)
+        return fingerprintGestureMap.copy(flags = newFlags, extras = newExtras)
     }
 }
