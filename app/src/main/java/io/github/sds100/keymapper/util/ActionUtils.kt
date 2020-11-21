@@ -248,7 +248,11 @@ fun Action.getIcon(ctx: Context): Result<Drawable?> = when (type) {
     }
 
     ActionType.APP_SHORTCUT -> extras.getData(Action.EXTRA_PACKAGE_NAME).then {
-        Success(ctx.packageManager.getApplicationIcon(it))
+        try {
+            Success(ctx.packageManager.getApplicationIcon(it))
+        } catch (e: PackageManager.NameNotFoundException) {
+            AppNotFound(it)
+        }
     } otherwise { Success(null) }
 
     ActionType.SYSTEM_ACTION -> {
