@@ -83,7 +83,7 @@ class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
                         onBind { _, view, _ ->
                             (view.dataBinding as ListItemFingerprintGestureBinding).apply {
                                 epoxyRecyclerViewActions.bindActions(it.id, it.actionModels)
-                                epoxyRecyclerViewConstraints.bindConstraints(it.constraintModels)
+                                epoxyRecyclerViewConstraints.bindConstraints(it.id, it.constraintModels)
                             }
                         }
                     }
@@ -140,13 +140,14 @@ class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
         }
     }
 
-    private fun EpoxyRecyclerView.bindConstraints(models: List<ConstraintModel>) = withModels {
+    private fun EpoxyRecyclerView.bindConstraints(gestureId: String, models: List<ConstraintModel>) = withModels {
         models.forEach {
             constraint {
                 id(it.id)
                 model(it)
 
                 onRemoveClick { _ ->
+                    mViewModel.removeConstraint(gestureId, it.id)
                 }
 
                 val tintType = when {
