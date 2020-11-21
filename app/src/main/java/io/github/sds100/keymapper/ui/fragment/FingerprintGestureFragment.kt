@@ -18,6 +18,7 @@ import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
 import io.github.sds100.keymapper.util.result.RecoverableFailure
 import kotlinx.coroutines.flow.collect
+import splitties.toast.toast
 
 /**
  * Created by sds100 on 22/02/2020.
@@ -121,6 +122,12 @@ class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
                 val direction =
                     HomeFragmentDirections.actionHomeFragmentToFingerprintGestureMapBehaviorFragment(it, requestKey)
                 findNavController().navigate(direction)
+            }
+        }
+
+        viewLifecycleScope.launchWhenStarted {
+            mViewModel.duplicateConstraintsEvent.collect {
+                toast(R.string.error_fingerprint_gesture_map_constraint_exists)
             }
         }
     }

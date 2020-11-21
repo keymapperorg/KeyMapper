@@ -142,7 +142,7 @@ class ConfigKeymapFragment : Fragment() {
             }
 
             mViewModel.duplicateConstraintsEvent.observe(viewLifecycleOwner, EventObserver {
-                toast(R.string.error_constraint_exists)
+                toast(R.string.error_keymap_constraint_exists)
             })
 
             mViewModel.showOnboardingPrompt.observe(viewLifecycleOwner, EventObserver {

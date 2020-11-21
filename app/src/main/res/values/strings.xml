@@ -670,7 +670,8 @@
     <string name="error_no_action_data">No Action data!</string>
     <string name="error_extra_not_found">Extra (%s) not found!</string>
     <string name="error_constraint_not_found">Constraint not found</string>
-    <string name="error_constraint_exists">This keymap already has this constraint!</string>
+    <string name="error_keymap_constraint_exists">This keymap already has this constraint!</string>
+    <string name="error_fingerprint_gesture_map_constraint_exists">This gesture already has this constraint!</string>
     <string name="error_cant_be_empty">Can\'t be empty!</string>
     <string name="error_invalid_action_type">Invalid Action Type: %s</string>
     <string name="error_options_not_required">Options not required</string>

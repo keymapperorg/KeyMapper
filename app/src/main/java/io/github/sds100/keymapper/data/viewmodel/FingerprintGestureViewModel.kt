@@ -38,6 +38,9 @@ class FingerprintGestureViewModel(
     private val _editOptions: MutableSharedFlow<FingerprintGestureMapOptions> = MutableSharedFlow()
     val editOptions = _editOptions.asSharedFlow()
 
+    private val _duplicateConstraintEvent: MutableSharedFlow<Unit> = MutableSharedFlow()
+    val duplicateConstraintsEvent = _duplicateConstraintEvent.asSharedFlow()
+
     init {
         viewModelScope.launch {
             mFingerprintGestureMaps.collect {
@@ -73,6 +76,13 @@ class FingerprintGestureViewModel(
     }
 
     fun addConstraint(gestureId: String, constraint: Constraint) = viewModelScope.launch {
+        val gestureMap = mFingerprintGestureMaps.firstOrNull()?.get(gestureId)
+
+        if (gestureMap?.constraintList?.any { it.uniqueId == constraint.uniqueId } == true) {
+            _duplicateConstraintEvent.emit(Unit)
+            return@launch
+        }
+
         mRepository.editGesture(gestureId) {
             val newConstraintList = it.constraintList.toMutableList().apply {
                 add(constraint)
