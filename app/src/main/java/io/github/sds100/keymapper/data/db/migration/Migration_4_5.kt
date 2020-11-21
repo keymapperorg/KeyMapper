@@ -62,7 +62,7 @@ object Migration_4_5 {
 
                 if (flags.hasFlag(OLD_KEYMAP_FLAG_SHOW_PERFORMING_ACTION_TOAST)) {
                     actionList = actionList.map {
-                        it.clone(flags = it.flags.withFlag(Action.ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST))
+                        it.copy(flags = it.flags.withFlag(Action.ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST))
                     }
                 }
 
@@ -90,7 +90,7 @@ object Migration_4_5 {
                             newExtras = newExtras.putExtraData(Action.EXTRA_REPEAT_RATE, repeatDelay)
                         }
 
-                        it.clone(flags = newFlags, extras = newExtras)
+                        it.copy(flags = newFlags, extras = newExtras)
                     }
                 }
 

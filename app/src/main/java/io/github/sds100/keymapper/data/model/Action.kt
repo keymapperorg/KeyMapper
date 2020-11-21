@@ -210,20 +210,4 @@ data class Action(
     }
 
     constructor(type: ActionType, data: String, extra: Extra) : this(type, data, mutableListOf(extra))
-
-    fun clone(
-        type: ActionType = this.type,
-        data: String = this.data,
-        flags: Int = this.flags,
-        extras: List<Extra> = this.extras
-    ) = Action(type, data, extras, flags, uid)
-
-    override fun toString() = buildString {
-        append(type)
-        append(data)
-        extras.forEach {
-            append("${it.id}${it.data}")
-        }
-        append(flags)
-    }
 }

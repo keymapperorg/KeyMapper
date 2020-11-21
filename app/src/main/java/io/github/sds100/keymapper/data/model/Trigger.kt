@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.data.model
 
-import android.view.KeyEvent
 import androidx.annotation.IntDef
 import com.github.salomonbrys.kotson.*
 import com.google.gson.annotations.SerializedName
@@ -15,7 +14,7 @@ import splitties.bitflags.withFlag
 /**
  * @property [keys] The key codes which will trigger the action
  */
-class Trigger(
+data class Trigger(
     @SerializedName(NAME_KEYS)
     val keys: List<Key> = listOf(),
 
@@ -140,19 +139,11 @@ class Trigger(
         }
 
         override fun equals(other: Any?): Boolean {
-            return (other as Key).keyCode == keyCode
+            return (other as Key?)?.keyCode == keyCode
         }
 
-        override fun hashCode() = keyCode
+        override fun hashCode() = keyCode.hashCode()
     }
-
-    fun clone(
-        keys: List<Key> = this.keys,
-        extras: List<Extra> = this.extras,
-        @Mode mode: Int = this.mode,
-        flags: Int = this.flags
-    ) =
-        Trigger(keys, extras, mode, flags)
 
     @IntDef(value = [PARALLEL, SEQUENCE, UNDEFINED])
     annotation class Mode
