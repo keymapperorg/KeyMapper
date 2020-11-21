@@ -43,12 +43,6 @@ class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        mViewModel.rebuildModels()
-    }
-
     override fun subscribeList(binding: FragmentRecyclerviewBinding) {
         binding.caption = str(R.string.caption_fingerprint_gesture)
 
@@ -130,6 +124,8 @@ class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
                 toast(R.string.error_fingerprint_gesture_map_constraint_exists)
             }
         }
+
+        mViewModel.rebuildModels()
     }
 
     private fun EpoxyRecyclerView.bindActions(gestureId: String, models: List<ActionModel>) = withModels {

@@ -434,6 +434,9 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
     override fun onResume() {
         super.onResume()
 
+        mKeyMapListViewModel.rebuildModels()
+        mFingerprintGestureViewModel.rebuildModels()
+
         updateStatusLayouts()
         requireContext().defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
 

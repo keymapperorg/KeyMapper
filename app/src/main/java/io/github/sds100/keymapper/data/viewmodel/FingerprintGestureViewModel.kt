@@ -14,7 +14,6 @@ import io.github.sds100.keymapper.util.Loading
 import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class FingerprintGestureViewModel(
     private val mRepository: FingerprintGestureRepository,
@@ -22,7 +21,6 @@ class FingerprintGestureViewModel(
 ) : ViewModel() {
 
     private val mFingerprintGestureMaps = combine(mRepository.swipeDown, mRepository.swipeUp) { swipeDown, swipeUp ->
-        Timber.d(swipeDown.actionList.joinToString { it.uid })
         mapOf(
             FingerprintGestureUtils.SWIPE_DOWN to swipeDown,
             FingerprintGestureUtils.SWIPE_UP to swipeUp

@@ -17,7 +17,6 @@ import io.github.sds100.keymapper.keymapSimple
 import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
 import io.github.sds100.keymapper.ui.callback.SelectionCallback
 import io.github.sds100.keymapper.util.*
-import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
 import io.github.sds100.keymapper.util.result.Failure
 import kotlinx.coroutines.launch
 
@@ -88,12 +87,6 @@ class KeymapListFragment : DefaultRecyclerViewFragment() {
 
         //assign in onViewCreated in case context is required when building the models.
         binding.epoxyRecyclerView.adapter = mController.adapter
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        mViewModel.rebuildModels()
     }
 
     private suspend fun buildModelList(keymapList: List<KeyMap>) =
