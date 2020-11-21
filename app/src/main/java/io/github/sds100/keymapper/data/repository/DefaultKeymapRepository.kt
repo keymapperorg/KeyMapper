@@ -38,7 +38,7 @@ class DefaultKeymapRepository internal constructor(private val mKeymapDao: KeyMa
         val keymaps = mutableListOf<KeyMap>()
 
         id.forEach {
-            keymaps.add(getKeymap(it).clone())
+            keymaps.add(getKeymap(it).copy())
         }
 
         insertKeymap(*keymaps.toTypedArray())

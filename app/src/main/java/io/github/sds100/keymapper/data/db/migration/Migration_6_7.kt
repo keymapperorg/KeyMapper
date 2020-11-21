@@ -47,7 +47,7 @@ object Migration_6_7 {
                 }
 
                 val newTriggerFlags = trigger.flags.minusFlag(TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION)
-                val newTrigger = trigger.clone(keys = newTriggerKeys, flags = newTriggerFlags)
+                val newTrigger = trigger.copy(keys = newTriggerKeys, flags = newTriggerFlags)
 
                 execSQL("UPDATE keymaps SET trigger='${newTrigger.json}', flags=0 WHERE id=$id")
             }

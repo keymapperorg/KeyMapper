@@ -97,7 +97,7 @@ class TriggerBehavior(keys: List<Trigger.Key>, @Trigger.Mode mode: Int, flags: I
         val newFlags = applyToTriggerFlags(trigger.flags)
         val newExtras = applyToTriggerExtras(trigger.extras)
 
-        return trigger.clone(extras = newExtras, flags = newFlags)
+        return trigger.copy(extras = newExtras, flags = newFlags)
     }
 
     fun setValue(id: String, value: Int): TriggerBehavior {

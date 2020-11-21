@@ -205,7 +205,7 @@ class ActionBehavior(
                 ))
         }
 
-        return action.clone(flags = newFlags, extras = newExtras)
+        return action.copy(flags = newFlags, extras = newExtras)
     }
 
     fun setValue(id: String, value: Int): ActionBehavior {

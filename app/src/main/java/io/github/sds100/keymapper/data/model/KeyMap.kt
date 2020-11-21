@@ -12,7 +12,7 @@ import io.github.sds100.keymapper.data.db.dao.KeyMapDao
  */
 
 @Entity(tableName = KeyMapDao.TABLE_NAME)
-class KeyMap(
+data class KeyMap(
     @SerializedName(NAME_ID)
     @PrimaryKey(autoGenerate = true)
     var id: Long,
@@ -91,15 +91,6 @@ class KeyMap(
 
     override fun hashCode() = id.toInt()
     override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as KeyMap
-
-        if (id != other.id) return false
-
-        return true
+        return (other as KeyMap?)?.id == this.id
     }
-
-    fun clone(): KeyMap = KeyMap(0, trigger, actionList, constraintList, constraintMode, flags, folderName, isEnabled)
 }
