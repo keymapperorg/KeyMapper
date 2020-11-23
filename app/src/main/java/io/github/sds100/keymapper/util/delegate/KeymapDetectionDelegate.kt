@@ -1189,6 +1189,9 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             BooleanArray(mParallelTriggerEvents[it].size) { false }
         }
 
+        mPerformActionsOnFailedDoublePress.clear()
+        mPerformActionsOnFailedLongPress.clear()
+
         mMetaStateFromActions = 0
         mMetaStateFromKeyEvent = 0
         mUnmappedKeycodesToConsumeOnUp = mutableSetOf()
