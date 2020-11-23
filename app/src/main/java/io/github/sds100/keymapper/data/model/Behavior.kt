@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.data.model
 
+import android.os.Build
 import io.github.sds100.keymapper.data.model.BehaviorOption.Companion.applyBehaviorOption
 import io.github.sds100.keymapper.data.model.Trigger.Companion.DOUBLE_PRESS
 import io.github.sds100.keymapper.data.model.Trigger.Companion.EXTRA_DOUBLE_PRESS_DELAY
@@ -12,6 +13,7 @@ import io.github.sds100.keymapper.data.model.Trigger.Companion.SEQUENCE
 import io.github.sds100.keymapper.data.model.Trigger.Companion.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION
 import io.github.sds100.keymapper.data.model.Trigger.Companion.TRIGGER_FLAG_SCREEN_OFF_TRIGGERS
 import io.github.sds100.keymapper.data.model.Trigger.Companion.TRIGGER_FLAG_VIBRATE
+import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.ActionUtils
 import io.github.sds100.keymapper.util.KeyEventUtils
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
@@ -97,6 +99,11 @@ class TriggerBehavior(keys: List<Trigger.Key>, @Trigger.Mode mode: Int, flags: I
     val doublePressDelay: BehaviorOption<Int>
     val vibrateDuration: BehaviorOption<Int>
     val sequenceTriggerTimeout: BehaviorOption<Int>
+
+    /*
+     It is very important that any new options are only allowed with a valid combination of other options. Make sure
+     the "isAllowed" property considers all the other options.
+     */
 
     init {
 
@@ -201,8 +208,10 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
         const val ID_SHOW_VOLUME_UI = "show_volume_ui"
         const val ID_SHOW_PERFORMING_ACTION_TOAST = "show_performing_action_toast"
         const val ID_STOP_REPEATING_TRIGGER_RELEASED = "stop_repeating_trigger_released"
+        const val ID_MULTIPLIER = "multiplier"
         const val ID_STOP_REPEATING_TRIGGER_PRESSED_AGAIN = "stop_repeating_trigger_pressed_again"
         const val ID_REPEAT_DELAY = "repeat_delay"
+        const val ID_HOLD_DOWN = "hold_down"
     }
 
     val actionId = action.uniqueId
@@ -210,7 +219,12 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
     val repeat = BehaviorOption(
         id = ID_REPEAT,
         value = action.flags.hasFlag(Action.ACTION_FLAG_REPEAT),
-        isAllowed = KeymapDetectionDelegate.performActionOnDown(triggerKeys, triggerMode)
+        isAllowed = if (triggerKeys != null && triggerMode != null) {
+
+            KeymapDetectionDelegate.performActionOnDown(triggerKeys, triggerMode)
+        } else {
+            false
+        }
     )
 
     val showVolumeUi = BehaviorOption(
@@ -225,6 +239,19 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
         isAllowed = true
     )
 
+    val holdDown = BehaviorOption(
+        id = ID_HOLD_DOWN,
+        value = action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN),
+        isAllowed = if (triggerKeys != null && triggerMode != null) {
+            KeymapDetectionDelegate.performActionOnDown(triggerKeys, triggerMode)
+                && (action.type == ActionType.KEY_EVENT
+                || (action.type == ActionType.TAP_COORDINATE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                )
+        } else {
+            false
+        }
+    )
+
     val stopRepeatingWhenTriggerReleased: BehaviorOption<Boolean>
 
     val stopRepeatingWhenTriggerPressedAgain: BehaviorOption<Boolean>
@@ -233,20 +260,31 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
 
     val repeatDelay: BehaviorOption<Int>
 
+    val multiplier = BehaviorOption(
+        id = ID_MULTIPLIER,
+        value = action.extras.getData(Action.EXTRA_MULTIPLIER).valueOrNull()?.toInt() ?: BehaviorOption.DEFAULT,
+        isAllowed = true
+    )
+
+    /*
+     It is very important that any new options are only allowed with a valid combination of other options. Make sure
+     the "isAllowed" property considers all the other options.
+     */
+
     init {
-        val repeatDelayValue = action.extras.getData(Action.EXTRA_REPEAT_RATE).valueOrNull()?.toInt()
+        val repeatRateValue = action.extras.getData(Action.EXTRA_REPEAT_RATE).valueOrNull()?.toInt()
 
         repeatRate = BehaviorOption(
             id = ID_REPEAT_RATE,
-            value = repeatDelayValue ?: BehaviorOption.DEFAULT,
+            value = repeatRateValue ?: BehaviorOption.DEFAULT,
             isAllowed = repeat.value
         )
 
-        val holdDownDelayValue = action.extras.getData(Action.EXTRA_REPEAT_DELAY).valueOrNull()?.toInt()
+        val repeatDelayValue = action.extras.getData(Action.EXTRA_REPEAT_DELAY).valueOrNull()?.toInt()
 
         repeatDelay = BehaviorOption(
             id = ID_REPEAT_DELAY,
-            value = holdDownDelayValue ?: BehaviorOption.DEFAULT,
+            value = repeatDelayValue ?: BehaviorOption.DEFAULT,
             isAllowed = repeat.value
         )
 
@@ -276,10 +314,12 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
             .applyBehaviorOption(repeat, Action.ACTION_FLAG_REPEAT)
             .applyBehaviorOption(showVolumeUi, Action.ACTION_FLAG_SHOW_VOLUME_UI)
             .applyBehaviorOption(showPerformingActionToast, Action.ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST)
+            .applyBehaviorOption(holdDown, Action.ACTION_FLAG_HOLD_DOWN)
 
         val newExtras = action.extras
             .applyBehaviorOption(repeatRate, Action.EXTRA_REPEAT_RATE)
             .applyBehaviorOption(repeatDelay, Action.EXTRA_REPEAT_DELAY)
+            .applyBehaviorOption(multiplier, Action.EXTRA_MULTIPLIER)
 
         newExtras.removeAll { it.id == Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR }
         if (stopRepeatingWhenTriggerPressedAgain.value) {
@@ -294,6 +334,7 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
         when (id) {
             ID_REPEAT_RATE -> repeatRate.value = value
             ID_REPEAT_DELAY -> repeatDelay.value = value
+            ID_MULTIPLIER -> multiplier.value = value
         }
 
         return this
@@ -324,8 +365,66 @@ class ActionBehavior(action: Action, @Trigger.Mode triggerMode: Int, triggerKeys
 
                 stopRepeatingWhenTriggerPressedAgain.value = !stopRepeatingWhenTriggerReleased.value
             }
+
+            ID_HOLD_DOWN -> {
+                holdDown.value = value
+            }
         }
 
         return this
+    }
+}
+
+class TriggerKeyBehavior(
+    key: Trigger.Key,
+    @Trigger.Mode mode: Int
+) : Serializable {
+
+    companion object {
+        const val ID_DO_NOT_CONSUME_KEY_EVENT = "do_not_consume_key_event"
+        const val ID_CLICK_TYPE = "click_type"
+    }
+
+    val uniqueId = key.uniqueId
+
+    val clickType = BehaviorOption(
+        id = ID_CLICK_TYPE,
+        value = key.clickType,
+        isAllowed = mode == SEQUENCE || mode == Trigger.UNDEFINED
+    )
+
+    val doNotConsumeKeyEvents = BehaviorOption(
+        id = ID_DO_NOT_CONSUME_KEY_EVENT,
+        value = key.flags.hasFlag(Trigger.Key.FLAG_DO_NOT_CONSUME_KEY_EVENT),
+        isAllowed = true
+    )
+
+    /*
+     It is very important that any new options are only allowed with a valid combination of other options. Make sure
+     the "isAllowed" property considers all the other options.
+     */
+
+    fun setValue(id: String, value: Boolean): TriggerKeyBehavior {
+        when (id) {
+            ID_DO_NOT_CONSUME_KEY_EVENT -> doNotConsumeKeyEvents.value = value
+        }
+
+        return this
+    }
+
+    fun setValue(id: String, value: Int): TriggerKeyBehavior {
+        when (id) {
+            ID_CLICK_TYPE -> clickType.value = value
+        }
+
+        return this
+    }
+
+    fun applyToTriggerKey(key: Trigger.Key): Trigger.Key {
+        key.flags = key.flags.applyBehaviorOption(doNotConsumeKeyEvents, Trigger.Key.FLAG_DO_NOT_CONSUME_KEY_EVENT)
+
+        key.clickType = clickType.value
+
+        return key
     }
 }

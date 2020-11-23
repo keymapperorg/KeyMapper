@@ -8,7 +8,7 @@
     android:minHeight="48dp">
 
     <Button
-        android:id="@+id/buttonFix"
+        android:id="@+id/button"
         style="@style/Widget.MaterialComponents.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -23,7 +23,7 @@
         tools:backgroundTint="?attr/colorError" />
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/textViewStatus"
+        android:id="@+id/textView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -34,7 +34,7 @@
         android:gravity="center_vertical"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/buttonFix"
+        app:layout_constraintEnd_toStartOf="@+id/button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:drawableStart="@drawable/ic_baseline_error_outline_24"

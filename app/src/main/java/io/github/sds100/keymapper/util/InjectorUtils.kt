@@ -40,12 +40,23 @@ object InjectorUtils {
         return KeymapListViewModel.Factory(keymapRepository, deviceInfoRepository)
     }
 
+    fun provideBackupRestoreViewModel(context: Context): BackupRestoreViewModel.Factory {
+        val keymapRepository = (context.applicationContext as MyApplication).keymapRepository
+        val deviceInfoRepository = (context.applicationContext as MyApplication).deviceInfoRepository
+
+        return BackupRestoreViewModel.Factory(keymapRepository, deviceInfoRepository)
+    }
+
     fun provideChooseConstraintListViewModel(): ChooseConstraintListViewModel.Factory {
         return ChooseConstraintListViewModel.Factory()
     }
 
     fun provideKeyActionTypeViewModel(): KeyActionTypeViewModel.Factory {
         return KeyActionTypeViewModel.Factory()
+    }
+
+    fun provideKeyEventActionTypeViewModel(): KeyEventActionTypeViewModel.Factory {
+        return KeyEventActionTypeViewModel.Factory()
     }
 
     fun provideKeycodeListViewModel(): KeycodeListViewModel.Factory {
@@ -60,12 +71,24 @@ object InjectorUtils {
         return UrlActionTypeViewModel.Factory()
     }
 
+    fun provideTapCoordinateActionTypeViewModel(): TapCoordinateActionTypeViewModel.Factory {
+        return TapCoordinateActionTypeViewModel.Factory()
+    }
+
     fun provideSystemActionListViewModel(context: Context): SystemActionListViewModel.Factory {
         return SystemActionListViewModel.Factory(getDefaultSystemActionRepository(context))
     }
 
+    fun provideUnsupportedActionListViewModel(context: Context): UnsupportedActionListViewModel.Factory {
+        return UnsupportedActionListViewModel.Factory(getDefaultSystemActionRepository(context))
+    }
+
     fun provideActionBehaviorViewModel(): ActionBehaviorViewModel.Factory {
         return ActionBehaviorViewModel.Factory()
+    }
+
+    fun provideTriggerKeyBehaviorViewModel(): TriggerKeyBehaviorViewModel.Factory {
+        return TriggerKeyBehaviorViewModel.Factory()
     }
 
     fun provideOnlineViewModel(context: Context,

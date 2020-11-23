@@ -1,24 +1,38 @@
 package io.github.sds100.keymapper.ui.activity
 
 import android.Manifest
+import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.findNavController
+import com.google.gson.Gson
 import io.github.sds100.keymapper.BuildConfig
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
+import io.github.sds100.keymapper.MyApplication
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.WidgetsManager
+import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
 import io.github.sds100.keymapper.data.viewmodel.KeyActionTypeViewModel
 import io.github.sds100.keymapper.databinding.ActivityHomeBinding
-import io.github.sds100.keymapper.util.AccessibilityUtils
-import io.github.sds100.keymapper.util.InjectorUtils
-import io.github.sds100.keymapper.util.PermissionUtils
+import io.github.sds100.keymapper.service.MyAccessibilityService
+import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.result.FileAccessDenied
+import io.github.sds100.keymapper.util.result.GenericFailure
+import io.github.sds100.keymapper.util.result.onFailure
+import io.github.sds100.keymapper.util.result.onSuccess
+import kotlinx.android.synthetic.main.activity_home.*
+import kotlinx.coroutines.launch
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.messageResource
 import splitties.alertdialog.appcompat.okButton
 import splitties.alertdialog.appcompat.titleResource
+import splitties.snackbar.snack
+import timber.log.Timber
 
 /**
  * Created by sds100 on 19/02/2020.
@@ -33,6 +47,10 @@ class HomeActivity : AppCompatActivity() {
 
     private val mKeyActionTypeViewModel: KeyActionTypeViewModel by viewModels {
         InjectorUtils.provideKeyActionTypeViewModel()
+    }
+
+    private val mBackupRestoreViewModel: BackupRestoreViewModel by viewModels {
+        InjectorUtils.provideBackupRestoreViewModel(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,8 +71,43 @@ class HomeActivity : AppCompatActivity() {
             }
         }
 
+        (application as MyApplication).keymapRepository.keymapList.observe(this, {
+            sendPackageBroadcast(
+                MyAccessibilityService.ACTION_UPDATE_KEYMAP_LIST_CACHE,
+                bundleOf(
+                    MyAccessibilityService.EXTRA_KEYMAP_LIST to Gson().toJson(it)
+                ))
+        })
+
         if (BuildConfig.DEBUG && PermissionUtils.isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
             AccessibilityUtils.enableService(this)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            (application as MyApplication).keymapRepository.requestBackup.observe(this, EventObserver { keymapList ->
+                if (!BackupUtils.backupAutomatically) return@EventObserver
+
+                BackupUtils.createAutomaticBackupOutputStream(this)
+                    .onSuccess {
+                        lifecycleScope.launch {
+                            mBackupRestoreViewModel.backup(it, keymapList)
+                        }
+                    }.onFailure {
+                        if (it is FileAccessDenied) {
+                            coordinatorLayout.snack(R.string.error_file_access_denied_automatic_backup).apply {
+                                setAction(R.string.reset) {
+                                    container.findNavController().navigate(R.id.action_global_settingsFragment)
+                                }
+
+                                show()
+                            }
+                        }
+
+                        if (it is GenericFailure) {
+                            Timber.e(it.exception)
+                        }
+                    }
+            })
         }
     }
 

@@ -3,13 +3,11 @@ package io.github.sds100.keymapper.util
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.net.ConnectivityManager
 import android.net.Uri
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.telephony.TelephonyManager
 import com.android.volley.Request
-import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import io.github.sds100.keymapper.R
@@ -40,14 +38,14 @@ object NetworkUtils {
         val queue = Volley.newRequestQueue(appCtx)
 
         val request = StringRequest(Request.Method.GET, url,
-            Response.Listener { response ->
+            { response ->
                 val file = File(filePath)
                 file.writeText(response)
 
                 it.resume(Success(file))
             },
 
-            Response.ErrorListener { error ->
+            { error ->
                 if (error.cause is SSLHandshakeException) {
                     it.resume(SSLHandshakeError())
                 } else {
@@ -63,7 +61,8 @@ object NetworkUtils {
     }
 
     //WiFi stuff
-    fun changeWifiState(ctx: Context, stateChange: StateChange) {
+    @Suppress("DEPRECATION")
+    fun changeWifiStatePreQ(ctx: Context, stateChange: StateChange) {
         val wifiManager = ctx.applicationContext
             .getSystemService(Context.WIFI_SERVICE) as WifiManager
 
@@ -123,13 +122,6 @@ object NetworkUtils {
         } else {
             enableMobileData()
         }
-    }
-
-    private fun isNetworkAvailable(ctx: Context): Boolean {
-        val connectivityManager = ctx.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val activeNetworkInfo = connectivityManager.activeNetworkInfo ?: return false
-
-        return activeNetworkInfo.isConnected
     }
 
     private fun isMobileDataEnabled(ctx: Context): Boolean {

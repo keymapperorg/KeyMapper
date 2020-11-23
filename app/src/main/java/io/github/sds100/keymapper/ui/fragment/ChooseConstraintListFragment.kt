@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import io.github.sds100.keymapper.data.model.AppListItemModel
 import io.github.sds100.keymapper.data.viewmodel.ChooseConstraintListViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.sectionHeader
@@ -24,7 +23,7 @@ import splitties.alertdialog.appcompat.okButton
 /**
  * A placeholder fragment containing a simple view.
  */
-class ChooseConstraintListFragment : RecyclerViewFragment() {
+class ChooseConstraintListFragment : DefaultRecyclerViewFragment() {
 
     companion object {
         const val REQUEST_KEY = "request_constraint"
@@ -35,22 +34,22 @@ class ChooseConstraintListFragment : RecyclerViewFragment() {
         InjectorUtils.provideChooseConstraintListViewModel()
     }
 
-    override var resultData: ResultData? = ResultData(REQUEST_KEY, EXTRA_CONSTRAINT)
+    override var requestKey: String? = REQUEST_KEY
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setFragmentResultListener(AppListFragment.REQUEST_KEY) { _, result ->
-            val appModel = result.getSerializable(AppListFragment.EXTRA_APP_MODEL) as AppListItemModel
+            val packageName = result.getString(AppListFragment.EXTRA_PACKAGE_NAME)
 
-            mViewModel.packageChosen(appModel.packageName)
+            mViewModel.packageChosen(packageName!!)
         }
 
         setFragmentResultListener(BluetoothDeviceListFragment.REQUEST_KEY) { _, result ->
-            val model = result.getSerializable(BluetoothDeviceListFragment.EXTRA_BLUETOOTH_DEVICE)
-                as BluetoothDeviceListFragment.Model
+            val address = result.getString(BluetoothDeviceListFragment.EXTRA_ADDRESS)
+            val name = result.getString(BluetoothDeviceListFragment.EXTRA_NAME)
 
-            mViewModel.bluetoothDeviceChosen(model.address, model.name)
+            mViewModel.bluetoothDeviceChosen(address!!, name!!)
         }
     }
 
@@ -81,7 +80,7 @@ class ChooseConstraintListFragment : RecyclerViewFragment() {
         })
 
         mViewModel.selectModelEvent.observe(viewLifecycleOwner, EventObserver {
-            selectModel(it)
+            returnResult(EXTRA_CONSTRAINT to it)
         })
 
         return super.onCreateView(inflater, container, savedInstanceState)

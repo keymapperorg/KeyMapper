@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.ui.fragment
 
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.observe
 import io.github.sds100.keymapper.data.viewmodel.KeycodeListViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.simple
@@ -11,7 +10,7 @@ import io.github.sds100.keymapper.util.InjectorUtils
  * Created by sds100 on 30/03/2020.
  */
 
-class KeycodeListFragment : RecyclerViewFragment() {
+class KeycodeListFragment : DefaultRecyclerViewFragment() {
     companion object {
         const val REQUEST_KEY = "request_keycode"
         const val EXTRA_KEYCODE = "extra_keycode"
@@ -19,14 +18,14 @@ class KeycodeListFragment : RecyclerViewFragment() {
     }
 
     override var searchStateKey: String? = SEARCH_STATE_KEY
-    override var resultData: ResultData? = ResultData(REQUEST_KEY, EXTRA_KEYCODE)
+    override var requestKey: String? = REQUEST_KEY
 
     private val mViewModel: KeycodeListViewModel by activityViewModels {
         InjectorUtils.provideKeycodeListViewModel()
     }
 
     override fun subscribeList(binding: FragmentRecyclerviewBinding) {
-        mViewModel.filteredKeycodeLabelList.observe(viewLifecycleOwner) { labelList ->
+        mViewModel.filteredKeycodeLabelList.observe(viewLifecycleOwner, { labelList ->
             binding.epoxyRecyclerView.withModels {
                 labelList.forEach {
                     val keycode = it.key
@@ -37,12 +36,12 @@ class KeycodeListFragment : RecyclerViewFragment() {
                         primaryText(label)
 
                         onClick { _ ->
-                            selectModel(keycode)
+                            returnResult(EXTRA_KEYCODE to keycode)
                         }
                     }
                 }
             }
-        }
+        })
     }
 
     override fun onSearchQuery(query: String?) {

@@ -6,11 +6,16 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 /**
  * Created by sds100 on 15/12/2018.
  */
 
 object FileUtils {
+
+    const val MIME_TYPE_IMAGES = "image/*"
+    const val MIME_TYPE_PNG = "image/png"
+    const val MIME_TYPE_ALL = "*/*"
 
     fun getTextFromAppFiles(ctx: Context, fileName: String): String {
         ctx.openFileInput(fileName).bufferedReader().use {

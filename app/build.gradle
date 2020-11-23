@@ -5,15 +5,16 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion = '29.0.3'
+    compileSdkVersion 30
+    buildToolsVersion = '30.0.2'
 
     defaultConfig {
         applicationId "io.github.sds100.keymapper"
         minSdkVersion 17
-        targetSdkVersion 29
-        versionCode 32
-        versionName "2.0.2"
+        targetSdkVersion 30
+        versionCode 38
+        versionName "2.1.0"
+        multiDexEnabled true
 
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -44,9 +45,8 @@ android {
         }
     }
 
-    dataBinding {
-        enabled = true
-        enabledForTests = true
+    buildFeatures {
+        dataBinding true
     }
 
     compileOptions {
@@ -83,26 +83,27 @@ android.applicationVariants.all { variant ->
 
 dependencies {
     def room_version = "2.2.5"
-    def coroutine_version = "1.3.4"
+    def coroutine_version = "1.3.7"
     def nav_version = '2.3.0'
-    def work_version = "2.3.4"
+    def work_version = "2.4.0"
     def epoxy_version = "3.9.0"
     def splitties_version = "3.0.0-alpha06"
     def markwonVersion = "4.3.1"
+    def multidex_version = "2.0.1"
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    // kotlin stuff
+// kotlin stuff
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutine_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutine_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
     // random stuff
-    implementation 'com.google.android.material:material:1.3.0-alpha01'
+    implementation 'com.google.android.material:material:1.3.0-alpha02'
     implementation 'com.github.salomonbrys.kotson:kotson:2.5.0'
     implementation 'net.cachapa.expandablelayout:expandablelayout:2.9.2'
-    implementation 'com.heinrichreimersoftware:material-intro:2.0.0'
     implementation "com.airbnb.android:epoxy:$epoxy_version"
+    implementation 'com.github.AppIntro:AppIntro:6.0.0'
     implementation "com.airbnb.android:epoxy-databinding:$epoxy_version"
     kapt "com.airbnb.android:epoxy-processor:$epoxy_version"
     implementation "io.noties.markwon:core:$markwonVersion"
@@ -120,8 +121,11 @@ dependencies {
 
     // androidx
     implementation 'androidx.legacy:legacy-support-core-ui:1.0.0'
-    implementation 'androidx.core:core-ktx:1.3.0'
-    implementation 'androidx.fragment:fragment-ktx:1.3.0-alpha06'
+    implementation 'androidx.core:core-ktx:1.3.1'
+
+    // dont update to alpha08. causes problems
+    implementation 'androidx.fragment:fragment-ktx:1.3.0-alpha08'
+
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
@@ -129,27 +133,28 @@ dependencies {
     implementation "androidx.work:work-runtime-ktx:$work_version"
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+    implementation "androidx.multidex:multidex:$multidex_version"
 
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.recyclerview:recyclerview:1.2.0-alpha04'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.recyclerview:recyclerview:1.2.0-alpha05'
     implementation 'androidx.preference:preference:1.1.1'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.viewpager2:viewpager2:1.0.0"
     kapt "androidx.room:room-compiler:$room_version"
 
     def junitVersion = "4.12"
-    def androidXTestExtKotlinRunnerVersion = "1.1.1"
-    def espressoVersion = "3.2.0"
+    def androidXTestExtKotlinRunnerVersion = "1.1.2"
+    def espressoVersion = "3.3.0"
     def coroutinesVersion = "1.2.1"
-    def androidXTestCoreVersion = "1.2.0"
+    def androidXTestCoreVersion = "1.3.0"
 
     // Dependencies for local unit tests
     testImplementation "junit:junit:$junitVersion"
     testImplementation "org.hamcrest:hamcrest-all:1.3"
     testImplementation "androidx.test.ext:junit-ktx:$androidXTestExtKotlinRunnerVersion"
-    testImplementation "androidx.test:core-ktx:1.2.0"
+    testImplementation "androidx.test:core-ktx:1.3.0"
     testImplementation "org.robolectric:robolectric:4.3.1"
     testImplementation "androidx.arch.core:core-testing:2.1.0"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"

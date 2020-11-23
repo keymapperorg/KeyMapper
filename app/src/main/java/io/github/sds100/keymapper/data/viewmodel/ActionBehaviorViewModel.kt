@@ -23,6 +23,22 @@ class ActionBehaviorViewModel : ViewModel() {
 
     val sliderModels = behavior.map {
         sequence {
+
+            if (it.multiplier.isAllowed) {
+                yield(SliderListItemModel(
+                    id = it.multiplier.id,
+                    label = R.string.extra_label_action_multiplier,
+
+                    sliderModel = SliderModel(
+                        value = it.multiplier.value.nullIfDefault,
+                        isDefaultStepEnabled = true,
+                        min = R.integer.action_multiplier_min,
+                        max = R.integer.action_multiplier_max,
+                        stepSize = R.integer.action_multiplier_step_size
+                    )
+                ))
+            }
+
             if (it.repeatRate.isAllowed) {
                 yield(SliderListItemModel(
                     id = it.repeatRate.id,
@@ -76,6 +92,14 @@ class ActionBehaviorViewModel : ViewModel() {
                     id = it.repeat.id,
                     label = R.string.flag_repeat_actions,
                     isChecked = it.repeat.value
+                ))
+            }
+
+            if (it.holdDown.isAllowed) {
+                yield(CheckBoxListItemModel(
+                    id = it.holdDown.id,
+                    label = R.string.flag_hold_down,
+                    isChecked = it.holdDown.value
                 ))
             }
         }.toList()

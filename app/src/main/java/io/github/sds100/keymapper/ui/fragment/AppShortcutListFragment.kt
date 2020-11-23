@@ -7,10 +7,8 @@ import android.content.pm.ActivityInfo
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.SystemRepository
-import io.github.sds100.keymapper.data.model.AppShortcutModel
 import io.github.sds100.keymapper.data.viewmodel.AppShortcutListViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.simple
@@ -24,22 +22,24 @@ import splitties.toast.toast
  * Created by sds100 on 29/03/2020.
  */
 
-class AppShortcutListFragment : RecyclerViewFragment() {
+class AppShortcutListFragment : DefaultRecyclerViewFragment() {
 
     companion object {
         const val REQUEST_KEY = "request_app_shortcut"
-        const val EXTRA_APP_SHORTCUT = "extra_app_shortcut"
+        const val EXTRA_NAME = "extra_name"
+        const val EXTRA_PACKAGE_NAME = "extra_package_name"
+        const val EXTRA_URI = "extra_uri"
         const val SEARCH_STATE_KEY = "key_app_shortcut_search_state"
     }
 
-    override var resultData: ResultData? = ResultData(REQUEST_KEY, EXTRA_APP_SHORTCUT)
+    override var requestKey: String? = REQUEST_KEY
     override var searchStateKey: String? = SEARCH_STATE_KEY
 
     private val mViewModel: AppShortcutListViewModel by viewModels {
         InjectorUtils.provideAppShortcutListViewModel(requireContext())
     }
 
-    private val mAppShortcutConfigLauncher by lazy {
+    private val mAppShortcutConfigLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             it ?: return@registerForActivityResult
 
@@ -50,6 +50,7 @@ class AppShortcutListFragment : RecyclerViewFragment() {
                     val uri: String
 
                     //the shortcut intents seem to be returned in 2 different formats.
+                    @Suppress("DEPRECATION")
                     if (data?.extras != null &&
                         data?.extras!!.containsKey(Intent.EXTRA_SHORTCUT_INTENT)) {
                         //get intent from selected shortcut
@@ -62,24 +63,38 @@ class AppShortcutListFragment : RecyclerViewFragment() {
 
                     val packageName = Intent.parseUri(uri, 0).`package`
                         ?: data?.component?.packageName
-                        ?: Intent.parseUri(uri, 0).component?.packageName!!
+                        ?: Intent.parseUri(uri, 0).component?.packageName
 
-                    //must launch when started because setFragmentResult won't work otherwise!
-                    lifecycleScope.launchWhenStarted {
-                        val shortcutName = getShortcutName(data!!)
-                        val appName = SystemRepository.getInstance(requireContext()).getAppName(packageName)
+                    /*
+                    must launch when resumed or started because setFragmentResult won't work otherwise!
+                    don't launch when started because going up the nav tree will cause the parent fragment and this
+                    fragment to overlap
+                     */
+                    lifecycleScope.launchWhenResumed {
+                        val appName = if (packageName == null) {
+                            null
+                        } else {
+                            SystemRepository.getInstance(requireContext()).getAppName(packageName)
+                        }
 
-                        val model = AppShortcutModel("$appName: $shortcutName", packageName, uri)
+                        val shortcutName = if (appName == null) {
+                            getShortcutName(data!!)
+                        } else {
+                            "$appName: ${getShortcutName(data!!)}"
+                        }
 
-                        selectModel(model)
+                        returnResult(
+                            EXTRA_NAME to shortcutName,
+                            EXTRA_PACKAGE_NAME to packageName,
+                            EXTRA_URI to uri
+                        )
                     }
                 }
             }
         }
-    }
 
     override fun subscribeList(binding: FragmentRecyclerviewBinding) {
-        mViewModel.filteredAppShortcutModelList.observe(viewLifecycleOwner) { appShortcutList ->
+        mViewModel.filteredAppShortcutModelList.observe(viewLifecycleOwner, { appShortcutList ->
 
             binding.epoxyRecyclerView.withModels {
                 appShortcutList.forEach {
@@ -94,7 +109,7 @@ class AppShortcutListFragment : RecyclerViewFragment() {
                     }
                 }
             }
-        }
+        })
     }
 
     override fun onSearchQuery(query: String?) {
@@ -116,7 +131,7 @@ class AppShortcutListFragment : RecyclerViewFragment() {
     }
 
     private suspend fun getShortcutName(data: Intent): String {
-        var shortcutName: String? = data.getStringExtra(Intent.EXTRA_SHORTCUT_NAME)
+        @Suppress("DEPRECATION") var shortcutName: String? = data.getStringExtra(Intent.EXTRA_SHORTCUT_NAME)
 
         if (shortcutName.isNullOrBlank()) {
             shortcutName = requireActivity().editTextAlertDialog(str(R.string.dialog_title_create_shortcut_title))

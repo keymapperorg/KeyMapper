@@ -5,19 +5,19 @@ import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.simple
 import io.github.sds100.keymapper.util.BluetoothUtils
 import io.github.sds100.keymapper.util.str
-import java.io.Serializable
 
 /**
  * Created by sds100 on 22/02/2020.
  */
-class BluetoothDeviceListFragment : RecyclerViewFragment() {
+class BluetoothDeviceListFragment : DefaultRecyclerViewFragment() {
 
     companion object {
         const val REQUEST_KEY = "request_key_bluetooth_device"
-        const val EXTRA_BLUETOOTH_DEVICE = "extra_bluetooth_device"
+        const val EXTRA_NAME = "extra_name"
+        const val EXTRA_ADDRESS = "extra_address"
     }
 
-    override var resultData: ResultData? = ResultData(REQUEST_KEY, EXTRA_BLUETOOTH_DEVICE)
+    override var requestKey: String? = REQUEST_KEY
 
     override fun subscribeList(binding: FragmentRecyclerviewBinding) {
         binding.epoxyRecyclerView.withModels {
@@ -36,12 +36,10 @@ class BluetoothDeviceListFragment : RecyclerViewFragment() {
                     secondaryText(device.address)
 
                     onClick { _ ->
-                        selectModel(Model(device.address, device.name))
+                        returnResult(EXTRA_ADDRESS to device.address, EXTRA_NAME to device.name)
                     }
                 }
             }
         }
     }
-
-    data class Model(val address: String, val name: String) : Serializable
 }

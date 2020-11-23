@@ -1,66 +1,66 @@
 package io.github.sds100.keymapper.ui.fragment
 
 import android.Manifest
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.airbnb.epoxy.EpoxyController
-import io.github.sds100.keymapper.*
+import io.github.sds100.keymapper.Constants
+import io.github.sds100.keymapper.NavAppDirections
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
-import io.github.sds100.keymapper.data.OnboardingState
+import io.github.sds100.keymapper.data.model.ChooseAppStoreModel
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
+import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
+import io.github.sds100.keymapper.databinding.DialogChooseAppStoreBinding
 import io.github.sds100.keymapper.databinding.FragmentKeymapListBinding
-import io.github.sds100.keymapper.service.KeyMapperImeService
+import io.github.sds100.keymapper.keymapSimple
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
 import io.github.sds100.keymapper.ui.callback.SelectionCallback
 import io.github.sds100.keymapper.ui.view.StatusLayout
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
 import io.github.sds100.keymapper.util.result.Failure
-import io.github.sds100.keymapper.util.result.ImeServiceDisabled
+import io.github.sds100.keymapper.util.result.NoCompatibleImeEnabled
 import io.github.sds100.keymapper.util.result.RecoverableFailure
 import io.github.sds100.keymapper.util.result.getFullMessage
 import io.github.sds100.keymapper.worker.SeedDatabaseWorker
 import kotlinx.android.synthetic.main.fragment_keymap_list.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import splitties.alertdialog.appcompat.alertDialog
-import splitties.alertdialog.appcompat.coroutines.showAndAwait
+import splitties.alertdialog.appcompat.cancelButton
 import splitties.alertdialog.appcompat.messageResource
 import splitties.experimental.ExperimentalSplittiesApi
 import splitties.snackbar.action
 import splitties.snackbar.longSnack
+import splitties.toast.toast
 
 /**
  * A placeholder fragment containing a simple view.
  */
 @ExperimentalSplittiesApi
-class KeymapListFragment : Fragment() {
+class KeymapListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private val mViewModel: KeymapListViewModel by viewModels {
+    private val mViewModel: KeymapListViewModel by activityViewModels {
         InjectorUtils.provideKeymapListViewModel(requireContext())
     }
 
@@ -100,8 +100,46 @@ class KeymapListFragment : Fragment() {
         }
     }
 
+    private val mRestoreLauncher by lazy {
+        requireActivity().registerForActivityResult(ActivityResultContracts.GetContent()) {
+            it ?: return@registerForActivityResult
+
+            mBackupRestoreViewModel.restore(requireContext().contentResolver.openInputStream(it))
+        }
+    }
+
+    private val mBackupLauncher by lazy {
+        requireActivity().registerForActivityResult(ActivityResultContracts.CreateDocument()) {
+            it ?: return@registerForActivityResult
+
+            mBackupRestoreViewModel.backup(requireActivity().contentResolver.openOutputStream(it),
+                *selectionProvider.selectedIds)
+
+            selectionProvider.stopSelecting()
+        }
+    }
+
+    private val mBackupRestoreViewModel: BackupRestoreViewModel by activityViewModels {
+        InjectorUtils.provideBackupRestoreViewModel(requireContext())
+    }
+
+    private val mRequestAccessNotificationPolicy =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            updateStatusLayouts()
+        }
+
+    private lateinit var mRecoverFailureDelegate: RecoverFailureDelegate
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        mRecoverFailureDelegate = RecoverFailureDelegate(
+            "KeymapListFragment",
+            requireActivity().activityResultRegistry,
+            this) {
+
+            mViewModel.rebuildModels()
+        }
 
         IntentFilter().apply {
             addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
@@ -118,7 +156,7 @@ class KeymapListFragment : Fragment() {
     ): View? {
         FragmentKeymapListBinding.inflate(inflater, container, false).apply {
             mBinding = this
-            lifecycleOwner = this@KeymapListFragment
+            lifecycleOwner = viewLifecycleOwner
             viewModel = mViewModel
 
             setOnNewKeymapClick {
@@ -162,6 +200,14 @@ class KeymapListFragment : Fragment() {
                         true
                     }
 
+                    R.id.action_backup -> {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                            mBackupLauncher.launch(BackupUtils.createFileName())
+                        }
+
+                        true
+                    }
+
                     else -> false
                 }
             }
@@ -189,22 +235,19 @@ class KeymapListFragment : Fragment() {
 
             mViewModel.apply {
 
-                keymapModelList.observe(viewLifecycleOwner) { keymapList ->
+                keymapModelList.observe(viewLifecycleOwner, { keymapList ->
                     mController.keymapList = keymapList
-                }
+                })
 
                 selectionProvider.apply {
 
-                    isSelectable.observe(viewLifecycleOwner, Observer { isSelectable ->
+                    isSelectable.observe(viewLifecycleOwner, { isSelectable ->
                         mController.requestModelBuild()
 
                         if (isSelectable) {
                             appBar.replaceMenu(R.menu.menu_multi_select)
                         } else {
                             appBar.replaceMenu(R.menu.menu_keymap_list)
-
-                            // only show the button to seed the database in debug builds.
-                            appBar.menu.findItem(R.id.action_seed_database).isVisible = BuildConfig.DEBUG
                         }
                     })
 
@@ -212,11 +255,25 @@ class KeymapListFragment : Fragment() {
                 }
 
                 rebuildModelsEvent.observe(viewLifecycleOwner, EventObserver {
-                    lifecycleScope.launch {
+                    viewLifecycleOwner.lifecycleScope.launch {
                         mViewModel.setModelList(buildModelList(it))
                     }
                 })
             }
+
+            mBackupRestoreViewModel.showMessageStringRes.observe(viewLifecycleOwner, EventObserver { messageRes ->
+                when (messageRes) {
+                    else -> toast(messageRes)
+                }
+            })
+
+            mBackupRestoreViewModel.showErrorMessage.observe(viewLifecycleOwner, EventObserver { failure ->
+                toast(failure.getFullMessage(requireContext()))
+            })
+
+            mBackupRestoreViewModel.requestRestore.observe(viewLifecycleOwner, EventObserver {
+                mRestoreLauncher.launch(FileUtils.MIME_TYPE_ALL)
+            })
 
             expanded = mExpanded
             collapsedStatusLayoutState = mCollapsedStatusState
@@ -226,7 +283,6 @@ class KeymapListFragment : Fragment() {
             writeSettingsStatusState = mWriteSettingsStatusState
 
             buttonCollapse.setOnClickListener {
-
                 mExpanded.value = false
             }
 
@@ -239,49 +295,29 @@ class KeymapListFragment : Fragment() {
             }
 
             setEnableImeService {
-                lifecycleScope.launchWhenCreated {
-                    val onboardingState = OnboardingState(requireContext())
+                lifecycleScope.launchWhenStarted {
 
-                    if (!onboardingState.getShownPrompt(R.string.key_pref_shown_password_screen_lock_warning)) {
-                        val approvedWarning = requireActivity().alertDialog {
-                            messageResource = R.string.dialog_message_password_screen_lock_warning
-                        }.showAndAwait(okValue = true,
-                            cancelValue = false,
-                            dismissValue = false)
+                    KeyboardUtils.enableCompatibleInputMethods()
 
-                        if (approvedWarning) {
-                            onboardingState.setShownPrompt(R.string.key_pref_shown_password_screen_lock_warning)
+                    lifecycleScope.launch {
+                        delay(3000)
 
-                            KeyboardUtils.enableKeyMapperIme()
-                        }
-                    } else {
-                        KeyboardUtils.enableKeyMapperIme()
-
-                        lifecycleScope.launch {
-                            delay(3000)
-
-                            updateStatusLayouts()
-                        }
-                    }
-                }
-            }
-
-            setGrantWriteSecureSettingsPermission {
-                PermissionUtils.requestPermission(requireActivity(), Manifest.permission.WRITE_SECURE_SETTINGS) {
-                    updateStatusLayouts()
-                }
-            }
-
-            setGrantDndAccess {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    PermissionUtils.requestPermission(requireActivity(),
-                        Manifest.permission.ACCESS_NOTIFICATION_POLICY) {
                         updateStatusLayouts()
                     }
                 }
             }
 
-            mExpanded.observe(viewLifecycleOwner) {
+            setGrantWriteSecureSettingsPermission {
+                PermissionUtils.requestWriteSecureSettingsPermission(requireActivity())
+            }
+
+            setGrantDndAccess {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    PermissionUtils.requestAccessNotificationPolicy(mRequestAccessNotificationPolicy)
+                }
+            }
+
+            mExpanded.observe(viewLifecycleOwner, {
                 if (it == true) {
                     expandableLayout.expand()
                 } else {
@@ -290,7 +326,7 @@ class KeymapListFragment : Fragment() {
                     val transition = Fade()
                     TransitionManager.beginDelayedTransition(layoutCollapsed, transition)
                 }
-            }
+            })
 
             updateStatusLayouts()
 
@@ -304,6 +340,31 @@ class KeymapListFragment : Fragment() {
                 AppPreferences.lastInstalledVersionCode = Constants.VERSION_CODE
             }
 
+            setGetNewGuiKeyboard {
+                requireContext().alertDialog {
+                    messageResource = R.string.dialog_message_select_app_store_gui_keyboard
+
+                    DialogChooseAppStoreBinding.inflate(layoutInflater).apply {
+                        model = ChooseAppStoreModel(
+                            playStoreLink = str(R.string.url_play_store_keymapper_gui_keyboard),
+                            githubLink = str(R.string.url_github_keymapper_gui_keyboard)
+                        )
+
+                        setView(this.root)
+                    }
+
+                    cancelButton()
+
+                    show()
+                }
+            }
+
+            setDismissNewGuiKeyboardAd {
+                AppPreferences.showGuiKeyboardAd = false
+            }
+
+            showNewGuiKeyboardAd = AppPreferences.showGuiKeyboardAd
+
             return this.root
         }
     }
@@ -316,18 +377,16 @@ class KeymapListFragment : Fragment() {
     }
 
     private suspend fun buildModelList(keymapList: List<KeyMap>) =
-        withContext(lifecycleScope.coroutineContext + Dispatchers.Default) {
-            keymapList.map { keymap ->
-                KeymapListItemModel(
-                    id = keymap.id,
-                    actionList = keymap.actionList.map { it.buildChipModel(requireContext()) },
-                    triggerDescription = keymap.trigger.buildDescription(requireContext(), mViewModel.getDeviceInfoList()),
-                    constraintList = keymap.constraintList.map { it.buildModel(requireContext()) },
-                    constraintMode = keymap.constraintMode,
-                    flagsDescription = keymap.trigger.buildTriggerFlagsDescription(requireContext()),
-                    isEnabled = keymap.isEnabled
-                )
-            }
+        keymapList.map { keymap ->
+            KeymapListItemModel(
+                id = keymap.id,
+                actionList = keymap.actionList.map { it.buildChipModel(requireContext()) },
+                triggerDescription = keymap.trigger.buildDescription(requireContext(), mViewModel.getDeviceInfoList()),
+                constraintList = keymap.constraintList.map { it.buildModel(requireContext()) },
+                constraintMode = keymap.constraintMode,
+                flagsDescription = keymap.trigger.buildTriggerFlagsDescription(requireContext()),
+                isEnabled = keymap.isEnabled
+            )
         }
 
     override fun onResume() {
@@ -335,12 +394,26 @@ class KeymapListFragment : Fragment() {
 
         mViewModel.rebuildModels()
         updateStatusLayouts()
+        requireContext().defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
+
+        if (PackageUtils.isAppInstalled(KeyboardUtils.KEY_MAPPER_GUI_IME_PACKAGE)
+            || Build.VERSION.SDK_INT < KeyboardUtils.KEY_MAPPER_GUI_IME_MIN_API) {
+            AppPreferences.showGuiKeyboardAd = false
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
         requireActivity().unregisterReceiver(mBroadcastReceiver)
+        requireContext().defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+    }
+
+    override fun onSharedPreferenceChanged(preferences: SharedPreferences?, key: String?) {
+        when (key) {
+            str(R.string.key_pref_show_gui_keyboard_ad) ->
+                mBinding.showNewGuiKeyboardAd = AppPreferences.showGuiKeyboardAd
+        }
     }
 
     private fun updateStatusLayouts() {
@@ -359,11 +432,11 @@ class KeymapListFragment : Fragment() {
             mWriteSettingsStatusState.value = StatusLayout.State.WARN
         }
 
-        if (KeyMapperImeService.isServiceEnabled()) {
+        if (KeyboardUtils.isCompatibleImeEnabled()) {
             mImeServiceStatusState.value = StatusLayout.State.POSITIVE
 
         } else if (mViewModel.keymapModelList.value?.any { keymap ->
-                keymap.actionList.any { it.error is ImeServiceDisabled }
+                keymap.actionList.any { it.error is NoCompatibleImeEnabled }
             } == true) {
 
             mImeServiceStatusState.value = StatusLayout.State.ERROR
@@ -426,11 +499,7 @@ class KeymapListFragment : Fragment() {
                                 //only add an action to fix the error if the error can be recovered from
                                 if (failure is RecoverableFailure) {
                                     action(R.string.snackbar_fix) {
-                                        lifecycleScope.launch {
-                                            failure.recover(requireActivity()) {
-                                                mViewModel.rebuildModels()
-                                            }
-                                        }
+                                        mRecoverFailureDelegate.recover(requireActivity(), failure)
                                     }
                                 }
 

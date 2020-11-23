@@ -1,6 +1,10 @@
 package io.github.sds100.keymapper.data.model
 
 import android.content.Context
+import com.github.salomonbrys.kotson.byArray
+import com.github.salomonbrys.kotson.byInt
+import com.github.salomonbrys.kotson.byString
+import com.github.salomonbrys.kotson.jsonDeserializer
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.ActionType
@@ -38,6 +42,7 @@ data class Action(
      * - Key Event: the keycode. Any extra information is stored in [extras]
      * - Block of text: text to insert
      * - System action: the system action id
+     * - Tap coordinate: comma separated x and y values
      */
     @SerializedName(NAME_DATA)
     val data: String,
@@ -63,11 +68,13 @@ data class Action(
         const val ACTION_FLAG_SHOW_VOLUME_UI = 1
         const val ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST = 2
         const val ACTION_FLAG_REPEAT = 4
+        const val ACTION_FLAG_HOLD_DOWN = 8
 
         val ACTION_FLAG_LABEL_MAP = mapOf(
             ACTION_FLAG_SHOW_VOLUME_UI to R.string.flag_show_volume_dialog,
             ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST to R.string.flag_performing_action_toast,
-            ACTION_FLAG_REPEAT to R.string.flag_repeat_actions
+            ACTION_FLAG_REPEAT to R.string.flag_repeat_actions,
+            ACTION_FLAG_HOLD_DOWN to R.string.flag_hold_down
         )
 
         //DON'T CHANGE THESE IDs!!!!
@@ -78,6 +85,8 @@ data class Action(
         const val EXTRA_LENS = "extra_flash"
         const val EXTRA_RINGER_MODE = "extra_ringer_mode"
         const val EXTRA_DND_MODE = "extra_do_not_disturb_mode"
+        const val EXTRA_ORIENTATIONS = "extra_orientations"
+        const val EXTRA_COORDINATE_DESCRIPTION = "extra_coordinate_description"
 
         /**
          * The KeyEvent meta state is stored as bit flags.
@@ -91,6 +100,7 @@ data class Action(
         const val EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR = "extra_custom_stop_repeat_behaviour"
         const val EXTRA_REPEAT_DELAY = "extra_hold_down_until_repeat_delay"
         const val EXTRA_REPEAT_RATE = "extra_repeat_delay"
+        const val EXTRA_MULTIPLIER = "extra_multiplier"
 
         val DATA_EXTRAS = arrayOf(
             EXTRA_SHORTCUT_TITLE,
@@ -101,32 +111,42 @@ data class Action(
             EXTRA_DND_MODE,
             EXTRA_KEY_EVENT_META_STATE,
             EXTRA_IME_ID,
-            EXTRA_IME_NAME
+            EXTRA_IME_NAME,
+            EXTRA_ORIENTATIONS,
+            EXTRA_COORDINATE_DESCRIPTION
         )
 
         fun appAction(packageName: String): Action {
             return Action(ActionType.APP, packageName)
         }
 
-        fun appShortcutAction(model: AppShortcutModel): Action {
+        fun appShortcutAction(name: String, packageName: String?, uri: String): Action {
             val extras = mutableListOf(
-                Extra(EXTRA_SHORTCUT_TITLE, model.name),
-                Extra(EXTRA_PACKAGE_NAME, model.packageName)
+                Extra(EXTRA_SHORTCUT_TITLE, name),
             )
 
-            return Action(ActionType.APP_SHORTCUT, data = model.uri, extras = extras)
+            packageName?.let {
+                extras.add(Extra(EXTRA_PACKAGE_NAME, packageName))
+            }
+
+            return Action(ActionType.APP_SHORTCUT, data = uri, extras = extras)
         }
 
         fun keyAction(keyCode: Int): Action {
-            return keyEventAction(keyCode)
+            return keyEventAction(keyCode, metaState = 0)
         }
 
-        fun keycodeAction(keyCode: Int): Action {
-            return keyEventAction(keyCode)
+        fun keyCodeAction(keyCode: Int): Action {
+            return keyEventAction(keyCode, metaState = 0)
         }
 
-        private fun keyEventAction(keyCode: Int): Action {
-            return Action(ActionType.KEY_EVENT, keyCode.toString(), flags = ACTION_FLAG_REPEAT)
+        fun keyEventAction(keyCode: Int, metaState: Int): Action {
+            return Action(
+                ActionType.KEY_EVENT,
+                keyCode.toString(),
+                flags = ACTION_FLAG_REPEAT,
+                extras = listOf(Extra(EXTRA_KEY_EVENT_META_STATE, metaState.toString()))
+            )
         }
 
         fun textBlockAction(text: String): Action {
@@ -137,28 +157,55 @@ data class Action(
             return Action(ActionType.URL, url)
         }
 
-        fun systemAction(ctx: Context, model: SelectedSystemActionModel): Action {
-            val data = model.id
+        fun systemAction(ctx: Context, id: String, optionData: String?): Action {
             val extras = mutableListOf<Extra>()
             var flags = 0
 
-            model.optionData?.let {
-                extras.add(Extra(Option.getExtraIdForOption(model.id), it))
+            optionData?.let {
+                extras.add(Extra(Option.getExtraIdForOption(id), it))
 
-                if (model.id == SystemAction.SWITCH_KEYBOARD) {
-                    Option.getOptionLabel(ctx, model.id, it).onSuccess { imeName ->
+                if (id == SystemAction.SWITCH_KEYBOARD) {
+                    Option.getOptionLabel(ctx, id, it).onSuccess { imeName ->
                         extras.add(Extra(EXTRA_IME_NAME, imeName))
                     }
                 }
             }
 
             //show the volume UI by default when the user chooses a volume action.
-            if (ActionUtils.isVolumeAction(data)) {
+            if (ActionUtils.isVolumeAction(id)) {
                 flags = flags.withFlag(ACTION_FLAG_SHOW_VOLUME_UI).withFlag(ACTION_FLAG_REPEAT)
             }
 
-            val action = Action(ActionType.SYSTEM_ACTION, data, extras, flags)
+            val action = Action(ActionType.SYSTEM_ACTION, id, extras, flags)
             return action
+        }
+
+        fun tapCoordinateAction(x: Int, y: Int, coordinateDescription: String?): Action {
+            val extras = mutableListOf<Extra>()
+
+            if (!coordinateDescription.isNullOrBlank()) {
+                extras.add(Extra(EXTRA_COORDINATE_DESCRIPTION, coordinateDescription))
+            }
+
+            return Action(
+                ActionType.TAP_COORDINATE,
+                "$x,$y",
+                extras = extras
+            )
+        }
+
+        val DESERIALIZER = jsonDeserializer {
+            val typeString by it.json.byString(NAME_ACTION_TYPE)
+            val type = ActionType.valueOf(typeString)
+
+            val data by it.json.byString(NAME_DATA)
+
+            val extrasJsonArray by it.json.byArray(NAME_EXTRAS)
+            val extraList = it.context.deserialize<List<Extra>>(extrasJsonArray) ?: listOf()
+
+            val flags by it.json.byInt(NAME_FLAGS)
+
+            Action(type, data, extraList.toMutableList(), flags)
         }
     }
 

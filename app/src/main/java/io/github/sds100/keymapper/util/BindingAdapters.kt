@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.util
 
 import android.content.res.ColorStateList
 import android.view.View
+import android.widget.Button
 import android.widget.CompoundButton
 import android.widget.SeekBar
 import android.widget.TextView
@@ -45,27 +46,27 @@ fun StatusLayout.setStatusLayoutState(
     showFixButton: Boolean = false,
     onFixClick: View.OnClickListener?
 ) {
-    buttonFix.isVisible = state != StatusLayout.State.POSITIVE && showFixButton
+    button.isVisible = state != StatusLayout.State.POSITIVE && showFixButton
 
-    buttonFix.setOnClickListener(onFixClick)
+    button.setOnClickListener(onFixClick)
 
     when (state) {
         StatusLayout.State.POSITIVE -> {
-            textViewStatus.text = fixedText
+            textView.text = fixedText
         }
 
         StatusLayout.State.WARN -> {
-            textViewStatus.text = warningText
+            textView.text = warningText
 
             val color = color(R.color.warn)
-            buttonFix.setBackgroundColor(color)
+            button.setBackgroundColor(color)
         }
 
         StatusLayout.State.ERROR -> {
-            textViewStatus.text = errorText
+            textView.text = errorText
 
             val color = styledColor(R.attr.colorError)
-            buttonFix.setBackgroundColor(color)
+            button.setBackgroundColor(color)
         }
     }
 
@@ -81,8 +82,8 @@ fun StatusLayout.setStatusLayoutState(
         StatusLayout.State.ERROR -> styledColor(R.attr.colorError)
     }
 
-    TextViewCompat.setCompoundDrawableTintList(textViewStatus, ColorStateList.valueOf(tint))
-    textViewStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, null, null, null)
+    TextViewCompat.setCompoundDrawableTintList(textView, ColorStateList.valueOf(tint))
+    textView.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, null, null, null)
 }
 
 @BindingAdapter("app:markdown")
@@ -118,7 +119,11 @@ fun TextInputLayout.errorWhenEmpty(enabled: Boolean) {
 
     //need to set it up when the view is created
     if (editText?.text.isNullOrBlank()) {
-        error = str(R.string.error_cant_be_empty)
+        error = if (enabled) {
+            str(R.string.error_cant_be_empty)
+        } else {
+            null
+        }
     }
 
     editText?.addTextChangedListener {
@@ -343,4 +348,13 @@ fun Slider.enabled(enabled: Boolean) {
 @BindingAdapter("app:customBackgroundTint")
 fun MaterialButton.backgroundTint(@ColorInt color: Int) {
     backgroundTintList = ColorStateList.valueOf(color)
+}
+
+@BindingAdapter("app:openUrlOnClick")
+fun Button.openUrlOnClick(url: String?) {
+    url ?: return
+
+    setOnClickListener {
+        context.openUrl(url)
+    }
 }

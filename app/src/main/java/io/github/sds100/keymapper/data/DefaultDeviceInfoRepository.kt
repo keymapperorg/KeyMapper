@@ -1,7 +1,7 @@
 package com.example.architecturetest.data
 
-import io.github.sds100.keymapper.data.db.dao.DeviceInfoDao
 import io.github.sds100.keymapper.data.DeviceInfoRepository
+import io.github.sds100.keymapper.data.db.dao.DeviceInfoDao
 import io.github.sds100.keymapper.data.model.DeviceInfo
 
 /**
@@ -23,8 +23,8 @@ class DefaultDeviceInfoRepository internal constructor(private val mDeviceInfoDa
         return mDeviceInfoDao.getAll()
     }
 
-    override suspend fun createDeviceInfo(deviceInfo: DeviceInfo) {
-        mDeviceInfoDao.insert(deviceInfo)
+    override suspend fun insertDeviceInfo(vararg deviceInfo: DeviceInfo) {
+        mDeviceInfoDao.insert(*deviceInfo)
     }
 
     override suspend fun getDeviceInfo(descriptor: String) {

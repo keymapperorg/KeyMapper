@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.ui.adapter
 
+import android.os.Build
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import io.github.sds100.keymapper.ui.fragment.*
@@ -10,7 +11,7 @@ import io.github.sds100.keymapper.ui.fragment.*
 
 class ChooseActionPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
 
-    private val mTabFragmentsCreators: Array<() -> Fragment> = arrayOf(
+    private val mTabFragmentsCreators: List<() -> Fragment> = mutableListOf(
         {
             AppListFragment().apply {
                 isAppBarVisible = false
@@ -24,13 +25,17 @@ class ChooseActionPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragme
             }
         },
         {
-            KeyActionTypeFragment()
-        },
-        {
             KeycodeListFragment().apply {
                 isAppBarVisible = false
                 isInPagerAdapter = true
             }
+        },
+        {
+            KeyActionTypeFragment()
+        },
+
+        {
+            KeyEventActionTypeFragment()
         },
         {
             TextBlockActionTypeFragment()
@@ -45,18 +50,22 @@ class ChooseActionPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragme
             }
         },
         {
-            UnsupportedSystemActionListFragment().apply {
+            UnsupportedActionListFragment().apply {
                 isAppBarVisible = false
                 isInPagerAdapter = true
             }
         }
-    )
+    ).apply {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            add(5) { TapCoordinateActionTypeFragment() }
+        }
+    }
 
     fun getSearchStateKey(position: Int): String? = when (position) {
         0 -> AppListFragment.SEARCH_STATE_KEY
         1 -> AppShortcutListFragment.SEARCH_STATE_KEY
-        3 -> KeycodeListFragment.SEARCH_STATE_KEY
-        6 -> SystemActionListFragment.SEARCH_STATE_KEY
+        2 -> KeycodeListFragment.SEARCH_STATE_KEY
+        8 -> SystemActionListFragment.SEARCH_STATE_KEY
 
         else -> null
     }

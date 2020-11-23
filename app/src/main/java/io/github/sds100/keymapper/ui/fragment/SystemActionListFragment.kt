@@ -6,11 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import com.airbnb.epoxy.EpoxyController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Option
-import io.github.sds100.keymapper.data.model.SelectedSystemActionModel
+import io.github.sds100.keymapper.data.model.OptionType
 import io.github.sds100.keymapper.data.model.SystemActionDef
 import io.github.sds100.keymapper.data.model.SystemActionListItemModel
 import io.github.sds100.keymapper.data.viewmodel.SystemActionListViewModel
@@ -26,11 +25,8 @@ import io.github.sds100.keymapper.util.result.onSuccess
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import splitties.alertdialog.appcompat.alertDialog
-import splitties.alertdialog.appcompat.cancelButton
+import splitties.alertdialog.appcompat.*
 import splitties.alertdialog.appcompat.coroutines.showAndAwaitOkOrDismiss
-import splitties.alertdialog.appcompat.messageResource
-import splitties.alertdialog.appcompat.titleResource
 import splitties.experimental.ExperimentalSplittiesApi
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -38,11 +34,12 @@ import kotlin.coroutines.suspendCoroutine
 /**
  * Created by sds100 on 31/03/2020.
  */
-class SystemActionListFragment : RecyclerViewFragment(), StringResourceProvider {
+class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourceProvider {
 
     companion object {
         const val REQUEST_KEY = "request_system_action"
-        const val EXTRA_SYSTEM_ACTION = "extra_system_action"
+        const val EXTRA_SYSTEM_ACTION_ID = "extra_system_action_id"
+        const val EXTRA_SYSTEM_ACTION_OPTION_DATA = "extra_system_action_option_data"
         const val SEARCH_STATE_KEY = "key_system_action_search_state"
     }
 
@@ -51,7 +48,7 @@ class SystemActionListFragment : RecyclerViewFragment(), StringResourceProvider 
     }
 
     override var searchStateKey: String? = SEARCH_STATE_KEY
-    override var resultData: ResultData? = ResultData(REQUEST_KEY, EXTRA_SYSTEM_ACTION)
+    override var requestKey: String? = REQUEST_KEY
 
     override val progressCallback: ProgressCallback?
         get() = mViewModel
@@ -67,13 +64,13 @@ class SystemActionListFragment : RecyclerViewFragment(), StringResourceProvider 
     override fun subscribeList(binding: FragmentRecyclerviewBinding) {
         binding.apply {
 
-            mViewModel.unsupportedSystemActions.observe(viewLifecycleOwner) {
+            mViewModel.unsupportedSystemActions.observe(viewLifecycleOwner, {
                 if (it.isNotEmpty()) {
                     caption = str(R.string.your_device_doesnt_support_some_actions)
                 }
-            }
+            })
 
-            mViewModel.filteredModelList.observe(viewLifecycleOwner) {
+            mViewModel.filteredModelList.observe(viewLifecycleOwner, {
                 epoxyRecyclerView.withModels {
                     for ((sectionHeader, systemActions) in it) {
                         sectionHeader {
@@ -86,7 +83,7 @@ class SystemActionListFragment : RecyclerViewFragment(), StringResourceProvider 
                         }
                     }
                 }
-            }
+            })
         }
     }
 
@@ -124,14 +121,37 @@ class SystemActionListFragment : RecyclerViewFragment(), StringResourceProvider 
 
             selectedOptionData = suspendCoroutine<String> {
                 requireActivity().alertDialog {
-                    setItems(optionLabels.toTypedArray()) { _, which ->
-                        val option = options[which]
 
-                        it.resume(option)
+                    when (systemActionDef.optionType) {
+                        OptionType.SINGLE -> {
+                            setItems(optionLabels.toTypedArray()) { _, which ->
+                                val option = options[which]
 
-                        cancelButton {
-                            cancel()
+                                it.resume(option)
+                            }
                         }
+
+                        OptionType.MULTIPLE -> {
+                            val checkedOptions = BooleanArray(optionLabels.size) { false }
+
+                            setMultiChoiceItems(
+                                optionLabels.toTypedArray(),
+                                checkedOptions
+                            ) { _, which, checked ->
+                                checkedOptions[which] = checked
+                            }
+
+                            okButton { _ ->
+                                val data = Option.optionSetToString(
+                                    options.filterIndexed { index, _ -> checkedOptions[index] }.toSet())
+
+                                it.resume(data)
+                            }
+                        }
+                    }
+
+                    cancelButton {
+                        cancel()
                     }
 
                     show()
@@ -139,7 +159,10 @@ class SystemActionListFragment : RecyclerViewFragment(), StringResourceProvider 
             }
         }
 
-        selectModel(SelectedSystemActionModel(systemActionDef.id, selectedOptionData))
+        returnResult(
+            EXTRA_SYSTEM_ACTION_ID to systemActionDef.id,
+            EXTRA_SYSTEM_ACTION_OPTION_DATA to selectedOptionData
+        )
     }
 
     @ExperimentalSplittiesApi

@@ -1,11 +1,13 @@
 package io.github.sds100.keymapper.util.delegate
 
 import android.accessibilityservice.AccessibilityService
+import android.accessibilityservice.GestureDescription
 import android.app.admin.DevicePolicyManager
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Context.DEVICE_POLICY_SERVICE
 import android.content.Intent
+import android.graphics.Path
 import android.hardware.camera2.CameraCharacteristics
 import android.media.AudioManager
 import android.net.Uri
@@ -13,7 +15,9 @@ import android.os.Build
 import android.provider.MediaStore
 import android.provider.Settings
 import android.view.KeyEvent
+import android.view.accessibility.AccessibilityNodeInfo
 import android.webkit.URLUtil
+import androidx.core.os.bundleOf
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.lifecycle.Lifecycle
 import io.github.sds100.keymapper.R
@@ -25,9 +29,12 @@ import io.github.sds100.keymapper.data.model.getData
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.onSuccess
 import io.github.sds100.keymapper.util.result.valueOrNull
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
 import splitties.toast.toast
+import timber.log.Timber
 
 
 /**
@@ -36,7 +43,8 @@ import splitties.toast.toast
 
 class ActionPerformerDelegate(context: Context,
                               iPerformAccessibilityAction: IPerformAccessibilityAction,
-                              lifecycle: Lifecycle) : IPerformAccessibilityAction by iPerformAccessibilityAction {
+                              lifecycle: Lifecycle
+) : IPerformAccessibilityAction by iPerformAccessibilityAction {
 
     companion object {
         private const val OVERFLOW_MENU_CONTENT_DESCRIPTION = "More options"
@@ -44,22 +52,25 @@ class ActionPerformerDelegate(context: Context,
 
     private val mCtx = context.applicationContext
     private lateinit var mFlashlightController: FlashlightController
+    private val mSuProcessDelegate = SuProcessDelegate()
 
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mFlashlightController = FlashlightController()
             lifecycle.addObserver(mFlashlightController)
         }
+
+        lifecycle.addObserver(mSuProcessDelegate)
     }
 
-    fun performAction(action: Action) = performAction(PerformActionModel(action))
+    fun performAction(action: Action, chosenImePackageName: String?) = performAction(PerformActionModel(action), chosenImePackageName)
 
-    fun performAction(performActionModel: PerformActionModel) {
-        val (action, metaState) = performActionModel
+    fun performAction(performActionModel: PerformActionModel, chosenImePackageName: String?) {
+        val (action, showToast, additionalMetaState, keyEventAction) = performActionModel
 
         mCtx.apply {
             //Only show a toast message that Key Mapper is performing an action if the user has enabled it
-            if (performActionModel.showToast) {
+            if (showToast) {
                 toast(R.string.performing_action)
             }
 
@@ -90,7 +101,7 @@ class ActionPerformerDelegate(context: Context,
                     }
                 }
 
-                ActionType.TEXT_BLOCK -> KeyboardUtils.inputTextFromImeService(action.data)
+                ActionType.TEXT_BLOCK -> chosenImePackageName?.let { KeyboardUtils.inputTextFromImeService(it, action.data) }
 
                 ActionType.URL -> {
                     val guessedUrl = URLUtil.guessUrl(action.data)
@@ -106,28 +117,68 @@ class ActionPerformerDelegate(context: Context,
                     }
                 }
 
-                ActionType.SYSTEM_ACTION -> performSystemAction(action)
+                ActionType.SYSTEM_ACTION -> performSystemAction(action, chosenImePackageName)
+
+                ActionType.TAP_COORDINATE -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        val x = action.data.split(',')[0]
+                        val y = action.data.split(',')[1]
+
+                        val duration = 1L //ms
+
+                        val path = Path().apply {
+                            moveTo(x.toFloat(), y.toFloat())
+                        }
+
+                        val strokeDescription = if (action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)
+                            && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+                            when (keyEventAction) {
+                                KeyEventAction.DOWN -> GestureDescription.StrokeDescription(path, 0, duration, true)
+                                KeyEventAction.UP -> GestureDescription.StrokeDescription(path, 59999, duration, false)
+                                else -> null
+                            }
+
+                        } else {
+                            GestureDescription.StrokeDescription(path, 0, duration)
+                        }
+
+                        strokeDescription?.let {
+                            val gestureDescription = GestureDescription.Builder().apply {
+                                addStroke(it)
+                            }.build()
+
+                            dispatchGesture(gestureDescription, null, null)
+                        }
+                    }
+                }
 
                 else -> {
                     if (action.type == ActionType.KEY_EVENT) {
-                        KeyboardUtils.inputKeyEventFromImeService(
-                            keyCode = action.data.toInt(),
-                            metaState = metaState.withFlag(
-                                action.extras.getData(Action.EXTRA_KEY_EVENT_META_STATE).valueOrNull()?.toInt() ?: 0
-                            )
-                        )
+                        chosenImePackageName?.let {
+                            KeyboardUtils.inputKeyEventFromImeService(
+                                it,
+                                keyCode = action.data.toInt(),
+                                metaState = additionalMetaState.withFlag(
+                                    action.extras.getData(Action.EXTRA_KEY_EVENT_META_STATE).valueOrNull()?.toInt() ?: 0
+                                ),
+                                keyEventAction = keyEventAction,
+                                deviceId = 0)
+                        }
                     }
                 }
             }
         }
     }
 
-    fun performSystemAction(id: String) = performSystemAction(Action(ActionType.SYSTEM_ACTION, id))
+    fun performSystemAction(id: String, chosenImePackageName: String?) = performSystemAction(Action(ActionType.SYSTEM_ACTION, id), chosenImePackageName)
 
-    private fun performSystemAction(action: Action) {
+    private fun performSystemAction(action: Action, chosenImePackageName: String?) {
 
-        fun getSdkValueForOption(systemActionId: String, onSuccess: (sdkOptionValue: Int) -> Unit) {
-            val extraId = Option.getExtraIdForOption(systemActionId)
+        val id = action.data
+
+        fun getSdkValueForOption(onSuccess: (sdkOptionValue: Int) -> Unit) {
+            val extraId = Option.getExtraIdForOption(id)
 
             action.extras.getData(extraId).onSuccess { option ->
                 val sdkOptionValue = Option.OPTION_ID_SDK_ID_MAP[option]
@@ -138,15 +189,27 @@ class ActionPerformerDelegate(context: Context,
             }
         }
 
-        val id = action.data
+        fun getSdkValuesForOptionSet(onSuccess: (values: List<Int>) -> Unit) {
+            val extraId = Option.getExtraIdForOption(id)
+
+            action.extras.getData(extraId).onSuccess { data ->
+                val optionIds = data.split(',')
+
+                val sdkValues = optionIds.map { Option.OPTION_ID_SDK_ID_MAP[it] }
+
+                if (sdkValues.all { it != null }) {
+                    onSuccess(sdkValues.map { it!! })
+                }
+            }
+        }
 
         val showVolumeUi = action.flags.hasFlag(Action.ACTION_FLAG_SHOW_VOLUME_UI)
 
         mCtx.apply {
             when (id) {
-                SystemAction.ENABLE_WIFI -> NetworkUtils.changeWifiState(this, StateChange.ENABLE)
-                SystemAction.DISABLE_WIFI -> NetworkUtils.changeWifiState(this, StateChange.DISABLE)
-                SystemAction.TOGGLE_WIFI -> NetworkUtils.changeWifiState(this, StateChange.TOGGLE)
+                SystemAction.ENABLE_WIFI -> NetworkUtils.changeWifiStatePreQ(this, StateChange.ENABLE)
+                SystemAction.DISABLE_WIFI -> NetworkUtils.changeWifiStatePreQ(this, StateChange.DISABLE)
+                SystemAction.TOGGLE_WIFI -> NetworkUtils.changeWifiStatePreQ(this, StateChange.TOGGLE)
 
                 SystemAction.TOGGLE_WIFI_ROOT -> NetworkUtils.toggleWifiRoot()
                 SystemAction.ENABLE_WIFI_ROOT -> NetworkUtils.enableWifiRoot()
@@ -177,13 +240,17 @@ class ActionPerformerDelegate(context: Context,
                 SystemAction.LANDSCAPE_MODE -> ScreenRotationUtils.forceLandscapeMode(this)
                 SystemAction.SWITCH_ORIENTATION -> ScreenRotationUtils.switchOrientation(this)
 
+                SystemAction.CYCLE_ROTATIONS -> getSdkValuesForOptionSet {
+                    ScreenRotationUtils.cycleRotations(this, it)
+                }
+
                 SystemAction.VOLUME_UP -> AudioUtils.adjustVolume(this, AudioManager.ADJUST_RAISE, showVolumeUi)
                 SystemAction.VOLUME_DOWN -> AudioUtils.adjustVolume(this, AudioManager.ADJUST_LOWER, showVolumeUi)
 
                 //the volume UI should always be shown for this action
                 SystemAction.VOLUME_SHOW_DIALOG -> AudioUtils.adjustVolume(this, AudioManager.ADJUST_SAME, true)
 
-                SystemAction.VOLUME_DECREASE_STREAM -> getSdkValueForOption(id) { stream ->
+                SystemAction.VOLUME_DECREASE_STREAM -> getSdkValueForOption { stream ->
                     AudioUtils.adjustSpecificStream(
                         this,
                         AudioManager.ADJUST_LOWER,
@@ -192,7 +259,7 @@ class ActionPerformerDelegate(context: Context,
                     )
                 }
 
-                SystemAction.VOLUME_INCREASE_STREAM -> getSdkValueForOption(id) { stream ->
+                SystemAction.VOLUME_INCREASE_STREAM -> getSdkValueForOption { stream ->
                     AudioUtils.adjustSpecificStream(
                         this,
                         AudioManager.ADJUST_RAISE,
@@ -204,7 +271,7 @@ class ActionPerformerDelegate(context: Context,
                 SystemAction.CYCLE_VIBRATE_RING -> AudioUtils.cycleBetweenVibrateAndRing(this)
                 SystemAction.CYCLE_RINGER_MODE -> AudioUtils.cycleThroughAllRingerModes(this)
 
-                SystemAction.CHANGE_RINGER_MODE -> getSdkValueForOption(id) { ringerMode ->
+                SystemAction.CHANGE_RINGER_MODE -> getSdkValueForOption { ringerMode ->
                     AudioUtils.changeRingerMode(this, ringerMode)
                 }
 
@@ -229,13 +296,42 @@ class ActionPerformerDelegate(context: Context,
                 SystemAction.OPEN_RECENTS -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
                 SystemAction.OPEN_MENU -> {
                     if (AppPreferences.hasRootPermission) {
-                        RootUtils.executeRootCommand("input keyevent ${KeyEvent.KEYCODE_MENU}")
+
+                        if (mSuProcessDelegate.process == null) {
+                            mSuProcessDelegate.createSuProcess()
+                        }
+
+                        mSuProcessDelegate.process?.let {
+                            //the \n is very important. it is like pressing enter
+
+                            try {
+                                with(it.outputStream.bufferedWriter()) {
+                                    write("input keyevent ${KeyEvent.KEYCODE_MENU}\n")
+                                    flush()
+                                }
+                            } catch (e: Exception) {
+                                Timber.e(e)
+
+                                e.message?.let { message -> toast(message) }
+                            }
+                        }
+
                     } else {
                         rootNode.findNodeRecursively {
                             it.contentDescription == OVERFLOW_MENU_CONTENT_DESCRIPTION
                         }?.let {
                             it.performAction(AccessibilityNodeInfoCompat.ACTION_CLICK)
+                            it.recycle()
                         }
+                    }
+                }
+
+                SystemAction.GO_LAST_APP -> {
+                    runBlocking {
+                        performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
+
+                        delay(100)
+                        performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
                     }
                 }
 
@@ -266,10 +362,18 @@ class ActionPerformerDelegate(context: Context,
                     dpm.lockNow()
                 }
 
-                SystemAction.MOVE_CURSOR_TO_END -> KeyboardUtils.inputKeyEventFromImeService(
-                    keyCode = KeyEvent.KEYCODE_MOVE_END,
-                    metaState = KeyEvent.META_CTRL_ON
-                )
+                SystemAction.POWER_ON_OFF_DEVICE -> {
+                    RootUtils.executeRootCommand("input keyevent ${KeyEvent.KEYCODE_POWER}")
+                }
+
+                SystemAction.MOVE_CURSOR_TO_END -> chosenImePackageName?.let {
+                    KeyboardUtils.inputKeyEventFromImeService(
+                        it,
+                        keyCode = KeyEvent.KEYCODE_MOVE_END,
+                        metaState = KeyEvent.META_CTRL_ON,
+                        deviceId = 0
+                    )
+                }
 
                 SystemAction.OPEN_SETTINGS -> {
                     Intent(Settings.ACTION_SETTINGS).apply {
@@ -280,7 +384,7 @@ class ActionPerformerDelegate(context: Context,
 
                 SystemAction.SWITCH_KEYBOARD -> {
                     action.extras.getData(Action.EXTRA_IME_ID).onSuccess {
-                        KeyboardUtils.switchIme(it)
+                        KeyboardUtils.switchIme(this, it)
                     }
                 }
 
@@ -291,9 +395,48 @@ class ActionPerformerDelegate(context: Context,
                 SystemAction.SCREENSHOT_ROOT -> ScreenshotUtils.takeScreenshotRoot()
 
                 else -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                        when (id) {
+                            SystemAction.TEXT_CUT ->
+                                rootNode.performActionOnFocusedNode(AccessibilityNodeInfo.ACTION_CUT)
+
+                            SystemAction.TEXT_COPY ->
+                                rootNode.performActionOnFocusedNode(AccessibilityNodeInfo.ACTION_COPY)
+
+                            SystemAction.TEXT_PASTE ->
+                                rootNode.performActionOnFocusedNode(AccessibilityNodeInfo.ACTION_PASTE)
+
+                            SystemAction.SELECT_WORD_AT_CURSOR -> {
+                                rootNode.focusedNode {
+                                    it ?: return@focusedNode
+
+                                    //it is the cursor position if they both return the same value
+                                    if (it.textSelectionStart == it.textSelectionEnd) {
+                                        val cursorPosition = it.textSelectionStart
+
+                                        val wordBoundary =
+                                            it.text.toString().getWordBoundaries(cursorPosition) ?: return@focusedNode
+
+                                        val bundle = bundleOf(
+                                            AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT
+                                                to wordBoundary.first,
+
+                                            //The index of the cursor is the index of the last char in the word + 1
+                                            AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT
+                                                to wordBoundary.second + 1
+                                        )
+
+                                        it.performAction(AccessibilityNodeInfo.ACTION_SET_SELECTION, bundle)
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         when (id) {
-                            SystemAction.SHOW_POWER_MENU -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_POWER_DIALOG)
+                            SystemAction.SHOW_POWER_MENU ->
+                                performGlobalAction(AccessibilityService.GLOBAL_ACTION_POWER_DIALOG)
                         }
                     }
 

@@ -30,7 +30,7 @@ object SystemAction {
     const val ENABLE_MOBILE_DATA = "enable_mobile_data"
 
     /**
-     * REQUIRES ROOT
+     * REQUIRES ROOTCYCLE_ORIENTATION
      */
     const val DISABLE_MOBILE_DATA = "disable_mobile_data"
 
@@ -48,6 +48,7 @@ object SystemAction {
     const val PORTRAIT_MODE = "portrait_mode"
     const val LANDSCAPE_MODE = "landscape_mode"
     const val SWITCH_ORIENTATION = "switch_orientation"
+    const val CYCLE_ROTATIONS = "cycle_rotations"
 
     //volume
     const val VOLUME_UP = "volume_up"
@@ -85,6 +86,7 @@ object SystemAction {
     const val GO_HOME = "go_home"
     const val OPEN_RECENTS = "open_recents"
     const val TOGGLE_SPLIT_SCREEN = "toggle_split_screen"
+    const val GO_LAST_APP = "go_last_app"
 
     //flashlight
     const val TOGGLE_FLASHLIGHT = "toggle_flashlight"
@@ -103,6 +105,10 @@ object SystemAction {
     const val HIDE_KEYBOARD = "hide_keyboard"
     const val SHOW_KEYBOARD_PICKER = "show_keyboard_picker"
     const val SHOW_KEYBOARD_PICKER_ROOT = "show_keyboard_picker_root"
+    const val TEXT_CUT = "text_cut"
+    const val TEXT_COPY = "text_copy"
+    const val TEXT_PASTE = "text_paste"
+    const val SELECT_WORD_AT_CURSOR = "select_word_at_cursor"
 
     /**
      * REQUIRES ROOT
@@ -123,6 +129,7 @@ object SystemAction {
     const val OPEN_CAMERA = "open_camera"
     const val LOCK_DEVICE = "lock_device_no_root"
     const val LOCK_DEVICE_ROOT = "lock_device"
+    const val POWER_ON_OFF_DEVICE = "power_on_off_device"
     const val SECURE_LOCK_DEVICE = "secure_lock_device"
     const val CONSUME_KEY_EVENT = "consume_key_event"
     const val OPEN_SETTINGS = "open_settings"

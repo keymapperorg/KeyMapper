@@ -11,6 +11,10 @@
         android:title="@string/pref_title_changelog" />
 
     <androidx.preference.Preference
+        android:key="@string/key_pref_youtube_channel"
+        android:title="@string/pref_title_youtube_channel" />
+
+    <androidx.preference.Preference
         android:key="@string/key_pref_discord"
         android:title="@string/pref_title_discord" />
 

@@ -1,15 +1,11 @@
 package io.github.sds100.keymapper.data.model
 
-import android.content.Context
-import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.util.result.OptionsNotRequired
 import io.github.sds100.keymapper.util.result.Result
 import io.github.sds100.keymapper.util.result.Success
-import io.github.sds100.keymapper.util.safeVectorDrawable
-import io.github.sds100.keymapper.util.str
 
 /**
  * Created by sds100 on 23/11/2018.
@@ -32,6 +28,8 @@ class SystemActionDef(
 
     @StringRes val descriptionRes: Int,
     @StringRes val descriptionFormattedRes: Int? = null,
+
+    val optionType: OptionType = OptionType.SINGLE,
 
     options: List<String>? = null,
 

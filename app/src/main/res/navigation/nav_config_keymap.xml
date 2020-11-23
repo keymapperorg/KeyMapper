@@ -34,13 +34,22 @@
             android:id="@+id/action_config_keymap_fragment_to_actionOptionsFragment"
             app:destination="@id/actionBehaviorFragment"
             app:enterAnim="@anim/slide_in_bottom" />
+
+        <action
+            android:id="@+id/action_config_keymap_fragment_to_triggerKeyBehaviorFragment"
+            app:destination="@id/triggerKeyBehaviorFragment"
+            app:enterAnim="@anim/slide_in_bottom" />
     </fragment>
 
     <fragment
         android:id="@+id/choose_action_fragment"
         android:name="io.github.sds100.keymapper.ui.fragment.ChooseActionFragment"
         android:label="@string/title_choose_action"
-        tools:layout="@layout/fragment_choose_action" />
+        tools:layout="@layout/fragment_choose_action">
+        <action
+            android:id="@+id/action_choose_action_fragment_to_keycodeListFragment"
+            app:destination="@id/keycodeListFragment" />
+    </fragment>
 
     <include app:graph="@navigation/nav_choose_constraint" />
 
@@ -71,4 +80,19 @@
             android:name="@string/nav_arg_action_behavior"
             app:argType="io.github.sds100.keymapper.data.model.ActionBehavior" />
     </dialog>
+
+    <dialog
+        android:id="@+id/triggerKeyBehaviorFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.TriggerKeyBehaviorFragment"
+        android:label="TriggerKeyBehaviorFragment">
+
+        <argument
+            android:name="@string/nav_arg_trigger_key_behavior"
+            app:argType="io.github.sds100.keymapper.data.model.TriggerKeyBehavior" />
+    </dialog>
+
+    <fragment
+        android:id="@+id/keycodeListFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.KeycodeListFragment"
+        android:label="KeycodeListFragment" />
 </navigation>

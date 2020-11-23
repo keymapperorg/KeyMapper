@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.data
 
 import android.view.KeyEvent
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.data.model.Action
@@ -19,6 +20,9 @@ class FakeKeymapRepository : KeymapRepository {
     private val mKeymapList = mutableMapOf<Long, KeyMap>()
 
     override val keymapList: MutableLiveData<List<KeyMap>> = MutableLiveData(mKeymapList.values.toList())
+
+    override val requestBackup: LiveData<Event<List<KeyMap>>>
+        get() = TODO("Not yet implemented")
 
     override suspend fun getKeymaps(): List<KeyMap> = mKeymapList.values.toList()
 

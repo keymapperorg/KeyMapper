@@ -12,11 +12,23 @@
         android:key="@string/key_pref_notification_settings"
         android:title="@string/title_pref_notification_settings" />
 
+    <androidx.preference.Preference
+        android:defaultValue="@string/default_value_automatic_backup_location"
+        android:key="@string/key_pref_automatic_backup_location"
+        android:summary="@string/summary_pref_automatic_backup_location_disabled"
+        android:title="@string/title_pref_automatic_backup_location" />
+
     <androidx.preference.SwitchPreference
         android:defaultValue="@bool/default_value_hide_home_screen_alerts"
         android:key="@string/key_pref_hide_home_screen_alerts"
         android:summary="@string/summary_pref_hide_home_screen_alerts"
         android:title="@string/title_pref_hide_home_screen_alerts" />
+
+    <androidx.preference.SwitchPreference
+        android:defaultValue="@bool/default_value_force_vibrate"
+        android:key="@string/key_pref_force_vibrate"
+        android:summary="@string/summary_pref_force_vibrate"
+        android:title="@string/title_pref_force_vibrate" />
 
     <androidx.preference.SeekBarPreference
         android:defaultValue="@integer/default_value_long_press_delay"

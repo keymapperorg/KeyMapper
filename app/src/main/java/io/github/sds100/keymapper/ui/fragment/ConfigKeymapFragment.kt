@@ -18,17 +18,17 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.ActionBehavior
 import io.github.sds100.keymapper.data.model.Constraint
+import io.github.sds100.keymapper.data.model.TriggerKeyBehavior
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentConfigKeymapBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.adapter.ConfigKeymapPagerAdapter
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
 import io.github.sds100.keymapper.util.result.RecoverableFailure
 import io.github.sds100.keymapper.util.result.getFullMessage
-import kotlinx.coroutines.launch
-import splitties.alertdialog.appcompat.alertDialog
+import splitties.alertdialog.appcompat.*
 import splitties.alertdialog.appcompat.coroutines.showAndAwait
-import splitties.alertdialog.appcompat.message
 import splitties.experimental.ExperimentalSplittiesApi
 import splitties.snackbar.action
 import splitties.snackbar.longSnack
@@ -59,10 +59,20 @@ class ConfigKeymapFragment : Fragment() {
             }
     }
 
+    private lateinit var mRecoverFailureDelegate: RecoverFailureDelegate
+
     override fun onCreate(savedInstanceState: Bundle?) {
         childFragmentManager.fragmentFactory = mFragmentFactory
 
         super.onCreate(savedInstanceState)
+
+        mRecoverFailureDelegate = RecoverFailureDelegate(
+            "ConfigKeymapFragment",
+            requireActivity().activityResultRegistry,
+            this) {
+
+            mViewModel.rebuildActionModels()
+        }
 
         setFragmentResultListener(ChooseActionFragment.REQUEST_KEY) { _, result ->
             val action = result.getSerializable(ChooseActionFragment.EXTRA_ACTION) as Action
@@ -77,6 +87,11 @@ class ConfigKeymapFragment : Fragment() {
         setFragmentResultListener(ActionBehaviorFragment.REQUEST_KEY) { _, result ->
             mViewModel.setActionBehavior(
                 result.getSerializable(ActionBehaviorFragment.EXTRA_ACTION_BEHAVIOR) as ActionBehavior)
+        }
+
+        setFragmentResultListener(TriggerKeyBehaviorFragment.REQUEST_KEY) { _, result ->
+            mViewModel.setTriggerKeyBehavior(
+                result.getSerializable(TriggerKeyBehaviorFragment.EXTRA_TRIGGER_KEY_BEHAVIOR) as TriggerKeyBehavior)
         }
     }
 
@@ -95,11 +110,11 @@ class ConfigKeymapFragment : Fragment() {
             tabLayout.isVisible = tabLayout.tabCount > 1
 
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-                findNavController().navigateUp()
+                showOnBackPressedWarning()
             }
 
             appBar.setNavigationOnClickListener {
-                findNavController().navigateUp()
+                showOnBackPressedWarning()
             }
 
             appBar.setOnMenuItemClickListener {
@@ -150,11 +165,7 @@ class ConfigKeymapFragment : Fragment() {
                     //only add an action to fix the error if the error can be recovered from
                     if (it is RecoverableFailure) {
                         action(R.string.snackbar_fix) {
-                            lifecycleScope.launch {
-                                it.recover(requireActivity()) {
-                                    mViewModel.rebuildActionModels()
-                                }
-                            }
+                            mRecoverFailureDelegate.recover(requireActivity(), it)
                         }
                     }
 
@@ -185,15 +196,46 @@ class ConfigKeymapFragment : Fragment() {
                 val serviceEnabled = AccessibilityUtils.isServiceEnabled(requireContext())
 
                 if (serviceEnabled) {
-
-                    requireContext().sendPackageBroadcast(MyAccessibilityService.ACTION_STOPPED_RECORDING_TRIGGER)
-
+                    stopRecordingTrigger()
                 } else {
                     mViewModel.promptToEnableAccessibilityService.value = Event(Unit)
                 }
             })
 
+            mViewModel.promptToEnableCapsLockKeyboardLayout.observe(viewLifecycleOwner, EventObserver {
+                requireActivity().alertDialog {
+                    messageResource = R.string.dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout
+
+                    okButton()
+
+                    show()
+                }
+            })
+
             return this.root
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        stopRecordingTrigger()
+    }
+
+    private fun showOnBackPressedWarning() {
+        requireContext().alertDialog {
+            messageResource = R.string.dialog_message_are_you_sure_want_to_leave_without_saving
+
+            positiveButton(R.string.pos_yes) {
+                findNavController().navigateUp()
+            }
+
+            cancelButton()
+            show()
+        }
+    }
+
+    private fun stopRecordingTrigger() {
+        requireContext().sendPackageBroadcast(MyAccessibilityService.ACTION_STOP_RECORDING_TRIGGER)
     }
 }

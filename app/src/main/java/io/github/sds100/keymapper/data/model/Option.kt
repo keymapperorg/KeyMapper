@@ -5,12 +5,11 @@ import android.content.Context
 import android.hardware.camera2.CameraCharacteristics
 import android.media.AudioManager
 import android.os.Build
+import android.view.Surface
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.KeyboardUtils
 import io.github.sds100.keymapper.util.SystemAction
-import io.github.sds100.keymapper.util.result.OptionLabelNotFound
-import io.github.sds100.keymapper.util.result.Result
-import io.github.sds100.keymapper.util.result.Success
+import io.github.sds100.keymapper.util.result.*
 import io.github.sds100.keymapper.util.str
 
 /**
@@ -40,6 +39,11 @@ object Option {
     const val DND_PRIORITY = "do_not_disturb_priority"
     const val DND_NONE = "do_not_disturb_none"
 
+    const val ROTATION_0 = "rotation_0"
+    const val ROTATION_90 = "rotation_90"
+    const val ROTATION_180 = "rotation_180"
+    const val ROTATION_270 = "rotation_270"
+
     val STREAMS = sequence {
         yieldAll(listOf(STREAM_ALARM,
             STREAM_DTMF,
@@ -66,6 +70,13 @@ object Option {
         DND_NONE
     )
 
+    val ROTATIONS = listOf(
+        ROTATION_0,
+        ROTATION_90,
+        ROTATION_180,
+        ROTATION_270
+    )
+
     val OPTION_ID_SDK_ID_MAP = sequence {
         yieldAll(listOf(STREAM_ALARM to AudioManager.STREAM_ALARM,
             STREAM_DTMF to AudioManager.STREAM_DTMF,
@@ -77,7 +88,12 @@ object Option {
 
             RINGER_MODE_NORMAL to AudioManager.RINGER_MODE_NORMAL,
             RINGER_MODE_VIBRATE to AudioManager.RINGER_MODE_VIBRATE,
-            RINGER_MODE_SILENT to AudioManager.RINGER_MODE_SILENT
+            RINGER_MODE_SILENT to AudioManager.RINGER_MODE_SILENT,
+
+            ROTATION_0 to Surface.ROTATION_0,
+            ROTATION_90 to Surface.ROTATION_90,
+            ROTATION_180 to Surface.ROTATION_180,
+            ROTATION_270 to Surface.ROTATION_270
         ))
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -117,6 +133,8 @@ object Option {
             SystemAction.ENABLE_DND_MODE,
             SystemAction.DISABLE_DND_MODE -> Action.EXTRA_DND_MODE
 
+            SystemAction.CYCLE_ROTATIONS -> Action.EXTRA_ORIENTATIONS
+
             else -> throw Exception("Can't find an extra id for that system action $systemActionId")
         }
     }
@@ -150,9 +168,39 @@ object Option {
             DND_PRIORITY -> ctx.str(R.string.dnd_mode_priority)
             DND_NONE -> ctx.str(R.string.dnd_mode_none)
 
+            ROTATION_0 -> ctx.str(R.string.orientation_0)
+            ROTATION_90 -> ctx.str(R.string.orientation_90)
+            ROTATION_180 -> ctx.str(R.string.orientation_180)
+            ROTATION_270 -> ctx.str(R.string.orientation_270)
+
             else -> return OptionLabelNotFound(optionId)
         }
 
         return Success(label)
     }
+
+    fun optionSetToString(optionIds: Set<String>) = optionIds.joinToString(",")
+
+    fun optionSetFromString(data: String): Result<Set<String>> =
+        try {
+            Success(data.split(',').toSet())
+        } catch (e: Exception) {
+            FailedToSplitString(data)
+        }
+
+    fun labelsFromOptionSet(ctx: Context, systemActionId: String, optionSet: Set<String>): Result<Set<String>> {
+        val labels = mutableSetOf<String>()
+
+        loop@ for (optionId in optionSet) {
+            getOptionLabel(ctx, systemActionId, optionId).onSuccess {
+                labels.add(it)
+            }.onFailure { return@labelsFromOptionSet it }
+        }
+
+        return Success(labels)
+    }
+}
+
+enum class OptionType {
+    SINGLE, MULTIPLE
 }

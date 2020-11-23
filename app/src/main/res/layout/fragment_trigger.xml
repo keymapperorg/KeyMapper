@@ -27,7 +27,7 @@
             android:layout_height="0dp"
             android:visibility="@{viewModel.triggerKeys.empty ? View.GONE : View.VISIBLE}"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toTopOf="@id/textViewRadioGroupHeader"
+            app:layout_constraintBottom_toTopOf="@id/radioGroupParallelTriggerClickType"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -46,6 +46,48 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:visibility="gone" />
 
+        <RadioGroup
+            android:id="@+id/radioGroupParallelTriggerClickType"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/cardview_padding_left"
+            android:layout_marginEnd="@dimen/cardview_padding_right"
+            android:checkedButton="@id/radioButtonShortPress"
+            android:gravity="bottom"
+            android:orientation="horizontal"
+            android:visibility="@{viewModel.triggerInParallel ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toTopOf="@+id/textViewRadioGroupHeader"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/radioButtonShortPress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:checked="@{viewModel.isParallelTriggerClickTypeShortPress}"
+                android:text="@string/radio_button_short_press" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/radioButtonLongPress"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:checked="@{viewModel.triggerInSequence || viewModel.isParallelTriggerClickTypeLongPress}"
+                android:text="@string/radio_button_long_press" />
+
+            <!-- Add a hidden radio button so a radio button is always checked in the group.
+            If a button isn't checked and then checking a button can make that radio button grey and not properly checked.-->
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/radioButtonDoublePress"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:checked="@{viewModel.isParallelTriggerClickTypeShortPress() == false &amp;&amp; viewModel.isParallelTriggerClickTypeLongPress() == false}"
+                android:text="Double Press"
+                android:visibility="gone" />
+        </RadioGroup>
+
         <TextView
             android:id="@+id/textViewRadioGroupHeader"
             android:layout_width="wrap_content"
@@ -56,34 +98,20 @@
             android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
             android:textSize="14sp"
             android:visibility="@{viewModel.triggerKeys.size() > 1 ? View.VISIBLE : View.GONE}"
-            app:layout_constraintBottom_toTopOf="@+id/radioGroup"
+            app:layout_constraintBottom_toTopOf="@+id/radioGroupTriggerMode"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <io.github.sds100.keymapper.ui.view.SquareImageButton
-            android:id="@+id/buttonTriggerOptions"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginEnd="@dimen/cardview_padding_right"
-            android:layout_marginBottom="@dimen/cardview_padding_bottom"
-            android:onClick="@{() -> viewModel.chooseParallelTriggerClickType()}"
-            android:tint="?attr/colorOnSurface"
-            android:visibility="@{viewModel.triggerKeys.size() > 1 &amp;&amp; viewModel.triggerInParallel ? View.VISIBLE : View.GONE}"
-            app:layout_constraintBottom_toTopOf="@+id/buttonRecordKeys"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/radioGroup"
-            app:srcCompat="@drawable/ic_outline_more_vert_24" />
-
         <RadioGroup
-            android:id="@+id/radioGroup"
+            android:id="@+id/radioGroupTriggerMode"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/cardview_padding_left"
+            android:layout_marginEnd="@dimen/cardview_padding_right"
             android:layout_marginBottom="@dimen/cardview_padding_bottom"
             android:gravity="bottom"
             android:orientation="horizontal"
             app:layout_constraintBottom_toTopOf="@+id/buttonRecordKeys"
-            app:layout_constraintEnd_toStartOf="@id/buttonTriggerOptions"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
             <com.google.android.material.radiobutton.MaterialRadioButton
@@ -103,6 +131,18 @@
                 android:checked="@={viewModel.triggerInSequence}"
                 android:enabled="@{viewModel.triggerKeys.size() &lt;= 1 ? false : true}"
                 android:text="@string/radio_button_sequence" />
+
+            <!-- Add a hidden radio button so a radio button is always checked in the group.
+            If a button isn't checked and then checking a button can make that radio button grey and not properly checked.-->
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/radioButtonUndefined"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:checked="@{viewModel.triggerModeUndefined}"
+                android:enabled="@{viewModel.triggerKeys.size() &lt;= 1 ? false : true}"
+                android:text="Undefined"
+                android:visibility="gone" />
         </RadioGroup>
 
         <Button

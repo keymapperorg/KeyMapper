@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.observe
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.navGraphViewModels
 import com.airbnb.epoxy.EpoxyController
 import io.github.sds100.keymapper.R
@@ -37,13 +37,14 @@ class KeymapOptionsFragment(private val mKeymapId: Long) : Fragment() {
         FragmentKeymapOptionsBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
 
-            mViewModel.checkBoxModels.observe(viewLifecycleOwner) {
+            mViewModel.checkBoxModels.observe(viewLifecycleOwner, {
                 mController.checkBoxModels = it
-            }
+            })
 
-            mViewModel.sliderModels.observe(viewLifecycleOwner) {
+            mViewModel.sliderModels.observe(viewLifecycleOwner, {
                 mController.sliderModels = it
-            }
+            })
+
             return this.root
         }
     }

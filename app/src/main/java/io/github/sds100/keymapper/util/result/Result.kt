@@ -1,7 +1,5 @@
 package io.github.sds100.keymapper.util.result
 
-import androidx.fragment.app.FragmentActivity
-
 /**
  * Created by sds100 on 26/02/2020.
  */
@@ -15,9 +13,7 @@ sealed class Result<out T>
 data class Success<T>(val value: T) : Result<T>()
 
 abstract class Failure : Result<Nothing>()
-abstract class RecoverableFailure : Failure() {
-    abstract suspend fun recover(activity: FragmentActivity, onSuccess: () -> Unit = {})
-}
+abstract class RecoverableFailure : Failure()
 
 inline fun <T> Result<T>.onSuccess(f: (T) -> Unit): Result<T> {
     if (this is Success) {
@@ -70,6 +66,13 @@ val <T> Result<T>.isSuccess: Boolean
     get() = this is Success
 
 fun <T, U> Result<T>.handle(onSuccess: (value: T) -> U, onFailure: (failure: Failure) -> U): U {
+    return when (this) {
+        is Success -> onSuccess(value)
+        is Failure -> onFailure(this)
+    }
+}
+
+suspend fun <T, U> Result<T>.handleAsync(onSuccess: suspend (value: T) -> U, onFailure: suspend (failure: Failure) -> U): U {
     return when (this) {
         is Success -> onSuccess(value)
         is Failure -> onFailure(this)

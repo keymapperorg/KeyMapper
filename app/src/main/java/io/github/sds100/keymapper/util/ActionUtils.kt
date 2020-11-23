@@ -8,8 +8,8 @@ import android.os.Build
 import android.view.KeyEvent
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.*
-import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.util.SystemActionUtils.getDescriptionWithOption
+import io.github.sds100.keymapper.util.SystemActionUtils.getDescriptionWithOptionSet
 import io.github.sds100.keymapper.util.result.*
 import splitties.bitflags.hasFlag
 
@@ -87,65 +87,117 @@ fun Action.buildChipModel(ctx: Context): ActionChipModel {
     return ActionChipModel(uniqueId, type, description, error, icon)
 }
 
-private fun Action.getTitle(ctx: Context): Result<String> = when (type) {
-    ActionType.APP -> {
-        try {
-            val applicationInfo = ctx.packageManager.getApplicationInfo(data, PackageManager.GET_META_DATA)
+private fun Action.getTitle(ctx: Context): Result<String> {
+    return when (type) {
+        ActionType.APP -> {
+            try {
+                val applicationInfo = ctx.packageManager.getApplicationInfo(data, PackageManager.GET_META_DATA)
 
-            val applicationLabel = ctx.packageManager.getApplicationLabel(applicationInfo)
+                val applicationLabel = ctx.packageManager.getApplicationLabel(applicationInfo)
 
-            Success(ctx.str(R.string.description_open_app, applicationLabel.toString()))
-        } catch (e: PackageManager.NameNotFoundException) {
-            //the app isn't installed
-            AppNotFound(data)
-        }
-    }
-
-    ActionType.APP_SHORTCUT -> {
-        extras.getData(Action.EXTRA_SHORTCUT_TITLE)
-    }
-
-    ActionType.KEY_EVENT -> {
-        val key = KeyEvent.keyCodeToString(data.toInt())
-        Success(ctx.str(R.string.description_keycode, key))
-    }
-
-    ActionType.TEXT_BLOCK -> {
-        val text = data
-        Success(ctx.str(R.string.description_text_block, text))
-    }
-
-    ActionType.URL -> {
-        Success(ctx.str(R.string.description_url, data))
-    }
-
-    ActionType.SYSTEM_ACTION -> {
-        val systemActionId = data
-
-        SystemActionUtils.getSystemActionDef(systemActionId) then { systemActionDef ->
-            if (systemActionDef.hasOptions) {
-
-                extras.getData(Option.getExtraIdForOption(systemActionId)) then {
-                    Option.getOptionLabel(ctx, systemActionId, it)
-
-                } then {
-                    Success(systemActionDef.getDescriptionWithOption(ctx, it))
-
-                } otherwise {
-                    if (systemActionId == SystemAction.SWITCH_KEYBOARD) {
-
-                        extras.getData(Action.EXTRA_IME_NAME) then {
-                            Success(systemActionDef.getDescriptionWithOption(ctx, it))
-                        }
-
-                    } else {
-                        Success(ctx.str(systemActionDef.descriptionRes))
-                    }
-                }
-            } else {
-                Success(ctx.str(systemActionDef.descriptionRes))
+                Success(ctx.str(R.string.description_open_app, applicationLabel.toString()))
+            } catch (e: PackageManager.NameNotFoundException) {
+                //the app isn't installed
+                AppNotFound(data)
             }
         }
+
+        ActionType.APP_SHORTCUT -> {
+            extras.getData(Action.EXTRA_SHORTCUT_TITLE)
+        }
+
+        ActionType.KEY_EVENT -> {
+            val key = if (data.toInt() > KeyEvent.getMaxKeyCode()) {
+                "Key Code $data"
+            } else {
+                KeyEvent.keyCodeToString(data.toInt())
+            }
+
+            val metaStateString = buildString {
+
+                extras.getData(Action.EXTRA_KEY_EVENT_META_STATE).onSuccess { metaState ->
+                    KeyEventUtils.MODIFIER_LABELS.entries.forEach {
+                        val modifier = it.key
+                        val labelRes = it.value
+
+                        if (metaState.toInt().hasFlag(modifier)) {
+                            append("${ctx.str(labelRes)} + ")
+                        }
+                    }
+                }
+            }
+
+            Success(ctx.str(R.string.description_keyevent, formatArgArray = arrayOf(metaStateString, key)))
+        }
+
+        ActionType.TEXT_BLOCK -> {
+            val text = data
+            Success(ctx.str(R.string.description_text_block, text))
+        }
+
+        ActionType.URL -> {
+            Success(ctx.str(R.string.description_url, data))
+        }
+
+        ActionType.SYSTEM_ACTION -> {
+            val systemActionId = data
+
+            SystemActionUtils.getSystemActionDef(systemActionId) then { systemActionDef ->
+                if (systemActionDef.hasOptions) {
+                    val optionData = extras.getData(Option.getExtraIdForOption(systemActionId))
+
+                    when (systemActionDef.optionType) {
+                        OptionType.SINGLE -> {
+                            optionData then {
+                                Option.getOptionLabel(ctx, systemActionId, it)
+                            } then {
+                                Success(systemActionDef.getDescriptionWithOption(ctx, it))
+
+                            } otherwise {
+                                if (systemActionId == SystemAction.SWITCH_KEYBOARD) {
+
+                                    extras.getData(Action.EXTRA_IME_NAME) then {
+                                        Success(systemActionDef.getDescriptionWithOption(ctx, it))
+                                    }
+
+                                } else {
+                                    Success(ctx.str(systemActionDef.descriptionRes))
+                                }
+                            }
+                        }
+
+                        OptionType.MULTIPLE -> {
+                            optionData then {
+                                Option.optionSetFromString(it)
+                            } then {
+                                Option.labelsFromOptionSet(ctx, systemActionId, it)
+                            } then {
+                                Success(systemActionDef.getDescriptionWithOptionSet(ctx, it))
+                            }
+                        }
+                    }
+                } else {
+                    Success(ctx.str(systemActionDef.descriptionRes))
+                }
+            }
+        }
+
+        ActionType.TAP_COORDINATE -> {
+            val x = data.split(',')[0]
+            val y = data.split(',')[1]
+
+            extras.getData(Action.EXTRA_COORDINATE_DESCRIPTION) then {
+                Success(ctx.str(resId = R.string.description_tap_coordinate_with_description, formatArgArray = arrayOf(x, y, it)))
+            } otherwise {
+                Success(ctx.str(resId = R.string.description_tap_coordinate_default, formatArgArray = arrayOf(x, y)))
+            }
+        }
+    }.then {
+        extras.getData(Action.EXTRA_MULTIPLIER).valueOrNull()?.toIntOrNull()?.let { multiplier ->
+            return@then Success("(${multiplier}x) $it")
+        }
+
+        Success(it)
     }
 }
 
@@ -163,8 +215,12 @@ private fun Action.getIcon(ctx: Context): Result<Drawable?> = when (type) {
     }
 
     ActionType.APP_SHORTCUT -> extras.getData(Action.EXTRA_PACKAGE_NAME).then {
-        Success(ctx.packageManager.getApplicationIcon(it))
-    }
+        try {
+            Success(ctx.packageManager.getApplicationIcon(it))
+        } catch (e: PackageManager.NameNotFoundException) {
+            AppNotFound(it)
+        }
+    } otherwise { Success(null) }
 
     ActionType.SYSTEM_ACTION -> {
         //convert the string representation of the enum entry into an enum object
@@ -188,12 +244,12 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
     if (data.isEmpty()) return NoActionData()
 
     if (requiresIME) {
-        if (!KeyMapperImeService.isServiceEnabled()) {
-            return ImeServiceDisabled()
+        if (!KeyboardUtils.isCompatibleImeEnabled()) {
+            return NoCompatibleImeEnabled()
         }
 
-        if (!KeyMapperImeService.isInputMethodChosen()) {
-            return ImeServiceNotChosen()
+        if (!KeyboardUtils.isCompatibleImeChosen(ctx)) {
+            return NoCompatibleImeChosen()
         }
     }
 
@@ -220,6 +276,18 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
                 } catch (e: Exception) {
                     return@then AppNotFound(data)
                 }
+            }.otherwise {
+                if (type == ActionType.APP_SHORTCUT) {
+                    Success(this)
+                } else {
+                    it
+                }
+            }
+        }
+
+        ActionType.TAP_COORDINATE -> {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                return SdkVersionTooLow(Build.VERSION_CODES.N)
             }
         }
 
@@ -279,7 +347,7 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
                 if (systemActionDef.id == SystemAction.SWITCH_KEYBOARD) {
 
                     extras.getData(Action.EXTRA_IME_ID).onSuccess { imeId ->
-                        if (!KeyboardUtils.inputMethodExists(imeId)) {
+                        if (!KeyboardUtils.isImeEnabled(imeId)) {
                             var errorData = imeId
 
                             extras.getData(Action.EXTRA_IME_NAME).onSuccess { imeName ->

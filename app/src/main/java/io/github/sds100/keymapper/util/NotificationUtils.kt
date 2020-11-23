@@ -20,8 +20,11 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.broadcastreceiver.KeyMapperBroadcastReceiver
 import io.github.sds100.keymapper.data.AppPreferences
+import io.github.sds100.keymapper.service.MyAccessibilityService
+import io.github.sds100.keymapper.ui.activity.HomeActivity
 import splitties.init.appCtx
 import splitties.systemservices.notificationManager
 
@@ -32,7 +35,7 @@ import splitties.systemservices.notificationManager
 object NotificationUtils {
     const val ID_IME_PICKER = 123
     const val ID_KEYBOARD_HIDDEN = 747
-    const val ID_TOGGLE_REMAPS = 231
+    const val ID_TOGGLE_KEYMAPS = 231
     const val ID_TOGGLE_KEYBOARD = 143
 
     const val CHANNEL_TOGGLE_REMAPS = "channel_toggle_remaps"
@@ -45,6 +48,104 @@ object NotificationUtils {
 
     @Deprecated("Removed in 2.0. This channel shouldn't exist")
     const val CHANNEL_ID_PERSISTENT = "channel_persistent"
+
+    fun updateToggleKeymapsNotification(ctx: Context, @WidgetsManager.Event event: Int) {
+        if (SDK_INT < Build.VERSION_CODES.O) {
+            val showNotification = AppPreferences.showToggleKeymapsNotification
+
+            if (!showNotification) {
+                dismissNotification(ID_TOGGLE_KEYMAPS)
+                return
+            }
+        }
+
+        val onClickPendingIntent: PendingIntent
+        val actions = mutableListOf<NotificationCompat.Action>()
+
+        @StringRes val titleRes: Int
+        @StringRes val textRes: Int
+        @DrawableRes val iconRes: Int
+
+        when (event) {
+            WidgetsManager.EVENT_PAUSE_REMAPS -> {
+                titleRes = R.string.notification_keymaps_start_title
+                textRes = R.string.notification_keymaps_start_text
+                iconRes = R.drawable.ic_notification_play
+
+                onClickPendingIntent = IntentUtils.createPendingBroadcastIntent(
+                    ctx,
+                    MyAccessibilityService.ACTION_RESUME_REMAPPINGS
+                )
+            }
+
+            WidgetsManager.EVENT_RESUME_REMAPS -> {
+                titleRes = R.string.notification_keymaps_pause_title
+                textRes = R.string.notification_keymaps_pause_text
+                iconRes = R.drawable.ic_notification_pause
+
+                onClickPendingIntent = IntentUtils.createPendingBroadcastIntent(
+                    ctx,
+                    MyAccessibilityService.ACTION_PAUSE_REMAPPINGS
+                )
+            }
+
+            WidgetsManager.EVENT_ACCESSIBILITY_SERVICE_STOPPED -> {
+                titleRes = R.string.notification_accessibility_service_disabled_title
+                textRes = R.string.notification_accessibility_service_disabled_text
+                iconRes = R.drawable.ic_notification_error
+
+                onClickPendingIntent = IntentUtils.createPendingBroadcastIntent(
+                    ctx,
+                    MyAccessibilityService.ACTION_START
+                )
+            }
+
+            else -> return
+        }
+
+        if ((event == WidgetsManager.EVENT_RESUME_REMAPS) or (event == WidgetsManager.EVENT_PAUSE_REMAPS)) {
+
+            val stopAccessibilityServicePendingIntent = IntentUtils.createPendingBroadcastIntent(
+                ctx,
+                MyAccessibilityService.ACTION_STOP
+            )
+
+            val dismissPendingIntent = IntentUtils.createPendingBroadcastIntent(
+                ctx,
+                KeyMapperBroadcastReceiver.ACTION_DISMISS_PAUSE_KEYMAPS_NOTIFICATION
+            )
+
+            actions.add(NotificationCompat.Action(
+                0,
+                ctx.str(R.string.notification_action_stop_acc_service),
+                stopAccessibilityServicePendingIntent
+            ))
+
+            actions.add(NotificationCompat.Action(
+                0,
+                ctx.str(R.string.notification_action_dismiss),
+                dismissPendingIntent
+            ))
+        }
+
+        val openAppPendingIntent = IntentUtils.createPendingActivityIntent(ctx, HomeActivity::class.java)
+
+        actions.add(NotificationCompat.Action(0, ctx.str(R.string.notification_action_open_app), openAppPendingIntent))
+
+        showNotification(
+            ctx,
+            ID_TOGGLE_KEYMAPS,
+            CHANNEL_TOGGLE_REMAPS,
+            onClickPendingIntent,
+            iconRes,
+            titleRes,
+            textRes,
+            showOnLockscreen = true,
+            onGoing = true,
+            priority = NotificationCompat.PRIORITY_MIN,
+            actions = actions.toTypedArray()
+        )
+    }
 
     fun showIMEPickerNotification(ctx: Context) {
         val pendingIntent = IntentUtils.createPendingBroadcastIntent(
@@ -82,7 +183,7 @@ object NotificationUtils {
             showOnLockscreen = true,
             priority = NotificationCompat.PRIORITY_MIN,
             onGoing = true,
-            actions = *arrayOf(NotificationCompat.Action(0, ctx.str(R.string.toggle), pendingIntent))
+            actions = arrayOf(NotificationCompat.Action(0, ctx.str(R.string.toggle), pendingIntent))
         )
     }
 

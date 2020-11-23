@@ -28,6 +28,7 @@ fun Context.safeVectorDrawable(@DrawableRes resId: Int?): Drawable? {
 
 // Using varargs doesn't work since prints [LJava.lang.object@32f...etc
 fun Context.str(@StringRes resId: Int, formatArg: Any? = null): String = getString(resId, formatArg)
+fun Context.str(@StringRes resId: Int, formatArgArray: Array<Any?>): String = getString(resId, *formatArgArray)
 fun View.str(@StringRes resId: Int, formatArgs: Any? = null): String = context.str(resId, formatArgs)
 fun Fragment.str(@StringRes resId: Int, formatArgs: Any? = null): String = requireContext().str(resId, formatArgs)
 
@@ -121,6 +122,7 @@ fun Fragment.drawable(@DrawableRes resId: Int?): Drawable? = requireContext().dr
 
 fun Context.color(@ColorRes resId: Int): Int = ContextCompat.getColor(this, resId)
 fun View.color(@ColorRes resId: Int): Int = context.color(resId)
+fun Fragment.color(@ColorRes resId: Int): Int = requireContext().color(resId)
 
 @ColorInt
 fun Context.styledColor(@AttrRes attr: Int) = withStyledAttributes(attr) { getColor(it, 0) }

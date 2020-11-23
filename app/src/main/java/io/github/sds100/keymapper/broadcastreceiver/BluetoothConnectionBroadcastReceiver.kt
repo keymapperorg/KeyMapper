@@ -55,15 +55,15 @@ class BluetoothConnectionBroadcastReceiver : BroadcastReceiver() {
         when (intentAction) {
             //when a device is connected, change to the Key Mapper ime
             BluetoothDevice.ACTION_ACL_CONNECTED -> {
+                KeyboardUtils.saveLastUsedIncompatibleIme(ctx)
 
-                AppPreferences.defaultIme = KeyboardUtils.getChosenImeId(ctx)
-                KeyboardUtils.switchToKeyMapperIme(ctx)
+                KeyboardUtils.chooseCompatibleInputMethod(ctx)
             }
 
             //when a device is disconnected, change back to the old ime
             BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
-                AppPreferences.defaultIme?.let {
-                    KeyboardUtils.switchIme(it)
+                AppPreferences.lastUsedIncompatibleImeId?.let {
+                    KeyboardUtils.switchIme(ctx, it)
                 }
             }
         }

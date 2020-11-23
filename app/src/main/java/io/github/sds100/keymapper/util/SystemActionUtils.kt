@@ -8,6 +8,7 @@ import android.os.Build
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Option
+import io.github.sds100.keymapper.data.model.OptionType
 import io.github.sds100.keymapper.data.model.SystemActionDef
 import io.github.sds100.keymapper.util.SystemAction.CATEGORY_AIRPLANE_MODE
 import io.github.sds100.keymapper.util.SystemAction.CATEGORY_BLUETOOTH
@@ -25,6 +26,7 @@ import io.github.sds100.keymapper.util.SystemAction.CATEGORY_VOLUME
 import io.github.sds100.keymapper.util.SystemAction.CATEGORY_WIFI
 import io.github.sds100.keymapper.util.SystemAction.COLLAPSE_STATUS_BAR
 import io.github.sds100.keymapper.util.SystemAction.CONSUME_KEY_EVENT
+import io.github.sds100.keymapper.util.SystemAction.CYCLE_ROTATIONS
 import io.github.sds100.keymapper.util.SystemAction.DECREASE_BRIGHTNESS
 import io.github.sds100.keymapper.util.SystemAction.DISABLE_AIRPLANE_MODE
 import io.github.sds100.keymapper.util.SystemAction.DISABLE_AUTO_BRIGHTNESS
@@ -47,6 +49,7 @@ import io.github.sds100.keymapper.util.SystemAction.EXPAND_QUICK_SETTINGS
 import io.github.sds100.keymapper.util.SystemAction.FAST_FORWARD
 import io.github.sds100.keymapper.util.SystemAction.GO_BACK
 import io.github.sds100.keymapper.util.SystemAction.GO_HOME
+import io.github.sds100.keymapper.util.SystemAction.GO_LAST_APP
 import io.github.sds100.keymapper.util.SystemAction.HIDE_KEYBOARD
 import io.github.sds100.keymapper.util.SystemAction.INCREASE_BRIGHTNESS
 import io.github.sds100.keymapper.util.SystemAction.LANDSCAPE_MODE
@@ -63,17 +66,22 @@ import io.github.sds100.keymapper.util.SystemAction.OPEN_VOICE_ASSISTANT
 import io.github.sds100.keymapper.util.SystemAction.PAUSE_MEDIA
 import io.github.sds100.keymapper.util.SystemAction.PLAY_PAUSE_MEDIA
 import io.github.sds100.keymapper.util.SystemAction.PORTRAIT_MODE
+import io.github.sds100.keymapper.util.SystemAction.POWER_ON_OFF_DEVICE
 import io.github.sds100.keymapper.util.SystemAction.PREVIOUS_TRACK
 import io.github.sds100.keymapper.util.SystemAction.REWIND
 import io.github.sds100.keymapper.util.SystemAction.SCREENSHOT
 import io.github.sds100.keymapper.util.SystemAction.SCREENSHOT_ROOT
 import io.github.sds100.keymapper.util.SystemAction.SECURE_LOCK_DEVICE
+import io.github.sds100.keymapper.util.SystemAction.SELECT_WORD_AT_CURSOR
 import io.github.sds100.keymapper.util.SystemAction.SHOW_KEYBOARD
 import io.github.sds100.keymapper.util.SystemAction.SHOW_KEYBOARD_PICKER
 import io.github.sds100.keymapper.util.SystemAction.SHOW_KEYBOARD_PICKER_ROOT
 import io.github.sds100.keymapper.util.SystemAction.SHOW_POWER_MENU
 import io.github.sds100.keymapper.util.SystemAction.SWITCH_KEYBOARD
 import io.github.sds100.keymapper.util.SystemAction.SWITCH_ORIENTATION
+import io.github.sds100.keymapper.util.SystemAction.TEXT_COPY
+import io.github.sds100.keymapper.util.SystemAction.TEXT_CUT
+import io.github.sds100.keymapper.util.SystemAction.TEXT_PASTE
 import io.github.sds100.keymapper.util.SystemAction.TOGGLE_AIRPLANE_MODE
 import io.github.sds100.keymapper.util.SystemAction.TOGGLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.util.SystemAction.TOGGLE_AUTO_ROTATE
@@ -149,6 +157,12 @@ object SystemActionUtils {
             id = TOGGLE_SPLIT_SCREEN,
             category = CATEGORY_NAVIGATION,
             descriptionRes = R.string.action_toggle_split_screen,
+            minApi = Build.VERSION_CODES.N
+        ),
+        SystemActionDef(
+            id = GO_LAST_APP,
+            category = CATEGORY_NAVIGATION,
+            descriptionRes = R.string.action_go_last_app,
             minApi = Build.VERSION_CODES.N
         ),
         //NAVIGATION
@@ -473,6 +487,16 @@ object SystemActionUtils {
             iconRes = R.drawable.ic_outline_screen_rotation_24,
             descriptionRes = R.string.action_switch_orientation
         ),
+        SystemActionDef(
+            id = CYCLE_ROTATIONS,
+            category = CATEGORY_SCREEN_ROTATION,
+            permissions = arrayOf(Manifest.permission.WRITE_SETTINGS),
+            iconRes = R.drawable.ic_outline_screen_rotation_24,
+            descriptionRes = R.string.action_cycle_rotations,
+            descriptionFormattedRes = R.string.action_cycle_rotations_formatted,
+            optionType = OptionType.MULTIPLE,
+            options = Option.ROTATIONS
+        ),
         //SCREEN ORIENTATION
 
         //BRIGHTNESS
@@ -626,6 +650,29 @@ object SystemActionUtils {
             }
         ),
 
+        SystemActionDef(id = TEXT_CUT,
+            category = CATEGORY_KEYBOARD,
+            iconRes = R.drawable.ic_content_cut,
+            descriptionRes = R.string.action_text_cut,
+            minApi = Build.VERSION_CODES.JELLY_BEAN_MR2),
+
+        SystemActionDef(id = TEXT_COPY,
+            category = CATEGORY_KEYBOARD,
+            iconRes = R.drawable.ic_content_copy,
+            descriptionRes = R.string.action_text_copy,
+            minApi = Build.VERSION_CODES.JELLY_BEAN_MR2),
+
+        SystemActionDef(id = TEXT_PASTE,
+            category = CATEGORY_KEYBOARD,
+            iconRes = R.drawable.ic_content_paste,
+            descriptionRes = R.string.action_text_paste,
+            minApi = Build.VERSION_CODES.JELLY_BEAN_MR2),
+
+        SystemActionDef(id = SELECT_WORD_AT_CURSOR,
+            category = CATEGORY_KEYBOARD,
+            descriptionRes = R.string.action_select_word_at_cursor,
+            minApi = Build.VERSION_CODES.JELLY_BEAN_MR2),
+
         //AIRPLANE MODE
         SystemActionDef(id = TOGGLE_AIRPLANE_MODE,
             category = CATEGORY_AIRPLANE_MODE,
@@ -707,6 +754,14 @@ object SystemActionUtils {
             messageOnSelection = R.string.action_secure_lock_device_message
         ),
         SystemActionDef(
+            id = POWER_ON_OFF_DEVICE,
+            category = CATEGORY_OTHER,
+            iconRes = R.drawable.ic_outline_power_settings_new_24,
+            descriptionRes = R.string.action_power_on_off_device,
+            permissions = arrayOf(Constants.PERMISSION_ROOT),
+            messageOnSelection = R.string.action_power_on_off_device_message
+        ),
+        SystemActionDef(
             id = CONSUME_KEY_EVENT,
             category = CATEGORY_OTHER,
             descriptionRes = R.string.action_consume_keyevent
@@ -776,5 +831,12 @@ object SystemActionUtils {
             ?: throw Exception("System action $id has options and doesn't have a formatted description")
 
         return ctx.str(descriptionFormattedRes, optionText)
+    }
+
+    fun SystemActionDef.getDescriptionWithOptionSet(ctx: Context, optionSetLabels: Set<String>): String {
+        descriptionFormattedRes
+            ?: throw Exception("System action $id has options and doesn't have a formatted description")
+
+        return ctx.str(descriptionFormattedRes, optionSetLabels.joinToString())
     }
 }

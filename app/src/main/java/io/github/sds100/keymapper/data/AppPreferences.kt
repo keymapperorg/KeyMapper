@@ -66,7 +66,7 @@ object AppPreferences : DefaultPreferences() {
         appCtx.bool(R.bool.default_value_auto_show_ime_picker)
     )
 
-    var defaultIme by StringOrNullPref(KEY_DEFAULT_IME)
+    var lastUsedIncompatibleImeId by StringOrNullPref(KEY_DEFAULT_IME)
 
     val longPressDelay by IntPref(
         appCtx.str(R.string.key_pref_long_press_delay),
@@ -118,6 +118,11 @@ object AppPreferences : DefaultPreferences() {
         appCtx.bool(R.bool.default_value_toggle_keyboard_on_toggle_keymaps)
     )
 
+    var automaticBackupLocation by StringPref(
+        appCtx.str(R.string.key_pref_automatic_backup_location),
+        appCtx.str(R.string.default_value_automatic_backup_location)
+    )
+
     var keymapsPaused by BoolPref(
         appCtx.str(R.string.key_pref_keymaps_paused),
         appCtx.bool(R.bool.default_value_keymaps_paused)
@@ -126,6 +131,15 @@ object AppPreferences : DefaultPreferences() {
     val hideHomeScreenAlerts by BoolPref(
         appCtx.str(R.string.key_pref_hide_home_screen_alerts),
         appCtx.bool(R.bool.default_value_hide_home_screen_alerts)
+    )
+
+    var lastUsedCompatibleImePackage by StringOrNullPref(
+        appCtx.str(R.string.key_pref_last_used_compatible_ime)
+    )
+
+    var showGuiKeyboardAd by BoolPref(
+        appCtx.str(R.string.key_pref_show_gui_keyboard_ad),
+        true
     )
 
     @NightMode

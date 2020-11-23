@@ -1,12 +1,15 @@
 package io.github.sds100.keymapper.util.delegate
 
 import android.view.KeyEvent
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.KeyEventUtils
 import io.github.sds100.keymapper.util.RootUtils
 import io.github.sds100.keymapper.util.Shell
 import io.github.sds100.keymapper.util.isExternalCompat
 import kotlinx.coroutines.*
 import splitties.systemservices.inputManager
+import splitties.toast.toast
+import java.io.IOException
 
 /**
  * Created by sds100 on 21/06/2020.
@@ -14,7 +17,8 @@ import splitties.systemservices.inputManager
 class GetEventDelegate(val onKeyEvent: suspend (keyCode: Int,
                                                 action: Int,
                                                 deviceDescriptor: String,
-                                                isExternal: Boolean) -> Unit) {
+                                                isExternal: Boolean,
+                                                deviceId: Int) -> Unit) {
 
     companion object {
         private const val REGEX_GET_DEVICE_LOCATION = "\\/.*(?=:)"
@@ -27,8 +31,8 @@ class GetEventDelegate(val onKeyEvent: suspend (keyCode: Int,
      * @return whether it successfully started listening.
      */
     fun startListening(scope: CoroutineScope): Boolean {
-        mJob = scope.launch {
-            withContext(Dispatchers.IO) {
+        try {
+            mJob = scope.launch(Dispatchers.IO) {
 
                 try {
                     val getEventDevices: String
@@ -70,11 +74,11 @@ class GetEventDelegate(val onKeyEvent: suspend (keyCode: Int,
 
                                 when (actionString) {
                                     "UP" -> {
-                                        onKeyEvent.invoke(keycode, KeyEvent.ACTION_UP, deviceDescriptor, isExternal)
+                                        onKeyEvent.invoke(keycode, KeyEvent.ACTION_UP, deviceDescriptor, isExternal, 0)
                                     }
 
                                     "DOWN" -> {
-                                        onKeyEvent.invoke(keycode, KeyEvent.ACTION_DOWN, deviceDescriptor, isExternal)
+                                        onKeyEvent.invoke(keycode, KeyEvent.ACTION_DOWN, deviceDescriptor, isExternal, 0)
                                     }
                                 }
 
@@ -85,11 +89,16 @@ class GetEventDelegate(val onKeyEvent: suspend (keyCode: Int,
 
                     inputStream.close()
 
-                } catch (e: Exception) {
-                    mJob?.cancel()
-                    return@withContext false
+                } catch (e: IOException) {
+                    withContext(Dispatchers.Main) {
+                        toast(R.string.toast_io_exception_shrug)
+                    }
                 }
             }
+
+        } catch (e: Exception) {
+            mJob?.cancel()
+            return false
         }
 
         return true

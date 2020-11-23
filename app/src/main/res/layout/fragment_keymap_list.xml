@@ -69,6 +69,18 @@
         <variable
             name="grantDndAccess"
             type="View.OnClickListener" />
+
+        <variable
+            name="showNewGuiKeyboardAd"
+            type="Boolean" />
+
+        <variable
+            name="dismissNewGuiKeyboardAd"
+            type="View.OnClickListener" />
+
+        <variable
+            name="getNewGuiKeyboard"
+            type="View.OnClickListener" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -86,12 +98,12 @@
             <FrameLayout
                 android:id="@+id/headerLayout"
                 android:layout_width="match_parent"
-                android:visibility="@{hideAlerts ? View.GONE : View.VISIBLE}"
                 android:layout_height="wrap_content"
-                tools:visibility="gone"
+                android:visibility="@{hideAlerts ? View.GONE : View.VISIBLE}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="visible">
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/layoutCollapsed"
@@ -105,7 +117,7 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:visibility="@{expanded ? View.GONE : View.VISIBLE}"
-                    tools:visibility="gone">
+                    tools:visibility="visible">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
@@ -148,7 +160,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     tools:el_expanded="true"
-                    tools:visibility="visible">
+                    tools:visibility="gone">
 
                     <androidx.core.widget.NestedScrollView
                         android:layout_width="match_parent"
@@ -199,16 +211,89 @@
                 </net.cachapa.expandablelayout.ExpandableLayout>
             </FrameLayout>
 
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/layoutNewGuiKeyboardAd"
+                style="@style/MyCardView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:onClick="@{getNewGuiKeyboard}"
+                android:visibility="@{showNewGuiKeyboardAd ? View.VISIBLE : View.GONE}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/headerLayout"
+                tools:visibility="visible">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/buttonRemove"
+                        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                        android:layout_width="48dp"
+                        android:layout_height="0dp"
+                        android:onClick="@{dismissNewGuiKeyboardAd}"
+                        android:tint="?attr/colorOnSurface"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/buttonGetNewGuiKeyboard"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0"
+                        app:srcCompat="@drawable/ic_outline_clear_24" />
+
+                    <Button
+                        android:id="@+id/buttonGetNewGuiKeyboard"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:onClick="@{getNewGuiKeyboard}"
+                        android:text="@string/button_yes"
+                        android:textColor="@color/warn"
+                        android:visibility="visible"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/textView"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/textView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp"
+                        app:drawableStartCompat="@drawable/ic_outline_star_border_24"
+                        android:drawablePadding="16dp"
+                        android:gravity="center_vertical"
+                        android:text="@string/new_gui_keyboard_ad_message"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                        app:drawableTint="@color/warn"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/buttonGetNewGuiKeyboard"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
             <com.airbnb.epoxy.EpoxyRecyclerView
                 android:id="@+id/epoxyRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_marginTop="8dp"
                 android:visibility="@{viewModel.loadingContent  || viewModel.keymapModelList.empty ? View.GONE : View.VISIBLE}"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/headerLayout"
+                app:layout_constraintTop_toBottomOf="@id/layoutNewGuiKeyboardAd"
                 tools:visibility="visible" />
 
             <ProgressBar
@@ -235,7 +320,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/headerLayout" />
+                app:layout_constraintTop_toBottomOf="@id/layoutNewGuiKeyboardAd" />
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="wrap_content"
