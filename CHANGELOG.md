@@ -2,7 +2,7 @@
 
 #### 23 Nov 2020
 
-This summarises the changes from 2.0.2.
+This summarises the changes since 2.0.2.
 
 ### Added
 
