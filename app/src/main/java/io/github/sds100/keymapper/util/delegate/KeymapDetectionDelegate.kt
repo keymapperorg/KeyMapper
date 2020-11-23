@@ -1326,6 +1326,9 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             BooleanArray(mParallelTriggerEvents[it].size) { false }
         }
 
+        mPerformActionsOnFailedDoublePress.clear()
+        mPerformActionsOnFailedLongPress.clear()
+
         mActionsBeingHeldDown.forEach {
             val action = mActionMap[it] ?: return@forEach
 
