@@ -1,0 +1,3 @@
+Bug Fixes
+
+- crash when getting icon for an app shortcut that isn't installed
