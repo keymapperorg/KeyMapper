@@ -46,7 +46,7 @@ jobs:
         run: bash ./gradlew assembleCi --stacktrace
 
       - name: set apk name env
-        run: echo "APK_NAME::$(basename app/build/outputs/apk/ci/*.apk .apk)" >> $GITHUB_ENV
+        run: echo ::set-env name=APK_NAME::$(basename app/build/outputs/apk/ci/*.apk .apk)
 
       - name: Upload APK
         uses: actions/upload-artifact@v1
