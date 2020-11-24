@@ -7,13 +7,11 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ui.fragment.*
 import io.github.sds100.keymapper.util.int
 import io.github.sds100.keymapper.util.intArray
-import splitties.experimental.ExperimentalSplittiesApi
 
 /**
  * Created by sds100 on 26/01/2020.
  */
 
-@ExperimentalSplittiesApi
 class ConfigKeymapPagerAdapter(fragment: Fragment, private val mKeymapId: Long) : FragmentStateAdapter(fragment) {
 
     /**

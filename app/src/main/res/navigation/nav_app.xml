@@ -55,7 +55,7 @@
 
     <action
         android:id="@+id/action_to_config_keymap"
-        app:destination="@id/nav_config_keymap"
+        app:destination="@id/nav_new_config_keymap"
         app:enterAnim="@anim/slide_in_right"
         app:exitAnim="@anim/slide_out_left"
         app:popEnterAnim="@anim/slide_in_left"
@@ -65,7 +65,7 @@
             app:argType="long" />
     </action>
 
-    <include app:graph="@navigation/nav_config_keymap" />
+    <include app:graph="@navigation/nav_new_config_keymap" />
     <include app:graph="@navigation/nav_choose_constraint" />
 
     <fragment
@@ -133,7 +133,6 @@
         android:name="io.github.sds100.keymapper.ui.fragment.AboutFragment"
         android:label="fragment_about"
         tools:layout="@layout/fragment_about" />
-
     <action
         android:id="@+id/action_global_aboutFragment"
         app:destination="@id/aboutFragment"
@@ -160,8 +159,6 @@
             android:name="@string/nav_arg_choose_action_request_key"
             app:argType="string" />
     </fragment>
-
-    <include app:graph="@navigation/nav_choose_constraint" />
 
     <dialog
         android:id="@+id/fingerprintGestureMapOptionsFragment"

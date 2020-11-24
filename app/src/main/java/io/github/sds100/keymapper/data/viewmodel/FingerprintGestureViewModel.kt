@@ -102,7 +102,6 @@ class FingerprintGestureViewModel(
         }
     }
 
-
     fun setEnabled(id: String, isEnabled: Boolean) = viewModelScope.launch {
         mRepository.editGesture(id) {
             it.copy(isEnabled = isEnabled)

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_new_config_keymap"
+    app:startDestination="@id/config_keymap_fragment">
+    <fragment
+        android:id="@+id/config_keymap_fragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.configkeymap.NewConfigKeymapFragment"
+        android:label="Edit Keymap"
+        tools:layout="@layout/fragment_new_config_keymap">
+
+        <argument
+            android:name="keymapId"
+            app:argType="long" />
+
+        <action
+            android:id="@+id/action_config_keymap_fragment_to_choose_action_fragment"
+            app:destination="@id/choose_action_fragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+        <action
+            android:id="@+id/action_config_keymap_fragment_to_choose_constraint"
+            app:destination="@id/nav_choose_constraint"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right">
+
+            <argument
+                android:name="@string/nav_arg_choose_constraint_request_key"
+                app:argType="string" />
+        </action>
+
+        <action
+            android:id="@+id/action_config_keymap_fragment_to_actionOptionsFragment"
+            app:destination="@id/actionBehaviorFragment"
+            app:enterAnim="@anim/slide_in_bottom" />
+
+        <action
+            android:id="@+id/action_config_keymap_fragment_to_triggerKeyBehaviorFragment"
+            app:destination="@id/triggerKeyBehaviorFragment"
+            app:enterAnim="@anim/slide_in_bottom" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/choose_action_fragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.ChooseActionFragment"
+        android:label="@string/title_choose_action"
+        tools:layout="@layout/fragment_choose_action">
+        <action
+            android:id="@+id/action_choose_action_fragment_to_keycodeListFragment"
+            app:destination="@id/keycodeListFragment" />
+        <argument
+            android:name="@string/nav_arg_choose_action_request_key"
+            app:argType="string" />
+    </fragment>
+
+    <include app:graph="@navigation/nav_choose_constraint" />
+
+    <action
+        android:id="@+id/action_global_helpFragment"
+        app:destination="@id/onlineFragment"
+        app:enterAnim="@anim/slide_in_bottom">
+        <argument
+            android:name="@string/nav_arg_header"
+            android:defaultValue="@string/title_help"
+            app:argType="reference" />
+        <argument
+            android:name="@string/nav_arg_file_url"
+            android:defaultValue="@string/url_help"
+            app:argType="reference" />
+        <argument
+            android:name="@string/nav_arg_file_url_alt"
+            android:defaultValue="@string/url_help_alternate"
+            app:argType="reference" />
+    </action>
+
+    <dialog
+        android:id="@+id/actionBehaviorFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.ActionBehaviorFragment"
+        android:label="ActionBehaviorFragment">
+
+        <argument
+            android:name="@string/nav_arg_action_behavior"
+            app:argType="io.github.sds100.keymapper.data.model.behavior.ActionBehavior" />
+    </dialog>
+
+    <dialog
+        android:id="@+id/triggerKeyBehaviorFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.TriggerKeyBehaviorFragment"
+        android:label="TriggerKeyBehaviorFragment">
+
+        <argument
+            android:name="@string/nav_arg_trigger_key_behavior"
+            app:argType="io.github.sds100.keymapper.data.model.behavior.TriggerKeyBehavior" />
+    </dialog>
+
+    <fragment
+        android:id="@+id/keycodeListFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.KeycodeListFragment"
+        android:label="KeycodeListFragment" />
+</navigation>

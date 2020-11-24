@@ -7,6 +7,7 @@ import io.github.sds100.keymapper.data.repository.FileRepository
 import io.github.sds100.keymapper.data.repository.SystemRepository
 import io.github.sds100.keymapper.data.viewmodel.*
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
+import io.github.sds100.keymapper.data.viewmodel.NewConfigKeymapViewModel
 
 /**
  * Created by sds100 on 26/01/2020.
@@ -124,6 +125,15 @@ object InjectorUtils {
     ): ConfigKeymapViewModel.Factory {
         (context.applicationContext as MyApplication).apply {
             return ConfigKeymapViewModel.Factory(keymapRepository, deviceInfoRepository, preferenceDataStore, id)
+        }
+    }
+
+    fun provideNewConfigKeymapViewModel(
+        context: Context,
+        id: Long
+    ): NewConfigKeymapViewModel.Factory {
+        (context.applicationContext as MyApplication).apply {
+            return NewConfigKeymapViewModel.Factory(keymapRepository, deviceInfoRepository, preferenceDataStore, id)
         }
     }
 

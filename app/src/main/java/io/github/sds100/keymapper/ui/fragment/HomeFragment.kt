@@ -14,7 +14,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.transition.Fade
@@ -33,9 +32,9 @@ import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
 import io.github.sds100.keymapper.data.model.behavior.FingerprintGestureMapOptions
 import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
-import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.data.viewmodel.FingerprintGestureViewModel
 import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
+import io.github.sds100.keymapper.data.viewmodel.NewConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.DialogChooseAppStoreBinding
 import io.github.sds100.keymapper.databinding.FragmentHomeBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
@@ -209,7 +208,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
 
             setOnNewKeymapClick {
                 val direction =
-                    HomeFragmentDirections.actionToConfigKeymap(ConfigKeymapViewModel.NEW_KEYMAP_ID)
+                    HomeFragmentDirections.actionToConfigKeymap(NewConfigKeymapViewModel.NEW_KEYMAP_ID)
                 findNavController().navigate(direction)
             }
 
@@ -273,7 +272,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                 }
             }
 
-            mKeyMapListViewModel.selectionProvider.isSelectable.observe(viewLifecycleOwner, Observer { isSelectable ->
+            mKeyMapListViewModel.selectionProvider.isSelectable.observe(viewLifecycleOwner, { isSelectable ->
                 viewPager.isUserInputEnabled = !isSelectable
 
                 if (isSelectable) {
@@ -359,7 +358,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                 }
             }
 
-            mExpanded.observe(viewLifecycleOwner, Observer {
+            mExpanded.observe(viewLifecycleOwner, {
                 if (it == true) {
                     expandableLayout.expand()
                 } else {
