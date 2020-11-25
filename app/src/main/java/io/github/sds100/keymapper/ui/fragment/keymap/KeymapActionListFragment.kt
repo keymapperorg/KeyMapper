@@ -1,9 +1,9 @@
-package io.github.sds100.keymapper.ui.fragment.configkeymap
+package io.github.sds100.keymapper.ui.fragment.keymap
 
 import androidx.navigation.navGraphViewModels
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.viewmodel.ActionListViewModel
-import io.github.sds100.keymapper.data.viewmodel.NewConfigKeymapViewModel
+import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.ui.fragment.ActionListFragment
 import io.github.sds100.keymapper.util.InjectorUtils
 
@@ -12,7 +12,7 @@ import io.github.sds100.keymapper.util.InjectorUtils
  */
 
 class KeymapActionListFragment(private val mKeymapId: Long) : ActionListFragment() {
-    private val mConfigKeymapViewModel: NewConfigKeymapViewModel by navGraphViewModels(R.id.nav_new_config_keymap) {
+    private val mConfigKeymapViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_new_config_keymap) {
         InjectorUtils.provideNewConfigKeymapViewModel(requireContext(), mKeymapId)
     }
 

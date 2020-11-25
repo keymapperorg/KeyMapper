@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.ui.fragment.configkeymap
+package io.github.sds100.keymapper.ui.fragment.keymap
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,11 +15,13 @@ import androidx.navigation.navGraphViewModels
 import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Action
-import io.github.sds100.keymapper.data.viewmodel.NewConfigKeymapViewModel
-import io.github.sds100.keymapper.databinding.FragmentNewConfigKeymapBinding
+import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
+import io.github.sds100.keymapper.databinding.FragmentConfigKeymapBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.adapter.GenericFragmentPagerAdapter
-import io.github.sds100.keymapper.ui.fragment.*
+import io.github.sds100.keymapper.ui.fragment.ActionBehaviorFragment
+import io.github.sds100.keymapper.ui.fragment.ChooseActionFragment
+import io.github.sds100.keymapper.ui.fragment.TriggerKeyBehaviorFragment
 import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
 import io.github.sds100.keymapper.util.int
@@ -34,11 +36,15 @@ import splitties.resources.intArray
 /**
  * Created by sds100 on 22/11/20.
  */
-class NewConfigKeymapFragment : Fragment() {
+class ConfigKeymapFragment : Fragment() {
+    companion object {
+        const val CHOOSE_ACTION_REQUEST_KEY = "request_choose_action"
+        const val CHOOSE_CONSTRAINT_REQUEST_KEY = "request_choose_constraint"
+    }
 
-    private val mArgs by navArgs<NewConfigKeymapFragmentArgs>()
+    private val mArgs by navArgs<ConfigKeymapFragmentArgs>()
 
-    private val mViewModel: NewConfigKeymapViewModel by navGraphViewModels(R.id.nav_new_config_keymap) {
+    private val mViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_new_config_keymap) {
         InjectorUtils.provideNewConfigKeymapViewModel(requireContext(), mArgs.keymapId)
     }
 
@@ -82,7 +88,7 @@ class NewConfigKeymapFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        FragmentNewConfigKeymapBinding.inflate(inflater, container, false).apply {
+        FragmentConfigKeymapBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             viewModel = mViewModel
 
@@ -221,7 +227,7 @@ class NewConfigKeymapFragment : Fragment() {
     }
 
     private fun createFragmentPagerAdapter() = GenericFragmentPagerAdapter(this,
-        intArray(R.array.new_config_keymap_fragments).map {
+        intArray(R.array.config_keymap_fragments).map {
             when (it) {
 
                 int(R.integer.fragment_id_actions) -> {

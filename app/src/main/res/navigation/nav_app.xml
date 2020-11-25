@@ -65,7 +65,7 @@
             app:argType="long" />
     </action>
 
-    <include app:graph="@navigation/nav_new_config_keymap" />
+    <include app:graph="@navigation/nav_config_keymap" />
     <include app:graph="@navigation/nav_choose_constraint" />
 
     <fragment

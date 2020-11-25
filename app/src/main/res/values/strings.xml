@@ -477,31 +477,16 @@
 
     <!-- The tabs that should be shown when configuring a keymap -->
     <string-array name="config_keymap_tab_titles" tools:ignore="InconsistentArrays">
-        <item>@string/tab_trigger</item>
-        <item>@string/tab_actions</item>
-        <item>@string/tab_keymap_constraints</item>
-        <item>@string/tab_keymap_flags</item>
-    </string-array>
-    <!-- The tabs that should be shown when configuring a keymap -->
-
-    <!-- The tabs that should be shown when configuring a keymap -->
-    <string-array name="ne_config_keymap_tab_titles" tools:ignore="InconsistentArrays">
         <item>@string/tab_actions</item>
     </string-array>
     <!-- The tabs that should be shown when configuring a keymap -->
 
     <!-- The fragments that should be shown when configuring a keymap -->
     <integer-array name="config_keymap_fragments" tools:ignore="InconsistentArrays">
-        <item>@integer/fragment_id_trigger</item>
         <item>@integer/fragment_id_actions</item>
-        <item>@integer/fragment_id_keymap_constraints</item>
-        <item>@integer/fragment_id_keymap_flags</item>
     </integer-array>
 
     <!-- The fragments that should be shown when configuring a keymap -->
-    <integer-array name="new_config_keymap_fragments" tools:ignore="InconsistentArrays">
-        <item>@integer/fragment_id_actions</item>
-    </integer-array>
 
     <integer name="fragment_id_trigger">10</integer>
     <integer name="fragment_id_actions">11</integer>

@@ -18,6 +18,8 @@ import io.github.sds100.keymapper.data.model.ActionModel
 import io.github.sds100.keymapper.data.viewmodel.ActionListViewModel
 import io.github.sds100.keymapper.databinding.FragmentActionListBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
+import io.github.sds100.keymapper.ui.fragment.keymap.ConfigKeymapFragment
+import io.github.sds100.keymapper.ui.fragment.keymap.ConfigKeymapFragmentDirections
 import io.github.sds100.keymapper.util.*
 
 /**

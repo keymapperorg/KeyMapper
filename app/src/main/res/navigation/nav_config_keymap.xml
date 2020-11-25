@@ -2,11 +2,11 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_config_keymap"
+    android:id="@+id/nav_new_config_keymap"
     app:startDestination="@id/config_keymap_fragment">
     <fragment
         android:id="@+id/config_keymap_fragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.ConfigKeymapFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.keymap.ConfigKeymapFragment"
         android:label="Edit Keymap"
         tools:layout="@layout/fragment_config_keymap">
 
