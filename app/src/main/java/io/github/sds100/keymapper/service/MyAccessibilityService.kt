@@ -350,9 +350,13 @@ class MyAccessibilityService : AccessibilityService(),
         }
 
         lifecycleScope.launchWhenStarted {
-            val keymapList = (application as MyApplication).keymapRepository.getKeymaps()
+            val keymapList = withContext(Dispatchers.IO) {
+                (application as MyApplication).keymapRepository.getKeymaps()
+            }
 
-            updateKeymapListCache(keymapList)
+            withContext(Dispatchers.Main) {
+                updateKeymapListCache(keymapList)
+            }
         }
     }
 
