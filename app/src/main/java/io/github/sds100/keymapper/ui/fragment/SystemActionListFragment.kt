@@ -67,26 +67,30 @@ class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourcePr
                     caption = str(R.string.your_device_doesnt_support_some_actions)
                 }
             })
+        }
+    }
 
-            mViewModel.filteredModelList.observe(viewLifecycleOwner, {
-                state = it
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        
+        mViewModel.filteredModelList.observe(viewLifecycleOwner, {
+            binding.state = it
 
-                if (it !is Data) return@observe
+            if (it !is Data) return@observe
 
-                epoxyRecyclerView.withModels {
-                    for ((sectionHeader, systemActions) in it.data) {
-                        sectionHeader {
-                            id(sectionHeader)
-                            header(str(sectionHeader))
-                        }
+            binding.epoxyRecyclerView.withModels {
+                for ((sectionHeader, systemActions) in it.data) {
+                    sectionHeader {
+                        id(sectionHeader)
+                        header(str(sectionHeader))
+                    }
 
-                        systemActions.forEach { systemAction ->
-                            createSimpleListItem(systemAction)
-                        }
+                    systemActions.forEach { systemAction ->
+                        createSimpleListItem(systemAction)
                     }
                 }
-            })
-        }
+            }
+        })
     }
 
     override fun onSearchQuery(query: String?) {
