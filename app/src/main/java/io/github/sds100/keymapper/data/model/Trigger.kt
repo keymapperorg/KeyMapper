@@ -6,6 +6,7 @@ import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.KeyEventUtils
 import splitties.bitflags.withFlag
+import java.util.*
 
 /**
  * Created by sds100 on 16/07/2018.
@@ -97,7 +98,10 @@ data class Trigger(
         var clickType: Int = SHORT_PRESS,
 
         @SerializedName(NAME_FLAGS)
-        var flags: Int = 0
+        var flags: Int = 0,
+
+        @SerializedName(NAME_UID)
+        val uid: String = UUID.randomUUID().toString()
     ) {
 
         companion object {
@@ -106,6 +110,7 @@ data class Trigger(
             const val NAME_DEVICE_ID = "deviceId"
             const val NAME_CLICK_TYPE = "clickType"
             const val NAME_FLAGS = "flags"
+            const val NAME_UID = "uid"
 
             //IDS! DON'T CHANGE
             const val DEVICE_ID_THIS_DEVICE = "io.github.sds100.keymapper.THIS_DEVICE"
@@ -124,13 +129,11 @@ data class Trigger(
 
                 //nullable because this property was added after backup and restore was released.
                 val flags by it.json.byNullableInt(NAME_FLAGS)
+                val uid by it.json.byNullableString(NAME_UID)
 
-                Key(keycode, deviceId, clickType, flags ?: 0)
+                Key(keycode, deviceId, clickType, flags ?: 0, uid ?: UUID.randomUUID().toString())
             }
         }
-
-        val uniqueId: String
-            get() = "$keyCode$clickType$deviceId"
 
         init {
             if (KeyEventUtils.isModifierKey(keyCode)) {
