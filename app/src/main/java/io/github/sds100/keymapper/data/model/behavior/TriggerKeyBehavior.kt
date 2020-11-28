@@ -50,11 +50,30 @@ class TriggerKeyBehavior(
         return this
     }
 
-    fun applyToTriggerKey(key: Trigger.Key): Trigger.Key {
-        key.flags = key.flags.applyBehaviorOption(doNotConsumeKeyEvents, Trigger.Key.FLAG_DO_NOT_CONSUME_KEY_EVENT)
+    fun applyToTriggerKey(triggerKeys: List<Trigger.Key>, triggerMode: Int): List<Trigger.Key> {
+        var keyToApplyOptions: Trigger.Key? = null
 
-        key.clickType = clickType.value
+        return triggerKeys
+            .toMutableList()
+            .map {
+                if (it.uid == uniqueId) {
+                    it.clickType = clickType.value
 
-        return key
+                    it.flags = it.flags.applyBehaviorOption(doNotConsumeKeyEvents, Trigger.Key.FLAG_DO_NOT_CONSUME_KEY_EVENT)
+
+                    keyToApplyOptions = it
+                }
+
+                it
+            }.map {
+                //set the click type of all duplicate keys to the same click type
+                if (triggerMode == Trigger.SEQUENCE
+                    && it.keyCode == keyToApplyOptions?.keyCode && it.deviceId == keyToApplyOptions?.deviceId) {
+
+                    it.clickType = clickType.value
+                }
+
+                it
+            }
     }
 }
