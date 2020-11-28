@@ -15,7 +15,7 @@ class TriggerKeyBehavior(
         const val ID_CLICK_TYPE = "click_type"
     }
 
-    val uniqueId = key.uniqueId
+    val uniqueId = key.uid
 
     val clickType = BehaviorOption(
         id = ID_CLICK_TYPE,

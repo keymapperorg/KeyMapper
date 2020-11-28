@@ -87,7 +87,7 @@ fun Trigger.Key.buildModel(ctx: Context, deviceInfoList: List<DeviceInfo>): Trig
     }
 
     return TriggerKeyModel(
-        id = uniqueId,
+        id = uid,
         keyCode = keyCode,
         name = KeyEventUtils.keycodeToString(keyCode),
         clickType = clickType,

@@ -592,7 +592,7 @@ class ConfigKeymapViewModel internal constructor(
     fun setTriggerKeyBehavior(triggerKeyBehavior: TriggerKeyBehavior) {
         triggerKeys.value = triggerKeys.value?.map { triggerKey ->
 
-            if (triggerKey.uniqueId == triggerKeyBehavior.uniqueId) {
+            if (triggerKey.uid == triggerKeyBehavior.uniqueId) {
                 return@map triggerKeyBehavior.applyToTriggerKey(triggerKey)
             }
 
@@ -634,7 +634,7 @@ class ConfigKeymapViewModel internal constructor(
     }
 
     fun editTriggerKeyBehavior(uniqueId: String) {
-        val key = triggerKeys.value?.find { it.uniqueId == uniqueId } ?: return
+        val key = triggerKeys.value?.find { it.uid == uniqueId } ?: return
 
         val behavior = TriggerKeyBehavior(key, triggerMode.value!!)
 
