@@ -22,7 +22,7 @@ import io.github.sds100.keymapper.databinding.FragmentConfigKeymapBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.adapter.GenericFragmentPagerAdapter
 import io.github.sds100.keymapper.ui.fragment.ActionListFragment
-import io.github.sds100.keymapper.ui.fragment.BaseOptionsFragment
+import io.github.sds100.keymapper.ui.fragment.BaseOptionsDialogFragment
 import io.github.sds100.keymapper.ui.fragment.ChooseActionFragment
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
@@ -53,6 +53,7 @@ class ConfigKeymapFragment : Fragment() {
     private val mFragmentFactory = object : FragmentFactory() {
         override fun instantiate(classLoader: ClassLoader, className: String) =
             when (className) {
+                TriggerFragment::class.java.name -> TriggerFragment(mArgs.keymapId)
                 KeymapActionListFragment::class.java.name -> KeymapActionListFragment(mArgs.keymapId)
 
                 else -> super.instantiate(classLoader, className)
@@ -83,7 +84,7 @@ class ConfigKeymapFragment : Fragment() {
         }
 
         setFragmentResultListener(KeymapActionOptionsFragment.REQUEST_KEY) { _, result ->
-            val options = result.getSerializable(BaseOptionsFragment.EXTRA_OPTIONS) as KeymapActionOptions
+            val options = result.getSerializable(BaseOptionsDialogFragment.EXTRA_OPTIONS) as KeymapActionOptions
             mViewModel.actionListViewModel.setOptions(options)
         }
 
@@ -237,6 +238,7 @@ class ConfigKeymapFragment : Fragment() {
 
                 int(R.integer.fragment_id_actions) -> it to { KeymapActionListFragment(mArgs.keymapId) }
                 int(R.integer.fragment_id_trigger) -> it to { TriggerFragment(mArgs.keymapId) }
+                int(R.integer.fragment_id_trigger_options) -> it to { TriggerOptionsFragment(mArgs.keymapId) }
 
                 else -> throw Exception("Don't know how to instantiate a fragment for this id $id")
             }

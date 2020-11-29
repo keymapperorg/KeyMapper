@@ -8,13 +8,13 @@ import com.airbnb.epoxy.EpoxyControllerAdapter
 import io.github.sds100.keymapper.data.model.options.KeymapActionOptions
 import io.github.sds100.keymapper.data.viewmodel.KeymapActionOptionsViewModel
 import io.github.sds100.keymapper.databinding.FragmentKeymapActionOptionsBinding
-import io.github.sds100.keymapper.ui.fragment.BaseOptionsFragment
+import io.github.sds100.keymapper.ui.fragment.BaseOptionsDialogFragment
 import io.github.sds100.keymapper.util.InjectorUtils
 
 /**
  * Created by sds100 on 27/06/2020.
  */
-class KeymapActionOptionsFragment : BaseOptionsFragment<FragmentKeymapActionOptionsBinding, KeymapActionOptions>() {
+class KeymapActionOptionsFragment : BaseOptionsDialogFragment<FragmentKeymapActionOptionsBinding, KeymapActionOptions>() {
 
     companion object {
         const val REQUEST_KEY = "request_choose_action_options"

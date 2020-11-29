@@ -43,8 +43,8 @@ abstract class RecyclerViewFragment<BINDING : ViewDataBinding> : Fragment() {
     private val mIsSearchEnabled: Boolean
         get() = searchStateKey != null
 
-    var isAppBarVisible = true
-    var isInPagerAdapter = false
+    open var isAppBarVisible = true
+    open var isInPagerAdapter = false
     open var requestKey: String? = null
     open var searchStateKey: String? = null
     abstract val appBar: BottomAppBar

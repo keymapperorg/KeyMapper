@@ -14,7 +14,7 @@ import io.github.sds100.keymapper.data.model.options.KeymapActionOptions
 /**
  * Created by sds100 on 27/06/20.
  */
-class KeymapActionOptionsViewModel : BaseOptionsViewModel<KeymapActionOptions>() {
+class KeymapActionOptionsViewModel : BaseOptionsDialogViewModel<KeymapActionOptions>() {
 
     override val stateKey = "state_choose_action_options"
 

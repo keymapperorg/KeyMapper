@@ -36,6 +36,8 @@ class TriggerViewModel(
     preferenceDataStore: IPreferenceDataStore
 ) : IPreferenceDataStore by preferenceDataStore {
 
+    val optionsViewModel = TriggerOptionsViewModel()
+
     private val _keys = MutableLiveData<List<Trigger.Key>>()
     val keys: LiveData<List<Trigger.Key>> = _keys
 
@@ -130,8 +132,6 @@ class TriggerViewModel(
         }
     }
 
-    private val _options = MutableLiveData<TriggerOptions>()
-
     private val _buildModelsEvent = MutableSharedFlow<List<Trigger.Key>>()
     val buildModelsEvent = _buildModelsEvent.asSharedFlow()
 
@@ -159,7 +159,7 @@ class TriggerViewModel(
     fun setTrigger(trigger: Trigger) {
         _keys.value = trigger.keys
 
-        _options.value = TriggerOptions(trigger.keys, trigger.mode, trigger.flags, trigger.extras)
+        optionsViewModel.setOptions(TriggerOptions(trigger.keys, trigger.mode, trigger.flags, trigger.extras))
 
         when (trigger.mode) {
             Trigger.PARALLEL -> {
@@ -183,7 +183,7 @@ class TriggerViewModel(
     }
 
     fun createTrigger(): Trigger? {
-        return _options.value?.apply(
+        return optionsViewModel.options.value?.apply(
             Trigger(
                 keys = keys.value ?: listOf(),
                 mode = mode.value ?: Trigger.DEFAULT_TRIGGER_MODE
@@ -278,7 +278,7 @@ class TriggerViewModel(
     }
 
     fun setTriggerOption(id: String, newValue: Int) {
-        _options.value = _options.value?.setValue(id, newValue)
+        optionsViewModel.setValue(id, newValue)
         invalidateOptions()
     }
 
@@ -292,7 +292,7 @@ class TriggerViewModel(
             })
         }
 
-        _options.value = _options.value?.setValue(id, newValue)
+        optionsViewModel.setValue(id, newValue)
         invalidateOptions()
     }
 
@@ -347,12 +347,12 @@ class TriggerViewModel(
     fun invalidateOptions() {
         val tempTrigger = createTrigger() ?: return
 
-        _options.value = TriggerOptions(
+        optionsViewModel.setOptions(TriggerOptions(
             tempTrigger.keys,
             tempTrigger.mode,
             tempTrigger.flags,
             tempTrigger.extras
-        )
+        ))
     }
 
     fun rebuildModels() = mCoroutineScope.launch {

@@ -74,7 +74,7 @@ class CreateActionShortcutFragment : Fragment() {
 
         setFragmentResultListener(KeymapActionOptionsFragment.REQUEST_KEY) { _, result ->
             mViewModel.setActionBehavior(
-                result.getSerializable(BaseOptionsFragment.EXTRA_OPTIONS) as KeymapActionOptions)
+                result.getSerializable(BaseOptionsDialogFragment.EXTRA_OPTIONS) as KeymapActionOptions)
         }
     }
 

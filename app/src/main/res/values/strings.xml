@@ -124,7 +124,7 @@
 
     <string name="tab_trigger_and_actions">Trigger and Actions</string>
     <string name="tab_constraints_and_more">Constraints and More</string>
-    <string name="tab_keymap_flags">Options</string>
+    <string name="tab_trigger_options">Options</string>
     <string name="tab_keymap_constraints">Constraints</string>
     <string name="tab_actions">Actions</string>
     <string name="tab_trigger">Trigger</string>
@@ -480,6 +480,7 @@
     <string-array name="config_keymap_tab_titles" tools:ignore="InconsistentArrays">
         <item>@string/tab_trigger</item>
         <item>@string/tab_actions</item>
+        <item>@string/tab_trigger_options</item>
     </string-array>
     <!-- The tabs that should be shown when configuring a keymap -->
 
@@ -487,6 +488,7 @@
     <integer-array name="config_keymap_fragments" tools:ignore="InconsistentArrays">
         <item>@integer/fragment_id_trigger</item>
         <item>@integer/fragment_id_actions</item>
+        <item>@integer/fragment_id_trigger_options</item>
     </integer-array>
 
     <!-- The fragments that should be shown when configuring a keymap -->
@@ -496,7 +498,7 @@
     <integer name="fragment_id_trigger_and_actions">12</integer>
     <integer name="fragment_id_constraints_and_more">13</integer>
     <integer name="fragment_id_keymap_constraints">14</integer>
-    <integer name="fragment_id_keymap_flags">15</integer>
+    <integer name="fragment_id_trigger_options">15</integer>
     <integer name="fragment_id_config_keymap_all">16</integer>
     <!-- The fragments that should be shown when configuring a keymap -->
 
