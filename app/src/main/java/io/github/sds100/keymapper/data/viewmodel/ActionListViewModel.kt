@@ -91,6 +91,9 @@ abstract class ActionListViewModel(
     }
 
     fun removeAction(id: String) {
+        _actionList.value = _actionList.value?.toMutableList()?.apply {
+            removeAll { it.uid == id }
+        }
 
         invalidateOptions()
     }
