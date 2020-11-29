@@ -16,14 +16,12 @@ import androidx.navigation.navGraphViewModels
 import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Action
+import io.github.sds100.keymapper.data.model.options.KeymapActionOptions
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentConfigKeymapBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.adapter.GenericFragmentPagerAdapter
-import io.github.sds100.keymapper.ui.fragment.ActionListFragment
-import io.github.sds100.keymapper.ui.fragment.ChooseActionFragment
-import io.github.sds100.keymapper.ui.fragment.KeymapActionOptionsFragment
-import io.github.sds100.keymapper.ui.fragment.TriggerKeyOptionsFragment
+import io.github.sds100.keymapper.ui.fragment.*
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
 import io.github.sds100.keymapper.util.result.RecoverableFailure
@@ -83,6 +81,8 @@ class ConfigKeymapFragment : Fragment() {
         }
 
         setFragmentResultListener(KeymapActionOptionsFragment.REQUEST_KEY) { _, result ->
+            val options = result.getSerializable(BaseOptionsFragment.EXTRA_OPTIONS) as KeymapActionOptions
+            mViewModel.actionListViewModel.setOptions(options)
         }
 
         setFragmentResultListener(TriggerKeyOptionsFragment.REQUEST_KEY) { _, result ->
