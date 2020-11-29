@@ -120,6 +120,7 @@
     <string name="radio_button_or">OR</string>
     <string name="radio_button_short_press">Short press</string>
     <string name="radio_button_long_press">Long press</string>
+    <string name="radio_button_double_press">Double press</string>
 
     <string name="tab_trigger_and_actions">Trigger and Actions</string>
     <string name="tab_constraints_and_more">Constraints and More</string>
@@ -137,7 +138,7 @@
     <string name="nav_arg_file_url" translatable="false">io.github.sds100.keymapper.ui.fragment.OnlineFileFragment.header.file_url</string>
     <string name="nav_arg_file_url_alt" translatable="false">file_url_alt</string>
     <string name="nav_arg_action_behavior" translatable="false">action_behavior</string>
-    <string name="nav_arg_trigger_key_behavior" translatable="false">trigger_key_behavior</string>
+    <string name="nav_arg_trigger_key_options" translatable="false">trigger_key_behavior</string>
     <string name="nav_arg_choose_action_request_key" translatable="false">choose_action_request_key</string>
     <string name="nav_arg_choose_constraint_request_key" translatable="false">choose_constraint_request_key</string>
 
@@ -477,12 +478,14 @@
 
     <!-- The tabs that should be shown when configuring a keymap -->
     <string-array name="config_keymap_tab_titles" tools:ignore="InconsistentArrays">
+        <item>@string/tab_trigger</item>
         <item>@string/tab_actions</item>
     </string-array>
     <!-- The tabs that should be shown when configuring a keymap -->
 
     <!-- The fragments that should be shown when configuring a keymap -->
     <integer-array name="config_keymap_fragments" tools:ignore="InconsistentArrays">
+        <item>@integer/fragment_id_trigger</item>
         <item>@integer/fragment_id_actions</item>
     </integer-array>
 

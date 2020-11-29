@@ -22,7 +22,7 @@ import com.google.gson.Gson
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.action
 import io.github.sds100.keymapper.data.model.Action
-import io.github.sds100.keymapper.data.model.behavior.ActionBehavior
+import io.github.sds100.keymapper.data.model.options.KeymapActionOptions
 import io.github.sds100.keymapper.data.viewmodel.CreateActionShortcutViewModel
 import io.github.sds100.keymapper.databinding.FragmentCreateActionShortcutBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
@@ -71,9 +71,9 @@ class CreateActionShortcutFragment : Fragment() {
             mViewModel.addAction(action)
         }
 
-        setFragmentResultListener(ActionBehaviorFragment.REQUEST_KEY) { _, result ->
+        setFragmentResultListener(KeymapActionOptionsFragment.REQUEST_KEY) { _, result ->
             mViewModel.setActionBehavior(
-                result.getSerializable(ActionBehaviorFragment.EXTRA_ACTION_BEHAVIOR) as ActionBehavior)
+                result.getSerializable(BaseOptionsFragment.EXTRA_OPTIONS) as KeymapActionOptions)
         }
     }
 
@@ -111,7 +111,7 @@ class CreateActionShortcutFragment : Fragment() {
                 }
             })
 
-            mViewModel.chooseActionBehavior.observe(viewLifecycleOwner, EventObserver {
+            mViewModel.editActionOptions.observe(viewLifecycleOwner, EventObserver {
                 val direction =
                     CreateActionShortcutFragmentDirections.actionActionShortcutListFragmentToActionBehaviorFragment(it)
 
@@ -244,7 +244,7 @@ class CreateActionShortcutFragment : Fragment() {
                         }
 
                         onMoreClick { _ ->
-                            mViewModel.chooseActionBehavior(model.id)
+                            mViewModel.editActionOptions(model.id)
                         }
 
                         onClick { _ ->

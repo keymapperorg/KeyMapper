@@ -85,8 +85,8 @@ object InjectorUtils {
         return UnsupportedActionListViewModel.Factory(getDefaultSystemActionRepository(context))
     }
 
-    fun provideActionBehaviorViewModel(): ActionBehaviorViewModel.Factory {
-        return ActionBehaviorViewModel.Factory()
+    fun provideActionBehaviorViewModel(): KeymapActionOptionsViewModel.Factory {
+        return KeymapActionOptionsViewModel.Factory()
     }
 
     fun provideTriggerKeyBehaviorViewModel(): TriggerKeyBehaviorViewModel.Factory {

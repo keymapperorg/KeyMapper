@@ -5,9 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asFlow
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.ActionModel
-import io.github.sds100.keymapper.data.model.behavior.BaseOptions
+import io.github.sds100.keymapper.data.model.options.BaseOptions
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.Data
+import io.github.sds100.keymapper.util.Empty
+import io.github.sds100.keymapper.util.Loading
+import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -21,8 +24,7 @@ import java.util.*
 
 abstract class ActionListViewModel(
     private val mCoroutineScope: CoroutineScope,
-    private val mDeviceInfoRepository: DeviceInfoRepository,
-    invalidateOptionsCallback: InvalidateOptionsCallback) : InvalidateOptionsCallback by invalidateOptionsCallback {
+    private val mDeviceInfoRepository: DeviceInfoRepository) {
 
     private val _actionList = MutableLiveData<List<Action>>(listOf())
     val actionList: LiveData<List<Action>> = _actionList
@@ -52,6 +54,8 @@ abstract class ActionListViewModel(
 
     fun setActionList(actionList: List<Action>) {
         _actionList.value = actionList
+
+        invalidateOptions()
     }
 
     fun setModels(modelList: List<ActionModel>) {
@@ -65,6 +69,8 @@ abstract class ActionListViewModel(
         _actionList.value = _actionList.value?.toMutableList()?.apply {
             add(action)
         }
+
+        invalidateOptions()
     }
 
     fun moveAction(fromIndex: Int, toIndex: Int) {
@@ -85,13 +91,14 @@ abstract class ActionListViewModel(
 
     fun removeAction(id: String) {
 
+        invalidateOptions()
     }
 
-    fun editActionOptions(id: String) {
+    fun editOptions(id: String) {
 
     }
 
-    fun onActionModelClick(id: String) {
+    fun onModelClick(id: String) {
 
     }
 
@@ -101,6 +108,14 @@ abstract class ActionListViewModel(
 
     fun rebuildModels() = mCoroutineScope.launch {
         _buildModelsEvent.emit(actionList.value ?: listOf())
+    }
+
+    fun invalidateOptions() {
+        val newActionList = actionList.value?.map {
+            getActionOptions(it).apply(it)
+        }
+
+        _actionList.value = newActionList ?: listOf()
     }
 
     suspend fun getDeviceInfoList() = mDeviceInfoRepository.getAll()

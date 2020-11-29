@@ -6,7 +6,7 @@
 
         <import type="android.view.View" />
 
-        <import type="io.github.sds100.keymapper.data.model.behavior.FingerprintGestureMapOptions" />
+        <import type="io.github.sds100.keymapper.data.model.options.FingerprintGestureMapOptions" />
 
         <import type="io.github.sds100.keymapper.util.State" />
 

@@ -4,8 +4,6 @@ import androidx.annotation.IntDef
 import com.github.salomonbrys.kotson.*
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.util.KeyEventUtils
-import splitties.bitflags.withFlag
 
 /**
  * Created by sds100 on 16/07/2018.
@@ -86,18 +84,18 @@ data class Trigger(
         }
     }
 
-    class Key(
+    data class Key(
         @SerializedName(NAME_KEYCODE)
         val keyCode: Int,
         @SerializedName(NAME_DEVICE_ID)
-        var deviceId: String = DEVICE_ID_THIS_DEVICE,
+        val deviceId: String = DEVICE_ID_THIS_DEVICE,
 
         @ClickType
         @SerializedName(NAME_CLICK_TYPE)
-        var clickType: Int = SHORT_PRESS,
+        val clickType: Int = SHORT_PRESS,
 
         @SerializedName(NAME_FLAGS)
-        var flags: Int = 0
+        val flags: Int = 0
     ) {
 
         companion object {
@@ -131,12 +129,6 @@ data class Trigger(
 
         val uniqueId: String
             get() = "$keyCode$clickType$deviceId"
-
-        init {
-            if (KeyEventUtils.isModifierKey(keyCode)) {
-                flags = flags.withFlag(FLAG_DO_NOT_CONSUME_KEY_EVENT)
-            }
-        }
 
         override fun equals(other: Any?): Boolean {
             return (other as Key?)?.keyCode == keyCode

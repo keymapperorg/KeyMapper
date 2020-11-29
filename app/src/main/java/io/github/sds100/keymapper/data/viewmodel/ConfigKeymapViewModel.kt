@@ -6,12 +6,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.data.IPreferenceDataStore
 import io.github.sds100.keymapper.data.model.Action
+import io.github.sds100.keymapper.data.model.Constraint
+import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Trigger
-import io.github.sds100.keymapper.data.model.behavior.BaseOptions
-import io.github.sds100.keymapper.data.model.behavior.KeymapActionOptions
+import io.github.sds100.keymapper.data.model.options.BaseOptions
+import io.github.sds100.keymapper.data.model.options.KeymapActionOptions
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.data.usecase.ConfigKeymapUseCase
-import io.github.sds100.keymapper.util.InvalidateOptionsCallback
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 /**
@@ -22,44 +24,89 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
                             private val mDeviceInfoRepository: DeviceInfoRepository,
                             preferenceDataStore: IPreferenceDataStore,
                             private val mId: Long
-) : ViewModel(), IPreferenceDataStore by preferenceDataStore, InvalidateOptionsCallback {
+) : ViewModel(), IPreferenceDataStore by preferenceDataStore {
 
     companion object {
         const val NEW_KEYMAP_ID = -2L
     }
 
-    val actionListViewModel = object : ActionListViewModel(viewModelScope, mDeviceInfoRepository, this) {
+    val actionListViewModel = object : ActionListViewModel(viewModelScope, mDeviceInfoRepository) {
         override fun getActionOptions(action: Action): BaseOptions<Action> {
-            //TODO use values from trigger viewmodel
             return KeymapActionOptions(
                 action,
                 actionList.value!!.size,
-                Trigger.DEFAULT_TRIGGER_MODE,
-                listOf()
+                triggerViewModel.mode.value,
+                triggerViewModel.keys.value
             )
         }
     }
+
+    val triggerViewModel = TriggerViewModel(
+        viewModelScope,
+        mDeviceInfoRepository,
+        preferenceDataStore = this
+    )
 
     val isEnabled = MutableLiveData<Boolean>()
 
     init {
         if (mId == NEW_KEYMAP_ID) {
             actionListViewModel.setActionList(listOf())
+            triggerViewModel.setTrigger(Trigger())
             isEnabled.value = true
 
         } else {
             viewModelScope.launch {
                 val keymap = mKeymapRepository.getKeymap(mId)
 
-                isEnabled.value = keymap.isEnabled
-
                 actionListViewModel.setActionList(keymap.actionList)
+                triggerViewModel.setTrigger(keymap.trigger)
+                isEnabled.value = keymap.isEnabled
             }
+        }
+
+        triggerViewModel.mode.observeForever {
+            actionListViewModel.invalidateOptions()
+        }
+
+        triggerViewModel.keys.observeForever {
+            actionListViewModel.invalidateOptions()
         }
     }
 
-    override fun invalidateOptions() {
+    fun saveKeymap(scope: CoroutineScope) {
+        //TODO
+//        val constraintMode = when {
+//            constraintAndMode.value == true -> Constraint.MODE_AND
+//            constraintOrMode.value == true -> Constraint.MODE_OR
+//            else -> Constraint.DEFAULT_MODE
+//        }
 
+        val actualId =
+            if (mId == NEW_KEYMAP_ID) {
+                0
+            } else {
+                mId
+            }
+
+        val trigger = triggerViewModel.createTrigger()
+
+        val keymap = KeyMap(
+            id = actualId,
+            trigger = trigger ?: Trigger(),
+            actionList = actionListViewModel.actionList.value ?: listOf(),
+            constraintList = listOf(),
+            constraintMode = Constraint.DEFAULT_MODE,
+            isEnabled = isEnabled.value ?: true
+        )
+
+        scope.launch {
+            if (mId == NEW_KEYMAP_ID) {
+                mKeymapRepository.insertKeymap(keymap)
+            } else {
+                mKeymapRepository.updateKeymap(keymap)
+            }
+        }
     }
 
     class Factory(

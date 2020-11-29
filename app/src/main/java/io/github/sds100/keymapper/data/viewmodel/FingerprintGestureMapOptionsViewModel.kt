@@ -6,8 +6,8 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.CheckBoxListItemModel
 import io.github.sds100.keymapper.data.model.SliderListItemModel
 import io.github.sds100.keymapper.data.model.SliderModel
-import io.github.sds100.keymapper.data.model.behavior.BehaviorOption.Companion.nullIfDefault
-import io.github.sds100.keymapper.data.model.behavior.FingerprintGestureMapOptions
+import io.github.sds100.keymapper.data.model.options.BehaviorOption.Companion.nullIfDefault
+import io.github.sds100.keymapper.data.model.options.FingerprintGestureMapOptions
 import io.github.sds100.keymapper.util.Data
 import io.github.sds100.keymapper.util.Loading
 import io.github.sds100.keymapper.util.State

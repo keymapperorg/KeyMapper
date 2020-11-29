@@ -12,7 +12,7 @@ import io.github.sds100.keymapper.util.InjectorUtils
  */
 
 class KeymapActionListFragment(private val mKeymapId: Long) : ActionListFragment() {
-    private val mConfigKeymapViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_new_config_keymap) {
+    private val mConfigKeymapViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap) {
         InjectorUtils.provideNewConfigKeymapViewModel(requireContext(), mKeymapId)
     }
 

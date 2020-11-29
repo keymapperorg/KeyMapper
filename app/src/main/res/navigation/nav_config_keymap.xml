@@ -2,8 +2,9 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_new_config_keymap"
+    android:id="@+id/nav_config_keymap"
     app:startDestination="@id/config_keymap_fragment">
+
     <fragment
         android:id="@+id/config_keymap_fragment"
         android:name="io.github.sds100.keymapper.ui.fragment.keymap.ConfigKeymapFragment"
@@ -37,12 +38,12 @@
 
         <action
             android:id="@+id/action_config_keymap_fragment_to_actionOptionsFragment"
-            app:destination="@id/actionBehaviorFragment"
+            app:destination="@id/actionOptionsFragment"
             app:enterAnim="@anim/slide_in_bottom" />
 
         <action
-            android:id="@+id/action_config_keymap_fragment_to_triggerKeyBehaviorFragment"
-            app:destination="@id/triggerKeyBehaviorFragment"
+            android:id="@+id/action_triggerKeyOptionsFragment"
+            app:destination="@id/triggerKeyOptionsFragment"
             app:enterAnim="@anim/slide_in_bottom" />
     </fragment>
 
@@ -80,27 +81,27 @@
     </action>
 
     <dialog
-        android:id="@+id/actionBehaviorFragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.ActionBehaviorFragment"
-        android:label="ActionBehaviorFragment">
-
-        <argument
-            android:name="@string/nav_arg_action_behavior"
-            app:argType="io.github.sds100.keymapper.data.model.behavior.ActionBehavior" />
-    </dialog>
-
-    <dialog
-        android:id="@+id/triggerKeyBehaviorFragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.TriggerKeyBehaviorFragment"
+        android:id="@+id/triggerKeyOptionsFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.TriggerKeyOptionsFragment"
         android:label="TriggerKeyBehaviorFragment">
 
         <argument
-            android:name="@string/nav_arg_trigger_key_behavior"
-            app:argType="io.github.sds100.keymapper.data.model.behavior.TriggerKeyBehavior" />
+            android:name="@string/nav_arg_trigger_key_options"
+            app:argType="io.github.sds100.keymapper.data.model.options.TriggerKeyOptions" />
     </dialog>
 
     <fragment
         android:id="@+id/keycodeListFragment"
         android:name="io.github.sds100.keymapper.ui.fragment.KeycodeListFragment"
         android:label="KeycodeListFragment" />
+
+    <dialog
+        android:id="@+id/actionOptionsFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.KeymapActionOptionsFragment"
+        android:label="ActionOptionsFragment">
+
+        <argument
+            android:name="@string/nav_arg_action_behavior"
+            app:argType="io.github.sds100.keymapper.data.model.options.KeymapActionOptions" />
+    </dialog>
 </navigation>

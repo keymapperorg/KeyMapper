@@ -5,7 +5,7 @@ import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.FingerprintGestureMap
 import io.github.sds100.keymapper.data.model.FingerprintGestureMapListItemModel
-import io.github.sds100.keymapper.data.model.behavior.FingerprintGestureMapOptions
+import io.github.sds100.keymapper.data.model.options.FingerprintGestureMapOptions
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.data.repository.FingerprintGestureRepository
 import io.github.sds100.keymapper.util.Data

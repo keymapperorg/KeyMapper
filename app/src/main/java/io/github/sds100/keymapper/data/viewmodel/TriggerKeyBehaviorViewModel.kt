@@ -5,7 +5,7 @@ import androidx.lifecycle.*
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.CheckBoxListItemModel
 import io.github.sds100.keymapper.data.model.Trigger
-import io.github.sds100.keymapper.data.model.behavior.TriggerKeyBehavior
+import io.github.sds100.keymapper.data.model.options.TriggerKeyOptions
 import io.github.sds100.keymapper.util.Event
 
 /**
@@ -17,9 +17,9 @@ class TriggerKeyBehaviorViewModel : ViewModel() {
         private const val STATE_KEY = "state_trigger_behavior"
     }
 
-    val behavior: MediatorLiveData<TriggerKeyBehavior> = MediatorLiveData()
+    val options: MediatorLiveData<TriggerKeyOptions> = MediatorLiveData()
 
-    val checkBoxModels = behavior.map {
+    val checkBoxModels = options.map {
         sequence {
             if (it.doNotConsumeKeyEvents.isAllowed) {
                 yield(CheckBoxListItemModel(
@@ -32,7 +32,7 @@ class TriggerKeyBehaviorViewModel : ViewModel() {
     }
 
     val shortPress = MediatorLiveData<Boolean>().apply {
-        addSource(behavior) {
+        addSource(options) {
             val newValue = it.clickType.value == Trigger.SHORT_PRESS
 
             if (value != newValue) {
@@ -42,7 +42,7 @@ class TriggerKeyBehaviorViewModel : ViewModel() {
     }
 
     val longPress = MediatorLiveData<Boolean>().apply {
-        addSource(behavior) {
+        addSource(options) {
             val newValue = it.clickType.value == Trigger.LONG_PRESS
 
             if (value != newValue) {
@@ -52,7 +52,7 @@ class TriggerKeyBehaviorViewModel : ViewModel() {
     }
 
     val doublePress = MediatorLiveData<Boolean>().apply {
-        addSource(behavior) {
+        addSource(options) {
             val newValue = it.clickType.value == Trigger.DOUBLE_PRESS
 
             if (value != newValue) {
@@ -61,50 +61,50 @@ class TriggerKeyBehaviorViewModel : ViewModel() {
         }
     }
 
-    val onSaveEvent: MutableLiveData<Event<TriggerKeyBehavior>> = MutableLiveData()
+    val onSaveEvent: MutableLiveData<Event<TriggerKeyOptions>> = MutableLiveData()
 
     init {
-        behavior.addSource(shortPress) {
+        options.addSource(shortPress) {
             if (it) {
-                setValue(TriggerKeyBehavior.ID_CLICK_TYPE, Trigger.SHORT_PRESS)
+                setValue(TriggerKeyOptions.ID_CLICK_TYPE, Trigger.SHORT_PRESS)
             }
         }
 
-        behavior.addSource(longPress) {
+        options.addSource(longPress) {
             if (it) {
-                setValue(TriggerKeyBehavior.ID_CLICK_TYPE, Trigger.LONG_PRESS)
+                setValue(TriggerKeyOptions.ID_CLICK_TYPE, Trigger.LONG_PRESS)
             }
         }
 
-        behavior.addSource(doublePress) {
+        options.addSource(doublePress) {
             if (it) {
-                setValue(TriggerKeyBehavior.ID_CLICK_TYPE, Trigger.DOUBLE_PRESS)
+                setValue(TriggerKeyOptions.ID_CLICK_TYPE, Trigger.DOUBLE_PRESS)
             }
         }
     }
 
     fun setValue(id: String, newValue: Boolean) {
-        behavior.value = behavior.value?.setValue(id, newValue)
+        options.value = options.value?.setValue(id, newValue)
     }
 
     fun setValue(id: String, newValue: Int) {
-        behavior.value = behavior.value?.setValue(id, newValue)
+        options.value = options.value?.setValue(id, newValue)
     }
 
-    fun setBehavior(triggerKeyBehavior: TriggerKeyBehavior) {
-        behavior.value = triggerKeyBehavior
+    fun setBehavior(triggerKeyOptions: TriggerKeyOptions) {
+        options.value = triggerKeyOptions
     }
 
     fun save() {
-        onSaveEvent.value = Event(behavior.value!!)
+        onSaveEvent.value = Event(options.value!!)
     }
 
     fun saveState(outState: Bundle) {
-        outState.putSerializable(STATE_KEY, behavior.value)
+        outState.putSerializable(STATE_KEY, options.value)
     }
 
     fun restoreState(state: Bundle) {
-        val behavior = state.getSerializable(STATE_KEY) as TriggerKeyBehavior
+        val behavior = state.getSerializable(STATE_KEY) as TriggerKeyOptions
         setBehavior(behavior)
     }
 

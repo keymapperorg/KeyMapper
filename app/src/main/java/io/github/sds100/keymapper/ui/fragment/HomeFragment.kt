@@ -30,7 +30,7 @@ import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.ChooseAppStoreModel
 import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
-import io.github.sds100.keymapper.data.model.behavior.FingerprintGestureMapOptions
+import io.github.sds100.keymapper.data.model.options.FingerprintGestureMapOptions
 import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.data.viewmodel.FingerprintGestureViewModel

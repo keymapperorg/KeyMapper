@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.airbnb.epoxy.EpoxyController
 import com.airbnb.epoxy.EpoxyTouchHelper
@@ -18,14 +17,14 @@ import io.github.sds100.keymapper.data.model.ActionModel
 import io.github.sds100.keymapper.data.viewmodel.ActionListViewModel
 import io.github.sds100.keymapper.databinding.FragmentActionListBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
-import io.github.sds100.keymapper.ui.fragment.keymap.ConfigKeymapFragment
-import io.github.sds100.keymapper.ui.fragment.keymap.ConfigKeymapFragmentDirections
 import io.github.sds100.keymapper.util.*
 
 /**
  * Created by sds100 on 22/11/20.
  */
 abstract class ActionListFragment : Fragment() {
+
+    //TODO rebuild models on input method changed
 
     abstract val actionListViewModel: ActionListViewModel
 
@@ -78,9 +77,8 @@ abstract class ActionListFragment : Fragment() {
             }
 
             setOnAddActionClick {
-                val direction = ConfigKeymapFragmentDirections
-                    .actionConfigKeymapFragmentToChooseActionFragment(ConfigKeymapFragment.CHOOSE_ACTION_REQUEST_KEY)
-                findNavController().navigate(direction)
+                //TODO use global action for choose action
+//                findNavController().navigate()
             }
 
             return this.root
@@ -160,11 +158,11 @@ abstract class ActionListFragment : Fragment() {
                     }
 
                     onMoreClick { _ ->
-                        actionListViewModel.editActionOptions(model.id)
+                        actionListViewModel.editOptions(model.id)
                     }
 
                     onClick { _ ->
-                        actionListViewModel.onActionModelClick(model.id)
+                        actionListViewModel.onModelClick(model.id)
                     }
                 }
             }

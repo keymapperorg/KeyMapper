@@ -9,6 +9,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.setFragmentResultListener
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
@@ -19,9 +20,9 @@ import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentConfigKeymapBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.adapter.GenericFragmentPagerAdapter
-import io.github.sds100.keymapper.ui.fragment.ActionBehaviorFragment
 import io.github.sds100.keymapper.ui.fragment.ChooseActionFragment
-import io.github.sds100.keymapper.ui.fragment.TriggerKeyBehaviorFragment
+import io.github.sds100.keymapper.ui.fragment.KeymapActionOptionsFragment
+import io.github.sds100.keymapper.ui.fragment.TriggerKeyOptionsFragment
 import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
 import io.github.sds100.keymapper.util.int
@@ -44,7 +45,7 @@ class ConfigKeymapFragment : Fragment() {
 
     private val mArgs by navArgs<ConfigKeymapFragmentArgs>()
 
-    private val mViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_new_config_keymap) {
+    private val mViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap) {
         InjectorUtils.provideNewConfigKeymapViewModel(requireContext(), mArgs.keymapId)
     }
 
@@ -72,18 +73,18 @@ class ConfigKeymapFragment : Fragment() {
             mViewModel.actionListViewModel.rebuildModels()
         }
 
-        setFragmentResultListener(ConfigKeymapFragment.CHOOSE_ACTION_REQUEST_KEY) { _, result ->
+        setFragmentResultListener(CHOOSE_ACTION_REQUEST_KEY) { _, result ->
             val action = result.getSerializable(ChooseActionFragment.EXTRA_ACTION) as Action
             mViewModel.actionListViewModel.addAction(action)
         }
 
-        setFragmentResultListener(ConfigKeymapFragment.CHOOSE_CONSTRAINT_REQUEST_KEY) { _, result ->
+        setFragmentResultListener(CHOOSE_CONSTRAINT_REQUEST_KEY) { _, result ->
         }
 
-        setFragmentResultListener(ActionBehaviorFragment.REQUEST_KEY) { _, result ->
+        setFragmentResultListener(KeymapActionOptionsFragment.REQUEST_KEY) { _, result ->
         }
 
-        setFragmentResultListener(TriggerKeyBehaviorFragment.REQUEST_KEY) { _, result ->
+        setFragmentResultListener(TriggerKeyOptionsFragment.REQUEST_KEY) { _, result ->
         }
     }
 
@@ -111,7 +112,7 @@ class ConfigKeymapFragment : Fragment() {
             appBar.setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.action_save -> {
-//                        mViewModel.saveKeymap(lifecycleScope)
+                        mViewModel.saveKeymap(lifecycleScope)
                         findNavController().navigateUp()
 
                         true
@@ -230,9 +231,8 @@ class ConfigKeymapFragment : Fragment() {
         intArray(R.array.config_keymap_fragments).map {
             when (it) {
 
-                int(R.integer.fragment_id_actions) -> {
-                    it to { KeymapActionListFragment(mArgs.keymapId) }
-                }
+                int(R.integer.fragment_id_actions) -> it to { KeymapActionListFragment(mArgs.keymapId) }
+                int(R.integer.fragment_id_trigger) -> it to { KeymapTriggerFragment(mArgs.keymapId) }
 
                 else -> throw Exception("Don't know how to instantiate a fragment for this id $id")
             }

@@ -55,7 +55,7 @@
 
     <action
         android:id="@+id/action_to_config_keymap"
-        app:destination="@id/nav_new_config_keymap"
+        app:destination="@id/nav_config_keymap"
         app:enterAnim="@anim/slide_in_right"
         app:exitAnim="@anim/slide_out_left"
         app:popEnterAnim="@anim/slide_in_left"
@@ -166,7 +166,7 @@
         android:label="FingerprintGestureMapOptionsFragment">
         <argument
             android:name="options"
-            app:argType="io.github.sds100.keymapper.data.model.behavior.FingerprintGestureMapOptions" />
+            app:argType="io.github.sds100.keymapper.data.model.options.FingerprintGestureMapOptions" />
         <argument
             android:name="requestKey"
             app:argType="string" />

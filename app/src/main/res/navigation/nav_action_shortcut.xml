@@ -19,7 +19,7 @@
             app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_actionShortcutListFragment_to_actionBehaviorFragment"
-            app:destination="@id/actionBehaviorFragment"
+            app:destination="@id/actionOptionsFragment"
             app:enterAnim="@anim/slide_in_bottom" />
     </fragment>
 
@@ -41,12 +41,12 @@
         android:label="KeycodeListFragment" />
 
     <dialog
-        android:id="@+id/actionBehaviorFragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.ActionBehaviorFragment"
-        android:label="ActionBehaviorFragment">
+        android:id="@+id/actionOptionsFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.KeymapActionOptionsFragment"
+        android:label="ActionOptionsFragment">
 
         <argument
             android:name="@string/nav_arg_action_behavior"
-            app:argType="io.github.sds100.keymapper.data.model.behavior.ActionBehavior" />
+            app:argType="io.github.sds100.keymapper.data.model.options.KeymapActionOptions" />
     </dialog>
 </navigation>

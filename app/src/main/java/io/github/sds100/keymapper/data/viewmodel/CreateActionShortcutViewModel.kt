@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.map
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.ActionModel
-import io.github.sds100.keymapper.data.model.behavior.ActionBehavior
+import io.github.sds100.keymapper.data.model.options.KeymapActionOptions
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.result.Failure
@@ -20,9 +20,10 @@ class CreateActionShortcutViewModel(private val mDeviceInfoRepository: DeviceInf
     val actionModelList = MutableLiveData<List<ActionModel>>()
     val buildActionModelList = actionList.map { Event(it) }
 
+    //TODO create custom action options for creating action shortcuts
     val chooseActionEvent: MutableLiveData<Event<Unit>> = MutableLiveData()
     val testAction: MutableLiveData<Event<Action>> = MutableLiveData()
-    val chooseActionBehavior: MutableLiveData<Event<ActionBehavior>> = MutableLiveData()
+    val editActionOptions: MutableLiveData<Event<KeymapActionOptions>> = MutableLiveData()
     val showFixPrompt: MutableLiveData<Event<Failure>> = MutableLiveData()
     val promptToEnableAccessibilityService: MutableLiveData<Event<Unit>> = MutableLiveData()
 
@@ -39,11 +40,11 @@ class CreateActionShortcutViewModel(private val mDeviceInfoRepository: DeviceInf
         }
     }
 
-    fun setActionBehavior(actionBehavior: ActionBehavior) {
+    fun setActionBehavior(actionBehavior: KeymapActionOptions) {
         actionList.value = actionList.value?.map {
 
             if (it.uid == actionBehavior.id) {
-                return@map actionBehavior.applyToAction(it)
+                return@map actionBehavior.apply(it)
             }
 
             it
@@ -72,11 +73,11 @@ class CreateActionShortcutViewModel(private val mDeviceInfoRepository: DeviceInf
         }
     }
 
-    fun chooseActionBehavior(id: String) {
+    fun editActionOptions(id: String) {
         val action = actionList.value?.find { it.uid == id } ?: return
-        val behavior = ActionBehavior(action, actionList.value!!.size)
+        val options = KeymapActionOptions(action, actionList.value!!.size)
 
-        chooseActionBehavior.value = Event(behavior)
+        editActionOptions.value = Event(options)
     }
 
     fun setActionModels(models: List<ActionModel>) {
