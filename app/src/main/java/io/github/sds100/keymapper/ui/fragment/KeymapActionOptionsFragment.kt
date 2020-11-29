@@ -28,12 +28,14 @@ class KeymapActionOptionsFragment : BaseOptionsFragment<FragmentKeymapActionOpti
     override val initialOptions: KeymapActionOptions
         get() = navArgs<KeymapActionOptionsFragmentArgs>().value.StringNavArgKeymapActionOptions
 
-    override fun subscribeUi(binding: FragmentKeymapActionOptionsBinding) = super.subscribeUi(binding).apply {
-        viewModel = optionsViewModel
+    override fun subscribeCustomUi(binding: FragmentKeymapActionOptionsBinding) {
+        binding.apply {
+            viewModel = optionsViewModel
 
-        optionsViewModel.options.observe(viewLifecycleOwner, {
-            options = it
-        })
+            optionsViewModel.options.observe(viewLifecycleOwner, {
+                options = it
+            })
+        }
     }
 
     override fun setRecyclerViewAdapter(binding: FragmentKeymapActionOptionsBinding, adapter: EpoxyControllerAdapter) {

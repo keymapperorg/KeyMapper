@@ -130,10 +130,10 @@ class TriggerViewModel(
         }
     }
 
+    private val _options = MutableLiveData<TriggerOptions>()
+
     private val _buildModelsEvent = MutableSharedFlow<List<Trigger.Key>>()
     val buildModelsEvent = _buildModelsEvent.asSharedFlow()
-
-    private val _options = MutableLiveData<TriggerOptions>()
 
     private val _editTriggerKeyOptionsEvent = MutableSharedFlow<TriggerKeyOptions>()
     val editTriggerKeyOptionsEvent = _editTriggerKeyOptionsEvent.asSharedFlow()
@@ -157,15 +157,37 @@ class TriggerViewModel(
     val stopRecording = _stopRecording.asSharedFlow()
 
     fun setTrigger(trigger: Trigger) {
+        _keys.value = trigger.keys
 
-        invalidateOptions()
+        _options.value = TriggerOptions(trigger.keys, trigger.mode, trigger.flags, trigger.extras)
+
+        when (trigger.mode) {
+            Trigger.PARALLEL -> {
+                triggerInParallel.value = true
+                triggerInSequence.value = false
+                triggerModeUndefined.value = false
+            }
+
+            Trigger.SEQUENCE -> {
+                triggerInSequence.value = true
+                triggerInParallel.value = false
+                triggerModeUndefined.value = false
+            }
+
+            Trigger.UNDEFINED -> {
+                triggerInSequence.value = false
+                triggerInParallel.value = false
+                triggerModeUndefined.value = true
+            }
+        }
     }
 
     fun createTrigger(): Trigger? {
-        return _options.value?.apply(Trigger(
-            keys = keys.value!!,
-            mode = mode.value!!
-        ))
+        return _options.value?.apply(
+            Trigger(
+                keys = keys.value ?: listOf(),
+                mode = mode.value ?: Trigger.DEFAULT_TRIGGER_MODE
+            ))
     }
 
     fun setParallelTriggerClickType(@Trigger.ClickType clickType: Int) {

@@ -55,8 +55,6 @@ abstract class ActionListViewModel<O : BaseOptions<Action>>(
 
     fun setActionList(actionList: List<Action>) {
         _actionList.value = actionList
-
-        invalidateOptions()
     }
 
     fun setModels(modelList: List<ActionModel>) {

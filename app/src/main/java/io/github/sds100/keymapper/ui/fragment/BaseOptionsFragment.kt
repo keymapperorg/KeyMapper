@@ -51,7 +51,23 @@ abstract class BaseOptionsFragment<BINDING : ViewDataBinding, O : BaseOptions<*>
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         bind(inflater, container).apply {
-            subscribeUi(this)
+            lifecycleOwner = viewLifecycleOwner
+
+            optionsViewModel.checkBoxModels.observe(viewLifecycleOwner, {
+                mController.checkBoxModels = it
+            })
+
+            optionsViewModel.sliderModels.observe(viewLifecycleOwner, {
+                mController.sliderModels = it
+            })
+
+            optionsViewModel.onSaveEvent.collectWhenLifecycleStarted(viewLifecycleOwner) {
+                setFragmentResult(requestKey, bundleOf(EXTRA_OPTIONS to it))
+                findNavController().navigateUp()
+            }
+
+            setRecyclerViewAdapter(this, mController.adapter)
+            subscribeCustomUi(this)
 
             return root
         }
@@ -78,25 +94,7 @@ abstract class BaseOptionsFragment<BINDING : ViewDataBinding, O : BaseOptions<*>
         optionsViewModel.restoreState(savedInstanceState)
     }
 
-    open fun subscribeUi(binding: BINDING) = binding.apply {
-        lifecycleOwner = viewLifecycleOwner
-
-        setRecyclerViewAdapter(binding, mController.adapter)
-
-        optionsViewModel.checkBoxModels.observe(viewLifecycleOwner, {
-            mController.checkBoxModels = it
-        })
-
-        optionsViewModel.sliderModels.observe(viewLifecycleOwner, {
-            mController.sliderModels = it
-        })
-
-        optionsViewModel.onSaveEvent.collectWhenLifecycleStarted(viewLifecycleOwner) {
-            setFragmentResult(requestKey, bundleOf(EXTRA_OPTIONS to it))
-            findNavController().navigateUp()
-        }
-    }
-
+    abstract fun subscribeCustomUi(binding: BINDING)
     abstract fun setRecyclerViewAdapter(binding: BINDING, adapter: EpoxyControllerAdapter)
     abstract fun bind(inflater: LayoutInflater, container: ViewGroup?): BINDING
 

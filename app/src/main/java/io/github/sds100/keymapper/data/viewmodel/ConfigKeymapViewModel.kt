@@ -67,30 +67,28 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
     val showFixPrompt = _showFixPrompt.asSharedFlow()
 
     init {
-        if (mId == NEW_KEYMAP_ID) {
-            actionListViewModel.setActionList(listOf())
-            triggerViewModel.setTrigger(Trigger())
-            isEnabled.value = true
+        viewModelScope.launch {
+            if (mId == NEW_KEYMAP_ID) {
+                actionListViewModel.setActionList(listOf())
+                triggerViewModel.setTrigger(Trigger())
+                isEnabled.value = true
 
-        } else {
-            viewModelScope.launch {
+            } else {
                 val keymap = mKeymapRepository.getKeymap(mId)
 
                 actionListViewModel.setActionList(keymap.actionList)
                 triggerViewModel.setTrigger(keymap.trigger)
                 isEnabled.value = keymap.isEnabled
             }
-        }
 
-        triggerViewModel.mode.observeForever {
-            actionListViewModel.invalidateOptions()
-        }
+            triggerViewModel.mode.observeForever {
+                actionListViewModel.invalidateOptions()
+            }
 
-        triggerViewModel.keys.observeForever {
-            actionListViewModel.invalidateOptions()
-        }
+            triggerViewModel.keys.observeForever {
+                actionListViewModel.invalidateOptions()
+            }
 
-        viewModelScope.launch {
             actionListViewModel.showFixPrompt.collect {
                 _showFixPrompt.emit(it)
             }
