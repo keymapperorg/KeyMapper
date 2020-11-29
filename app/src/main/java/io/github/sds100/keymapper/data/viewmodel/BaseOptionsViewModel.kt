@@ -55,9 +55,7 @@ abstract class BaseOptionsViewModel<O : BaseOptions<*>> : ViewModel() {
     }
 
     fun setOptions(options: O) {
-        viewModelScope.launch {
-            this@BaseOptionsViewModel.options.value = options
-        }
+        this.options.value = options
     }
 
     fun save() {

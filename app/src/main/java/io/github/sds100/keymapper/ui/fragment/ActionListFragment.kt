@@ -18,7 +18,9 @@ import com.google.android.material.card.MaterialCardView
 import io.github.sds100.keymapper.ActionBindingModel_
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.action
+import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.ActionModel
+import io.github.sds100.keymapper.data.model.options.BaseOptions
 import io.github.sds100.keymapper.data.viewmodel.ActionListViewModel
 import io.github.sds100.keymapper.databinding.FragmentActionListBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
@@ -28,13 +30,13 @@ import io.github.sds100.keymapper.util.*
 /**
  * Created by sds100 on 22/11/20.
  */
-abstract class ActionListFragment : Fragment() {
+abstract class ActionListFragment<O : BaseOptions<Action>> : Fragment() {
 
     companion object {
         const val CHOOSE_ACTION_REQUEST_KEY = "request_choose_action"
     }
 
-    abstract val actionListViewModel: ActionListViewModel
+    abstract val actionListViewModel: ActionListViewModel<O>
 
     private val mActionListController = ActionListController()
 
@@ -81,7 +83,7 @@ abstract class ActionListFragment : Fragment() {
                 }
 
                 editActionOptionsEvent.collectWhenLifecycleStarted(viewLifecycleOwner) {
-
+                    openActionOptionsFragment(it)
                 }
 
                 buildModelsEvent.collectWhenLifecycleStarted(viewLifecycleOwner) { actionList ->
@@ -119,6 +121,8 @@ abstract class ActionListFragment : Fragment() {
 
         actionListViewModel.rebuildModels()
     }
+
+    abstract fun openActionOptionsFragment(options: O)
 
     private fun FragmentActionListBinding.subscribeActionList() {
         actionListViewModel.modelList.observe(viewLifecycleOwner, { actionList ->

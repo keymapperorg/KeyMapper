@@ -19,8 +19,8 @@ class KeymapActionOptionsFragment : BaseOptionsFragment<FragmentKeymapActionOpti
         const val REQUEST_KEY = "request_choose_action_options"
     }
 
-    override val viewModel: KeymapActionOptionsViewModel by viewModels {
-        InjectorUtils.provideActionBehaviorViewModel()
+    override val optionsViewModel: KeymapActionOptionsViewModel by viewModels {
+        InjectorUtils.provideKeymapActionOptionsViewModel()
     }
 
     override val requestKey = REQUEST_KEY
@@ -29,13 +29,16 @@ class KeymapActionOptionsFragment : BaseOptionsFragment<FragmentKeymapActionOpti
         get() = navArgs<KeymapActionOptionsFragmentArgs>().value.StringNavArgKeymapActionOptions
 
     override fun subscribeUi(binding: FragmentKeymapActionOptionsBinding) = super.subscribeUi(binding).apply {
-        viewModel = this@KeymapActionOptionsFragment.viewModel
+        viewModel = optionsViewModel
+
+        optionsViewModel.options.observe(viewLifecycleOwner, {
+            options = it
+        })
     }
 
     override fun setRecyclerViewAdapter(binding: FragmentKeymapActionOptionsBinding, adapter: EpoxyControllerAdapter) {
         binding.epoxyRecyclerView.adapter = adapter
     }
-
 
     override fun bind(inflater: LayoutInflater, container: ViewGroup?): FragmentKeymapActionOptionsBinding {
         return FragmentKeymapActionOptionsBinding.inflate(inflater, container, false)

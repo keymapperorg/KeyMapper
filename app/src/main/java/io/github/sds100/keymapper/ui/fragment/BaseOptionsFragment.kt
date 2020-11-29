@@ -30,13 +30,14 @@ import io.github.sds100.keymapper.util.str
 /**
  * Created by sds100 on 27/06/2020.
  */
+
 abstract class BaseOptionsFragment<BINDING : ViewDataBinding, O : BaseOptions<*>> : BottomSheetDialogFragment() {
 
     companion object {
         const val EXTRA_OPTIONS = "extra_options"
     }
 
-    abstract val viewModel: BaseOptionsViewModel<O>
+    abstract val optionsViewModel: BaseOptionsViewModel<O>
     abstract val requestKey: String
     abstract val initialOptions: O
 
@@ -45,11 +46,10 @@ abstract class BaseOptionsFragment<BINDING : ViewDataBinding, O : BaseOptions<*>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.setOptions(initialOptions)
+        optionsViewModel.setOptions(initialOptions)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-
         bind(inflater, container).apply {
             subscribeUi(this)
 
@@ -65,7 +65,7 @@ abstract class BaseOptionsFragment<BINDING : ViewDataBinding, O : BaseOptions<*>
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        viewModel.saveState(outState)
+        optionsViewModel.saveState(outState)
 
         super.onSaveInstanceState(outState)
     }
@@ -75,7 +75,7 @@ abstract class BaseOptionsFragment<BINDING : ViewDataBinding, O : BaseOptions<*>
 
         savedInstanceState ?: return
 
-        viewModel.restoreState(savedInstanceState)
+        optionsViewModel.restoreState(savedInstanceState)
     }
 
     open fun subscribeUi(binding: BINDING) = binding.apply {
@@ -83,15 +83,15 @@ abstract class BaseOptionsFragment<BINDING : ViewDataBinding, O : BaseOptions<*>
 
         setRecyclerViewAdapter(binding, mController.adapter)
 
-        viewModel.checkBoxModels.observe(viewLifecycleOwner, {
+        optionsViewModel.checkBoxModels.observe(viewLifecycleOwner, {
             mController.checkBoxModels = it
         })
 
-        viewModel.sliderModels.observe(viewLifecycleOwner, {
+        optionsViewModel.sliderModels.observe(viewLifecycleOwner, {
             mController.sliderModels = it
         })
 
-        viewModel.onSaveEvent.collectWhenLifecycleStarted(viewLifecycleOwner) {
+        optionsViewModel.onSaveEvent.collectWhenLifecycleStarted(viewLifecycleOwner) {
             setFragmentResult(requestKey, bundleOf(EXTRA_OPTIONS to it))
             findNavController().navigateUp()
         }
@@ -102,13 +102,13 @@ abstract class BaseOptionsFragment<BINDING : ViewDataBinding, O : BaseOptions<*>
 
     private inner class Controller : EpoxyController() {
 
-        var checkBoxModels: List<CheckBoxListItemModel> = listOf()
+        var checkBoxModels: List<CheckBoxListItemModel> = emptyList()
             set(value) {
                 field = value
                 requestModelBuild()
             }
 
-        var sliderModels: List<SliderListItemModel> = listOf()
+        var sliderModels: List<SliderListItemModel> = emptyList()
             set(value) {
                 field = value
                 requestModelBuild()
@@ -122,7 +122,7 @@ abstract class BaseOptionsFragment<BINDING : ViewDataBinding, O : BaseOptions<*>
                     isSelected(it.isChecked)
 
                     onClick { view ->
-                        viewModel.setValue(it.id, (view as CheckBox).isChecked)
+                        optionsViewModel.setValue(it.id, (view as CheckBox).isChecked)
                     }
                 }
             }
@@ -138,9 +138,9 @@ abstract class BaseOptionsFragment<BINDING : ViewDataBinding, O : BaseOptions<*>
 
                         //If the user has selected to use the default value
                         if (value < int(it.sliderModel.min)) {
-                            viewModel.setValue(it.id, BehaviorOption.DEFAULT)
+                            optionsViewModel.setValue(it.id, BehaviorOption.DEFAULT)
                         } else {
-                            viewModel.setValue(it.id, value.toInt())
+                            optionsViewModel.setValue(it.id, value.toInt())
                         }
                     }
 
@@ -150,7 +150,7 @@ abstract class BaseOptionsFragment<BINDING : ViewDataBinding, O : BaseOptions<*>
                                 hint = str(it.label),
                                 min = int(it.sliderModel.min))
 
-                            viewModel.setValue(it.id, num)
+                            optionsViewModel.setValue(it.id, num)
                         }
                     }
                 }

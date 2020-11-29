@@ -6,6 +6,8 @@ import java.io.Serializable
  * Created by sds100 on 21/11/20.
  */
 interface BaseOptions<T> : Serializable {
+    val id: String
+
     val intOptions: List<BehaviorOption<Int>>
     val boolOptions: List<BehaviorOption<Boolean>>
 

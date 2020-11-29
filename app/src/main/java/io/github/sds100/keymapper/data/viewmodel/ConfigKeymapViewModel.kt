@@ -9,10 +9,10 @@ import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Trigger
-import io.github.sds100.keymapper.data.model.options.BaseOptions
 import io.github.sds100.keymapper.data.model.options.KeymapActionOptions
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.data.usecase.ConfigKeymapUseCase
+import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.result.Failure
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -34,14 +34,24 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
         const val NEW_KEYMAP_ID = -2L
     }
 
-    val actionListViewModel = object : ActionListViewModel(viewModelScope, mDeviceInfoRepository) {
-        override fun getActionOptions(action: Action): BaseOptions<Action> {
+    val actionListViewModel = object : ActionListViewModel<KeymapActionOptions>(viewModelScope, mDeviceInfoRepository) {
+        override fun getActionOptions(action: Action): KeymapActionOptions {
             return KeymapActionOptions(
                 action,
                 actionList.value!!.size,
                 triggerViewModel.mode.value,
                 triggerViewModel.keys.value
             )
+        }
+
+        override fun onAddAction(action: Action) {
+            if (action.type == ActionType.KEY_EVENT) {
+                getActionOptions(action).apply {
+                    setValue(KeymapActionOptions.ID_REPEAT, true)
+
+                    setOptions(this)
+                }
+            }
         }
     }
 

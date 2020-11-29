@@ -55,11 +55,12 @@ class TriggerOptions(
     val vibrateDuration: BehaviorOption<Int>
     val sequenceTriggerTimeout: BehaviorOption<Int>
 
+    override val id = "trigger"
+
     /*
      It is very important that any new options are only allowed with a valid combination of other options. Make sure
      the "isAllowed" property considers all the other options.
      */
-
     init {
 
         val longPressDelayValue = extras.getData(Trigger.EXTRA_LONG_PRESS_DELAY).valueOrNull()?.toInt()

@@ -40,7 +40,7 @@ class KeymapActionOptions(action: Action,
         const val ID_HOLD_DOWN_DURATION = "hold_down_duration"
     }
 
-    val id = action.uid
+    override val id = action.uid
 
     val repeat = BehaviorOption(
         id = ID_REPEAT,
@@ -83,19 +83,19 @@ class KeymapActionOptions(action: Action,
     val stopHoldDownWhenTriggerReleased: BehaviorOption<Boolean>
     val stopHoldDownWhenTriggerPressedAgain: BehaviorOption<Boolean>
 
-    val repeatRate: BehaviorOption<Int>
+    private val repeatRate: BehaviorOption<Int>
 
-    val repeatDelay: BehaviorOption<Int>
+    private val repeatDelay: BehaviorOption<Int>
 
-    val delayBeforeNextAction: BehaviorOption<Int>
+    private val delayBeforeNextAction: BehaviorOption<Int>
 
-    val multiplier = BehaviorOption(
+    private val multiplier = BehaviorOption(
         id = ID_MULTIPLIER,
         value = action.extras.getData(Action.EXTRA_MULTIPLIER).valueOrNull()?.toInt() ?: BehaviorOption.DEFAULT,
         isAllowed = true
     )
 
-    val holdDownDuration = BehaviorOption(
+    private val holdDownDuration = BehaviorOption(
         id = ID_HOLD_DOWN_DURATION,
         value = action.extras.getData(Action.EXTRA_HOLD_DOWN_DURATION).valueOrNull()?.toInt() ?: BehaviorOption.DEFAULT,
         isAllowed = action.repeat && action.holdDown
@@ -176,15 +176,15 @@ class KeymapActionOptions(action: Action,
     override val intOptions = listOf(
         repeatRate,
         repeatDelay,
-        multiplier,
         delayBeforeNextAction,
-        holdDownDuration
+        holdDownDuration,
+        multiplier
     )
 
     override val boolOptions = listOf(
-        repeat,
-        showVolumeUi,
         showPerformingActionToast,
+        showVolumeUi,
+        repeat,
         holdDown
     )
 
@@ -289,6 +289,6 @@ class KeymapActionOptions(action: Action,
                 ))
         }
 
-        return old.copy(flags = newFlags, extras = newExtras)
+        return old.copy(flags = newFlags, extras = newExtras, uid = old.uid)
     }
 }

@@ -20,7 +20,7 @@ import java.util.*
  * Created by sds100 on 22/11/20.
  */
 
-abstract class ActionListViewModel(
+abstract class ActionListViewModel<O : BaseOptions<Action>>(
     private val mCoroutineScope: CoroutineScope,
     private val mDeviceInfoRepository: DeviceInfoRepository) {
 
@@ -36,7 +36,7 @@ abstract class ActionListViewModel(
     private val _promptToEnableAccessibilityServiceEvent = MutableSharedFlow<Unit>()
     val promptToEnableAccessibilityServiceEvent = _promptToEnableAccessibilityServiceEvent.asSharedFlow()
 
-    private val _editActionOptionsEvent = MutableSharedFlow<BaseOptions<Action>>()
+    private val _editActionOptionsEvent = MutableSharedFlow<O>()
     val editActionOptionsEvent = _editActionOptionsEvent.asSharedFlow()
 
     private val _buildModelsEvent = MutableSharedFlow<List<Action>>()
@@ -72,6 +72,8 @@ abstract class ActionListViewModel(
         }
 
         invalidateOptions()
+
+        onAddAction(action)
     }
 
     fun moveAction(fromIndex: Int, toIndex: Int) {
@@ -99,7 +101,10 @@ abstract class ActionListViewModel(
     }
 
     fun editOptions(id: String) {
-
+        mCoroutineScope.launch {
+            val action = actionList.value?.singleOrNull { it.uid == id } ?: return@launch
+            _editActionOptionsEvent.emit(getActionOptions(action))
+        }
     }
 
     fun onModelClick(id: String) {
@@ -117,6 +122,19 @@ abstract class ActionListViewModel(
             }
         }
     }
+
+    fun setOptions(options: O) {
+        _actionList.value = actionList.value?.map {
+            if (it.uid == options.id) {
+                return@map options.apply(it)
+            }
+
+            it
+        }
+
+        invalidateOptions()
+    }
+
 
     fun promptToEnableAccessibilityService() = mCoroutineScope.launch {
         _promptToEnableAccessibilityServiceEvent.emit(Unit)
@@ -136,5 +154,6 @@ abstract class ActionListViewModel(
 
     suspend fun getDeviceInfoList() = mDeviceInfoRepository.getAll()
 
-    abstract fun getActionOptions(action: Action): BaseOptions<Action>
+    abstract fun getActionOptions(action: Action): O
+    open fun onAddAction(action: Action) {}
 }

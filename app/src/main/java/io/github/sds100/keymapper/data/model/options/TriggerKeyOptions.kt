@@ -15,7 +15,7 @@ class TriggerKeyOptions(
         const val ID_CLICK_TYPE = "click_type"
     }
 
-    val uniqueId = key.uniqueId
+    override val id: String = key.uniqueId
 
     val clickType = BehaviorOption(
         id = ID_CLICK_TYPE,
