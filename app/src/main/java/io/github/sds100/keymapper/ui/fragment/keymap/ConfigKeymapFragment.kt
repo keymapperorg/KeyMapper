@@ -24,16 +24,17 @@ import io.github.sds100.keymapper.ui.fragment.ActionListFragment
 import io.github.sds100.keymapper.ui.fragment.ChooseActionFragment
 import io.github.sds100.keymapper.ui.fragment.KeymapActionOptionsFragment
 import io.github.sds100.keymapper.ui.fragment.TriggerKeyOptionsFragment
-import io.github.sds100.keymapper.util.InjectorUtils
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
-import io.github.sds100.keymapper.util.int
-import io.github.sds100.keymapper.util.sendPackageBroadcast
-import io.github.sds100.keymapper.util.strArray
+import io.github.sds100.keymapper.util.result.RecoverableFailure
+import io.github.sds100.keymapper.util.result.getFullMessage
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
 import splitties.alertdialog.appcompat.messageResource
 import splitties.alertdialog.appcompat.positiveButton
 import splitties.resources.intArray
+import splitties.snackbar.action
+import splitties.snackbar.longSnack
 
 /**
  * Created by sds100 on 22/11/20.
@@ -147,19 +148,20 @@ class ConfigKeymapFragment : Fragment() {
 //                }
 //            })
 //
-//            mViewModel.showFixPrompt.observe(viewLifecycleOwner, EventObserver {
-//                coordinatorLayout.longSnack(it.getFullMessage(requireContext())) {
-//
-//                    //only add an action to fix the error if the error can be recovered from
-//                    if (it is RecoverableFailure) {
-//                        action(R.string.snackbar_fix) {
-//                            mRecoverFailureDelegate.recover(requireActivity(), it)
-//                        }
-//                    }
-//
-//                    show()
-//                }
-//            })
+
+            mViewModel.showFixPrompt.collectWhenLifecycleStarted(viewLifecycleOwner) {
+                coordinatorLayout.longSnack(it.getFullMessage(requireContext())) {
+
+                    //only add an action to fix the error if the error can be recovered from
+                    if (it is RecoverableFailure) {
+                        action(R.string.snackbar_fix) {
+                            mRecoverFailureDelegate.recover(requireActivity(), it)
+                        }
+                    }
+
+                    show()
+                }
+            }
 //
 //            mViewModel.startRecordingTriggerInService.observe(viewLifecycleOwner, EventObserver {
 //                val serviceEnabled = AccessibilityUtils.isServiceEnabled(requireContext())

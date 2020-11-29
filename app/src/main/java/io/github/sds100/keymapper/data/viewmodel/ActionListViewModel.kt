@@ -7,10 +7,8 @@ import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.ActionModel
 import io.github.sds100.keymapper.data.model.options.BaseOptions
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
-import io.github.sds100.keymapper.util.Data
-import io.github.sds100.keymapper.util.Empty
-import io.github.sds100.keymapper.util.Loading
-import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.result.Failure
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -43,6 +41,9 @@ abstract class ActionListViewModel(
 
     private val _buildModelsEvent = MutableSharedFlow<List<Action>>()
     val buildModelsEvent = _buildModelsEvent.asSharedFlow()
+
+    private val _showFixPrompt = MutableSharedFlow<Failure>()
+    val showFixPrompt = _showFixPrompt.asSharedFlow()
 
     init {
         mCoroutineScope.launch {
@@ -99,7 +100,19 @@ abstract class ActionListViewModel(
     }
 
     fun onModelClick(id: String) {
-
+        mCoroutineScope.launch {
+            modelList.value?.ifIsData { modelList ->
+                modelList.singleOrNull { it.id == id }?.apply {
+                    when {
+                        hasError -> _showFixPrompt.emit(failure!!)
+                        else -> {
+                            val action = actionList.value?.singleOrNull { it.uid == id } ?: return@apply
+                            _testActionEvent.emit(action)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     fun promptToEnableAccessibilityService() = mCoroutineScope.launch {
