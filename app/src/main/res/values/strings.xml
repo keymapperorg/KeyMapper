@@ -137,8 +137,8 @@
     <string name="nav_arg_header" translatable="false">io.github.sds100.keymapper.ui.fragment.OnlineFileFragment.header</string>
     <string name="nav_arg_file_url" translatable="false">io.github.sds100.keymapper.ui.fragment.OnlineFileFragment.header.file_url</string>
     <string name="nav_arg_file_url_alt" translatable="false">file_url_alt</string>
-    <string name="nav_arg_action_behavior" translatable="false">action_behavior</string>
-    <string name="nav_arg_trigger_key_options" translatable="false">trigger_key_behavior</string>
+    <string name="nav_arg_keymap_action_options" translatable="false">keymap_action_options</string>
+    <string name="nav_arg_trigger_key_options" translatable="false">trigger_key_options</string>
     <string name="nav_arg_choose_action_request_key" translatable="false">choose_action_request_key</string>
     <string name="nav_arg_choose_constraint_request_key" translatable="false">choose_constraint_request_key</string>
 

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.airbnb.epoxy.EpoxyController
 import com.airbnb.epoxy.EpoxyTouchHelper
@@ -17,12 +18,17 @@ import io.github.sds100.keymapper.data.model.ActionModel
 import io.github.sds100.keymapper.data.viewmodel.ActionListViewModel
 import io.github.sds100.keymapper.databinding.FragmentActionListBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
+import io.github.sds100.keymapper.ui.fragment.keymap.ConfigKeymapFragmentDirections
 import io.github.sds100.keymapper.util.*
 
 /**
  * Created by sds100 on 22/11/20.
  */
 abstract class ActionListFragment : Fragment() {
+
+    companion object {
+        const val CHOOSE_ACTION_REQUEST_KEY = "request_choose_action"
+    }
 
     //TODO rebuild models on input method changed
 
@@ -77,8 +83,9 @@ abstract class ActionListFragment : Fragment() {
             }
 
             setOnAddActionClick {
-                //TODO use global action for choose action
-//                findNavController().navigate()
+                val direction = ConfigKeymapFragmentDirections
+                    .actionConfigKeymapFragmentToChooseActionFragment(CHOOSE_ACTION_REQUEST_KEY)
+                findNavController().navigate(direction)
             }
 
             return this.root

@@ -20,6 +20,7 @@ import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentConfigKeymapBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.adapter.GenericFragmentPagerAdapter
+import io.github.sds100.keymapper.ui.fragment.ActionListFragment
 import io.github.sds100.keymapper.ui.fragment.ChooseActionFragment
 import io.github.sds100.keymapper.ui.fragment.KeymapActionOptionsFragment
 import io.github.sds100.keymapper.ui.fragment.TriggerKeyOptionsFragment
@@ -39,7 +40,6 @@ import splitties.resources.intArray
  */
 class ConfigKeymapFragment : Fragment() {
     companion object {
-        const val CHOOSE_ACTION_REQUEST_KEY = "request_choose_action"
         const val CHOOSE_CONSTRAINT_REQUEST_KEY = "request_choose_constraint"
     }
 
@@ -73,7 +73,7 @@ class ConfigKeymapFragment : Fragment() {
             mViewModel.actionListViewModel.rebuildModels()
         }
 
-        setFragmentResultListener(CHOOSE_ACTION_REQUEST_KEY) { _, result ->
+        setFragmentResultListener(ActionListFragment.CHOOSE_ACTION_REQUEST_KEY) { _, result ->
             val action = result.getSerializable(ChooseActionFragment.EXTRA_ACTION) as Action
             mViewModel.actionListViewModel.addAction(action)
         }
