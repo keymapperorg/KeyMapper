@@ -163,8 +163,6 @@ class ActionPerformerDelegate(context: Context,
                             onFailure = { 0 }
                         )
 
-                        Timber.d("deviceid = $deviceId")
-
                         chosenImePackageName?.let {
                             KeyboardUtils.inputKeyEventFromImeService(
                                 it,
