@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.ui.fragment
+package io.github.sds100.keymapper.ui.fragment.keymap
 
 import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.airbnb.epoxy.EpoxyController
 import com.airbnb.epoxy.EpoxyTouchHelper
@@ -22,6 +23,7 @@ import io.github.sds100.keymapper.TriggerKeyBindingModel_
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.model.TriggerKeyModel
+import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.data.viewmodel.TriggerViewModel
 import io.github.sds100.keymapper.databinding.FragmentTriggerBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
@@ -39,10 +41,15 @@ import kotlin.coroutines.suspendCoroutine
  * Created by sds100 on 25/11/20.
  */
 
-abstract class TriggerFragment : Fragment() {
-    abstract val triggerViewModel: TriggerViewModel
+class TriggerFragment(private val mKeymapId: Long) : Fragment() {
 
     private lateinit var mBinding: FragmentTriggerBinding
+
+    private val triggerViewModel: TriggerViewModel by lazy {
+        navGraphViewModels<ConfigKeymapViewModel>(R.id.nav_config_keymap) {
+            InjectorUtils.provideConfigKeymapViewModel(requireContext(), mKeymapId)
+        }.value.triggerViewModel
+    }
 
     /**
      * Listens for key events from the accessibility service
@@ -126,6 +133,7 @@ abstract class TriggerFragment : Fragment() {
 
             requireActivity().registerReceiver(mBroadcastReceiver, this)
         }
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.ui.fragment
+package io.github.sds100.keymapper.ui.fragment.keymap
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -8,6 +8,7 @@ import com.airbnb.epoxy.EpoxyControllerAdapter
 import io.github.sds100.keymapper.data.model.options.KeymapActionOptions
 import io.github.sds100.keymapper.data.viewmodel.KeymapActionOptionsViewModel
 import io.github.sds100.keymapper.databinding.FragmentKeymapActionOptionsBinding
+import io.github.sds100.keymapper.ui.fragment.BaseOptionsFragment
 import io.github.sds100.keymapper.util.InjectorUtils
 
 /**

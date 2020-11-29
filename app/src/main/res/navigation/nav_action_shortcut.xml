@@ -42,7 +42,7 @@
 
     <dialog
         android:id="@+id/keymapActionOptionsFragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.KeymapActionOptionsFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.keymap.KeymapActionOptionsFragment"
         android:label="ActionOptionsFragment">
 
         <argument

@@ -74,7 +74,7 @@
 
     <dialog
         android:id="@+id/triggerKeyOptionsFragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.TriggerKeyOptionsFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.keymap.TriggerKeyOptionsFragment"
         android:label="TriggerKeyOptionsFragment">
 
         <argument
@@ -84,7 +84,7 @@
 
     <dialog
         android:id="@+id/keymapActionOptionsFragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.KeymapActionOptionsFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.keymap.KeymapActionOptionsFragment"
         android:label="KeymapActionOptionsFragment">
 
         <argument
