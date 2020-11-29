@@ -24,20 +24,20 @@ abstract class BaseOptionsViewModel<O : BaseOptions<*>> : ViewModel() {
     val options = MediatorLiveData<O>()
 
     val sliderModels = options.map { options ->
-        sequence<SliderListItemModel> {
+        sequence {
             options.intOptions.forEach {
                 if (it.isAllowed) {
-                    createSliderListItemModel(it)
+                    yield(createSliderListItemModel(it))
                 }
             }
         }.toList()
     }
 
     val checkBoxModels = options.map { options ->
-        sequence<CheckBoxListItemModel> {
+        sequence {
             options.boolOptions.forEach {
                 if (it.isAllowed) {
-                    createCheckboxListItemModel(it)
+                    yield(createCheckboxListItemModel(it))
                 }
             }
         }.toList()
