@@ -1,5 +1,9 @@
 package io.github.sds100.keymapper.ui.fragment
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,11 +34,30 @@ abstract class ActionListFragment : Fragment() {
         const val CHOOSE_ACTION_REQUEST_KEY = "request_choose_action"
     }
 
-    //TODO rebuild models on input method changed
-
     abstract val actionListViewModel: ActionListViewModel
 
     private val mActionListController = ActionListController()
+
+    private val mBroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            intent ?: return
+
+            when (intent.action) {
+                Intent.ACTION_INPUT_METHOD_CHANGED -> {
+                    actionListViewModel.rebuildModels()
+                }
+            }
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        IntentFilter().apply {
+            addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
+            requireContext().registerReceiver(mBroadcastReceiver, this)
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         FragmentActionListBinding.inflate(inflater, container, false).apply {
@@ -46,7 +69,6 @@ abstract class ActionListFragment : Fragment() {
             epoxyRecyclerViewActions.adapter = mActionListController.adapter
 
             actionListViewModel.apply {
-
                 testActionEvent.collectWhenLifecycleStarted(viewLifecycleOwner) {
                     if (AccessibilityUtils.isServiceEnabled(requireContext())) {
 
