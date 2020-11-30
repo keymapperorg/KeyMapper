@@ -9,7 +9,6 @@ import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.constraint
 import io.github.sds100.keymapper.data.viewmodel.ConstraintListViewModel
 import io.github.sds100.keymapper.databinding.FragmentConstraintListBinding
-import io.github.sds100.keymapper.ui.fragment.keymap.ConfigKeymapFragment
 import io.github.sds100.keymapper.util.*
 import splitties.toast.toast
 
@@ -17,6 +16,10 @@ import splitties.toast.toast
  * Created by sds100 on 29/11/20.
  */
 abstract class ConstraintListFragment : Fragment() {
+    companion object {
+        const val CHOOSE_CONSTRAINT_REQUEST_KEY = "request_choose_constraint"
+    }
+
 
     abstract val constraintListViewModel: ConstraintListViewModel
 
@@ -26,7 +29,7 @@ abstract class ConstraintListFragment : Fragment() {
             viewModel = constraintListViewModel
 
             setOnAddConstraintClick {
-                val direction = NavAppDirections.actionGlobalChooseConstraint(ConfigKeymapFragment.CHOOSE_CONSTRAINT_REQUEST_KEY)
+                val direction = NavAppDirections.actionGlobalChooseConstraint(CHOOSE_CONSTRAINT_REQUEST_KEY)
                 findNavController().navigate(direction)
             }
 

@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.data.model.options.KeymapActionOptions
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.data.usecase.ConfigKeymapUseCase
 import io.github.sds100.keymapper.util.ActionType
+import io.github.sds100.keymapper.util.EnableAccessibilityServicePrompt
 import io.github.sds100.keymapper.util.FixFailure
 import io.github.sds100.keymapper.util.SealedEvent
 import kotlinx.coroutines.CoroutineScope
@@ -76,7 +77,7 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
 
         addSource(triggerViewModel.eventStream) {
             when (it) {
-                is FixFailure -> value = it
+                is FixFailure, is EnableAccessibilityServicePrompt -> value = it
             }
         }
     }

@@ -34,6 +34,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import splitties.alertdialog.appcompat.*
+import splitties.alertdialog.appcompat.coroutines.showAndAwait
+import splitties.experimental.ExperimentalSplittiesApi
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -144,6 +146,7 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
         }
     }
 
+    @ExperimentalSplittiesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -186,6 +189,35 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
                             triggerViewModel.setModelList(modelList)
                         }
                     }
+
+                    is OkDialog -> lifecycleScope.launchWhenStarted {
+                        val approvedWarning = requireActivity().alertDialog {
+                            message = str(event.message)
+
+                        }.showAndAwait(okValue = true, cancelValue = null, dismissValue = false)
+
+                        if (approvedWarning) {
+                            event.onOk.invoke()
+                        }
+                    }
+
+                    is StopRecordingTriggerInService -> {
+                        val serviceEnabled = AccessibilityUtils.isServiceEnabled(requireContext())
+
+                        if (serviceEnabled) {
+                            stopRecordingTrigger()
+                        } else {
+                            triggerViewModel.promptToEnableAccessibilityService()
+                        }
+                    }
+
+                    is EnableCapsLockKeyboardLayoutPrompt -> requireActivity().alertDialog {
+                        messageResource = R.string.dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout
+
+                        okButton()
+
+                        show()
+                    }
                 }
             })
 
@@ -209,10 +241,20 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
         triggerViewModel.rebuildModels()
     }
 
+    override fun onPause() {
+        super.onPause()
+
+        stopRecordingTrigger()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
 
         requireActivity().unregisterReceiver(mBroadcastReceiver)
+    }
+
+    private fun stopRecordingTrigger() {
+        requireContext().sendPackageBroadcast(MyAccessibilityService.ACTION_STOP_RECORDING_TRIGGER)
     }
 
     @SuppressLint("ClickableViewAccessibility")

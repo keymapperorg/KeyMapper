@@ -21,12 +21,8 @@ import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.options.KeymapActionOptions
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentConfigKeymapBinding
-import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.adapter.GenericFragmentPagerAdapter
-import io.github.sds100.keymapper.ui.fragment.ActionListFragment
-import io.github.sds100.keymapper.ui.fragment.BaseOptionsDialogFragment
-import io.github.sds100.keymapper.ui.fragment.ChooseActionFragment
-import io.github.sds100.keymapper.ui.fragment.ChooseConstraintFragment
+import io.github.sds100.keymapper.ui.fragment.*
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
 import io.github.sds100.keymapper.util.result.RecoverableFailure
@@ -38,15 +34,12 @@ import splitties.alertdialog.appcompat.positiveButton
 import splitties.resources.intArray
 import splitties.snackbar.action
 import splitties.snackbar.longSnack
+import splitties.snackbar.snack
 
 /**
  * Created by sds100 on 22/11/20.
  */
 class ConfigKeymapFragment : Fragment() {
-    companion object {
-        const val CHOOSE_CONSTRAINT_REQUEST_KEY = "request_choose_constraint"
-    }
-
     private val mArgs by navArgs<ConfigKeymapFragmentArgs>()
 
     private val mViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap) {
@@ -84,7 +77,7 @@ class ConfigKeymapFragment : Fragment() {
             mViewModel.actionListViewModel.addAction(action)
         }
 
-        setFragmentResultListener(CHOOSE_CONSTRAINT_REQUEST_KEY) { _, result ->
+        setFragmentResultListener(ConstraintListFragment.CHOOSE_CONSTRAINT_REQUEST_KEY) { _, result ->
             val constraint = result.getSerializable(ChooseConstraintFragment.EXTRA_CONSTRAINT) as Constraint
             mViewModel.constraintListViewModel.addConstraint(constraint)
         }
@@ -139,21 +132,6 @@ class ConfigKeymapFragment : Fragment() {
                     else -> false
                 }
             }
-//
-//            mViewModel.showOnboardingPrompt.observe(viewLifecycleOwner, EventObserver {
-//
-//                lifecycleScope.launchWhenStarted {
-//                    val approvedWarning = requireActivity().alertDialog {
-//                        message = str(it.message)
-//
-//                    }.showAndAwait(okValue = true, cancelValue = null, dismissValue = false)
-//
-//                    if (approvedWarning) {
-//                        it.onApproved.invoke()
-//                    }
-//                }
-//            })
-//
 
             mViewModel.eventStream.observe(viewLifecycleOwner, { event ->
                 when (event) {
@@ -170,45 +148,19 @@ class ConfigKeymapFragment : Fragment() {
                             show()
                         }
                     }
+
+                    is EnableAccessibilityServicePrompt -> {
+                        coordinatorLayout.snack(R.string.error_accessibility_service_disabled_record_trigger) {
+                            setAction(str(R.string.snackbar_fix)) {
+                                AccessibilityUtils.enableService(requireContext())
+                            }
+                        }
+                    }
                 }
             })
 
-//            mViewModel.promptToEnableAccessibilityService.observe(viewLifecycleOwner, EventObserver {
-//                coordinatorLayout.snack(R.string.error_accessibility_service_disabled_record_trigger) {
-//                    setAction(str(R.string.snackbar_fix)) {
-//                        AccessibilityUtils.enableService(requireContext())
-//                    }
-//                }
-//            })
-//
-//            mViewModel.stopRecordingTrigger.observe(viewLifecycleOwner, EventObserver {
-//                val serviceEnabled = AccessibilityUtils.isServiceEnabled(requireContext())
-//
-//                if (serviceEnabled) {
-//                    stopRecordingTrigger()
-//                } else {
-//                    mViewModel.promptToEnableAccessibilityService.value = Event(Unit)
-//                }
-//            })
-//
-//            mViewModel.promptToEnableCapsLockKeyboardLayout.observe(viewLifecycleOwner, EventObserver {
-//                requireActivity().alertDialog {
-//                    messageResource = R.string.dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout
-//
-//                    okButton()
-//
-//                    show()
-//                }
-//            })
-
             return this.root
         }
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-        stopRecordingTrigger()
     }
 
     private fun showOnBackPressedWarning() {
@@ -222,10 +174,6 @@ class ConfigKeymapFragment : Fragment() {
             cancelButton()
             show()
         }
-    }
-
-    private fun stopRecordingTrigger() {
-        requireContext().sendPackageBroadcast(MyAccessibilityService.ACTION_STOP_RECORDING_TRIGGER)
     }
 
     private fun createFragmentPagerAdapter() = GenericFragmentPagerAdapter(this,
