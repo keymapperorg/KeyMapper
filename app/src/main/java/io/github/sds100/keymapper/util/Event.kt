@@ -20,7 +20,9 @@ import androidx.lifecycle.Observer
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Constraint
+import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.model.options.BaseOptions
+import io.github.sds100.keymapper.data.model.options.TriggerKeyOptions
 import io.github.sds100.keymapper.util.result.Failure
 import java.io.Serializable
 
@@ -31,7 +33,15 @@ abstract class MessageEvent(@StringRes val textRes: Int) : SealedEvent()
 
 class FixFailure(val failure: Failure) : SealedEvent()
 
+class OkDialog(@StringRes val message: Int, val onOk: () -> Unit) : SealedEvent()
 class EnableAccessibilityServicePrompt : SealedEvent()
+
+//trigger
+class BuildTriggerKeyModels(val source: List<Trigger.Key>) : SealedEvent()
+class EditTriggerKeyOptions(val options: TriggerKeyOptions) : SealedEvent()
+class EnableCapsLockKeyboardLayoutPrompt : SealedEvent()
+class StartRecordingTriggerInService : SealedEvent()
+class StopRecordingTriggerInService : SealedEvent()
 
 //action list
 class BuildActionListModels(val source: List<Action>) : SealedEvent()

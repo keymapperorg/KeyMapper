@@ -172,18 +172,7 @@ class ConfigKeymapFragment : Fragment() {
                     }
                 }
             })
-//
-//            mViewModel.startRecordingTriggerInService.observe(viewLifecycleOwner, EventObserver {
-//                val serviceEnabled = AccessibilityUtils.isServiceEnabled(requireContext())
-//
-//                if (serviceEnabled) {
-//                    requireContext().sendPackageBroadcast(MyAccessibilityService.ACTION_RECORD_TRIGGER)
-//
-//                } else {
-//                    mViewModel.promptToEnableAccessibilityService.value = Event(Unit)
-//                }
-//            })
-//
+
 //            mViewModel.promptToEnableAccessibilityService.observe(viewLifecycleOwner, EventObserver {
 //                coordinatorLayout.snack(R.string.error_accessibility_service_disabled_record_trigger) {
 //                    setAction(str(R.string.snackbar_fix)) {

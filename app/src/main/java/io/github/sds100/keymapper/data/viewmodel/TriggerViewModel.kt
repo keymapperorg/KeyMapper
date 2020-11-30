@@ -1,28 +1,22 @@
 package io.github.sds100.keymapper.data.viewmodel
 
 import android.view.KeyEvent
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
+import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.IPreferenceDataStore
 import io.github.sds100.keymapper.data.model.DeviceInfo
-import io.github.sds100.keymapper.data.model.NotifyUserModel
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.model.TriggerKeyModel
 import io.github.sds100.keymapper.data.model.options.TriggerKeyOptions
 import io.github.sds100.keymapper.data.model.options.TriggerOptions
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
-import io.github.sds100.keymapper.util.Data
-import io.github.sds100.keymapper.util.Empty
-import io.github.sds100.keymapper.util.KeyEventUtils
-import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.launch
 import splitties.bitflags.withFlag
 import java.util.*
 
@@ -55,11 +49,9 @@ class TriggerViewModel(
                 if (_keys.value?.size!! > 1 &&
                     !getBoolPref(R.string.key_pref_shown_parallel_trigger_order_dialog)) {
 
-                    val model = NotifyUserModel(R.string.dialog_message_parallel_trigger_order) {
+                    notifyUser(R.string.dialog_message_parallel_trigger_order) {
                         setBoolPref(R.string.key_pref_shown_parallel_trigger_order_dialog, true)
                     }
-
-                    notifyUser(model)
                 }
 
                 // set all the keys to a short press if coming from a non-parallel trigger
@@ -87,11 +79,9 @@ class TriggerViewModel(
                 if (_keys.value?.size!! > 1 &&
                     !getBoolPref(R.string.key_pref_shown_sequence_trigger_explanation_dialog)) {
 
-                    val model = NotifyUserModel(R.string.dialog_message_sequence_trigger_explanation) {
+                    notifyUser(R.string.dialog_message_sequence_trigger_explanation) {
                         setBoolPref(R.string.key_pref_shown_sequence_trigger_explanation_dialog, true)
                     }
-
-                    notifyUser(model)
                 }
             }
         }
@@ -132,29 +122,16 @@ class TriggerViewModel(
         }
     }
 
-    private val _buildModelsEvent = MutableSharedFlow<List<Trigger.Key>>()
-    val buildModelsEvent = _buildModelsEvent.asSharedFlow()
-
-    private val _editTriggerKeyOptionsEvent = MutableSharedFlow<TriggerKeyOptions>()
-    val editTriggerKeyOptionsEvent = _editTriggerKeyOptionsEvent.asSharedFlow()
-
-    private val _notifyUserEvent = MutableSharedFlow<NotifyUserModel>()
-    val notifyUserEvent = _notifyUserEvent.asSharedFlow()
-
-    private val _promptToEnableCapsLockKeyboardLayout = MutableSharedFlow<Unit>()
-    val promptToEnableCapsLockKeyboardLayout = _promptToEnableCapsLockKeyboardLayout.asSharedFlow()
-
-    private val _promptToEnableAccessibilityService = MutableSharedFlow<Unit>()
-    val promptToEnableAccessibilityService = _promptToEnableAccessibilityService.asSharedFlow()
-
     val recordTriggerTimeLeft = MutableLiveData(0)
     val recordingTrigger = MutableLiveData(false)
 
-    private val _startRecordingTriggerInService = MutableSharedFlow<Unit>()
-    val startRecordingTriggerInService = _startRecordingTriggerInService.asSharedFlow()
+    private val _eventStream = LiveEvent<SealedEvent>().apply {
+        addSource(keys) {
+            value = BuildTriggerKeyModels(it ?: listOf())
+        }
+    }
 
-    private val _stopRecording = MutableSharedFlow<Unit>()
-    val stopRecording = _stopRecording.asSharedFlow()
+    val eventStream: LiveData<SealedEvent> = _eventStream
 
     fun setTrigger(trigger: Trigger) {
         _keys.value = trigger.keys
@@ -267,9 +244,7 @@ class TriggerViewModel(
         }
 
         if (keyCode == KeyEvent.KEYCODE_CAPS_LOCK) {
-            mCoroutineScope.launch {
-                _promptToEnableCapsLockKeyboardLayout.emit(Unit)
-            }
+            _eventStream.value = EnableCapsLockKeyboardLayoutPrompt()
         }
 
         invalidateOptions()
@@ -287,9 +262,9 @@ class TriggerViewModel(
         if (id == TriggerOptions.ID_SCREEN_OFF_TRIGGER &&
             !getBoolPref(R.string.key_pref_shown_screen_off_triggers_explanation)) {
 
-            notifyUser(NotifyUserModel(R.string.showcase_screen_off_triggers) {
+            notifyUser(R.string.showcase_screen_off_triggers) {
                 setBoolPref(R.string.key_pref_shown_screen_off_triggers_explanation, true)
-            })
+            }
         }
 
         optionsViewModel.setValue(id, newValue)
@@ -324,23 +299,23 @@ class TriggerViewModel(
         invalidateOptions()
     }
 
-    fun editTriggerKeyOptions(id: String) = mCoroutineScope.launch {
-        val key = keys.value?.find { it.uniqueId == id } ?: return@launch
+    fun editTriggerKeyOptions(id: String) {
+        val key = keys.value?.find { it.uniqueId == id } ?: return
 
         val options = TriggerKeyOptions(key, mode.value!!)
 
-        _editTriggerKeyOptionsEvent.emit(options)
+        _eventStream.value = EditTriggerKeyOptions(options)
     }
 
-    fun recordTrigger() = mCoroutineScope.launch {
+    fun recordTrigger() {
         if (!recordingTrigger.value!!) {
-            _startRecordingTriggerInService.emit(Unit)
+            _eventStream.value = StartRecordingTriggerInService()
         }
     }
 
-    fun stopRecording() = mCoroutineScope.launch {
+    fun stopRecording() {
         if (recordingTrigger.value == true) {
-            _stopRecording.emit(Unit)
+            _eventStream.value = StopRecordingTriggerInService()
         }
     }
 
@@ -355,8 +330,8 @@ class TriggerViewModel(
         ))
     }
 
-    fun rebuildModels() = mCoroutineScope.launch {
-        _buildModelsEvent.emit(keys.value ?: listOf())
+    fun rebuildModels() {
+        _eventStream.value = BuildTriggerKeyModels(keys.value ?: emptyList())
     }
 
     fun setModelList(models: List<TriggerKeyModel>) {
@@ -366,10 +341,16 @@ class TriggerViewModel(
         }
     }
 
-    private fun notifyUser(model: NotifyUserModel) = mCoroutineScope.launch {
-        if (_notifyUserEvent.firstOrNull()?.message != model.message) {
-            _notifyUserEvent.emit(model)
+    fun promptToEnableAccessibilityService() {
+        _eventStream.value = EnableAccessibilityServicePrompt()
+    }
+
+    private fun notifyUser(@StringRes message: Int, onOk: () -> Unit) {
+        if (eventStream.value is OkDialog && (eventStream.value as OkDialog).message == message) {
+            return
         }
+
+        _eventStream.value = OkDialog(message, onOk)
     }
 
     suspend fun getDeviceInfoList() = mDeviceInfoRepository.getAll()

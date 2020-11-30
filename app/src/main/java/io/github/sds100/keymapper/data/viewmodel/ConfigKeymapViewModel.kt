@@ -73,6 +73,12 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
                 is FixFailure -> value = it
             }
         }
+
+        addSource(triggerViewModel.eventStream) {
+            when (it) {
+                is FixFailure -> value = it
+            }
+        }
     }
 
     val eventStream: LiveData<SealedEvent> = _eventStream

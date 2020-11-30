@@ -159,26 +159,35 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
                 mTriggerKeyController.requestModelBuild()
             }
 
-            triggerViewModel.buildModelsEvent.collectWhenLifecycleStarted(viewLifecycleOwner) { triggerKeys ->
-                withContext(Dispatchers.Default) {
-                    val deviceInfoList = triggerViewModel.getDeviceInfoList()
+            triggerViewModel.eventStream.observe(viewLifecycleOwner, { event ->
+                when (event) {
+                    is StartRecordingTriggerInService -> {
+                        val serviceEnabled = AccessibilityUtils.isServiceEnabled(requireContext())
 
-                    val modelList = sequence {
-                        triggerKeys.forEach {
-                            val model = it.buildModel(requireContext(), deviceInfoList)
-                            yield(model)
+                        if (serviceEnabled) {
+                            requireContext().sendPackageBroadcast(MyAccessibilityService.ACTION_RECORD_TRIGGER)
+
+                        } else {
+                            triggerViewModel.promptToEnableAccessibilityService()
                         }
-                    }.toList()
+                    }
 
-                    withContext(Dispatchers.Main) {
-                        triggerViewModel.setModelList(modelList)
+                    is BuildTriggerKeyModels -> viewLifecycleScope.launchWhenStarted {
+                        val deviceInfoList = triggerViewModel.getDeviceInfoList()
+
+                        val modelList = sequence {
+                            event.source.forEach {
+                                val model = it.buildModel(requireContext(), deviceInfoList)
+                                yield(model)
+                            }
+                        }.toList()
+
+                        withContext(Dispatchers.Main) {
+                            triggerViewModel.setModelList(modelList)
+                        }
                     }
                 }
-            }
-
-            triggerViewModel.editTriggerKeyOptionsEvent.collectWhenLifecycleStarted(viewLifecycleOwner) {
-
-            }
+            })
 
             radioButtonShortPress.setOnClickListener { view ->
                 if ((view as MaterialRadioButton).isChecked) {
