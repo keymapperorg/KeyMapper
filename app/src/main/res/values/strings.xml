@@ -480,6 +480,7 @@
     <string-array name="config_keymap_tab_titles" tools:ignore="InconsistentArrays">
         <item>@string/tab_trigger</item>
         <item>@string/tab_actions</item>
+        <item>@string/tab_keymap_constraints</item>
         <item>@string/tab_trigger_options</item>
     </string-array>
     <!-- The tabs that should be shown when configuring a keymap -->
@@ -488,6 +489,7 @@
     <integer-array name="config_keymap_fragments" tools:ignore="InconsistentArrays">
         <item>@integer/fragment_id_trigger</item>
         <item>@integer/fragment_id_actions</item>
+        <item>@integer/fragment_id_keymap_constraints</item>
         <item>@integer/fragment_id_trigger_options</item>
     </integer-array>
 
@@ -671,7 +673,7 @@
     <string name="error_no_action_data">No Action data!</string>
     <string name="error_extra_not_found">Extra (%s) not found!</string>
     <string name="error_constraint_not_found">Constraint not found</string>
-    <string name="error_keymap_constraint_exists">This keymap already has this constraint!</string>
+    <string name="error_duplicate_constraint">You can\'t have duplicate constraints!</string>
     <string name="error_fingerprint_gesture_map_constraint_exists">This gesture already has this constraint!</string>
     <string name="error_cant_be_empty">Can\'t be empty!</string>
     <string name="error_invalid_action_type">Invalid Action Type: %s</string>

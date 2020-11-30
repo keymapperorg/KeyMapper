@@ -14,8 +14,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import com.google.android.material.tabs.TabLayoutMediator
+import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Action
+import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.options.KeymapActionOptions
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentConfigKeymapBinding
@@ -24,6 +26,7 @@ import io.github.sds100.keymapper.ui.adapter.GenericFragmentPagerAdapter
 import io.github.sds100.keymapper.ui.fragment.ActionListFragment
 import io.github.sds100.keymapper.ui.fragment.BaseOptionsDialogFragment
 import io.github.sds100.keymapper.ui.fragment.ChooseActionFragment
+import io.github.sds100.keymapper.ui.fragment.ChooseConstraintFragment
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
 import io.github.sds100.keymapper.util.result.RecoverableFailure
@@ -55,6 +58,7 @@ class ConfigKeymapFragment : Fragment() {
             when (className) {
                 TriggerFragment::class.java.name -> TriggerFragment(mArgs.keymapId)
                 KeymapActionListFragment::class.java.name -> KeymapActionListFragment(mArgs.keymapId)
+                KeymapConstraintListFragment::class.java.name -> KeymapConstraintListFragment(mArgs.keymapId)
 
                 else -> super.instantiate(classLoader, className)
             }
@@ -81,6 +85,8 @@ class ConfigKeymapFragment : Fragment() {
         }
 
         setFragmentResultListener(CHOOSE_CONSTRAINT_REQUEST_KEY) { _, result ->
+            val constraint = result.getSerializable(ChooseConstraintFragment.EXTRA_CONSTRAINT) as Constraint
+            mViewModel.constraintListViewModel.addConstraint(constraint)
         }
 
         setFragmentResultListener(KeymapActionOptionsFragment.REQUEST_KEY) { _, result ->
@@ -89,6 +95,7 @@ class ConfigKeymapFragment : Fragment() {
         }
 
         setFragmentResultListener(TriggerKeyOptionsFragment.REQUEST_KEY) { _, result ->
+
         }
     }
 
@@ -123,7 +130,7 @@ class ConfigKeymapFragment : Fragment() {
                     }
 
                     R.id.action_help -> {
-                        val direction = ConfigKeymapFragmentDirections.actionGlobalHelpFragment()
+                        val direction = NavAppDirections.actionGlobalHelpFragment()
                         findNavController().navigate(direction)
 
                         true
@@ -132,10 +139,6 @@ class ConfigKeymapFragment : Fragment() {
                     else -> false
                 }
             }
-//
-//            mViewModel.duplicateConstraintsEvent.observe(viewLifecycleOwner, EventObserver {
-//                toast(R.string.error_keymap_constraint_exists)
-//            })
 //
 //            mViewModel.showOnboardingPrompt.observe(viewLifecycleOwner, EventObserver {
 //
@@ -238,6 +241,7 @@ class ConfigKeymapFragment : Fragment() {
 
                 int(R.integer.fragment_id_actions) -> it to { KeymapActionListFragment(mArgs.keymapId) }
                 int(R.integer.fragment_id_trigger) -> it to { TriggerFragment(mArgs.keymapId) }
+                int(R.integer.fragment_id_keymap_constraints) -> it to { KeymapConstraintListFragment(mArgs.keymapId) }
                 int(R.integer.fragment_id_trigger_options) -> it to { TriggerOptionsFragment(mArgs.keymapId) }
 
                 else -> throw Exception("Don't know how to instantiate a fragment for this id $id")

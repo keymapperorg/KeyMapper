@@ -4,16 +4,13 @@ import android.os.Bundle
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.airbnb.epoxy.EpoxyRecyclerView
-import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.action
-import io.github.sds100.keymapper.constraint
+import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.data.model.ActionModel
 import io.github.sds100.keymapper.data.model.ConstraintModel
 import io.github.sds100.keymapper.data.model.FingerprintGestureMapListItemModel
 import io.github.sds100.keymapper.data.viewmodel.FingerprintGestureViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.databinding.ListItemFingerprintGestureBinding
-import io.github.sds100.keymapper.fingerprintGesture
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
 import io.github.sds100.keymapper.util.result.RecoverableFailure
@@ -58,10 +55,10 @@ class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
                         model(it)
 
                         onChooseActionClick { _ ->
-                            val direction = HomeFragmentDirections.actionHomeFragmentToChooseActionFragment(
-                                FingerprintGestureUtils.CHOOSE_ACTION_REQUEST_KEYS[it.id]!!)
-
-                            findNavController().navigate(direction)
+//                            val direction = HomeFragmentDirections.actionHomeFragmentToChooseActionFragment(
+//                                FingerprintGestureUtils.CHOOSE_ACTION_REQUEST_KEYS[it.id]!!)
+//
+//                            findNavController().navigate(direction)
                         }
 
                         onEnabledSwitchChangeListener { _, isChecked ->
@@ -69,7 +66,7 @@ class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
                         }
 
                         onAddConstraintClick { _ ->
-                            val direction = HomeFragmentDirections.actionHomeFragmentToChooseConstraint(
+                            val direction = NavAppDirections.actionGlobalChooseConstraint(
                                 FingerprintGestureUtils.ADD_CONSTRAINT_REQUEST_KEYS[it.id]!!)
 
                             findNavController().navigate(direction)

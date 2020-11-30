@@ -61,6 +61,8 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
         preferenceDataStore = this
     )
 
+    val constraintListViewModel = ConstraintListViewModel(viewModelScope)
+
     val isEnabled = MutableLiveData<Boolean>()
 
     private val _showFixPrompt = MutableSharedFlow<Failure>()
@@ -69,8 +71,9 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
     init {
         viewModelScope.launch {
             if (mId == NEW_KEYMAP_ID) {
-                actionListViewModel.setActionList(listOf())
+                actionListViewModel.setActionList(emptyList())
                 triggerViewModel.setTrigger(Trigger())
+                constraintListViewModel.setConstraintList(emptyList(), Constraint.DEFAULT_MODE)
                 isEnabled.value = true
 
             } else {
@@ -78,6 +81,7 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
 
                 actionListViewModel.setActionList(keymap.actionList)
                 triggerViewModel.setTrigger(keymap.trigger)
+                constraintListViewModel.setConstraintList(keymap.constraintList, keymap.constraintMode)
                 isEnabled.value = keymap.isEnabled
             }
 
@@ -88,7 +92,15 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
             triggerViewModel.keys.observeForever {
                 actionListViewModel.invalidateOptions()
             }
+        }
 
+        viewModelScope.launch {
+            constraintListViewModel.showFixPrompt.collect {
+                _showFixPrompt.emit(it)
+            }
+        }
+
+        viewModelScope.launch {
             actionListViewModel.showFixPrompt.collect {
                 _showFixPrompt.emit(it)
             }
@@ -96,13 +108,6 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
     }
 
     fun saveKeymap(scope: CoroutineScope) {
-        //TODO
-//        val constraintMode = when {
-//            constraintAndMode.value == true -> Constraint.MODE_AND
-//            constraintOrMode.value == true -> Constraint.MODE_OR
-//            else -> Constraint.DEFAULT_MODE
-//        }
-
         val actualId =
             if (mId == NEW_KEYMAP_ID) {
                 0
@@ -116,8 +121,8 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
             id = actualId,
             trigger = trigger ?: Trigger(),
             actionList = actionListViewModel.actionList.value ?: listOf(),
-            constraintList = listOf(),
-            constraintMode = Constraint.DEFAULT_MODE,
+            constraintList = constraintListViewModel.constraintList.value ?: listOf(),
+            constraintMode = constraintListViewModel.getConstraintMode(),
             isEnabled = isEnabled.value ?: true
         )
 

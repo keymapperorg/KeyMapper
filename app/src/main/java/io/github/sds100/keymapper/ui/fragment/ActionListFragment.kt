@@ -16,6 +16,7 @@ import com.airbnb.epoxy.EpoxyController
 import com.airbnb.epoxy.EpoxyTouchHelper
 import com.google.android.material.card.MaterialCardView
 import io.github.sds100.keymapper.ActionBindingModel_
+import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.action
 import io.github.sds100.keymapper.data.model.Action
@@ -24,7 +25,6 @@ import io.github.sds100.keymapper.data.model.options.BaseOptions
 import io.github.sds100.keymapper.data.viewmodel.ActionListViewModel
 import io.github.sds100.keymapper.databinding.FragmentActionListBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
-import io.github.sds100.keymapper.ui.fragment.keymap.ConfigKeymapFragmentDirections
 import io.github.sds100.keymapper.util.*
 
 /**
@@ -107,8 +107,7 @@ abstract class ActionListFragment<O : BaseOptions<Action>> : Fragment() {
             }
 
             setOnAddActionClick {
-                val direction = ConfigKeymapFragmentDirections
-                    .actionConfigKeymapFragmentToChooseActionFragment(CHOOSE_ACTION_REQUEST_KEY)
+                val direction = NavAppDirections.actionGlobalChooseActionFragment(CHOOSE_ACTION_REQUEST_KEY)
                 findNavController().navigate(direction)
             }
 

@@ -16,31 +16,6 @@
             app:argType="long" />
 
         <action
-            android:id="@+id/action_config_keymap_fragment_to_choose_action_fragment"
-            app:destination="@id/nav_choose_action"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right">
-            <argument
-                android:name="@string/nav_arg_choose_action_request_key"
-                app:argType="string" />
-        </action>
-
-        <action
-            android:id="@+id/action_config_keymap_fragment_to_choose_constraint"
-            app:destination="@id/nav_choose_constraint"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right">
-
-            <argument
-                android:name="@string/nav_arg_choose_constraint_request_key"
-                app:argType="string" />
-        </action>
-
-        <action
             android:id="@+id/action_config_keymap_fragment_to_actionOptionsFragment"
             app:destination="@id/keymapActionOptionsFragment"
             app:enterAnim="@anim/slide_in_bottom" />
@@ -50,27 +25,6 @@
             app:destination="@id/triggerKeyOptionsFragment"
             app:enterAnim="@anim/slide_in_bottom" />
     </fragment>
-
-    <include app:graph="@navigation/nav_choose_action" />
-    <include app:graph="@navigation/nav_choose_constraint" />
-
-    <action
-        android:id="@+id/action_global_helpFragment"
-        app:destination="@id/onlineFragment"
-        app:enterAnim="@anim/slide_in_bottom">
-        <argument
-            android:name="@string/nav_arg_header"
-            android:defaultValue="@string/title_help"
-            app:argType="reference" />
-        <argument
-            android:name="@string/nav_arg_file_url"
-            android:defaultValue="@string/url_help"
-            app:argType="reference" />
-        <argument
-            android:name="@string/nav_arg_file_url_alt"
-            android:defaultValue="@string/url_help_alternate"
-            app:argType="reference" />
-    </action>
 
     <dialog
         android:id="@+id/triggerKeyOptionsFragment"

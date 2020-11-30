@@ -33,7 +33,6 @@ class ChooseActionFragment : Fragment() {
     companion object {
         const val EXTRA_ACTION = "extra_action"
     }
-
     private val mRequestKey by lazy { navArgs<ChooseActionFragmentArgs>().value.StringNavArgChooseActionRequestKey }
     private lateinit var mPagerAdapter: ChooseActionPagerAdapter
 
