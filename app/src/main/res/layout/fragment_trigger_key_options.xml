@@ -10,11 +10,7 @@
 
         <variable
             name="viewModel"
-            type="io.github.sds100.keymapper.data.viewmodel.TriggerKeyBehaviorViewModel" />
-
-        <variable
-            name="options"
-            type="TriggerKeyOptions" />
+            type="io.github.sds100.keymapper.data.viewmodel.TriggerKeyOptionsViewModel" />
     </data>
 
     <androidx.core.widget.NestedScrollView
@@ -46,7 +42,7 @@
                 android:text="@string/header_click_type"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
                 android:textSize="14sp"
-                android:visibility="@{options.clickType.isAllowed ? View.VISIBLE : View.GONE}"
+                android:visibility="@{viewModel.options.clickType.isAllowed ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toTopOf="@+id/radioGroup"
                 app:layout_constraintStart_toStartOf="parent" />
 
@@ -57,7 +53,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:orientation="horizontal"
-                android:visibility="@{options.clickType.isAllowed ? View.VISIBLE : View.GONE}">
+                android:visibility="@{viewModel.options.clickType.isAllowed ? View.VISIBLE : View.GONE}">
 
                 <com.google.android.material.radiobutton.MaterialRadioButton
                     android:layout_width="wrap_content"

@@ -32,10 +32,6 @@ class KeymapActionOptionsFragment : BaseOptionsDialogFragment<FragmentKeymapActi
     override fun subscribeCustomUi(binding: FragmentKeymapActionOptionsBinding) {
         binding.apply {
             viewModel = optionsViewModel
-
-            optionsViewModel.options.observe(viewLifecycleOwner, {
-                options = it
-            })
         }
     }
 

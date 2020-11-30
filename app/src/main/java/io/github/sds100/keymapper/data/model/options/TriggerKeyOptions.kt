@@ -54,7 +54,7 @@ class TriggerKeyOptions(
         get() = listOf()
 
     override val boolOptions: List<BehaviorOption<Boolean>>
-        get() = listOf()
+        get() = listOf(doNotConsumeKeyEvents)
 
     override fun apply(old: Trigger.Key): Trigger.Key {
         val newFlags = old.flags.applyBehaviorOption(doNotConsumeKeyEvents, Trigger.Key.FLAG_DO_NOT_CONSUME_KEY_EVENT)

@@ -300,6 +300,16 @@ class TriggerViewModel(
         _eventStream.value = EditTriggerKeyOptions(options)
     }
 
+    fun setTriggerKeyOptions(options: TriggerKeyOptions) {
+        _keys.value = keys.value?.toMutableList()?.map {
+            if (it.uniqueId == options.id) {
+                return@map options.apply(it)
+            }
+
+            it
+        }
+    }
+
     fun recordTrigger() {
         if (!recordingTrigger.value!!) {
             _eventStream.value = StartRecordingTriggerInService()

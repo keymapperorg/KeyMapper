@@ -6,14 +6,9 @@
 
         <import type="android.view.View" />
 
-
         <variable
             name="viewModel"
             type="io.github.sds100.keymapper.data.viewmodel.KeymapActionOptionsViewModel" />
-
-        <variable
-            name="options"
-            type="io.github.sds100.keymapper.data.model.options.KeymapActionOptions" />
     </data>
 
     <androidx.core.widget.NestedScrollView

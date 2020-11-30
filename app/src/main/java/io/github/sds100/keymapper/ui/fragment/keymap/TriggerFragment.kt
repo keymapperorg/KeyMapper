@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.airbnb.epoxy.EpoxyController
@@ -217,6 +218,11 @@ class TriggerFragment(private val mKeymapId: Long) : Fragment() {
                         okButton()
 
                         show()
+                    }
+
+                    is EditTriggerKeyOptions -> {
+                        val direction = ConfigKeymapFragmentDirections.actionTriggerKeyOptionsFragment(event.options)
+                        findNavController().navigate(direction)
                     }
                 }
             })

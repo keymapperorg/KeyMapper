@@ -19,6 +19,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.options.KeymapActionOptions
+import io.github.sds100.keymapper.data.model.options.TriggerKeyOptions
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.databinding.FragmentConfigKeymapBinding
 import io.github.sds100.keymapper.ui.adapter.GenericFragmentPagerAdapter
@@ -88,7 +89,8 @@ class ConfigKeymapFragment : Fragment() {
         }
 
         setFragmentResultListener(TriggerKeyOptionsFragment.REQUEST_KEY) { _, result ->
-
+            val options = result.getSerializable(BaseOptionsDialogFragment.EXTRA_OPTIONS) as TriggerKeyOptions
+            mViewModel.triggerViewModel.setTriggerKeyOptions(options)
         }
     }
 

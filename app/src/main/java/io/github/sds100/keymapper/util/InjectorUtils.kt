@@ -89,8 +89,8 @@ object InjectorUtils {
         return KeymapActionOptionsViewModel.Factory()
     }
 
-    fun provideTriggerKeyBehaviorViewModel(): TriggerKeyBehaviorViewModel.Factory {
-        return TriggerKeyBehaviorViewModel.Factory()
+    fun provideTriggerKeyOptionsViewModel(): TriggerKeyOptionsViewModel.Factory {
+        return TriggerKeyOptionsViewModel.Factory()
     }
 
     fun provideFingerprintGestureMapBehaviorViewModel(): FingerprintGestureMapOptionsViewModel.Factory {
