@@ -2,17 +2,13 @@ package io.github.sds100.keymapper.data.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asFlow
+import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.ActionModel
 import io.github.sds100.keymapper.data.model.options.BaseOptions
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.util.*
-import io.github.sds100.keymapper.util.result.Failure
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -30,28 +26,13 @@ abstract class ActionListViewModel<O : BaseOptions<Action>>(
     private val _modelList = MutableLiveData<State<List<ActionModel>>>(Loading())
     val modelList: LiveData<State<List<ActionModel>>> = _modelList
 
-    private val _testActionEvent = MutableSharedFlow<Action>()
-    val testActionEvent = _testActionEvent.asSharedFlow()
-
-    private val _promptToEnableAccessibilityServiceEvent = MutableSharedFlow<Unit>()
-    val promptToEnableAccessibilityServiceEvent = _promptToEnableAccessibilityServiceEvent.asSharedFlow()
-
-    private val _editActionOptionsEvent = MutableSharedFlow<O>()
-    val editActionOptionsEvent = _editActionOptionsEvent.asSharedFlow()
-
-    private val _buildModelsEvent = MutableSharedFlow<List<Action>>()
-    val buildModelsEvent = _buildModelsEvent.asSharedFlow()
-
-    private val _showFixPrompt = MutableSharedFlow<Failure>()
-    val showFixPrompt = _showFixPrompt.asSharedFlow()
-
-    init {
-        mCoroutineScope.launch {
-            actionList.asFlow().collect {
-                _buildModelsEvent.emit(it)
-            }
+    private val _eventStream = LiveEvent<SealedEvent>().apply {
+        addSource(actionList) {
+            value = BuildActionListModels(it ?: listOf())
         }
     }
+
+    val eventStream: LiveData<SealedEvent> = _eventStream
 
     fun setActionList(actionList: List<Action>) {
         _actionList.value = actionList
@@ -99,10 +80,8 @@ abstract class ActionListViewModel<O : BaseOptions<Action>>(
     }
 
     fun editOptions(id: String) {
-        mCoroutineScope.launch {
-            val action = actionList.value?.singleOrNull { it.uid == id } ?: return@launch
-            _editActionOptionsEvent.emit(getActionOptions(action))
-        }
+        val action = actionList.value?.singleOrNull { it.uid == id } ?: return
+        _eventStream.value = EditActionOptions(getActionOptions(action))
     }
 
     fun onModelClick(id: String) {
@@ -110,10 +89,11 @@ abstract class ActionListViewModel<O : BaseOptions<Action>>(
             modelList.value?.ifIsData { modelList ->
                 modelList.singleOrNull { it.id == id }?.apply {
                     when {
-                        hasError -> _showFixPrompt.emit(failure!!)
+                        hasError -> _eventStream.value = FixFailure(failure!!)
+
                         else -> {
                             val action = actionList.value?.singleOrNull { it.uid == id } ?: return@apply
-                            _testActionEvent.emit(action)
+                            _eventStream.value = TestAction(action)
                         }
                     }
                 }
@@ -133,13 +113,12 @@ abstract class ActionListViewModel<O : BaseOptions<Action>>(
         invalidateOptions()
     }
 
-
-    fun promptToEnableAccessibilityService() = mCoroutineScope.launch {
-        _promptToEnableAccessibilityServiceEvent.emit(Unit)
+    fun promptToEnableAccessibilityService() {
+        _eventStream.value = EnableAccessibilityServicePrompt()
     }
 
-    fun rebuildModels() = mCoroutineScope.launch {
-        _buildModelsEvent.emit(actionList.value ?: listOf())
+    fun rebuildModels() {
+        _eventStream.value = BuildActionListModels(actionList.value ?: emptyList())
     }
 
     fun invalidateOptions() {
@@ -147,7 +126,7 @@ abstract class ActionListViewModel<O : BaseOptions<Action>>(
             getActionOptions(it).apply(it)
         }
 
-        _actionList.value = newActionList ?: listOf()
+        _actionList.value = newActionList ?: emptyList()
     }
 
     suspend fun getDeviceInfoList() = mDeviceInfoRepository.getAll()

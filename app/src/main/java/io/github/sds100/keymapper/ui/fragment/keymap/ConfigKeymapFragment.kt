@@ -155,20 +155,6 @@ class ConfigKeymapFragment : Fragment() {
 //            })
 //
 
-            mViewModel.showFixPrompt.collectWhenLifecycleStarted(viewLifecycleOwner) {
-                coordinatorLayout.longSnack(it.getFullMessage(requireContext())) {
-
-                    //only add an action to fix the error if the error can be recovered from
-                    if (it is RecoverableFailure) {
-                        action(R.string.snackbar_fix) {
-                            mRecoverFailureDelegate.recover(requireActivity(), it)
-                        }
-                    }
-
-                    show()
-                }
-            }
-
             mViewModel.eventStream.observe(viewLifecycleOwner, { event ->
                 when (event) {
                     is FixFailure -> {

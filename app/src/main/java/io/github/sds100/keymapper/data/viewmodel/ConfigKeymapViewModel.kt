@@ -13,11 +13,7 @@ import io.github.sds100.keymapper.data.usecase.ConfigKeymapUseCase
 import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.FixFailure
 import io.github.sds100.keymapper.util.SealedEvent
-import io.github.sds100.keymapper.util.result.Failure
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 /**
@@ -65,11 +61,14 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
 
     val isEnabled = MutableLiveData<Boolean>()
 
-    private val _showFixPrompt = MutableSharedFlow<Failure>()
-    val showFixPrompt = _showFixPrompt.asSharedFlow()
-
     private val _eventStream = LiveEvent<SealedEvent>().apply {
         addSource(constraintListViewModel.eventStream) {
+            when (it) {
+                is FixFailure -> value = it
+            }
+        }
+
+        addSource(actionListViewModel.eventStream) {
             when (it) {
                 is FixFailure -> value = it
             }
@@ -101,12 +100,6 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
 
             triggerViewModel.keys.observeForever {
                 actionListViewModel.invalidateOptions()
-            }
-        }
-
-        viewModelScope.launch {
-            actionListViewModel.showFixPrompt.collect {
-                _showFixPrompt.emit(it)
             }
         }
     }

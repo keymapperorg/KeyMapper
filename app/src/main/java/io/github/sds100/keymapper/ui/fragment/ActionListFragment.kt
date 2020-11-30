@@ -70,41 +70,44 @@ abstract class ActionListFragment<O : BaseOptions<Action>> : Fragment() {
 
             epoxyRecyclerViewActions.adapter = mActionListController.adapter
 
-            actionListViewModel.apply {
-                testActionEvent.collectWhenLifecycleStarted(viewLifecycleOwner) {
-                    if (AccessibilityUtils.isServiceEnabled(requireContext())) {
+            actionListViewModel.eventStream.observe(viewLifecycleOwner, { event ->
+                @Suppress("UNCHECKED_CAST")
+                when (event) {
+                    is TestAction -> {
+                        if (AccessibilityUtils.isServiceEnabled(requireContext())) {
 
-                        requireContext().sendPackageBroadcast(MyAccessibilityService.ACTION_TEST_ACTION,
-                            bundleOf(MyAccessibilityService.EXTRA_ACTION to it))
+                            requireContext().sendPackageBroadcast(MyAccessibilityService.ACTION_TEST_ACTION,
+                                bundleOf(MyAccessibilityService.EXTRA_ACTION to event.action))
 
-                    } else {
-                        promptToEnableAccessibilityService()
-                    }
-                }
-
-                editActionOptionsEvent.collectWhenLifecycleStarted(viewLifecycleOwner) {
-                    openActionOptionsFragment(it)
-                }
-
-                buildModelsEvent.collectWhenLifecycleStarted(viewLifecycleOwner) { actionList ->
-                    val deviceInfoList = getDeviceInfoList()
-
-                    val models = sequence {
-                        actionList.forEach {
-                            yield(it.buildModel(requireContext(), deviceInfoList))
+                        } else {
+                            actionListViewModel.promptToEnableAccessibilityService()
                         }
-                    }.toList()
-
-                    setModels(models)
-                }
-
-                modelList.observe(viewLifecycleOwner, {
-                    mActionListController.modelList = when (it) {
-                        is Data -> it.data
-                        else -> emptyList()
                     }
-                })
-            }
+
+                    is EditActionOptions -> openActionOptionsFragment(event.options as O)
+
+                    is BuildActionListModels -> {
+                        viewLifecycleScope.launchWhenStarted {
+                            val deviceInfoList = actionListViewModel.getDeviceInfoList()
+
+                            val models = sequence {
+                                event.source.forEach {
+                                    yield(it.buildModel(requireContext(), deviceInfoList))
+                                }
+                            }.toList()
+
+                            actionListViewModel.setModels(models)
+                        }
+                    }
+                }
+            })
+
+            actionListViewModel.modelList.observe(viewLifecycleOwner, {
+                mActionListController.modelList = when (it) {
+                    is Data -> it.data
+                    else -> emptyList()
+                }
+            })
 
             setOnAddActionClick {
                 val direction = NavAppDirections.actionGlobalChooseActionFragment(CHOOSE_ACTION_REQUEST_KEY)
