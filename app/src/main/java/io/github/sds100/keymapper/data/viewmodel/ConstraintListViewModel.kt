@@ -2,19 +2,11 @@ package io.github.sds100.keymapper.data.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asFlow
+import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.ConstraintModel
-import io.github.sds100.keymapper.util.Data
-import io.github.sds100.keymapper.util.Empty
-import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.ifIsData
-import io.github.sds100.keymapper.util.result.Failure
+import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onSubscription
 import kotlinx.coroutines.launch
 
 /**
@@ -32,25 +24,13 @@ class ConstraintListViewModel(private val mCoroutineScope: CoroutineScope) {
     private val _modelList = MutableLiveData<State<List<ConstraintModel>>>(Empty())
     val modelList: LiveData<State<List<ConstraintModel>>> = _modelList
 
-    private val _buildModelsEvent = MutableSharedFlow<List<Constraint>>()
-    val buildModelsEvent = _buildModelsEvent.asSharedFlow()
-
-    private val _showFixPrompt = MutableSharedFlow<Failure>()
-    val showFixPrompt = _showFixPrompt.asSharedFlow()
-
-    //TODO replace with liveevent
-    private val _duplicateConstraintsEvent = MutableSharedFlow<Unit>()
-    val duplicateConstraintsEvent = _duplicateConstraintsEvent.asSharedFlow()
-
-    init {
-        mCoroutineScope.launch {
-            constraintList.asFlow().collect {
-                buildModelsEvent.onSubscription {
-                    _buildModelsEvent.emit(it)
-                }
-            }
+    private val _eventStream = LiveEvent<SealedEvent>().apply {
+        addSource(constraintList) {
+            value = BuildConstraintListModels(it)
         }
     }
+
+    val eventStream: LiveData<SealedEvent> = _eventStream
 
     fun setConstraintList(constraintList: List<Constraint>, constraintMode: Int) {
         _constraintList.value = constraintList
@@ -76,9 +56,7 @@ class ConstraintListViewModel(private val mCoroutineScope: CoroutineScope) {
 
     fun addConstraint(constraint: Constraint) {
         if (constraintList.value?.any { it.uniqueId == constraint.uniqueId } == true) {
-            duplicateConstraintsEvent.onSubscription {
-                _duplicateConstraintsEvent.emit(Unit)
-            }
+            _eventStream.postValue(DuplicateConstraints())
 
             return
         }
@@ -98,7 +76,10 @@ class ConstraintListViewModel(private val mCoroutineScope: CoroutineScope) {
         mCoroutineScope.launch {
             modelList.value?.ifIsData { modelList ->
                 val constraint = modelList.singleOrNull { it.id == id } ?: return@launch
-                _showFixPrompt.emit(constraint.failure!!)
+
+                if (constraint.hasError) {
+                    _eventStream.postValue(FixFailure(constraint.failure!!))
+                }
             }
         }
     }
@@ -110,7 +91,7 @@ class ConstraintListViewModel(private val mCoroutineScope: CoroutineScope) {
         }
     }
 
-    fun rebuildModels() = mCoroutineScope.launch {
-        _buildModelsEvent.emit(constraintList.value ?: listOf())
+    fun rebuildModels() {
+        _eventStream.value = BuildConstraintListModels(constraintList.value!!)
     }
 }

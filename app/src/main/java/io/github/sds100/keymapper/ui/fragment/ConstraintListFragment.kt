@@ -6,15 +6,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.NavAppDirections
-import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.constraint
 import io.github.sds100.keymapper.data.viewmodel.ConstraintListViewModel
 import io.github.sds100.keymapper.databinding.FragmentConstraintListBinding
 import io.github.sds100.keymapper.ui.fragment.keymap.ConfigKeymapFragment
-import io.github.sds100.keymapper.util.TintType
-import io.github.sds100.keymapper.util.buildModel
-import io.github.sds100.keymapper.util.collectWhenLifecycleStarted
-import io.github.sds100.keymapper.util.ifIsData
+import io.github.sds100.keymapper.util.*
 import splitties.toast.toast
 
 /**
@@ -34,17 +30,25 @@ abstract class ConstraintListFragment : Fragment() {
                 findNavController().navigate(direction)
             }
 
-            constraintListViewModel.duplicateConstraintsEvent.collectWhenLifecycleStarted(viewLifecycleOwner, {
-                toast(R.string.error_duplicate_constraint)
-            })
+            constraintListViewModel.eventStream.observe(viewLifecycleOwner, { event ->
+                when (event) {
+                    is MessageEvent -> toast(event.textRes)
 
-            constraintListViewModel.buildModelsEvent.collectWhenLifecycleStarted(viewLifecycleOwner, { constraintList ->
-                val modelList = constraintList.map { it.buildModel(requireContext()) }
-                constraintListViewModel.setModels(modelList)
+                    is BuildConstraintListModels -> {
+                        val modelList = event.source.map { it.buildModel(requireContext()) }
+                        constraintListViewModel.setModels(modelList)
+                    }
+                }
             })
 
             subscribeConstraintsList()
         }.root
+
+    override fun onResume() {
+        super.onResume()
+
+        constraintListViewModel.rebuildModels()
+    }
 
     private fun FragmentConstraintListBinding.subscribeConstraintsList() {
         constraintListViewModel.modelList.observe(viewLifecycleOwner, { constraintList ->

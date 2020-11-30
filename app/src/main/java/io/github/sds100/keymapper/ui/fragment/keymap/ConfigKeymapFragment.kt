@@ -168,6 +168,24 @@ class ConfigKeymapFragment : Fragment() {
                     show()
                 }
             }
+
+            mViewModel.eventStream.observe(viewLifecycleOwner, { event ->
+                when (event) {
+                    is FixFailure -> {
+                        coordinatorLayout.longSnack(event.failure.getFullMessage(requireContext())) {
+
+                            //only add an action to fix the error if the error can be recovered from
+                            if (event.failure is RecoverableFailure) {
+                                action(R.string.snackbar_fix) {
+                                    mRecoverFailureDelegate.recover(requireActivity(), event.failure)
+                                }
+                            }
+
+                            show()
+                        }
+                    }
+                }
+            })
 //
 //            mViewModel.startRecordingTriggerInService.observe(viewLifecycleOwner, EventObserver {
 //                val serviceEnabled = AccessibilityUtils.isServiceEnabled(requireContext())

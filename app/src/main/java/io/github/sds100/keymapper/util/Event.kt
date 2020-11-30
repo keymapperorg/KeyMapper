@@ -15,8 +15,21 @@
  */
 package io.github.sds100.keymapper.util
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.Observer
+import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.data.model.Constraint
+import io.github.sds100.keymapper.util.result.Failure
 import java.io.Serializable
+
+
+sealed class SealedEvent
+
+abstract class MessageEvent(@StringRes val textRes: Int) : SealedEvent()
+class DuplicateConstraints : MessageEvent(R.string.error_duplicate_constraint)
+abstract class BuildModels<T>(val source: List<T>) : SealedEvent()
+class BuildConstraintListModels(source: List<Constraint>) : BuildModels<Constraint>(source)
+class FixFailure(val failure: Failure) : SealedEvent()
 
 /**
  * Used as a wrapper for data that is exposed via a LiveData that represents an event.

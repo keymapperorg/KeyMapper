@@ -1,9 +1,7 @@
 package io.github.sds100.keymapper.data.viewmodel
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
+import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.data.IPreferenceDataStore
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Constraint
@@ -13,6 +11,8 @@ import io.github.sds100.keymapper.data.model.options.KeymapActionOptions
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.data.usecase.ConfigKeymapUseCase
 import io.github.sds100.keymapper.util.ActionType
+import io.github.sds100.keymapper.util.FixFailure
+import io.github.sds100.keymapper.util.SealedEvent
 import io.github.sds100.keymapper.util.result.Failure
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -68,6 +68,16 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
     private val _showFixPrompt = MutableSharedFlow<Failure>()
     val showFixPrompt = _showFixPrompt.asSharedFlow()
 
+    private val _eventStream = LiveEvent<SealedEvent>().apply {
+        addSource(constraintListViewModel.eventStream) {
+            when (it) {
+                is FixFailure -> value = it
+            }
+        }
+    }
+
+    val eventStream: LiveData<SealedEvent> = _eventStream
+
     init {
         viewModelScope.launch {
             if (mId == NEW_KEYMAP_ID) {
@@ -91,12 +101,6 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
 
             triggerViewModel.keys.observeForever {
                 actionListViewModel.invalidateOptions()
-            }
-        }
-
-        viewModelScope.launch {
-            constraintListViewModel.showFixPrompt.collect {
-                _showFixPrompt.emit(it)
             }
         }
 
