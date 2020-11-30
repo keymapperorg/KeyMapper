@@ -38,11 +38,11 @@ abstract class BaseOptionsViewModel<O : BaseOptions<*>> : ViewModel() {
         }.toList()
     }
 
-    fun setValue(id: String, newValue: Int) {
+    open fun setValue(id: String, newValue: Int) {
         options.value = options.value?.setValue(id, newValue) as O?
     }
 
-    fun setValue(id: String, newValue: Boolean) {
+    open fun setValue(id: String, newValue: Boolean) {
         options.value = options.value?.setValue(id, newValue) as O?
     }
 

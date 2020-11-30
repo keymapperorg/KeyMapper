@@ -30,7 +30,11 @@ class TriggerViewModel(
     preferenceDataStore: IPreferenceDataStore
 ) : IPreferenceDataStore by preferenceDataStore {
 
-    val optionsViewModel = TriggerOptionsViewModel()
+    val optionsViewModel = TriggerOptionsViewModel(
+        preferenceDataStore,
+        getTriggerKeys = { keys.value ?: emptyList() },
+        getTriggerMode = { mode.value ?: Trigger.DEFAULT_TRIGGER_MODE }
+    )
 
     private val _keys = MutableLiveData<List<Trigger.Key>>()
     val keys: LiveData<List<Trigger.Key>> = _keys
@@ -47,7 +51,7 @@ class TriggerViewModel(
                 the order in which they list the keys is the order in which they will need to be held down.
                  */
                 if (_keys.value?.size!! > 1 &&
-                    !getBoolPref(R.string.key_pref_shown_parallel_trigger_order_dialog)) {
+                    !getBoolPref(R.string.key_pref_shown_parallel_trigger_order_dialog) && value != Trigger.PARALLEL) {
 
                     notifyUser(R.string.dialog_message_parallel_trigger_order) {
                         setBoolPref(R.string.key_pref_shown_parallel_trigger_order_dialog, true)
@@ -94,6 +98,10 @@ class TriggerViewModel(
                 triggerInParallel.value = false
             }
         }
+
+        observeForever {
+            optionsViewModel.invalidateOptions()
+        }
     }
 
     val isParallelTriggerClickTypeShortPress = _keys.map {
@@ -129,6 +137,10 @@ class TriggerViewModel(
         addSource(keys) {
             value = BuildTriggerKeyModels(it ?: listOf())
         }
+
+        addSource(optionsViewModel.eventStream) {
+            value = it
+        }
     }
 
     val eventStream: LiveData<SealedEvent> = _eventStream
@@ -136,7 +148,7 @@ class TriggerViewModel(
     fun setTrigger(trigger: Trigger) {
         _keys.value = trigger.keys
 
-        optionsViewModel.setOptions(TriggerOptions(trigger.keys, trigger.mode, trigger.flags, trigger.extras))
+        optionsViewModel.setOptions(TriggerOptions(trigger))
 
         when (trigger.mode) {
             Trigger.PARALLEL -> {
@@ -172,7 +184,7 @@ class TriggerViewModel(
             it.copy(clickType = clickType)
         }
 
-        invalidateOptions()
+        optionsViewModel.invalidateOptions()
     }
 
     fun setTriggerKeyDevice(keyCode: Int, descriptor: String) {
@@ -184,7 +196,7 @@ class TriggerViewModel(
             it
         }
 
-        invalidateOptions()
+        optionsViewModel.invalidateOptions()
     }
 
     /**
@@ -247,28 +259,9 @@ class TriggerViewModel(
             _eventStream.value = EnableCapsLockKeyboardLayoutPrompt()
         }
 
-        invalidateOptions()
+        optionsViewModel.invalidateOptions()
 
         return true
-    }
-
-    fun setTriggerOption(id: String, newValue: Int) {
-        optionsViewModel.setValue(id, newValue)
-        invalidateOptions()
-    }
-
-    fun setTriggerOption(id: String, newValue: Boolean) {
-
-        if (id == TriggerOptions.ID_SCREEN_OFF_TRIGGER &&
-            !getBoolPref(R.string.key_pref_shown_screen_off_triggers_explanation)) {
-
-            notifyUser(R.string.showcase_screen_off_triggers) {
-                setBoolPref(R.string.key_pref_shown_screen_off_triggers_explanation, true)
-            }
-        }
-
-        optionsViewModel.setValue(id, newValue)
-        invalidateOptions()
     }
 
     fun removeTriggerKey(keycode: Int) {
@@ -280,7 +273,7 @@ class TriggerViewModel(
             triggerModeUndefined.value = true
         }
 
-        invalidateOptions()
+        optionsViewModel.invalidateOptions()
     }
 
     fun moveTriggerKey(fromIndex: Int, toIndex: Int) {
@@ -296,7 +289,7 @@ class TriggerViewModel(
             }
         }
 
-        invalidateOptions()
+        optionsViewModel.invalidateOptions()
     }
 
     fun editTriggerKeyOptions(id: String) {
@@ -319,17 +312,6 @@ class TriggerViewModel(
         }
     }
 
-    fun invalidateOptions() {
-        val tempTrigger = createTrigger() ?: return
-
-        optionsViewModel.setOptions(TriggerOptions(
-            tempTrigger.keys,
-            tempTrigger.mode,
-            tempTrigger.flags,
-            tempTrigger.extras
-        ))
-    }
-
     fun rebuildModels() {
         _eventStream.value = BuildTriggerKeyModels(keys.value ?: emptyList())
     }
@@ -346,10 +328,6 @@ class TriggerViewModel(
     }
 
     private fun notifyUser(@StringRes message: Int, onOk: () -> Unit) {
-        if (eventStream.value is OkDialog && (eventStream.value as OkDialog).message == message) {
-            return
-        }
-
         _eventStream.value = OkDialog(message, onOk)
     }
 

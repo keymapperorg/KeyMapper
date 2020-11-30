@@ -12,12 +12,7 @@ import splitties.bitflags.hasFlag
  * Created by sds100 on 25/11/20.
  */
 
-class TriggerOptions(
-    keys: List<Trigger.Key>,
-    @Trigger.Mode mode: Int,
-    flags: Int,
-    extras: List<Extra>
-) : BaseOptions<Trigger> {
+class TriggerOptions(trigger: Trigger) : BaseOptions<Trigger> {
 
     companion object {
         const val ID_LONG_PRESS_DELAY = "long_press_delay"
@@ -31,21 +26,21 @@ class TriggerOptions(
 
     val vibrate = BehaviorOption(
         id = ID_VIBRATE,
-        value = flags.hasFlag(Trigger.TRIGGER_FLAG_VIBRATE),
+        value = trigger.flags.hasFlag(Trigger.TRIGGER_FLAG_VIBRATE),
         isAllowed = true
     )
 
     val longPressDoubleVibration = BehaviorOption(
         id = ID_LONG_PRESS_DOUBLE_VIBRATION,
-        value = flags.hasFlag(Trigger.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION),
-        isAllowed = (keys.size == 1 || (mode == Trigger.PARALLEL))
-            && keys.getOrNull(0)?.clickType == Trigger.LONG_PRESS
+        value = trigger.flags.hasFlag(Trigger.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION),
+        isAllowed = (trigger.keys.size == 1 || (trigger.mode == Trigger.PARALLEL))
+            && trigger.keys.getOrNull(0)?.clickType == Trigger.LONG_PRESS
     )
 
     val screenOffTrigger = BehaviorOption(
         id = ID_SCREEN_OFF_TRIGGER,
-        value = flags.hasFlag(Trigger.TRIGGER_FLAG_SCREEN_OFF_TRIGGERS),
-        isAllowed = keys.isNotEmpty() && keys.all {
+        value = trigger.flags.hasFlag(Trigger.TRIGGER_FLAG_SCREEN_OFF_TRIGGERS),
+        isAllowed = trigger.keys.isNotEmpty() && trigger.keys.all {
             KeyEventUtils.GET_EVENT_LABEL_TO_KEYCODE.containsValue(it.keyCode)
         }
     )
@@ -63,23 +58,23 @@ class TriggerOptions(
      */
     init {
 
-        val longPressDelayValue = extras.getData(Trigger.EXTRA_LONG_PRESS_DELAY).valueOrNull()?.toInt()
+        val longPressDelayValue = trigger.extras.getData(Trigger.EXTRA_LONG_PRESS_DELAY).valueOrNull()?.toInt()
 
         longPressDelay = BehaviorOption(
             id = ID_LONG_PRESS_DELAY,
             value = longPressDelayValue ?: BehaviorOption.DEFAULT,
-            isAllowed = keys.any { it.clickType == Trigger.LONG_PRESS }
+            isAllowed = trigger.keys.any { it.clickType == Trigger.LONG_PRESS }
         )
 
-        val doublePressDelayValue = extras.getData(Trigger.EXTRA_DOUBLE_PRESS_DELAY).valueOrNull()?.toInt()
+        val doublePressDelayValue = trigger.extras.getData(Trigger.EXTRA_DOUBLE_PRESS_DELAY).valueOrNull()?.toInt()
 
         doublePressDelay = BehaviorOption(
             id = ID_DOUBLE_PRESS_DELAY,
             value = doublePressDelayValue ?: BehaviorOption.DEFAULT,
-            isAllowed = keys.any { it.clickType == Trigger.DOUBLE_PRESS }
+            isAllowed = trigger.keys.any { it.clickType == Trigger.DOUBLE_PRESS }
         )
 
-        val vibrateDurationValue = extras.getData(Trigger.EXTRA_VIBRATION_DURATION).valueOrNull()?.toInt()
+        val vibrateDurationValue = trigger.extras.getData(Trigger.EXTRA_VIBRATION_DURATION).valueOrNull()?.toInt()
 
         vibrateDuration = BehaviorOption(
             id = ID_VIBRATE_DURATION,
@@ -88,20 +83,13 @@ class TriggerOptions(
         )
 
         val sequenceTriggerTimeoutValue =
-            extras.getData(Trigger.EXTRA_SEQUENCE_TRIGGER_TIMEOUT).valueOrNull()?.toInt()
+            trigger.extras.getData(Trigger.EXTRA_SEQUENCE_TRIGGER_TIMEOUT).valueOrNull()?.toInt()
 
         sequenceTriggerTimeout = BehaviorOption(
             id = ID_SEQUENCE_TRIGGER_TIMEOUT,
             value = sequenceTriggerTimeoutValue ?: BehaviorOption.DEFAULT,
-            isAllowed = !keys.isNullOrEmpty() && keys.size > 1 && mode == Trigger.SEQUENCE
+            isAllowed = !trigger.keys.isNullOrEmpty() && trigger.keys.size > 1 && trigger.mode == Trigger.SEQUENCE
         )
-    }
-
-    fun dependentDataChanged(keys: List<Trigger.Key>, @Trigger.Mode mode: Int): TriggerOptions {
-        val flags = applyToTriggerFlags(0)
-        val extras = applyToTriggerExtras(listOf())
-
-        return TriggerOptions(keys, mode, flags, extras)
     }
 
     override val intOptions: List<BehaviorOption<Int>>
@@ -155,6 +143,13 @@ class TriggerOptions(
         val newExtras = applyToTriggerExtras(old.extras)
 
         return old.copy(extras = newExtras, flags = newFlags)
+    }
+
+    fun dependentDataChanged(keys: List<Trigger.Key>, @Trigger.Mode mode: Int): TriggerOptions {
+        val flags = applyToTriggerFlags(0)
+        val extras = applyToTriggerExtras(listOf())
+
+        return TriggerOptions(Trigger(keys, extras, mode, flags))
     }
 
     private fun applyToTriggerFlags(flags: Int): Int {

@@ -1,17 +1,31 @@
 package io.github.sds100.keymapper.data.viewmodel
 
+import androidx.lifecycle.LiveData
+import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.data.IPreferenceDataStore
 import io.github.sds100.keymapper.data.model.CheckBoxListItemModel
 import io.github.sds100.keymapper.data.model.SliderListItemModel
 import io.github.sds100.keymapper.data.model.SliderModel
+import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.model.options.BehaviorOption
 import io.github.sds100.keymapper.data.model.options.BehaviorOption.Companion.nullIfDefault
 import io.github.sds100.keymapper.data.model.options.TriggerOptions
+import io.github.sds100.keymapper.util.OkDialog
+import io.github.sds100.keymapper.util.SealedEvent
 
 /**
  * Created by sds100 on 29/11/20.
  */
-class TriggerOptionsViewModel : BaseOptionsViewModel<TriggerOptions>() {
+class TriggerOptionsViewModel(
+    preferenceDataStore: IPreferenceDataStore,
+    val getTriggerKeys: () -> List<Trigger.Key>,
+    val getTriggerMode: () -> Int
+) : BaseOptionsViewModel<TriggerOptions>(), IPreferenceDataStore by preferenceDataStore {
+
+    private val _eventStream = LiveEvent<SealedEvent>()
+    val eventStream: LiveData<SealedEvent> = _eventStream
+
     override fun createSliderListItemModel(option: BehaviorOption<Int>) = when (option.id) {
 
         TriggerOptions.ID_VIBRATE_DURATION -> SliderListItemModel(
@@ -25,7 +39,6 @@ class TriggerOptionsViewModel : BaseOptionsViewModel<TriggerOptions>() {
                 stepSize = R.integer.vibrate_duration_step_size
             )
         )
-
 
         TriggerOptions.ID_LONG_PRESS_DELAY -> SliderListItemModel(
             id = option.id,
@@ -86,5 +99,31 @@ class TriggerOptionsViewModel : BaseOptionsViewModel<TriggerOptions>() {
         )
 
         else -> throw Exception("Don't know how to create a CheckboxListItemModel for this option $option.id")
+    }
+
+    override fun setValue(id: String, newValue: Boolean) {
+        super.setValue(id, newValue)
+
+        invalidateOptions()
+    }
+
+    override fun setValue(id: String, newValue: Int) {
+        super.setValue(id, newValue)
+
+        if (id == TriggerOptions.ID_SCREEN_OFF_TRIGGER &&
+            !getBoolPref(R.string.key_pref_shown_screen_off_triggers_explanation)) {
+
+            _eventStream.value = OkDialog(R.string.showcase_screen_off_triggers) {
+                setBoolPref(R.string.key_pref_shown_screen_off_triggers_explanation, true)
+            }
+        }
+
+        invalidateOptions()
+    }
+
+    fun invalidateOptions() {
+        options.value?.apply {
+            setOptions(dependentDataChanged(getTriggerKeys.invoke(), getTriggerMode.invoke()))
+        }
     }
 }
