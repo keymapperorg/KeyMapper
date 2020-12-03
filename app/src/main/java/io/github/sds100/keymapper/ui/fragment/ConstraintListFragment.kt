@@ -20,7 +20,6 @@ abstract class ConstraintListFragment : Fragment() {
         const val CHOOSE_CONSTRAINT_REQUEST_KEY = "request_choose_constraint"
     }
 
-
     abstract val constraintListViewModel: ConstraintListViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =

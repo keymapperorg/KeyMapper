@@ -136,6 +136,7 @@ fun Context.int(@IntegerRes resId: Int) = resources.getInteger(resId)
 fun Fragment.int(@IntegerRes resId: Int) = requireContext().int(resId)
 
 fun Context.intArray(@ArrayRes resId: Int): IntArray = resources.getIntArray(resId)
+fun Fragment.intArray(@ArrayRes resId: Int): IntArray = resources.getIntArray(resId)
 
 fun Context.styledColorSL(@AttrRes attr: Int): ColorStateList? =
     ContextCompat.getColorStateList(this, resolveThemeAttribute(attr))

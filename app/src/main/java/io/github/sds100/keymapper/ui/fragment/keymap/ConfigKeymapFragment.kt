@@ -32,7 +32,6 @@ import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
 import splitties.alertdialog.appcompat.messageResource
 import splitties.alertdialog.appcompat.positiveButton
-import splitties.resources.intArray
 import splitties.snackbar.action
 import splitties.snackbar.longSnack
 import splitties.snackbar.snack
@@ -53,6 +52,7 @@ class ConfigKeymapFragment : Fragment() {
                 TriggerFragment::class.java.name -> TriggerFragment(mArgs.keymapId)
                 KeymapActionListFragment::class.java.name -> KeymapActionListFragment(mArgs.keymapId)
                 KeymapConstraintListFragment::class.java.name -> KeymapConstraintListFragment(mArgs.keymapId)
+                TriggerOptionsFragment::class.java.name -> TriggerOptionsFragment(mArgs.keymapId)
 
                 else -> super.instantiate(classLoader, className)
             }
@@ -186,9 +186,29 @@ class ConfigKeymapFragment : Fragment() {
                 int(R.integer.fragment_id_trigger) -> it to { TriggerFragment(mArgs.keymapId) }
                 int(R.integer.fragment_id_keymap_constraints) -> it to { KeymapConstraintListFragment(mArgs.keymapId) }
                 int(R.integer.fragment_id_trigger_options) -> it to { TriggerOptionsFragment(mArgs.keymapId) }
+                int(R.integer.fragment_id_trigger_and_actions) -> it to { TriggerAndActionsFragment() }
+                int(R.integer.fragment_id_keymap_constraints_and_more) -> it to { ConstraintsAndOptionsFragment() }
+                int(R.integer.fragment_id_config_keymap_all) -> it to { AllFragments() }
 
                 else -> throw Exception("Don't know how to instantiate a fragment for this id $id")
             }
         }
+    )
+
+    class TriggerAndActionsFragment : TwoFragments(
+        top = R.string.trigger_list_header to TriggerFragment::class.java,
+        bottom = R.string.action_list_header to KeymapActionListFragment::class.java
+    )
+
+    class ConstraintsAndOptionsFragment : TwoFragments(
+        top = R.string.trigger_options_header to TriggerOptionsFragment::class.java,
+        bottom = R.string.constraint_list_header to KeymapConstraintListFragment::class.java
+    )
+
+    class AllFragments : FourFragments(
+        topLeft = R.string.trigger_list_header to TriggerFragment::class.java,
+        topRight = R.string.trigger_options_header to TriggerOptionsFragment::class.java,
+        bottomLeft = R.string.action_list_header to KeymapActionListFragment::class.java,
+        bottomRight = R.string.constraint_list_header to KeymapConstraintListFragment::class.java
     )
 }
