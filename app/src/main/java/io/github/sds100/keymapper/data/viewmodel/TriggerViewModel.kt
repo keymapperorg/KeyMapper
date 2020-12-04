@@ -133,7 +133,7 @@ class TriggerViewModel(
     val recordTriggerTimeLeft = MutableLiveData(0)
     val recordingTrigger = MutableLiveData(false)
 
-    private val _eventStream = LiveEvent<SealedEvent>().apply {
+    private val _eventStream = LiveEvent<Event>().apply {
         addSource(keys) {
             value = BuildTriggerKeyModels(it ?: listOf())
         }
@@ -143,7 +143,7 @@ class TriggerViewModel(
         }
     }
 
-    val eventStream: LiveData<SealedEvent> = _eventStream
+    val eventStream: LiveData<Event> = _eventStream
 
     fun setTrigger(trigger: Trigger) {
         _keys.value = trigger.keys

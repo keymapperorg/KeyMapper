@@ -12,8 +12,8 @@ import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.data.usecase.ConfigKeymapUseCase
 import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.EnableAccessibilityServicePrompt
+import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.FixFailure
-import io.github.sds100.keymapper.util.SealedEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -62,7 +62,7 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
 
     val isEnabled = MutableLiveData<Boolean>()
 
-    private val _eventStream = LiveEvent<SealedEvent>().apply {
+    private val _eventStream = LiveEvent<Event>().apply {
         addSource(constraintListViewModel.eventStream) {
             when (it) {
                 is FixFailure -> value = it
@@ -82,7 +82,7 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
         }
     }
 
-    val eventStream: LiveData<SealedEvent> = _eventStream
+    val eventStream: LiveData<Event> = _eventStream
 
     init {
         viewModelScope.launch {

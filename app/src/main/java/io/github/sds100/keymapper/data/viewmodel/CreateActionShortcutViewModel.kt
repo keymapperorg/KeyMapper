@@ -9,8 +9,8 @@ import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.options.ActionShortcutOptions
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.util.EnableAccessibilityServicePrompt
+import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.FixFailure
-import io.github.sds100.keymapper.util.SealedEvent
 
 /**
  * Created by sds100 on 08/09/20.
@@ -26,7 +26,7 @@ class CreateActionShortcutViewModel(deviceInfoRepository: DeviceInfoRepository) 
         }
     }
 
-    private val _eventStream = LiveEvent<SealedEvent>().apply {
+    private val _eventStream = LiveEvent<Event>().apply {
         addSource(actionListViewModel.eventStream) {
             when (it) {
                 is FixFailure, is EnableAccessibilityServicePrompt -> value = it
@@ -34,7 +34,7 @@ class CreateActionShortcutViewModel(deviceInfoRepository: DeviceInfoRepository) 
         }
     }
 
-    val eventStream: LiveData<SealedEvent> = _eventStream
+    val eventStream: LiveData<Event> = _eventStream
 
     class Factory(private val mDeviceInfoRepository: DeviceInfoRepository) : ViewModelProvider.Factory {
 

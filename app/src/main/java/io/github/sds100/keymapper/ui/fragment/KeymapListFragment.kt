@@ -18,7 +18,6 @@ import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
 import io.github.sds100.keymapper.ui.callback.SelectionCallback
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.Failure
-import kotlinx.coroutines.launch
 
 /**
  * Created by sds100 on 22/02/2020.
@@ -68,15 +67,17 @@ class KeymapListFragment : DefaultRecyclerViewFragment() {
                 mController.requestModelBuild()
             })
 
-            rebuildModelsEvent.observe(viewLifecycleOwner, EventObserver {
-                lifecycleScope.launch {
-                    mViewModel.setModelList(buildModelList(it))
-                }
-            })
+            mViewModel.eventStream.observe(viewLifecycleOwner, {
+                when (it) {
+                    is BuildKeymapListModels -> lifecycleScope.launchWhenStarted {
+                        mViewModel.setModelList(buildModelList(it.keymapList))
+                    }
 
-            backupEvent.observe(viewLifecycleOwner, EventObserver {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    mBackupLauncher.launch(BackupUtils.createFileName())
+                    is BackupSelectedKeymaps -> {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                            mBackupLauncher.launch(BackupUtils.createFileName())
+                        }
+                    }
                 }
             })
         }

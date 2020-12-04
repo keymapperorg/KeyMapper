@@ -5,11 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
-import androidx.core.os.bundleOf
-import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -23,7 +20,6 @@ import io.github.sds100.keymapper.data.viewmodel.FingerprintGestureMapOptionsVie
 import io.github.sds100.keymapper.databinding.FragmentFingerprintGestureMapBehaviorBinding
 import io.github.sds100.keymapper.slider
 import io.github.sds100.keymapper.util.*
-import kotlinx.coroutines.flow.collect
 
 /**
  * Created by sds100 on 27/06/2020.
@@ -54,13 +50,6 @@ class FingerprintGestureMapOptionsFragment : BottomSheetDialogFragment() {
             mViewModel.options.observe(viewLifecycleOwner, {
                 isLoading = it is Loading
             })
-
-            viewLifecycleScope.launchWhenStarted {
-                mViewModel.onSave.collect {
-                    setFragmentResult(mRequestKey, bundleOf(EXTRA_FINGERPRINT_GESTURE_MAP_OPTIONS to it))
-                    findNavController().navigateUp()
-                }
-            }
 
             mViewModel.checkBoxModels.observe(viewLifecycleOwner, {
                 mController.checkBoxModels = it

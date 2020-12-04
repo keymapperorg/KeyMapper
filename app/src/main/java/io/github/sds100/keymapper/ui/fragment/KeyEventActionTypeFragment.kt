@@ -17,11 +17,8 @@ import io.github.sds100.keymapper.checkbox
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.viewmodel.KeyEventActionTypeViewModel
 import io.github.sds100.keymapper.databinding.FragmentKeyeventActionTypeBinding
-import io.github.sds100.keymapper.util.EventObserver
-import io.github.sds100.keymapper.util.InjectorUtils
-import io.github.sds100.keymapper.util.InputDeviceUtils
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.getFullMessage
-import io.github.sds100.keymapper.util.str
 
 /**
  * Created by sds100 on 30/03/2020.
@@ -64,11 +61,6 @@ class KeyEventActionTypeFragment : Fragment() {
                 textInputLayoutKeyCode.error = it?.getFullMessage(requireContext())
             })
 
-            mViewModel.chooseKeycode.observe(viewLifecycleOwner, EventObserver {
-                val direction = ChooseActionFragmentDirections.actionChooseActionFragmentToKeycodeListFragment()
-                findNavController().navigate(direction)
-            })
-
             mViewModel.modifierKeyModels.observe(viewLifecycleOwner, { models ->
                 epoxyRecyclerViewModifiers.withModels {
                     models.forEach {
@@ -95,8 +87,17 @@ class KeyEventActionTypeFragment : Fragment() {
                 dropdownDeviceId.setText(text, false)
             })
 
-            mViewModel.buildDeviceInfoModels.observe(viewLifecycleOwner, EventObserver {
-                mViewModel.setDeviceInfoModels(InputDeviceUtils.createDeviceInfoModelsForAll())
+            mViewModel.eventStream.observe(viewLifecycleOwner, {
+                when (it) {
+                    is ChooseKeycode -> {
+                        val direction = ChooseActionFragmentDirections.actionChooseActionFragmentToKeycodeListFragment()
+                        findNavController().navigate(direction)
+                    }
+
+                    is BuildDeviceInfoModels -> {
+                        mViewModel.setDeviceInfoModels(InputDeviceUtils.createDeviceInfoModelsForAll())
+                    }
+                }
             })
 
             mViewModel.deviceInfoModels.observe(viewLifecycleOwner, { models ->

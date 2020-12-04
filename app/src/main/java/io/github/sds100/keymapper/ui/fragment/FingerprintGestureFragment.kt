@@ -7,15 +7,12 @@ import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.data.model.ActionModel
 import io.github.sds100.keymapper.data.model.ConstraintModel
-import io.github.sds100.keymapper.data.model.FingerprintGestureMapListItemModel
 import io.github.sds100.keymapper.data.viewmodel.FingerprintGestureViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.databinding.ListItemFingerprintGestureBinding
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
 import io.github.sds100.keymapper.util.result.RecoverableFailure
-import kotlinx.coroutines.flow.collect
-import splitties.toast.toast
 
 /**
  * Created by sds100 on 22/02/2020.
@@ -82,45 +79,45 @@ class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
                 }
             }
         })
-
-        viewLifecycleScope.launchWhenStarted {
-            mViewModel.buildModels.collect { gestureMaps ->
-                val models = gestureMaps.map {
-                    FingerprintGestureMapListItemModel(
-                        id = it.key,
-                        header = str(FingerprintGestureUtils.HEADERS[it.key]!!),
-
-                        actionModels = it.value.actionList.map { action ->
-                            action.buildModel(requireContext(), mViewModel.getDeviceInfoList())
-                        },
-
-                        constraintModels = it.value.constraintList.map { constraint ->
-                            constraint.buildModel(requireContext())
-                        },
-
-                        isEnabled = it.value.isEnabled
-                    )
-                }
-
-                mViewModel.setModels(models)
-            }
-        }
-
-        viewLifecycleScope.launchWhenStarted {
-            mViewModel.editOptions.collect {
-                val requestKey = FingerprintGestureUtils.OPTIONS_REQUEST_KEYS[it.gestureId]!!
-
-                val direction =
-                    HomeFragmentDirections.actionHomeFragmentToFingerprintGestureMapBehaviorFragment(it, requestKey)
-                findNavController().navigate(direction)
-            }
-        }
-
-        viewLifecycleScope.launchWhenStarted {
-            mViewModel.duplicateConstraintsEvent.collect {
-                toast(R.string.error_fingerprint_gesture_map_constraint_exists)
-            }
-        }
+//
+//        viewLifecycleScope.launchWhenStarted {
+//            mViewModel.buildModels.collect { gestureMaps ->
+//                val models = gestureMaps.map {
+//                    FingerprintGestureMapListItemModel(
+//                        id = it.key,
+//                        header = str(FingerprintGestureUtils.HEADERS[it.key]!!),
+//
+//                        actionModels = it.value.actionList.map { action ->
+//                            action.buildModel(requireContext(), mViewModel.getDeviceInfoList())
+//                        },
+//
+//                        constraintModels = it.value.constraintList.map { constraint ->
+//                            constraint.buildModel(requireContext())
+//                        },
+//
+//                        isEnabled = it.value.isEnabled
+//                    )
+//                }
+//
+//                mViewModel.setModels(models)
+//            }
+//        }
+//
+//        viewLifecycleScope.launchWhenStarted {
+//            mViewModel.editOptions.collect {
+//                val requestKey = FingerprintGestureUtils.OPTIONS_REQUEST_KEYS[it.gestureId]!!
+//
+//                val direction =
+//                    HomeFragmentDirections.actionHomeFragmentToFingerprintGestureMapBehaviorFragment(it, requestKey)
+//                findNavController().navigate(direction)
+//            }
+//        }
+//
+//        viewLifecycleScope.launchWhenStarted {
+//            mViewModel.duplicateConstraintsEvent.collect {
+//                toast(R.string.error_fingerprint_gesture_map_constraint_exists)
+//            }
+//        }
 
         mViewModel.rebuildModels()
     }

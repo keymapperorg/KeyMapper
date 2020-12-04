@@ -3,11 +3,9 @@
 package io.github.sds100.keymapper.data.viewmodel
 
 import android.os.Bundle
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.LiveData
+import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.data.model.options.BaseOptions
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.launch
 
 /**
  * Created by sds100 on 28/11/20.
@@ -15,13 +13,11 @@ import kotlinx.coroutines.launch
 
 abstract class BaseOptionsDialogViewModel<O : BaseOptions<*>> : BaseOptionsViewModel<O>() {
 
-    private val _onSaveEvent = MutableSharedFlow<BaseOptions<*>>()
-    val onSaveEvent = _onSaveEvent.asSharedFlow()
+    private val _onSaveEvent = LiveEvent<BaseOptions<*>>()
+    val onSaveEvent: LiveData<BaseOptions<*>> = _onSaveEvent
 
     fun save() {
-        viewModelScope.launch {
-            _onSaveEvent.emit(options.value!!)
-        }
+        _onSaveEvent.value = options.value!!
     }
 
     fun saveState(outState: Bundle) {

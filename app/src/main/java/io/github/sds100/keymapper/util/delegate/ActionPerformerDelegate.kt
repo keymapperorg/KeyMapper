@@ -24,7 +24,6 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Option
-import io.github.sds100.keymapper.data.model.PerformActionModel
 import io.github.sds100.keymapper.data.model.getData
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.handle
@@ -64,9 +63,10 @@ class ActionPerformerDelegate(context: Context,
         lifecycle.addObserver(mSuProcessDelegate)
     }
 
-    fun performAction(action: Action, chosenImePackageName: String?) = performAction(PerformActionModel(action), chosenImePackageName)
+    fun performAction(action: Action, chosenImePackageName: String?
+    ) = performAction(PerformAction(action), chosenImePackageName)
 
-    fun performAction(performActionModel: PerformActionModel, chosenImePackageName: String?) {
+    fun performAction(performActionModel: PerformAction, chosenImePackageName: String?) {
         val (action, showToast, additionalMetaState, keyEventAction) = performActionModel
 
         mCtx.apply {

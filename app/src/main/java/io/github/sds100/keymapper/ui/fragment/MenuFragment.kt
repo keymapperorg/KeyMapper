@@ -131,7 +131,7 @@ class MenuFragment : BottomSheetDialogFragment(), SharedPreferences.OnSharedPref
 
             setRestore {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    mBackupRestoreViewModel.requestRestore.value = Event(Unit)
+                    mBackupRestoreViewModel.requestRestore()
                     dismiss()
                 }
             }

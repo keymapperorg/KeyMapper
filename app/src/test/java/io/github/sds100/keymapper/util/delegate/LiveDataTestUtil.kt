@@ -1,9 +1,8 @@
 package io.github.sds100.keymapper.util.delegate
 
 import androidx.annotation.VisibleForTesting
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import io.github.sds100.keymapper.util.Event
+import com.hadilq.liveevent.LiveEvent
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.withTimeout
 import java.util.concurrent.CountDownLatch
@@ -15,7 +14,7 @@ import java.util.concurrent.TimeoutException
  */
 
 @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-fun <T> LiveData<T>.getOrAwaitValue(
+fun <T> LiveEvent<T>.getOrAwaitValue(
     time: Long = 2,
     timeUnit: TimeUnit = TimeUnit.SECONDS,
     afterObserve: () -> Unit = {}
@@ -49,7 +48,7 @@ fun <T> LiveData<T>.getOrAwaitValue(
 
 
 @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-suspend fun <T> LiveData<T>.getOrAwaitValueCoroutine(
+suspend fun <T> LiveEvent<T>.getOrAwaitValueCoroutine(
     time: Long = 2,
     timeUnit: TimeUnit = TimeUnit.SECONDS,
     onChange: (data: T) -> Unit = {}
@@ -62,10 +61,6 @@ suspend fun <T> LiveData<T>.getOrAwaitValueCoroutine(
         try {
             observer = object : Observer<T> {
                 override fun onChanged(o: T?) {
-                    if (o is Event<*>) {
-                        if (o.hasBeenHandled) return
-                    }
-
                     if (o == null) {
                         return
                     }

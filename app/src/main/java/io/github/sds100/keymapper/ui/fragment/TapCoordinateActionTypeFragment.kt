@@ -69,12 +69,11 @@ class TapCoordinateActionTypeFragment : Fragment() {
                 imageViewScreenshot.setImageBitmap(it)
             })
 
-            mViewModel.selectScreenshotEvent.observe(viewLifecycleOwner, EventObserver {
-                mScreenshotLauncher.launch(FileUtils.MIME_TYPE_IMAGES)
-            })
-
-            mViewModel.incorrectScreenshotResolutionEvent.observe(viewLifecycleOwner, EventObserver {
-                toast(R.string.toast_incorrect_screenshot_resolution)
+            mViewModel.eventStream.observe(viewLifecycleOwner, {
+                when (it) {
+                    is SelectScreenshot -> mScreenshotLauncher.launch(FileUtils.MIME_TYPE_IMAGES)
+                    is MessageEvent -> toast(it.textRes)
+                }
             })
 
             imageViewScreenshot.pointCoordinates.observe(viewLifecycleOwner, {

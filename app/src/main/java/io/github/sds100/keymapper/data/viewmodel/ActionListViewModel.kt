@@ -26,13 +26,13 @@ abstract class ActionListViewModel<O : BaseOptions<Action>>(
     private val _modelList = MutableLiveData<State<List<ActionModel>>>(Loading())
     val modelList: LiveData<State<List<ActionModel>>> = _modelList
 
-    private val _eventStream = LiveEvent<SealedEvent>().apply {
+    private val _eventStream = LiveEvent<Event>().apply {
         addSource(actionList) {
             value = BuildActionListModels(it ?: listOf())
         }
     }
 
-    val eventStream: LiveData<SealedEvent> = _eventStream
+    val eventStream: LiveData<Event> = _eventStream
 
     fun setActionList(actionList: List<Action>) {
         _actionList.value = actionList

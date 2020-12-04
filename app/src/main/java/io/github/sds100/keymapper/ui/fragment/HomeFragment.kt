@@ -44,18 +44,14 @@ import io.github.sds100.keymapper.ui.view.StatusLayout
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
 import io.github.sds100.keymapper.util.result.NoCompatibleImeEnabled
-import io.github.sds100.keymapper.util.result.RecoverableFailure
 import io.github.sds100.keymapper.util.result.getFullMessage
 import io.github.sds100.keymapper.worker.SeedDatabaseWorker
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
 import splitties.alertdialog.appcompat.messageResource
-import splitties.snackbar.action
-import splitties.snackbar.longSnack
 import splitties.systemservices.powerManager
 import splitties.toast.longToast
 import splitties.toast.toast
@@ -190,7 +186,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         FragmentHomeBinding.inflate(inflater, container, false).apply {
             mBinding = this
             lifecycleOwner = this@HomeFragment
@@ -290,18 +286,12 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                 mKeyMapListViewModel.selectionProvider.stopSelecting()
             }
 
-            mBackupRestoreViewModel.showMessageStringRes.observe(viewLifecycleOwner, EventObserver { messageRes ->
-                when (messageRes) {
-                    else -> toast(messageRes)
+            mBackupRestoreViewModel.eventStream.observe(viewLifecycleOwner, {
+                when (it) {
+                    is MessageEvent -> toast(it.textRes)
+                    is ShowErrorMessage -> toast(it.failure.getFullMessage(requireContext()))
+                    is RequestRestore -> mRestoreLauncher.launch(FileUtils.MIME_TYPE_ALL)
                 }
-            })
-
-            mBackupRestoreViewModel.showErrorMessage.observe(viewLifecycleOwner, EventObserver { failure ->
-                toast(failure.getFullMessage(requireContext()))
-            })
-
-            mBackupRestoreViewModel.requestRestore.observe(viewLifecycleOwner, EventObserver {
-                mRestoreLauncher.launch(FileUtils.MIME_TYPE_ALL)
             })
 
             expanded = mExpanded
@@ -409,22 +399,14 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
 
             showNewGuiKeyboardAd = AppPreferences.showGuiKeyboardAd
 
-            viewLifecycleScope.launchWhenStarted {
-                mKeyMapListViewModel.promptFix.collect {
-                    coordinatorLayout.longSnack(it.getFullMessage(requireContext())) {
-
-                        //only add an action to fix the error if the error can be recovered from
-                        if (it is RecoverableFailure) {
-                            action(R.string.snackbar_fix) {
-                                mRecoverFailureDelegate.recover(requireActivity(), it)
-                            }
-                        }
-
-                        setAnchorView(R.id.fab)
-                        show()
-                    }
+            mKeyMapListViewModel.eventStream.observe(viewLifecycleOwner, {
+                when (it) {
+                    is FixFailure -> coordinatorLayout.showFixActionSnackBar(
+                        it.failure,
+                        requireActivity(),
+                        mRecoverFailureDelegate)
                 }
-            }
+            })
 
             return this.root
         }

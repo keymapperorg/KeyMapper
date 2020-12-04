@@ -24,13 +24,13 @@ class ConstraintListViewModel(private val mCoroutineScope: CoroutineScope) {
     private val _modelList = MutableLiveData<State<List<ConstraintModel>>>(Empty())
     val modelList: LiveData<State<List<ConstraintModel>>> = _modelList
 
-    private val _eventStream = LiveEvent<SealedEvent>().apply {
+    private val _eventStream = LiveEvent<Event>().apply {
         addSource(constraintList) {
             value = BuildConstraintListModels(it)
         }
     }
 
-    val eventStream: LiveData<SealedEvent> = _eventStream
+    val eventStream: LiveData<Event> = _eventStream
 
     fun setConstraintList(constraintList: List<Constraint>, constraintMode: Int) {
         _constraintList.value = constraintList

@@ -1,17 +1,14 @@
 package io.github.sds100.keymapper.data.viewmodel
 
 import androidx.lifecycle.*
+import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Constraint
-import io.github.sds100.keymapper.data.model.FingerprintGestureMap
 import io.github.sds100.keymapper.data.model.FingerprintGestureMapListItemModel
 import io.github.sds100.keymapper.data.model.options.FingerprintGestureMapOptions
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.data.repository.FingerprintGestureRepository
-import io.github.sds100.keymapper.util.Data
-import io.github.sds100.keymapper.util.FingerprintGestureUtils
-import io.github.sds100.keymapper.util.Loading
-import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -30,22 +27,13 @@ class FingerprintGestureViewModel(
     private val _models: MutableLiveData<State<List<FingerprintGestureMapListItemModel>>> = MutableLiveData(Loading())
     val models: LiveData<State<List<FingerprintGestureMapListItemModel>>> = _models
 
-    private val _buildModels: MutableSharedFlow<Map<String, FingerprintGestureMap>> = MutableSharedFlow()
-    val buildModels = _buildModels.asSharedFlow()
-
-    private val _editOptions: MutableSharedFlow<FingerprintGestureMapOptions> = MutableSharedFlow()
-    val editOptions = _editOptions.asSharedFlow()
-
-    private val _duplicateConstraintEvent: MutableSharedFlow<Unit> = MutableSharedFlow()
-    val duplicateConstraintsEvent = _duplicateConstraintEvent.asSharedFlow()
-
-    init {
-        viewModelScope.launch {
-            mFingerprintGestureMaps.collect {
-                _buildModels.emit(it)
-            }
+    private val _eventStream = LiveEvent<Event>().apply {
+        addSource(mFingerprintGestureMaps.asLiveData()) {
+            value = BuildFingerprintGestureModels(it)
         }
     }
+
+    val eventStream: LiveData<Event> = _eventStream
 
     fun setModels(models: List<FingerprintGestureMapListItemModel>) = viewModelScope.launch {
         _models.value = Data(models)
@@ -77,7 +65,7 @@ class FingerprintGestureViewModel(
         val gestureMap = mFingerprintGestureMaps.firstOrNull()?.get(gestureId)
 
         if (gestureMap?.constraintList?.any { it.uniqueId == constraint.uniqueId } == true) {
-            _duplicateConstraintEvent.emit(Unit)
+            _eventStream.value = DuplicateConstraints()
             return@launch
         }
 
@@ -112,14 +100,14 @@ class FingerprintGestureViewModel(
         _models.value = Loading()
 
         mFingerprintGestureMaps.firstOrNull()?.let {
-            _buildModels.emit(it)
+            _eventStream.value = BuildFingerprintGestureModels(it)
         }
     }
 
     fun editOptions(gestureId: String) = viewModelScope.launch {
         mFingerprintGestureMaps.firstOrNull()?.get(gestureId)?.let {
             val options = FingerprintGestureMapOptions(gestureId, it)
-            _editOptions.emit(options)
+            _eventStream.value = EditFingerprintGestureMapOptions(options)
         }
     }
 

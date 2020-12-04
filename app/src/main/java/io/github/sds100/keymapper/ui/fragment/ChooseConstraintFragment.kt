@@ -54,32 +54,36 @@ class ChooseConstraintFragment : DefaultRecyclerViewFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        mViewModel.choosePackageEvent.observe(viewLifecycleOwner, EventObserver {
-            val direction = ChooseConstraintFragmentDirections.actionChooseConstraintListFragmentToAppListFragment()
-            findNavController().navigate(direction)
-        })
-
-        mViewModel.chooseBluetoothDeviceEvent.observe(viewLifecycleOwner, EventObserver {
-            val direction =
-                ChooseConstraintFragmentDirections.actionChooseConstraintListFragmentToBluetoothDevicesFragment()
-
-            findNavController().navigate(direction)
-        })
-
-        mViewModel.notifyUserEvent.observe(viewLifecycleOwner, EventObserver { model ->
-            requireContext().alertDialog {
-                messageResource = model.message
-
-                okButton {
-                    model.onApproved.invoke()
+        mViewModel.eventStream.observe(viewLifecycleOwner, { event ->
+            when (event) {
+                is ChoosePackage -> {
+                    val direction = ChooseConstraintFragmentDirections.actionChooseConstraintListFragmentToAppListFragment()
+                    findNavController().navigate(direction)
                 }
 
-                show()
-            }
-        })
+                is ChooseBluetoothDevice -> {
+                    val direction =
+                        ChooseConstraintFragmentDirections.actionChooseConstraintListFragmentToBluetoothDevicesFragment()
 
-        mViewModel.selectModelEvent.observe(viewLifecycleOwner, EventObserver {
-            returnResult(EXTRA_CONSTRAINT to it)
+                    findNavController().navigate(direction)
+                }
+
+                is OkDialog -> {
+                    requireContext().alertDialog {
+                        messageResource = event.message
+
+                        okButton {
+                            event.onOk.invoke()
+                        }
+
+                        show()
+                    }
+                }
+
+                is SelectConstraint -> {
+                    returnResult(EXTRA_CONSTRAINT to event.constraint)
+                }
+            }
         })
 
         return super.onCreateView(inflater, container, savedInstanceState)

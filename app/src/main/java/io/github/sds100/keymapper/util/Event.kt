@@ -16,84 +16,62 @@
 package io.github.sds100.keymapper.util
 
 import androidx.annotation.StringRes
-import androidx.lifecycle.Observer
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.model.Action
-import io.github.sds100.keymapper.data.model.Constraint
-import io.github.sds100.keymapper.data.model.Trigger
+import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.options.BaseOptions
+import io.github.sds100.keymapper.data.model.options.FingerprintGestureMapOptions
 import io.github.sds100.keymapper.data.model.options.TriggerKeyOptions
 import io.github.sds100.keymapper.util.result.Failure
-import java.io.Serializable
 
+sealed class Event
 
-sealed class SealedEvent
+open class MessageEvent(@StringRes val textRes: Int) : Event()
 
-abstract class MessageEvent(@StringRes val textRes: Int) : SealedEvent()
+class FixFailure(val failure: Failure) : Event()
+class Vibrate(val duration: Long) : Event()
 
-class FixFailure(val failure: Failure) : SealedEvent()
+data class PerformAction(val action: Action,
+                         val showPerformingActionToast: Boolean = false,
+                         val additionalMetaState: Int = 0,
+                         val keyEventAction: KeyEventAction = KeyEventAction.DOWN_UP) : Event()
 
-class OkDialog(@StringRes val message: Int, val onOk: () -> Unit) : SealedEvent()
-class EnableAccessibilityServicePrompt : SealedEvent()
+class ImitateButtonPress(val keyCode: Int, val metaState: Int = 0, val deviceId: Int = 0) : Event()
+class ChoosePackage : Event()
+class ChooseBluetoothDevice : Event()
+class OpenUrl(val url: String) : Event()
+class CloseDialog : Event()
+
+class SelectScreenshot : Event()
+
+class ChooseKeycode : Event()
+class BuildDeviceInfoModels : Event()
+
+class BackupSelectedKeymaps : Event()
+class BuildKeymapListModels(val keymapList: List<KeyMap>) : Event()
+
+class OkDialog(@StringRes val message: Int, val onOk: () -> Unit) : Event()
+class EnableAccessibilityServicePrompt : Event()
+class RequestBackup(val keymapList: List<KeyMap>) : Event()
+class RequestRestore : Event()
+class ShowErrorMessage(val failure: Failure) : Event()
 
 //trigger
-class BuildTriggerKeyModels(val source: List<Trigger.Key>) : SealedEvent()
-class EditTriggerKeyOptions(val options: TriggerKeyOptions) : SealedEvent()
-class EnableCapsLockKeyboardLayoutPrompt : SealedEvent()
-class StartRecordingTriggerInService : SealedEvent()
-class StopRecordingTriggerInService : SealedEvent()
+class BuildTriggerKeyModels(val source: List<Trigger.Key>) : Event()
+class EditTriggerKeyOptions(val options: TriggerKeyOptions) : Event()
+class EnableCapsLockKeyboardLayoutPrompt : Event()
+class StartRecordingTriggerInService : Event()
+class StopRecordingTriggerInService : Event()
 
 //action list
-class BuildActionListModels(val source: List<Action>) : SealedEvent()
-class TestAction(val action: Action) : SealedEvent()
-class EditActionOptions(val options: BaseOptions<Action>) : SealedEvent()
+class BuildActionListModels(val source: List<Action>) : Event()
+class TestAction(val action: Action) : Event()
+class EditActionOptions(val options: BaseOptions<Action>) : Event()
 
-//constraint list
+//constraints
 class DuplicateConstraints : MessageEvent(R.string.error_duplicate_constraint)
-class BuildConstraintListModels(val source: List<Constraint>) : SealedEvent()
+class BuildConstraintListModels(val source: List<Constraint>) : Event()
+class SelectConstraint(val constraint: Constraint) : Event()
 
-
-/**
- * Used as a wrapper for data that is exposed via a LiveData that represents an event.
- */
-open class Event<out T>(private val content: T) : Serializable {
-
-    @Suppress("MemberVisibilityCanBePrivate")
-    var hasBeenHandled = false
-        private set // Allow external read but not write
-
-    /**
-     * Returns the content and prevents its use again.
-     */
-    fun getContentIfNotHandled(): T? {
-        return if (hasBeenHandled) {
-            null
-        } else {
-            hasBeenHandled = true
-            content
-        }
-    }
-
-    fun handled() {
-        hasBeenHandled = true
-    }
-
-    /**
-     * Returns the content, even if it's already been handled.
-     */
-    fun peekContent(): T = content
-}
-
-/**
- * An [Observer] for [Event]s, simplifying the pattern of checking if the [Event]'s content has
- * already been handled.
- *
- * [onEventUnhandledContent] is *only* called if the [Event]'s contents has not been handled.
- */
-class EventObserver<T>(private val onEventUnhandledContent: (T) -> Unit) : Observer<Event<T>> {
-    override fun onChanged(event: Event<T>?) {
-        event?.getContentIfNotHandled()?.let {
-            onEventUnhandledContent(it)
-        }
-    }
-}
+//fingerprint gesture maps
+class BuildFingerprintGestureModels(val gestureMaps: Map<String, FingerprintGestureMap>) : Event()
+class EditFingerprintGestureMapOptions(val options: FingerprintGestureMapOptions) : Event()

@@ -12,8 +12,6 @@ import io.github.sds100.keymapper.util.Data
 import io.github.sds100.keymapper.util.Loading
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ifIsData
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 /**
@@ -27,9 +25,6 @@ class FingerprintGestureMapOptionsViewModel : ViewModel() {
 
     private val _options: MutableLiveData<State<FingerprintGestureMapOptions>> = MutableLiveData(Loading())
     val options: LiveData<State<FingerprintGestureMapOptions>> = _options
-
-    private val _onSave: MutableSharedFlow<FingerprintGestureMapOptions> = MutableSharedFlow()
-    val onSave = _onSave.asSharedFlow()
 
     fun setOptions(behavior: FingerprintGestureMapOptions) {
         _options.value = Data(behavior)
@@ -85,7 +80,7 @@ class FingerprintGestureMapOptionsViewModel : ViewModel() {
     fun save() {
         options.value?.ifIsData {
             viewModelScope.launch {
-                _onSave.emit(it)
+//                _onSave.emit(it)
             }
         }
     }

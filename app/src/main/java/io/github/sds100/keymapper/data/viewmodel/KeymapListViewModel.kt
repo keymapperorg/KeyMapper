@@ -1,14 +1,12 @@
 package io.github.sds100.keymapper.data.viewmodel
 
 import androidx.lifecycle.*
-import io.github.sds100.keymapper.data.model.KeyMap
+import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.data.usecase.KeymapListUseCase
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.Failure
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class KeymapListViewModel internal constructor(
@@ -18,18 +16,15 @@ class KeymapListViewModel internal constructor(
 
     val keymapModelList: MutableLiveData<State<List<KeymapListItemModel>>> = MutableLiveData(Loading())
 
-    val rebuildModelsEvent = MediatorLiveData<Event<List<KeyMap>>>().apply {
+    val selectionProvider: ISelectionProvider = SelectionProvider()
+
+    private val _eventStream = LiveEvent<Event>().apply {
         addSource(mKeymapRepository.keymapList) {
-            this.value = Event(it)
+            value = BuildKeymapListModels(it)
         }
     }
 
-    val selectionProvider: ISelectionProvider = SelectionProvider()
-
-    val backupEvent = MutableLiveData<Event<Unit>>()
-
-    private val _promptFix = MutableSharedFlow<Failure>()
-    val promptFix = _promptFix.asSharedFlow()
+    val eventStream: LiveData<Event> = _eventStream
 
     fun duplicate(vararg id: Long) {
         viewModelScope.launch {
@@ -71,7 +66,7 @@ class KeymapListViewModel internal constructor(
         if (mKeymapRepository.keymapList.value.isNullOrEmpty()) return@launch
         keymapModelList.value = Loading()
 
-        rebuildModelsEvent.value = Event(mKeymapRepository.keymapList.value ?: listOf())
+        _eventStream.value = BuildKeymapListModels(mKeymapRepository.keymapList.value ?: listOf())
     }
 
     fun setModelList(list: List<KeymapListItemModel>) {
@@ -84,11 +79,11 @@ class KeymapListViewModel internal constructor(
     }
 
     fun backup() {
-        backupEvent.value = Event(Unit)
+        _eventStream.value
     }
 
-    fun fixError(failure: Failure) = viewModelScope.launch {
-        _promptFix.emit(failure)
+    fun fixError(failure: Failure) {
+        _eventStream.value = FixFailure(failure)
     }
 
     suspend fun getDeviceInfoList() = mDeviceInfoRepository.getAll()

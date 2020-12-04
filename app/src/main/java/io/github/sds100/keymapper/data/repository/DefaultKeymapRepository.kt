@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.usecase.*
-import io.github.sds100.keymapper.util.Event
+import io.github.sds100.keymapper.util.RequestBackup
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -15,7 +15,7 @@ import kotlinx.coroutines.withContext
 class DefaultKeymapRepository internal constructor(private val mKeymapDao: KeyMapDao
 ) : GlobalKeymapUseCase, KeymapListUseCase, ConfigKeymapUseCase, BackupRestoreUseCase, MenuKeymapUseCase {
 
-    override val requestBackup = MutableLiveData<Event<List<KeyMap>>>()
+    override val requestBackup = MutableLiveData<RequestBackup>()
     override val keymapList: LiveData<List<KeyMap>> = mKeymapDao.observeAll()
 
     override suspend fun getKeymaps(): List<KeyMap> = mKeymapDao.getAll()
@@ -82,7 +82,7 @@ class DefaultKeymapRepository internal constructor(private val mKeymapDao: KeyMa
 
     private suspend fun requestBackup() {
         withContext(Dispatchers.Default) {
-            requestBackup.postValue(Event(getKeymaps()))
+            requestBackup.postValue(RequestBackup(getKeymaps()))
         }
     }
 }

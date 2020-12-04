@@ -3,9 +3,12 @@ package io.github.sds100.keymapper.data.viewmodel
 import android.annotation.SuppressLint
 import android.view.KeyEvent
 import androidx.lifecycle.*
+import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.data.model.CheckBoxListItemModel
 import io.github.sds100.keymapper.data.model.DeviceInfo
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
+import io.github.sds100.keymapper.util.BuildDeviceInfoModels
+import io.github.sds100.keymapper.util.ChooseKeycode
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.KeyEventUtils
 import io.github.sds100.keymapper.util.result.CantBeEmpty
@@ -39,10 +42,11 @@ class KeyEventActionTypeViewModel(private val mDeviceInfoRepository: DeviceInfoR
     val chosenDevice = MutableLiveData<DeviceInfo?>(null)
 
     val deviceInfoModels = MutableLiveData<List<DeviceInfo>>()
-    val buildDeviceInfoModels = MutableLiveData<Event<Unit>>()
 
     val metaState = MutableLiveData(0)
-    val chooseKeycode = MutableLiveData<Event<Unit>>()
+
+    private val _eventStream = LiveEvent<Event>()
+    val eventStream: LiveData<Event> = _eventStream
 
     val failure = keyCode.map {
         when {
@@ -72,7 +76,7 @@ class KeyEventActionTypeViewModel(private val mDeviceInfoRepository: DeviceInfoR
     }
 
     fun chooseKeycode() {
-        chooseKeycode.value = Event(Unit)
+        _eventStream.value = ChooseKeycode()
     }
 
     fun setModifierKey(flag: Int, isChecked: Boolean) {
@@ -99,7 +103,7 @@ class KeyEventActionTypeViewModel(private val mDeviceInfoRepository: DeviceInfoR
     }
 
     fun refreshDevices() {
-        buildDeviceInfoModels.value = Event(Unit)
+        _eventStream.value = BuildDeviceInfoModels()
     }
 
     fun setDeviceInfoModels(models: List<DeviceInfo>) {

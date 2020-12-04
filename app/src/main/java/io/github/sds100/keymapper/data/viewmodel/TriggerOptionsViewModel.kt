@@ -11,8 +11,8 @@ import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.model.options.BehaviorOption
 import io.github.sds100.keymapper.data.model.options.BehaviorOption.Companion.nullIfDefault
 import io.github.sds100.keymapper.data.model.options.TriggerOptions
+import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.OkDialog
-import io.github.sds100.keymapper.util.SealedEvent
 
 /**
  * Created by sds100 on 29/11/20.
@@ -23,8 +23,8 @@ class TriggerOptionsViewModel(
     val getTriggerMode: () -> Int
 ) : BaseOptionsViewModel<TriggerOptions>(), IPreferenceDataStore by preferenceDataStore {
 
-    private val _eventStream = LiveEvent<SealedEvent>()
-    val eventStream: LiveData<SealedEvent> = _eventStream
+    private val _eventStream = LiveEvent<Event>()
+    val eventStream: LiveData<Event> = _eventStream
 
     override fun createSliderListItemModel(option: BehaviorOption<Int>) = when (option.id) {
 

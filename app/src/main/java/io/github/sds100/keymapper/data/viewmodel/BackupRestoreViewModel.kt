@@ -1,16 +1,15 @@
 package io.github.sds100.keymapper.data.viewmodel
 
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.data.usecase.BackupRestoreUseCase
-import io.github.sds100.keymapper.util.BackupUtils
-import io.github.sds100.keymapper.util.Event
-import io.github.sds100.keymapper.util.result.Failure
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.GenericFailure
 import io.github.sds100.keymapper.util.result.handle
 import io.github.sds100.keymapper.util.result.handleAsync
@@ -26,9 +25,8 @@ class BackupRestoreViewModel internal constructor(
     private val mDeviceInfoRepository: DeviceInfoRepository
 ) : ViewModel() {
 
-    val showMessageStringRes = MutableLiveData<Event<Int>>()
-    val showErrorMessage = MutableLiveData<Event<Failure>>()
-    val requestRestore = MutableLiveData<Event<Unit>>()
+    private val _eventStream = LiveEvent<Event>()
+    val eventStream: LiveData<Event> = _eventStream
 
     fun backup(outputStream: OutputStream?, vararg keymapId: Long) {
         viewModelScope.launch {
@@ -50,9 +48,13 @@ class BackupRestoreViewModel internal constructor(
         }
     }
 
+    fun requestRestore() {
+        _eventStream.value = RequestRestore()
+    }
+
     fun restore(inputStream: InputStream?) {
         if (inputStream == null) {
-            showMessageStringRes.value = Event(R.string.error_failed_to_pick_file)
+            _eventStream.value = MessageEvent(R.string.error_failed_to_pick_file)
         }
 
         viewModelScope.launch {
@@ -62,7 +64,7 @@ class BackupRestoreViewModel internal constructor(
                     mDeviceInfoRepository.insertDeviceInfo(*it.deviceInfo.toTypedArray())
                 },
                 onFailure = {
-                    showErrorMessage.value = Event(it)
+                    _eventStream.value = ShowErrorMessage(it)
 
                     if (it is GenericFailure) {
                         Timber.e(it.exception)
@@ -74,11 +76,11 @@ class BackupRestoreViewModel internal constructor(
 
     suspend fun backup(outputStream: OutputStream?, keymapList: List<KeyMap>?) {
         if (outputStream == null) {
-            showMessageStringRes.value = Event(R.string.error_failed_to_pick_file)
+            _eventStream.value = MessageEvent(R.string.error_failed_to_pick_file)
         }
 
         if (keymapList.isNullOrEmpty()) {
-            showMessageStringRes.value = Event(R.string.error_no_keymaps)
+            _eventStream.value = MessageEvent(R.string.error_no_keymaps)
             return
         }
 
@@ -86,10 +88,10 @@ class BackupRestoreViewModel internal constructor(
 
         BackupUtils.backup(outputStream!!, keymapList, deviceInfo).handle(
             onSuccess = {
-                showMessageStringRes.value = Event(R.string.toast_backup_successful)
+                _eventStream.value = MessageEvent(R.string.toast_backup_successful)
             },
             onFailure = {
-                showErrorMessage.value = Event(it)
+                _eventStream.value = ShowErrorMessage(it)
             })
     }
 

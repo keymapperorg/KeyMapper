@@ -301,7 +301,7 @@ class MyAccessibilityService : AccessibilityService(),
         WidgetsManager.onEvent(this, EVENT_ACCESSIBILITY_SERVICE_STARTED)
         sendPackageBroadcast(ACTION_ON_START)
 
-        mKeymapDetectionDelegate.imitateButtonPress.observe(this, EventObserver {
+        mKeymapDetectionDelegate.imitateButtonPress.observe(this, {
             when (it.keyCode) {
                 KeyEvent.KEYCODE_VOLUME_UP -> AudioUtils.adjustVolume(this, AudioManager.ADJUST_RAISE,
                     showVolumeUi = true)
@@ -328,18 +328,18 @@ class MyAccessibilityService : AccessibilityService(),
             }
         })
 
-        mKeymapDetectionDelegate.performAction.observe(this, EventObserver { model ->
+        mKeymapDetectionDelegate.performAction.observe(this, { model ->
             mActionPerformerDelegate.performAction(model, mChosenImePackageName)
         })
 
-        mKeymapDetectionDelegate.vibrate.observe(this, EventObserver {
+        mKeymapDetectionDelegate.vibrate.observe(this, {
 
-            if (it <= 0) return@EventObserver
+            if (it.duration <= 0) return@observe
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                vibrator.vibrate(VibrationEffect.createOneShot(it, VibrationEffect.DEFAULT_AMPLITUDE))
+                vibrator.vibrate(VibrationEffect.createOneShot(it.duration, VibrationEffect.DEFAULT_AMPLITUDE))
             } else {
-                vibrator.vibrate(it)
+                vibrator.vibrate(it.duration)
             }
         })
 
