@@ -26,15 +26,10 @@ import io.github.sds100.keymapper.ui.adapter.GenericFragmentPagerAdapter
 import io.github.sds100.keymapper.ui.fragment.*
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
-import io.github.sds100.keymapper.util.result.RecoverableFailure
-import io.github.sds100.keymapper.util.result.getFullMessage
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
 import splitties.alertdialog.appcompat.messageResource
 import splitties.alertdialog.appcompat.positiveButton
-import splitties.snackbar.action
-import splitties.snackbar.longSnack
-import splitties.snackbar.snack
 
 /**
  * Created by sds100 on 22/11/20.
@@ -137,27 +132,13 @@ class ConfigKeymapFragment : Fragment() {
 
             mViewModel.eventStream.observe(viewLifecycleOwner, { event ->
                 when (event) {
-                    is FixFailure -> {
-                        coordinatorLayout.longSnack(event.failure.getFullMessage(requireContext())) {
+                    is FixFailure -> coordinatorLayout.showFixActionSnackBar(
+                        event.failure,
+                        requireActivity(),
+                        mRecoverFailureDelegate
+                    )
 
-                            //only add an action to fix the error if the error can be recovered from
-                            if (event.failure is RecoverableFailure) {
-                                action(R.string.snackbar_fix) {
-                                    mRecoverFailureDelegate.recover(requireActivity(), event.failure)
-                                }
-                            }
-
-                            show()
-                        }
-                    }
-
-                    is EnableAccessibilityServicePrompt -> {
-                        coordinatorLayout.snack(R.string.error_accessibility_service_disabled_record_trigger) {
-                            setAction(str(R.string.snackbar_fix)) {
-                                AccessibilityUtils.enableService(requireContext())
-                            }
-                        }
-                    }
+                    is EnableAccessibilityServicePrompt -> coordinatorLayout.showEnableAccessibilityServiceSnackBar()
                 }
             })
 

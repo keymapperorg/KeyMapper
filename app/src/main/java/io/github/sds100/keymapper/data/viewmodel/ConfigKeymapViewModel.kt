@@ -71,7 +71,7 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
 
         addSource(actionListViewModel.eventStream) {
             when (it) {
-                is FixFailure -> value = it
+                is FixFailure, is EnableAccessibilityServicePrompt -> value = it
             }
         }
 

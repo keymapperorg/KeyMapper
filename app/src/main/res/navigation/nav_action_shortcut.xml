@@ -8,45 +8,36 @@
     <fragment
         android:id="@+id/actionShortcutListFragment"
         android:name="io.github.sds100.keymapper.ui.fragment.CreateActionShortcutFragment"
-        android:label="ActionShortcutListFragment"
+        android:label="CreateActionShortcutListFragment"
         tools:layout="@layout/fragment_create_action_shortcut">
+
         <action
-            android:id="@+id/action_actionShortcutListFragment_to_chooseActionFragment"
-            app:destination="@id/chooseActionFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_right"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
-            android:id="@+id/action_actionShortcutListFragment_to_actionBehaviorFragment"
-            app:destination="@id/keymapActionOptionsFragment"
+            android:id="@+id/action_to_actionOptionsFragment"
+            app:destination="@id/actionShortcutOptionsFragment"
             app:enterAnim="@anim/slide_in_bottom" />
     </fragment>
 
-    <fragment
-        android:id="@+id/chooseActionFragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.ChooseActionFragment"
-        android:label="ChooseActionFragment">
-        <action
-            android:id="@+id/action_choose_action_fragment_to_keycodeListFragment"
-            app:destination="@id/keycodeListFragment" />
-        <argument
-            android:name="@string/nav_arg_choose_action_request_key"
-            app:argType="string" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/keycodeListFragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.KeycodeListFragment"
-        android:label="KeycodeListFragment" />
-
     <dialog
-        android:id="@+id/keymapActionOptionsFragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.keymap.KeymapActionOptionsFragment"
+        android:id="@+id/actionShortcutOptionsFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.actionshortcut.ActionShortcutOptionsFragment"
         android:label="ActionOptionsFragment">
 
         <argument
             android:name="@string/nav_arg_keymap_action_options"
-            app:argType="io.github.sds100.keymapper.data.model.options.KeymapActionOptions" />
+            app:argType="io.github.sds100.keymapper.data.model.options.ActionShortcutOptions" />
     </dialog>
+
+    <action
+        android:id="@+id/action_global_chooseActionFragment"
+        app:destination="@id/nav_choose_action"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right">
+        <argument
+            android:name="@string/nav_arg_choose_action_request_key"
+            app:argType="string" />
+    </action>
+
+    <include app:graph="@navigation/nav_choose_action" />
 </navigation>
