@@ -57,20 +57,13 @@ The version code in the develop branch should always be the highest. Therefore, 
 Format:
 ```
 <issue id> <type>: <subject>
-
-body
-
-footer
 ```
 
-Every feature or bug fix commit should have an issue associated with it. This is a cue for the developer to plan what they are doing, which improves efficiency. A feature should be split up into multiple tasks and each task should have its own commit. The feature should be developed on a sepearate branch and these commits should be squashed into a single commit when the branch is merged.
+Every feature or bug fix commit should have an issue associated with it. This is a cue for the developer to plan what they are doing which improves efficiency. A feature should be split up into multiple tasks and each task should have its own commit. The feature should be developed on a separate branch and these commits should be squashed into a single commit when the branch is merged.
 
 #### Example
 ```
 #100 feat: This a new feature
-
-Extra information about the feature goes in here. It should be wrapped to
-roughly 80 characters.
 ```
 
 #### Types
