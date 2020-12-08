@@ -346,12 +346,14 @@ class MyAccessibilityService : AccessibilityService(),
         mChosenImePackageName = KeyboardUtils.getChosenInputMethodPackageName(this).valueOrNull()
 
         lifecycleScope.launchWhenStarted {
-            val keymapList = withContext(Dispatchers.IO) {
-                (application as MyApplication).keymapRepository.getKeymaps()
-            }
+            application?.let {
+                val keymapList = withContext(Dispatchers.IO) {
+                    (it as MyApplication).keymapRepository.getKeymaps()
+                }
 
-            withContext(Dispatchers.Main) {
-                updateKeymapListCache(keymapList)
+                withContext(Dispatchers.Main) {
+                    updateKeymapListCache(keymapList)
+                }
             }
         }
     }
