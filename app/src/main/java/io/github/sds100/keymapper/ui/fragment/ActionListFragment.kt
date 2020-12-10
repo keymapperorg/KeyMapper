@@ -118,10 +118,24 @@ abstract class ActionListFragment<O : BaseOptions<Action>> : Fragment() {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        actionListViewModel.saveState(outState)
+
+        super.onSaveInstanceState(outState)
+    }
+
     override fun onResume() {
         super.onResume()
 
         actionListViewModel.rebuildModels()
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+
+        savedInstanceState ?: return
+
+        actionListViewModel.restoreState(savedInstanceState)
     }
 
     abstract fun openActionOptionsFragment(options: O)

@@ -32,6 +32,8 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
     }
 
     val actionListViewModel = object : ActionListViewModel<KeymapActionOptions>(viewModelScope, mDeviceInfoRepository) {
+        override val stateKey = "keymap_action_list_view_model"
+
         override fun getActionOptions(action: Action): KeymapActionOptions {
             return KeymapActionOptions(
                 action,

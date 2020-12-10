@@ -69,8 +69,9 @@ class ConfigKeymapFragment : Fragment() {
         }
 
         setFragmentResultListener(ActionListFragment.CHOOSE_ACTION_REQUEST_KEY) { _, result ->
-            val action = result.getSerializable(ChooseActionFragment.EXTRA_ACTION) as Action
-            mViewModel.actionListViewModel.addAction(action)
+            result.getParcelable<Action>(ChooseActionFragment.EXTRA_ACTION)?.let {
+                mViewModel.actionListViewModel.addAction(it)
+            }
         }
 
         setFragmentResultListener(ConstraintListFragment.CHOOSE_CONSTRAINT_REQUEST_KEY) { _, result ->

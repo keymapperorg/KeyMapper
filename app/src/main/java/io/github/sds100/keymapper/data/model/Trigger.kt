@@ -1,9 +1,11 @@
 package io.github.sds100.keymapper.data.model
 
+import android.os.Parcelable
 import androidx.annotation.IntDef
 import com.github.salomonbrys.kotson.*
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.R
+import kotlinx.android.parcel.Parcelize
 
 /**
  * Created by sds100 on 16/07/2018.
@@ -12,6 +14,7 @@ import io.github.sds100.keymapper.R
 /**
  * @property [keys] The key codes which will trigger the action
  */
+@Parcelize
 data class Trigger(
     @SerializedName(NAME_KEYS)
     val keys: List<Key> = listOf(),
@@ -25,7 +28,7 @@ data class Trigger(
 
     @SerializedName(NAME_FLAGS)
     val flags: Int = 0
-) {
+) : Parcelable {
 
     companion object {
         //DON'T CHANGE THESE. Used for JSON serialization and parsing.
@@ -84,6 +87,7 @@ data class Trigger(
         }
     }
 
+    @Parcelize
     data class Key(
         @SerializedName(NAME_KEYCODE)
         val keyCode: Int,
@@ -96,7 +100,7 @@ data class Trigger(
 
         @SerializedName(NAME_FLAGS)
         val flags: Int = 0
-    ) {
+    ) : Parcelable {
 
         companion object {
             //DON'T CHANGE THESE. Used for JSON serialization and parsing.

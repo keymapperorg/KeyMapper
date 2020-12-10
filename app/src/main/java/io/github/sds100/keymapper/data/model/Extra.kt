@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.data.model
 
+import android.os.Parcelable
 import androidx.annotation.StringDef
 import com.github.salomonbrys.kotson.byString
 import com.github.salomonbrys.kotson.jsonDeserializer
@@ -20,7 +21,7 @@ import io.github.sds100.keymapper.data.model.Trigger.Companion.EXTRA_VIBRATION_D
 import io.github.sds100.keymapper.util.result.ExtraNotFound
 import io.github.sds100.keymapper.util.result.Result
 import io.github.sds100.keymapper.util.result.Success
-import java.io.Serializable
+import kotlinx.android.parcel.Parcelize
 
 /**
  * Created by sds100 on 26/01/2019.
@@ -43,12 +44,13 @@ import java.io.Serializable
 ])
 annotation class ExtraId
 
+@Parcelize
 data class Extra(@ExtraId
                  @SerializedName(NAME_ID)
                  val id: String,
 
                  @SerializedName(NAME_DATA)
-                 val data: String) : Serializable {
+                 val data: String) : Parcelable {
     companion object {
 
         //DON'T CHANGE THESE. Used for JSON serialization and parsing.

@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.data.model
 
 import android.content.Context
+import android.os.Parcelable
 import com.github.salomonbrys.kotson.*
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.R
@@ -8,8 +9,8 @@ import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.ActionUtils
 import io.github.sds100.keymapper.util.SystemAction
 import io.github.sds100.keymapper.util.result.onSuccess
+import kotlinx.android.parcel.Parcelize
 import splitties.bitflags.withFlag
-import java.io.Serializable
 import java.util.*
 
 /**
@@ -28,6 +29,7 @@ import java.util.*
  * - Insert a block of text
  * - System actions/settings
  */
+@Parcelize
 data class Action(
     @SerializedName(NAME_ACTION_TYPE)
     val type: ActionType,
@@ -54,7 +56,7 @@ data class Action(
     @SerializedName(NAME_UID)
     val uid: String = UUID.randomUUID().toString()
 
-) : Serializable {
+) : Parcelable {
     companion object {
 
         //DON'T CHANGE THESE. Used for JSON serialization and parsing.

@@ -21,6 +21,8 @@ class CreateActionShortcutViewModel(deviceInfoRepository: DeviceInfoRepository) 
         viewModelScope,
         deviceInfoRepository
     ) {
+        override val stateKey = "create_action_shortcut_view_model"
+
         override fun getActionOptions(action: Action): ActionShortcutOptions {
             return ActionShortcutOptions(action, actionList.value!!.size)
         }
