@@ -48,7 +48,13 @@ abstract class RecyclerViewFragment<BINDING : ViewDataBinding> : Fragment() {
     open var requestKey: String? = null
     open var searchStateKey: String? = null
     abstract val appBar: BottomAppBar
-    lateinit var binding: BINDING
+
+    /**
+     * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
+     */
+    private var _binding: BINDING? = null
+    val binding: BINDING
+        get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,7 +74,7 @@ abstract class RecyclerViewFragment<BINDING : ViewDataBinding> : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = bind(inflater, container)
+        _binding = bind(inflater, container)
 
         subscribeList(binding)
         setupSearchView()
@@ -114,6 +120,12 @@ abstract class RecyclerViewFragment<BINDING : ViewDataBinding> : Fragment() {
                 override fun onQueryTextSubmit(query: String?) = onQueryTextChange(query)
             })
         }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+
+        super.onDestroyView()
     }
 
     open fun onSearchQuery(query: String?) {}
