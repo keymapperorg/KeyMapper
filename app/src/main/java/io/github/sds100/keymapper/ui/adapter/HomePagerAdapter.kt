@@ -4,7 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.ui.fragment.FingerprintGestureFragment
-import io.github.sds100.keymapper.ui.fragment.KeymapListFragment
+import io.github.sds100.keymapper.ui.fragment.keymap.KeymapListFragment
 
 /**
  * Created by sds100 on 26/01/2020.

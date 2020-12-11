@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.ui.fragment
+package io.github.sds100.keymapper.ui.fragment.keymap
 
 import android.os.Build
 import android.os.Bundle
@@ -16,6 +16,8 @@ import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.keymap
 import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
 import io.github.sds100.keymapper.ui.callback.SelectionCallback
+import io.github.sds100.keymapper.ui.fragment.DefaultRecyclerViewFragment
+import io.github.sds100.keymapper.ui.fragment.HomeFragmentDirections
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.Failure
 
