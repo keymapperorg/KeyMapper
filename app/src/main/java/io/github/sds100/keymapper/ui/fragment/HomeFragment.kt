@@ -12,7 +12,6 @@ import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -26,11 +25,8 @@ import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
-import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.ChooseAppStoreModel
-import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
-import io.github.sds100.keymapper.data.model.options.FingerprintGestureMapOptions
 import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.data.viewmodel.FingerprintGestureViewModel
@@ -39,7 +35,6 @@ import io.github.sds100.keymapper.databinding.DialogChooseAppStoreBinding
 import io.github.sds100.keymapper.databinding.FragmentHomeBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.adapter.HomePagerAdapter
-import io.github.sds100.keymapper.ui.fragment.FingerprintGestureMapOptionsFragment.Companion.EXTRA_FINGERPRINT_GESTURE_MAP_OPTIONS
 import io.github.sds100.keymapper.ui.view.StatusLayout
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
@@ -150,35 +145,6 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             requireActivity().registerReceiver(mBroadcastReceiver, this)
         }
 
-        FingerprintGestureUtils.CHOOSE_ACTION_REQUEST_KEYS.forEach {
-            val gestureId = it.key
-            val requestKey = it.value
-
-            setFragmentResultListener(requestKey) { _, result ->
-                val action = result.getSerializable(ChooseActionFragment.EXTRA_ACTION) as Action
-                mFingerprintGestureViewModel.addAction(gestureId, action)
-            }
-        }
-
-        FingerprintGestureUtils.OPTIONS_REQUEST_KEYS.forEach {
-            val requestKey = it.value
-
-            setFragmentResultListener(requestKey) { _, result ->
-                mFingerprintGestureViewModel.setOptions(
-                    result.getSerializable(EXTRA_FINGERPRINT_GESTURE_MAP_OPTIONS) as FingerprintGestureMapOptions)
-            }
-        }
-
-        FingerprintGestureUtils.ADD_CONSTRAINT_REQUEST_KEYS.forEach {
-            val gestureId = it.key
-            val requestKey = it.value
-
-            setFragmentResultListener(requestKey) { _, result ->
-                mFingerprintGestureViewModel.addConstraint(gestureId,
-                    result.getSerializable(ChooseConstraintFragment.EXTRA_CONSTRAINT) as Constraint)
-            }
-        }
-
         mRecoverFailureDelegate = RecoverFailureDelegate(
             "HomeFragment",
             requireActivity().activityResultRegistry,
@@ -194,10 +160,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
     ): View {
         FragmentHomeBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = this@HomeFragment
-
             _binding = this
-
-
             return this.root
         }
     }
@@ -420,6 +383,15 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             showNewGuiKeyboardAd = AppPreferences.showGuiKeyboardAd
 
             mKeyMapListViewModel.eventStream.observe(viewLifecycleOwner, {
+                when (it) {
+                    is FixFailure -> coordinatorLayout.showFixActionSnackBar(
+                        it.failure,
+                        requireActivity(),
+                        mRecoverFailureDelegate)
+                }
+            })
+
+            mFingerprintGestureViewModel.eventStream.observe(viewLifecycleOwner, {
                 when (it) {
                     is FixFailure -> coordinatorLayout.showFixActionSnackBar(
                         it.failure,

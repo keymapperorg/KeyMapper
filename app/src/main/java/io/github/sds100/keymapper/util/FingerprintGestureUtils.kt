@@ -57,3 +57,13 @@ fun FingerprintGestureMap.getFlagLabelList(ctx: Context): List<String> = sequenc
         }
     }
 }.toList()
+
+fun FingerprintGestureMap.buildOptionsDescription(ctx: Context): String = buildString {
+    getFlagLabelList(ctx).forEachIndexed { index, label ->
+        if (index > 0) {
+            append(" ${ctx.str(R.string.interpunct)} ")
+        }
+
+        append(label)
+    }
+}

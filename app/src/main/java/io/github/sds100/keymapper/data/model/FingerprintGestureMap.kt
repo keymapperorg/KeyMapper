@@ -17,6 +17,9 @@ data class FingerprintGestureMap(
     @SerializedName(NAME_CONSTRAINTS)
     val constraintList: List<Constraint> = listOf(),
 
+    @SerializedName(NAME_CONSTRAINT_MODE)
+    val constraintMode: Int = Constraint.DEFAULT_MODE,
+
     @SerializedName(NAME_EXTRAS)
     val extras: List<Extra> = listOf(),
 
@@ -33,6 +36,7 @@ data class FingerprintGestureMap(
         private const val NAME_FLAGS = "flags"
         private const val NAME_ENABLED = "enabled"
         private const val NAME_CONSTRAINTS = "constraints"
+        private const val NAME_CONSTRAINT_MODE = "constraint_mode"
 
         val DESERIALIZER = jsonDeserializer {
             val actionListJson by it.json.byArray(NAME_ACTION_LIST)
@@ -44,11 +48,13 @@ data class FingerprintGestureMap(
             val constraintsJson by it.json.byArray(NAME_CONSTRAINTS)
             val constraints = it.context.deserialize<List<Constraint>>(constraintsJson)
 
+            val constraintMode by it.json.byInt(NAME_CONSTRAINT_MODE)
+
             val flags by it.json.byInt(NAME_FLAGS)
 
             val isEnabled by it.json.byBool(NAME_ENABLED)
 
-            FingerprintGestureMap(actionList, constraints, extras, flags, isEnabled)
+            FingerprintGestureMap(actionList, constraints, constraintMode, extras, flags, isEnabled)
         }
 
         const val FLAG_VIBRATE = 1
