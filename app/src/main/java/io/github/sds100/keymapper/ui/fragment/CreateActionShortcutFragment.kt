@@ -13,7 +13,6 @@ import androidx.core.graphics.drawable.IconCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.navGraphViewModels
 import com.google.gson.Gson
 import io.github.sds100.keymapper.R
@@ -48,6 +47,13 @@ class CreateActionShortcutFragment : Fragment() {
 
     private lateinit var mRecoverFailureDelegate: RecoverFailureDelegate
 
+    /**
+     * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
+     */
+    private var _binding: FragmentCreateActionShortcutBinding? = null
+    val binding: FragmentCreateActionShortcutBinding
+        get() = _binding!!
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -75,6 +81,14 @@ class CreateActionShortcutFragment : Fragment() {
             lifecycleOwner = viewLifecycleOwner
             viewModel = mViewModel
 
+            return this.root
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.apply {
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
                 showOnBackPressedWarning()
             }
@@ -86,28 +100,8 @@ class CreateActionShortcutFragment : Fragment() {
             appBar.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.action_done -> {
-                        lifecycleScope.launchWhenResumed {
-                            ShortcutInfoCompat.Builder(requireContext(), UUID.randomUUID().toString()).apply {
-                                val icon = createShortcutIcon()
-                                val shortcutLabel = createShortcutLabel()
-
-                                setIcon(icon)
-                                setShortLabel(shortcutLabel)
-
-                                Intent(requireContext(), LaunchActionShortcutActivity::class.java).apply {
-                                    action = MyAccessibilityService.ACTION_PERFORM_ACTIONS
-
-                                    putExtra(MyAccessibilityService.EXTRA_ACTION_LIST,
-                                        Gson().toJson(mViewModel.actionListViewModel.actionList.value))
-
-                                    setIntent(this)
-                                }
-
-                                ShortcutManagerCompat.createShortcutResultIntent(requireContext(), this.build()).apply {
-                                    requireActivity().setResult(Activity.RESULT_OK, this)
-                                    requireActivity().finish()
-                                }
-                            }
+                        viewLifecycleScope.launchWhenStarted {
+                            onDoneClick()
                         }
 
                         true
@@ -128,8 +122,35 @@ class CreateActionShortcutFragment : Fragment() {
                     is EnableAccessibilityServicePrompt -> coordinatorLayout.showEnableAccessibilityServiceSnackBar()
                 }
             })
+        }
+    }
 
-            return this.root
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
+    }
+
+    private suspend fun onDoneClick() {
+        ShortcutInfoCompat.Builder(requireContext(), UUID.randomUUID().toString()).apply {
+            val icon = createShortcutIcon()
+            val shortcutLabel = createShortcutLabel()
+
+            setIcon(icon)
+            setShortLabel(shortcutLabel)
+
+            Intent(requireContext(), LaunchActionShortcutActivity::class.java).apply {
+                action = MyAccessibilityService.ACTION_PERFORM_ACTIONS
+
+                putExtra(MyAccessibilityService.EXTRA_ACTION_LIST,
+                    Gson().toJson(mViewModel.actionListViewModel.actionList.value))
+
+                setIntent(this)
+            }
+
+            ShortcutManagerCompat.createShortcutResultIntent(requireContext(), this.build()).apply {
+                requireActivity().setResult(Activity.RESULT_OK, this)
+                requireActivity().finish()
+            }
         }
     }
 

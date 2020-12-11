@@ -52,6 +52,13 @@ abstract class ActionListFragment<O : BaseOptions<Action>> : Fragment() {
         }
     }
 
+    /**
+     * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
+     */
+    private var _binding: FragmentActionListBinding? = null
+    val binding: FragmentActionListBinding
+        get() = _binding!!
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -61,11 +68,25 @@ abstract class ActionListFragment<O : BaseOptions<Action>> : Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         FragmentActionListBinding.inflate(inflater, container, false).apply {
             viewModel = actionListViewModel
             lifecycleOwner = viewLifecycleOwner
 
+            _binding = this
+
+            return this.root
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.apply {
             subscribeActionList()
 
             epoxyRecyclerViewActions.adapter = mActionListController.adapter
@@ -113,8 +134,6 @@ abstract class ActionListFragment<O : BaseOptions<Action>> : Fragment() {
                 val direction = NavAppDirections.actionGlobalChooseActionFragment(CHOOSE_ACTION_REQUEST_KEY)
                 findNavController().navigate(direction)
             }
-
-            return this.root
         }
     }
 
@@ -136,6 +155,11 @@ abstract class ActionListFragment<O : BaseOptions<Action>> : Fragment() {
         savedInstanceState ?: return
 
         actionListViewModel.restoreState(savedInstanceState)
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     abstract fun openActionOptionsFragment(options: O)

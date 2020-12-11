@@ -48,7 +48,7 @@ class KeymapListFragment : DefaultRecyclerViewFragment() {
 
     private val mController = KeymapController()
 
-    override fun subscribeList(binding: FragmentRecyclerviewBinding) {
+    override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
         mViewModel.apply {
 
             keymapModelList.observe(viewLifecycleOwner, { keymapList ->

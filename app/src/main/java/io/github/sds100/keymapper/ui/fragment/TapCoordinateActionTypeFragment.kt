@@ -52,10 +52,18 @@ class TapCoordinateActionTypeFragment : Fragment() {
 
         val displaySize = Point().apply {
             windowManager.defaultDisplay.getRealSize(this)
-            }
+        }
 
-            mViewModel.selectedScreenshot(bitmap, displaySize)
+        mViewModel.selectedScreenshot(bitmap, displaySize)
     }
+
+    /**
+     * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
+     */
+    private var _binding: FragmentTapCoordinateActionTypeBinding? = null
+    val binding: FragmentTapCoordinateActionTypeBinding
+        get() = _binding!!
+
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -63,6 +71,16 @@ class TapCoordinateActionTypeFragment : Fragment() {
         FragmentTapCoordinateActionTypeBinding.inflate(inflater, container, false).apply {
 
             lifecycleOwner = viewLifecycleOwner
+            _binding = this
+
+            return this.root
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.apply {
             viewModel = mViewModel
 
             mViewModel.bitmap.observe(viewLifecycleOwner, {
@@ -100,8 +118,11 @@ class TapCoordinateActionTypeFragment : Fragment() {
                     findNavController().navigateUp()
                 }
             }
-
-            return this.root
         }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 }

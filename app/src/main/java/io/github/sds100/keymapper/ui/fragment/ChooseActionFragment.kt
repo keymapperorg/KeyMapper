@@ -33,8 +33,16 @@ class ChooseActionFragment : Fragment() {
     companion object {
         const val EXTRA_ACTION = "extra_action"
     }
+
     private val mRequestKey by lazy { navArgs<ChooseActionFragmentArgs>().value.StringNavArgChooseActionRequestKey }
     private lateinit var mPagerAdapter: ChooseActionPagerAdapter
+
+    /**
+     * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
+     */
+    private var _binding: FragmentChooseActionBinding? = null
+    val binding: FragmentChooseActionBinding
+        get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -116,7 +124,16 @@ class ChooseActionFragment : Fragment() {
     ): View {
         FragmentChooseActionBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
+            _binding = this
 
+            return this.root
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.apply {
             mPagerAdapter = ChooseActionPagerAdapter(this@ChooseActionFragment)
             viewPager.adapter = mPagerAdapter
 
@@ -129,9 +146,12 @@ class ChooseActionFragment : Fragment() {
             }
 
             subscribeSearchView()
-
-            return this.root
         }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     @Suppress("UNCHECKED_CAST")

@@ -35,24 +35,19 @@ class OnlineFileFragment : BottomSheetDialogFragment() {
         InjectorUtils.provideOnlineViewModel(requireContext(), mFileUrl, mAlternateUrl, mHeader)
     }
 
+    /**
+     * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
+     */
+    private var _binding: FragmentOnlineFileBinding? = null
+    val binding: FragmentOnlineFileBinding
+        get() = _binding!!
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         FragmentOnlineFileBinding.inflate(inflater, container, false).apply {
 
             lifecycleOwner = viewLifecycleOwner
-
             viewModel = mViewModel
-
-            mViewModel.eventStream.observe(viewLifecycleOwner, {
-                when (it) {
-                    is CloseDialog -> dismiss()
-                    is ShowErrorMessage -> toast(it.failure.getFullMessage(requireContext()))
-                    is OpenUrl -> {
-                        Intent(Intent.ACTION_VIEW, Uri.parse(it.url)).apply {
-                            startActivity(this)
-                        }
-                    }
-                }
-            })
+            _binding = this
 
             return this.root
         }
@@ -63,5 +58,22 @@ class OnlineFileFragment : BottomSheetDialogFragment() {
 
         val dialog = requireDialog() as BottomSheetDialog
         dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+
+        mViewModel.eventStream.observe(viewLifecycleOwner, {
+            when (it) {
+                is CloseDialog -> dismiss()
+                is ShowErrorMessage -> toast(it.failure.getFullMessage(requireContext()))
+                is OpenUrl -> {
+                    Intent(Intent.ACTION_VIEW, Uri.parse(it.url)).apply {
+                        startActivity(this)
+                    }
+                }
+            }
+        })
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 }

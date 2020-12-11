@@ -37,7 +37,7 @@ class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
         }
     }
 
-    override fun subscribeList(binding: FragmentRecyclerviewBinding) {
+    override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
         binding.caption = str(R.string.caption_fingerprint_gesture)
 
         mViewModel.models.observe(viewLifecycleOwner, { models ->

@@ -40,7 +40,7 @@ class TriggerOptionsFragment : DefaultRecyclerViewFragment() {
         }
     }
 
-    override fun subscribeList(binding: FragmentRecyclerviewBinding) {
+    override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
         binding.apply {
             epoxyRecyclerView.adapter = mController.adapter
 

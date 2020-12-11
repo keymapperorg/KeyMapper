@@ -22,7 +22,8 @@ import splitties.bitflags.withFlag
  * Created by sds100 on 30/03/2020.
  */
 
-class KeyEventActionTypeViewModel(private val mDeviceInfoRepository: DeviceInfoRepository) : ViewModel() {
+class KeyEventActionTypeViewModel(private val mDeviceInfoRepository: DeviceInfoRepository
+) : ViewModel() {
 
     val keyCode = MutableLiveData<String>(null)
 
@@ -111,7 +112,8 @@ class KeyEventActionTypeViewModel(private val mDeviceInfoRepository: DeviceInfoR
     }
 
     @Suppress("UNCHECKED_CAST")
-    class Factory(private val mDeviceInfoRepository: DeviceInfoRepository) : ViewModelProvider.NewInstanceFactory() {
+    class Factory(private val mDeviceInfoRepository: DeviceInfoRepository
+    ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             return KeyEventActionTypeViewModel(mDeviceInfoRepository) as T

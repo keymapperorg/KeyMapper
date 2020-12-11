@@ -69,7 +69,12 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
         InjectorUtils.provideFingerprintGestureViewModel(requireContext())
     }
 
-    private lateinit var mBinding: FragmentHomeBinding
+    /**
+     * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
+     */
+    private var _binding: FragmentHomeBinding? = null
+    private val mBinding: FragmentHomeBinding
+        get() = _binding!!
 
     private val mExpanded = MutableLiveData(false)
     private val mCollapsedStatusState = MutableLiveData(StatusLayout.State.ERROR)
@@ -188,9 +193,19 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
         savedInstanceState: Bundle?
     ): View {
         FragmentHomeBinding.inflate(inflater, container, false).apply {
-            mBinding = this
             lifecycleOwner = this@HomeFragment
 
+            _binding = this
+
+
+            return this.root
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        mBinding.apply {
             mPagerAdapter = HomePagerAdapter(this@HomeFragment)
             viewPager.adapter = mPagerAdapter
 
@@ -229,17 +244,20 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                     }
 
                     R.id.action_enable -> {
-                        mKeyMapListViewModel.enableKeymaps(*mKeyMapListViewModel.selectionProvider.selectedIds)
+                        mKeyMapListViewModel
+                            .enableKeymaps(*mKeyMapListViewModel.selectionProvider.selectedIds)
                         true
                     }
 
                     R.id.action_disable -> {
-                        mKeyMapListViewModel.disableKeymaps(*mKeyMapListViewModel.selectionProvider.selectedIds)
+                        mKeyMapListViewModel
+                            .disableKeymaps(*mKeyMapListViewModel.selectionProvider.selectedIds)
                         true
                     }
 
                     R.id.action_duplicate_keymap -> {
-                        mKeyMapListViewModel.duplicate(*mKeyMapListViewModel.selectionProvider.selectedIds)
+                        mKeyMapListViewModel
+                            .duplicate(*mKeyMapListViewModel.selectionProvider.selectedIds)
                         true
                     }
 
@@ -268,15 +286,16 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                 }
             }
 
-            mKeyMapListViewModel.selectionProvider.isSelectable.observe(viewLifecycleOwner, { isSelectable ->
-                viewPager.isUserInputEnabled = !isSelectable
+            mKeyMapListViewModel.selectionProvider.isSelectable
+                .observe(viewLifecycleOwner, { isSelectable ->
+                    viewPager.isUserInputEnabled = !isSelectable
 
-                if (isSelectable) {
-                    appBar.replaceMenu(R.menu.menu_multi_select)
-                } else {
-                    appBar.replaceMenu(R.menu.menu_home)
-                }
-            })
+                    if (isSelectable) {
+                        appBar.replaceMenu(R.menu.menu_multi_select)
+                    } else {
+                        appBar.replaceMenu(R.menu.menu_home)
+                    }
+                })
 
             isSelectable = mKeyMapListViewModel.selectionProvider.isSelectable
             selectionCount = mKeyMapListViewModel.selectionProvider.selectedCount
@@ -359,7 +378,8 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                 }
             })
 
-            isFingerprintGestureDetectionAvailable = AppPreferences.isFingerprintGestureDetectionAvailable
+            isFingerprintGestureDetectionAvailable =
+                AppPreferences.isFingerprintGestureDetectionAvailable
 
             updateStatusLayouts()
 
@@ -407,8 +427,6 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                         mRecoverFailureDelegate)
                 }
             })
-
-            return this.root
         }
     }
 
@@ -427,15 +445,18 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
         }
     }
 
+    override fun onDestroyView() {
+        mBinding.viewPager.unregisterOnPageChangeCallback(mOnPageChangeCallback)
+        _binding = null
+        super.onDestroyView()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
 
         requireActivity().unregisterReceiver(mBroadcastReceiver)
         requireContext().defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
 
-        if (::mBinding.isInitialized) {
-            mBinding.viewPager.unregisterOnPageChangeCallback(mOnPageChangeCallback)
-        }
     }
 
     override fun onSharedPreferenceChanged(preferences: SharedPreferences?, key: String?) {
@@ -444,7 +465,9 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                 mBinding.showNewGuiKeyboardAd = AppPreferences.showGuiKeyboardAd
 
             str(R.string.key_pref_fingerprint_gesture_available) -> {
-                mBinding.isFingerprintGestureDetectionAvailable = AppPreferences.isFingerprintGestureDetectionAvailable
+                mBinding.isFingerprintGestureDetectionAvailable =
+                    AppPreferences.isFingerprintGestureDetectionAvailable
+
                 mPagerAdapter.notifyDataSetChanged()
             }
         }

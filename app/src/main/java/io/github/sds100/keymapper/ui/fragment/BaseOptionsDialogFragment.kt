@@ -46,6 +46,13 @@ abstract class BaseOptionsDialogFragment<BINDING : ViewDataBinding, O : BaseOpti
         }
     }
 
+    /**
+     * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
+     */
+    private var _binding: BINDING? = null
+    val binding: BINDING
+        get() = _binding!!
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -55,7 +62,19 @@ abstract class BaseOptionsDialogFragment<BINDING : ViewDataBinding, O : BaseOpti
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         bind(inflater, container).apply {
             lifecycleOwner = viewLifecycleOwner
+            _binding = this
 
+            return root
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val dialog = requireDialog() as BottomSheetDialog
+        dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+
+        binding.apply {
             optionsViewModel.checkBoxModels.observe(viewLifecycleOwner, {
                 mController.checkBoxModels = it
             })
@@ -71,16 +90,7 @@ abstract class BaseOptionsDialogFragment<BINDING : ViewDataBinding, O : BaseOpti
 
             setRecyclerViewAdapter(this, mController.adapter)
             subscribeCustomUi(this)
-
-            return root
         }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        val dialog = requireDialog() as BottomSheetDialog
-        dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -95,6 +105,11 @@ abstract class BaseOptionsDialogFragment<BINDING : ViewDataBinding, O : BaseOpti
         savedInstanceState ?: return
 
         optionsViewModel.restoreState(savedInstanceState)
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     abstract fun subscribeCustomUi(binding: BINDING)

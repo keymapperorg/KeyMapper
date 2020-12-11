@@ -24,6 +24,7 @@ import io.github.sds100.keymapper.util.*
 /**
  * Created by sds100 on 27/06/2020.
  */
+//TODO inherit base options dialog fragment
 class FingerprintGestureMapOptionsFragment : BottomSheetDialogFragment() {
 
     companion object {

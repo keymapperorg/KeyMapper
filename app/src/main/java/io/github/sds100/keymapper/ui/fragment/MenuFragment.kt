@@ -21,7 +21,8 @@ import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.util.*
 import splitties.alertdialog.appcompat.*
 
-class MenuFragment : BottomSheetDialogFragment(), SharedPreferences.OnSharedPreferenceChangeListener {
+class MenuFragment : BottomSheetDialogFragment(),
+    SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val mViewModel: MenuFragmentViewModel by activityViewModels {
         InjectorUtils.provideMenuFragmentViewModel(requireContext())
@@ -52,6 +53,13 @@ class MenuFragment : BottomSheetDialogFragment(), SharedPreferences.OnSharedPref
         }
     }
 
+    /**
+     * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
+     */
+    private var _binding: FragmentMenuBinding? = null
+    val binding: FragmentMenuBinding
+        get() = _binding!!
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -69,7 +77,19 @@ class MenuFragment : BottomSheetDialogFragment(), SharedPreferences.OnSharedPref
         FragmentMenuBinding.inflate(inflater, container, false).apply {
 
             lifecycleOwner = viewLifecycleOwner
+            _binding = this
 
+            return this.root
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val dialog = requireDialog() as BottomSheetDialog
+        dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+
+        binding.apply {
             keymapsPaused = mKeymapsPaused
             accessibilityServiceEnabled = mAccessibilityServiceEnabled
 
@@ -135,16 +155,12 @@ class MenuFragment : BottomSheetDialogFragment(), SharedPreferences.OnSharedPref
                     dismiss()
                 }
             }
-
-            return this.root
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        val dialog = requireDialog() as BottomSheetDialog
-        dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     override fun onDestroy() {

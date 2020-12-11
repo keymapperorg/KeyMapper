@@ -1,9 +1,6 @@
 package io.github.sds100.keymapper.ui.fragment
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -52,44 +49,7 @@ class ChooseConstraintFragment : DefaultRecyclerViewFragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-
-        mViewModel.eventStream.observe(viewLifecycleOwner, { event ->
-            when (event) {
-                is ChoosePackage -> {
-                    val direction = ChooseConstraintFragmentDirections.actionChooseConstraintListFragmentToAppListFragment()
-                    findNavController().navigate(direction)
-                }
-
-                is ChooseBluetoothDevice -> {
-                    val direction =
-                        ChooseConstraintFragmentDirections.actionChooseConstraintListFragmentToBluetoothDevicesFragment()
-
-                    findNavController().navigate(direction)
-                }
-
-                is OkDialog -> {
-                    requireContext().alertDialog {
-                        messageResource = event.message
-
-                        okButton {
-                            event.onOk.invoke()
-                        }
-
-                        show()
-                    }
-                }
-
-                is SelectConstraint -> {
-                    returnResult(EXTRA_CONSTRAINT to event.constraint)
-                }
-            }
-        })
-
-        return super.onCreateView(inflater, container, savedInstanceState)
-    }
-
-    override fun subscribeList(binding: FragmentRecyclerviewBinding) {
+    override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
         mViewModel.constraintsSortedByCategory.observe(viewLifecycleOwner, { modelList ->
             binding.state = modelList
 
@@ -122,6 +82,38 @@ class ChooseConstraintFragment : DefaultRecyclerViewFragment() {
                             }
                         }
                     }
+                }
+            }
+        })
+
+        mViewModel.eventStream.observe(viewLifecycleOwner, { event ->
+            when (event) {
+                is ChoosePackage -> {
+                    val direction = ChooseConstraintFragmentDirections.actionChooseConstraintListFragmentToAppListFragment()
+                    findNavController().navigate(direction)
+                }
+
+                is ChooseBluetoothDevice -> {
+                    val direction =
+                        ChooseConstraintFragmentDirections.actionChooseConstraintListFragmentToBluetoothDevicesFragment()
+
+                    findNavController().navigate(direction)
+                }
+
+                is OkDialog -> {
+                    requireContext().alertDialog {
+                        messageResource = event.message
+
+                        okButton {
+                            event.onOk.invoke()
+                        }
+
+                        show()
+                    }
+                }
+
+                is SelectConstraint -> {
+                    returnResult(EXTRA_CONSTRAINT to event.constraint)
                 }
             }
         })

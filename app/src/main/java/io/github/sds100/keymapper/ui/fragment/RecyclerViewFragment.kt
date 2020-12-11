@@ -75,21 +75,27 @@ abstract class RecyclerViewFragment<BINDING : ViewDataBinding> : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = bind(inflater, container)
-
-        subscribeList(binding)
-        setupSearchView()
-
-        appBar.isVisible = isAppBarVisible
-
-        appBar.setNavigationOnClickListener {
-            findNavController().navigateUp()
-        }
-
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            findNavController().navigateUp()
-        }
-
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.apply {
+            subscribeUi(binding)
+            setupSearchView()
+
+            appBar.isVisible = isAppBarVisible
+
+            appBar.setNavigationOnClickListener {
+                findNavController().navigateUp()
+            }
+
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+                findNavController().navigateUp()
+            }
+
+        }
     }
 
     fun returnResult(vararg extras: Pair<String, Any?>) {
@@ -129,6 +135,6 @@ abstract class RecyclerViewFragment<BINDING : ViewDataBinding> : Fragment() {
     }
 
     open fun onSearchQuery(query: String?) {}
-    abstract fun subscribeList(binding: BINDING)
+    abstract fun subscribeUi(binding: BINDING)
     abstract fun bind(inflater: LayoutInflater, container: ViewGroup?): BINDING
 }

@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.ui.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -22,11 +23,25 @@ abstract class ConstraintListFragment : Fragment() {
 
     abstract val constraintListViewModel: ConstraintListViewModel
 
+    /**
+     * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
+     */
+    private var _binding: FragmentConstraintListBinding? = null
+    val binding: FragmentConstraintListBinding
+        get() = _binding!!
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
         FragmentConstraintListBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             viewModel = constraintListViewModel
 
+            _binding = this
+        }.root
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.apply {
             setOnAddConstraintClick {
                 val direction = NavAppDirections.actionGlobalChooseConstraint(CHOOSE_CONSTRAINT_REQUEST_KEY)
                 findNavController().navigate(direction)
@@ -44,12 +59,19 @@ abstract class ConstraintListFragment : Fragment() {
             })
 
             subscribeConstraintsList()
-        }.root
+
+        }
+    }
 
     override fun onResume() {
         super.onResume()
 
         constraintListViewModel.rebuildModels()
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     private fun FragmentConstraintListBinding.subscribeConstraintsList() {
