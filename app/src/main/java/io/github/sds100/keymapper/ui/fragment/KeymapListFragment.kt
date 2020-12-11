@@ -13,7 +13,7 @@ import io.github.sds100.keymapper.data.model.KeymapListItemModel
 import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
 import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
-import io.github.sds100.keymapper.keymapSimple
+import io.github.sds100.keymapper.keymap
 import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
 import io.github.sds100.keymapper.ui.callback.SelectionCallback
 import io.github.sds100.keymapper.util.*
@@ -114,7 +114,7 @@ class KeymapListFragment : DefaultRecyclerViewFragment() {
 
         override fun buildModels() {
             keymapList.forEach {
-                keymapSimple {
+                keymap {
                     id(it.id)
                     model(it)
                     isSelectable(selectionProvider.isSelectable.value)
