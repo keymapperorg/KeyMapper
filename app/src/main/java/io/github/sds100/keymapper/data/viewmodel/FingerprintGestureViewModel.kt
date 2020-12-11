@@ -17,10 +17,17 @@ class FingerprintGestureViewModel(
 ) : ViewModel() {
 
     private val mFingerprintGestureMaps =
-        combine(mRepository.swipeDown, mRepository.swipeUp) { swipeDown, swipeUp ->
+        combine(
+            mRepository.swipeDown,
+            mRepository.swipeUp,
+            mRepository.swipeLeft,
+            mRepository.swipeRight
+        ) { swipeDown, swipeUp, swipeLeft, swipeRight ->
             mapOf(
                 FingerprintGestureUtils.SWIPE_DOWN to swipeDown,
-                FingerprintGestureUtils.SWIPE_UP to swipeUp
+                FingerprintGestureUtils.SWIPE_UP to swipeUp,
+                FingerprintGestureUtils.SWIPE_LEFT to swipeLeft,
+                FingerprintGestureUtils.SWIPE_RIGHT to swipeRight
             )
         }
 

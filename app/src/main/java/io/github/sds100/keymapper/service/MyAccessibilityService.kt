@@ -107,7 +107,8 @@ class MyAccessibilityService : AccessibilityService(),
                 }
 
                 BluetoothDevice.ACTION_ACL_CONNECTED, BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
-                    val device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE) ?: return
+                    val device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
+                        ?: return
 
                     if (intent.action == BluetoothDevice.ACTION_ACL_DISCONNECTED) {
                         mConnectedBtAddresses.remove(device.address)
@@ -360,6 +361,7 @@ class MyAccessibilityService : AccessibilityService(),
                 }
             }
         }
+
     }
 
     override fun onInterrupt() {}

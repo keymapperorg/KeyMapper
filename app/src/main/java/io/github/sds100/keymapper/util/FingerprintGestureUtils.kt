@@ -12,41 +12,23 @@ import splitties.bitflags.hasFlag
 object FingerprintGestureUtils {
     const val SWIPE_DOWN = "swipe_down"
     const val SWIPE_UP = "swipe_up"
+    const val SWIPE_LEFT = "swipe_left"
+    const val SWIPE_RIGHT = "swipe_right"
 
-    private const val CHOOSE_ACTION_SWIPE_DOWN_REQUEST_KEY = "request_choose_action_swipe_down"
-    private const val CHOOSE_ACTION_SWIPE_UP_REQUEST_KEY = "request_choose_action_swipe_up"
-
-    private const val OPTIONS_SWIPE_DOWN_REQUEST_KEY = "request_options_swipe_down"
-    private const val OPTIONS_SWIPE_UP_REQUEST_KEY = "request_options_swipe_up"
-
-    private const val ADD_CONSTRAINT_SWIPE_DOWN_REQUEST_KEY = "request_add_constraint_swipe_down"
-    private const val ADD_CONSTRAINT_SWIPE_UP_REQUEST_KEY = "request_add_constraint_swipe_up"
-
-    val GESTURES = arrayOf(SWIPE_DOWN, SWIPE_UP)
+    val GESTURES = arrayOf(SWIPE_DOWN, SWIPE_UP, SWIPE_LEFT, SWIPE_RIGHT)
 
     val PREF_KEYS = mapOf(
         SWIPE_DOWN to DataStoreKeys.FINGERPRINT_GESTURE_SWIPE_DOWN,
-        SWIPE_UP to DataStoreKeys.FINGERPRINT_GESTURE_SWIPE_UP
+        SWIPE_UP to DataStoreKeys.FINGERPRINT_GESTURE_SWIPE_UP,
+        SWIPE_LEFT to DataStoreKeys.FINGERPRINT_GESTURE_SWIPE_LEFT,
+        SWIPE_RIGHT to DataStoreKeys.FINGERPRINT_GESTURE_SWIPE_RIGHT
     )
 
     val HEADERS = mapOf(
         SWIPE_DOWN to R.string.header_fingerprint_gesture_down,
-        SWIPE_UP to R.string.header_fingerprint_gesture_up
-    )
-
-    val CHOOSE_ACTION_REQUEST_KEYS = mapOf(
-        SWIPE_DOWN to CHOOSE_ACTION_SWIPE_DOWN_REQUEST_KEY,
-        SWIPE_UP to CHOOSE_ACTION_SWIPE_UP_REQUEST_KEY
-    )
-
-    val OPTIONS_REQUEST_KEYS = mapOf(
-        SWIPE_DOWN to OPTIONS_SWIPE_DOWN_REQUEST_KEY,
-        SWIPE_UP to OPTIONS_SWIPE_UP_REQUEST_KEY
-    )
-
-    val ADD_CONSTRAINT_REQUEST_KEYS = mapOf(
-        SWIPE_DOWN to ADD_CONSTRAINT_SWIPE_DOWN_REQUEST_KEY,
-        SWIPE_UP to ADD_CONSTRAINT_SWIPE_UP_REQUEST_KEY
+        SWIPE_UP to R.string.header_fingerprint_gesture_up,
+        SWIPE_LEFT to R.string.header_fingerprint_gesture_left,
+        SWIPE_RIGHT to R.string.header_fingerprint_gesture_right
     )
 }
 

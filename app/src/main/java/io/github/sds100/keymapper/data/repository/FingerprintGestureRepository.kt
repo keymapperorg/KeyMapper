@@ -34,6 +34,14 @@ class FingerprintGestureRepository constructor(private val mDataStore: DataStore
         prefs.getGesture(DataStoreKeys.FINGERPRINT_GESTURE_SWIPE_UP)
     }
 
+    val swipeLeft: Flow<FingerprintGestureMap> = mDataStore.data.map { prefs ->
+        prefs.getGesture(DataStoreKeys.FINGERPRINT_GESTURE_SWIPE_LEFT)
+    }
+
+    val swipeRight: Flow<FingerprintGestureMap> = mDataStore.data.map { prefs ->
+        prefs.getGesture(DataStoreKeys.FINGERPRINT_GESTURE_SWIPE_RIGHT)
+    }
+
     suspend fun editGesture(
         gestureId: String,
         block: (old: FingerprintGestureMap) -> FingerprintGestureMap
