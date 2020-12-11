@@ -7,7 +7,8 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.CheckBoxListItemModel
 import io.github.sds100.keymapper.data.model.SliderListItemModel
 import io.github.sds100.keymapper.data.model.Trigger
-import io.github.sds100.keymapper.data.model.options.BehaviorOption
+import io.github.sds100.keymapper.data.model.options.BoolOption
+import io.github.sds100.keymapper.data.model.options.IntOption
 import io.github.sds100.keymapper.data.model.options.TriggerKeyOptions
 
 /**
@@ -17,11 +18,12 @@ class TriggerKeyOptionsViewModel : BaseOptionsDialogViewModel<TriggerKeyOptions>
 
     override val stateKey = "state_trigger_options"
 
-    override fun createSliderListItemModel(option: BehaviorOption<Int>): SliderListItemModel {
-        throw Exception("Don't know how to create a SliderListItemModel for this option $option.id")
+    override fun createSliderListItemModel(option: IntOption): SliderListItemModel {
+        throw Exception(
+            "Don't know how to create a SliderListItemModel for this option $option.id")
     }
 
-    override fun createCheckboxListItemModel(option: BehaviorOption<Boolean>) = when (option.id) {
+    override fun createCheckboxListItemModel(option: BoolOption) = when (option.id) {
         TriggerKeyOptions.ID_DO_NOT_CONSUME_KEY_EVENT ->
             CheckBoxListItemModel(
                 id = option.id,
@@ -29,7 +31,8 @@ class TriggerKeyOptionsViewModel : BaseOptionsDialogViewModel<TriggerKeyOptions>
                 isChecked = option.value
             )
 
-        else -> throw Exception("Don't know how to create a CheckboxListItemModel for this option $option.id")
+        else -> throw Exception(
+            "Don't know how to create a CheckboxListItemModel for this option $option.id")
     }
 
     val shortPress = MediatorLiveData<Boolean>().apply {

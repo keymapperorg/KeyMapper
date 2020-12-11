@@ -21,13 +21,14 @@ abstract class BaseOptionsDialogViewModel<O : BaseOptions<*>> : BaseOptionsViewM
     }
 
     fun saveState(outState: Bundle) {
-        outState.putSerializable(stateKey, options.value)
+        outState.putParcelable(stateKey, options.value)
     }
 
     @Suppress("UNCHECKED_CAST")
     fun restoreState(state: Bundle) {
-        val options = state.getSerializable(stateKey) as O
-        setOptions(options)
+        state.getParcelable<O>(stateKey)?.let {
+            setOptions(it)
+        }
     }
 
     abstract val stateKey: String

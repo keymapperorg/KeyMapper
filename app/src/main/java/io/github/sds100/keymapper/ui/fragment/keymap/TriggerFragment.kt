@@ -44,13 +44,13 @@ import kotlin.coroutines.suspendCoroutine
  * Created by sds100 on 25/11/20.
  */
 
-class TriggerFragment(private val mKeymapId: Long) : Fragment() {
+class TriggerFragment : Fragment() {
 
     private lateinit var mBinding: FragmentTriggerBinding
 
     private val triggerViewModel: TriggerViewModel by lazy {
         navGraphViewModels<ConfigKeymapViewModel>(R.id.nav_config_keymap) {
-            InjectorUtils.provideConfigKeymapViewModel(requireContext(), mKeymapId)
+            InjectorUtils.provideConfigKeymapViewModel(requireContext())
         }.value.triggerViewModel
     }
 

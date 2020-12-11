@@ -1,18 +1,22 @@
 package io.github.sds100.keymapper.data.model.options
 
 import io.github.sds100.keymapper.data.model.Action
-import io.github.sds100.keymapper.data.model.getData
-import io.github.sds100.keymapper.data.model.options.BehaviorOption.Companion.applyBehaviorOption
-import io.github.sds100.keymapper.util.ActionUtils
-import io.github.sds100.keymapper.util.result.valueOrNull
-import splitties.bitflags.hasFlag
-import java.io.Serializable
+import io.github.sds100.keymapper.data.model.options.BoolOption.Companion.saveBoolOption
+import io.github.sds100.keymapper.data.model.options.IntOption.Companion.saveIntOption
+import io.github.sds100.keymapper.util.*
+import kotlinx.android.parcel.Parcelize
 
 /**
  * Created by sds100 on 22/11/20.
  */
-class ActionShortcutOptions(action: Action,
-                            actionCount: Int) : Serializable, BaseOptions<Action> {
+@Parcelize
+class ActionShortcutOptions(
+    override val id: String,
+    val showVolumeUi: BoolOption,
+    val showPerformingActionToast: BoolOption,
+    val delayBeforeNextAction: IntOption,
+    val multiplier: IntOption
+) : BaseOptions<Action> {
 
     companion object {
         const val ID_SHOW_VOLUME_UI = "show_volume_ui"
@@ -21,43 +25,34 @@ class ActionShortcutOptions(action: Action,
         const val ID_DELAY_BEFORE_NEXT_ACTION = "delay_before_next_action"
     }
 
-    override val id = action.uid
+    constructor(action: Action,
+                actionCount: Int) : this(
+        id = action.uid,
 
-    val showVolumeUi = BehaviorOption(
-        id = ID_SHOW_VOLUME_UI,
-        value = action.flags.hasFlag(Action.ACTION_FLAG_SHOW_VOLUME_UI),
-        isAllowed = ActionUtils.isVolumeAction(action.data)
-    )
+        showVolumeUi = BoolOption(
+            id = ID_SHOW_VOLUME_UI,
+            value = action.showVolumeUi,
+            isAllowed = ActionUtils.isVolumeAction(action.data)
+        ),
 
-    val showPerformingActionToast = BehaviorOption(
-        id = ID_SHOW_PERFORMING_ACTION_TOAST,
-        value = action.flags.hasFlag(Action.ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST),
-        isAllowed = true
-    )
+        showPerformingActionToast = BoolOption(
+            id = ID_SHOW_PERFORMING_ACTION_TOAST,
+            value = action.showPerformingActionToast,
+            isAllowed = true
+        ),
 
-    private val delayBeforeNextAction: BehaviorOption<Int>
+        multiplier = IntOption(
+            id = ID_MULTIPLIER,
+            value = action.multiplier ?: IntOption.DEFAULT,
+            isAllowed = true
+        ),
 
-    private val multiplier = BehaviorOption(
-        id = ID_MULTIPLIER,
-        value = action.extras.getData(Action.EXTRA_MULTIPLIER).valueOrNull()?.toInt() ?: BehaviorOption.DEFAULT,
-        isAllowed = true
-    )
-
-    /*
-     It is very important that any new options are only allowed with a valid combination of other options. Make sure
-     the "isAllowed" property considers all the other options.
-     */
-
-    init {
-        val delayBeforeNextActionValue =
-            action.extras.getData(Action.EXTRA_DELAY_BEFORE_NEXT_ACTION).valueOrNull()?.toInt()
-
-        delayBeforeNextAction = BehaviorOption(
+        delayBeforeNextAction = IntOption(
             id = ID_DELAY_BEFORE_NEXT_ACTION,
-            value = delayBeforeNextActionValue ?: BehaviorOption.DEFAULT,
+            value = action.delayBeforeNextAction ?: IntOption.DEFAULT,
             isAllowed = actionCount > 0
         )
-    }
+    )
 
     override val intOptions = listOf(
         delayBeforeNextAction,
@@ -90,12 +85,12 @@ class ActionShortcutOptions(action: Action,
 
     override fun apply(old: Action): Action {
         val newFlags = old.flags
-            .applyBehaviorOption(showVolumeUi, Action.ACTION_FLAG_SHOW_VOLUME_UI)
-            .applyBehaviorOption(showPerformingActionToast, Action.ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST)
+            .saveBoolOption(showVolumeUi, Action.ACTION_FLAG_SHOW_VOLUME_UI)
+            .saveBoolOption(showPerformingActionToast, Action.ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST)
 
         val newExtras = old.extras
-            .applyBehaviorOption(multiplier, Action.EXTRA_MULTIPLIER)
-            .applyBehaviorOption(delayBeforeNextAction, Action.EXTRA_DELAY_BEFORE_NEXT_ACTION)
+            .saveIntOption(multiplier, Action.EXTRA_MULTIPLIER)
+            .saveIntOption(delayBeforeNextAction, Action.EXTRA_DELAY_BEFORE_NEXT_ACTION)
 
         newExtras.removeAll {
             it.id in arrayOf(Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR, Action.EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR)

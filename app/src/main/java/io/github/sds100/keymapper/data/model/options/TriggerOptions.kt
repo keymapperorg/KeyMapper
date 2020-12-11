@@ -3,16 +3,28 @@ package io.github.sds100.keymapper.data.model.options
 import io.github.sds100.keymapper.data.model.Extra
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.model.getData
-import io.github.sds100.keymapper.data.model.options.BehaviorOption.Companion.applyBehaviorOption
+import io.github.sds100.keymapper.data.model.options.BoolOption.Companion.saveBoolOption
+import io.github.sds100.keymapper.data.model.options.IntOption.Companion.saveIntOption
 import io.github.sds100.keymapper.util.KeyEventUtils
 import io.github.sds100.keymapper.util.result.valueOrNull
+import kotlinx.android.parcel.Parcelize
 import splitties.bitflags.hasFlag
 
 /**
  * Created by sds100 on 25/11/20.
  */
 
-class TriggerOptions(trigger: Trigger) : BaseOptions<Trigger> {
+@Parcelize
+class TriggerOptions(
+    override val id: String = "trigger",
+    private val vibrate: BoolOption,
+    private val longPressDoubleVibration: BoolOption,
+    private val screenOffTrigger: BoolOption,
+    private val longPressDelay: IntOption,
+    private val doublePressDelay: IntOption,
+    private val vibrateDuration: IntOption,
+    private val sequenceTriggerTimeout: IntOption
+) : BaseOptions<Trigger> {
 
     companion object {
         const val ID_LONG_PRESS_DELAY = "long_press_delay"
@@ -24,75 +36,60 @@ class TriggerOptions(trigger: Trigger) : BaseOptions<Trigger> {
         const val ID_SCREEN_OFF_TRIGGER = "screen_off_trigger"
     }
 
-    val vibrate = BehaviorOption(
-        id = ID_VIBRATE,
-        value = trigger.flags.hasFlag(Trigger.TRIGGER_FLAG_VIBRATE),
-        isAllowed = true
-    )
+    constructor(trigger: Trigger) : this(
+        vibrate = BoolOption(
+            id = ID_VIBRATE,
+            value = trigger.flags.hasFlag(Trigger.TRIGGER_FLAG_VIBRATE),
+            isAllowed = true
+        ),
+        longPressDoubleVibration = BoolOption(
+            id = ID_LONG_PRESS_DOUBLE_VIBRATION,
+            value = trigger.flags.hasFlag(Trigger.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION),
+            isAllowed = (trigger.keys.size == 1 || (trigger.mode == Trigger.PARALLEL))
+                && trigger.keys.getOrNull(0)?.clickType == Trigger.LONG_PRESS
+        ),
+        screenOffTrigger = BoolOption(
+            id = ID_SCREEN_OFF_TRIGGER,
+            value = trigger.flags.hasFlag(Trigger.TRIGGER_FLAG_SCREEN_OFF_TRIGGERS),
+            isAllowed = trigger.keys.isNotEmpty() && trigger.keys.all {
+                KeyEventUtils.GET_EVENT_LABEL_TO_KEYCODE.containsValue(it.keyCode)
+            }
+        ),
 
-    val longPressDoubleVibration = BehaviorOption(
-        id = ID_LONG_PRESS_DOUBLE_VIBRATION,
-        value = trigger.flags.hasFlag(Trigger.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION),
-        isAllowed = (trigger.keys.size == 1 || (trigger.mode == Trigger.PARALLEL))
-            && trigger.keys.getOrNull(0)?.clickType == Trigger.LONG_PRESS
-    )
-
-    val screenOffTrigger = BehaviorOption(
-        id = ID_SCREEN_OFF_TRIGGER,
-        value = trigger.flags.hasFlag(Trigger.TRIGGER_FLAG_SCREEN_OFF_TRIGGERS),
-        isAllowed = trigger.keys.isNotEmpty() && trigger.keys.all {
-            KeyEventUtils.GET_EVENT_LABEL_TO_KEYCODE.containsValue(it.keyCode)
-        }
-    )
-
-    val longPressDelay: BehaviorOption<Int>
-    val doublePressDelay: BehaviorOption<Int>
-    val vibrateDuration: BehaviorOption<Int>
-    val sequenceTriggerTimeout: BehaviorOption<Int>
-
-    override val id = "trigger"
-
-    /*
-     It is very important that any new options are only allowed with a valid combination of other options. Make sure
-     the "isAllowed" property considers all the other options.
-     */
-    init {
-
-        val longPressDelayValue = trigger.extras.getData(Trigger.EXTRA_LONG_PRESS_DELAY).valueOrNull()?.toInt()
-
-        longPressDelay = BehaviorOption(
+        longPressDelay = IntOption(
             id = ID_LONG_PRESS_DELAY,
-            value = longPressDelayValue ?: BehaviorOption.DEFAULT,
+            value = trigger.extras.getData(Trigger.EXTRA_LONG_PRESS_DELAY).valueOrNull()?.toInt()
+                ?: IntOption.DEFAULT,
             isAllowed = trigger.keys.any { it.clickType == Trigger.LONG_PRESS }
-        )
+        ),
 
-        val doublePressDelayValue = trigger.extras.getData(Trigger.EXTRA_DOUBLE_PRESS_DELAY).valueOrNull()?.toInt()
-
-        doublePressDelay = BehaviorOption(
+        doublePressDelay = IntOption(
             id = ID_DOUBLE_PRESS_DELAY,
-            value = doublePressDelayValue ?: BehaviorOption.DEFAULT,
+            value = trigger.extras.getData(Trigger.EXTRA_DOUBLE_PRESS_DELAY).valueOrNull()?.toInt()
+                ?: IntOption.DEFAULT,
             isAllowed = trigger.keys.any { it.clickType == Trigger.DOUBLE_PRESS }
-        )
+        ),
 
-        val vibrateDurationValue = trigger.extras.getData(Trigger.EXTRA_VIBRATION_DURATION).valueOrNull()?.toInt()
-
-        vibrateDuration = BehaviorOption(
+        vibrateDuration = IntOption(
             id = ID_VIBRATE_DURATION,
-            value = vibrateDurationValue ?: BehaviorOption.DEFAULT,
-            isAllowed = vibrate.value || longPressDoubleVibration.value
-        )
+            value = trigger.extras.getData(Trigger.EXTRA_VIBRATION_DURATION).valueOrNull()?.toInt()
+                ?: IntOption.DEFAULT,
+            isAllowed = trigger.flags.hasFlag(Trigger.TRIGGER_FLAG_VIBRATE)
+                || trigger.flags.hasFlag(Trigger.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION)
+        ),
 
-        val sequenceTriggerTimeoutValue =
-            trigger.extras.getData(Trigger.EXTRA_SEQUENCE_TRIGGER_TIMEOUT).valueOrNull()?.toInt()
-
-        sequenceTriggerTimeout = BehaviorOption(
+        sequenceTriggerTimeout = IntOption(
             id = ID_SEQUENCE_TRIGGER_TIMEOUT,
-            value = sequenceTriggerTimeoutValue ?: BehaviorOption.DEFAULT,
-            isAllowed = !trigger.keys.isNullOrEmpty() && trigger.keys.size > 1 && trigger.mode == Trigger.SEQUENCE
+            value =
+            trigger.extras.getData(Trigger.EXTRA_SEQUENCE_TRIGGER_TIMEOUT).valueOrNull()?.toInt()
+                ?: IntOption.DEFAULT,
+            isAllowed = !trigger.keys.isNullOrEmpty()
+                && trigger.keys.size > 1
+                && trigger.mode == Trigger.SEQUENCE
         )
-    }
+    )
 
-    override val intOptions: List<BehaviorOption<Int>>
+    override val intOptions: List<IntOption>
         get() = listOf(
             longPressDelay,
             doublePressDelay,
@@ -100,7 +97,7 @@ class TriggerOptions(trigger: Trigger) : BaseOptions<Trigger> {
             sequenceTriggerTimeout
         )
 
-    override val boolOptions: List<BehaviorOption<Boolean>>
+    override val boolOptions: List<BoolOption>
         get() = listOf(
             vibrate,
             longPressDoubleVibration,
@@ -153,16 +150,16 @@ class TriggerOptions(trigger: Trigger) : BaseOptions<Trigger> {
     }
 
     private fun applyToTriggerFlags(flags: Int): Int {
-        return flags.applyBehaviorOption(vibrate, Trigger.TRIGGER_FLAG_VIBRATE)
-            .applyBehaviorOption(longPressDoubleVibration, Trigger.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION)
-            .applyBehaviorOption(screenOffTrigger, Trigger.TRIGGER_FLAG_SCREEN_OFF_TRIGGERS)
+        return flags.saveBoolOption(vibrate, Trigger.TRIGGER_FLAG_VIBRATE)
+            .saveBoolOption(longPressDoubleVibration, Trigger.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION)
+            .saveBoolOption(screenOffTrigger, Trigger.TRIGGER_FLAG_SCREEN_OFF_TRIGGERS)
     }
 
     private fun applyToTriggerExtras(extras: List<Extra>): List<Extra> {
         return extras
-            .applyBehaviorOption(vibrateDuration, Trigger.EXTRA_VIBRATION_DURATION)
-            .applyBehaviorOption(longPressDelay, Trigger.EXTRA_LONG_PRESS_DELAY)
-            .applyBehaviorOption(doublePressDelay, Trigger.EXTRA_DOUBLE_PRESS_DELAY)
-            .applyBehaviorOption(sequenceTriggerTimeout, Trigger.EXTRA_SEQUENCE_TRIGGER_TIMEOUT)
+            .saveIntOption(vibrateDuration, Trigger.EXTRA_VIBRATION_DURATION)
+            .saveIntOption(longPressDelay, Trigger.EXTRA_LONG_PRESS_DELAY)
+            .saveIntOption(doublePressDelay, Trigger.EXTRA_DOUBLE_PRESS_DELAY)
+            .saveIntOption(sequenceTriggerTimeout, Trigger.EXTRA_SEQUENCE_TRIGGER_TIMEOUT)
     }
 }

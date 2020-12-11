@@ -16,11 +16,11 @@ import io.github.sds100.keymapper.util.InjectorUtils
 /**
  * Created by sds100 on 29/11/20.
  */
-class TriggerOptionsFragment(private val mKeymapId: Long) : DefaultRecyclerViewFragment() {
+class TriggerOptionsFragment : DefaultRecyclerViewFragment() {
 
     val optionsViewModel: BaseOptionsViewModel<TriggerOptions> by lazy {
         navGraphViewModels<ConfigKeymapViewModel>(R.id.nav_config_keymap) {
-            InjectorUtils.provideConfigKeymapViewModel(requireContext(), mKeymapId)
+            InjectorUtils.provideConfigKeymapViewModel(requireContext())
         }.value.triggerViewModel.optionsViewModel
     }
 

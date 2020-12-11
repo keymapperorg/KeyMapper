@@ -112,10 +112,10 @@ class FingerprintGestureViewModel(
     }
 
     fun setOptions(options: FingerprintGestureMapOptions) = viewModelScope.launch {
-        mFingerprintGestureMaps.firstOrNull()?.get(options.gestureId)?.let {
-            val newMap = options.applyToFingerprintGestureMap(it)
+        mFingerprintGestureMaps.firstOrNull()?.get(options.id)?.let {
+            val newMap = options.apply(it)
 
-            mRepository.editGesture(options.gestureId) { newMap }
+            mRepository.editGesture(options.id) { newMap }
         }
     }
 

@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -38,27 +37,18 @@ class ConfigKeymapFragment : Fragment() {
     private val mArgs by navArgs<ConfigKeymapFragmentArgs>()
 
     private val mViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap) {
-        InjectorUtils.provideNewConfigKeymapViewModel(requireContext(), mArgs.keymapId)
-    }
-
-    private val mFragmentFactory = object : FragmentFactory() {
-        override fun instantiate(classLoader: ClassLoader, className: String) =
-            when (className) {
-                TriggerFragment::class.java.name -> TriggerFragment(mArgs.keymapId)
-                KeymapActionListFragment::class.java.name -> KeymapActionListFragment(mArgs.keymapId)
-                KeymapConstraintListFragment::class.java.name -> KeymapConstraintListFragment(mArgs.keymapId)
-                TriggerOptionsFragment::class.java.name -> TriggerOptionsFragment(mArgs.keymapId)
-
-                else -> super.instantiate(classLoader, className)
-            }
+        InjectorUtils.provideConfigKeymapViewModel(requireContext())
     }
 
     private lateinit var mRecoverFailureDelegate: RecoverFailureDelegate
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        childFragmentManager.fragmentFactory = mFragmentFactory
-
         super.onCreate(savedInstanceState)
+
+        //only load the keymap if opening this fragment for the first time
+        if (savedInstanceState == null) {
+            mViewModel.loadKeymap(mArgs.keymapId)
+        }
 
         mRecoverFailureDelegate = RecoverFailureDelegate(
             "ConfigKeymapFragment",
@@ -75,18 +65,21 @@ class ConfigKeymapFragment : Fragment() {
         }
 
         setFragmentResultListener(ConstraintListFragment.CHOOSE_CONSTRAINT_REQUEST_KEY) { _, result ->
-            val constraint = result.getSerializable(ChooseConstraintFragment.EXTRA_CONSTRAINT) as Constraint
-            mViewModel.constraintListViewModel.addConstraint(constraint)
+            result.getParcelable<Constraint>(ChooseConstraintFragment.EXTRA_CONSTRAINT)?.let {
+                mViewModel.constraintListViewModel.addConstraint(it)
+            }
         }
 
         setFragmentResultListener(KeymapActionOptionsFragment.REQUEST_KEY) { _, result ->
-            val options = result.getSerializable(BaseOptionsDialogFragment.EXTRA_OPTIONS) as KeymapActionOptions
-            mViewModel.actionListViewModel.setOptions(options)
+            result.getParcelable<KeymapActionOptions>(BaseOptionsDialogFragment.EXTRA_OPTIONS)?.let {
+                mViewModel.actionListViewModel.setOptions(it)
+            }
         }
 
         setFragmentResultListener(TriggerKeyOptionsFragment.REQUEST_KEY) { _, result ->
-            val options = result.getSerializable(BaseOptionsDialogFragment.EXTRA_OPTIONS) as TriggerKeyOptions
-            mViewModel.triggerViewModel.setTriggerKeyOptions(options)
+            result.getParcelable<TriggerKeyOptions>(BaseOptionsDialogFragment.EXTRA_OPTIONS)?.let {
+                mViewModel.triggerViewModel.setTriggerKeyOptions(it)
+            }
         }
     }
 
@@ -147,6 +140,20 @@ class ConfigKeymapFragment : Fragment() {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        mViewModel.saveState(outState)
+
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+
+        savedInstanceState ?: return
+
+        mViewModel.restoreState(savedInstanceState)
+    }
+
     private fun showOnBackPressedWarning() {
         requireContext().alertDialog {
             messageResource = R.string.dialog_message_are_you_sure_want_to_leave_without_saving
@@ -164,10 +171,10 @@ class ConfigKeymapFragment : Fragment() {
         intArray(R.array.config_keymap_fragments).map {
             when (it) {
 
-                int(R.integer.fragment_id_actions) -> it to { KeymapActionListFragment(mArgs.keymapId) }
-                int(R.integer.fragment_id_trigger) -> it to { TriggerFragment(mArgs.keymapId) }
-                int(R.integer.fragment_id_keymap_constraints) -> it to { KeymapConstraintListFragment(mArgs.keymapId) }
-                int(R.integer.fragment_id_trigger_options) -> it to { TriggerOptionsFragment(mArgs.keymapId) }
+                int(R.integer.fragment_id_actions) -> it to { KeymapActionListFragment() }
+                int(R.integer.fragment_id_trigger) -> it to { TriggerFragment() }
+                int(R.integer.fragment_id_keymap_constraints) -> it to { KeymapConstraintListFragment() }
+                int(R.integer.fragment_id_trigger_options) -> it to { TriggerOptionsFragment() }
                 int(R.integer.fragment_id_trigger_and_actions) -> it to { TriggerAndActionsFragment() }
                 int(R.integer.fragment_id_keymap_constraints_and_more) -> it to { ConstraintsAndOptionsFragment() }
                 int(R.integer.fragment_id_config_keymap_all) -> it to { AllFragments() }

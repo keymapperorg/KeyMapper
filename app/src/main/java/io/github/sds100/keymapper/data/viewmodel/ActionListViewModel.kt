@@ -130,16 +130,10 @@ abstract class ActionListViewModel<O : BaseOptions<Action>>(
         _actionList.value = newActionList ?: emptyList()
     }
 
-    /**
-     * Must call super
-     */
-    open fun saveState(outState: Bundle) {
+    fun saveState(outState: Bundle) {
         outState.putParcelableArray(stateKey, actionList.value?.toTypedArray())
     }
 
-    /**
-     * Must call super
-     */
     @Suppress("UNCHECKED_CAST")
     fun restoreState(state: Bundle) {
         _actionList.value = state.getParcelableArray(stateKey)?.toList() as List<Action>

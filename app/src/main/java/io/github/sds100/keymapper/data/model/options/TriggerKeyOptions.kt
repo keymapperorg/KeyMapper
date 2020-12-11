@@ -1,38 +1,37 @@
 package io.github.sds100.keymapper.data.model.options
 
 import io.github.sds100.keymapper.data.model.Trigger
-import io.github.sds100.keymapper.data.model.options.BehaviorOption.Companion.applyBehaviorOption
+import io.github.sds100.keymapper.data.model.options.BoolOption.Companion.saveBoolOption
+import kotlinx.android.parcel.Parcelize
 import splitties.bitflags.hasFlag
-import java.io.Serializable
 
+@Parcelize
 class TriggerKeyOptions(
-    key: Trigger.Key,
-    @Trigger.Mode mode: Int
-) : BaseOptions<Trigger.Key>, Serializable {
+    override val id: String,
+    val clickType: IntOption,
+    private val doNotConsumeKeyEvents: BoolOption
+) : BaseOptions<Trigger.Key> {
 
     companion object {
         const val ID_DO_NOT_CONSUME_KEY_EVENT = "do_not_consume_key_event"
         const val ID_CLICK_TYPE = "click_type"
     }
 
-    override val id: String = key.uniqueId
+    constructor(key: Trigger.Key, @Trigger.Mode mode: Int) : this(
+        id = key.uniqueId,
 
-    val clickType = BehaviorOption(
-        id = ID_CLICK_TYPE,
-        value = key.clickType,
-        isAllowed = mode == Trigger.SEQUENCE || mode == Trigger.UNDEFINED
+        clickType = IntOption(
+            id = ID_CLICK_TYPE,
+            value = key.clickType,
+            isAllowed = mode == Trigger.SEQUENCE || mode == Trigger.UNDEFINED
+        ),
+
+        doNotConsumeKeyEvents = BoolOption(
+            id = ID_DO_NOT_CONSUME_KEY_EVENT,
+            value = key.flags.hasFlag(Trigger.Key.FLAG_DO_NOT_CONSUME_KEY_EVENT),
+            isAllowed = true
+        )
     )
-
-    val doNotConsumeKeyEvents = BehaviorOption(
-        id = ID_DO_NOT_CONSUME_KEY_EVENT,
-        value = key.flags.hasFlag(Trigger.Key.FLAG_DO_NOT_CONSUME_KEY_EVENT),
-        isAllowed = true
-    )
-
-    /*
-     It is very important that any new options are only allowed with a valid combination of other options. Make sure
-     the "isAllowed" property considers all the other options.
-     */
 
     override fun setValue(id: String, value: Boolean): TriggerKeyOptions {
         when (id) {
@@ -50,14 +49,18 @@ class TriggerKeyOptions(
         return this
     }
 
-    override val intOptions: List<BehaviorOption<Int>>
+    override val intOptions: List<IntOption>
         get() = listOf()
 
-    override val boolOptions: List<BehaviorOption<Boolean>>
+    override val boolOptions: List<BoolOption>
         get() = listOf(doNotConsumeKeyEvents)
 
     override fun apply(old: Trigger.Key): Trigger.Key {
-        val newFlags = old.flags.applyBehaviorOption(doNotConsumeKeyEvents, Trigger.Key.FLAG_DO_NOT_CONSUME_KEY_EVENT)
+        val newFlags = old.flags.saveBoolOption(
+            doNotConsumeKeyEvents,
+            Trigger.Key.FLAG_DO_NOT_CONSUME_KEY_EVENT
+        )
+
         val newClickType = clickType.value
 
         return old.copy(flags = newFlags, clickType = newClickType)

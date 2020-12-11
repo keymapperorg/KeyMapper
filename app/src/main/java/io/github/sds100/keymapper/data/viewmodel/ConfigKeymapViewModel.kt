@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.data.viewmodel
 
+import android.os.Bundle
 import androidx.lifecycle.*
 import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.data.IPreferenceDataStore
@@ -23,13 +24,15 @@ import kotlinx.coroutines.launch
 
 class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
                             private val mDeviceInfoRepository: DeviceInfoRepository,
-                            preferenceDataStore: IPreferenceDataStore,
-                            private val mId: Long
+                            preferenceDataStore: IPreferenceDataStore
 ) : ViewModel(), IPreferenceDataStore by preferenceDataStore {
 
     companion object {
         const val NEW_KEYMAP_ID = -2L
+        private const val STATE_KEY = "config_keymap"
     }
+
+    private var mId = NEW_KEYMAP_ID
 
     val actionListViewModel = object : ActionListViewModel<KeymapActionOptions>(viewModelScope, mDeviceInfoRepository) {
         override val stateKey = "keymap_action_list_view_model"
@@ -62,7 +65,7 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
 
     val constraintListViewModel = ConstraintListViewModel(viewModelScope)
 
-    val isEnabled = MutableLiveData<Boolean>()
+    val isEnabled = MutableLiveData(false)
 
     private val _eventStream = LiveEvent<Event>().apply {
         addSource(constraintListViewModel.eventStream) {
@@ -87,50 +90,22 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
     val eventStream: LiveData<Event> = _eventStream
 
     init {
-        viewModelScope.launch {
-            if (mId == NEW_KEYMAP_ID) {
-                actionListViewModel.setActionList(emptyList())
-                triggerViewModel.setTrigger(Trigger())
-                constraintListViewModel.setConstraintList(emptyList(), Constraint.DEFAULT_MODE)
-                isEnabled.value = true
+        actionListViewModel.setActionList(emptyList())
+        triggerViewModel.setTrigger(Trigger())
+        constraintListViewModel.setConstraintList(emptyList(), Constraint.DEFAULT_MODE)
+        isEnabled.value = true
 
-            } else {
-                val keymap = mKeymapRepository.getKeymap(mId)
+        triggerViewModel.mode.observeForever {
+            actionListViewModel.invalidateOptions()
+        }
 
-                actionListViewModel.setActionList(keymap.actionList)
-                triggerViewModel.setTrigger(keymap.trigger)
-                constraintListViewModel.setConstraintList(keymap.constraintList, keymap.constraintMode)
-                isEnabled.value = keymap.isEnabled
-            }
-
-            triggerViewModel.mode.observeForever {
-                actionListViewModel.invalidateOptions()
-            }
-
-            triggerViewModel.keys.observeForever {
-                actionListViewModel.invalidateOptions()
-            }
+        triggerViewModel.keys.observeForever {
+            actionListViewModel.invalidateOptions()
         }
     }
 
     fun saveKeymap(scope: CoroutineScope) {
-        val actualId =
-            if (mId == NEW_KEYMAP_ID) {
-                0
-            } else {
-                mId
-            }
-
-        val trigger = triggerViewModel.createTrigger()
-
-        val keymap = KeyMap(
-            id = actualId,
-            trigger = trigger ?: Trigger(),
-            actionList = actionListViewModel.actionList.value ?: listOf(),
-            constraintList = constraintListViewModel.constraintList.value ?: listOf(),
-            constraintMode = constraintListViewModel.getConstraintMode(),
-            isEnabled = isEnabled.value ?: true
-        )
+        val keymap = createKeymap()
 
         scope.launch {
             if (mId == NEW_KEYMAP_ID) {
@@ -141,14 +116,61 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
         }
     }
 
+    private fun createKeymap(): KeyMap {
+        val actualId =
+            if (mId == NEW_KEYMAP_ID) {
+                0
+            } else {
+                mId
+            }
+
+        val trigger = triggerViewModel.createTrigger()
+
+        return KeyMap(
+            id = mId,
+            trigger = trigger ?: Trigger(),
+            actionList = actionListViewModel.actionList.value ?: listOf(),
+            constraintList = constraintListViewModel.constraintList.value ?: listOf(),
+            constraintMode = constraintListViewModel.getConstraintMode(),
+            isEnabled = isEnabled.value ?: true
+        )
+    }
+
+    fun loadKeymap(id: Long) {
+        if (id == NEW_KEYMAP_ID) return
+
+        viewModelScope.launch {
+            val keymap = mKeymapRepository.getKeymap(id)
+            loadKeymap(keymap)
+        }
+    }
+
+    private fun loadKeymap(keymap: KeyMap) {
+        mId = keymap.id
+        actionListViewModel.setActionList(keymap.actionList)
+        triggerViewModel.setTrigger(keymap.trigger)
+        constraintListViewModel.setConstraintList(keymap.constraintList, keymap.constraintMode)
+        isEnabled.value = keymap.isEnabled
+    }
+
+    fun saveState(outState: Bundle) {
+        outState.putParcelable(STATE_KEY, createKeymap())
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun restoreState(state: Bundle) {
+        state.getParcelable<KeyMap>(STATE_KEY)?.let {
+            loadKeymap(it)
+        }
+    }
+
     class Factory(
         private val mConfigKeymapUseCase: ConfigKeymapUseCase,
         private val mDeviceInfoRepository: DeviceInfoRepository,
-        private val mIPreferenceDataStore: IPreferenceDataStore,
-        private val mId: Long) : ViewModelProvider.Factory {
+        private val mIPreferenceDataStore: IPreferenceDataStore) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>) =
-            ConfigKeymapViewModel(mConfigKeymapUseCase, mDeviceInfoRepository, mIPreferenceDataStore, mId) as T
+            ConfigKeymapViewModel(mConfigKeymapUseCase, mDeviceInfoRepository, mIPreferenceDataStore) as T
     }
 }

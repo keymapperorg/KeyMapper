@@ -10,10 +10,10 @@ import io.github.sds100.keymapper.util.InjectorUtils
 /**
  * Created by sds100 on 30/11/20.
  */
-class KeymapConstraintListFragment(private val mKeymapId: Long) : ConstraintListFragment() {
+class KeymapConstraintListFragment : ConstraintListFragment() {
 
     private val mConfigKeymapViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap) {
-        InjectorUtils.provideNewConfigKeymapViewModel(requireContext(), mKeymapId)
+        InjectorUtils.provideConfigKeymapViewModel(requireContext())
     }
 
     override val constraintListViewModel: ConstraintListViewModel

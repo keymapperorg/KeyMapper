@@ -48,8 +48,6 @@ object BackupUtils {
                 val deviceInfoIdsToBackup = mutableSetOf<String>()
 
                 keymapList.forEach { keymap ->
-                    keymap.id = 0
-
                     keymap.trigger.keys.forEach { key ->
                         if (key.deviceId != Trigger.Key.DEVICE_ID_ANY_DEVICE
                             && key.deviceId != Trigger.Key.DEVICE_ID_THIS_DEVICE) {

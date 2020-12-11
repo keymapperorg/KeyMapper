@@ -8,8 +8,9 @@ import io.github.sds100.keymapper.data.model.CheckBoxListItemModel
 import io.github.sds100.keymapper.data.model.SliderListItemModel
 import io.github.sds100.keymapper.data.model.SliderModel
 import io.github.sds100.keymapper.data.model.Trigger
-import io.github.sds100.keymapper.data.model.options.BehaviorOption
-import io.github.sds100.keymapper.data.model.options.BehaviorOption.Companion.nullIfDefault
+import io.github.sds100.keymapper.data.model.options.BoolOption
+import io.github.sds100.keymapper.data.model.options.IntOption
+import io.github.sds100.keymapper.data.model.options.IntOption.Companion.nullIfDefault
 import io.github.sds100.keymapper.data.model.options.TriggerOptions
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.OkDialog
@@ -26,7 +27,7 @@ class TriggerOptionsViewModel(
     private val _eventStream = LiveEvent<Event>()
     val eventStream: LiveData<Event> = _eventStream
 
-    override fun createSliderListItemModel(option: BehaviorOption<Int>) = when (option.id) {
+    override fun createSliderListItemModel(option: IntOption) = when (option.id) {
 
         TriggerOptions.ID_VIBRATE_DURATION -> SliderListItemModel(
             id = option.id,
@@ -79,7 +80,7 @@ class TriggerOptionsViewModel(
         else -> throw Exception("Don't know how to create a SliderListItemModel for this option $option.id")
     }
 
-    override fun createCheckboxListItemModel(option: BehaviorOption<Boolean>) = when (option.id) {
+    override fun createCheckboxListItemModel(option: BoolOption) = when (option.id) {
         TriggerOptions.ID_VIBRATE -> CheckBoxListItemModel(
             id = option.id,
             label = R.string.flag_vibrate,

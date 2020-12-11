@@ -8,7 +8,8 @@ import androidx.lifecycle.map
 import io.github.sds100.keymapper.data.model.CheckBoxListItemModel
 import io.github.sds100.keymapper.data.model.SliderListItemModel
 import io.github.sds100.keymapper.data.model.options.BaseOptions
-import io.github.sds100.keymapper.data.model.options.BehaviorOption
+import io.github.sds100.keymapper.data.model.options.BoolOption
+import io.github.sds100.keymapper.data.model.options.IntOption
 
 /**
  * Created by sds100 on 28/11/20.
@@ -50,6 +51,6 @@ abstract class BaseOptionsViewModel<O : BaseOptions<*>> : ViewModel() {
         this.options.value = options
     }
 
-    abstract fun createSliderListItemModel(option: BehaviorOption<Int>): SliderListItemModel
-    abstract fun createCheckboxListItemModel(option: BehaviorOption<Boolean>): CheckBoxListItemModel
+    abstract fun createSliderListItemModel(option: IntOption): SliderListItemModel
+    abstract fun createCheckboxListItemModel(option: BoolOption): CheckBoxListItemModel
 }

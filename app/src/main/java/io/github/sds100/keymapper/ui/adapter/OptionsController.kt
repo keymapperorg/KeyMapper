@@ -9,7 +9,7 @@ import com.airbnb.epoxy.EpoxyController
 import io.github.sds100.keymapper.checkbox
 import io.github.sds100.keymapper.data.model.CheckBoxListItemModel
 import io.github.sds100.keymapper.data.model.SliderListItemModel
-import io.github.sds100.keymapper.data.model.options.BehaviorOption
+import io.github.sds100.keymapper.data.model.options.IntOption
 import io.github.sds100.keymapper.data.viewmodel.BaseOptionsViewModel
 import io.github.sds100.keymapper.slider
 import io.github.sds100.keymapper.util.editTextNumberAlertDialog
@@ -62,7 +62,7 @@ abstract class OptionsController(lifecycleOwner: LifecycleOwner) : EpoxyControll
 
                     //If the user has selected to use the default value
                     if (value < ctx.int(it.sliderModel.min)) {
-                        viewModel.setValue(it.id, BehaviorOption.DEFAULT)
+                        viewModel.setValue(it.id, IntOption.DEFAULT)
                     } else {
                         viewModel.setValue(it.id, value.toInt())
                     }

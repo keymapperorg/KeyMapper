@@ -118,21 +118,9 @@ object InjectorUtils {
         return MenuFragmentViewModel.Factory(keymapUseCase, fingerprintGestureUseCase)
     }
 
-    fun provideConfigKeymapViewModel(
-        context: Context,
-        id: Long
-    ): ConfigKeymapViewModel.Factory {
+    fun provideConfigKeymapViewModel(context: Context): ConfigKeymapViewModel.Factory {
         (context.applicationContext as MyApplication).apply {
-            return ConfigKeymapViewModel.Factory(keymapRepository, deviceInfoRepository, preferenceDataStore, id)
-        }
-    }
-
-    fun provideNewConfigKeymapViewModel(
-        context: Context,
-        id: Long
-    ): ConfigKeymapViewModel.Factory {
-        (context.applicationContext as MyApplication).apply {
-            return ConfigKeymapViewModel.Factory(keymapRepository, deviceInfoRepository, preferenceDataStore, id)
+            return ConfigKeymapViewModel.Factory(keymapRepository, deviceInfoRepository, preferenceDataStore)
         }
     }
 

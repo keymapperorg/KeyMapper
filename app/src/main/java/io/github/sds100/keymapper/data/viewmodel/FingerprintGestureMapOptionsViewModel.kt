@@ -6,8 +6,8 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.CheckBoxListItemModel
 import io.github.sds100.keymapper.data.model.SliderListItemModel
 import io.github.sds100.keymapper.data.model.SliderModel
-import io.github.sds100.keymapper.data.model.options.BehaviorOption.Companion.nullIfDefault
 import io.github.sds100.keymapper.data.model.options.FingerprintGestureMapOptions
+import io.github.sds100.keymapper.data.model.options.IntOption.Companion.nullIfDefault
 import io.github.sds100.keymapper.util.Data
 import io.github.sds100.keymapper.util.Loading
 import io.github.sds100.keymapper.util.State
@@ -87,15 +87,16 @@ class FingerprintGestureMapOptionsViewModel : ViewModel() {
 
     fun saveState(outState: Bundle) {
         options.value?.ifIsData {
-            outState.putSerializable(STATE_KEY, it)
+            outState.putParcelable(STATE_KEY, it)
         }
     }
 
     fun restoreState(state: Bundle) {
         _options.value = Loading()
 
-        val behavior = state.getSerializable(STATE_KEY) as FingerprintGestureMapOptions
-        setOptions(behavior)
+        state.getParcelable<FingerprintGestureMapOptions>(STATE_KEY)?.let {
+            setOptions(it)
+        }
     }
 
     @Suppress("UNCHECKED_CAST")

@@ -4,25 +4,35 @@ import android.os.Build
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Extra
 import io.github.sds100.keymapper.data.model.Trigger
-import io.github.sds100.keymapper.data.model.getData
-import io.github.sds100.keymapper.data.model.options.BehaviorOption.Companion.applyBehaviorOption
-import io.github.sds100.keymapper.util.ActionType
-import io.github.sds100.keymapper.util.ActionUtils
+import io.github.sds100.keymapper.data.model.options.BoolOption.Companion.saveBoolOption
+import io.github.sds100.keymapper.data.model.options.IntOption.Companion.saveIntOption
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
-import io.github.sds100.keymapper.util.holdDown
-import io.github.sds100.keymapper.util.repeat
-import io.github.sds100.keymapper.util.result.onSuccess
-import io.github.sds100.keymapper.util.result.valueOrNull
-import splitties.bitflags.hasFlag
-import java.io.Serializable
+import kotlinx.android.parcel.Parcelize
 
 /**
  * Created by sds100 on 22/11/20.
  */
-class KeymapActionOptions(action: Action,
-                          actionCount: Int,
-                          @Trigger.Mode triggerMode: Int? = null,
-                          triggerKeys: List<Trigger.Key>? = null) : Serializable, BaseOptions<Action> {
+
+@Parcelize
+class KeymapActionOptions(
+    override val id: String,
+    val repeat: BoolOption,
+    private val showVolumeUi: BoolOption,
+    private val showPerformingActionToast: BoolOption,
+    val holdDown: BoolOption,
+    val stopRepeatingWhenTriggerReleased: BoolOption,
+    val stopRepeatingWhenTriggerPressedAgain: BoolOption,
+    val stopHoldDownWhenTriggerReleased: BoolOption,
+    val stopHoldDownWhenTriggerPressedAgain: BoolOption,
+
+    private val repeatRate: IntOption,
+    private val repeatDelay: IntOption,
+    private val holdDownDuration: IntOption,
+    private val delayBeforeNextAction: IntOption,
+    private val multiplier: IntOption
+
+) : BaseOptions<Action> {
 
     companion object {
         const val ID_REPEAT_RATE = "repeat_rate"
@@ -40,138 +50,102 @@ class KeymapActionOptions(action: Action,
         const val ID_HOLD_DOWN_DURATION = "hold_down_duration"
     }
 
-    override val id = action.uid
+    constructor(action: Action,
+                actionCount: Int,
+                @Trigger.Mode triggerMode: Int? = null,
+                triggerKeys: List<Trigger.Key>? = null) : this(
+        id = action.uid,
 
-    val repeat = BehaviorOption(
-        id = ID_REPEAT,
-        value = action.flags.hasFlag(Action.ACTION_FLAG_REPEAT),
-        isAllowed = if (triggerKeys != null && triggerMode != null) {
-            KeymapDetectionDelegate.performActionOnDown(triggerKeys, triggerMode)
-        } else {
-            false
-        }
-    )
+        showVolumeUi = BoolOption(
+            id = ID_SHOW_VOLUME_UI,
+            value = action.showVolumeUi,
+            isAllowed = ActionUtils.isVolumeAction(action.data)
+        ),
 
-    val showVolumeUi = BehaviorOption(
-        id = ID_SHOW_VOLUME_UI,
-        value = action.flags.hasFlag(Action.ACTION_FLAG_SHOW_VOLUME_UI),
-        isAllowed = ActionUtils.isVolumeAction(action.data)
-    )
+        repeat = BoolOption(
+            id = ID_REPEAT,
+            value = action.repeat,
+            isAllowed = if (triggerKeys != null && triggerMode != null) {
+                KeymapDetectionDelegate.performActionOnDown(triggerKeys, triggerMode)
+            } else {
+                false
+            }
+        ),
 
-    val showPerformingActionToast = BehaviorOption(
-        id = ID_SHOW_PERFORMING_ACTION_TOAST,
-        value = action.flags.hasFlag(Action.ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST),
-        isAllowed = true
-    )
+        showPerformingActionToast = BoolOption(
+            id = ID_SHOW_PERFORMING_ACTION_TOAST,
+            value = action.showPerformingActionToast,
+            isAllowed = true
+        ),
 
-    val holdDown = BehaviorOption(
-        id = ID_HOLD_DOWN,
-        value = action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN),
-        isAllowed = if (triggerKeys != null && triggerMode != null) {
-            KeymapDetectionDelegate.performActionOnDown(triggerKeys, triggerMode)
-                && (action.type == ActionType.KEY_EVENT
-                || (action.type == ActionType.TAP_COORDINATE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                )
-        } else {
-            false
-        }
-    )
+        holdDown = BoolOption(
+            id = ID_HOLD_DOWN,
+            value = action.holdDown,
+            isAllowed = if (triggerKeys != null && triggerMode != null) {
+                KeymapDetectionDelegate.performActionOnDown(triggerKeys, triggerMode)
+                    && (action.type == ActionType.KEY_EVENT
+                    || (action.type == ActionType.TAP_COORDINATE
+                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                    )
+            } else {
+                false
+            }
+        ),
 
-    val stopRepeatingWhenTriggerReleased: BehaviorOption<Boolean>
-    val stopRepeatingWhenTriggerPressedAgain: BehaviorOption<Boolean>
+        multiplier = IntOption(
+            id = ID_MULTIPLIER,
+            value = action.multiplier ?: IntOption.DEFAULT,
+            isAllowed = true
+        ),
 
-    val stopHoldDownWhenTriggerReleased: BehaviorOption<Boolean>
-    val stopHoldDownWhenTriggerPressedAgain: BehaviorOption<Boolean>
+        holdDownDuration = IntOption(
+            id = ID_HOLD_DOWN_DURATION,
+            value = action.holdDownDuration ?: IntOption.DEFAULT,
+            isAllowed = action.repeat && action.holdDown
+        ),
 
-    private val repeatRate: BehaviorOption<Int>
-
-    private val repeatDelay: BehaviorOption<Int>
-
-    private val delayBeforeNextAction: BehaviorOption<Int>
-
-    private val multiplier = BehaviorOption(
-        id = ID_MULTIPLIER,
-        value = action.extras.getData(Action.EXTRA_MULTIPLIER).valueOrNull()?.toInt() ?: BehaviorOption.DEFAULT,
-        isAllowed = true
-    )
-
-    private val holdDownDuration = BehaviorOption(
-        id = ID_HOLD_DOWN_DURATION,
-        value = action.extras.getData(Action.EXTRA_HOLD_DOWN_DURATION).valueOrNull()?.toInt() ?: BehaviorOption.DEFAULT,
-        isAllowed = action.repeat && action.holdDown
-    )
-
-    /*
-     It is very important that any new options are only allowed with a valid combination of other options. Make sure
-     the "isAllowed" property considers all the other options.
-     */
-
-    init {
-        val repeatRateValue = action.extras.getData(Action.EXTRA_REPEAT_RATE).valueOrNull()?.toInt()
-
-        repeatRate = BehaviorOption(
+        repeatRate = IntOption(
             id = ID_REPEAT_RATE,
-            value = repeatRateValue ?: BehaviorOption.DEFAULT,
-            isAllowed = repeat.value
-        )
+            value = action.repeatRate ?: IntOption.DEFAULT,
+            isAllowed = action.repeat
+        ),
 
-        val repeatDelayValue = action.extras.getData(Action.EXTRA_REPEAT_DELAY).valueOrNull()?.toInt()
-
-        repeatDelay = BehaviorOption(
+        repeatDelay = IntOption(
             id = ID_REPEAT_DELAY,
-            value = repeatDelayValue ?: BehaviorOption.DEFAULT,
-            isAllowed = repeat.value
-        )
+            value = action.repeatDelay ?: IntOption.DEFAULT,
+            isAllowed = action.repeat
+        ),
 
-        var stopRepeatingTriggerPressedAgain = false
-
-        action.extras.getData(Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR).onSuccess {
-            if (it.toInt() == Action.STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN) {
-                stopRepeatingTriggerPressedAgain = true
-            }
-        }
-
-        stopRepeatingWhenTriggerPressedAgain = BehaviorOption(
+        stopRepeatingWhenTriggerPressedAgain = BoolOption(
             id = ID_STOP_REPEATING_TRIGGER_PRESSED_AGAIN,
-            value = stopRepeatingTriggerPressedAgain,
-            isAllowed = repeat.value
-        )
+            value = action.stopRepeatingWhenTriggerPressedAgain,
+            isAllowed = action.repeat
+        ),
 
-        stopRepeatingWhenTriggerReleased = BehaviorOption(
+        stopRepeatingWhenTriggerReleased = BoolOption(
             id = ID_STOP_REPEATING_TRIGGER_RELEASED,
-            value = !stopRepeatingTriggerPressedAgain,
-            isAllowed = repeat.value
-        )
+            value = action.stopRepeatingWhenTriggerReleased,
+            isAllowed = action.repeat
+        ),
 
-        var stopHoldDownTriggerPressedAgain = false
-
-        action.extras.getData(Action.EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR).onSuccess {
-            if (it.toInt() == Action.STOP_HOLD_DOWN_BEHAVIOR_TRIGGER_PRESSED_AGAIN) {
-                stopHoldDownTriggerPressedAgain = true
-            }
-        }
-
-        stopHoldDownWhenTriggerPressedAgain = BehaviorOption(
+        stopHoldDownWhenTriggerPressedAgain = BoolOption(
             id = ID_STOP_HOLD_DOWN_WHEN_TRIGGER_PRESSED_AGAIN,
-            value = stopHoldDownTriggerPressedAgain,
-            isAllowed = holdDown.value && !repeat.value
-        )
+            value = action.stopHoldDownWhenTriggerPressedAgain,
+            isAllowed = action.holdDown && !action.repeat
+        ),
 
-        stopHoldDownWhenTriggerReleased = BehaviorOption(
+        stopHoldDownWhenTriggerReleased = BoolOption(
             id = ID_STOP_HOLD_DOWN_WHEN_TRIGGER_RELEASED,
-            value = !stopHoldDownTriggerPressedAgain,
-            isAllowed = holdDown.value
-        )
+            value = action.stopHoldDownWhenTriggerReleased,
+            isAllowed = action.holdDown
+        ),
 
-        val delayBeforeNextActionValue =
-            action.extras.getData(Action.EXTRA_DELAY_BEFORE_NEXT_ACTION).valueOrNull()?.toInt()
-
-        delayBeforeNextAction = BehaviorOption(
+        delayBeforeNextAction = IntOption(
             id = ID_DELAY_BEFORE_NEXT_ACTION,
-            value = delayBeforeNextActionValue ?: BehaviorOption.DEFAULT,
+            value = action.delayBeforeNextAction ?: IntOption.DEFAULT,
             isAllowed = actionCount > 0
         )
-    }
+    )
 
     override val intOptions = listOf(
         repeatRate,
@@ -257,17 +231,17 @@ class KeymapActionOptions(action: Action,
 
     override fun apply(old: Action): Action {
         val newFlags = old.flags
-            .applyBehaviorOption(repeat, Action.ACTION_FLAG_REPEAT)
-            .applyBehaviorOption(showVolumeUi, Action.ACTION_FLAG_SHOW_VOLUME_UI)
-            .applyBehaviorOption(showPerformingActionToast, Action.ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST)
-            .applyBehaviorOption(holdDown, Action.ACTION_FLAG_HOLD_DOWN)
+            .saveBoolOption(repeat, Action.ACTION_FLAG_REPEAT)
+            .saveBoolOption(showVolumeUi, Action.ACTION_FLAG_SHOW_VOLUME_UI)
+            .saveBoolOption(showPerformingActionToast, Action.ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST)
+            .saveBoolOption(holdDown, Action.ACTION_FLAG_HOLD_DOWN)
 
         val newExtras = old.extras
-            .applyBehaviorOption(repeatRate, Action.EXTRA_REPEAT_RATE)
-            .applyBehaviorOption(repeatDelay, Action.EXTRA_REPEAT_DELAY)
-            .applyBehaviorOption(multiplier, Action.EXTRA_MULTIPLIER)
-            .applyBehaviorOption(delayBeforeNextAction, Action.EXTRA_DELAY_BEFORE_NEXT_ACTION)
-            .applyBehaviorOption(holdDownDuration, Action.EXTRA_HOLD_DOWN_DURATION)
+            .saveIntOption(repeatRate, Action.EXTRA_REPEAT_RATE)
+            .saveIntOption(repeatDelay, Action.EXTRA_REPEAT_DELAY)
+            .saveIntOption(multiplier, Action.EXTRA_MULTIPLIER)
+            .saveIntOption(delayBeforeNextAction, Action.EXTRA_DELAY_BEFORE_NEXT_ACTION)
+            .saveIntOption(holdDownDuration, Action.EXTRA_HOLD_DOWN_DURATION)
 
         newExtras.removeAll {
             it.id in arrayOf(Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR, Action.EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR)
