@@ -23,7 +23,8 @@ import io.github.sds100.keymapper.ui.adapter.OptionsController
  * Created by sds100 on 27/06/2020.
  */
 
-abstract class BaseOptionsDialogFragment<BINDING : ViewDataBinding, O : BaseOptions<*>> : BottomSheetDialogFragment() {
+abstract class BaseOptionsDialogFragment<BINDING : ViewDataBinding, O : BaseOptions<*>>
+    : BottomSheetDialogFragment() {
 
     companion object {
         const val EXTRA_OPTIONS = "extra_options"

@@ -61,7 +61,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
     }
 
     private val mFingerprintGestureViewModel: FingerprintGestureViewModel by activityViewModels {
-        InjectorUtils.provideFingerprintGestureViewModel(requireContext())
+        InjectorUtils.provideFingerprintMapListViewModel(requireContext())
     }
 
     /**

@@ -9,7 +9,7 @@ import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.repository.DefaultDeviceInfoRepository
 import io.github.sds100.keymapper.data.repository.DefaultKeymapRepository
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
-import io.github.sds100.keymapper.data.repository.FingerprintGestureRepository
+import io.github.sds100.keymapper.data.repository.FingerprintMapRepository
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -33,7 +33,7 @@ object ServiceLocator {
         @VisibleForTesting set
 
     @Volatile
-    var fingerprintGestureRepository: FingerprintGestureRepository? = null
+    var fingerprintMapRepository: FingerprintMapRepository? = null
 
     fun provideKeymapRepository(context: Context): DefaultKeymapRepository {
         synchronized(this) {
@@ -53,9 +53,9 @@ object ServiceLocator {
         }
     }
 
-    fun provideFingerprintGestureRepository(context: Context): FingerprintGestureRepository {
+    fun provideFingerprintGestureRepository(context: Context): FingerprintMapRepository {
         synchronized(this) {
-            return fingerprintGestureRepository ?: createFingerprintGestureRepository(context)
+            return fingerprintMapRepository ?: createFingerprintGestureRepository(context)
         }
     }
 
@@ -97,11 +97,11 @@ object ServiceLocator {
         return preferenceDataStore
     }
 
-    private fun createFingerprintGestureRepository(context: Context): FingerprintGestureRepository {
-        val fingerprintGestureRepository = fingerprintGestureRepository
-            ?: FingerprintGestureRepository(providePreferenceDataStore(context).fingerprintGestureDataStore)
+    private fun createFingerprintGestureRepository(context: Context): FingerprintMapRepository {
+        val fingerprintGestureRepository = fingerprintMapRepository
+            ?: FingerprintMapRepository(providePreferenceDataStore(context).fingerprintGestureDataStore)
 
-        this.fingerprintGestureRepository = fingerprintGestureRepository
+        this.fingerprintMapRepository = fingerprintGestureRepository
 
         return fingerprintGestureRepository
     }

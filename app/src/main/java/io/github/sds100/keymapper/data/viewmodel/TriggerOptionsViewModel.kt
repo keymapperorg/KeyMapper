@@ -24,6 +24,8 @@ class TriggerOptionsViewModel(
     val getTriggerMode: () -> Int
 ) : BaseOptionsViewModel<TriggerOptions>(), IPreferenceDataStore by preferenceDataStore {
 
+    override val stateKey = "trigger_options_view_model"
+
     private val _eventStream = LiveEvent<Event>()
     val eventStream: LiveData<Event> = _eventStream
 

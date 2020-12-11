@@ -1,16 +1,19 @@
 package io.github.sds100.keymapper.data.model
 
+import android.os.Parcelable
 import com.github.salomonbrys.kotson.byArray
 import com.github.salomonbrys.kotson.byBool
 import com.github.salomonbrys.kotson.byInt
 import com.github.salomonbrys.kotson.jsonDeserializer
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.R
+import kotlinx.android.parcel.Parcelize
 
 /**
  * Created by sds100 on 08/11/20.
  */
-data class FingerprintGestureMap(
+@Parcelize
+data class FingerprintMap(
     @SerializedName(NAME_ACTION_LIST)
     val actionList: List<Action> = listOf(),
 
@@ -28,7 +31,7 @@ data class FingerprintGestureMap(
 
     @SerializedName(NAME_ENABLED)
     val isEnabled: Boolean = true
-) {
+) : Parcelable {
     companion object {
         //DON'T CHANGE THESE. Used for JSON serialization and parsing.
         private const val NAME_ACTION_LIST = "action_list"
@@ -54,7 +57,7 @@ data class FingerprintGestureMap(
 
             val isEnabled by it.json.byBool(NAME_ENABLED)
 
-            FingerprintGestureMap(actionList, constraints, constraintMode, extras, flags, isEnabled)
+            FingerprintMap(actionList, constraints, constraintMode, extras, flags, isEnabled)
         }
 
         const val FLAG_VIBRATE = 1

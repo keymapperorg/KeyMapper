@@ -10,7 +10,7 @@ import io.github.sds100.keymapper.data.DataStoreKeys
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.Extra
-import io.github.sds100.keymapper.data.model.FingerprintGestureMap
+import io.github.sds100.keymapper.data.model.FingerprintMap
 import io.github.sds100.keymapper.util.FingerprintGestureUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -18,33 +18,33 @@ import kotlinx.coroutines.flow.map
 /**
  * Created by sds100 on 17/11/20.
  */
-class FingerprintGestureRepository constructor(private val mDataStore: DataStore<Preferences>) {
+class FingerprintMapRepository constructor(private val mDataStore: DataStore<Preferences>) {
 
     private val mGson = GsonBuilder()
-        .registerTypeAdapter(FingerprintGestureMap.DESERIALIZER)
+        .registerTypeAdapter(FingerprintMap.DESERIALIZER)
         .registerTypeAdapter(Action.DESERIALIZER)
         .registerTypeAdapter(Extra.DESERIALIZER)
         .registerTypeAdapter(Constraint.DESERIALIZER).create()
 
-    val swipeDown: Flow<FingerprintGestureMap> = mDataStore.data.map { prefs ->
+    val swipeDown: Flow<FingerprintMap> = mDataStore.data.map { prefs ->
         prefs.getGesture(DataStoreKeys.FINGERPRINT_GESTURE_SWIPE_DOWN)
     }
 
-    val swipeUp: Flow<FingerprintGestureMap> = mDataStore.data.map { prefs ->
+    val swipeUp: Flow<FingerprintMap> = mDataStore.data.map { prefs ->
         prefs.getGesture(DataStoreKeys.FINGERPRINT_GESTURE_SWIPE_UP)
     }
 
-    val swipeLeft: Flow<FingerprintGestureMap> = mDataStore.data.map { prefs ->
+    val swipeLeft: Flow<FingerprintMap> = mDataStore.data.map { prefs ->
         prefs.getGesture(DataStoreKeys.FINGERPRINT_GESTURE_SWIPE_LEFT)
     }
 
-    val swipeRight: Flow<FingerprintGestureMap> = mDataStore.data.map { prefs ->
+    val swipeRight: Flow<FingerprintMap> = mDataStore.data.map { prefs ->
         prefs.getGesture(DataStoreKeys.FINGERPRINT_GESTURE_SWIPE_RIGHT)
     }
 
     suspend fun editGesture(
         gestureId: String,
-        block: (old: FingerprintGestureMap) -> FingerprintGestureMap
+        block: (old: FingerprintMap) -> FingerprintMap
     ) {
         mDataStore.edit { prefs ->
             val key = FingerprintGestureUtils.PREF_KEYS[gestureId]!!
@@ -54,11 +54,11 @@ class FingerprintGestureRepository constructor(private val mDataStore: DataStore
         }
     }
 
-    private fun Preferences.getGesture(key: Preferences.Key<String>): FingerprintGestureMap {
+    private fun Preferences.getGesture(key: Preferences.Key<String>): FingerprintMap {
         val json = this[key]
 
         return if (json == null) {
-            FingerprintGestureMap()
+            FingerprintMap()
         } else {
             mGson.fromJson(json)
         }

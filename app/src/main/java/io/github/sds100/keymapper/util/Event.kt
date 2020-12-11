@@ -19,7 +19,7 @@ import androidx.annotation.StringRes
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.options.BaseOptions
-import io.github.sds100.keymapper.data.model.options.FingerprintGestureMapOptions
+import io.github.sds100.keymapper.data.model.options.FingerprintMapOptions
 import io.github.sds100.keymapper.data.model.options.TriggerKeyOptions
 import io.github.sds100.keymapper.util.result.Failure
 
@@ -73,5 +73,5 @@ class BuildConstraintListModels(val source: List<Constraint>) : Event()
 class SelectConstraint(val constraint: Constraint) : Event()
 
 //fingerprint gesture maps
-class BuildFingerprintGestureModels(val gestureMaps: Map<String, FingerprintGestureMap>) : Event()
-class EditFingerprintGestureMapOptions(val options: FingerprintGestureMapOptions) : Event()
+class BuildFingerprintGestureModels(val maps: Map<String, FingerprintMap>) : Event()
+class EditFingerprintGestureMapOptions(val options: FingerprintMapOptions) : Event()

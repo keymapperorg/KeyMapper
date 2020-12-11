@@ -1,24 +1,27 @@
-package io.github.sds100.keymapper.ui.fragment
+package io.github.sds100.keymapper.ui.fragment.fingerprint
 
 import android.os.Bundle
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import com.google.android.material.switchmaterial.SwitchMaterial
 import io.github.sds100.keymapper.*
-import io.github.sds100.keymapper.data.model.FingerprintGestureMap
 import io.github.sds100.keymapper.data.model.FingerprintGestureMapListItemModel
+import io.github.sds100.keymapper.data.model.FingerprintMap
 import io.github.sds100.keymapper.data.viewmodel.FingerprintGestureViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
+import io.github.sds100.keymapper.ui.fragment.DefaultRecyclerViewFragment
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
 import io.github.sds100.keymapper.util.result.Failure
 
 /**
- * Created by sds100 on 22/02/2020.
+ * Created by sds100 on 11/12/2020.
  */
-class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
+class FingerprintMapListFragment : DefaultRecyclerViewFragment() {
 
     private val mViewModel: FingerprintGestureViewModel by activityViewModels {
-        InjectorUtils.provideFingerprintGestureViewModel(requireContext())
+        InjectorUtils.provideFingerprintMapListViewModel(requireContext())
     }
 
     private lateinit var mRecoverFailureDelegate: RecoverFailureDelegate
@@ -43,12 +46,12 @@ class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
 
             binding.epoxyRecyclerView.withModels {
                 models.data.forEach {
-                    fingerprintGesture {
+                    fingerprintMap {
                         id(it.id)
                         model(it)
 
-                        onEnabledSwitchChangeListener { _, isChecked ->
-                            mViewModel.setEnabled(it.id, isChecked)
+                        onEnabledSwitchClick { view ->
+                            mViewModel.setEnabled(it.id, (view as SwitchMaterial).isChecked)
                         }
 
                         onErrorClick(object : ErrorClickCallback {
@@ -58,6 +61,8 @@ class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
                         })
 
                         onClick { _ ->
+                            val direction = NavAppDirections.actionToConfigFingerprintMap(it.id)
+                            findNavController().navigate(direction)
                         }
                     }
                 }
@@ -69,7 +74,7 @@ class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
                 when (it) {
                     is BuildFingerprintGestureModels -> {
                         viewLifecycleScope.launchWhenStarted {
-                            mViewModel.setModels(buildModels(it.gestureMaps))
+                            mViewModel.setModels(buildModels(it.maps))
                         }
                     }
                 }
@@ -78,8 +83,8 @@ class FingerprintGestureFragment : DefaultRecyclerViewFragment() {
         mViewModel.rebuildModels()
     }
 
-    private suspend fun buildModels(gestureMaps: Map<String, FingerprintGestureMap>) =
-        gestureMaps.map {
+    private suspend fun buildModels(maps: Map<String, FingerprintMap>) =
+        maps.map {
             FingerprintGestureMapListItemModel(
                 id = it.key,
                 header = str(FingerprintGestureUtils.HEADERS[it.key]!!),

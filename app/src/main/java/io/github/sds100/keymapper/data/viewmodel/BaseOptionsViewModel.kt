@@ -2,6 +2,7 @@
 
 package io.github.sds100.keymapper.data.viewmodel
 
+import android.os.Bundle
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
@@ -17,6 +18,7 @@ import io.github.sds100.keymapper.data.model.options.IntOption
 
 abstract class BaseOptionsViewModel<O : BaseOptions<*>> : ViewModel() {
 
+    abstract val stateKey: String
     val options = MediatorLiveData<O>()
 
     val sliderModels = options.map { options ->
@@ -37,6 +39,17 @@ abstract class BaseOptionsViewModel<O : BaseOptions<*>> : ViewModel() {
                 }
             }
         }.toList()
+    }
+
+    fun saveState(outState: Bundle) {
+        outState.putParcelable(stateKey, options.value)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun restoreState(state: Bundle) {
+        state.getParcelable<O>(stateKey)?.let {
+            setOptions(it)
+        }
     }
 
     open fun setValue(id: String, newValue: Int) {

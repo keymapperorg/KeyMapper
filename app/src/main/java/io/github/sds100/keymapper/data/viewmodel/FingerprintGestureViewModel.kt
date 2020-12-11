@@ -4,15 +4,16 @@ import androidx.lifecycle.*
 import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.data.model.FingerprintGestureMapListItemModel
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
-import io.github.sds100.keymapper.data.repository.FingerprintGestureRepository
+import io.github.sds100.keymapper.data.repository.FingerprintMapRepository
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.Failure
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class FingerprintGestureViewModel(
-    private val mRepository: FingerprintGestureRepository,
+    private val mRepository: FingerprintMapRepository,
     private val mDeviceInfoRepository: DeviceInfoRepository
 ) : ViewModel() {
 
@@ -50,6 +51,7 @@ class FingerprintGestureViewModel(
 
     fun setEnabled(id: String, isEnabled: Boolean) = viewModelScope.launch {
         mRepository.editGesture(id) {
+            Timber.d("edit $id $isEnabled")
             it.copy(isEnabled = isEnabled)
         }
     }
@@ -70,7 +72,7 @@ class FingerprintGestureViewModel(
 
     @Suppress("UNCHECKED_CAST")
     class Factory(
-        private val mRepository: FingerprintGestureRepository,
+        private val mRepository: FingerprintMapRepository,
         private val mDeviceInfoRepository: DeviceInfoRepository
     ) : ViewModelProvider.NewInstanceFactory() {
 

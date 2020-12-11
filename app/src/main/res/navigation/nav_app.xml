@@ -28,12 +28,6 @@
         <action
             android:id="@+id/action_keymap_list_fragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
-
-        <action
-            android:id="@+id/action_home_fragment_to_fingerprintGestureMapBehaviorFragment"
-            app:destination="@id/fingerprintGestureMapOptionsFragment"
-            app:enterAnim="@anim/slide_in_bottom"
-            app:exitAnim="@anim/slide_out_bottom" />
     </fragment>
 
     <action
@@ -46,6 +40,18 @@
         <argument
             android:name="keymapId"
             app:argType="long" />
+    </action>
+
+    <action
+        android:id="@+id/action_to_config_fingerprint_map"
+        app:destination="@id/nav_config_fingerprint_map"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right">
+        <argument
+            android:name="gestureId"
+            app:argType="string" />
     </action>
 
     <action
@@ -75,6 +81,7 @@
 
     <include app:graph="@navigation/nav_choose_action" />
     <include app:graph="@navigation/nav_config_keymap" />
+    <include app:graph="@navigation/nav_config_fingerprint_map" />
     <include app:graph="@navigation/nav_choose_constraint" />
 
     <fragment
@@ -161,16 +168,4 @@
         android:id="@+id/action_global_menuFragment"
         app:destination="@id/menuFragment"
         app:enterAnim="@anim/slide_in_bottom" />
-
-    <dialog
-        android:id="@+id/fingerprintGestureMapOptionsFragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.FingerprintGestureMapOptionsFragment"
-        android:label="FingerprintGestureMapOptionsFragment">
-        <argument
-            android:name="options"
-            app:argType="io.github.sds100.keymapper.data.model.options.FingerprintGestureMapOptions" />
-        <argument
-            android:name="requestKey"
-            app:argType="string" />
-    </dialog>
 </navigation>

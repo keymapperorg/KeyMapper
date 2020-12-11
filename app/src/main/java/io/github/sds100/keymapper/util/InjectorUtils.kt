@@ -35,15 +35,21 @@ object InjectorUtils {
     }
 
     fun provideKeymapListViewModel(context: Context): KeymapListViewModel.Factory {
-        val keymapRepository = (context.applicationContext as MyApplication).keymapRepository
-        val deviceInfoRepository = (context.applicationContext as MyApplication).deviceInfoRepository
+        val keymapRepository =
+            (context.applicationContext as MyApplication).keymapRepository
+
+        val deviceInfoRepository =
+            (context.applicationContext as MyApplication).deviceInfoRepository
 
         return KeymapListViewModel.Factory(keymapRepository, deviceInfoRepository)
     }
 
     fun provideBackupRestoreViewModel(context: Context): BackupRestoreViewModel.Factory {
-        val keymapRepository = (context.applicationContext as MyApplication).keymapRepository
-        val deviceInfoRepository = (context.applicationContext as MyApplication).deviceInfoRepository
+        val keymapRepository =
+            (context.applicationContext as MyApplication).keymapRepository
+
+        val deviceInfoRepository =
+            (context.applicationContext as MyApplication).deviceInfoRepository
 
         return BackupRestoreViewModel.Factory(keymapRepository, deviceInfoRepository)
     }
@@ -56,8 +62,12 @@ object InjectorUtils {
         return KeyActionTypeViewModel.Factory()
     }
 
-    fun provideKeyEventActionTypeViewModel(context: Context): KeyEventActionTypeViewModel.Factory {
-        val deviceInfoRepository = (context.applicationContext as MyApplication).deviceInfoRepository
+    fun provideKeyEventActionTypeViewModel(context: Context
+    ): KeyEventActionTypeViewModel.Factory {
+
+        val deviceInfoRepository =
+            (context.applicationContext as MyApplication).deviceInfoRepository
+
         return KeyEventActionTypeViewModel.Factory(deviceInfoRepository)
     }
 
@@ -81,7 +91,8 @@ object InjectorUtils {
         return SystemActionListViewModel.Factory(getDefaultSystemActionRepository(context))
     }
 
-    fun provideUnsupportedActionListViewModel(context: Context): UnsupportedActionListViewModel.Factory {
+    fun provideUnsupportedActionListViewModel(context: Context
+    ): UnsupportedActionListViewModel.Factory {
         return UnsupportedActionListViewModel.Factory(getDefaultSystemActionRepository(context))
     }
 
@@ -89,12 +100,16 @@ object InjectorUtils {
         return KeymapActionOptionsViewModel.Factory()
     }
 
+    fun provideFingerprintActionOptionsViewModel(): FingerprintActionOptionsViewModel.Factory {
+        return FingerprintActionOptionsViewModel.Factory()
+    }
+
     fun provideTriggerKeyOptionsViewModel(): TriggerKeyOptionsViewModel.Factory {
         return TriggerKeyOptionsViewModel.Factory()
     }
 
-    fun provideFingerprintGestureMapBehaviorViewModel(): FingerprintGestureMapOptionsViewModel.Factory {
-        return FingerprintGestureMapOptionsViewModel.Factory()
+    fun provideFingerprintGestureMapBehaviorViewModel(): FingerprintMapOptionsViewModel.Factory {
+        return FingerprintMapOptionsViewModel.Factory()
     }
 
     fun provideOnlineViewModel(context: Context,
@@ -105,27 +120,52 @@ object InjectorUtils {
         return OnlineFileViewModel.Factory(repository, fileUrl, alternateUrl, header)
     }
 
-    fun provideFingerprintGestureViewModel(context: Context): FingerprintGestureViewModel.Factory {
-        val repository = (context.applicationContext as MyApplication).fingerprintGestureRepository
-        val deviceInforRepository = (context.applicationContext as MyApplication).deviceInfoRepository
+    fun provideFingerprintMapListViewModel(context: Context): FingerprintGestureViewModel.Factory {
+        val repository =
+            (context.applicationContext as MyApplication).fingerprintMapRepository
 
-        return FingerprintGestureViewModel.Factory(repository, deviceInforRepository)
+        val deviceInfoRepository =
+            (context.applicationContext as MyApplication).deviceInfoRepository
+
+        return FingerprintGestureViewModel.Factory(repository, deviceInfoRepository)
     }
 
     fun provideMenuFragmentViewModel(context: Context): MenuFragmentViewModel.Factory {
-        val keymapUseCase = (context.applicationContext as MyApplication).keymapRepository
-        val fingerprintGestureUseCase = (context.applicationContext as MyApplication).fingerprintGestureRepository
+        val keymapUseCase =
+            (context.applicationContext as MyApplication).keymapRepository
+
+        val fingerprintGestureUseCase =
+            (context.applicationContext as MyApplication).fingerprintMapRepository
+
         return MenuFragmentViewModel.Factory(keymapUseCase, fingerprintGestureUseCase)
     }
 
-    fun provideConfigKeymapViewModel(context: Context): ConfigKeymapViewModel.Factory {
+    fun provideConfigKeymapViewModel(context: Context
+    ): ConfigKeymapViewModel.Factory {
         (context.applicationContext as MyApplication).apply {
-            return ConfigKeymapViewModel.Factory(keymapRepository, deviceInfoRepository, preferenceDataStore)
+            return ConfigKeymapViewModel.Factory(
+                keymapRepository,
+                deviceInfoRepository,
+                preferenceDataStore
+            )
         }
     }
 
-    fun provideCreateActionShortcutViewModel(context: Context): CreateActionShortcutViewModel.Factory {
-        val deviceInfoRepository = (context.applicationContext as MyApplication).deviceInfoRepository
+    fun provideConfigFingerprintMapViewModel(context: Context
+    ): ConfigFingerprintMapViewModel.Factory {
+        (context.applicationContext as MyApplication).apply {
+            return ConfigFingerprintMapViewModel.Factory(
+                fingerprintMapRepository,
+                deviceInfoRepository,
+                preferenceDataStore
+            )
+        }
+    }
+
+    fun provideCreateActionShortcutViewModel(context: Context
+    ): CreateActionShortcutViewModel.Factory {
+        val deviceInfoRepository =
+            (context.applicationContext as MyApplication).deviceInfoRepository
 
         return CreateActionShortcutViewModel.Factory(deviceInfoRepository)
     }

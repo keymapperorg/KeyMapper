@@ -6,19 +6,9 @@
 
         <import type="android.view.View" />
 
-        <import type="io.github.sds100.keymapper.data.model.options.FingerprintGestureMapOptions" />
-
-        <import type="io.github.sds100.keymapper.util.State" />
-
-        <import type="io.github.sds100.keymapper.util.Loading" />
-
         <variable
             name="viewModel"
-            type="io.github.sds100.keymapper.data.viewmodel.FingerprintGestureMapOptionsViewModel" />
-
-        <variable
-            name="isLoading"
-            type="Boolean" />
+            type="io.github.sds100.keymapper.data.viewmodel.FingerprintActionOptionsViewModel" />
     </data>
 
     <androidx.core.widget.NestedScrollView
@@ -34,13 +24,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-            <com.google.android.material.progressindicator.ProgressIndicator
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:indeterminate="true"
-                android:visibility="@{isLoading ? View.VISIBLE : View.GONE}" />
 
             <com.airbnb.epoxy.EpoxyRecyclerView
                 android:id="@+id/epoxyRecyclerView"

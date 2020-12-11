@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.util
 import android.content.Context
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.DataStoreKeys
-import io.github.sds100.keymapper.data.model.FingerprintGestureMap
+import io.github.sds100.keymapper.data.model.FingerprintMap
 import splitties.bitflags.hasFlag
 
 /**
@@ -32,15 +32,15 @@ object FingerprintGestureUtils {
     )
 }
 
-fun FingerprintGestureMap.getFlagLabelList(ctx: Context): List<String> = sequence {
-    FingerprintGestureMap.FLAG_LABEL_MAP.keys.forEach { flag ->
+fun FingerprintMap.getFlagLabelList(ctx: Context): List<String> = sequence {
+    FingerprintMap.FLAG_LABEL_MAP.keys.forEach { flag ->
         if (flags.hasFlag(flag)) {
-            yield(ctx.str(FingerprintGestureMap.FLAG_LABEL_MAP.getValue(flag)))
+            yield(ctx.str(FingerprintMap.FLAG_LABEL_MAP.getValue(flag)))
         }
     }
 }.toList()
 
-fun FingerprintGestureMap.buildOptionsDescription(ctx: Context): String = buildString {
+fun FingerprintMap.buildOptionsDescription(ctx: Context): String = buildString {
     getFlagLabelList(ctx).forEachIndexed { index, label ->
         if (index > 0) {
             append(" ${ctx.str(R.string.interpunct)} ")

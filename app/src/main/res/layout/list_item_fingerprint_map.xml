@@ -16,12 +16,12 @@
             type="View.OnClickListener" />
 
         <variable
-            name="onEnabledSwitchChangeListener"
-            type="android.widget.CompoundButton.OnCheckedChangeListener" />
-
-        <variable
             name="onErrorClick"
             type="io.github.sds100.keymapper.ui.callback.ErrorClickCallback" />
+
+        <variable
+            name="onEnabledSwitchClick"
+            type="View.OnClickListener" />
 
         <variable
             name="onClick"
@@ -69,12 +69,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:checked="@{model.isEnabled}"
+                android:onClick="@{onEnabledSwitchClick}"
                 app:layout_constraintBottom_toBottomOf="@id/textViewHeader"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="@id/textViewHeader"
-                app:layout_constraintTop_toTopOf="@id/textViewHeader"
-                app:onCheckedChange="@{onEnabledSwitchChangeListener}" />
+                app:layout_constraintTop_toTopOf="@id/textViewHeader" />
 
             <TextView
                 android:id="@+id/textViewExtraInfo"

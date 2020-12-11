@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.data.model.options
 
-import io.github.sds100.keymapper.data.model.FingerprintGestureMap
+import io.github.sds100.keymapper.data.model.FingerprintMap
 import io.github.sds100.keymapper.data.model.getData
 import io.github.sds100.keymapper.data.model.options.BoolOption.Companion.saveBoolOption
 import io.github.sds100.keymapper.data.model.options.IntOption.Companion.saveIntOption
@@ -13,35 +13,36 @@ import splitties.bitflags.hasFlag
  */
 
 @Parcelize
-class FingerprintGestureMapOptions(
+class FingerprintMapOptions(
     override val id: String,
     val vibrate: BoolOption,
     val vibrateDuration: IntOption
-) : BaseOptions<FingerprintGestureMap> {
+
+) : BaseOptions<FingerprintMap> {
     companion object {
         const val ID_VIBRATE = "vibrate"
         const val ID_VIBRATION_DURATION = "vibration_duration"
     }
 
-    constructor(gestureId: String, fingerprintGestureMap: FingerprintGestureMap) : this(
+    constructor(gestureId: String, fingerprintMap: FingerprintMap) : this(
         id = gestureId,
 
         vibrate = BoolOption(
             id = ID_VIBRATE,
-            value = fingerprintGestureMap.flags.hasFlag(FingerprintGestureMap.FLAG_VIBRATE),
+            value = fingerprintMap.flags.hasFlag(FingerprintMap.FLAG_VIBRATE),
             isAllowed = true
         ),
 
         vibrateDuration = IntOption(
             id = ID_VIBRATION_DURATION,
-            value = fingerprintGestureMap.extras
-                .getData(FingerprintGestureMap.EXTRA_VIBRATION_DURATION).valueOrNull()?.toInt()
+            value = fingerprintMap.extras
+                .getData(FingerprintMap.EXTRA_VIBRATION_DURATION).valueOrNull()?.toInt()
                 ?: IntOption.DEFAULT,
-            isAllowed = fingerprintGestureMap.flags.hasFlag(FingerprintGestureMap.FLAG_VIBRATE)
+            isAllowed = fingerprintMap.flags.hasFlag(FingerprintMap.FLAG_VIBRATE)
         )
     )
 
-    override fun setValue(id: String, value: Boolean): FingerprintGestureMapOptions {
+    override fun setValue(id: String, value: Boolean): FingerprintMapOptions {
         when (id) {
             ID_VIBRATE -> {
                 vibrate.value = value
@@ -52,7 +53,7 @@ class FingerprintGestureMapOptions(
         return this
     }
 
-    override fun setValue(id: String, value: Int): FingerprintGestureMapOptions {
+    override fun setValue(id: String, value: Int): FingerprintMapOptions {
         when (id) {
             ID_VIBRATION_DURATION -> vibrateDuration.value = value
         }
@@ -66,12 +67,12 @@ class FingerprintGestureMapOptions(
     override val boolOptions: List<BoolOption>
         get() = listOf(vibrate)
 
-    override fun apply(old: FingerprintGestureMap): FingerprintGestureMap {
+    override fun apply(old: FingerprintMap): FingerprintMap {
         val newFlags = old.flags
-            .saveBoolOption(vibrate, FingerprintGestureMap.FLAG_VIBRATE)
+            .saveBoolOption(vibrate, FingerprintMap.FLAG_VIBRATE)
 
         val newExtras = old.extras
-            .saveIntOption(vibrateDuration, FingerprintGestureMap.EXTRA_VIBRATION_DURATION)
+            .saveIntOption(vibrateDuration, FingerprintMap.EXTRA_VIBRATION_DURATION)
 
         return old.copy(flags = newFlags, extras = newExtras)
     }

@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.ui.fragment.keymap
+package io.github.sds100.keymapper.ui.fragment.fingerprint
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,10 +17,9 @@ import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Constraint
-import io.github.sds100.keymapper.data.model.options.KeymapActionOptions
-import io.github.sds100.keymapper.data.model.options.TriggerKeyOptions
-import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
-import io.github.sds100.keymapper.databinding.FragmentConfigKeymapBinding
+import io.github.sds100.keymapper.data.model.options.FingerprintActionOptions
+import io.github.sds100.keymapper.data.viewmodel.ConfigFingerprintMapViewModel
+import io.github.sds100.keymapper.databinding.FragmentConfigFingerprintMapBinding
 import io.github.sds100.keymapper.ui.adapter.GenericFragmentPagerAdapter
 import io.github.sds100.keymapper.ui.fragment.*
 import io.github.sds100.keymapper.util.*
@@ -33,25 +32,26 @@ import splitties.alertdialog.appcompat.positiveButton
 /**
  * Created by sds100 on 22/11/20.
  */
-class ConfigKeymapFragment : Fragment() {
-    private val mArgs by navArgs<ConfigKeymapFragmentArgs>()
+class ConfigFingerprintMapFragment : Fragment() {
+    private val mArgs by navArgs<ConfigFingerprintMapFragmentArgs>()
 
-    private val mViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap) {
-        InjectorUtils.provideConfigKeymapViewModel(requireContext())
-    }
+    private val mViewModel: ConfigFingerprintMapViewModel
+        by navGraphViewModels(R.id.nav_config_fingerprint_map) {
+            InjectorUtils.provideConfigFingerprintMapViewModel(requireContext())
+        }
 
     private lateinit var mRecoverFailureDelegate: RecoverFailureDelegate
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //only load the keymap if opening this fragment for the first time
+        //only load the fingerprint map if opening this fragment for the first time
         if (savedInstanceState == null) {
-            mViewModel.loadKeymap(mArgs.keymapId)
+            mViewModel.loadFingerprintMap(mArgs.gestureId)
         }
 
         mRecoverFailureDelegate = RecoverFailureDelegate(
-            "ConfigKeymapFragment",
+            "ConfigFingerprintMapFragment",
             requireActivity().activityResultRegistry,
             this) {
 
@@ -64,34 +64,30 @@ class ConfigKeymapFragment : Fragment() {
             }
         }
 
-        setFragmentResultListener(ConstraintListFragment.CHOOSE_CONSTRAINT_REQUEST_KEY) { _, result ->
+        setFragmentResultListener(ConstraintListFragment.CHOOSE_CONSTRAINT_REQUEST_KEY) { _,
+                                                                                          result ->
             result.getParcelable<Constraint>(ChooseConstraintFragment.EXTRA_CONSTRAINT)?.let {
                 mViewModel.constraintListViewModel.addConstraint(it)
             }
         }
 
-        setFragmentResultListener(KeymapActionOptionsFragment.REQUEST_KEY) { _, result ->
-            result.getParcelable<KeymapActionOptions>(BaseOptionsDialogFragment.EXTRA_OPTIONS)?.let {
-                mViewModel.actionListViewModel.setOptions(it)
-            }
-        }
-
-        setFragmentResultListener(TriggerKeyOptionsFragment.REQUEST_KEY) { _, result ->
-            result.getParcelable<TriggerKeyOptions>(BaseOptionsDialogFragment.EXTRA_OPTIONS)?.let {
-                mViewModel.triggerViewModel.setTriggerKeyOptions(it)
-            }
+        setFragmentResultListener(FingerprintActionOptionsFragment.REQUEST_KEY) { _, result ->
+            result.getParcelable<FingerprintActionOptions>(BaseOptionsDialogFragment.EXTRA_OPTIONS)
+                ?.let {
+                    mViewModel.actionListViewModel.setOptions(it)
+                }
         }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        FragmentConfigKeymapBinding.inflate(inflater, container, false).apply {
+        FragmentConfigFingerprintMapBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             viewModel = mViewModel
 
             viewPager.adapter = createFragmentPagerAdapter()
 
             TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-                tab.text = strArray(R.array.config_keymap_tab_titles)[position]
+                tab.text = strArray(R.array.config_fingerprint_map_tab_titles)[position]
             }.attach()
 
             tabLayout.isVisible = tabLayout.tabCount > 1
@@ -107,7 +103,7 @@ class ConfigKeymapFragment : Fragment() {
             appBar.setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.action_save -> {
-                        mViewModel.saveKeymap(lifecycleScope)
+                        mViewModel.save(lifecycleScope)
                         findNavController().navigateUp()
 
                         true
@@ -168,36 +164,28 @@ class ConfigKeymapFragment : Fragment() {
     }
 
     private fun createFragmentPagerAdapter() = GenericFragmentPagerAdapter(this,
-        intArray(R.array.config_keymap_fragments).map {
+        intArray(R.array.config_fingerprint_map_fragments).map {
             when (it) {
 
-                int(R.integer.fragment_id_action_list) -> it to { KeymapActionListFragment() }
-                int(R.integer.fragment_id_trigger) -> it to { TriggerFragment() }
-                int(R.integer.fragment_id_constraint_list) -> it to { KeymapConstraintListFragment() }
-                int(R.integer.fragment_id_trigger_options) -> it to { TriggerOptionsFragment() }
-                int(R.integer.fragment_id_trigger_and_action_list) -> it to { TriggerAndActionsFragment() }
-                int(R.integer.fragment_id_constraints_and_options) -> it to { ConstraintsAndOptionsFragment() }
-                int(R.integer.fragment_id_config_keymap_all) -> it to { AllFragments() }
+                int(R.integer.fragment_id_action_list) ->
+                    it to { FingerprintActionListFragment() }
+
+                int(R.integer.fragment_id_constraint_list) ->
+                    it to { FingerprintConstraintListFragment() }
+
+                int(R.integer.fragment_id_fingerprint_map_options) ->
+                    it to { FingerprintMapOptionsFragment() }
+
+                int(R.integer.fragment_id_constraints_and_options) ->
+                    it to { ConstraintsAndOptionsFragment() }
 
                 else -> throw Exception("Don't know how to instantiate a fragment for this id $id")
             }
         }
     )
 
-    class TriggerAndActionsFragment : TwoFragments(
-        top = R.string.trigger_list_header to TriggerFragment::class.java,
-        bottom = R.string.action_list_header to KeymapActionListFragment::class.java
-    )
-
     class ConstraintsAndOptionsFragment : TwoFragments(
-        top = R.string.trigger_options_header to TriggerOptionsFragment::class.java,
-        bottom = R.string.constraint_list_header to KeymapConstraintListFragment::class.java
-    )
-
-    class AllFragments : FourFragments(
-        topLeft = R.string.trigger_list_header to TriggerFragment::class.java,
-        topRight = R.string.trigger_options_header to TriggerOptionsFragment::class.java,
-        bottomLeft = R.string.action_list_header to KeymapActionListFragment::class.java,
-        bottomRight = R.string.constraint_list_header to KeymapConstraintListFragment::class.java
+        top = R.string.option_list_header to FingerprintMapOptionsFragment::class.java,
+        bottom = R.string.constraint_list_header to FingerprintConstraintListFragment::class.java
     )
 }

@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.data.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import io.github.sds100.keymapper.data.repository.FingerprintGestureRepository
+import io.github.sds100.keymapper.data.repository.FingerprintMapRepository
 import io.github.sds100.keymapper.data.usecase.MenuKeymapUseCase
 import io.github.sds100.keymapper.util.FingerprintGestureUtils
 import kotlinx.coroutines.launch
@@ -12,13 +12,13 @@ import kotlinx.coroutines.launch
  * Created by sds100 on 17/11/20.
  */
 class MenuFragmentViewModel(private val mKeymapUseCase: MenuKeymapUseCase,
-                            private val mFingerprintGestureRepository: FingerprintGestureRepository) : ViewModel() {
+                            private val mFingerprintMapRepository: FingerprintMapRepository) : ViewModel() {
 
     fun enableAll() = viewModelScope.launch {
         mKeymapUseCase.enableAll()
 
         FingerprintGestureUtils.GESTURES.forEach { gestureId ->
-            mFingerprintGestureRepository.editGesture(gestureId) {
+            mFingerprintMapRepository.editGesture(gestureId) {
                 it.copy(isEnabled = true)
             }
         }
@@ -28,7 +28,7 @@ class MenuFragmentViewModel(private val mKeymapUseCase: MenuKeymapUseCase,
         mKeymapUseCase.disableAll()
 
         FingerprintGestureUtils.GESTURES.forEach { gestureId ->
-            mFingerprintGestureRepository.editGesture(gestureId) {
+            mFingerprintMapRepository.editGesture(gestureId) {
                 it.copy(isEnabled = false)
             }
         }
@@ -37,11 +37,11 @@ class MenuFragmentViewModel(private val mKeymapUseCase: MenuKeymapUseCase,
     @Suppress("UNCHECKED_CAST")
     class Factory(
         private val mKeymapUseCase: MenuKeymapUseCase,
-        private val mFingerprintGestureRepository: FingerprintGestureRepository
+        private val mFingerprintMapRepository: FingerprintMapRepository
     ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return MenuFragmentViewModel(mKeymapUseCase, mFingerprintGestureRepository) as T
+            return MenuFragmentViewModel(mKeymapUseCase, mFingerprintMapRepository) as T
         }
     }
 }

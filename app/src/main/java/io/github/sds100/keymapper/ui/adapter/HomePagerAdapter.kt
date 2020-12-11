@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.ui.adapter
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import io.github.sds100.keymapper.data.AppPreferences
-import io.github.sds100.keymapper.ui.fragment.FingerprintGestureFragment
+import io.github.sds100.keymapper.ui.fragment.fingerprint.FingerprintMapListFragment
 import io.github.sds100.keymapper.ui.fragment.keymap.KeymapListFragment
 
 /**
@@ -23,7 +23,7 @@ class HomePagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
         ).apply {
             if (AppPreferences.isFingerprintGestureDetectionAvailable) {
                 add {
-                    FingerprintGestureFragment().apply {
+                    FingerprintMapListFragment().apply {
                         isAppBarVisible = false
                         isInPagerAdapter = true
                     }
