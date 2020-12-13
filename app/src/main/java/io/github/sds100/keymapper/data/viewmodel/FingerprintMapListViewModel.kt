@@ -10,9 +10,8 @@ import io.github.sds100.keymapper.util.result.Failure
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
-class FingerprintGestureViewModel(
+class FingerprintMapListViewModel(
     private val mRepository: FingerprintMapRepository,
     private val mDeviceInfoRepository: DeviceInfoRepository
 ) : ViewModel() {
@@ -25,10 +24,10 @@ class FingerprintGestureViewModel(
             mRepository.swipeRight
         ) { swipeDown, swipeUp, swipeLeft, swipeRight ->
             mapOf(
-                FingerprintGestureUtils.SWIPE_DOWN to swipeDown,
-                FingerprintGestureUtils.SWIPE_UP to swipeUp,
-                FingerprintGestureUtils.SWIPE_LEFT to swipeLeft,
-                FingerprintGestureUtils.SWIPE_RIGHT to swipeRight
+                FingerprintMapUtils.SWIPE_DOWN to swipeDown,
+                FingerprintMapUtils.SWIPE_UP to swipeUp,
+                FingerprintMapUtils.SWIPE_LEFT to swipeLeft,
+                FingerprintMapUtils.SWIPE_RIGHT to swipeRight
             )
         }
 
@@ -45,13 +44,12 @@ class FingerprintGestureViewModel(
 
     val eventStream: LiveData<Event> = _eventStream
 
-    fun setModels(models: List<FingerprintGestureMapListItemModel>) = viewModelScope.launch {
+    fun setModels(models: List<FingerprintGestureMapListItemModel>) {
         _models.value = Data(models)
     }
 
     fun setEnabled(id: String, isEnabled: Boolean) = viewModelScope.launch {
         mRepository.editGesture(id) {
-            Timber.d("edit $id $isEnabled")
             it.copy(isEnabled = isEnabled)
         }
     }
@@ -77,7 +75,7 @@ class FingerprintGestureViewModel(
     ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return FingerprintGestureViewModel(mRepository, mDeviceInfoRepository) as T
+            return FingerprintMapListViewModel(mRepository, mDeviceInfoRepository) as T
         }
     }
 }

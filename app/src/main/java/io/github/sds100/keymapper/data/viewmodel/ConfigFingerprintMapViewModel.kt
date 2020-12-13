@@ -11,10 +11,10 @@ import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.data.repository.FingerprintMapRepository
 import io.github.sds100.keymapper.util.EnableAccessibilityServicePrompt
 import io.github.sds100.keymapper.util.Event
-import io.github.sds100.keymapper.util.FingerprintGestureUtils.SWIPE_DOWN
-import io.github.sds100.keymapper.util.FingerprintGestureUtils.SWIPE_LEFT
-import io.github.sds100.keymapper.util.FingerprintGestureUtils.SWIPE_RIGHT
-import io.github.sds100.keymapper.util.FingerprintGestureUtils.SWIPE_UP
+import io.github.sds100.keymapper.util.FingerprintMapUtils.SWIPE_DOWN
+import io.github.sds100.keymapper.util.FingerprintMapUtils.SWIPE_LEFT
+import io.github.sds100.keymapper.util.FingerprintMapUtils.SWIPE_RIGHT
+import io.github.sds100.keymapper.util.FingerprintMapUtils.SWIPE_UP
 import io.github.sds100.keymapper.util.FixFailure
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect

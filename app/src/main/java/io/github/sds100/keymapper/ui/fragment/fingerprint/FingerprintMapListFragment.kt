@@ -7,7 +7,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.data.model.FingerprintGestureMapListItemModel
 import io.github.sds100.keymapper.data.model.FingerprintMap
-import io.github.sds100.keymapper.data.viewmodel.FingerprintGestureViewModel
+import io.github.sds100.keymapper.data.viewmodel.FingerprintMapListViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
 import io.github.sds100.keymapper.ui.fragment.DefaultRecyclerViewFragment
@@ -20,7 +20,7 @@ import io.github.sds100.keymapper.util.result.Failure
  */
 class FingerprintMapListFragment : DefaultRecyclerViewFragment() {
 
-    private val mViewModel: FingerprintGestureViewModel by activityViewModels {
+    private val mViewModel: FingerprintMapListViewModel by activityViewModels {
         InjectorUtils.provideFingerprintMapListViewModel(requireContext())
     }
 
@@ -87,7 +87,7 @@ class FingerprintMapListFragment : DefaultRecyclerViewFragment() {
         maps.map {
             FingerprintGestureMapListItemModel(
                 id = it.key,
-                header = str(FingerprintGestureUtils.HEADERS[it.key]!!),
+                header = str(FingerprintMapUtils.HEADERS[it.key]!!),
 
                 actionModels = it.value.actionList.map { action ->
                     action.buildChipModel(requireContext(), mViewModel.getDeviceInfoList())

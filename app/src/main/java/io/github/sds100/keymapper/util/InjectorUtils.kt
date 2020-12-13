@@ -108,10 +108,6 @@ object InjectorUtils {
         return TriggerKeyOptionsViewModel.Factory()
     }
 
-    fun provideFingerprintGestureMapBehaviorViewModel(): FingerprintMapOptionsViewModel.Factory {
-        return FingerprintMapOptionsViewModel.Factory()
-    }
-
     fun provideOnlineViewModel(context: Context,
                                fileUrl: String,
                                alternateUrl: String? = null,
@@ -120,14 +116,14 @@ object InjectorUtils {
         return OnlineFileViewModel.Factory(repository, fileUrl, alternateUrl, header)
     }
 
-    fun provideFingerprintMapListViewModel(context: Context): FingerprintGestureViewModel.Factory {
+    fun provideFingerprintMapListViewModel(context: Context): FingerprintMapListViewModel.Factory {
         val repository =
             (context.applicationContext as MyApplication).fingerprintMapRepository
 
         val deviceInfoRepository =
             (context.applicationContext as MyApplication).deviceInfoRepository
 
-        return FingerprintGestureViewModel.Factory(repository, deviceInfoRepository)
+        return FingerprintMapListViewModel.Factory(repository, deviceInfoRepository)
     }
 
     fun provideMenuFragmentViewModel(context: Context): MenuFragmentViewModel.Factory {

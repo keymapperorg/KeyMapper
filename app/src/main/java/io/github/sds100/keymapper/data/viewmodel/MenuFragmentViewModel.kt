@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.data.repository.FingerprintMapRepository
 import io.github.sds100.keymapper.data.usecase.MenuKeymapUseCase
-import io.github.sds100.keymapper.util.FingerprintGestureUtils
+import io.github.sds100.keymapper.util.FingerprintMapUtils
 import kotlinx.coroutines.launch
 
 /**
@@ -17,7 +17,7 @@ class MenuFragmentViewModel(private val mKeymapUseCase: MenuKeymapUseCase,
     fun enableAll() = viewModelScope.launch {
         mKeymapUseCase.enableAll()
 
-        FingerprintGestureUtils.GESTURES.forEach { gestureId ->
+        FingerprintMapUtils.GESTURES.forEach { gestureId ->
             mFingerprintMapRepository.editGesture(gestureId) {
                 it.copy(isEnabled = true)
             }
@@ -27,7 +27,7 @@ class MenuFragmentViewModel(private val mKeymapUseCase: MenuKeymapUseCase,
     fun disableAll() = viewModelScope.launch {
         mKeymapUseCase.disableAll()
 
-        FingerprintGestureUtils.GESTURES.forEach { gestureId ->
+        FingerprintMapUtils.GESTURES.forEach { gestureId ->
             mFingerprintMapRepository.editGesture(gestureId) {
                 it.copy(isEnabled = false)
             }

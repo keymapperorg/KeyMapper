@@ -29,7 +29,7 @@ import io.github.sds100.keymapper.data.model.ChooseAppStoreModel
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
 import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
-import io.github.sds100.keymapper.data.viewmodel.FingerprintGestureViewModel
+import io.github.sds100.keymapper.data.viewmodel.FingerprintMapListViewModel
 import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
 import io.github.sds100.keymapper.databinding.DialogChooseAppStoreBinding
 import io.github.sds100.keymapper.databinding.FragmentHomeBinding
@@ -60,7 +60,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
         InjectorUtils.provideKeymapListViewModel(requireContext())
     }
 
-    private val mFingerprintGestureViewModel: FingerprintGestureViewModel by activityViewModels {
+    private val mFingerprintMapListViewModel: FingerprintMapListViewModel by activityViewModels {
         InjectorUtils.provideFingerprintMapListViewModel(requireContext())
     }
 
@@ -88,7 +88,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                 * that they need the input method to be enabled. */
                 Intent.ACTION_INPUT_METHOD_CHANGED -> {
                     mKeyMapListViewModel.rebuildModels()
-                    mFingerprintGestureViewModel.rebuildModels()
+                    mFingerprintMapListViewModel.rebuildModels()
                 }
 
                 MyAccessibilityService.ACTION_ON_START -> {
@@ -391,7 +391,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                 }
             })
 
-            mFingerprintGestureViewModel.eventStream.observe(viewLifecycleOwner, {
+            mFingerprintMapListViewModel.eventStream.observe(viewLifecycleOwner, {
                 when (it) {
                     is FixFailure -> coordinatorLayout.showFixActionSnackBar(
                         it.failure,
@@ -406,7 +406,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
         super.onResume()
 
         mKeyMapListViewModel.rebuildModels()
-        mFingerprintGestureViewModel.rebuildModels()
+        mFingerprintMapListViewModel.rebuildModels()
 
         updateStatusLayouts()
         requireContext().defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
