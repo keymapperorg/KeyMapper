@@ -7,7 +7,7 @@ import android.accessibilityservice.FingerprintGestureController
 import android.bluetooth.BluetoothDevice
 import android.content.*
 import android.media.AudioManager
-import android.os.Build
+import android.os.Build.*
 import android.os.SystemClock
 import android.os.VibrationEffect
 import android.view.KeyEvent
@@ -118,7 +118,7 @@ class MyAccessibilityService : AccessibilityService(),
                 }
 
                 ACTION_SHOW_KEYBOARD -> {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    if (VERSION.SDK_INT >= VERSION_CODES.N) {
                         softKeyboardController.show(baseContext)
                     }
                 }
@@ -209,7 +209,7 @@ class MyAccessibilityService : AccessibilityService(),
     private lateinit var mActionPerformerDelegate: ActionPerformerDelegate
     private lateinit var mConstraintDelegate: ConstraintDelegate
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    @RequiresApi(VERSION_CODES.O)
     private var mFingerprintMapManager: FingerprintMapManager? = null
 
     override val currentTime: Long
@@ -230,7 +230,7 @@ class MyAccessibilityService : AccessibilityService(),
     override val packagesCurrentlyPlayingMedia: List<String>
         get() {
             if (PermissionUtils.isPermissionGranted(Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE)
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                && VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
 
                 val component = ComponentName(this, NotificationReceiver::class.java)
 
@@ -264,7 +264,7 @@ class MyAccessibilityService : AccessibilityService(),
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    @RequiresApi(VERSION_CODES.O)
     private var mFingerprintMapRepository: FingerprintMapRepository? = null
 
     override fun onServiceConnected() {
@@ -352,7 +352,7 @@ class MyAccessibilityService : AccessibilityService(),
 
         mChosenImePackageName = KeyboardUtils.getChosenInputMethodPackageName(this).valueOrNull()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (VERSION.SDK_INT >= VERSION_CODES.O) {
 
             //check whether the device supports fingerprint gesture detection
             requestFingerprintGestureDetection()
@@ -404,7 +404,7 @@ class MyAccessibilityService : AccessibilityService(),
                 value = it
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (VERSION.SDK_INT >= VERSION_CODES.O) {
                 mFingerprintMapManager?.let { manager ->
                     addSource(manager.vibrate) {
                         value = it
@@ -416,7 +416,7 @@ class MyAccessibilityService : AccessibilityService(),
 
                 if (it.duration <= 0) return@Observer
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                if (VERSION.SDK_INT >= VERSION_CODES.O) {
                     val effect =
                         VibrationEffect.createOneShot(it.duration, VibrationEffect.DEFAULT_AMPLITUDE)
 
@@ -432,7 +432,7 @@ class MyAccessibilityService : AccessibilityService(),
                 value = it
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (VERSION.SDK_INT >= VERSION_CODES.O) {
                 mFingerprintMapManager?.let { manager ->
                     addSource(manager.performAction) {
                         value = it
@@ -462,7 +462,7 @@ class MyAccessibilityService : AccessibilityService(),
 
         unregisterReceiver(mBroadcastReceiver)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (VERSION.SDK_INT >= VERSION_CODES.O) {
             fingerprintGestureController
                 .unregisterFingerprintGestureCallback(mFingerprintGestureCallback)
         }
@@ -544,12 +544,20 @@ class MyAccessibilityService : AccessibilityService(),
                     if (AppPreferences.toggleKeyboardOnToggleKeymaps) {
                         KeyboardUtils.chooseLastUsedIncompatibleInputMethod(this)
                     }
+
+                    if (VERSION.SDK_INT >= VERSION_CODES.O) {
+                        denyFingerprintGestureDetection()
+                    }
                 } else {
                     WidgetsManager.onEvent(this, EVENT_RESUME_REMAPS)
 
                     if (AppPreferences.toggleKeyboardOnToggleKeymaps) {
                         KeyboardUtils.saveLastUsedIncompatibleIme(this)
                         KeyboardUtils.chooseCompatibleInputMethod(this)
+                    }
+
+                    if (VERSION.SDK_INT >= VERSION_CODES.O) {
+                        requestFingerprintGestureDetection()
                     }
                 }
             }
@@ -573,7 +581,7 @@ class MyAccessibilityService : AccessibilityService(),
     override fun getLifecycle() = mLifecycleRegistry
 
     override val keyboardController: SoftKeyboardController?
-        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        get() = if (VERSION.SDK_INT >= VERSION_CODES.N) {
             softKeyboardController
         } else {
             null
@@ -582,27 +590,28 @@ class MyAccessibilityService : AccessibilityService(),
     override val rootNode: AccessibilityNodeInfo?
         get() = rootInActiveWindow
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    @RequiresApi(VERSION_CODES.O)
     private fun requestFingerprintGestureDetection() {
         serviceInfo = serviceInfo.apply {
             flags = flags.withFlag(AccessibilityServiceInfo.FLAG_REQUEST_FINGERPRINT_GESTURES)
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    @RequiresApi(VERSION_CODES.O)
     private fun denyFingerprintGestureDetection() {
         serviceInfo = serviceInfo.apply {
             flags = flags.minusFlag(AccessibilityServiceInfo.FLAG_REQUEST_FINGERPRINT_GESTURES)
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    @RequiresApi(VERSION_CODES.O)
     private fun observeFingerprintMaps(repository: FingerprintMapRepository) {
         repository.fingerprintGestureMapsLiveData.observe(this, Observer { maps ->
 
             mFingerprintMapManager?.fingerprintMaps = maps
 
-            if (maps.any { it.value.isEnabled && it.value.actionList.isNotEmpty() }) {
+            if (maps.any { it.value.isEnabled && it.value.actionList.isNotEmpty() }
+                && !AppPreferences.keymapsPaused) {
                 requestFingerprintGestureDetection()
             } else {
                 denyFingerprintGestureDetection()
