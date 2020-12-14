@@ -22,7 +22,7 @@ class KeymapListViewModel internal constructor(
 
     private val _eventStream = LiveEvent<Event>().apply {
         addSource(mKeymapRepository.keymapList) {
-            value = BuildKeymapListModels(it)
+            postValue(BuildKeymapListModels(it))
         }
     }
 
@@ -65,7 +65,9 @@ class KeymapListViewModel internal constructor(
     }
 
     fun rebuildModels() {
-        if (mKeymapRepository.keymapList.value.isNullOrEmpty()) {
+        if (mKeymapRepository.keymapList.value == null) return
+
+        if (mKeymapRepository.keymapList.value?.isEmpty() == true) {
             keymapModelList.value = Empty()
             return
         }
