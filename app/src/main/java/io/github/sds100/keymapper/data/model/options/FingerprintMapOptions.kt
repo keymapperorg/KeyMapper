@@ -16,7 +16,7 @@ import splitties.bitflags.hasFlag
 class FingerprintMapOptions(
     override val id: String,
     val vibrate: BoolOption,
-    val vibrateDuration: IntOption
+    private val vibrateDuration: IntOption
 
 ) : BaseOptions<FingerprintMap> {
     companion object {

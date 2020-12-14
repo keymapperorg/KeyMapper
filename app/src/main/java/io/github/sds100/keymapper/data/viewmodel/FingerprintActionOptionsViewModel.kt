@@ -63,6 +63,21 @@ class FingerprintActionOptionsViewModel : BaseOptionsDialogViewModel<Fingerprint
                     )
                 )
             }
+
+            FingerprintActionOptions.ID_HOLD_DOWN_DURATION -> {
+                SliderListItemModel(
+                    id = option.id,
+                    label = R.string.extra_label_hold_down_duration,
+                    sliderModel = SliderModel(
+                        value = option.value.nullIfDefault,
+                        isDefaultStepEnabled = true,
+                        min = R.integer.hold_down_duration_min,
+                        maxSlider = R.integer.hold_down_duration_max,
+                        stepSize = R.integer.hold_down_duration_step_size
+                    )
+                )
+            }
+
             else -> throw Exception(
                 "Don't know how to create a SliderListItemModel for this option $option.id")
         }
@@ -89,6 +104,14 @@ class FingerprintActionOptionsViewModel : BaseOptionsDialogViewModel<Fingerprint
                 CheckBoxListItemModel(
                     id = option.id,
                     label = R.string.flag_repeat_until_swiped_again,
+                    isChecked = option.value
+                )
+            }
+
+            FingerprintActionOptions.ID_HOLD_DOWN_UNTIL_SWIPED_AGAIN -> {
+                CheckBoxListItemModel(
+                    id = option.id,
+                    label = R.string.flag_hold_down_until_swiped_again,
                     isChecked = option.value
                 )
             }

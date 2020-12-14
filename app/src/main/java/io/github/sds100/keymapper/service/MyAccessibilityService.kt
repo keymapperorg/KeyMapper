@@ -466,7 +466,7 @@ class MyAccessibilityService : AccessibilityService(),
             fingerprintGestureController
                 .unregisterFingerprintGestureCallback(mFingerprintGestureCallback)
 
-            mFingerprintGestureMapController?.stopJobs()
+            mFingerprintGestureMapController?.reset()
         }
 
         super.onDestroy()

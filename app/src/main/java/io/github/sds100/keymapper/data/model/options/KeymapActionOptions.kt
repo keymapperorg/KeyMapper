@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.data.model.options
 
-import android.os.Build
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Extra
 import io.github.sds100.keymapper.data.model.Trigger
@@ -83,10 +82,7 @@ class KeymapActionOptions(
             value = action.holdDown,
             isAllowed = if (triggerKeys != null && triggerMode != null) {
                 KeymapDetectionDelegate.performActionOnDown(triggerKeys, triggerMode)
-                    && (action.type == ActionType.KEY_EVENT
-                    || (action.type == ActionType.TAP_COORDINATE
-                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                    )
+                    && action.canBeHeldDown
             } else {
                 false
             }

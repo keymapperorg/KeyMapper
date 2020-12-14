@@ -27,10 +27,11 @@ class FingerprintGestureMapController(
 
     private val mRepeatJobs = mutableMapOf<String, List<RepeatJob>>()
     private val mPerformActionJobs = mutableMapOf<String, Job>()
+    private val mActionsBeingHeldDown = mutableListOf<Action>()
 
     var fingerprintMaps: Map<String, FingerprintMap> = emptyMap()
         set(value) {
-            stopJobs()
+            reset()
 
             field = value
         }
@@ -73,7 +74,26 @@ class FingerprintGestureMapController(
                             job.start()
                         }
                     } else {
-                        performAction(it)
+
+                        val alreadyBeingHeldDown = if (it.holdDown) {
+                            mActionsBeingHeldDown.any { action -> action.uid == it.uid }
+                        } else {
+                            false
+                        }
+
+                        val keyEventAction = when {
+                            it.holdDown && !alreadyBeingHeldDown -> KeyEventAction.DOWN
+                            alreadyBeingHeldDown -> KeyEventAction.UP
+                            else -> KeyEventAction.DOWN_UP
+                        }
+
+                        if (alreadyBeingHeldDown) {
+                            mActionsBeingHeldDown.remove(it)
+                        } else {
+                            mActionsBeingHeldDown.add(it)
+                        }
+
+                        performAction(it, keyEventAction)
                     }
 
                     delay(it.delayBeforeNextAction?.toLong() ?: 0)
@@ -106,17 +126,32 @@ class FingerprintGestureMapController(
         }
     }
 
-    private fun repeatAction(action: Action) = mCoroutineScope.async(start = CoroutineStart.LAZY) {
-        val repeatRate = action.repeatRate ?: AppPreferences.repeatRate
+    private fun repeatAction(action: Action) = mCoroutineScope.launch(start = CoroutineStart.LAZY) {
+        val repeatRate = action.repeatRate?.toLong() ?: AppPreferences.repeatRate.toLong()
+
+        val holdDownDuration = action.holdDownDuration?.toLong()
+            ?: AppPreferences.holdDownDuration.toLong()
+
+        val holdDown = action.holdDown
 
         while (true) {
-            performAction(action)
+            val keyEventAction = when {
+                holdDown -> KeyEventAction.DOWN
+                else -> KeyEventAction.DOWN_UP
+            }
 
-            delay(repeatRate.toLong())
+            performAction(action, keyEventAction)
+
+            if (holdDown) {
+                delay(holdDownDuration)
+                performAction(action, KeyEventAction.UP)
+            }
+
+            delay(repeatRate)
         }
     }
 
-    fun stopJobs() {
+    fun reset() {
         mRepeatJobs.values.forEach { jobs ->
             jobs.forEach { it.cancel() }
         }
@@ -128,6 +163,12 @@ class FingerprintGestureMapController(
         }
 
         mPerformActionJobs.clear()
+
+        mActionsBeingHeldDown.forEach {
+            performAction(it, KeyEventAction.UP)
+        }
+
+        mActionsBeingHeldDown.clear()
     }
 
     private class RepeatJob(val actionUuid: String, launch: () -> Job) : Job by launch.invoke()
