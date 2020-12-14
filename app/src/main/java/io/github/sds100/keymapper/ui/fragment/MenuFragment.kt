@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -32,22 +31,17 @@ class MenuFragment : BottomSheetDialogFragment(),
         InjectorUtils.provideBackupRestoreViewModel(requireContext())
     }
 
-    private val mKeymapsPaused = MutableLiveData(AppPreferences.keymapsPaused)
-    private val mAccessibilityServiceEnabled by lazy {
-        MutableLiveData(AccessibilityUtils.isServiceEnabled(requireContext()))
-    }
-
     private val mBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             intent ?: return
 
             when (intent.action) {
                 MyAccessibilityService.ACTION_ON_START -> {
-                    mAccessibilityServiceEnabled.value = true
+                    mViewModel.accessibilityServiceEnabled.value = true
                 }
 
                 MyAccessibilityService.ACTION_ON_STOP -> {
-                    mAccessibilityServiceEnabled.value = false
+                    mViewModel.accessibilityServiceEnabled.value = false
                 }
             }
         }
@@ -73,7 +67,11 @@ class MenuFragment : BottomSheetDialogFragment(),
         requireContext().defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         FragmentMenuBinding.inflate(inflater, container, false).apply {
 
             lifecycleOwner = viewLifecycleOwner
@@ -89,72 +87,44 @@ class MenuFragment : BottomSheetDialogFragment(),
         val dialog = requireDialog() as BottomSheetDialog
         dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
 
-        binding.apply {
-            keymapsPaused = mKeymapsPaused
-            accessibilityServiceEnabled = mAccessibilityServiceEnabled
+        binding.viewModel = mViewModel
 
-            setChangeKeyboard {
-                KeyboardUtils.showInputMethodPicker()
-                dismiss()
-            }
+        mViewModel.apply {
+            keymapsPaused.value = AppPreferences.keymapsPaused
+            accessibilityServiceEnabled.value = AccessibilityUtils.isServiceEnabled(requireContext())
 
-            setSendFeedback {
-                requireActivity().alertDialog {
-                    messageResource = R.string.dialog_message_view_faq_and_use_discord_over_email
-
-                    positiveButton(R.string.pos_help_page) {
+            eventStream.observe(viewLifecycleOwner, {
+                when (it) {
+                    is ChooseKeyboard -> {
+                        KeyboardUtils.showInputMethodPicker()
                         dismiss()
-                        findNavController().navigate(MenuFragmentDirections.actionGlobalHelpFragment())
                     }
 
-                    negativeButton(R.string.neutral_discord) {
+                    is SendFeedback -> this@MenuFragment.sendFeedback()
+                    is OpenSettings -> {
+                        findNavController().navigate(R.id.action_global_settingsFragment)
                         dismiss()
-                        requireContext().openUrl(str(R.string.url_discord_server_invite))
                     }
 
-                    neutralButton(R.string.neg_email) {
+                    is OpenAbout -> {
+                        findNavController().navigate(R.id.action_global_aboutFragment)
                         dismiss()
-                        FeedbackUtils.emailDeveloper(requireContext())
                     }
 
-                    show()
+                    is PauseKeymaps -> AppPreferences.keymapsPaused = true
+                    is ResumeKeymaps -> AppPreferences.keymapsPaused = false
+
+                    is EnableAccessibilityService ->
+                        AccessibilityUtils.enableService(requireContext())
+
+                    is RequestRestore -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        mBackupRestoreViewModel.requestRestore()
+                        dismiss()
+                    }
+
+                    is RequestBackupAll -> mBackupRestoreViewModel.requestBackupAll()
                 }
-            }
-
-            setOpenSettings {
-                findNavController().navigate(R.id.action_global_settingsFragment)
-                dismiss()
-            }
-
-            setOpenAbout {
-                dismiss()
-                findNavController().navigate(R.id.action_global_aboutFragment)
-            }
-
-            setEnableAll {
-                mViewModel.enableAll()
-                dismiss()
-            }
-
-            setDisableAll {
-                mViewModel.disableAll()
-                dismiss()
-            }
-
-            setToggleKeymaps {
-                AppPreferences.keymapsPaused = !AppPreferences.keymapsPaused
-            }
-
-            setEnableAccessibilityService {
-                AccessibilityUtils.enableService(requireContext())
-            }
-
-            setRestore {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    mBackupRestoreViewModel.requestRestore()
-                    dismiss()
-                }
-            }
+            })
         }
     }
 
@@ -172,7 +142,30 @@ class MenuFragment : BottomSheetDialogFragment(),
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         if (key == str(R.string.key_pref_keymaps_paused)) {
-            mKeymapsPaused.value = AppPreferences.keymapsPaused
+            mViewModel.keymapsPaused.value = AppPreferences.keymapsPaused
+        }
+    }
+
+    private fun sendFeedback() {
+        requireActivity().alertDialog {
+            messageResource = R.string.dialog_message_view_faq_and_use_discord_over_email
+
+            positiveButton(R.string.pos_help_page) {
+                dismiss()
+                findNavController().navigate(MenuFragmentDirections.actionGlobalHelpFragment())
+            }
+
+            negativeButton(R.string.neutral_discord) {
+                dismiss()
+                requireContext().openUrl(str(R.string.url_discord_server_invite))
+            }
+
+            neutralButton(R.string.neg_email) {
+                dismiss()
+                FeedbackUtils.emailDeveloper(requireContext())
+            }
+
+            show()
         }
     }
 }

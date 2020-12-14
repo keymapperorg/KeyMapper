@@ -248,8 +248,11 @@
     <string name="action_duplicate_keymap">Duplicate</string>
     <string name="action_backup">Backup</string>
     <string name="action_restore">Restore</string>
+    <string name="action_backup_everything">Backup Everything</string>
+    <string name="action_backup_all">Backup All</string>
     <string name="action_tap_to_pause_keymaps">Tap to pause</string>
     <string name="action_tap_to_resume_keymaps">Tap to resume</string>
+    <string name="action_reset">Reset</string>
     <!-- Menu action titles-->
 
     <!-- Button titles -->

@@ -47,7 +47,7 @@ abstract class RecyclerViewFragment<BINDING : ViewDataBinding> : Fragment() {
     open var isInPagerAdapter = false
     open var requestKey: String? = null
     open var searchStateKey: String? = null
-    abstract val appBar: BottomAppBar
+    open val appBar: BottomAppBar? = null
 
     /**
      * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
@@ -85,9 +85,9 @@ abstract class RecyclerViewFragment<BINDING : ViewDataBinding> : Fragment() {
             subscribeUi(binding)
             setupSearchView()
 
-            appBar.isVisible = isAppBarVisible
+            appBar?.isVisible = isAppBarVisible
 
-            appBar.setNavigationOnClickListener {
+            appBar?.setNavigationOnClickListener {
                 findNavController().navigateUp()
             }
 
@@ -106,11 +106,16 @@ abstract class RecyclerViewFragment<BINDING : ViewDataBinding> : Fragment() {
     }
 
     private fun setupSearchView() {
-        val searchViewMenuItem = appBar.menu.findItem(R.id.action_search)
+        appBar ?: return
+
+        val searchViewMenuItem = appBar!!.menu.findItem(R.id.action_search)
         searchViewMenuItem.isVisible = mIsSearchEnabled
 
         if (mIsSearchEnabled) {
-            findNavController().observeCurrentDestinationLiveData<String>(viewLifecycleOwner, searchStateKey!!) {
+            findNavController().observeCurrentDestinationLiveData<String>(
+                viewLifecycleOwner,
+                searchStateKey!!
+            ) {
                 onSearchQuery(it)
             }
 

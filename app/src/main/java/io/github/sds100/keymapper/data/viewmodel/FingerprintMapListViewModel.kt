@@ -38,7 +38,8 @@ class FingerprintMapListViewModel(
 
     private val _eventStream = LiveEvent<Event>().apply {
         addSource(mFingerprintGestureMaps.asLiveData()) {
-            value = BuildFingerprintGestureModels(it)
+            //this is important to prevent events being sent in the wrong order
+            postValue(BuildFingerprintMapModels(it))
         }
     }
 
@@ -54,16 +55,28 @@ class FingerprintMapListViewModel(
         }
     }
 
-    fun rebuildModels() = viewModelScope.launch {
-        _models.value = Loading()
+    fun rebuildModels() {
+        viewModelScope.launch {
+            _models.value = Loading()
 
-        mFingerprintGestureMaps.firstOrNull()?.let {
-            _eventStream.value = BuildFingerprintGestureModels(it)
+            mFingerprintGestureMaps.firstOrNull()?.let {
+                _eventStream.postValue(BuildFingerprintMapModels(it))
+            }
         }
     }
 
     fun fixError(failure: Failure) {
         _eventStream.value = FixFailure(failure)
+    }
+
+    fun backupAll() = run { _eventStream.value = BackupFingerprintMaps() }
+
+    fun requestReset() = run { _eventStream.value = RequestFingerprintMapReset() }
+
+    fun reset() {
+        viewModelScope.launch {
+            mRepository.reset()
+        }
     }
 
     suspend fun getDeviceInfoList() = mDeviceInfoRepository.getAll()

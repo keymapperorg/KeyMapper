@@ -4,11 +4,10 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.github.salomonbrys.kotson.byArray
-import com.github.salomonbrys.kotson.fromJson
-import com.github.salomonbrys.kotson.registerTypeAdapter
+import com.github.salomonbrys.kotson.*
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.data.AppPreferences
@@ -34,13 +33,23 @@ object BackupUtils {
     //DON'T CHANGE THESE. Used for serialization and parsing.
     private const val NAME_KEYMAP_LIST = "keymap_list"
     private const val NAME_DEVICE_INFO = "device_info"
+    private const val NAME_FINGERPRINT_SWIPE_DOWN = "fingerprint_swipe_down"
+    private const val NAME_FINGERPRINT_SWIPE_UP = "fingerprint_swipe_up"
+    private const val NAME_FINGERPRINT_SWIPE_LEFT = "fingerprint_swipe_left"
+    private const val NAME_FINGERPRINT_SWIPE_RIGHT = "fingerprint_swipe_right"
 
     val backupAutomatically: Boolean
         get() = AppPreferences.automaticBackupLocation.isNotBlank()
 
-    suspend fun backup(outputStream: OutputStream,
-                       keymapList: List<KeyMap>,
-                       allDeviceInfo: List<DeviceInfo>): Result<Unit> = withContext(Dispatchers.IO) {
+    suspend fun backup(
+        outputStream: OutputStream,
+        keymapList: List<KeyMap>,
+        allDeviceInfo: List<DeviceInfo>,
+        fingerprintSwipeDown: FingerprintMap?,
+        fingerprintSwipeUp: FingerprintMap?,
+        fingerprintSwipeLeft: FingerprintMap?,
+        fingerprintSwipeRight: FingerprintMap?
+    ): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             val deferred = async(Dispatchers.IO) {
                 //delete the contents of the file
@@ -56,10 +65,18 @@ object BackupUtils {
                     }
                 }
 
-                val deviceInfoList = deviceInfoIdsToBackup.map { id -> allDeviceInfo.single { it.descriptor == id } }
+                val deviceInfoList =
+                    deviceInfoIdsToBackup.map { id -> allDeviceInfo.single { it.descriptor == id } }
 
                 outputStream.bufferedWriter().use { bufferedWriter ->
-                    val json = Gson().toJson(BackupModel(keymapList, deviceInfoList))
+                    val json = Gson().toJson(BackupModel(
+                        keymapList,
+                        deviceInfoList,
+                        fingerprintSwipeDown,
+                        fingerprintSwipeUp,
+                        fingerprintSwipeLeft,
+                        fingerprintSwipeRight
+                    ))
 
                     bufferedWriter.write(json)
                 }
@@ -87,7 +104,8 @@ object BackupUtils {
                     .registerTypeAdapter(Action.DESERIALIZER)
                     .registerTypeAdapter(Constraint.DESERIALIZER)
                     .registerTypeAdapter(DeviceInfo.DESERIALIZER)
-                    .registerTypeAdapter(Extra.DESERIALIZER).create()
+                    .registerTypeAdapter(Extra.DESERIALIZER)
+                    .registerTypeAdapter(FingerprintMap.DESERIALIZER).create()
 
                 val rootElement = parser.parse(json)
                 val keymapListJsonArray by rootElement.byArray(NAME_KEYMAP_LIST)
@@ -96,7 +114,15 @@ object BackupUtils {
                 val deviceInfoJsonArray by rootElement.byArray(NAME_DEVICE_INFO)
                 val deviceInfoList = gson.fromJson<List<DeviceInfo>>(deviceInfoJsonArray)
 
-                return@withContext Success(RestoreModel(keymapList, deviceInfoList))
+                return@withContext Success(
+                    RestoreModel(
+                        keymapList,
+                        deviceInfoList,
+                        getFingerprintMap(gson, rootElement, NAME_FINGERPRINT_SWIPE_DOWN),
+                        getFingerprintMap(gson, rootElement, NAME_FINGERPRINT_SWIPE_UP),
+                        getFingerprintMap(gson, rootElement, NAME_FINGERPRINT_SWIPE_LEFT),
+                        getFingerprintMap(gson, rootElement, NAME_FINGERPRINT_SWIPE_RIGHT)
+                    ))
             }
 
         } catch (e: Exception) {
@@ -133,11 +159,41 @@ object BackupUtils {
         }
     }
 
-    class RestoreModel(val keymapList: List<KeyMap>, val deviceInfo: List<DeviceInfo>)
+    private fun getFingerprintMap(
+        gson: Gson,
+        rootElement: JsonElement,
+        name: String,
+    ): FingerprintMap? {
+
+        val json by rootElement.byNullableObject(name)
+        return json?.let { gson.fromJson(it) }
+    }
+
+    class RestoreModel(
+        val keymapList: List<KeyMap>,
+        val deviceInfo: List<DeviceInfo>,
+        val fingerprintSwipeDown: FingerprintMap? = null,
+        val fingerprintSwipeUp: FingerprintMap? = null,
+        val fingerprintSwipeLeft: FingerprintMap? = null,
+        val fingerprintSwipeRight: FingerprintMap? = null
+    )
 
     private class BackupModel(@SerializedName(NAME_KEYMAP_LIST)
                               val keymapList: List<KeyMap>,
 
                               @SerializedName(NAME_DEVICE_INFO)
-                              val deviceInfo: List<DeviceInfo>)
+                              val deviceInfo: List<DeviceInfo>,
+
+                              @SerializedName(NAME_FINGERPRINT_SWIPE_DOWN)
+                              val fingerprintSwipeDown: FingerprintMap?,
+
+                              @SerializedName(NAME_FINGERPRINT_SWIPE_UP)
+                              val fingerprintSwipeUp: FingerprintMap?,
+
+                              @SerializedName(NAME_FINGERPRINT_SWIPE_LEFT)
+                              val fingerprintSwipeLeft: FingerprintMap?,
+
+                              @SerializedName(NAME_FINGERPRINT_SWIPE_RIGHT)
+                              val fingerprintSwipeRight: FingerprintMap?
+    )
 }

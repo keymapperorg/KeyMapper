@@ -37,16 +37,16 @@ class KeymapListFragment : DefaultRecyclerViewFragment() {
     private val selectionProvider: ISelectionProvider
         get() = mViewModel.selectionProvider
 
-    private val mBackupLauncher by lazy {
-        requireActivity().registerForActivityResult(ActivityResultContracts.CreateDocument()) {
+    private val mBackupLauncher =
+        registerForActivityResult(ActivityResultContracts.CreateDocument()) {
             it ?: return@registerForActivityResult
 
-            mBackupRestoreViewModel.backup(requireActivity().contentResolver.openOutputStream(it),
-                *selectionProvider.selectedIds)
+            mBackupRestoreViewModel.backupKeymaps(
+                requireActivity().contentResolver.openOutputStream(it),
+                mViewModel.getSelectedKeymaps())
 
             selectionProvider.stopSelecting()
         }
-    }
 
     private val mController = KeymapController()
 
@@ -75,7 +75,7 @@ class KeymapListFragment : DefaultRecyclerViewFragment() {
                         mViewModel.setModelList(buildModelList(it.keymapList))
                     }
 
-                    is BackupSelectedKeymaps -> {
+                    is RequestBackupSelectedKeymaps -> {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                             mBackupLauncher.launch(BackupUtils.createFileName())
                         }

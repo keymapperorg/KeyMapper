@@ -90,7 +90,7 @@ class HomeActivity : AppCompatActivity() {
                 BackupUtils.createAutomaticBackupOutputStream(this)
                     .onSuccess {
                         lifecycleScope.launch {
-                            mBackupRestoreViewModel.backup(it, event.keymapList)
+                            mBackupRestoreViewModel.backupKeymaps(it, event.keymapList)
                         }
                     }.onFailure {
                         if (it is FileAccessDenied) {

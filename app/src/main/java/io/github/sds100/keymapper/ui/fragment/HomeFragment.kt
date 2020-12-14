@@ -102,13 +102,20 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
         }
     }
 
-    private val mRestoreLauncher by lazy {
-        requireActivity().registerForActivityResult(ActivityResultContracts.GetContent()) {
+    private val mBackupLauncher =
+        registerForActivityResult(ActivityResultContracts.CreateDocument()) {
+            it ?: return@registerForActivityResult
+
+            mBackupRestoreViewModel
+                .backupAll(requireActivity().contentResolver.openOutputStream(it))
+        }
+
+    private val mRestoreLauncher =
+        registerForActivityResult(ActivityResultContracts.GetContent()) {
             it ?: return@registerForActivityResult
 
             mBackupRestoreViewModel.restore(requireContext().contentResolver.openInputStream(it))
         }
-    }
 
     private val mBackupRestoreViewModel: BackupRestoreViewModel by activityViewModels {
         InjectorUtils.provideBackupRestoreViewModel(requireContext())
@@ -208,13 +215,13 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
 
                     R.id.action_enable -> {
                         mKeyMapListViewModel
-                            .enableKeymaps(*mKeyMapListViewModel.selectionProvider.selectedIds)
+                            .enableSelectedKeymaps()
                         true
                     }
 
                     R.id.action_disable -> {
                         mKeyMapListViewModel
-                            .disableKeymaps(*mKeyMapListViewModel.selectionProvider.selectedIds)
+                            .disableSelectedKeymaps()
                         true
                     }
 
@@ -225,7 +232,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                     }
 
                     R.id.action_backup -> {
-                        mKeyMapListViewModel.backup()
+                        mKeyMapListViewModel.requestBackupSelectedKeymaps()
                         true
                     }
 
@@ -273,6 +280,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                     is MessageEvent -> toast(it.textRes)
                     is ShowErrorMessage -> toast(it.failure.getFullMessage(requireContext()))
                     is RequestRestore -> mRestoreLauncher.launch(FileUtils.MIME_TYPE_ALL)
+                    is RequestBackupAll -> mBackupLauncher.launch(BackupUtils.createFileName())
                 }
             })
 

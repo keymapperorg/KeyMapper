@@ -19,7 +19,6 @@ import androidx.annotation.StringRes
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.options.BaseOptions
-import io.github.sds100.keymapper.data.model.options.FingerprintMapOptions
 import io.github.sds100.keymapper.data.model.options.TriggerKeyOptions
 import io.github.sds100.keymapper.util.result.Failure
 
@@ -46,13 +45,14 @@ class SelectScreenshot : Event()
 class ChooseKeycode : Event()
 class BuildDeviceInfoModels : Event()
 
-class BackupSelectedKeymaps : Event()
+class RequestBackupSelectedKeymaps : Event()
 class BuildKeymapListModels(val keymapList: List<KeyMap>) : Event()
 
 class OkDialog(@StringRes val message: Int, val onOk: () -> Unit) : Event()
 class EnableAccessibilityServicePrompt : Event()
 class RequestBackup(val keymapList: List<KeyMap>) : Event()
 class RequestRestore : Event()
+class RequestBackupAll : Event()
 class ShowErrorMessage(val failure: Failure) : Event()
 
 //trigger
@@ -73,5 +73,15 @@ class BuildConstraintListModels(val source: List<Constraint>) : Event()
 class SelectConstraint(val constraint: Constraint) : Event()
 
 //fingerprint gesture maps
-class BuildFingerprintGestureModels(val maps: Map<String, FingerprintMap>) : Event()
-class EditFingerprintGestureMapOptions(val options: FingerprintMapOptions) : Event()
+class BuildFingerprintMapModels(val maps: Map<String, FingerprintMap>) : Event()
+class BackupFingerprintMaps : Event()
+class RequestFingerprintMapReset : Event()
+
+//menu
+class OpenSettings : Event()
+class OpenAbout : Event()
+class ChooseKeyboard : Event()
+class SendFeedback : Event()
+class ResumeKeymaps : Event()
+class PauseKeymaps : Event()
+class EnableAccessibilityService : Event()

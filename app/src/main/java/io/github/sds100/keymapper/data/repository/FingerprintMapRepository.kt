@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.data.repository
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.clear
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.asLiveData
 import com.github.salomonbrys.kotson.fromJson
@@ -68,6 +69,12 @@ class FingerprintMapRepository constructor(private val mDataStore: DataStore<Pre
             val new = block.invoke(prefs.getGesture(key))
 
             prefs[key] = mGson.toJson(new)
+        }
+    }
+
+    suspend fun reset() {
+        mDataStore.edit { prefs ->
+            prefs.clear()
         }
     }
 
