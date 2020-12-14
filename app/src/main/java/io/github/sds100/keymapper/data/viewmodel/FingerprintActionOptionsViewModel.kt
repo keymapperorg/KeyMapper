@@ -49,6 +49,20 @@ class FingerprintActionOptionsViewModel : BaseOptionsDialogViewModel<Fingerprint
                     )
                 )
             }
+
+            FingerprintActionOptions.ID_REPEAT_RATE -> {
+                SliderListItemModel(
+                    id = option.id,
+                    label = R.string.extra_label_repeat_rate,
+                    sliderModel = SliderModel(
+                        value = option.value.nullIfDefault,
+                        isDefaultStepEnabled = true,
+                        min = R.integer.repeat_rate_min,
+                        maxSlider = R.integer.repeat_rate_max,
+                        stepSize = R.integer.repeat_rate_step_size
+                    )
+                )
+            }
             else -> throw Exception(
                 "Don't know how to create a SliderListItemModel for this option $option.id")
         }
@@ -67,6 +81,14 @@ class FingerprintActionOptionsViewModel : BaseOptionsDialogViewModel<Fingerprint
                 CheckBoxListItemModel(
                     id = option.id,
                     label = R.string.flag_show_volume_dialog,
+                    isChecked = option.value
+                )
+            }
+
+            FingerprintActionOptions.ID_REPEAT_UNTIL_SWIPED_AGAIN -> {
+                CheckBoxListItemModel(
+                    id = option.id,
+                    label = R.string.flag_repeat_until_swiped_again,
                     isChecked = option.value
                 )
             }

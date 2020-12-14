@@ -207,9 +207,11 @@ data class Action(
 
             val uid by it.json.byNullableString(NAME_UID)
 
-            Action(type, data, extraList.toMutableList(), flags, uid ?: UUID.randomUUID().toString())
+            Action(type, data, extraList.toMutableList(), flags, uid
+                ?: UUID.randomUUID().toString())
         }
     }
 
-    constructor(type: ActionType, data: String, extra: Extra) : this(type, data, mutableListOf(extra))
+    constructor(type: ActionType, data: String, extra: Extra
+    ) : this(type, data, mutableListOf(extra))
 }

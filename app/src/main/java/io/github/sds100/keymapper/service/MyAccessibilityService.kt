@@ -210,7 +210,7 @@ class MyAccessibilityService : AccessibilityService(),
     private lateinit var mConstraintDelegate: ConstraintDelegate
 
     @RequiresApi(VERSION_CODES.O)
-    private var mFingerprintMapManager: FingerprintMapManager? = null
+    private var mFingerprintGestureMapController: FingerprintGestureMapController? = null
 
     override val currentTime: Long
         get() = SystemClock.elapsedRealtime()
@@ -362,7 +362,7 @@ class MyAccessibilityService : AccessibilityService(),
 
             mFingerprintMapRepository = (application as MyApplication).fingerprintMapRepository
 
-            mFingerprintMapManager = FingerprintMapManager(
+            mFingerprintGestureMapController = FingerprintGestureMapController(
                 lifecycleScope,
                 iConstraintDelegate = mConstraintDelegate,
                 iActionError = this
@@ -374,7 +374,7 @@ class MyAccessibilityService : AccessibilityService(),
                     override fun onGestureDetected(gesture: Int) {
                         super.onGestureDetected(gesture)
 
-                        mFingerprintMapManager?.onGesture(gesture)
+                        mFingerprintGestureMapController?.onGesture(gesture)
                     }
                 }
 
@@ -405,7 +405,7 @@ class MyAccessibilityService : AccessibilityService(),
             }
 
             if (VERSION.SDK_INT >= VERSION_CODES.O) {
-                mFingerprintMapManager?.let { manager ->
+                mFingerprintGestureMapController?.let { manager ->
                     addSource(manager.vibrate) {
                         value = it
                     }
@@ -433,7 +433,7 @@ class MyAccessibilityService : AccessibilityService(),
             }
 
             if (VERSION.SDK_INT >= VERSION_CODES.O) {
-                mFingerprintMapManager?.let { manager ->
+                mFingerprintGestureMapController?.let { manager ->
                     addSource(manager.performAction) {
                         value = it
                     }
@@ -465,6 +465,8 @@ class MyAccessibilityService : AccessibilityService(),
         if (VERSION.SDK_INT >= VERSION_CODES.O) {
             fingerprintGestureController
                 .unregisterFingerprintGestureCallback(mFingerprintGestureCallback)
+
+            mFingerprintGestureMapController?.stopJobs()
         }
 
         super.onDestroy()
@@ -608,7 +610,7 @@ class MyAccessibilityService : AccessibilityService(),
     private fun observeFingerprintMaps(repository: FingerprintMapRepository) {
         repository.fingerprintGestureMapsLiveData.observe(this, Observer { maps ->
 
-            mFingerprintMapManager?.fingerprintMaps = maps
+            mFingerprintGestureMapController?.fingerprintMaps = maps
 
             if (maps.any { it.value.isEnabled && it.value.actionList.isNotEmpty() }
                 && !AppPreferences.keymapsPaused) {

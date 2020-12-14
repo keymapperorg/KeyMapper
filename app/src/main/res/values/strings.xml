@@ -541,6 +541,7 @@
     <string name="flag_repeat_actions">Repeat</string>
     <string name="flag_hold_down">Hold down</string>
     <string name="flag_dont_override_default_action">Do Not Override Default Action</string>
+    <string name="flag_repeat_until_swiped_again">Repeat Until Swiped Again</string>
     <!--flags-->
 
     <!-- Showcase -->
