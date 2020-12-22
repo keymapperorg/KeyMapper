@@ -7,5 +7,4 @@
     <integer-array name="config_keymap_fragments" tools:ignore="InconsistentArrays">
         <item>@integer/fragment_id_config_keymap_all</item>
     </integer-array>
-
 </resources>
