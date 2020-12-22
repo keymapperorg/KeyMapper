@@ -19,7 +19,7 @@ class UnsupportedActionListFragment : DefaultRecyclerViewFragment() {
         InjectorUtils.provideUnsupportedActionListViewModel(requireContext())
     }
 
-    override fun subscribeList(binding: FragmentRecyclerviewBinding) {
+    override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
         binding.apply {
             mViewModel.unsupportedSystemActions.observe(viewLifecycleOwner, { unsupportedActions ->
                 state = unsupportedActions
@@ -31,7 +31,8 @@ class UnsupportedActionListFragment : DefaultRecyclerViewFragment() {
                         simple {
                             id(0)
                             primaryText(str(R.string.action_type_tap_coordinate))
-                            secondaryText(SdkVersionTooLow(Build.VERSION_CODES.N).getFullMessage(requireContext()))
+                            secondaryText(SdkVersionTooLow(Build.VERSION_CODES.N)
+                                .getFullMessage(requireContext()))
                         }
                     }
 

@@ -3,9 +3,12 @@ package io.github.sds100.keymapper.data.viewmodel
 import android.annotation.SuppressLint
 import android.view.KeyEvent
 import androidx.lifecycle.*
+import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.data.model.CheckBoxListItemModel
 import io.github.sds100.keymapper.data.model.DeviceInfo
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
+import io.github.sds100.keymapper.util.BuildDeviceInfoModels
+import io.github.sds100.keymapper.util.ChooseKeycode
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.KeyEventUtils
 import io.github.sds100.keymapper.util.result.CantBeEmpty
@@ -19,7 +22,8 @@ import splitties.bitflags.withFlag
  * Created by sds100 on 30/03/2020.
  */
 
-class KeyEventActionTypeViewModel(private val mDeviceInfoRepository: DeviceInfoRepository) : ViewModel() {
+class KeyEventActionTypeViewModel(private val mDeviceInfoRepository: DeviceInfoRepository
+) : ViewModel() {
 
     val keyCode = MutableLiveData<String>(null)
 
@@ -39,10 +43,11 @@ class KeyEventActionTypeViewModel(private val mDeviceInfoRepository: DeviceInfoR
     val chosenDevice = MutableLiveData<DeviceInfo?>(null)
 
     val deviceInfoModels = MutableLiveData<List<DeviceInfo>>()
-    val buildDeviceInfoModels = MutableLiveData<Event<Unit>>()
 
     val metaState = MutableLiveData(0)
-    val chooseKeycode = MutableLiveData<Event<Unit>>()
+
+    private val _eventStream = LiveEvent<Event>()
+    val eventStream: LiveData<Event> = _eventStream
 
     val failure = keyCode.map {
         when {
@@ -72,7 +77,7 @@ class KeyEventActionTypeViewModel(private val mDeviceInfoRepository: DeviceInfoR
     }
 
     fun chooseKeycode() {
-        chooseKeycode.value = Event(Unit)
+        _eventStream.value = ChooseKeycode()
     }
 
     fun setModifierKey(flag: Int, isChecked: Boolean) {
@@ -99,7 +104,7 @@ class KeyEventActionTypeViewModel(private val mDeviceInfoRepository: DeviceInfoR
     }
 
     fun refreshDevices() {
-        buildDeviceInfoModels.value = Event(Unit)
+        _eventStream.value = BuildDeviceInfoModels()
     }
 
     fun setDeviceInfoModels(models: List<DeviceInfo>) {
@@ -107,7 +112,8 @@ class KeyEventActionTypeViewModel(private val mDeviceInfoRepository: DeviceInfoR
     }
 
     @Suppress("UNCHECKED_CAST")
-    class Factory(private val mDeviceInfoRepository: DeviceInfoRepository) : ViewModelProvider.NewInstanceFactory() {
+    class Factory(private val mDeviceInfoRepository: DeviceInfoRepository
+    ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             return KeyEventActionTypeViewModel(mDeviceInfoRepository) as T

@@ -28,7 +28,7 @@ class SuProcessDelegate : LifecycleObserver {
         try {
             process = RootUtils.getSuProcess()
         } catch (e: IOException) {
-            Timber.e(e)
+            Timber.i("No root $e")
         }
     }
 }

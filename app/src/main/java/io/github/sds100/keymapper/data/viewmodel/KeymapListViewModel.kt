@@ -1,11 +1,13 @@
 package io.github.sds100.keymapper.data.viewmodel
 
 import androidx.lifecycle.*
+import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.data.usecase.KeymapListUseCase
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.result.Failure
 import kotlinx.coroutines.launch
 
 class KeymapListViewModel internal constructor(
@@ -13,15 +15,18 @@ class KeymapListViewModel internal constructor(
     private val mDeviceInfoRepository: DeviceInfoRepository
 ) : ViewModel() {
 
-    val keymapModelList: MutableLiveData<State<List<KeymapListItemModel>>> = MutableLiveData(Loading())
+    val keymapModelList: MutableLiveData<State<List<KeymapListItemModel>>> =
+        MutableLiveData(Loading())
 
-    val rebuildModelsEvent = MediatorLiveData<Event<List<KeyMap>>>().apply {
+    val selectionProvider: ISelectionProvider = SelectionProvider()
+
+    private val _eventStream = LiveEvent<Event>().apply {
         addSource(mKeymapRepository.keymapList) {
-            this.value = Event(it)
+            postValue(BuildKeymapListModels(it))
         }
     }
 
-    val selectionProvider: ISelectionProvider = SelectionProvider()
+    val eventStream: LiveData<Event> = _eventStream
 
     fun duplicate(vararg id: Long) {
         viewModelScope.launch {
@@ -35,15 +40,15 @@ class KeymapListViewModel internal constructor(
         }
     }
 
-    fun enableKeymaps(vararg id: Long) {
+    fun enableSelectedKeymaps() {
         viewModelScope.launch {
-            mKeymapRepository.enableKeymapById(*id)
+            mKeymapRepository.enableKeymapById(*selectionProvider.selectedIds)
         }
     }
 
-    fun disableKeymaps(vararg id: Long) {
+    fun disableSelectedKeymaps() {
         viewModelScope.launch {
-            mKeymapRepository.disableKeymapById(*id)
+            mKeymapRepository.disableKeymapById(*selectionProvider.selectedIds)
         }
     }
 
@@ -59,11 +64,18 @@ class KeymapListViewModel internal constructor(
         }
     }
 
-    fun rebuildModels() = viewModelScope.launch {
-        if (mKeymapRepository.keymapList.value.isNullOrEmpty()) return@launch
+    fun rebuildModels() {
+        if (mKeymapRepository.keymapList.value == null) return
+
+        if (mKeymapRepository.keymapList.value?.isEmpty() == true) {
+            keymapModelList.value = Empty()
+            return
+        }
+
         keymapModelList.value = Loading()
 
-        rebuildModelsEvent.value = Event(mKeymapRepository.keymapList.value ?: listOf())
+        _eventStream.value =
+            BuildKeymapListModels(mKeymapRepository.keymapList.value ?: emptyList())
     }
 
     fun setModelList(list: List<KeymapListItemModel>) {
@@ -73,6 +85,22 @@ class KeymapListViewModel internal constructor(
             list.isEmpty() -> Empty()
             else -> Data(list)
         }
+    }
+
+    fun requestBackupSelectedKeymaps() = run { _eventStream.value = RequestBackupSelectedKeymaps() }
+
+    fun fixError(failure: Failure) {
+        _eventStream.value = FixFailure(failure)
+    }
+
+    fun getSelectedKeymaps(): List<KeyMap> {
+        mKeymapRepository.keymapList.value?.let { keymapList ->
+            return selectionProvider.selectedIds.map { selectedId ->
+                keymapList.single { it.id == selectedId }
+            }
+        }
+
+        return emptyList()
     }
 
     suspend fun getDeviceInfoList() = mDeviceInfoRepository.getAll()

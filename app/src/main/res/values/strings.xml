@@ -62,6 +62,10 @@
     <string name="new_gui_keyboard_ad_message">Get the new Key Mapper Keyboard that actually has a keyboard!</string>
     <string name="shortcut_label_action">Perform Actions</string>
     <string name="hint_shortcut_name">Shortcut Name</string>
+    <string name="header_fingerprint_gesture_up">Swipe Up</string>
+    <string name="header_fingerprint_gesture_down">Swipe Down</string>
+    <string name="header_fingerprint_gesture_left">Swipe Left</string>
+    <string name="header_fingerprint_gesture_right">Swipe Right</string>
     <string name="header_click_type">Click Type</string>
     <string name="hold_down_until_trigger_is_dot_dot_dot">Hold down until trigger is…</string>
     <string name="hint_from_device">From Device</string>
@@ -78,6 +82,7 @@
     <string name="caption_action_type_url">Type a url which you want to be opened. The http://, https:// or www. isn\'t required.</string>
 
     <string name="caption_no_paired_bt_devices">Can\'t find any paired devices. Is Bluetooth turned on?</string>
+    <string name="caption_fingerprint_gesture">Your changes are automatically saved.</string>
 
     <string name="switch_enabled">Enabled</string>
     <string name="disabled">Disabled</string>
@@ -105,7 +110,7 @@
     <string name="action_list_header">Actions</string>
     <string name="trigger_list_header">Trigger</string>
     <string name="constraint_list_header">Constraints</string>
-    <string name="keymap_flags_header">Options</string>
+    <string name="trigger_options_header">Options</string>
 
     <string name="action_title_wait">Wait %sms</string>
 
@@ -115,13 +120,16 @@
     <string name="radio_button_or">OR</string>
     <string name="radio_button_short_press">Short press</string>
     <string name="radio_button_long_press">Long press</string>
+    <string name="radio_button_double_press">Double press</string>
 
     <string name="tab_trigger_and_actions">Trigger and Actions</string>
     <string name="tab_constraints_and_more">Constraints and More</string>
-    <string name="tab_keymap_flags">Options</string>
-    <string name="tab_keymap_constraints">Constraints</string>
+    <string name="tab_options">Options</string>
+    <string name="tab_constraints">Constraints</string>
     <string name="tab_actions">Actions</string>
     <string name="tab_trigger">Trigger</string>
+    <string name="tab_keyevents">Key Events</string>
+    <string name="tab_fingerprint">Fingerprint</string>
 
     <string name="email_subject">Key Mapper query</string>
     <string name="email_default_message">Does the help page solve your problem? What is your device?\n\n Which OEM skin or ROM are you using?\n\n Please describe the issue you\'re having:</string>
@@ -129,8 +137,12 @@
     <string name="nav_arg_header" translatable="false">io.github.sds100.keymapper.ui.fragment.OnlineFileFragment.header</string>
     <string name="nav_arg_file_url" translatable="false">io.github.sds100.keymapper.ui.fragment.OnlineFileFragment.header.file_url</string>
     <string name="nav_arg_file_url_alt" translatable="false">file_url_alt</string>
-    <string name="nav_arg_action_behavior" translatable="false">action_behavior</string>
-    <string name="nav_arg_trigger_key_behavior" translatable="false">trigger_key_behavior</string>
+    <string name="nav_arg_keymap_action_options" translatable="false">keymap_action_options</string>
+    <string name="nav_arg_action_shortcut_options" translatable="false">action_shortcut_options</string>
+    <string name="nav_arg_trigger_key_options" translatable="false">trigger_key_options</string>
+    <string name="nav_arg_choose_action_request_key" translatable="false">choose_action_request_key</string>
+    <string name="nav_arg_choose_constraint_request_key" translatable="false">choose_constraint_request_key</string>
+    <string name="nav_arg_fingerprint_action_options" translatable="false">fingerprint_action_options</string>
 
     <string name="toast_chose_keyboard">Chose %s</string>
     <string name="toast_backup_successful">Backup Successful!</string>
@@ -236,8 +248,11 @@
     <string name="action_duplicate_keymap">Duplicate</string>
     <string name="action_backup">Backup</string>
     <string name="action_restore">Restore</string>
+    <string name="action_backup_everything">Backup Everything</string>
+    <string name="action_backup_all">Backup All</string>
     <string name="action_tap_to_pause_keymaps">Tap to pause</string>
     <string name="action_tap_to_resume_keymaps">Tap to resume</string>
+    <string name="action_reset">Reset</string>
     <!-- Menu action titles-->
 
     <!-- Button titles -->
@@ -250,6 +265,7 @@
     <string name="button_add_constraint">Add Constraint</string>
     <string name="button_choose_keycode">Choose Key Code</string>
     <string name="button_yes">Yes!</string>
+    <string name="button_choose_action">Choose Action</string>
     <!-- Button titles -->
 
     <!-- Dialog titles -->
@@ -466,30 +482,55 @@
     </string-array>
     <!-- Action Type tab title order-->
 
-    <!-- The tabs which should be shown when configuring a keymap -->
+    <!--    Fragment ids    -->
+    <integer name="fragment_id_trigger">10</integer>
+    <integer name="fragment_id_action_list">11</integer>
+    <integer name="fragment_id_trigger_and_action_list">12</integer>
+    <integer name="fragment_id_constraints_and_options">13</integer>
+    <integer name="fragment_id_constraint_list">14</integer>
+    <integer name="fragment_id_trigger_options">15</integer>
+    <integer name="fragment_id_config_keymap_all">16</integer>
+    <integer name="fragment_id_fingerprint_map_options">17</integer>
+    <!--    Fragment ids    -->
 
+    <!-- The tabs that should be shown when configuring a keymap -->
     <string-array name="config_keymap_tab_titles" tools:ignore="InconsistentArrays">
         <item>@string/tab_trigger</item>
         <item>@string/tab_actions</item>
-        <item>@string/tab_keymap_constraints</item>
-        <item>@string/tab_keymap_flags</item>
+        <item>@string/tab_constraints</item>
+        <item>@string/tab_options</item>
     </string-array>
+    <!-- The tabs that should be shown when configuring a keymap -->
 
+    <!-- The fragments that should be shown when configuring a keymap -->
     <integer-array name="config_keymap_fragments" tools:ignore="InconsistentArrays">
         <item>@integer/fragment_id_trigger</item>
-        <item>@integer/fragment_id_actions</item>
-        <item>@integer/fragment_id_keymap_constraints</item>
-        <item>@integer/fragment_id_keymap_flags</item>
+        <item>@integer/fragment_id_action_list</item>
+        <item>@integer/fragment_id_constraint_list</item>
+        <item>@integer/fragment_id_trigger_options</item>
     </integer-array>
 
-    <integer name="fragment_id_trigger">10</integer>
-    <integer name="fragment_id_actions">11</integer>
-    <integer name="fragment_id_trigger_and_actions">12</integer>
-    <integer name="fragment_id_constraints_and_more">13</integer>
-    <integer name="fragment_id_keymap_constraints">14</integer>
-    <integer name="fragment_id_keymap_flags">15</integer>
-    <integer name="fragment_id_config_keymap_all">16</integer>
-    <!-- The fragments which should be shown when configuring a keymap -->
+    <!-- The tabs that should be shown when configuring a keymap -->
+    <string-array name="config_fingerprint_map_tab_titles" tools:ignore="InconsistentArrays">
+        <item>@string/tab_actions</item>
+        <item>@string/tab_constraints</item>
+        <item>@string/tab_options</item>
+    </string-array>
+    <!-- The tabs that should be shown when configuring a keymap -->
+
+    <!-- The fragments that should be shown when configuring a keymap -->
+    <integer-array name="config_fingerprint_map_fragments" tools:ignore="InconsistentArrays">
+        <item>@integer/fragment_id_action_list</item>
+        <item>@integer/fragment_id_constraint_list</item>
+        <item>@integer/fragment_id_fingerprint_map_options</item>
+    </integer-array>
+
+    <!-- The fragments on the homescreen -->
+    <string-array name="home_tab_titles">
+        <item>@string/tab_keyevents</item>
+        <item>@string/tab_fingerprint</item>
+    </string-array>
+    <!-- The fragments on the homescreen -->
 
     <!--flags-->
     <string name="flag_show_volume_dialog">Show volume dialog</string>
@@ -501,6 +542,8 @@
     <string name="flag_repeat_actions">Repeat</string>
     <string name="flag_hold_down">Hold down</string>
     <string name="flag_dont_override_default_action">Do Not Override Default Action</string>
+    <string name="flag_repeat_until_swiped_again">Repeat Until Swiped Again</string>
+    <string name="flag_hold_down_until_swiped_again">Hold Down Until Swiped Again</string>
     <!--flags-->
 
     <!-- Showcase -->
@@ -527,6 +570,12 @@
     <string name="showcase_contributing_description">"This app is open source! You can start contributing by heading over to the sds100/KeyMapper repo on GitHub and by joining the Discord server. Even if you can\'t code, you can contribute by helping others and testing the latest cutting-edge features."</string>
     <string name="showcase_action_list">Tap the 3 dots to change the repeat behaviour and more. You can test an action and fix action errors by tapping it.</string>
     <string name="showcase_screen_off_triggers">This option will only work if your device is rooted and you have told Key Mapper that it has root permission in the Key Mapper settings. If you don\'t know what root is then this option will not work. It will also only work for some keys (e.g volume buttons) so see the Help page for a list of supported keys.</string>
+
+    <string name="showcase_fingerprint_gesture_support_title">Remapping fingerprint reader gestures</string>
+    <string name="showcase_fingerprint_gesture_support_message_supported_unknown">You\'ll need to enable the accessibility service so that Key Mapper can check whether your device can detect fingerprint gestures.</string>
+    <string name="showcase_fingerprint_gesture_support_message_supported">Your device can detect fingerprint gestures! There is a tab at the top of the home-screen to for remapping fingerprint gestures.</string>
+    <string name="showcase_fingerprint_gesture_support_message_not_supported">Your device can NOT detect fingerprint gestures!</string>
+    <string name="showcase_fingerprint_gesture_support_button">Enable</string>
     <!-- Showcase -->
 
     <!-- system action options -->
@@ -653,7 +702,8 @@
     <string name="error_no_action_data">No Action data!</string>
     <string name="error_extra_not_found">Extra (%s) not found!</string>
     <string name="error_constraint_not_found">Constraint not found</string>
-    <string name="error_constraint_exists">This keymap already has this constraint!</string>
+    <string name="error_duplicate_constraint">You can\'t have duplicate constraints!</string>
+    <string name="error_fingerprint_gesture_map_constraint_exists">This gesture already has this constraint!</string>
     <string name="error_cant_be_empty">Can\'t be empty!</string>
     <string name="error_invalid_action_type">Invalid Action Type: %s</string>
     <string name="error_options_not_required">Options not required</string>

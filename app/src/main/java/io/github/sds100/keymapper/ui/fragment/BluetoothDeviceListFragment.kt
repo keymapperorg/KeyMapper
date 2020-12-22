@@ -21,7 +21,7 @@ class BluetoothDeviceListFragment : DefaultRecyclerViewFragment() {
 
     override var requestKey: String? = REQUEST_KEY
 
-    override fun subscribeList(binding: FragmentRecyclerviewBinding) {
+    override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
         binding.epoxyRecyclerView.withModels {
             val pairedDevices = BluetoothUtils.getPairedDevices()
 

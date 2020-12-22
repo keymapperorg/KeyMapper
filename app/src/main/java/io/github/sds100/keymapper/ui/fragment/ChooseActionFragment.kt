@@ -13,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.R
@@ -30,11 +31,18 @@ import io.github.sds100.keymapper.util.strArray
 class ChooseActionFragment : Fragment() {
 
     companion object {
-        const val REQUEST_KEY = "request_choose_action"
         const val EXTRA_ACTION = "extra_action"
     }
 
+    private val mRequestKey by lazy { navArgs<ChooseActionFragmentArgs>().value.StringNavArgChooseActionRequestKey }
     private lateinit var mPagerAdapter: ChooseActionPagerAdapter
+
+    /**
+     * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
+     */
+    private var _binding: FragmentChooseActionBinding? = null
+    val binding: FragmentChooseActionBinding
+        get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,10 +121,19 @@ class ChooseActionFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         FragmentChooseActionBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
+            _binding = this
 
+            return this.root
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.apply {
             mPagerAdapter = ChooseActionPagerAdapter(this@ChooseActionFragment)
             viewPager.adapter = mPagerAdapter
 
@@ -129,9 +146,12 @@ class ChooseActionFragment : Fragment() {
             }
 
             subscribeSearchView()
-
-            return this.root
         }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -142,7 +162,7 @@ class ChooseActionFragment : Fragment() {
         childFragmentManager.setFragmentResultListener(requestKey, this) { _, result ->
             val action = createAction(result)
 
-            setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_ACTION to action))
+            setFragmentResult(mRequestKey, bundleOf(EXTRA_ACTION to action))
         }
     }
 

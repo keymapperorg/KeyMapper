@@ -30,20 +30,37 @@ import splitties.alertdialog.appcompat.*
 
 class SettingsFragment : Fragment() {
 
+    /**
+     * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
+     */
+    private var _binding: FragmentSettingsBinding? = null
+    val binding: FragmentSettingsBinding
+        get() = _binding!!
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         FragmentSettingsBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
-
-            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-                findNavController().navigateUp()
-            }
-
-            appBar.setNavigationOnClickListener {
-                findNavController().navigateUp()
-            }
+            _binding = this
 
             return this.root
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            findNavController().navigateUp()
+        }
+
+        binding.appBar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 }
 
@@ -112,9 +129,9 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
 
             requireContext().contentResolver.takePersistableUriPermission(it, takeFlags)
 
-                mBackupRestoreViewModel.backupAll(requireContext().contentResolver.openOutputStream(it))
-            }
+            mBackupRestoreViewModel.backupAll(requireContext().contentResolver.openOutputStream(it))
         }
+    }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.preferences)

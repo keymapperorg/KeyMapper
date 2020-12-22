@@ -2,6 +2,8 @@ package io.github.sds100.keymapper.ui.fragment
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.google.android.material.bottomappbar.BottomAppBar
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.util.Loading

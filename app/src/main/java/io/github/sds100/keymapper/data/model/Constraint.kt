@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.data.model
 
+import android.os.Parcelable
 import androidx.annotation.IntDef
 import androidx.annotation.StringDef
 import com.github.salomonbrys.kotson.byArray
@@ -10,7 +11,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.result.ExtraNotFound
 import io.github.sds100.keymapper.util.result.Result
 import io.github.sds100.keymapper.util.result.Success
-import java.io.Serializable
+import kotlinx.android.parcel.Parcelize
 
 /**
  * Created by sds100 on 17/03/2020.
@@ -44,12 +45,13 @@ annotation class ConstraintMode
 )
 annotation class ConstraintCategory
 
+@Parcelize
 data class Constraint(@ConstraintType
                       @SerializedName(NAME_TYPE)
                       val type: String,
 
                       @SerializedName(NAME_EXTRAS)
-                      val extras: List<Extra>) : Serializable {
+                      val extras: List<Extra>) : Parcelable {
 
     constructor(type: String, vararg extra: Extra) : this(type, extra.toList())
 

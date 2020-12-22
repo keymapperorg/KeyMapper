@@ -64,7 +64,8 @@
                 android:clipToPadding="false"
                 android:visibility="@{state instanceof Data ? View.VISIBLE : View.GONE}"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/list_item_simple" />
+                tools:listitem="@layout/list_item_simple"
+                tools:visibility="gone" />
 
             <ProgressBar
                 android:id="@+id/progressBar"

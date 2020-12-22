@@ -31,7 +31,7 @@ class AppListFragment : RecyclerViewFragment<FragmentAppListBinding>() {
         InjectorUtils.provideAppListViewModel(requireContext())
     }
 
-    override fun subscribeList(binding: FragmentAppListBinding) {
+    override fun subscribeUi(binding: FragmentAppListBinding) {
         mViewModel.filteredAppModelList.observe(viewLifecycleOwner, { appModelList ->
 
             binding.epoxyRecyclerView.withModels {

@@ -86,14 +86,15 @@ dependencies {
     def coroutine_version = "1.3.9"
     def nav_version = '2.3.1'
     def work_version = "2.4.0"
-    def epoxy_version = "3.9.0"
-    def splitties_version = "3.0.0-alpha06"
+    def epoxy_version = "4.0.0"
+    def splitties_version = "3.0.0-alpha07"
     def markwonVersion = "4.3.1"
     def multidex_version = "2.0.1"
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
 // kotlin stuff
+    // kotlin stuff
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutine_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
@@ -108,12 +109,14 @@ dependencies {
     implementation "io.noties.markwon:core:$markwonVersion"
     implementation 'com.android.volley:volley:1.1.1'
     implementation 'com.jakewharton.timber:timber:4.7.1'
+    implementation "com.github.hadilq.liveevent:liveevent:1.2.0"
 
     // splitties
     implementation "com.louiscad.splitties:splitties-bitflags:$splitties_version"
     implementation "com.louiscad.splitties:splitties-alertdialog-appcompat-coroutines:$splitties_version"
     implementation "com.louiscad.splitties:splitties-alertdialog-appcompat:$splitties_version"
     implementation "com.louiscad.splitties:splitties-preferences:$splitties_version"
+    implementation "com.louiscad.splitties:splitties-resources:$splitties_version"
     implementation "com.louiscad.splitties:splitties-snackbar:$splitties_version"
     implementation "com.louiscad.splitties:splitties-systemservices:$splitties_version"
     implementation "com.louiscad.splitties:splitties-toast:$splitties_version"
@@ -141,6 +144,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.viewpager2:viewpager2:1.0.0"
+    implementation "androidx.datastore:datastore-preferences:1.0.0-alpha04"
     kapt "androidx.room:room-compiler:$room_version"
 
     def junitVersion = "4.13.1"

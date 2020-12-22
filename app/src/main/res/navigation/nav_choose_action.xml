@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_choose_action"
+    app:startDestination="@id/choose_action_fragment">
+
+    <fragment
+        android:id="@+id/choose_action_fragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.ChooseActionFragment"
+        android:label="@string/title_choose_action"
+        tools:layout="@layout/fragment_choose_action">
+
+        <argument
+            android:name="@string/nav_arg_choose_action_request_key"
+            app:argType="string" />
+
+        <action
+            android:id="@+id/action_choose_action_fragment_to_keycodeListFragment"
+            app:destination="@id/keycodeListFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/keycodeListFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.KeycodeListFragment"
+        android:label="KeycodeListFragment" />
+</navigation>

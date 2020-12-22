@@ -18,12 +18,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_app"
-    app:startDestination="@id/keymap_list_fragment">
+    app:startDestination="@id/home_fragment">
 
     <fragment
-        android:id="@+id/keymap_list_fragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.KeymapListFragment"
-        tools:layout="@layout/fragment_keymap_list">
+        android:id="@+id/home_fragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.HomeFragment"
+        tools:layout="@layout/fragment_home">
 
         <action
             android:id="@+id/action_keymap_list_fragment_to_settingsFragment"
@@ -42,7 +42,47 @@
             app:argType="long" />
     </action>
 
+    <action
+        android:id="@+id/action_to_config_fingerprint_map"
+        app:destination="@id/nav_config_fingerprint_map"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right">
+        <argument
+            android:name="gestureId"
+            app:argType="string" />
+    </action>
+
+    <action
+        android:id="@+id/action_global_chooseActionFragment"
+        app:destination="@id/nav_choose_action"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right">
+        <argument
+            android:name="@string/nav_arg_choose_action_request_key"
+            app:argType="string" />
+    </action>
+
+    <action
+        android:id="@+id/action_global_chooseConstraint"
+        app:destination="@id/nav_choose_constraint"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right">
+
+        <argument
+            android:name="@string/nav_arg_choose_constraint_request_key"
+            app:argType="string" />
+    </action>
+
+    <include app:graph="@navigation/nav_choose_action" />
     <include app:graph="@navigation/nav_config_keymap" />
+    <include app:graph="@navigation/nav_config_fingerprint_map" />
+    <include app:graph="@navigation/nav_choose_constraint" />
 
     <fragment
         android:id="@+id/settingsFragment"
@@ -123,6 +163,7 @@
         android:name="io.github.sds100.keymapper.ui.fragment.MenuFragment"
         android:label="fragment_menu"
         tools:layout="@layout/fragment_menu" />
+
     <action
         android:id="@+id/action_global_menuFragment"
         app:destination="@id/menuFragment"

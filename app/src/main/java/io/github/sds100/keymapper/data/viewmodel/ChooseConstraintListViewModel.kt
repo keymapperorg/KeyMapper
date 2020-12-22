@@ -1,17 +1,15 @@
 package io.github.sds100.keymapper.data.viewmodel
 
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.liveData
+import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.ChooseConstraintListItemModel
 import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.ConstraintType
-import io.github.sds100.keymapper.data.model.NotifyUserModel
-import io.github.sds100.keymapper.util.Event
-import io.github.sds100.keymapper.util.Loading
-import io.github.sds100.keymapper.util.getState
+import io.github.sds100.keymapper.util.*
 
 /**
  * Created by sds100 on 21/03/2020.
@@ -105,10 +103,8 @@ class ChooseConstraintListViewModel : ViewModel() {
         )
     }
 
-    val choosePackageEvent = MutableLiveData<Event<Unit>>()
-    val chooseBluetoothDeviceEvent = MutableLiveData<Event<Unit>>()
-    val selectModelEvent = MutableLiveData<Event<Constraint>>()
-    val notifyUserEvent = MutableLiveData<Event<NotifyUserModel>>()
+    private val _eventStream = LiveEvent<Event>()
+    val eventStream: LiveData<Event> = _eventStream
 
     private var mChosenConstraintType: String? = null
 
@@ -119,36 +115,36 @@ class ChooseConstraintListViewModel : ViewModel() {
             Constraint.APP_FOREGROUND,
             Constraint.APP_NOT_FOREGROUND,
             Constraint.APP_PLAYING_MEDIA,
-            -> choosePackageEvent.value = Event(Unit)
+            -> _eventStream.value = ChoosePackage()
 
             Constraint.BT_DEVICE_CONNECTED, Constraint.BT_DEVICE_DISCONNECTED -> {
-                notifyUserEvent.value = Event(NotifyUserModel(R.string.dialog_message_bt_constraint_limitation) {
-                    chooseBluetoothDeviceEvent.value = Event(Unit)
-                })
+                _eventStream.value = OkDialog(R.string.dialog_message_bt_constraint_limitation) {
+                    _eventStream.value = ChooseBluetoothDevice()
+                }
             }
             Constraint.SCREEN_ON -> {
-                notifyUserEvent.value = Event(NotifyUserModel(R.string.dialog_message_screen_constraints_limitation) {
-                    selectModelEvent.value = Event(Constraint(Constraint.SCREEN_ON))
-                })
+                _eventStream.value = OkDialog(R.string.dialog_message_screen_constraints_limitation) {
+                    _eventStream.value = SelectConstraint(Constraint(Constraint.SCREEN_ON))
+                }
             }
             Constraint.SCREEN_OFF -> {
-                notifyUserEvent.value = Event(NotifyUserModel(R.string.dialog_message_screen_constraints_limitation) {
-                    selectModelEvent.value = Event(Constraint(Constraint.SCREEN_OFF))
-                })
+                _eventStream.value = OkDialog(R.string.dialog_message_screen_constraints_limitation) {
+                    _eventStream.value = SelectConstraint(Constraint(Constraint.SCREEN_OFF))
+                }
             }
             else -> {
-                selectModelEvent.value = Event(Constraint(constraintType))
+                _eventStream.value = SelectConstraint(Constraint(constraintType))
             }
         }
     }
 
     fun packageChosen(packageName: String) {
-        selectModelEvent.value = Event(Constraint.appConstraint(mChosenConstraintType!!, packageName))
+        _eventStream.value = SelectConstraint(Constraint.appConstraint(mChosenConstraintType!!, packageName))
         mChosenConstraintType = null
     }
 
     fun bluetoothDeviceChosen(address: String, name: String) {
-        selectModelEvent.value = Event(Constraint.btConstraint(mChosenConstraintType!!, address, name))
+        _eventStream.value = SelectConstraint(Constraint.btConstraint(mChosenConstraintType!!, address, name))
         mChosenConstraintType = null
     }
 

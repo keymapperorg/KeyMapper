@@ -18,6 +18,12 @@ fun <T, O> State<T>.mapData(block: (data: T) -> O): State<O> = when (this) {
     is Data -> Data(block.invoke(this.data))
 }
 
+inline fun <T> State<T>.ifIsData(block: (data: T) -> Unit) {
+    if (this is Data) {
+        block.invoke(this.data)
+    }
+}
+
 fun <T> List<T>?.getState() =
     if (this.isNullOrEmpty()) {
         Empty()

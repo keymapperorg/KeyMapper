@@ -13,10 +13,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.github.sds100.keymapper.data.viewmodel.OnlineFileViewModel
 import io.github.sds100.keymapper.databinding.FragmentOnlineFileBinding
-import io.github.sds100.keymapper.util.EventObserver
-import io.github.sds100.keymapper.util.InjectorUtils
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.getFullMessage
-import io.github.sds100.keymapper.util.str
 import splitties.toast.toast
 
 class OnlineFileFragment : BottomSheetDialogFragment() {
@@ -37,26 +35,19 @@ class OnlineFileFragment : BottomSheetDialogFragment() {
         InjectorUtils.provideOnlineViewModel(requireContext(), mFileUrl, mAlternateUrl, mHeader)
     }
 
+    /**
+     * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
+     */
+    private var _binding: FragmentOnlineFileBinding? = null
+    val binding: FragmentOnlineFileBinding
+        get() = _binding!!
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         FragmentOnlineFileBinding.inflate(inflater, container, false).apply {
 
             lifecycleOwner = viewLifecycleOwner
-
             viewModel = mViewModel
-
-            mViewModel.closeDialogEvent.observe(viewLifecycleOwner, EventObserver {
-                dismiss()
-            })
-
-            mViewModel.showErrorEvent.observe(viewLifecycleOwner, EventObserver {
-                toast(it.getFullMessage(requireContext()))
-            })
-
-            mViewModel.openUrlExternallyEvent.observe(viewLifecycleOwner, EventObserver {
-                Intent(Intent.ACTION_VIEW, Uri.parse(it)).apply {
-                    startActivity(this)
-                }
-            })
+            _binding = this
 
             return this.root
         }
@@ -67,5 +58,22 @@ class OnlineFileFragment : BottomSheetDialogFragment() {
 
         val dialog = requireDialog() as BottomSheetDialog
         dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+
+        mViewModel.eventStream.observe(viewLifecycleOwner, {
+            when (it) {
+                is CloseDialog -> dismiss()
+                is ShowErrorMessage -> toast(it.failure.getFullMessage(requireContext()))
+                is OpenUrl -> {
+                    Intent(Intent.ACTION_VIEW, Uri.parse(it.url)).apply {
+                        startActivity(this)
+                    }
+                }
+            }
+        })
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 }

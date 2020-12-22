@@ -65,7 +65,7 @@ class KeymapDetectionDelegateTest {
         private val TEST_ACTION = Action(ActionType.SYSTEM_ACTION, SystemAction.TOGGLE_FLASHLIGHT)
         private val TEST_ACTION_2 = Action(ActionType.APP, Constants.PACKAGE_NAME)
 
-        private val TEST_ACTIONS = arrayOf(
+        private val TEST_ACTIONS = setOf(
             TEST_ACTION,
             TEST_ACTION_2
         )
@@ -150,29 +150,17 @@ class KeymapDetectionDelegateTest {
         advanceUntilIdle()
 
         //THEN
-        assertThat(
-            mDelegate.performAction.getOrAwaitValueCoroutine().peekContent().action,
-            `is`(action)
-        )
+        assertThat(mDelegate.performAction.value?.action, `is`(action))
 
-        assertThat(
-            mDelegate.performAction.getOrAwaitValueCoroutine().peekContent().keyEventAction,
-            `is`(KeyEventAction.DOWN)
-        )
+        assertThat(mDelegate.performAction.value?.keyEventAction, `is`(KeyEventAction.DOWN))
 
         //WHEN
         mockTriggerKeyInput(trigger.keys[0])
         advanceUntilIdle()
 
-        assertThat(
-            mDelegate.performAction.getOrAwaitValueCoroutine().peekContent().action,
-            `is`(action)
-        )
+        assertThat(mDelegate.performAction.value?.action, `is`(action))
 
-        assertThat(
-            mDelegate.performAction.getOrAwaitValueCoroutine().peekContent().keyEventAction,
-            `is`(KeyEventAction.UP)
-        )
+        assertThat(mDelegate.performAction.value?.keyEventAction, `is`(KeyEventAction.UP))
     }
 
     @Test
@@ -186,10 +174,8 @@ class KeymapDetectionDelegateTest {
 
             var imitatedKeyMetaState: Int? = null
 
-            val observer = Observer<Event<ImitateKeyModel>> {
-                it.getContentIfNotHandled()?.let { model ->
-                    imitatedKeyMetaState = model.metaState
-                }
+            val observer = Observer<ImitateButtonPress> {
+                imitatedKeyMetaState = it.metaState
             }
 
             mDelegate.imitateButtonPress.observeForever(observer)
@@ -235,10 +221,8 @@ class KeymapDetectionDelegateTest {
 
             val performedActions = mutableSetOf<Action>()
 
-            val observer = Observer<Event<PerformActionModel>> {
-                it.getContentIfNotHandled()?.action?.let { action ->
-                    performedActions.add(action)
-                }
+            val observer = Observer<PerformAction> {
+                performedActions.add(it.action)
             }
 
             mDelegate.performAction.observeForever(observer)
@@ -319,7 +303,7 @@ class KeymapDetectionDelegateTest {
 
         //then
         //the first action performed shouldn't be the short press action
-        assertEquals(TEST_ACTION_2, mDelegate.performAction.getOrAwaitValueCoroutine()?.getContentIfNotHandled()?.action)
+        assertEquals(TEST_ACTION_2, mDelegate.performAction.value?.action)
 
         /*
         rerun the test to see if the short press trigger action is performed correctly.
@@ -330,9 +314,8 @@ class KeymapDetectionDelegateTest {
         advanceUntilIdle()
 
         //then
-        val action = mDelegate.performAction.getOrAwaitValueCoroutine()
-
-        assertEquals(TEST_ACTION, action?.getContentIfNotHandled()?.action)
+        val action = mDelegate.performAction.value?.action
+        assertEquals(TEST_ACTION, action)
     }
 
     @Test
@@ -352,7 +335,7 @@ class KeymapDetectionDelegateTest {
         //THEN
 
         //the first action performed shouldn't be the short press action
-        assertEquals(TEST_ACTION_2, mDelegate.performAction.getOrAwaitValueCoroutine().getContentIfNotHandled()?.action)
+        assertEquals(TEST_ACTION_2, mDelegate.performAction.value?.action)
 
         //WHEN
         //rerun the test to see if the short press trigger action is performed correctly.
@@ -361,7 +344,7 @@ class KeymapDetectionDelegateTest {
 
         //THEN
         //the first action performed shouldn't be the short press action
-        assertEquals(TEST_ACTION, mDelegate.performAction.getOrAwaitValueCoroutine().getContentIfNotHandled()?.action)
+        assertEquals(TEST_ACTION, mDelegate.performAction.value?.action)
     }
 
     @Test
@@ -529,11 +512,11 @@ class KeymapDetectionDelegateTest {
         mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN))
 
         //then
-        assertNull(mDelegate.imitateButtonPress.value?.getContentIfNotHandled())
+        assertNull(mDelegate.imitateButtonPress.value)
 
         advanceUntilIdle()
 
-        assertEquals(KeyEvent.KEYCODE_VOLUME_DOWN, mDelegate.imitateButtonPress.value?.getContentIfNotHandled()?.keyCode)
+        assertEquals(KeyEvent.KEYCODE_VOLUME_DOWN, mDelegate.imitateButtonPress.value?.keyCode)
     }
 
     @Test
@@ -554,10 +537,8 @@ class KeymapDetectionDelegateTest {
         }
 
         //then
-        val performEvent = mDelegate.performAction.getOrAwaitValue()
-
-        assertEquals(TEST_ACTION, performEvent.getContentIfNotHandled()?.action)
-        assertNull(mDelegate.imitateButtonPress.value?.getContentIfNotHandled())
+        assertEquals(TEST_ACTION, mDelegate.performAction.value?.action)
+        assertNull(mDelegate.imitateButtonPress.value)
     }
 
     @Test
@@ -577,17 +558,15 @@ class KeymapDetectionDelegateTest {
             mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN))
 
             //then
-            val performEvent = mDelegate.performAction.getOrAwaitValueCoroutine()
-
-            assertEquals(TEST_ACTION, performEvent.getContentIfNotHandled()?.action)
+            assertEquals(TEST_ACTION, mDelegate.performAction.value?.action)
 
             //wait for the double press to try and imitate the key.
             advanceUntilIdle()
-            assertNull(mDelegate.imitateButtonPress.value?.getContentIfNotHandled())
+            assertNull(mDelegate.imitateButtonPress.value)
         }
 
     @Test
-    fun singleKeyTriggerAndShortPressParallelTriggerWithSameInitialKey_validSingleKeyTriggerInput_onlyPerformActionDontImitateKey() {
+    fun singleKeyTriggerAndShortPressParallelTriggerWithSameInitialKey_validSingleKeyTriggerInput_onlyPerformActionDontImitateKey() = mCoroutineScope.runBlockingTest {
         //given
         val singleKeyKeymap = createValidKeymapFromTriggerKey(0, Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN))
         val parallelTriggerKeymap = createValidKeymapFromTriggerKey(1,
@@ -598,15 +577,11 @@ class KeymapDetectionDelegateTest {
         mDelegate.keyMapListCache = listOf(singleKeyKeymap, parallelTriggerKeymap)
 
         //when
-        runBlocking {
-            mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN))
-        }
+        mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN))
 
         //then
-        val performEvent = mDelegate.performAction.getOrAwaitValue()
-
-        assertNull(mDelegate.imitateButtonPress.value?.getContentIfNotHandled())
-        assertEquals(TEST_ACTION, performEvent.getContentIfNotHandled()?.action)
+        assertNull(mDelegate.imitateButtonPress.value)
+        assertEquals(TEST_ACTION, mDelegate.performAction.value?.action)
     }
 
     @Test
@@ -623,40 +598,33 @@ class KeymapDetectionDelegateTest {
             mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = LONG_PRESS), 100)
         }
 
-        val value = mDelegate.imitateButtonPress.getOrAwaitValue()
-
-        assertEquals(KeyEvent.KEYCODE_VOLUME_DOWN, value.getContentIfNotHandled()?.keyCode)
+        assertEquals(KeyEvent.KEYCODE_VOLUME_DOWN, mDelegate.imitateButtonPress.value?.keyCode)
     }
 
     @Test
     @Parameters(method = "params_multipleActionsPerformed")
-    fun validInput_multipleActionsPerformed(description: String, trigger: Trigger) {
+    fun validInput_multipleActionsPerformed(description: String, trigger: Trigger) = mCoroutineScope.runBlockingTest {
         //GIVEN
         val keymap = KeyMap(0, trigger, TEST_ACTIONS.toList())
         mDelegate.keyMapListCache = listOf(keymap)
 
+        val performedActions = mutableSetOf<Action>()
+
+        mDelegate.performAction.observeForever {
+            performedActions.add(it.action)
+        }
+
         //WHEN
         if (keymap.trigger.mode == Trigger.PARALLEL) {
-            runBlocking {
-                mockParallelTriggerKeys(*keymap.trigger.keys.toTypedArray())
-            }
+            mockParallelTriggerKeys(*keymap.trigger.keys.toTypedArray())
         } else {
-            runBlocking {
-                keymap.trigger.keys.forEach {
-                    mockTriggerKeyInput(it)
-                }
+            keymap.trigger.keys.forEach {
+                mockTriggerKeyInput(it)
             }
         }
 
         //THEN
-        var actionPerformedCount = 0
-
-        for (i in TEST_ACTIONS.indices) {
-            mDelegate.performAction.getOrAwaitValue()
-            actionPerformedCount++
-        }
-
-        assertEquals(TEST_ACTIONS.size, actionPerformedCount)
+        assertEquals(TEST_ACTIONS, performedActions)
     }
 
     fun params_multipleActionsPerformed() = listOf(
@@ -944,7 +912,7 @@ class KeymapDetectionDelegateTest {
             //THEN
             val value = mDelegate.performAction.value
 
-            assertThat(value?.getContentIfNotHandled()?.action, `is`(TEST_ACTION))
+            assertThat(value?.action, `is`(TEST_ACTION))
         } else {
             //WHEN
             keymap.trigger.keys.forEach {
@@ -954,9 +922,8 @@ class KeymapDetectionDelegateTest {
             advanceUntilIdle()
 
             //THEN
-            val value = mDelegate.performAction.getOrAwaitValueCoroutine()
-
-            assertThat(value?.getContentIfNotHandled()?.action, `is`(TEST_ACTION))
+            val action = mDelegate.performAction.value?.action
+            assertThat(action, `is`(TEST_ACTION))
         }
     }
 

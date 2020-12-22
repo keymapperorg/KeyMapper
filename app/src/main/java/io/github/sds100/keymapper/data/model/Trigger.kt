@@ -1,12 +1,11 @@
 package io.github.sds100.keymapper.data.model
 
+import android.os.Parcelable
 import androidx.annotation.IntDef
 import com.github.salomonbrys.kotson.*
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.util.KeyEventUtils
-import splitties.bitflags.withFlag
-import java.util.*
+import kotlinx.android.parcel.Parcelize
 
 /**
  * Created by sds100 on 16/07/2018.
@@ -15,6 +14,7 @@ import java.util.*
 /**
  * @property [keys] The key codes which will trigger the action
  */
+@Parcelize
 data class Trigger(
     @SerializedName(NAME_KEYS)
     val keys: List<Key> = listOf(),
@@ -28,7 +28,7 @@ data class Trigger(
 
     @SerializedName(NAME_FLAGS)
     val flags: Int = 0
-) {
+) : Parcelable {
 
     companion object {
         //DON'T CHANGE THESE. Used for JSON serialization and parsing.
@@ -87,22 +87,20 @@ data class Trigger(
         }
     }
 
-    class Key(
+    @Parcelize
+    data class Key(
         @SerializedName(NAME_KEYCODE)
         val keyCode: Int,
         @SerializedName(NAME_DEVICE_ID)
-        var deviceId: String = DEVICE_ID_THIS_DEVICE,
+        val deviceId: String = DEVICE_ID_THIS_DEVICE,
 
         @ClickType
         @SerializedName(NAME_CLICK_TYPE)
-        var clickType: Int = SHORT_PRESS,
+        val clickType: Int = SHORT_PRESS,
 
         @SerializedName(NAME_FLAGS)
-        var flags: Int = 0,
-
-        @SerializedName(NAME_UID)
-        val uid: String = UUID.randomUUID().toString()
-    ) {
+        val flags: Int = 0
+    ) : Parcelable {
 
         companion object {
             //DON'T CHANGE THESE. Used for JSON serialization and parsing.
@@ -132,12 +130,6 @@ data class Trigger(
                 val uid by it.json.byNullableString(NAME_UID)
 
                 Key(keycode, deviceId, clickType, flags ?: 0, uid ?: UUID.randomUUID().toString())
-            }
-        }
-
-        init {
-            if (KeyEventUtils.isModifierKey(keyCode)) {
-                flags = flags.withFlag(FLAG_DO_NOT_CONSUME_KEY_EVENT)
             }
         }
 

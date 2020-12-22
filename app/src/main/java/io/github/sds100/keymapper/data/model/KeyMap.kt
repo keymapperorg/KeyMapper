@@ -1,54 +1,57 @@
 package io.github.sds100.keymapper.data.model
 
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.github.salomonbrys.kotson.*
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
+import kotlinx.android.parcel.Parcelize
 
 /**
  * Created by sds100 on 12/07/2018.
  */
 
+@Parcelize
 @Entity(tableName = KeyMapDao.TABLE_NAME)
 data class KeyMap(
     @SerializedName(NAME_ID)
     @PrimaryKey(autoGenerate = true)
-    var id: Long,
+    val id: Long,
 
     @SerializedName(NAME_TRIGGER)
     @ColumnInfo(name = KeyMapDao.KEY_TRIGGER)
-    var trigger: Trigger = Trigger(),
+    val trigger: Trigger = Trigger(),
 
     @SerializedName(NAME_ACTION_LIST)
     @ColumnInfo(name = KeyMapDao.KEY_ACTION_LIST)
-    var actionList: List<Action> = listOf(),
+    val actionList: List<Action> = listOf(),
 
     @SerializedName(NAME_CONSTRAINT_LIST)
     @ColumnInfo(name = KeyMapDao.KEY_CONSTRAINT_LIST)
-    var constraintList: List<Constraint> = listOf(),
+    val constraintList: List<Constraint> = listOf(),
 
     @ConstraintMode
     @SerializedName(NAME_CONSTRAINT_MODE)
     @ColumnInfo(name = KeyMapDao.KEY_CONSTRAINT_MODE)
-    var constraintMode: Int = Constraint.DEFAULT_MODE,
+    val constraintMode: Int = Constraint.DEFAULT_MODE,
 
     @SerializedName(NAME_FLAGS)
     @ColumnInfo(name = KeyMapDao.KEY_FLAGS)
     /**
      * Flags are stored as bits.
      */
-    var flags: Int = 0,
+    val flags: Int = 0,
 
     @SerializedName(NAME_FOLDER_NAME)
     @ColumnInfo(name = KeyMapDao.KEY_FOLDER_NAME)
-    var folderName: String? = null,
+    val folderName: String? = null,
 
     @SerializedName(NAME_IS_ENABLED)
     @ColumnInfo(name = KeyMapDao.KEY_ENABLED)
-    var isEnabled: Boolean = true
-) {
+    val isEnabled: Boolean = true
+) : Parcelable {
     companion object {
 
         //DON'T CHANGE THESE. Used for JSON serialization and parsing.

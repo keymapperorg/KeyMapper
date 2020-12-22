@@ -3,12 +3,13 @@ package io.github.sds100.keymapper
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.room.Room
-import io.github.sds100.keymapper.data.IOnboardingState
-import io.github.sds100.keymapper.data.OnboardingState
+import io.github.sds100.keymapper.data.DefaultPreferenceDataStore
+import io.github.sds100.keymapper.data.IPreferenceDataStore
 import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.repository.DefaultDeviceInfoRepository
 import io.github.sds100.keymapper.data.repository.DefaultKeymapRepository
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
+import io.github.sds100.keymapper.data.repository.FingerprintMapRepository
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -28,8 +29,11 @@ object ServiceLocator {
         @VisibleForTesting set
 
     @Volatile
-    var onboardingState: IOnboardingState? = null
+    var preferenceDataStore: IPreferenceDataStore? = null
         @VisibleForTesting set
+
+    @Volatile
+    var fingerprintMapRepository: FingerprintMapRepository? = null
 
     fun provideKeymapRepository(context: Context): DefaultKeymapRepository {
         synchronized(this) {
@@ -43,9 +47,15 @@ object ServiceLocator {
         }
     }
 
-    fun provideOnboardingState(context: Context): IOnboardingState {
+    fun providePreferenceDataStore(context: Context): IPreferenceDataStore {
         synchronized(this) {
-            return onboardingState ?: createOnboardingState(context)
+            return preferenceDataStore ?: createPreferenceDataStore(context)
+        }
+    }
+
+    fun provideFingerprintGestureRepository(context: Context): FingerprintMapRepository {
+        synchronized(this) {
+            return fingerprintMapRepository ?: createFingerprintGestureRepository(context)
         }
     }
 
@@ -80,11 +90,20 @@ object ServiceLocator {
         return deviceInfoRepository!!
     }
 
-    private fun createOnboardingState(context: Context): IOnboardingState {
-        val onboardingState = onboardingState ?: OnboardingState(context)
-        this.onboardingState = onboardingState
+    private fun createPreferenceDataStore(context: Context): IPreferenceDataStore {
+        val preferenceDataStore = preferenceDataStore ?: DefaultPreferenceDataStore(context)
+        this.preferenceDataStore = preferenceDataStore
 
-        return onboardingState
+        return preferenceDataStore
+    }
+
+    private fun createFingerprintGestureRepository(context: Context): FingerprintMapRepository {
+        val fingerprintGestureRepository = fingerprintMapRepository
+            ?: FingerprintMapRepository(providePreferenceDataStore(context).fingerprintGestureDataStore)
+
+        this.fingerprintMapRepository = fingerprintGestureRepository
+
+        return fingerprintGestureRepository
     }
 
     private fun createDatabase(context: Context): AppDatabase {

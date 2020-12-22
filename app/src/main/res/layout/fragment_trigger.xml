@@ -5,13 +5,19 @@
 
     <data>
 
-        <import type="io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel" />
-
         <import type="android.view.View" />
+
+        <import type="io.github.sds100.keymapper.util.State" />
+
+        <import type="io.github.sds100.keymapper.util.Data" />
+
+        <import type="io.github.sds100.keymapper.util.Loading" />
+
+        <import type="io.github.sds100.keymapper.util.Empty" />
 
         <variable
             name="viewModel"
-            type="io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel" />
+            type="io.github.sds100.keymapper.data.viewmodel.TriggerViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -25,7 +31,7 @@
             android:id="@+id/epoxyRecyclerViewTriggers"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:visibility="@{viewModel.triggerKeys.empty ? View.GONE : View.VISIBLE}"
+            android:visibility="@{viewModel.modelList instanceof Empty ? View.GONE : View.VISIBLE}"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@id/radioGroupParallelTriggerClickType"
             app:layout_constraintEnd_toEndOf="parent"
@@ -39,7 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:text="@string/triggers_recyclerview_placeholder"
-            android:visibility="@{viewModel.triggerKeys.empty ? View.VISIBLE : View.GONE}"
+            android:visibility="@{viewModel.modelList instanceof Empty ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toTopOf="@+id/buttonRecordKeys"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -84,7 +90,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.5"
                 android:checked="@{viewModel.isParallelTriggerClickTypeShortPress() == false &amp;&amp; viewModel.isParallelTriggerClickTypeLongPress() == false}"
-                android:text="Double Press"
+                android:text="@string/radio_button_double_press"
                 android:visibility="gone" />
         </RadioGroup>
 
@@ -97,7 +103,7 @@
             android:text="@string/press_dot_dot_dot"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
             android:textSize="14sp"
-            android:visibility="@{viewModel.triggerKeys.size() > 1 ? View.VISIBLE : View.GONE}"
+            android:visibility="@{viewModel.triggerKeyCount > 1 ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toTopOf="@+id/radioGroupTriggerMode"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -120,7 +126,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
                 android:checked="@={viewModel.triggerInParallel}"
-                android:enabled="@{viewModel.triggerKeys.size() &lt;= 1 ? false : true}"
+                android:enabled="@{viewModel.triggerKeyCount &lt;= 1 ? false : true}"
                 android:text="@string/radio_button_parallel" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
@@ -129,7 +135,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.5"
                 android:checked="@={viewModel.triggerInSequence}"
-                android:enabled="@{viewModel.triggerKeys.size() &lt;= 1 ? false : true}"
+                android:enabled="@{viewModel.triggerKeyCount &lt;= 1 ? false : true}"
                 android:text="@string/radio_button_sequence" />
 
             <!-- Add a hidden radio button so a radio button is always checked in the group.
@@ -140,7 +146,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.5"
                 android:checked="@{viewModel.triggerModeUndefined}"
-                android:enabled="@{viewModel.triggerKeys.size() &lt;= 1 ? false : true}"
+                android:enabled="@{viewModel.triggerKeyCount &lt;= 1 ? false : true}"
                 android:text="Undefined"
                 android:visibility="gone" />
         </RadioGroup>

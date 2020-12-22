@@ -398,6 +398,10 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
     return Success(this)
 }
 
+val Action.canBeHeldDown: Boolean
+    get() = type in arrayOf(ActionType.KEY_EVENT, ActionType.TAP_COORDINATE)
+        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+
 val Action.requiresIME: Boolean
     get() {
         return type == ActionType.KEY_EVENT ||
@@ -410,6 +414,41 @@ val Action.repeat: Boolean
 
 val Action.holdDown: Boolean
     get() = flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)
+
+val Action.showVolumeUi: Boolean
+    get() = flags.hasFlag(Action.ACTION_FLAG_SHOW_VOLUME_UI)
+
+val Action.showPerformingActionToast: Boolean
+    get() = flags.hasFlag(Action.ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST)
+
+val Action.stopRepeatingWhenTriggerPressedAgain: Boolean
+    get() = extras.getData(Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR).valueOrNull()?.toInt() ==
+        Action.STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN
+
+val Action.stopRepeatingWhenTriggerReleased: Boolean
+    get() = !stopRepeatingWhenTriggerPressedAgain
+
+val Action.stopHoldDownWhenTriggerPressedAgain: Boolean
+    get() = extras.getData(Action.EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR).valueOrNull()?.toInt() ==
+        Action.STOP_HOLD_DOWN_BEHAVIOR_TRIGGER_PRESSED_AGAIN
+
+val Action.stopHoldDownWhenTriggerReleased: Boolean
+    get() = !stopHoldDownWhenTriggerPressedAgain
+
+val Action.delayBeforeNextAction: Int?
+    get() = extras.getData(Action.EXTRA_DELAY_BEFORE_NEXT_ACTION).valueOrNull()?.toInt()
+
+val Action.multiplier: Int?
+    get() = extras.getData(Action.EXTRA_MULTIPLIER).valueOrNull()?.toInt()
+
+val Action.holdDownDuration: Int?
+    get() = extras.getData(Action.EXTRA_HOLD_DOWN_DURATION).valueOrNull()?.toInt()
+
+val Action.repeatRate: Int?
+    get() = extras.getData(Action.EXTRA_REPEAT_RATE).valueOrNull()?.toInt()
+
+val Action.repeatDelay: Int?
+    get() = extras.getData(Action.EXTRA_REPEAT_DELAY).valueOrNull()?.toInt()
 
 fun Action.getFlagLabelList(ctx: Context): List<String> = sequence {
     Action.ACTION_FLAG_LABEL_MAP.keys.forEach { flag ->

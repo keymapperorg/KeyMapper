@@ -84,13 +84,13 @@ class HomeActivity : AppCompatActivity() {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            (application as MyApplication).keymapRepository.requestBackup.observe(this, EventObserver { keymapList ->
-                if (!BackupUtils.backupAutomatically) return@EventObserver
+            (application as MyApplication).keymapRepository.requestBackup.observe(this, { event ->
+                if (!BackupUtils.backupAutomatically) return@observe
 
                 BackupUtils.createAutomaticBackupOutputStream(this)
                     .onSuccess {
                         lifecycleScope.launch {
-                            mBackupRestoreViewModel.backup(it, keymapList)
+                            mBackupRestoreViewModel.backupKeymaps(it, event.keymapList)
                         }
                     }.onFailure {
                         if (it is FileAccessDenied) {

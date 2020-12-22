@@ -3,12 +3,9 @@
 package io.github.sds100.keymapper.data.viewmodel
 
 import androidx.lifecycle.*
+import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.data.repository.FileRepository
-import io.github.sds100.keymapper.util.Data
-import io.github.sds100.keymapper.util.Event
-import io.github.sds100.keymapper.util.Loading
-import io.github.sds100.keymapper.util.mapData
-import io.github.sds100.keymapper.util.result.Failure
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.SSLHandshakeError
 import io.github.sds100.keymapper.util.result.handle
 
@@ -37,12 +34,12 @@ class OnlineFileViewModel(
                 onFailure = {
                     if (it is SSLHandshakeError) {
                         if (mAlternateUrl != null) {
-                            openUrlExternallyEvent.value = Event(mAlternateUrl)
+                            _eventStream.value = OpenUrl(mAlternateUrl)
                         }
                     }
 
-                    showErrorEvent.value = Event(it)
-                    closeDialogEvent.value = Event(Unit)
+                    _eventStream.value = ShowErrorMessage(it)
+                    _eventStream.value = CloseDialog()
 
                     ""
                 }
@@ -50,9 +47,8 @@ class OnlineFileViewModel(
         }
     }
 
-    val openUrlExternallyEvent = MutableLiveData<Event<String>>()
-    val showErrorEvent = MutableLiveData<Event<Failure>>()
-    val closeDialogEvent = MutableLiveData<Event<Unit>>()
+    private val _eventStream = LiveEvent<Event>()
+    val eventStream: LiveData<Event> = _eventStream
 
     class Factory(
         private val mRepository: FileRepository,

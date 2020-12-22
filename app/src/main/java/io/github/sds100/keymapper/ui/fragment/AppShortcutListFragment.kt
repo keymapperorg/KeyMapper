@@ -94,7 +94,7 @@ class AppShortcutListFragment : DefaultRecyclerViewFragment() {
             }
         }
 
-    override fun subscribeList(binding: FragmentRecyclerviewBinding) {
+    override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
         mViewModel.filteredAppShortcutModelList.observe(viewLifecycleOwner, { appShortcutList ->
             binding.state = appShortcutList
 

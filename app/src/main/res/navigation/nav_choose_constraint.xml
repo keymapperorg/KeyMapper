@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_choose_constraint"
-    app:startDestination="@id/chooseConstraintListFragment">
+    app:startDestination="@id/chooseConstraintFragment">
 
     <fragment
-        android:id="@+id/chooseConstraintListFragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.ChooseConstraintListFragment"
-        android:label="ChooseConstraintListFragment"
+        android:id="@+id/chooseConstraintFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.ChooseConstraintFragment"
+        android:label="ChooseConstraintFragment"
         tools:layout="@layout/fragment_recyclerview">
 
         <action
@@ -18,6 +18,10 @@
         <action
             android:id="@+id/action_chooseConstraintListFragment_to_bluetoothDevicesFragment"
             app:destination="@+id/bluetoothDevicesFragment" />
+
+        <argument
+            android:name="@string/nav_arg_choose_constraint_request_key"
+            app:argType="string" />
     </fragment>
 
     <fragment

@@ -17,11 +17,8 @@ import io.github.sds100.keymapper.checkbox
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.viewmodel.KeyEventActionTypeViewModel
 import io.github.sds100.keymapper.databinding.FragmentKeyeventActionTypeBinding
-import io.github.sds100.keymapper.util.EventObserver
-import io.github.sds100.keymapper.util.InjectorUtils
-import io.github.sds100.keymapper.util.InputDeviceUtils
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.getFullMessage
-import io.github.sds100.keymapper.util.str
 
 /**
  * Created by sds100 on 30/03/2020.
@@ -39,12 +36,32 @@ class KeyEventActionTypeFragment : Fragment() {
         InjectorUtils.provideKeyEventActionTypeViewModel(requireContext())
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    /**
+     * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
+     */
+    private var _binding: FragmentKeyeventActionTypeBinding? = null
+    val binding: FragmentKeyeventActionTypeBinding
+        get() = _binding!!
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         FragmentKeyeventActionTypeBinding.inflate(inflater, container, false).apply {
 
             lifecycleOwner = viewLifecycleOwner
             viewModel = mViewModel
+            _binding = this
 
+            return this.root
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.apply {
             setOnDoneClick {
                 setFragmentResult(REQUEST_KEY,
                     bundleOf(
@@ -62,11 +79,6 @@ class KeyEventActionTypeFragment : Fragment() {
 
             mViewModel.failure.observe(viewLifecycleOwner, {
                 textInputLayoutKeyCode.error = it?.getFullMessage(requireContext())
-            })
-
-            mViewModel.chooseKeycode.observe(viewLifecycleOwner, EventObserver {
-                val direction = ChooseActionFragmentDirections.actionChooseActionFragmentToKeycodeListFragment()
-                findNavController().navigate(direction)
             })
 
             mViewModel.modifierKeyModels.observe(viewLifecycleOwner, { models ->
@@ -88,19 +100,38 @@ class KeyEventActionTypeFragment : Fragment() {
             mViewModel.chosenDevice.observe(viewLifecycleOwner, {
                 val text = when {
                     it == null -> str(R.string.from_no_device)
-                    AppPreferences.showDeviceDescriptors -> "${it.name} ${it.descriptor.substring(0..4)}"
+
+                    AppPreferences.showDeviceDescriptors ->
+                        "${it.name} ${it.descriptor.substring(0..4)}"
+
                     else -> it.name
                 }
 
                 dropdownDeviceId.setText(text, false)
             })
 
-            mViewModel.buildDeviceInfoModels.observe(viewLifecycleOwner, EventObserver {
-                mViewModel.setDeviceInfoModels(InputDeviceUtils.createDeviceInfoModelsForAll())
+            mViewModel.eventStream.observe(viewLifecycleOwner, {
+                when (it) {
+                    is ChooseKeycode -> {
+                        val direction = ChooseActionFragmentDirections
+                            .actionChooseActionFragmentToKeycodeListFragment()
+
+                        findNavController().navigate(direction)
+                    }
+
+                    is BuildDeviceInfoModels -> {
+                        val modelList = InputDeviceUtils.createDeviceInfoModelsForAll()
+                        mViewModel.setDeviceInfoModels(modelList)
+                    }
+                }
             })
 
             mViewModel.deviceInfoModels.observe(viewLifecycleOwner, { models ->
-                ArrayAdapter<String>(requireContext(), R.layout.dropdown_menu_popup_item, mutableListOf()).apply {
+                ArrayAdapter<String>(
+                    requireContext(),
+                    R.layout.dropdown_menu_popup_item,
+                    mutableListOf()
+                ).apply {
                     clear()
                     add(str(R.string.from_no_device))
 
@@ -131,7 +162,12 @@ class KeyEventActionTypeFragment : Fragment() {
                 }
 
                 onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
                         if (position == 0) {
                             mViewModel.chooseNoDevice()
                             return
@@ -146,8 +182,11 @@ class KeyEventActionTypeFragment : Fragment() {
                     }
                 }
             }
-
-            return this.root
         }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 }

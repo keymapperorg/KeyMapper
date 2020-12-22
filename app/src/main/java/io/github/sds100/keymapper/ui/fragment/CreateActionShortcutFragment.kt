@@ -11,33 +11,25 @@ import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.core.graphics.drawable.toBitmap
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
-import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import com.google.gson.Gson
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.action
 import io.github.sds100.keymapper.data.model.Action
-import io.github.sds100.keymapper.data.model.behavior.ActionBehavior
+import io.github.sds100.keymapper.data.model.options.ActionShortcutOptions
 import io.github.sds100.keymapper.data.viewmodel.CreateActionShortcutViewModel
 import io.github.sds100.keymapper.databinding.FragmentCreateActionShortcutBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.activity.LaunchActionShortcutActivity
+import io.github.sds100.keymapper.ui.fragment.keymap.KeymapActionOptionsFragment
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
-import io.github.sds100.keymapper.util.result.RecoverableFailure
-import io.github.sds100.keymapper.util.result.getFullMessage
 import io.github.sds100.keymapper.util.result.valueOrNull
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
 import splitties.alertdialog.appcompat.messageResource
 import splitties.alertdialog.appcompat.positiveButton
-import splitties.snackbar.action
-import splitties.snackbar.longSnack
 import java.util.*
 
 /**
@@ -45,12 +37,22 @@ import java.util.*
  */
 
 class CreateActionShortcutFragment : Fragment() {
+    companion object {
+        private const val CHOOSE_ACTION_REQUEST_KEY = "request_choose_action"
+    }
 
     private val mViewModel by navGraphViewModels<CreateActionShortcutViewModel>(R.id.nav_action_shortcut) {
         InjectorUtils.provideCreateActionShortcutViewModel(requireContext())
     }
 
     private lateinit var mRecoverFailureDelegate: RecoverFailureDelegate
+
+    /**
+     * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
+     */
+    private var _binding: FragmentCreateActionShortcutBinding? = null
+    val binding: FragmentCreateActionShortcutBinding
+        get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,17 +62,17 @@ class CreateActionShortcutFragment : Fragment() {
             requireActivity().activityResultRegistry,
             this) {
 
-            mViewModel.rebuildActionModels()
+            mViewModel.actionListViewModel.rebuildModels()
         }
 
-        setFragmentResultListener(ChooseActionFragment.REQUEST_KEY) { _, result ->
+        setFragmentResultListener(CHOOSE_ACTION_REQUEST_KEY) { _, result ->
             val action = result.getSerializable(ChooseActionFragment.EXTRA_ACTION) as Action
-            mViewModel.addAction(action)
+            mViewModel.actionListViewModel.addAction(action)
         }
 
-        setFragmentResultListener(ActionBehaviorFragment.REQUEST_KEY) { _, result ->
-            mViewModel.setActionBehavior(
-                result.getSerializable(ActionBehaviorFragment.EXTRA_ACTION_BEHAVIOR) as ActionBehavior)
+        setFragmentResultListener(KeymapActionOptionsFragment.REQUEST_KEY) { _, result ->
+            mViewModel.actionListViewModel.setOptions(
+                result.getSerializable(BaseOptionsDialogFragment.EXTRA_OPTIONS) as ActionShortcutOptions)
         }
     }
 
@@ -79,6 +81,14 @@ class CreateActionShortcutFragment : Fragment() {
             lifecycleOwner = viewLifecycleOwner
             viewModel = mViewModel
 
+            return this.root
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.apply {
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
                 showOnBackPressedWarning()
             }
@@ -87,74 +97,11 @@ class CreateActionShortcutFragment : Fragment() {
                 showOnBackPressedWarning()
             }
 
-            mViewModel.actionList.observe(viewLifecycleOwner, Observer {
-                appBar.menu?.findItem(R.id.action_done)?.isVisible = it.isNotEmpty()
-            })
-
-            mViewModel.chooseActionEvent.observe(viewLifecycleOwner, EventObserver {
-                findNavController().navigate(
-                    CreateActionShortcutFragmentDirections.actionActionShortcutListFragmentToChooseActionFragment())
-            })
-
-            mViewModel.testAction.observe(viewLifecycleOwner, EventObserver {
-                if (AccessibilityUtils.isServiceEnabled(requireContext())) {
-
-                    requireContext().sendPackageBroadcast(MyAccessibilityService.ACTION_TEST_ACTION,
-                        bundleOf(MyAccessibilityService.EXTRA_ACTION to it))
-
-                } else {
-                    mViewModel.promptToEnableAccessibilityService.value = Event(Unit)
-                }
-            })
-
-            mViewModel.chooseActionBehavior.observe(viewLifecycleOwner, EventObserver {
-                val direction =
-                    CreateActionShortcutFragmentDirections.actionActionShortcutListFragmentToActionBehaviorFragment(it)
-
-                findNavController().navigate(direction)
-            })
-
-            mViewModel.showFixPrompt.observe(viewLifecycleOwner, EventObserver {
-                coordinatorLayout.longSnack(it.getFullMessage(requireContext())) {
-
-                    //only add an action to fix the error if the error can be recovered from
-                    if (it is RecoverableFailure) {
-                        action(R.string.snackbar_fix) {
-                            mRecoverFailureDelegate.recover(requireActivity(), it)
-                        }
-                    }
-
-                    show()
-                }
-            })
-
-            subscribeActionList()
-
             appBar.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.action_done -> {
-                        lifecycleScope.launchWhenResumed {
-                            ShortcutInfoCompat.Builder(requireContext(), UUID.randomUUID().toString()).apply {
-                                val icon = createShortcutIcon()
-                                val shortcutLabel = createShortcutLabel()
-
-                                setIcon(icon)
-                                setShortLabel(shortcutLabel)
-
-                                Intent(requireContext(), LaunchActionShortcutActivity::class.java).apply {
-                                    action = MyAccessibilityService.ACTION_PERFORM_ACTIONS
-
-                                    putExtra(MyAccessibilityService.EXTRA_ACTION_LIST,
-                                        Gson().toJson(mViewModel.actionList.value))
-
-                                    setIntent(this)
-                                }
-
-                                ShortcutManagerCompat.createShortcutResultIntent(requireContext(), this.build()).apply {
-                                    requireActivity().setResult(Activity.RESULT_OK, this)
-                                    requireActivity().finish()
-                                }
-                            }
+                        viewLifecycleScope.launchWhenStarted {
+                            onDoneClick()
                         }
 
                         true
@@ -164,13 +111,52 @@ class CreateActionShortcutFragment : Fragment() {
                 }
             }
 
-            return this.root
+            mViewModel.eventStream.observe(viewLifecycleOwner, { event ->
+                when (event) {
+                    is FixFailure -> coordinatorLayout.showFixActionSnackBar(
+                        event.failure,
+                        requireActivity(),
+                        mRecoverFailureDelegate
+                    )
+
+                    is EnableAccessibilityServicePrompt -> coordinatorLayout.showEnableAccessibilityServiceSnackBar()
+                }
+            })
+        }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
+    }
+
+    private suspend fun onDoneClick() {
+        ShortcutInfoCompat.Builder(requireContext(), UUID.randomUUID().toString()).apply {
+            val icon = createShortcutIcon()
+            val shortcutLabel = createShortcutLabel()
+
+            setIcon(icon)
+            setShortLabel(shortcutLabel)
+
+            Intent(requireContext(), LaunchActionShortcutActivity::class.java).apply {
+                action = MyAccessibilityService.ACTION_PERFORM_ACTIONS
+
+                putExtra(MyAccessibilityService.EXTRA_ACTION_LIST,
+                    Gson().toJson(mViewModel.actionListViewModel.actionList.value))
+
+                setIntent(this)
+            }
+
+            ShortcutManagerCompat.createShortcutResultIntent(requireContext(), this.build()).apply {
+                requireActivity().setResult(Activity.RESULT_OK, this)
+                requireActivity().finish()
+            }
         }
     }
 
     private fun createShortcutIcon(): IconCompat {
-        if (mViewModel.actionList.value?.size == 1) {
-            val action = mViewModel.actionList.value!![0]
+        if (mViewModel.actionListViewModel.actionList.value?.size == 1) {
+            val action = mViewModel.actionListViewModel.actionList.value!![0]
 
             action.getIcon(requireContext()).valueOrNull()?.let {
                 val bitmap = it.toBitmap()
@@ -185,10 +171,10 @@ class CreateActionShortcutFragment : Fragment() {
     }
 
     private suspend fun createShortcutLabel(): String {
-        if (mViewModel.actionList.value?.size == 1) {
-            val action = mViewModel.actionList.value!![0]
+        if (mViewModel.actionListViewModel.actionList.value?.size == 1) {
+            val action = mViewModel.actionListViewModel.actionList.value!![0]
 
-            action.getTitle(requireContext(), mViewModel.getDeviceInfoList()).valueOrNull()?.let {
+            action.getTitle(requireContext(), mViewModel.actionListViewModel.getDeviceInfoList()).valueOrNull()?.let {
                 return it
             }
         }
@@ -210,46 +196,5 @@ class CreateActionShortcutFragment : Fragment() {
             cancelButton()
             show()
         }
-    }
-
-    private fun FragmentCreateActionShortcutBinding.subscribeActionList() {
-        mViewModel.buildActionModelList.observe(viewLifecycleOwner, EventObserver { actionList ->
-            lifecycleScope.launchWhenStarted {
-                val deviceInfoList = mViewModel.getDeviceInfoList()
-
-                val models = sequence {
-                    actionList.forEach {
-                        yield(it.buildModel(requireContext(), deviceInfoList))
-                    }
-                }.toList()
-
-                mViewModel.setActionModels(models)
-            }
-        })
-
-        mViewModel.actionModelList.observe(viewLifecycleOwner, { actionList ->
-            epoxyRecyclerView.withModels {
-
-                actionList.forEachIndexed { _, model ->
-                    action {
-                        id(model.id)
-                        model(model)
-                        icon(model.icon)
-
-                        onRemoveClick { _ ->
-                            mViewModel.removeAction(model.id)
-                        }
-
-                        onMoreClick { _ ->
-                            mViewModel.chooseActionBehavior(model.id)
-                        }
-
-                        onClick { _ ->
-                            mViewModel.onActionModelClick(model.id)
-                        }
-                    }
-                }
-            }
-        })
     }
 }

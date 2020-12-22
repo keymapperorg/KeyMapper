@@ -25,7 +25,7 @@ class KeycodeListFragment : DefaultRecyclerViewFragment() {
         InjectorUtils.provideKeycodeListViewModel()
     }
 
-    override fun subscribeList(binding: FragmentRecyclerviewBinding) {
+    override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
         mViewModel.filteredKeycodeLabelList.observe(viewLifecycleOwner, { labelList ->
 
             binding.state = labelList
