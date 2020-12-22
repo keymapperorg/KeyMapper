@@ -3,6 +3,8 @@ package io.github.sds100.keymapper.ui.activity
 import android.Manifest
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -79,6 +81,99 @@ class AppIntroActivity : AppIntro2() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    class FingerprintGestureSupportSlide : AppIntroScrollableFragment(),
+        SharedPreferences.OnSharedPreferenceChangeListener {
+
+        override fun onCreate(savedInstanceState: Bundle?) {
+            super.onCreate(savedInstanceState)
+
+            requireContext().defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
+        }
+
+        override fun onBind(binding: FragmentAppIntroSlideBinding) {
+            binding.apply {
+                title = str(R.string.showcase_fingerprint_gesture_support_title)
+
+                imageDrawable = drawable(R.drawable.ic_baseline_fingerprint_64)
+                backgroundColor = color(R.color.orange)
+
+                invalidateLayout(binding)
+            }
+        }
+
+        override fun onResume() {
+            super.onResume()
+
+            invalidateLayout(binding)
+        }
+
+        override fun onDestroy() {
+            requireContext().defaultSharedPreferences
+                .unregisterOnSharedPreferenceChangeListener(this)
+
+            super.onDestroy()
+        }
+
+        override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+            when (key) {
+                str(R.string.key_pref_fingerprint_gesture_available) -> {
+                    val supported = AppPreferences.isFingerprintGestureDetectionAvailable
+
+                    if (supported) {
+                        gesturesSupportedLayout(binding)
+                    } else {
+                        gesturesUnsupportedLayout(binding)
+                    }
+                }
+            }
+        }
+
+        private fun invalidateLayout(binding: FragmentAppIntroSlideBinding) {
+            when {
+                !AppPreferences.checkedForFingerprintGestureSupport ->
+                    supportedUnknownLayout(binding)
+
+                AppPreferences.isFingerprintGestureDetectionAvailable ->
+                    gesturesSupportedLayout(binding)
+
+                !AppPreferences.isFingerprintGestureDetectionAvailable ->
+                    gesturesUnsupportedLayout(binding)
+            }
+        }
+
+        private fun gesturesSupportedLayout(binding: FragmentAppIntroSlideBinding) {
+            binding.apply {
+                description =
+                    str(R.string.showcase_fingerprint_gesture_support_message_supported)
+
+                buttonText = null
+            }
+        }
+
+        private fun supportedUnknownLayout(binding: FragmentAppIntroSlideBinding) {
+            binding.apply {
+                description =
+                    str(R.string.showcase_fingerprint_gesture_support_message_supported_unknown)
+
+                buttonText = str(R.string.showcase_fingerprint_gesture_support_button)
+
+                setOnButtonClickListener {
+                    AccessibilityUtils.enableService(requireContext())
+                }
+            }
+        }
+
+        private fun gesturesUnsupportedLayout(binding: FragmentAppIntroSlideBinding) {
+            binding.apply {
+                description =
+                    str(R.string.showcase_fingerprint_gesture_support_message_not_supported)
+
+                buttonText = null
+            }
+        }
+    }
+
     class DexSlide : AppIntroScrollableFragment() {
         override fun onBind(binding: FragmentAppIntroSlideBinding) {
             binding.apply {
@@ -136,6 +231,11 @@ class AppIntroActivity : AppIntro2() {
             && !powerManager.isIgnoringBatteryOptimizations(Constants.PACKAGE_NAME)) {
 
             addSlide(BatteryOptimisationSlide())
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+            && packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
+            addSlide(FingerprintGestureSupportSlide())
         }
 
         if (isDexSupported(this)) {

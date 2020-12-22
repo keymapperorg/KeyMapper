@@ -45,6 +45,7 @@
     <string name="key_pref_last_used_compatible_ime" translatable="false">pref_last_used_compatible_ime</string>
     <string name="key_pref_show_gui_keyboard_ad" translatable="false">pref_show_gui_keyboard_ad</string>
     <string name="key_pref_fingerprint_gesture_available" translatable="false">pref_fingerprint_gesture_available</string>
+    <string name="key_pref_checked_for_fingerprint_gesture_support" translatable="false">pref_checked_for_fingerprint_gesture_support</string>
     <string name="key_pref_show_device_descriptors" translatable="false">pref_show_device_descriptors</string>
     <string name="key_pref_hold_down_duration" translatable="false">pref_hold_down_duration</string>
 

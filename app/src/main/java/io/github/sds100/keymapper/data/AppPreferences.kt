@@ -142,6 +142,11 @@ object AppPreferences : DefaultPreferences() {
         true
     )
 
+    var checkedForFingerprintGestureSupport by BoolPref(
+        appCtx.str(R.string.key_pref_checked_for_fingerprint_gesture_support),
+        false
+    )
+
     var isFingerprintGestureDetectionAvailable by BoolPref(
         appCtx.str(R.string.key_pref_fingerprint_gesture_available),
         false

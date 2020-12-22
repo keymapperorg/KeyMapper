@@ -360,6 +360,8 @@ class MyAccessibilityService : AccessibilityService(),
                 fingerprintGestureController.isGestureDetectionAvailable
             denyFingerprintGestureDetection()
 
+            AppPreferences.checkedForFingerprintGestureSupport = true
+
             mFingerprintMapRepository = (application as MyApplication).fingerprintMapRepository
 
             mFingerprintGestureMapController = FingerprintGestureMapController(
