@@ -109,7 +109,7 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
 
         scope.launch {
             if (mId == NEW_KEYMAP_ID) {
-                mKeymapRepository.insertKeymap(keymap)
+                mKeymapRepository.insertKeymap(keymap.copy(id = 0))
             } else {
                 mKeymapRepository.updateKeymap(keymap)
             }
