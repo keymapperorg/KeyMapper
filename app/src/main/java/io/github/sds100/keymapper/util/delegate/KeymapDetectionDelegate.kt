@@ -26,10 +26,9 @@ import splitties.bitflags.withFlag
 class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                               val preferences: KeymapDetectionPreferences,
                               iClock: IClock,
-                              iConstraintState: IConstraintState,
                               iActionError: IActionError,
                               iConstraintDelegate: IConstraintDelegate
-) : IClock by iClock, IConstraintState by iConstraintState, IActionError by iActionError,
+) : IClock by iClock, IActionError by iActionError,
     IConstraintDelegate by iConstraintDelegate {
 
     companion object {

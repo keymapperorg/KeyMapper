@@ -290,7 +290,6 @@ class MyAccessibilityService : AccessibilityService(),
             lifecycleScope,
             preferences,
             iClock = this,
-            iConstraintState = this,
             iActionError = this,
             mConstraintDelegate)
 

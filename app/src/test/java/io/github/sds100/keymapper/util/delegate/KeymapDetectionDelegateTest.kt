@@ -100,6 +100,8 @@ class KeymapDetectionDelegateTest {
             override val packagesCurrentlyPlayingMedia = listOf<String>()
         }
 
+        val constraintDelegate = ConstraintDelegate(iConstraintState)
+
         val iActionError = object : IActionError {
             override fun canActionBePerformed(action: Action) = Success(action)
         }
@@ -114,7 +116,13 @@ class KeymapDetectionDelegateTest {
             HOLD_DOWN_DURATION,
             FORCE_VIBRATE)
 
-        mDelegate = KeymapDetectionDelegate(mCoroutineScope, preferences, iClock, iConstraintState, iActionError)
+        mDelegate = KeymapDetectionDelegate(
+            mCoroutineScope,
+            preferences,
+            iClock,
+            iActionError,
+            constraintDelegate
+        )
     }
 
     @After
