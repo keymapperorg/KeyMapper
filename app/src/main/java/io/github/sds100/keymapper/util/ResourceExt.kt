@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.util
 
 import android.content.Context
 import android.content.res.ColorStateList
+import android.content.res.TypedArray
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.View
@@ -10,7 +11,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.getResourceIdOrThrow
 import androidx.fragment.app.Fragment
-import splitties.resources.resolveThemeAttribute
+import splitties.mainthread.isMainThread
 
 /**
  * Created by sds100 on 17/05/2020.
@@ -124,7 +125,7 @@ fun View.color(@ColorRes resId: Int): Int = context.color(resId)
 fun Fragment.color(@ColorRes resId: Int): Int = requireContext().color(resId)
 
 @ColorInt
-fun Context.styledColor(@AttrRes attr: Int) = ContextCompat.getColor(this, resolveThemeAttribute(attr))
+fun Context.styledColor(@AttrRes attr: Int) = withStyledAttributes(attr) { getColor(it, 0) }
 
 @ColorInt
 fun Fragment.styledColor(@AttrRes attr: Int) = requireContext().styledColor(attr)
@@ -139,7 +140,26 @@ fun Context.intArray(@ArrayRes resId: Int): IntArray = resources.getIntArray(res
 fun Fragment.intArray(@ArrayRes resId: Int): IntArray = resources.getIntArray(resId)
 
 fun Context.styledColorSL(@AttrRes attr: Int): ColorStateList? =
-    ContextCompat.getColorStateList(this, resolveThemeAttribute(attr))
+    withStyledAttributes(attr) { getColorStateList(it) }
 
 fun Fragment.styledColorSL(@AttrRes attr: Int) = context!!.styledColorSL(attr)
 fun View.styledColorSL(@AttrRes attr: Int) = context.styledColorSL(attr)
+
+private val uiThreadConfinedCachedAttrArray = IntArray(1)
+private val cachedAttrArray = IntArray(1)
+
+inline fun <T> Context.withStyledAttributes(
+    @AttrRes attrRes: Int,
+    func: TypedArray.(firstIndex: Int) -> T
+): T = obtainStyledAttr(attrRes).let { styledAttrs ->
+    styledAttrs.func(styledAttrs.getIndex(0)).also { styledAttrs.recycle() }
+}
+
+fun Context.obtainStyledAttr(@AttrRes attrRes: Int): TypedArray = if (isMainThread) {
+    uiThreadConfinedCachedAttrArray[0] = attrRes
+    obtainStyledAttributes(uiThreadConfinedCachedAttrArray)
+} else synchronized(cachedAttrArray) {
+    cachedAttrArray[0] = attrRes
+    obtainStyledAttributes(cachedAttrArray)
+}
+

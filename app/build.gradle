@@ -87,13 +87,12 @@ dependencies {
     def nav_version = '2.3.1'
     def work_version = "2.4.0"
     def epoxy_version = "4.0.0"
-    def splitties_version = "3.0.0-alpha07"
+    def splitties_version = "3.0.0-beta01"
     def markwonVersion = "4.3.1"
     def multidex_version = "2.0.1"
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-// kotlin stuff
     // kotlin stuff
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutine_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
@@ -116,10 +115,10 @@ dependencies {
     implementation "com.louiscad.splitties:splitties-alertdialog-appcompat-coroutines:$splitties_version"
     implementation "com.louiscad.splitties:splitties-alertdialog-appcompat:$splitties_version"
     implementation "com.louiscad.splitties:splitties-preferences:$splitties_version"
-    implementation "com.louiscad.splitties:splitties-resources:$splitties_version"
     implementation "com.louiscad.splitties:splitties-snackbar:$splitties_version"
     implementation "com.louiscad.splitties:splitties-systemservices:$splitties_version"
     implementation "com.louiscad.splitties:splitties-toast:$splitties_version"
+    implementation "com.louiscad.splitties:splitties-mainthread:$splitties_version"
 
     // androidx
     implementation 'androidx.legacy:legacy-support-core-ui:1.0.0'
