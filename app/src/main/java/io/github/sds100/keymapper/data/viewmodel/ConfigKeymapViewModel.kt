@@ -117,13 +117,6 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
     }
 
     private fun createKeymap(): KeyMap {
-        val actualId =
-            if (mId == NEW_KEYMAP_ID) {
-                0
-            } else {
-                mId
-            }
-
         val trigger = triggerViewModel.createTrigger()
 
         return KeyMap(

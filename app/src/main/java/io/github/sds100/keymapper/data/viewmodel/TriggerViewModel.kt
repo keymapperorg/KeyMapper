@@ -17,7 +17,6 @@ import io.github.sds100.keymapper.data.model.options.TriggerOptions
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.CoroutineScope
-import splitties.bitflags.withFlag
 import java.util.*
 
 /**
@@ -44,31 +43,38 @@ class TriggerViewModel(
     val triggerModeUndefined: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val mode: MediatorLiveData<Int> = MediatorLiveData<Int>().apply {
-        addSource(triggerInParallel) {
-            if (it == true) {
+        addSource(triggerInParallel) { newValue ->
+            if (newValue == true) {
 
                 /* when the user first chooses to make parallel a trigger, show a dialog informing them that
                 the order in which they list the keys is the order in which they will need to be held down.
                  */
-                if (_keys.value?.size!! > 1 &&
-                    !getBoolPref(R.string.key_pref_shown_parallel_trigger_order_dialog) && value != Trigger.PARALLEL) {
+                if (keys.value?.size!! > 1 &&
+                    !getBoolPref(R.string.key_pref_shown_parallel_trigger_order_dialog)) {
 
                     notifyUser(R.string.dialog_message_parallel_trigger_order) {
                         setBoolPref(R.string.key_pref_shown_parallel_trigger_order_dialog, true)
                     }
                 }
 
-                // set all the keys to a short press if coming from a non-parallel trigger
-                // because they must all be the same click type and can't all be double pressed
-                if (it == true && value != null && value != Trigger.PARALLEL) {
-                    _keys.value?.let { keys ->
-                        if (keys.isEmpty()) {
+                if (value != Trigger.PARALLEL) {
+                    keys.value?.let { oldKeys ->
+                        var newKeys = oldKeys.toMutableList()
+
+                        if (newKeys.isEmpty()) {
                             return@let
                         }
 
-                        _keys.value = keys.map { key ->
+                        // set all the keys to a short press if coming from a non-parallel trigger
+                        // because they must all be the same click type and can't all be double pressed
+                        newKeys = newKeys.map { key ->
                             key.copy(clickType = Trigger.SHORT_PRESS)
-                        }
+                        }.toMutableList()
+
+                        //remove duplicates of keys that have the same keycode and device id
+                        newKeys = newKeys.distinctBy { Pair(it.keyCode, it.deviceId) }.toMutableList()
+
+                        _keys.value = newKeys
                     }
                 }
 
@@ -187,9 +193,9 @@ class TriggerViewModel(
         optionsViewModel.invalidateOptions()
     }
 
-    fun setTriggerKeyDevice(keyCode: Int, descriptor: String) {
+    fun setTriggerKeyDevice(uid: String, descriptor: String) {
         _keys.value = keys.value?.map {
-            if (it.keyCode == keyCode) {
+            if (it.uid == uid) {
                 return@map it.copy(deviceId = descriptor)
             }
 
@@ -205,43 +211,75 @@ class TriggerViewModel(
     suspend fun addTriggerKey(keyCode: Int, deviceDescriptor: String, deviceName: String, isExternal: Boolean): Boolean {
         mDeviceInfoRepository.insertDeviceInfo(DeviceInfo(deviceDescriptor, deviceName))
 
-        val containsKey = keys.value?.any {
-            val sameKeyCode = keyCode == it.keyCode
+        var clickType = Trigger.SHORT_PRESS
 
-            //if the key is not external, check whether a trigger key already exists for this device
-            val sameDeviceId = if (
-                (it.deviceId == Trigger.Key.DEVICE_ID_THIS_DEVICE
-                    || it.deviceId == Trigger.Key.DEVICE_ID_ANY_DEVICE)
-                && !isExternal) {
-                true
+        val deviceId = if (isExternal) {
+            deviceDescriptor
+        } else {
+            Trigger.Key.DEVICE_ID_THIS_DEVICE
+        }
+
+        val containsKey = keys.value?.any {
+            if (mode.value != Trigger.SEQUENCE) {
+                val sameKeyCode = keyCode == it.keyCode
+
+                //if the key is not external, check whether a trigger key already exists for this device
+                val sameDeviceId = if (
+                    (it.deviceId == Trigger.Key.DEVICE_ID_THIS_DEVICE
+                        || it.deviceId == Trigger.Key.DEVICE_ID_ANY_DEVICE)
+                    && !isExternal) {
+                    true
+
+                } else {
+                    it.deviceId == deviceDescriptor
+                }
+
+                sameKeyCode && sameDeviceId
 
             } else {
-                it.deviceId == deviceDescriptor
+                false
             }
-
-            sameKeyCode && sameDeviceId
-
         } ?: false
 
         if (containsKey) {
-            return false
+            triggerInSequence.value = true
+
+            if (!getBoolPref(R.string.key_pref_shown_multiple_of_same_key_in_sequence_trigger_info)) {
+                notifyUser(R.string.dialog_message_use_key_multiple_times_in_sequence_trigger)
+
+                setBoolPref(R.string.key_pref_shown_multiple_of_same_key_in_sequence_trigger_info,
+                    true)
+            }
+        }
+
+        /*
+        multiple of the same key from the same device in a sequence trigger must all have the same click type.
+        Therefore, set the click type of the new key to the same as the other keys.
+         */
+        if (triggerInSequence.value == true) {
+            val keysWithSameKeycodeAndDevice = keys.value?.filter {
+                it.keyCode == keyCode && it.deviceId == deviceId
+            } ?: listOf()
+
+            if (keysWithSameKeycodeAndDevice.isNotEmpty()) {
+                clickType = keysWithSameKeycodeAndDevice[0].clickType
+
+                if (!getBoolPref(
+                        R.string.key_pref_shown_multiple_of_same_key_in_sequence_trigger_info)) {
+
+                    notifyUser(R.string.dialog_message_use_key_multiple_times_in_sequence_trigger)
+
+                    setBoolPref(
+                        R.string.key_pref_shown_multiple_of_same_key_in_sequence_trigger_info,
+                        true
+                    )
+                }
+            }
         }
 
         _keys.value = keys.value?.toMutableList()?.apply {
-            val deviceId = if (isExternal) {
-                deviceDescriptor
-            } else {
-                Trigger.Key.DEVICE_ID_THIS_DEVICE
-            }
 
-            var flags = 0
-
-            if (KeyEventUtils.isModifierKey(keyCode)) {
-                flags = flags.withFlag(Trigger.Key.FLAG_DO_NOT_CONSUME_KEY_EVENT)
-            }
-
-            val triggerKey = Trigger.Key(keyCode, deviceId, flags)
-
+            val triggerKey = Trigger.Key(keyCode, deviceId, clickType)
             add(triggerKey)
         }
 
@@ -251,7 +289,7 @@ class TriggerViewModel(
 
         /* Automatically make it a parallel trigger when the user makes a trigger with more than one key
         because this is what most users are expecting when they make a trigger with multiple keys */
-        if (keys.value!!.size == 2) {
+        if (keys.value!!.size == 2 && !containsKey) {
             triggerInParallel.value = true
         }
 
@@ -264,9 +302,9 @@ class TriggerViewModel(
         return true
     }
 
-    fun removeTriggerKey(keycode: Int) {
+    fun removeTriggerKey(uid: String) {
         _keys.value = keys.value?.toMutableList()?.apply {
-            removeAll { it.keyCode == keycode }
+            removeAll { it.uid == uid }
         }
 
         if (keys.value!!.size <= 1) {
@@ -293,7 +331,7 @@ class TriggerViewModel(
     }
 
     fun editTriggerKeyOptions(id: String) {
-        val key = keys.value?.find { it.uniqueId == id } ?: return
+        val key = keys.value?.find { it.uid == id } ?: return
 
         val options = TriggerKeyOptions(key, mode.value!!)
 
@@ -301,13 +339,8 @@ class TriggerViewModel(
     }
 
     fun setTriggerKeyOptions(options: TriggerKeyOptions) {
-        _keys.value = keys.value?.toMutableList()?.map {
-            if (it.uniqueId == options.id) {
-                return@map options.apply(it)
-            }
-
-            it
-        }
+        val newTrigger = options.apply(createTrigger() ?: return)
+        setTrigger(newTrigger)
     }
 
     fun recordTrigger() {
@@ -337,7 +370,7 @@ class TriggerViewModel(
         _eventStream.value = EnableAccessibilityServicePrompt()
     }
 
-    private fun notifyUser(@StringRes message: Int, onOk: () -> Unit) {
+    private fun notifyUser(@StringRes message: Int, onOk: () -> Unit = {}) {
         _eventStream.value = OkDialog(message, onOk)
     }
 

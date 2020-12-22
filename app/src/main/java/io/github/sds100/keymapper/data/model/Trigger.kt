@@ -6,6 +6,7 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.R
 import kotlinx.android.parcel.Parcelize
+import java.util.*
 
 /**
  * Created by sds100 on 16/07/2018.
@@ -99,7 +100,10 @@ data class Trigger(
         val clickType: Int = SHORT_PRESS,
 
         @SerializedName(NAME_FLAGS)
-        val flags: Int = 0
+        val flags: Int = 0,
+
+        @SerializedName(NAME_UID)
+        val uid: String = UUID.randomUUID().toString()
     ) : Parcelable {
 
         companion object {

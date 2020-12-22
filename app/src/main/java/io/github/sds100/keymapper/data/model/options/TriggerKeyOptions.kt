@@ -10,7 +10,7 @@ class TriggerKeyOptions(
     override val id: String,
     val clickType: IntOption,
     private val doNotConsumeKeyEvents: BoolOption
-) : BaseOptions<Trigger.Key> {
+) : BaseOptions<Trigger> {
 
     companion object {
         const val ID_DO_NOT_CONSUME_KEY_EVENT = "do_not_consume_key_event"
@@ -18,7 +18,7 @@ class TriggerKeyOptions(
     }
 
     constructor(key: Trigger.Key, @Trigger.Mode mode: Int) : this(
-        id = key.uniqueId,
+        id = key.uid,
 
         clickType = IntOption(
             id = ID_CLICK_TYPE,
@@ -55,14 +55,39 @@ class TriggerKeyOptions(
     override val boolOptions: List<BoolOption>
         get() = listOf(doNotConsumeKeyEvents)
 
-    override fun apply(old: Trigger.Key): Trigger.Key {
-        val newFlags = old.flags.saveBoolOption(
-            doNotConsumeKeyEvents,
-            Trigger.Key.FLAG_DO_NOT_CONSUME_KEY_EVENT
-        )
+    override fun apply(trigger: Trigger): Trigger {
+        var keyToApplyOptions: Trigger.Key? = null
 
-        val newClickType = clickType.value
+        val newTriggerKeys = trigger.keys
+            .toMutableList()
+            .map {
+                if (it.uid == id) {
+                    val newKey = it.copy(
+                        clickType = clickType.value,
+                        flags = it.flags.saveBoolOption(
+                            doNotConsumeKeyEvents,
+                            Trigger.Key.FLAG_DO_NOT_CONSUME_KEY_EVENT
+                        )
+                    )
 
-        return old.copy(flags = newFlags, clickType = newClickType)
+                    keyToApplyOptions = it
+
+                    return@map newKey
+                }
+
+                it
+            }.map {
+                //set the click type of all duplicate keys to the same click type
+                if (trigger.mode == Trigger.SEQUENCE
+                    && it.keyCode == keyToApplyOptions?.keyCode
+                    && it.deviceId == keyToApplyOptions?.deviceId) {
+
+                    return@map it.copy(clickType = clickType.value)
+                }
+
+                it
+            }
+
+        return trigger.copy(keys = newTriggerKeys)
     }
 }

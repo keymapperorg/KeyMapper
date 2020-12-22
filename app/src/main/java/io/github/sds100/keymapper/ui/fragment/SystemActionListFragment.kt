@@ -1,5 +1,7 @@
 package io.github.sds100.keymapper.ui.fragment
 
+import android.os.Bundle
+import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.airbnb.epoxy.EpoxyController
@@ -45,7 +47,6 @@ class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourcePr
     override var searchStateKey: String? = SEARCH_STATE_KEY
     override var requestKey: String? = REQUEST_KEY
 
-    @ExperimentalSplittiesApi
     override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
 
         mViewModel.registerStringResourceProvider(this)

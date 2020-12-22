@@ -366,7 +366,7 @@ class TriggerFragment : Fragment() {
                     triggerKeyIndex(index)
 
                     onRemoveClick { _ ->
-                        mViewModel.removeTriggerKey(model.id)
+                        triggerViewModel.removeTriggerKey(model.id)
                     }
 
                     onMoreClick { _ ->
@@ -377,7 +377,7 @@ class TriggerFragment : Fragment() {
                         lifecycleScope.launch {
                             val deviceId = showChooseDeviceDialog()
 
-                            mViewModel.setTriggerKeyDevice(model.id, deviceId)
+                            triggerViewModel.setTriggerKeyDevice(model.id, deviceId)
                         }
                     }
                 }
