@@ -112,8 +112,7 @@ dependencies {
 
     // splitties
     implementation "com.louiscad.splitties:splitties-bitflags:$splitties_version"
-    implementation "com.louiscad.splitties:splitties-alertdialog-appcompat-coroutines:$splitties_version"
-    implementation "com.louiscad.splitties:splitties-alertdialog-appcompat:$splitties_version"
+    implementation "com.louiscad.splitties:splitties-fun-pack-android-appcompat:$splitties_version"
     implementation "com.louiscad.splitties:splitties-preferences:$splitties_version"
     implementation "com.louiscad.splitties:splitties-snackbar:$splitties_version"
     implementation "com.louiscad.splitties:splitties-systemservices:$splitties_version"
