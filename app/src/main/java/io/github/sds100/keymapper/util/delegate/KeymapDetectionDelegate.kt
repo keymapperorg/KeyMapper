@@ -242,13 +242,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                         }
                     }
 
-                    val constraints = sequence {
-                        keyMap.constraintList.forEach {
-
-
-                            yield(it)
-                        }
-                    }.toList().toTypedArray()
+                    val constraints = keyMap.constraintList.toTypedArray()
 
                     if (performActionOnDown(keyMap.trigger.keys, keyMap.trigger.mode)) {
                         parallelTriggerEvents.add(encodedTriggerList.toIntArray())
