@@ -15,7 +15,6 @@ import io.github.sds100.keymapper.util.result.DownloadFailed
 import io.github.sds100.keymapper.util.result.Result
 import io.github.sds100.keymapper.util.result.SSLHandshakeError
 import io.github.sds100.keymapper.util.result.Success
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import splitties.init.appCtx
 import splitties.systemservices.wifiManager
@@ -29,7 +28,6 @@ import kotlin.coroutines.resume
  */
 object NetworkUtils {
 
-    @ExperimentalCoroutinesApi
     suspend fun downloadFile(
         url: String,
         filePath: String

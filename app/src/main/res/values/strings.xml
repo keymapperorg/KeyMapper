@@ -547,8 +547,11 @@
     <!--flags-->
 
     <!-- Showcase -->
-    <string name="showcase_accessibility_service_title">Enable the accessibility service</string>
-    <string name="showcase_accessibility_service_description">Your keymaps will only work once you have enabled the accessibility service. It also needs to be turned on to create a trigger.</string>
+    <string name="showcase_accessibility_service_title_enabled">Accessibility service is enabled :)</string>
+    <string name="showcase_accessibility_service_description_enabled">All good.</string>
+
+    <string name="showcase_accessibility_service_title_disabled">Enable the accessibility service</string>
+    <string name="showcase_accessibility_service_description_disabled">Your keymaps will only work once you have enabled the accessibility service. It also needs to be turned on to create a trigger.</string>
 
     <string name="showcase_record_trigger_title">The accessibility service is disabled</string>
     <string name="showcase_record_trigger_description">You can only record a trigger if the accessibility service is enabled.</string>

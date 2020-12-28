@@ -1,21 +1,22 @@
 package io.github.sds100.keymapper.ui.activity
 
 import android.Manifest
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.content.SharedPreferences
+import android.content.*
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import com.github.appintro.AppIntro2
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.databinding.FragmentAppIntroSlideBinding
+import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.fragment.AppIntroScrollableFragment
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.DexUtils.isDexSupported
@@ -40,20 +41,68 @@ class AppIntroActivity : AppIntro2() {
     }
 
     class AccessibilityServiceSlide : AppIntroScrollableFragment() {
-        override fun onBind(binding: FragmentAppIntroSlideBinding) {
-            binding.apply {
-                title = str(R.string.showcase_accessibility_service_title)
-                description = str(R.string.showcase_accessibility_service_description)
-
-                imageDrawable = drawable(R.drawable.ic_outline_error_outline_64)
-                backgroundColor = color(R.color.purple)
-
-                buttonText = str(R.string.enable)
-
-                setOnButtonClickListener {
-                    AccessibilityUtils.enableService(requireContext())
+        private val mBroadcastReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                if (intent?.action == MyAccessibilityService.ACTION_ON_START) {
+                    binding.apply {
+                        if (AccessibilityUtils.isServiceEnabled(requireContext())) {
+                            serviceEnabledLayout()
+                        } else {
+                            serviceDisabledLayout()
+                        }
+                    }
                 }
             }
+        }
+
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+            super.onViewCreated(view, savedInstanceState)
+
+            IntentFilter().apply {
+                addAction(MyAccessibilityService.ACTION_ON_START)
+
+                requireContext().registerReceiver(mBroadcastReceiver, this)
+            }
+        }
+
+        override fun onDestroyView() {
+            requireContext().unregisterReceiver(mBroadcastReceiver)
+
+            super.onDestroyView()
+        }
+
+        override fun onBind(binding: FragmentAppIntroSlideBinding) {
+            binding.apply {
+                if (AccessibilityUtils.isServiceEnabled(requireContext())) {
+                    serviceEnabledLayout()
+                } else {
+                    serviceDisabledLayout()
+                }
+            }
+        }
+
+        private fun FragmentAppIntroSlideBinding.serviceDisabledLayout() {
+            title = str(R.string.showcase_accessibility_service_title_disabled)
+            description = str(R.string.showcase_accessibility_service_description_disabled)
+
+            imageDrawable = drawable(R.drawable.ic_outline_error_outline_64)
+            backgroundColor = color(R.color.purple)
+
+            buttonText = str(R.string.enable)
+
+            setOnButtonClickListener {
+                AccessibilityUtils.enableService(requireContext())
+            }
+        }
+
+        private fun FragmentAppIntroSlideBinding.serviceEnabledLayout() {
+            title = str(R.string.showcase_accessibility_service_title_enabled)
+            description = str(R.string.showcase_accessibility_service_description_enabled)
+
+            imageDrawable = drawable(R.drawable.ic_baseline_check_64)
+            backgroundColor = color(R.color.purple)
+
+            buttonText = null
         }
     }
 
@@ -82,14 +131,7 @@ class AppIntroActivity : AppIntro2() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    class FingerprintGestureSupportSlide : AppIntroScrollableFragment(),
-        SharedPreferences.OnSharedPreferenceChangeListener {
-
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-
-            requireContext().defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
-        }
+    class FingerprintGestureSupportSlide : AppIntroScrollableFragment() {
 
         override fun onBind(binding: FragmentAppIntroSlideBinding) {
             binding.apply {
@@ -98,79 +140,40 @@ class AppIntroActivity : AppIntro2() {
                 imageDrawable = drawable(R.drawable.ic_baseline_fingerprint_64)
                 backgroundColor = color(R.color.orange)
 
-                invalidateLayout(binding)
+                ServiceLocator.fingerprintMapRepository(requireContext())
+                    .fingerprintGesturesAvailable.observe(viewLifecycleOwner, { available ->
+                        when (available) {
+                            true -> gesturesSupportedLayout()
+                            false -> gesturesUnsupportedLayout()
+                            null -> supportedUnknownLayout()
+                        }
+                    })
             }
         }
 
-        override fun onResume() {
-            super.onResume()
+        private fun FragmentAppIntroSlideBinding.gesturesSupportedLayout() {
+            description =
+                str(R.string.showcase_fingerprint_gesture_support_message_supported)
 
-            invalidateLayout(binding)
+            buttonText = null
         }
 
-        override fun onDestroy() {
-            requireContext().defaultSharedPreferences
-                .unregisterOnSharedPreferenceChangeListener(this)
+        private fun FragmentAppIntroSlideBinding.supportedUnknownLayout() {
+            description =
+                str(R.string.showcase_fingerprint_gesture_support_message_supported_unknown)
 
-            super.onDestroy()
-        }
+            buttonText = str(R.string.showcase_fingerprint_gesture_support_button)
 
-        override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-            when (key) {
-                str(R.string.key_pref_fingerprint_gesture_available) -> {
-                    val supported = AppPreferences.isFingerprintGestureDetectionAvailable
-
-                    if (supported) {
-                        gesturesSupportedLayout(binding)
-                    } else {
-                        gesturesUnsupportedLayout(binding)
-                    }
-                }
+            setOnButtonClickListener {
+                AccessibilityUtils.enableService(requireContext())
             }
         }
 
-        private fun invalidateLayout(binding: FragmentAppIntroSlideBinding) {
-            when {
-                !AppPreferences.checkedForFingerprintGestureSupport ->
-                    supportedUnknownLayout(binding)
+        private fun FragmentAppIntroSlideBinding.gesturesUnsupportedLayout() {
+            description =
+                str(R.string.showcase_fingerprint_gesture_support_message_not_supported)
 
-                AppPreferences.isFingerprintGestureDetectionAvailable ->
-                    gesturesSupportedLayout(binding)
-
-                !AppPreferences.isFingerprintGestureDetectionAvailable ->
-                    gesturesUnsupportedLayout(binding)
-            }
-        }
-
-        private fun gesturesSupportedLayout(binding: FragmentAppIntroSlideBinding) {
-            binding.apply {
-                description =
-                    str(R.string.showcase_fingerprint_gesture_support_message_supported)
-
-                buttonText = null
-            }
-        }
-
-        private fun supportedUnknownLayout(binding: FragmentAppIntroSlideBinding) {
-            binding.apply {
-                description =
-                    str(R.string.showcase_fingerprint_gesture_support_message_supported_unknown)
-
-                buttonText = str(R.string.showcase_fingerprint_gesture_support_button)
-
-                setOnButtonClickListener {
-                    AccessibilityUtils.enableService(requireContext())
-                }
-            }
-        }
-
-        private fun gesturesUnsupportedLayout(binding: FragmentAppIntroSlideBinding) {
-            binding.apply {
-                description =
-                    str(R.string.showcase_fingerprint_gesture_support_message_not_supported)
-
-                buttonText = null
-            }
+            buttonText = null
         }
     }
 

@@ -4,25 +4,14 @@ import android.content.Context
 import io.github.sds100.keymapper.util.FileUtils
 import io.github.sds100.keymapper.util.NetworkUtils
 import io.github.sds100.keymapper.util.result.*
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.io.File
 import java.net.URL
 
 /**
  * Created by sds100 on 04/04/2020.
  */
-class FileRepository private constructor(private val mContext: Context) {
-    companion object {
-        @Volatile
-        private var instance: FileRepository? = null
+class FileRepository(private val mContext: Context) {
 
-        fun getInstance(context: Context) =
-            instance ?: synchronized(this) {
-                instance ?: FileRepository(context.applicationContext).also { instance = it }
-            }
-    }
-
-    @ExperimentalCoroutinesApi
     suspend fun getFile(url: String): Result<String> {
         val fileName = extractFileName(url)
         val path = FileUtils.getPathToFileInAppData(mContext, fileName)

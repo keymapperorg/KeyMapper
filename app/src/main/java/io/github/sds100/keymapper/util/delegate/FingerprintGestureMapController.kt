@@ -1,8 +1,6 @@
 package io.github.sds100.keymapper.util.delegate
 
-import android.os.Build
 import androidx.annotation.MainThread
-import androidx.annotation.RequiresApi
 import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.IConstraintDelegate
 import io.github.sds100.keymapper.data.AppPreferences
@@ -18,7 +16,6 @@ import splitties.bitflags.hasFlag
 /**
  * Created by sds100 on 11/12/20.
  */
-@RequiresApi(Build.VERSION_CODES.O)
 class FingerprintGestureMapController(
     private val mCoroutineScope: CoroutineScope,
     iConstraintDelegate: IConstraintDelegate,

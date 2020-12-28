@@ -5,7 +5,7 @@ import android.view.KeyEvent
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import io.github.sds100.keymapper.Constants
-import io.github.sds100.keymapper.MyApplication
+import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.KeyMap
@@ -37,7 +37,7 @@ class SeedDatabaseWorker(
                 }
             }.toList().toTypedArray()
 
-            (applicationContext as MyApplication).keymapRepository.insertKeymap(*keymaps)
+            ServiceLocator.keymapRepository(applicationContext).insertKeymap(*keymaps)
 
             Result.success()
         } catch (e: Exception) {

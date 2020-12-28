@@ -34,6 +34,8 @@ class FingerprintMapListViewModel(
     private val _models =
         MutableLiveData<State<List<FingerprintGestureMapListItemModel>>>(Loading())
 
+    val fingerprintGesturesAvailable = mRepository.fingerprintGesturesAvailable
+
     val models: LiveData<State<List<FingerprintGestureMapListItemModel>>> = _models
 
     private val _eventStream = LiveEvent<Event>().apply {

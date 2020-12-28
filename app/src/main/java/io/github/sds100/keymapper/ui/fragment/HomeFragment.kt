@@ -126,9 +126,6 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             updateStatusLayouts()
         }
 
-    private lateinit var mPagerAdapter: HomePagerAdapter
-    private lateinit var mTabLayoutMediator: TabLayoutMediator
-
     private val mOnPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
             if (position == 0) {
@@ -176,10 +173,20 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
         super.onViewCreated(view, savedInstanceState)
 
         mBinding.apply {
-            mPagerAdapter = HomePagerAdapter(this@HomeFragment)
-            viewPager.adapter = mPagerAdapter
 
-            mTabLayoutMediator = TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+            val pagerAdapter = HomePagerAdapter(
+                this@HomeFragment,
+                mFingerprintMapListViewModel.fingerprintGesturesAvailable.value ?: false
+            )
+
+            viewPager.adapter = pagerAdapter
+
+            mFingerprintMapListViewModel.fingerprintGesturesAvailable.observe(viewLifecycleOwner, {
+                pagerAdapter.invalidateFragments(it ?: false)
+                isFingerprintGestureDetectionAvailable = it ?: false
+            })
+
+            TabLayoutMediator(tabLayout, viewPager) { tab, position ->
                 tab.text = strArray(R.array.home_tab_titles)[position]
             }.apply {
                 attach()
@@ -349,9 +356,6 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                 }
             })
 
-            isFingerprintGestureDetectionAvailable =
-                AppPreferences.isFingerprintGestureDetectionAvailable
-
             updateStatusLayouts()
 
             if (AppPreferences.lastInstalledVersionCode != Constants.VERSION_CODE) {
@@ -435,20 +439,12 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
 
         requireActivity().unregisterReceiver(mBroadcastReceiver)
         requireContext().defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
-
     }
 
     override fun onSharedPreferenceChanged(preferences: SharedPreferences?, key: String?) {
         when (key) {
             str(R.string.key_pref_show_gui_keyboard_ad) ->
                 mBinding.showNewGuiKeyboardAd = AppPreferences.showGuiKeyboardAd
-
-            str(R.string.key_pref_fingerprint_gesture_available) -> {
-                mBinding.isFingerprintGestureDetectionAvailable =
-                    AppPreferences.isFingerprintGestureDetectionAvailable
-
-                mPagerAdapter.notifyDataSetChanged()
-            }
         }
     }
 

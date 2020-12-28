@@ -21,8 +21,8 @@ import com.github.salomonbrys.kotson.registerTypeAdapter
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
-import io.github.sds100.keymapper.MyApplication
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.WidgetsManager.EVENT_ACCESSIBILITY_SERVICE_STARTED
 import io.github.sds100.keymapper.WidgetsManager.EVENT_ACCESSIBILITY_SERVICE_STOPPED
@@ -193,9 +193,6 @@ class MyAccessibilityService : AccessibilityService(),
         }
     }
 
-    private var mFingerprintGestureCallback:
-        FingerprintGestureController.FingerprintGestureCallback? = null
-
     private var mRecordingTriggerJob: Job? = null
 
     private val mRecordingTrigger: Boolean
@@ -209,8 +206,13 @@ class MyAccessibilityService : AccessibilityService(),
     private lateinit var mActionPerformerDelegate: ActionPerformerDelegate
     private lateinit var mConstraintDelegate: ConstraintDelegate
 
-    @RequiresApi(VERSION_CODES.O)
-    private var mFingerprintGestureMapController: FingerprintGestureMapController? = null
+    //fingerprint gesture stuff
+    private lateinit var mFingerprintGestureMapController: FingerprintGestureMapController
+
+    private var mFingerprintGestureCallback:
+        FingerprintGestureController.FingerprintGestureCallback? = null
+
+    private lateinit var mFingerprintMapRepository: FingerprintMapRepository
 
     override val currentTime: Long
         get() = SystemClock.elapsedRealtime()
@@ -263,9 +265,6 @@ class MyAccessibilityService : AccessibilityService(),
             }
         }
     }
-
-    @RequiresApi(VERSION_CODES.O)
-    private var mFingerprintMapRepository: FingerprintMapRepository? = null
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -351,23 +350,27 @@ class MyAccessibilityService : AccessibilityService(),
 
         mChosenImePackageName = KeyboardUtils.getChosenInputMethodPackageName(this).valueOrNull()
 
+        mFingerprintMapRepository = ServiceLocator.fingerprintMapRepository(this)
+
+        mFingerprintGestureMapController = FingerprintGestureMapController(
+            lifecycleScope,
+            iConstraintDelegate = mConstraintDelegate,
+            iActionError = this
+        )
+
+        //check whether the device supports fingerprint gesture detection
         if (VERSION.SDK_INT >= VERSION_CODES.O) {
-
-            //check whether the device supports fingerprint gesture detection
             requestFingerprintGestureDetection()
-            AppPreferences.isFingerprintGestureDetectionAvailable =
-                fingerprintGestureController.isGestureDetectionAvailable
+
+            lifecycleScope.launchWhenStarted {
+                mFingerprintMapRepository.setFingerprintGesturesAvailable(
+                    fingerprintGestureController.isGestureDetectionAvailable)
+            }
+
             denyFingerprintGestureDetection()
+        }
 
-            AppPreferences.checkedForFingerprintGestureSupport = true
-
-            mFingerprintMapRepository = (application as MyApplication).fingerprintMapRepository
-
-            mFingerprintGestureMapController = FingerprintGestureMapController(
-                lifecycleScope,
-                iConstraintDelegate = mConstraintDelegate,
-                iActionError = this
-            )
+        if (VERSION.SDK_INT >= VERSION_CODES.O) {
 
             mFingerprintGestureCallback =
                 object : FingerprintGestureController.FingerprintGestureCallback() {
@@ -375,13 +378,11 @@ class MyAccessibilityService : AccessibilityService(),
                     override fun onGestureDetected(gesture: Int) {
                         super.onGestureDetected(gesture)
 
-                        mFingerprintGestureMapController?.onGesture(gesture)
+                        mFingerprintGestureMapController.onGesture(gesture)
                     }
                 }
 
-            mFingerprintMapRepository?.let {
-                observeFingerprintMaps(it)
-            }
+            observeFingerprintMaps(mFingerprintMapRepository)
 
             mFingerprintGestureCallback?.let {
                 fingerprintGestureController.registerFingerprintGestureCallback(it, null)
@@ -391,7 +392,7 @@ class MyAccessibilityService : AccessibilityService(),
         lifecycleScope.launchWhenStarted {
             application?.let {
                 val keymapList = withContext(Dispatchers.IO) {
-                    (it as MyApplication).keymapRepository.getKeymaps()
+                    ServiceLocator.keymapRepository(this@MyAccessibilityService).getKeymaps()
                 }
 
                 withContext(Dispatchers.Main) {
@@ -406,7 +407,7 @@ class MyAccessibilityService : AccessibilityService(),
             }
 
             if (VERSION.SDK_INT >= VERSION_CODES.O) {
-                mFingerprintGestureMapController?.let { manager ->
+                mFingerprintGestureMapController.let { manager ->
                     addSource(manager.vibrate) {
                         value = it
                     }
@@ -434,7 +435,7 @@ class MyAccessibilityService : AccessibilityService(),
             }
 
             if (VERSION.SDK_INT >= VERSION_CODES.O) {
-                mFingerprintGestureMapController?.let { manager ->
+                mFingerprintGestureMapController.let { manager ->
                     addSource(manager.performAction) {
                         value = it
                     }
@@ -467,7 +468,7 @@ class MyAccessibilityService : AccessibilityService(),
             fingerprintGestureController
                 .unregisterFingerprintGestureCallback(mFingerprintGestureCallback)
 
-            mFingerprintGestureMapController?.reset()
+            mFingerprintGestureMapController.reset()
         }
 
         super.onDestroy()
@@ -609,9 +610,9 @@ class MyAccessibilityService : AccessibilityService(),
 
     @RequiresApi(VERSION_CODES.O)
     private fun observeFingerprintMaps(repository: FingerprintMapRepository) {
-        repository.fingerprintGestureMapsLiveData.observe(this, Observer { maps ->
 
-            mFingerprintGestureMapController?.fingerprintMaps = maps
+        repository.fingerprintGestureMaps.collectWhenLifecycleStarted(this, { maps ->
+            mFingerprintGestureMapController.fingerprintMaps = maps
 
             if (maps.any { it.value.isEnabled && it.value.actionList.isNotEmpty() }
                 && !AppPreferences.keymapsPaused) {

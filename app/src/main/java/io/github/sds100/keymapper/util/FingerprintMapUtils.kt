@@ -5,7 +5,6 @@ import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.DataStoreKeys
 import io.github.sds100.keymapper.data.model.FingerprintMap
 import splitties.bitflags.hasFlag
 
@@ -19,13 +18,6 @@ object FingerprintMapUtils {
     const val SWIPE_RIGHT = "swipe_right"
 
     val GESTURES = arrayOf(SWIPE_DOWN, SWIPE_UP, SWIPE_LEFT, SWIPE_RIGHT)
-
-    val PREF_KEYS = mapOf(
-        SWIPE_DOWN to DataStoreKeys.FINGERPRINT_GESTURE_SWIPE_DOWN,
-        SWIPE_UP to DataStoreKeys.FINGERPRINT_GESTURE_SWIPE_UP,
-        SWIPE_LEFT to DataStoreKeys.FINGERPRINT_GESTURE_SWIPE_LEFT,
-        SWIPE_RIGHT to DataStoreKeys.FINGERPRINT_GESTURE_SWIPE_RIGHT
-    )
 
     val HEADERS = mapOf(
         SWIPE_DOWN to R.string.header_fingerprint_gesture_down,

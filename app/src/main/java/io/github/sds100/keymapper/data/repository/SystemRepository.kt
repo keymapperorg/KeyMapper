@@ -12,7 +12,7 @@ import kotlinx.coroutines.withContext
 /**
  * Created by sds100 on 27/01/2020.
  */
-class SystemRepository private constructor(private val mContext: Context) {
+class SystemRepository(private val mContext: Context) {
 
     suspend fun getAllAppList() = withContext(Dispatchers.Default) {
         sequence {
@@ -35,7 +35,7 @@ class SystemRepository private constructor(private val mContext: Context) {
                 val installedApps = getInstalledApplications(GET_META_DATA)
 
                 installedApps.forEach { app ->
-//                    //only allow apps that can be launched by the user
+                    //only allow apps that can be launched by the user
                     if (getLaunchIntentForPackage(app.packageName) != null) {
                         yield(app)
                     }
@@ -69,15 +69,5 @@ class SystemRepository private constructor(private val mContext: Context) {
 
     fun getIntentLabel(resolveInfo: ResolveInfo): String? {
         return resolveInfo.loadLabel(mContext.packageManager).toString()
-    }
-
-    companion object {
-        @Volatile
-        private var instance: SystemRepository? = null
-
-        fun getInstance(context: Context): SystemRepository =
-            instance ?: synchronized(this) {
-                instance ?: SystemRepository(context.applicationContext)
-            }
     }
 }

@@ -2,9 +2,7 @@ package io.github.sds100.keymapper.util
 
 import android.content.Context
 import io.github.sds100.keymapper.MyApplication
-import io.github.sds100.keymapper.data.repository.DefaultSystemActionRepository
-import io.github.sds100.keymapper.data.repository.FileRepository
-import io.github.sds100.keymapper.data.repository.SystemRepository
+import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.data.viewmodel.*
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 
@@ -12,52 +10,27 @@ import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
  * Created by sds100 on 26/01/2020.
  */
 object InjectorUtils {
-    private fun getDefaultSystemActionRepository(context: Context): DefaultSystemActionRepository {
-        return DefaultSystemActionRepository.getInstance(context)
-    }
-
-    private fun getSystemRepository(context: Context): SystemRepository {
-        return SystemRepository.getInstance(context)
-    }
-
-    private fun getFileRepository(context: Context): FileRepository {
-        return FileRepository.getInstance(context)
-    }
 
     fun provideAppListViewModel(context: Context): AppListViewModel.Factory {
-        val repository = getSystemRepository(context)
-        return AppListViewModel.Factory(repository)
+        return AppListViewModel.Factory(ServiceLocator.systemRepository(context))
     }
 
     fun provideAppShortcutListViewModel(context: Context): AppShortcutListViewModel.Factory {
-        val repository = getSystemRepository(context)
-        return AppShortcutListViewModel.Factory(repository)
+        return AppShortcutListViewModel.Factory(ServiceLocator.systemRepository(context))
     }
 
     fun provideKeymapListViewModel(context: Context): KeymapListViewModel.Factory {
-        val keymapRepository =
-            (context.applicationContext as MyApplication).keymapRepository
-
-        val deviceInfoRepository =
-            (context.applicationContext as MyApplication).deviceInfoRepository
-
-        return KeymapListViewModel.Factory(keymapRepository, deviceInfoRepository)
+        return KeymapListViewModel.Factory(
+            ServiceLocator.keymapRepository(context),
+            ServiceLocator.deviceInfoRepository(context)
+        )
     }
 
     fun provideBackupRestoreViewModel(context: Context): BackupRestoreViewModel.Factory {
-        val keymapRepository =
-            (context.applicationContext as MyApplication).keymapRepository
-
-        val deviceInfoRepository =
-            (context.applicationContext as MyApplication).deviceInfoRepository
-
-        val fingerprintMapRepository =
-            (context.applicationContext as MyApplication).fingerprintMapRepository
-
         return BackupRestoreViewModel.Factory(
-            keymapRepository,
-            deviceInfoRepository,
-            fingerprintMapRepository
+            ServiceLocator.keymapRepository(context),
+            ServiceLocator.deviceInfoRepository(context),
+            ServiceLocator.fingerprintMapRepository(context)
         )
     }
 
@@ -71,11 +44,7 @@ object InjectorUtils {
 
     fun provideKeyEventActionTypeViewModel(context: Context
     ): KeyEventActionTypeViewModel.Factory {
-
-        val deviceInfoRepository =
-            (context.applicationContext as MyApplication).deviceInfoRepository
-
-        return KeyEventActionTypeViewModel.Factory(deviceInfoRepository)
+        return KeyEventActionTypeViewModel.Factory(ServiceLocator.deviceInfoRepository(context))
     }
 
     fun provideKeycodeListViewModel(): KeycodeListViewModel.Factory {
@@ -95,12 +64,12 @@ object InjectorUtils {
     }
 
     fun provideSystemActionListViewModel(context: Context): SystemActionListViewModel.Factory {
-        return SystemActionListViewModel.Factory(getDefaultSystemActionRepository(context))
+        return SystemActionListViewModel.Factory(ServiceLocator.systemActionRepository(context))
     }
 
     fun provideUnsupportedActionListViewModel(context: Context
     ): UnsupportedActionListViewModel.Factory {
-        return UnsupportedActionListViewModel.Factory(getDefaultSystemActionRepository(context))
+        return UnsupportedActionListViewModel.Factory(ServiceLocator.systemActionRepository(context))
     }
 
     fun provideKeymapActionOptionsViewModel(): KeymapActionOptionsViewModel.Factory {
@@ -119,37 +88,33 @@ object InjectorUtils {
                                fileUrl: String,
                                alternateUrl: String? = null,
                                header: String): OnlineFileViewModel.Factory {
-        val repository = getFileRepository(context)
-        return OnlineFileViewModel.Factory(repository, fileUrl, alternateUrl, header)
+        return OnlineFileViewModel.Factory(
+            ServiceLocator.fileRepository(context),
+            fileUrl,
+            alternateUrl,
+            header
+        )
     }
 
     fun provideFingerprintMapListViewModel(context: Context): FingerprintMapListViewModel.Factory {
-        val repository =
-            (context.applicationContext as MyApplication).fingerprintMapRepository
-
-        val deviceInfoRepository =
-            (context.applicationContext as MyApplication).deviceInfoRepository
-
-        return FingerprintMapListViewModel.Factory(repository, deviceInfoRepository)
+        return FingerprintMapListViewModel.Factory(
+            ServiceLocator.fingerprintMapRepository(context),
+            ServiceLocator.deviceInfoRepository(context))
     }
 
     fun provideMenuFragmentViewModel(context: Context): MenuFragmentViewModel.Factory {
-        val keymapUseCase =
-            (context.applicationContext as MyApplication).keymapRepository
-
-        val fingerprintGestureUseCase =
-            (context.applicationContext as MyApplication).fingerprintMapRepository
-
-        return MenuFragmentViewModel.Factory(keymapUseCase, fingerprintGestureUseCase)
+        return MenuFragmentViewModel.Factory(
+            ServiceLocator.keymapRepository(context),
+            ServiceLocator.fingerprintMapRepository(context))
     }
 
     fun provideConfigKeymapViewModel(context: Context
     ): ConfigKeymapViewModel.Factory {
         (context.applicationContext as MyApplication).apply {
             return ConfigKeymapViewModel.Factory(
-                keymapRepository,
-                deviceInfoRepository,
-                preferenceDataStore
+                ServiceLocator.keymapRepository(context),
+                ServiceLocator.deviceInfoRepository(context),
+                ServiceLocator.preferenceDataStore(context)
             )
         }
     }
@@ -158,18 +123,15 @@ object InjectorUtils {
     ): ConfigFingerprintMapViewModel.Factory {
         (context.applicationContext as MyApplication).apply {
             return ConfigFingerprintMapViewModel.Factory(
-                fingerprintMapRepository,
-                deviceInfoRepository,
-                preferenceDataStore
+                ServiceLocator.fingerprintMapRepository(context),
+                ServiceLocator.deviceInfoRepository(context),
+                ServiceLocator.preferenceDataStore(context)
             )
         }
     }
 
     fun provideCreateActionShortcutViewModel(context: Context
     ): CreateActionShortcutViewModel.Factory {
-        val deviceInfoRepository =
-            (context.applicationContext as MyApplication).deviceInfoRepository
-
-        return CreateActionShortcutViewModel.Factory(deviceInfoRepository)
+        return CreateActionShortcutViewModel.Factory(ServiceLocator.deviceInfoRepository(context))
     }
 }
