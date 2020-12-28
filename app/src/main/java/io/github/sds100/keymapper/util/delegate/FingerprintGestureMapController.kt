@@ -72,11 +72,8 @@ class FingerprintGestureMapController(
                         }
                     } else {
 
-                        val alreadyBeingHeldDown = if (it.holdDown) {
+                        val alreadyBeingHeldDown =
                             mActionsBeingHeldDown.any { action -> action.uid == it.uid }
-                        } else {
-                            false
-                        }
 
                         val keyEventAction = when {
                             it.holdDown && !alreadyBeingHeldDown -> KeyEventAction.DOWN
@@ -84,10 +81,9 @@ class FingerprintGestureMapController(
                             else -> KeyEventAction.DOWN_UP
                         }
 
-                        if (alreadyBeingHeldDown) {
-                            mActionsBeingHeldDown.remove(it)
-                        } else {
-                            mActionsBeingHeldDown.add(it)
+                        when {
+                            it.holdDown -> mActionsBeingHeldDown.add(it)
+                            alreadyBeingHeldDown -> mActionsBeingHeldDown.remove(it)
                         }
 
                         performAction(it, keyEventAction)
@@ -118,8 +114,7 @@ class FingerprintGestureMapController(
                 action,
                 action.showPerformingActionToast,
                 0,
-                keyEventAction
-            )
+                keyEventAction)
         }
     }
 

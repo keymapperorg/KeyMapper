@@ -390,14 +390,12 @@ class MyAccessibilityService : AccessibilityService(),
         }
 
         lifecycleScope.launchWhenStarted {
-            application?.let {
-                val keymapList = withContext(Dispatchers.IO) {
-                    ServiceLocator.keymapRepository(this@MyAccessibilityService).getKeymaps()
-                }
+            val keymapList = withContext(Dispatchers.IO) {
+                ServiceLocator.keymapRepository(this@MyAccessibilityService).getKeymaps()
+            }
 
-                withContext(Dispatchers.Main) {
-                    updateKeymapListCache(keymapList)
-                }
+            withContext(Dispatchers.Main) {
+                updateKeymapListCache(keymapList)
             }
         }
 
@@ -407,15 +405,12 @@ class MyAccessibilityService : AccessibilityService(),
             }
 
             if (VERSION.SDK_INT >= VERSION_CODES.O) {
-                mFingerprintGestureMapController.let { manager ->
-                    addSource(manager.vibrate) {
-                        value = it
-                    }
+                addSource(mFingerprintGestureMapController.vibrate) {
+                    value = it
                 }
             }
 
             observe(this@MyAccessibilityService, Observer {
-
                 if (it.duration <= 0) return@Observer
 
                 if (VERSION.SDK_INT >= VERSION_CODES.O) {
@@ -435,10 +430,8 @@ class MyAccessibilityService : AccessibilityService(),
             }
 
             if (VERSION.SDK_INT >= VERSION_CODES.O) {
-                mFingerprintGestureMapController.let { manager ->
-                    addSource(manager.performAction) {
-                        value = it
-                    }
+                addSource(mFingerprintGestureMapController.performAction) {
+                    value = it
                 }
             }
 
@@ -611,7 +604,7 @@ class MyAccessibilityService : AccessibilityService(),
     @RequiresApi(VERSION_CODES.O)
     private fun observeFingerprintMaps(repository: FingerprintMapRepository) {
 
-        repository.fingerprintGestureMaps.collectWhenLifecycleStarted(this, { maps ->
+        repository.fingerprintGestureMapsLiveData.observe(this, Observer { maps ->
             mFingerprintGestureMapController.fingerprintMaps = maps
 
             if (maps.any { it.value.isEnabled && it.value.actionList.isNotEmpty() }

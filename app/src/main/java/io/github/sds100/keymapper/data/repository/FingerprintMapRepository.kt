@@ -53,7 +53,7 @@ class FingerprintMapRepository(private val mDataStore: DataStore<Preferences>) {
         prefs.getGesture(PreferenceKeys.FINGERPRINT_GESTURE_SWIPE_RIGHT)
     }
 
-    val fingerprintGestureMaps = combine(
+    val fingerprintGestureMapsLiveData = combine(
         swipeDown,
         swipeUp,
         swipeLeft,
@@ -65,7 +65,7 @@ class FingerprintMapRepository(private val mDataStore: DataStore<Preferences>) {
             FingerprintMapUtils.SWIPE_LEFT to swipeLeft,
             FingerprintMapUtils.SWIPE_RIGHT to swipeRight
         )
-    }
+    }.asLiveData()
 
     val fingerprintGesturesAvailable = mDataStore.data.map {
         it[PreferenceKeys.FINGERPRINT_GESTURES_AVAILABLE]
