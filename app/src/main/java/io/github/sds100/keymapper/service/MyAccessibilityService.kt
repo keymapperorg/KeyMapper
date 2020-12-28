@@ -358,19 +358,9 @@ class MyAccessibilityService : AccessibilityService(),
             iActionError = this
         )
 
-        //check whether the device supports fingerprint gesture detection
         if (VERSION.SDK_INT >= VERSION_CODES.O) {
+
             requestFingerprintGestureDetection()
-
-            lifecycleScope.launchWhenStarted {
-                mFingerprintMapRepository.setFingerprintGesturesAvailable(
-                    fingerprintGestureController.isGestureDetectionAvailable)
-            }
-
-            denyFingerprintGestureDetection()
-        }
-
-        if (VERSION.SDK_INT >= VERSION_CODES.O) {
 
             mFingerprintGestureCallback =
                 object : FingerprintGestureController.FingerprintGestureCallback() {
@@ -379,6 +369,21 @@ class MyAccessibilityService : AccessibilityService(),
                         super.onGestureDetected(gesture)
 
                         mFingerprintGestureMapController.onGesture(gesture)
+                    }
+
+                    override fun onGestureDetectionAvailabilityChanged(available: Boolean) {
+                        super.onGestureDetectionAvailabilityChanged(available)
+
+                        lifecycleScope.launchWhenStarted {
+                            /*
+                            don't worry about this changing when the user is briefly using a
+                            fingerprint for security. as long as they can configure fingerprint maps
+                             */
+                            mFingerprintMapRepository.setFingerprintGesturesAvailable(
+                                fingerprintGestureController.isGestureDetectionAvailable)
+                        }
+
+                        invalidateFingerprintGestureDetection()
                     }
                 }
 
@@ -607,13 +612,20 @@ class MyAccessibilityService : AccessibilityService(),
         repository.fingerprintGestureMapsLiveData.observe(this, Observer { maps ->
             mFingerprintGestureMapController.fingerprintMaps = maps
 
+            invalidateFingerprintGestureDetection()
+        })
+    }
+
+    @RequiresApi(VERSION_CODES.O)
+    private fun invalidateFingerprintGestureDetection() {
+        mFingerprintGestureMapController.fingerprintMaps.let { maps ->
             if (maps.any { it.value.isEnabled && it.value.actionList.isNotEmpty() }
                 && !AppPreferences.keymapsPaused) {
                 requestFingerprintGestureDetection()
             } else {
                 denyFingerprintGestureDetection()
             }
-        })
+        }
     }
 
     private fun recordTrigger() = lifecycleScope.launchWhenStarted {
