@@ -72,6 +72,7 @@ class KeymapDetectionDelegateTest {
     }
 
     private lateinit var mDelegate: KeymapDetectionDelegate
+    private lateinit var mPerformActionTest: LiveEventTestWrapper<PerformAction>
     private var mCurrentPackage = ""
 
     @get:Rule
@@ -123,12 +124,62 @@ class KeymapDetectionDelegateTest {
             iActionError,
             constraintDelegate
         )
+
+        mPerformActionTest = LiveEventTestWrapper(mDelegate.performAction)
     }
 
     @After
     fun tearDown() {
         mDelegate.keyMapListCache = listOf()
         mDelegate.reset()
+
+        mPerformActionTest.reset()
+    }
+
+    @Test
+    fun `trigger for a specific device and trigger for any device, input trigger from a different device, only detect trigger for any device`() = mCoroutineScope.runBlockingTest {
+        //GIVEN
+        val triggerHeadphone = Trigger(
+            keys = listOf(Trigger.Key(KeyEvent.KEYCODE_A, deviceId = FAKE_HEADPHONE_DESCRIPTOR)),
+            mode = Trigger.UNDEFINED
+        )
+
+        val triggerAnyDevice = Trigger(
+            keys = listOf(Trigger.Key(KeyEvent.KEYCODE_A, deviceId = Trigger.Key.DEVICE_ID_ANY_DEVICE)),
+            mode = Trigger.UNDEFINED
+        )
+
+        mDelegate.keyMapListCache = listOf(
+            KeyMap(0, trigger = triggerHeadphone, actionList = listOf(TEST_ACTION)),
+            KeyMap(1, trigger = triggerAnyDevice, actionList = listOf(TEST_ACTION_2))
+        )
+
+        //WHEN
+        mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_A, deviceId = FAKE_KEYBOARD_DESCRIPTOR))
+        advanceUntilIdle()
+
+        //THEN
+        assertThat(mPerformActionTest.history.map { it.action }, `is`(listOf(TEST_ACTION_2)))
+    }
+
+    @Test
+    fun `trigger for a specific device, input trigger from a different device, dont detect trigger`() = mCoroutineScope.runBlockingTest {
+        //GIVEN
+        val triggerHeadphone = Trigger(
+            keys = listOf(Trigger.Key(KeyEvent.KEYCODE_A, deviceId = FAKE_HEADPHONE_DESCRIPTOR)),
+            mode = Trigger.UNDEFINED
+        )
+
+        mDelegate.keyMapListCache = listOf(
+            KeyMap(0, trigger = triggerHeadphone, actionList = listOf(TEST_ACTION))
+        )
+
+        //WHEN
+        mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_A, deviceId = FAKE_KEYBOARD_DESCRIPTOR))
+        advanceUntilIdle()
+
+        //THEN
+        assertThat(mPerformActionTest.history, `is`(emptyList()))
     }
 
     @Test
@@ -208,7 +259,7 @@ class KeymapDetectionDelegateTest {
         }
 
     @Test
-    fun `2x key sequence trigger and 3x key sequence trigger with the last 2 keys being the same,trigger 3x key trigger, ignore the first 2x key trigger`() =
+    fun `2x key sequence trigger and 3x key sequence trigger with the last 2 keys being the same, trigger 3x key trigger, ignore the first 2x key trigger`() =
         mCoroutineScope.runBlockingTest {
 
             val firstTrigger = sequenceTrigger(
@@ -218,7 +269,7 @@ class KeymapDetectionDelegateTest {
 
             val secondTrigger = sequenceTrigger(
                 Trigger.Key(KeyEvent.KEYCODE_HOME),
-                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN),
+                Trigger.Key(KeyEvent.KEYCODE_VOLUME_DOWN, deviceId = Trigger.Key.DEVICE_ID_ANY_DEVICE),
                 Trigger.Key(KeyEvent.KEYCODE_VOLUME_UP)
             )
 
