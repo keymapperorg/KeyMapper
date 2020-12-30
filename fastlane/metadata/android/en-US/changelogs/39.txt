@@ -1,5 +1,6 @@
 Added
-- Remap fingerprint gestures! Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
+- Remap fingerprint gestures! #378
+Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
 
 - Widget/shortcut to launch actions. #459
 - Setting to show the first 5 digits of input devices so devices with the same name can be differentiated in Key Mapper lists. #470
@@ -14,8 +15,8 @@ Changes
 - No max limit for sliders (except in settings). #458
 
 Bug Fixes
-- Save and restore state for all view models.
-- Use View Binding in fragments properly. This should stop random crashes for some users.
-- Hold Down action option doesn't work for long press triggers.
-- A trigger for a specific device can still be detected if the same buttons on another device are pressed.
-- Fix layout of the trigger fragment on some screen sizes so that some things aren't cut off.
+- Save and restore state for all view models. #519
+- Use View Binding in fragments properly. This should stop random crashes for some users. #518
+- Hold Down action option doesn't work for long press triggers. #504
+- A trigger for a specific device can still be detected if the same buttons on another device are pressed. #523
+- Fix layout of the trigger fragment on some screen sizes so that some things aren't cut off. #522
