@@ -1,3 +1,30 @@
+## [2.2.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v2.2.0-beta.1) 
+
+#### 30 Dec 2020
+
+### Added
+- Remap fingerprint gestures! #378
+Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
+
+- Widget/shortcut to launch actions. #459
+- Setting to show the first 5 digits of input devices so devices with the same name can be differentiated in Key Mapper lists. #470
+- Show a warning at the top of the homescreen if the user hasn't disabled battery optimisation for Key Mapper. #496
+- Action option to hold down until the trigger is pressed again. #479
+- Action option to change the delay before the next action in the list. #476
+- Orientation constraint. #505
+- Key Event action option to pretend that the Key Event came from a particular device. #509
+- Use duplicates of the same key in a sequence trigger. #513
+
+### Changes
+- No max limit for sliders (except in settings). #458
+
+### Bug Fixes
+- Save and restore state for all view models. #519
+- Use View Binding in fragments properly. This should stop random crashes for some users. #518
+- Hold Down action option doesn't work for long press triggers. #504
+- A trigger for a specific device can still be detected if the same buttons smb://@sds-pc.local:445/Home/Desktop/Android-Projects/release/keymapper-2.2.0-beta.1.apkon another device are pressed. #523
+- Fix layout of the trigger fragment on some screen sizes so that some things aren't cut off. #522
+
 ## [2.1.0](https://github.com/sds100/KeyMapper/releases/tag/v2.1.0) 
 
 #### 23 Nov 2020
