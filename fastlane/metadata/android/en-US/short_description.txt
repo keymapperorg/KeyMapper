@@ -1,1 +1,1 @@
-Remaps the buttons on your device and other devices
+Remaps the buttons on your device and other devices and fingerprint gestures.
