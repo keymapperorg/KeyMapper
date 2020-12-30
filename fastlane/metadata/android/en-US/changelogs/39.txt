@@ -1,0 +1,21 @@
+Added
+- Remap fingerprint gestures! Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
+
+- Widget/shortcut to launch actions. #459
+- Setting to show the first 5 digits of input devices so devices with the same name can be differentiated in Key Mapper lists. #470
+- Show a warning at the top of the homescreen if the user hasn't disabled battery optimisation for Key Mapper. #496
+- Action option to hold down until the trigger is pressed again. #479
+- Action option to change the delay before the next action in the list. #476
+- Orientation constraint. #505
+- Key Event action option to pretend that the Key Event came from a particular device. #509
+- Use duplicates of the same key in a sequence trigger. #513
+
+Changes
+- No max limit for sliders (except in settings). #458
+
+Bug Fixes
+- Save and restore state for all view models.
+- Use View Binding in fragments properly. This should stop random crashes for some users.
+- Hold Down action option doesn't work for long press triggers.
+- A trigger for a specific device can still be detected if the same buttons on another device are pressed.
+- Fix layout of the trigger fragment on some screen sizes so that some things aren't cut off.
