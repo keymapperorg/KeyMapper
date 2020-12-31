@@ -154,25 +154,24 @@ class ActionPerformerDelegate(context: Context,
                     }
                 }
 
-                else -> {
-                    if (action.type == ActionType.KEY_EVENT) {
-                        val deviceId = action.extras.getData(Action.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR).handle(
-                            onSuccess = {
-                                InputDeviceUtils.getDeviceIdFromDescriptor(it)
-                            },
-                            onFailure = { 0 }
-                        )
+                ActionType.KEY_EVENT -> {
+                    val deviceId = action.extras.getData(Action.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR).handle(
+                        onSuccess = {
+                            InputDeviceUtils.getDeviceIdFromDescriptor(it)
+                        },
+                        onFailure = { 0 }
+                    )
 
-                        chosenImePackageName?.let {
-                            KeyboardUtils.inputKeyEventFromImeService(
-                                it,
-                                keyCode = action.data.toInt(),
-                                metaState = additionalMetaState.withFlag(
-                                    action.extras.getData(Action.EXTRA_KEY_EVENT_META_STATE).valueOrNull()?.toInt() ?: 0
-                                ),
-                                keyEventAction = keyEventAction,
-                                deviceId = deviceId ?: 0)
-                        }
+                    chosenImePackageName?.let {
+                        KeyboardUtils.inputKeyEventFromImeService(
+                            it,
+                            keyCode = action.data.toInt(),
+                            metaState = additionalMetaState.withFlag(
+                                action.extras.getData(Action.EXTRA_KEY_EVENT_META_STATE).valueOrNull()?.toInt()
+                                    ?: 0
+                            ),
+                            keyEventAction = keyEventAction,
+                            deviceId = deviceId ?: 0)
                     }
                 }
             }
@@ -423,7 +422,8 @@ class ActionPerformerDelegate(context: Context,
                                         val cursorPosition = it.textSelectionStart
 
                                         val wordBoundary =
-                                            it.text.toString().getWordBoundaries(cursorPosition) ?: return@focusedNode
+                                            it.text.toString().getWordBoundaries(cursorPosition)
+                                                ?: return@focusedNode
 
                                         val bundle = bundleOf(
                                             AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT
