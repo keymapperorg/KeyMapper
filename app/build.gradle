@@ -12,7 +12,7 @@ android {
         applicationId "io.github.sds100.keymapper"
         minSdkVersion 17
         targetSdkVersion 30
-        versionCode 40
+        versionCode 41
         versionName "2.3.0-alpha"
         multiDexEnabled true
 
