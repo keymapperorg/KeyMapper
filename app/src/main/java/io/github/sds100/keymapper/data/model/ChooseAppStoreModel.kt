@@ -6,6 +6,5 @@ package io.github.sds100.keymapper.data.model
 data class ChooseAppStoreModel(
     val playStoreLink: String? = null,
     val fdroidLink: String? = null,
-    val githubLink: String? = null,
-    val xdaLink: String? = null
+    val githubLink: String? = null
 )
