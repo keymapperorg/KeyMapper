@@ -2,9 +2,9 @@ package io.github.sds100.keymapper.data.repository
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.clear
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.preferencesKey
+import androidx.datastore.preferences.core.remove
 import androidx.lifecycle.asLiveData
 import com.github.salomonbrys.kotson.fromJson
 import com.github.salomonbrys.kotson.registerTypeAdapter
@@ -91,7 +91,9 @@ class FingerprintMapRepository(private val mDataStore: DataStore<Preferences>) {
 
     suspend fun reset() {
         mDataStore.edit { prefs ->
-            prefs.clear()
+            PreferenceKeys.ALL_SWIPE_KEYS.forEach {
+                prefs.remove(it)
+            }
         }
     }
 
@@ -110,6 +112,12 @@ class FingerprintMapRepository(private val mDataStore: DataStore<Preferences>) {
         val FINGERPRINT_GESTURE_SWIPE_UP = preferencesKey<String>("swipe_up")
         val FINGERPRINT_GESTURE_SWIPE_LEFT = preferencesKey<String>("swipe_left")
         val FINGERPRINT_GESTURE_SWIPE_RIGHT = preferencesKey<String>("swipe_right")
+
+        val ALL_SWIPE_KEYS = arrayOf(
+            FINGERPRINT_GESTURE_SWIPE_DOWN,
+            FINGERPRINT_GESTURE_SWIPE_LEFT,
+            FINGERPRINT_GESTURE_SWIPE_UP,
+            FINGERPRINT_GESTURE_SWIPE_RIGHT)
 
         val FINGERPRINT_GESTURES_AVAILABLE =
             preferencesKey<Boolean>("fingerprint_gestures_available")
