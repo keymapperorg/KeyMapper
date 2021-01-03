@@ -40,6 +40,13 @@ class ConfigKeymapFragment : Fragment() {
         InjectorUtils.provideConfigKeymapViewModel(requireContext())
     }
 
+    /**
+     * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
+     */
+    private var _binding: FragmentConfigKeymapBinding? = null
+    val binding: FragmentConfigKeymapBinding
+        get() = _binding!!
+
     private lateinit var mRecoverFailureDelegate: RecoverFailureDelegate
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,6 +94,16 @@ class ConfigKeymapFragment : Fragment() {
         FragmentConfigKeymapBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             viewModel = mViewModel
+            _binding = this
+
+            return this.root
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.apply {
 
             viewPager.adapter = createFragmentPagerAdapter()
 
@@ -135,9 +152,12 @@ class ConfigKeymapFragment : Fragment() {
                     is EnableAccessibilityServicePrompt -> coordinatorLayout.showEnableAccessibilityServiceSnackBar()
                 }
             })
-
-            return this.root
         }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
