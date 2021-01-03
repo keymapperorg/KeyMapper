@@ -9,6 +9,7 @@
         <item>@string/action_type_tap_coordinate</item>
         <item>@string/action_type_title_text_block</item>
         <item>@string/action_type_url</item>
+        <item>@string/action_type_intent</item>
         <item>@string/action_type_title_system_action</item>
         <item>@string/tab_unsupported_actions</item>
     </string-array>

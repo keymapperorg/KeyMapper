@@ -42,7 +42,8 @@ data class Action(
      * - Key Event: the keycode. Any extra information is stored in [extras]
      * - Block of text: text to insert
      * - System action: the system action id
-     * - Tap coordinate: comma separated x and y valuesk
+     * - Tap coordinate: comma separated x and y values
+     * - Intent: the Intent parsed as a URI
      */
     @SerializedName(NAME_DATA)
     val data: String,
@@ -91,7 +92,7 @@ data class Action(
         const val EXTRA_DND_MODE = "extra_do_not_disturb_mode"
         const val EXTRA_ORIENTATIONS = "extra_orientations"
         const val EXTRA_COORDINATE_DESCRIPTION = "extra_coordinate_description"
-        const val EXTRA_INTENT_URI = "extra_intent_uri"
+        const val EXTRA_INTENT_TARGET = "extra_intent_target"
 
         /**
          * The KeyEvent meta state is stored as bit flags.

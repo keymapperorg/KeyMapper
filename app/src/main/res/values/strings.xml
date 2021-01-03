@@ -107,6 +107,7 @@
     <string name="header_fingerprint_gesture_left">Swipe Left</string>
     <string name="header_fingerprint_gesture_right">Swipe Right</string>
     <string name="header_click_type">Click Type</string>
+    <string name="header_intent_extras">Extras</string>
     <!--  Headers  -->
 
     <!--  Hints  -->
@@ -170,6 +171,14 @@
     <string name="extra_label_delay_before_next_action">Delay before next action (ms)</string>
     <string name="extra_label_hold_down_duration">Hold down duration</string>
     <!-- Extra labels -->
+
+    <string name="hint_intent_action">Action</string>
+    <string name="hint_intent_category">Category</string>
+    <string name="hint_intent_data">Data</string>
+    <string name="hint_intent_package">Package</string>
+    <string name="hint_intent_class">Class</string>
+    <string name="hint_intent_extra_name">Name</string>
+    <string name="hint_intent_extra_value_with_type">Value (%s)</string>
 
     <!-- Constraints -->
     <string name="constraint_app_foreground_description">%s is in foreground</string>
@@ -477,6 +486,7 @@
     <string name="action_type_title_text_block">Text</string>
     <string name="action_type_url">URL</string>
     <string name="action_type_tap_coordinate">Tap Screen</string>
+    <string name="action_type_intent">Intent</string>
     <!--Action Types Titles-->
 
     <!-- Action Type tab title order-->
@@ -488,6 +498,7 @@
         <item>@string/action_type_title_keyevent</item>
         <item>@string/action_type_title_text_block</item>
         <item>@string/action_type_url</item>
+        <item>@string/action_type_intent</item>
         <item>@string/action_type_title_system_action</item>
         <item>@string/tab_unsupported_actions</item>
     </string-array>
@@ -887,5 +898,13 @@
     <string name="system_action_cat_keyboard">Keyboard</string>
     <string name="system_action_cat_airplane_mode">Airplane Mode</string>
     <!-- System action category labels -->
+
+    <!--  Intent action type strings  -->
+    <string name="intent_type_bool_header">Boolean</string>
+    <string name="intent_type_int_header">Integer</string>
+
+    <string name="intent_type_bool_example">Can only be "true" or "false".</string>
+    <string name="intent_type_int_example">Must be a valid Integer in the Java programming language.</string>
+    <!--  Intent action type strings  -->
 
 </resources>

@@ -51,6 +51,10 @@ object InjectorUtils {
         return KeycodeListViewModel.Factory()
     }
 
+    fun provideIntentActionTypeViewModel(): IntentActionTypeViewModel.Factory {
+        return IntentActionTypeViewModel.Factory()
+    }
+
     fun provideTextBlockActionTypeViewModel(): TextBlockActionTypeViewModel.Factory {
         return TextBlockActionTypeViewModel.Factory()
     }

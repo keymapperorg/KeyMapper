@@ -225,6 +225,9 @@ fun Action.getTitle(ctx: Context, deviceInfoList: List<DeviceInfo>): Result<Stri
                 Success(ctx.str(resId = R.string.description_tap_coordinate_default, formatArgArray = arrayOf(x, y)))
             }
         }
+
+        ActionType.INTENT -> TODO()
+
     }.then {
         extras.getData(Action.EXTRA_MULTIPLIER).valueOrNull()?.toIntOrNull()?.let { multiplier ->
             return@then Success("(${multiplier}x) $it")
