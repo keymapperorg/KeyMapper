@@ -362,6 +362,11 @@ class MyAccessibilityService : AccessibilityService(),
 
             requestFingerprintGestureDetection()
 
+            lifecycleScope.launchWhenStarted {
+                mFingerprintMapRepository.setFingerprintGesturesAvailable(
+                    fingerprintGestureController.isGestureDetectionAvailable)
+            }
+
             mFingerprintGestureCallback =
                 object : FingerprintGestureController.FingerprintGestureCallback() {
 
@@ -369,21 +374,6 @@ class MyAccessibilityService : AccessibilityService(),
                         super.onGestureDetected(gesture)
 
                         mFingerprintGestureMapController.onGesture(gesture)
-                    }
-
-                    override fun onGestureDetectionAvailabilityChanged(available: Boolean) {
-                        super.onGestureDetectionAvailabilityChanged(available)
-
-                        lifecycleScope.launchWhenStarted {
-                            /*
-                            don't worry about this changing when the user is briefly using a
-                            fingerprint for security. as long as they can configure fingerprint maps
-                             */
-                            mFingerprintMapRepository.setFingerprintGesturesAvailable(
-                                fingerprintGestureController.isGestureDetectionAvailable)
-                        }
-
-                        invalidateFingerprintGestureDetection()
                     }
                 }
 
