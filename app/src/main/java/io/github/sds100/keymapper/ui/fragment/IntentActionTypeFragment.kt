@@ -19,6 +19,8 @@ import io.github.sds100.keymapper.util.Data
 import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.str
 import splitties.alertdialog.appcompat.alertDialog
+import splitties.alertdialog.appcompat.message
+import splitties.alertdialog.appcompat.okButton
 
 /**
  * Created by sds100 on 30/03/2020.
@@ -121,7 +123,12 @@ class IntentActionTypeFragment : Fragment() {
                         }
 
                         onShowExampleClick { _ ->
+                            requireContext().alertDialog {
+                                message = it.exampleString
+                                okButton()
 
+                                show()
+                            }
                         }
                     }
                 }
