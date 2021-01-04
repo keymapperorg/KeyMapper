@@ -45,9 +45,9 @@
     <string name="show_hidden_apps">Show hidden apps</string>
     <string name="modifiers">Modifiers</string>
     <string name="toggle">Toggle</string>
-    <string name="chip_play_store" translatable="false">Play Store</string>
-    <string name="chip_fdroid" translatable="false">F-Droid</string>
-    <string name="chip_github" translatable="false">GitHub</string>
+    <string name="chip_play_store">Play Store</string>
+    <string name="chip_fdroid">F-Droid</string>
+    <string name="chip_github">GitHub</string>
     <string name="tap_coordinate_screenshot_message">IMPORTANT!!! These coordinates are only correct when your display is in the same orientation as the screenshot! This action will cancel any touches or gestures you are doing on the screen.\n\nIf you need help finding the coordinates of a point on your screen take a screenshot and then tap on the screenshot where you want this action to press.</string>
     <string name="dont_know_device_name">Don\'t know device name!</string>
     <string name="permission_description_key_mapper_input_method">perform Key Mapper actions that require a keyboard</string>
@@ -227,7 +227,6 @@
     <string name="url_privacy_policy" translatable="false">https://raw.githubusercontent.com/sds100/KeyMapper/master/PRIVACY_POLICY.md</string>
     <string name="url_xda_thread" translatable="false">https://forum.xda-developers.com/android/apps-games/app-keyboard-button-mapper-t3914005</string>
     <string name="url_discord_server_invite" translatable="false">https://discord.gg/Suj6nyw</string>
-    <string name="url_xda_labs_key_mapper" translatable="false">https://labs.xda-developers.com/store/app/io.github.sds100.keymapper</string>
     <string name="url_fdroid_key_mapper" translatable="false">https://f-droid.org/en/packages/io.github.sds100.keymapper/</string>
     <string name="url_github_releases_key_mapper" translatable="false">https://github.com/sds100/KeyMapper/releases</string>
     <string name="url_youtube_channel" translatable="false">https://www.youtube.com/channel/UC87daDTKj8hpQQolhB81mYA</string>
