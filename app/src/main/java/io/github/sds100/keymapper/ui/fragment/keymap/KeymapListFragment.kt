@@ -56,10 +56,13 @@ class KeymapListFragment : DefaultRecyclerViewFragment() {
             keymapModelList.observe(viewLifecycleOwner, { keymapList ->
                 binding.state = keymapList
 
-                mController.keymapList = if (keymapList is Data) {
-                    keymapList.data
-                } else {
-                    listOf()
+                /*
+                Don't set the list to empty if it is loading otherwise the scroll position is lost
+                when reloading the list.
+                 */
+                when (keymapList) {
+                    is Data -> mController.keymapList = keymapList.data
+                    is Empty -> mController.keymapList = emptyList()
                 }
             })
 
