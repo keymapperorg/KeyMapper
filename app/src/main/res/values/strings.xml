@@ -56,6 +56,7 @@
     <string name="shortcut_label_action">Perform Actions</string>
     <string name="hold_down_until_trigger_is_dot_dot_dot">Hold down until trigger is…</string>
     <string name="from_no_device">No Device</string>
+    <string name="intent_extras_recycler_view_placeholder">¯\\_(ツ)_/¯\n\nNo Extras!</string>
 
     <string name="whats_new">What\'s New</string>
     <string name="caption_action_type_key">Click the key on the device which you want to be entered.
@@ -286,6 +287,7 @@
     <string name="button_choose_keycode">Choose Key Code</string>
     <string name="button_yes">Yes!</string>
     <string name="button_choose_action">Choose Action</string>
+    <string name="button_add_intent_extra">Add Extra</string>
     <!-- Button titles -->
 
     <!-- Dialog titles -->

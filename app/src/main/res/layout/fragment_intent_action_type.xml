@@ -1,13 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <import type="android.view.View" />
 
+        <import type="io.github.sds100.keymapper.util.State" />
+
+        <import type="io.github.sds100.keymapper.util.Data" />
+
+        <import type="io.github.sds100.keymapper.util.Loading" />
+
+        <import type="io.github.sds100.keymapper.util.Empty" />
+
         <variable
             name="onDoneClick"
+            type="View.OnClickListener" />
+
+        <variable
+            name="onAddExtraClick"
             type="View.OnClickListener" />
 
         <variable
@@ -74,14 +87,45 @@
                     android:layout_height="wrap_content"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintEnd_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/headerExtras" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/headerExtras"
+                    tools:visibility="gone" />
+
+                <TextView
+                    style="@style/RecyclerViewPlaceholderTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/intent_extras_recycler_view_placeholder"
+                    android:visibility="@{viewModel.extrasListItemModels instanceof Empty ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/headerExtras"
+                    tools:visibility="visible" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
 
         <Button
+            android:id="@+id/buttonAddExtra"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:onClick="@{onAddExtraClick}"
+            android:text="@string/button_add_intent_extra"
+            app:layout_constraintBottom_toTopOf="@id/buttonDone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
             android:id="@+id/buttonDone"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:layout_marginStart="16dp"
@@ -92,6 +136,7 @@
             android:onClick="@{onDoneClick}"
             android:text="@string/button_done"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
