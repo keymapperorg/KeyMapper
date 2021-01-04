@@ -24,7 +24,22 @@ class IntentActionTypeViewModel : ViewModel() {
     val targetPackage = MutableLiveData("")
     val targetClass = MutableLiveData("")
 
-    private val _isValid = MutableLiveData(false)
+    private val _isValid = MediatorLiveData<Boolean>().apply {
+
+        fun invalidate() {
+            if (description.value.isNullOrEmpty()) {
+                value = false
+                return
+            }
+
+            value = true
+        }
+
+        addSource(description) {
+            invalidate()
+        }
+    }
+
     val isValid: LiveData<Boolean> = _isValid
 
     private val mExtras = MutableLiveData(emptyList<IntentExtraModel>())
