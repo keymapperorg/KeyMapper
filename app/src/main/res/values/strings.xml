@@ -3,7 +3,6 @@
     <string name="developer_email" translatable="false">developer.sds100@gmail.com</string>
 
     <string name="no_action_chosen">No Action Chosen</string>
-    <string name="triggers_header">Triggers</string>
     <string name="accessibility_service_description">Key Mapper needs to use an accessibility service so it can listen to button/key presses and perform the actions you\'ve chosen.
     The accessibility service only listens for key events and detects which app you are in. You can look at the source code, which is linked in the About screen, to verify this.</string>
     <string name="selection_count">%d selected</string>
@@ -45,30 +44,17 @@
     <string name="trigger_pressed_again">Pressed again</string>
     <string name="show_hidden_apps">Show hidden apps</string>
     <string name="modifiers">Modifiers</string>
-    <string name="hint_keycode">Key Code</string>
     <string name="toggle">Toggle</string>
-    <string name="chip_play_store">Play Store</string>
-    <string name="chip_fdroid">F-Droid</string>
-    <string name="chip_github">GitHub</string>
-    <string name="chip_xda_labs">XDA Labs</string>
-    <string name="hint_x">X</string>
-    <string name="hint_y">Y</string>
-    <string name="toast_incorrect_screenshot_resolution">Screenshot resolution doesn\'t match this device\'s resolution!</string>
+    <string name="chip_play_store" translatable="false">Play Store</string>
+    <string name="chip_fdroid" translatable="false">F-Droid</string>
+    <string name="chip_github" translatable="false">GitHub</string>
     <string name="tap_coordinate_screenshot_message">IMPORTANT!!! These coordinates are only correct when your display is in the same orientation as the screenshot! This action will cancel any touches or gestures you are doing on the screen.\n\nIf you need help finding the coordinates of a point on your screen take a screenshot and then tap on the screenshot where you want this action to press.</string>
-    <string name="hint_tap_coordinate_title">Coordinate description (optional)</string>
     <string name="dont_know_device_name">Don\'t know device name!</string>
     <string name="permission_description_key_mapper_input_method">perform Key Mapper actions that require a keyboard</string>
     <string name="tap_actions_to_fix">Tap actions to fix!</string>
     <string name="new_gui_keyboard_ad_message">Get the new Key Mapper Keyboard that actually has a keyboard!</string>
     <string name="shortcut_label_action">Perform Actions</string>
-    <string name="hint_shortcut_name">Shortcut Name</string>
-    <string name="header_fingerprint_gesture_up">Swipe Up</string>
-    <string name="header_fingerprint_gesture_down">Swipe Down</string>
-    <string name="header_fingerprint_gesture_left">Swipe Left</string>
-    <string name="header_fingerprint_gesture_right">Swipe Right</string>
-    <string name="header_click_type">Click Type</string>
     <string name="hold_down_until_trigger_is_dot_dot_dot">Hold down until trigger is…</string>
-    <string name="hint_from_device">From Device</string>
     <string name="from_no_device">No Device</string>
 
     <string name="whats_new">What\'s New</string>
@@ -80,24 +66,12 @@
 
     <string name="caption_action_type_text">Type some text you want to be inserted when you perform this action.</string>
     <string name="caption_action_type_url">Type a url which you want to be opened. The http://, https:// or www. isn\'t required.</string>
-
     <string name="caption_no_paired_bt_devices">Can\'t find any paired devices. Is Bluetooth turned on?</string>
-    <string name="caption_fingerprint_gesture">Your changes are automatically saved.</string>
 
     <string name="switch_enabled">Enabled</string>
     <string name="disabled">Disabled</string>
-    <string name="key_map_adapter_flags">Flags</string>
 
     <string name="reset">Reset</string>
-    <string name="description_open_app">Open %s</string>
-    <string name="description_key">Press \'%s\' key</string>
-    <string name="description_text_block">Type \'%s\'</string>
-    <string name="description_keyevent">Input %s%s</string>
-    <string name="description_keyevent_from_device">Input %s%s from %s</string>
-    <string name="description_url">Open %s</string>
-    <string name="description_tap_coordinate_default">Tap Coordinates %s, %s</string>
-    <string name="description_tap_coordinate_with_description">Tap Coordinates %s, %s (%s)</string>
-
     <string name="exception_accessibility_service" translatable="false">Exception in onKeyEvent. Look in logcat.</string>
     <string name="enable_device_admin_message">Once you have enabled the device admin, you must DEACTIVATE it if you want to uninstall the app.</string>
 
@@ -106,14 +80,45 @@
 
     <string name="constraints_recyclerview_placeholder">No constraints!</string>
 
+    <string name="action_title_wait">Wait %sms</string>
+
+    <string name="email_subject">Key Mapper query</string>
+    <string name="email_default_message">Does the help page solve your problem? What is your device?\n\n Which OEM skin or ROM are you using?\n\n Please describe the issue you\'re having:</string>
+
+    <!--  Action descriptions  -->
+    <string name="description_open_app">Open %s</string>
+    <string name="description_key">Press \'%s\' key</string>
+    <string name="description_text_block">Type \'%s\'</string>
+    <string name="description_keyevent">Input %s%s</string>
+    <string name="description_keyevent_from_device">Input %s%s from %s</string>
+    <string name="description_url">Open %s</string>
+    <string name="description_tap_coordinate_default">Tap Coordinates %s, %s</string>
+    <string name="description_tap_coordinate_with_description">Tap Coordinates %s, %s (%s)</string>
+    <!--  Action descriptions  -->
+
+    <!--  Headers  -->
     <string name="option_list_header">Options</string>
     <string name="action_list_header">Actions</string>
     <string name="trigger_list_header">Trigger</string>
     <string name="constraint_list_header">Constraints</string>
     <string name="trigger_options_header">Options</string>
+    <string name="header_fingerprint_gesture_up">Swipe Up</string>
+    <string name="header_fingerprint_gesture_down">Swipe Down</string>
+    <string name="header_fingerprint_gesture_left">Swipe Left</string>
+    <string name="header_fingerprint_gesture_right">Swipe Right</string>
+    <string name="header_click_type">Click Type</string>
+    <!--  Headers  -->
 
-    <string name="action_title_wait">Wait %sms</string>
+    <!--  Hints  -->
+    <string name="hint_coordinate_x" translatable="false">X</string>
+    <string name="hint_coordinate_y" translatable="false">Y</string>
+    <string name="hint_keycode">Key Code</string>
+    <string name="hint_from_device">From Device</string>
+    <string name="hint_shortcut_name">Shortcut Name</string>
+    <string name="hint_tap_coordinate_title">Coordinate description (optional)</string>
+    <!--  Hints  -->
 
+    <!--  Radio buttons  -->
     <string name="radio_button_parallel">At the same time</string>
     <string name="radio_button_sequence">In sequence</string>
     <string name="radio_button_and">AND</string>
@@ -121,19 +126,20 @@
     <string name="radio_button_short_press">Short press</string>
     <string name="radio_button_long_press">Long press</string>
     <string name="radio_button_double_press">Double press</string>
+    <!--  Radio buttons  -->
 
+    <!--  Tabs  -->
     <string name="tab_trigger_and_actions">Trigger and Actions</string>
     <string name="tab_constraints_and_more">Constraints and More</string>
     <string name="tab_options">Options</string>
     <string name="tab_constraints">Constraints</string>
     <string name="tab_actions">Actions</string>
     <string name="tab_trigger">Trigger</string>
-    <string name="tab_keyevents">Key Events</string>
+    <string name="tab_keyevents" translatable="false">Key Events</string>
     <string name="tab_fingerprint">Fingerprint</string>
+    <!--  Tabs  -->
 
-    <string name="email_subject">Key Mapper query</string>
-    <string name="email_default_message">Does the help page solve your problem? What is your device?\n\n Which OEM skin or ROM are you using?\n\n Please describe the issue you\'re having:</string>
-
+    <!--  Navigation argument ids  -->
     <string name="nav_arg_header" translatable="false">io.github.sds100.keymapper.ui.fragment.OnlineFileFragment.header</string>
     <string name="nav_arg_file_url" translatable="false">io.github.sds100.keymapper.ui.fragment.OnlineFileFragment.header.file_url</string>
     <string name="nav_arg_file_url_alt" translatable="false">file_url_alt</string>
@@ -143,12 +149,17 @@
     <string name="nav_arg_choose_action_request_key" translatable="false">choose_action_request_key</string>
     <string name="nav_arg_choose_constraint_request_key" translatable="false">choose_constraint_request_key</string>
     <string name="nav_arg_fingerprint_action_options" translatable="false">fingerprint_action_options</string>
+    <!--  Navigation argument ids  -->
 
+    <!--  Toasts  -->
     <string name="toast_chose_keyboard">Chose %s</string>
     <string name="toast_backup_successful">Backup Successful!</string>
     <string name="toast_screenshot_taken">Screenshot Taken</string>
     <string name="toast_io_exception_shrug">IO Exception ¯\\_(ツ)_/¯</string>
+    <string name="toast_incorrect_screenshot_resolution">Screenshot resolution doesn\'t match this device\'s resolution!</string>
+    <!--  Toasts  -->
 
+    <!-- Extra labels -->
     <string name="extra_label_sequence_trigger_timeout">Sequence trigger timeout (ms)</string>
     <string name="extra_label_long_press_delay_timeout">Long press delay (ms)</string>
     <string name="extra_label_double_press_delay_timeout">Double press timeout (ms)</string>
@@ -158,6 +169,7 @@
     <string name="extra_label_action_multiplier">Action count</string>
     <string name="extra_label_delay_before_next_action">Delay before next action (ms)</string>
     <string name="extra_label_hold_down_duration">Hold down duration</string>
+    <!-- Extra labels -->
 
     <!-- Constraints -->
     <string name="constraint_app_foreground_description">%s is in foreground</string>
