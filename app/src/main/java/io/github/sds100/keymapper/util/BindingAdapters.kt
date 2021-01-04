@@ -1,11 +1,9 @@
 package io.github.sds100.keymapper.util
 
 import android.content.res.ColorStateList
+import android.text.TextWatcher
 import android.view.View
-import android.widget.Button
-import android.widget.CompoundButton
-import android.widget.SeekBar
-import android.widget.TextView
+import android.widget.*
 import androidx.annotation.ColorInt
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.view.isVisible
@@ -135,6 +133,16 @@ fun TextInputLayout.errorWhenEmpty(enabled: Boolean) {
             null
         }
     }
+}
+
+@BindingAdapter("app:onTextChanged")
+fun TextView.onTextChanged(watcher: TextWatcher) {
+    addTextChangedListener(watcher)
+}
+
+@BindingAdapter("app:errorText")
+fun TextInputLayout.errorText(text: String?) {
+    error = text
 }
 
 @BindingAdapter("app:onLongClick")

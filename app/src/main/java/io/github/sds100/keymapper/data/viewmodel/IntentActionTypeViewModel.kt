@@ -32,6 +32,7 @@ class IntentActionTypeViewModel : ViewModel() {
                 return
             }
 
+
             value = true
         }
 

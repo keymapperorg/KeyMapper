@@ -1,12 +1,15 @@
 package io.github.sds100.keymapper.ui.fragment
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.airbnb.epoxy.EpoxyController
 import io.github.sds100.keymapper.data.model.BoolExtraType
 import io.github.sds100.keymapper.data.model.IntArrayExtraType
 import io.github.sds100.keymapper.data.model.IntentExtraListItemModel
@@ -113,27 +116,45 @@ class IntentActionTypeFragment : Fragment() {
                 }
 
                 models.forEach {
-                    intentExtra {
-                        id(it.uid)
-
-                        model(it)
-
-                        onRemoveClick { _ ->
-                            mViewModel.removeExtra(it.uid)
-                        }
-
-                        onShowExampleClick { _ ->
-                            requireContext().alertDialog {
-                                message = it.exampleString
-                                okButton()
-
-                                show()
-                            }
-                        }
-                    }
+                    bindExtra(it)
                 }
             }
         })
+    }
+
+    private fun EpoxyController.bindExtra(model: IntentExtraListItemModel) {
+        intentExtra {
+            id(model.uid)
+
+            model(model)
+
+            onRemoveClick { _ ->
+                mViewModel.removeExtra(model.uid)
+            }
+
+            onShowExampleClick { _ ->
+                requireContext().alertDialog {
+                    message = model.exampleString
+                    okButton()
+
+                    show()
+                }
+            }
+
+            onValueChanged(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+                }
+
+                override fun afterTextChanged(s: Editable?) {
+                    mViewModel.setExtraValue(model.uid, s.toString())
+                }
+            })
+        }
     }
 
     private fun IntentExtraModel.toListItemModel(): IntentExtraListItemModel {
@@ -142,7 +163,7 @@ class IntentActionTypeFragment : Fragment() {
             str(type.labelStringRes),
             name,
             value,
-            type.isValid(value),
+            isValid,
             str(type.exampleStringRes)
         )
     }

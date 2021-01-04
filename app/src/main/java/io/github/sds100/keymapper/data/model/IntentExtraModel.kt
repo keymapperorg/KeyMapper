@@ -10,4 +10,7 @@ data class IntentExtraModel(
     val name: String = "",
     val value: String = "",
     val uid: String = UUID.randomUUID().toString()
-)
+) {
+    val isValid: Boolean
+        get() = type.isValid(value)
+}
