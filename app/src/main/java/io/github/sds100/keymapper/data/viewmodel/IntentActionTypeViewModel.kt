@@ -12,9 +12,12 @@ import io.github.sds100.keymapper.util.*
  */
 class IntentActionTypeViewModel : ViewModel() {
     val targetActivity = MutableLiveData(false)
-    val targetBroadcastReceiver = MutableLiveData(false)
+
+    //set broadcast receiver as the default target
+    val targetBroadcastReceiver = MutableLiveData(true)
     val targetService = MutableLiveData(false)
 
+    val description = MutableLiveData("")
     val action = MutableLiveData("")
     val category = MutableLiveData("")
     val data = MutableLiveData("")

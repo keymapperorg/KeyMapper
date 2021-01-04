@@ -86,6 +86,10 @@
     <string name="email_subject">Key Mapper query</string>
     <string name="email_default_message">Does the help page solve your problem? What is your device?\n\n Which OEM skin or ROM are you using?\n\n Please describe the issue you\'re having:</string>
 
+    <string name="intent_target_activity">Activity</string>
+    <string name="intent_target_service">Service</string>
+    <string name="intent_target_broadcast_receiver">Broadcast Receiver</string>
+
     <!--  Action descriptions  -->
     <string name="description_open_app">Open %s</string>
     <string name="description_key">Press \'%s\' key</string>
@@ -118,6 +122,15 @@
     <string name="hint_from_device">From Device</string>
     <string name="hint_shortcut_name">Shortcut Name</string>
     <string name="hint_tap_coordinate_title">Coordinate description (optional)</string>
+
+    <string name="hint_intent_action">Action</string>
+    <string name="hint_intent_category">Category</string>
+    <string name="hint_intent_data">Data</string>
+    <string name="hint_intent_package">Package</string>
+    <string name="hint_intent_class">Class</string>
+    <string name="hint_intent_extra_name">Name</string>
+    <string name="hint_intent_extra_value_with_type">Value (%s)</string>
+    <string name="hint_intent_description">Description for Key Mapper (required)</string>
     <!--  Hints  -->
 
     <!--  Radio buttons  -->
@@ -172,14 +185,6 @@
     <string name="extra_label_delay_before_next_action">Delay before next action (ms)</string>
     <string name="extra_label_hold_down_duration">Hold down duration</string>
     <!-- Extra labels -->
-
-    <string name="hint_intent_action">Action</string>
-    <string name="hint_intent_category">Category</string>
-    <string name="hint_intent_data">Data</string>
-    <string name="hint_intent_package">Package</string>
-    <string name="hint_intent_class">Class</string>
-    <string name="hint_intent_extra_name">Name</string>
-    <string name="hint_intent_extra_value_with_type">Value (%s)</string>
 
     <!-- Constraints -->
     <string name="constraint_app_foreground_description">%s is in foreground</string>
