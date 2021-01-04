@@ -901,10 +901,10 @@
 
     <!--  Intent action type strings  -->
     <string name="intent_type_bool_header">Boolean</string>
-    <string name="intent_type_int_header">Integer</string>
+    <string name="intent_type_int_array_header">Integer Array</string>
 
     <string name="intent_type_bool_example">Can only be "true" or "false".</string>
-    <string name="intent_type_int_example">Must be a valid Integer in the Java programming language.</string>
+    <string name="intent_type_int_array_example">A comma-separated list of valid Integers in the Java programming language. E.g 100,399</string>
     <!--  Intent action type strings  -->
 
 </resources>

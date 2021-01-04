@@ -37,8 +37,8 @@ class BoolExtraType : IntentExtraType() {
 }
 
 class IntArrayExtraType : IntentExtraType() {
-    override val labelStringRes = R.string.intent_type_int_header
-    override val exampleStringRes = R.string.intent_type_int_example
+    override val labelStringRes = R.string.intent_type_int_array_header
+    override val exampleStringRes = R.string.intent_type_int_array_example
 
     override fun putInIntent(intent: Intent, name: String, value: String) {
         intent.putExtra(name, parse(value))
@@ -50,7 +50,7 @@ class IntArrayExtraType : IntentExtraType() {
             .split(',')
             .map {
                 try {
-                    it.toInt()
+                    it.trim().toInt()
                 } catch (e: NumberFormatException) {
                     return null
                 }
