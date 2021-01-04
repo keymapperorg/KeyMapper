@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.util
 
 import android.content.res.ColorStateList
-import android.text.TextWatcher
 import android.view.View
 import android.widget.*
 import androidx.annotation.ColorInt
@@ -133,11 +132,6 @@ fun TextInputLayout.errorWhenEmpty(enabled: Boolean) {
             null
         }
     }
-}
-
-@BindingAdapter("app:onTextChanged")
-fun TextView.onTextChanged(watcher: TextWatcher) {
-    addTextChangedListener(watcher)
 }
 
 @BindingAdapter("app:errorText")

@@ -1,11 +1,10 @@
 package io.github.sds100.keymapper.ui.fragment
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -16,6 +15,7 @@ import io.github.sds100.keymapper.data.model.IntentExtraListItemModel
 import io.github.sds100.keymapper.data.model.IntentExtraModel
 import io.github.sds100.keymapper.data.viewmodel.IntentActionTypeViewModel
 import io.github.sds100.keymapper.databinding.FragmentIntentActionTypeBinding
+import io.github.sds100.keymapper.databinding.ListItemIntentExtraBinding
 import io.github.sds100.keymapper.intentExtra
 import io.github.sds100.keymapper.util.BuildIntentExtraListItemModels
 import io.github.sds100.keymapper.util.Data
@@ -141,19 +141,14 @@ class IntentActionTypeFragment : Fragment() {
                 }
             }
 
-            onValueChanged(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            onBind { model, view, _ ->
+                (view.dataBinding as ListItemIntentExtraBinding).apply {
+                    textInputLayoutExtraValue.editText?.doAfterTextChanged {
 
+                        mViewModel.setExtraValue(model.model().uid, it.toString())
+                    }
                 }
-
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
-                }
-
-                override fun afterTextChanged(s: Editable?) {
-                    mViewModel.setExtraValue(model.uid, s.toString())
-                }
-            })
+            }
         }
     }
 

@@ -11,10 +11,6 @@
             type="io.github.sds100.keymapper.data.model.IntentExtraListItemModel" />
 
         <variable
-            name="onValueChanged"
-            type="android.text.TextWatcher" />
-
-        <variable
             name="onRemoveClick"
             type="View.OnClickListener" />
 
@@ -52,6 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
+            app:endIconDrawable="@drawable/ic_baseline_help_outline_24"
             android:hint="@{@string/hint_intent_extra_value_with_type(model.typeString)}"
             app:error="@{model.isValid ? null : @string/error_invalid_intent_extra_value}"
             app:layout_constraintEnd_toStartOf="@+id/buttonRemove"
@@ -60,8 +57,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:onTextChanged="@{onValueChanged}" />
+                android:layout_height="wrap_content" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.appcompat.widget.AppCompatImageButton
