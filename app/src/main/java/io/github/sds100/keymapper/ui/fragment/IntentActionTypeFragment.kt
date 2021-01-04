@@ -7,10 +7,15 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import io.github.sds100.keymapper.data.model.IntentExtraListItemModel
+import io.github.sds100.keymapper.data.model.IntentExtraModel
 import io.github.sds100.keymapper.data.viewmodel.IntentActionTypeViewModel
 import io.github.sds100.keymapper.databinding.FragmentIntentActionTypeBinding
 import io.github.sds100.keymapper.intentExtra
+import io.github.sds100.keymapper.util.BuildIntentExtraListItemModels
+import io.github.sds100.keymapper.util.Data
 import io.github.sds100.keymapper.util.InjectorUtils
+import io.github.sds100.keymapper.util.str
 
 /**
  * Created by sds100 on 30/03/2020.
@@ -57,6 +62,15 @@ class IntentActionTypeFragment : Fragment() {
                 findNavController().navigateUp()
             }
 
+            mViewModel.eventStream.observe(viewLifecycleOwner, { event ->
+                when (event) {
+                    is BuildIntentExtraListItemModels -> {
+                        val models = event.extraModels.map { it.toListItemModel() }
+                        mViewModel.setListItemModels(models)
+                    }
+                }
+            })
+
             subscribeExtrasList()
         }
     }
@@ -67,8 +81,15 @@ class IntentActionTypeFragment : Fragment() {
     }
 
     private fun FragmentIntentActionTypeBinding.subscribeExtrasList() {
-        mViewModel.extrasListItemModels.observe(viewLifecycleOwner, { models ->
+        mViewModel.extrasListItemModels.observe(viewLifecycleOwner, { state ->
             epoxyRecyclerViewExtras.withModels {
+
+                val models = if (state is Data) {
+                    state.data
+                } else {
+                    emptyList()
+                }
+
                 models.forEach {
                     intentExtra {
                         id(it.id)
@@ -86,5 +107,15 @@ class IntentActionTypeFragment : Fragment() {
                 }
             }
         })
+    }
+
+    private fun IntentExtraModel.toListItemModel(): IntentExtraListItemModel {
+        return IntentExtraListItemModel(
+            str(type.labelStringRes),
+            name,
+            value,
+            type.isValid(value),
+            str(type.exampleStringRes)
+        )
     }
 }

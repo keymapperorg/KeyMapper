@@ -54,6 +54,7 @@ class RequestBackup(val keymapList: List<KeyMap>) : Event()
 class RequestRestore : Event()
 class RequestBackupAll : Event()
 class ShowErrorMessage(val failure: Failure) : Event()
+class BuildIntentExtraListItemModels(val extraModels: List<IntentExtraModel>) : Event()
 
 //trigger
 class BuildTriggerKeyModels(val source: List<Trigger.Key>) : Event()

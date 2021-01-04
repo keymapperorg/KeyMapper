@@ -5,7 +5,7 @@ import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.data.model.IntentExtraListItemModel
 import io.github.sds100.keymapper.data.model.IntentExtraModel
 import io.github.sds100.keymapper.data.model.IntentExtraType
-import io.github.sds100.keymapper.util.Event
+import io.github.sds100.keymapper.util.*
 
 /**
  * Created by sds100 on 01/01/21.
@@ -26,24 +26,15 @@ class IntentActionTypeViewModel : ViewModel() {
 
     private val mExtras = MutableLiveData(emptyList<IntentExtraModel>())
 
-    val extrasListItemModels = mExtras.map { extras ->
-        extras.map {
-            it.toListItemModel()
+    private val _extrasListItemModels = MutableLiveData<State<List<IntentExtraListItemModel>>>(Empty())
+    val extrasListItemModels: LiveData<State<List<IntentExtraListItemModel>>> = _extrasListItemModels
+
+    private val _eventStream = LiveEvent<Event>().apply {
+        addSource(mExtras) {
+            value = BuildIntentExtraListItemModels(it)
         }
     }
-
-    private val _eventStream = LiveEvent<Event>()
     val eventStream: LiveData<Event> = _eventStream
-
-    private fun IntentExtraModel.toListItemModel(): IntentExtraListItemModel {
-        return IntentExtraListItemModel(
-            type.labelStringRes,
-            name,
-            value,
-            type.isValid(value),
-            type.exampleStringRes
-        )
-    }
 
     fun setExtraName(uid: String, name: String) {
         mExtras.value = mExtras.value?.map {
@@ -77,6 +68,15 @@ class IntentActionTypeViewModel : ViewModel() {
         mExtras.value = mExtras.value?.toMutableList()?.apply {
             add(model)
         }
+    }
+
+    fun setListItemModels(models: List<IntentExtraListItemModel>) {
+        if (models.isEmpty()) {
+            _extrasListItemModels.value = Empty()
+            return
+        }
+
+        _extrasListItemModels.value = Data(models)
     }
 
     @Suppress("UNCHECKED_CAST")
