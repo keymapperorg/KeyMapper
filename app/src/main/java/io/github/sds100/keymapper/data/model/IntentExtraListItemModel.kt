@@ -5,8 +5,9 @@ package io.github.sds100.keymapper.data.model
  */
 
 data class IntentExtraListItemModel(
+    val uid: String,
     val typeString: String,
-    val id: String,
+    val name: String,
     val value: String,
     val isValid: Boolean,
     val exampleString: String

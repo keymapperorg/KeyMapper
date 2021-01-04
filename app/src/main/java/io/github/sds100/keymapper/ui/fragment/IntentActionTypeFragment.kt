@@ -77,7 +77,7 @@ class IntentActionTypeFragment : Fragment() {
                     setItems(labels) { _, position ->
                         mViewModel.addExtra(EXTRA_TYPES[position])
                     }
-                    
+
                     show()
                 }
             }
@@ -112,12 +112,12 @@ class IntentActionTypeFragment : Fragment() {
 
                 models.forEach {
                     intentExtra {
-                        id(it.id)
+                        id(it.uid)
 
                         model(it)
 
                         onRemoveClick { _ ->
-
+                            mViewModel.removeExtra(it.uid)
                         }
 
                         onShowExampleClick { _ ->
@@ -131,6 +131,7 @@ class IntentActionTypeFragment : Fragment() {
 
     private fun IntentExtraModel.toListItemModel(): IntentExtraListItemModel {
         return IntentExtraListItemModel(
+            uid,
             str(type.labelStringRes),
             name,
             value,
