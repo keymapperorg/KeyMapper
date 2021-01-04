@@ -144,8 +144,11 @@ class IntentActionTypeFragment : Fragment() {
             onBind { model, view, _ ->
                 (view.dataBinding as ListItemIntentExtraBinding).apply {
                     textInputLayoutExtraValue.editText?.doAfterTextChanged {
-
                         mViewModel.setExtraValue(model.model().uid, it.toString())
+                    }
+
+                    textInputLayoutExtraName.editText?.doAfterTextChanged {
+                        mViewModel.setExtraName(model.model().uid, it.toString())
                     }
                 }
             }
