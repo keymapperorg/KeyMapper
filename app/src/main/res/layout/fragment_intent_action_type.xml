@@ -122,6 +122,7 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:inputType="textNoSuggestions"
                         android:text="@={viewModel.action}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -142,6 +143,7 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:inputType="textNoSuggestions"
                         android:text="@={viewModel.categoriesString}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -176,6 +178,7 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:inputType="textNoSuggestions"
                         android:text="@={viewModel.data}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -196,6 +199,7 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:inputType="textNoSuggestions"
                         android:text="@={viewModel.targetPackage}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -216,6 +220,7 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:inputType="textNoSuggestions"
                         android:text="@={viewModel.targetClass}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
