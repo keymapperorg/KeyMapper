@@ -24,24 +24,6 @@ class IntentActionTypeViewModel : ViewModel() {
     val targetPackage = MutableLiveData("")
     val targetClass = MutableLiveData("")
 
-    private val _isValid = MediatorLiveData<Boolean>().apply {
-
-        fun invalidate() {
-            if (description.value.isNullOrEmpty()) {
-                value = false
-                return
-            }
-
-            value = true
-        }
-
-        addSource(description) {
-            invalidate()
-        }
-    }
-
-    val isValid: LiveData<Boolean> = _isValid
-
     private val mExtras = MutableLiveData(emptyList<IntentExtraModel>())
 
     private val _extrasListItemModels = MutableLiveData<State<List<IntentExtraListItemModel>>>(Empty())
@@ -53,6 +35,33 @@ class IntentActionTypeViewModel : ViewModel() {
         }
     }
     val eventStream: LiveData<Event> = _eventStream
+
+    private val _isValid = MediatorLiveData<Boolean>().apply {
+
+        fun invalidate() {
+            if (description.value.isNullOrEmpty()) {
+                value = false
+                return
+            }
+
+            if (mExtras.value?.any { !it.isValidValue || it.name.isEmpty() } == true) {
+                value = false
+                return
+            }
+
+            value = true
+        }
+
+        addSource(description) {
+            invalidate()
+        }
+
+        addSource(mExtras) {
+            invalidate()
+        }
+    }
+
+    val isValid: LiveData<Boolean> = _isValid
 
     fun setExtraName(uid: String, name: String) {
         mExtras.value = mExtras.value?.map {

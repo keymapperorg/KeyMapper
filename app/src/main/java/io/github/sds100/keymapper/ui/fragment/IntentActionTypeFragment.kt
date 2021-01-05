@@ -186,7 +186,7 @@ class IntentActionTypeFragment : Fragment() {
                 uid,
                 name,
                 parsedValue?.let { it as Boolean } ?: true,
-                isValid
+                isValidValue
             )
 
             else -> {
@@ -200,7 +200,7 @@ class IntentActionTypeFragment : Fragment() {
                     str(type.labelStringRes),
                     name,
                     value,
-                    isValid,
+                    isValidValue,
                     str(type.exampleStringRes),
                     inputType
                 )
