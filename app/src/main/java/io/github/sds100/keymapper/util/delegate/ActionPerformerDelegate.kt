@@ -33,6 +33,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
+import splitties.toast.longToast
 import splitties.toast.toast
 import timber.log.Timber
 
@@ -172,6 +173,25 @@ class ActionPerformerDelegate(context: Context,
                             ),
                             keyEventAction = keyEventAction,
                             deviceId = deviceId ?: 0)
+                    }
+                }
+
+                ActionType.INTENT -> {
+                    val intent = Intent.parseUri(action.data, 0)
+
+                    try {
+                        action.extras.getData(Action.EXTRA_INTENT_TARGET).onSuccess {
+                            when (IntentTarget.valueOf(it)) {
+                                IntentTarget.ACTIVITY -> {
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    startActivity(intent)
+                                }
+                                IntentTarget.BROADCAST_RECEIVER -> sendBroadcast(intent)
+                                IntentTarget.SERVICE -> startService(intent)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        longToast(e.message!!)
                     }
                 }
             }

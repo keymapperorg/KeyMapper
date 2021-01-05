@@ -227,8 +227,21 @@ fun Action.getTitle(ctx: Context, deviceInfoList: List<DeviceInfo>): Result<Stri
         }
 
         ActionType.INTENT -> {
-            extras.getData(Action.EXTRA_INTENT_DESCRIPTION) then {
-                Success("Intent: $it")
+            extras.getData(Action.EXTRA_INTENT_DESCRIPTION) then { description ->
+                extras.getData(Action.EXTRA_INTENT_TARGET) then { target ->
+                    val title = when (IntentTarget.valueOf(target)) {
+                        IntentTarget.ACTIVITY ->
+                            ctx.str(R.string.action_title_intent_start_activity, description)
+
+                        IntentTarget.BROADCAST_RECEIVER ->
+                            ctx.str(R.string.action_title_intent_send_broadcast, description)
+
+                        IntentTarget.SERVICE ->
+                            ctx.str(R.string.action_title_intent_start_service, description)
+                    }
+
+                    Success(title)
+                }
             }
         }
 

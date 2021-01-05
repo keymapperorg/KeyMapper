@@ -58,3 +58,14 @@ class IntArrayExtraType : IntentExtraType() {
             .toIntArray()
     }
 }
+
+class StringExtraType : IntentExtraType() {
+    override val labelStringRes = R.string.intent_type_string_header
+    override val exampleStringRes = R.string.intent_type_string_example
+
+    override fun putInIntent(intent: Intent, name: String, value: String) {
+        intent.putExtra(name, parse(value))
+    }
+
+    override fun parse(value: String): String = value
+}

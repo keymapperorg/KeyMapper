@@ -90,6 +90,10 @@
     <string name="intent_target_service">Service</string>
     <string name="intent_target_broadcast_receiver">Broadcast Receiver</string>
 
+    <string name="action_title_intent_start_activity">Start activity: %s</string>
+    <string name="action_title_intent_start_service">Start service: %s</string>
+    <string name="action_title_intent_send_broadcast">Send broadcast: %s</string>
+
     <!--  Action descriptions  -->
     <string name="description_open_app">Open %s</string>
     <string name="description_key">Press \'%s\' key</string>
@@ -913,10 +917,12 @@
     <!--  Intent action type strings  -->
     <string name="intent_type_bool_header">Boolean</string>
     <string name="intent_type_int_array_header">Integer Array</string>
+    <string name="intent_type_string_header">String</string>
 
     <string name="intent_type_bool_example">Can only be \"true\" or \"false\".</string>
     <string name="intent_type_int_array_example">A comma-separated list of valid Integers in the Java programming language. E.g 100,399</string>
     <string name="intent_categories_example">A comma separated list. E.g category1,category2</string>
+    <string name="intent_type_string_example">Any text.</string>
     <!--  Intent action type strings  -->
 
 </resources>

@@ -44,7 +44,8 @@ class IntentActionTypeFragment : Fragment() {
 
         private val EXTRA_TYPES = arrayOf(
             BoolExtraType(),
-            IntArrayExtraType()
+            IntArrayExtraType(),
+            StringExtraType()
         )
     }
 
@@ -105,12 +106,17 @@ class IntentActionTypeFragment : Fragment() {
 
                     mViewModel.extras.value?.forEach { model ->
                         if (model.name.isEmpty()) return@forEach
+                        if (model.parsedValue == null) return@forEach
 
-                        model.parsedValue?.let { value ->
-                            when (model.type) {
-                                is BoolExtraType -> putExtra(model.name, value as Boolean)
-                                is IntArrayExtraType -> putExtra(model.name, value as IntArray)
-                            }
+                        when (model.type) {
+                            is BoolExtraType ->
+                                putExtra(model.name, model.parsedValue as Boolean)
+
+                            is IntArrayExtraType ->
+                                putExtra(model.name, model.parsedValue as IntArray)
+
+                            is StringExtraType ->
+                                putExtra(model.name, model.parsedValue as String)
                         }
                     }
                 }
