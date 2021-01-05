@@ -142,7 +142,7 @@ class MyAccessibilityService : AccessibilityService(),
                 }
 
                 ACTION_TEST_ACTION -> {
-                    (intent.getSerializableExtra(EXTRA_ACTION) as Action?)?.let {
+                    intent.getParcelableExtra<Action>(EXTRA_ACTION)?.let {
                         mActionPerformerDelegate.performAction(it, mChosenImePackageName)
                     }
                 }
