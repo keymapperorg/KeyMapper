@@ -120,7 +120,7 @@ class IntentActionTypeFragment : Fragment() {
                 setFragmentResult(REQUEST_KEY,
                     bundleOf(
                         EXTRA_DESCRIPTION to mViewModel.description.value,
-                        EXTRA_TARGET to mViewModel.target.value.toString(),
+                        EXTRA_TARGET to mViewModel.getTarget().toString(),
                         EXTRA_URI to uri
                     )
                 )

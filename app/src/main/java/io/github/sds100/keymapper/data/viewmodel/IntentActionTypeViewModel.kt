@@ -26,29 +26,6 @@ class IntentActionTypeViewModel : ViewModel() {
     val targetPackage = MutableLiveData("")
     val targetClass = MutableLiveData("")
 
-    private val _target: MediatorLiveData<IntentTarget> = MediatorLiveData<IntentTarget>().apply {
-        value = IntentTarget.BROADCAST_RECEIVER
-
-        addSource(targetActivity) {
-            if (it == true) {
-                value = IntentTarget.ACTIVITY
-            }
-        }
-
-        addSource(targetBroadcastReceiver) {
-            if (it == true) {
-                value = IntentTarget.BROADCAST_RECEIVER
-            }
-        }
-
-        addSource(targetService) {
-            if (it == true) {
-                value = IntentTarget.SERVICE
-            }
-        }
-    }
-    val target: LiveData<IntentTarget> = _target
-
     private val _extras = MutableLiveData(emptyList<IntentExtraModel>())
     val extras: LiveData<List<IntentExtraModel>> = _extras
 
@@ -135,6 +112,13 @@ class IntentActionTypeViewModel : ViewModel() {
         }
 
         _extrasListItemModels.value = Data(models)
+    }
+
+    fun getTarget(): IntentTarget = when {
+        targetActivity.value == true -> IntentTarget.ACTIVITY
+        targetBroadcastReceiver.value == true -> IntentTarget.BROADCAST_RECEIVER
+        targetService.value == true -> IntentTarget.SERVICE
+        else -> throw Exception("No target selected.")
     }
 
     @Suppress("UNCHECKED_CAST")
