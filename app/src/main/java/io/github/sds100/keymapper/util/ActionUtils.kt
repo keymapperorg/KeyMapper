@@ -226,7 +226,11 @@ fun Action.getTitle(ctx: Context, deviceInfoList: List<DeviceInfo>): Result<Stri
             }
         }
 
-        ActionType.INTENT -> TODO()
+        ActionType.INTENT -> {
+            extras.getData(Action.EXTRA_INTENT_DESCRIPTION) then {
+                Success("Intent: $it")
+            }
+        }
 
     }.then {
         extras.getData(Action.EXTRA_MULTIPLIER).valueOrNull()?.toIntOrNull()?.let { multiplier ->

@@ -24,6 +24,10 @@
             type="View.OnClickListener" />
 
         <variable
+            name="onShowCategoriesExampleClick"
+            type="View.OnClickListener" />
+
+        <variable
             name="viewModel"
             type="io.github.sds100.keymapper.data.viewmodel.IntentActionTypeViewModel" />
     </data>
@@ -123,24 +127,38 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/textInputLayoutCategory"
+                    android:id="@+id/textInputLayoutCategories"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:hint="@string/hint_intent_category"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginEnd="8dp"
+                    android:hint="@string/hint_intent_categories"
+                    app:layout_constraintEnd_toStartOf="@+id/buttonShowCategoriesExample"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/textInputLayoutAction">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@={viewModel.category}" />
+                        android:text="@={viewModel.categoriesString}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
+
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/buttonShowCategoriesExample"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:layout_width="36dp"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="16dp"
+                    android:baselineAlignBottom="true"
+                    android:onClick="@{onShowCategoriesExampleClick}"
+                    android:tint="?attr/colorOnSurface"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/textInputLayoutCategories"
+                    app:layout_constraintTop_toTopOf="@id/textInputLayoutCategories"
+                    app:srcCompat="@drawable/ic_baseline_help_outline_24" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textInputLayoutData"
@@ -153,7 +171,7 @@
                     android:hint="@string/hint_intent_data"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/textInputLayoutCategory">
+                    app:layout_constraintTop_toBottomOf="@id/textInputLayoutCategories">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"

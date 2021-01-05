@@ -124,7 +124,7 @@
     <string name="hint_tap_coordinate_title">Coordinate description (optional)</string>
 
     <string name="hint_intent_action">Action</string>
-    <string name="hint_intent_category">Category</string>
+    <string name="hint_intent_categories">Categories</string>
     <string name="hint_intent_data">Data</string>
     <string name="hint_intent_package">Package</string>
     <string name="hint_intent_class">Class</string>
@@ -916,6 +916,7 @@
 
     <string name="intent_type_bool_example">Can only be \"true\" or \"false\".</string>
     <string name="intent_type_int_array_example">A comma-separated list of valid Integers in the Java programming language. E.g 100,399</string>
+    <string name="intent_categories_example">A comma separated list. E.g category1,category2</string>
     <!--  Intent action type strings  -->
 
 </resources>

@@ -7,6 +7,7 @@ import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.ActionUtils
+import io.github.sds100.keymapper.util.IntentTarget
 import io.github.sds100.keymapper.util.SystemAction
 import io.github.sds100.keymapper.util.result.onSuccess
 import kotlinx.android.parcel.Parcelize
@@ -93,6 +94,7 @@ data class Action(
         const val EXTRA_ORIENTATIONS = "extra_orientations"
         const val EXTRA_COORDINATE_DESCRIPTION = "extra_coordinate_description"
         const val EXTRA_INTENT_TARGET = "extra_intent_target"
+        const val EXTRA_INTENT_DESCRIPTION = "extra_intent_description"
 
         /**
          * The KeyEvent meta state is stored as bit flags.
@@ -193,6 +195,23 @@ data class Action(
                 ActionType.TAP_COORDINATE,
                 "$x,$y",
                 extras = extras
+            )
+        }
+
+        fun intentAction(
+            description: String,
+            target: IntentTarget,
+            uri: String
+        ): Action {
+            val actionExtras = listOf(
+                Extra(EXTRA_INTENT_DESCRIPTION, description),
+                Extra(EXTRA_INTENT_TARGET, target.toString())
+            )
+
+            return Action(
+                type = ActionType.INTENT,
+                data = uri,
+                extras = actionExtras
             )
         }
 

@@ -1,15 +1,20 @@
 package io.github.sds100.keymapper.ui.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.net.toUri
+import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import com.airbnb.epoxy.EpoxyController
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.viewmodel.IntentActionTypeViewModel
 import io.github.sds100.keymapper.databinding.FragmentIntentActionTypeBinding
@@ -23,6 +28,7 @@ import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.str
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.message
+import splitties.alertdialog.appcompat.messageResource
 import splitties.alertdialog.appcompat.okButton
 
 /**
@@ -32,8 +38,9 @@ import splitties.alertdialog.appcompat.okButton
 class IntentActionTypeFragment : Fragment() {
     companion object {
         const val REQUEST_KEY = "request_intent"
+        const val EXTRA_DESCRIPTION = "extra_intent_description"
         const val EXTRA_TARGET = "extra_target"
-        const val EXTRA_URi = "extra_uri"
+        const val EXTRA_URI = "extra_uri"
 
         private val EXTRA_TYPES = arrayOf(
             BoolExtraType(),
@@ -72,6 +79,52 @@ class IntentActionTypeFragment : Fragment() {
 
         binding.apply {
             setOnDoneClick {
+                val intent = Intent().apply {
+                    if (mViewModel.action.value?.isNotEmpty() == true) {
+                        this.action = mViewModel.action.value
+                    }
+
+                    mViewModel.categoriesList.value?.forEach {
+                        this.addCategory(it)
+                    }
+
+                    if (mViewModel.data.value?.isNotEmpty() == true) {
+                        this.data = mViewModel.data.value?.toUri()
+                    }
+
+                    if (mViewModel.targetPackage.value?.isNotEmpty() == true) {
+                        this.`package` = mViewModel.targetPackage.value
+
+                        if (mViewModel.targetClass.value?.isNotEmpty() == true) {
+                            this.setClassName(
+                                mViewModel.targetPackage.value!!,
+                                mViewModel.targetClass.value!!
+                            )
+                        }
+                    }
+
+                    mViewModel.extras.value?.forEach { model ->
+                        if (model.name.isEmpty()) return@forEach
+
+                        model.parsedValue?.let { value ->
+                            when (model.type) {
+                                is BoolExtraType -> putExtra(model.name, value as Boolean)
+                                is IntArrayExtraType -> putExtra(model.name, value as IntArray)
+                            }
+                        }
+                    }
+                }
+
+                val uri = intent.toUri(0)
+
+                setFragmentResult(REQUEST_KEY,
+                    bundleOf(
+                        EXTRA_DESCRIPTION to mViewModel.description.value,
+                        EXTRA_TARGET to mViewModel.target.value.toString(),
+                        EXTRA_URI to uri
+                    )
+                )
+
                 findNavController().navigateUp()
             }
 
@@ -83,6 +136,14 @@ class IntentActionTypeFragment : Fragment() {
                         mViewModel.addExtra(EXTRA_TYPES[position])
                     }
 
+                    show()
+                }
+            }
+
+            setOnShowCategoriesExampleClick {
+                requireContext().alertDialog {
+                    messageResource = R.string.intent_categories_example
+                    okButton()
                     show()
                 }
             }

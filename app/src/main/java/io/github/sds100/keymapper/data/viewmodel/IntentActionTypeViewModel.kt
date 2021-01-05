@@ -12,25 +12,51 @@ import io.github.sds100.keymapper.util.*
  */
 class IntentActionTypeViewModel : ViewModel() {
     val targetActivity = MutableLiveData(false)
-
-    //set broadcast receiver as the default target
-    val targetBroadcastReceiver = MutableLiveData(true)
+    val targetBroadcastReceiver = MutableLiveData(false)
     val targetService = MutableLiveData(false)
 
     val description = MutableLiveData("")
     val action = MutableLiveData("")
-    val category = MutableLiveData("")
+    val categoriesString = MutableLiveData("")
+    val categoriesList = categoriesString.map {
+        it.split(',')
+    }
+
     val data = MutableLiveData("")
     val targetPackage = MutableLiveData("")
     val targetClass = MutableLiveData("")
 
-    private val mExtras = MutableLiveData(emptyList<IntentExtraModel>())
+    private val _target: MediatorLiveData<IntentTarget> = MediatorLiveData<IntentTarget>().apply {
+        value = IntentTarget.BROADCAST_RECEIVER
+
+        addSource(targetActivity) {
+            if (it == true) {
+                value = IntentTarget.ACTIVITY
+            }
+        }
+
+        addSource(targetBroadcastReceiver) {
+            if (it == true) {
+                value = IntentTarget.BROADCAST_RECEIVER
+            }
+        }
+
+        addSource(targetService) {
+            if (it == true) {
+                value = IntentTarget.SERVICE
+            }
+        }
+    }
+    val target: LiveData<IntentTarget> = _target
+
+    private val _extras = MutableLiveData(emptyList<IntentExtraModel>())
+    val extras: LiveData<List<IntentExtraModel>> = _extras
 
     private val _extrasListItemModels = MutableLiveData<State<List<IntentExtraListItemModel>>>(Empty())
     val extrasListItemModels: LiveData<State<List<IntentExtraListItemModel>>> = _extrasListItemModels
 
     private val _eventStream = LiveEvent<Event>().apply {
-        addSource(mExtras) {
+        addSource(_extras) {
             value = BuildIntentExtraListItemModels(it)
         }
     }
@@ -44,7 +70,7 @@ class IntentActionTypeViewModel : ViewModel() {
                 return
             }
 
-            if (mExtras.value?.any { !it.isValidValue || it.name.isEmpty() } == true) {
+            if (_extras.value?.any { !it.isValidValue || it.name.isEmpty() } == true) {
                 value = false
                 return
             }
@@ -56,15 +82,20 @@ class IntentActionTypeViewModel : ViewModel() {
             invalidate()
         }
 
-        addSource(mExtras) {
+        addSource(_extras) {
             invalidate()
         }
     }
 
     val isValid: LiveData<Boolean> = _isValid
 
+    init {
+        //set broadcast receiver as the default target
+        targetBroadcastReceiver.value = true
+    }
+
     fun setExtraName(uid: String, name: String) {
-        mExtras.value = mExtras.value?.map {
+        _extras.value = _extras.value?.map {
             if (it.uid == uid) {
                 return@map it.copy(name = name)
             }
@@ -74,7 +105,7 @@ class IntentActionTypeViewModel : ViewModel() {
     }
 
     fun setExtraValue(uid: String, value: String) {
-        mExtras.value = mExtras.value?.map {
+        _extras.value = _extras.value?.map {
             if (it.uid == uid) {
                 return@map it.copy(value = value)
             }
@@ -84,7 +115,7 @@ class IntentActionTypeViewModel : ViewModel() {
     }
 
     fun removeExtra(uid: String) {
-        mExtras.value = mExtras.value?.toMutableList()?.apply {
+        _extras.value = _extras.value?.toMutableList()?.apply {
             removeAll { it.uid == uid }
         }
     }
@@ -92,7 +123,7 @@ class IntentActionTypeViewModel : ViewModel() {
     fun addExtra(type: IntentExtraType) {
         val model = IntentExtraModel(type = type)
 
-        mExtras.value = mExtras.value?.toMutableList()?.apply {
+        _extras.value = _extras.value?.toMutableList()?.apply {
             add(model)
         }
     }
