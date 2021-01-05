@@ -141,6 +141,9 @@
     <string name="radio_button_short_press">Short press</string>
     <string name="radio_button_long_press">Long press</string>
     <string name="radio_button_double_press">Double press</string>
+    <string name="radio_button_intent_extra_value_true">True</string>
+    <string name="radio_button_intent_extra_value_false">False</string>
+
     <!--  Radio buttons  -->
 
     <!--  Tabs  -->

@@ -13,4 +13,7 @@ data class IntentExtraModel(
 ) {
     val isValid: Boolean
         get() = type.isValid(value)
+
+    val parsedValue: Any?
+        get() = type.parse(value)
 }

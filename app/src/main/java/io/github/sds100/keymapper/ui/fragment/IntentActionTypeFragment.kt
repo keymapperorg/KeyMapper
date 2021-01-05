@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.ui.fragment
 
 import android.os.Bundle
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,14 +10,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.airbnb.epoxy.EpoxyController
-import io.github.sds100.keymapper.data.model.BoolExtraType
-import io.github.sds100.keymapper.data.model.IntArrayExtraType
-import io.github.sds100.keymapper.data.model.IntentExtraListItemModel
-import io.github.sds100.keymapper.data.model.IntentExtraModel
+import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.viewmodel.IntentActionTypeViewModel
 import io.github.sds100.keymapper.databinding.FragmentIntentActionTypeBinding
-import io.github.sds100.keymapper.databinding.ListItemIntentExtraBinding
-import io.github.sds100.keymapper.intentExtra
+import io.github.sds100.keymapper.databinding.ListItemIntentExtraBoolBinding
+import io.github.sds100.keymapper.databinding.ListItemIntentExtraGenericBinding
+import io.github.sds100.keymapper.intentExtraBool
+import io.github.sds100.keymapper.intentExtraGeneric
 import io.github.sds100.keymapper.util.BuildIntentExtraListItemModels
 import io.github.sds100.keymapper.util.Data
 import io.github.sds100.keymapper.util.InjectorUtils
@@ -123,32 +123,57 @@ class IntentActionTypeFragment : Fragment() {
     }
 
     private fun EpoxyController.bindExtra(model: IntentExtraListItemModel) {
-        intentExtra {
-            id(model.uid)
+        when (model) {
+            is GenericIntentExtraListItemModel -> intentExtraGeneric {
 
-            model(model)
+                id(model.uid)
 
-            onRemoveClick { _ ->
-                mViewModel.removeExtra(model.uid)
-            }
+                model(model)
 
-            onShowExampleClick { _ ->
-                requireContext().alertDialog {
-                    message = model.exampleString
-                    okButton()
+                onRemoveClick { _ ->
+                    mViewModel.removeExtra(model.uid)
+                }
 
-                    show()
+                onShowExampleClick { _ ->
+                    requireContext().alertDialog {
+                        message = model.exampleString
+                        okButton()
+
+                        show()
+                    }
+                }
+
+                onBind { model, view, _ ->
+                    (view.dataBinding as ListItemIntentExtraGenericBinding).apply {
+                        textInputLayoutExtraValue.editText?.doAfterTextChanged {
+                            mViewModel.setExtraValue(model.model().uid, it.toString())
+                        }
+
+                        textInputLayoutExtraName.editText?.doAfterTextChanged {
+                            mViewModel.setExtraName(model.model().uid, it.toString())
+                        }
+                    }
                 }
             }
 
-            onBind { model, view, _ ->
-                (view.dataBinding as ListItemIntentExtraBinding).apply {
-                    textInputLayoutExtraValue.editText?.doAfterTextChanged {
-                        mViewModel.setExtraValue(model.model().uid, it.toString())
-                    }
+            is BoolIntentExtraListItemModel -> intentExtraBool {
+                id(model.uid)
 
-                    textInputLayoutExtraName.editText?.doAfterTextChanged {
-                        mViewModel.setExtraName(model.model().uid, it.toString())
+                model(model)
+
+                onRemoveClick { _ ->
+                    mViewModel.removeExtra(model.uid)
+                }
+
+                onBind { model, view, _ ->
+                    (view.dataBinding as ListItemIntentExtraBoolBinding).apply {
+                        radioButtonTrue.setOnCheckedChangeListener { _, isChecked ->
+                            if (isChecked) mViewModel.setExtraValue(model.model().uid, "true")
+                        }
+
+                        radioButtonFalse.setOnCheckedChangeListener { _, isChecked ->
+                            if (isChecked) mViewModel.setExtraValue(model.model().uid, "false")
+                        }
                     }
                 }
             }
@@ -156,13 +181,30 @@ class IntentActionTypeFragment : Fragment() {
     }
 
     private fun IntentExtraModel.toListItemModel(): IntentExtraListItemModel {
-        return IntentExtraListItemModel(
-            uid,
-            str(type.labelStringRes),
-            name,
-            value,
-            isValid,
-            str(type.exampleStringRes)
-        )
+        return when (type) {
+            is BoolExtraType -> BoolIntentExtraListItemModel(
+                uid,
+                name,
+                parsedValue?.let { it as Boolean } ?: true,
+                isValid
+            )
+
+            else -> {
+                val inputType = when (type) {
+                    is IntArrayExtraType -> InputType.TYPE_CLASS_NUMBER or InputType.TYPE_CLASS_TEXT
+                    else -> InputType.TYPE_CLASS_TEXT
+                }
+
+                GenericIntentExtraListItemModel(
+                    uid,
+                    str(type.labelStringRes),
+                    name,
+                    value,
+                    isValid,
+                    str(type.exampleStringRes),
+                    inputType
+                )
+            }
+        }
     }
 }

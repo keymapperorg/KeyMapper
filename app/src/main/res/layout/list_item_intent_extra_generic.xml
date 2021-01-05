@@ -8,7 +8,7 @@
 
         <variable
             name="model"
-            type="io.github.sds100.keymapper.data.model.IntentExtraListItemModel" />
+            type="io.github.sds100.keymapper.data.model.GenericIntentExtraListItemModel" />
 
         <variable
             name="onRemoveClick"
@@ -56,7 +56,8 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="@{model.inputType}" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.appcompat.widget.AppCompatImageButton
