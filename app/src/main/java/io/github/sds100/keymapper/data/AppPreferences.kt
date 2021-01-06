@@ -14,7 +14,6 @@ import splitties.preferences.DefaultPreferences
 
 @Suppress("EXPERIMENTAL_API_USAGE")
 object AppPreferences : DefaultPreferences() {
-    private const val KEY_DEFAULT_IME = "key_default_ime"
 
     private var mDarkThemeModePref by StringPref(
         appCtx.str(R.string.key_pref_dark_theme_mode),
@@ -65,8 +64,6 @@ object AppPreferences : DefaultPreferences() {
         appCtx.str(R.string.key_pref_auto_show_ime_picker),
         appCtx.bool(R.bool.default_value_auto_show_ime_picker)
     )
-
-    var lastUsedIncompatibleImeId by StringOrNullPref(KEY_DEFAULT_IME)
 
     val longPressDelay by IntPref(
         appCtx.str(R.string.key_pref_long_press_delay),
@@ -131,10 +128,6 @@ object AppPreferences : DefaultPreferences() {
     val hideHomeScreenAlerts by BoolPref(
         appCtx.str(R.string.key_pref_hide_home_screen_alerts),
         appCtx.bool(R.bool.default_value_hide_home_screen_alerts)
-    )
-
-    var lastUsedCompatibleImePackage by StringOrNullPref(
-        appCtx.str(R.string.key_pref_last_used_compatible_ime)
     )
 
     var showGuiKeyboardAd by BoolPref(

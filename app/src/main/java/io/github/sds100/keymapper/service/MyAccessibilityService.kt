@@ -123,17 +123,6 @@ class MyAccessibilityService : AccessibilityService(),
                     }
                 }
 
-                Intent.ACTION_INPUT_METHOD_CHANGED -> {
-                    mChosenImePackageName =
-                        KeyboardUtils.getChosenInputMethodPackageName(this@MyAccessibilityService).valueOrNull()
-
-                    if (KeyboardUtils.isCompatibleImeChosen(this@MyAccessibilityService)) {
-                        KeyboardUtils.getChosenInputMethodPackageName(this@MyAccessibilityService).onSuccess {
-                            AppPreferences.lastUsedCompatibleImePackage = it
-                        }
-                    }
-                }
-
                 ACTION_RECORD_TRIGGER -> {
                     //don't start recording if a trigger is being recorded
                     if (!mRecordingTrigger) {
@@ -311,7 +300,6 @@ class MyAccessibilityService : AccessibilityService(),
             addAction(Intent.ACTION_SCREEN_OFF)
             addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
             addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
-            addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
 
             registerReceiver(mBroadcastReceiver, this)
         }
@@ -544,7 +532,6 @@ class MyAccessibilityService : AccessibilityService(),
                     WidgetsManager.onEvent(this, EVENT_RESUME_REMAPS)
 
                     if (AppPreferences.toggleKeyboardOnToggleKeymaps) {
-                        KeyboardUtils.saveLastUsedIncompatibleIme(this)
                         KeyboardUtils.chooseCompatibleInputMethod(this)
                     }
 

@@ -42,7 +42,6 @@
     <string name="key_pref_shown_screen_off_triggers_explanation" translatable="false">pref_screen_off_triggers_explanation</string>
     <string name="key_pref_hide_home_screen_alerts" translatable="false">pref_hide_home_screen_alerts</string>
     <string name="key_pref_showcase_action_list" translatable="false">pref_showcase_action_list</string>
-    <string name="key_pref_last_used_compatible_ime" translatable="false">pref_last_used_compatible_ime</string>
     <string name="key_pref_show_gui_keyboard_ad" translatable="false">pref_show_gui_keyboard_ad</string>
     <string name="key_pref_show_device_descriptors" translatable="false">pref_show_device_descriptors</string>
     <string name="key_pref_hold_down_duration" translatable="false">pref_hold_down_duration</string>

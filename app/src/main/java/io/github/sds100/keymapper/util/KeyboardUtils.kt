@@ -14,7 +14,6 @@ import androidx.annotation.RequiresPermission
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.WidgetsManager
-import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
 import io.github.sds100.keymapper.util.result.*
 import splitties.init.appCtx
@@ -37,6 +36,8 @@ object KeyboardUtils {
 
     const val KEY_MAPPER_GUI_IME_PACKAGE = "io.github.sds100.keymapper.inputmethod.latin"
     const val KEY_MAPPER_GUI_IME_MIN_API = Build.VERSION_CODES.KITKAT
+
+    private const val SETTINGS_SECURE_SUBTYPE_HISTORY_KEY = "input_methods_subtype_history"
 
     val KEY_MAPPER_IME_PACKAGE_LIST = arrayOf(
         Constants.PACKAGE_NAME,
@@ -63,11 +64,9 @@ object KeyboardUtils {
     fun chooseCompatibleInputMethod(ctx: Context) {
 
         if (ctx.haveWriteSecureSettingsPermission) {
-            AppPreferences.lastUsedCompatibleImePackage?.let {
-                getImeId(it).valueOrNull()?.let { imeId ->
-                    switchIme(ctx, imeId)
-                    return
-                }
+            getLastUsedCompatibleImeId(ctx).onSuccess {
+                switchIme(ctx, it)
+                return
             }
 
             getImeId(Constants.PACKAGE_NAME).valueOrNull()?.let {
@@ -80,15 +79,9 @@ object KeyboardUtils {
     }
 
     fun chooseLastUsedIncompatibleInputMethod(ctx: Context) {
-        if (isCompatibleImeChosen(ctx)) {
-            getChosenInputMethodPackageName(ctx).onSuccess {
-                AppPreferences.lastUsedCompatibleImePackage = it
-            }
+        getLastUsedIncompatibleImeId(ctx).onSuccess {
+            switchIme(ctx, it)
         }
-
-        val imeId = AppPreferences.lastUsedIncompatibleImeId ?: getFirstIncompatibleImeId(ctx)
-
-        imeId?.let { switchIme(ctx, it) }
     }
 
     fun toggleCompatibleIme(ctx: Context) {
@@ -97,19 +90,10 @@ object KeyboardUtils {
             return
         }
 
-        val imeId: String?
-
-        if (isCompatibleImeChosen(ctx)) {
-            getChosenInputMethodPackageName(ctx).onSuccess {
-                AppPreferences.lastUsedCompatibleImePackage = it
-            }
-
-            imeId = AppPreferences.lastUsedIncompatibleImeId ?: getFirstIncompatibleImeId(ctx)
-
+        val imeId = if (isCompatibleImeChosen(ctx)) {
+            getLastUsedIncompatibleImeId(ctx).valueOrNull()
         } else {
-            saveLastUsedIncompatibleIme(ctx)
-
-            imeId = getLastUsedCompatibleImeId().valueOrNull()
+            getLastUsedCompatibleImeId(ctx).valueOrNull()
         }
 
         imeId ?: return
@@ -176,12 +160,6 @@ object KeyboardUtils {
         return getImePackageName(chosenImeId)
     }
 
-    fun getLastUsedCompatibleImeId(): Result<String> {
-        val packageName = AppPreferences.lastUsedCompatibleImePackage ?: Constants.PACKAGE_NAME
-
-        return getImeId(packageName)
-    }
-
     fun getImePackageName(imeId: String): Result<String> {
         val packageName = inputMethodManager.inputMethodList.find { it.id == imeId }?.packageName
 
@@ -190,29 +168,6 @@ object KeyboardUtils {
         } else {
             Success(packageName)
         }
-    }
-
-    fun getFirstIncompatibleImeId(ctx: Context): String? {
-        var incompatibleImeId: String? = null
-
-        getInputMethodIds().onSuccess { imeList ->
-            for (imeId in imeList) {
-                var breakLoop = false
-
-                getImePackageName(imeId).onSuccess {
-                    if (!KEY_MAPPER_IME_PACKAGE_LIST.contains(it)) {
-                        incompatibleImeId = imeId
-                        breakLoop = true
-                    }
-                }
-
-                if (breakLoop) {
-                    break
-                }
-            }
-        }
-
-        return incompatibleImeId
     }
 
     fun isImeEnabled(imeId: String): Boolean = getInputMethodIds().handle(
@@ -289,7 +244,7 @@ object KeyboardUtils {
         }
     }
 
-    fun getChosenImeId(ctx: Context): String {
+    private fun getChosenImeId(ctx: Context): String {
         return Settings.Secure.getString(ctx.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD)
     }
 
@@ -300,19 +255,39 @@ object KeyboardUtils {
         return Success(inputMethod.id)
     }
 
-    fun saveLastUsedIncompatibleIme(ctx: Context) {
-        var chosenImeId = getChosenImeId(ctx)
+    private fun getSubtypeHistoryString(ctx: Context): String {
+        return Settings.Secure.getString(ctx.contentResolver, SETTINGS_SECURE_SUBTYPE_HISTORY_KEY)
+    }
 
-        getImePackageName(chosenImeId).onSuccess { chosenPackageName ->
+    /**
+     * Example:
+     * io.github.sds100.keymapper.inputmethod.latin/.LatinIME;-921088104
+     * :com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME;1891618174
+     */
+    private fun getInputMethodHistoryIds(ctx: Context): List<String> {
+        return getSubtypeHistoryString(ctx)
+            .split(':')
+            .map { it.split(';')[0] }
+    }
 
-            if (KEY_MAPPER_IME_PACKAGE_LIST.contains(chosenPackageName)) {
-                getFirstIncompatibleImeId(ctx)?.let {
-                    chosenImeId = it
-                }
+    private fun getLastUsedCompatibleImeId(ctx: Context): Result<String> {
+        for (id in getInputMethodHistoryIds(ctx)) {
+            if (id.split('/')[0] in KEY_MAPPER_IME_PACKAGE_LIST) {
+                return Success(id)
             }
-
-            AppPreferences.lastUsedIncompatibleImeId = chosenImeId
         }
+
+        return getImeId(Constants.PACKAGE_NAME)
+    }
+
+    private fun getLastUsedIncompatibleImeId(ctx: Context): Result<String> {
+        for (id in getInputMethodHistoryIds(ctx)) {
+            if (id.split('/')[0] != Constants.PACKAGE_NAME) {
+                return Success(id)
+            }
+        }
+
+        return NoIncompatibleKeyboardsInstalled()
     }
 }
 
