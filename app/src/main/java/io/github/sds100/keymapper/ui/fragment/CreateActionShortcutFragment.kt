@@ -66,13 +66,16 @@ class CreateActionShortcutFragment : Fragment() {
         }
 
         setFragmentResultListener(CHOOSE_ACTION_REQUEST_KEY) { _, result ->
-            val action = result.getSerializable(ChooseActionFragment.EXTRA_ACTION) as Action
-            mViewModel.actionListViewModel.addAction(action)
+            result.getParcelable<Action>(ChooseActionFragment.EXTRA_ACTION)?.let {
+                mViewModel.actionListViewModel.addAction(it)
+            }
         }
 
         setFragmentResultListener(KeymapActionOptionsFragment.REQUEST_KEY) { _, result ->
-            mViewModel.actionListViewModel.setOptions(
-                result.getSerializable(BaseOptionsDialogFragment.EXTRA_OPTIONS) as ActionShortcutOptions)
+            result.getParcelable<ActionShortcutOptions>(BaseOptionsDialogFragment.EXTRA_OPTIONS)
+                ?.let {
+                    mViewModel.actionListViewModel.setOptions(it)
+                }
         }
     }
 
@@ -80,6 +83,7 @@ class CreateActionShortcutFragment : Fragment() {
         FragmentCreateActionShortcutBinding.inflate(inflater).apply {
             lifecycleOwner = viewLifecycleOwner
             viewModel = mViewModel
+            _binding = this
 
             return this.root
         }

@@ -1,11 +1,9 @@
 package io.github.sds100.keymapper.util
 
 import android.content.res.ColorStateList
+import android.text.TextWatcher
 import android.view.View
-import android.widget.Button
-import android.widget.CompoundButton
-import android.widget.SeekBar
-import android.widget.TextView
+import android.widget.*
 import androidx.annotation.ColorInt
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.view.isVisible
@@ -86,6 +84,11 @@ fun StatusLayout.setStatusLayoutState(
     textView.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, null, null, null)
 }
 
+@BindingAdapter("app:onTextChanged")
+fun EditText.onTextChangedListener(textWatcher: TextWatcher) {
+    addTextChangedListener(textWatcher)
+}
+
 @BindingAdapter("app:markdown")
 fun TextView.markdown(markdown: State<String>) {
     when (markdown) {
@@ -135,6 +138,11 @@ fun TextInputLayout.errorWhenEmpty(enabled: Boolean) {
             null
         }
     }
+}
+
+@BindingAdapter("app:errorText")
+fun TextInputLayout.errorText(text: String?) {
+    error = text
 }
 
 @BindingAdapter("app:onLongClick")

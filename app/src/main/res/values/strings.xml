@@ -56,6 +56,7 @@
     <string name="shortcut_label_action">Perform Actions</string>
     <string name="hold_down_until_trigger_is_dot_dot_dot">Hold down until trigger is…</string>
     <string name="from_no_device">No Device</string>
+    <string name="intent_extras_recycler_view_placeholder">¯\\_(ツ)_/¯\n\nNo Extras!</string>
 
     <string name="whats_new">What\'s New</string>
     <string name="caption_action_type_key">Click the key on the device which you want to be entered.
@@ -85,6 +86,10 @@
     <string name="email_subject">Key Mapper query</string>
     <string name="email_default_message">Does the help page solve your problem? What is your device?\n\n Which OEM skin or ROM are you using?\n\n Please describe the issue you\'re having:</string>
 
+    <string name="action_title_intent_start_activity">Start activity: %s</string>
+    <string name="action_title_intent_start_service">Start service: %s</string>
+    <string name="action_title_intent_send_broadcast">Send broadcast: %s</string>
+
     <!--  Action descriptions  -->
     <string name="description_open_app">Open %s</string>
     <string name="description_key">Press \'%s\' key</string>
@@ -107,6 +112,7 @@
     <string name="header_fingerprint_gesture_left">Swipe Left</string>
     <string name="header_fingerprint_gesture_right">Swipe Right</string>
     <string name="header_click_type">Click Type</string>
+    <string name="header_intent_extras">Extras</string>
     <!--  Headers  -->
 
     <!--  Hints  -->
@@ -116,6 +122,15 @@
     <string name="hint_from_device">From Device</string>
     <string name="hint_shortcut_name">Shortcut Name</string>
     <string name="hint_tap_coordinate_title">Coordinate description (optional)</string>
+
+    <string name="hint_intent_action">Action</string>
+    <string name="hint_intent_categories">Categories</string>
+    <string name="hint_intent_data">Data</string>
+    <string name="hint_intent_package">Package</string>
+    <string name="hint_intent_class">Class</string>
+    <string name="hint_intent_extra_name">Name</string>
+    <string name="hint_intent_extra_value_with_type">Value (%s)</string>
+    <string name="hint_intent_description">Description for Key Mapper (required)</string>
     <!--  Hints  -->
 
     <!--  Radio buttons  -->
@@ -126,6 +141,12 @@
     <string name="radio_button_short_press">Short press</string>
     <string name="radio_button_long_press">Long press</string>
     <string name="radio_button_double_press">Double press</string>
+    <string name="radio_button_intent_extra_value_true">True</string>
+    <string name="radio_button_intent_extra_value_false">False</string>
+    <string name="radio_button_intent_target_activity">Activity</string>
+    <string name="radio_button_intent_target_service">Service</string>
+    <string name="radio_button_intent_target_broadcast_receiver">Broadcast Receiver</string>
+
     <!--  Radio buttons  -->
 
     <!--  Tabs  -->
@@ -277,6 +298,7 @@
     <string name="button_choose_keycode">Choose Key Code</string>
     <string name="button_yes">Yes!</string>
     <string name="button_choose_action">Choose Action</string>
+    <string name="button_add_intent_extra">Add Extra</string>
     <!-- Button titles -->
 
     <!-- Dialog titles -->
@@ -477,6 +499,7 @@
     <string name="action_type_title_text_block">Text</string>
     <string name="action_type_url">URL</string>
     <string name="action_type_tap_coordinate">Tap Screen</string>
+    <string name="action_type_intent">Intent</string>
     <!--Action Types Titles-->
 
     <!-- Action Type tab title order-->
@@ -488,6 +511,7 @@
         <item>@string/action_type_title_keyevent</item>
         <item>@string/action_type_title_text_block</item>
         <item>@string/action_type_url</item>
+        <item>@string/action_type_intent</item>
         <item>@string/action_type_title_system_action</item>
         <item>@string/tab_unsupported_actions</item>
     </string-array>
@@ -741,6 +765,7 @@
     <string name="error_battery_optimisation_disabled">Battery optimisation is turned off!</string>
     <string name="error_cant_find_notification_listener_settings">Can\'t find the notification access settings!</string>
     <string name="error_denied_notification_listener_service_permission">Denied notification access permission!</string>
+    <string name="error_invalid_intent_extra_value">Invalid!</string>
 
     <!-- Error messages -->
 
@@ -887,5 +912,47 @@
     <string name="system_action_cat_keyboard">Keyboard</string>
     <string name="system_action_cat_airplane_mode">Airplane Mode</string>
     <!-- System action category labels -->
+
+    <!--  Intent action type strings  -->
+    <string name="intent_type_bool_header">Boolean</string>
+    <string name="intent_type_bool_array_header">Boolean Array</string>
+    <string name="intent_type_int_header">Integer</string>
+    <string name="intent_type_int_array_header">Integer Array</string>
+    <string name="intent_type_string_header">String</string>
+    <string name="intent_type_string_array_header">String Array</string>
+    <string name="intent_type_long_header">Long</string>
+    <string name="intent_type_long_array_header">Long Array</string>
+    <string name="intent_type_byte_header">Byte</string>
+    <string name="intent_type_byte_array_header">Byte Array</string>
+    <string name="intent_type_double_header">Double</string>
+    <string name="intent_type_double_array_header">Double Array</string>
+    <string name="intent_type_char_header">Char</string>
+    <string name="intent_type_char_array_header">Char Array</string>
+    <string name="intent_type_float_header">Float</string>
+    <string name="intent_type_float_array_header">Float Array</string>
+    <string name="intent_type_short_header">Short</string>
+    <string name="intent_type_short_array_header">Short Array</string>
+
+    <string name="intent_type_bool_example">Can only be \"true\" or \"false\"</string>
+    <string name="intent_type_bool_array_example">A comma-separated list of "true" and "false". E.g true,false,true</string>
+    <string name="intent_type_int_example">A valid Integer in the Java programming language.</string>
+    <string name="intent_type_int_array_example">A comma-separated list of valid Integers in the Java programming language. E.g 100,399</string>
+    <string name="intent_categories_example">A comma separated list. E.g category1,category2</string>
+    <string name="intent_type_string_example">Any text.</string>
+    <string name="intent_type_string_array_example">A comma separated list of strings. E.g string1,string2</string>
+    <string name="intent_type_long_example">A valid Long in the Java programming language.</string>
+    <string name="intent_type_long_array_example">A comma-separated list of valid Longs in the Java programming language. E.g 102302234234234,399083423234429</string>
+    <string name="intent_type_byte_example">A valid Byte in the Java programming language.</string>
+    <string name="intent_type_byte_array_example">A comma-separated list of valid Bytes in the Java programming language. E.g 123,3</string>
+    <string name="intent_type_double_example">A valid Double in the Java programming language.</string>
+    <string name="intent_type_double_array_example">A comma-separated list of valid Doubles in the Java programming language. E.g 1.0,3.234</string>
+    <string name="intent_type_char_example">A valid Char in the Java programming language. E.g \'a\' or \'b\'</string>
+    <string name="intent_type_char_array_example">A comma-separated list of valid Chars in the Java programming language. E.g a,b,c</string>
+    <string name="intent_type_float_example">A valid Float in the Java programming language. E.g 3.145</string>
+    <string name="intent_type_float_array_example">A comma-separated list of valid Floats in the Java programming language. E.g 1241.123</string>
+    <string name="intent_type_short_example">A valid Short in the Java programming language. E.g 2342</string>
+    <string name="intent_type_short_array_example">A comma-separated list of valid Shorts in the Java programming language. E.g 3242,12354</string>
+
+    <!--  Intent action type strings  -->
 
 </resources>

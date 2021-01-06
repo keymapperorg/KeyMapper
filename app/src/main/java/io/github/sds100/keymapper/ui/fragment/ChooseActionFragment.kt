@@ -22,6 +22,7 @@ import io.github.sds100.keymapper.data.viewmodel.KeyEventActionTypeViewModel
 import io.github.sds100.keymapper.databinding.FragmentChooseActionBinding
 import io.github.sds100.keymapper.ui.adapter.ChooseActionPagerAdapter
 import io.github.sds100.keymapper.util.InjectorUtils
+import io.github.sds100.keymapper.util.IntentTarget
 import io.github.sds100.keymapper.util.setCurrentDestinationLiveData
 import io.github.sds100.keymapper.util.strArray
 
@@ -105,6 +106,16 @@ class ChooseActionFragment : Fragment() {
             val description = it.getString(TapCoordinateActionTypeFragment.EXTRA_DESCRIPTION)
 
             Action.tapCoordinateAction(x, y, description)
+        }
+
+        setResultListener(IntentActionTypeFragment.REQUEST_KEY) { bundle ->
+            val description = bundle.getString(IntentActionTypeFragment.EXTRA_DESCRIPTION)!!
+            val target = bundle.getString(IntentActionTypeFragment.EXTRA_TARGET)!!.let {
+                IntentTarget.valueOf(it)
+            }
+            val uri = bundle.getString(IntentActionTypeFragment.EXTRA_URI)!!
+
+            Action.intentAction(description, target, uri)
         }
 
         setFragmentResultListener(KeycodeListFragment.REQUEST_KEY) { _, result ->

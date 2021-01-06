@@ -44,6 +44,9 @@ class ChooseActionPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragme
             UrlActionTypeFragment()
         },
         {
+            IntentActionTypeFragment()
+        },
+        {
             SystemActionListFragment().apply {
                 isAppBarVisible = false
                 isInPagerAdapter = true

@@ -7,6 +7,7 @@ import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.ActionUtils
+import io.github.sds100.keymapper.util.IntentTarget
 import io.github.sds100.keymapper.util.SystemAction
 import io.github.sds100.keymapper.util.result.onSuccess
 import kotlinx.android.parcel.Parcelize
@@ -42,7 +43,8 @@ data class Action(
      * - Key Event: the keycode. Any extra information is stored in [extras]
      * - Block of text: text to insert
      * - System action: the system action id
-     * - Tap coordinate: comma separated x and y valuesk
+     * - Tap coordinate: comma separated x and y values
+     * - Intent: the Intent parsed as a URI
      */
     @SerializedName(NAME_DATA)
     val data: String,
@@ -91,6 +93,8 @@ data class Action(
         const val EXTRA_DND_MODE = "extra_do_not_disturb_mode"
         const val EXTRA_ORIENTATIONS = "extra_orientations"
         const val EXTRA_COORDINATE_DESCRIPTION = "extra_coordinate_description"
+        const val EXTRA_INTENT_TARGET = "extra_intent_target"
+        const val EXTRA_INTENT_DESCRIPTION = "extra_intent_description"
 
         /**
          * The KeyEvent meta state is stored as bit flags.
@@ -191,6 +195,23 @@ data class Action(
                 ActionType.TAP_COORDINATE,
                 "$x,$y",
                 extras = extras
+            )
+        }
+
+        fun intentAction(
+            description: String,
+            target: IntentTarget,
+            uri: String
+        ): Action {
+            val actionExtras = listOf(
+                Extra(EXTRA_INTENT_DESCRIPTION, description),
+                Extra(EXTRA_INTENT_TARGET, target.toString())
+            )
+
+            return Action(
+                type = ActionType.INTENT,
+                data = uri,
+                extras = actionExtras
             )
         }
 

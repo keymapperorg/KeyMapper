@@ -33,6 +33,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
+import splitties.toast.longToast
 import splitties.toast.toast
 import timber.log.Timber
 
@@ -154,25 +155,43 @@ class ActionPerformerDelegate(context: Context,
                     }
                 }
 
-                else -> {
-                    if (action.type == ActionType.KEY_EVENT) {
-                        val deviceId = action.extras.getData(Action.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR).handle(
-                            onSuccess = {
-                                InputDeviceUtils.getDeviceIdFromDescriptor(it)
-                            },
-                            onFailure = { 0 }
-                        )
+                ActionType.KEY_EVENT -> {
+                    val deviceId = action.extras.getData(Action.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR).handle(
+                        onSuccess = {
+                            InputDeviceUtils.getDeviceIdFromDescriptor(it)
+                        },
+                        onFailure = { 0 }
+                    )
 
-                        chosenImePackageName?.let {
-                            KeyboardUtils.inputKeyEventFromImeService(
-                                it,
-                                keyCode = action.data.toInt(),
-                                metaState = additionalMetaState.withFlag(
-                                    action.extras.getData(Action.EXTRA_KEY_EVENT_META_STATE).valueOrNull()?.toInt() ?: 0
-                                ),
-                                keyEventAction = keyEventAction,
-                                deviceId = deviceId ?: 0)
+                    chosenImePackageName?.let {
+                        KeyboardUtils.inputKeyEventFromImeService(
+                            it,
+                            keyCode = action.data.toInt(),
+                            metaState = additionalMetaState.withFlag(
+                                action.extras.getData(Action.EXTRA_KEY_EVENT_META_STATE).valueOrNull()?.toInt()
+                                    ?: 0
+                            ),
+                            keyEventAction = keyEventAction,
+                            deviceId = deviceId ?: 0)
+                    }
+                }
+
+                ActionType.INTENT -> {
+                    val intent = Intent.parseUri(action.data, 0)
+
+                    try {
+                        action.extras.getData(Action.EXTRA_INTENT_TARGET).onSuccess {
+                            when (IntentTarget.valueOf(it)) {
+                                IntentTarget.ACTIVITY -> {
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    startActivity(intent)
+                                }
+                                IntentTarget.BROADCAST_RECEIVER -> sendBroadcast(intent)
+                                IntentTarget.SERVICE -> startService(intent)
+                            }
                         }
+                    } catch (e: Exception) {
+                        longToast(e.message!!)
                     }
                 }
             }
@@ -423,7 +442,8 @@ class ActionPerformerDelegate(context: Context,
                                         val cursorPosition = it.textSelectionStart
 
                                         val wordBoundary =
-                                            it.text.toString().getWordBoundaries(cursorPosition) ?: return@focusedNode
+                                            it.text.toString().getWordBoundaries(cursorPosition)
+                                                ?: return@focusedNode
 
                                         val bundle = bundleOf(
                                             AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT
