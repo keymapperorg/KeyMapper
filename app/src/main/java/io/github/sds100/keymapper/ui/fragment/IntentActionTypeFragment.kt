@@ -2,13 +2,14 @@ package io.github.sds100.keymapper.ui.fragment
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
 import android.text.InputType
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
-import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
@@ -19,7 +20,6 @@ import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.viewmodel.IntentActionTypeViewModel
 import io.github.sds100.keymapper.databinding.FragmentIntentActionTypeBinding
 import io.github.sds100.keymapper.databinding.ListItemIntentExtraBoolBinding
-import io.github.sds100.keymapper.databinding.ListItemIntentExtraGenericBinding
 import io.github.sds100.keymapper.intentExtraBool
 import io.github.sds100.keymapper.intentExtraGeneric
 import io.github.sds100.keymapper.util.BuildIntentExtraListItemModels
@@ -44,8 +44,23 @@ class IntentActionTypeFragment : Fragment() {
 
         private val EXTRA_TYPES = arrayOf(
             BoolExtraType(),
+            BoolArrayExtraType(),
+            IntExtraType(),
             IntArrayExtraType(),
-            StringExtraType()
+            StringExtraType(),
+            StringArrayExtraType(),
+            LongExtraType(),
+            LongArrayExtraType(),
+            ByteExtraType(),
+            ByteArrayExtraType(),
+            DoubleExtraType(),
+            DoubleArrayExtraType(),
+            CharExtraType(),
+            CharArrayExtraType(),
+            FloatExtraType(),
+            FloatArrayExtraType(),
+            ShortExtraType(),
+            ShortArrayExtraType()
         )
     }
 
@@ -108,16 +123,7 @@ class IntentActionTypeFragment : Fragment() {
                         if (model.name.isEmpty()) return@forEach
                         if (model.parsedValue == null) return@forEach
 
-                        when (model.type) {
-                            is BoolExtraType ->
-                                putExtra(model.name, model.parsedValue as Boolean)
-
-                            is IntArrayExtraType ->
-                                putExtra(model.name, model.parsedValue as IntArray)
-
-                            is StringExtraType ->
-                                putExtra(model.name, model.parsedValue as String)
-                        }
+                        model.type.putInIntent(this, model.name, model.value)
                     }
                 }
 
@@ -210,17 +216,31 @@ class IntentActionTypeFragment : Fragment() {
                     }
                 }
 
-                onBind { model, view, _ ->
-                    (view.dataBinding as ListItemIntentExtraGenericBinding).apply {
-                        textInputLayoutExtraValue.editText?.doAfterTextChanged {
-                            mViewModel.setExtraValue(model.model().uid, it.toString())
-                        }
+                valueTextWatcher(object : TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
-                        textInputLayoutExtraName.editText?.doAfterTextChanged {
-                            mViewModel.setExtraName(model.model().uid, it.toString())
-                        }
                     }
-                }
+
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    }
+
+                    override fun afterTextChanged(s: Editable?) {
+                        mViewModel.setExtraValue(model.uid, s.toString())
+                    }
+                })
+
+                nameTextWatcher(object : TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+                    }
+
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    }
+
+                    override fun afterTextChanged(s: Editable?) {
+                        mViewModel.setExtraName(model.uid, s.toString())
+                    }
+                })
             }
 
             is BoolIntentExtraListItemModel -> intentExtraBool {
@@ -258,7 +278,48 @@ class IntentActionTypeFragment : Fragment() {
 
             else -> {
                 val inputType = when (type) {
-                    is IntArrayExtraType -> InputType.TYPE_CLASS_NUMBER or InputType.TYPE_CLASS_TEXT
+                    is IntExtraType ->
+                        InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED
+
+                    is IntArrayExtraType -> InputType.TYPE_CLASS_NUMBER or
+                        InputType.TYPE_NUMBER_FLAG_SIGNED or InputType.TYPE_CLASS_TEXT
+
+                    is LongExtraType ->
+                        InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED
+
+                    is LongArrayExtraType -> InputType.TYPE_CLASS_NUMBER or
+                        InputType.TYPE_NUMBER_FLAG_SIGNED or InputType.TYPE_CLASS_TEXT
+
+                    is ByteExtraType ->
+                        InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED
+
+                    is ByteArrayExtraType -> InputType.TYPE_CLASS_NUMBER or
+                        InputType.TYPE_NUMBER_FLAG_SIGNED or InputType.TYPE_CLASS_TEXT
+
+                    is DoubleExtraType ->
+                        InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED or
+                            InputType.TYPE_NUMBER_FLAG_DECIMAL
+
+                    is DoubleArrayExtraType -> InputType.TYPE_CLASS_NUMBER or
+                        InputType.TYPE_NUMBER_FLAG_DECIMAL or
+                        InputType.TYPE_NUMBER_FLAG_SIGNED or
+                        InputType.TYPE_CLASS_TEXT
+
+                    is FloatExtraType ->
+                        InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED or
+                            InputType.TYPE_NUMBER_FLAG_DECIMAL
+
+                    is FloatArrayExtraType -> InputType.TYPE_CLASS_NUMBER or
+                        InputType.TYPE_NUMBER_FLAG_DECIMAL or
+                        InputType.TYPE_NUMBER_FLAG_SIGNED or
+                        InputType.TYPE_CLASS_TEXT
+
+                    is ShortExtraType ->
+                        InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED
+
+                    is ShortArrayExtraType -> InputType.TYPE_CLASS_NUMBER or
+                        InputType.TYPE_NUMBER_FLAG_SIGNED or InputType.TYPE_CLASS_TEXT
+
                     else -> InputType.TYPE_CLASS_TEXT
                 }
 

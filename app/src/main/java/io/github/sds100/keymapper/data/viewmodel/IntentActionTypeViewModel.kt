@@ -73,7 +73,7 @@ class IntentActionTypeViewModel : ViewModel() {
 
     fun setExtraName(uid: String, name: String) {
         _extras.value = _extras.value?.map {
-            if (it.uid == uid) {
+            if (it.uid == uid && it.name != name) {
                 return@map it.copy(name = name)
             }
 
@@ -83,7 +83,7 @@ class IntentActionTypeViewModel : ViewModel() {
 
     fun setExtraValue(uid: String, value: String) {
         _extras.value = _extras.value?.map {
-            if (it.uid == uid) {
+            if (it.uid == uid && it.value != value) {
                 return@map it.copy(value = value)
             }
 

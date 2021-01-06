@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.util
 
 import android.content.res.ColorStateList
+import android.text.TextWatcher
 import android.view.View
 import android.widget.*
 import androidx.annotation.ColorInt
@@ -81,6 +82,11 @@ fun StatusLayout.setStatusLayoutState(
 
     TextViewCompat.setCompoundDrawableTintList(textView, ColorStateList.valueOf(tint))
     textView.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, null, null, null)
+}
+
+@BindingAdapter("app:onTextChanged")
+fun EditText.onTextChangedListener(textWatcher: TextWatcher) {
+    addTextChangedListener(textWatcher)
 }
 
 @BindingAdapter("app:markdown")

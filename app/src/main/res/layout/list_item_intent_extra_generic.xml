@@ -11,6 +11,14 @@
             type="io.github.sds100.keymapper.data.model.GenericIntentExtraListItemModel" />
 
         <variable
+            name="valueTextWatcher"
+            type="android.text.TextWatcher" />
+
+        <variable
+            name="nameTextWatcher"
+            type="android.text.TextWatcher" />
+
+        <variable
             name="onRemoveClick"
             type="View.OnClickListener" />
 
@@ -54,7 +62,8 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@{model.name}" />
+                    android:text="@{model.name}"
+                    app:onTextChanged="@{nameTextWatcher}" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -73,7 +82,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="@{model.inputType}"
-                    android:text="@{model.value}" />
+                    android:text="@{model.value}"
+                    app:onTextChanged="@{valueTextWatcher}" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <androidx.appcompat.widget.AppCompatImageButton
