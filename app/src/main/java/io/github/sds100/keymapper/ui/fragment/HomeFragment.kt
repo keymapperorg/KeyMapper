@@ -375,7 +375,8 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                     DialogChooseAppStoreBinding.inflate(layoutInflater).apply {
                         model = ChooseAppStoreModel(
                             playStoreLink = str(R.string.url_play_store_keymapper_gui_keyboard),
-                            githubLink = str(R.string.url_github_keymapper_gui_keyboard)
+                            githubLink = str(R.string.url_github_keymapper_gui_keyboard),
+                            fdroidLink = str(R.string.url_fdroid_keymapper_gui_keyboard)
                         )
 
                         setView(this.root)
