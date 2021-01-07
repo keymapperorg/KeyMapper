@@ -758,8 +758,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
                             var shouldPerformActionNormally = true
 
-                            if (action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)
-                                && action.flags.hasFlag(Action.ACTION_FLAG_REPEAT)
+                            if (action.holdDown && action.repeat
                                 && stopRepeatingWhenPressedAgain(actionKey)) {
 
                                 shouldPerformActionNormally = false
@@ -790,12 +789,14 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                                         multiplier = actionMultiplier(actionKey))
 
                                     shouldPerformActionNormally = false
-                                } else {
-                                    mActionsBeingHeldDown.add(actionKey)
                                 }
                             }
 
                             if (shouldPerformActionNormally) {
+                                if (action.holdDown) {
+                                    mActionsBeingHeldDown.add(actionKey)
+                                }
+
                                 val keyEventAction =
                                     if (action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)) {
                                         KeyEventAction.DOWN
@@ -1111,8 +1112,12 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                     actionKeys.forEach { actionKey ->
                         val action = mActionMap[actionKey] ?: return@forEach
 
+                        if (!mActionsBeingHeldDown.contains(actionKey)) return@forEach
+
                         if (action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)
                             && !holdDownUntilPressedAgain(actionKey)) {
+
+                            mActionsBeingHeldDown.remove(actionKey)
 
                             performAction(
                                 action,
@@ -1424,7 +1429,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             actionKeys.forEach { actionKey ->
                 val action = mActionMap[actionKey] ?: return@forEach
 
-                var shouldPerformAction = true
+                var performActionNormally = true
 
                 if (holdDownUntilPressedAgain(actionKey)) {
                     if (mActionsBeingHeldDown.contains(actionKey)) {
@@ -1436,13 +1441,18 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                             keyEventAction = KeyEventAction.UP,
                             multiplier = actionMultiplier(actionKey))
 
-                        shouldPerformAction = false
+                        performActionNormally = false
                     } else {
                         mActionsBeingHeldDown.add(actionKey)
                     }
                 }
 
-                if (shouldPerformAction) {
+                if (performActionNormally) {
+
+                    if (action.holdDown) {
+                        mActionsBeingHeldDown.add(actionKey)
+                    }
+
                     val keyEventAction =
                         if (action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)) {
                             KeyEventAction.DOWN
