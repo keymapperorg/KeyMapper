@@ -64,6 +64,7 @@ import io.github.sds100.keymapper.util.SystemAction.OPEN_RECENTS
 import io.github.sds100.keymapper.util.SystemAction.OPEN_SETTINGS
 import io.github.sds100.keymapper.util.SystemAction.OPEN_VOICE_ASSISTANT
 import io.github.sds100.keymapper.util.SystemAction.PAUSE_MEDIA
+import io.github.sds100.keymapper.util.SystemAction.PLAY_MEDIA
 import io.github.sds100.keymapper.util.SystemAction.PLAY_PAUSE_MEDIA
 import io.github.sds100.keymapper.util.SystemAction.PORTRAIT_MODE
 import io.github.sds100.keymapper.util.SystemAction.POWER_ON_OFF_DEVICE
@@ -829,7 +830,8 @@ object SystemActionUtils {
     }
 
     fun getSystemActionDef(id: String): Result<SystemActionDef> {
-        val systemActionDef = SYSTEM_ACTION_DEFINITIONS.find { it.id == id } ?: return SystemActionNotFound(id)
+        val systemActionDef = SYSTEM_ACTION_DEFINITIONS.find { it.id == id }
+            ?: return SystemActionNotFound(id)
 
         return Success(systemActionDef)
     }
