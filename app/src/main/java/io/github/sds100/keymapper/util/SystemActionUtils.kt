@@ -300,7 +300,7 @@ object SystemActionUtils {
 
         ),
         SystemActionDef(
-            id = PLAY_PAUSE_MEDIA,
+            id = PLAY_MEDIA,
             category = CATEGORY_MEDIA,
             iconRes = R.drawable.ic_outline_play_arrow_24,
             descriptionRes = R.string.action_play_media,
