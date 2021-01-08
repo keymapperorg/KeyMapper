@@ -29,6 +29,7 @@ What can I remap my keys to do?
  * Open an app
  * Open an app shortcut.
  * Open a URL
+ * Create Intents
  * Go back
  * Go home
  * Open recents
