@@ -20,6 +20,7 @@ interface KeyMapDao {
         const val KEY_CONSTRAINT_LIST = "constraint_list"
         const val KEY_CONSTRAINT_MODE = "constraint_mode"
         const val KEY_FOLDER_NAME = "folder_name"
+        const val KEY_UID = "uid"
     }
 
     @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_ID = (:id)")
