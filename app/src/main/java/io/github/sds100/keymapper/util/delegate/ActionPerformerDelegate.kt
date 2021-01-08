@@ -291,14 +291,6 @@ class ActionPerformerDelegate(context: Context,
                 SystemAction.DISABLE_NFC -> NfcUtils.disable()
                 SystemAction.TOGGLE_NFC -> NfcUtils.toggle(this)
 
-                SystemAction.PAUSE_MEDIA -> MediaUtils.pauseMediaPlayback(this)
-                SystemAction.PLAY_MEDIA -> MediaUtils.playMedia(this)
-                SystemAction.PLAY_PAUSE_MEDIA -> MediaUtils.playPauseMediaPlayback(this)
-                SystemAction.NEXT_TRACK -> MediaUtils.nextTrack(this)
-                SystemAction.PREVIOUS_TRACK -> MediaUtils.previousTrack(this)
-                SystemAction.FAST_FORWARD -> MediaUtils.fastForward(this)
-                SystemAction.REWIND -> MediaUtils.rewind(this)
-
                 SystemAction.GO_BACK -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
                 SystemAction.GO_HOME -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
                 SystemAction.OPEN_RECENTS -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
@@ -438,6 +430,18 @@ class ActionPerformerDelegate(context: Context,
                                     }
                                 }
                             }
+                        }
+                    }
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        when (id) {
+                            SystemAction.PAUSE_MEDIA -> MediaUtils.pauseMediaPlayback(this)
+                            SystemAction.PLAY_MEDIA -> MediaUtils.playMedia(this)
+                            SystemAction.PLAY_PAUSE_MEDIA -> MediaUtils.playPauseMediaPlayback(this)
+                            SystemAction.NEXT_TRACK -> MediaUtils.nextTrack(this)
+                            SystemAction.PREVIOUS_TRACK -> MediaUtils.previousTrack(this)
+                            SystemAction.FAST_FORWARD -> MediaUtils.fastForward(this)
+                            SystemAction.REWIND -> MediaUtils.rewind(this)
                         }
                     }
 

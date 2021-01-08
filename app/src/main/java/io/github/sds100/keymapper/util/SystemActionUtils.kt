@@ -288,45 +288,53 @@ object SystemActionUtils {
             id = PLAY_PAUSE_MEDIA,
             category = CATEGORY_MEDIA,
             iconRes = R.drawable.ic_play_pause_24dp,
-            descriptionRes = R.string.action_play_pause_media
+            descriptionRes = R.string.action_play_pause_media,
+            minApi = Build.VERSION_CODES.KITKAT
         ),
         SystemActionDef(
             id = PAUSE_MEDIA,
             category = CATEGORY_MEDIA,
             iconRes = R.drawable.ic_outline_pause_24,
-            descriptionRes = R.string.action_pause_media
+            descriptionRes = R.string.action_pause_media,
+            minApi = Build.VERSION_CODES.KITKAT
+
         ),
         SystemActionDef(
             id = PLAY_PAUSE_MEDIA,
             category = CATEGORY_MEDIA,
             iconRes = R.drawable.ic_outline_play_arrow_24,
-            descriptionRes = R.string.action_play_media
+            descriptionRes = R.string.action_play_media,
+            minApi = Build.VERSION_CODES.KITKAT
         ),
         SystemActionDef(
             id = NEXT_TRACK,
             category = CATEGORY_MEDIA,
             iconRes = R.drawable.ic_outline_skip_next_24,
-            descriptionRes = R.string.action_next_track
+            descriptionRes = R.string.action_next_track,
+            minApi = Build.VERSION_CODES.KITKAT
         ),
         SystemActionDef(
             id = PREVIOUS_TRACK,
             category = CATEGORY_MEDIA,
             iconRes = R.drawable.ic_outline_skip_previous_24,
-            descriptionRes = R.string.action_previous_track
+            descriptionRes = R.string.action_previous_track,
+            minApi = Build.VERSION_CODES.KITKAT
         ),
         SystemActionDef(
             id = FAST_FORWARD,
             category = CATEGORY_MEDIA,
             iconRes = R.drawable.ic_outline_fast_forward_24,
             descriptionRes = R.string.action_fast_forward,
-            messageOnSelection = R.string.action_fast_forward_message
+            messageOnSelection = R.string.action_fast_forward_message,
+            minApi = Build.VERSION_CODES.KITKAT
         ),
         SystemActionDef(
             id = REWIND,
             category = CATEGORY_MEDIA,
             iconRes = R.drawable.ic_outline_fast_rewind_24,
             descriptionRes = R.string.action_rewind,
-            messageOnSelection = R.string.action_rewind_message
+            messageOnSelection = R.string.action_rewind_message,
+            minApi = Build.VERSION_CODES.KITKAT
         ),
         //MEDIA
 
