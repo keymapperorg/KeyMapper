@@ -69,7 +69,9 @@ object SystemAction {
 
     //status bar
     const val EXPAND_NOTIFICATION_DRAWER = "expand_notification_drawer"
+    const val TOGGLE_NOTIFICATION_DRAWER = "toggle_notification_drawer"
     const val EXPAND_QUICK_SETTINGS = "expand_quick_settings"
+    const val TOGGLE_QUICK_SETTINGS_DRAWER = "toggle_quick_settings_drawer"
     const val COLLAPSE_STATUS_BAR = "collapse_status_bar"
 
     //media

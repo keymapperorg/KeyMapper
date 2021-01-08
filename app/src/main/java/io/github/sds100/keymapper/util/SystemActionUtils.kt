@@ -89,6 +89,8 @@ import io.github.sds100.keymapper.util.SystemAction.TOGGLE_BLUETOOTH
 import io.github.sds100.keymapper.util.SystemAction.TOGGLE_KEYBOARD
 import io.github.sds100.keymapper.util.SystemAction.TOGGLE_MOBILE_DATA
 import io.github.sds100.keymapper.util.SystemAction.TOGGLE_NFC
+import io.github.sds100.keymapper.util.SystemAction.TOGGLE_NOTIFICATION_DRAWER
+import io.github.sds100.keymapper.util.SystemAction.TOGGLE_QUICK_SETTINGS_DRAWER
 import io.github.sds100.keymapper.util.SystemAction.TOGGLE_SPLIT_SCREEN
 import io.github.sds100.keymapper.util.SystemAction.TOGGLE_WIFI
 import io.github.sds100.keymapper.util.SystemAction.TOGGLE_WIFI_ROOT
@@ -174,9 +176,19 @@ object SystemActionUtils {
             descriptionRes = R.string.action_expand_notification_drawer
         ),
         SystemActionDef(
+            id = TOGGLE_NOTIFICATION_DRAWER,
+            category = CATEGORY_STATUS_BAR,
+            descriptionRes = R.string.action_toggle_notification_drawer
+        ),
+        SystemActionDef(
             id = EXPAND_QUICK_SETTINGS,
             category = CATEGORY_STATUS_BAR,
             descriptionRes = R.string.action_expand_quick_settings
+        ),
+        SystemActionDef(
+            id = TOGGLE_QUICK_SETTINGS_DRAWER,
+            category = CATEGORY_STATUS_BAR,
+            descriptionRes = R.string.action_toggle_quick_settings
         ),
         SystemActionDef(
             id = COLLAPSE_STATUS_BAR,
@@ -821,7 +833,8 @@ object SystemActionUtils {
     }
 
     fun getSystemActionDef(id: String): Result<SystemActionDef> {
-        val systemActionDef = SYSTEM_ACTION_DEFINITIONS.find { it.id == id } ?: return SystemActionNotFound(id)
+        val systemActionDef = SYSTEM_ACTION_DEFINITIONS.find { it.id == id }
+            ?: return SystemActionNotFound(id)
 
         return Success(systemActionDef)
     }

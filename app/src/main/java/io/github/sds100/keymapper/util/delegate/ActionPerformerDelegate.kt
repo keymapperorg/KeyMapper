@@ -64,10 +64,17 @@ class ActionPerformerDelegate(context: Context,
         lifecycle.addObserver(mSuProcessDelegate)
     }
 
-    fun performAction(action: Action, chosenImePackageName: String?
-    ) = performAction(PerformAction(action), chosenImePackageName)
+    fun performAction(
+        action: Action,
+        chosenImePackageName: String?,
+        currentPackageName: String?
+    ) = performAction(PerformAction(action), chosenImePackageName, currentPackageName)
 
-    fun performAction(performActionModel: PerformAction, chosenImePackageName: String?) {
+    fun performAction(
+        performActionModel: PerformAction,
+        chosenImePackageName: String?,
+        currentPackageName: String?
+    ) {
         val (action, showToast, additionalMetaState, keyEventAction) = performActionModel
 
         mCtx.apply {
@@ -119,7 +126,11 @@ class ActionPerformerDelegate(context: Context,
                     }
                 }
 
-                ActionType.SYSTEM_ACTION -> performSystemAction(action, chosenImePackageName)
+                ActionType.SYSTEM_ACTION -> performSystemAction(
+                    action,
+                    chosenImePackageName,
+                    currentPackageName
+                )
 
                 ActionType.TAP_COORDINATE -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -198,9 +209,19 @@ class ActionPerformerDelegate(context: Context,
         }
     }
 
-    fun performSystemAction(id: String, chosenImePackageName: String?) = performSystemAction(Action(ActionType.SYSTEM_ACTION, id), chosenImePackageName)
+    fun performSystemAction(
+        id: String,
+        chosenImePackageName: String?,
+        currentPackageName: String?
+    ) = performSystemAction(
+        Action(ActionType.SYSTEM_ACTION, id),
+        chosenImePackageName,
+        currentPackageName
+    )
 
-    private fun performSystemAction(action: Action, chosenImePackageName: String?) {
+    private fun performSystemAction(action: Action,
+                                    chosenImePackageName: String?,
+                                    currentPackageName: String?) {
 
         val id = action.data
 
@@ -303,7 +324,11 @@ class ActionPerformerDelegate(context: Context,
                 }
 
                 SystemAction.EXPAND_NOTIFICATION_DRAWER -> StatusBarUtils.expandNotificationDrawer()
+                SystemAction.TOGGLE_NOTIFICATION_DRAWER ->
+                    currentPackageName?.let { StatusBarUtils.toggleNotificationDrawer(it) }
                 SystemAction.EXPAND_QUICK_SETTINGS -> StatusBarUtils.expandQuickSettings()
+                SystemAction.TOGGLE_QUICK_SETTINGS_DRAWER ->
+                    currentPackageName?.let { StatusBarUtils.toggleQuickSettingsDrawer(it) }
                 SystemAction.COLLAPSE_STATUS_BAR -> StatusBarUtils.collapseStatusBar()
 
                 SystemAction.ENABLE_NFC -> NfcUtils.enable()

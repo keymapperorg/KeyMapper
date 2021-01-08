@@ -132,7 +132,11 @@ class MyAccessibilityService : AccessibilityService(),
 
                 ACTION_TEST_ACTION -> {
                     intent.getParcelableExtra<Action>(EXTRA_ACTION)?.let {
-                        mActionPerformerDelegate.performAction(it, mChosenImePackageName)
+                        mActionPerformerDelegate.performAction(
+                            it,
+                            mChosenImePackageName,
+                            currentPackageName
+                        )
                     }
                 }
 
@@ -153,7 +157,11 @@ class MyAccessibilityService : AccessibilityService(),
                     val actionList = gson.fromJson<List<Action>>(actionListJson)
 
                     actionList.forEach {
-                        mActionPerformerDelegate.performAction(it, mChosenImePackageName)
+                        mActionPerformerDelegate.performAction(
+                            it,
+                            mChosenImePackageName,
+                            currentPackageName
+                        )
                     }
                 }
 
@@ -321,7 +329,11 @@ class MyAccessibilityService : AccessibilityService(),
                 KeyEvent.KEYCODE_HOME -> performGlobalAction(GLOBAL_ACTION_HOME)
                 KeyEvent.KEYCODE_APP_SWITCH -> performGlobalAction(GLOBAL_ACTION_RECENTS)
                 KeyEvent.KEYCODE_MENU ->
-                    mActionPerformerDelegate.performSystemAction(SystemAction.OPEN_MENU, mChosenImePackageName)
+                    mActionPerformerDelegate.performSystemAction(
+                        SystemAction.OPEN_MENU,
+                        mChosenImePackageName,
+                        currentPackageName
+                    )
 
                 else -> {
                     mChosenImePackageName?.let { imePackageName ->
@@ -419,7 +431,11 @@ class MyAccessibilityService : AccessibilityService(),
             }
 
             observe(this@MyAccessibilityService, Observer {
-                mActionPerformerDelegate.performAction(it, mChosenImePackageName)
+                mActionPerformerDelegate.performAction(
+                    it,
+                    mChosenImePackageName,
+                    currentPackageName
+                )
             })
         }
     }
