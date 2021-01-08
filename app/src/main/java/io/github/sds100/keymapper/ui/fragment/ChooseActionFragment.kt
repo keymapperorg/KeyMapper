@@ -18,6 +18,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Action
+import io.github.sds100.keymapper.data.viewmodel.ChooseActionViewModel
 import io.github.sds100.keymapper.data.viewmodel.KeyEventActionTypeViewModel
 import io.github.sds100.keymapper.databinding.FragmentChooseActionBinding
 import io.github.sds100.keymapper.ui.adapter.ChooseActionPagerAdapter
@@ -31,6 +32,9 @@ class ChooseActionFragment : Fragment() {
     companion object {
         const val EXTRA_ACTION = "extra_action"
     }
+
+    private val mViewModel by activityViewModels<ChooseActionViewModel>
+    { ChooseActionViewModel.Factory() }
 
     private val mRequestKey by lazy { navArgs<ChooseActionFragmentArgs>().value.StringNavArgChooseActionRequestKey }
     private lateinit var mPagerAdapter: ChooseActionPagerAdapter
@@ -152,6 +156,20 @@ class ChooseActionFragment : Fragment() {
             appBar.setNavigationOnClickListener {
                 findNavController().navigateUp()
             }
+
+            mViewModel.currentTabPosition.let {
+                if (it > mPagerAdapter.itemCount - 1) return@let
+
+                viewPager.setCurrentItem(it, false)
+            }
+
+            viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    super.onPageSelected(position)
+
+                    mViewModel.currentTabPosition = position
+                }
+            })
 
             subscribeSearchView()
         }
