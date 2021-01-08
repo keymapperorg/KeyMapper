@@ -7,6 +7,7 @@ import android.media.AudioManager
 import android.os.Build
 import android.view.Surface
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.util.KeyboardUtils
 import io.github.sds100.keymapper.util.SystemAction
 import io.github.sds100.keymapper.util.result.*
@@ -135,12 +136,29 @@ object Option {
 
             SystemAction.CYCLE_ROTATIONS -> Action.EXTRA_ORIENTATIONS
 
+            SystemAction.PLAY_MEDIA_PACKAGE,
+            SystemAction.PLAY_PAUSE_MEDIA_PACKAGE,
+            SystemAction.PAUSE_MEDIA_PACKAGE,
+            SystemAction.NEXT_TRACK_PACKAGE,
+            SystemAction.PREVIOUS_TRACK_PACKAGE,
+            SystemAction.FAST_FORWARD_PACKAGE,
+            SystemAction.REWIND_PACKAGE -> Action.EXTRA_PACKAGE_NAME
+
             else -> throw Exception("Can't find an extra id for that system action $systemActionId")
         }
     }
 
     fun getOptionLabel(ctx: Context, systemActionId: String, optionId: String): Result<String> {
         when (systemActionId) {
+            SystemAction.PLAY_MEDIA_PACKAGE,
+            SystemAction.PLAY_PAUSE_MEDIA_PACKAGE,
+            SystemAction.PAUSE_MEDIA_PACKAGE,
+            SystemAction.NEXT_TRACK_PACKAGE,
+            SystemAction.PREVIOUS_TRACK_PACKAGE,
+            SystemAction.FAST_FORWARD_PACKAGE,
+            SystemAction.REWIND_PACKAGE ->
+                return Success(ServiceLocator.systemRepository(ctx).getAppName(optionId))
+
             SystemAction.SWITCH_KEYBOARD -> {
                 return KeyboardUtils.getInputMethodLabel(optionId)
             }

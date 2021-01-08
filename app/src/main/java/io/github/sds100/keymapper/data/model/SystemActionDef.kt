@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.data.model
 
+import android.content.Context
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import io.github.sds100.keymapper.Constants
@@ -33,14 +34,17 @@ class SystemActionDef(
 
     options: List<String>? = null,
 
-    val getOptions: () -> Result<List<String>> = {
-        if (options == null) {
-            OptionsNotRequired()
-        } else {
-            Success(options)
-        }
-    }) {
+    getOptions: (suspend (ctx: Context) -> Result<List<String>>)? = null) {
 
-    val hasOptions: Boolean
-        get() = getOptions() !is OptionsNotRequired
+    val getOptions: suspend (ctx: Context) -> Result<List<String>> =
+        getOptions ?: {
+            if (options == null) {
+                OptionsNotRequired()
+            } else {
+                Success(options)
+            }
+        }
+
+    val hasOptions: Boolean = getOptions != null
+
 }

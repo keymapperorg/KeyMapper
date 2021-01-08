@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.service
 
-import android.Manifest
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.accessibilityservice.FingerprintGestureController
@@ -41,7 +40,6 @@ import splitties.bitflags.hasFlag
 import splitties.bitflags.minusFlag
 import splitties.bitflags.withFlag
 import splitties.systemservices.displayManager
-import splitties.systemservices.mediaSessionManager
 import splitties.systemservices.vibrator
 import splitties.toast.toast
 import timber.log.Timber
@@ -224,19 +222,10 @@ class MyAccessibilityService : AccessibilityService(),
         get() = displayManager.displays[0].rotation
 
     override val highestPriorityPackagePlayingMedia: String?
-        get() = packagesCurrentlyPlayingMedia.elementAtOrNull(0)
-
-    override val packagesCurrentlyPlayingMedia: List<String>
-        get() {
-            if (PermissionUtils.isPermissionGranted(Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE)
-                && VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-
-                val component = ComponentName(this, NotificationReceiver::class.java)
-
-                return mediaSessionManager.getActiveSessions(component).map { it.packageName }
-            }
-
-            return listOf()
+        get() = if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
+            MediaUtils.highestPriorityPackagePlayingMedia(this).valueOrNull()
+        } else {
+            null
         }
 
     private var mIsScreenOn = true

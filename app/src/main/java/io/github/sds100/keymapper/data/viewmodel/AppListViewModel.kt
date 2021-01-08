@@ -108,7 +108,7 @@ class AppListViewModel internal constructor(
     private suspend fun List<ApplicationInfo>.createModels(): List<AppListItemModel> =
         withContext(viewModelScope.coroutineContext + Dispatchers.Default) {
             return@withContext map {
-                val name = repository.getAppName(it) ?: it.packageName
+                val name = repository.getAppName(it)
                 val icon = repository.getAppIcon(it)
 
                 AppListItemModel(it.packageName, name, icon)

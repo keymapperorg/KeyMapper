@@ -58,16 +58,16 @@ class SystemRepository(private val mContext: Context) {
         return resolveInfo.loadIcon(mContext.packageManager)
     }
 
-    fun getAppName(applicationInfo: ApplicationInfo): String? {
+    fun getAppName(applicationInfo: ApplicationInfo): String {
         return applicationInfo.loadLabel(mContext.packageManager).toString()
     }
 
-    fun getAppName(packageName: String): String? {
+    fun getAppName(packageName: String): String {
         val applicationInfo = mContext.packageManager.getApplicationInfo(packageName, 0)
         return getAppName(applicationInfo)
     }
 
-    fun getIntentLabel(resolveInfo: ResolveInfo): String? {
+    fun getIntentLabel(resolveInfo: ResolveInfo): String {
         return resolveInfo.loadLabel(mContext.packageManager).toString()
     }
 }

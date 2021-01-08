@@ -828,13 +828,33 @@
     <string name="action_collapse_status_bar">Collapse Status Bar</string>
 
     <string name="action_pause_media">Pause Media Playback</string>
+    <string name="action_pause_media_package">Pause Media Playback for an App</string>
+    <string name="action_pause_media_package_formatted">Pause Media for %s</string>
+
     <string name="action_play_media">Resume Media Playback</string>
+    <string name="action_play_media_package">Resume Media Playback for an App</string>
+    <string name="action_play_media_package_formatted">Resume Media for %s</string>
+
     <string name="action_play_pause_media">Play/Pause Media Playback</string>
+    <string name="action_play_pause_media_package">Play/Pause Media Playback for an App</string>
+    <string name="action_play_pause_media_package_formatted">Play/Pause Media for %s</string>
+
     <string name="action_next_track">Next Track</string>
+    <string name="action_next_track_package">Next Track for an App</string>
+    <string name="action_next_track_package_formatted">Next Track for %s</string>>
+
     <string name="action_previous_track">Previous Track</string>
+    <string name="action_previous_track_package">Previous Track for an App</string>
+    <string name="action_previous_track_package_formatted">Previous Track for %s</string>>
+
     <string name="action_fast_forward">Fast Forward</string>
+    <string name="action_fast_forward_package">Fast Forward for an App</string>
+    <string name="action_fast_forward_package_formatted">Fast Forward for %s</string>
     <string name="action_fast_forward_message">Not all media apps support fast forwarding. E.g Google Play Music.</string>
+
     <string name="action_rewind">Rewind</string>
+    <string name="action_rewind_package">Rewind for an App</string>
+    <string name="action_rewind_package_formatted">Rewind for %s</string>>
     <string name="action_rewind_message">Not all media apps support rewinding. E.g Google Play Music.</string>
 
     <string name="action_go_back">Go Back</string>

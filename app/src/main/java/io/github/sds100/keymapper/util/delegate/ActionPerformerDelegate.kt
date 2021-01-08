@@ -494,6 +494,42 @@ class ActionPerformerDelegate(context: Context,
                         when (id) {
                             SystemAction.SHOW_POWER_MENU ->
                                 performGlobalAction(AccessibilityService.GLOBAL_ACTION_POWER_DIALOG)
+
+                            SystemAction.PLAY_MEDIA_PACKAGE -> {
+                                action.extras.getData(Action.EXTRA_PACKAGE_NAME).onSuccess {
+                                    MediaUtils.playMediaForPackage(mCtx, it)
+                                }
+                            }
+                            SystemAction.PLAY_PAUSE_MEDIA_PACKAGE -> {
+                                action.extras.getData(Action.EXTRA_PACKAGE_NAME).onSuccess {
+                                    MediaUtils.playPauseMediaPlaybackForPackage(mCtx, it)
+                                }
+                            }
+                            SystemAction.PAUSE_MEDIA_PACKAGE -> {
+                                action.extras.getData(Action.EXTRA_PACKAGE_NAME).onSuccess {
+                                    MediaUtils.pauseMediaForPackage(mCtx, it)
+                                }
+                            }
+                            SystemAction.NEXT_TRACK_PACKAGE -> {
+                                action.extras.getData(Action.EXTRA_PACKAGE_NAME).onSuccess {
+                                    MediaUtils.nextTrackForPackage(mCtx, it)
+                                }
+                            }
+                            SystemAction.PREVIOUS_TRACK_PACKAGE -> {
+                                action.extras.getData(Action.EXTRA_PACKAGE_NAME).onSuccess {
+                                    MediaUtils.previousTrackForPackage(mCtx, it)
+                                }
+                            }
+                            SystemAction.FAST_FORWARD_PACKAGE -> {
+                                action.extras.getData(Action.EXTRA_PACKAGE_NAME).onSuccess {
+                                    MediaUtils.fastForwardForPackage(mCtx, it)
+                                }
+                            }
+                            SystemAction.REWIND_PACKAGE -> {
+                                action.extras.getData(Action.EXTRA_PACKAGE_NAME).onSuccess {
+                                    MediaUtils.rewindForPackage(mCtx, it)
+                                }
+                            }
                         }
                     }
 

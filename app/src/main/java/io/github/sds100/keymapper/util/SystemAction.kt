@@ -76,12 +76,25 @@ object SystemAction {
 
     //media
     const val PAUSE_MEDIA = "pause_media"
+    const val PAUSE_MEDIA_PACKAGE = "pause_media_package"
+
     const val PLAY_MEDIA = "play_media"
+    const val PLAY_MEDIA_PACKAGE = "play_media_package"
+
     const val PLAY_PAUSE_MEDIA = "play_pause_media"
+    const val PLAY_PAUSE_MEDIA_PACKAGE = "play_pause_media_package"
+
     const val NEXT_TRACK = "next_track"
+    const val NEXT_TRACK_PACKAGE = "next_track_package"
+
     const val PREVIOUS_TRACK = "previous_track"
+    const val PREVIOUS_TRACK_PACKAGE = "previous_track_package"
+
     const val FAST_FORWARD = "fast_forward"
+    const val FAST_FORWARD_PACKAGE = "fast_forward_package"
+
     const val REWIND = "rewind"
+    const val REWIND_PACKAGE = "rewind_package"
 
     //navigation
     const val GO_BACK = "go_back"

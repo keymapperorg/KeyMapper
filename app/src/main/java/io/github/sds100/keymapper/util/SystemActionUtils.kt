@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.data.model.Option
 import io.github.sds100.keymapper.data.model.OptionType
 import io.github.sds100.keymapper.data.model.SystemActionDef
@@ -47,6 +48,7 @@ import io.github.sds100.keymapper.util.SystemAction.ENABLE_WIFI_ROOT
 import io.github.sds100.keymapper.util.SystemAction.EXPAND_NOTIFICATION_DRAWER
 import io.github.sds100.keymapper.util.SystemAction.EXPAND_QUICK_SETTINGS
 import io.github.sds100.keymapper.util.SystemAction.FAST_FORWARD
+import io.github.sds100.keymapper.util.SystemAction.FAST_FORWARD_PACKAGE
 import io.github.sds100.keymapper.util.SystemAction.GO_BACK
 import io.github.sds100.keymapper.util.SystemAction.GO_HOME
 import io.github.sds100.keymapper.util.SystemAction.GO_LAST_APP
@@ -57,6 +59,7 @@ import io.github.sds100.keymapper.util.SystemAction.LOCK_DEVICE
 import io.github.sds100.keymapper.util.SystemAction.LOCK_DEVICE_ROOT
 import io.github.sds100.keymapper.util.SystemAction.MOVE_CURSOR_TO_END
 import io.github.sds100.keymapper.util.SystemAction.NEXT_TRACK
+import io.github.sds100.keymapper.util.SystemAction.NEXT_TRACK_PACKAGE
 import io.github.sds100.keymapper.util.SystemAction.OPEN_CAMERA
 import io.github.sds100.keymapper.util.SystemAction.OPEN_DEVICE_ASSISTANT
 import io.github.sds100.keymapper.util.SystemAction.OPEN_MENU
@@ -64,11 +67,17 @@ import io.github.sds100.keymapper.util.SystemAction.OPEN_RECENTS
 import io.github.sds100.keymapper.util.SystemAction.OPEN_SETTINGS
 import io.github.sds100.keymapper.util.SystemAction.OPEN_VOICE_ASSISTANT
 import io.github.sds100.keymapper.util.SystemAction.PAUSE_MEDIA
+import io.github.sds100.keymapper.util.SystemAction.PAUSE_MEDIA_PACKAGE
+import io.github.sds100.keymapper.util.SystemAction.PLAY_MEDIA
+import io.github.sds100.keymapper.util.SystemAction.PLAY_MEDIA_PACKAGE
 import io.github.sds100.keymapper.util.SystemAction.PLAY_PAUSE_MEDIA
+import io.github.sds100.keymapper.util.SystemAction.PLAY_PAUSE_MEDIA_PACKAGE
 import io.github.sds100.keymapper.util.SystemAction.PORTRAIT_MODE
 import io.github.sds100.keymapper.util.SystemAction.POWER_ON_OFF_DEVICE
 import io.github.sds100.keymapper.util.SystemAction.PREVIOUS_TRACK
+import io.github.sds100.keymapper.util.SystemAction.PREVIOUS_TRACK_PACKAGE
 import io.github.sds100.keymapper.util.SystemAction.REWIND
+import io.github.sds100.keymapper.util.SystemAction.REWIND_PACKAGE
 import io.github.sds100.keymapper.util.SystemAction.SCREENSHOT
 import io.github.sds100.keymapper.util.SystemAction.SCREENSHOT_ROOT
 import io.github.sds100.keymapper.util.SystemAction.SECURE_LOCK_DEVICE
@@ -98,6 +107,7 @@ import io.github.sds100.keymapper.util.SystemAction.VOLUME_MUTE
 import io.github.sds100.keymapper.util.SystemAction.VOLUME_TOGGLE_MUTE
 import io.github.sds100.keymapper.util.SystemAction.VOLUME_UNMUTE
 import io.github.sds100.keymapper.util.result.*
+import java.util.*
 
 /**
  * Created by sds100 on 01/08/2018.
@@ -304,12 +314,32 @@ object SystemActionUtils {
             minApi = Build.VERSION_CODES.KITKAT
         ),
         SystemActionDef(
+            id = PLAY_PAUSE_MEDIA_PACKAGE,
+            category = CATEGORY_MEDIA,
+            iconRes = R.drawable.ic_play_pause_24dp,
+            descriptionRes = R.string.action_play_pause_media_package,
+            descriptionFormattedRes = R.string.action_play_pause_media_package_formatted,
+            minApi = Build.VERSION_CODES.LOLLIPOP,
+            getOptions = { ctx -> getPackagesSortedByName(ctx) },
+            permissions = arrayOf(Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE)
+        ),
+        SystemActionDef(
             id = PAUSE_MEDIA,
             category = CATEGORY_MEDIA,
             iconRes = R.drawable.ic_outline_pause_24,
             descriptionRes = R.string.action_pause_media,
             minApi = Build.VERSION_CODES.KITKAT
 
+        ),
+        SystemActionDef(
+            id = PAUSE_MEDIA_PACKAGE,
+            category = CATEGORY_MEDIA,
+            iconRes = R.drawable.ic_outline_pause_24,
+            descriptionRes = R.string.action_pause_media_package,
+            descriptionFormattedRes = R.string.action_pause_media_package_formatted,
+            minApi = Build.VERSION_CODES.LOLLIPOP,
+            getOptions = { ctx -> getPackagesSortedByName(ctx) },
+            permissions = arrayOf(Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE)
         ),
         SystemActionDef(
             id = PLAY_MEDIA,
@@ -319,6 +349,16 @@ object SystemActionUtils {
             minApi = Build.VERSION_CODES.KITKAT
         ),
         SystemActionDef(
+            id = PLAY_MEDIA_PACKAGE,
+            category = CATEGORY_MEDIA,
+            iconRes = R.drawable.ic_outline_play_arrow_24,
+            descriptionRes = R.string.action_play_media_package,
+            descriptionFormattedRes = R.string.action_play_media_package_formatted,
+            minApi = Build.VERSION_CODES.LOLLIPOP,
+            getOptions = { ctx -> getPackagesSortedByName(ctx) },
+            permissions = arrayOf(Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE)
+        ),
+        SystemActionDef(
             id = NEXT_TRACK,
             category = CATEGORY_MEDIA,
             iconRes = R.drawable.ic_outline_skip_next_24,
@@ -326,11 +366,31 @@ object SystemActionUtils {
             minApi = Build.VERSION_CODES.KITKAT
         ),
         SystemActionDef(
+            id = NEXT_TRACK_PACKAGE,
+            category = CATEGORY_MEDIA,
+            iconRes = R.drawable.ic_outline_skip_next_24,
+            descriptionRes = R.string.action_next_track_package,
+            descriptionFormattedRes = R.string.action_next_track_package_formatted,
+            minApi = Build.VERSION_CODES.LOLLIPOP,
+            getOptions = { ctx -> getPackagesSortedByName(ctx) },
+            permissions = arrayOf(Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE)
+        ),
+        SystemActionDef(
             id = PREVIOUS_TRACK,
             category = CATEGORY_MEDIA,
             iconRes = R.drawable.ic_outline_skip_previous_24,
             descriptionRes = R.string.action_previous_track,
             minApi = Build.VERSION_CODES.KITKAT
+        ),
+        SystemActionDef(
+            id = PREVIOUS_TRACK_PACKAGE,
+            category = CATEGORY_MEDIA,
+            iconRes = R.drawable.ic_outline_skip_previous_24,
+            descriptionRes = R.string.action_previous_track_package,
+            descriptionFormattedRes = R.string.action_previous_track_package_formatted,
+            minApi = Build.VERSION_CODES.LOLLIPOP,
+            getOptions = { ctx -> getPackagesSortedByName(ctx) },
+            permissions = arrayOf(Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE)
         ),
         SystemActionDef(
             id = FAST_FORWARD,
@@ -341,12 +401,34 @@ object SystemActionUtils {
             minApi = Build.VERSION_CODES.KITKAT
         ),
         SystemActionDef(
+            id = FAST_FORWARD_PACKAGE,
+            category = CATEGORY_MEDIA,
+            iconRes = R.drawable.ic_outline_fast_forward_24,
+            descriptionRes = R.string.action_fast_forward_package,
+            descriptionFormattedRes = R.string.action_fast_forward_package_formatted,
+            messageOnSelection = R.string.action_fast_forward_message,
+            minApi = Build.VERSION_CODES.LOLLIPOP,
+            getOptions = { ctx -> getPackagesSortedByName(ctx) },
+            permissions = arrayOf(Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE)
+        ),
+        SystemActionDef(
             id = REWIND,
             category = CATEGORY_MEDIA,
             iconRes = R.drawable.ic_outline_fast_rewind_24,
             descriptionRes = R.string.action_rewind,
             messageOnSelection = R.string.action_rewind_message,
             minApi = Build.VERSION_CODES.KITKAT
+        ),
+        SystemActionDef(
+            id = REWIND_PACKAGE,
+            category = CATEGORY_MEDIA,
+            iconRes = R.drawable.ic_outline_fast_rewind_24,
+            descriptionRes = R.string.action_rewind_package,
+            descriptionFormattedRes = R.string.action_rewind_package_formatted,
+            messageOnSelection = R.string.action_rewind_message,
+            minApi = Build.VERSION_CODES.LOLLIPOP,
+            getOptions = { ctx -> getPackagesSortedByName(ctx) },
+            permissions = arrayOf(Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE)
         ),
         //MEDIA
 
@@ -804,19 +886,20 @@ object SystemActionUtils {
     /**
      * Get all the system actions which are supported by the system.
      */
-    fun getSupportedSystemActions(ctx: Context) = SYSTEM_ACTION_DEFINITIONS.filter { it.isSupported(ctx) is Success }
-
-    fun getUnsupportedSystemActions(ctx: Context) = SYSTEM_ACTION_DEFINITIONS.filter { it.isSupported(ctx) !is Success }
+    fun getSupportedSystemActions(ctx: Context) =
+        SYSTEM_ACTION_DEFINITIONS
+            .filter { it.isSupported(ctx) is Success }
 
     fun getUnsupportedSystemActionsWithReasons(ctx: Context): Map<SystemActionDef, Failure> =
-        SYSTEM_ACTION_DEFINITIONS.filter { it.isSupported(ctx) is Failure }.map {
-            it to (it.isSupported(ctx) as Failure)
-        }.toMap()
+        SYSTEM_ACTION_DEFINITIONS
+            .filter { it.isSupported(ctx) is Failure }
+            .map { it to (it.isSupported(ctx) as Failure) }
+            .toMap()
 
     /**
      * @return null if the action is supported.
      */
-    fun SystemActionDef.isSupported(ctx: Context): Result<SystemActionDef> {
+    private fun SystemActionDef.isSupported(ctx: Context): Result<SystemActionDef> {
         if (Build.VERSION.SDK_INT < minApi) {
             return SdkVersionTooLow(minApi)
         }
@@ -829,12 +912,6 @@ object SystemActionUtils {
 
         if (Build.VERSION.SDK_INT > maxApi) {
             return SdkVersionTooHigh(maxApi)
-        }
-
-        val options = getOptions()
-
-        if (options is Failure && options !is OptionsNotRequired) {
-            return options
         }
 
         return Success(this)
@@ -860,4 +937,12 @@ object SystemActionUtils {
 
         return ctx.str(descriptionFormattedRes, optionSetLabels.joinToString())
     }
+
+    private suspend fun getPackagesSortedByName(ctx: Context) =
+        ServiceLocator.systemRepository(ctx).let { repository ->
+            repository.getLaunchableAppList()
+                .sortedBy { repository.getAppName(it).toLowerCase(Locale.getDefault()) }
+                .map { it.packageName }
+                .let { Success(it) }
+        }
 }

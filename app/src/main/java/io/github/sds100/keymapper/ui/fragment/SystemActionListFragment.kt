@@ -111,7 +111,7 @@ class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourcePr
                 }.showAndAwaitOkOrDismiss()
             }
 
-            systemActionDef.getOptions().onSuccess { options ->
+            systemActionDef.getOptions(requireContext()).onSuccess { options ->
                 val optionLabels = options.map { optionId ->
                     Option.getOptionLabel(requireContext(), systemActionDef.id, optionId).handle(
                         onSuccess = { it },
