@@ -64,7 +64,8 @@ fun Constraint.buildModel(ctx: Context): ConstraintModel {
 
     val iconTintOnSurface = when (type) {
         Constraint.APP_FOREGROUND,
-        Constraint.APP_NOT_FOREGROUND -> false
+        Constraint.APP_NOT_FOREGROUND,
+        Constraint.APP_PLAYING_MEDIA -> false
 
         else -> true
     }
