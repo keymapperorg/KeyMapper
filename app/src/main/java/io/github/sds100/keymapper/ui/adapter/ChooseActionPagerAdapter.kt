@@ -3,6 +3,8 @@ package io.github.sds100.keymapper.ui.adapter
 import android.os.Build
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.data.model.TabFragmentModel
 import io.github.sds100.keymapper.ui.fragment.*
 
 /**
@@ -11,48 +13,62 @@ import io.github.sds100.keymapper.ui.fragment.*
 
 class ChooseActionPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
 
-    private val mTabFragmentsCreators: List<() -> Fragment> = mutableListOf(
-        {
+    val tabFragmentCreators: List<TabFragmentModel> = mutableListOf(
+        TabFragmentModel(R.string.action_type_title_application, AppListFragment.SEARCH_STATE_KEY) {
             AppListFragment().apply {
                 isAppBarVisible = false
                 isInPagerAdapter = true
             }
         },
-        {
+        TabFragmentModel(R.string.action_type_title_application_shortcut,
+            AppShortcutListFragment.SEARCH_STATE_KEY) {
+
             AppShortcutListFragment().apply {
                 isAppBarVisible = false
                 isInPagerAdapter = true
             }
         },
-        {
+        TabFragmentModel(R.string.action_type_title_key_code,
+            KeycodeListFragment.SEARCH_STATE_KEY) {
+
             KeycodeListFragment().apply {
                 isAppBarVisible = false
                 isInPagerAdapter = true
             }
         },
-        {
+        TabFragmentModel(R.string.action_type_title_key, null) {
             KeyActionTypeFragment()
         },
 
-        {
+        TabFragmentModel(R.string.action_type_title_keyevent, null) {
             KeyEventActionTypeFragment()
         },
-        {
+
+        TabFragmentModel(R.string.action_type_title_text_block, null) {
             TextBlockActionTypeFragment()
         },
-        {
+
+        TabFragmentModel(R.string.action_type_url, null) {
             UrlActionTypeFragment()
         },
-        {
+
+        TabFragmentModel(R.string.action_type_intent, null) {
             IntentActionTypeFragment()
         },
-        {
+
+        TabFragmentModel(
+            R.string.action_type_title_system_action,
+            SystemActionListFragment.SEARCH_STATE_KEY
+        ) {
+
             SystemActionListFragment().apply {
                 isAppBarVisible = false
                 isInPagerAdapter = true
             }
         },
-        {
+
+        TabFragmentModel(R.string.tab_unsupported_actions, null) {
+
             UnsupportedActionListFragment().apply {
                 isAppBarVisible = false
                 isInPagerAdapter = true
@@ -60,20 +76,16 @@ class ChooseActionPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragme
         }
     ).apply {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            add(5) { TapCoordinateActionTypeFragment() }
+            val model = TabFragmentModel(R.string.action_type_tap_coordinate, null) {
+                TapCoordinateActionTypeFragment()
+            }
+
+            add(5, model)
         }
     }
 
-    fun getSearchStateKey(position: Int): String? = when (position) {
-        0 -> AppListFragment.SEARCH_STATE_KEY
-        1 -> AppShortcutListFragment.SEARCH_STATE_KEY
-        2 -> KeycodeListFragment.SEARCH_STATE_KEY
-        10 -> SystemActionListFragment.SEARCH_STATE_KEY
+    override fun getItemCount() = tabFragmentCreators.size
 
-        else -> null
-    }
-
-    override fun getItemCount() = mTabFragmentsCreators.size
-
-    override fun createFragment(position: Int) = mTabFragmentsCreators[position].invoke()
+    override fun createFragment(position: Int) =
+        tabFragmentCreators[position].fragmentCreator.invoke()
 }

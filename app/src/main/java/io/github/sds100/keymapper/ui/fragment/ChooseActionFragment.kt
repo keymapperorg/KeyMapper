@@ -21,10 +21,7 @@ import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.viewmodel.KeyEventActionTypeViewModel
 import io.github.sds100.keymapper.databinding.FragmentChooseActionBinding
 import io.github.sds100.keymapper.ui.adapter.ChooseActionPagerAdapter
-import io.github.sds100.keymapper.util.InjectorUtils
-import io.github.sds100.keymapper.util.IntentTarget
-import io.github.sds100.keymapper.util.setCurrentDestinationLiveData
-import io.github.sds100.keymapper.util.strArray
+import io.github.sds100.keymapper.util.*
 
 /**
  * A placeholder fragment containing a simple view.
@@ -149,7 +146,7 @@ class ChooseActionFragment : Fragment() {
             viewPager.adapter = mPagerAdapter
 
             TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-                tab.text = strArray(R.array.choose_action_tab_titles)[position]
+                tab.text = str(mPagerAdapter.tabFragmentCreators[position].tabTitle)
             }.attach()
 
             appBar.setNavigationOnClickListener {
@@ -185,7 +182,8 @@ class ChooseActionFragment : Fragment() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
 
-                searchViewMenuItem.isVisible = mPagerAdapter.getSearchStateKey(position) != null
+                searchViewMenuItem.isVisible =
+                    mPagerAdapter.tabFragmentCreators[position].searchStateKey != null
             }
         })
 
@@ -210,8 +208,8 @@ class ChooseActionFragment : Fragment() {
 
             override fun onQueryTextChange(newText: String?): Boolean {
 
-                mPagerAdapter.getSearchStateKey(viewPager.currentItem)?.let { searchStateKey ->
-                    findNavController().setCurrentDestinationLiveData(searchStateKey, newText)
+                mPagerAdapter.tabFragmentCreators[viewPager.currentItem].searchStateKey?.let {
+                    findNavController().setCurrentDestinationLiveData(it, newText)
                 }
 
                 return false
