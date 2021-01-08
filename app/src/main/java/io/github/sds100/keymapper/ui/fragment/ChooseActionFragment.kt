@@ -119,6 +119,12 @@ class ChooseActionFragment : Fragment() {
             Action.intentAction(description, target, uri)
         }
 
+        setResultListener(PhoneCallActionTypeFragment.REQUEST_KEY) {
+            val number = it.getString(PhoneCallActionTypeFragment.EXTRA_PHONE_NUMBER)
+
+            Action.phoneCallAction(number!!)
+        }
+
         setFragmentResultListener(KeycodeListFragment.REQUEST_KEY) { _, result ->
             val keyEventViewModel by activityViewModels<KeyEventActionTypeViewModel> {
                 InjectorUtils.provideKeyEventActionTypeViewModel(requireContext())

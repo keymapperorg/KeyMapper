@@ -68,6 +68,10 @@ class ChooseActionPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragme
             IntentActionTypeFragment()
         },
 
+        TabFragmentModel(R.string.action_type_phone_call, null) {
+            PhoneCallActionTypeFragment()
+        },
+
         TabFragmentModel(R.string.tab_unsupported_actions, null) {
 
             UnsupportedActionListFragment().apply {

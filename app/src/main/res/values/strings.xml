@@ -66,6 +66,7 @@
             Inputting this keycode as an action will only work if you are using a Key Mapper compatible keyboard.</string>
 
     <string name="caption_action_type_text">Type some text you want to be inserted when you perform this action.</string>
+    <string name="caption_action_type_phone_call">Enter the phone number.</string>
     <string name="caption_action_type_url">Type a url which you want to be opened. The http://, https:// or www. isn\'t required.</string>
     <string name="caption_no_paired_bt_devices">Can\'t find any paired devices. Is Bluetooth turned on?</string>
 
@@ -99,6 +100,7 @@
     <string name="description_url">Open %s</string>
     <string name="description_tap_coordinate_default">Tap Coordinates %s, %s</string>
     <string name="description_tap_coordinate_with_description">Tap Coordinates %s, %s (%s)</string>
+    <string name="description_phone_call">Call %s</string>
     <!--  Action descriptions  -->
 
     <!--  Headers  -->
@@ -500,6 +502,7 @@
     <string name="action_type_url">URL</string>
     <string name="action_type_tap_coordinate">Tap Screen</string>
     <string name="action_type_intent">Intent</string>
+    <string name="action_type_phone_call">Phone Call</string>
     <!--Action Types Titles-->
 
     <!--    Fragment ids    -->
@@ -751,6 +754,7 @@
     <string name="error_cant_find_notification_listener_settings">Can\'t find the notification access settings!</string>
     <string name="error_denied_notification_listener_service_permission">Denied notification access permission!</string>
     <string name="error_invalid_intent_extra_value">Invalid!</string>
+    <string name="error_denied_call_phone_permission">Denied permission to start phone calls!</string>
 
     <!-- Error messages -->
 

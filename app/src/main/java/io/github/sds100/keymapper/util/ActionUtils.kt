@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.util
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -245,6 +246,8 @@ fun Action.getTitle(ctx: Context, deviceInfoList: List<DeviceInfo>): Result<Stri
             }
         }
 
+        ActionType.PHONE_CALL -> Success(ctx.str(R.string.description_phone_call, data))
+
     }.then {
         extras.getData(Action.EXTRA_MULTIPLIER).valueOrNull()?.toIntOrNull()?.let { multiplier ->
             return@then Success("(${multiplier}x) $it")
@@ -341,6 +344,12 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
         ActionType.TAP_COORDINATE -> {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                 return SdkVersionTooLow(Build.VERSION_CODES.N)
+            }
+        }
+
+        ActionType.PHONE_CALL -> {
+            if (!PermissionUtils.isPermissionGranted(Manifest.permission.CALL_PHONE)) {
+                return PermissionDenied(Manifest.permission.CALL_PHONE)
             }
         }
 

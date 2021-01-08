@@ -85,6 +85,9 @@ class RecoverFailureDelegate(
                     Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE ->
                         PermissionUtils.requestNotificationListenerAccess(mStartActivityForResultLauncher)
 
+                    Manifest.permission.CALL_PHONE ->
+                        PermissionUtils.requestStandardPermission(mRequestPermissionLauncher, Manifest.permission.CALL_PHONE)
+
                     else -> throw Exception("Don't know how to ask for permission ${failure.permission}")
                 }
             }

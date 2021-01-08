@@ -215,6 +215,13 @@ data class Action(
             )
         }
 
+        fun phoneCallAction(number: String): Action {
+            return Action(
+                type = ActionType.PHONE_CALL,
+                data = number
+            )
+        }
+
         val DESERIALIZER = jsonDeserializer {
             val typeString by it.json.byString(NAME_ACTION_TYPE)
             val type = ActionType.valueOf(typeString)

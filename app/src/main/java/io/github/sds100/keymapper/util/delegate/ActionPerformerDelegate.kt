@@ -205,6 +205,14 @@ class ActionPerformerDelegate(context: Context,
                         longToast(e.message!!)
                     }
                 }
+
+                ActionType.PHONE_CALL -> {
+                    Intent(Intent.ACTION_CALL).apply {
+                        data = Uri.parse("tel:0987654321")
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                        startActivity(this)
+                    }
+                }
             }
         }
     }
