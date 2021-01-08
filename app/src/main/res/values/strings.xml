@@ -495,7 +495,7 @@
     <string name="action_type_title_key">Key</string>
     <string name="action_type_title_key_code">Keycode</string>
     <string name="action_type_title_keyevent">Key Event</string>
-    <string name="action_type_title_system_action">Other</string>
+    <string name="action_type_title_system_action">System</string>
     <string name="action_type_title_text_block">Text</string>
     <string name="action_type_url">URL</string>
     <string name="action_type_tap_coordinate">Tap Screen</string>

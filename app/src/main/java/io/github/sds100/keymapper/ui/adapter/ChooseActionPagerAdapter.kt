@@ -36,6 +36,18 @@ class ChooseActionPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragme
                 isInPagerAdapter = true
             }
         },
+
+        TabFragmentModel(
+            R.string.action_type_title_system_action,
+            SystemActionListFragment.SEARCH_STATE_KEY
+        ) {
+
+            SystemActionListFragment().apply {
+                isAppBarVisible = false
+                isInPagerAdapter = true
+            }
+        },
+
         TabFragmentModel(R.string.action_type_title_key, null) {
             KeyActionTypeFragment()
         },
@@ -54,17 +66,6 @@ class ChooseActionPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragme
 
         TabFragmentModel(R.string.action_type_intent, null) {
             IntentActionTypeFragment()
-        },
-
-        TabFragmentModel(
-            R.string.action_type_title_system_action,
-            SystemActionListFragment.SEARCH_STATE_KEY
-        ) {
-
-            SystemActionListFragment().apply {
-                isAppBarVisible = false
-                isInPagerAdapter = true
-            }
         },
 
         TabFragmentModel(R.string.tab_unsupported_actions, null) {
