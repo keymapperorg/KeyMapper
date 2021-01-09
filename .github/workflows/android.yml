@@ -59,4 +59,4 @@ jobs:
             DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         uses: Ilshidur/action-discord@0.3.0
         with:
-          args: 'New nightly! {{ env.APK_NAME }} https://nightly.link/sds100/KeyMapper/workflows/android/develop/{{ env.APK_NAME }}.zip'
+          args: 'New nightly! 🎉{{ APK_NAME }} https://nightly.link/sds100/KeyMapper/workflows/android/develop/{{ APK_NAME }}.zip'
