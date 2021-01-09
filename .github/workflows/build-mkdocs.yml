@@ -39,7 +39,3 @@ jobs:
         run: |
           git pull
           mkdocs gh-deploy
-
-      # Runs a set of commands using the runners shell
-      - name: Run a one-line script 2
-        run: mkdocs --version
