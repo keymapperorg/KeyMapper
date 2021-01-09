@@ -1,0 +1,4 @@
+site_name: Key Mapper Documentation
+nav:
+    - Home: index.md
+theme: readthedocs
