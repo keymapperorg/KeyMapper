@@ -54,9 +54,9 @@ jobs:
           name: ${{ env.APK_NAME }}
           path: app/build/outputs/apk/ci/${{ env.APK_NAME }}.apk
 
-      - name: Discord notification
-        env:
+      - name: Upload to Discord
+          uses: sinshutu/upload-to-discord@v2.0.0
+          env:
             DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        uses: Ilshidur/action-discord@0.3.0
-        with:
-          args: 'New nightly! 🎉{{ APK_NAME }} https://nightly.link/sds100/KeyMapper/workflows/android/develop/{{ APK_NAME }}.zip'
+          with:
+            args: app/build/outputs/apk/ci/${{ env.APK_NAME }}.apk
