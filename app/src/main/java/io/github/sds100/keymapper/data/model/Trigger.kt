@@ -46,15 +46,16 @@ data class Trigger(
         const val TRIGGER_FLAG_VIBRATE = 1
         const val TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION = 2
         const val TRIGGER_FLAG_SCREEN_OFF_TRIGGERS = 4
+        const val TRIGGER_FLAG_BY_INTENT = 8
 
         val TRIGGER_FLAG_LABEL_MAP = mapOf(
             TRIGGER_FLAG_VIBRATE to R.string.flag_vibrate,
             TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION to R.string.flag_long_press_double_vibration,
             TRIGGER_FLAG_SCREEN_OFF_TRIGGERS to R.string.flag_detect_triggers_screen_off,
+            TRIGGER_FLAG_BY_INTENT to R.string.flag_trigger_by_intent
         )
 
         const val DEFAULT_TRIGGER_MODE = UNDEFINED
-        const val DEFAULT_FLAGS = 0
 
         const val UNDETERMINED = -1
         const val SHORT_PRESS = 0
@@ -65,13 +66,6 @@ data class Trigger(
         const val EXTRA_LONG_PRESS_DELAY = "extra_long_press_delay"
         const val EXTRA_DOUBLE_PRESS_DELAY = "extra_double_press_timeout"
         const val EXTRA_VIBRATION_DURATION = "extra_vibration_duration"
-
-        val EXTRAS = arrayOf(
-            EXTRA_SEQUENCE_TRIGGER_TIMEOUT,
-            EXTRA_LONG_PRESS_DELAY,
-            EXTRA_DOUBLE_PRESS_DELAY,
-            EXTRA_VIBRATION_DURATION
-        )
 
         val DESERIALIZER = jsonDeserializer {
             val triggerKeysJsonArray by it.json.byArray(NAME_KEYS)

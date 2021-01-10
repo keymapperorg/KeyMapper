@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="model"
+            type="io.github.sds100.keymapper.data.model.TriggerByIntentModel" />
+
+        <variable
+            name="onClick"
+            type="View.OnClickListener" />
+
+        <variable
+            name="onCopyClick"
+            type="View.OnClickListener" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/cardview_padding_left"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="@dimen/cardview_padding_right"
+        android:layout_marginBottom="8dp">
+
+        <CheckBox
+            android:id="@+id/checkBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:checked="@{model.isEnabled}"
+            android:onClick="@{onClick}"
+            android:paddingHorizontal="8dp"
+            android:text="@string/flag_trigger_by_intent"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="?attr/colorOnSurface"
+            app:layout_constraintEnd_toStartOf="@+id/buttonCopyToClipboard"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="TextView" />
+
+        <TextView
+            android:id="@+id/textViewUid"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@{model.uid}"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+            android:visibility="@{model.isEnabled ? View.VISIBLE : View.GONE}"
+            app:layout_constraintEnd_toStartOf="@+id/buttonCopyToClipboard"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/checkBox"
+            tools:text="jsldjfo23u4adaeowurb23" />
+
+        <io.github.sds100.keymapper.ui.view.SquareImageButton
+            android:id="@+id/buttonCopyToClipboard"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:onClick="@{onCopyClick}"
+            android:tint="?attr/colorOnSurface"
+            android:visibility="@{model.isEnabled ? View.VISIBLE : View.GONE}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_content_copy" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
