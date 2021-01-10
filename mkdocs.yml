@@ -1,4 +1,5 @@
 site_name: Key Mapper Documentation
+repo_url: https://github.com/sds100/KeyMapper
 nav:
     - Home: index.md
 theme: readthedocs
