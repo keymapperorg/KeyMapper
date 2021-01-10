@@ -8,4 +8,5 @@ nav:
     - User Guide:
         - Triggers: user-guide/triggers.md
         - Actions: user-guide/actions.md
-theme: readthedocs
+theme:
+    name: material
