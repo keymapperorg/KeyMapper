@@ -10,3 +10,4 @@ nav:
         - Actions: user-guide/actions.md
 theme:
     name: material
+    favicon: images/favicon.ico
