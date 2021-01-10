@@ -75,5 +75,6 @@ Every feature or bug fix commit should have an issue associated with it. This is
 - test: adding tests, refactoring test; no production code change
 - chore: updating build tasks, package manager configs, version name changes, etc; no production code change
 - release: a new release.
+- website: stuff to do with the website.
 
 The README, License, Credits, Changelog and Privacy Policy files should just be changed in the master branch.
