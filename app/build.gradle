@@ -83,7 +83,7 @@ android.applicationVariants.all { variant ->
 
 dependencies {
     def room_version = "2.2.6"
-    def coroutine_version = "1.3.9"
+    def coroutinesVersion = "1.4.1"
     def nav_version = '2.3.2'
     def work_version = "2.4.0"
     def epoxy_version = "4.0.0"
@@ -94,7 +94,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     // kotlin stuff
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutine_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
     // random stuff
@@ -149,7 +149,6 @@ dependencies {
     def junitVersion = "4.13.1"
     def androidXTestExtKotlinRunnerVersion = "1.1.2"
     def espressoVersion = "3.3.0"
-    def coroutinesVersion = "1.2.1"
     def androidXTestCoreVersion = "1.3.0"
 
     // Dependencies for local unit tests
