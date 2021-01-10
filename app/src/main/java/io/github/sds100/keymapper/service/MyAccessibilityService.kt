@@ -583,7 +583,7 @@ class MyAccessibilityService : AccessibilityService(),
 
     @RequiresApi(VERSION_CODES.O)
     private fun denyFingerprintGestureDetection() {
-        serviceInfo = serviceInfo.apply {
+        serviceInfo = serviceInfo?.apply {
             flags = flags.minusFlag(AccessibilityServiceInfo.FLAG_REQUEST_FINGERPRINT_GESTURES)
         }
     }

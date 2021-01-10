@@ -8,6 +8,7 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 import kotlinx.android.parcel.Parcelize
+import java.util.*
 
 /**
  * Created by sds100 on 12/07/2018.
@@ -50,7 +51,11 @@ data class KeyMap(
 
     @SerializedName(NAME_IS_ENABLED)
     @ColumnInfo(name = KeyMapDao.KEY_ENABLED)
-    val isEnabled: Boolean = true
+    val isEnabled: Boolean = true,
+
+    @SerializedName(NAME_UID)
+    @ColumnInfo(name = KeyMapDao.KEY_UID)
+    val uid: String = UUID.randomUUID().toString()
 ) : Parcelable {
     companion object {
 
@@ -63,6 +68,7 @@ data class KeyMap(
         const val NAME_FLAGS = "flags"
         const val NAME_FOLDER_NAME = "folderName"
         const val NAME_IS_ENABLED = "isEnabled"
+        const val NAME_UID = "uid"
 
         val DESERIALIZER = jsonDeserializer {
             val actionListJsonArray by it.json.byArray(NAME_ACTION_LIST)
@@ -78,6 +84,7 @@ data class KeyMap(
             val flags by it.json.byInt(NAME_FLAGS)
             val folderName by it.json.byNullableString(NAME_FOLDER_NAME)
             val isEnabled by it.json.byBool(NAME_IS_ENABLED)
+            val uid by it.json.byString(NAME_UID) { UUID.randomUUID().toString() }
 
             KeyMap(
                 0,
@@ -87,7 +94,8 @@ data class KeyMap(
                 constraintMode,
                 flags,
                 folderName,
-                isEnabled
+                isEnabled,
+                uid
             )
         }
     }

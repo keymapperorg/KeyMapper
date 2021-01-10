@@ -55,8 +55,8 @@ jobs:
           path: app/build/outputs/apk/ci/${{ env.APK_NAME }}.apk
 
       - name: Upload to Discord
-        uses: sinshutu/upload-to-discord@v2.0.0
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        with:
-          args: app/build/outputs/apk/ci/${{ env.APK_NAME }}.apk
+          uses: sinshutu/upload-to-discord@v2.0.0
+          env:
+            DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          with:
+            args: app/build/outputs/apk/ci/${{ env.APK_NAME }}.apk

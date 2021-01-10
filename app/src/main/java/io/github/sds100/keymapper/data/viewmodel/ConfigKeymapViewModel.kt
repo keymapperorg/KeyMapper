@@ -17,6 +17,7 @@ import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.FixFailure
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.util.*
 
 /**
  * Created by sds100 on 22/11/20.
@@ -67,6 +68,9 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
 
     val isEnabled = MutableLiveData(false)
 
+    private val _uid = MutableLiveData<String>()
+    val uid: LiveData<String> = _uid
+
     private val _eventStream = LiveEvent<Event>().apply {
         addSource(constraintListViewModel.eventStream) {
             when (it) {
@@ -94,6 +98,7 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
         triggerViewModel.setTrigger(Trigger())
         constraintListViewModel.setConstraintList(emptyList(), Constraint.DEFAULT_MODE)
         isEnabled.value = true
+        _uid.value = UUID.randomUUID().toString()
 
         triggerViewModel.mode.observeForever {
             actionListViewModel.invalidateOptions()
@@ -125,7 +130,8 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
             actionList = actionListViewModel.actionList.value ?: listOf(),
             constraintList = constraintListViewModel.constraintList.value ?: listOf(),
             constraintMode = constraintListViewModel.getConstraintMode(),
-            isEnabled = isEnabled.value ?: true
+            isEnabled = isEnabled.value ?: true,
+            uid = uid.value ?: UUID.randomUUID().toString()
         )
     }
 
@@ -144,6 +150,7 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
         triggerViewModel.setTrigger(keymap.trigger)
         constraintListViewModel.setConstraintList(keymap.constraintList, keymap.constraintMode)
         isEnabled.value = keymap.isEnabled
+        _uid.value = keymap.uid
     }
 
     fun saveState(outState: Bundle) {
