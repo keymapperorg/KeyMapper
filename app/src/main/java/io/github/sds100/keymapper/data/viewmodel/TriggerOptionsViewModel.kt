@@ -1,13 +1,11 @@
 package io.github.sds100.keymapper.data.viewmodel
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.IPreferenceDataStore
-import io.github.sds100.keymapper.data.model.CheckBoxListItemModel
-import io.github.sds100.keymapper.data.model.SliderListItemModel
-import io.github.sds100.keymapper.data.model.SliderModel
-import io.github.sds100.keymapper.data.model.Trigger
+import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.options.BoolOption
 import io.github.sds100.keymapper.data.model.options.IntOption
 import io.github.sds100.keymapper.data.model.options.IntOption.Companion.nullIfDefault
@@ -21,7 +19,8 @@ import io.github.sds100.keymapper.util.OkDialog
 class TriggerOptionsViewModel(
     preferenceDataStore: IPreferenceDataStore,
     val getTriggerKeys: () -> List<Trigger.Key>,
-    val getTriggerMode: () -> Int
+    val getTriggerMode: () -> Int,
+    private val keymapUid: LiveData<String>
 ) : BaseOptionsViewModel<TriggerOptions>(), IPreferenceDataStore by preferenceDataStore {
 
     override val stateKey = "trigger_options_view_model"
@@ -102,6 +101,25 @@ class TriggerOptionsViewModel(
         )
 
         else -> throw Exception("Don't know how to create a CheckboxListItemModel for this option $option.id")
+    }
+
+    val triggerByIntent = MediatorLiveData<TriggerByIntentModel>().apply {
+        value = null
+
+        fun invalidate() {
+            value = TriggerByIntentModel(
+                keymapUid.value ?: return,
+                options.value?.triggerByIntent?.value ?: return
+            )
+        }
+
+        addSource(keymapUid) {
+            invalidate()
+        }
+
+        addSource(options) {
+            invalidate()
+        }
     }
 
     override fun setValue(id: String, newValue: Boolean) {

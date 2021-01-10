@@ -91,6 +91,8 @@
     <string name="action_title_intent_start_service">Start service: %s</string>
     <string name="action_title_intent_send_broadcast">Send broadcast: %s</string>
 
+    <string name="clipboard_label_keymap_uid">Keymap UUID</string>
+
     <!--  Action descriptions  -->
     <string name="description_open_app">Open %s</string>
     <string name="description_key">Press \'%s\' key</string>
@@ -180,6 +182,7 @@
     <string name="toast_screenshot_taken">Screenshot Taken</string>
     <string name="toast_io_exception_shrug">IO Exception ¯\\_(ツ)_/¯</string>
     <string name="toast_incorrect_screenshot_resolution">Screenshot resolution doesn\'t match this device\'s resolution!</string>
+    <string name="toast_copied_keymap_uid_to_clipboard">Copied keymap UUID to clipboard</string>
     <!--  Toasts  -->
 
     <!-- Extra labels -->
@@ -567,6 +570,7 @@
     <string name="flag_dont_override_default_action">Do Not Override Default Action</string>
     <string name="flag_repeat_until_swiped_again">Repeat Until Swiped Again</string>
     <string name="flag_hold_down_until_swiped_again">Hold Down Until Swiped Again</string>
+    <string name="flag_trigger_by_intent">Trigger By Intent</string>
     <!--flags-->
 
     <!-- Showcase -->

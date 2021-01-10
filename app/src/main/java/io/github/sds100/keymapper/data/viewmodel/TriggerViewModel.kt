@@ -16,7 +16,6 @@ import io.github.sds100.keymapper.data.model.options.TriggerKeyOptions
 import io.github.sds100.keymapper.data.model.options.TriggerOptions
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.util.*
-import kotlinx.coroutines.CoroutineScope
 import java.util.*
 
 /**
@@ -24,15 +23,16 @@ import java.util.*
  */
 
 class TriggerViewModel(
-    private val mCoroutineScope: CoroutineScope,
     private val mDeviceInfoRepository: DeviceInfoRepository,
-    preferenceDataStore: IPreferenceDataStore
+    preferenceDataStore: IPreferenceDataStore,
+    keymapUid: LiveData<String>
 ) : IPreferenceDataStore by preferenceDataStore {
 
     val optionsViewModel = TriggerOptionsViewModel(
         preferenceDataStore,
         getTriggerKeys = { keys.value ?: emptyList() },
-        getTriggerMode = { mode.value ?: Trigger.DEFAULT_TRIGGER_MODE }
+        getTriggerMode = { mode.value ?: Trigger.DEFAULT_TRIGGER_MODE },
+        keymapUid
     )
 
     private val _keys = MutableLiveData<List<Trigger.Key>>()

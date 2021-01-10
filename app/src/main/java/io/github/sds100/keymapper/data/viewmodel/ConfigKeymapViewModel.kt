@@ -35,6 +35,9 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
 
     private var mId = NEW_KEYMAP_ID
 
+    private val _uid = MutableLiveData<String>()
+    val uid: LiveData<String> = _uid
+
     val actionListViewModel = object : ActionListViewModel<KeymapActionOptions>(viewModelScope, mDeviceInfoRepository) {
         override val stateKey = "keymap_action_list_view_model"
 
@@ -59,17 +62,14 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
     }
 
     val triggerViewModel = TriggerViewModel(
-        viewModelScope,
         mDeviceInfoRepository,
-        preferenceDataStore = this
+        preferenceDataStore = this,
+        this.uid
     )
 
     val constraintListViewModel = ConstraintListViewModel(viewModelScope)
 
     val isEnabled = MutableLiveData(false)
-
-    private val _uid = MutableLiveData<String>()
-    val uid: LiveData<String> = _uid
 
     private val _eventStream = LiveEvent<Event>().apply {
         addSource(constraintListViewModel.eventStream) {
