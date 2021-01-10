@@ -4,6 +4,7 @@ repo_url: https://github.com/sds100/KeyMapper
 site_description: Documentation website for the Key Mapper Android app.
 nav:
     - Home: index.md
+    - Contributing: contributing.md
     - User Guide:
         - Triggers: user-guide/triggers.md
         - Actions: user-guide/actions.md
