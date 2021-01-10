@@ -4,7 +4,7 @@
 
 ### Language
 
-It is important to use consistent language within the app's code and documentation. Make sure that your submissions comply with these standards. If you have noticed that the developers haven't followed these rules in some place let them know. These standards don't need to be used when writing in places other than the documentation and the source code.
+It is important to use consistent language within the app's code and documentation. Make sure that your submissions comply with these standards. If you have noticed that the developers haven't followed these rules in some place then let them know. These standards don't need to be used when writing in places other than the documentation and the source code.
 
 Here are words and phrases that can be spelt or capitalised in multiple ways.
 
