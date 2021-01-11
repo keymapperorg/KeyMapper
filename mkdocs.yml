@@ -1,4 +1,11 @@
 site_name: Key Mapper Documentation
 nav:
     - Home: index.md
-theme: readthedocs
+
+theme:
+  name: material
+  palette:
+    accent: red
+
+extra_css:
+- stylesheets/extra.css
