@@ -13,6 +13,7 @@ Here are words and phrases that can be spelt or capitalised in multiple ways.
 | A trigger       | **trigger**                                                  | Trigger                            |
 | An action       | **action**                                                   | Action                             |
 | A constraint    | **constraint**                                               | Constraint                         |
+| A key event | **key event** | Key Event, keyevent |
 
 ### Documentation
 
