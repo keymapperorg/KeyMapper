@@ -22,3 +22,8 @@ extra_css:
 markdown_extensions:
   - toc:
       permalink: true
+
+plugins:
+  - redirects:
+      redirect_maps:
+        'redirects/trigger-by-intent.md': 'user-guide/triggers.md'
