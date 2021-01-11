@@ -32,3 +32,10 @@ This will only send the Intent to Key Mapper and no other packages.
 
 Add `.debug` or `.ci` to the end of all `io.github.sds100.keymapper` instances in the action, extra and package if your Key Mapper build is a debug or ci build respectively.
 
+### Detect Trigger When Screen is Off (ROOT, 2.0.0+)
+
+These are the buttons which can be detected when the screen is off. Let the developer know about any keys you would also like to be supported.
+
+* Volume Up
+* Volume Down
+* Headset button
