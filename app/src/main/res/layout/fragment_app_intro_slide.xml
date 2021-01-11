@@ -90,6 +90,7 @@
                 tools:text="This is a demo of the AppIntro Library" />
         </androidx.core.widget.NestedScrollView>
 
+        <!--    Set INVISIBLE rather than GONE so that the text doesn't move up and down between slides.    -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button"
             style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
@@ -97,7 +98,7 @@
             android:layout_height="wrap_content"
             android:onClick="@{onButtonClickListener}"
             android:text="@{buttonText}"
-            android:visibility="@{buttonText == null ? View.GONE : View.VISIBLE}"
+            android:visibility="@{buttonText == null ? View.INVISIBLE : View.VISIBLE}"
             app:backgroundTint="@color/appintro_default_fab_background_color"
             app:elevation="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
