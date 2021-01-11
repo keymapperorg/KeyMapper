@@ -8,38 +8,6 @@ Key Mapper Basic Input Method (the keyboard built-in to the app) has no GUI/butt
 ## "Why don't my volume buttons work when I press them?"
 Give the app Do Not Disturb access in your device settings. At the top of the homescreen in the Key Mapper app there is a "Fix" button to do this.
 
-## "How do I give the app more permissions?"
-If your device is **rooted**, Key Mapper can grant itself the permission by enabling the "Key Mapper has root permissions" toggle in the settings.
-
-If your device is **not rooted** you may have to do the following...
-
-### Prepare debug interface (ADB)
-1. Enable developer options on your device by going to device Settings -> About Phone and tapping Build Number many times until it says you've enabled developer options. The location of the Build Number may vary between devices.
-2. Enable USB Debugging in developer options and plug your device into your PC.
-3. Download the [Android SDK platform tools](https://developer.android.com/studio/releases/platform-tools.html) from here and unzip it.
-4. Open a terminal/command prompt in the unzipped folder.
-5. Type `adb devices` and your device should show up in the list after you click the prompt on your phone to allow USB debugging from your PC.
-
-### ENABLED_ACCESSIBILITY_SERVICES
-You may wish to enable Key Mapper's accessibility service using ADB if you cannot do so in-app due to manufacturer constraints.
-
-To add Key Mapper to the List of the enabled accessibility providers, type or paste in a terminal:
-```
-adb shell settings put secure ENABLED_ACCESSIBILITY_SERVICES io.github.sds100.keymapper/io.github.sds100.keymapper.service.MyAccessibilityService
-```
-### WRITE_SECURE_SETTINGS
-If you need more features of Key Mapper, you may grant the app an entire set of permissions called [Settings.Secure](https://developer.android.com/reference/android/provider/Settings.Secure.html).
-
-Type or paste in a terminal:
-```
-adb shell pm grant io.github.sds100.keymapper android.permission.WRITE_SECURE_SETTINGS
-```
-You can now choose the Key Mapper keyboard without going into the Android settings. [Ensure the accessibility service is enabled.](#enabled_accessibility_services)
-
-_For CI builds the package name is_ `io.github.sds100.keymapper.ci`.
-
-More features which rely on this set of permission will come in the future. These permissions persist across reboots but need to be granted again if the app is reinstalled.
-
 ### "Why aren't my key maps being triggered?"
 1. Disable all battery and memory optimisation features on your device. Consult https://dontkillmyapp.com for how to do this on your device.
 2. Restart/reboot your device. This works in most cases.
