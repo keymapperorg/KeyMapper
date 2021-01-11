@@ -2,7 +2,7 @@
 
 There are options for each trigger key by pressing the 3-dots on them. There are also more options for the whole trigger under the "options" tab. Here are explanations of each option.
 
-### Trigger by Intent (v2.3.0+)
+### Trigger by Intent (2.3.0+)
 
 This allows you to trigger the key map by sending an [Intent](https://developer.android.com/reference/android/content/Intent) to Key Mapper. There are many apps that can automate broadcasting Intents such as Tasker and Automate.
 

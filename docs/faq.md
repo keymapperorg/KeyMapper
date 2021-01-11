@@ -63,9 +63,3 @@ We tested the app on SwitchRoot Android and this is what works...
 * SR and SL (right joycon)
 * Power button
 
-## Supported keys for screen off triggers and constraint
-This feature only works on rooted devices and Key Mapper version 2.1.0+.
-Let the developer know about any keys you would also like to be supported.
-* Volume Up
-* Volume Down
-* Headset button
