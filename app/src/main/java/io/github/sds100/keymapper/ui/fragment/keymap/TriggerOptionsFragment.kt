@@ -2,9 +2,7 @@ package io.github.sds100.keymapper.ui.fragment.keymap
 
 import android.content.ClipData
 import android.content.Context
-import android.net.Uri
 import android.widget.CheckBox
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.navGraphViewModels
 import io.github.sds100.keymapper.R
@@ -19,6 +17,7 @@ import io.github.sds100.keymapper.ui.adapter.OptionsController
 import io.github.sds100.keymapper.ui.fragment.DefaultRecyclerViewFragment
 import io.github.sds100.keymapper.util.Data
 import io.github.sds100.keymapper.util.InjectorUtils
+import io.github.sds100.keymapper.util.UrlUtils
 import io.github.sds100.keymapper.util.str
 import splitties.systemservices.clipboardManager
 import splitties.toast.toast
@@ -80,12 +79,9 @@ class TriggerOptionsFragment : DefaultRecyclerViewFragment() {
                         }
 
                         onHelpClick { _ ->
-                            CustomTabsIntent.Builder()
-                                .build()
-                                .launchUrl(
-                                    requireContext(),
-                                    Uri.parse(str(R.string.url_trigger_by_intent_guide))
-                                )
+                            UrlUtils.launchCustomTab(
+                                requireContext(),
+                                str(R.string.url_trigger_by_intent_guide))
                         }
                     }
                 }

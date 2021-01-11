@@ -205,7 +205,14 @@ class ConfigFingerprintMapFragment : Fragment() {
     )
 
     class ConstraintsAndOptionsFragment : TwoFragments(
-        top = R.string.option_list_header to FingerprintMapOptionsFragment::class.java,
-        bottom = R.string.constraint_list_header to FingerprintConstraintListFragment::class.java
+        top = Triple(
+            R.string.option_list_header,
+            FingerprintMapOptionsFragment::class.java,
+            R.string.url_fingerprint_map_options_guide),
+
+        bottom = Triple(
+            R.string.constraint_list_header,
+            FingerprintConstraintListFragment::class.java,
+            R.string.url_constraints_guide)
     )
 }
