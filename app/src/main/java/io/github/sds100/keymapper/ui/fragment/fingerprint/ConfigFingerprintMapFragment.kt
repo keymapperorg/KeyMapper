@@ -13,7 +13,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import com.google.android.material.tabs.TabLayoutMediator
-import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Constraint
@@ -122,13 +121,6 @@ class ConfigFingerprintMapFragment : Fragment() {
                 R.id.action_save -> {
                     viewModel.save(lifecycleScope)
                     findNavController().navigateUp()
-
-                    true
-                }
-
-                R.id.action_help -> {
-                    val direction = NavAppDirections.actionGlobalHelpFragment()
-                    findNavController().navigate(direction)
 
                     true
                 }
