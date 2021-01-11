@@ -12,6 +12,7 @@ nav:
       - Constraints (2.0+): user-guide/constraints.md
       - ADB Permissions: user-guide/adb-permissions.md
       - Fingerprint Gestures (2.2.0+): user-guide/fingerprint-gestures.md
+  - Contributing: contributing.md
 
 theme:
   name: material
