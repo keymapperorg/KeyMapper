@@ -3,11 +3,12 @@ site_author: sds100
 repo_url: https://github.com/sds100/KeyMapper
 site_description: Documentation website for the Key Mapper Android app.
 nav:
-    - Home: index.md
-    - Contributing: contributing.md
-    - User Guide:
-        - Triggers: user-guide/triggers.md
-        - Actions: user-guide/actions.md
+  - Home: index.md
+  - Quick Start Guide: quick-start.md
+  - Help: help.md
+  - User Guide:
+      - Triggers: user-guide/triggers.md
+      - Actions: user-guide/actions.md
 
 theme:
   name: material
@@ -15,15 +16,37 @@ theme:
     accent: red
   favicon: images/favicon.ico
   logo: images/logo.png
+  custom_dir: overrides
+  features:
+    - navigation.instant
 
 extra_css:
   - stylesheets/extra.css
 
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/sds100/KeyMapper
+    - icon: fontawesome/brands/discord
+      link: https://keymapper.club
+    - icon: fontawesome/brands/google-play
+      link: https://play.google.com/store/apps/developer?id=sds100
+    - icon: fontawesome/solid/envelope
+      link: mailto:developer.sds100@gmail.com
+    - icon: kofi
+      link: https://ko-fi.com/sethschroeder
+
 markdown_extensions:
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+      options:
+        custom_icons:
+          - overrides/.icons
   - toc:
       permalink: true
 
 plugins:
   - redirects:
       redirect_maps:
-          'redirects/trigger-by-intent.md': 'https://sds100.github.io/KeyMapper/user-guide/triggers/#trigger-by-intent-v230'
+        'redirects/trigger-by-intent.md': 'https://sds100.github.io/KeyMapper/user-guide/triggers/#trigger-by-intent-v230'
