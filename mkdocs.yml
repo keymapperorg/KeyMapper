@@ -9,6 +9,7 @@ nav:
   - User Guide:
       - Triggers: user-guide/triggers.md
       - Actions: user-guide/actions.md
+      - Special Permissions: user-guide/special-permissions.md
 
 theme:
   name: material
@@ -50,3 +51,4 @@ plugins:
   - redirects:
       redirect_maps:
         'redirects/trigger-by-intent.md': 'https://sds100.github.io/KeyMapper/user-guide/triggers/#trigger-by-intent-v230'
+        'redirects/grant-write-secure-settings.md': 'https://sds100.github.io/KeyMapper/u/user-guide/special-permissions/#write_secure_settings'
