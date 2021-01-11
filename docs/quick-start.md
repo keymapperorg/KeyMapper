@@ -44,4 +44,35 @@ Tapping the FIX button next to the battery optimisation prompt will allow you to
 ![](images/hg-warn-battery-optimisation.png)
 
 The screen that opens after tapping FIX may vary depending on your device. In my case, to disable optimisation I found the app(s) in the list, tapped them to open their settings, and chose 'Don't optimise'.
+
 There is an excellent guide at [dontkillmyapp.com](http://dontkillmyapp.com) that explains how to disable battery and/or memory optimisation for your specific device. If Key Mapper randomly stops working even after you complete these steps, ask for help in [the Discord server.](http://keymapper.club)
+
+![](images/hg-settings-battery-optimisation.png)
+
+If you want to remap volume buttons and use them when Do Not Disturb is enabled, you should grant Key Mapper permission to do so.
+
+![](images/hg-warn-dnd.png)
+
+Tapping FIX will allow you to grant the permission. Find Key Mapper in the list and tap it in order to choose 'Allowed'.
+
+![](images/hg-settings-dnd.png)
+
+Most people can ignore the final prompt. If you want to create an action to change input method, you need to grant an additional set of permissions called WRITE_SECURE_SETTINGS. For help with this [click here.](http://docs.keymapper.club/user-guide/adb-permissions/#write_secure_settings)
+
+![](images/hg-warn-secure-settings.png)
+
+## Creating a key map
+
+A key map is an association between a user input (such as pushing a key or button) and a response from the device (sending information about what key was pressed and for how long).
+
+In Key Mapper, 'user inputs' that are recognised by the app are called 'triggers'. The responses from your device that were due to a trigger being pressed are called 'actions'.
+
+Key Mapper lets you assign actions to triggers that may be different from their default use. A 'volume-up' trigger normally increases the volume when pressed, but this app can change that to something else.
+
+To create your first key map, tap the + icon at the bottom of the Key Mapper home screen. You will see one of the two menus below.
+
+![](images/hg-keymap-0.png)
+
+In either case, the first step is to record a trigger. Tap the red RECORD TRIGGER button and then push the button that you want to change the function of. In this guide I will demonstrate with Volume Down.
+
+![](images/hg-keymap-1.png)
