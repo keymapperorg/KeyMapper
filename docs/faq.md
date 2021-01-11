@@ -28,9 +28,6 @@ You have probably enabled the app's device administrator in your device's settin
 The Key Mapper keyboard must be enabled in your device settings and chosen as the active keyboard.
 See Quick Start Guide for help.
 
-## Volume increases to max/minimum when pressing power and the respective volume button when the phone is off
-This seems to be a bug with accessibility services on Android Pie and newer for some devices. It happens with the Macrodroid app as well when you only enable their accessibility service which filters keyevents. I tested Key Mapper with no code in the onKeyEvent function in the accessibility service and it still happens. I've tested it on a rooted OOS Android 10 OnePlus 6T, rooted stock Android Pie custom ROM on the OnePlus 6t, non-rooted OOS Android 10 OnePlus 7 Pro. It doesn't seem to happen with Android 10 on the Pixel 2.
-
 ## Why can't I remap some of my Joy Con buttons?
 Not all the Joy Con buttons are visible to accessibility services. There isn't anything the developer can do.
 
