@@ -150,9 +150,12 @@ class MenuFragment : BottomSheetDialogFragment(),
         requireActivity().alertDialog {
             messageResource = R.string.dialog_message_view_faq_and_use_discord_over_email
 
-            positiveButton(R.string.pos_help_page) {
+            positiveButton(R.string.pos_grant_write_secure_settings_guide) {
                 dismiss()
-                findNavController().navigate(MenuFragmentDirections.actionGlobalHelpFragment())
+                UrlUtils.launchCustomTab(
+                    requireContext(),
+                    str(R.string.url_grant_write_secure_settings_guide)
+                )
             }
 
             negativeButton(R.string.neutral_discord) {

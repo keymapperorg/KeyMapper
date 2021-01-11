@@ -13,7 +13,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import com.google.android.material.tabs.TabLayoutMediator
-import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Constraint
@@ -126,13 +125,6 @@ class ConfigFingerprintMapFragment : Fragment() {
                     true
                 }
 
-                R.id.action_help -> {
-                    val direction = NavAppDirections.actionGlobalHelpFragment()
-                    findNavController().navigate(direction)
-
-                    true
-                }
-
                 else -> false
             }
         }
@@ -205,7 +197,14 @@ class ConfigFingerprintMapFragment : Fragment() {
     )
 
     class ConstraintsAndOptionsFragment : TwoFragments(
-        top = R.string.option_list_header to FingerprintMapOptionsFragment::class.java,
-        bottom = R.string.constraint_list_header to FingerprintConstraintListFragment::class.java
+        top = Triple(
+            R.string.option_list_header,
+            FingerprintMapOptionsFragment::class.java,
+            R.string.url_fingerprint_map_options_guide),
+
+        bottom = Triple(
+            R.string.constraint_list_header,
+            FingerprintConstraintListFragment::class.java,
+            R.string.url_constraints_guide)
     )
 }

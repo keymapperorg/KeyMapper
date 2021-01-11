@@ -17,7 +17,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.findNavController
 import io.github.sds100.keymapper.Constants
-import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.service.DeviceAdmin
@@ -119,13 +118,16 @@ object PermissionUtils {
         activity.alertDialog {
             messageResource = R.string.dialog_message_write_secure_settings
 
-            positiveButton(R.string.pos_help_page) {
-                val direction = NavAppDirections.actionGlobalHelpFragment()
-                activity.findNavController(R.id.container).navigate(direction)
+            positiveButton(R.string.pos_grant_write_secure_settings_guide) {
+                UrlUtils.launchCustomTab(
+                    activity,
+                    activity.str(R.string.url_grant_write_secure_settings_guide)
+                )
             }
 
             negativeButton(R.string.pos_enable_root_features) {
-                activity.findNavController(R.id.container).navigate(R.id.action_global_settingsFragment)
+                activity.findNavController(R.id.container)
+                    .navigate(R.id.action_global_settingsFragment)
             }
 
             show()

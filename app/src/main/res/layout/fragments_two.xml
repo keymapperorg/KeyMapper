@@ -1,15 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
+        <import type="android.view.View" />
+
         <variable
             name="topFragmentHeader"
             type="String" />
 
         <variable
+            name="onTopFragmentHelpClick"
+            type="View.OnClickListener" />
+
+        <variable
             name="bottomFragmentHeader"
             type="String" />
+
+        <variable
+            name="onBottomFragmentHelpClick"
+            type="View.OnClickListener" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -24,25 +36,26 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardViewOptions"
+                android:id="@+id/cardViewTop"
                 style="@style/MyCardView"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                app:layout_constraintBottom_toTopOf="@+id/cardViewConstraints"
+                app:layout_constraintBottom_toTopOf="@+id/cardViewBottom"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/textViewTopHeader"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/cardview_padding_left"
@@ -52,17 +65,38 @@
                         android:text="@{topFragmentHeader}"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
                         android:textColor="?attr/colorAccent"
-                        android:textSize="14sp" />
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="Top Header" />
+
+                    <io.github.sds100.keymapper.ui.view.SquareImageButton
+                        android:id="@+id/buttonHelpTopLeft"
+                        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:onClick="@{onTopFragmentHelpClick}"
+                        android:tint="?attr/colorOnSurface"
+                        app:layout_constraintBottom_toBottomOf="@id/textViewTopHeader"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_baseline_help_outline_24" />
 
                     <androidx.fragment.app.FragmentContainerView
                         android:id="@+id/containerTop"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
-                </LinearLayout>
+                        android:layout_height="0dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/textViewTopHeader" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardViewConstraints"
+                android:id="@+id/cardViewBottom"
                 style="@style/MyCardView"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -74,14 +108,15 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardViewOptions">
+                app:layout_constraintTop_toBottomOf="@+id/cardViewTop">
 
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/textViewBottomHeader"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/cardview_padding_left"
@@ -91,13 +126,34 @@
                         android:text="@{bottomFragmentHeader}"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
                         android:textColor="?attr/colorAccent"
-                        android:textSize="14sp" />
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="Bottom Header" />
+
+                    <io.github.sds100.keymapper.ui.view.SquareImageButton
+                        android:id="@+id/buttonHelpBottom"
+                        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:onClick="@{onBottomFragmentHelpClick}"
+                        android:tint="?attr/colorOnSurface"
+                        app:layout_constraintBottom_toBottomOf="@id/textViewBottomHeader"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_baseline_help_outline_24" />
 
                     <androidx.fragment.app.FragmentContainerView
                         android:id="@+id/containerBottom"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
-                </LinearLayout>
+                        android:layout_height="0dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/textViewBottomHeader" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

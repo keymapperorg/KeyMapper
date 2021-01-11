@@ -13,7 +13,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import com.google.android.material.tabs.TabLayoutMediator
-import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Constraint
@@ -127,14 +126,6 @@ class ConfigKeymapFragment : Fragment() {
 
                     true
                 }
-
-                R.id.action_help -> {
-                    val direction = NavAppDirections.actionGlobalHelpFragment()
-                    findNavController().navigate(direction)
-
-                    true
-                }
-
                 else -> false
             }
         }
@@ -203,19 +194,51 @@ class ConfigKeymapFragment : Fragment() {
     )
 
     class TriggerAndActionsFragment : TwoFragments(
-        top = R.string.trigger_list_header to TriggerFragment::class.java,
-        bottom = R.string.action_list_header to KeymapActionListFragment::class.java
+        top = Triple(
+            R.string.trigger_list_header,
+            TriggerFragment::class.java,
+            R.string.url_trigger_options_guide
+        ),
+        bottom = Triple(
+            R.string.action_list_header,
+            KeymapActionListFragment::class.java,
+            R.string.url_action_guide
+        )
     )
 
     class ConstraintsAndOptionsFragment : TwoFragments(
-        top = R.string.trigger_options_header to TriggerOptionsFragment::class.java,
-        bottom = R.string.constraint_list_header to KeymapConstraintListFragment::class.java
+        top = Triple(
+            R.string.trigger_options_header,
+            TriggerOptionsFragment::class.java,
+            R.string.url_trigger_options_guide
+        ),
+        bottom = Triple(
+            R.string.constraint_list_header,
+            KeymapConstraintListFragment::class.java,
+            R.string.url_constraints_guide
+        )
     )
 
     class AllFragments : FourFragments(
-        topLeft = R.string.trigger_list_header to TriggerFragment::class.java,
-        topRight = R.string.trigger_options_header to TriggerOptionsFragment::class.java,
-        bottomLeft = R.string.action_list_header to KeymapActionListFragment::class.java,
-        bottomRight = R.string.constraint_list_header to KeymapConstraintListFragment::class.java
+        topLeft = Triple(
+            R.string.trigger_list_header,
+            TriggerFragment::class.java,
+            R.string.url_trigger_options_guide
+        ),
+        topRight = Triple(
+            R.string.trigger_options_header,
+            TriggerOptionsFragment::class.java,
+            R.string.url_trigger_options_guide
+        ),
+        bottomLeft = Triple(
+            R.string.action_list_header,
+            KeymapActionListFragment::class.java,
+            R.string.url_action_guide
+        ),
+        bottomRight = Triple(
+            R.string.constraint_list_header,
+            KeymapConstraintListFragment::class.java,
+            R.string.url_constraints_guide
+        )
     )
 }

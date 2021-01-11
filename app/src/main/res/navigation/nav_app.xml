@@ -126,24 +126,6 @@
             app:argType="reference" />
     </action>
 
-    <action
-        android:id="@+id/action_global_helpFragment"
-        app:destination="@id/onlineFragment"
-        app:enterAnim="@anim/slide_in_bottom">
-        <argument
-            android:name="@string/nav_arg_header"
-            android:defaultValue="@string/title_help"
-            app:argType="reference" />
-        <argument
-            android:name="@string/nav_arg_file_url"
-            android:defaultValue="@string/url_help"
-            app:argType="reference" />
-        <argument
-            android:name="@string/nav_arg_file_url_alt"
-            android:defaultValue="@string/url_help_alternate"
-            app:argType="reference" />
-    </action>
-
     <fragment
         android:id="@+id/aboutFragment"
         android:name="io.github.sds100.keymapper.ui.fragment.AboutFragment"

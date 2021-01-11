@@ -203,9 +203,10 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             appBar.setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.action_help -> {
-                        val direction = HomeFragmentDirections.actionGlobalHelpFragment()
-                        findNavController().navigate(direction)
-
+                        UrlUtils.launchCustomTab(
+                            requireContext(),
+                            str(R.string.url_quick_start_guide)
+                        )
                         true
                     }
 
