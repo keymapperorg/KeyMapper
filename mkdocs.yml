@@ -13,8 +13,8 @@ theme:
   name: material
   palette:
     accent: red
-    favicon: images/favicon.ico
-    logo: images/logo.png
+  favicon: images/favicon.ico
+  logo: images/logo.png
 
 extra_css:
 - stylesheets/extra.css
