@@ -28,9 +28,6 @@ You have probably enabled the app's device administrator in your device's settin
 The Key Mapper keyboard must be enabled in your device settings and chosen as the active keyboard.
 See Quick Start Guide for help.
 
-## Why isn’t the Key Mapper “choose keyboard” notification working?
-On Android 8.1 and newer, ROOT permission is required since Google has blocked the ability for apps to open the input method picker outside of the app. Therefore, this feature is not available on these newer devices. If your device isn’t rooted, Use the Android system's “Change keyboard” notification instead by tapping somewhere you can type and pressing the notification in the notification drawer. If your version of Android doesn't show a notification then there might be an icon in your navigation bar.
-
 ## Volume increases to max/minimum when pressing power and the respective volume button when the phone is off
 This seems to be a bug with accessibility services on Android Pie and newer for some devices. It happens with the Macrodroid app as well when you only enable their accessibility service which filters keyevents. I tested Key Mapper with no code in the onKeyEvent function in the accessibility service and it still happens. I've tested it on a rooted OOS Android 10 OnePlus 6T, rooted stock Android Pie custom ROM on the OnePlus 6t, non-rooted OOS Android 10 OnePlus 7 Pro. It doesn't seem to happen with Android 10 on the Pixel 2.
 
