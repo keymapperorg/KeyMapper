@@ -3,13 +3,15 @@ site_author: sds100
 repo_url: https://github.com/sds100/KeyMapper
 site_description: Documentation website for the Key Mapper Android app.
 nav:
-    - Home: index.md
-    - Quick Start Guide: quick-start.md
-    - Help: help.md
-    - User Guide:
-        - Triggers: user-guide/triggers.md
-        - Actions: user-guide/actions.md
-    - Contributing: contributing.md
+  - Home: index.md
+  - Quick Start Guide: quick-start.md
+  - FAQ: faq.md
+  - User Guide:
+      - Triggers: user-guide/triggers.md
+      - Actions: user-guide/actions.md
+      - Constraints (2.0+): user-guide/constraints.md
+      - Special Permissions: user-guide/special-permissions.md
+      - Fingerprint Gestures (2.2.0+): user-guide/fingerprint-gestures.md
 
 theme:
   name: material
@@ -22,7 +24,7 @@ theme:
     - navigation.instant
 
 extra_css:
-- stylesheets/extra.css
+  - stylesheets/extra.css
 
 extra:
   social:
@@ -36,7 +38,7 @@ extra:
       link: mailto:developer.sds100@gmail.com
     - icon: kofi
       link: https://ko-fi.com/sethschroeder
-      
+
 markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
@@ -44,3 +46,17 @@ markdown_extensions:
       options:
         custom_icons:
           - overrides/.icons
+  - toc:
+      permalink: true
+
+plugins:
+  - redirects:
+      redirect_maps:
+        'redirects/trigger-by-intent.md': 'https://sds100.github.io/KeyMapper/user-guide/triggers/#trigger-by-intent-v230'
+        'redirects/grant-write-secure-settings.md': 'https://sds100.github.io/KeyMapper/user-guide/special-permissions/#write_secure_settings'
+        'redirects/faq.md': 'https://sds100.github.io/KeyMapper/faq'
+        'redirects/quick-start.md': 'https://sds100.github.io/KeyMapper/quick-start'
+        'redirects/fingerprint-map-options.md': 'https://sds100.github.io/KeyMapper/user-guide/fingerprint-gestures'
+        'redirects/constraints.md': 'https://sds100.github.io/KeyMapper/user-guide/constraints'
+        'redirects/action.md': 'https://sds100.github.io/KeyMapper/user-guide/actions'
+        'redirects/trigger.md': 'https://sds100.github.io/KeyMapper/user-guide/triggers'
