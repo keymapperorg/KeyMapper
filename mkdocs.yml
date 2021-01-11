@@ -10,7 +10,7 @@ nav:
       - Triggers: user-guide/triggers.md
       - Actions: user-guide/actions.md
       - Constraints (2.0+): user-guide/constraints.md
-      - Special Permissions: user-guide/special-permissions.md
+      - ADB Permissions: user-guide/adb-permissions.md
       - Fingerprint Gestures (2.2.0+): user-guide/fingerprint-gestures.md
 
 theme:
@@ -55,10 +55,11 @@ plugins:
   - redirects:
       redirect_maps:
         'redirects/trigger-by-intent.md': 'https://sds100.github.io/KeyMapper/user-guide/triggers/#trigger-by-intent-v230'
-        'redirects/grant-write-secure-settings.md': 'https://sds100.github.io/KeyMapper/user-guide/special-permissions/#write_secure_settings'
+        'redirects/grant-write-secure-settings.md': 'https://sds100.github.io/KeyMapper/user-guide/adb-permissions/#write_secure_settings'
         'redirects/faq.md': 'https://sds100.github.io/KeyMapper/faq'
         'redirects/quick-start.md': 'https://sds100.github.io/KeyMapper/quick-start'
         'redirects/fingerprint-map-options.md': 'https://sds100.github.io/KeyMapper/user-guide/fingerprint-gestures'
         'redirects/constraints.md': 'https://sds100.github.io/KeyMapper/user-guide/constraints'
         'redirects/action.md': 'https://sds100.github.io/KeyMapper/user-guide/actions'
         'redirects/trigger.md': 'https://sds100.github.io/KeyMapper/user-guide/triggers'
+        'redirects/trigger-options.md': 'https://sds100.github.io/KeyMapper/user-guide/triggers/#options'
