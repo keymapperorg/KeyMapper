@@ -10,12 +10,3 @@
 
 
 This wiki aims to provide users with a comprehensive guide to using and setting up Key Mapper for typical implementations. For specific help with more complicated key maps or if this wiki does not answer your questions, you can join the [Key Mapper Discord support server](http://keymapper.club) and ask for help.
-
-
-
-## Project layout
-
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
