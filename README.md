@@ -59,7 +59,7 @@ Format:
 <issue id> <type>: <subject>
 ```
 
-Every feature or bug fix commit should have an issue associated with it. This is a cue for the developer to plan what they are doing which improves efficiency. A feature should be split up into multiple tasks and each task should have its own commit. The feature should be developed on a separate branch and these commits should be squashed into a single commit when the branch is merged.
+Every feature or bug fix commit should have an issue associated with it. This is a cue for the developer to plan what they are doing which improves efficiency. A feature should be split up into multiple tasks and each task should have its own commit. The feature should be developed on a separate branch and then merged into develop.
 
 #### Example
 ```
