@@ -1,5 +1,3 @@
-# Triggers
-
 ## Options
 
 There are options for each trigger key by pressing the 3-dots on them. There are also more options for the whole trigger under the "options" tab. Here are explanations of each option.
