@@ -10,6 +10,7 @@ nav:
       - Triggers: user-guide/triggers.md
       - Actions: user-guide/actions.md
       - Special Permissions: user-guide/special-permissions.md
+      - Fingerprint Gestures (2.2.0+): user-guide/fingerprint-gestures.md
 
 theme:
   name: material
@@ -54,3 +55,4 @@ plugins:
         'redirects/grant-write-secure-settings.md': 'https://sds100.github.io/KeyMapper/user-guide/special-permissions/#write_secure_settings'
         'redirects/faq.md': 'https://sds100.github.io/KeyMapper/faq'
         'redirects/quick-start.md': 'https://sds100.github.io/KeyMapper/quick-start'
+        'redirects/fingerprint-map-options.md': 'https://sds100.github.io/KeyMapper/user-guide/fingerprint-gestures'
