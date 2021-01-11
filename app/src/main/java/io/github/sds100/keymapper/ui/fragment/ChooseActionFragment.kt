@@ -33,8 +33,7 @@ class ChooseActionFragment : Fragment() {
         const val EXTRA_ACTION = "extra_action"
     }
 
-    private val viewModel by activityViewModels<ChooseActionViewModel>
-    { ChooseActionViewModel.Factory() }
+    private val viewModel by activityViewModels<ChooseActionViewModel> { ChooseActionViewModel.Factory() }
 
     private val requestKey by lazy { navArgs<ChooseActionFragmentArgs>().value.StringNavArgChooseActionRequestKey }
     private lateinit var pagerAdapter: ChooseActionPagerAdapter
@@ -194,7 +193,7 @@ class ChooseActionFragment : Fragment() {
         childFragmentManager.setFragmentResultListener(requestKey, this) { _, result ->
             val action = createAction(result)
 
-            setFragmentResult(requestKey, bundleOf(EXTRA_ACTION to action))
+            setFragmentResult(this.requestKey, bundleOf(EXTRA_ACTION to action))
         }
     }
 
