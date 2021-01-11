@@ -2,7 +2,9 @@ package io.github.sds100.keymapper.ui.fragment.keymap
 
 import android.content.ClipData
 import android.content.Context
+import android.net.Uri
 import android.widget.CheckBox
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.navGraphViewModels
 import io.github.sds100.keymapper.R
@@ -75,6 +77,15 @@ class TriggerOptionsFragment : DefaultRecyclerViewFragment() {
                             clipboardManager.setPrimaryClip(clipData)
 
                             toast(R.string.toast_copied_keymap_uid_to_clipboard)
+                        }
+
+                        onHelpClick { _ ->
+                            CustomTabsIntent.Builder()
+                                .build()
+                                .launchUrl(
+                                    requireContext(),
+                                    Uri.parse(str(R.string.url_trigger_by_intent_guide))
+                                )
                         }
                     }
                 }
