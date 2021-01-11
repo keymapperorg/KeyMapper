@@ -35,5 +35,5 @@ jobs:
 
       - name: Deploy
         run: |
-          git pull origin master
+          git pull
           mkdocs gh-deploy
