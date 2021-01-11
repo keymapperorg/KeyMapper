@@ -26,4 +26,4 @@ markdown_extensions:
 plugins:
   - redirects:
       redirect_maps:
-        'redirects/trigger-by-intent.md': 'user-guide/triggers.md'
+          'redirects/trigger-by-intent.md': 'https://sds100.github.io/KeyMapper/user-guide/triggers/#trigger-by-intent-v230'
