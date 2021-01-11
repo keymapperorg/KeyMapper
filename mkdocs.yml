@@ -60,3 +60,4 @@ plugins:
         'redirects/constraints.md': 'https://sds100.github.io/KeyMapper/user-guide/constraints'
         'redirects/action.md': 'https://sds100.github.io/KeyMapper/user-guide/actions'
         'redirects/trigger.md': 'https://sds100.github.io/KeyMapper/user-guide/triggers'
+        'redirects/trigger-options.md': 'https://sds100.github.io/KeyMapper/user-guide/triggers/#options'
