@@ -51,17 +51,17 @@ class ActionPerformerDelegate(context: Context,
         private const val OVERFLOW_MENU_CONTENT_DESCRIPTION = "More options"
     }
 
-    private val mCtx = context.applicationContext
-    private lateinit var mFlashlightController: FlashlightController
-    private val mSuProcessDelegate = SuProcessDelegate()
+    private val ctx = context.applicationContext
+    private lateinit var flashlightController: FlashlightController
+    private val suProcessDelegate = SuProcessDelegate()
 
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            mFlashlightController = FlashlightController()
-            lifecycle.addObserver(mFlashlightController)
+            flashlightController = FlashlightController()
+            lifecycle.addObserver(flashlightController)
         }
 
-        lifecycle.addObserver(mSuProcessDelegate)
+        lifecycle.addObserver(suProcessDelegate)
     }
 
     fun performAction(
@@ -77,7 +77,7 @@ class ActionPerformerDelegate(context: Context,
     ) {
         val (action, showToast, additionalMetaState, keyEventAction) = performActionModel
 
-        mCtx.apply {
+        ctx.apply {
             //Only show a toast message that Key Mapper is performing an action if the user has enabled it
             if (showToast) {
                 toast(R.string.performing_action)
@@ -126,7 +126,7 @@ class ActionPerformerDelegate(context: Context,
                     }
                 }
 
-                ActionType.SYSTEM_ACTION -> performSystemAction(
+                ActionType.SYSTEM_ACTION -> perforsystemAction(
                     action,
                     chosenImePackageName,
                     currentPackageName
@@ -217,19 +217,19 @@ class ActionPerformerDelegate(context: Context,
         }
     }
 
-    fun performSystemAction(
+    fun perforsystemAction(
         id: String,
         chosenImePackageName: String?,
         currentPackageName: String?
-    ) = performSystemAction(
+    ) = perforsystemAction(
         Action(ActionType.SYSTEM_ACTION, id),
         chosenImePackageName,
         currentPackageName
     )
 
-    private fun performSystemAction(action: Action,
-                                    chosenImePackageName: String?,
-                                    currentPackageName: String?) {
+    private fun perforsystemAction(action: Action,
+                                   chosenImePackageName: String?,
+                                   currentPackageName: String?) {
 
         val id = action.data
 
@@ -261,7 +261,7 @@ class ActionPerformerDelegate(context: Context,
 
         val showVolumeUi = action.flags.hasFlag(Action.ACTION_FLAG_SHOW_VOLUME_UI)
 
-        mCtx.apply {
+        ctx.apply {
             when (id) {
                 SystemAction.ENABLE_WIFI -> NetworkUtils.changeWifiStatePreQ(this, StateChange.ENABLE)
                 SystemAction.DISABLE_WIFI -> NetworkUtils.changeWifiStatePreQ(this, StateChange.DISABLE)
@@ -349,11 +349,11 @@ class ActionPerformerDelegate(context: Context,
                 SystemAction.OPEN_MENU -> {
                     if (AppPreferences.hasRootPermission) {
 
-                        if (mSuProcessDelegate.process == null) {
-                            mSuProcessDelegate.createSuProcess()
+                        if (suProcessDelegate.process == null) {
+                            suProcessDelegate.createSuProcess()
                         }
 
-                        mSuProcessDelegate.process?.let {
+                        suProcessDelegate.process?.let {
                             //the \n is very important. it is like pressing enter
 
                             try {
@@ -505,37 +505,37 @@ class ActionPerformerDelegate(context: Context,
 
                             SystemAction.PLAY_MEDIA_PACKAGE -> {
                                 action.extras.getData(Action.EXTRA_PACKAGE_NAME).onSuccess {
-                                    MediaUtils.playMediaForPackage(mCtx, it)
+                                    MediaUtils.playMediaForPackage(ctx, it)
                                 }
                             }
                             SystemAction.PLAY_PAUSE_MEDIA_PACKAGE -> {
                                 action.extras.getData(Action.EXTRA_PACKAGE_NAME).onSuccess {
-                                    MediaUtils.playPauseMediaPlaybackForPackage(mCtx, it)
+                                    MediaUtils.playPauseMediaPlaybackForPackage(ctx, it)
                                 }
                             }
                             SystemAction.PAUSE_MEDIA_PACKAGE -> {
                                 action.extras.getData(Action.EXTRA_PACKAGE_NAME).onSuccess {
-                                    MediaUtils.pauseMediaForPackage(mCtx, it)
+                                    MediaUtils.pauseMediaForPackage(ctx, it)
                                 }
                             }
                             SystemAction.NEXT_TRACK_PACKAGE -> {
                                 action.extras.getData(Action.EXTRA_PACKAGE_NAME).onSuccess {
-                                    MediaUtils.nextTrackForPackage(mCtx, it)
+                                    MediaUtils.nextTrackForPackage(ctx, it)
                                 }
                             }
                             SystemAction.PREVIOUS_TRACK_PACKAGE -> {
                                 action.extras.getData(Action.EXTRA_PACKAGE_NAME).onSuccess {
-                                    MediaUtils.previousTrackForPackage(mCtx, it)
+                                    MediaUtils.previousTrackForPackage(ctx, it)
                                 }
                             }
                             SystemAction.FAST_FORWARD_PACKAGE -> {
                                 action.extras.getData(Action.EXTRA_PACKAGE_NAME).onSuccess {
-                                    MediaUtils.fastForwardForPackage(mCtx, it)
+                                    MediaUtils.fastForwardForPackage(ctx, it)
                                 }
                             }
                             SystemAction.REWIND_PACKAGE -> {
                                 action.extras.getData(Action.EXTRA_PACKAGE_NAME).onSuccess {
-                                    MediaUtils.rewindForPackage(mCtx, it)
+                                    MediaUtils.rewindForPackage(ctx, it)
                                 }
                             }
                         }
@@ -566,9 +566,9 @@ class ActionPerformerDelegate(context: Context,
                             SystemAction.VOLUME_TOGGLE_MUTE ->
                                 AudioUtils.adjustVolume(this, AudioManager.ADJUST_TOGGLE_MUTE, showVolumeUi)
 
-                            SystemAction.TOGGLE_FLASHLIGHT -> mFlashlightController.toggleFlashlight(lensFacing)
-                            SystemAction.ENABLE_FLASHLIGHT -> mFlashlightController.setFlashlightMode(true, lensFacing)
-                            SystemAction.DISABLE_FLASHLIGHT -> mFlashlightController.setFlashlightMode(false, lensFacing)
+                            SystemAction.TOGGLE_FLASHLIGHT -> flashlightController.toggleFlashlight(lensFacing)
+                            SystemAction.ENABLE_FLASHLIGHT -> flashlightController.setFlashlightMode(true, lensFacing)
+                            SystemAction.DISABLE_FLASHLIGHT -> flashlightController.setFlashlightMode(false, lensFacing)
 
                             SystemAction.TOGGLE_DND_MODE,
                             SystemAction.ENABLE_DND_MODE -> {

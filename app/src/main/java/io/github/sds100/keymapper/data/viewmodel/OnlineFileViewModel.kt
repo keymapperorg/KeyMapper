@@ -14,18 +14,18 @@ import io.github.sds100.keymapper.util.result.handle
  */
 
 class OnlineFileViewModel(
-    private val mRepository: FileRepository,
-    private val mFileUrl: String,
-    private val mAlternateUrl: String? = null,
+    private val repository: FileRepository,
+    private val fileUrl: String,
+    private val alternateUrl: String? = null,
     val header: String) : ViewModel() {
 
-    private val mMarkdownResult = liveData {
+    private val markdownResult = liveData {
         emit(Loading())
 
-        emit(Data(mRepository.getFile(mFileUrl)))
+        emit(Data(repository.getFile(fileUrl)))
     }
 
-    val markdownText = mMarkdownResult.map { result ->
+    val markdownText = markdownResult.map { result ->
         result.mapData { data ->
             data.handle(
                 onSuccess = {
@@ -33,8 +33,8 @@ class OnlineFileViewModel(
                 },
                 onFailure = {
                     if (it is SSLHandshakeError) {
-                        if (mAlternateUrl != null) {
-                            _eventStream.value = OpenUrl(mAlternateUrl)
+                        if (alternateUrl != null) {
+                            _eventStream.value = OpenUrl(alternateUrl)
                         }
                     }
 
@@ -51,14 +51,14 @@ class OnlineFileViewModel(
     val eventStream: LiveData<Event> = _eventStream
 
     class Factory(
-        private val mRepository: FileRepository,
-        private val mFileUrl: String,
-        private val mAlternateUrl: String? = null,
-        private val mHeader: String
+        private val repository: FileRepository,
+        private val fileUrl: String,
+        private val alternateUrl: String? = null,
+        private val header: String
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>) =
-            OnlineFileViewModel(mRepository, mFileUrl, mAlternateUrl, mHeader) as T
+            OnlineFileViewModel(repository, fileUrl, alternateUrl, header) as T
     }
 }

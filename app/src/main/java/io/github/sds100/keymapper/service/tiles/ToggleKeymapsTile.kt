@@ -19,7 +19,7 @@ import io.github.sds100.keymapper.util.str
 @RequiresApi(Build.VERSION_CODES.N)
 class ToggleKeymapsTile : TileService(), SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private val mState: State
+    private val state: State
         get() = when {
             !AccessibilityUtils.isServiceEnabled(this) -> State.DISABLED
 
@@ -30,7 +30,7 @@ class ToggleKeymapsTile : TileService(), SharedPreferences.OnSharedPreferenceCha
             }
         }
 
-    private val mBroadcastReceiver = object : BroadcastReceiver() {
+    private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             intent ?: return
 
@@ -48,7 +48,7 @@ class ToggleKeymapsTile : TileService(), SharedPreferences.OnSharedPreferenceCha
             addAction(MyAccessibilityService.ACTION_ON_START)
             addAction(MyAccessibilityService.ACTION_ON_STOP)
 
-            registerReceiver(mBroadcastReceiver, this)
+            registerReceiver(broadcastReceiver, this)
         }
 
         invalidateTile()
@@ -87,7 +87,7 @@ class ToggleKeymapsTile : TileService(), SharedPreferences.OnSharedPreferenceCha
         super.onDestroy()
 
         defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
-        unregisterReceiver(mBroadcastReceiver)
+        unregisterReceiver(broadcastReceiver)
     }
 
     override fun onClick() {
@@ -111,7 +111,7 @@ class ToggleKeymapsTile : TileService(), SharedPreferences.OnSharedPreferenceCha
     private fun invalidateTile() {
         qsTile ?: return
 
-        when (mState) {
+        when (state) {
             State.PAUSED -> {
                 qsTile.label = str(R.string.tile_resume)
                 qsTile.contentDescription = str(R.string.tile_resume)

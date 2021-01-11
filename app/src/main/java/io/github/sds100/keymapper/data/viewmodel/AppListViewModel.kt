@@ -16,13 +16,13 @@ class AppListViewModel internal constructor(
     private val repository: SystemRepository
 ) : ViewModel() {
 
-    private val mLaunchableAppModelList = liveData {
+    private val launchableAppModelList = liveData {
         emit(Loading())
 
         emit(repository.getLaunchableAppList().createModels().getState())
     }
 
-    private val mAllAppModelList = liveData {
+    private val allAppModelList = liveData {
         emit(Loading())
 
         emit(repository.getAllAppList().createModels().getState())
@@ -32,7 +32,7 @@ class AppListViewModel internal constructor(
 
     val showHiddenApps = MutableLiveData(false)
 
-    val haveHiddenApps = mLaunchableAppModelList.map {
+    val haveHiddenApps = launchableAppModelList.map {
         if (it is Data) {
             it.data.isNotEmpty()
         } else {
@@ -61,36 +61,36 @@ class AppListViewModel internal constructor(
         }
 
         fun showAllApps() {
-            value = mAllAppModelList.value
+            value = allAppModelList.value
 
             searchQuery.value?.let { query ->
-                filter(mAllAppModelList.value ?: Empty(), query)
+                filter(allAppModelList.value ?: Empty(), query)
             }
         }
 
         fun showLaunchableApps() {
-            value = mLaunchableAppModelList.value
+            value = launchableAppModelList.value
 
             searchQuery.value?.let { query ->
-                filter(mLaunchableAppModelList.value ?: Empty(), query)
+                filter(launchableAppModelList.value ?: Empty(), query)
             }
         }
 
         addSource(searchQuery) { query ->
             if (showHiddenApps.value == true) {
-                filter(mAllAppModelList.value ?: Empty(), query)
+                filter(allAppModelList.value ?: Empty(), query)
             } else {
-                filter(mLaunchableAppModelList.value ?: Empty(), query)
+                filter(launchableAppModelList.value ?: Empty(), query)
             }
         }
 
-        addSource(mAllAppModelList) {
+        addSource(allAppModelList) {
             if (showHiddenApps.value == true) {
                 showAllApps()
             }
         }
 
-        addSource(mLaunchableAppModelList) {
+        addSource(launchableAppModelList) {
             if (showHiddenApps.value == false) {
                 showLaunchableApps()
             }
@@ -116,11 +116,11 @@ class AppListViewModel internal constructor(
         }
 
     class Factory(
-        private val mRepository: SystemRepository
+        private val repository: SystemRepository
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>) =
-            AppListViewModel(mRepository) as T
+            AppListViewModel(repository) as T
     }
 }

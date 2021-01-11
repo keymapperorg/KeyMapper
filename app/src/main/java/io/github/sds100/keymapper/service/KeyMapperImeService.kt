@@ -24,7 +24,7 @@ class KeyMapperImeService : InputMethodService() {
         private const val KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT = "io.github.sds100.keymapper.inputmethod.EXTRA_KEY_EVENT"
     }
 
-    private val mBroadcastReceiver = object : BroadcastReceiver() {
+    private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val action = intent?.action ?: return
 
@@ -72,13 +72,13 @@ class KeyMapperImeService : InputMethodService() {
             addAction(KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_UP)
             addAction(KEY_MAPPER_INPUT_METHOD_ACTION_TEXT)
 
-            registerReceiver(mBroadcastReceiver, this)
+            registerReceiver(broadcastReceiver, this)
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
-        unregisterReceiver(mBroadcastReceiver)
+        unregisterReceiver(broadcastReceiver)
     }
 }

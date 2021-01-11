@@ -92,18 +92,18 @@ class MyAccessibilityService : AccessibilityService(),
     /**
      * Broadcast receiver for all intents sent from within the app.
      */
-    private val mBroadcastReceiver = object : BroadcastReceiver() {
+    private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
 
                 ACTION_PAUSE_REMAPPINGS -> {
-                    mKeymapDetectionDelegate.reset()
+                    keymapDetectionDelegate.reset()
                     AppPreferences.keymapsPaused = true
                     WidgetsManager.onEvent(this@MyAccessibilityService, EVENT_PAUSE_REMAPS)
                 }
 
                 ACTION_RESUME_REMAPPINGS -> {
-                    mKeymapDetectionDelegate.reset()
+                    keymapDetectionDelegate.reset()
                     AppPreferences.keymapsPaused = false
                     WidgetsManager.onEvent(this@MyAccessibilityService, EVENT_RESUME_REMAPS)
                 }
@@ -113,9 +113,9 @@ class MyAccessibilityService : AccessibilityService(),
                         ?: return
 
                     if (intent.action == BluetoothDevice.ACTION_ACL_DISCONNECTED) {
-                        mConnectedBtAddresses.remove(device.address)
+                        connectedBtAddresses.remove(device.address)
                     } else {
-                        mConnectedBtAddresses.add(device.address)
+                        connectedBtAddresses.add(device.address)
                     }
                 }
 
@@ -127,26 +127,26 @@ class MyAccessibilityService : AccessibilityService(),
 
                 ACTION_RECORD_TRIGGER -> {
                     //don't start recording if a trigger is being recorded
-                    if (!mRecordingTrigger) {
-                        mRecordingTriggerJob = recordTrigger()
+                    if (!ecordingTrigger) {
+                        recordingTriggerJob = recordTrigger()
                     }
                 }
 
                 ACTION_TEST_ACTION -> {
                     intent.getParcelableExtra<Action>(EXTRA_ACTION)?.let {
-                        mActionPerformerDelegate.performAction(
+                        actionPerformerDelegate.performAction(
                             it,
-                            mChosenImePackageName,
+                            chosenImePackageName,
                             currentPackageName
                         )
                     }
                 }
 
                 ACTION_STOP_RECORDING_TRIGGER -> {
-                    val wasRecordingTrigger = mRecordingTrigger
+                    val wasRecordingTrigger = ecordingTrigger
 
-                    mRecordingTriggerJob?.cancel()
-                    mRecordingTriggerJob = null
+                    recordingTriggerJob?.cancel()
+                    recordingTriggerJob = null
 
                     if (wasRecordingTrigger) {
                         sendPackageBroadcast(ACTION_STOPPED_RECORDING_TRIGGER)
@@ -159,9 +159,9 @@ class MyAccessibilityService : AccessibilityService(),
                     val actionList = gson.fromJson<List<Action>>(actionListJson)
 
                     actionList.forEach {
-                        mActionPerformerDelegate.performAction(
+                        actionPerformerDelegate.performAction(
                             it,
-                            mChosenImePackageName,
+                            chosenImePackageName,
                             currentPackageName
                         )
                     }
@@ -176,14 +176,14 @@ class MyAccessibilityService : AccessibilityService(),
                 }
 
                 Intent.ACTION_SCREEN_ON -> {
-                    mIsScreenOn = true
-                    mGetEventDelegate.stopListening()
+                    _isScreenOn = true
+                    getEventDelegate.stopListening()
                 }
 
                 Intent.ACTION_SCREEN_OFF -> {
-                    mIsScreenOn = false
-                    if (AppPreferences.hasRootPermission && mScreenOffTriggersEnabled) {
-                        if (!mGetEventDelegate.startListening(lifecycleScope)) {
+                    _isScreenOn = false
+                    if (AppPreferences.hasRootPermission && screenOffTriggersEnabled) {
+                        if (!getEventDelegate.startListening(lifecycleScope)) {
                             toast(R.string.error_failed_execute_getevent)
                         }
                     }
@@ -191,35 +191,35 @@ class MyAccessibilityService : AccessibilityService(),
 
                 ACTION_TRIGGER_KEYMAP_BY_UID -> {
                     intent.getStringExtra(EXTRA_KEYMAP_UID)?.let {
-                        mTriggerKeymapByIntentController.onDetected(it)
+                        triggerKeymapByIntentController.onDetected(it)
                     }
                 }
             }
         }
     }
 
-    private var mRecordingTriggerJob: Job? = null
+    private var recordingTriggerJob: Job? = null
 
-    private val mRecordingTrigger: Boolean
-        get() = mRecordingTriggerJob != null
+    private val ecordingTrigger: Boolean
+        get() = recordingTriggerJob != null
 
-    private var mScreenOffTriggersEnabled = false
+    private var screenOffTriggersEnabled = false
 
-    private lateinit var mLifecycleRegistry: LifecycleRegistry
+    private lateinit var lifecycleRegistry: LifecycleRegistry
 
-    private lateinit var mKeymapDetectionDelegate: KeymapDetectionDelegate
-    private lateinit var mActionPerformerDelegate: ActionPerformerDelegate
-    private lateinit var mConstraintDelegate: ConstraintDelegate
+    private lateinit var keymapDetectionDelegate: KeymapDetectionDelegate
+    private lateinit var actionPerformerDelegate: ActionPerformerDelegate
+    private lateinit var constraintDelegate: ConstraintDelegate
 
-    private lateinit var mTriggerKeymapByIntentController: TriggerKeymapByIntentController
+    private lateinit var triggerKeymapByIntentController: TriggerKeymapByIntentController
 
     //fingerprint gesture stuff
-    private lateinit var mFingerprintGestureMapController: FingerprintGestureMapController
+    private lateinit var fingerprintGestureMapController: FingerprintGestureMapController
 
-    private var mFingerprintGestureCallback:
+    private var fingerprintGestureCallback:
         FingerprintGestureController.FingerprintGestureCallback? = null
 
-    private lateinit var mFingerprintMapRepository: FingerprintMapRepository
+    private lateinit var fingerprintMapRepository: FingerprintMapRepository
 
     override val currentTime: Long
         get() = SystemClock.elapsedRealtime()
@@ -227,8 +227,9 @@ class MyAccessibilityService : AccessibilityService(),
     override val currentPackageName: String?
         get() = rootInActiveWindow?.packageName?.toString()
 
+    private var _isScreenOn = true
     override val isScreenOn: Boolean
-        get() = mIsScreenOn
+        get() = _isScreenOn
 
     override val orientation: Int?
         get() = displayManager.displays[0].rotation
@@ -240,19 +241,18 @@ class MyAccessibilityService : AccessibilityService(),
             null
         }
 
-    private var mIsScreenOn = true
-    private val mConnectedBtAddresses = mutableSetOf<String>()
+    private val connectedBtAddresses = mutableSetOf<String>()
 
-    private var mChosenImePackageName: String? = null
+    private var chosenImePackageName: String? = null
 
-    private val mIsCompatibleImeChosen
-        get() = KeyboardUtils.KEY_MAPPER_IME_PACKAGE_LIST.contains(mChosenImePackageName)
+    private val isCompatibleImeChosen
+        get() = KeyboardUtils.KEY_MAPPER_IME_PACKAGE_LIST.contains(chosenImePackageName)
 
-    private val mGetEventDelegate = GetEventDelegate { keyCode, action, deviceDescriptor, isExternal, deviceId ->
+    private val getEventDelegate = GetEventDelegate { keyCode, action, deviceDescriptor, isExternal, deviceId ->
 
         if (!AppPreferences.keymapsPaused) {
             withContext(Dispatchers.Main.immediate) {
-                mKeymapDetectionDelegate.onKeyEvent(
+                keymapDetectionDelegate.onKeyEvent(
                     keyCode,
                     action,
                     deviceDescriptor,
@@ -267,8 +267,8 @@ class MyAccessibilityService : AccessibilityService(),
     override fun onServiceConnected() {
         super.onServiceConnected()
 
-        mLifecycleRegistry = LifecycleRegistry(this)
-        mLifecycleRegistry.currentState = Lifecycle.State.STARTED
+        lifecycleRegistry = LifecycleRegistry(this)
+        lifecycleRegistry.currentState = Lifecycle.State.STARTED
 
         val preferences = KeymapDetectionPreferences(
             AppPreferences.longPressDelay,
@@ -281,23 +281,23 @@ class MyAccessibilityService : AccessibilityService(),
             AppPreferences.forceVibrate
         )
 
-        mConstraintDelegate = ConstraintDelegate(this)
+        constraintDelegate = ConstraintDelegate(this)
 
-        mKeymapDetectionDelegate = KeymapDetectionDelegate(
+        keymapDetectionDelegate = KeymapDetectionDelegate(
             lifecycleScope,
             preferences,
             iClock = this,
             iActionError = this,
-            mConstraintDelegate)
+            constraintDelegate)
 
-        mActionPerformerDelegate = ActionPerformerDelegate(
+        actionPerformerDelegate = ActionPerformerDelegate(
             context = this,
             iPerformAccessibilityAction = this,
             lifecycle = lifecycle)
 
-        mTriggerKeymapByIntentController = TriggerKeymapByIntentController(
+        triggerKeymapByIntentController = TriggerKeymapByIntentController(
             coroutineScope = lifecycleScope,
-            mConstraintDelegate,
+            constraintDelegate,
             iActionError = this
         )
 
@@ -317,7 +317,7 @@ class MyAccessibilityService : AccessibilityService(),
             addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
             addAction(ACTION_TRIGGER_KEYMAP_BY_UID)
 
-            registerReceiver(mBroadcastReceiver, this)
+            registerReceiver(broadcastReceiver, this)
         }
 
         defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
@@ -325,7 +325,7 @@ class MyAccessibilityService : AccessibilityService(),
         WidgetsManager.onEvent(this, EVENT_ACCESSIBILITY_SERVICE_STARTED)
         sendPackageBroadcast(ACTION_ON_START)
 
-        mKeymapDetectionDelegate.imitateButtonPress.observe(this, {
+        keymapDetectionDelegate.imitateButtonPress.observe(this, {
             when (it.keyCode) {
                 KeyEvent.KEYCODE_VOLUME_UP -> AudioUtils.adjustVolume(this, AudioManager.ADJUST_RAISE,
                     showVolumeUi = true)
@@ -337,14 +337,14 @@ class MyAccessibilityService : AccessibilityService(),
                 KeyEvent.KEYCODE_HOME -> performGlobalAction(GLOBAL_ACTION_HOME)
                 KeyEvent.KEYCODE_APP_SWITCH -> performGlobalAction(GLOBAL_ACTION_RECENTS)
                 KeyEvent.KEYCODE_MENU ->
-                    mActionPerformerDelegate.performSystemAction(
+                    actionPerformerDelegate.perforsystemAction(
                         SystemAction.OPEN_MENU,
-                        mChosenImePackageName,
+                        chosenImePackageName,
                         currentPackageName
                     )
 
                 else -> {
-                    mChosenImePackageName?.let { imePackageName ->
+                    chosenImePackageName?.let { imePackageName ->
                         KeyboardUtils.inputKeyEventFromImeService(
                             imePackageName = imePackageName,
                             keyCode = it.keyCode,
@@ -356,13 +356,13 @@ class MyAccessibilityService : AccessibilityService(),
             }
         })
 
-        mChosenImePackageName = KeyboardUtils.getChosenInputMethodPackageName(this).valueOrNull()
+        chosenImePackageName = KeyboardUtils.getChosenInputMethodPackageName(this).valueOrNull()
 
-        mFingerprintMapRepository = ServiceLocator.fingerprintMapRepository(this)
+        fingerprintMapRepository = ServiceLocator.fingerprintMapRepository(this)
 
-        mFingerprintGestureMapController = FingerprintGestureMapController(
+        fingerprintGestureMapController = FingerprintGestureMapController(
             lifecycleScope,
-            iConstraintDelegate = mConstraintDelegate,
+            iConstraintDelegate = constraintDelegate,
             iActionError = this
         )
 
@@ -371,23 +371,23 @@ class MyAccessibilityService : AccessibilityService(),
             requestFingerprintGestureDetection()
 
             lifecycleScope.launchWhenStarted {
-                mFingerprintMapRepository.setFingerprintGesturesAvailable(
+                fingerprintMapRepository.setFingerprintGesturesAvailable(
                     fingerprintGestureController.isGestureDetectionAvailable)
             }
 
-            mFingerprintGestureCallback =
+            fingerprintGestureCallback =
                 object : FingerprintGestureController.FingerprintGestureCallback() {
 
                     override fun onGestureDetected(gesture: Int) {
                         super.onGestureDetected(gesture)
 
-                        mFingerprintGestureMapController.onGesture(gesture)
+                        fingerprintGestureMapController.onGesture(gesture)
                     }
                 }
 
-            observeFingerprintMaps(mFingerprintMapRepository)
+            observeFingerprintMaps(fingerprintMapRepository)
 
-            mFingerprintGestureCallback?.let {
+            fingerprintGestureCallback?.let {
                 fingerprintGestureController.registerFingerprintGestureCallback(it, null)
             }
         }
@@ -403,15 +403,15 @@ class MyAccessibilityService : AccessibilityService(),
         }
 
         MediatorLiveData<Vibrate>().apply {
-            addSource(mKeymapDetectionDelegate.vibrate) {
+            addSource(keymapDetectionDelegate.vibrate) {
                 value = it
             }
 
-            addSource(mFingerprintGestureMapController.vibrate) {
+            addSource(fingerprintGestureMapController.vibrate) {
                 value = it
             }
 
-            addSource(mTriggerKeymapByIntentController.vibrate) {
+            addSource(triggerKeymapByIntentController.vibrate) {
                 value = it
             }
 
@@ -430,22 +430,22 @@ class MyAccessibilityService : AccessibilityService(),
         }
 
         MediatorLiveData<PerformAction>().apply {
-            addSource(mKeymapDetectionDelegate.performAction) {
+            addSource(keymapDetectionDelegate.performAction) {
                 value = it
             }
 
-            addSource(mFingerprintGestureMapController.performAction) {
+            addSource(fingerprintGestureMapController.performAction) {
                 value = it
             }
 
-            addSource(mTriggerKeymapByIntentController.performAction) {
+            addSource(triggerKeymapByIntentController.performAction) {
                 value = it
             }
 
             observe(this@MyAccessibilityService, Observer {
-                mActionPerformerDelegate.performAction(
+                actionPerformerDelegate.performAction(
                     it,
-                    mChosenImePackageName,
+                    chosenImePackageName,
                     currentPackageName
                 )
             })
@@ -456,8 +456,8 @@ class MyAccessibilityService : AccessibilityService(),
 
     override fun onDestroy() {
 
-        if (::mLifecycleRegistry.isInitialized) {
-            mLifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+        if (::lifecycleRegistry.isInitialized) {
+            lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
         }
 
         WidgetsManager.onEvent(this, EVENT_ACCESSIBILITY_SERVICE_STOPPED)
@@ -466,13 +466,13 @@ class MyAccessibilityService : AccessibilityService(),
 
         defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
 
-        unregisterReceiver(mBroadcastReceiver)
+        unregisterReceiver(broadcastReceiver)
 
         if (VERSION.SDK_INT >= VERSION_CODES.O) {
             fingerprintGestureController
-                .unregisterFingerprintGestureCallback(mFingerprintGestureCallback)
+                .unregisterFingerprintGestureCallback(fingerprintGestureCallback)
 
-            mFingerprintGestureMapController.reset()
+            fingerprintGestureMapController.reset()
         }
 
         super.onDestroy()
@@ -483,7 +483,7 @@ class MyAccessibilityService : AccessibilityService(),
     override fun onKeyEvent(event: KeyEvent?): Boolean {
         event ?: return super.onKeyEvent(event)
 
-        if (mRecordingTrigger) {
+        if (ecordingTrigger) {
             if (event.action == KeyEvent.ACTION_DOWN) {
 
                 //tell the UI that a key has been pressed
@@ -495,7 +495,7 @@ class MyAccessibilityService : AccessibilityService(),
 
         if (!AppPreferences.keymapsPaused) {
             try {
-                return mKeymapDetectionDelegate.onKeyEvent(
+                return keymapDetectionDelegate.onKeyEvent(
                     event.keyCode,
                     event.action,
                     event.device.descriptor,
@@ -513,36 +513,36 @@ class MyAccessibilityService : AccessibilityService(),
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         when (key) {
             str(R.string.key_pref_long_press_delay) -> {
-                mKeymapDetectionDelegate.preferences.defaultLongPressDelay = AppPreferences.longPressDelay
+                keymapDetectionDelegate.preferences.defaultLongPressDelay = AppPreferences.longPressDelay
             }
 
             str(R.string.key_pref_double_press_delay) -> {
-                mKeymapDetectionDelegate.preferences.defaultDoublePressDelay = AppPreferences.doublePressDelay
+                keymapDetectionDelegate.preferences.defaultDoublePressDelay = AppPreferences.doublePressDelay
             }
 
             str(R.string.key_pref_repeat_delay) -> {
-                mKeymapDetectionDelegate.preferences.defaultRepeatDelay = AppPreferences.repeatDelay
+                keymapDetectionDelegate.preferences.defaultRepeatDelay = AppPreferences.repeatDelay
             }
 
             str(R.string.key_pref_repeat_rate) -> {
-                mKeymapDetectionDelegate.preferences.defaultRepeatRate = AppPreferences.repeatRate
+                keymapDetectionDelegate.preferences.defaultRepeatRate = AppPreferences.repeatRate
             }
 
             str(R.string.key_pref_sequence_trigger_timeout) -> {
-                mKeymapDetectionDelegate.preferences.defaultSequenceTriggerTimeout =
+                keymapDetectionDelegate.preferences.defaultSequenceTriggerTimeout =
                     AppPreferences.sequenceTriggerTimeout
             }
 
             str(R.string.key_pref_vibrate_duration) -> {
-                mKeymapDetectionDelegate.preferences.defaultVibrateDuration = AppPreferences.vibrateDuration
+                keymapDetectionDelegate.preferences.defaultVibrateDuration = AppPreferences.vibrateDuration
             }
 
             str(R.string.key_pref_force_vibrate) -> {
-                mKeymapDetectionDelegate.preferences.forceVibrate = AppPreferences.forceVibrate
+                keymapDetectionDelegate.preferences.forceVibrate = AppPreferences.forceVibrate
             }
 
             str(R.string.key_pref_hold_down_duration) -> {
-                mKeymapDetectionDelegate.preferences.defaultHoldDownDuration = AppPreferences.holdDownDuration
+                keymapDetectionDelegate.preferences.defaultHoldDownDuration = AppPreferences.holdDownDuration
             }
 
             str(R.string.key_pref_keymaps_paused) -> {
@@ -571,11 +571,11 @@ class MyAccessibilityService : AccessibilityService(),
         }
     }
 
-    override fun isBluetoothDeviceConnected(address: String) = mConnectedBtAddresses.contains(address)
+    override fun isBluetoothDeviceConnected(address: String) = connectedBtAddresses.contains(address)
 
     override fun canActionBePerformed(action: Action): Result<Action> {
         if (action.requiresIME) {
-            return if (mIsCompatibleImeChosen) {
+            return if (isCompatibleImeChosen) {
                 Success(action)
             } else {
                 NoCompatibleImeChosen()
@@ -585,7 +585,7 @@ class MyAccessibilityService : AccessibilityService(),
         return action.canBePerformed(this)
     }
 
-    override fun getLifecycle() = mLifecycleRegistry
+    override fun getLifecycle() = lifecycleRegistry
 
     override val keyboardController: SoftKeyboardController?
         get() = if (VERSION.SDK_INT >= VERSION_CODES.N) {
@@ -615,7 +615,7 @@ class MyAccessibilityService : AccessibilityService(),
     private fun observeFingerprintMaps(repository: FingerprintMapRepository) {
 
         repository.fingerprintGestureMapsLiveData.observe(this, Observer { maps ->
-            mFingerprintGestureMapController.fingerprintMaps = maps
+            fingerprintGestureMapController.fingerprintMaps = maps
 
             invalidateFingerprintGestureDetection()
         })
@@ -623,7 +623,7 @@ class MyAccessibilityService : AccessibilityService(),
 
     @RequiresApi(VERSION_CODES.O)
     private fun invalidateFingerprintGestureDetection() {
-        mFingerprintGestureMapController.fingerprintMaps.let { maps ->
+        fingerprintGestureMapController.fingerprintMaps.let { maps ->
             if (maps.any { it.value.isEnabled && it.value.actionList.isNotEmpty() }
                 && !AppPreferences.keymapsPaused) {
                 requestFingerprintGestureDetection()
@@ -651,12 +651,12 @@ class MyAccessibilityService : AccessibilityService(),
     }
 
     private fun updateKeymapListCache(keymapList: List<KeyMap>) {
-        mKeymapDetectionDelegate.keyMapListCache = keymapList
+        keymapDetectionDelegate.keymapListCache = keymapList
 
-        mScreenOffTriggersEnabled = keymapList.any { keymap ->
+        screenOffTriggersEnabled = keymapList.any { keymap ->
             keymap.trigger.flags.hasFlag(Trigger.TRIGGER_FLAG_SCREEN_OFF_TRIGGERS)
         }
 
-        mTriggerKeymapByIntentController.onKeymapListUpdate(keymapList)
+        triggerKeymapByIntentController.onKeymapListUpdate(keymapList)
     }
 }

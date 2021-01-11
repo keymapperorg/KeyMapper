@@ -17,7 +17,7 @@ object FileUtils {
     const val MIME_TYPE_PNG = "image/png"
     const val MIME_TYPE_ALL = "*/*"
 
-    fun getTextFromAppFiles(ctx: Context, fileName: String): String {
+    fun getTextFroappFiles(ctx: Context, fileName: String): String {
         ctx.openFileInput(fileName).bufferedReader().use {
             return it.readText()
         }

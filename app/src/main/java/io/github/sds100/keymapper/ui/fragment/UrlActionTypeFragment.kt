@@ -26,7 +26,7 @@ class UrlActionTypeFragment : Fragment() {
         const val EXTRA_URL = "extra_url"
     }
 
-    private val mViewModel: UrlActionTypeViewModel by activityViewModels {
+    private val viewModel: UrlActionTypeViewModel by activityViewModels {
         InjectorUtils.provideUrlActionTypeViewModel()
     }
 
@@ -55,13 +55,13 @@ class UrlActionTypeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.apply {
-            text = mViewModel.url
+            text = viewModel.url
             caption = str(R.string.caption_action_type_url)
 
             editText.inputType = InputType.TYPE_TEXT_VARIATION_URI
 
             setOnDoneClick {
-                setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_URL to mViewModel.url.value))
+                setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_URL to viewModel.url.value))
                 findNavController().navigateUp()
             }
         }

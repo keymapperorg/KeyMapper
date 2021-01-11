@@ -25,7 +25,7 @@ class PickCoordinateImageView(context: Context,
 
     val pointCoordinates = MutableLiveData<Point>()
 
-    private val mCoordinateLinePaint = Paint().apply {
+    private val coordinateLinePaint = Paint().apply {
         color = context.color(R.color.coordinate_line)
     }
 
@@ -35,8 +35,8 @@ class PickCoordinateImageView(context: Context,
         if (canvas == null) return
 
         pointCoordinates.value?.let {
-            canvas.drawLine(it.x.toFloat(), 0f, it.x.toFloat(), height.toFloat(), mCoordinateLinePaint)
-            canvas.drawLine(0f, it.y.toFloat(), width.toFloat(), it.y.toFloat(), mCoordinateLinePaint)
+            canvas.drawLine(it.x.toFloat(), 0f, it.x.toFloat(), height.toFloat(), coordinateLinePaint)
+            canvas.drawLine(0f, it.y.toFloat(), width.toFloat(), it.y.toFloat(), coordinateLinePaint)
         }
     }
 

@@ -20,19 +20,19 @@ import splitties.toast.toast
 
 @RequiresApi(Build.VERSION_CODES.M)
 class FlashlightController : LifecycleObserver {
-    private val mFlashEnabled = SparseBooleanArray()
+    private val flashEnabled = SparseBooleanArray()
 
-    private val mTorchCallback = @RequiresApi(Build.VERSION_CODES.M)
+    private val torchCallback = @RequiresApi(Build.VERSION_CODES.M)
     object : CameraManager.TorchCallback() {
         override fun onTorchModeChanged(cameraId: String, enabled: Boolean) {
             super.onTorchModeChanged(cameraId, enabled)
 
             cameraManager.apply {
                 try {
-                    val camera = getCameraCharacteristics(cameraId) ?: return
+                    val camera = getCameraCharacteristics(cameraId)
                     val lensFacing = camera.get(CameraCharacteristics.LENS_FACING)!!
 
-                    mFlashEnabled.put(lensFacing, enabled)
+                    flashEnabled.put(lensFacing, enabled)
                 } catch (e: Exception) {
                 }
             }
@@ -40,29 +40,29 @@ class FlashlightController : LifecycleObserver {
     }
 
     init {
-        mFlashEnabled.put(CameraCharacteristics.LENS_FACING_FRONT, false)
-        mFlashEnabled.put(CameraCharacteristics.LENS_FACING_BACK, false)
+        flashEnabled.put(CameraCharacteristics.LENS_FACING_FRONT, false)
+        flashEnabled.put(CameraCharacteristics.LENS_FACING_BACK, false)
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     fun registerTorchCallback() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            cameraManager.registerTorchCallback(mTorchCallback, null)
+            cameraManager.registerTorchCallback(torchCallback, null)
         }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     fun unregisterTorchCallback() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            cameraManager.unregisterTorchCallback(mTorchCallback)
+            cameraManager.unregisterTorchCallback(torchCallback)
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
     fun toggleFlashlight(lens: Int = CameraCharacteristics.LENS_FACING_BACK) {
-        mFlashEnabled[lens] = !mFlashEnabled[lens]
+        flashEnabled[lens] = !flashEnabled[lens]
 
-        setFlashlightMode(mFlashEnabled[lens], lens)
+        setFlashlightMode(flashEnabled[lens], lens)
     }
 
     @RequiresApi(Build.VERSION_CODES.M)

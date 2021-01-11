@@ -44,22 +44,22 @@ class HomeActivity : AppCompatActivity() {
             "$PACKAGE_NAME.show_accessibility_settings_not_found_dialog"
     }
 
-    private val mKeyActionTypeViewModel: KeyActionTypeViewModel by viewModels {
+    private val keyActionTypeViewModel: KeyActionTypeViewModel by viewModels {
         InjectorUtils.provideKeyActionTypeViewModel()
     }
 
-    private val mBackupRestoreViewModel: BackupRestoreViewModel by viewModels {
+    private val backupRestoreViewModel: BackupRestoreViewModel by viewModels {
         InjectorUtils.provideBackupRestoreViewModel(this)
     }
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
-    private val mRequestBackupObserver = Observer<RequestBackup> { event ->
+    private val requestBackupObserver = Observer<RequestBackup> { event ->
         if (!BackupUtils.backupAutomatically) return@Observer
 
         BackupUtils.createAutomaticBackupOutputStream(this@HomeActivity)
             .onSuccess {
                 lifecycleScope.launch {
-                    mBackupRestoreViewModel.backupKeymaps(it, event.keymapList)
+                    backupRestoreViewModel.backupKeymaps(it, event.keymapList)
                 }
             }.onFailure {
                 if (it is FileAccessDenied) {
@@ -107,7 +107,7 @@ class HomeActivity : AppCompatActivity() {
             })
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                requestBackup.observe(this@HomeActivity, mRequestBackupObserver)
+                requestBackup.observe(this@HomeActivity, requestBackupObserver)
             }
         }
 
@@ -123,7 +123,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
-        mKeyActionTypeViewModel.keyEvent.value = event
+        keyActionTypeViewModel.keyEvent.value = event
 
         return super.onKeyUp(keyCode, event)
     }

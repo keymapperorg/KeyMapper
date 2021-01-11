@@ -12,11 +12,11 @@ import io.github.sds100.keymapper.util.InjectorUtils
  */
 class FingerprintConstraintListFragment : ConstraintListFragment() {
 
-    private val mViewModel: ConfigFingerprintMapViewModel
+    private val viewModel: ConfigFingerprintMapViewModel
         by navGraphViewModels(R.id.nav_config_fingerprint_map) {
             InjectorUtils.provideFingerprintMapListViewModel(requireContext())
         }
 
     override val constraintListViewModel: ConstraintListViewModel
-        get() = mViewModel.constraintListViewModel
+        get() = viewModel.constraintListViewModel
 }

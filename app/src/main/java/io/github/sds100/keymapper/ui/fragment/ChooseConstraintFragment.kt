@@ -24,7 +24,7 @@ class ChooseConstraintFragment : DefaultRecyclerViewFragment() {
         const val EXTRA_CONSTRAINT = "extra_constraint"
     }
 
-    private val mViewModel: ChooseConstraintListViewModel by viewModels {
+    private val viewModel: ChooseConstraintListViewModel by viewModels {
         InjectorUtils.provideChooseConstraintListViewModel()
     }
 
@@ -38,19 +38,19 @@ class ChooseConstraintFragment : DefaultRecyclerViewFragment() {
         setFragmentResultListener(AppListFragment.REQUEST_KEY) { _, result ->
             val packageName = result.getString(AppListFragment.EXTRA_PACKAGE_NAME)
 
-            mViewModel.packageChosen(packageName!!)
+            viewModel.packageChosen(packageName!!)
         }
 
         setFragmentResultListener(BluetoothDeviceListFragment.REQUEST_KEY) { _, result ->
             val address = result.getString(BluetoothDeviceListFragment.EXTRA_ADDRESS)
             val name = result.getString(BluetoothDeviceListFragment.EXTRA_NAME)
 
-            mViewModel.bluetoothDeviceChosen(address!!, name!!)
+            viewModel.bluetoothDeviceChosen(address!!, name!!)
         }
     }
 
     override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
-        mViewModel.constraintsSortedByCategory.observe(viewLifecycleOwner, { modelList ->
+        viewModel.constraintsSortedByCategory.observe(viewLifecycleOwner, { modelList ->
             binding.state = modelList
 
             binding.epoxyRecyclerView.withModels {
@@ -78,7 +78,7 @@ class ChooseConstraintFragment : DefaultRecyclerViewFragment() {
                             }
 
                             onClick { _ ->
-                                mViewModel.chooseConstraint(constraint.id)
+                                viewModel.chooseConstraint(constraint.id)
                             }
                         }
                     }
@@ -86,7 +86,7 @@ class ChooseConstraintFragment : DefaultRecyclerViewFragment() {
             }
         })
 
-        mViewModel.eventStream.observe(viewLifecycleOwner, { event ->
+        viewModel.eventStream.observe(viewLifecycleOwner, { event ->
             when (event) {
                 is ChoosePackage -> {
                     val direction = ChooseConstraintFragmentDirections.actionChooseConstraintListFragmentToAppListFragment()

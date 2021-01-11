@@ -15,18 +15,18 @@ import java.util.*
  * Created by sds100 on 31/03/2020.
  */
 class SystemActionListViewModel(
-    private val mRepository: SystemActionRepository,
-    private var mStringResourceProvider: StringResourceProvider? = null
+    private val repository: SystemActionRepository,
+    private var stringResourceProvider: StringResourceProvider? = null
 ) : ViewModel() {
 
     val searchQuery = MutableLiveData("")
 
-    private val mModelsSortedByCategory = liveData {
+    private val modelsSortedByCategory = liveData {
 
         emit(Loading())
 
         val systemActionsSortedByCategory = withContext(viewModelScope.coroutineContext + Dispatchers.Default) {
-            val allModels = mRepository.supportedSystemActions.map {
+            val allModels = repository.supportedSystemActions.map {
                 val requiresRoot = it.permissions.contains(Constants.PERMISSION_ROOT)
 
                 SystemActionListItemModel(it.id, it.category, it.descriptionRes, it.iconRes, requiresRoot)
@@ -48,17 +48,17 @@ class SystemActionListViewModel(
 
     val filteredModelList = MediatorLiveData<State<Map<Int, List<SystemActionListItemModel>>>>().apply {
         fun filter(query: String) {
-            mModelsSortedByCategory.value ?: return
-            mStringResourceProvider ?: return
+            modelsSortedByCategory.value ?: return
+            stringResourceProvider ?: return
 
             value = Loading()
 
-            mModelsSortedByCategory.value?.let { modelsSortedByCategory ->
+            modelsSortedByCategory.value?.let { modelsSortedByCategory ->
                 if (modelsSortedByCategory is Data) {
                     val filteredModels = sequence {
                         for ((category, systemActionList) in modelsSortedByCategory.data) {
                             val matchedSystemActions = systemActionList.filter {
-                                val descriptionString = mStringResourceProvider!!.getStringResource(it.descriptionRes)
+                                val descriptionString = stringResourceProvider!!.getStringResource(it.descriptionRes)
 
                                 descriptionString.toLowerCase(Locale.getDefault()).contains(query)
                             }
@@ -78,7 +78,7 @@ class SystemActionListViewModel(
             filter(query)
         }
 
-        addSource(mModelsSortedByCategory) {
+        addSource(modelsSortedByCategory) {
             value = it
 
             searchQuery.value?.let { query ->
@@ -91,7 +91,7 @@ class SystemActionListViewModel(
         emit(Loading())
 
         val unsupportedActions = withContext(viewModelScope.coroutineContext + Dispatchers.Default) {
-            mRepository.unsupportedSystemActions.map {
+            repository.unsupportedSystemActions.map {
                 val systemAction = it.key
                 val failure = it.value
 
@@ -106,11 +106,11 @@ class SystemActionListViewModel(
     }
 
     fun registerStringResourceProvider(stringResourceProvider: StringResourceProvider) {
-        mStringResourceProvider = stringResourceProvider
+        this.stringResourceProvider = stringResourceProvider
     }
 
     fun unregisterStringResourceProvider() {
-        mStringResourceProvider = null
+        stringResourceProvider = null
     }
 
     override fun onCleared() {
@@ -120,10 +120,10 @@ class SystemActionListViewModel(
     }
 
     @Suppress("UNCHECKED_CAST")
-    class Factory(private val mSystemActionRepository: SystemActionRepository) : ViewModelProvider.NewInstanceFactory() {
+    class Factory(private val systemActionRepository: SystemActionRepository) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return SystemActionListViewModel(mSystemActionRepository) as T
+            return SystemActionListViewModel(systemActionRepository) as T
         }
     }
 }

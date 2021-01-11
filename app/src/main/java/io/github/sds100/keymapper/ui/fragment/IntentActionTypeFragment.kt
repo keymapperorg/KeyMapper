@@ -64,7 +64,7 @@ class IntentActionTypeFragment : Fragment() {
         )
     }
 
-    private val mViewModel: IntentActionTypeViewModel by activityViewModels {
+    private val viewModel: IntentActionTypeViewModel by activityViewModels {
         InjectorUtils.provideIntentActionTypeViewModel()
     }
 
@@ -83,7 +83,6 @@ class IntentActionTypeFragment : Fragment() {
         FragmentIntentActionTypeBinding.inflate(inflater, container, false).apply {
 
             lifecycleOwner = viewLifecycleOwner
-            viewModel = mViewModel
             _binding = this
 
             return this.root
@@ -93,84 +92,84 @@ class IntentActionTypeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.apply {
-            setOnDoneClick {
-                val intent = Intent().apply {
-                    if (mViewModel.action.value?.isNotEmpty() == true) {
-                        this.action = mViewModel.action.value
-                    }
+        binding.viewModel = viewModel
 
-                    mViewModel.categoriesList.value?.forEach {
-                        this.addCategory(it)
-                    }
+        binding.setOnDoneClick {
+            val intent = Intent().apply {
+                if (viewModel.action.value?.isNotEmpty() == true) {
+                    this.action = viewModel.action.value
+                }
 
-                    if (mViewModel.data.value?.isNotEmpty() == true) {
-                        this.data = mViewModel.data.value?.toUri()
-                    }
+                viewModel.categoriesList.value?.forEach {
+                    this.addCategory(it)
+                }
 
-                    if (mViewModel.targetPackage.value?.isNotEmpty() == true) {
-                        this.`package` = mViewModel.targetPackage.value
+                if (viewModel.data.value?.isNotEmpty() == true) {
+                    this.data = viewModel.data.value?.toUri()
+                }
 
-                        if (mViewModel.targetClass.value?.isNotEmpty() == true) {
-                            this.setClassName(
-                                mViewModel.targetPackage.value!!,
-                                mViewModel.targetClass.value!!
-                            )
-                        }
-                    }
+                if (viewModel.targetPackage.value?.isNotEmpty() == true) {
+                    this.`package` = viewModel.targetPackage.value
 
-                    mViewModel.extras.value?.forEach { model ->
-                        if (model.name.isEmpty()) return@forEach
-                        if (model.parsedValue == null) return@forEach
-
-                        model.type.putInIntent(this, model.name, model.value)
+                    if (viewModel.targetClass.value?.isNotEmpty() == true) {
+                        this.setClassName(
+                            viewModel.targetPackage.value!!,
+                            viewModel.targetClass.value!!
+                        )
                     }
                 }
 
-                val uri = intent.toUri(0)
+                viewModel.extras.value?.forEach { model ->
+                    if (model.name.isEmpty()) return@forEach
+                    if (model.parsedValue == null) return@forEach
 
-                setFragmentResult(REQUEST_KEY,
-                    bundleOf(
-                        EXTRA_DESCRIPTION to mViewModel.description.value,
-                        EXTRA_TARGET to mViewModel.getTarget().toString(),
-                        EXTRA_URI to uri
-                    )
+                    model.type.putInIntent(this, model.name, model.value)
+                }
+            }
+
+            val uri = intent.toUri(0)
+
+            setFragmentResult(REQUEST_KEY,
+                bundleOf(
+                    EXTRA_DESCRIPTION to viewModel.description.value,
+                    EXTRA_TARGET to viewModel.getTarget().toString(),
+                    EXTRA_URI to uri
                 )
+            )
 
-                findNavController().navigateUp()
-            }
-
-            setOnAddExtraClick {
-                requireContext().alertDialog {
-                    val labels = EXTRA_TYPES.map { str(it.labelStringRes) }.toTypedArray()
-
-                    setItems(labels) { _, position ->
-                        mViewModel.addExtra(EXTRA_TYPES[position])
-                    }
-
-                    show()
-                }
-            }
-
-            setOnShowCategoriesExampleClick {
-                requireContext().alertDialog {
-                    messageResource = R.string.intent_categories_example
-                    okButton()
-                    show()
-                }
-            }
-
-            mViewModel.eventStream.observe(viewLifecycleOwner, { event ->
-                when (event) {
-                    is BuildIntentExtraListItemModels -> {
-                        val models = event.extraModels.map { it.toListItemModel() }
-                        mViewModel.setListItemModels(models)
-                    }
-                }
-            })
-
-            subscribeExtrasList()
+            findNavController().navigateUp()
         }
+
+        binding.setOnAddExtraClick {
+            requireContext().alertDialog {
+                val labels = EXTRA_TYPES.map { str(it.labelStringRes) }.toTypedArray()
+
+                setItems(labels) { _, position ->
+                    viewModel.addExtra(EXTRA_TYPES[position])
+                }
+
+                show()
+            }
+        }
+
+        binding.setOnShowCategoriesExampleClick {
+            requireContext().alertDialog {
+                messageResource = R.string.intent_categories_example
+                okButton()
+                show()
+            }
+        }
+
+        viewModel.eventStream.observe(viewLifecycleOwner, { event ->
+            when (event) {
+                is BuildIntentExtraListItemModels -> {
+                    val models = event.extraModels.map { it.toListItemModel() }
+                    viewModel.setListItemModels(models)
+                }
+            }
+        })
+
+        subscribeExtrasList()
     }
 
     override fun onDestroyView() {
@@ -178,9 +177,9 @@ class IntentActionTypeFragment : Fragment() {
         super.onDestroyView()
     }
 
-    private fun FragmentIntentActionTypeBinding.subscribeExtrasList() {
-        mViewModel.extrasListItemModels.observe(viewLifecycleOwner, { state ->
-            epoxyRecyclerViewExtras.withModels {
+    private fun subscribeExtrasList() {
+        viewModel.extrasListItemModels.observe(viewLifecycleOwner, { state ->
+            binding.epoxyRecyclerViewExtras.withModels {
 
                 val models = if (state is Data) {
                     state.data
@@ -204,7 +203,7 @@ class IntentActionTypeFragment : Fragment() {
                 model(model)
 
                 onRemoveClick { _ ->
-                    mViewModel.removeExtra(model.uid)
+                    viewModel.removeExtra(model.uid)
                 }
 
                 onShowExampleClick { _ ->
@@ -225,7 +224,7 @@ class IntentActionTypeFragment : Fragment() {
                     }
 
                     override fun afterTextChanged(s: Editable?) {
-                        mViewModel.setExtraValue(model.uid, s.toString())
+                        viewModel.setExtraValue(model.uid, s.toString())
                     }
                 })
 
@@ -238,7 +237,7 @@ class IntentActionTypeFragment : Fragment() {
                     }
 
                     override fun afterTextChanged(s: Editable?) {
-                        mViewModel.setExtraName(model.uid, s.toString())
+                        viewModel.setExtraName(model.uid, s.toString())
                     }
                 })
             }
@@ -249,17 +248,17 @@ class IntentActionTypeFragment : Fragment() {
                 model(model)
 
                 onRemoveClick { _ ->
-                    mViewModel.removeExtra(model.uid)
+                    viewModel.removeExtra(model.uid)
                 }
 
                 onBind { model, view, _ ->
                     (view.dataBinding as ListItemIntentExtraBoolBinding).apply {
                         radioButtonTrue.setOnCheckedChangeListener { _, isChecked ->
-                            if (isChecked) mViewModel.setExtraValue(model.model().uid, "true")
+                            if (isChecked) viewModel.setExtraValue(model.model().uid, "true")
                         }
 
                         radioButtonFalse.setOnCheckedChangeListener { _, isChecked ->
-                            if (isChecked) mViewModel.setExtraValue(model.model().uid, "false")
+                            if (isChecked) viewModel.setExtraValue(model.model().uid, "false")
                         }
                     }
                 }

@@ -15,19 +15,19 @@ import io.github.sds100.keymapper.util.result.getFullMessage
  */
 class UnsupportedActionListFragment : DefaultRecyclerViewFragment() {
 
-    private val mViewModel: UnsupportedActionListViewModel by activityViewModels {
+    private val viewModel: UnsupportedActionListViewModel by activityViewModels {
         InjectorUtils.provideUnsupportedActionListViewModel(requireContext())
     }
 
     override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
         binding.apply {
-            mViewModel.unsupportedSystemActions.observe(viewLifecycleOwner, { unsupportedActions ->
+            viewModel.unsupportedSystemActions.observe(viewLifecycleOwner, { unsupportedActions ->
                 state = unsupportedActions
 
                 epoxyRecyclerView.withModels {
                     if (unsupportedActions !is Data) return@withModels
 
-                    if (!mViewModel.isTapCoordinateActionSupported) {
+                    if (!viewModel.isTapCoordinateActionSupported) {
                         simple {
                             id(0)
                             primaryText(str(R.string.action_type_tap_coordinate))

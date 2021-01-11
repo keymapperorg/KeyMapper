@@ -25,7 +25,7 @@ class TextBlockActionTypeFragment : Fragment() {
         const val EXTRA_TEXT_BLOCK = "extra_text_block"
     }
 
-    private val mViewModel: TextBlockActionTypeViewModel by activityViewModels {
+    private val viewModel: TextBlockActionTypeViewModel by activityViewModels {
         InjectorUtils.provideTextBlockActionTypeViewModel()
     }
 
@@ -48,11 +48,11 @@ class TextBlockActionTypeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.apply {
-            text = mViewModel.text
+            text = viewModel.text
             caption = str(R.string.caption_action_type_text)
 
             setOnDoneClick {
-                setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_TEXT_BLOCK to mViewModel.text.value))
+                setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_TEXT_BLOCK to viewModel.text.value))
                 findNavController().navigateUp()
             }
         }

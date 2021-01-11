@@ -27,12 +27,14 @@ class AppListFragment : RecyclerViewFragment<FragmentAppListBinding>() {
     override val appBar: BottomAppBar
         get() = binding.appBar
 
-    private val mViewModel: AppListViewModel by viewModels {
+    private val viewModel: AppListViewModel by viewModels {
         InjectorUtils.provideAppListViewModel(requireContext())
     }
 
     override fun subscribeUi(binding: FragmentAppListBinding) {
-        mViewModel.filteredAppModelList.observe(viewLifecycleOwner, { appModelList ->
+        binding.viewModel = viewModel
+
+        viewModel.filteredAppModelList.observe(viewLifecycleOwner, { appModelList ->
 
             binding.epoxyRecyclerView.withModels {
 
@@ -54,12 +56,11 @@ class AppListFragment : RecyclerViewFragment<FragmentAppListBinding>() {
     }
 
     override fun onSearchQuery(query: String?) {
-        mViewModel.searchQuery.value = query
+        viewModel.searchQuery.value = query
     }
 
     override fun bind(inflater: LayoutInflater, container: ViewGroup?) =
         FragmentAppListBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
-            viewModel = mViewModel
         }
 }

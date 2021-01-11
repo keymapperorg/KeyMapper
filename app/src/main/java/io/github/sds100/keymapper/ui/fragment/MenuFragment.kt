@@ -23,25 +23,25 @@ import splitties.alertdialog.appcompat.*
 class MenuFragment : BottomSheetDialogFragment(),
     SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private val mViewModel: MenuFragmentViewModel by activityViewModels {
+    private val viewModel: MenuFragmentViewModel by activityViewModels {
         InjectorUtils.provideMenuFragmentViewModel(requireContext())
     }
 
-    private val mBackupRestoreViewModel: BackupRestoreViewModel by activityViewModels {
+    private val backupRestoreViewModel: BackupRestoreViewModel by activityViewModels {
         InjectorUtils.provideBackupRestoreViewModel(requireContext())
     }
 
-    private val mBroadcastReceiver = object : BroadcastReceiver() {
+    private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             intent ?: return
 
             when (intent.action) {
                 MyAccessibilityService.ACTION_ON_START -> {
-                    mViewModel.accessibilityServiceEnabled.value = true
+                    viewModel.accessibilityServiceEnabled.value = true
                 }
 
                 MyAccessibilityService.ACTION_ON_STOP -> {
-                    mViewModel.accessibilityServiceEnabled.value = false
+                    viewModel.accessibilityServiceEnabled.value = false
                 }
             }
         }
@@ -61,7 +61,7 @@ class MenuFragment : BottomSheetDialogFragment(),
             addAction(MyAccessibilityService.ACTION_ON_START)
             addAction(MyAccessibilityService.ACTION_ON_STOP)
 
-            requireActivity().registerReceiver(mBroadcastReceiver, this)
+            requireActivity().registerReceiver(broadcastReceiver, this)
         }
 
         requireContext().defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
@@ -87,9 +87,9 @@ class MenuFragment : BottomSheetDialogFragment(),
         val dialog = requireDialog() as BottomSheetDialog
         dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
 
-        binding.viewModel = mViewModel
+        binding.viewModel = viewModel
 
-        mViewModel.apply {
+        viewModel.apply {
             keymapsPaused.value = AppPreferences.keymapsPaused
             accessibilityServiceEnabled.value = AccessibilityUtils.isServiceEnabled(requireContext())
 
@@ -118,11 +118,11 @@ class MenuFragment : BottomSheetDialogFragment(),
                         AccessibilityUtils.enableService(requireContext())
 
                     is RequestRestore -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                        mBackupRestoreViewModel.requestRestore()
+                        backupRestoreViewModel.requestRestore()
                         dismiss()
                     }
 
-                    is RequestBackupAll -> mBackupRestoreViewModel.requestBackupAll()
+                    is RequestBackupAll -> backupRestoreViewModel.requestBackupAll()
                 }
             })
         }
@@ -136,13 +136,13 @@ class MenuFragment : BottomSheetDialogFragment(),
     override fun onDestroy() {
         super.onDestroy()
 
-        requireContext().unregisterReceiver(mBroadcastReceiver)
+        requireContext().unregisterReceiver(broadcastReceiver)
         requireContext().defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         if (key == str(R.string.key_pref_keymaps_paused)) {
-            mViewModel.keymapsPaused.value = AppPreferences.keymapsPaused
+            viewModel.keymapsPaused.value = AppPreferences.keymapsPaused
         }
     }
 

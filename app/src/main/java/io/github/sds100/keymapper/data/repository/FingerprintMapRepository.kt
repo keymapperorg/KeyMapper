@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.map
 /**
  * Created by sds100 on 17/11/20.
  */
-class FingerprintMapRepository(private val mDataStore: DataStore<Preferences>) {
+class FingerprintMapRepository(private val dataStore: DataStore<Preferences>) {
     companion object {
         val PREF_KEYS = mapOf(
             FingerprintMapUtils.SWIPE_DOWN to PreferenceKeys.FINGERPRINT_GESTURE_SWIPE_DOWN,
@@ -31,25 +31,25 @@ class FingerprintMapRepository(private val mDataStore: DataStore<Preferences>) {
         )
     }
 
-    private val mGson = GsonBuilder()
+    private val gson = GsonBuilder()
         .registerTypeAdapter(FingerprintMap.DESERIALIZER)
         .registerTypeAdapter(Action.DESERIALIZER)
         .registerTypeAdapter(Extra.DESERIALIZER)
         .registerTypeAdapter(Constraint.DESERIALIZER).create()
 
-    val swipeDown: Flow<FingerprintMap> = mDataStore.data.map { prefs ->
+    val swipeDown: Flow<FingerprintMap> = dataStore.data.map { prefs ->
         prefs.getGesture(PreferenceKeys.FINGERPRINT_GESTURE_SWIPE_DOWN)
     }
 
-    val swipeUp: Flow<FingerprintMap> = mDataStore.data.map { prefs ->
+    val swipeUp: Flow<FingerprintMap> = dataStore.data.map { prefs ->
         prefs.getGesture(PreferenceKeys.FINGERPRINT_GESTURE_SWIPE_UP)
     }
 
-    val swipeLeft: Flow<FingerprintMap> = mDataStore.data.map { prefs ->
+    val swipeLeft: Flow<FingerprintMap> = dataStore.data.map { prefs ->
         prefs.getGesture(PreferenceKeys.FINGERPRINT_GESTURE_SWIPE_LEFT)
     }
 
-    val swipeRight: Flow<FingerprintMap> = mDataStore.data.map { prefs ->
+    val swipeRight: Flow<FingerprintMap> = dataStore.data.map { prefs ->
         prefs.getGesture(PreferenceKeys.FINGERPRINT_GESTURE_SWIPE_RIGHT)
     }
 
@@ -67,12 +67,12 @@ class FingerprintMapRepository(private val mDataStore: DataStore<Preferences>) {
         )
     }.asLiveData()
 
-    val fingerprintGesturesAvailable = mDataStore.data.map {
+    val fingerprintGesturesAvailable = dataStore.data.map {
         it[PreferenceKeys.FINGERPRINT_GESTURES_AVAILABLE]
     }.asLiveData()
 
     suspend fun setFingerprintGesturesAvailable(available: Boolean) {
-        mDataStore.edit {
+        dataStore.edit {
             it[PreferenceKeys.FINGERPRINT_GESTURES_AVAILABLE] = available
         }
     }
@@ -81,16 +81,16 @@ class FingerprintMapRepository(private val mDataStore: DataStore<Preferences>) {
         gestureId: String,
         block: (old: FingerprintMap) -> FingerprintMap
     ) {
-        mDataStore.edit { prefs ->
+        dataStore.edit { prefs ->
             val key = PREF_KEYS[gestureId]!!
             val new = block.invoke(prefs.getGesture(key))
 
-            prefs[key] = mGson.toJson(new)
+            prefs[key] = gson.toJson(new)
         }
     }
 
     suspend fun reset() {
-        mDataStore.edit { prefs ->
+        dataStore.edit { prefs ->
             PreferenceKeys.ALL_SWIPE_KEYS.forEach {
                 prefs.remove(it)
             }
@@ -103,7 +103,7 @@ class FingerprintMapRepository(private val mDataStore: DataStore<Preferences>) {
         return if (json == null) {
             FingerprintMap()
         } else {
-            mGson.fromJson(json)
+            gson.fromJson(json)
         }
     }
 

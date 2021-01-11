@@ -23,7 +23,7 @@ import java.util.*
  */
 
 class TriggerViewModel(
-    private val mDeviceInfoRepository: DeviceInfoRepository,
+    private val deviceInfoRepository: DeviceInfoRepository,
     preferenceDataStore: IPreferenceDataStore,
     keymapUid: LiveData<String>
 ) : IPreferenceDataStore by preferenceDataStore {
@@ -209,7 +209,7 @@ class TriggerViewModel(
      * @return whether the key already exists has been added to the list
      */
     suspend fun addTriggerKey(keyCode: Int, deviceDescriptor: String, deviceName: String, isExternal: Boolean): Boolean {
-        mDeviceInfoRepository.insertDeviceInfo(DeviceInfo(deviceDescriptor, deviceName))
+        deviceInfoRepository.insertDeviceInfo(DeviceInfo(deviceDescriptor, deviceName))
 
         var clickType = Trigger.SHORT_PRESS
 
@@ -374,5 +374,5 @@ class TriggerViewModel(
         _eventStream.value = OkDialog(message, onOk)
     }
 
-    suspend fun getDeviceInfoList() = mDeviceInfoRepository.getAll()
+    suspend fun getDeviceInfoList() = deviceInfoRepository.getAll()
 }

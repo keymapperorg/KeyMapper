@@ -34,9 +34,9 @@ import splitties.alertdialog.appcompat.positiveButton
  * Created by sds100 on 22/11/20.
  */
 class ConfigKeymapFragment : Fragment() {
-    private val mArgs by navArgs<ConfigKeymapFragmentArgs>()
+    private val args by navArgs<ConfigKeymapFragmentArgs>()
 
-    private val mViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap) {
+    private val viewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap) {
         InjectorUtils.provideConfigKeymapViewModel(requireContext())
     }
 
@@ -47,45 +47,45 @@ class ConfigKeymapFragment : Fragment() {
     val binding: FragmentConfigKeymapBinding
         get() = _binding!!
 
-    private lateinit var mRecoverFailureDelegate: RecoverFailureDelegate
+    private lateinit var recoverFailureDelegate: RecoverFailureDelegate
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         //only load the keymap if opening this fragment for the first time
         if (savedInstanceState == null) {
-            mViewModel.loadKeymap(mArgs.keymapId)
+            viewModel.loadKeymap(args.keymapId)
         }
 
-        mRecoverFailureDelegate = RecoverFailureDelegate(
+        recoverFailureDelegate = RecoverFailureDelegate(
             "ConfigKeymapFragment",
             requireActivity().activityResultRegistry,
             this) {
 
-            mViewModel.actionListViewModel.rebuildModels()
+            viewModel.actionListViewModel.rebuildModels()
         }
 
         setFragmentResultListener(ActionListFragment.CHOOSE_ACTION_REQUEST_KEY) { _, result ->
             result.getParcelable<Action>(ChooseActionFragment.EXTRA_ACTION)?.let {
-                mViewModel.actionListViewModel.addAction(it)
+                viewModel.actionListViewModel.addAction(it)
             }
         }
 
         setFragmentResultListener(ConstraintListFragment.CHOOSE_CONSTRAINT_REQUEST_KEY) { _, result ->
             result.getParcelable<Constraint>(ChooseConstraintFragment.EXTRA_CONSTRAINT)?.let {
-                mViewModel.constraintListViewModel.addConstraint(it)
+                viewModel.constraintListViewModel.addConstraint(it)
             }
         }
 
         setFragmentResultListener(KeymapActionOptionsFragment.REQUEST_KEY) { _, result ->
             result.getParcelable<KeymapActionOptions>(BaseOptionsDialogFragment.EXTRA_OPTIONS)?.let {
-                mViewModel.actionListViewModel.setOptions(it)
+                viewModel.actionListViewModel.setOptions(it)
             }
         }
 
         setFragmentResultListener(TriggerKeyOptionsFragment.REQUEST_KEY) { _, result ->
             result.getParcelable<TriggerKeyOptions>(BaseOptionsDialogFragment.EXTRA_OPTIONS)?.let {
-                mViewModel.triggerViewModel.setTriggerKeyOptions(it)
+                viewModel.triggerViewModel.setTriggerKeyOptions(it)
             }
         }
     }
@@ -93,7 +93,6 @@ class ConfigKeymapFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         FragmentConfigKeymapBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
-            viewModel = mViewModel
             _binding = this
 
             return this.root
@@ -103,56 +102,55 @@ class ConfigKeymapFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.apply {
+        binding.viewModel = viewModel
+        binding.viewPager.adapter = createFragmentPagerAdapter()
 
-            viewPager.adapter = createFragmentPagerAdapter()
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            tab.text = strArray(R.array.config_keymap_tab_titles)[position]
+        }.attach()
 
-            TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-                tab.text = strArray(R.array.config_keymap_tab_titles)[position]
-            }.attach()
+        binding.tabLayout.isVisible = binding.tabLayout.tabCount > 1
 
-            tabLayout.isVisible = tabLayout.tabCount > 1
-
-            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-                showOnBackPressedWarning()
-            }
-
-            appBar.setNavigationOnClickListener {
-                showOnBackPressedWarning()
-            }
-
-            appBar.setOnMenuItemClickListener {
-                when (it.itemId) {
-                    R.id.action_save -> {
-                        mViewModel.saveKeymap(lifecycleScope)
-                        findNavController().navigateUp()
-
-                        true
-                    }
-
-                    R.id.action_help -> {
-                        val direction = NavAppDirections.actionGlobalHelpFragment()
-                        findNavController().navigate(direction)
-
-                        true
-                    }
-
-                    else -> false
-                }
-            }
-
-            mViewModel.eventStream.observe(viewLifecycleOwner, { event ->
-                when (event) {
-                    is FixFailure -> coordinatorLayout.showFixActionSnackBar(
-                        event.failure,
-                        requireActivity(),
-                        mRecoverFailureDelegate
-                    )
-
-                    is EnableAccessibilityServicePrompt -> coordinatorLayout.showEnableAccessibilityServiceSnackBar()
-                }
-            })
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            showOnBackPressedWarning()
         }
+
+        binding.appBar.setNavigationOnClickListener {
+            showOnBackPressedWarning()
+        }
+
+        binding.appBar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.action_save -> {
+                    viewModel.saveKeymap(lifecycleScope)
+                    findNavController().navigateUp()
+
+                    true
+                }
+
+                R.id.action_help -> {
+                    val direction = NavAppDirections.actionGlobalHelpFragment()
+                    findNavController().navigate(direction)
+
+                    true
+                }
+
+                else -> false
+            }
+        }
+
+        viewModel.eventStream.observe(viewLifecycleOwner, { event ->
+            when (event) {
+                is FixFailure -> binding.coordinatorLayout.showFixActionSnackBar(
+                    event.failure,
+                    requireActivity(),
+                    recoverFailureDelegate
+                )
+
+                is EnableAccessibilityServicePrompt ->
+                    binding.coordinatorLayout.showEnableAccessibilityServiceSnackBar()
+            }
+        })
     }
 
     override fun onDestroyView() {
@@ -161,7 +159,7 @@ class ConfigKeymapFragment : Fragment() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        mViewModel.saveState(outState)
+        viewModel.saveState(outState)
 
         super.onSaveInstanceState(outState)
     }
@@ -171,7 +169,7 @@ class ConfigKeymapFragment : Fragment() {
 
         savedInstanceState ?: return
 
-        mViewModel.restoreState(savedInstanceState)
+        viewModel.restoreState(savedInstanceState)
     }
 
     private fun showOnBackPressedWarning() {

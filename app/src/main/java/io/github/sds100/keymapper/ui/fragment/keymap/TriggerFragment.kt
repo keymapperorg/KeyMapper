@@ -46,7 +46,7 @@ import kotlin.coroutines.suspendCoroutine
 
 class TriggerFragment : Fragment() {
 
-    private lateinit var mBinding: FragmentTriggerBinding
+    private lateinit var binding: FragmentTriggerBinding
 
     private val triggerViewModel: TriggerViewModel by lazy {
         navGraphViewModels<ConfigKeymapViewModel>(R.id.nav_config_keymap) {
@@ -57,7 +57,7 @@ class TriggerFragment : Fragment() {
     /**
      * Listens for key events from the accessibility service
      */
-    private val mBroadcastReceiver = object : BroadcastReceiver() {
+    private val broadcastReceiver = object : BroadcastReceiver() {
 
         override fun onReceive(context: Context?, intent: Intent?) {
             intent ?: return
@@ -66,8 +66,8 @@ class TriggerFragment : Fragment() {
 
                 MyAccessibilityService.ACTION_RECORDED_TRIGGER_KEY -> {
                     intent.getParcelableExtra<KeyEvent>(MyAccessibilityService.EXTRA_KEY_EVENT)?.let { keyEvent ->
-                        if (!mSuccessfullyRecordedTrigger) {
-                            mSuccessfullyRecordedTrigger = true
+                        if (!successfullyRecordedTrigger) {
+                            successfullyRecordedTrigger = true
                         }
 
                         lifecycleScope.launch {
@@ -90,15 +90,16 @@ class TriggerFragment : Fragment() {
                 }
 
                 MyAccessibilityService.ACTION_STOPPED_RECORDING_TRIGGER -> {
-                    val stoppedEarly = triggerViewModel.recordTriggerTimeLeft.value?.let { it > 1 } ?: true
+                    val stoppedEarly = triggerViewModel.recordTriggerTimeLeft.value?.let { it > 1 }
+                        ?: true
 
                     if (!stoppedEarly) {
-                        mRecordingTriggerCount++
+                        recordingTriggerCount++
                     }
 
                     triggerViewModel.recordingTrigger.value = false
 
-                    if (mRecordingTriggerCount >= 2 && !mSuccessfullyRecordedTrigger) {
+                    if (recordingTriggerCount >= 2 && !successfullyRecordedTrigger) {
                         requireContext().alertDialog {
                             titleResource = R.string.dialog_title_cant_record_trigger
                             messageResource = R.string.dialog_message_cant_record_trigger
@@ -116,14 +117,14 @@ class TriggerFragment : Fragment() {
     /**
      * The number of times the user has attempted to record a trigger.
      */
-    private var mRecordingTriggerCount = 0
+    private var recordingTriggerCount = 0
 
     /**
      * Whether the user has successfully recorded a trigger.
      */
-    private var mSuccessfullyRecordedTrigger = false
+    private var successfullyRecordedTrigger = false
 
-    private val mTriggerKeyController = TriggerKeyController()
+    private val triggerKeyController = TriggerKeyController()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -134,14 +135,14 @@ class TriggerFragment : Fragment() {
             addAction(MyAccessibilityService.ACTION_RECORDED_TRIGGER_KEY)
             addAction(MyAccessibilityService.ACTION_STOPPED_RECORDING_TRIGGER)
 
-            requireActivity().registerReceiver(mBroadcastReceiver, this)
+            requireActivity().registerReceiver(broadcastReceiver, this)
         }
 
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         FragmentTriggerBinding.inflate(inflater, container, false).apply {
-            mBinding = this
+            binding = this
 
             return this.root
         }
@@ -151,16 +152,16 @@ class TriggerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mBinding.apply {
+        binding.apply {
             viewModel = triggerViewModel
             lifecycleOwner = viewLifecycleOwner
 
             subscribeTriggerList()
 
-            epoxyRecyclerViewTriggers.adapter = mTriggerKeyController.adapter
+            epoxyRecyclerViewTriggers.adapter = triggerKeyController.adapter
 
             triggerViewModel.mode.observe(viewLifecycleOwner) {
-                mTriggerKeyController.requestModelBuild()
+                triggerKeyController.requestModelBuild()
             }
 
             triggerViewModel.eventStream.observe(viewLifecycleOwner, { event ->
@@ -256,7 +257,7 @@ class TriggerFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
 
-        requireActivity().unregisterReceiver(mBroadcastReceiver)
+        requireActivity().unregisterReceiver(broadcastReceiver)
     }
 
     private fun stopRecordingTrigger() {
@@ -267,11 +268,11 @@ class TriggerFragment : Fragment() {
     private fun FragmentTriggerBinding.subscribeTriggerList() {
         triggerViewModel.modelList.observe(viewLifecycleOwner, { triggerKeyList ->
 
-            enableTriggerKeyDragging(mTriggerKeyController)
+            enableTriggerKeyDragging(triggerKeyController)
 
             when (triggerKeyList) {
-                is Data -> mTriggerKeyController.modelList = triggerKeyList.data
-                else -> mTriggerKeyController.modelList = emptyList()
+                is Data -> triggerKeyController.modelList = triggerKeyList.data
+                else -> triggerKeyController.modelList = emptyList()
             }
         })
     }

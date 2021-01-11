@@ -12,24 +12,24 @@ import kotlinx.coroutines.withContext
 /**
  * Created by sds100 on 26/01/2020.
  */
-class DefaultKeymapRepository internal constructor(private val mKeymapDao: KeyMapDao
+class DefaultKeymapRepository internal constructor(private val keymapDao: KeyMapDao
 ) : GlobalKeymapUseCase, KeymapListUseCase, ConfigKeymapUseCase, BackupRestoreUseCase, MenuKeymapUseCase {
 
     override val requestBackup = MutableLiveData<RequestBackup>()
-    override val keymapList: LiveData<List<KeyMap>> = mKeymapDao.observeAll()
+    override val keymapList: LiveData<List<KeyMap>> = keymapDao.observeAll()
 
-    override suspend fun getKeymaps(): List<KeyMap> = mKeymapDao.getAll()
+    override suspend fun getKeymaps(): List<KeyMap> = keymapDao.getAll()
 
-    override suspend fun getKeymap(id: Long) = mKeymapDao.getById(id)
+    override suspend fun getKeymap(id: Long) = keymapDao.getById(id)
 
     override suspend fun insertKeymap(vararg keymap: KeyMap) {
-        mKeymapDao.insert(*keymap)
+        keymapDao.insert(*keymap)
 
         requestBackup()
     }
 
     override suspend fun updateKeymap(keymap: KeyMap) {
-        mKeymapDao.update(keymap)
+        keymapDao.update(keymap)
 
         requestBackup()
     }
@@ -45,37 +45,37 @@ class DefaultKeymapRepository internal constructor(private val mKeymapDao: KeyMa
     }
 
     override suspend fun enableKeymapById(vararg id: Long) {
-        mKeymapDao.enableKeymapById(*id)
+        keymapDao.enableKeymapById(*id)
 
         requestBackup()
     }
 
     override suspend fun disableKeymapById(vararg id: Long) {
-        mKeymapDao.disableKeymapById(*id)
+        keymapDao.disableKeymapById(*id)
 
         requestBackup()
     }
 
     override suspend fun deleteKeymap(vararg id: Long) {
-        mKeymapDao.deleteById(*id)
+        keymapDao.deleteById(*id)
 
         requestBackup()
     }
 
     override suspend fun deleteAll() {
-        mKeymapDao.deleteAll()
+        keymapDao.deleteAll()
 
         requestBackup()
     }
 
     override suspend fun enableAll() {
-        mKeymapDao.enableAll()
+        keymapDao.enableAll()
 
         requestBackup()
     }
 
     override suspend fun disableAll() {
-        mKeymapDao.disableAll()
+        keymapDao.disableAll()
 
         requestBackup()
     }

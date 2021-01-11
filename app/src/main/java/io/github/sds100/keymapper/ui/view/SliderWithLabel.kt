@@ -23,21 +23,21 @@ class SliderWithLabel(context: Context,
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context) : this(context, null, 0)
 
-    private val mSlider by lazy { findViewById<Slider>(R.id.slider) }
-    private val mSliderValue by lazy { findViewById<Button>(R.id.textViewSliderValue) }
+    private val slider by lazy { findViewById<Slider>(R.id.slider) }
+    private val sliderValue by lazy { findViewById<Button>(R.id.textViewSliderValue) }
 
-    private var mIsDefaultStepEnabled = false
+    private var isDefaultStepEnabled = false
 
     init {
         inflate(context, R.layout.slider_with_label, this)
 
-        mSlider.addOnChangeListener { _, value, _ ->
+        slider.addOnChangeListener { _, value, _ ->
             setSliderValueTextViewText(value)
         }
 
-        mSlider.setLabelFormatter {
+        slider.setLabelFormatter {
             //Set text to "default" if the slider is in the "default" step position.
-            if (mIsDefaultStepEnabled && it == mSlider.valueFrom) {
+            if (isDefaultStepEnabled && it == slider.valueFrom) {
                 str(R.string.slider_default)
             } else {
                 try {
@@ -48,7 +48,7 @@ class SliderWithLabel(context: Context,
             }
         }
 
-        mSliderValue.setOnClickListener {
+        sliderValue.setOnClickListener {
 
         }
     }
@@ -64,16 +64,16 @@ class SliderWithLabel(context: Context,
 
         val defaultStepValue = calculateDefaultStepValue(min.toFloat(), stepSize.toFloat())
 
-        mSlider.valueFrom = if (model.isDefaultStepEnabled) {
+        slider.valueFrom = if (model.isDefaultStepEnabled) {
             defaultStepValue
         } else {
             min.toFloat()
         }
 
-        mSlider.valueTo = max.toFloat()
+        slider.valueTo = max.toFloat()
 
-        mSlider.stepSize = stepSize.toFloat()
-        mIsDefaultStepEnabled = model.isDefaultStepEnabled
+        slider.stepSize = stepSize.toFloat()
+        isDefaultStepEnabled = model.isDefaultStepEnabled
 
         if (model.value != null) {
             when {
@@ -85,28 +85,28 @@ class SliderWithLabel(context: Context,
                         model.value % stepSize
                     }
 
-                    mSlider.valueTo = ((model.value + stepSize) - remainder).toFloat()
-                    mSlider.value = model.value.toFloat()
+                    slider.valueTo = ((model.value + stepSize) - remainder).toFloat()
+                    slider.value = model.value.toFloat()
                 }
 
-                model.value < min -> mSlider.value = min.toFloat()
+                model.value < min -> slider.value = min.toFloat()
 
-                else -> mSlider.value = model.value.toFloat()
+                else -> slider.value = model.value.toFloat()
             }
         } else {
-            mSlider.value = defaultStepValue
+            slider.value = defaultStepValue
         }
 
-        setSliderValueTextViewText(mSlider.value)
+        setSliderValueTextViewText(slider.value)
     }
 
     fun setOnSliderValueClickListener(onClickListener: OnClickListener) {
-        mSliderValue.setOnClickListener(onClickListener)
+        sliderValue.setOnClickListener(onClickListener)
     }
 
     fun setOnSliderChangeListener(onChangeListener: Slider.OnChangeListener) {
-        mSlider.clearOnChangeListeners()
-        mSlider.addOnChangeListener(onChangeListener)
+        slider.clearOnChangeListeners()
+        slider.addOnChangeListener(onChangeListener)
     }
 
     private fun calculateDefaultStepValue(min: Float, stepSize: Float): Float {
@@ -115,8 +115,8 @@ class SliderWithLabel(context: Context,
 
     private fun setSliderValueTextViewText(value: Float) {
         //Set text to "default" if the slider is in the "default" step position.
-        if (mIsDefaultStepEnabled && value == mSlider.valueFrom) {
-            mSliderValue.setText(R.string.slider_default)
+        if (isDefaultStepEnabled && value == slider.valueFrom) {
+            sliderValue.setText(R.string.slider_default)
         } else {
             val text = try {
                 value.toInt().toString()
@@ -124,7 +124,7 @@ class SliderWithLabel(context: Context,
                 value.toString()
             }
 
-            mSliderValue.text = text
+            sliderValue.text = text
         }
     }
 }

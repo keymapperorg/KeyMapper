@@ -24,8 +24,8 @@ import kotlinx.coroutines.launch
  * Created by sds100 on 08/11/20.
  */
 
-class ConfigFingerprintMapViewModel(private val mFingerprintMapRepository: FingerprintMapRepository,
-                                    private val mDeviceInfoRepository: DeviceInfoRepository,
+class ConfigFingerprintMapViewModel(private val fingerprintMapRepository: FingerprintMapRepository,
+                                    private val deviceInfoRepository: DeviceInfoRepository,
                                     preferenceDataStore: IPreferenceDataStore
 ) : ViewModel(), IPreferenceDataStore by preferenceDataStore {
 
@@ -34,10 +34,10 @@ class ConfigFingerprintMapViewModel(private val mFingerprintMapRepository: Finge
         private const val GESTURE_ID_STATE_KEY = "config_fingerprint_map_gesture_id"
     }
 
-    private var mGestureId: String? = null
+    private var gestureId: String? = null
 
     val actionListViewModel = object : ActionListViewModel<FingerprintActionOptions>(
-        viewModelScope, mDeviceInfoRepository) {
+        viewModelScope, deviceInfoRepository) {
 
         override val stateKey = "fingerprint_action_list_view_model"
 
@@ -75,8 +75,8 @@ class ConfigFingerprintMapViewModel(private val mFingerprintMapRepository: Finge
         scope.launch {
             val map = createFingerprintMap()
 
-            mGestureId?.let {
-                mFingerprintMapRepository.editGesture(it) {
+            gestureId?.let {
+                fingerprintMapRepository.editGesture(it) {
                     map
                 }
             }
@@ -97,10 +97,10 @@ class ConfigFingerprintMapViewModel(private val mFingerprintMapRepository: Finge
     fun loadFingerprintMap(gestureId: String) {
         viewModelScope.launch {
             val map = when (gestureId) {
-                SWIPE_DOWN -> mFingerprintMapRepository.swipeDown
-                SWIPE_UP -> mFingerprintMapRepository.swipeUp
-                SWIPE_LEFT -> mFingerprintMapRepository.swipeLeft
-                SWIPE_RIGHT -> mFingerprintMapRepository.swipeRight
+                SWIPE_DOWN -> fingerprintMapRepository.swipeDown
+                SWIPE_UP -> fingerprintMapRepository.swipeUp
+                SWIPE_LEFT -> fingerprintMapRepository.swipeLeft
+                SWIPE_RIGHT -> fingerprintMapRepository.swipeRight
 
                 else -> throw Exception("unknown fingerprint id $gestureId")
             }
@@ -113,7 +113,7 @@ class ConfigFingerprintMapViewModel(private val mFingerprintMapRepository: Finge
     }
 
     private fun loadFingerprintMap(gestureId: String, map: FingerprintMap) {
-        mGestureId = gestureId
+        this.gestureId = gestureId
         actionListViewModel.setActionList(map.actionList)
         constraintListViewModel.setConstraintList(map.constraintList, map.constraintMode)
         isEnabled.value = map.isEnabled
@@ -121,7 +121,7 @@ class ConfigFingerprintMapViewModel(private val mFingerprintMapRepository: Finge
     }
 
     fun saveState(outState: Bundle) {
-        outState.putString(GESTURE_ID_STATE_KEY, mGestureId)
+        outState.putString(GESTURE_ID_STATE_KEY, gestureId)
         outState.putParcelable(MAP_STATE_KEY, createFingerprintMap())
     }
 
@@ -134,16 +134,16 @@ class ConfigFingerprintMapViewModel(private val mFingerprintMapRepository: Finge
     }
 
     class Factory(
-        private val mFingerprintMapRepository: FingerprintMapRepository,
-        private val mDeviceInfoRepository: DeviceInfoRepository,
-        private val mIPreferenceDataStore: IPreferenceDataStore) : ViewModelProvider.Factory {
+        private val fingerprintMapRepository: FingerprintMapRepository,
+        private val deviceInfoRepository: DeviceInfoRepository,
+        private val iPreferenceDataStore: IPreferenceDataStore) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>) =
             ConfigFingerprintMapViewModel(
-                mFingerprintMapRepository,
-                mDeviceInfoRepository,
-                mIPreferenceDataStore
+                fingerprintMapRepository,
+                deviceInfoRepository,
+                iPreferenceDataStore
             ) as T
     }
 }

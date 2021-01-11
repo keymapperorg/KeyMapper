@@ -18,8 +18,8 @@ import java.util.*
  */
 
 abstract class ActionListViewModel<O : BaseOptions<Action>>(
-    private val mCoroutineScope: CoroutineScope,
-    private val mDeviceInfoRepository: DeviceInfoRepository) {
+    private val coroutineScope: CoroutineScope,
+    private val deviceInfoRepository: DeviceInfoRepository) {
 
     private val _actionList = MutableLiveData<List<Action>>(listOf())
     val actionList: LiveData<List<Action>> = _actionList
@@ -86,14 +86,15 @@ abstract class ActionListViewModel<O : BaseOptions<Action>>(
     }
 
     fun onModelClick(id: String) {
-        mCoroutineScope.launch {
+        coroutineScope.launch {
             modelList.value?.ifIsData { modelList ->
                 modelList.singleOrNull { it.id == id }?.apply {
                     when {
                         hasError -> _eventStream.value = FixFailure(failure!!)
 
                         else -> {
-                            val action = actionList.value?.singleOrNull { it.uid == id } ?: return@apply
+                            val action = actionList.value?.singleOrNull { it.uid == id }
+                                ?: return@apply
                             _eventStream.value = TestAction(action)
                         }
                     }
@@ -142,7 +143,7 @@ abstract class ActionListViewModel<O : BaseOptions<Action>>(
 
     abstract val stateKey: String
 
-    suspend fun getDeviceInfoList() = mDeviceInfoRepository.getAll()
+    suspend fun getDeviceInfoList() = deviceInfoRepository.getAll()
 
     abstract fun getActionOptions(action: Action): O
     open fun onAddAction(action: Action) {}

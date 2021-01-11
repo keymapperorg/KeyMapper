@@ -11,8 +11,8 @@ import io.github.sds100.keymapper.util.result.Failure
 import kotlinx.coroutines.launch
 
 class KeymapListViewModel internal constructor(
-    private val mKeymapRepository: KeymapListUseCase,
-    private val mDeviceInfoRepository: DeviceInfoRepository
+    private val keymapRepository: KeymapListUseCase,
+    private val deviceInfoRepository: DeviceInfoRepository
 ) : ViewModel() {
 
     val keymapModelList: MutableLiveData<State<List<KeymapListItemModel>>> =
@@ -21,7 +21,7 @@ class KeymapListViewModel internal constructor(
     val selectionProvider: ISelectionProvider = SelectionProvider()
 
     private val _eventStream = LiveEvent<Event>().apply {
-        addSource(mKeymapRepository.keymapList) {
+        addSource(keymapRepository.keymapList) {
             postValue(BuildKeymapListModels(it))
         }
     }
@@ -30,44 +30,44 @@ class KeymapListViewModel internal constructor(
 
     fun duplicate(vararg id: Long) {
         viewModelScope.launch {
-            mKeymapRepository.duplicateKeymap(*id)
+            keymapRepository.duplicateKeymap(*id)
         }
     }
 
     fun delete(vararg id: Long) {
         viewModelScope.launch {
-            mKeymapRepository.deleteKeymap(*id)
+            keymapRepository.deleteKeymap(*id)
         }
     }
 
     fun enableSelectedKeymaps() {
         viewModelScope.launch {
-            mKeymapRepository.enableKeymapById(*selectionProvider.selectedIds)
+            keymapRepository.enableKeymapById(*selectionProvider.selectedIds)
         }
     }
 
     fun disableSelectedKeymaps() {
         viewModelScope.launch {
-            mKeymapRepository.disableKeymapById(*selectionProvider.selectedIds)
+            keymapRepository.disableKeymapById(*selectionProvider.selectedIds)
         }
     }
 
     fun enableAll() {
         viewModelScope.launch {
-            mKeymapRepository.enableAll()
+            keymapRepository.enableAll()
         }
     }
 
     fun disableAll() {
         viewModelScope.launch {
-            mKeymapRepository.disableAll()
+            keymapRepository.disableAll()
         }
     }
 
     fun rebuildModels() {
-        if (mKeymapRepository.keymapList.value == null) return
+        if (keymapRepository.keymapList.value == null) return
 
-        if (mKeymapRepository.keymapList.value?.isEmpty() == true) {
+        if (keymapRepository.keymapList.value?.isEmpty() == true) {
             keymapModelList.value = Empty()
             return
         }
@@ -75,7 +75,7 @@ class KeymapListViewModel internal constructor(
         keymapModelList.value = Loading()
 
         _eventStream.value =
-            BuildKeymapListModels(mKeymapRepository.keymapList.value ?: emptyList())
+            BuildKeymapListModels(keymapRepository.keymapList.value ?: emptyList())
     }
 
     fun setModelList(list: List<KeymapListItemModel>) {
@@ -94,7 +94,7 @@ class KeymapListViewModel internal constructor(
     }
 
     fun getSelectedKeymaps(): List<KeyMap> {
-        mKeymapRepository.keymapList.value?.let { keymapList ->
+        keymapRepository.keymapList.value?.let { keymapList ->
             return selectionProvider.selectedIds.map { selectedId ->
                 keymapList.single { it.id == selectedId }
             }
@@ -103,16 +103,16 @@ class KeymapListViewModel internal constructor(
         return emptyList()
     }
 
-    suspend fun getDeviceInfoList() = mDeviceInfoRepository.getAll()
+    suspend fun getDeviceInfoList() = deviceInfoRepository.getAll()
 
     @Suppress("UNCHECKED_CAST")
     class Factory(
-        private val mKeymapListUseCase: KeymapListUseCase,
-        private val mDeviceInfoRepository: DeviceInfoRepository
+        private val keymapListUseCase: KeymapListUseCase,
+        private val deviceInfoRepository: DeviceInfoRepository
     ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return KeymapListViewModel(mKeymapListUseCase, mDeviceInfoRepository) as T
+            return KeymapListViewModel(keymapListUseCase, deviceInfoRepository) as T
         }
     }
 }

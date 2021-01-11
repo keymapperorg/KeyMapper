@@ -41,7 +41,7 @@ class AppIntroActivity : AppIntro2() {
     }
 
     class AccessibilityServiceSlide : AppIntroScrollableFragment() {
-        private val mBroadcastReceiver = object : BroadcastReceiver() {
+        private val broadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 if (intent?.action == MyAccessibilityService.ACTION_ON_START) {
                     binding.apply {
@@ -61,12 +61,12 @@ class AppIntroActivity : AppIntro2() {
             IntentFilter().apply {
                 addAction(MyAccessibilityService.ACTION_ON_START)
 
-                requireContext().registerReceiver(mBroadcastReceiver, this)
+                requireContext().registerReceiver(broadcastReceiver, this)
             }
         }
 
         override fun onDestroyView() {
-            requireContext().unregisterReceiver(mBroadcastReceiver)
+            requireContext().unregisterReceiver(broadcastReceiver)
 
             super.onDestroyView()
         }
@@ -191,7 +191,7 @@ class AppIntroActivity : AppIntro2() {
     @RequiresApi(Build.VERSION_CODES.M)
     class DndAccessSlide : AppIntroScrollableFragment() {
 
-        private val mRequestAccessNotificationPolicy =
+        private val requestAccessNotificationPolicy =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
 
         override fun onBind(binding: FragmentAppIntroSlideBinding) {
@@ -205,7 +205,7 @@ class AppIntroActivity : AppIntro2() {
                 buttonText = str(R.string.pos_grant)
 
                 setOnButtonClickListener {
-                    PermissionUtils.requestAccessNotificationPolicy(mRequestAccessNotificationPolicy)
+                    PermissionUtils.requestAccessNotificationPolicy(requestAccessNotificationPolicy)
                 }
             }
         }

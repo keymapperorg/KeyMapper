@@ -23,7 +23,7 @@ class KeyActionTypeFragment : Fragment() {
         const val EXTRA_KEYCODE = "extra_keycode"
     }
 
-    private val mViewModel: KeyActionTypeViewModel by activityViewModels {
+    private val viewModel: KeyActionTypeViewModel by activityViewModels {
         InjectorUtils.provideKeyActionTypeViewModel()
     }
 
@@ -44,7 +44,6 @@ class KeyActionTypeFragment : Fragment() {
 
             lifecycleOwner = viewLifecycleOwner
             _binding = this
-            viewModel = mViewModel
 
             return this.root
         }
@@ -53,14 +52,14 @@ class KeyActionTypeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.apply {
-            mViewModel.clearKey()
+        binding.viewModel = viewModel
 
-            setOnDoneClick {
-                setFragmentResult(REQUEST_KEY,
-                    bundleOf(EXTRA_KEYCODE to mViewModel.keyEvent.value?.keyCode))
-                findNavController().navigateUp()
-            }
+        viewModel.clearKey()
+
+        binding.setOnDoneClick {
+            setFragmentResult(REQUEST_KEY,
+                bundleOf(EXTRA_KEYCODE to viewModel.keyEvent.value?.keyCode))
+            findNavController().navigateUp()
         }
     }
 

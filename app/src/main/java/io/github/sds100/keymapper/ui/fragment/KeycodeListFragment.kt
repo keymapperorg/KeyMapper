@@ -21,12 +21,12 @@ class KeycodeListFragment : DefaultRecyclerViewFragment() {
     override var searchStateKey: String? = SEARCH_STATE_KEY
     override var requestKey: String? = REQUEST_KEY
 
-    private val mViewModel: KeycodeListViewModel by activityViewModels {
+    private val viewModel: KeycodeListViewModel by activityViewModels {
         InjectorUtils.provideKeycodeListViewModel()
     }
 
     override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
-        mViewModel.filteredKeycodeLabelList.observe(viewLifecycleOwner, { labelList ->
+        viewModel.filteredKeycodeLabelList.observe(viewLifecycleOwner, { labelList ->
 
             binding.state = labelList
 
@@ -51,6 +51,6 @@ class KeycodeListFragment : DefaultRecyclerViewFragment() {
     }
 
     override fun onSearchQuery(query: String?) {
-        mViewModel.searchQuery.value = query
+        viewModel.searchQuery.value = query
     }
 }

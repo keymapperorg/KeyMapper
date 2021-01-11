@@ -13,7 +13,7 @@ import java.util.*
 
 class KeycodeListViewModel : ViewModel() {
 
-    private val mKeycodeLabelMap = liveData {
+    private val keycodeLabelMap = liveData {
         val keycodeList = withContext(viewModelScope.coroutineContext + Dispatchers.Default) {
             sequence {
                 KeyEventUtils.getKeyCodes().forEach {
@@ -31,7 +31,7 @@ class KeycodeListViewModel : ViewModel() {
         fun filter(query: String) {
             value = Loading()
 
-            value = mKeycodeLabelMap.value?.filter {
+            value = keycodeLabelMap.value?.filter {
                 it.value.toLowerCase(Locale.getDefault()).contains(query)
             }.getState()
         }
@@ -40,7 +40,7 @@ class KeycodeListViewModel : ViewModel() {
             filter(query)
         }
 
-        addSource(mKeycodeLabelMap) {
+        addSource(keycodeLabelMap) {
             value = Data(it)
 
             searchQuery.value?.let { query ->

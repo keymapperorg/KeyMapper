@@ -26,28 +26,28 @@ class RecoverFailureDelegate(
     keyPrefix: String,
     resultRegistry: ActivityResultRegistry,
     lifecycleOwner: LifecycleOwner,
-    private val mOnSuccessfulRecover: () -> Unit
+    private val onSuccessfulRecover: () -> Unit
 ) {
 
-    private val mStartActivityForResultLauncher =
+    private val startActivityForResultLauncher =
         resultRegistry.register(
             "$keyPrefix.start_activity",
             lifecycleOwner,
             ActivityResultContracts.StartActivityForResult()
         ) {
             if (it.resultCode == Activity.RESULT_OK) {
-                mOnSuccessfulRecover.invoke()
+                onSuccessfulRecover.invoke()
             }
         }
 
-    private val mRequestPermissionLauncher =
+    private val requestPermissionLauncher =
         resultRegistry.register(
             "$keyPrefix.request_permission",
             lifecycleOwner,
             ActivityResultContracts.RequestPermission()
         ) {
             if (it) {
-                mOnSuccessfulRecover.invoke()
+                onSuccessfulRecover.invoke()
             }
         }
 
@@ -61,20 +61,20 @@ class RecoverFailureDelegate(
                         }
 
                     Manifest.permission.CAMERA ->
-                        PermissionUtils.requestStandardPermission(mRequestPermissionLauncher, Manifest.permission.CAMERA)
+                        PermissionUtils.requestStandardPermission(requestPermissionLauncher, Manifest.permission.CAMERA)
 
                     Manifest.permission.BIND_DEVICE_ADMIN ->
-                        PermissionUtils.requestDeviceAdmin(activity, mStartActivityForResultLauncher)
+                        PermissionUtils.requestDeviceAdmin(activity, startActivityForResultLauncher)
 
                     Manifest.permission.READ_PHONE_STATE ->
                         PermissionUtils.requestStandardPermission(
-                            mRequestPermissionLauncher,
+                            requestPermissionLauncher,
                             Manifest.permission.READ_PHONE_STATE
                         )
 
                     Manifest.permission.ACCESS_NOTIFICATION_POLICY ->
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            PermissionUtils.requestAccessNotificationPolicy(mStartActivityForResultLauncher)
+                            PermissionUtils.requestAccessNotificationPolicy(startActivityForResultLauncher)
                         }
 
                     Manifest.permission.WRITE_SECURE_SETTINGS ->
@@ -83,10 +83,10 @@ class RecoverFailureDelegate(
                     Constants.PERMISSION_ROOT -> PermissionUtils.requestRootPermission(activity)
 
                     Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE ->
-                        PermissionUtils.requestNotificationListenerAccess(mStartActivityForResultLauncher)
+                        PermissionUtils.requestNotificationListenerAccess(startActivityForResultLauncher)
 
                     Manifest.permission.CALL_PHONE ->
-                        PermissionUtils.requestStandardPermission(mRequestPermissionLauncher, Manifest.permission.CALL_PHONE)
+                        PermissionUtils.requestStandardPermission(requestPermissionLauncher, Manifest.permission.CALL_PHONE)
 
                     else -> throw Exception("Don't know how to ask for permission ${failure.permission}")
                 }

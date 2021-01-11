@@ -32,7 +32,7 @@ class KeyEventActionTypeFragment : Fragment() {
         const val EXTRA_DEVICE_DESCRIPTOR = "extra_device_descriptor"
     }
 
-    private val mViewModel: KeyEventActionTypeViewModel by activityViewModels {
+    private val viewModel: KeyEventActionTypeViewModel by activityViewModels {
         InjectorUtils.provideKeyEventActionTypeViewModel(requireContext())
     }
 
@@ -51,7 +51,6 @@ class KeyEventActionTypeFragment : Fragment() {
         FragmentKeyeventActionTypeBinding.inflate(inflater, container, false).apply {
 
             lifecycleOwner = viewLifecycleOwner
-            viewModel = mViewModel
             _binding = this
 
             return this.root
@@ -61,125 +60,125 @@ class KeyEventActionTypeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.apply {
-            setOnDoneClick {
-                setFragmentResult(REQUEST_KEY,
-                    bundleOf(
-                        EXTRA_KEYCODE to mViewModel.keyCode.value?.toInt(),
-                        EXTRA_META_STATE to mViewModel.metaState.value
-                    ).apply {
-                        mViewModel.chosenDevice.value?.let {
-                            putString(EXTRA_DEVICE_DESCRIPTOR, it.descriptor)
+        binding.viewModel = viewModel
+
+        binding.setOnDoneClick {
+            setFragmentResult(REQUEST_KEY,
+                bundleOf(
+                    EXTRA_KEYCODE to viewModel.keyCode.value?.toInt(),
+                    EXTRA_META_STATE to viewModel.metaState.value
+                ).apply {
+                    viewModel.chosenDevice.value?.let {
+                        putString(EXTRA_DEVICE_DESCRIPTOR, it.descriptor)
+                    }
+                }
+            )
+
+            findNavController().navigateUp()
+        }
+
+        viewModel.failure.observe(viewLifecycleOwner, {
+            binding.textInputLayoutKeyCode.error = it?.getFullMessage(requireContext())
+        })
+
+        viewModel.modifierKeyModels.observe(viewLifecycleOwner, { models ->
+            binding.epoxyRecyclerViewModifiers.withModels {
+                models.forEach {
+                    checkbox {
+                        id(it.id)
+                        primaryText(str(it.label))
+                        isSelected(it.isChecked)
+
+                        onClick { view ->
+                            viewModel.setModifierKey(it.id.toInt(), (view as CheckBox).isChecked)
                         }
                     }
-                )
+                }
+            }
+        })
 
-                findNavController().navigateUp()
+        viewModel.chosenDevice.observe(viewLifecycleOwner, {
+            val text = when {
+                it == null -> str(R.string.from_no_device)
+
+                AppPreferences.showDeviceDescriptors ->
+                    "${it.name} ${it.descriptor.substring(0..4)}"
+
+                else -> it.name
             }
 
-            mViewModel.failure.observe(viewLifecycleOwner, {
-                textInputLayoutKeyCode.error = it?.getFullMessage(requireContext())
-            })
+            binding.dropdownDeviceId.setText(text, false)
+        })
 
-            mViewModel.modifierKeyModels.observe(viewLifecycleOwner, { models ->
-                epoxyRecyclerViewModifiers.withModels {
-                    models.forEach {
-                        checkbox {
-                            id(it.id)
-                            primaryText(str(it.label))
-                            isSelected(it.isChecked)
+        viewModel.eventStream.observe(viewLifecycleOwner, {
+            when (it) {
+                is ChooseKeycode -> {
+                    val direction = ChooseActionFragmentDirections
+                        .actionChooseActionFragmentToKeycodeListFragment()
 
-                            onClick { view ->
-                                mViewModel.setModifierKey(it.id.toInt(), (view as CheckBox).isChecked)
-                            }
-                        }
-                    }
-                }
-            })
-
-            mViewModel.chosenDevice.observe(viewLifecycleOwner, {
-                val text = when {
-                    it == null -> str(R.string.from_no_device)
-
-                    AppPreferences.showDeviceDescriptors ->
-                        "${it.name} ${it.descriptor.substring(0..4)}"
-
-                    else -> it.name
+                    findNavController().navigate(direction)
                 }
 
-                dropdownDeviceId.setText(text, false)
-            })
+                is BuildDeviceInfoModels -> {
+                    val modelList = InputDeviceUtils.createDeviceInfoModelsForAll()
+                    viewModel.setDeviceInfoModels(modelList)
+                }
+            }
+        })
 
-            mViewModel.eventStream.observe(viewLifecycleOwner, {
-                when (it) {
-                    is ChooseKeycode -> {
-                        val direction = ChooseActionFragmentDirections
-                            .actionChooseActionFragmentToKeycodeListFragment()
+        viewModel.deviceInfoModels.observe(viewLifecycleOwner, { models ->
+            ArrayAdapter<String>(
+                requireContext(),
+                R.layout.dropdown_menu_popup_item,
+                mutableListOf()
+            ).apply {
+                clear()
+                add(str(R.string.from_no_device))
 
-                        findNavController().navigate(direction)
-                    }
-
-                    is BuildDeviceInfoModels -> {
-                        val modelList = InputDeviceUtils.createDeviceInfoModelsForAll()
-                        mViewModel.setDeviceInfoModels(modelList)
+                models.forEach {
+                    if (AppPreferences.showDeviceDescriptors) {
+                        add("${it.name} ${it.descriptor.substring(0..4)}")
+                    } else {
+                        add(it.name)
                     }
                 }
-            })
 
-            mViewModel.deviceInfoModels.observe(viewLifecycleOwner, { models ->
-                ArrayAdapter<String>(
-                    requireContext(),
-                    R.layout.dropdown_menu_popup_item,
-                    mutableListOf()
-                ).apply {
-                    clear()
-                    add(str(R.string.from_no_device))
+                binding.dropdownDeviceId.setAdapter(this)
+            }
+        })
 
-                    models.forEach {
-                        if (AppPreferences.showDeviceDescriptors) {
-                            add("${it.name} ${it.descriptor.substring(0..4)}")
-                        } else {
-                            add(it.name)
-                        }
-                    }
+        binding.dropdownDeviceId.apply {
+            //set the default value
+            setText(str(R.string.from_no_device), false)
 
-                    dropdownDeviceId.setAdapter(this)
+            setOnItemClickListener { _, _, position, _ ->
+                if (position == 0) {
+                    viewModel.chooseNoDevice()
+                    return@setOnItemClickListener
                 }
-            })
 
-            dropdownDeviceId.apply {
-                //set the default value
-                setText(str(R.string.from_no_device), false)
+                //subtract the list item that selects no device
+                viewModel.chooseDevice(position - 1)
+            }
 
-                setOnItemClickListener { _, _, position, _ ->
+            onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
                     if (position == 0) {
-                        mViewModel.chooseNoDevice()
-                        return@setOnItemClickListener
+                        viewModel.chooseNoDevice()
+                        return
                     }
 
                     //subtract the list item that selects no device
-                    mViewModel.chooseDevice(position - 1)
+                    viewModel.chooseDevice(position - 1)
                 }
 
-                onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-                        if (position == 0) {
-                            mViewModel.chooseNoDevice()
-                            return
-                        }
-
-                        //subtract the list item that selects no device
-                        mViewModel.chooseDevice(position - 1)
-                    }
-
-                    override fun onNothingSelected(parent: AdapterView<*>?) {
-                        mViewModel.chooseNoDevice()
-                    }
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    viewModel.chooseNoDevice()
                 }
             }
         }

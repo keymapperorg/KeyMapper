@@ -35,7 +35,7 @@ class TriggerOptionsFragment : DefaultRecyclerViewFragment() {
     override var isInPagerAdapter = true
     override var isAppBarVisible = false
 
-    private val mController by lazy {
+    private val controller by lazy {
 
         object : OptionsController(this) {
             var triggerByIntent: TriggerByIntentModel? = null
@@ -86,20 +86,20 @@ class TriggerOptionsFragment : DefaultRecyclerViewFragment() {
 
     override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
         binding.apply {
-            epoxyRecyclerView.adapter = mController.adapter
+            epoxyRecyclerView.adapter = controller.adapter
 
             optionsViewModel.triggerByIntent.observe(viewLifecycleOwner, {
-                mController.triggerByIntent = it
+                controller.triggerByIntent = it
             })
 
             optionsViewModel.checkBoxModels.observe(viewLifecycleOwner, {
                 state = Data(Unit)
-                mController.checkBoxModels = it
+                controller.checkBoxModels = it
             })
 
             optionsViewModel.sliderModels.observe(viewLifecycleOwner, {
                 state = Data(Unit)
-                mController.sliderModels = it
+                controller.sliderModels = it
             })
         }
     }

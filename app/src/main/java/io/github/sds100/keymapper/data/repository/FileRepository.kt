@@ -10,11 +10,11 @@ import java.net.URL
 /**
  * Created by sds100 on 04/04/2020.
  */
-class FileRepository(private val mContext: Context) {
+class FileRepository(private val context: Context) {
 
     suspend fun getFile(url: String): Result<String> {
         val fileName = extractFileName(url)
-        val path = FileUtils.getPathToFileInAppData(mContext, fileName)
+        val path = FileUtils.getPathToFileInAppData(context, fileName)
 
         return NetworkUtils.downloadFile(url, path).otherwise {
             if (it is DownloadFailed) {

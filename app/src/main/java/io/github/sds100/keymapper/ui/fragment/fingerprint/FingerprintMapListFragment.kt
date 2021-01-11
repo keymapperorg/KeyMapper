@@ -26,39 +26,39 @@ import splitties.alertdialog.appcompat.*
  */
 class FingerprintMapListFragment : RecyclerViewFragment<FragmentFingerprintMapListBinding>() {
 
-    private val mViewModel: FingerprintMapListViewModel by activityViewModels {
+    private val viewModel: FingerprintMapListViewModel by activityViewModels {
         InjectorUtils.provideFingerprintMapListViewModel(requireContext())
     }
 
-    private val mBackupLauncher =
+    private val backupLauncher =
         registerForActivityResult(ActivityResultContracts.CreateDocument()) {
             it ?: return@registerForActivityResult
 
-            mBackupRestoreViewModel
+            backupRestoreViewModel
                 .backupFingerprintMaps(requireActivity().contentResolver.openOutputStream(it))
         }
 
-    private val mBackupRestoreViewModel: BackupRestoreViewModel by activityViewModels {
+    private val backupRestoreViewModel: BackupRestoreViewModel by activityViewModels {
         InjectorUtils.provideBackupRestoreViewModel(requireContext())
     }
 
-    private lateinit var mRecoverFailureDelegate: RecoverFailureDelegate
+    private lateinit var recoverFailureDelegate: RecoverFailureDelegate
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        mRecoverFailureDelegate = RecoverFailureDelegate(
+        recoverFailureDelegate = RecoverFailureDelegate(
             "FingerprintGestureFragment",
             requireActivity().activityResultRegistry,
             this) {
 
-            mViewModel.rebuildModels()
+            viewModel.rebuildModels()
         }
     }
 
     override fun subscribeUi(binding: FragmentFingerprintMapListBinding) {
-        mViewModel.models.observe(viewLifecycleOwner, { models ->
-            binding.viewModel = mViewModel
+        viewModel.models.observe(viewLifecycleOwner, { models ->
+            binding.viewModel = viewModel
 
             binding.state = models
 
@@ -71,12 +71,12 @@ class FingerprintMapListFragment : RecyclerViewFragment<FragmentFingerprintMapLi
                         model(it)
 
                         onEnabledSwitchClick { view ->
-                            mViewModel.setEnabled(it.id, (view as SwitchMaterial).isChecked)
+                            viewModel.setEnabled(it.id, (view as SwitchMaterial).isChecked)
                         }
 
                         onErrorClick(object : ErrorClickCallback {
                             override fun onErrorClick(failure: Failure) {
-                                mViewModel.fixError(failure)
+                                viewModel.fixError(failure)
                             }
                         })
 
@@ -89,12 +89,12 @@ class FingerprintMapListFragment : RecyclerViewFragment<FragmentFingerprintMapLi
             }
         })
 
-        mViewModel.eventStream.observe(viewLifecycleOwner,
+        viewModel.eventStream.observe(viewLifecycleOwner,
             {
                 when (it) {
                     is BuildFingerprintMapModels -> {
                         viewLifecycleScope.launchWhenStarted {
-                            mViewModel.setModels(buildModels(it.maps))
+                            viewModel.setModels(buildModels(it.maps))
                         }
                     }
 
@@ -103,7 +103,7 @@ class FingerprintMapListFragment : RecyclerViewFragment<FragmentFingerprintMapLi
                             messageResource = R.string.dialog_title_are_you_sure
 
                             positiveButton(R.string.pos_yes) {
-                                mViewModel.reset()
+                                viewModel.reset()
                             }
 
                             cancelButton()
@@ -112,11 +112,11 @@ class FingerprintMapListFragment : RecyclerViewFragment<FragmentFingerprintMapLi
                         }
                     }
 
-                    is BackupFingerprintMaps -> mBackupLauncher.launch(BackupUtils.createFileName())
+                    is BackupFingerprintMaps -> backupLauncher.launch(BackupUtils.createFileName())
                 }
             })
 
-        mViewModel.rebuildModels()
+        viewModel.rebuildModels()
     }
 
     private suspend fun buildModels(maps: Map<String, FingerprintMap>) =
@@ -126,7 +126,7 @@ class FingerprintMapListFragment : RecyclerViewFragment<FragmentFingerprintMapLi
                 header = str(FingerprintMapUtils.HEADERS[it.key]!!),
 
                 actionModels = it.value.actionList.map { action ->
-                    action.buildChipModel(requireContext(), mViewModel.getDeviceInfoList())
+                    action.buildChipModel(requireContext(), viewModel.getDeviceInfoList())
                 },
 
                 constraintModels = it.value.constraintList.map { constraint ->

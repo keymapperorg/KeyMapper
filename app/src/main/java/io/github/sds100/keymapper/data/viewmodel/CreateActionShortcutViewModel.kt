@@ -38,10 +38,10 @@ class CreateActionShortcutViewModel(deviceInfoRepository: DeviceInfoRepository) 
 
     val eventStream: LiveData<Event> = _eventStream
 
-    class Factory(private val mDeviceInfoRepository: DeviceInfoRepository) : ViewModelProvider.Factory {
+    class Factory(private val deviceInfoRepository: DeviceInfoRepository) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>) =
-            CreateActionShortcutViewModel(mDeviceInfoRepository) as T
+            CreateActionShortcutViewModel(deviceInfoRepository) as T
     }
 }

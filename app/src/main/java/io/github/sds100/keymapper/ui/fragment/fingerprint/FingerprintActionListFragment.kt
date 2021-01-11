@@ -14,13 +14,13 @@ import io.github.sds100.keymapper.util.InjectorUtils
  */
 
 class FingerprintActionListFragment : ActionListFragment<FingerprintActionOptions>() {
-    private val mViewModel: ConfigFingerprintMapViewModel
+    private val viewModel: ConfigFingerprintMapViewModel
         by navGraphViewModels(R.id.nav_config_fingerprint_map) {
             InjectorUtils.provideFingerprintMapListViewModel(requireContext())
         }
 
     override val actionListViewModel: ActionListViewModel<FingerprintActionOptions>
-        get() = mViewModel.actionListViewModel
+        get() = viewModel.actionListViewModel
 
     override fun openActionOptionsFragment(options: FingerprintActionOptions) {
         val direction = ConfigFingerprintMapFragmentDirections

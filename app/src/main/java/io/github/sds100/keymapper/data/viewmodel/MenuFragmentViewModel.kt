@@ -10,8 +10,8 @@ import kotlinx.coroutines.launch
 /**
  * Created by sds100 on 17/11/20.
  */
-class MenuFragmentViewModel(private val mKeymapUseCase: MenuKeymapUseCase,
-                            private val mFingerprintMapRepository: FingerprintMapRepository
+class MenuFragmentViewModel(private val keymapUseCase: MenuKeymapUseCase,
+                            private val fingerprintMapRepository: FingerprintMapRepository
 ) : ViewModel() {
 
     val keymapsPaused = MutableLiveData(false)
@@ -21,20 +21,20 @@ class MenuFragmentViewModel(private val mKeymapUseCase: MenuKeymapUseCase,
     val eventStream: LiveData<Event> = _eventStream
 
     fun enableAll() = viewModelScope.launch {
-        mKeymapUseCase.enableAll()
+        keymapUseCase.enableAll()
 
         FingerprintMapUtils.GESTURES.forEach { gestureId ->
-            mFingerprintMapRepository.editGesture(gestureId) {
+            fingerprintMapRepository.editGesture(gestureId) {
                 it.copy(isEnabled = true)
             }
         }
     }
 
     fun disableAll() = viewModelScope.launch {
-        mKeymapUseCase.disableAll()
+        keymapUseCase.disableAll()
 
         FingerprintMapUtils.GESTURES.forEach { gestureId ->
-            mFingerprintMapRepository.editGesture(gestureId) {
+            fingerprintMapRepository.editGesture(gestureId) {
                 it.copy(isEnabled = false)
             }
         }
@@ -52,12 +52,12 @@ class MenuFragmentViewModel(private val mKeymapUseCase: MenuKeymapUseCase,
 
     @Suppress("UNCHECKED_CAST")
     class Factory(
-        private val mKeymapUseCase: MenuKeymapUseCase,
-        private val mFingerprintMapRepository: FingerprintMapRepository
+        private val keymapUseCase: MenuKeymapUseCase,
+        private val fingerprintMapRepository: FingerprintMapRepository
     ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return MenuFragmentViewModel(mKeymapUseCase, mFingerprintMapRepository) as T
+            return MenuFragmentViewModel(keymapUseCase, fingerprintMapRepository) as T
         }
     }
 }

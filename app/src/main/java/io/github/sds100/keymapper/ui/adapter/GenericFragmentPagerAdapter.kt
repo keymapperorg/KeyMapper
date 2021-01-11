@@ -11,20 +11,20 @@ class GenericFragmentPagerAdapter(fragment: Fragment,
                                   fragmentCreatorsWithId: List<Pair<Int, () -> Fragment>>
 ) : FragmentStateAdapter(fragment) {
 
-    private val mItemIds = fragmentCreatorsWithId.map { it.first.toLong() }
-    private val mFragmentCreatorsList = fragmentCreatorsWithId.map { it.second }
+    private val itemIds = fragmentCreatorsWithId.map { it.first.toLong() }
+    private val fragmentCreatorsList = fragmentCreatorsWithId.map { it.second }
 
-    override fun getItemCount() = mFragmentCreatorsList.size
+    override fun getItemCount() = fragmentCreatorsList.size
 
     override fun createFragment(position: Int): Fragment {
-        return mFragmentCreatorsList[position].invoke()
+        return fragmentCreatorsList[position].invoke()
     }
 
     override fun getItemId(position: Int): Long {
-        return mItemIds[position]
+        return itemIds[position]
     }
 
-    override fun containsItem(itemId: Long): Boolean {
-        return mItemIds.contains(itemId)
+    override fun containsItem(iteid: Long): Boolean {
+        return itemIds.contains(iteid)
     }
 }

@@ -40,7 +40,7 @@ class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourcePr
         const val SEARCH_STATE_KEY = "key_system_action_search_state"
     }
 
-    private val mViewModel: SystemActionListViewModel by activityViewModels {
+    private val viewModel: SystemActionListViewModel by activityViewModels {
         InjectorUtils.provideSystemActionListViewModel(requireContext())
     }
 
@@ -49,11 +49,11 @@ class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourcePr
 
     override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
 
-        mViewModel.registerStringResourceProvider(this)
+        viewModel.registerStringResourceProvider(this)
 
         binding.apply {
 
-            mViewModel.unsupportedSystemActions.observe(viewLifecycleOwner, {
+            viewModel.unsupportedSystemActions.observe(viewLifecycleOwner, {
                 if (it !is Data) return@observe
 
                 if (it.data.isNotEmpty()) {
@@ -65,8 +65,8 @@ class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourcePr
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
-        mViewModel.filteredModelList.observe(viewLifecycleOwner, {
+
+        viewModel.filteredModelList.observe(viewLifecycleOwner, {
             binding.state = it
 
             if (it !is Data) return@observe
@@ -87,7 +87,7 @@ class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourcePr
     }
 
     override fun onSearchQuery(query: String?) {
-        mViewModel.searchQuery.value = query
+        viewModel.searchQuery.value = query
     }
 
     override fun getStringResource(resId: Int) = str(resId)
@@ -95,7 +95,7 @@ class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourcePr
     override fun onDestroy() {
         super.onDestroy()
 
-        mViewModel.unregisterStringResourceProvider()
+        viewModel.unregisterStringResourceProvider()
     }
 
     @ExperimentalSplittiesApi

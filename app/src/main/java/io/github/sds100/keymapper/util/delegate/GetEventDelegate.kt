@@ -25,14 +25,14 @@ class GetEventDelegate(val onKeyEvent: suspend (keyCode: Int,
         private const val REGEX_KEY_EVENT_ACTION = "(?<= )(DOWN|UP)"
     }
 
-    private var mJob: Job? = null
+    private var job: Job? = null
 
     /**
      * @return whether it successfully started listening.
      */
     fun startListening(scope: CoroutineScope): Boolean {
         try {
-            mJob = scope.launch(Dispatchers.IO) {
+            job = scope.launch(Dispatchers.IO) {
 
                 try {
                     val getEventDevices: String
@@ -97,7 +97,7 @@ class GetEventDelegate(val onKeyEvent: suspend (keyCode: Int,
             }
 
         } catch (e: Exception) {
-            mJob?.cancel()
+            job?.cancel()
             return false
         }
 
@@ -105,7 +105,7 @@ class GetEventDelegate(val onKeyEvent: suspend (keyCode: Int,
     }
 
     fun stopListening() {
-        mJob?.cancel()
+        job?.cancel()
     }
 
     private fun getDeviceLocation(getEventDeviceOutput: String, deviceName: String): String? {

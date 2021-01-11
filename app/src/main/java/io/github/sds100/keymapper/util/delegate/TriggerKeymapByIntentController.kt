@@ -5,7 +5,6 @@ import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.util.IActionError
 import io.github.sds100.keymapper.util.triggerByIntent
 import kotlinx.coroutines.CoroutineScope
-import timber.log.Timber
 
 /**
  * Created by sds100 on 11/12/20.
@@ -16,10 +15,10 @@ class TriggerKeymapByIntentController(
     iActionError: IActionError
 ) : SimpleMappingController(coroutineScope, iConstraintDelegate, iActionError) {
 
-    private var mKeymapList = emptyList<KeyMap>()
+    private var keymapList = emptyList<KeyMap>()
 
     fun onDetected(uid: String) {
-        mKeymapList
+        keymapList
             .find { it.uid == uid }
             ?.let {
                 onDetected(it.uid,
@@ -36,6 +35,6 @@ class TriggerKeymapByIntentController(
     fun onKeymapListUpdate(keymapList: List<KeyMap>) {
         reset()
 
-        mKeymapList = keymapList.filter { it.trigger.triggerByIntent }
+        this.keymapList = keymapList.filter { it.trigger.triggerByIntent }
     }
 }

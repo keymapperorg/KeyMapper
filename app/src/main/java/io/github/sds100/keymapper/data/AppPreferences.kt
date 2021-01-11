@@ -15,19 +15,19 @@ import splitties.preferences.DefaultPreferences
 @Suppress("EXPERIMENTAL_API_USAGE")
 object AppPreferences : DefaultPreferences() {
 
-    private var mDarkThemeModePref by StringPref(
+    private var darkThemeModePref by StringPref(
         appCtx.str(R.string.key_pref_dark_theme_mode),
         appCtx.str(R.string.default_value_dark_theme_mode)
     )
 
     @NightMode
     var darkThemeMode: Int
-        get() = getSdkNightMode(mDarkThemeModePref)
+        get() = getSdkNightMode(darkThemeModePref)
         set(value) {
             when (value) {
-                MODE_NIGHT_YES -> mDarkThemeModePref = appCtx.str(R.string.value_pref_dark_theme_enabled)
-                MODE_NIGHT_NO -> mDarkThemeModePref = appCtx.str(R.string.value_pref_dark_theme_disabled)
-                MODE_NIGHT_FOLLOW_SYSTEM -> mDarkThemeModePref = appCtx.str(R.string.value_pref_dark_theme_follow_system)
+                MODE_NIGHT_YES -> darkThemeModePref = appCtx.str(R.string.value_pref_dark_theme_enabled)
+                MODE_NIGHT_NO -> darkThemeModePref = appCtx.str(R.string.value_pref_dark_theme_disabled)
+                MODE_NIGHT_FOLLOW_SYSTEM -> darkThemeModePref = appCtx.str(R.string.value_pref_dark_theme_follow_system)
             }
         }
 

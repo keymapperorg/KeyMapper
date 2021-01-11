@@ -34,7 +34,7 @@ abstract class BaseOptionsDialogFragment<BINDING : ViewDataBinding, O : BaseOpti
     abstract val requestKey: String
     abstract val initialOptions: O
 
-    private val mController by lazy {
+    private val controller by lazy {
         object : OptionsController(this) {
             override val activity: FragmentActivity
                 get() = requireActivity()
@@ -77,11 +77,11 @@ abstract class BaseOptionsDialogFragment<BINDING : ViewDataBinding, O : BaseOpti
 
         binding.apply {
             optionsViewModel.checkBoxModels.observe(viewLifecycleOwner, {
-                mController.checkBoxModels = it
+                controller.checkBoxModels = it
             })
 
             optionsViewModel.sliderModels.observe(viewLifecycleOwner, {
-                mController.sliderModels = it
+                controller.sliderModels = it
             })
 
             optionsViewModel.onSaveEvent.observe(viewLifecycleOwner, {
@@ -89,7 +89,7 @@ abstract class BaseOptionsDialogFragment<BINDING : ViewDataBinding, O : BaseOpti
                 findNavController().navigateUp()
             })
 
-            setRecyclerViewAdapter(this, mController.adapter)
+            setRecyclerViewAdapter(this, controller.adapter)
             subscribeCustomUi(this)
         }
     }

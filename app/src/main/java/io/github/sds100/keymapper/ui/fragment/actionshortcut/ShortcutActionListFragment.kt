@@ -15,12 +15,12 @@ import io.github.sds100.keymapper.util.InjectorUtils
  */
 
 class ShortcutActionListFragment : ActionListFragment<ActionShortcutOptions>() {
-    private val mViewModel: CreateActionShortcutViewModel by navGraphViewModels(R.id.nav_action_shortcut) {
+    private val viewModel: CreateActionShortcutViewModel by navGraphViewModels(R.id.nav_action_shortcut) {
         InjectorUtils.provideCreateActionShortcutViewModel(requireContext())
     }
 
     override val actionListViewModel: ActionListViewModel<ActionShortcutOptions>
-        get() = mViewModel.actionListViewModel
+        get() = viewModel.actionListViewModel
 
     override fun openActionOptionsFragment(options: ActionShortcutOptions) {
         val direction = CreateActionShortcutFragmentDirections.actionToActionOptionsFragment(options)

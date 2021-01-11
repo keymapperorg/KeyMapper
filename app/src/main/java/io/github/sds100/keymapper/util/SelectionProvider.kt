@@ -15,9 +15,10 @@ class SelectionProvider : ISelectionProvider {
     override val isSelectable: MutableLiveData<Boolean> = MutableLiveData(false)
     override val selectedCount: MutableLiveData<Int> = MutableLiveData(0)
 
+    private var _selectedIds = SparseBooleanArray()
     override val selectedIds: LongArray
         get() = sequence {
-            mSelectedIds.forEach { id, selected ->
+            _selectedIds.forEach { id, selected ->
                 if (selected) {
                     yield(id.toLong())
                 }
@@ -25,8 +26,6 @@ class SelectionProvider : ISelectionProvider {
         }.toList().toLongArray()
 
     override var callback: SelectionCallback? = null
-
-    private var mSelectedIds = SparseBooleanArray()
 
     override fun startSelecting(): Boolean {
         if (isSelectable.value == false) {
@@ -49,7 +48,7 @@ class SelectionProvider : ISelectionProvider {
     }
 
     override fun toggleSelection(id: Long) {
-        mSelectedIds[id.toInt()] = !isSelected(id)
+        _selectedIds[id.toInt()] = !isSelected(id)
 
         if (isSelected(id)) {
             callback?.onSelect(id)
@@ -61,7 +60,7 @@ class SelectionProvider : ISelectionProvider {
     }
 
     override fun isSelected(id: Long): Boolean {
-        return mSelectedIds[id.toInt()]
+        return _selectedIds[id.toInt()]
     }
 
     override fun updateIds(ids: LongArray) {
@@ -69,26 +68,26 @@ class SelectionProvider : ISelectionProvider {
 
         ids.forEach {
             val id = it.toInt()
-            val value = mSelectedIds[id]
+            val value = _selectedIds[id]
 
             newSparseArray.put(id, value)
         }
 
-        mSelectedIds = newSparseArray
+        _selectedIds = newSparseArray
     }
 
     override fun selectAll() {
-        mSelectedIds.forEach { key, _ ->
-            mSelectedIds[key] = true
+        _selectedIds.forEach { key, _ ->
+            _selectedIds[key] = true
         }
-        selectedCount.value = mSelectedIds.size
+        selectedCount.value = _selectedIds.size
         callback?.onSelectAll()
     }
 
     private fun unselectAll() {
         //unselect all the items
-        mSelectedIds.forEach { key, _ ->
-            mSelectedIds[key] = false
+        _selectedIds.forEach { key, _ ->
+            _selectedIds[key] = false
         }
         selectedCount.value = 0
     }

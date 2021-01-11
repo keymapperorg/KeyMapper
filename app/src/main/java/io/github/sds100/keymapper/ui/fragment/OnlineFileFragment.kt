@@ -19,20 +19,20 @@ import splitties.toast.toast
 
 class OnlineFileFragment : BottomSheetDialogFragment() {
 
-    private val mArgs by navArgs<OnlineFileFragmentArgs>()
+    private val args by navArgs<OnlineFileFragmentArgs>()
 
-    private val mFileUrl by lazy { str(mArgs.StringNavArgFileUrl) }
-    private val mAlternateUrl by lazy {
-        if (mArgs.StringNavArgFileUrlAlt != 0) {
-            str(mArgs.StringNavArgFileUrlAlt)
+    private val fileUrl by lazy { str(args.StringNavArgFileUrl) }
+    private val alternateUrl by lazy {
+        if (args.StringNavArgFileUrlAlt != 0) {
+            str(args.StringNavArgFileUrlAlt)
         } else {
             null
         }
     }
-    private val mHeader by lazy { str(mArgs.StringNavArgHeader) }
+    private val header by lazy { str(args.StringNavArgHeader) }
 
-    private val mViewModel by viewModels<OnlineFileViewModel> {
-        InjectorUtils.provideOnlineViewModel(requireContext(), mFileUrl, mAlternateUrl, mHeader)
+    private val viewModel by viewModels<OnlineFileViewModel> {
+        InjectorUtils.provideOnlineViewModel(requireContext(), fileUrl, alternateUrl, header)
     }
 
     /**
@@ -46,7 +46,6 @@ class OnlineFileFragment : BottomSheetDialogFragment() {
         FragmentOnlineFileBinding.inflate(inflater, container, false).apply {
 
             lifecycleOwner = viewLifecycleOwner
-            viewModel = mViewModel
             _binding = this
 
             return this.root
@@ -59,7 +58,9 @@ class OnlineFileFragment : BottomSheetDialogFragment() {
         val dialog = requireDialog() as BottomSheetDialog
         dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
 
-        mViewModel.eventStream.observe(viewLifecycleOwner, {
+        binding.viewModel = viewModel
+
+        viewModel.eventStream.observe(viewLifecycleOwner, {
             when (it) {
                 is CloseDialog -> dismiss()
                 is ShowErrorMessage -> toast(it.failure.getFullMessage(requireContext()))

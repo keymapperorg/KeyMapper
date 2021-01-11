@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
  * Created by sds100 on 29/11/20.
  */
 
-class ConstraintListViewModel(private val mCoroutineScope: CoroutineScope) {
+class ConstraintListViewModel(private val coroutineScope: CoroutineScope) {
 
     private val _constraintList = MutableLiveData<List<Constraint>>()
     val constraintList: LiveData<List<Constraint>> = _constraintList
@@ -73,7 +73,7 @@ class ConstraintListViewModel(private val mCoroutineScope: CoroutineScope) {
     }
 
     fun onModelClick(id: String) {
-        mCoroutineScope.launch {
+        coroutineScope.launch {
             modelList.value?.ifIsData { modelList ->
                 val constraint = modelList.singleOrNull { it.id == id } ?: return@launch
 

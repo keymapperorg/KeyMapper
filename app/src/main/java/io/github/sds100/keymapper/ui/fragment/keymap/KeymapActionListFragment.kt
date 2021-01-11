@@ -14,12 +14,12 @@ import io.github.sds100.keymapper.util.InjectorUtils
  */
 
 class KeymapActionListFragment : ActionListFragment<KeymapActionOptions>() {
-    private val mConfigKeymapViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap) {
+    private val configKeymapViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap) {
         InjectorUtils.provideConfigKeymapViewModel(requireContext())
     }
 
     override val actionListViewModel: ActionListViewModel<KeymapActionOptions>
-        get() = mConfigKeymapViewModel.actionListViewModel
+        get() = configKeymapViewModel.actionListViewModel
 
     override fun openActionOptionsFragment(options: KeymapActionOptions) {
         val direction = ConfigKeymapFragmentDirections.actionConfigKeymapFragmentToActionOptionsFragment(options)

@@ -56,11 +56,11 @@ import splitties.toast.toast
  */
 class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private val mKeyMapListViewModel: KeymapListViewModel by activityViewModels {
+    private val keyMapListViewModel: KeymapListViewModel by activityViewModels {
         InjectorUtils.provideKeymapListViewModel(requireContext())
     }
 
-    private val mFingerprintMapListViewModel: FingerprintMapListViewModel by activityViewModels {
+    private val fingerprintMapListViewModel: FingerprintMapListViewModel by activityViewModels {
         InjectorUtils.provideFingerprintMapListViewModel(requireContext())
     }
 
@@ -68,18 +68,18 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
      * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
      */
     private var _binding: FragmentHomeBinding? = null
-    private val mBinding: FragmentHomeBinding
+    private val binding: FragmentHomeBinding
         get() = _binding!!
 
-    private val mExpanded = MutableLiveData(false)
-    private val mCollapsedStatusState = MutableLiveData(StatusLayout.State.ERROR)
-    private val mAccessibilityServiceStatusState = MutableLiveData(StatusLayout.State.ERROR)
-    private val mImeServiceStatusState = MutableLiveData(StatusLayout.State.ERROR)
-    private val mDndAccessStatusState = MutableLiveData(StatusLayout.State.ERROR)
-    private val mWriteSettingsStatusState = MutableLiveData(StatusLayout.State.ERROR)
-    private val mBatteryOptimisationState = MutableLiveData(StatusLayout.State.ERROR)
+    private val expandedHeader = MutableLiveData(false)
+    private val collapsedStatusState = MutableLiveData(StatusLayout.State.ERROR)
+    private val accessibilityServiceStatusState = MutableLiveData(StatusLayout.State.ERROR)
+    private val imeServiceStatusState = MutableLiveData(StatusLayout.State.ERROR)
+    private val dndAccessStatusState = MutableLiveData(StatusLayout.State.ERROR)
+    private val writeSettingsStatusState = MutableLiveData(StatusLayout.State.ERROR)
+    private val batteryOptimisationState = MutableLiveData(StatusLayout.State.ERROR)
 
-    private val mBroadcastReceiver = object : BroadcastReceiver() {
+    private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             intent ?: return
 
@@ -87,46 +87,46 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                 /*when the input method changes, update the action descriptions in case any need to show an error
                 * that they need the input method to be enabled. */
                 Intent.ACTION_INPUT_METHOD_CHANGED -> {
-                    mKeyMapListViewModel.rebuildModels()
-                    mFingerprintMapListViewModel.rebuildModels()
+                    keyMapListViewModel.rebuildModels()
+                    fingerprintMapListViewModel.rebuildModels()
                 }
 
                 MyAccessibilityService.ACTION_ON_START -> {
-                    mAccessibilityServiceStatusState.value = StatusLayout.State.POSITIVE
+                    accessibilityServiceStatusState.value = StatusLayout.State.POSITIVE
                 }
 
                 MyAccessibilityService.ACTION_ON_STOP -> {
-                    mAccessibilityServiceStatusState.value = StatusLayout.State.ERROR
+                    accessibilityServiceStatusState.value = StatusLayout.State.ERROR
                 }
             }
         }
     }
 
-    private val mBackupLauncher =
+    private val backupLauncher =
         registerForActivityResult(ActivityResultContracts.CreateDocument()) {
             it ?: return@registerForActivityResult
 
-            mBackupRestoreViewModel
+            backupRestoreViewModel
                 .backupAll(requireActivity().contentResolver.openOutputStream(it))
         }
 
-    private val mRestoreLauncher =
+    private val restoreLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) {
             it ?: return@registerForActivityResult
 
-            mBackupRestoreViewModel.restore(requireContext().contentResolver.openInputStream(it))
+            backupRestoreViewModel.restore(requireContext().contentResolver.openInputStream(it))
         }
 
-    private val mBackupRestoreViewModel: BackupRestoreViewModel by activityViewModels {
+    private val backupRestoreViewModel: BackupRestoreViewModel by activityViewModels {
         InjectorUtils.provideBackupRestoreViewModel(requireContext())
     }
 
-    private val mRequestAccessNotificationPolicy =
+    private val requestAccessNotificationPolicy =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             updateStatusLayouts()
         }
 
-    private val mOnPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
+    private val onPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
             if (position == 0) {
                 fab.show()
@@ -136,7 +136,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
         }
     }
 
-    private lateinit var mRecoverFailureDelegate: RecoverFailureDelegate
+    private lateinit var recoverFailureDelegate: RecoverFailureDelegate
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -146,15 +146,15 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             addAction(MyAccessibilityService.ACTION_ON_START)
             addAction(MyAccessibilityService.ACTION_ON_STOP)
 
-            requireActivity().registerReceiver(mBroadcastReceiver, this)
+            requireActivity().registerReceiver(broadcastReceiver, this)
         }
 
-        mRecoverFailureDelegate = RecoverFailureDelegate(
+        recoverFailureDelegate = RecoverFailureDelegate(
             "HomeFragment",
             requireActivity().activityResultRegistry,
             this) {
 
-            mKeyMapListViewModel.rebuildModels()
+            keyMapListViewModel.rebuildModels()
         }
     }
 
@@ -172,16 +172,16 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mBinding.apply {
+        binding.apply {
 
             val pagerAdapter = HomePagerAdapter(
                 this@HomeFragment,
-                mFingerprintMapListViewModel.fingerprintGesturesAvailable.value ?: false
+                fingerprintMapListViewModel.fingerprintGesturesAvailable.value ?: false
             )
 
             viewPager.adapter = pagerAdapter
 
-            mFingerprintMapListViewModel.fingerprintGesturesAvailable.observe(viewLifecycleOwner, {
+            fingerprintMapListViewModel.fingerprintGesturesAvailable.observe(viewLifecycleOwner, {
                 pagerAdapter.invalidateFragments(it ?: false)
                 isFingerprintGestureDetectionAvailable = it ?: false
             })
@@ -192,7 +192,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                 attach()
             }
 
-            viewPager.registerOnPageChangeCallback(mOnPageChangeCallback)
+            viewPager.registerOnPageChangeCallback(onPageChangeCallback)
 
             setOnNewKeymapClick {
                 val direction =
@@ -216,30 +216,30 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                     }
 
                     R.id.action_select_all -> {
-                        mKeyMapListViewModel.selectionProvider.selectAll()
+                        keyMapListViewModel.selectionProvider.selectAll()
                         true
                     }
 
                     R.id.action_enable -> {
-                        mKeyMapListViewModel
+                        keyMapListViewModel
                             .enableSelectedKeymaps()
                         true
                     }
 
                     R.id.action_disable -> {
-                        mKeyMapListViewModel
+                        keyMapListViewModel
                             .disableSelectedKeymaps()
                         true
                     }
 
                     R.id.action_duplicate_keymap -> {
-                        mKeyMapListViewModel
-                            .duplicate(*mKeyMapListViewModel.selectionProvider.selectedIds)
+                        keyMapListViewModel
+                            .duplicate(*keyMapListViewModel.selectionProvider.selectedIds)
                         true
                     }
 
                     R.id.action_backup -> {
-                        mKeyMapListViewModel.requestBackupSelectedKeymaps()
+                        keyMapListViewModel.requestBackupSelectedKeymaps()
                         true
                     }
 
@@ -248,22 +248,22 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             }
 
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-                if (mKeyMapListViewModel.selectionProvider.isSelectable.value == true) {
-                    mKeyMapListViewModel.selectionProvider.stopSelecting()
+                if (keyMapListViewModel.selectionProvider.isSelectable.value == true) {
+                    keyMapListViewModel.selectionProvider.stopSelecting()
                 } else {
                     requireActivity().finish()
                 }
             }
 
             appBar.setNavigationOnClickListener {
-                if (mKeyMapListViewModel.selectionProvider.isSelectable.value == true) {
-                    mKeyMapListViewModel.selectionProvider.stopSelecting()
+                if (keyMapListViewModel.selectionProvider.isSelectable.value == true) {
+                    keyMapListViewModel.selectionProvider.stopSelecting()
                 } else {
                     findNavController().navigate(R.id.action_global_menuFragment)
                 }
             }
 
-            mKeyMapListViewModel.selectionProvider.isSelectable
+            keyMapListViewModel.selectionProvider.isSelectable
                 .observe(viewLifecycleOwner, { isSelectable ->
                     viewPager.isUserInputEnabled = !isSelectable
 
@@ -274,37 +274,37 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                     }
                 })
 
-            isSelectable = mKeyMapListViewModel.selectionProvider.isSelectable
-            selectionCount = mKeyMapListViewModel.selectionProvider.selectedCount
+            isSelectable = keyMapListViewModel.selectionProvider.isSelectable
+            selectionCount = keyMapListViewModel.selectionProvider.selectedCount
 
             setOnConfirmSelectionClick {
-                mKeyMapListViewModel.delete(*mKeyMapListViewModel.selectionProvider.selectedIds)
-                mKeyMapListViewModel.selectionProvider.stopSelecting()
+                keyMapListViewModel.delete(*keyMapListViewModel.selectionProvider.selectedIds)
+                keyMapListViewModel.selectionProvider.stopSelecting()
             }
 
-            mBackupRestoreViewModel.eventStream.observe(viewLifecycleOwner, {
+            backupRestoreViewModel.eventStream.observe(viewLifecycleOwner, {
                 when (it) {
                     is MessageEvent -> toast(it.textRes)
                     is ShowErrorMessage -> toast(it.failure.getFullMessage(requireContext()))
-                    is RequestRestore -> mRestoreLauncher.launch(FileUtils.MIME_TYPE_ALL)
-                    is RequestBackupAll -> mBackupLauncher.launch(BackupUtils.createFileName())
+                    is RequestRestore -> restoreLauncher.launch(FileUtils.MIME_TYPE_ALL)
+                    is RequestBackupAll -> backupLauncher.launch(BackupUtils.createFileName())
                 }
             })
 
-            expanded = mExpanded
-            collapsedStatusLayoutState = mCollapsedStatusState
-            accessibilityServiceStatusState = mAccessibilityServiceStatusState
-            imeServiceStatusState = mImeServiceStatusState
-            dndAccessStatusState = mDndAccessStatusState
-            writeSettingsStatusState = mWriteSettingsStatusState
-            batteryOptimisationState = mBatteryOptimisationState
+            expanded = expandedHeader
+            collapsedStatusLayoutState = this@HomeFragment.collapsedStatusState
+            accessibilityServiceStatusState = this@HomeFragment.accessibilityServiceStatusState
+            imeServiceStatusState = this@HomeFragment.imeServiceStatusState
+            dndAccessStatusState = this@HomeFragment.dndAccessStatusState
+            writeSettingsStatusState = this@HomeFragment.writeSettingsStatusState
+            batteryOptimisationState = this@HomeFragment.batteryOptimisationState
 
             buttonCollapse.setOnClickListener {
-                mExpanded.value = false
+                expandedHeader.value = false
             }
 
             layoutCollapsed.setOnClickListener {
-                mExpanded.value = true
+                expandedHeader.value = true
             }
 
             setEnableAccessibilityService {
@@ -330,7 +330,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
 
             setGrantDndAccess {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    PermissionUtils.requestAccessNotificationPolicy(mRequestAccessNotificationPolicy)
+                    PermissionUtils.requestAccessNotificationPolicy(requestAccessNotificationPolicy)
                 }
             }
 
@@ -345,7 +345,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                 }
             }
 
-            mExpanded.observe(viewLifecycleOwner, {
+            expandedHeader.observe(viewLifecycleOwner, {
                 if (it == true) {
                     expandableLayout.expand()
                 } else {
@@ -394,21 +394,21 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
 
             showNewGuiKeyboardAd = AppPreferences.showGuiKeyboardAd
 
-            mKeyMapListViewModel.eventStream.observe(viewLifecycleOwner, {
+            keyMapListViewModel.eventStream.observe(viewLifecycleOwner, {
                 when (it) {
                     is FixFailure -> coordinatorLayout.showFixActionSnackBar(
                         it.failure,
                         requireActivity(),
-                        mRecoverFailureDelegate)
+                        recoverFailureDelegate)
                 }
             })
 
-            mFingerprintMapListViewModel.eventStream.observe(viewLifecycleOwner, {
+            fingerprintMapListViewModel.eventStream.observe(viewLifecycleOwner, {
                 when (it) {
                     is FixFailure -> coordinatorLayout.showFixActionSnackBar(
                         it.failure,
                         requireActivity(),
-                        mRecoverFailureDelegate)
+                        recoverFailureDelegate)
                 }
             })
         }
@@ -417,8 +417,8 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
     override fun onResume() {
         super.onResume()
 
-        mKeyMapListViewModel.rebuildModels()
-        mFingerprintMapListViewModel.rebuildModels()
+        keyMapListViewModel.rebuildModels()
+        fingerprintMapListViewModel.rebuildModels()
 
         updateStatusLayouts()
         requireContext().defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
@@ -430,7 +430,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
     }
 
     override fun onDestroyView() {
-        mBinding.viewPager.unregisterOnPageChangeCallback(mOnPageChangeCallback)
+        binding.viewPager.unregisterOnPageChangeCallback(onPageChangeCallback)
         _binding = null
         super.onDestroyView()
     }
@@ -438,85 +438,85 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
     override fun onDestroy() {
         super.onDestroy()
 
-        requireActivity().unregisterReceiver(mBroadcastReceiver)
+        requireActivity().unregisterReceiver(broadcastReceiver)
         requireContext().defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
     }
 
     override fun onSharedPreferenceChanged(preferences: SharedPreferences?, key: String?) {
         when (key) {
             str(R.string.key_pref_show_gui_keyboard_ad) ->
-                mBinding.showNewGuiKeyboardAd = AppPreferences.showGuiKeyboardAd
+                binding.showNewGuiKeyboardAd = AppPreferences.showGuiKeyboardAd
         }
     }
 
     private fun updateStatusLayouts() {
-        mBinding.hideAlerts = AppPreferences.hideHomeScreenAlerts
+        binding.hideAlerts = AppPreferences.hideHomeScreenAlerts
 
         if (AccessibilityUtils.isServiceEnabled(requireActivity())) {
-            mAccessibilityServiceStatusState.value = StatusLayout.State.POSITIVE
+            accessibilityServiceStatusState.value = StatusLayout.State.POSITIVE
 
         } else {
-            mAccessibilityServiceStatusState.value = StatusLayout.State.ERROR
+            accessibilityServiceStatusState.value = StatusLayout.State.ERROR
         }
 
         if (PermissionUtils.isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
-            mWriteSettingsStatusState.value = StatusLayout.State.POSITIVE
+            writeSettingsStatusState.value = StatusLayout.State.POSITIVE
         } else {
-            mWriteSettingsStatusState.value = StatusLayout.State.WARN
+            writeSettingsStatusState.value = StatusLayout.State.WARN
         }
 
         if (KeyboardUtils.isCompatibleImeEnabled()) {
-            mImeServiceStatusState.value = StatusLayout.State.POSITIVE
+            imeServiceStatusState.value = StatusLayout.State.POSITIVE
 
-        } else if (mKeyMapListViewModel.keymapModelList.value is Data) {
+        } else if (keyMapListViewModel.keymapModelList.value is Data) {
 
-            if ((mKeyMapListViewModel.keymapModelList.value as Data<List<KeymapListItemModel>>).data.any { keymap ->
+            if ((keyMapListViewModel.keymapModelList.value as Data<List<KeymapListItemModel>>).data.any { keymap ->
                     keymap.actionList.any { it.error is NoCompatibleImeEnabled }
                 }) {
 
-                mImeServiceStatusState.value = StatusLayout.State.ERROR
+                imeServiceStatusState.value = StatusLayout.State.ERROR
             }
 
         } else {
-            mImeServiceStatusState.value = StatusLayout.State.WARN
+            imeServiceStatusState.value = StatusLayout.State.WARN
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (PermissionUtils.isPermissionGranted(Manifest.permission.ACCESS_NOTIFICATION_POLICY)) {
-                mDndAccessStatusState.value = StatusLayout.State.POSITIVE
+                dndAccessStatusState.value = StatusLayout.State.POSITIVE
             } else {
-                mDndAccessStatusState.value = StatusLayout.State.WARN
+                dndAccessStatusState.value = StatusLayout.State.WARN
             }
 
             if (powerManager.isIgnoringBatteryOptimizations(Constants.PACKAGE_NAME)) {
-                mBatteryOptimisationState.value = StatusLayout.State.POSITIVE
+                batteryOptimisationState.value = StatusLayout.State.POSITIVE
             } else {
-                mBatteryOptimisationState.value = StatusLayout.State.WARN
+                batteryOptimisationState.value = StatusLayout.State.WARN
             }
         }
 
         val states = listOf(
-            mAccessibilityServiceStatusState,
-            mWriteSettingsStatusState,
-            mImeServiceStatusState,
-            mDndAccessStatusState,
-            mBatteryOptimisationState
+            accessibilityServiceStatusState,
+            writeSettingsStatusState,
+            imeServiceStatusState,
+            dndAccessStatusState,
+            batteryOptimisationState
         )
 
         when {
             states.all { it.value == StatusLayout.State.POSITIVE } -> {
-                mExpanded.value = false
-                mCollapsedStatusState.value = StatusLayout.State.POSITIVE
+                expandedHeader.value = false
+                collapsedStatusState.value = StatusLayout.State.POSITIVE
             }
 
             states.any { it.value == StatusLayout.State.ERROR } -> {
-                mExpanded.value = true
-                mCollapsedStatusState.value = StatusLayout.State.ERROR
+                expandedHeader.value = true
+                collapsedStatusState.value = StatusLayout.State.ERROR
             }
 
             states.any { it.value == StatusLayout.State.WARN } -> {
-                mExpanded.value = false
-                mCollapsedStatusState.value = StatusLayout.State.WARN
+                expandedHeader.value = false
+                collapsedStatusState.value = StatusLayout.State.WARN
             }
         }
     }

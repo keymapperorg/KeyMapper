@@ -23,8 +23,8 @@ import java.util.*
  * Created by sds100 on 22/11/20.
  */
 
-class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
-                            private val mDeviceInfoRepository: DeviceInfoRepository,
+class ConfigKeymapViewModel(private val keymapRepository: ConfigKeymapUseCase,
+                            private val deviceInfoRepository: DeviceInfoRepository,
                             preferenceDataStore: IPreferenceDataStore
 ) : ViewModel(), IPreferenceDataStore by preferenceDataStore {
 
@@ -33,12 +33,12 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
         private const val STATE_KEY = "config_keymap"
     }
 
-    private var mId = NEW_KEYMAP_ID
+    private var id = NEW_KEYMAP_ID
 
     private val _uid = MutableLiveData<String>()
     val uid: LiveData<String> = _uid
 
-    val actionListViewModel = object : ActionListViewModel<KeymapActionOptions>(viewModelScope, mDeviceInfoRepository) {
+    val actionListViewModel = object : ActionListViewModel<KeymapActionOptions>(viewModelScope, deviceInfoRepository) {
         override val stateKey = "keymap_action_list_view_model"
 
         override fun getActionOptions(action: Action): KeymapActionOptions {
@@ -62,7 +62,7 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
     }
 
     val triggerViewModel = TriggerViewModel(
-        mDeviceInfoRepository,
+        deviceInfoRepository,
         preferenceDataStore = this,
         this.uid
     )
@@ -113,10 +113,10 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
         val keymap = createKeymap()
 
         scope.launch {
-            if (mId == NEW_KEYMAP_ID) {
-                mKeymapRepository.insertKeymap(keymap.copy(id = 0))
+            if (id == NEW_KEYMAP_ID) {
+                keymapRepository.insertKeymap(keymap.copy(id = 0))
             } else {
-                mKeymapRepository.updateKeymap(keymap)
+                keymapRepository.updateKeymap(keymap)
             }
         }
     }
@@ -125,7 +125,7 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
         val trigger = triggerViewModel.createTrigger()
 
         return KeyMap(
-            id = mId,
+            id = id,
             trigger = trigger ?: Trigger(),
             actionList = actionListViewModel.actionList.value ?: listOf(),
             constraintList = constraintListViewModel.constraintList.value ?: listOf(),
@@ -139,13 +139,13 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
         if (id == NEW_KEYMAP_ID) return
 
         viewModelScope.launch {
-            val keymap = mKeymapRepository.getKeymap(id)
+            val keymap = keymapRepository.getKeymap(id)
             loadKeymap(keymap)
         }
     }
 
     private fun loadKeymap(keymap: KeyMap) {
-        mId = keymap.id
+        id = keymap.id
         actionListViewModel.setActionList(keymap.actionList)
         triggerViewModel.setTrigger(keymap.trigger)
         constraintListViewModel.setConstraintList(keymap.constraintList, keymap.constraintMode)
@@ -165,12 +165,12 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
     }
 
     class Factory(
-        private val mConfigKeymapUseCase: ConfigKeymapUseCase,
-        private val mDeviceInfoRepository: DeviceInfoRepository,
-        private val mIPreferenceDataStore: IPreferenceDataStore) : ViewModelProvider.Factory {
+        private val configKeymapUseCase: ConfigKeymapUseCase,
+        private val deviceInfoRepository: DeviceInfoRepository,
+        private val iPreferenceDataStore: IPreferenceDataStore) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>) =
-            ConfigKeymapViewModel(mConfigKeymapUseCase, mDeviceInfoRepository, mIPreferenceDataStore) as T
+            ConfigKeymapViewModel(configKeymapUseCase, deviceInfoRepository, iPreferenceDataStore) as T
     }
 }

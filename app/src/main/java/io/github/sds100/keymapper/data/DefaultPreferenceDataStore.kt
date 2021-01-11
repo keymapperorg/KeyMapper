@@ -13,30 +13,30 @@ import io.github.sds100.keymapper.util.str
 
 class DefaultPreferenceDataStore(ctx: Context) : IPreferenceDataStore {
 
-    private val mCtx = ctx.applicationContext
+    private val ctx = ctx.applicationContext
 
-    private val mPrefs: SharedPreferences
-        get() = mCtx.defaultSharedPreferences
+    private val prefs: SharedPreferences
+        get() = ctx.defaultSharedPreferences
 
     override val fingerprintGestureDataStore = ctx.createDataStore("fingerprint_gestures")
 
     override fun getBoolPref(key: Int): Boolean {
-        return mPrefs.getBoolean(mCtx.str(key), false)
+        return prefs.getBoolean(ctx.str(key), false)
     }
 
     override fun setBoolPref(key: Int, value: Boolean) {
-        mPrefs.edit {
-            putBoolean(mCtx.str(key), value)
+        prefs.edit {
+            putBoolean(ctx.str(key), value)
         }
     }
 
     override fun getStringPref(key: Int): String? {
-        return mPrefs.getString(mCtx.str(key), null)
+        return prefs.getString(ctx.str(key), null)
     }
 
     override fun setStringPref(key: Int, value: String) {
-        mPrefs.edit {
-            putString(mCtx.str(key), value)
+        prefs.edit {
+            putString(ctx.str(key), value)
         }
     }
 }

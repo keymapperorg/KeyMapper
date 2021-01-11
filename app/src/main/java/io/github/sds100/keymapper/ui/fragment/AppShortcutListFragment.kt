@@ -36,11 +36,11 @@ class AppShortcutListFragment : DefaultRecyclerViewFragment() {
     override var requestKey: String? = REQUEST_KEY
     override var searchStateKey: String? = SEARCH_STATE_KEY
 
-    private val mViewModel: AppShortcutListViewModel by viewModels {
+    private val viewModel: AppShortcutListViewModel by viewModels {
         InjectorUtils.provideAppShortcutListViewModel(requireContext())
     }
 
-    private val mAppShortcutConfigLauncher =
+    private val appShortcutConfigLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             it ?: return@registerForActivityResult
 
@@ -95,7 +95,7 @@ class AppShortcutListFragment : DefaultRecyclerViewFragment() {
         }
 
     override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
-        mViewModel.filteredAppShortcutModelList.observe(viewLifecycleOwner, { appShortcutList ->
+        viewModel.filteredAppShortcutModelList.observe(viewLifecycleOwner, { appShortcutList ->
             binding.state = appShortcutList
 
             binding.epoxyRecyclerView.withModels {
@@ -117,7 +117,7 @@ class AppShortcutListFragment : DefaultRecyclerViewFragment() {
     }
 
     override fun onSearchQuery(query: String?) {
-        mViewModel.searchQuery.value = query
+        viewModel.searchQuery.value = query
     }
 
     private fun ActivityInfo.launchShortcutConfiguration() {
@@ -127,7 +127,7 @@ class AppShortcutListFragment : DefaultRecyclerViewFragment() {
             putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, 1)
 
             try {
-                mAppShortcutConfigLauncher.launch(this)
+                appShortcutConfigLauncher.launch(this)
             } catch (e: SecurityException) {
                 toast(R.string.error_keymapper_doesnt_have_permission_app_shortcut)
             }

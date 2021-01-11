@@ -16,7 +16,7 @@ import kotlinx.coroutines.withContext
  * Created by sds100 on 31/03/2020.
  */
 class UnsupportedActionListViewModel(
-    private val mRepository: SystemActionRepository
+    private val repository: SystemActionRepository
 ) : ViewModel() {
 
     val isTapCoordinateActionSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
@@ -25,7 +25,7 @@ class UnsupportedActionListViewModel(
         emit(Loading())
 
         val unsupportedActions = withContext(viewModelScope.coroutineContext + Dispatchers.Default) {
-            mRepository.unsupportedSystemActions.map {
+            repository.unsupportedSystemActions.map {
                 val systemAction = it.key
                 val failure = it.value
 
@@ -40,10 +40,11 @@ class UnsupportedActionListViewModel(
     }
 
     @Suppress("UNCHECKED_CAST")
-    class Factory(private val mSystemActionRepository: SystemActionRepository) : ViewModelProvider.NewInstanceFactory() {
+    class Factory(private val systemActionRepository: SystemActionRepository
+    ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return UnsupportedActionListViewModel(mSystemActionRepository) as T
+            return UnsupportedActionListViewModel(systemActionRepository) as T
         }
     }
 }

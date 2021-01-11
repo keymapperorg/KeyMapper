@@ -15,14 +15,14 @@ import splitties.bitflags.hasFlag
  * Created by sds100 on 10/01/21.
  */
 abstract class SimpleMappingController(
-    private val mCoroutineScope: CoroutineScope,
+    private val coroutineScope: CoroutineScope,
     iConstraintDelegate: IConstraintDelegate,
     iActionError: IActionError
 ) : IActionError by iActionError, IConstraintDelegate by iConstraintDelegate {
 
-    private val mRepeatJobs = mutableMapOf<String, List<RepeatJob>>()
-    private val mPerformActionJobs = mutableMapOf<String, Job>()
-    private val mActionsBeingHeldDown = mutableListOf<Action>()
+    private val repeatJobs = mutableMapOf<String, List<RepeatJob>>()
+    private val performActionJobs = mutableMapOf<String, Job>()
+    private val actionsBeingHeldDown = mutableListOf<Action>()
 
     val performAction = LiveEvent<PerformAction>()
     val vibrate: LiveEvent<Vibrate> = LiveEvent()
@@ -40,11 +40,11 @@ abstract class SimpleMappingController(
         if (actionList.isEmpty()) return
         if (!constraintList.toTypedArray().constraintsSatisfied(constraintMode)) return
 
-        mRepeatJobs[mappingId]?.forEach { it.cancel() }
+        repeatJobs[mappingId]?.forEach { it.cancel() }
 
-        mPerformActionJobs[mappingId]?.cancel()
+        performActionJobs[mappingId]?.cancel()
 
-        mPerformActionJobs[mappingId] = mCoroutineScope.launch {
+        performActionJobs[mappingId] = coroutineScope.launch {
             val repeatJobs = mutableListOf<RepeatJob>()
 
             actionList.forEach {
@@ -53,7 +53,7 @@ abstract class SimpleMappingController(
                 if (it.repeat) {
                     var alreadyRepeating = false
 
-                    for (job in mRepeatJobs[mappingId] ?: emptyList()) {
+                    for (job in this@SimpleMappingController.repeatJobs[mappingId] ?: emptyList()) {
                         if (job.actionUuid == it.uid) {
                             alreadyRepeating = true
                             job.cancel()
@@ -69,7 +69,7 @@ abstract class SimpleMappingController(
                 } else {
 
                     val alreadyBeingHeldDown =
-                        mActionsBeingHeldDown.any { action -> action.uid == it.uid }
+                        actionsBeingHeldDown.any { action -> action.uid == it.uid }
 
                     val keyEventAction = when {
                         it.holdDown && !alreadyBeingHeldDown -> KeyEventAction.DOWN
@@ -78,8 +78,8 @@ abstract class SimpleMappingController(
                     }
 
                     when {
-                        it.holdDown -> mActionsBeingHeldDown.add(it)
-                        alreadyBeingHeldDown -> mActionsBeingHeldDown.remove(it)
+                        it.holdDown -> actionsBeingHeldDown.add(it)
+                        alreadyBeingHeldDown -> actionsBeingHeldDown.remove(it)
                     }
 
                     performAction(it, keyEventAction)
@@ -88,7 +88,7 @@ abstract class SimpleMappingController(
                 delay(it.delayBeforeNextAction?.toLong() ?: 0)
             }
 
-            mRepeatJobs[mappingId] = repeatJobs
+            this@SimpleMappingController.repeatJobs[mappingId] = repeatJobs
         }
 
         if (flags.hasFlag(FingerprintMap.FLAG_VIBRATE)) {
@@ -113,7 +113,7 @@ abstract class SimpleMappingController(
         }
     }
 
-    private fun repeatAction(action: Action) = mCoroutineScope.launch(start = CoroutineStart.LAZY) {
+    private fun repeatAction(action: Action) = coroutineScope.launch(start = CoroutineStart.LAZY) {
         val repeatRate = action.repeatRate?.toLong() ?: AppPreferences.repeatRate.toLong()
 
         val holdDownDuration = action.holdDownDuration?.toLong()
@@ -139,23 +139,23 @@ abstract class SimpleMappingController(
     }
 
     fun reset() {
-        mRepeatJobs.values.forEach { jobs ->
+        repeatJobs.values.forEach { jobs ->
             jobs.forEach { it.cancel() }
         }
 
-        mRepeatJobs.clear()
+        repeatJobs.clear()
 
-        mPerformActionJobs.values.forEach {
+        performActionJobs.values.forEach {
             it.cancel()
         }
 
-        mPerformActionJobs.clear()
+        performActionJobs.clear()
 
-        mActionsBeingHeldDown.forEach {
+        actionsBeingHeldDown.forEach {
             performAction(it, KeyEventAction.UP)
         }
 
-        mActionsBeingHeldDown.clear()
+        actionsBeingHeldDown.clear()
     }
 
     private class RepeatJob(val actionUuid: String, launch: () -> Job) : Job by launch.invoke()

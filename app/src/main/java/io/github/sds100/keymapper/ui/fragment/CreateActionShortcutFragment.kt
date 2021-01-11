@@ -41,11 +41,11 @@ class CreateActionShortcutFragment : Fragment() {
         private const val CHOOSE_ACTION_REQUEST_KEY = "request_choose_action"
     }
 
-    private val mViewModel by navGraphViewModels<CreateActionShortcutViewModel>(R.id.nav_action_shortcut) {
+    private val viewModel by navGraphViewModels<CreateActionShortcutViewModel>(R.id.nav_action_shortcut) {
         InjectorUtils.provideCreateActionShortcutViewModel(requireContext())
     }
 
-    private lateinit var mRecoverFailureDelegate: RecoverFailureDelegate
+    private lateinit var recoverFailureDelegate: RecoverFailureDelegate
 
     /**
      * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
@@ -57,24 +57,24 @@ class CreateActionShortcutFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        mRecoverFailureDelegate = RecoverFailureDelegate(
+        recoverFailureDelegate = RecoverFailureDelegate(
             "CreateActionShortcutFragment",
             requireActivity().activityResultRegistry,
             this) {
 
-            mViewModel.actionListViewModel.rebuildModels()
+            viewModel.actionListViewModel.rebuildModels()
         }
 
         setFragmentResultListener(CHOOSE_ACTION_REQUEST_KEY) { _, result ->
             result.getParcelable<Action>(ChooseActionFragment.EXTRA_ACTION)?.let {
-                mViewModel.actionListViewModel.addAction(it)
+                viewModel.actionListViewModel.addAction(it)
             }
         }
 
         setFragmentResultListener(KeymapActionOptionsFragment.REQUEST_KEY) { _, result ->
             result.getParcelable<ActionShortcutOptions>(BaseOptionsDialogFragment.EXTRA_OPTIONS)
                 ?.let {
-                    mViewModel.actionListViewModel.setOptions(it)
+                    viewModel.actionListViewModel.setOptions(it)
                 }
         }
     }
@@ -82,7 +82,6 @@ class CreateActionShortcutFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         FragmentCreateActionShortcutBinding.inflate(inflater).apply {
             lifecycleOwner = viewLifecycleOwner
-            viewModel = mViewModel
             _binding = this
 
             return this.root
@@ -92,41 +91,42 @@ class CreateActionShortcutFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.apply {
-            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-                showOnBackPressedWarning()
-            }
+        binding.viewModel = viewModel
 
-            appBar.setNavigationOnClickListener {
-                showOnBackPressedWarning()
-            }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            showOnBackPressedWarning()
+        }
 
-            appBar.setOnMenuItemClickListener { menuItem ->
-                when (menuItem.itemId) {
-                    R.id.action_done -> {
-                        viewLifecycleScope.launchWhenStarted {
-                            onDoneClick()
-                        }
+        binding.appBar.setNavigationOnClickListener {
+            showOnBackPressedWarning()
+        }
 
-                        true
+        binding.appBar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.action_done -> {
+                    viewLifecycleScope.launchWhenStarted {
+                        onDoneClick()
                     }
 
-                    else -> false
+                    true
                 }
+
+                else -> false
             }
-
-            mViewModel.eventStream.observe(viewLifecycleOwner, { event ->
-                when (event) {
-                    is FixFailure -> coordinatorLayout.showFixActionSnackBar(
-                        event.failure,
-                        requireActivity(),
-                        mRecoverFailureDelegate
-                    )
-
-                    is EnableAccessibilityServicePrompt -> coordinatorLayout.showEnableAccessibilityServiceSnackBar()
-                }
-            })
         }
+
+        viewModel.eventStream.observe(viewLifecycleOwner, { event ->
+            when (event) {
+                is FixFailure -> binding.coordinatorLayout.showFixActionSnackBar(
+                    event.failure,
+                    requireActivity(),
+                    recoverFailureDelegate
+                )
+
+                is EnableAccessibilityServicePrompt ->
+                    binding.coordinatorLayout.showEnableAccessibilityServiceSnackBar()
+            }
+        })
     }
 
     override fun onDestroyView() {
@@ -146,7 +146,7 @@ class CreateActionShortcutFragment : Fragment() {
                 action = MyAccessibilityService.ACTION_PERFORM_ACTIONS
 
                 putExtra(MyAccessibilityService.EXTRA_ACTION_LIST,
-                    Gson().toJson(mViewModel.actionListViewModel.actionList.value))
+                    Gson().toJson(viewModel.actionListViewModel.actionList.value))
 
                 setIntent(this)
             }
@@ -159,8 +159,8 @@ class CreateActionShortcutFragment : Fragment() {
     }
 
     private fun createShortcutIcon(): IconCompat {
-        if (mViewModel.actionListViewModel.actionList.value?.size == 1) {
-            val action = mViewModel.actionListViewModel.actionList.value!![0]
+        if (viewModel.actionListViewModel.actionList.value?.size == 1) {
+            val action = viewModel.actionListViewModel.actionList.value!![0]
 
             action.getIcon(requireContext()).valueOrNull()?.let {
                 val bitmap = it.toBitmap()
@@ -175,10 +175,10 @@ class CreateActionShortcutFragment : Fragment() {
     }
 
     private suspend fun createShortcutLabel(): String {
-        if (mViewModel.actionListViewModel.actionList.value?.size == 1) {
-            val action = mViewModel.actionListViewModel.actionList.value!![0]
+        if (viewModel.actionListViewModel.actionList.value?.size == 1) {
+            val action = viewModel.actionListViewModel.actionList.value!![0]
 
-            action.getTitle(requireContext(), mViewModel.actionListViewModel.getDeviceInfoList()).valueOrNull()?.let {
+            action.getTitle(requireContext(), viewModel.actionListViewModel.getDeviceInfoList()).valueOrNull()?.let {
                 return it
             }
         }

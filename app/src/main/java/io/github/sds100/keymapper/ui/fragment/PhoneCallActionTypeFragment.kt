@@ -25,7 +25,7 @@ class PhoneCallActionTypeFragment : Fragment() {
         const val EXTRA_PHONE_NUMBER = "extra_phone_number"
     }
 
-    private val mViewModel: PhoneCallActionTypeViewModel by activityViewModels {
+    private val viewModel: PhoneCallActionTypeViewModel by activityViewModels {
         PhoneCallActionTypeViewModel.Factory()
     }
 
@@ -52,14 +52,14 @@ class PhoneCallActionTypeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.apply {
-            text = mViewModel.number
+            text = viewModel.number
             caption = str(R.string.caption_action_type_phone_call)
             editText.inputType = InputType.TYPE_CLASS_PHONE
 
             setOnDoneClick {
                 setFragmentResult(
                     REQUEST_KEY,
-                    bundleOf(EXTRA_PHONE_NUMBER to mViewModel.number.value))
+                    bundleOf(EXTRA_PHONE_NUMBER to viewModel.number.value))
 
                 findNavController().navigateUp()
             }

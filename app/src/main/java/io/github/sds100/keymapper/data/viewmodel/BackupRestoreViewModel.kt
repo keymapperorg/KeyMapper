@@ -28,9 +28,9 @@ import java.io.InputStream
 import java.io.OutputStream
 
 class BackupRestoreViewModel internal constructor(
-    private val mKeymapRepository: BackupRestoreUseCase,
-    private val mDeviceInfoRepository: DeviceInfoRepository,
-    private val mFingerprintMapRepository: FingerprintMapRepository
+    private val keymapRepository: BackupRestoreUseCase,
+    private val deviceInfoRepository: DeviceInfoRepository,
+    private val fingerprintMapRepository: FingerprintMapRepository
 ) : ViewModel() {
 
     private val _eventStream = LiveEvent<Event>()
@@ -39,14 +39,14 @@ class BackupRestoreViewModel internal constructor(
     fun backupAll(outputStream: OutputStream?) {
         viewModelScope.launch {
             val keymaps = withContext(Dispatchers.Default) {
-                mKeymapRepository.getKeymaps()
+                keymapRepository.getKeymaps()
             }
 
             backup(outputStream, keymaps,
-                mFingerprintMapRepository.swipeDown.firstOrNull(),
-                mFingerprintMapRepository.swipeUp.firstOrNull(),
-                mFingerprintMapRepository.swipeLeft.firstOrNull(),
-                mFingerprintMapRepository.swipeRight.firstOrNull())
+                fingerprintMapRepository.swipeDown.firstOrNull(),
+                fingerprintMapRepository.swipeUp.firstOrNull(),
+                fingerprintMapRepository.swipeLeft.firstOrNull(),
+                fingerprintMapRepository.swipeRight.firstOrNull())
         }
     }
 
@@ -66,8 +66,8 @@ class BackupRestoreViewModel internal constructor(
         viewModelScope.launch {
             BackupUtils.restore(inputStream!!).handleAsync(
                 onSuccess = {
-                    mKeymapRepository.insertKeymap(*it.keymapList.toTypedArray())
-                    mDeviceInfoRepository.insertDeviceInfo(*it.deviceInfo.toTypedArray())
+                    keymapRepository.insertKeymap(*it.keymapList.toTypedArray())
+                    deviceInfoRepository.insertDeviceInfo(*it.deviceInfo.toTypedArray())
 
                     restoreFingerprintMap(SWIPE_DOWN, it.fingerprintSwipeDown)
                     restoreFingerprintMap(SWIPE_UP, it.fingerprintSwipeUp)
@@ -101,10 +101,10 @@ class BackupRestoreViewModel internal constructor(
             backup(
                 outputStream,
                 emptyList(),
-                mFingerprintMapRepository.swipeDown.firstOrNull(),
-                mFingerprintMapRepository.swipeUp.firstOrNull(),
-                mFingerprintMapRepository.swipeLeft.firstOrNull(),
-                mFingerprintMapRepository.swipeRight.firstOrNull())
+                fingerprintMapRepository.swipeDown.firstOrNull(),
+                fingerprintMapRepository.swipeUp.firstOrNull(),
+                fingerprintMapRepository.swipeLeft.firstOrNull(),
+                fingerprintMapRepository.swipeRight.firstOrNull())
         }
     }
 
@@ -120,7 +120,7 @@ class BackupRestoreViewModel internal constructor(
             _eventStream.value = MessageEvent(R.string.error_failed_to_pick_file)
         }
 
-        val deviceInfo = mDeviceInfoRepository.getAll()
+        val deviceInfo = deviceInfoRepository.getAll()
 
         BackupUtils.backup(
             outputStream!!,
@@ -142,23 +142,23 @@ class BackupRestoreViewModel internal constructor(
     private suspend fun restoreFingerprintMap(gestureId: String, fingerprintMap: FingerprintMap?) {
         fingerprintMap ?: return
 
-        mFingerprintMapRepository.editGesture(gestureId) {
+        fingerprintMapRepository.editGesture(gestureId) {
             fingerprintMap
         }
     }
 
     @Suppress("UNCHECKED_CAST")
     class Factory(
-        private val mBackupRestoreUseCase: BackupRestoreUseCase,
-        private val mDeviceInfoRepository: DeviceInfoRepository,
-        private val mFingerprintMapRepository: FingerprintMapRepository
+        private val backupRestoreUseCase: BackupRestoreUseCase,
+        private val deviceInfoRepository: DeviceInfoRepository,
+        private val fingerprintMapRepository: FingerprintMapRepository
     ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             return BackupRestoreViewModel(
-                mBackupRestoreUseCase,
-                mDeviceInfoRepository,
-                mFingerprintMapRepository
+                backupRestoreUseCase,
+                deviceInfoRepository,
+                fingerprintMapRepository
             ) as T
         }
     }

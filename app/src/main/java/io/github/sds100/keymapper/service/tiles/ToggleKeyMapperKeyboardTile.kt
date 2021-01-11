@@ -15,7 +15,7 @@ import io.github.sds100.keymapper.util.str
 @RequiresApi(Build.VERSION_CODES.N)
 class ToggleKeyMapperKeyboardTile : TileService() {
 
-    private val mState: State
+    private val state: State
         get() = if (KeyboardUtils.isCompatibleImeEnabled()) {
             State.DEFAULT
         } else {
@@ -57,7 +57,7 @@ class ToggleKeyMapperKeyboardTile : TileService() {
 
         invalidateTile()
 
-        when (mState) {
+        when (state) {
             State.DEFAULT -> KeyboardUtils.toggleCompatibleIme(this)
 
             State.DISABLED -> {
@@ -69,7 +69,7 @@ class ToggleKeyMapperKeyboardTile : TileService() {
     private fun invalidateTile() {
         qsTile ?: return
 
-        when (mState) {
+        when (state) {
             State.DEFAULT -> {
                 qsTile.icon = Icon.createWithResource(this, R.drawable.ic_tile_keyboard)
                 qsTile.label = str(R.string.tile_toggle_keymapper_keyboard)

@@ -33,11 +33,11 @@ class ChooseActionFragment : Fragment() {
         const val EXTRA_ACTION = "extra_action"
     }
 
-    private val mViewModel by activityViewModels<ChooseActionViewModel>
+    private val viewModel by activityViewModels<ChooseActionViewModel>
     { ChooseActionViewModel.Factory() }
 
-    private val mRequestKey by lazy { navArgs<ChooseActionFragmentArgs>().value.StringNavArgChooseActionRequestKey }
-    private lateinit var mPagerAdapter: ChooseActionPagerAdapter
+    private val requestKey by lazy { navArgs<ChooseActionFragmentArgs>().value.StringNavArgChooseActionRequestKey }
+    private lateinit var pagerAdapter: ChooseActionPagerAdapter
 
     /**
      * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
@@ -152,19 +152,19 @@ class ChooseActionFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.apply {
-            mPagerAdapter = ChooseActionPagerAdapter(this@ChooseActionFragment)
-            viewPager.adapter = mPagerAdapter
+            pagerAdapter = ChooseActionPagerAdapter(this@ChooseActionFragment)
+            viewPager.adapter = pagerAdapter
 
             TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-                tab.text = str(mPagerAdapter.tabFragmentCreators[position].tabTitle)
+                tab.text = str(pagerAdapter.tabFragmentCreators[position].tabTitle)
             }.attach()
 
             appBar.setNavigationOnClickListener {
                 findNavController().navigateUp()
             }
 
-            mViewModel.currentTabPosition.let {
-                if (it > mPagerAdapter.itemCount - 1) return@let
+            viewModel.currentTabPosition.let {
+                if (it > pagerAdapter.itemCount - 1) return@let
 
                 viewPager.setCurrentItem(it, false)
             }
@@ -173,7 +173,7 @@ class ChooseActionFragment : Fragment() {
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
 
-                    mViewModel.currentTabPosition = position
+                    viewModel.currentTabPosition = position
                 }
             })
 
@@ -194,7 +194,7 @@ class ChooseActionFragment : Fragment() {
         childFragmentManager.setFragmentResultListener(requestKey, this) { _, result ->
             val action = createAction(result)
 
-            setFragmentResult(mRequestKey, bundleOf(EXTRA_ACTION to action))
+            setFragmentResult(requestKey, bundleOf(EXTRA_ACTION to action))
         }
     }
 
@@ -207,7 +207,7 @@ class ChooseActionFragment : Fragment() {
                 super.onPageSelected(position)
 
                 searchViewMenuItem.isVisible =
-                    mPagerAdapter.tabFragmentCreators[position].searchStateKey != null
+                    pagerAdapter.tabFragmentCreators[position].searchStateKey != null
             }
         })
 
@@ -232,7 +232,7 @@ class ChooseActionFragment : Fragment() {
 
             override fun onQueryTextChange(newText: String?): Boolean {
 
-                mPagerAdapter.tabFragmentCreators[viewPager.currentItem].searchStateKey?.let {
+                pagerAdapter.tabFragmentCreators[viewPager.currentItem].searchStateKey?.let {
                     findNavController().setCurrentDestinationLiveData(it, newText)
                 }
 

@@ -17,7 +17,7 @@ import io.github.sds100.keymapper.util.*
 
 class ChooseConstraintListViewModel : ViewModel() {
 
-    private val mConstraintList = listOf(
+    private val constraintList = listOf(
         ChooseConstraintListItemModel(
             Constraint.APP_FOREGROUND,
             Constraint.CATEGORY_APP,
@@ -95,7 +95,7 @@ class ChooseConstraintListViewModel : ViewModel() {
         emit(
             sequence {
                 for ((id, label) in Constraint.CATEGORY_LABEL_MAP) {
-                    val constraints = mConstraintList.filter { it.categoryId == id }
+                    val constraints = constraintList.filter { it.categoryId == id }
 
                     yield(label to constraints)
                 }
@@ -106,10 +106,10 @@ class ChooseConstraintListViewModel : ViewModel() {
     private val _eventStream = LiveEvent<Event>()
     val eventStream: LiveData<Event> = _eventStream
 
-    private var mChosenConstraintType: String? = null
+    private var chosenConstraintType: String? = null
 
     fun chooseConstraint(@ConstraintType constraintType: String) {
-        mChosenConstraintType = constraintType
+        chosenConstraintType = constraintType
 
         when (constraintType) {
             Constraint.APP_FOREGROUND,
@@ -139,13 +139,13 @@ class ChooseConstraintListViewModel : ViewModel() {
     }
 
     fun packageChosen(packageName: String) {
-        _eventStream.value = SelectConstraint(Constraint.appConstraint(mChosenConstraintType!!, packageName))
-        mChosenConstraintType = null
+        _eventStream.value = SelectConstraint(Constraint.appConstraint(chosenConstraintType!!, packageName))
+        chosenConstraintType = null
     }
 
     fun bluetoothDeviceChosen(address: String, name: String) {
-        _eventStream.value = SelectConstraint(Constraint.btConstraint(mChosenConstraintType!!, address, name))
-        mChosenConstraintType = null
+        _eventStream.value = SelectConstraint(Constraint.btConstraint(chosenConstraintType!!, address, name))
+        chosenConstraintType = null
     }
 
     @Suppress("UNCHECKED_CAST")

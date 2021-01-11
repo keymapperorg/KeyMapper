@@ -37,11 +37,11 @@ class TapCoordinateActionTypeFragment : Fragment() {
         const val EXTRA_DESCRIPTION = "extra_description"
     }
 
-    private val mViewModel: TapCoordinateActionTypeViewModel by activityViewModels {
+    private val viewModel: TapCoordinateActionTypeViewModel by activityViewModels {
         InjectorUtils.provideTapCoordinateActionTypeViewModel()
     }
 
-    private val mScreenshotLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {
+    private val screenshotLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {
         it ?: return@registerForActivityResult
 
         val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -54,7 +54,7 @@ class TapCoordinateActionTypeFragment : Fragment() {
             windowManager.defaultDisplay.getRealSize(this)
         }
 
-        mViewModel.selectedScreenshot(bitmap, displaySize)
+        viewModel.selectedScreenshot(bitmap, displaySize)
     }
 
     /**
@@ -80,43 +80,41 @@ class TapCoordinateActionTypeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.apply {
-            viewModel = mViewModel
+        binding.viewModel = viewModel
 
-            mViewModel.bitmap.observe(viewLifecycleOwner, {
-                imageViewScreenshot.setImageBitmap(it)
-            })
+        viewModel.bitmap.observe(viewLifecycleOwner, {
+            binding.imageViewScreenshot.setImageBitmap(it)
+        })
 
-            mViewModel.eventStream.observe(viewLifecycleOwner, {
-                when (it) {
-                    is SelectScreenshot -> mScreenshotLauncher.launch(FileUtils.MIME_TYPE_IMAGES)
-                    is MessageEvent -> toast(it.textRes)
-                }
-            })
+        viewModel.eventStream.observe(viewLifecycleOwner, {
+            when (it) {
+                is SelectScreenshot -> screenshotLauncher.launch(FileUtils.MIME_TYPE_IMAGES)
+                is MessageEvent -> toast(it.textRes)
+            }
+        })
 
-            imageViewScreenshot.pointCoordinates.observe(viewLifecycleOwner, {
-                mViewModel.onScreenshotTouch(
-                    it.x.toFloat() / imageViewScreenshot.width,
-                    it.y.toFloat() / imageViewScreenshot.height
+        binding.imageViewScreenshot.pointCoordinates.observe(viewLifecycleOwner, {
+            viewModel.onScreenshotTouch(
+                it.x.toFloat() / binding.imageViewScreenshot.width,
+                it.y.toFloat() / binding.imageViewScreenshot.height
+            )
+        })
+
+        binding.setOnDoneClick {
+            lifecycleScope.launch {
+                val description = requireActivity().editTextStringAlertDialog(
+                    str(R.string.hint_tap_coordinate_title),
+                    allowEmpty = true
                 )
-            })
 
-            setOnDoneClick {
-                lifecycleScope.launch {
-                    val description = requireActivity().editTextStringAlertDialog(
-                        str(R.string.hint_tap_coordinate_title),
-                        allowEmpty = true
-                    )
+                setFragmentResult(REQUEST_KEY,
+                    bundleOf(
+                        EXTRA_X to viewModel.x.value,
+                        EXTRA_Y to viewModel.y.value,
+                        EXTRA_DESCRIPTION to description
+                    ))
 
-                    setFragmentResult(REQUEST_KEY,
-                        bundleOf(
-                            EXTRA_X to mViewModel.x.value,
-                            EXTRA_Y to mViewModel.y.value,
-                            EXTRA_DESCRIPTION to description
-                        ))
-
-                    findNavController().navigateUp()
-                }
+                findNavController().navigateUp()
             }
         }
     }

@@ -12,11 +12,11 @@ import kotlinx.coroutines.withContext
 /**
  * Created by sds100 on 27/01/2020.
  */
-class SystemRepository(private val mContext: Context) {
+class SystemRepository(private val context: Context) {
 
     suspend fun getAllAppList() = withContext(Dispatchers.Default) {
         sequence {
-            mContext.packageManager.apply {
+            context.packageManager.apply {
 
                 val installedApps = getInstalledApplications(GET_META_DATA)
 
@@ -30,7 +30,7 @@ class SystemRepository(private val mContext: Context) {
 
     suspend fun getLaunchableAppList() = withContext(Dispatchers.Default) {
         sequence {
-            mContext.packageManager.apply {
+            context.packageManager.apply {
 
                 val installedApps = getInstalledApplications(GET_META_DATA)
 
@@ -47,27 +47,27 @@ class SystemRepository(private val mContext: Context) {
 
     suspend fun getAppShortcutList(): List<ResolveInfo> = withContext(Dispatchers.Default) {
         val shortcutIntent = Intent(Intent.ACTION_CREATE_SHORTCUT)
-        return@withContext mContext.packageManager.queryIntentActivities(shortcutIntent, 0)
+        return@withContext context.packageManager.queryIntentActivities(shortcutIntent, 0)
     }
 
     fun getAppIcon(applicationInfo: ApplicationInfo): Drawable? {
-        return applicationInfo.loadIcon(mContext.packageManager)
+        return applicationInfo.loadIcon(context.packageManager)
     }
 
     fun getIntentIcon(resolveInfo: ResolveInfo): Drawable? {
-        return resolveInfo.loadIcon(mContext.packageManager)
+        return resolveInfo.loadIcon(context.packageManager)
     }
 
     fun getAppName(applicationInfo: ApplicationInfo): String {
-        return applicationInfo.loadLabel(mContext.packageManager).toString()
+        return applicationInfo.loadLabel(context.packageManager).toString()
     }
 
     fun getAppName(packageName: String): String {
-        val applicationInfo = mContext.packageManager.getApplicationInfo(packageName, 0)
+        val applicationInfo = context.packageManager.getApplicationInfo(packageName, 0)
         return getAppName(applicationInfo)
     }
 
     fun getIntentLabel(resolveInfo: ResolveInfo): String {
-        return resolveInfo.loadLabel(mContext.packageManager).toString()
+        return resolveInfo.loadLabel(context.packageManager).toString()
     }
 }

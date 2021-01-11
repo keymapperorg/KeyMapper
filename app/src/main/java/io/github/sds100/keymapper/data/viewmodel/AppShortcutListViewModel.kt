@@ -17,14 +17,14 @@ class AppShortcutListViewModel internal constructor(
 
     val searchQuery: MutableLiveData<String> = MutableLiveData("")
 
-    private val mAppShortcutModelList = liveData {
+    private val appShortcutModelList = liveData {
         emit(Loading())
 
         val appShortcutList = withContext(viewModelScope.coroutineContext + Dispatchers.Default) {
             repository.getAppShortcutList().map {
                 //only include it if it has a configuration screen
 
-                val name = repository.getIntentLabel(it) ?: ""
+                val name = repository.getIntentLabel(it)
                 val icon = repository.getIntentIcon(it)
 
                 AppShortcutListItemModel(it.activityInfo, name, icon)
@@ -53,25 +53,25 @@ class AppShortcutListViewModel internal constructor(
         }
 
         addSource(searchQuery) { query ->
-            filter(mAppShortcutModelList.value ?: Empty(), query)
+            filter(appShortcutModelList.value ?: Empty(), query)
         }
 
-        addSource(mAppShortcutModelList)
+        addSource(appShortcutModelList)
         {
             value = it
 
             searchQuery.value?.let { query ->
-                filter(mAppShortcutModelList.value ?: Empty(), query)
+                filter(appShortcutModelList.value ?: Empty(), query)
             }
         }
     }
 
     class Factory(
-        private val mRepository: SystemRepository
+        private val repository: SystemRepository
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>) =
-            AppShortcutListViewModel(mRepository) as T
+            AppShortcutListViewModel(repository) as T
     }
 }

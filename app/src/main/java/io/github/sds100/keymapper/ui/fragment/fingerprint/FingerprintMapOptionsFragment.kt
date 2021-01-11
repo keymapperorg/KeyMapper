@@ -27,7 +27,7 @@ class FingerprintMapOptionsFragment : DefaultRecyclerViewFragment() {
     override var isInPagerAdapter = true
     override var isAppBarVisible = false
 
-    private val mController by lazy {
+    private val controller by lazy {
         object : OptionsController(this) {
             override val activity: FragmentActivity
                 get() = requireActivity()
@@ -42,16 +42,16 @@ class FingerprintMapOptionsFragment : DefaultRecyclerViewFragment() {
 
     override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
         binding.apply {
-            epoxyRecyclerView.adapter = mController.adapter
+            epoxyRecyclerView.adapter = controller.adapter
 
             optionsViewModel.checkBoxModels.observe(viewLifecycleOwner, {
                 state = Data(Unit)
-                mController.checkBoxModels = it
+                controller.checkBoxModels = it
             })
 
             optionsViewModel.sliderModels.observe(viewLifecycleOwner, {
                 state = Data(Unit)
-                mController.sliderModels = it
+                controller.sliderModels = it
             })
         }
     }

@@ -33,48 +33,56 @@ import splitties.alertdialog.appcompat.positiveButton
  * Created by sds100 on 22/11/20.
  */
 class ConfigFingerprintMapFragment : Fragment() {
-    private val mArgs by navArgs<ConfigFingerprintMapFragmentArgs>()
+    private val args by navArgs<ConfigFingerprintMapFragmentArgs>()
 
-    private val mViewModel: ConfigFingerprintMapViewModel
+    private val viewModel: ConfigFingerprintMapViewModel
         by navGraphViewModels(R.id.nav_config_fingerprint_map) {
             InjectorUtils.provideConfigFingerprintMapViewModel(requireContext())
         }
 
-    private lateinit var mRecoverFailureDelegate: RecoverFailureDelegate
+    private lateinit var recoverFailureDelegate: RecoverFailureDelegate
+
+    /**
+     * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
+     */
+    private var _binding: FragmentConfigFingerprintMapBinding? = null
+    val binding: FragmentConfigFingerprintMapBinding
+        get() = _binding!!
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         //only load the fingerprint map if opening this fragment for the first time
         if (savedInstanceState == null) {
-            mViewModel.loadFingerprintMap(mArgs.gestureId)
+            viewModel.loadFingerprintMap(args.gestureId)
         }
 
-        mRecoverFailureDelegate = RecoverFailureDelegate(
+        recoverFailureDelegate = RecoverFailureDelegate(
             "ConfigFingerprintMapFragment",
             requireActivity().activityResultRegistry,
             this) {
 
-            mViewModel.actionListViewModel.rebuildModels()
+            viewModel.actionListViewModel.rebuildModels()
         }
 
         setFragmentResultListener(ActionListFragment.CHOOSE_ACTION_REQUEST_KEY) { _, result ->
             result.getParcelable<Action>(ChooseActionFragment.EXTRA_ACTION)?.let {
-                mViewModel.actionListViewModel.addAction(it)
+                viewModel.actionListViewModel.addAction(it)
             }
         }
 
         setFragmentResultListener(ConstraintListFragment.CHOOSE_CONSTRAINT_REQUEST_KEY) { _,
                                                                                           result ->
             result.getParcelable<Constraint>(ChooseConstraintFragment.EXTRA_CONSTRAINT)?.let {
-                mViewModel.constraintListViewModel.addConstraint(it)
+                viewModel.constraintListViewModel.addConstraint(it)
             }
         }
 
         setFragmentResultListener(FingerprintActionOptionsFragment.REQUEST_KEY) { _, result ->
             result.getParcelable<FingerprintActionOptions>(BaseOptionsDialogFragment.EXTRA_OPTIONS)
                 ?.let {
-                    mViewModel.actionListViewModel.setOptions(it)
+                    viewModel.actionListViewModel.setOptions(it)
                 }
         }
     }
@@ -82,62 +90,69 @@ class ConfigFingerprintMapFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         FragmentConfigFingerprintMapBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
-            viewModel = mViewModel
-
-            viewPager.adapter = createFragmentPagerAdapter()
-
-            TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-                tab.text = strArray(R.array.config_fingerprint_map_tab_titles)[position]
-            }.attach()
-
-            tabLayout.isVisible = tabLayout.tabCount > 1
-
-            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-                showOnBackPressedWarning()
-            }
-
-            appBar.setNavigationOnClickListener {
-                showOnBackPressedWarning()
-            }
-
-            appBar.setOnMenuItemClickListener {
-                when (it.itemId) {
-                    R.id.action_save -> {
-                        mViewModel.save(lifecycleScope)
-                        findNavController().navigateUp()
-
-                        true
-                    }
-
-                    R.id.action_help -> {
-                        val direction = NavAppDirections.actionGlobalHelpFragment()
-                        findNavController().navigate(direction)
-
-                        true
-                    }
-
-                    else -> false
-                }
-            }
-
-            mViewModel.eventStream.observe(viewLifecycleOwner, { event ->
-                when (event) {
-                    is FixFailure -> coordinatorLayout.showFixActionSnackBar(
-                        event.failure,
-                        requireActivity(),
-                        mRecoverFailureDelegate
-                    )
-
-                    is EnableAccessibilityServicePrompt -> coordinatorLayout.showEnableAccessibilityServiceSnackBar()
-                }
-            })
+            _binding = this
 
             return this.root
         }
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.viewModel = viewModel
+
+        binding.viewPager.adapter = createFragmentPagerAdapter()
+
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            tab.text = strArray(R.array.config_fingerprint_map_tab_titles)[position]
+        }.attach()
+
+        binding.tabLayout.isVisible = binding.tabLayout.tabCount > 1
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            showOnBackPressedWarning()
+        }
+
+        binding.appBar.setNavigationOnClickListener {
+            showOnBackPressedWarning()
+        }
+
+        binding.appBar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.action_save -> {
+                    viewModel.save(lifecycleScope)
+                    findNavController().navigateUp()
+
+                    true
+                }
+
+                R.id.action_help -> {
+                    val direction = NavAppDirections.actionGlobalHelpFragment()
+                    findNavController().navigate(direction)
+
+                    true
+                }
+
+                else -> false
+            }
+        }
+
+        viewModel.eventStream.observe(viewLifecycleOwner, { event ->
+            when (event) {
+                is FixFailure -> binding.coordinatorLayout.showFixActionSnackBar(
+                    event.failure,
+                    requireActivity(),
+                    recoverFailureDelegate
+                )
+
+                is EnableAccessibilityServicePrompt ->
+                    binding.coordinatorLayout.showEnableAccessibilityServiceSnackBar()
+            }
+        })
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
-        mViewModel.saveState(outState)
+        viewModel.saveState(outState)
 
         super.onSaveInstanceState(outState)
     }
@@ -147,7 +162,12 @@ class ConfigFingerprintMapFragment : Fragment() {
 
         savedInstanceState ?: return
 
-        mViewModel.restoreState(savedInstanceState)
+        viewModel.restoreState(savedInstanceState)
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     private fun showOnBackPressedWarning() {

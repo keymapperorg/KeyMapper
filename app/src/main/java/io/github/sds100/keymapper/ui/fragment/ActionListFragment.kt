@@ -38,9 +38,9 @@ abstract class ActionListFragment<O : BaseOptions<Action>> : Fragment() {
 
     abstract val actionListViewModel: ActionListViewModel<O>
 
-    private val mActionListController = ActionListController()
+    private val actionListController = ActionListController()
 
-    private val mBroadcastReceiver = object : BroadcastReceiver() {
+    private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             intent ?: return
 
@@ -64,7 +64,7 @@ abstract class ActionListFragment<O : BaseOptions<Action>> : Fragment() {
 
         IntentFilter().apply {
             addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
-            requireContext().registerReceiver(mBroadcastReceiver, this)
+            requireContext().registerReceiver(broadcastReceiver, this)
         }
     }
 
@@ -89,7 +89,7 @@ abstract class ActionListFragment<O : BaseOptions<Action>> : Fragment() {
         binding.apply {
             subscribeActionList()
 
-            epoxyRecyclerViewActions.adapter = mActionListController.adapter
+            epoxyRecyclerViewActions.adapter = actionListController.adapter
 
             actionListViewModel.eventStream.observe(viewLifecycleOwner, { event ->
                 @Suppress("UNCHECKED_CAST")
@@ -124,7 +124,7 @@ abstract class ActionListFragment<O : BaseOptions<Action>> : Fragment() {
             })
 
             actionListViewModel.modelList.observe(viewLifecycleOwner, {
-                mActionListController.modelList = when (it) {
+                actionListController.modelList = when (it) {
                     is Data -> it.data
                     else -> emptyList()
                 }
@@ -166,10 +166,10 @@ abstract class ActionListFragment<O : BaseOptions<Action>> : Fragment() {
 
     private fun FragmentActionListBinding.subscribeActionList() {
         actionListViewModel.modelList.observe(viewLifecycleOwner, { actionList ->
-            enableActionDragging(mActionListController)
+            enableActionDragging(actionListController)
 
             actionList.ifIsData {
-                mActionListController.modelList = it
+                actionListController.modelList = it
             }
         })
     }

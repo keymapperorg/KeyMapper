@@ -26,32 +26,32 @@ import io.github.sds100.keymapper.util.result.Failure
  */
 class KeymapListFragment : DefaultRecyclerViewFragment() {
 
-    private val mViewModel: KeymapListViewModel by activityViewModels {
+    private val viewModel: KeymapListViewModel by activityViewModels {
         InjectorUtils.provideKeymapListViewModel(requireContext())
     }
 
-    private val mBackupRestoreViewModel: BackupRestoreViewModel by activityViewModels {
+    private val backupRestoreViewModel: BackupRestoreViewModel by activityViewModels {
         InjectorUtils.provideBackupRestoreViewModel(requireContext())
     }
 
     private val selectionProvider: ISelectionProvider
-        get() = mViewModel.selectionProvider
+        get() = viewModel.selectionProvider
 
-    private val mBackupLauncher =
+    private val backupLauncher =
         registerForActivityResult(ActivityResultContracts.CreateDocument()) {
             it ?: return@registerForActivityResult
 
-            mBackupRestoreViewModel.backupKeymaps(
+            backupRestoreViewModel.backupKeymaps(
                 requireActivity().contentResolver.openOutputStream(it),
-                mViewModel.getSelectedKeymaps())
+                viewModel.getSelectedKeymaps())
 
             selectionProvider.stopSelecting()
         }
 
-    private val mController = KeymapController()
+    private val controller = KeymapController()
 
     override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
-        mViewModel.apply {
+        viewModel.apply {
 
             keymapModelList.observe(viewLifecycleOwner, { keymapList ->
                 binding.state = keymapList
@@ -61,26 +61,26 @@ class KeymapListFragment : DefaultRecyclerViewFragment() {
                 when reloading the list.
                  */
                 when (keymapList) {
-                    is Data -> mController.keymapList = keymapList.data
-                    is Empty -> mController.keymapList = emptyList()
+                    is Data -> controller.keymapList = keymapList.data
+                    is Empty -> controller.keymapList = emptyList()
                 }
             })
 
-            selectionProvider.callback = mController
+            selectionProvider.callback = controller
 
             selectionProvider.isSelectable.observe(viewLifecycleOwner, {
-                mController.requestModelBuild()
+                controller.requestModelBuild()
             })
 
-            mViewModel.eventStream.observe(viewLifecycleOwner, {
+            viewModel.eventStream.observe(viewLifecycleOwner, {
                 when (it) {
                     is BuildKeymapListModels -> lifecycleScope.launchWhenStarted {
-                        mViewModel.setModelList(buildModelList(it.keymapList))
+                        viewModel.setModelList(buildModelList(it.keymapList))
                     }
 
                     is RequestBackupSelectedKeymaps -> {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                            mBackupLauncher.launch(BackupUtils.createFileName())
+                            backupLauncher.launch(BackupUtils.createFileName())
                         }
                     }
                 }
@@ -92,12 +92,12 @@ class KeymapListFragment : DefaultRecyclerViewFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         //assign in onViewCreated in case context is required when building the models.
-        binding.epoxyRecyclerView.adapter = mController.adapter
+        binding.epoxyRecyclerView.adapter = controller.adapter
     }
 
     private suspend fun buildModelList(keymapList: List<KeyMap>) =
         keymapList.map { keymap ->
-            val deviceInfoList = mViewModel.getDeviceInfoList()
+            val deviceInfoList = viewModel.getDeviceInfoList()
 
             KeymapListItemModel(
                 id = keymap.id,
@@ -127,7 +127,7 @@ class KeymapListFragment : DefaultRecyclerViewFragment() {
 
                     onErrorClick(object : ErrorClickCallback {
                         override fun onErrorClick(failure: Failure) {
-                            mViewModel.fixError(failure)
+                            viewModel.fixError(failure)
                         }
                     })
 

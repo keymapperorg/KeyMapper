@@ -14,18 +14,18 @@ class HomePagerAdapter(
     fingerprintGesturesAvailable: Boolean
 ) : FragmentStateAdapter(fragment) {
 
-    private var mTabFragmentsCreators = emptyList<() -> Fragment>()
+    private var tabFragmentsCreators = emptyList<() -> Fragment>()
 
     init {
         invalidateFragments(fingerprintGesturesAvailable)
     }
 
-    override fun getItemCount() = mTabFragmentsCreators.size
+    override fun getItemCount() = tabFragmentsCreators.size
 
-    override fun createFragment(position: Int) = mTabFragmentsCreators[position].invoke()
+    override fun createFragment(position: Int) = tabFragmentsCreators[position].invoke()
 
     fun invalidateFragments(fingerprintGesturesAvailable: Boolean) {
-        mTabFragmentsCreators = mutableListOf<() -> Fragment>(
+        tabFragmentsCreators = mutableListOf<() -> Fragment>(
             {
                 KeymapListFragment().apply {
                     isAppBarVisible = false

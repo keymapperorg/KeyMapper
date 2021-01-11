@@ -12,16 +12,16 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class FingerprintMapListViewModel(
-    private val mRepository: FingerprintMapRepository,
-    private val mDeviceInfoRepository: DeviceInfoRepository
+    private val repository: FingerprintMapRepository,
+    private val deviceInfoRepository: DeviceInfoRepository
 ) : ViewModel() {
 
-    private val mFingerprintGestureMaps =
+    private val fingerprintGestureMaps =
         combine(
-            mRepository.swipeDown,
-            mRepository.swipeUp,
-            mRepository.swipeLeft,
-            mRepository.swipeRight
+            repository.swipeDown,
+            repository.swipeUp,
+            repository.swipeLeft,
+            repository.swipeRight
         ) { swipeDown, swipeUp, swipeLeft, swipeRight ->
             mapOf(
                 FingerprintMapUtils.SWIPE_DOWN to swipeDown,
@@ -34,12 +34,12 @@ class FingerprintMapListViewModel(
     private val _models =
         MutableLiveData<State<List<FingerprintGestureMapListItemModel>>>(Loading())
 
-    val fingerprintGesturesAvailable = mRepository.fingerprintGesturesAvailable
+    val fingerprintGesturesAvailable = repository.fingerprintGesturesAvailable
 
     val models: LiveData<State<List<FingerprintGestureMapListItemModel>>> = _models
 
     private val _eventStream = LiveEvent<Event>().apply {
-        addSource(mFingerprintGestureMaps.asLiveData()) {
+        addSource(fingerprintGestureMaps.asLiveData()) {
             //this is important to prevent events being sent in the wrong order
             postValue(BuildFingerprintMapModels(it))
         }
@@ -52,7 +52,7 @@ class FingerprintMapListViewModel(
     }
 
     fun setEnabled(id: String, isEnabled: Boolean) = viewModelScope.launch {
-        mRepository.editGesture(id) {
+        repository.editGesture(id) {
             it.copy(isEnabled = isEnabled)
         }
     }
@@ -61,7 +61,7 @@ class FingerprintMapListViewModel(
         viewModelScope.launch {
             _models.value = Loading()
 
-            mFingerprintGestureMaps.firstOrNull()?.let {
+            fingerprintGestureMaps.firstOrNull()?.let {
                 _eventStream.postValue(BuildFingerprintMapModels(it))
             }
         }
@@ -77,20 +77,20 @@ class FingerprintMapListViewModel(
 
     fun reset() {
         viewModelScope.launch {
-            mRepository.reset()
+            repository.reset()
         }
     }
 
-    suspend fun getDeviceInfoList() = mDeviceInfoRepository.getAll()
+    suspend fun getDeviceInfoList() = deviceInfoRepository.getAll()
 
     @Suppress("UNCHECKED_CAST")
     class Factory(
-        private val mRepository: FingerprintMapRepository,
-        private val mDeviceInfoRepository: DeviceInfoRepository
+        private val repository: FingerprintMapRepository,
+        private val deviceInfoRepository: DeviceInfoRepository
     ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return FingerprintMapListViewModel(mRepository, mDeviceInfoRepository) as T
+            return FingerprintMapListViewModel(repository, deviceInfoRepository) as T
         }
     }
 }

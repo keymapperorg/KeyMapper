@@ -40,7 +40,7 @@ abstract class RecyclerViewFragment<BINDING : ViewDataBinding> : Fragment() {
         }
     }
 
-    private val mIsSearchEnabled: Boolean
+    private val isSearchEnabled: Boolean
         get() = searchStateKey != null
 
     open var isAppBarVisible = true
@@ -109,9 +109,9 @@ abstract class RecyclerViewFragment<BINDING : ViewDataBinding> : Fragment() {
         appBar ?: return
 
         val searchViewMenuItem = appBar!!.menu.findItem(R.id.action_search)
-        searchViewMenuItem.isVisible = mIsSearchEnabled
+        searchViewMenuItem.isVisible = isSearchEnabled
 
-        if (mIsSearchEnabled) {
+        if (isSearchEnabled) {
             findNavController().observeCurrentDestinationLiveData<String>(
                 viewLifecycleOwner,
                 searchStateKey!!
