@@ -14,8 +14,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.FragmentActivity
-import androidx.navigation.findNavController
+import androidx.navigation.NavController
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
@@ -97,14 +96,14 @@ object PermissionUtils {
         }
     }
 
-    fun requestRootPermission(activity: FragmentActivity) {
-        activity.alertDialog {
+    fun requestRootPermission(ctx: Context, navController: NavController) {
+        ctx.alertDialog {
             titleResource = R.string.dialog_title_root_prompt
             messageResource = R.string.dialog_message_root_prompt
             setIcon(R.drawable.ic_baseline_warning_24)
 
             okButton {
-                activity.findNavController(R.id.container).navigate(R.id.action_global_settingsFragment)
+                navController.navigate(R.id.action_global_settingsFragment)
                 Shell.run("su")
             }
 
@@ -114,20 +113,19 @@ object PermissionUtils {
         }
     }
 
-    fun requestWriteSecureSettingsPermission(activity: FragmentActivity) {
-        activity.alertDialog {
+    fun requestWriteSecureSettingsPermission(ctx: Context, navController: NavController) {
+        ctx.alertDialog {
             messageResource = R.string.dialog_message_write_secure_settings
 
             positiveButton(R.string.pos_grant_write_secure_settings_guide) {
                 UrlUtils.launchCustomTab(
-                    activity,
-                    activity.str(R.string.url_grant_write_secure_settings_guide)
+                    ctx,
+                    ctx.str(R.string.url_grant_write_secure_settings_guide)
                 )
             }
 
             negativeButton(R.string.pos_enable_root_features) {
-                activity.findNavController(R.id.container)
-                    .navigate(R.id.action_global_settingsFragment)
+                navController.navigate(R.id.action_global_settingsFragment)
             }
 
             show()

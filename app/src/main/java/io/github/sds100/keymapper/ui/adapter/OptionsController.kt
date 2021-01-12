@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.ui.adapter
 
 import android.content.Context
 import android.widget.CheckBox
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.airbnb.epoxy.EpoxyController
@@ -22,7 +21,6 @@ import io.github.sds100.keymapper.util.str
 
 abstract class OptionsController(lifecycleOwner: LifecycleOwner) : EpoxyController(), LifecycleOwner by lifecycleOwner {
 
-    abstract val activity: FragmentActivity
     abstract val ctx: Context
     abstract val viewModel: BaseOptionsViewModel<*>
 
@@ -70,7 +68,8 @@ abstract class OptionsController(lifecycleOwner: LifecycleOwner) : EpoxyControll
 
                 onSliderValueClickListener { _ ->
                     lifecycleScope.launchWhenStarted {
-                        val num = activity.editTextNumberAlertDialog(
+                        val num = ctx.editTextNumberAlertDialog(
+                            this@OptionsController,
                             hint = ctx.str(it.label),
                             min = ctx.int(it.sliderModel.min))
 

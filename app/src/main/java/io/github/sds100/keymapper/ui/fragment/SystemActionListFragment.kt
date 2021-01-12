@@ -105,7 +105,7 @@ class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourcePr
             var selectedOptionData: String? = null
 
             if (systemActionDef.messageOnSelection != null) {
-                requireActivity().alertDialog {
+                requireContext().alertDialog {
                     titleResource = systemActionDef.descriptionRes
                     messageResource = systemActionDef.messageOnSelection
                 }.showAndAwaitOkOrDismiss()
@@ -120,7 +120,7 @@ class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourcePr
                 }
 
                 selectedOptionData = suspendCoroutine<String> {
-                    requireActivity().alertDialog {
+                    requireContext().alertDialog {
 
                         when (systemActionDef.optionType) {
                             OptionType.SINGLE -> {

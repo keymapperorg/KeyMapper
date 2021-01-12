@@ -89,7 +89,8 @@ class HomeActivity : AppCompatActivity() {
                 messageResource = R.string.dialog_message_cant_find_accessibility_settings_page
 
                 okButton {
-                    PermissionUtils.requestWriteSecureSettingsPermission(this@HomeActivity)
+                    PermissionUtils.requestWriteSecureSettingsPermission(
+                        this@HomeActivity, findNavController(R.id.container))
                 }
 
                 show()

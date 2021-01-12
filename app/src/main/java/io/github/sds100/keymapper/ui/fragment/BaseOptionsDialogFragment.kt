@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.databinding.ViewDataBinding
-import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import com.airbnb.epoxy.EpoxyControllerAdapter
@@ -35,10 +34,7 @@ abstract class BaseOptionsDialogFragment<BINDING : ViewDataBinding, O : BaseOpti
     abstract val initialOptions: O
 
     private val controller by lazy {
-        object : OptionsController(this) {
-            override val activity: FragmentActivity
-                get() = requireActivity()
-
+        object : OptionsController(viewLifecycleOwner) {
             override val ctx: Context
                 get() = requireContext()
 

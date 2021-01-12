@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.ui.fragment.fingerprint
 
 import android.content.Context
-import androidx.fragment.app.FragmentActivity
 import androidx.navigation.navGraphViewModels
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.options.FingerprintMapOptions
@@ -28,10 +27,7 @@ class FingerprintMapOptionsFragment : DefaultRecyclerViewFragment() {
     override var isAppBarVisible = false
 
     private val controller by lazy {
-        object : OptionsController(this) {
-            override val activity: FragmentActivity
-                get() = requireActivity()
-
+        object : OptionsController(viewLifecycleOwner) {
             override val ctx: Context
                 get() = requireContext()
 

@@ -13,6 +13,7 @@ import androidx.core.graphics.drawable.IconCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import com.google.gson.Gson
 import io.github.sds100.keymapper.R
@@ -57,14 +58,6 @@ class CreateActionShortcutFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        recoverFailureDelegate = RecoverFailureDelegate(
-            "CreateActionShortcutFragment",
-            requireActivity().activityResultRegistry,
-            this) {
-
-            viewModel.actionListViewModel.rebuildModels()
-        }
-
         setFragmentResultListener(CHOOSE_ACTION_REQUEST_KEY) { _, result ->
             result.getParcelable<Action>(ChooseActionFragment.EXTRA_ACTION)?.let {
                 viewModel.actionListViewModel.addAction(it)
@@ -80,6 +73,15 @@ class CreateActionShortcutFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
+        recoverFailureDelegate = RecoverFailureDelegate(
+            "CreateActionShortcutFragment",
+            requireActivity().activityResultRegistry,
+            viewLifecycleOwner) {
+
+            viewModel.actionListViewModel.rebuildModels()
+        }
+
         FragmentCreateActionShortcutBinding.inflate(inflater).apply {
             lifecycleOwner = viewLifecycleOwner
             _binding = this
@@ -119,8 +121,9 @@ class CreateActionShortcutFragment : Fragment() {
             when (event) {
                 is FixFailure -> binding.coordinatorLayout.showFixActionSnackBar(
                     event.failure,
-                    requireActivity(),
-                    recoverFailureDelegate
+                    requireContext(),
+                    recoverFailureDelegate,
+                    findNavController()
                 )
 
                 is EnableAccessibilityServicePrompt ->
@@ -183,7 +186,8 @@ class CreateActionShortcutFragment : Fragment() {
             }
         }
 
-        return requireActivity().editTextStringAlertDialog(
+        return requireContext().editTextStringAlertDialog(
+            viewLifecycleOwner,
             str(R.string.hint_shortcut_name),
             allowEmpty = false
         )

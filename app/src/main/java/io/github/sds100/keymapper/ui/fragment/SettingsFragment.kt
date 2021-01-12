@@ -178,7 +178,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
                 if (!showingNoPairedDevicesDialog) {
                     showingNoPairedDevicesDialog = true
 
-                    requireActivity().alertDialog {
+                    requireContext().alertDialog {
                         title = getString(R.string.dialog_title_cant_find_paired_devices)
                         message = getString(R.string.dialog_message_cant_find_paired_devices)
                         okButton { dialog ->

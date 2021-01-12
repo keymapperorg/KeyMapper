@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.ui.fragment.keymap
 import android.content.ClipData
 import android.content.Context
 import android.widget.CheckBox
-import androidx.fragment.app.FragmentActivity
 import androidx.navigation.navGraphViewModels
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.TriggerByIntentModel
@@ -38,15 +37,12 @@ class TriggerOptionsFragment : DefaultRecyclerViewFragment() {
 
     private val controller by lazy {
 
-        object : OptionsController(this) {
+        object : OptionsController(viewLifecycleOwner) {
             var triggerByIntent: TriggerByIntentModel? = null
                 set(value) {
                     field = value
                     requestModelBuild()
                 }
-
-            override val activity: FragmentActivity
-                get() = requireActivity()
 
             override val ctx: Context
                 get() = requireContext()

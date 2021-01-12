@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.ui.fragment.fingerprint
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
@@ -35,7 +36,7 @@ class FingerprintMapListFragment : RecyclerViewFragment<FragmentFingerprintMapLi
             it ?: return@registerForActivityResult
 
             backupRestoreViewModel
-                .backupFingerprintMaps(requireActivity().contentResolver.openOutputStream(it))
+                .backupFingerprintMaps(requireContext().contentResolver.openOutputStream(it))
         }
 
     private val backupRestoreViewModel: BackupRestoreViewModel by activityViewModels {
@@ -44,16 +45,17 @@ class FingerprintMapListFragment : RecyclerViewFragment<FragmentFingerprintMapLi
 
     private lateinit var recoverFailureDelegate: RecoverFailureDelegate
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         recoverFailureDelegate = RecoverFailureDelegate(
             "FingerprintGestureFragment",
             requireActivity().activityResultRegistry,
-            this) {
+            viewLifecycleOwner) {
 
             viewModel.rebuildModels()
         }
+
+        return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     override fun subscribeUi(binding: FragmentFingerprintMapListBinding) {
@@ -99,7 +101,7 @@ class FingerprintMapListFragment : RecyclerViewFragment<FragmentFingerprintMapLi
                     }
 
                     is RequestFingerprintMapReset -> {
-                        requireActivity().alertDialog {
+                        requireContext().alertDialog {
                             messageResource = R.string.dialog_title_are_you_sure
 
                             positiveButton(R.string.pos_yes) {

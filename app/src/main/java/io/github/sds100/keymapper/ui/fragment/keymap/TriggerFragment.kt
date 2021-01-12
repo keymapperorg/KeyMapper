@@ -135,9 +135,8 @@ class TriggerFragment : Fragment() {
             addAction(MyAccessibilityService.ACTION_RECORDED_TRIGGER_KEY)
             addAction(MyAccessibilityService.ACTION_STOPPED_RECORDING_TRIGGER)
 
-            requireActivity().registerReceiver(broadcastReceiver, this)
+            requireContext().registerReceiver(broadcastReceiver, this)
         }
-
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -193,7 +192,7 @@ class TriggerFragment : Fragment() {
                     }
 
                     is OkDialog -> lifecycleScope.launchWhenStarted {
-                        val approvedWarning = requireActivity().alertDialog {
+                        val approvedWarning = requireContext().alertDialog {
                             message = str(event.message)
 
                         }.showAndAwait(okValue = true, cancelValue = null, dismissValue = false)
@@ -213,7 +212,7 @@ class TriggerFragment : Fragment() {
                         }
                     }
 
-                    is EnableCapsLockKeyboardLayoutPrompt -> requireActivity().alertDialog {
+                    is EnableCapsLockKeyboardLayoutPrompt -> requireContext().alertDialog {
                         messageResource = R.string.dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout
 
                         okButton()
@@ -255,7 +254,7 @@ class TriggerFragment : Fragment() {
     }
 
     override fun onDestroy() {
-        requireActivity().unregisterReceiver(broadcastReceiver)
+        requireContext().unregisterReceiver(broadcastReceiver)
 
         super.onDestroy()
     }
@@ -278,7 +277,7 @@ class TriggerFragment : Fragment() {
     }
 
     private suspend fun showChooseDeviceDialog() = suspendCoroutine<String> {
-        requireActivity().alertDialog {
+        requireContext().alertDialog {
 
             val deviceIds = sequence {
                 yield(Trigger.Key.DEVICE_ID_THIS_DEVICE)

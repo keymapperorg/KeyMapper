@@ -1,7 +1,8 @@
 package io.github.sds100.keymapper.util
 
+import android.content.Context
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.fragment.app.FragmentActivity
+import androidx.navigation.NavController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
 import io.github.sds100.keymapper.util.result.Failure
@@ -25,15 +26,16 @@ fun CoordinatorLayout.showEnableAccessibilityServiceSnackBar() {
 
 fun CoordinatorLayout.showFixActionSnackBar(
     failure: Failure,
-    activity: FragmentActivity,
-    recoverFailureDelegate: RecoverFailureDelegate
+    ctx: Context,
+    recoverFailureDelegate: RecoverFailureDelegate,
+    navController: NavController
 ) {
     longSnack(failure.getFullMessage(context)) {
 
         //only add an action to fix the error if the error can be recovered from
         if (failure is RecoverableFailure) {
             action(R.string.snackbar_fix) {
-                recoverFailureDelegate.recover(activity, failure)
+                recoverFailureDelegate.recover(ctx, failure, navController)
             }
         }
 

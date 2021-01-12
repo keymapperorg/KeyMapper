@@ -57,14 +57,6 @@ class ConfigFingerprintMapFragment : Fragment() {
             viewModel.loadFingerprintMap(args.gestureId)
         }
 
-        recoverFailureDelegate = RecoverFailureDelegate(
-            "ConfigFingerprintMapFragment",
-            requireActivity().activityResultRegistry,
-            this) {
-
-            viewModel.actionListViewModel.rebuildModels()
-        }
-
         setFragmentResultListener(ActionListFragment.CHOOSE_ACTION_REQUEST_KEY) { _, result ->
             result.getParcelable<Action>(ChooseActionFragment.EXTRA_ACTION)?.let {
                 viewModel.actionListViewModel.addAction(it)
@@ -87,6 +79,15 @@ class ConfigFingerprintMapFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
+        recoverFailureDelegate = RecoverFailureDelegate(
+            "ConfigFingerprintMapFragment",
+            requireActivity().activityResultRegistry,
+            viewLifecycleOwner) {
+
+            viewModel.actionListViewModel.rebuildModels()
+        }
+
         FragmentConfigFingerprintMapBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             _binding = this
@@ -133,8 +134,9 @@ class ConfigFingerprintMapFragment : Fragment() {
             when (event) {
                 is FixFailure -> binding.coordinatorLayout.showFixActionSnackBar(
                     event.failure,
-                    requireActivity(),
-                    recoverFailureDelegate
+                    requireContext(),
+                    recoverFailureDelegate,
+                    findNavController()
                 )
 
                 is EnableAccessibilityServicePrompt ->

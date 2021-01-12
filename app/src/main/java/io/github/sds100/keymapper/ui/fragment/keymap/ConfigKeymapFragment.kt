@@ -56,14 +56,6 @@ class ConfigKeymapFragment : Fragment() {
             viewModel.loadKeymap(args.keymapId)
         }
 
-        recoverFailureDelegate = RecoverFailureDelegate(
-            "ConfigKeymapFragment",
-            requireActivity().activityResultRegistry,
-            this) {
-
-            viewModel.actionListViewModel.rebuildModels()
-        }
-
         setFragmentResultListener(ActionListFragment.CHOOSE_ACTION_REQUEST_KEY) { _, result ->
             result.getParcelable<Action>(ChooseActionFragment.EXTRA_ACTION)?.let {
                 viewModel.actionListViewModel.addAction(it)
@@ -90,6 +82,15 @@ class ConfigKeymapFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
+        recoverFailureDelegate = RecoverFailureDelegate(
+            "ConfigKeymapFragment",
+            requireActivity().activityResultRegistry,
+            viewLifecycleOwner) {
+
+            viewModel.actionListViewModel.rebuildModels()
+        }
+
         FragmentConfigKeymapBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             _binding = this
@@ -134,8 +135,9 @@ class ConfigKeymapFragment : Fragment() {
             when (event) {
                 is FixFailure -> binding.coordinatorLayout.showFixActionSnackBar(
                     event.failure,
-                    requireActivity(),
-                    recoverFailureDelegate
+                    requireContext(),
+                    recoverFailureDelegate,
+                    findNavController()
                 )
 
                 is EnableAccessibilityServicePrompt ->

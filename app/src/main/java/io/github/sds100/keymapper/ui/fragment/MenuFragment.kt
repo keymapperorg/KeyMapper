@@ -61,7 +61,7 @@ class MenuFragment : BottomSheetDialogFragment(),
             addAction(MyAccessibilityService.ACTION_ON_START)
             addAction(MyAccessibilityService.ACTION_ON_STOP)
 
-            requireActivity().registerReceiver(broadcastReceiver, this)
+            requireContext().registerReceiver(broadcastReceiver, this)
         }
 
         requireContext().defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
@@ -147,7 +147,7 @@ class MenuFragment : BottomSheetDialogFragment(),
     }
 
     private fun sendFeedback() {
-        requireActivity().alertDialog {
+        requireContext().alertDialog {
             messageResource = R.string.dialog_message_view_faq_and_use_discord_over_email
 
             positiveButton(R.string.pos_grant_write_secure_settings_guide) {

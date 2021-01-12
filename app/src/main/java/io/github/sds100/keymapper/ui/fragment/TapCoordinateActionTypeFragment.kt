@@ -102,10 +102,12 @@ class TapCoordinateActionTypeFragment : Fragment() {
 
         binding.setOnDoneClick {
             lifecycleScope.launch {
-                val description = requireActivity().editTextStringAlertDialog(
-                    str(R.string.hint_tap_coordinate_title),
-                    allowEmpty = true
-                )
+                val description = requireContext()
+                    .editTextStringAlertDialog(
+                        viewLifecycleOwner,
+                        str(R.string.hint_tap_coordinate_title),
+                        allowEmpty = true
+                    )
 
                 setFragmentResult(REQUEST_KEY,
                     bundleOf(

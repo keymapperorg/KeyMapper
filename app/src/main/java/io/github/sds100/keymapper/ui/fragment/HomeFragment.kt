@@ -107,7 +107,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             it ?: return@registerForActivityResult
 
             backupRestoreViewModel
-                .backupAll(requireActivity().contentResolver.openOutputStream(it))
+                .backupAll(requireContext().contentResolver.openOutputStream(it))
         }
 
     private val restoreLauncher =
@@ -146,15 +146,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             addAction(MyAccessibilityService.ACTION_ON_START)
             addAction(MyAccessibilityService.ACTION_ON_STOP)
 
-            requireActivity().registerReceiver(broadcastReceiver, this)
-        }
-
-        recoverFailureDelegate = RecoverFailureDelegate(
-            "HomeFragment",
-            requireActivity().activityResultRegistry,
-            this) {
-
-            keyMapListViewModel.rebuildModels()
+            requireContext().registerReceiver(broadcastReceiver, this)
         }
     }
 
@@ -162,6 +154,15 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
+        recoverFailureDelegate = RecoverFailureDelegate(
+            "HomeFragment",
+            requireActivity().activityResultRegistry,
+            viewLifecycleOwner) {
+
+            keyMapListViewModel.rebuildModels()
+        }
+
         FragmentHomeBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = this@HomeFragment
             _binding = this
@@ -309,7 +310,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             }
 
             setEnableAccessibilityService {
-                AccessibilityUtils.enableService(requireActivity())
+                AccessibilityUtils.enableService(requireContext())
             }
 
             setEnableImeService {
@@ -326,7 +327,9 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             }
 
             setGrantWriteSecureSettingsPermission {
-                PermissionUtils.requestWriteSecureSettingsPermission(requireActivity())
+                PermissionUtils.requestWriteSecureSettingsPermission(
+                    requireContext(),
+                    findNavController())
             }
 
             setGrantDndAccess {
@@ -399,8 +402,9 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                 when (it) {
                     is FixFailure -> coordinatorLayout.showFixActionSnackBar(
                         it.failure,
-                        requireActivity(),
-                        recoverFailureDelegate)
+                        requireContext(),
+                        recoverFailureDelegate,
+                        findNavController())
                 }
             })
 
@@ -408,8 +412,9 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                 when (it) {
                     is FixFailure -> coordinatorLayout.showFixActionSnackBar(
                         it.failure,
-                        requireActivity(),
-                        recoverFailureDelegate)
+                        requireContext(),
+                        recoverFailureDelegate,
+                        findNavController())
                 }
             })
         }
@@ -437,7 +442,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
     }
 
     override fun onDestroy() {
-        requireActivity().unregisterReceiver(broadcastReceiver)
+        requireContext().unregisterReceiver(broadcastReceiver)
         requireContext().defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
 
         super.onDestroy()
@@ -453,7 +458,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
     private fun updateStatusLayouts() {
         binding.hideAlerts = AppPreferences.hideHomeScreenAlerts
 
-        if (AccessibilityUtils.isServiceEnabled(requireActivity())) {
+        if (AccessibilityUtils.isServiceEnabled(requireContext())) {
             accessibilityServiceStatusState.value = StatusLayout.State.POSITIVE
 
         } else {

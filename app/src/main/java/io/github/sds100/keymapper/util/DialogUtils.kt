@@ -1,8 +1,10 @@
 package io.github.sds100.keymapper.util
 
+import android.content.Context
+import android.view.LayoutInflater
 import android.widget.SeekBar
 import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import io.github.sds100.keymapper.data.model.SeekBarListItemModel
 import io.github.sds100.keymapper.databinding.DialogEdittextNumberBinding
@@ -19,9 +21,13 @@ import kotlin.coroutines.suspendCoroutine
  * Created by sds100 on 30/03/2020.
  */
 
-suspend fun FragmentActivity.editTextStringAlertDialog(hint: String, allowEmpty: Boolean = false) = suspendCoroutine<String> {
+suspend fun Context.editTextStringAlertDialog(lifecycleOwner: LifecycleOwner,
+                                              hint: String,
+                                              allowEmpty: Boolean = false) = suspendCoroutine<String> {
     alertDialog {
-        DialogEdittextStringBinding.inflate(layoutInflater).apply {
+        val inflater = LayoutInflater.from(this@editTextStringAlertDialog)
+
+        DialogEdittextStringBinding.inflate(inflater).apply {
             val text = MutableLiveData("")
 
             setHint(hint)
@@ -37,7 +43,7 @@ suspend fun FragmentActivity.editTextStringAlertDialog(hint: String, allowEmpty:
             cancelButton()
 
             show().apply {
-                text.observe(this@editTextStringAlertDialog, {
+                text.observe(lifecycleOwner, {
                     getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
                         if (allowEmpty) {
                             true
@@ -50,7 +56,8 @@ suspend fun FragmentActivity.editTextStringAlertDialog(hint: String, allowEmpty:
     }
 }
 
-suspend fun FragmentActivity.editTextNumberAlertDialog(
+suspend fun Context.editTextNumberAlertDialog(
+    lifecycleOwner: LifecycleOwner,
     hint: String,
     min: Int? = null,
     max: Int? = null
@@ -83,7 +90,8 @@ suspend fun FragmentActivity.editTextNumberAlertDialog(
     }
 
     alertDialog {
-        DialogEdittextNumberBinding.inflate(layoutInflater).apply {
+        val inflater = LayoutInflater.from(this@editTextNumberAlertDialog)
+        DialogEdittextNumberBinding.inflate(inflater).apply {
             val text = MutableLiveData("")
 
             setHint(hint)
@@ -100,7 +108,7 @@ suspend fun FragmentActivity.editTextNumberAlertDialog(
             cancelButton()
 
             show().apply {
-                text.observe(this@editTextNumberAlertDialog, {
+                text.observe(lifecycleOwner, {
                     val result = isValid(it)
 
                     getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = result.isSuccess
@@ -112,9 +120,12 @@ suspend fun FragmentActivity.editTextNumberAlertDialog(
     }
 }
 
-suspend fun FragmentActivity.seekBarAlertDialog(seekBarListItemModel: SeekBarListItemModel) = suspendCoroutine<Int> {
+suspend fun Context.seekBarAlertDialog(
+    lifecycleOwner: LifecycleOwner,
+    seekBarListItemModel: SeekBarListItemModel) = suspendCoroutine<Int> {
     alertDialog {
-        DialogSeekbarListBinding.inflate(layoutInflater).apply {
+        val inflater = LayoutInflater.from(this@seekBarAlertDialog)
+        DialogSeekbarListBinding.inflate(inflater).apply {
 
             var result = seekBarListItemModel.initialValue
 

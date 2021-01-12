@@ -138,7 +138,10 @@ class AppShortcutListFragment : DefaultRecyclerViewFragment() {
         @Suppress("DEPRECATION") var shortcutName: String? = data.getStringExtra(Intent.EXTRA_SHORTCUT_NAME)
 
         if (shortcutName.isNullOrBlank()) {
-            shortcutName = requireActivity().editTextStringAlertDialog(str(R.string.dialog_title_create_shortcut_title))
+            shortcutName =
+                requireContext().editTextStringAlertDialog(
+                    viewLifecycleOwner,
+                    str(R.string.dialog_title_create_shortcut_title))
         }
 
         return shortcutName
