@@ -47,9 +47,18 @@ class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourcePr
     override var searchStateKey: String? = SEARCH_STATE_KEY
     override var requestKey: String? = REQUEST_KEY
 
-    override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel.registerStringResourceProvider(this)
+        super.onViewCreated(view, savedInstanceState)
+    }
+
+    override fun onDestroyView() {
+        viewModel.unregisterStringResourceProvider()
+
+        super.onDestroyView()
+    }
+
+    override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
 
         binding.apply {
 
@@ -60,30 +69,26 @@ class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourcePr
                     caption = str(R.string.your_device_doesnt_support_some_actions)
                 }
             })
-        }
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+            viewModel.filteredModelList.observe(viewLifecycleOwner, {
+                binding.state = it
 
-        viewModel.filteredModelList.observe(viewLifecycleOwner, {
-            binding.state = it
+                if (it !is Data) return@observe
 
-            if (it !is Data) return@observe
+                binding.epoxyRecyclerView.withModels {
+                    for ((sectionHeader, systemActions) in it.data) {
+                        sectionHeader {
+                            id(sectionHeader)
+                            header(str(sectionHeader))
+                        }
 
-            binding.epoxyRecyclerView.withModels {
-                for ((sectionHeader, systemActions) in it.data) {
-                    sectionHeader {
-                        id(sectionHeader)
-                        header(str(sectionHeader))
-                    }
-
-                    systemActions.forEach { systemAction ->
-                        createSimpleListItem(systemAction)
+                        systemActions.forEach { systemAction ->
+                            createSimpleListItem(systemAction)
+                        }
                     }
                 }
-            }
-        })
+            })
+        }
     }
 
     override fun onSearchQuery(query: String?) {
@@ -91,12 +96,6 @@ class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourcePr
     }
 
     override fun getStringResource(resId: Int) = str(resId)
-
-    override fun onDestroy() {
-        viewModel.unregisterStringResourceProvider()
-
-        super.onDestroy()
-    }
 
     @ExperimentalSplittiesApi
     private suspend fun onSystemActionClick(systemActionDef: SystemActionDef) =
