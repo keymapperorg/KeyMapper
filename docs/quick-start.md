@@ -83,4 +83,8 @@ Key Mapper can also create a key map with multiple triggers. If you want to use 
 
 ![](images/hg-keymap-1.png) ![](images/hg-keymap-1-light.png)
 
-Next, it's time to choose an action. If you have a high-resolution display, you will see the green ADD ACTION button at the bottom of the 
+Next, it's time to choose an action. If you have a high-resolution display, you will see the green ADD ACTION button at the bottom of the screen (pictured left). Otherwise, tap the ACTIONS tab at the top of the screen (pictured right).
+
+![](images/hg-keymap-2.png) ![](images/hg-keymap-2-light.png)
+
+Tap the green ADD ACTION button at the bottom of this screen. The action selection screen will open. Here you can choose from a wide variety of actions.
