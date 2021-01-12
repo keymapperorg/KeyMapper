@@ -99,7 +99,7 @@ Tab | Description |
 | Tap screen | Emulate a screen tap at a specific location on your screen. |
 | Key event | Emulate a key press from a specifc connected device. |
 | Text | Emulate typing a string. |
-| Intent | See [this page.](user-guide/actions/#intent) |
+| Intent | See [this page.](../user-guide/actions/#intent-230) |
 | Phone call | Call a telephone number. Network and carrier rates will apply. |
 | Unsupported actions | A list of actions that your device won't allow you to use. Android frequently changes what users are allowed to do between versions. |
 
