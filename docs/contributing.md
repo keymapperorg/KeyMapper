@@ -1,5 +1,3 @@
-# Contributing
-
 ## Consistency Standards
 
 ### Language
@@ -15,6 +13,15 @@ Here are words and phrases that can be spelt or capitalised in multiple ways.
 | A trigger       | **trigger**                                                  | Trigger                            |
 | An action       | **action**                                                   | Action                             |
 | A constraint    | **constraint**                                               | Constraint                         |
+| A key event | **key event** | Key Event, keyevent |
+
+### Documentation
+
+#### Headings
+
+If a heading is for a particular feature then it should include the minimum supported Key Mapper version except version 1.0 and whether it requires root.
+
+E.g "Trigger When Screen is Off (ROOT, 2.0.0+)"
 
 ### Committing
 

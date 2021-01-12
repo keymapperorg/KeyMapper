@@ -9,10 +9,11 @@ nav:
   - User Guide:
       - Triggers: user-guide/triggers.md
       - Actions: user-guide/actions.md
-      - Constraints (2.0+): user-guide/constraints.md
+      - Constraints (2.0.0+): user-guide/constraints.md
       - ADB Permissions: user-guide/adb-permissions.md
       - Fingerprint Gestures (2.2.0+): user-guide/fingerprint-gestures.md
   - Contributing: contributing.md
+  - Known Issues: known-issues.md
 
 theme:
   name: material
@@ -20,7 +21,7 @@ theme:
     accent: red
   favicon: images/favicon.ico
   logo: images/logo.png
-  custom_dir: overrides
+  custom_dir: docs/overrides
   features:
     - navigation.instant
 
@@ -43,12 +44,13 @@ extra:
       link: https://ko-fi.com/sethschroeder
 
 markdown_extensions:
+  - attr_list
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
       options:
         custom_icons:
-          - overrides/.icons
+          - docs/overrides/.icons
   - toc:
       permalink: true
 
