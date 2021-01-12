@@ -127,7 +127,7 @@ class MyAccessibilityService : AccessibilityService(),
 
                 ACTION_RECORD_TRIGGER -> {
                     //don't start recording if a trigger is being recorded
-                    if (!ecordingTrigger) {
+                    if (!recordingTrigger) {
                         recordingTriggerJob = recordTrigger()
                     }
                 }
@@ -143,7 +143,7 @@ class MyAccessibilityService : AccessibilityService(),
                 }
 
                 ACTION_STOP_RECORDING_TRIGGER -> {
-                    val wasRecordingTrigger = ecordingTrigger
+                    val wasRecordingTrigger = recordingTrigger
 
                     recordingTriggerJob?.cancel()
                     recordingTriggerJob = null
@@ -200,7 +200,7 @@ class MyAccessibilityService : AccessibilityService(),
 
     private var recordingTriggerJob: Job? = null
 
-    private val ecordingTrigger: Boolean
+    private val recordingTrigger: Boolean
         get() = recordingTriggerJob != null
 
     private var screenOffTriggersEnabled = false
@@ -480,7 +480,7 @@ class MyAccessibilityService : AccessibilityService(),
     override fun onKeyEvent(event: KeyEvent?): Boolean {
         event ?: return super.onKeyEvent(event)
 
-        if (ecordingTrigger) {
+        if (recordingTrigger) {
             if (event.action == KeyEvent.ACTION_DOWN) {
 
                 //tell the UI that a key has been pressed
