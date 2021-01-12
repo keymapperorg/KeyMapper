@@ -6,16 +6,16 @@ For specific troubleshooting, consult the FAQ.
 Where screenshots are necessary, this guide uses two devices to demonstrate.
 
 1. OnePlus 7 Pro, Android 10, Dark theme, 1440p, tiny font size
-2. Samsung J3 6, Android 5, Light theme, 720p, normal font size
+2. Samsung J3 6, Android 5, Light theme, 720p, medium font size
 
-App interface pictured: `keymapper-2.3.0-alpha-ci.709`
+App interface pictured: `keymapper-2.3.0-alpha-ci.715`
 
 The guide is updated to match current stable release UI. [Report inaccuracies.](https://github.com/sds100/KeyMapper/issues/new)
 
 ## First time setup
 
 When you open Key Mapper, you will be presented with this screen.
-This screen is referred to as the *Key Mapper home screen*.
+This screen is referred to as the Key Mapper home screen.
 
 ![](images/hg-home-empty.png) ![](images/hg-home-empty-light.png)
 
@@ -83,8 +83,36 @@ Key Mapper can also create a key map with multiple triggers. If you want to use 
 
 ![](images/hg-keymap-1.png) ![](images/hg-keymap-1-light.png)
 
-Next, it's time to choose an action. If you have a high-resolution display, you will see the green ADD ACTION button at the bottom of the screen (pictured left). Otherwise, tap the ACTIONS tab at the top of the screen (pictured right).
+Next, it's time to choose an action. If you have a high-resolution display, you will see the ADD ACTION button at the bottom of the screen (pictured left). Otherwise, tap the ACTIONS tab at the top of the screen (pictured right).
 
-![](images/hg-keymap-2.png) ![](images/hg-keymap-2-light.png)
+![](images/hg-keymap-1.png) ![](images/hg-keymap-2-light.png)
 
-Tap the green ADD ACTION button at the bottom of this screen. The action selection screen will open. Here you can choose from a wide variety of actions.
+Tap the ADD ACTION button at the bottom of this screen. The action selection screen will open. Here you can choose from a wide variety of actions. Swipe left and right to change category, and scroll up and down the list until you find the action you want to add. Below is a table of the different kinds of actions you can choose from in each tab.
+
+Tab | Description |
+|-|-|
+| App | Choose an app to open when you press your trigger. |
+| App shortcut | Choose an app operation (such as sharing location, checking local traffic, sending a text message) |
+| Keycode | Emulate a keyboard key press (such as an alphanumeric character or multimedia key) |
+| System | Choose a system operation (such as toggling Bluetooth, opening the home menu, toggling flashlight) |
+| Key | An alternative way to choose a key press action, by pressing the key that you want to map to. |
+| Tap screen | Emulate a screen tap at a specific location on your screen. |
+| Key event | Emulate a key press from a specifc connected device. |
+| Text | Emulate typing a string. |
+| Intent | See [this page.](http://docs.keymapper.club/user-guide/triggers/#trigger-by-intent-230) |
+| Phone call | Call a telephone number. Network and carrier rates will apply. |
+| Unsupported actions | A list of actions that your device won't allow you to use. Android frequently changes what users are allowed to do between versions. |
+
+For this simple demonstration I will choose KEYCODE_E from the Keycode tab. This action will emulate pressing an E key on a keyboard.
+
+![](images/hg-keymap-3.png) ![](images/hg-keymap-3-light.png)
+
+Key Mapper can also create a key map with multiple actions. If you want to add more actions to execute in series you can do so by tapping ADD ACTION again and choosing the next action in the chain. In the next section you can specify a delay between those actions if you wish.
+
+### Customising the trigger(s) and action(s)
+
+In the next section, I will explain in more detail how to customise your triggers and actions to be more in line with what you want. Most people will want to do at least some customisation.
+
+Starting with the triggers, tap the 3 dot menu to the right of the trigger's name to bring up the following menu.
+
+![](images/hg-trigger-settings.png) ![](images/hg-trigger-settings-light.png) 
