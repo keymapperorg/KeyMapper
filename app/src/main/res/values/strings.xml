@@ -588,7 +588,7 @@
     <string name="showcase_fingerprint_gesture_support_title">Remapping fingerprint reader gestures</string>
     <string name="showcase_fingerprint_gesture_support_message_supported_unknown">You\'ll need to enable the accessibility service so that Key Mapper can check whether your device can detect fingerprint gestures.</string>
     <string name="showcase_fingerprint_gesture_support_message_supported">Your device can detect fingerprint gestures! There is a tab at the top of the home-screen to for remapping fingerprint gestures.</string>
-    <string name="showcase_fingerprint_gesture_support_message_not_supported">Your device can NOT detect fingerprint gestures!</string>
+    <string name="showcase_fingerprint_gesture_support_message_not_supported">Your device does NOT allow 3rd party apps to detect fingerprint gestures! There isn\'t anything the developer can do about this. Some devices have the setting to swipe down on the fingerprint reader to open the notification drawer and do NOT allow 3rd party apps to detect fingerprint gestures.</string>
     <string name="showcase_fingerprint_gesture_support_button">Enable</string>
     <!-- Showcase -->
 
