@@ -93,9 +93,9 @@ class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourcePr
     override fun getStringResource(resId: Int) = str(resId)
 
     override fun onDestroy() {
-        super.onDestroy()
-
         viewModel.unregisterStringResourceProvider()
+
+        super.onDestroy()
     }
 
     @ExperimentalSplittiesApi

@@ -321,9 +321,9 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-
         requireContext().defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+
+        super.onDestroy()
     }
 
     private fun populateBluetoothDevicesPreference() {

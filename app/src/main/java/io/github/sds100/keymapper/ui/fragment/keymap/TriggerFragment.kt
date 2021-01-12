@@ -255,9 +255,9 @@ class TriggerFragment : Fragment() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-
         requireActivity().unregisterReceiver(broadcastReceiver)
+
+        super.onDestroy()
     }
 
     private fun stopRecordingTrigger() {

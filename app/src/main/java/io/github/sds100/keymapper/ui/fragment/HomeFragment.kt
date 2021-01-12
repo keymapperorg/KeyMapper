@@ -437,10 +437,10 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-
         requireActivity().unregisterReceiver(broadcastReceiver)
         requireContext().defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+
+        super.onDestroy()
     }
 
     override fun onSharedPreferenceChanged(preferences: SharedPreferences?, key: String?) {

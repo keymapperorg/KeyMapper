@@ -134,10 +134,10 @@ class MenuFragment : BottomSheetDialogFragment(),
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-
         requireContext().unregisterReceiver(broadcastReceiver)
         requireContext().defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+
+        super.onDestroy()
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
