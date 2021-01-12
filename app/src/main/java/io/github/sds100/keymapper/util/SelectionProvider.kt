@@ -4,8 +4,9 @@ import android.util.SparseBooleanArray
 import androidx.core.util.forEach
 import androidx.core.util.set
 import androidx.core.util.size
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.github.sds100.keymapper.ui.callback.SelectionCallback
+import com.hadilq.liveevent.LiveEvent
 
 /**
  * Created by sds100 on 11/02/2020.
@@ -14,6 +15,10 @@ import io.github.sds100.keymapper.ui.callback.SelectionCallback
 class SelectionProvider : ISelectionProvider {
     override val isSelectable: MutableLiveData<Boolean> = MutableLiveData(false)
     override val selectedCount: MutableLiveData<Int> = MutableLiveData(0)
+
+    private val _selectionEvents = LiveEvent<SelectionEvent>()
+
+    override val selectionEvents: LiveData<SelectionEvent> = _selectionEvents
 
     private var _selectedIds = SparseBooleanArray()
     override val selectedIds: LongArray
@@ -24,8 +29,6 @@ class SelectionProvider : ISelectionProvider {
                 }
             }
         }.toList().toLongArray()
-
-    override var callback: SelectionCallback? = null
 
     override fun startSelecting(): Boolean {
         if (isSelectable.value == false) {
@@ -51,10 +54,10 @@ class SelectionProvider : ISelectionProvider {
         _selectedIds[id.toInt()] = !isSelected(id)
 
         if (isSelected(id)) {
-            callback?.onSelect(id)
+            _selectionEvents.value = Selected(id)
             selectedCount.value = selectedCount.value?.plus(1)
         } else {
-            callback?.onUnselect(id)
+            _selectionEvents.value = Unselected(id)
             selectedCount.value = selectedCount.value?.minus(1)
         }
     }
@@ -81,7 +84,7 @@ class SelectionProvider : ISelectionProvider {
             _selectedIds[key] = true
         }
         selectedCount.value = _selectedIds.size
-        callback?.onSelectAll()
+        _selectionEvents.value = SelectAll()
     }
 
     private fun unselectAll() {

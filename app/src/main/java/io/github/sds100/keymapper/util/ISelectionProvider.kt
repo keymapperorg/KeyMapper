@@ -1,18 +1,16 @@
 package io.github.sds100.keymapper.util
 
 import androidx.lifecycle.LiveData
-import io.github.sds100.keymapper.ui.callback.SelectionCallback
 
 /**
  * Created by sds100 on 11/02/2020.
  */
 
 interface ISelectionProvider {
-    var callback: SelectionCallback?
-
     val isSelectable: LiveData<Boolean>
     val selectedCount: LiveData<Int>
     val selectedIds: LongArray
+    val selectionEvents: LiveData<SelectionEvent>
 
     /**
      * @return true if it wasn't already selecting

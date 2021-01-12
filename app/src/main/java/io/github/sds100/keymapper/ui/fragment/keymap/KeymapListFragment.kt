@@ -15,7 +15,6 @@ import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.keymap
 import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
-import io.github.sds100.keymapper.ui.callback.SelectionCallback
 import io.github.sds100.keymapper.ui.fragment.DefaultRecyclerViewFragment
 import io.github.sds100.keymapper.ui.fragment.HomeFragmentDirections
 import io.github.sds100.keymapper.util.*
@@ -66,7 +65,9 @@ class KeymapListFragment : DefaultRecyclerViewFragment() {
                 }
             })
 
-            selectionProvider.callback = controller
+            selectionProvider.selectionEvents.observe(viewLifecycleOwner, {
+                controller.requestModelBuild()
+            })
 
             selectionProvider.isSelectable.observe(viewLifecycleOwner, {
                 controller.requestModelBuild()
@@ -110,7 +111,7 @@ class KeymapListFragment : DefaultRecyclerViewFragment() {
             )
         }
 
-    inner class KeymapController : EpoxyController(), SelectionCallback {
+    inner class KeymapController : EpoxyController() {
         var keymapList: List<KeymapListItemModel> = listOf()
             set(value) {
                 field = value
@@ -155,18 +156,6 @@ class KeymapListFragment : DefaultRecyclerViewFragment() {
                     }
                 }
             }
-        }
-
-        override fun onSelect(id: Long) {
-            requestModelBuild()
-        }
-
-        override fun onUnselect(id: Long) {
-            requestModelBuild()
-        }
-
-        override fun onSelectAll() {
-            requestModelBuild()
         }
     }
 }
