@@ -159,8 +159,12 @@ abstract class ActionListFragment<O : BaseOptions<Action>> : Fragment() {
 
     override fun onDestroyView() {
         _binding = null
-        requireContext().unregisterReceiver(broadcastReceiver)
         super.onDestroyView()
+    }
+
+    override fun onDestroy() {
+        requireContext().unregisterReceiver(broadcastReceiver)
+        super.onDestroy()
     }
 
     abstract fun openActionOptionsFragment(options: O)
