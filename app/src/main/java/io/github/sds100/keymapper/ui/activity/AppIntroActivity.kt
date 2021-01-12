@@ -29,199 +29,6 @@ import splitties.toast.longToast
 
 class AppIntroActivity : AppIntro2() {
 
-    class NoteFromDeveloperSlide : AppIntroScrollableFragment() {
-        override fun onBind(binding: FragmentAppIntroSlideBinding) {
-            binding.apply {
-                title = str(R.string.showcase_note_from_the_developer_title)
-                description = str(R.string.showcase_note_from_the_developer_description)
-                imageDrawable = drawable(R.mipmap.ic_launcher_round)
-                backgroundColor = color(R.color.red)
-            }
-        }
-    }
-
-    class AccessibilityServiceSlide : AppIntroScrollableFragment() {
-        private val broadcastReceiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                if (intent?.action == MyAccessibilityService.ACTION_ON_START) {
-                    binding.apply {
-                        if (AccessibilityUtils.isServiceEnabled(requireContext())) {
-                            serviceEnabledLayout()
-                        } else {
-                            serviceDisabledLayout()
-                        }
-                    }
-                }
-            }
-        }
-
-        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            super.onViewCreated(view, savedInstanceState)
-
-            IntentFilter().apply {
-                addAction(MyAccessibilityService.ACTION_ON_START)
-
-                requireContext().registerReceiver(broadcastReceiver, this)
-            }
-        }
-
-        override fun onDestroyView() {
-            requireContext().unregisterReceiver(broadcastReceiver)
-
-            super.onDestroyView()
-        }
-
-        override fun onBind(binding: FragmentAppIntroSlideBinding) {
-            binding.apply {
-                if (AccessibilityUtils.isServiceEnabled(requireContext())) {
-                    serviceEnabledLayout()
-                } else {
-                    serviceDisabledLayout()
-                }
-            }
-        }
-
-        private fun FragmentAppIntroSlideBinding.serviceDisabledLayout() {
-            title = str(R.string.showcase_accessibility_service_title_disabled)
-            description = str(R.string.showcase_accessibility_service_description_disabled)
-
-            imageDrawable = drawable(R.drawable.ic_outline_error_outline_64)
-            backgroundColor = color(R.color.purple)
-
-            buttonText = str(R.string.enable)
-
-            setOnButtonClickListener {
-                AccessibilityUtils.enableService(requireContext())
-            }
-        }
-
-        private fun FragmentAppIntroSlideBinding.serviceEnabledLayout() {
-            title = str(R.string.showcase_accessibility_service_title_enabled)
-            description = str(R.string.showcase_accessibility_service_description_enabled)
-
-            imageDrawable = drawable(R.drawable.ic_baseline_check_64)
-            backgroundColor = color(R.color.purple)
-
-            buttonText = null
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.M)
-    class BatteryOptimisationSlide : AppIntroScrollableFragment() {
-        override fun onBind(binding: FragmentAppIntroSlideBinding) {
-            binding.apply {
-                title = str(R.string.showcase_disable_battery_optimisation_title)
-                description = str(R.string.showcase_disable_battery_optimisation_message)
-
-                imageDrawable = drawable(R.drawable.ic_battery_std_white_64dp)
-                backgroundColor = color(R.color.blue)
-
-                buttonText = str(R.string.showcase_disable_battery_optimisation_button)
-
-                setOnButtonClickListener {
-                    try {
-                        val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-                        startActivity(intent)
-                    } catch (e: ActivityNotFoundException) {
-                        longToast(R.string.error_battery_optimisation_activity_not_found)
-                    }
-                }
-            }
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    class FingerprintGestureSupportSlide : AppIntroScrollableFragment() {
-
-        override fun onBind(binding: FragmentAppIntroSlideBinding) {
-            binding.apply {
-                title = str(R.string.showcase_fingerprint_gesture_support_title)
-
-                imageDrawable = drawable(R.drawable.ic_baseline_fingerprint_64)
-                backgroundColor = color(R.color.orange)
-
-                ServiceLocator.fingerprintMapRepository(requireContext())
-                    .fingerprintGesturesAvailable.observe(viewLifecycleOwner, { available ->
-                        when (available) {
-                            true -> gesturesSupportedLayout()
-                            false -> gesturesUnsupportedLayout()
-                            null -> supportedUnknownLayout()
-                        }
-                    })
-            }
-        }
-
-        private fun FragmentAppIntroSlideBinding.gesturesSupportedLayout() {
-            description =
-                str(R.string.showcase_fingerprint_gesture_support_message_supported)
-
-            buttonText = null
-        }
-
-        private fun FragmentAppIntroSlideBinding.supportedUnknownLayout() {
-            description =
-                str(R.string.showcase_fingerprint_gesture_support_message_supported_unknown)
-
-            buttonText = str(R.string.showcase_fingerprint_gesture_support_button)
-
-            setOnButtonClickListener {
-                AccessibilityUtils.enableService(requireContext())
-            }
-        }
-
-        private fun FragmentAppIntroSlideBinding.gesturesUnsupportedLayout() {
-            description =
-                str(R.string.showcase_fingerprint_gesture_support_message_not_supported)
-
-            buttonText = null
-        }
-    }
-
-    class DexSlide : AppIntroScrollableFragment() {
-        override fun onBind(binding: FragmentAppIntroSlideBinding) {
-            binding.apply {
-                title = str(R.string.showcase_dex_mode_supported_title)
-                description = str(R.string.showcase_dex_mode_supported_message)
-                imageDrawable = drawable(R.drawable.ic_dock_white_64dp)
-                backgroundColor = color(R.color.orange)
-            }
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.M)
-    class DndAccessSlide : AppIntroScrollableFragment() {
-
-        private val requestAccessNotificationPolicy =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
-
-        override fun onBind(binding: FragmentAppIntroSlideBinding) {
-            binding.apply {
-                title = str(R.string.showcase_dnd_access_title)
-                description = str(R.string.showcase_dnd_access_description)
-
-                imageDrawable = drawable(R.drawable.ic_outline_dnd_circle_outline_64)
-                backgroundColor = color(R.color.red)
-
-                buttonText = str(R.string.pos_grant)
-
-                setOnButtonClickListener {
-                    PermissionUtils.requestAccessNotificationPolicy(requestAccessNotificationPolicy)
-                }
-            }
-        }
-    }
-
-    class ContributingSlide : AppIntroScrollableFragment() {
-        override fun onBind(binding: FragmentAppIntroSlideBinding) {
-            binding.apply {
-                title = str(R.string.showcase_contributing_title)
-                description = str(R.string.showcase_contributing_description)
-                imageDrawable = drawable(R.drawable.ic_outline_feedback_64)
-                backgroundColor = color(R.color.green)
-            }
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -261,5 +68,198 @@ class AppIntroActivity : AppIntro2() {
         startActivity(Intent(this, HomeActivity::class.java))
 
         finish()
+    }
+}
+
+private class NoteFromDeveloperSlide : AppIntroScrollableFragment() {
+    override fun onBind(binding: FragmentAppIntroSlideBinding) {
+        binding.apply {
+            title = str(R.string.showcase_note_from_the_developer_title)
+            description = str(R.string.showcase_note_from_the_developer_description)
+            imageDrawable = drawable(R.mipmap.ic_launcher_round)
+            backgroundColor = color(R.color.red)
+        }
+    }
+}
+
+private class AccessibilityServiceSlide : AppIntroScrollableFragment() {
+    private val broadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == MyAccessibilityService.ACTION_ON_START) {
+                binding.apply {
+                    if (AccessibilityUtils.isServiceEnabled(requireContext())) {
+                        serviceEnabledLayout()
+                    } else {
+                        serviceDisabledLayout()
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        IntentFilter().apply {
+            addAction(MyAccessibilityService.ACTION_ON_START)
+
+            requireContext().registerReceiver(broadcastReceiver, this)
+        }
+    }
+
+    override fun onDestroyView() {
+        requireContext().unregisterReceiver(broadcastReceiver)
+
+        super.onDestroyView()
+    }
+
+    override fun onBind(binding: FragmentAppIntroSlideBinding) {
+        binding.apply {
+            if (AccessibilityUtils.isServiceEnabled(requireContext())) {
+                serviceEnabledLayout()
+            } else {
+                serviceDisabledLayout()
+            }
+        }
+    }
+
+    private fun FragmentAppIntroSlideBinding.serviceDisabledLayout() {
+        title = str(R.string.showcase_accessibility_service_title_disabled)
+        description = str(R.string.showcase_accessibility_service_description_disabled)
+
+        imageDrawable = drawable(R.drawable.ic_outline_error_outline_64)
+        backgroundColor = color(R.color.purple)
+
+        buttonText = str(R.string.enable)
+
+        setOnButtonClickListener {
+            AccessibilityUtils.enableService(requireContext())
+        }
+    }
+
+    private fun FragmentAppIntroSlideBinding.serviceEnabledLayout() {
+        title = str(R.string.showcase_accessibility_service_title_enabled)
+        description = str(R.string.showcase_accessibility_service_description_enabled)
+
+        imageDrawable = drawable(R.drawable.ic_baseline_check_64)
+        backgroundColor = color(R.color.purple)
+
+        buttonText = null
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.M)
+private class BatteryOptimisationSlide : AppIntroScrollableFragment() {
+    override fun onBind(binding: FragmentAppIntroSlideBinding) {
+        binding.apply {
+            title = str(R.string.showcase_disable_battery_optimisation_title)
+            description = str(R.string.showcase_disable_battery_optimisation_message)
+
+            imageDrawable = drawable(R.drawable.ic_battery_std_white_64dp)
+            backgroundColor = color(R.color.blue)
+
+            buttonText = str(R.string.showcase_disable_battery_optimisation_button)
+
+            setOnButtonClickListener {
+                try {
+                    val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                    startActivity(intent)
+                } catch (e: ActivityNotFoundException) {
+                    longToast(R.string.error_battery_optimisation_activity_not_found)
+                }
+            }
+        }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+private class FingerprintGestureSupportSlide : AppIntroScrollableFragment() {
+
+    override fun onBind(binding: FragmentAppIntroSlideBinding) {
+        binding.apply {
+            title = str(R.string.showcase_fingerprint_gesture_support_title)
+
+            imageDrawable = drawable(R.drawable.ic_baseline_fingerprint_64)
+            backgroundColor = color(R.color.orange)
+
+            ServiceLocator.fingerprintMapRepository(requireContext())
+                .fingerprintGesturesAvailable.observe(viewLifecycleOwner, { available ->
+                    when (available) {
+                        true -> gesturesSupportedLayout()
+                        false -> gesturesUnsupportedLayout()
+                        null -> supportedUnknownLayout()
+                    }
+                })
+        }
+    }
+
+    private fun FragmentAppIntroSlideBinding.gesturesSupportedLayout() {
+        description =
+            str(R.string.showcase_fingerprint_gesture_support_message_supported)
+
+        buttonText = null
+    }
+
+    private fun FragmentAppIntroSlideBinding.supportedUnknownLayout() {
+        description =
+            str(R.string.showcase_fingerprint_gesture_support_message_supported_unknown)
+
+        buttonText = str(R.string.showcase_fingerprint_gesture_support_button)
+
+        setOnButtonClickListener {
+            AccessibilityUtils.enableService(requireContext())
+        }
+    }
+
+    private fun FragmentAppIntroSlideBinding.gesturesUnsupportedLayout() {
+        description =
+            str(R.string.showcase_fingerprint_gesture_support_message_not_supported)
+
+        buttonText = null
+    }
+}
+
+private class DexSlide : AppIntroScrollableFragment() {
+    override fun onBind(binding: FragmentAppIntroSlideBinding) {
+        binding.apply {
+            title = str(R.string.showcase_dex_mode_supported_title)
+            description = str(R.string.showcase_dex_mode_supported_message)
+            imageDrawable = drawable(R.drawable.ic_dock_white_64dp)
+            backgroundColor = color(R.color.orange)
+        }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.M)
+private class DndAccessSlide : AppIntroScrollableFragment() {
+
+    private val requestAccessNotificationPolicy =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
+
+    override fun onBind(binding: FragmentAppIntroSlideBinding) {
+        binding.apply {
+            title = str(R.string.showcase_dnd_access_title)
+            description = str(R.string.showcase_dnd_access_description)
+
+            imageDrawable = drawable(R.drawable.ic_outline_dnd_circle_outline_64)
+            backgroundColor = color(R.color.red)
+
+            buttonText = str(R.string.pos_grant)
+
+            setOnButtonClickListener {
+                PermissionUtils.requestAccessNotificationPolicy(requestAccessNotificationPolicy)
+            }
+        }
+    }
+}
+
+private class ContributingSlide : AppIntroScrollableFragment() {
+    override fun onBind(binding: FragmentAppIntroSlideBinding) {
+        binding.apply {
+            title = str(R.string.showcase_contributing_title)
+            description = str(R.string.showcase_contributing_description)
+            imageDrawable = drawable(R.drawable.ic_outline_feedback_64)
+            backgroundColor = color(R.color.green)
+        }
     }
 }
