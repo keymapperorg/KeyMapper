@@ -36,19 +36,7 @@ object ServiceLocator {
     private var systemActionRepository: SystemActionRepository? = null
 
     @Volatile
-    private var systemRepository: SystemRepository? = null
-
-    private fun getSystemActionRepository(context: Context): SystemActionRepository {
-        synchronized(this) {
-            return systemActionRepository ?: createSystemActionRepository(context)
-        }
-    }
-
-    private fun getSystemRepository(context: Context): SystemRepository {
-        synchronized(this) {
-            return systemRepository ?: createSystemRepository(context)
-        }
-    }
+    private var packageRepository: DefaultPackageRepository? = null
 
     fun keymapRepository(context: Context): DefaultKeymapRepository {
         synchronized(this) {
@@ -87,9 +75,9 @@ object ServiceLocator {
         }
     }
 
-    fun systemRepository(context: Context): SystemRepository {
+    fun packageRepository(context: Context): PackageRepository {
         synchronized(this) {
-            return systemRepository ?: createSystemRepository(context)
+            return packageRepository ?: createPackageRepository(context)
         }
     }
 
@@ -147,10 +135,10 @@ object ServiceLocator {
             }
     }
 
-    private fun createSystemRepository(context: Context): SystemRepository {
-        return systemRepository
-            ?: SystemRepository(context.applicationContext).also {
-                this.systemRepository = it
+    private fun createPackageRepository(context: Context): PackageRepository {
+        return packageRepository
+            ?: DefaultPackageRepository(context.applicationContext).also {
+                this.packageRepository = it
             }
     }
 
@@ -176,5 +164,12 @@ object ServiceLocator {
             AppDatabase.MIGRATION_8_9).build()
         database = result
         return result
+    }
+
+    fun release() {
+        synchronized(this) {
+            packageRepository = null
+            systemActionRepository = null
+        }
     }
 }

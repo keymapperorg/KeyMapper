@@ -939,7 +939,7 @@ object SystemActionUtils {
     }
 
     private suspend fun getPackagesSortedByName(ctx: Context) =
-        ServiceLocator.systemRepository(ctx).let { repository ->
+        ServiceLocator.packageRepository(ctx).let { repository ->
             repository.getLaunchableAppList()
                 .sortedBy { repository.getAppName(it).toLowerCase(Locale.getDefault()) }
                 .map { it.packageName }

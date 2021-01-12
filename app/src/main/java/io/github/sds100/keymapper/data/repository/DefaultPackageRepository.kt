@@ -12,9 +12,9 @@ import kotlinx.coroutines.withContext
 /**
  * Created by sds100 on 27/01/2020.
  */
-class SystemRepository(private val context: Context) {
+class DefaultPackageRepository(private val context: Context) : PackageRepository {
 
-    suspend fun getAllAppList() = withContext(Dispatchers.Default) {
+    override suspend fun getAllAppList() = withContext(Dispatchers.Default) {
         sequence {
             context.packageManager.apply {
 
@@ -28,7 +28,7 @@ class SystemRepository(private val context: Context) {
         }.toList()
     }
 
-    suspend fun getLaunchableAppList() = withContext(Dispatchers.Default) {
+    override suspend fun getLaunchableAppList() = withContext(Dispatchers.Default) {
         sequence {
             context.packageManager.apply {
 
@@ -45,29 +45,29 @@ class SystemRepository(private val context: Context) {
         }.toList()
     }
 
-    suspend fun getAppShortcutList(): List<ResolveInfo> = withContext(Dispatchers.Default) {
+    override suspend fun getAppShortcutList(): List<ResolveInfo> = withContext(Dispatchers.Default) {
         val shortcutIntent = Intent(Intent.ACTION_CREATE_SHORTCUT)
         return@withContext context.packageManager.queryIntentActivities(shortcutIntent, 0)
     }
 
-    fun getAppIcon(applicationInfo: ApplicationInfo): Drawable? {
+    override fun getAppIcon(applicationInfo: ApplicationInfo): Drawable? {
         return applicationInfo.loadIcon(context.packageManager)
     }
 
-    fun getIntentIcon(resolveInfo: ResolveInfo): Drawable? {
+    override fun getIntentIcon(resolveInfo: ResolveInfo): Drawable? {
         return resolveInfo.loadIcon(context.packageManager)
     }
 
-    fun getAppName(applicationInfo: ApplicationInfo): String {
+    override fun getAppName(applicationInfo: ApplicationInfo): String {
         return applicationInfo.loadLabel(context.packageManager).toString()
     }
 
-    fun getAppName(packageName: String): String {
+    override fun getAppName(packageName: String): String {
         val applicationInfo = context.packageManager.getApplicationInfo(packageName, 0)
         return getAppName(applicationInfo)
     }
 
-    fun getIntentLabel(resolveInfo: ResolveInfo): String {
+    override fun getIntentLabel(resolveInfo: ResolveInfo): String {
         return resolveInfo.loadLabel(context.packageManager).toString()
     }
 }

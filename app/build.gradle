@@ -144,6 +144,8 @@ dependencies {
     implementation "androidx.datastore:datastore-preferences:1.0.0-alpha05"
     kapt "androidx.room:room-compiler:$room_version"
 
+//    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.6'
+
     def junitVersion = "4.13.1"
     def androidXTestExtKotlinRunnerVersion = "1.1.2"
     def espressoVersion = "3.3.0"

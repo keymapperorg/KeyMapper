@@ -121,7 +121,7 @@ class MyAccessibilityService : AccessibilityService(),
 
                 ACTION_SHOW_KEYBOARD -> {
                     if (VERSION.SDK_INT >= VERSION_CODES.N) {
-                        softKeyboardController.show(baseContext)
+                        softKeyboardController.show(this@MyAccessibilityService)
                     }
                 }
 
@@ -218,8 +218,6 @@ class MyAccessibilityService : AccessibilityService(),
 
     private var fingerprintGestureCallback:
         FingerprintGestureController.FingerprintGestureCallback? = null
-
-    private lateinit var fingerprintMapRepository: FingerprintMapRepository
 
     override val currentTime: Long
         get() = SystemClock.elapsedRealtime()
@@ -358,8 +356,6 @@ class MyAccessibilityService : AccessibilityService(),
 
         chosenImePackageName = KeyboardUtils.getChosenInputMethodPackageName(this).valueOrNull()
 
-        fingerprintMapRepository = ServiceLocator.fingerprintMapRepository(this)
-
         fingerprintGestureMapController = FingerprintGestureMapController(
             lifecycleScope,
             iConstraintDelegate = constraintDelegate,
@@ -371,8 +367,9 @@ class MyAccessibilityService : AccessibilityService(),
             requestFingerprintGestureDetection()
 
             lifecycleScope.launchWhenStarted {
-                fingerprintMapRepository.setFingerprintGesturesAvailable(
-                    fingerprintGestureController.isGestureDetectionAvailable)
+                ServiceLocator.fingerprintMapRepository(this@MyAccessibilityService)
+                    .setFingerprintGesturesAvailable(
+                        fingerprintGestureController.isGestureDetectionAvailable)
             }
 
             fingerprintGestureCallback =
@@ -385,7 +382,7 @@ class MyAccessibilityService : AccessibilityService(),
                     }
                 }
 
-            observeFingerprintMaps(fingerprintMapRepository)
+            observeFingerprintMaps(ServiceLocator.fingerprintMapRepository(this))
 
             fingerprintGestureCallback?.let {
                 fingerprintGestureController.registerFingerprintGestureCallback(it, null)

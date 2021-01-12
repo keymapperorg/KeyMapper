@@ -157,7 +157,7 @@ object Option {
             SystemAction.PREVIOUS_TRACK_PACKAGE,
             SystemAction.FAST_FORWARD_PACKAGE,
             SystemAction.REWIND_PACKAGE ->
-                return Success(ServiceLocator.systemRepository(ctx).getAppName(optionId))
+                return Success(ServiceLocator.packageRepository(ctx).getAppName(optionId))
 
             SystemAction.SWITCH_KEYBOARD -> {
                 return KeyboardUtils.getInputMethodLabel(optionId)

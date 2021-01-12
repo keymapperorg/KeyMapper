@@ -12,11 +12,11 @@ import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 object InjectorUtils {
 
     fun provideAppListViewModel(context: Context): AppListViewModel.Factory {
-        return AppListViewModel.Factory(ServiceLocator.systemRepository(context))
+        return AppListViewModel.Factory(ServiceLocator.packageRepository(context))
     }
 
     fun provideAppShortcutListViewModel(context: Context): AppShortcutListViewModel.Factory {
-        return AppShortcutListViewModel.Factory(ServiceLocator.systemRepository(context))
+        return AppShortcutListViewModel.Factory(ServiceLocator.packageRepository(context))
     }
 
     fun provideKeymapListViewModel(context: Context): KeymapListViewModel.Factory {

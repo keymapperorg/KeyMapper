@@ -75,7 +75,7 @@ class AppShortcutListFragment : DefaultRecyclerViewFragment() {
                         val appName = if (packageName == null) {
                             null
                         } else {
-                            ServiceLocator.systemRepository(requireContext()).getAppName(packageName)
+                            ServiceLocator.packageRepository(requireContext()).getAppName(packageName)
                         }
 
                         val shortcutName = if (appName == null) {

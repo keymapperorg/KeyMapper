@@ -122,6 +122,12 @@ class HomeActivity : AppCompatActivity() {
         WidgetsManager.invalidateNotifications(this)
     }
 
+    override fun onDestroy() {
+        ServiceLocator.release()
+
+        super.onDestroy()
+    }
+
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
         keyActionTypeViewModel.keyEvent.value = event
 

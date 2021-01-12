@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.data.viewmodel
 
 import androidx.lifecycle.*
 import io.github.sds100.keymapper.data.model.AppShortcutListItemModel
-import io.github.sds100.keymapper.data.repository.SystemRepository
+import io.github.sds100.keymapper.data.repository.PackageRepository
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -12,7 +12,7 @@ import java.util.*
  * Created by sds100 on 27/01/2020.
  */
 class AppShortcutListViewModel internal constructor(
-    private val repository: SystemRepository
+    private val repository: PackageRepository
 ) : ViewModel() {
 
     val searchQuery: MutableLiveData<String> = MutableLiveData("")
@@ -67,7 +67,7 @@ class AppShortcutListViewModel internal constructor(
     }
 
     class Factory(
-        private val repository: SystemRepository
+        private val repository: PackageRepository
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")

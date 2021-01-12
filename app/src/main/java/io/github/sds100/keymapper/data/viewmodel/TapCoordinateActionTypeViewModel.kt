@@ -73,6 +73,13 @@ class TapCoordinateActionTypeViewModel : ViewModel() {
         }
     }
 
+    override fun onCleared() {
+        bitmap.value?.recycle()
+        bitmap.value = null
+
+        super.onCleared()
+    }
+
     @Suppress("UNCHECKED_CAST")
     class Factory : ViewModelProvider.NewInstanceFactory() {
 
