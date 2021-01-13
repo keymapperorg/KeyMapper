@@ -71,7 +71,7 @@ class AppIntroActivity : AppIntro2() {
     }
 }
 
-private class NoteFromDeveloperSlide : AppIntroScrollableFragment() {
+class NoteFromDeveloperSlide : AppIntroScrollableFragment() {
     override fun onBind(binding: FragmentAppIntroSlideBinding) {
         binding.apply {
             title = str(R.string.showcase_note_from_the_developer_title)
@@ -82,7 +82,7 @@ private class NoteFromDeveloperSlide : AppIntroScrollableFragment() {
     }
 }
 
-private class AccessibilityServiceSlide : AppIntroScrollableFragment() {
+class AccessibilityServiceSlide : AppIntroScrollableFragment() {
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == MyAccessibilityService.ACTION_ON_START) {
@@ -149,7 +149,7 @@ private class AccessibilityServiceSlide : AppIntroScrollableFragment() {
 }
 
 @RequiresApi(Build.VERSION_CODES.M)
-private class BatteryOptimisationSlide : AppIntroScrollableFragment() {
+class BatteryOptimisationSlide : AppIntroScrollableFragment() {
     override fun onBind(binding: FragmentAppIntroSlideBinding) {
         binding.apply {
             title = str(R.string.showcase_disable_battery_optimisation_title)
@@ -173,7 +173,7 @@ private class BatteryOptimisationSlide : AppIntroScrollableFragment() {
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
-private class FingerprintGestureSupportSlide : AppIntroScrollableFragment() {
+class FingerprintGestureSupportSlide : AppIntroScrollableFragment() {
 
     override fun onBind(binding: FragmentAppIntroSlideBinding) {
         binding.apply {
@@ -219,7 +219,7 @@ private class FingerprintGestureSupportSlide : AppIntroScrollableFragment() {
     }
 }
 
-private class DexSlide : AppIntroScrollableFragment() {
+class DexSlide : AppIntroScrollableFragment() {
     override fun onBind(binding: FragmentAppIntroSlideBinding) {
         binding.apply {
             title = str(R.string.showcase_dex_mode_supported_title)
@@ -231,7 +231,7 @@ private class DexSlide : AppIntroScrollableFragment() {
 }
 
 @RequiresApi(Build.VERSION_CODES.M)
-private class DndAccessSlide : AppIntroScrollableFragment() {
+class DndAccessSlide : AppIntroScrollableFragment() {
 
     private val requestAccessNotificationPolicy =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
@@ -253,7 +253,7 @@ private class DndAccessSlide : AppIntroScrollableFragment() {
     }
 }
 
-private class ContributingSlide : AppIntroScrollableFragment() {
+class ContributingSlide : AppIntroScrollableFragment() {
     override fun onBind(binding: FragmentAppIntroSlideBinding) {
         binding.apply {
             title = str(R.string.showcase_contributing_title)
