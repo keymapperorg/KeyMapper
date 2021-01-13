@@ -1,5 +1,5 @@
 This page aims to give users an introduction to the Key Mapper interface and a demonstration on how to perform typical tasks with the app.
-For specific troubleshooting, consult the FAQ.
+For specific troubleshooting, [consult the FAQ.](../faq)
 
 
 
@@ -59,7 +59,7 @@ Tapping FIX will allow you to grant the permission. Find Key Mapper in the list 
 
 ![](images/hg-settings-dnd.png)
 
-Most people can ignore the final prompt. If you want to create an action to change input method, you need to grant an additional set of permissions called WRITE_SECURE_SETTINGS. For help with this [click here.](http://docs.keymapper.club/user-guide/adb-permissions/#write_secure_settings)
+Most people can ignore the final prompt. If you want to create an action to change input method, you need to grant an additional set of permissions called WRITE_SECURE_SETTINGS. For help with this [click here.](../user-guide/adb-permissions/#write_secure_settings)
 
 ![](images/hg-warn-secure-settings.png)
 
@@ -117,7 +117,7 @@ In the next section, I will explain in more detail how to customise your trigger
 
 ### Trigger settings
 
-Starting with the triggers, tap the 3 dot menu to the right of the trigger's name to bring up the following menu.
+Starting with the triggers, tap the 3 dot :fontawesome-solid-ellipsis-v: menu to the right of the trigger's name to bring up the following menu.
 
 ![](images/hg-trigger-settings.png) ![](images/hg-trigger-settings-light.png) 
 
@@ -127,7 +127,7 @@ One trigger can have three different click types. Choose from short press, long 
 
 ### Action settings
 
-Next, tap the 3 stacked dots to the right of the action's name to bring up the following menu.
+Next, tap the 3 stacked dots :fontawesome-solid-ellipsis-v: to the right of the action's name to bring up the following menu.
 
 ![](images/hg-action-settings.png) ![](images/hg-action-settings-light.png)
 
@@ -218,3 +218,25 @@ You can use turn on both of these settings to unlock an additional setting. A re
 ![](images/ui-slider-default-light-450px.png)
 
 This allows you to set how long the action is held down for before repeating.
+
+## Managing key maps
+
+To save your key map and return to the home screen, tap the save :fontawesome-solid-save: icon in the bottom right of the screen.
+
+Now your key map should already be working. To pause/unpause all of your key maps, pull down the notification tray and tap the Key Mapper notification to toggle between Paused and Running.
+
+![](images/hg-notification.png) ![](images/hg-notification-light.png)
+
+On the Key Mapper home screen, tap the 3 bar :fontawesome-solid-bars: menu to open the Key Mapper general settings. You will see the following options.
+
+![](images/hg-general-settings.png) ![](images/hg-general-settings-light.png)
+
+Here you can pause/unpause/enable/disable all of your key maps at once.<br />
+You can also backup and restore key maps here. [Learn more about backup and restore.](#)
+
+Tapping 'Show input method picker' allows for switching between a Key Mapper compatible keyboard and any other.<br />
+
+The 'About' menu is explained [here.](#)<br />
+Tapping 'Settings' shows more advanced settings and preferences you can learn about [here.](#)
+
+Thanks for using this Quick Start Guide. [Go to top.](#)
