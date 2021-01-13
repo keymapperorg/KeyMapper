@@ -2,3 +2,10 @@
   --md-primary-fg-color:        #1565c0;
 
 }
+.accent-light {
+  color: #d32f2f;
+}
+img[src*='#center'] { 
+  display: block;
+  margin: auto;
+}
