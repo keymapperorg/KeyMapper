@@ -1,8 +1,6 @@
 This page aims to give users an introduction to the Key Mapper interface and a demonstration on how to perform typical tasks with the app.
 For specific troubleshooting, [consult the FAQ.](../faq)
 
-
-
 Where screenshots are necessary, this guide uses two devices to demonstrate.
 
 1. OnePlus 7 Pro, Android 10, Dark theme, 1440p, tiny font size
@@ -239,4 +237,4 @@ Tapping 'Show input method picker' allows for switching between a Key Mapper com
 The 'About' menu is explained [here.](#)<br />
 Tapping 'Settings' shows more advanced settings and preferences you can learn about [here.](#)
 
-Thanks for using this Quick Start Guide. [Go to top.](#)
+[Go to top.](#)
