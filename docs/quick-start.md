@@ -77,7 +77,7 @@ To create your first key map, tap the + icon at the bottom of the Key Mapper hom
 
 ![](images/hg-keymap-0.png) ![](images/hg-keymap-0-light.png)
 
-In either case, the first step is to record a trigger. Tap the red RECORD TRIGGER option and then press the physical button that you want to change the function of. In this guide I will demonstrate with Volume Down.
+In either case, the first step is to record a trigger. Tap the red RECORD TRIGGER button and then press the physical button that you want to change the function of. In this guide I will demonstrate with Volume Down.
 
 Key Mapper can also create a key map with multiple triggers. If you want to use more than one trigger for one key map, you can press the buttons in the order you will press them to execute the key map. For example, if you wanted to map 'Ctrl' + 'H' to show the device home menu, you should press 'Ctrl' and then 'H'.
 
@@ -99,7 +99,7 @@ Tab | Description |
 | Tap screen | Emulate a screen tap at a specific location on your screen. |
 | Key event | Emulate a key press from a specifc connected device. |
 | Text | Emulate typing a string. |
-| Intent | See [this page.](http://docs.keymapper.club/user-guide/triggers/#trigger-by-intent-230) |
+| Intent | See [this page.](../user-guide/actions/#intent-230) |
 | Phone call | Call a telephone number. Network and carrier rates will apply. |
 | Unsupported actions | A list of actions that your device won't allow you to use. Android frequently changes what users are allowed to do between versions. |
 
