@@ -35,8 +35,7 @@ class ChooseActionFragment : Fragment() {
 
     private val viewModel by activityViewModels<ChooseActionViewModel> { ChooseActionViewModel.Factory() }
 
-    private val requestKey by lazy { navArgs<ChooseActionFragmentArgs>().value.StringNavArgChooseActionRequestKey }
-    private lateinit var pagerAdapter: ChooseActionPagerAdapter
+    private val mArgs by navArgs<ChooseActionFragmentArgs>()
 
     /**
      * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
@@ -45,8 +44,11 @@ class ChooseActionFragment : Fragment() {
     val binding: FragmentChooseActionBinding
         get() = _binding!!
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
 
         setResultListener(AppListFragment.REQUEST_KEY) {
             val packageName = it.getString(AppListFragment.EXTRA_PACKAGE_NAME)
@@ -133,12 +135,7 @@ class ChooseActionFragment : Fragment() {
                 keyEventViewModel.keyCode.value = it.toString()
             }
         }
-    }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
         FragmentChooseActionBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             _binding = this
@@ -151,7 +148,7 @@ class ChooseActionFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.apply {
-            pagerAdapter = ChooseActionPagerAdapter(this@ChooseActionFragment)
+            val pagerAdapter = ChooseActionPagerAdapter(this@ChooseActionFragment)
             viewPager.adapter = pagerAdapter
 
             TabLayoutMediator(tabLayout, viewPager) { tab, position ->
@@ -176,7 +173,7 @@ class ChooseActionFragment : Fragment() {
                 }
             })
 
-            subscribeSearchView()
+            subscribeSearchView(pagerAdapter)
         }
     }
 
@@ -190,14 +187,17 @@ class ChooseActionFragment : Fragment() {
         requestKey: String,
         createAction: (bundle: Bundle) -> Action
     ) {
-        childFragmentManager.setFragmentResultListener(requestKey, this) { _, result ->
+        childFragmentManager.setFragmentResultListener(requestKey, viewLifecycleOwner) { _, result ->
             val action = createAction(result)
 
-            setFragmentResult(this.requestKey, bundleOf(EXTRA_ACTION to action))
+            setFragmentResult(
+                this.mArgs.StringNavArgChooseActionRequestKey,
+                bundleOf(EXTRA_ACTION to action))
         }
     }
 
-    private fun FragmentChooseActionBinding.subscribeSearchView() {
+    private fun FragmentChooseActionBinding.subscribeSearchView(
+        pagerAdapter: ChooseActionPagerAdapter) {
         val searchViewMenuItem = appBar.menu.findItem(R.id.action_search)
         val searchView = searchViewMenuItem.actionView as SearchView
 

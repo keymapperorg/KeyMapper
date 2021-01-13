@@ -142,6 +142,7 @@ class TriggerFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         FragmentTriggerBinding.inflate(inflater, container, false).apply {
             binding = this
+            lifecycleOwner = viewLifecycleOwner
 
             return this.root
         }
@@ -153,7 +154,6 @@ class TriggerFragment : Fragment() {
 
         binding.apply {
             viewModel = triggerViewModel
-            lifecycleOwner = viewLifecycleOwner
 
             subscribeTriggerList()
 
@@ -374,7 +374,7 @@ class TriggerFragment : Fragment() {
                     }
 
                     onDeviceClick { _ ->
-                        lifecycleScope.launch {
+                        viewLifecycleScope.launch {
                             val deviceId = showChooseDeviceDialog()
 
                             triggerViewModel.setTriggerKeyDevice(model.id, deviceId)

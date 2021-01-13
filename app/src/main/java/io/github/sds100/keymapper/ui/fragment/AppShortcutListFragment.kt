@@ -5,7 +5,7 @@ import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
@@ -36,7 +36,7 @@ class AppShortcutListFragment : DefaultRecyclerViewFragment() {
     override var requestKey: String? = REQUEST_KEY
     override var searchStateKey: String? = SEARCH_STATE_KEY
 
-    private val viewModel: AppShortcutListViewModel by viewModels {
+    private val viewModel: AppShortcutListViewModel by activityViewModels {
         InjectorUtils.provideAppShortcutListViewModel(requireContext())
     }
 

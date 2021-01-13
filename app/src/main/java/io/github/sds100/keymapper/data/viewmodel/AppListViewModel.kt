@@ -6,7 +6,6 @@ import io.github.sds100.keymapper.data.model.AppListItemModel
 import io.github.sds100.keymapper.data.repository.PackageRepository
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.util.*
 
 /**
@@ -16,13 +15,13 @@ class AppListViewModel internal constructor(
     private val repository: PackageRepository
 ) : ViewModel() {
 
-    private val launchableAppModelList = liveData {
+    private val launchableAppModelList = liveData(viewModelScope.coroutineContext + Dispatchers.Default) {
         emit(Loading())
 
         emit(repository.getLaunchableAppList().createModels().getState())
     }
 
-    private val allAppModelList = liveData {
+    private val allAppModelList = liveData(viewModelScope.coroutineContext + Dispatchers.Default) {
         emit(Loading())
 
         emit(repository.getAllAppList().createModels().getState())
@@ -105,15 +104,13 @@ class AppListViewModel internal constructor(
         }
     }
 
-    private suspend fun List<ApplicationInfo>.createModels(): List<AppListItemModel> =
-        withContext(viewModelScope.coroutineContext + Dispatchers.Default) {
-            return@withContext map {
-                val name = repository.getAppName(it)
-                val icon = repository.getAppIcon(it)
+    private fun List<ApplicationInfo>.createModels(): List<AppListItemModel> =
+        map {
+            val name = repository.getAppName(it)
+            val icon = repository.getAppIcon(it)
 
-                AppListItemModel(it.packageName, name, icon)
-            }.sortedBy { it.appName.toLowerCase(Locale.getDefault()) }
-        }
+            AppListItemModel(it.packageName, name, icon)
+        }.sortedBy { it.appName.toLowerCase(Locale.getDefault()) }
 
     class Factory(
         private val repository: PackageRepository

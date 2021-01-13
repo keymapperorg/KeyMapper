@@ -15,7 +15,6 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.viewmodel.TapCoordinateActionTypeViewModel
@@ -101,7 +100,7 @@ class TapCoordinateActionTypeFragment : Fragment() {
         })
 
         binding.setOnDoneClick {
-            lifecycleScope.launch {
+            viewLifecycleScope.launch {
                 val description = requireContext()
                     .editTextStringAlertDialog(
                         viewLifecycleOwner,

@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.ui.fragment
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import com.google.android.material.bottomappbar.BottomAppBar
 import io.github.sds100.keymapper.data.viewmodel.AppListViewModel
 import io.github.sds100.keymapper.databinding.FragmentAppListBinding
@@ -27,7 +27,7 @@ class AppListFragment : RecyclerViewFragment<FragmentAppListBinding>() {
     override val appBar: BottomAppBar
         get() = binding.appBar
 
-    private val viewModel: AppListViewModel by viewModels {
+    private val viewModel: AppListViewModel by activityViewModels {
         InjectorUtils.provideAppListViewModel(requireContext())
     }
 

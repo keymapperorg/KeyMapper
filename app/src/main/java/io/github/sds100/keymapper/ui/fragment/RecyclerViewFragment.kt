@@ -35,7 +35,7 @@ abstract class RecyclerViewFragment<BINDING : ViewDataBinding> : Fragment() {
         Bundle().apply {
             putBoolean(KEY_IS_APPBAR_VISIBLE, isAppBarVisible)
             putBoolean(KEY_IS_IN_PAGER_ADAPTER, isInPagerAdapter)
-            putSerializable(KEY_REQUEST_KEY, requestKey)
+            putString(KEY_REQUEST_KEY, requestKey)
             putString(KEY_SEARCH_STATE_KEY, searchStateKey)
         }
     }

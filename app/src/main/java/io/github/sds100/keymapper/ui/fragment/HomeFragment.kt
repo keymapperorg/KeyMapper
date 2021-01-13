@@ -318,7 +318,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
 
                     KeyboardUtils.enableCompatibleInputMethods()
 
-                    lifecycleScope.launch {
+                    viewLifecycleScope.launch {
                         delay(3000)
 
                         updateStatusLayouts()

@@ -182,7 +182,7 @@ class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourcePr
 
             onClick { _ ->
                 SystemActionUtils.getSystemActionDef(systemAction.id).onSuccess {
-                    lifecycleScope.launch {
+                    viewLifecycleScope.launch {
                         onSystemActionClick(it)
                     }
                 }

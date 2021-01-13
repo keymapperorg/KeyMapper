@@ -137,7 +137,7 @@ object ServiceLocator {
 
     private fun createPackageRepository(context: Context): PackageRepository {
         return packageRepository
-            ?: DefaultPackageRepository(context.applicationContext).also {
+            ?: DefaultPackageRepository(context.packageManager).also {
                 this.packageRepository = it
             }
     }
