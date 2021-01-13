@@ -1,5 +1,5 @@
 This page aims to give users an introduction to the Key Mapper interface and a demonstration on how to perform typical tasks with the app.
-For specific troubleshooting, consult the FAQ.
+For specific troubleshooting, [consult the FAQ.](../faq)
 
 
 
@@ -10,7 +10,7 @@ Where screenshots are necessary, this guide uses two devices to demonstrate.
 
 App interface pictured: `keymapper-2.3.0-alpha-ci.715`
 
-The guide is updated to match current stable release UI. [Report inaccuracies.](https://github.com/sds100/KeyMapper/issues/new)
+This guide is updated to match current stable release UI. [Report inaccuracies.](https://github.com/sds100/KeyMapper/issues/new)
 
 ## First time setup
 
@@ -59,7 +59,7 @@ Tapping FIX will allow you to grant the permission. Find Key Mapper in the list 
 
 ![](images/hg-settings-dnd.png)
 
-Most people can ignore the final prompt. If you want to create an action to change input method, you need to grant an additional set of permissions called WRITE_SECURE_SETTINGS. For help with this [click here.](http://docs.keymapper.club/user-guide/adb-permissions/#write_secure_settings)
+Most people can ignore the final prompt. If you want to create an action to change input method, you need to grant an additional set of permissions called WRITE_SECURE_SETTINGS. For help with this [click here.](../user-guide/adb-permissions/#write_secure_settings)
 
 ![](images/hg-warn-secure-settings.png)
 
@@ -71,7 +71,7 @@ In Key Mapper, 'user inputs' that are recognised by the app are called 'triggers
 
 Key Mapper lets you assign actions to triggers that may be different from their default use. A 'volume-up' trigger normally increases the volume when pressed, but this app can change that to something else.
 
-### Setting the trigger(s) and action(s)
+### Setting the trigger(s)
 
 To create your first key map, tap the + icon at the bottom of the Key Mapper home screen. You will see one of the two menus below.
 
@@ -82,6 +82,8 @@ In either case, the first step is to record a trigger. Tap the red RECORD TRIGGE
 Key Mapper can also create a key map with multiple triggers. If you want to use more than one trigger for one key map, you can press the buttons in the order you will press them to execute the key map. For example, if you wanted to map 'Ctrl' + 'H' to show the device home menu, you should press 'Ctrl' and then 'H'.
 
 ![](images/hg-keymap-1.png) ![](images/hg-keymap-1-light.png)
+
+### Setting the action(s)
 
 Next, it's time to choose an action. If you have a high-resolution display, you will see the ADD ACTION button at the bottom of the screen (pictured left). Otherwise, tap the ACTIONS tab at the top of the screen (pictured right).
 
@@ -109,10 +111,132 @@ For this simple demonstration I will choose KEYCODE_E from the Keycode tab. This
 
 Key Mapper can also create a key map with multiple actions. If you want to add more actions to execute in series you can do so by tapping ADD ACTION again and choosing the next action in the chain. In the next section you can specify a delay between those actions if you wish.
 
-### Customising the trigger(s) and action(s)
+## Customising a key map
 
 In the next section, I will explain in more detail how to customise your triggers and actions to be more in line with what you want. Most people will want to do at least some customisation.
 
-Starting with the triggers, tap the 3 dot menu to the right of the trigger's name to bring up the following menu.
+### Trigger settings
+
+Starting with the triggers, tap the 3 dot :fontawesome-solid-ellipsis-v: menu to the right of the trigger's name to bring up the following menu.
 
 ![](images/hg-trigger-settings.png) ![](images/hg-trigger-settings-light.png) 
+
+You can choose from four different settings. Turning on "Do not override default action" will mean that Key Mapper will not replace the normal operation of your trigger, instead it will execute the key map as well as the default operation.
+
+One trigger can have three different click types. Choose from short press, long press and double press. [Read more.](#)
+
+### Action settings
+
+Next, tap the 3 stacked dots :fontawesome-solid-ellipsis-v: to the right of the action's name to bring up the following menu.
+
+![](images/hg-action-settings.png) ![](images/hg-action-settings-light.png)
+
+Here you can customise a lot of the operation of your key map, including timing, multipliers and debug messages.
+
+___
+
+:fontawesome-solid-check-square:{: .accent-light } &nbsp; Show a toast message when performing
+
+When this is turned on, the following notice will come up at the bottom of the screen when ever your trigger is pressed.
+
+![](images/ui-toast.png)
+
+___
+
+The following details refer to action timing settings.
+
+&nbsp;Delay before next action (ms)<br /> 
+![](images/ui-slider-default-light-450px.png)
+
+This option takes effect if you have multiple actions in your key map. The slider sets the amount of time between this action and the next.
+
+___
+
+&nbsp;Action count<br /> 
+![](images/ui-slider-default-light-450px.png)
+
+This option serves as a multiplier. If action count is equal to 1, when your key map is triggered, your action will be performed once. If it is equal to 5, the action will be performed 5 times, etc.
+
+___
+
+#### Repeating actions
+
+:fontawesome-solid-check-square:{: .accent-light } &nbsp; Repeat
+
+When this is turned on, Key Mapper will execute your key map repeatedly. This is particularly useful when emulating a keyboard key press, where in most applications holding down the key would result in a repeating output. The default settings in Key Mapper are designed to emulate that behaviour when 'Repeat' is turned on.
+
+___
+
+&nbsp;Repeat every... (ms)<br /> 
+![](images/ui-slider-default-light-450px.png)
+
+This option sets the time period for your repeating action. If this is set to 200, your action will repeat every 200ms, or in terms of frequency, 5 times per second. Some people prefer to think about this setting as a repeat rate, commonly measured in 'clicks' per second or cps. To calculate the appropriate time period for this option from a desired frequency, use this equation:
+
+```
+Time period (ms) = 1000 / Frequency ('cps')
+```
+___
+
+&nbsp;Delay until repeat... (ms)<br /> 
+![](images/ui-slider-default-light-450px.png)
+
+This option sets the amount of time between the first action and the second action (or the first repeat). This is part of the keyboard key behaviour simulation. If you want your repeating action to begin straight away, you can make this 0. 
+
+___
+
+<sup><sub>&nbsp;Stop repeating when trigger is...</sup></sub><br />
+&nbsp;&nbsp;&nbsp;:radiobox-marked:{: .accent-light } <sup><sub>Released</sup></sub>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:radiobox-marked:{: .accent-light } <sup><sub>Pressed again</sup></sub>
+
+This option allows you to choose from 2 simple behaviours. If you choose 'Released', you will need to hold down the trigger key(s) in order to have the key map execute. If you let go of the key(s), the key map will stop.
+
+If you choose 'Pressed again', pressing your trigger key(s) once will be sufficient to start your repeating key map. To stop the key map, you will need to press the trigger key(s) a second time.
+
+___
+
+#### Hold down actions
+
+:fontawesome-solid-check-square:{: .accent-light } &nbsp; Hold down
+
+This setting provides the ability to simulate holding down a key. With this turned on (and repeat turned off), the default behaviour is that holding down your trigger will translate to holding down the action, for as long as you hold down the trigger.
+
+___
+
+<sup><sub>&nbsp;Hold down until trigger is...</sup></sub><br />
+&nbsp;&nbsp;&nbsp;:radiobox-marked:{: .accent-light } <sup><sub>Released</sup></sub>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:radiobox-marked:{: .accent-light } <sup><sub>Pressed again</sup></sub>
+
+This setting allows you to choose from two behaviours. If 'Released' is selected, holding down your trigger key(s) will translate to holding down the action, for as long as you hold down the trigger key(s).
+
+If you choose 'Pressed again', pressing your trigger key(s) once will be sufficient to start holding down the action. To stop the key map, you will need to press the trigger key(s) a second time.
+
+___
+
+#### Using 'Hold down' and 'Repeat' together
+
+You can use turn on both of these settings to unlock an additional setting. A repeating hold down action behaves like a normal 'Repeat' action in that the action repeats itself with a given frequency. It also behaves like a 'Hold down' action in that each individual action will be held for a certain amount of time in each cycle.
+
+&nbsp;Hold down duration (ms)<br /> 
+![](images/ui-slider-default-light-450px.png)
+
+This allows you to set how long the action is held down for before repeating.
+
+## Managing key maps
+
+To save your key map and return to the home screen, tap the save :fontawesome-solid-save: icon in the bottom right of the screen.
+
+Now your key map should already be working. To pause/unpause all of your key maps, pull down the notification tray and tap the Key Mapper notification to toggle between Paused and Running.
+
+![](images/hg-notification.png) ![](images/hg-notification-light.png)
+
+On the Key Mapper home screen, tap the 3 bar :fontawesome-solid-bars: menu to open the Key Mapper general settings. You will see the following options.
+
+![](images/hg-general-settings.png) ![](images/hg-general-settings-light.png)
+
+Here you can pause/unpause/enable/disable all of your key maps at once.<br />
+You can also backup and restore key maps here. [Learn more about backup and restore.](#)
+
+Tapping 'Show input method picker' allows for switching between a Key Mapper compatible keyboard and any other.<br />
+
+The 'About' menu is explained [here.](#)<br />
+Tapping 'Settings' shows more advanced settings and preferences you can learn about [here.](#)
+
+Thanks for using this Quick Start Guide. [Go to top.](#)

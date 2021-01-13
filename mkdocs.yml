@@ -15,7 +15,7 @@ nav:
   - Contributing: contributing.md
   - Known Issues: known-issues.md
 
-theme:
+theme: 
   name: material
   palette:
     accent: red
