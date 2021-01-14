@@ -6,6 +6,7 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager.GET_META_DATA
 import android.content.pm.ResolveInfo
 import android.graphics.drawable.Drawable
+import android.os.Build
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -35,9 +36,18 @@ class SystemRepository(private val mContext: Context) {
                 val installedApps = getInstalledApplications(GET_META_DATA)
 
                 installedApps.forEach { app ->
+
+                    //do leanback intent first
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                        && getLeanbackLaunchIntentForPackage(app.packageName) != null) {
+                        yield(app)
+                        return@forEach
+                    }
+
                     //only allow apps that can be launched by the user
                     if (getLaunchIntentForPackage(app.packageName) != null) {
                         yield(app)
+                        return@forEach
                     }
                 }
             }
