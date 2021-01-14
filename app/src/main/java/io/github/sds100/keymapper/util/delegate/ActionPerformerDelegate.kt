@@ -85,7 +85,17 @@ class ActionPerformerDelegate(context: Context,
 
             when (action.type) {
                 ActionType.APP -> {
-                    val intent = packageManager.getLaunchIntentForPackage(action.data)
+                    Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT
+                    val leanbackIntent =
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            packageManager.getLeanbackLaunchIntentForPackage(action.data)
+                        } else {
+                            null
+                        }
+
+                    val normalIntent = packageManager.getLaunchIntentForPackage(action.data)
+
+                    val intent = leanbackIntent ?: normalIntent
 
                     //intent = null if the app doesn't exist
                     if (intent != null) {
