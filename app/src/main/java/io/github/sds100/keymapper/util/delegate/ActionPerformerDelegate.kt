@@ -77,7 +77,17 @@ class ActionPerformerDelegate(context: Context,
 
             when (action.type) {
                 ActionType.APP -> {
-                    val intent = packageManager.getLaunchIntentForPackage(action.data)
+                    Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT
+                    val leanbackIntent =
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            packageManager.getLeanbackLaunchIntentForPackage(action.data)
+                        } else {
+                            null
+                        }
+
+                    val normalIntent = packageManager.getLaunchIntentForPackage(action.data)
+
+                    val intent = leanbackIntent ?: normalIntent
 
                     //intent = null if the app doesn't exist
                     if (intent != null) {
@@ -168,7 +178,8 @@ class ActionPerformerDelegate(context: Context,
                                 it,
                                 keyCode = action.data.toInt(),
                                 metaState = additionalMetaState.withFlag(
-                                    action.extras.getData(Action.EXTRA_KEY_EVENT_META_STATE).valueOrNull()?.toInt() ?: 0
+                                    action.extras.getData(Action.EXTRA_KEY_EVENT_META_STATE).valueOrNull()?.toInt()
+                                        ?: 0
                                 ),
                                 keyEventAction = keyEventAction,
                                 deviceId = deviceId ?: 0)
@@ -415,7 +426,8 @@ class ActionPerformerDelegate(context: Context,
                                         val cursorPosition = it.textSelectionStart
 
                                         val wordBoundary =
-                                            it.text.toString().getWordBoundaries(cursorPosition) ?: return@focusedNode
+                                            it.text.toString().getWordBoundaries(cursorPosition)
+                                                ?: return@focusedNode
 
                                         val bundle = bundleOf(
                                             AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT
