@@ -14,7 +14,7 @@ import io.github.sds100.keymapper.util.str
 fun Failure.getFullMessage(ctx: Context) = when (this) {
     is PermissionDenied -> PermissionDenied.getMessageForPermission(ctx, permission)
     is AppNotFound -> ctx.str(R.string.error_app_isnt_installed, packageName)
-    is AppDisabled -> ctx.str(R.string.error_app_isnt_installed)
+    is AppDisabled -> ctx.str(R.string.error_app_is_disabled)
     is NoCompatibleImeEnabled -> ctx.str(R.string.error_ime_service_disabled)
     is NoCompatibleImeChosen -> ctx.str(R.string.error_ime_must_be_chosen)
     is OptionsNotRequired -> ctx.str(R.string.error_options_not_required)
