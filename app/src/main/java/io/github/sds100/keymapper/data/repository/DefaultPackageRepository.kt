@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.content.pm.PackageManager.GET_META_DATA
 import android.content.pm.ResolveInfo
 import android.graphics.drawable.Drawable
+import android.os.Build
 
 /**
  * Created by sds100 on 27/01/2020.
@@ -19,7 +20,9 @@ class DefaultPackageRepository(private val packageManager: PackageManager) : Pac
     override suspend fun getLaunchableAppList(): List<ApplicationInfo> {
         return packageManager.getInstalledApplications(GET_META_DATA)
             .filter {
-                packageManager.getLaunchIntentForPackage(it.packageName) != null
+                (packageManager.getLaunchIntentForPackage(it.packageName) != null
+                    || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                    && packageManager.getLeanbackLaunchIntentForPackage(it.packageName) != null))
             }
     }
 
