@@ -72,10 +72,11 @@ class FlashlightController : LifecycleObserver {
 
             for (cameraId in cameraIdList) {
                 try {
-                    val flashAvailable =
-                        getCameraCharacteristics(cameraId).get(CameraCharacteristics.FLASH_INFO_AVAILABLE) ?: return
+                    val flashAvailable = getCameraCharacteristics(cameraId)
+                        .get(CameraCharacteristics.FLASH_INFO_AVAILABLE) ?: return
 
-                    val lensFacing = getCameraCharacteristics(cameraId).get(CameraCharacteristics.LENS_FACING)
+                    val lensFacing = getCameraCharacteristics(cameraId)
+                        .get(CameraCharacteristics.LENS_FACING)
 
                     //try to find a camera with a flash
                     if (flashAvailable && lensFacing == lens) {
@@ -91,6 +92,7 @@ class FlashlightController : LifecycleObserver {
                         CameraAccessException.MAX_CAMERAS_IN_USE -> toast(R.string.error_max_cameras_in_use)
                         else -> toast(R.string.error_camera_access_exception)
                     }
+                } catch (e: IllegalArgumentException) {
                 }
             }
         }
