@@ -26,9 +26,7 @@ import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Option
 import io.github.sds100.keymapper.data.model.getData
 import io.github.sds100.keymapper.util.*
-import io.github.sds100.keymapper.util.result.handle
-import io.github.sds100.keymapper.util.result.onSuccess
-import io.github.sds100.keymapper.util.result.valueOrNull
+import io.github.sds100.keymapper.util.result.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import splitties.bitflags.hasFlag
@@ -85,15 +83,16 @@ class ActionPerformerDelegate(context: Context,
 
             when (action.type) {
                 ActionType.APP -> {
-                    Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT
+                    val packageName = action.data
+
                     val leanbackIntent =
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            packageManager.getLeanbackLaunchIntentForPackage(action.data)
+                            packageManager.getLeanbackLaunchIntentForPackage(packageName)
                         } else {
                             null
                         }
 
-                    val normalIntent = packageManager.getLaunchIntentForPackage(action.data)
+                    val normalIntent = packageManager.getLaunchIntentForPackage(packageName)
 
                     val intent = leanbackIntent ?: normalIntent
 
@@ -101,7 +100,21 @@ class ActionPerformerDelegate(context: Context,
                     if (intent != null) {
                         startActivity(intent)
                     } else {
-                        toast(R.string.error_app_isnt_installed)
+                        try {
+                            val appInfo = ctx.packageManager.getApplicationInfo(packageName, 0)
+
+                            //if the app is disabled, show an error message because it won't open
+                            if (!appInfo.enabled) {
+                                AppDisabled(packageName)
+                            }
+
+                            Success(packageName)
+
+                        } catch (e: Exception) {
+                            AppNotFound(packageName)
+                        }.onFailure {
+                            toast(it.getFullMessage(this))
+                        }
                     }
                 }
 
