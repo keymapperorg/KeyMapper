@@ -335,7 +335,7 @@ class MyAccessibilityService : AccessibilityService(),
                 KeyEvent.KEYCODE_HOME -> performGlobalAction(GLOBAL_ACTION_HOME)
                 KeyEvent.KEYCODE_APP_SWITCH -> performGlobalAction(GLOBAL_ACTION_RECENTS)
                 KeyEvent.KEYCODE_MENU ->
-                    actionPerformerDelegate.perforsystemAction(
+                    actionPerformerDelegate.performSystemAction(
                         SystemAction.OPEN_MENU,
                         chosenImePackageName,
                         currentPackageName

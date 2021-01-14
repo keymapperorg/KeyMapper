@@ -149,7 +149,7 @@ class ActionPerformerDelegate(context: Context,
                     }
                 }
 
-                ActionType.SYSTEM_ACTION -> perforsystemAction(
+                ActionType.SYSTEM_ACTION -> performSystemAction(
                     action,
                     chosenImePackageName,
                     currentPackageName
@@ -240,19 +240,19 @@ class ActionPerformerDelegate(context: Context,
         }
     }
 
-    fun perforsystemAction(
+    fun performSystemAction(
         id: String,
         chosenImePackageName: String?,
         currentPackageName: String?
-    ) = perforsystemAction(
+    ) = performSystemAction(
         Action(ActionType.SYSTEM_ACTION, id),
         chosenImePackageName,
         currentPackageName
     )
 
-    private fun perforsystemAction(action: Action,
-                                   chosenImePackageName: String?,
-                                   currentPackageName: String?) {
+    private fun performSystemAction(action: Action,
+                                    chosenImePackageName: String?,
+                                    currentPackageName: String?) {
 
         val id = action.data
 
