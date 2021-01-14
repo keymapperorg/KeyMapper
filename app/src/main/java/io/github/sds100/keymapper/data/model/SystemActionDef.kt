@@ -45,6 +45,5 @@ class SystemActionDef(
             }
         }
 
-    val hasOptions: Boolean = getOptions != null
-
+    val hasOptions: Boolean = getOptions != null || options != null
 }
