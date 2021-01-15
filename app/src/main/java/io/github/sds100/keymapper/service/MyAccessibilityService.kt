@@ -194,6 +194,12 @@ class MyAccessibilityService : AccessibilityService(),
                         triggerKeymapByIntentController.onDetected(it)
                     }
                 }
+
+                Intent.ACTION_INPUT_METHOD_CHANGED -> {
+                    chosenImePackageName =
+                        KeyboardUtils.getChosenInputMethodPackageName(this@MyAccessibilityService)
+                            .valueOrNull()
+                }
             }
         }
     }
@@ -314,6 +320,7 @@ class MyAccessibilityService : AccessibilityService(),
             addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
             addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
             addAction(ACTION_TRIGGER_KEYMAP_BY_UID)
+            addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
 
             registerReceiver(broadcastReceiver, this)
         }
