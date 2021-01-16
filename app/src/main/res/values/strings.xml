@@ -279,7 +279,7 @@
     <string name="action_select_all">Select all</string>
     <string name="action_about">About</string>
     <string name="action_search">Search</string>
-    <string name="action_help">Help</string>
+    <string name="action_help_home">Quick Start Guide</string>
     <string name="action_enable">Enable</string>
     <string name="action_disable">Disable</string>
     <string name="action_disable_all_keymaps">Disable all</string>
