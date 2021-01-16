@@ -56,6 +56,7 @@ class ChooseConstraintFragment
     }
 
     override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
+        super.subscribeUi(binding)
 
         viewModel.eventStream.observe(viewLifecycleOwner, { event ->
             when (event) {
