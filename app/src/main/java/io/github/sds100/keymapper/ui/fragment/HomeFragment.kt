@@ -56,7 +56,7 @@ import splitties.toast.toast
  */
 class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private val keyMapListViewModel: KeymapListViewModel by activityViewModels {
+    private val keymapListViewModel: KeymapListViewModel by activityViewModels {
         InjectorUtils.provideKeymapListViewModel(requireContext())
     }
 
@@ -87,7 +87,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                 /*when the input method changes, update the action descriptions in case any need to show an error
                 * that they need the input method to be enabled. */
                 Intent.ACTION_INPUT_METHOD_CHANGED -> {
-                    keyMapListViewModel.rebuildModels()
+                    keymapListViewModel.rebuildModels()
                     fingerprintMapListViewModel.rebuildModels()
                 }
 
@@ -160,7 +160,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             requireActivity().activityResultRegistry,
             viewLifecycleOwner) {
 
-            keyMapListViewModel.rebuildModels()
+            keymapListViewModel.rebuildModels()
         }
 
         FragmentHomeBinding.inflate(inflater, container, false).apply {
@@ -218,30 +218,30 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                     }
 
                     R.id.action_select_all -> {
-                        keyMapListViewModel.selectionProvider.selectAll()
+                        keymapListViewModel.selectionProvider.selectAll()
                         true
                     }
 
                     R.id.action_enable -> {
-                        keyMapListViewModel
+                        keymapListViewModel
                             .enableSelectedKeymaps()
                         true
                     }
 
                     R.id.action_disable -> {
-                        keyMapListViewModel
+                        keymapListViewModel
                             .disableSelectedKeymaps()
                         true
                     }
 
                     R.id.action_duplicate_keymap -> {
-                        keyMapListViewModel
-                            .duplicate(*keyMapListViewModel.selectionProvider.selectedIds)
+                        keymapListViewModel
+                            .duplicate(*keymapListViewModel.selectionProvider.selectedIds)
                         true
                     }
 
                     R.id.action_backup -> {
-                        keyMapListViewModel.requestBackupSelectedKeymaps()
+                        keymapListViewModel.requestBackupSelectedKeymaps()
                         true
                     }
 
@@ -250,22 +250,22 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             }
 
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-                if (keyMapListViewModel.selectionProvider.isSelectable.value == true) {
-                    keyMapListViewModel.selectionProvider.stopSelecting()
+                if (keymapListViewModel.selectionProvider.isSelectable.value == true) {
+                    keymapListViewModel.selectionProvider.stopSelecting()
                 } else {
                     requireActivity().finish()
                 }
             }
 
             appBar.setNavigationOnClickListener {
-                if (keyMapListViewModel.selectionProvider.isSelectable.value == true) {
-                    keyMapListViewModel.selectionProvider.stopSelecting()
+                if (keymapListViewModel.selectionProvider.isSelectable.value == true) {
+                    keymapListViewModel.selectionProvider.stopSelecting()
                 } else {
                     findNavController().navigate(R.id.action_global_menuFragment)
                 }
             }
 
-            keyMapListViewModel.selectionProvider.isSelectable
+            keymapListViewModel.selectionProvider.isSelectable
                 .observe(viewLifecycleOwner, { isSelectable ->
                     viewPager.isUserInputEnabled = !isSelectable
 
@@ -276,12 +276,12 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                     }
                 })
 
-            isSelectable = keyMapListViewModel.selectionProvider.isSelectable
-            selectionCount = keyMapListViewModel.selectionProvider.selectedCount
+            isSelectable = keymapListViewModel.selectionProvider.isSelectable
+            selectionCount = keymapListViewModel.selectionProvider.selectedCount
 
             setOnConfirmSelectionClick {
-                keyMapListViewModel.delete(*keyMapListViewModel.selectionProvider.selectedIds)
-                keyMapListViewModel.selectionProvider.stopSelecting()
+                keymapListViewModel.delete(*keymapListViewModel.selectionProvider.selectedIds)
+                keymapListViewModel.selectionProvider.stopSelecting()
             }
 
             backupRestoreViewModel.eventStream.observe(viewLifecycleOwner, {
@@ -398,7 +398,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
 
             showNewGuiKeyboardAd = AppPreferences.showGuiKeyboardAd
 
-            keyMapListViewModel.eventStream.observe(viewLifecycleOwner, {
+            keymapListViewModel.eventStream.observe(viewLifecycleOwner, {
                 when (it) {
                     is FixFailure -> coordinatorLayout.showFixActionSnackBar(
                         it.failure,
@@ -423,7 +423,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
     override fun onResume() {
         super.onResume()
 
-        keyMapListViewModel.rebuildModels()
+        keymapListViewModel.rebuildModels()
         fingerprintMapListViewModel.rebuildModels()
 
         updateStatusLayouts()
@@ -474,9 +474,9 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
         if (KeyboardUtils.isCompatibleImeEnabled()) {
             imeServiceStatusState.value = StatusLayout.State.POSITIVE
 
-        } else if (keyMapListViewModel.model.value is Data) {
+        } else if (keymapListViewModel.model.value is Data) {
 
-            if ((keyMapListViewModel.model.value as Data<List<KeymapListItemModel>>)
+            if ((keymapListViewModel.model.value as Data<List<KeymapListItemModel>>)
                     .data.any { keymap ->
                         keymap.actionList.any { it.error is NoCompatibleImeEnabled }
                     }) {
