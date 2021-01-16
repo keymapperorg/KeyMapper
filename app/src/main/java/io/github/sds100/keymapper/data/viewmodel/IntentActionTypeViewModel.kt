@@ -29,8 +29,8 @@ class IntentActionTypeViewModel : ViewModel() {
     private val _extras = MutableLiveData(emptyList<IntentExtraModel>())
     val extras: LiveData<List<IntentExtraModel>> = _extras
 
-    private val _extrasListItemModels = MutableLiveData<State<List<IntentExtraListItemModel>>>(Empty())
-    val extrasListItemModels: LiveData<State<List<IntentExtraListItemModel>>> = _extrasListItemModels
+    private val _extrasListItemModels = MutableLiveData<DataState<List<IntentExtraListItemModel>>>(Empty())
+    val extrasListItemModels: LiveData<DataState<List<IntentExtraListItemModel>>> = _extrasListItemModels
 
     private val _eventStream = LiveEvent<Event>().apply {
         addSource(_extras) {

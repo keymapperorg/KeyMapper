@@ -16,6 +16,8 @@ abstract class BaseOptionsDialogViewModel<O : BaseOptions<*>> : BaseOptionsViewM
     val onSaveEvent: LiveData<BaseOptions<*>> = _onSaveEvent
 
     fun save() {
-        _onSaveEvent.value = options.value!!
+        options.value?.let {
+            _onSaveEvent.value = it
+        }
     }
 }

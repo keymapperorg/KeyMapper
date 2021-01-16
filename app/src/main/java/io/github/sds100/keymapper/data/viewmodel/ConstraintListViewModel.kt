@@ -6,6 +6,7 @@ import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.ConstraintModel
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.delegate.IModelState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -13,7 +14,8 @@ import kotlinx.coroutines.launch
  * Created by sds100 on 29/11/20.
  */
 
-class ConstraintListViewModel(private val coroutineScope: CoroutineScope) {
+class ConstraintListViewModel(private val coroutineScope: CoroutineScope) :
+    IModelState<List<ConstraintModel>> {
 
     private val _constraintList = MutableLiveData<List<Constraint>>()
     val constraintList: LiveData<List<Constraint>> = _constraintList
@@ -21,8 +23,10 @@ class ConstraintListViewModel(private val coroutineScope: CoroutineScope) {
     val constraintAndMode = MutableLiveData<Boolean>()
     val constraintOrMode = MutableLiveData<Boolean>()
 
-    private val _modelList = MutableLiveData<State<List<ConstraintModel>>>(Empty())
-    val modelList: LiveData<State<List<ConstraintModel>>> = _modelList
+    private val _model = MutableLiveData<DataState<List<ConstraintModel>>>(Loading())
+    override val model = _model
+
+    override val viewState = MutableLiveData<ViewState>(ViewLoading())
 
     private val _eventStream = LiveEvent<Event>().apply {
         addSource(constraintList) {
@@ -74,7 +78,7 @@ class ConstraintListViewModel(private val coroutineScope: CoroutineScope) {
 
     fun onModelClick(id: String) {
         coroutineScope.launch {
-            modelList.value?.ifIsData { modelList ->
+            model.value?.ifIsData { modelList ->
                 val constraint = modelList.singleOrNull { it.id == id } ?: return@launch
 
                 if (constraint.hasError) {
@@ -85,7 +89,7 @@ class ConstraintListViewModel(private val coroutineScope: CoroutineScope) {
     }
 
     fun setModels(models: List<ConstraintModel>) {
-        _modelList.value = when {
+        _model.value = when {
             models.isEmpty() -> Empty()
             else -> Data(models)
         }

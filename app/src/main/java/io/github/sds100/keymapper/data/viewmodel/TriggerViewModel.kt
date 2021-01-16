@@ -126,8 +126,8 @@ class TriggerViewModel(
         }
     }
 
-    private val _modelList = MutableLiveData<State<List<TriggerKeyModel>>>()
-    val modelList: LiveData<State<List<TriggerKeyModel>>> = _modelList
+    private val _modelList = MutableLiveData<DataState<List<TriggerKeyModel>>>()
+    val modelList: LiveData<DataState<List<TriggerKeyModel>>> = _modelList
 
     val triggerKeyCount = modelList.map {
         when (it) {

@@ -7,16 +7,20 @@ import io.github.sds100.keymapper.data.model.KeymapListItemModel
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.data.usecase.KeymapListUseCase
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.delegate.IModelState
 import io.github.sds100.keymapper.util.result.Failure
 import kotlinx.coroutines.launch
 
 class KeymapListViewModel internal constructor(
     private val keymapRepository: KeymapListUseCase,
     private val deviceInfoRepository: DeviceInfoRepository
-) : ViewModel() {
+) : ViewModel(), IModelState<List<KeymapListItemModel>> {
 
-    val keymapModelList: MutableLiveData<State<List<KeymapListItemModel>>> =
+    private val _model: MutableLiveData<DataState<List<KeymapListItemModel>>> =
         MutableLiveData(Loading())
+
+    override val model = _model
+    override val viewState = MutableLiveData<ViewState>(ViewLoading())
 
     val selectionProvider: ISelectionProvider = SelectionProvider()
 
@@ -68,11 +72,11 @@ class KeymapListViewModel internal constructor(
         if (keymapRepository.keymapList.value == null) return
 
         if (keymapRepository.keymapList.value?.isEmpty() == true) {
-            keymapModelList.value = Empty()
+            _model.value = Empty()
             return
         }
 
-        keymapModelList.value = Loading()
+        _model.value = Loading()
 
         _eventStream.value =
             BuildKeymapListModels(keymapRepository.keymapList.value ?: emptyList())
@@ -81,7 +85,7 @@ class KeymapListViewModel internal constructor(
     fun setModelList(list: List<KeymapListItemModel>) {
         selectionProvider.updateIds(list.map { it.id }.toLongArray())
 
-        keymapModelList.value = when {
+        _model.value = when {
             list.isEmpty() -> Empty()
             else -> Data(list)
         }

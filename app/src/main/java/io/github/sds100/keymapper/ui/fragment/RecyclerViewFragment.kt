@@ -15,18 +15,18 @@ import androidx.navigation.fragment.findNavController
 import androidx.savedstate.SavedStateRegistry
 import com.google.android.material.bottomappbar.BottomAppBar
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.util.observeCurrentDestinationLiveData
+import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.delegate.IModelState
 
 /**
  * Created by sds100 on 22/02/2020.
  */
-abstract class RecyclerViewFragment<BINDING : ViewDataBinding> : Fragment() {
+abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
 
     companion object {
         private const val KEY_SAVED_STATE = "key_saved_state"
 
         private const val KEY_IS_APPBAR_VISIBLE = "key_is_app_visible"
-        private const val KEY_IS_IN_PAGER_ADAPTER = "key_is_in_pager_adapter"
         private const val KEY_REQUEST_KEY = "key_request_key"
         private const val KEY_SEARCH_STATE_KEY = "key_search_state_key"
     }
@@ -34,7 +34,6 @@ abstract class RecyclerViewFragment<BINDING : ViewDataBinding> : Fragment() {
     private val savedStateProvider = SavedStateRegistry.SavedStateProvider {
         Bundle().apply {
             putBoolean(KEY_IS_APPBAR_VISIBLE, isAppBarVisible)
-            putBoolean(KEY_IS_IN_PAGER_ADAPTER, isInPagerAdapter)
             putString(KEY_REQUEST_KEY, requestKey)
             putString(KEY_SEARCH_STATE_KEY, searchStateKey)
         }
@@ -43,11 +42,11 @@ abstract class RecyclerViewFragment<BINDING : ViewDataBinding> : Fragment() {
     private val isSearchEnabled: Boolean
         get() = searchStateKey != null
 
+    abstract val modelState: IModelState<T>
+
     open var isAppBarVisible = true
-    open var isInPagerAdapter = false
     open var requestKey: String? = null
     open var searchStateKey: String? = null
-    open val appBar: BottomAppBar? = null
 
     /**
      * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
@@ -63,7 +62,6 @@ abstract class RecyclerViewFragment<BINDING : ViewDataBinding> : Fragment() {
 
         savedStateRegistry.consumeRestoredStateForKey(KEY_SAVED_STATE)?.apply {
             isAppBarVisible = getBoolean(KEY_IS_APPBAR_VISIBLE)
-            isInPagerAdapter = getBoolean(KEY_IS_IN_PAGER_ADAPTER)
             requestKey = getString(KEY_REQUEST_KEY)
             searchStateKey = getString(KEY_SEARCH_STATE_KEY)
         }
@@ -83,18 +81,41 @@ abstract class RecyclerViewFragment<BINDING : ViewDataBinding> : Fragment() {
 
         binding.apply {
             subscribeUi(binding)
-            setupSearchView()
 
-            appBar?.isVisible = isAppBarVisible
+            modelState.model.observe(viewLifecycleOwner, { model ->
+                when (model) {
+                    is Empty -> {
 
-            appBar?.setNavigationOnClickListener {
+                        viewLifecycleScope.launchWhenResumed {
+                            populateList(binding, null)
+                        }
+
+                        modelState.viewState.empty()
+                    }
+                    is Loading -> modelState.viewState.loading()
+                    is Data -> {
+                        modelState.viewState.loading()
+
+                        viewLifecycleScope.launchWhenResumed {
+                            populateList(binding, model.data)
+
+                            modelState.viewState.populated()
+                        }
+                    }
+                }
+            })
+
+            setupSearchView(binding)
+
+            getBottomAppBar(binding)?.isVisible = isAppBarVisible
+
+            getBottomAppBar(binding)?.setNavigationOnClickListener {
                 findNavController().navigateUp()
             }
 
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
                 findNavController().navigateUp()
             }
-
         }
     }
 
@@ -105,10 +126,10 @@ abstract class RecyclerViewFragment<BINDING : ViewDataBinding> : Fragment() {
         }
     }
 
-    private fun setupSearchView() {
-        appBar ?: return
+    private fun setupSearchView(binding: BINDING) {
+        getBottomAppBar(binding) ?: return
 
-        val searchViewMenuItem = appBar!!.menu.findItem(R.id.action_search)
+        val searchViewMenuItem = getBottomAppBar(binding)!!.menu.findItem(R.id.action_search)
         searchViewMenuItem.isVisible = isSearchEnabled
 
         if (isSearchEnabled) {
@@ -140,6 +161,14 @@ abstract class RecyclerViewFragment<BINDING : ViewDataBinding> : Fragment() {
     }
 
     open fun onSearchQuery(query: String?) {}
+    open fun getBottomAppBar(binding: BINDING): BottomAppBar? {
+        return null
+    }
+
+    /**
+     * [model] is null if it is empty.
+     */
+    abstract fun populateList(binding: BINDING, model: T?)
     abstract fun subscribeUi(binding: BINDING)
     abstract fun bind(inflater: LayoutInflater, container: ViewGroup?): BINDING
 }

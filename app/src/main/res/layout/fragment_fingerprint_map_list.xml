@@ -9,21 +9,18 @@
 
         <import type="androidx.lifecycle.LiveData" />
 
-        <import type="io.github.sds100.keymapper.util.State" />
+        <import type="io.github.sds100.keymapper.util.ViewState" />
 
-        <import type="io.github.sds100.keymapper.util.Data" />
+        <import type="io.github.sds100.keymapper.util.ViewPopulated" />
 
-        <import type="io.github.sds100.keymapper.util.Loading" />
+        <import type="io.github.sds100.keymapper.util.ViewLoading" />
 
-        <import type="io.github.sds100.keymapper.util.Empty" />
+        <import type="io.github.sds100.keymapper.util.ViewEmpty" />
 
         <variable
             name="viewModel"
             type="io.github.sds100.keymapper.data.viewmodel.FingerprintMapListViewModel" />
 
-        <variable
-            name="state"
-            type="State" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -45,7 +42,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
-                android:visibility="@{state instanceof Data ? View.VISIBLE : View.GONE}"
+                android:visibility="@{viewModel.viewState instanceof ViewPopulated ? View.VISIBLE : View.GONE}"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/list_item_simple"
                 tools:visibility="gone" />
@@ -59,7 +56,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
-                android:visibility="@{state instanceof Loading ? View.VISIBLE : View.GONE}"
+                android:visibility="@{viewModel.viewState instanceof ViewLoading ? View.VISIBLE : View.GONE}"
                 tools:visibility="gone" />
 
             <TextView
@@ -72,7 +69,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
                 android:text="@string/recyclerview_placeholder"
-                android:visibility="@{state instanceof Empty ? View.VISIBLE : View.GONE}" />
+                android:visibility="@{viewModel.viewState instanceof ViewEmpty ? View.VISIBLE : View.GONE}" />
         </FrameLayout>
 
         <com.google.android.material.button.MaterialButton

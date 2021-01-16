@@ -4,18 +4,19 @@ import android.content.Context
 import androidx.navigation.navGraphViewModels
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.options.FingerprintMapOptions
+import io.github.sds100.keymapper.data.model.options.OptionsListModel
 import io.github.sds100.keymapper.data.viewmodel.BaseOptionsViewModel
 import io.github.sds100.keymapper.data.viewmodel.ConfigFingerprintMapViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.ui.adapter.OptionsController
 import io.github.sds100.keymapper.ui.fragment.DefaultRecyclerViewFragment
-import io.github.sds100.keymapper.util.Data
 import io.github.sds100.keymapper.util.InjectorUtils
+import io.github.sds100.keymapper.util.delegate.IModelState
 
 /**
  * Created by sds100 on 29/11/20.
  */
-class FingerprintMapOptionsFragment : DefaultRecyclerViewFragment() {
+class FingerprintMapOptionsFragment : DefaultRecyclerViewFragment<OptionsListModel>() {
 
     val optionsViewModel: BaseOptionsViewModel<FingerprintMapOptions> by lazy {
         navGraphViewModels<ConfigFingerprintMapViewModel>(R.id.nav_config_fingerprint_map) {
@@ -23,7 +24,9 @@ class FingerprintMapOptionsFragment : DefaultRecyclerViewFragment() {
         }.value.optionsViewModel
     }
 
-    override var isInPagerAdapter = true
+    override val modelState: IModelState<OptionsListModel>
+        get() = optionsViewModel
+
     override var isAppBarVisible = false
 
     private val controller by lazy {
@@ -37,18 +40,15 @@ class FingerprintMapOptionsFragment : DefaultRecyclerViewFragment() {
     }
 
     override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
-        binding.apply {
-            epoxyRecyclerView.adapter = controller.adapter
+        super.subscribeUi(binding)
 
-            optionsViewModel.checkBoxModels.observe(viewLifecycleOwner, {
-                state = Data(Unit)
-                controller.checkBoxModels = it
-            })
+        binding.epoxyRecyclerView.adapter = controller.adapter
+    }
 
-            optionsViewModel.sliderModels.observe(viewLifecycleOwner, {
-                state = Data(Unit)
-                controller.sliderModels = it
-            })
-        }
+    override fun populateList(
+        binding: FragmentRecyclerviewBinding,
+        model: OptionsListModel?
+    ) {
+        controller.optionsListModel = model ?: OptionsListModel.EMPTY
     }
 }

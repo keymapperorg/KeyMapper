@@ -3,10 +3,10 @@ package io.github.sds100.keymapper.data.viewmodel
 import androidx.lifecycle.*
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.data.model.SystemActionListItemModel
-import io.github.sds100.keymapper.data.model.UnsupportedSystemActionListItemModel
 import io.github.sds100.keymapper.data.repository.SystemActionRepository
 import io.github.sds100.keymapper.ui.callback.StringResourceProvider
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.delegate.IModelState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
@@ -17,7 +17,7 @@ import java.util.*
 class SystemActionListViewModel(
     private val repository: SystemActionRepository,
     private var stringResourceProvider: StringResourceProvider? = null
-) : ViewModel() {
+) : ViewModel(), IModelState<Map<Int, List<SystemActionListItemModel>>> {
 
     val searchQuery = MutableLiveData("")
 
@@ -46,7 +46,7 @@ class SystemActionListViewModel(
         emit(systemActionsSortedByCategory)
     }
 
-    val filteredModelList = MediatorLiveData<State<Map<Int, List<SystemActionListItemModel>>>>().apply {
+    private val _model = MediatorLiveData<DataState<Map<Int, List<SystemActionListItemModel>>>>().apply {
         fun filter(query: String) {
             modelsSortedByCategory.value ?: return
             stringResourceProvider ?: return
@@ -87,22 +87,12 @@ class SystemActionListViewModel(
         }
     }
 
-    val unsupportedSystemActions = liveData {
-        emit(Loading())
+    override val model = _model
 
-        val unsupportedActions = withContext(viewModelScope.coroutineContext + Dispatchers.Default) {
-            repository.unsupportedSystemActions.map {
-                val systemAction = it.key
-                val failure = it.value
+    override val viewState = MutableLiveData<ViewState>(ViewLoading())
 
-                UnsupportedSystemActionListItemModel(systemAction.id,
-                    systemAction.descriptionRes,
-                    systemAction.iconRes,
-                    failure)
-            }.getState()
-        }
-
-        emit(unsupportedActions)
+    val allActionsAreSupported = liveData {
+        emit(repository.unsupportedSystemActions.isEmpty())
     }
 
     fun registerStringResourceProvider(stringResourceProvider: StringResourceProvider) {

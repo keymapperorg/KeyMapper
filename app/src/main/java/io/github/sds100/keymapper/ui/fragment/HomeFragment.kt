@@ -474,11 +474,12 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
         if (KeyboardUtils.isCompatibleImeEnabled()) {
             imeServiceStatusState.value = StatusLayout.State.POSITIVE
 
-        } else if (keyMapListViewModel.keymapModelList.value is Data) {
+        } else if (keyMapListViewModel.model.value is Data) {
 
-            if ((keyMapListViewModel.keymapModelList.value as Data<List<KeymapListItemModel>>).data.any { keymap ->
-                    keymap.actionList.any { it.error is NoCompatibleImeEnabled }
-                }) {
+            if ((keyMapListViewModel.model.value as Data<List<KeymapListItemModel>>)
+                    .data.any { keymap ->
+                        keymap.actionList.any { it.error is NoCompatibleImeEnabled }
+                    }) {
 
                 imeServiceStatusState.value = StatusLayout.State.ERROR
             }

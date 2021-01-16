@@ -1,13 +1,13 @@
 package io.github.sds100.keymapper.data.viewmodel
 
 import android.os.Build
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.liveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import io.github.sds100.keymapper.data.model.UnsupportedSystemActionListItemModel
 import io.github.sds100.keymapper.data.repository.SystemActionRepository
 import io.github.sds100.keymapper.util.Loading
+import io.github.sds100.keymapper.util.ViewLoading
+import io.github.sds100.keymapper.util.ViewState
+import io.github.sds100.keymapper.util.delegate.IModelState
 import io.github.sds100.keymapper.util.getState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -17,11 +17,11 @@ import kotlinx.coroutines.withContext
  */
 class UnsupportedActionListViewModel(
     private val repository: SystemActionRepository
-) : ViewModel() {
+) : ViewModel(), IModelState<List<UnsupportedSystemActionListItemModel>> {
 
     val isTapCoordinateActionSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
 
-    val unsupportedSystemActions = liveData {
+    private val _model = liveData {
         emit(Loading())
 
         val unsupportedActions = withContext(viewModelScope.coroutineContext + Dispatchers.Default) {
@@ -38,6 +38,9 @@ class UnsupportedActionListViewModel(
 
         emit(unsupportedActions)
     }
+
+    override val model = _model
+    override val viewState = MutableLiveData<ViewState>(ViewLoading())
 
     @Suppress("UNCHECKED_CAST")
     class Factory(private val systemActionRepository: SystemActionRepository

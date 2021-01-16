@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.data.viewmodel
 import android.view.KeyEvent
 import androidx.lifecycle.*
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.delegate.IModelState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
@@ -11,7 +12,7 @@ import java.util.*
  * Created by sds100 on 31/03/2020.
  */
 
-class KeycodeListViewModel : ViewModel() {
+class KeycodeListViewModel : ViewModel(), IModelState<Map<Int, String>> {
 
     private val keycodeLabelMap = liveData {
         val keycodeList = withContext(viewModelScope.coroutineContext + Dispatchers.Default) {
@@ -27,7 +28,7 @@ class KeycodeListViewModel : ViewModel() {
 
     val searchQuery: MutableLiveData<String> = MutableLiveData("")
 
-    val filteredKeycodeLabelList = MediatorLiveData<State<Map<Int, String>>>().apply {
+    private val _model = MediatorLiveData<DataState<Map<Int, String>>>().apply {
         fun filter(query: String) {
             value = Loading()
 
@@ -48,6 +49,9 @@ class KeycodeListViewModel : ViewModel() {
             }
         }
     }
+    override val model = _model
+
+    override val viewState = MutableLiveData<ViewState>(ViewLoading())
 
     @Suppress("UNCHECKED_CAST")
     class Factory : ViewModelProvider.NewInstanceFactory() {

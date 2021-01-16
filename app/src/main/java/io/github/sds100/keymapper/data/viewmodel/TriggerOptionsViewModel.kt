@@ -103,7 +103,7 @@ class TriggerOptionsViewModel(
         else -> throw Exception("Don't know how to create a CheckboxListItemModel for this option $option.id")
     }
 
-    val triggerByIntent = MediatorLiveData<TriggerByIntentModel>().apply {
+    private val _triggerByIntent = MediatorLiveData<TriggerByIntentModel>().apply {
         value = null
 
         fun invalidate() {
@@ -121,6 +121,7 @@ class TriggerOptionsViewModel(
             invalidate()
         }
     }
+    val triggerByIntent: LiveData<TriggerByIntentModel> = _triggerByIntent
 
     override fun setValue(id: String, newValue: Boolean) {
         super.setValue(id, newValue)

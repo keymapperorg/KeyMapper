@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.data.model.ActionModel
 import io.github.sds100.keymapper.data.model.options.BaseOptions
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.delegate.IModelState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.util.*
@@ -19,13 +20,14 @@ import java.util.*
 
 abstract class ActionListViewModel<O : BaseOptions<Action>>(
     private val coroutineScope: CoroutineScope,
-    private val deviceInfoRepository: DeviceInfoRepository) {
+    private val deviceInfoRepository: DeviceInfoRepository) : IModelState<List<ActionModel>> {
 
     private val _actionList = MutableLiveData<List<Action>>(listOf())
     val actionList: LiveData<List<Action>> = _actionList
 
-    private val _modelList = MutableLiveData<State<List<ActionModel>>>(Loading())
-    val modelList: LiveData<State<List<ActionModel>>> = _modelList
+    private val _model = MutableLiveData<DataState<List<ActionModel>>>(Loading())
+    override val model = _model
+    override val viewState = MutableLiveData<ViewState>(ViewLoading())
 
     private val _eventStream = LiveEvent<Event>().apply {
         addSource(actionList) {
@@ -41,8 +43,8 @@ abstract class ActionListViewModel<O : BaseOptions<Action>>(
 
     fun setModels(modelList: List<ActionModel>) {
         when {
-            modelList.isEmpty() -> _modelList.value = Empty()
-            else -> _modelList.value = Data(modelList)
+            modelList.isEmpty() -> _model.value = Empty()
+            else -> _model.value = Data(modelList)
         }
     }
 
@@ -87,7 +89,7 @@ abstract class ActionListViewModel<O : BaseOptions<Action>>(
 
     fun onModelClick(id: String) {
         coroutineScope.launch {
-            modelList.value?.ifIsData { modelList ->
+            model.value?.ifIsData { modelList ->
                 modelList.singleOrNull { it.id == id }?.apply {
                     when {
                         hasError -> _eventStream.value = FixFailure(failure!!)

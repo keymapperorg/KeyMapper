@@ -29,7 +29,7 @@
 
         <variable
             name="model"
-            type="io.github.sds100.keymapper.data.model.FingerprintGestureMapListItemModel" />
+            type="io.github.sds100.keymapper.data.model.FingerprintMapListItemModel" />
     </data>
 
     <com.google.android.material.card.MaterialCardView

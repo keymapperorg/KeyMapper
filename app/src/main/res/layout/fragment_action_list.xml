@@ -8,13 +8,13 @@
 
         <import type="androidx.lifecycle.LiveData" />
 
-        <import type="io.github.sds100.keymapper.util.State" />
+        <import type="io.github.sds100.keymapper.util.ViewState" />
 
-        <import type="io.github.sds100.keymapper.util.Data" />
+        <import type="io.github.sds100.keymapper.util.ViewPopulated" />
 
-        <import type="io.github.sds100.keymapper.util.Loading" />
+        <import type="io.github.sds100.keymapper.util.ViewLoading" />
 
-        <import type="io.github.sds100.keymapper.util.Empty" />
+        <import type="io.github.sds100.keymapper.util.ViewEmpty" />
 
         <variable
             name="viewModel"
@@ -37,7 +37,7 @@
             android:id="@+id/epoxyRecyclerViewActions"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:visibility="@{viewModel.modelList instanceof Data ? View.VISIBLE : View.GONE}"
+            android:visibility="@{viewModel.viewState instanceof ViewPopulated ? View.VISIBLE : View.GONE}"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@+id/buttonAddAction"
             app:layout_constraintEnd_toEndOf="parent"
@@ -49,7 +49,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:text="@string/actions_recyclerview_placeholder"
-            android:visibility="@{viewModel.modelList instanceof Empty ? View.VISIBLE : View.GONE}"
+            android:visibility="@{viewModel.viewState instanceof ViewEmpty ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toTopOf="@+id/buttonAddAction"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

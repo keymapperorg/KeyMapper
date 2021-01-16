@@ -10,14 +10,15 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.switchmaterial.SwitchMaterial
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.model.FingerprintGestureMapListItemModel
 import io.github.sds100.keymapper.data.model.FingerprintMap
+import io.github.sds100.keymapper.data.model.FingerprintMapListItemModel
 import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
 import io.github.sds100.keymapper.data.viewmodel.FingerprintMapListViewModel
 import io.github.sds100.keymapper.databinding.FragmentFingerprintMapListBinding
 import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
 import io.github.sds100.keymapper.ui.fragment.RecyclerViewFragment
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.delegate.IModelState
 import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
 import io.github.sds100.keymapper.util.result.Failure
 import splitties.alertdialog.appcompat.*
@@ -25,7 +26,8 @@ import splitties.alertdialog.appcompat.*
 /**
  * Created by sds100 on 11/12/2020.
  */
-class FingerprintMapListFragment : RecyclerViewFragment<FragmentFingerprintMapListBinding>() {
+class FingerprintMapListFragment
+    : RecyclerViewFragment<List<FingerprintMapListItemModel>, FragmentFingerprintMapListBinding>() {
 
     private val viewModel: FingerprintMapListViewModel by activityViewModels {
         InjectorUtils.provideFingerprintMapListViewModel(requireContext())
@@ -43,6 +45,9 @@ class FingerprintMapListFragment : RecyclerViewFragment<FragmentFingerprintMapLi
         InjectorUtils.provideBackupRestoreViewModel(requireContext())
     }
 
+    override val modelState: IModelState<List<FingerprintMapListItemModel>>
+        get() = viewModel
+
     private lateinit var recoverFailureDelegate: RecoverFailureDelegate
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -58,44 +63,43 @@ class FingerprintMapListFragment : RecyclerViewFragment<FragmentFingerprintMapLi
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
-    override fun subscribeUi(binding: FragmentFingerprintMapListBinding) {
-        viewModel.models.observe(viewLifecycleOwner, { models ->
-            binding.viewModel = viewModel
+    override fun populateList(
+        binding: FragmentFingerprintMapListBinding,
+        model: List<FingerprintMapListItemModel>?
+    ) {
+        binding.epoxyRecyclerView.withModels {
+            model?.forEach {
+                fingerprintMap {
+                    id(it.id)
+                    model(it)
 
-            binding.state = models
+                    onEnabledSwitchClick { view ->
+                        viewModel.setEnabled(it.id, (view as SwitchMaterial).isChecked)
+                    }
 
-            if (models !is Data) return@observe
-
-            binding.epoxyRecyclerView.withModels {
-                models.data.forEach {
-                    fingerprintMap {
-                        id(it.id)
-                        model(it)
-
-                        onEnabledSwitchClick { view ->
-                            viewModel.setEnabled(it.id, (view as SwitchMaterial).isChecked)
+                    onErrorClick(object : ErrorClickCallback {
+                        override fun onErrorClick(failure: Failure) {
+                            viewModel.fixError(failure)
                         }
+                    })
 
-                        onErrorClick(object : ErrorClickCallback {
-                            override fun onErrorClick(failure: Failure) {
-                                viewModel.fixError(failure)
-                            }
-                        })
-
-                        onClick { _ ->
-                            val direction = NavAppDirections.actionToConfigFingerprintMap(it.id)
-                            findNavController().navigate(direction)
-                        }
+                    onClick { _ ->
+                        val direction = NavAppDirections.actionToConfigFingerprintMap(it.id)
+                        findNavController().navigate(direction)
                     }
                 }
             }
-        })
+        }
+    }
+
+    override fun subscribeUi(binding: FragmentFingerprintMapListBinding) {
+        binding.viewModel = viewModel
 
         viewModel.eventStream.observe(viewLifecycleOwner,
             {
                 when (it) {
                     is BuildFingerprintMapModels -> {
-                        viewLifecycleScope.launchWhenStarted {
+                        viewLifecycleScope.launchWhenResumed {
                             viewModel.setModels(buildModels(it.maps))
                         }
                     }
@@ -123,7 +127,7 @@ class FingerprintMapListFragment : RecyclerViewFragment<FragmentFingerprintMapLi
 
     private suspend fun buildModels(maps: Map<String, FingerprintMap>) =
         maps.map {
-            FingerprintGestureMapListItemModel(
+            FingerprintMapListItemModel(
                 id = it.key,
                 header = str(FingerprintMapUtils.HEADERS[it.key]!!),
 
@@ -144,5 +148,7 @@ class FingerprintMapListFragment : RecyclerViewFragment<FragmentFingerprintMapLi
         }
 
     override fun bind(inflater: LayoutInflater, container: ViewGroup?) =
-        FragmentFingerprintMapListBinding.inflate(inflater, container)
+        FragmentFingerprintMapListBinding.inflate(inflater, container, false).apply {
+            lifecycleOwner = viewLifecycleOwner
+        }
 }

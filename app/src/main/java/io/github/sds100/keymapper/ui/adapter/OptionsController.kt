@@ -6,9 +6,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.airbnb.epoxy.EpoxyController
 import io.github.sds100.keymapper.checkbox
-import io.github.sds100.keymapper.data.model.CheckBoxListItemModel
-import io.github.sds100.keymapper.data.model.SliderListItemModel
 import io.github.sds100.keymapper.data.model.options.IntOption
+import io.github.sds100.keymapper.data.model.options.OptionsListModel
 import io.github.sds100.keymapper.data.viewmodel.BaseOptionsViewModel
 import io.github.sds100.keymapper.slider
 import io.github.sds100.keymapper.util.editTextNumberAlertDialog
@@ -24,20 +23,14 @@ abstract class OptionsController(lifecycleOwner: LifecycleOwner) : EpoxyControll
     abstract val ctx: Context
     abstract val viewModel: BaseOptionsViewModel<*>
 
-    var checkBoxModels: List<CheckBoxListItemModel> = emptyList()
-        set(value) {
-            field = value
-            requestModelBuild()
-        }
-
-    var sliderModels: List<SliderListItemModel> = emptyList()
+    var optionsListModel: OptionsListModel = OptionsListModel.EMPTY
         set(value) {
             field = value
             requestModelBuild()
         }
 
     override fun buildModels() {
-        checkBoxModels.forEach {
+        optionsListModel.checkBoxModels.forEach {
             checkbox {
                 id(it.id)
                 primaryText(ctx.str(it.label))
@@ -49,7 +42,7 @@ abstract class OptionsController(lifecycleOwner: LifecycleOwner) : EpoxyControll
             }
         }
 
-        sliderModels.forEach {
+        optionsListModel.sliderModels.forEach {
             slider {
                 id(it.id)
                 label(ctx.str(it.label))

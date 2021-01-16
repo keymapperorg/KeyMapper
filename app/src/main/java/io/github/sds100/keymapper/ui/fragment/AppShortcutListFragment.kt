@@ -9,21 +9,19 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
+import io.github.sds100.keymapper.data.model.AppShortcutListItemModel
 import io.github.sds100.keymapper.data.viewmodel.AppShortcutListViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.simple
-import io.github.sds100.keymapper.util.Data
-import io.github.sds100.keymapper.util.InjectorUtils
-import io.github.sds100.keymapper.util.editTextStringAlertDialog
-import io.github.sds100.keymapper.util.str
+import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.delegate.IModelState
 import splitties.toast.toast
-
 
 /**
  * Created by sds100 on 29/03/2020.
  */
 
-class AppShortcutListFragment : DefaultRecyclerViewFragment() {
+class AppShortcutListFragment : DefaultRecyclerViewFragment<List<AppShortcutListItemModel>>() {
 
     companion object {
         const val REQUEST_KEY = "request_app_shortcut"
@@ -39,6 +37,9 @@ class AppShortcutListFragment : DefaultRecyclerViewFragment() {
     private val viewModel: AppShortcutListViewModel by activityViewModels {
         InjectorUtils.provideAppShortcutListViewModel(requireContext())
     }
+
+    override val modelState: IModelState<List<AppShortcutListItemModel>>
+        get() = viewModel
 
     private val appShortcutConfigLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -94,26 +95,21 @@ class AppShortcutListFragment : DefaultRecyclerViewFragment() {
             }
         }
 
-    override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
-        viewModel.filteredAppShortcutModelList.observe(viewLifecycleOwner, { appShortcutList ->
-            binding.state = appShortcutList
+    override fun populateList(binding: FragmentRecyclerviewBinding,
+                              modelList: List<AppShortcutListItemModel>?) {
+        binding.epoxyRecyclerView.withModels {
+            modelList?.forEach {
+                simple {
+                    id(it.activityInfo.name)
+                    primaryText(it.label)
+                    icon(it.icon)
 
-            binding.epoxyRecyclerView.withModels {
-                if (appShortcutList !is Data) return@withModels
-
-                appShortcutList.data.forEach {
-                    simple {
-                        id(it.activityInfo.name)
-                        primaryText(it.label)
-                        icon(it.icon)
-
-                        onClick { _ ->
-                            it.activityInfo.launchShortcutConfiguration()
-                        }
+                    onClick { _ ->
+                        it.activityInfo.launchShortcutConfiguration()
                     }
                 }
             }
-        })
+        }
     }
 
     override fun onSearchQuery(query: String?) {

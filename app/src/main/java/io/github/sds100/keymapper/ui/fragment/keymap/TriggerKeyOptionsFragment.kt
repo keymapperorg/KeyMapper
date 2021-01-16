@@ -14,7 +14,8 @@ import io.github.sds100.keymapper.util.InjectorUtils
 /**
  * Created by sds100 on 27/06/2020.
  */
-class TriggerKeyOptionsFragment : BaseOptionsDialogFragment<FragmentTriggerKeyOptionsBinding, TriggerKeyOptions>() {
+class TriggerKeyOptionsFragment
+    : BaseOptionsDialogFragment<FragmentTriggerKeyOptionsBinding, TriggerKeyOptions>() {
 
     companion object {
         const val REQUEST_KEY = "request_trigger_key_behavior"
@@ -30,16 +31,18 @@ class TriggerKeyOptionsFragment : BaseOptionsDialogFragment<FragmentTriggerKeyOp
         get() = navArgs<TriggerKeyOptionsFragmentArgs>().value.StringNavArgTriggerKeyOptions
 
     override fun subscribeCustomUi(binding: FragmentTriggerKeyOptionsBinding) {
-        binding.apply {
-            viewModel = optionsViewModel
-        }
+        binding.viewModel = optionsViewModel
     }
 
-    override fun setRecyclerViewAdapter(binding: FragmentTriggerKeyOptionsBinding, adapter: EpoxyControllerAdapter) {
+    override fun setRecyclerViewAdapter(
+        binding: FragmentTriggerKeyOptionsBinding,
+        adapter: EpoxyControllerAdapter
+    ) {
         binding.epoxyRecyclerView.adapter = adapter
     }
 
-    override fun bind(inflater: LayoutInflater, container: ViewGroup?): FragmentTriggerKeyOptionsBinding {
-        return FragmentTriggerKeyOptionsBinding.inflate(inflater, container, false)
-    }
+    override fun bind(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ) = FragmentTriggerKeyOptionsBinding.inflate(inflater, container, false)
 }

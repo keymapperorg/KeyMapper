@@ -1,21 +1,20 @@
 package io.github.sds100.keymapper.data.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.liveData
+import androidx.lifecycle.*
 import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.ChooseConstraintListItemModel
 import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.ConstraintType
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.delegate.IModelState
 
 /**
  * Created by sds100 on 21/03/2020.
  */
 
-class ChooseConstraintListViewModel : ViewModel() {
+class ChooseConstraintListViewModel
+    : ViewModel(), IModelState<Map<Int, List<ChooseConstraintListItemModel>>> {
 
     private val constraintList = listOf(
         ChooseConstraintListItemModel(
@@ -89,7 +88,7 @@ class ChooseConstraintListViewModel : ViewModel() {
         ),
     )
 
-    val constraintsSortedByCategory = liveData {
+    override val model = liveData {
         emit(Loading())
 
         emit(
@@ -102,6 +101,7 @@ class ChooseConstraintListViewModel : ViewModel() {
             }.toMap().getState()
         )
     }
+    override val viewState = MutableLiveData<ViewState>(ViewLoading())
 
     private val _eventStream = LiveEvent<Event>()
     val eventStream: LiveData<Event> = _eventStream

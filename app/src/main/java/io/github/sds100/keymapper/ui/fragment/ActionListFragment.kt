@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.airbnb.epoxy.EpoxyController
@@ -26,17 +25,22 @@ import io.github.sds100.keymapper.data.viewmodel.ActionListViewModel
 import io.github.sds100.keymapper.databinding.FragmentActionListBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.delegate.IModelState
 
 /**
  * Created by sds100 on 22/11/20.
  */
-abstract class ActionListFragment<O : BaseOptions<Action>> : Fragment() {
+abstract class ActionListFragment<O : BaseOptions<Action>>
+    : RecyclerViewFragment<List<ActionModel>, FragmentActionListBinding>() {
 
     companion object {
         const val CHOOSE_ACTION_REQUEST_KEY = "request_choose_action"
     }
 
     abstract val actionListViewModel: ActionListViewModel<O>
+
+    override val modelState: IModelState<List<ActionModel>>
+        get() = actionListViewModel
 
     private val actionListController = ActionListController()
 
@@ -52,88 +56,12 @@ abstract class ActionListFragment<O : BaseOptions<Action>> : Fragment() {
         }
     }
 
-    /**
-     * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
-     */
-    private var _binding: FragmentActionListBinding? = null
-    val binding: FragmentActionListBinding
-        get() = _binding!!
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         IntentFilter().apply {
             addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
             requireContext().registerReceiver(broadcastReceiver, this)
-        }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        FragmentActionListBinding.inflate(inflater, container, false).apply {
-            viewModel = actionListViewModel
-            lifecycleOwner = viewLifecycleOwner
-
-            _binding = this
-
-            return this.root
-        }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        binding.apply {
-            subscribeActionList()
-
-            epoxyRecyclerViewActions.adapter = actionListController.adapter
-
-            actionListViewModel.eventStream.observe(viewLifecycleOwner, { event ->
-                @Suppress("UNCHECKED_CAST")
-                when (event) {
-                    is TestAction -> {
-                        if (AccessibilityUtils.isServiceEnabled(requireContext())) {
-
-                            requireContext().sendPackageBroadcast(MyAccessibilityService.ACTION_TEST_ACTION,
-                                bundleOf(MyAccessibilityService.EXTRA_ACTION to event.action))
-
-                        } else {
-                            actionListViewModel.promptToEnableAccessibilityService()
-                        }
-                    }
-
-                    is EditActionOptions -> openActionOptionsFragment(event.options as O)
-
-                    is BuildActionListModels -> {
-                        viewLifecycleScope.launchWhenStarted {
-                            val deviceInfoList = actionListViewModel.getDeviceInfoList()
-
-                            val models = sequence {
-                                event.source.forEach {
-                                    yield(it.buildModel(requireContext(), deviceInfoList))
-                                }
-                            }.toList()
-
-                            actionListViewModel.setModels(models)
-                        }
-                    }
-                }
-            })
-
-            actionListViewModel.modelList.observe(viewLifecycleOwner, {
-                actionListController.modelList = when (it) {
-                    is Data -> it.data
-                    else -> emptyList()
-                }
-            })
-
-            setOnAddActionClick {
-                val direction = NavAppDirections.actionGlobalChooseActionFragment(CHOOSE_ACTION_REQUEST_KEY)
-                findNavController().navigate(direction)
-            }
         }
     }
 
@@ -157,29 +85,70 @@ abstract class ActionListFragment<O : BaseOptions<Action>> : Fragment() {
         actionListViewModel.restoreState(savedInstanceState)
     }
 
-    override fun onDestroyView() {
-        _binding = null
-        super.onDestroyView()
-    }
-
     override fun onDestroy() {
         requireContext().unregisterReceiver(broadcastReceiver)
         super.onDestroy()
     }
 
+    override fun bind(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentActionListBinding.inflate(inflater, container, false).apply {
+            lifecycleOwner = viewLifecycleOwner
+        }
+
     abstract fun openActionOptionsFragment(options: O)
 
-    private fun FragmentActionListBinding.subscribeActionList() {
-        actionListViewModel.modelList.observe(viewLifecycleOwner, { actionList ->
-            enableActionDragging(actionListController)
+    override fun populateList(binding: FragmentActionListBinding, model: List<ActionModel>?) {
+        binding.enableActionDragging(actionListController)
 
-            actionList.ifIsData {
-                actionListController.modelList = it
-            }
-        })
+        actionListController.modelList = model ?: emptyList()
     }
 
-    private fun FragmentActionListBinding.enableActionDragging(controller: EpoxyController): ItemTouchHelper {
+    override fun subscribeUi(binding: FragmentActionListBinding) {
+        binding.viewModel = actionListViewModel
+
+        binding.epoxyRecyclerViewActions.adapter = actionListController.adapter
+
+        actionListViewModel.eventStream.observe(viewLifecycleOwner, { event ->
+            @Suppress("UNCHECKED_CAST")
+            when (event) {
+                is TestAction -> {
+                    if (AccessibilityUtils.isServiceEnabled(requireContext())) {
+
+                        requireContext().sendPackageBroadcast(MyAccessibilityService.ACTION_TEST_ACTION,
+                            bundleOf(MyAccessibilityService.EXTRA_ACTION to event.action))
+
+                    } else {
+                        actionListViewModel.promptToEnableAccessibilityService()
+                    }
+                }
+
+                is EditActionOptions -> openActionOptionsFragment(event.options as O)
+
+                is BuildActionListModels -> {
+                    viewLifecycleScope.launchWhenStarted {
+                        val deviceInfoList = actionListViewModel.getDeviceInfoList()
+
+                        val models = sequence {
+                            event.source.forEach {
+                                yield(it.buildModel(requireContext(), deviceInfoList))
+                            }
+                        }.toList()
+
+                        actionListViewModel.setModels(models)
+                    }
+                }
+            }
+        })
+
+        binding.setOnAddActionClick {
+            val direction = NavAppDirections.actionGlobalChooseActionFragment(CHOOSE_ACTION_REQUEST_KEY)
+            findNavController().navigate(direction)
+        }
+    }
+
+    private fun FragmentActionListBinding.enableActionDragging(
+        controller: EpoxyController): ItemTouchHelper {
+
         return EpoxyTouchHelper.initDragging(controller)
             .withRecyclerView(epoxyRecyclerViewActions)
             .forVerticalList()
@@ -187,7 +156,7 @@ abstract class ActionListFragment<O : BaseOptions<Action>> : Fragment() {
             .andCallbacks(object : EpoxyTouchHelper.DragCallbacks<ActionBindingModel_>() {
 
                 override fun isDragEnabledForModel(model: ActionBindingModel_?): Boolean {
-                    actionListViewModel.modelList.value?.ifIsData {
+                    modelState.model.value?.ifIsData {
                         if (it.size > 1) return true
                     }
 

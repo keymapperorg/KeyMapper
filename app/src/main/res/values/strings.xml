@@ -27,7 +27,7 @@
     <string name="interpunct" translatable="false">•</string>
     <string name="arrow" translatable="false">→</string>
     <string name="plus" translatable="false">+</string>
-    <string name="unknown_keycode">Unknown keycode: %s</string>
+    <string name="unknown_keycode">Unknown key code: %s</string>
     <string name="chip_while">while</string>
     <string name="google_app_package_name">com.google.android.googlequicksearchbox</string>
     <string name="on">On</string>
@@ -63,7 +63,7 @@
             \n\nIMPORTANT!
             Inputting this key as an action will only work if you are using a Key Mapper compatible keyboard.</string>
     <string name="caption_action_type_keycode">IMPORTANT!
-            Inputting this keycode as an action will only work if you are using a Key Mapper compatible keyboard.</string>
+            Inputting this key code as an action will only work if you are using a Key Mapper compatible keyboard.</string>
 
     <string name="caption_action_type_text">Type some text you want to be inserted when you perform this action.</string>
     <string name="caption_action_type_phone_call">Enter the phone number.</string>
@@ -122,7 +122,7 @@
     <!--  Hints  -->
     <string name="hint_coordinate_x" translatable="false">X</string>
     <string name="hint_coordinate_y" translatable="false">Y</string>
-    <string name="hint_keycode">Key Code</string>
+    <string name="hint_keycode">Key code</string>
     <string name="hint_from_device">From Device</string>
     <string name="hint_shortcut_name">Shortcut Name</string>
     <string name="hint_tap_coordinate_title">Coordinate description (optional)</string>
@@ -235,9 +235,9 @@
     <!-- Constraints -->
 
     <!-- Click types -->
-    <string name="clicktype_short_press">Short Press</string>
-    <string name="clicktype_long_press">Long Press</string>
-    <string name="clicktype_double_press">Double Press</string>
+    <string name="clicktype_short_press">Short press</string>
+    <string name="clicktype_long_press">Long press</string>
+    <string name="clicktype_double_press">Double press</string>
     <!-- Click types -->
 
     <!-- URLs -->
@@ -306,7 +306,7 @@
     <string name="button_fix">Fix</string>
     <string name="button_recording_trigger_countdown">%d…</string>
     <string name="button_add_constraint">Add Constraint</string>
-    <string name="button_choose_keycode">Choose Key Code</string>
+    <string name="button_choose_keycode">Choose Key code</string>
     <string name="button_yes">Yes!</string>
     <string name="button_choose_action">Choose Action</string>
     <string name="button_add_intent_extra">Add Extra</string>
@@ -574,10 +574,10 @@
     <string name="flag_detect_triggers_screen_off">Detect trigger when screen is off. ROOT only.</string>
     <string name="flag_repeat_actions">Repeat</string>
     <string name="flag_hold_down">Hold down</string>
-    <string name="flag_dont_override_default_action">Do Not Override Default Action</string>
-    <string name="flag_repeat_until_swiped_again">Repeat Until Swiped Again</string>
-    <string name="flag_hold_down_until_swiped_again">Hold Down Until Swiped Again</string>
-    <string name="flag_trigger_by_intent">Trigger By Intent</string>
+    <string name="flag_dont_override_default_action">Do not override default action</string>
+    <string name="flag_repeat_until_swiped_again">Repeat until swiped again</string>
+    <string name="flag_hold_down_until_swiped_again">Hold down until swiped again</string>
+    <string name="flag_trigger_by_intent">Trigger by Intent</string>
     <!--flags-->
 
     <!-- Showcase -->
@@ -886,7 +886,7 @@
     <string name="action_lock_device_root">Lock Device (root)</string>
 
     <string name="action_secure_lock_device">Secure Lock Device</string>
-    <string name="action_secure_lock_device_message">This will lock your device but you will only be able to log back in with your PIN. The fingerprint scanner and face unlock will be disabled. For now this is the only reliable way I have found to lock non-rooted devices before Android Pie 9.0.</string>
+    <string name="action_secure_lock_device_message">You will only be able to log back in with your PIN. The fingerprint scanner and face unlock will be disabled. This is the only reliable way I have found to lock non-rooted devices before Android Pie 9.0.</string>
 
     <string name="action_power_on_off_device">Power On/Off Device</string>
     <string name="action_power_on_off_device_message">You must turn on the option to detect the trigger when the screen is off!</string>

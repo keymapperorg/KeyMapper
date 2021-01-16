@@ -16,6 +16,7 @@ import io.github.sds100.keymapper.sectionHeader
 import io.github.sds100.keymapper.simple
 import io.github.sds100.keymapper.ui.callback.StringResourceProvider
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.delegate.IModelState
 import io.github.sds100.keymapper.util.result.getFullMessage
 import io.github.sds100.keymapper.util.result.handle
 import io.github.sds100.keymapper.util.result.onSuccess
@@ -31,7 +32,9 @@ import kotlin.coroutines.suspendCoroutine
 /**
  * Created by sds100 on 31/03/2020.
  */
-class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourceProvider {
+class SystemActionListFragment
+    : DefaultRecyclerViewFragment<Map<Int, List<SystemActionListItemModel>>>(),
+    StringResourceProvider {
 
     companion object {
         const val REQUEST_KEY = "request_system_action"
@@ -43,6 +46,9 @@ class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourcePr
     private val viewModel: SystemActionListViewModel by activityViewModels {
         InjectorUtils.provideSystemActionListViewModel(requireContext())
     }
+
+    override val modelState: IModelState<Map<Int, List<SystemActionListItemModel>>>
+        get() = viewModel
 
     override var searchStateKey: String? = SEARCH_STATE_KEY
     override var requestKey: String? = REQUEST_KEY
@@ -59,35 +65,32 @@ class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourcePr
     }
 
     override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
+        super.subscribeUi(binding)
 
-        binding.apply {
+        viewModel.allActionsAreSupported.observe(viewLifecycleOwner, {
+            binding.caption = if (it == false) {
+                str(R.string.your_device_doesnt_support_some_actions)
+            } else {
+                null
+            }
+        })
+    }
 
-            viewModel.unsupportedSystemActions.observe(viewLifecycleOwner, {
-                if (it !is Data) return@observe
-
-                if (it.data.isNotEmpty()) {
-                    caption = str(R.string.your_device_doesnt_support_some_actions)
+    override fun populateList(
+        binding: FragmentRecyclerviewBinding,
+        model: Map<Int, List<SystemActionListItemModel>>?
+    ) {
+        binding.epoxyRecyclerView.withModels {
+            for ((sectionHeader, systemActions) in model ?: emptyMap()) {
+                sectionHeader {
+                    id(sectionHeader)
+                    header(str(sectionHeader))
                 }
-            })
 
-            viewModel.filteredModelList.observe(viewLifecycleOwner, {
-                binding.state = it
-
-                if (it !is Data) return@observe
-
-                binding.epoxyRecyclerView.withModels {
-                    for ((sectionHeader, systemActions) in it.data) {
-                        sectionHeader {
-                            id(sectionHeader)
-                            header(str(sectionHeader))
-                        }
-
-                        systemActions.forEach { systemAction ->
-                            createSimpleListItem(systemAction)
-                        }
-                    }
+                systemActions.forEach { systemAction ->
+                    createSimpleListItem(systemAction)
                 }
-            })
+            }
         }
     }
 

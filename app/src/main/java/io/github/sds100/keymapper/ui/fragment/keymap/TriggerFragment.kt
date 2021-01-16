@@ -31,9 +31,7 @@ import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.triggerKey
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.onSuccess
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import splitties.alertdialog.appcompat.*
 import splitties.alertdialog.appcompat.coroutines.showAndAwait
 import splitties.experimental.ExperimentalSplittiesApi
@@ -152,91 +150,87 @@ class TriggerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.apply {
-            viewModel = triggerViewModel
+        binding.viewModel = triggerViewModel
 
-            subscribeTriggerList()
+        binding.subscribeTriggerList()
 
-            epoxyRecyclerViewTriggers.adapter = triggerKeyController.adapter
+        binding.epoxyRecyclerViewTriggers.adapter = triggerKeyController.adapter
 
-            triggerViewModel.mode.observe(viewLifecycleOwner) {
-                triggerKeyController.requestModelBuild()
-            }
+        triggerViewModel.mode.observe(viewLifecycleOwner) {
+            triggerKeyController.requestModelBuild()
+        }
 
-            triggerViewModel.eventStream.observe(viewLifecycleOwner, { event ->
-                when (event) {
-                    is StartRecordingTriggerInService -> {
-                        val serviceEnabled = AccessibilityUtils.isServiceEnabled(requireContext())
+        triggerViewModel.eventStream.observe(viewLifecycleOwner, { event ->
+            when (event) {
+                is StartRecordingTriggerInService -> {
+                    val serviceEnabled = AccessibilityUtils.isServiceEnabled(requireContext())
 
-                        if (serviceEnabled) {
-                            requireContext().sendPackageBroadcast(MyAccessibilityService.ACTION_RECORD_TRIGGER)
+                    if (serviceEnabled) {
+                        requireContext().sendPackageBroadcast(MyAccessibilityService.ACTION_RECORD_TRIGGER)
 
-                        } else {
-                            triggerViewModel.promptToEnableAccessibilityService()
-                        }
-                    }
-
-                    is BuildTriggerKeyModels -> viewLifecycleScope.launchWhenStarted {
-                        val deviceInfoList = triggerViewModel.getDeviceInfoList()
-
-                        val modelList = sequence {
-                            event.source.forEach {
-                                val model = it.buildModel(requireContext(), deviceInfoList)
-                                yield(model)
-                            }
-                        }.toList()
-
-                        withContext(Dispatchers.Main) {
-                            triggerViewModel.setModelList(modelList)
-                        }
-                    }
-
-                    is OkDialog -> lifecycleScope.launchWhenStarted {
-                        val approvedWarning = requireContext().alertDialog {
-                            message = str(event.message)
-
-                        }.showAndAwait(okValue = true, cancelValue = null, dismissValue = false)
-
-                        if (approvedWarning) {
-                            event.onOk.invoke()
-                        }
-                    }
-
-                    is StopRecordingTriggerInService -> {
-                        val serviceEnabled = AccessibilityUtils.isServiceEnabled(requireContext())
-
-                        if (serviceEnabled) {
-                            stopRecordingTrigger()
-                        } else {
-                            triggerViewModel.promptToEnableAccessibilityService()
-                        }
-                    }
-
-                    is EnableCapsLockKeyboardLayoutPrompt -> requireContext().alertDialog {
-                        messageResource = R.string.dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout
-
-                        okButton()
-
-                        show()
-                    }
-
-                    is EditTriggerKeyOptions -> {
-                        val direction = ConfigKeymapFragmentDirections.actionTriggerKeyOptionsFragment(event.options)
-                        findNavController().navigate(direction)
+                    } else {
+                        triggerViewModel.promptToEnableAccessibilityService()
                     }
                 }
-            })
 
-            radioButtonShortPress.setOnClickListener { view ->
-                if ((view as MaterialRadioButton).isChecked) {
-                    triggerViewModel.setParallelTriggerClickType(Trigger.SHORT_PRESS)
+                is BuildTriggerKeyModels -> viewLifecycleScope.launchWhenResumed {
+                    val deviceInfoList = triggerViewModel.getDeviceInfoList()
+
+                    val modelList = sequence {
+                        event.source.forEach {
+                            val model = it.buildModel(requireContext(), deviceInfoList)
+                            yield(model)
+                        }
+                    }.toList()
+
+                    triggerViewModel.setModelList(modelList)
+                }
+
+                is OkDialog -> lifecycleScope.launchWhenResumed {
+                    val approvedWarning = requireContext().alertDialog {
+                        message = str(event.message)
+
+                    }.showAndAwait(okValue = true, cancelValue = null, dismissValue = false)
+
+                    if (approvedWarning) {
+                        event.onOk.invoke()
+                    }
+                }
+
+                is StopRecordingTriggerInService -> {
+                    val serviceEnabled = AccessibilityUtils.isServiceEnabled(requireContext())
+
+                    if (serviceEnabled) {
+                        stopRecordingTrigger()
+                    } else {
+                        triggerViewModel.promptToEnableAccessibilityService()
+                    }
+                }
+
+                is EnableCapsLockKeyboardLayoutPrompt -> requireContext().alertDialog {
+                    messageResource = R.string.dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout
+
+                    okButton()
+
+                    show()
+                }
+
+                is EditTriggerKeyOptions -> {
+                    val direction = ConfigKeymapFragmentDirections.actionTriggerKeyOptionsFragment(event.options)
+                    findNavController().navigate(direction)
                 }
             }
+        })
 
-            radioButtonLongPress.setOnClickListener { view ->
-                if ((view as MaterialRadioButton).isChecked) {
-                    triggerViewModel.setParallelTriggerClickType(Trigger.LONG_PRESS)
-                }
+        binding.radioButtonShortPress.setOnClickListener { radioButton ->
+            if ((radioButton as MaterialRadioButton).isChecked) {
+                triggerViewModel.setParallelTriggerClickType(Trigger.SHORT_PRESS)
+            }
+        }
+
+        binding.radioButtonLongPress.setOnClickListener { radioButton ->
+            if ((radioButton as MaterialRadioButton).isChecked) {
+                triggerViewModel.setParallelTriggerClickType(Trigger.LONG_PRESS)
             }
         }
     }
@@ -267,11 +261,13 @@ class TriggerFragment : Fragment() {
     private fun FragmentTriggerBinding.subscribeTriggerList() {
         triggerViewModel.modelList.observe(viewLifecycleOwner, { triggerKeyList ->
 
-            enableTriggerKeyDragging(triggerKeyController)
+            viewLifecycleScope.launchWhenResumed {
+                enableTriggerKeyDragging(triggerKeyController)
 
-            when (triggerKeyList) {
-                is Data -> triggerKeyController.modelList = triggerKeyList.data
-                else -> triggerKeyController.modelList = emptyList()
+                when (triggerKeyList) {
+                    is Data -> triggerKeyController.modelList = triggerKeyList.data
+                    else -> triggerKeyController.modelList = emptyList()
+                }
             }
         })
     }

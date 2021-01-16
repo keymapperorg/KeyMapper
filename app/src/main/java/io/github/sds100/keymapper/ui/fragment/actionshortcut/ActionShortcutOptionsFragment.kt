@@ -35,11 +35,17 @@ class ActionShortcutOptionsFragment :
         }
     }
 
-    override fun setRecyclerViewAdapter(binding: FragmentActionShortcutOptionsBinding, adapter: EpoxyControllerAdapter) {
+    override fun setRecyclerViewAdapter(
+        binding: FragmentActionShortcutOptionsBinding,
+        adapter: EpoxyControllerAdapter
+    ) {
         binding.epoxyRecyclerView.adapter = adapter
     }
 
-    override fun bind(inflater: LayoutInflater, container: ViewGroup?): FragmentActionShortcutOptionsBinding {
+    override fun bind(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentActionShortcutOptionsBinding {
         return FragmentActionShortcutOptionsBinding.inflate(inflater, container, false)
     }
 }

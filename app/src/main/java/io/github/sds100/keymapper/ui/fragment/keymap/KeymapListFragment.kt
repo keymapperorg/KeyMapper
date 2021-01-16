@@ -1,11 +1,8 @@
 package io.github.sds100.keymapper.ui.fragment.keymap
 
 import android.os.Build
-import android.os.Bundle
-import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.airbnb.epoxy.EpoxyController
 import io.github.sds100.keymapper.data.model.KeyMap
@@ -18,12 +15,13 @@ import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
 import io.github.sds100.keymapper.ui.fragment.DefaultRecyclerViewFragment
 import io.github.sds100.keymapper.ui.fragment.HomeFragmentDirections
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.delegate.IModelState
 import io.github.sds100.keymapper.util.result.Failure
 
 /**
  * Created by sds100 on 22/02/2020.
  */
-class KeymapListFragment : DefaultRecyclerViewFragment() {
+class KeymapListFragment : DefaultRecyclerViewFragment<List<KeymapListItemModel>>() {
 
     private val viewModel: KeymapListViewModel by activityViewModels {
         InjectorUtils.provideKeymapListViewModel(requireContext())
@@ -49,51 +47,40 @@ class KeymapListFragment : DefaultRecyclerViewFragment() {
 
     private val controller = KeymapController()
 
+    override val modelState: IModelState<List<KeymapListItemModel>>
+        get() = viewModel
+
     override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
-        viewModel.apply {
+        super.subscribeUi(binding)
 
-            keymapModelList.observe(viewLifecycleOwner, { keymapList ->
-                binding.state = keymapList
+        binding.epoxyRecyclerView.adapter = controller.adapter
 
-                /*
-                Don't set the list to empty if it is loading otherwise the scroll position is lost
-                when reloading the list.
-                 */
-                when (keymapList) {
-                    is Data -> controller.keymapList = keymapList.data
-                    is Empty -> controller.keymapList = emptyList()
+        selectionProvider.selectionEvents.observe(viewLifecycleOwner, {
+            controller.requestModelBuild()
+        })
+
+        selectionProvider.isSelectable.observe(viewLifecycleOwner, {
+            controller.requestModelBuild()
+        })
+
+        viewModel.eventStream.observe(viewLifecycleOwner, {
+            when (it) {
+                is BuildKeymapListModels -> viewLifecycleScope.launchWhenResumed {
+                    viewModel.setModelList(buildModelList(it.keymapList))
                 }
-            })
 
-            selectionProvider.selectionEvents.observe(viewLifecycleOwner, {
-                controller.requestModelBuild()
-            })
-
-            selectionProvider.isSelectable.observe(viewLifecycleOwner, {
-                controller.requestModelBuild()
-            })
-
-            viewModel.eventStream.observe(viewLifecycleOwner, {
-                when (it) {
-                    is BuildKeymapListModels -> lifecycleScope.launchWhenStarted {
-                        viewModel.setModelList(buildModelList(it.keymapList))
-                    }
-
-                    is RequestBackupSelectedKeymaps -> {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                            backupLauncher.launch(BackupUtils.createFileName())
-                        }
+                is RequestBackupSelectedKeymaps -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        backupLauncher.launch(BackupUtils.createFileName())
                     }
                 }
-            })
-        }
+            }
+        })
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        //assign in onViewCreated in case context is required when building the models.
-        binding.epoxyRecyclerView.adapter = controller.adapter
+    override fun populateList(binding: FragmentRecyclerviewBinding,
+                              model: List<KeymapListItemModel>?) {
+        controller.keymapList = model ?: emptyList()
     }
 
     private suspend fun buildModelList(keymapList: List<KeyMap>) =

@@ -29,7 +29,6 @@ class HomePagerAdapter(
             {
                 KeymapListFragment().apply {
                     isAppBarVisible = false
-                    isInPagerAdapter = true
                 }
             }
         ).apply {
@@ -37,7 +36,6 @@ class HomePagerAdapter(
                 add {
                     FingerprintMapListFragment().apply {
                         isAppBarVisible = false
-                        isInPagerAdapter = true
                     }
                 }
             }

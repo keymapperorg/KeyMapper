@@ -39,7 +39,12 @@ class KeymapActionOptionsFragment : BaseOptionsDialogFragment<FragmentKeymapActi
         binding.epoxyRecyclerView.adapter = adapter
     }
 
-    override fun bind(inflater: LayoutInflater, container: ViewGroup?): FragmentKeymapActionOptionsBinding {
-        return FragmentKeymapActionOptionsBinding.inflate(inflater, container, false)
+    override fun bind(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentKeymapActionOptionsBinding {
+        return FragmentKeymapActionOptionsBinding.inflate(inflater, container, false).apply {
+            lifecycleOwner = viewLifecycleOwner
+        }
     }
 }

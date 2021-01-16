@@ -17,6 +17,7 @@ import io.github.sds100.keymapper.data.model.options.BaseOptions
 import io.github.sds100.keymapper.data.viewmodel.BaseOptionsDialogViewModel
 import io.github.sds100.keymapper.data.viewmodel.BaseOptionsViewModel
 import io.github.sds100.keymapper.ui.adapter.OptionsController
+import io.github.sds100.keymapper.util.ifIsData
 
 /**
  * Created by sds100 on 27/06/2020.
@@ -71,23 +72,19 @@ abstract class BaseOptionsDialogFragment<BINDING : ViewDataBinding, O : BaseOpti
         val dialog = requireDialog() as BottomSheetDialog
         dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
 
-        binding.apply {
-            optionsViewModel.checkBoxModels.observe(viewLifecycleOwner, {
-                controller.checkBoxModels = it
-            })
+        optionsViewModel.model.observe(viewLifecycleOwner, { options ->
+            options.ifIsData {
+                controller.optionsListModel = it
+            }
+        })
 
-            optionsViewModel.sliderModels.observe(viewLifecycleOwner, {
-                controller.sliderModels = it
-            })
+        optionsViewModel.onSaveEvent.observe(viewLifecycleOwner, {
+            setFragmentResult(requestKey, bundleOf(EXTRA_OPTIONS to it))
+            findNavController().navigateUp()
+        })
 
-            optionsViewModel.onSaveEvent.observe(viewLifecycleOwner, {
-                setFragmentResult(requestKey, bundleOf(EXTRA_OPTIONS to it))
-                findNavController().navigateUp()
-            })
-
-            setRecyclerViewAdapter(this, controller.adapter)
-            subscribeCustomUi(this)
-        }
+        setRecyclerViewAdapter(binding, controller.adapter)
+        subscribeCustomUi(binding)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

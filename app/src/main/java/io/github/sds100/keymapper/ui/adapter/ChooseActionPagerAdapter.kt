@@ -17,7 +17,6 @@ class ChooseActionPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragme
         TabFragmentModel(R.string.action_type_title_application, AppListFragment.SEARCH_STATE_KEY) {
             AppListFragment().apply {
                 isAppBarVisible = false
-                isInPagerAdapter = true
             }
         },
         TabFragmentModel(R.string.action_type_title_application_shortcut,
@@ -25,7 +24,6 @@ class ChooseActionPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragme
 
             AppShortcutListFragment().apply {
                 isAppBarVisible = false
-                isInPagerAdapter = true
             }
         },
         TabFragmentModel(R.string.action_type_title_key_code,
@@ -33,7 +31,6 @@ class ChooseActionPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragme
 
             KeycodeListFragment().apply {
                 isAppBarVisible = false
-                isInPagerAdapter = true
             }
         },
 
@@ -44,7 +41,6 @@ class ChooseActionPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragme
 
             SystemActionListFragment().apply {
                 isAppBarVisible = false
-                isInPagerAdapter = true
             }
         },
 
@@ -76,7 +72,6 @@ class ChooseActionPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragme
 
             UnsupportedActionListFragment().apply {
                 isAppBarVisible = false
-                isInPagerAdapter = true
             }
         }
     ).apply {

@@ -5,6 +5,7 @@ import androidx.lifecycle.*
 import io.github.sds100.keymapper.data.model.AppListItemModel
 import io.github.sds100.keymapper.data.repository.PackageRepository
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.delegate.IModelState
 import kotlinx.coroutines.Dispatchers
 import java.util.*
 
@@ -13,7 +14,7 @@ import java.util.*
  */
 class AppListViewModel internal constructor(
     private val repository: PackageRepository
-) : ViewModel() {
+) : ViewModel(), IModelState<List<AppListItemModel>> {
 
     private val launchableAppModelList = liveData(viewModelScope.coroutineContext + Dispatchers.Default) {
         emit(Loading())
@@ -39,40 +40,17 @@ class AppListViewModel internal constructor(
         }
     }
 
-    val filteredAppModelList = MediatorLiveData<State<List<AppListItemModel>>>().apply {
-        value = Loading()
-
-        fun filter(modelList: State<List<AppListItemModel>>, query: String) {
-            value = Loading()
-
-            when (modelList) {
-                is Data -> {
-                    val filteredList = modelList.data.filter { model ->
-                        model.appName.toLowerCase(Locale.getDefault()).contains(query)
-                    }
-
-                    value = filteredList.getState()
-                }
-
-                is Empty -> Empty()
-                is Loading -> Loading()
-            }
-        }
-
+    val _model = FilteredListLiveData<AppListItemModel>().apply {
         fun showAllApps() {
             value = allAppModelList.value
 
-            searchQuery.value?.let { query ->
-                filter(allAppModelList.value ?: Empty(), query)
-            }
+            filter(allAppModelList.value ?: Empty(), searchQuery.value)
         }
 
         fun showLaunchableApps() {
             value = launchableAppModelList.value
 
-            searchQuery.value?.let { query ->
-                filter(launchableAppModelList.value ?: Empty(), query)
-            }
+            filter(launchableAppModelList.value ?: Empty(), searchQuery.value)
         }
 
         addSource(searchQuery) { query ->
@@ -103,6 +81,9 @@ class AppListViewModel internal constructor(
             }
         }
     }
+
+    override val model = _model
+    override val viewState = MutableLiveData<ViewState>(ViewLoading())
 
     private fun List<ApplicationInfo>.createModels(): List<AppListItemModel> =
         map {

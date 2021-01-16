@@ -82,15 +82,17 @@ class KeyEventActionTypeFragment : Fragment() {
         })
 
         viewModel.modifierKeyModels.observe(viewLifecycleOwner, { models ->
-            binding.epoxyRecyclerViewModifiers.withModels {
-                models.forEach {
-                    checkbox {
-                        id(it.id)
-                        primaryText(str(it.label))
-                        isSelected(it.isChecked)
+            viewLifecycleScope.launchWhenResumed {
+                binding.epoxyRecyclerViewModifiers.withModels {
+                    models.forEach {
+                        checkbox {
+                            id(it.id)
+                            primaryText(str(it.label))
+                            isSelected(it.isChecked)
 
-                        onClick { view ->
-                            viewModel.setModifierKey(it.id.toInt(), (view as CheckBox).isChecked)
+                            onClick { view ->
+                                viewModel.setModifierKey(it.id.toInt(), (view as CheckBox).isChecked)
+                            }
                         }
                     }
                 }
@@ -120,30 +122,34 @@ class KeyEventActionTypeFragment : Fragment() {
                 }
 
                 is BuildDeviceInfoModels -> {
-                    val modelList = InputDeviceUtils.createDeviceInfoModelsForAll()
-                    viewModel.setDeviceInfoModels(modelList)
+                    viewLifecycleScope.launchWhenResumed {
+                        val modelList = InputDeviceUtils.createDeviceInfoModelsForAll()
+                        viewModel.setDeviceInfoModels(modelList)
+                    }
                 }
             }
         })
 
         viewModel.deviceInfoModels.observe(viewLifecycleOwner, { models ->
-            ArrayAdapter<String>(
-                requireContext(),
-                R.layout.dropdown_menu_popup_item,
-                mutableListOf()
-            ).apply {
-                clear()
-                add(str(R.string.from_no_device))
+            viewLifecycleScope.launchWhenResumed {
+                ArrayAdapter<String>(
+                    requireContext(),
+                    R.layout.dropdown_menu_popup_item,
+                    mutableListOf()
+                ).apply {
+                    clear()
+                    add(str(R.string.from_no_device))
 
-                models.forEach {
-                    if (AppPreferences.showDeviceDescriptors) {
-                        add("${it.name} ${it.descriptor.substring(0..4)}")
-                    } else {
-                        add(it.name)
+                    models.forEach {
+                        if (AppPreferences.showDeviceDescriptors) {
+                            add("${it.name} ${it.descriptor.substring(0..4)}")
+                        } else {
+                            add(it.name)
+                        }
                     }
-                }
 
-                binding.dropdownDeviceId.setAdapter(this)
+                    binding.dropdownDeviceId.setAdapter(this)
+                }
             }
         })
 

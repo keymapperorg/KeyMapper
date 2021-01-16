@@ -22,10 +22,7 @@ import io.github.sds100.keymapper.databinding.FragmentIntentActionTypeBinding
 import io.github.sds100.keymapper.databinding.ListItemIntentExtraBoolBinding
 import io.github.sds100.keymapper.intentExtraBool
 import io.github.sds100.keymapper.intentExtraGeneric
-import io.github.sds100.keymapper.util.BuildIntentExtraListItemModels
-import io.github.sds100.keymapper.util.Data
-import io.github.sds100.keymapper.util.InjectorUtils
-import io.github.sds100.keymapper.util.str
+import io.github.sds100.keymapper.util.*
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.message
 import splitties.alertdialog.appcompat.messageResource
@@ -81,7 +78,6 @@ class IntentActionTypeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         FragmentIntentActionTypeBinding.inflate(inflater, container, false).apply {
-
             lifecycleOwner = viewLifecycleOwner
             _binding = this
 
@@ -162,7 +158,7 @@ class IntentActionTypeFragment : Fragment() {
 
         viewModel.eventStream.observe(viewLifecycleOwner, { event ->
             when (event) {
-                is BuildIntentExtraListItemModels -> {
+                is BuildIntentExtraListItemModels -> viewLifecycleScope.launchWhenResumed {
                     val models = event.extraModels.map { it.toListItemModel() }
                     viewModel.setListItemModels(models)
                 }
@@ -179,16 +175,18 @@ class IntentActionTypeFragment : Fragment() {
 
     private fun subscribeExtrasList() {
         viewModel.extrasListItemModels.observe(viewLifecycleOwner, { state ->
-            binding.epoxyRecyclerViewExtras.withModels {
+            viewLifecycleScope.launchWhenResumed {
+                binding.epoxyRecyclerViewExtras.withModels {
 
-                val models = if (state is Data) {
-                    state.data
-                } else {
-                    emptyList()
-                }
+                    val models = if (state is Data) {
+                        state.data
+                    } else {
+                        emptyList()
+                    }
 
-                models.forEach {
-                    bindExtra(it)
+                    models.forEach {
+                        bindExtra(it)
+                    }
                 }
             }
         })
