@@ -358,6 +358,7 @@
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
             android:layout_width="wrap_content"
+            android:contentDescription="@string/content_description_fab_new_keymap"
             android:layout_height="wrap_content"
             android:onClick="@{isSelectable ? onConfirmSelectionClick : onNewKeymapClick}"
             android:src='@{isSelectable ? @drawable/ic_baseline_delete_outline_24 : @drawable/ic_baseline_add_24}'
