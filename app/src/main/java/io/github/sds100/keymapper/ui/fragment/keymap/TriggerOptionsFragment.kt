@@ -15,7 +15,6 @@ import io.github.sds100.keymapper.triggerByIntent
 import io.github.sds100.keymapper.ui.adapter.OptionsController
 import io.github.sds100.keymapper.ui.fragment.OptionsFragment
 import io.github.sds100.keymapper.util.InjectorUtils
-import io.github.sds100.keymapper.util.UrlUtils
 import io.github.sds100.keymapper.util.str
 import splitties.systemservices.clipboardManager
 import splitties.toast.toast
@@ -78,12 +77,6 @@ class TriggerOptionsFragment : OptionsFragment<TriggerOptions>() {
                         clipboardManager.setPrimaryClip(clipData)
 
                         toast(R.string.toast_copied_keymap_uid_to_clipboard)
-                    }
-
-                    onHelpClick { _ ->
-                        UrlUtils.launchCustomTab(
-                            requireContext(),
-                            str(R.string.url_trigger_by_intent_guide))
                     }
                 }
             }

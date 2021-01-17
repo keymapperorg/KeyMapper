@@ -18,10 +18,6 @@
         <variable
             name="onCopyClick"
             type="View.OnClickListener" />
-
-        <variable
-            name="onHelpClick"
-            type="View.OnClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -42,7 +38,7 @@
             android:text="@string/flag_trigger_by_intent"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="?attr/colorOnSurface"
-            app:layout_constraintEnd_toStartOf="@+id/buttonHelp"
+            app:layout_constraintEnd_toStartOf="@+id/buttonCopyToClipboard"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="TextView" />
@@ -54,7 +50,7 @@
             android:text="@{model.uid}"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
             android:visibility="@{model.isEnabled ? View.VISIBLE : View.GONE}"
-            app:layout_constraintEnd_toStartOf="@+id/buttonHelp"
+            app:layout_constraintEnd_toStartOf="@+id/buttonCopyToClipboard"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/checkBox"
             tools:text="jsldjfo23u4adaeowurb23" />
@@ -71,16 +67,5 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_content_copy" />
 
-        <io.github.sds100.keymapper.ui.view.SquareImageButton
-            android:id="@+id/buttonHelp"
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:onClick="@{onHelpClick}"
-            android:tint="?attr/colorOnSurface"
-            app:layout_constraintEnd_toStartOf="@id/buttonCopyToClipboard"
-            app:layout_constraintStart_toEndOf="@id/checkBox"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_help_outline_24" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
