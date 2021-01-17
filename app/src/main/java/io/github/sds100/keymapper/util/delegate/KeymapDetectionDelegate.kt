@@ -7,7 +7,6 @@ import androidx.collection.keyIterator
 import androidx.collection.set
 import androidx.collection.valueIterator
 import com.hadilq.liveevent.LiveEvent
-import io.github.sds100.keymapper.IConstraintDelegate
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.Trigger.Companion.DOUBLE_PRESS
 import io.github.sds100.keymapper.data.model.Trigger.Companion.LONG_PRESS

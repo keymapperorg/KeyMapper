@@ -1,9 +1,9 @@
 package io.github.sds100.keymapper.util.delegate
 
-import io.github.sds100.keymapper.IConstraintDelegate
 import io.github.sds100.keymapper.data.model.FingerprintMap
 import io.github.sds100.keymapper.util.FingerprintMapUtils
 import io.github.sds100.keymapper.util.IActionError
+import io.github.sds100.keymapper.util.IConstraintDelegate
 import kotlinx.coroutines.CoroutineScope
 
 /**

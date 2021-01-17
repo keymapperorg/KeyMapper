@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper
+package io.github.sds100.keymapper.util
 
 import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.ConstraintMode

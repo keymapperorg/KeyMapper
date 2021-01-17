@@ -1,9 +1,9 @@
 package io.github.sds100.keymapper.util.delegate
 
 import android.view.Surface
-import io.github.sds100.keymapper.IConstraintDelegate
 import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.ConstraintMode
+import io.github.sds100.keymapper.util.IConstraintDelegate
 import io.github.sds100.keymapper.util.IConstraintState
 import io.github.sds100.keymapper.util.ScreenRotationUtils
 import io.github.sds100.keymapper.util.result.valueOrNull
