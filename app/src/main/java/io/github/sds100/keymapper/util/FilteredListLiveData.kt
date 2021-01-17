@@ -7,7 +7,7 @@ import java.util.*
  * Created by sds100 on 13/01/21.
  */
 
-class FilteredListLiveData<T : Searchable> : MediatorLiveData<DataState<List<T>>>() {
+class FilteredListLiveData<T : ISearchable> : MediatorLiveData<DataState<List<T>>>() {
     init {
         value = Loading()
     }
