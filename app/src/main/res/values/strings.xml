@@ -975,7 +975,11 @@
     <string name="intent_type_float_array_example">A comma-separated list of valid Floats in the Java programming language. E.g 1241.123</string>
     <string name="intent_type_short_example">A valid Short in the Java programming language. E.g 2342</string>
     <string name="intent_type_short_array_example">A comma-separated list of valid Shorts in the Java programming language. E.g 3242,12354</string>
-
     <!--  Intent action type strings  -->
+
+    <!--  Tap targets  -->
+    <string name="tap_target_quick_start_guide_primary">Quick Start Guide</string>
+    <string name="tap_target_quick_start_guide_secondary">Check out the quick start guide if you are stuck.</string>
+    <!--  Tap targets  -->
 
 </resources>

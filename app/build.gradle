@@ -109,6 +109,7 @@ dependencies {
     implementation 'com.android.volley:volley:1.1.1'
     implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation "com.github.hadilq.liveevent:liveevent:1.2.0"
+    implementation 'uk.co.samuelwall:material-tap-target-prompt:3.1.0'
 
     // splitties
     implementation "com.louiscad.splitties:splitties-bitflags:$splitties_version"

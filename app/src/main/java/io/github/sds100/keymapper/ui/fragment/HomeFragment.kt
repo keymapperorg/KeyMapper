@@ -417,6 +417,10 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                         findNavController())
                 }
             })
+
+            viewLifecycleScope.launchWhenResumed {
+                QuickStartGuideTapTarget().show(this@HomeFragment, R.id.action_help)
+            }
         }
     }
 

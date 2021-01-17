@@ -24,10 +24,12 @@ import io.github.sds100.keymapper.ui.adapter.GenericFragmentPagerAdapter
 import io.github.sds100.keymapper.ui.fragment.*
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
+import kotlinx.android.synthetic.main.fragment_home.*
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.cancelButton
 import splitties.alertdialog.appcompat.messageResource
 import splitties.alertdialog.appcompat.positiveButton
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
 
 /**
  * Created by sds100 on 22/11/20.
@@ -144,6 +146,14 @@ class ConfigKeymapFragment : Fragment() {
                     binding.coordinatorLayout.showEnableAccessibilityServiceSnackBar()
             }
         })
+
+        binding.apply {
+            MaterialTapTargetPrompt.Builder(this@ConfigKeymapFragment)
+                .setTarget(appBar.findViewById(R.id.action_help))
+                .setFocalColour(color(android.R.color.transparent))
+                .setPrimaryText("Check out the quick start guide to get started!")
+                .show()
+        }
     }
 
     override fun onDestroyView() {
