@@ -92,7 +92,8 @@ abstract class ConfigMappingFragment : Fragment() {
             showOnBackPressedWarning()
         }
 
-        binding.appBar.menu.findItem(R.id.action_help).isVisible = fragmentInfoList[binding.viewPager.currentItem].second.supportUrl != null
+        binding.appBar.menu.findItem(R.id.action_help).isVisible =
+            fragmentInfoList[binding.viewPager.currentItem].second.supportUrl != null
 
         binding.appBar.setOnMenuItemClickListener {
             when (it.itemId) {
