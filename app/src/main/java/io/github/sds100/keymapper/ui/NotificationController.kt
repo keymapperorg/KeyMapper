@@ -20,7 +20,7 @@ import io.github.sds100.keymapper.util.PermissionUtils
 /**
  * Tells notifications what to display
  */
-object WidgetsManager {
+object NotificationController {
     @IntDef(value = [
         EVENT_PAUSE_REMAPS,
         EVENT_RESUME_REMAPS,

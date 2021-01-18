@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.broadcastreceiver
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import io.github.sds100.keymapper.WidgetsManager
+import io.github.sds100.keymapper.NotificationController
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.util.NotificationUtils
 
@@ -24,7 +24,7 @@ class BootBroadcastReceiver : BroadcastReceiver() {
                 }
             }
 
-            WidgetsManager.invalidateNotifications(context!!)
+            NotificationController.invalidateNotifications(context!!)
         }
     }
 }

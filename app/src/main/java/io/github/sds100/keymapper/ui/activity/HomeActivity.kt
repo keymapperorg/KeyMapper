@@ -126,7 +126,7 @@ class HomeActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        WidgetsManager.invalidateNotifications(this)
+        NotificationController.invalidateNotifications(this)
     }
 
     override fun onDestroy() {

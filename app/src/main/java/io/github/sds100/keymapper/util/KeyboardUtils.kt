@@ -12,8 +12,8 @@ import android.view.KeyEvent
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import io.github.sds100.keymapper.Constants
+import io.github.sds100.keymapper.NotificationController
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
 import io.github.sds100.keymapper.util.result.*
 import splitties.init.appCtx
@@ -294,13 +294,13 @@ object KeyboardUtils {
 @RequiresApi(Build.VERSION_CODES.N)
 fun AccessibilityService.SoftKeyboardController.hide(ctx: Context) {
     showMode = AccessibilityService.SHOW_MODE_HIDDEN
-    WidgetsManager.onEvent(ctx, WidgetsManager.EVENT_HIDE_KEYBOARD)
+    NotificationController.onEvent(ctx, NotificationController.EVENT_HIDE_KEYBOARD)
 }
 
 @RequiresApi(Build.VERSION_CODES.N)
 fun AccessibilityService.SoftKeyboardController.show(ctx: Context) {
     showMode = AccessibilityService.SHOW_MODE_AUTO
-    WidgetsManager.onEvent(ctx, WidgetsManager.EVENT_SHOW_KEYBOARD)
+    NotificationController.onEvent(ctx, NotificationController.EVENT_SHOW_KEYBOARD)
 }
 
 @RequiresApi(Build.VERSION_CODES.N)

@@ -20,13 +20,13 @@ import com.github.salomonbrys.kotson.registerTypeAdapter
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
+import io.github.sds100.keymapper.NotificationController
+import io.github.sds100.keymapper.NotificationController.EVENT_ACCESSIBILITY_SERVICE_STARTED
+import io.github.sds100.keymapper.NotificationController.EVENT_ACCESSIBILITY_SERVICE_STOPPED
+import io.github.sds100.keymapper.NotificationController.EVENT_PAUSE_REMAPS
+import io.github.sds100.keymapper.NotificationController.EVENT_RESUME_REMAPS
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
-import io.github.sds100.keymapper.WidgetsManager
-import io.github.sds100.keymapper.WidgetsManager.EVENT_ACCESSIBILITY_SERVICE_STARTED
-import io.github.sds100.keymapper.WidgetsManager.EVENT_ACCESSIBILITY_SERVICE_STOPPED
-import io.github.sds100.keymapper.WidgetsManager.EVENT_PAUSE_REMAPS
-import io.github.sds100.keymapper.WidgetsManager.EVENT_RESUME_REMAPS
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.KeyMap
@@ -99,13 +99,13 @@ class MyAccessibilityService : AccessibilityService(),
                 ACTION_PAUSE_REMAPPINGS -> {
                     keymapDetectionDelegate.reset()
                     AppPreferences.keymapsPaused = true
-                    WidgetsManager.onEvent(this@MyAccessibilityService, EVENT_PAUSE_REMAPS)
+                    NotificationController.onEvent(this@MyAccessibilityService, EVENT_PAUSE_REMAPS)
                 }
 
                 ACTION_RESUME_REMAPPINGS -> {
                     keymapDetectionDelegate.reset()
                     AppPreferences.keymapsPaused = false
-                    WidgetsManager.onEvent(this@MyAccessibilityService, EVENT_RESUME_REMAPS)
+                    NotificationController.onEvent(this@MyAccessibilityService, EVENT_RESUME_REMAPS)
                 }
 
                 BluetoothDevice.ACTION_ACL_CONNECTED, BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
@@ -336,7 +336,7 @@ class MyAccessibilityService : AccessibilityService(),
 
         defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
 
-        WidgetsManager.onEvent(this, EVENT_ACCESSIBILITY_SERVICE_STARTED)
+        NotificationController.onEvent(this, EVENT_ACCESSIBILITY_SERVICE_STARTED)
         sendPackageBroadcast(ACTION_ON_START)
 
         keymapDetectionDelegate.imitateButtonPress.observe(this, Observer {
@@ -481,7 +481,7 @@ class MyAccessibilityService : AccessibilityService(),
             lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
         }
 
-        WidgetsManager.onEvent(this, EVENT_ACCESSIBILITY_SERVICE_STOPPED)
+        NotificationController.onEvent(this, EVENT_ACCESSIBILITY_SERVICE_STOPPED)
 
         sendPackageBroadcast(ACTION_ON_STOP)
 
@@ -573,7 +573,7 @@ class MyAccessibilityService : AccessibilityService(),
 
             str(R.string.key_pref_keymaps_paused) -> {
                 if (AppPreferences.keymapsPaused) {
-                    WidgetsManager.onEvent(this, EVENT_PAUSE_REMAPS)
+                    NotificationController.onEvent(this, EVENT_PAUSE_REMAPS)
 
                     if (AppPreferences.toggleKeyboardOnToggleKeymaps) {
                         KeyboardUtils.chooseLastUsedIncompatibleInputMethod(this)
@@ -583,7 +583,7 @@ class MyAccessibilityService : AccessibilityService(),
                         denyFingerprintGestureDetection()
                     }
                 } else {
-                    WidgetsManager.onEvent(this, EVENT_RESUME_REMAPS)
+                    NotificationController.onEvent(this, EVENT_RESUME_REMAPS)
 
                     if (AppPreferences.toggleKeyboardOnToggleKeymaps) {
                         KeyboardUtils.chooseCompatibleInputMethod(this)

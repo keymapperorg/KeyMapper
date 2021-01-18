@@ -18,8 +18,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.preference.*
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
+import io.github.sds100.keymapper.NotificationController
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
 import io.github.sds100.keymapper.databinding.FragmentSettingsBinding
@@ -258,7 +258,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
                 toggleKeyboardNotificationPref -> {
                     //show/hide the notification when the preference is toggled
                     if (newValue) {
-                        WidgetsManager.invalidateNotifications(requireContext())
+                        NotificationController.invalidateNotifications(requireContext())
                     } else {
                         NotificationUtils.dismissNotification(NotificationUtils.ID_TOGGLE_KEYBOARD)
                     }
@@ -267,7 +267,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
                 toggleRemappingsNotificationPref -> {
 
                     if (newValue) {
-                        WidgetsManager.invalidateNotifications(requireContext())
+                        NotificationController.invalidateNotifications(requireContext())
                     } else {
 
                         NotificationUtils.dismissNotification(NotificationUtils.ID_TOGGLE_KEYMAPS)
@@ -279,7 +279,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
                     enableRootPreferences(newValue)
 
                     //the pending intents need to be updated so they don't use the root methods
-                    WidgetsManager.invalidateNotifications(requireContext())
+                    NotificationController.invalidateNotifications(requireContext())
                 }
 
                 automaticBackupLocation -> {

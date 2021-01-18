@@ -19,8 +19,8 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import io.github.sds100.keymapper.Constants
+import io.github.sds100.keymapper.NotificationController
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.WidgetsManager
 import io.github.sds100.keymapper.broadcastreceiver.KeyMapperBroadcastReceiver
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.service.MyAccessibilityService
@@ -51,7 +51,7 @@ object NotificationUtils {
     @Deprecated("Removed in 2.0. This channel shouldn't exist")
     const val CHANNEL_ID_PERSISTENT = "channel_persistent"
 
-    fun updateToggleKeymapsNotification(ctx: Context, @WidgetsManager.Event event: Int) {
+    fun updateToggleKeymapsNotification(ctx: Context, @NotificationController.Event event: Int) {
         if (SDK_INT < Build.VERSION_CODES.O) {
             val showNotification = AppPreferences.showToggleKeymapsNotification
 
@@ -69,7 +69,7 @@ object NotificationUtils {
         @DrawableRes val iconRes: Int
 
         when (event) {
-            WidgetsManager.EVENT_PAUSE_REMAPS -> {
+            NotificationController.EVENT_PAUSE_REMAPS -> {
                 titleRes = R.string.notification_keymaps_start_title
                 textRes = R.string.notification_keymaps_start_text
                 iconRes = R.drawable.ic_notification_play
@@ -80,7 +80,7 @@ object NotificationUtils {
                 )
             }
 
-            WidgetsManager.EVENT_RESUME_REMAPS -> {
+            NotificationController.EVENT_RESUME_REMAPS -> {
                 titleRes = R.string.notification_keymaps_pause_title
                 textRes = R.string.notification_keymaps_pause_text
                 iconRes = R.drawable.ic_notification_pause
@@ -91,7 +91,7 @@ object NotificationUtils {
                 )
             }
 
-            WidgetsManager.EVENT_ACCESSIBILITY_SERVICE_STOPPED -> {
+            NotificationController.EVENT_ACCESSIBILITY_SERVICE_STOPPED -> {
                 titleRes = R.string.notification_accessibility_service_disabled_title
                 textRes = R.string.notification_accessibility_service_disabled_text
                 iconRes = R.drawable.ic_notification_error
@@ -105,7 +105,7 @@ object NotificationUtils {
             else -> return
         }
 
-        if ((event == WidgetsManager.EVENT_RESUME_REMAPS) or (event == WidgetsManager.EVENT_PAUSE_REMAPS)) {
+        if ((event == NotificationController.EVENT_RESUME_REMAPS) or (event == NotificationController.EVENT_PAUSE_REMAPS)) {
 
             val stopAccessibilityServicePendingIntent = IntentUtils.createPendingBroadcastIntent(
                 ctx,
