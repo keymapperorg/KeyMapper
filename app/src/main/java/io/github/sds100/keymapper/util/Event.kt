@@ -82,3 +82,6 @@ class SendFeedback : Event()
 class ResumeKeymaps : Event()
 class PauseKeymaps : Event()
 class EnableAccessibilityService : Event()
+
+//accessibility service
+class ShowFingerprintFeatureNotification : Event()

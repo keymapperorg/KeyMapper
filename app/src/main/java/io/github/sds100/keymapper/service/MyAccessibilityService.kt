@@ -459,7 +459,6 @@ class MyAccessibilityService : AccessibilityService(),
         }
 
         controller = AccessibilityServiceController(
-            ctx = this,
             lifecycleOwner = this,
             iConstraintState = this,
             iAccessibilityService = this,
@@ -468,7 +467,8 @@ class MyAccessibilityService : AccessibilityService(),
 
         controller.eventStream.observe(this, Observer {
             when (it) {
-
+                is ShowFingerprintFeatureNotification ->
+                    FingerprintMapUtils.showFeatureNotification(this)
             }
         })
     }
