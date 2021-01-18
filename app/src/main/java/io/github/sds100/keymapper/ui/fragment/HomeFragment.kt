@@ -50,7 +50,6 @@ import splitties.alertdialog.appcompat.messageResource
 import splitties.systemservices.powerManager
 import splitties.toast.longToast
 import splitties.toast.toast
-import uk.co.samuelwall.materialtaptargetprompt.extras.focals.RectanglePromptFocal
 
 /**
  * A placeholder fragment containing a simple view.
@@ -422,9 +421,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             viewLifecycleScope.launchWhenResumed {
                 QuickStartGuideTapTarget().show(
                     this@HomeFragment,
-                    R.id.action_help,
-                    RectanglePromptFocal()
-                )
+                    R.id.action_help)
             }
         }
     }
