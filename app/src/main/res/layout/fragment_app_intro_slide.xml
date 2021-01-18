@@ -8,6 +8,14 @@
 
         <import type="android.view.View" />
 
+        <import type="io.github.sds100.keymapper.util.ViewState" />
+
+        <import type="io.github.sds100.keymapper.util.ViewPopulated" />
+
+        <import type="io.github.sds100.keymapper.util.ViewEmpty" />
+
+        <import type="io.github.sds100.keymapper.util.ViewLoading" />
+
         <variable
             name="title"
             type="String" />
@@ -31,6 +39,10 @@
         <variable
             name="onButtonClickListener"
             type="View.OnClickListener" />
+
+        <variable
+            name="viewState"
+            type="ViewState" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -75,6 +87,7 @@
             android:id="@+id/scrollViewDescription"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:visibility="@{viewState instanceof ViewPopulated ? View.VISIBLE : View.INVISIBLE}"
             app:layout_constraintBottom_toTopOf="@id/button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -89,6 +102,19 @@
                 android:text="@{description}"
                 tools:text="This is a demo of the AppIntro Library" />
         </androidx.core.widget.NestedScrollView>
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="@{viewState instanceof ViewLoading ? View.VISIBLE : View.GONE}"
+            app:indicatorColor="#FFFFFF"
+            app:layout_constraintBottom_toTopOf="@id/button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
+            app:layout_constraintVertical_weight="3" />
 
         <!--    Set INVISIBLE rather than GONE so that the text doesn't move up and down between slides.    -->
         <com.google.android.material.button.MaterialButton
