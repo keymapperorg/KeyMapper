@@ -9,6 +9,8 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
 import kotlinx.coroutines.flow.collect
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
+import uk.co.samuelwall.materialtaptargetprompt.extras.PromptFocal
+import uk.co.samuelwall.materialtaptargetprompt.extras.focals.CirclePromptFocal
 
 /**
  * Created by sds100 on 17/01/21.
@@ -22,7 +24,9 @@ sealed class TapTarget(private val key: Preferences.Key<Boolean>,
      * Only works on app bar items if called during or after
      * the resumed state in the view lifecycle.
      */
-    suspend fun show(fragment: Fragment, @IdRes viewId: Int) {
+    suspend fun show(fragment: Fragment,
+                     @IdRes viewId: Int,
+                     promptFocal: PromptFocal = CirclePromptFocal()) {
         val dataStore = ServiceLocator.preferenceDataStore(fragment.requireContext())
 
         dataStore.get(key).collect { shown ->
@@ -35,6 +39,7 @@ sealed class TapTarget(private val key: Preferences.Key<Boolean>,
                 setPrimaryText(this@TapTarget.primaryText)
                 setSecondaryText(this@TapTarget.secondaryText)
                 backgroundColour = fragment.color(R.color.colorAccent)
+                this.promptFocal = promptFocal
 
                 setPromptStateChangeListener { _, state ->
                     if (state == MaterialTapTargetPrompt.STATE_DISMISSED
