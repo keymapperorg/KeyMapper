@@ -200,9 +200,6 @@ class MyAccessibilityService : AccessibilityService(),
                         KeyboardUtils.getChosenInputMethodPackageName(this@MyAccessibilityService)
                             .valueOrNull()
                 }
-
-                ACTION_CHECK_FINGERPRINT_GESTURES_AVAILABILITY ->
-                    checkFingerprintGesturesAvailability()
             }
         }
     }
@@ -383,7 +380,7 @@ class MyAccessibilityService : AccessibilityService(),
 
         if (VERSION.SDK_INT >= VERSION_CODES.O) {
 
-//            checkFingerprintGesturesIsAvailable()
+            checkFingerprintGesturesAvailability()
 
             fingerprintGestureCallback =
                 object : FingerprintGestureController.FingerprintGestureCallback() {
