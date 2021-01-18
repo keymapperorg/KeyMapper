@@ -3,6 +3,7 @@ package io.github.sds100.keymapper
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.room.Room
+import io.github.sds100.keymapper.data.AppUpdateManager
 import io.github.sds100.keymapper.data.DefaultPreferenceDataStore
 import io.github.sds100.keymapper.data.IPreferenceDataStore
 import io.github.sds100.keymapper.data.db.AppDatabase
@@ -50,6 +51,9 @@ object ServiceLocator {
         }
     }
 
+    @Volatile
+    private var appUpdateManager: AppUpdateManager? = null
+
     fun keymapRepository(context: Context): DefaultKeymapRepository {
         synchronized(this) {
             return keymapRepository ?: createKeymapRepository(context)
@@ -90,6 +94,12 @@ object ServiceLocator {
     fun systemRepository(context: Context): SystemRepository {
         synchronized(this) {
             return systemRepository ?: createSystemRepository(context)
+        }
+    }
+
+    fun appUpdateManager(context: Context): AppUpdateManager {
+        synchronized(this) {
+            return appUpdateManager ?: createAppUpdateManager(context)
         }
     }
 
@@ -159,6 +169,14 @@ object ServiceLocator {
             ?: FileRepository(context.applicationContext).also {
                 this.fileRepository = it
             }
+    }
+
+    private fun createAppUpdateManager(context: Context): AppUpdateManager {
+        val preferenceDataStore = preferenceDataStore(context)
+
+        return appUpdateManager ?: AppUpdateManager(preferenceDataStore).also {
+            this.appUpdateManager = it
+        }
     }
 
     private fun createDatabase(context: Context): AppDatabase {

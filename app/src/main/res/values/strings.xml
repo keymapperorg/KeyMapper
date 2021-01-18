@@ -346,6 +346,7 @@
     <string name="notification_channel_toggle_remaps">Pause/Resume keymaps</string>
     <string name="notification_channel_keyboard_hidden">Keyboard is hidden warning</string>
     <string name="notification_channel_toggle_keyboard">Toggle Key Mapper Keyboard</string>
+    <string name="notification_channel_new_features">New Features</string>
 
     <string name="notification_ime_persistent_text">Tap to change your keyboard.</string>
     <string name="notification_ime_persistent_title">Keyboard Picker</string>
@@ -371,6 +372,9 @@
     <string name="notification_toggle_keyboard_text">Tap to switch to and from the Key Mapper keyboard.</string>
     <string name="notification_ime_service_disabled_title">Key Mapper Keyboard disabled!</string>
     <string name="notification_ime_service_disabled_text">Tap to enable the Key Mapper keyboard.</string>
+
+    <string name="notification_feature_fingerprint_title">Remap fingerprint gestures with Key Mapper!</string>
+    <string name="notification_feature_fingerprint_text">Your device supports remapping swipes on the fingerprint sensor. Tap to start remapping!</string>
     <!-- Notification strings -->
 
     <!--Preference titles and summaries-->
@@ -587,7 +591,7 @@
 
     <string name="showcase_fingerprint_gesture_support_title">Remapping fingerprint reader gestures</string>
     <string name="showcase_fingerprint_gesture_support_message_supported_unknown">You\'ll need to enable the accessibility service so that Key Mapper can check whether your device can detect fingerprint gestures.</string>
-    <string name="showcase_fingerprint_gesture_support_message_supported">Your device can detect fingerprint gestures! There is a tab at the top of the home-screen to for remapping fingerprint gestures.</string>
+    <string name="showcase_fingerprint_gesture_support_message_supported">Your device can detect fingerprint gestures! There is a tab at the top of the home-screen for remapping fingerprint gestures.</string>
     <string name="showcase_fingerprint_gesture_support_message_not_supported">Your device does NOT allow 3rd party apps to detect fingerprint gestures! There isn\'t anything the developer can do about this. Some devices have the setting to swipe down on the fingerprint reader to open the notification drawer and do NOT allow 3rd party apps to detect fingerprint gestures.</string>
     <string name="showcase_fingerprint_gesture_support_button">Enable</string>
     <!-- Showcase -->

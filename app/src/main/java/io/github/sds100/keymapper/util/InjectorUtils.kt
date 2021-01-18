@@ -134,4 +134,8 @@ object InjectorUtils {
     ): CreateActionShortcutViewModel.Factory {
         return CreateActionShortcutViewModel.Factory(ServiceLocator.deviceInfoRepository(context))
     }
+
+    fun provideHomeViewModel(context: Context): HomeViewModel.Factory {
+        return HomeViewModel.Factory()
+    }
 }

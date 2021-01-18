@@ -53,7 +53,7 @@ class MyAccessibilityService : AccessibilityService(),
     LifecycleOwner,
     SharedPreferences.OnSharedPreferenceChangeListener,
     IClock,
-    IPerformAccessibilityAction,
+    IAccessibilityService,
     IConstraintState,
     IActionError {
 
@@ -192,9 +192,7 @@ class MyAccessibilityService : AccessibilityService(),
                     }
                 }
                 ACTION_CHECK_FINGERPRINT_GESTURES_AVAILABILITY ->
-                    if (VERSION.SDK_INT >= VERSION_CODES.O) {
-                        checkFingerprintGesturesIsAvailable()
-                    }
+                    checkFingerprintGesturesAvailability()
             }
         }
     }
@@ -245,8 +243,17 @@ class MyAccessibilityService : AccessibilityService(),
                 return mediaSessionManager.getActiveSessions(component).map { it.packageName }
             }
 
-            return listOf()
+            return emptyList()
         }
+
+    override val fingerprintGestureDetectionAvailable: Boolean
+        get() = if (VERSION.SDK_INT >= VERSION_CODES.O) {
+            fingerprintGestureController.isGestureDetectionAvailable
+        } else {
+            false
+        }
+
+    private val connectedBtAddresses = mutableSetOf<String>()
 
     private var mIsScreenOn = true
     private val mConnectedBtAddresses = mutableSetOf<String>()
@@ -271,6 +278,8 @@ class MyAccessibilityService : AccessibilityService(),
             }
         }
     }
+
+    private lateinit var controller: AccessibilityServiceController
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -300,7 +309,7 @@ class MyAccessibilityService : AccessibilityService(),
 
         mActionPerformerDelegate = ActionPerformerDelegate(
             context = this,
-            iPerformAccessibilityAction = this,
+            iAccessibilityService = this,
             lifecycle = lifecycle)
 
         IntentFilter().apply {
@@ -328,7 +337,7 @@ class MyAccessibilityService : AccessibilityService(),
         WidgetsManager.onEvent(this, EVENT_ACCESSIBILITY_SERVICE_STARTED)
         sendPackageBroadcast(ACTION_ON_START)
 
-        mKeymapDetectionDelegate.imitateButtonPress.observe(this, {
+        mKeymapDetectionDelegate.imitateButtonPress.observe(this, Observer {
             when (it.keyCode) {
                 KeyEvent.KEYCODE_VOLUME_UP -> AudioUtils.adjustVolume(this, AudioManager.ADJUST_RAISE,
                     showVolumeUi = true)
@@ -367,7 +376,7 @@ class MyAccessibilityService : AccessibilityService(),
 
         if (VERSION.SDK_INT >= VERSION_CODES.O) {
 
-            checkFingerprintGesturesIsAvailable()
+            checkFingerprintGesturesAvailability()
 
             mFingerprintGestureCallback =
                 object : FingerprintGestureController.FingerprintGestureCallback() {
@@ -436,6 +445,22 @@ class MyAccessibilityService : AccessibilityService(),
                 mActionPerformerDelegate.performAction(it, mChosenImePackageName)
             })
         }
+
+        controller = AccessibilityServiceController(
+            ctx = this,
+            lifecycleOwner = this,
+            iConstraintState = this,
+            iAccessibilityService = this,
+            appUpdateManager = ServiceLocator.appUpdateManager(this)
+        )
+
+        controller.eventStream.observe(this, Observer {
+            when (it) {
+
+            }
+        })
+
+        checkFingerprintGesturesAvailability()
     }
 
     override fun onInterrupt() {}
@@ -499,15 +524,18 @@ class MyAccessibilityService : AccessibilityService(),
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         when (key) {
             str(R.string.key_pref_long_press_delay) -> {
-                mKeymapDetectionDelegate.preferences.defaultLongPressDelay = AppPreferences.longPressDelay
+                mKeymapDetectionDelegate.preferences.defaultLongPressDelay =
+                    AppPreferences.longPressDelay
             }
 
             str(R.string.key_pref_double_press_delay) -> {
-                mKeymapDetectionDelegate.preferences.defaultDoublePressDelay = AppPreferences.doublePressDelay
+                mKeymapDetectionDelegate.preferences.defaultDoublePressDelay =
+                    AppPreferences.doublePressDelay
             }
 
             str(R.string.key_pref_repeat_delay) -> {
-                mKeymapDetectionDelegate.preferences.defaultRepeatDelay = AppPreferences.repeatDelay
+                mKeymapDetectionDelegate.preferences.defaultRepeatDelay =
+                    AppPreferences.repeatDelay
             }
 
             str(R.string.key_pref_repeat_rate) -> {
@@ -520,7 +548,8 @@ class MyAccessibilityService : AccessibilityService(),
             }
 
             str(R.string.key_pref_vibrate_duration) -> {
-                mKeymapDetectionDelegate.preferences.defaultVibrateDuration = AppPreferences.vibrateDuration
+                mKeymapDetectionDelegate.preferences.defaultVibrateDuration =
+                    AppPreferences.vibrateDuration
             }
 
             str(R.string.key_pref_force_vibrate) -> {
@@ -528,7 +557,8 @@ class MyAccessibilityService : AccessibilityService(),
             }
 
             str(R.string.key_pref_hold_down_duration) -> {
-                mKeymapDetectionDelegate.preferences.defaultHoldDownDuration = AppPreferences.holdDownDuration
+                mKeymapDetectionDelegate.preferences.defaultHoldDownDuration =
+                    AppPreferences.holdDownDuration
             }
 
             str(R.string.key_pref_keymaps_paused) -> {
@@ -584,17 +614,19 @@ class MyAccessibilityService : AccessibilityService(),
     override val rootNode: AccessibilityNodeInfo?
         get() = rootInActiveWindow
 
-    @RequiresApi(VERSION_CODES.O)
-    private fun requestFingerprintGestureDetection() {
-        serviceInfo = serviceInfo.apply {
-            flags = flags.withFlag(AccessibilityServiceInfo.FLAG_REQUEST_FINGERPRINT_GESTURES)
+    override fun requestFingerprintGestureDetection() {
+        if (VERSION.SDK_INT >= VERSION_CODES.O) {
+            serviceInfo = serviceInfo.apply {
+                flags = flags.withFlag(AccessibilityServiceInfo.FLAG_REQUEST_FINGERPRINT_GESTURES)
+            }
         }
     }
 
-    @RequiresApi(VERSION_CODES.O)
-    private fun denyFingerprintGestureDetection() {
-        serviceInfo = serviceInfo.apply {
-            flags = flags.minusFlag(AccessibilityServiceInfo.FLAG_REQUEST_FINGERPRINT_GESTURES)
+    override fun denyFingerprintGestureDetection() {
+        if (VERSION.SDK_INT >= VERSION_CODES.O) {
+            serviceInfo = serviceInfo?.apply {
+                flags = flags.minusFlag(AccessibilityServiceInfo.FLAG_REQUEST_FINGERPRINT_GESTURES)
+            }
         }
     }
 
@@ -645,15 +677,16 @@ class MyAccessibilityService : AccessibilityService(),
         }
     }
 
-    @RequiresApi(VERSION_CODES.O)
-    private fun checkFingerprintGesturesIsAvailable() {
+    private fun checkFingerprintGesturesAvailability() {
         requestFingerprintGestureDetection()
 
         //this is important
         runBlocking {
-            if (fingerprintGestureController.isGestureDetectionAvailable) {
-                ServiceLocator.fingerprintMapRepository(this@MyAccessibilityService)
-                    .setFingerprintGesturesAvailable(true)
+            if (VERSION.SDK_INT >= VERSION_CODES.O) {
+                if (fingerprintGestureController.isGestureDetectionAvailable) {
+                    ServiceLocator.fingerprintMapRepository(this@MyAccessibilityService)
+                        .setFingerprintGesturesAvailable(true)
+                }
             }
         }
 

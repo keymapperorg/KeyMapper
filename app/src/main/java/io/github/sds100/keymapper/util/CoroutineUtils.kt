@@ -14,9 +14,9 @@ import kotlinx.coroutines.flow.collect
 val Fragment.viewLifecycleScope: LifecycleCoroutineScope
     get() = viewLifecycleOwner.lifecycle.coroutineScope
 
-fun <T> Flow<T>.collectWhenLifecycleStarted(lifecycleOwner: LifecycleOwner,
-                                            block: suspend (value: T) -> Unit) {
-    lifecycleOwner.lifecycle.coroutineScope.launchWhenStarted {
+fun <T> Flow<T>.collectWhenResumed(lifecycleOwner: LifecycleOwner,
+                                   block: suspend (value: T) -> Unit) {
+    lifecycleOwner.lifecycle.coroutineScope.launchWhenResumed {
         collect {
             block.invoke(it)
         }

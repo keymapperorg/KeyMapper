@@ -42,9 +42,9 @@ import timber.log.Timber
  */
 
 class ActionPerformerDelegate(context: Context,
-                              iPerformAccessibilityAction: IPerformAccessibilityAction,
+                              iAccessibilityService: IAccessibilityService,
                               lifecycle: Lifecycle
-) : IPerformAccessibilityAction by iPerformAccessibilityAction {
+) : IAccessibilityService by iAccessibilityService {
 
     companion object {
         private const val OVERFLOW_MENU_CONTENT_DESCRIPTION = "More options"

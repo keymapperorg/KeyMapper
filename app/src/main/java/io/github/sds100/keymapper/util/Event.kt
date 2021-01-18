@@ -39,15 +39,11 @@ class ChoosePackage : Event()
 class ChooseBluetoothDevice : Event()
 class OpenUrl(val url: String) : Event()
 class CloseDialog : Event()
-
 class SelectScreenshot : Event()
-
 class ChooseKeycode : Event()
 class BuildDeviceInfoModels : Event()
-
 class RequestBackupSelectedKeymaps : Event()
 class BuildKeymapListModels(val keymapList: List<KeyMap>) : Event()
-
 class OkDialog(@StringRes val message: Int, val onOk: () -> Unit) : Event()
 class EnableAccessibilityServicePrompt : Event()
 class RequestBackup(val keymapList: List<KeyMap>) : Event()

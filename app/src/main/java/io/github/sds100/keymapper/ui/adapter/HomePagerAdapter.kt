@@ -14,7 +14,13 @@ class HomePagerAdapter(
     fingerprintGesturesAvailable: Boolean
 ) : FragmentStateAdapter(fragment) {
 
+    companion object {
+        const val INDEX_FINGERPRINT_TAB = 1
+    }
+
     private var mTabFragmentsCreators = emptyList<() -> Fragment>()
+
+    private var tabFragmentsCreators = emptyList<() -> Fragment>()
 
     init {
         invalidateFragments(fingerprintGesturesAvailable)
@@ -34,7 +40,7 @@ class HomePagerAdapter(
             }
         ).apply {
             if (fingerprintGesturesAvailable) {
-                add {
+                add(INDEX_FINGERPRINT_TAB) {
                     FingerprintMapListFragment().apply {
                         isAppBarVisible = false
                         isInPagerAdapter = true

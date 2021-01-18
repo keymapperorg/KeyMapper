@@ -6,12 +6,19 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.FingerprintMap
+import io.github.sds100.keymapper.ui.activity.HomeActivity
 import splitties.bitflags.hasFlag
 
 /**
  * Created by sds100 on 14/11/20.
  */
 object FingerprintMapUtils {
+    /**
+     * Use version code for 2.2.0.beta.2 because in beta 1 there were issues detecting the
+     * availability of fingerprint gestures.
+     */
+    const val FINGERPRINT_GESTURES_MIN_VERSION = 40
+
     const val SWIPE_DOWN = "swipe_down"
     const val SWIPE_UP = "swipe_up"
     const val SWIPE_LEFT = "swipe_left"
@@ -33,6 +40,26 @@ object FingerprintMapUtils {
         FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_LEFT to SWIPE_LEFT,
         FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_RIGHT to SWIPE_RIGHT
     )
+
+    fun dismissFeatureNotification() {
+        NotificationUtils.dismissNotification(
+            NotificationUtils.ID_FEATURE_REMAP_FINGERPRINT_GESTURES)
+    }
+
+    fun showFeatureNotification(ctx: Context) {
+        val pendingIntent = IntentUtils.createPendingActivityIntent(ctx, HomeActivity::class.java)
+
+        NotificationUtils.showNotification(
+            ctx,
+            id = NotificationUtils.ID_FEATURE_REMAP_FINGERPRINT_GESTURES,
+            channel = NotificationUtils.CHANNEL_NEW_FEATURES,
+            icon = R.drawable.ic_notification_fingerprint,
+            title = R.string.notification_feature_fingerprint_title,
+            text = R.string.notification_feature_fingerprint_text,
+            intent = pendingIntent,
+            autoCancel = true
+        )
+    }
 }
 
 fun FingerprintMap.getFlagLabelList(ctx: Context): List<String> = sequence {
