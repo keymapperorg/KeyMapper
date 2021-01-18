@@ -72,8 +72,6 @@ class MyAccessibilityService : AccessibilityService(),
         const val ACTION_ON_STOP = "$PACKAGE_NAME.ON_ACCESSIBILITY_SERVICE_STOP"
         const val ACTION_PERFORM_ACTIONS = "$PACKAGE_NAME.PERFORM_ACTIONS"
         const val ACTION_UPDATE_KEYMAP_LIST_CACHE = "$PACKAGE_NAME.UPDATE_KEYMAP_LIST_CACHE"
-        const val ACTION_CHECK_FINGERPRINT_GESTURES_AVAILABILITY =
-            "$PACKAGE_NAME.ACTION_CHECK_FINGERPRINT_GESTURES_AVAILABILITY"
 
         //DONT CHANGE!!!
         const val ACTION_TRIGGER_KEYMAP_BY_UID = "$PACKAGE_NAME.TRIGGER_KEYMAP_BY_UID"
@@ -335,7 +333,6 @@ class MyAccessibilityService : AccessibilityService(),
             addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
             addAction(ACTION_TRIGGER_KEYMAP_BY_UID)
             addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
-            addAction(ACTION_CHECK_FINGERPRINT_GESTURES_AVAILABILITY)
 
             registerReceiver(broadcastReceiver, this)
         }
@@ -477,8 +474,6 @@ class MyAccessibilityService : AccessibilityService(),
 
             }
         })
-
-        checkFingerprintGesturesAvailability()
     }
 
     override fun onInterrupt() {}

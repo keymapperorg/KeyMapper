@@ -431,9 +431,6 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                     this@HomeFragment,
                     R.id.action_help)
             }
-
-            requireContext().sendPackageBroadcast(
-                MyAccessibilityService.ACTION_CHECK_FINGERPRINT_GESTURES_AVAILABILITY)
         }
     }
 
