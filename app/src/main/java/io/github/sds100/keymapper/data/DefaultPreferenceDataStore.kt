@@ -9,6 +9,7 @@ import androidx.datastore.preferences.createDataStore
 import io.github.sds100.keymapper.util.defaultSharedPreferences
 import io.github.sds100.keymapper.util.str
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 /**
@@ -35,8 +36,12 @@ class DefaultPreferenceDataStore(ctx: Context) : IPreferenceDataStore {
         }
     }
 
-    override fun <T> get(key: Preferences.Key<T>): Flow<T?> {
+    override fun <T> getFlow(key: Preferences.Key<T>): Flow<T?> {
         return preferenceDataStore.data.map { it[key] }
+    }
+
+    override suspend fun <T> get(key: Preferences.Key<T>): T? {
+        return preferenceDataStore.data.first()[key]
     }
 
     override suspend fun <T> set(key: Preferences.Key<T>, value: T) {

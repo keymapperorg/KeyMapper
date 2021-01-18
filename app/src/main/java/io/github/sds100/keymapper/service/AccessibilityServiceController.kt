@@ -25,15 +25,14 @@ class AccessibilityServiceController(
     val eventStream: LiveData<Event> = _eventStream
 
     init {
-        appUpdateManager.lastVersionCodeAccessibilityService.observe(this, Observer { oldVersion ->
-            if (oldVersion == Constants.VERSION_CODE) return@Observer
+        lifecycleScope.launch {
+            val oldVersion = appUpdateManager.getLastVersionCodeAccessibilityService()
+            if (oldVersion == Constants.VERSION_CODE) return@launch
 
             requestFingerprintGestureDetection()
 
             val handledUpdateInHomeScreen =
-                appUpdateManager.lastVersionCodeHomeScreen.value
-                    ?.let { it == Constants.VERSION_CODE }
-                    ?: false
+                appUpdateManager.getLastVersionCodeHomeScreen() == Constants.VERSION_CODE
 
             if (oldVersion < FingerprintMapUtils.FINGERPRINT_GESTURES_MIN_VERSION
                 && fingerprintGestureDetectionAvailable
@@ -43,9 +42,7 @@ class AccessibilityServiceController(
 
             denyFingerprintGestureDetection()
 
-            lifecycleScope.launch {
-                appUpdateManager.handledAppUpdateInAccessibilityService()
-            }
-        })
+            appUpdateManager.handledAppUpdateInAccessibilityService()
+        }
     }
 }

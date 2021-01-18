@@ -12,7 +12,8 @@ interface IPreferenceDataStore {
     fun getBoolPref(@StringRes key: Int): Boolean
     fun setBoolPref(@StringRes key: Int, value: Boolean)
 
-    fun <T> get(key: Preferences.Key<T>): Flow<T?>
+    fun <T> getFlow(key: Preferences.Key<T>): Flow<T?>
+    suspend fun <T> get(key: Preferences.Key<T>): T?
     suspend fun <T> set(key: Preferences.Key<T>, value: T)
 
     fun getStringPref(@StringRes key: Int): String?

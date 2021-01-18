@@ -366,19 +366,19 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
 
             val appUpdateManager = ServiceLocator.appUpdateManager(requireContext())
 
-            appUpdateManager.lastVersionCodeHomeScreen.observe(viewLifecycleOwner, {
-                if (it == Constants.VERSION_CODE) return@observe
+            viewLifecycleScope.launchWhenResumed {
+                val oldVersion = appUpdateManager.getLastVersionCodeHomeScreen()
 
-                viewLifecycleScope.launchWhenResumed {
-                    val direction = NavAppDirections.actionGlobalOnlineFileFragment(
-                        R.string.whats_new,
-                        R.string.url_changelog
-                    )
-                    findNavController().navigate(direction)
+                if (oldVersion == Constants.VERSION_CODE) return@launchWhenResumed
 
-                    appUpdateManager.handledAppUpdateOnHomeScreen()
-                }
-            })
+                val direction = NavAppDirections.actionGlobalOnlineFileFragment(
+                    R.string.whats_new,
+                    R.string.url_changelog
+                )
+                findNavController().navigate(direction)
+
+                appUpdateManager.handledAppUpdateOnHomeScreen()
+            }
 
             setGetNewGuiKeyboard {
                 requireContext().alertDialog {

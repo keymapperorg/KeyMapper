@@ -7,7 +7,6 @@ import androidx.datastore.preferences.core.preferencesKey
 import androidx.fragment.app.Fragment
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
-import kotlinx.coroutines.flow.collect
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
 import uk.co.samuelwall.materialtaptargetprompt.extras.PromptFocal
 import uk.co.samuelwall.materialtaptargetprompt.extras.focals.CirclePromptFocal
@@ -29,30 +28,28 @@ sealed class TapTarget(private val key: Preferences.Key<Boolean>,
                      promptFocal: PromptFocal = CirclePromptFocal()) {
         val dataStore = ServiceLocator.preferenceDataStore(fragment.requireContext())
 
-        dataStore.get(key).collect { shown ->
-            if (shown == true) return@collect
+        if (dataStore.get(key) == true) return
 
-            MaterialTapTargetPrompt.Builder(fragment).apply {
-                setTarget(viewId)
+        MaterialTapTargetPrompt.Builder(fragment).apply {
+            setTarget(viewId)
 
-                focalColour = fragment.color(android.R.color.transparent)
-                setPrimaryText(this@TapTarget.primaryText)
-                setSecondaryText(this@TapTarget.secondaryText)
-                backgroundColour = fragment.color(R.color.colorAccent)
-                this.promptFocal = promptFocal
+            focalColour = fragment.color(android.R.color.transparent)
+            setPrimaryText(this@TapTarget.primaryText)
+            setSecondaryText(this@TapTarget.secondaryText)
+            backgroundColour = fragment.color(R.color.colorAccent)
+            this.promptFocal = promptFocal
 
-                setPromptStateChangeListener { _, state ->
-                    if (state == MaterialTapTargetPrompt.STATE_DISMISSED
-                        || state == MaterialTapTargetPrompt.STATE_FINISHED) {
+            setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED
+                    || state == MaterialTapTargetPrompt.STATE_FINISHED) {
 
-                        fragment.viewLifecycleScope.launchWhenCreated {
-                            dataStore.set(key, true)
-                        }
+                    fragment.viewLifecycleScope.launchWhenCreated {
+                        dataStore.set(key, true)
                     }
                 }
-
-                show()
             }
+
+            show()
         }
     }
 }
