@@ -419,9 +419,6 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                         mRecoverFailureDelegate)
                 }
             })
-
-            requireContext().sendPackageBroadcast(
-                MyAccessibilityService.ACTION_CHECK_FINGERPRINT_GESTURES_AVAILABILITY)
         }
     }
 
