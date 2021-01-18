@@ -24,13 +24,11 @@ import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.ChooseAppStoreModel
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
-import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
-import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
-import io.github.sds100.keymapper.data.viewmodel.FingerprintMapListViewModel
-import io.github.sds100.keymapper.data.viewmodel.KeymapListViewModel
+import io.github.sds100.keymapper.data.viewmodel.*
 import io.github.sds100.keymapper.databinding.DialogChooseAppStoreBinding
 import io.github.sds100.keymapper.databinding.FragmentHomeBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
@@ -62,6 +60,10 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
 
     private val fingerprintMapListViewModel: FingerprintMapListViewModel by activityViewModels {
         InjectorUtils.provideFingerprintMapListViewModel(requireContext())
+    }
+
+    private val homeViewModel: HomeViewModel by activityViewModels {
+        InjectorUtils.provideHomeViewModel(requireContext())
     }
 
     /**
@@ -362,15 +364,21 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
 
             updateStatusLayouts()
 
-            if (AppPreferences.lastInstalledVersionCode != Constants.VERSION_CODE) {
-                val direction = NavAppDirections.actionGlobalOnlineFileFragment(
-                    R.string.whats_new,
-                    R.string.url_changelog
-                )
-                findNavController().navigate(direction)
+            val appUpdateManager = ServiceLocator.appUpdateManager(requireContext())
 
-                AppPreferences.lastInstalledVersionCode = Constants.VERSION_CODE
-            }
+            appUpdateManager.lastVersionCodeHomeScreen.observe(viewLifecycleOwner, {
+                if (it == Constants.VERSION_CODE) return@observe
+
+                viewLifecycleScope.launchWhenResumed {
+                    val direction = NavAppDirections.actionGlobalOnlineFileFragment(
+                        R.string.whats_new,
+                        R.string.url_changelog
+                    )
+                    findNavController().navigate(direction)
+
+                    appUpdateManager.handledAppUpdateOnHomeScreen()
+                }
+            })
 
             setGetNewGuiKeyboard {
                 requireContext().alertDialog {
@@ -442,6 +450,8 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             || Build.VERSION.SDK_INT < KeyboardUtils.KEY_MAPPER_GUI_IME_MIN_API) {
             AppPreferences.showGuiKeyboardAd = false
         }
+
+        FingerprintMapUtils.dismissFeatureNotification()
     }
 
     override fun onDestroyView() {

@@ -35,7 +35,7 @@ class DefaultPreferenceDataStore(ctx: Context) : IPreferenceDataStore {
         }
     }
 
-    override suspend fun <T> get(key: Preferences.Key<T>): Flow<T?> {
+    override fun <T> get(key: Preferences.Key<T>): Flow<T?> {
         return preferenceDataStore.data.map { it[key] }
     }
 

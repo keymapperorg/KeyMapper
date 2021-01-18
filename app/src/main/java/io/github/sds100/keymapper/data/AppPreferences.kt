@@ -105,11 +105,6 @@ object AppPreferences : DefaultPreferences() {
         false
     )
 
-    var lastInstalledVersionCode by IntPref(
-        appCtx.str(R.string.key_pref_last_installed_version),
-        -1
-    )
-
     val toggleKeyboardOnToggleKeymaps by BoolPref(
         appCtx.str(R.string.key_pref_toggle_keyboard_on_toggle_keymaps),
         appCtx.bool(R.bool.default_value_toggle_keyboard_on_toggle_keymaps)

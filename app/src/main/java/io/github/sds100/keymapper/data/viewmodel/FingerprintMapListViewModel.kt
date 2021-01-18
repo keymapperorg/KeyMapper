@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.data.repository.FingerprintMapRepository
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.IModelState
 import io.github.sds100.keymapper.util.result.Failure
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -32,7 +33,8 @@ class FingerprintMapListViewModel(
             )
         }
 
-    val fingerprintGesturesAvailable = repository.fingerprintGesturesAvailable
+    private val _fingerprintGesturesAvailable = MutableLiveData<Boolean>()
+    val fingerprintGesturesAvailable: LiveData<Boolean> = _fingerprintGesturesAvailable
 
     private val _eventStream = LiveEvent<Event>().apply {
         addSource(fingerprintGestureMaps.asLiveData()) {
@@ -46,6 +48,14 @@ class FingerprintMapListViewModel(
     private val _model = MutableLiveData<DataState<List<FingerprintMapListItemModel>>>()
     override val model = _model
     override val viewState = MutableLiveData<ViewState>(ViewLoading())
+
+    init {
+        viewModelScope.launch {
+            repository.fingerprintGesturesAvailable.collect {
+                _fingerprintGesturesAvailable.value = it
+            }
+        }
+    }
 
     fun setModels(models: List<FingerprintMapListItemModel>) {
         _model.value = Data(models)

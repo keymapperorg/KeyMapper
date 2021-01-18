@@ -54,7 +54,6 @@ sealed class TapTarget(private val key: Preferences.Key<Boolean>,
                 show()
             }
         }
-
     }
 }
 

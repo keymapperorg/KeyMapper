@@ -9,7 +9,7 @@ import android.view.accessibility.AccessibilityNodeInfo
 /**
  * Created by sds100 on 25/11/2018.
  */
-interface IPerformAccessibilityAction {
+interface IAccessibilityService {
     fun performGlobalAction(action: Int): Boolean
     fun dispatchGesture(gesture: GestureDescription,
                         callback: GestureResultCallback?,
@@ -17,4 +17,7 @@ interface IPerformAccessibilityAction {
 
     val keyboardController: AccessibilityService.SoftKeyboardController?
     val rootNode: AccessibilityNodeInfo?
+    val fingerprintGestureDetectionAvailable: Boolean
+    fun requestFingerprintGestureDetection()
+    fun denyFingerprintGestureDetection()
 }

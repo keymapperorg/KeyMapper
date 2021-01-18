@@ -183,13 +183,13 @@ class FingerprintGestureSupportSlide : AppIntroScrollableFragment() {
             backgroundColor = color(R.color.orange)
 
             ServiceLocator.fingerprintMapRepository(requireContext())
-                .fingerprintGesturesAvailable.observe(viewLifecycleOwner, { available ->
+                .fingerprintGesturesAvailable.collectWhenResumed(viewLifecycleOwner) { available ->
                     when (available) {
                         true -> gesturesSupportedLayout()
                         false -> gesturesUnsupportedLayout()
                         null -> supportedUnknownLayout()
                     }
-                })
+                }
         }
     }
 

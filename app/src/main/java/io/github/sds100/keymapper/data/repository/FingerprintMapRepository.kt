@@ -69,7 +69,7 @@ class FingerprintMapRepository(private val dataStore: DataStore<Preferences>) {
 
     val fingerprintGesturesAvailable = dataStore.data.map {
         it[PreferenceKeys.FINGERPRINT_GESTURES_AVAILABLE]
-    }.asLiveData()
+    }
 
     suspend fun setFingerprintGesturesAvailable(available: Boolean) {
         dataStore.edit {
