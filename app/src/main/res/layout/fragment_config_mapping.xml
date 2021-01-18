@@ -47,8 +47,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:gravity="center"
-            app:fabAlignmentMode="end"
-            app:fabAnimationMode="slide"
             app:menu="@menu/menu_config_mapping"
             app:navigationIcon="@drawable/ic_baseline_arrow_back_24">
 

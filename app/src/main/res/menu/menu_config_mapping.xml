@@ -2,11 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <!--  This must be visible by default otherwise the save button can be hidden in some situations  -->
     <item
         android:id="@+id/action_help"
         android:icon="@drawable/ic_baseline_help_outline_24"
         android:title="@string/action_help"
-        android:visible="false"
+        android:visible="true"
         app:showAsAction="ifRoom|withText" />
 
     <item
