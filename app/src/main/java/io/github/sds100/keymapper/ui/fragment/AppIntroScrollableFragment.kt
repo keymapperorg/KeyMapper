@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import io.github.sds100.keymapper.databinding.FragmentAppIntroSlideBinding
+import io.github.sds100.keymapper.util.ViewLoading
+import io.github.sds100.keymapper.util.ViewPopulated
 
 abstract class AppIntroScrollableFragment : Fragment() {
 
@@ -29,12 +31,18 @@ abstract class AppIntroScrollableFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.viewState = ViewLoading()
+
         onBind(binding)
     }
 
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
+    }
+
+    fun viewLoaded() {
+        binding.viewState = ViewPopulated()
     }
 
     abstract fun onBind(binding: FragmentAppIntroSlideBinding)

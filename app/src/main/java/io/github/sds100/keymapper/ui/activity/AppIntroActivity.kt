@@ -79,6 +79,8 @@ class NoteFromDeveloperSlide : AppIntroScrollableFragment() {
             imageDrawable = drawable(R.mipmap.ic_launcher_round)
             backgroundColor = color(R.color.red)
         }
+
+        viewLoaded()
     }
 }
 
@@ -121,6 +123,8 @@ class AccessibilityServiceSlide : AppIntroScrollableFragment() {
                 serviceDisabledLayout()
             }
         }
+
+        viewLoaded()
     }
 
     private fun FragmentAppIntroSlideBinding.serviceDisabledLayout() {
@@ -169,6 +173,8 @@ class BatteryOptimisationSlide : AppIntroScrollableFragment() {
                 }
             }
         }
+
+        viewLoaded()
     }
 }
 
@@ -182,13 +188,15 @@ class FingerprintGestureSupportSlide : AppIntroScrollableFragment() {
             imageDrawable = drawable(R.drawable.ic_baseline_fingerprint_64)
             backgroundColor = color(R.color.orange)
 
-            ServiceLocator.fingerprintMapRepository(requireContext())
-                .fingerprintGesturesAvailable.collectWhenResumed(viewLifecycleOwner) { available ->
+            ServiceLocator.fingerprintMapRepository(requireContext()).fingerprintGesturesAvailable
+                .collectWhenResumed(viewLifecycleOwner) { available ->
                     when (available) {
                         true -> gesturesSupportedLayout()
                         false -> gesturesUnsupportedLayout()
                         null -> supportedUnknownLayout()
                     }
+
+                    viewLoaded()
                 }
         }
     }
@@ -227,6 +235,8 @@ class DexSlide : AppIntroScrollableFragment() {
             imageDrawable = drawable(R.drawable.ic_dock_white_64dp)
             backgroundColor = color(R.color.orange)
         }
+
+        viewLoaded()
     }
 }
 
@@ -250,6 +260,8 @@ class DndAccessSlide : AppIntroScrollableFragment() {
                 PermissionUtils.requestAccessNotificationPolicy(requestAccessNotificationPolicy)
             }
         }
+
+        viewLoaded()
     }
 }
 
@@ -261,5 +273,7 @@ class ContributingSlide : AppIntroScrollableFragment() {
             imageDrawable = drawable(R.drawable.ic_outline_feedback_64)
             backgroundColor = color(R.color.green)
         }
+
+        viewLoaded()
     }
 }
