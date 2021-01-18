@@ -9,6 +9,7 @@
         <item name="colorSecondary">@color/colorSecondary</item>
         <item name="colorOnSecondary">@color/colorOnSecondary</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="actionButtonStyle">@style/ActionButton</item>
     </style>
 
     <style name="AppTheme" parent="Base.AppTheme" />
@@ -46,7 +47,9 @@
 
     <style name="OutlineChip" parent="Widget.MaterialComponents.Chip.Entry">
         <item name="chipBackgroundColor">@android:color/transparent</item>
-        <item name="chipStrokeColor" tools:ignore="PrivateResource">@color/mtrl_btn_stroke_color_selector</item>
+        <item name="chipStrokeColor" tools:ignore="PrivateResource">
+            @color/mtrl_btn_stroke_color_selector
+        </item>
         <item name="chipStrokeWidth">1dp</item>
         <item name="android:checkable">false</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
@@ -93,7 +96,8 @@
 
     <style name="KeymapListHeader" parent="TextAppearance.MaterialComponents.Subtitle2">
         <item name="android:textSize">14sp</item>
-        <item name="android:textColor" tools:ignore="PrivateResource">@color/mtrl_chip_text_color</item>
+        <item name="android:textColor" tools:ignore="PrivateResource">@color/mtrl_chip_text_color
+        </item>
     </style>
 
     <style name="RecyclerViewPlaceholderTextView" parent="Widget.AppCompat.TextView">
@@ -137,5 +141,9 @@
         <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="iconTint">?attr/colorOnSurface</item>
         <item name="shapeAppearance">@style/ShapeAppearanceOverlay.BottomSheetMenuItem</item>
+    </style>
+
+    <style name="ActionButton" parent="Widget.AppCompat.ActionButton">
+        <item name="android:drawablePadding">8dp</item>
     </style>
 </resources>
