@@ -1,53 +1,30 @@
 package io.github.sds100.keymapper.ui.fragment.fingerprint
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.activity.addCallback
-import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
-import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.options.FingerprintActionOptions
 import io.github.sds100.keymapper.data.viewmodel.ConfigFingerprintMapViewModel
-import io.github.sds100.keymapper.databinding.FragmentConfigFingerprintMapBinding
-import io.github.sds100.keymapper.ui.adapter.GenericFragmentPagerAdapter
 import io.github.sds100.keymapper.ui.fragment.*
-import io.github.sds100.keymapper.util.*
-import io.github.sds100.keymapper.util.delegate.RecoverFailureDelegate
-import splitties.alertdialog.appcompat.alertDialog
-import splitties.alertdialog.appcompat.cancelButton
-import splitties.alertdialog.appcompat.messageResource
-import splitties.alertdialog.appcompat.positiveButton
+import io.github.sds100.keymapper.util.FragmentInfo
+import io.github.sds100.keymapper.util.InjectorUtils
+import io.github.sds100.keymapper.util.int
+import io.github.sds100.keymapper.util.intArray
 
 /**
  * Created by sds100 on 22/11/20.
  */
-class ConfigFingerprintMapFragment : Fragment() {
+class ConfigFingerprintMapFragment : ConfigMappingFragment() {
     private val args by navArgs<ConfigFingerprintMapFragmentArgs>()
 
-    private val viewModel: ConfigFingerprintMapViewModel
+    override val viewModel: ConfigFingerprintMapViewModel
         by navGraphViewModels(R.id.nav_config_fingerprint_map) {
             InjectorUtils.provideConfigFingerprintMapViewModel(requireContext())
         }
-
-    private lateinit var recoverFailureDelegate: RecoverFailureDelegate
-
-    /**
-     * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
-     */
-    private var _binding: FragmentConfigFingerprintMapBinding? = null
-    val binding: FragmentConfigFingerprintMapBinding
-        get() = _binding!!
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,8 +40,7 @@ class ConfigFingerprintMapFragment : Fragment() {
             }
         }
 
-        setFragmentResultListener(ConstraintListFragment.CHOOSE_CONSTRAINT_REQUEST_KEY) { _,
-                                                                                          result ->
+        setFragmentResultListener(ConstraintListFragment.CHOOSE_CONSTRAINT_REQUEST_KEY) { _, result ->
             result.getParcelable<Constraint>(ChooseConstraintFragment.EXTRA_CONSTRAINT)?.let {
                 viewModel.constraintListViewModel.addConstraint(it)
             }
@@ -78,135 +54,29 @@ class ConfigFingerprintMapFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-
-        recoverFailureDelegate = RecoverFailureDelegate(
-            "ConfigFingerprintMapFragment",
-            requireActivity().activityResultRegistry,
-            viewLifecycleOwner) {
-
-            viewModel.actionListViewModel.rebuildModels()
-        }
-
-        FragmentConfigFingerprintMapBinding.inflate(inflater, container, false).apply {
-            lifecycleOwner = viewLifecycleOwner
-            _binding = this
-
-            return this.root
-        }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        binding.viewModel = viewModel
-
-        binding.viewPager.adapter = createFragmentPagerAdapter()
-
-        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-            tab.text = strArray(R.array.config_fingerprint_map_tab_titles)[position]
-        }.attach()
-
-        binding.tabLayout.isVisible = binding.tabLayout.tabCount > 1
-
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            showOnBackPressedWarning()
-        }
-
-        binding.appBar.setNavigationOnClickListener {
-            showOnBackPressedWarning()
-        }
-
-        binding.appBar.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.action_save -> {
-                    viewModel.save(lifecycleScope)
-                    findNavController().navigateUp()
-
-                    true
-                }
-
-                else -> false
-            }
-        }
-
-        viewModel.eventStream.observe(viewLifecycleOwner, { event ->
-            when (event) {
-                is FixFailure -> binding.coordinatorLayout.showFixActionSnackBar(
-                    event.failure,
-                    requireContext(),
-                    recoverFailureDelegate,
-                    findNavController()
-                )
-
-                is EnableAccessibilityServicePrompt ->
-                    binding.coordinatorLayout.showEnableAccessibilityServiceSnackBar()
-            }
-        })
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        viewModel.saveState(outState)
-
-        super.onSaveInstanceState(outState)
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-
-        savedInstanceState ?: return
-
-        viewModel.restoreState(savedInstanceState)
-    }
-
-    override fun onDestroyView() {
-        _binding = null
-        super.onDestroyView()
-    }
-
-    private fun showOnBackPressedWarning() {
-        requireContext().alertDialog {
-            messageResource = R.string.dialog_message_are_you_sure_want_to_leave_without_saving
-
-            positiveButton(R.string.pos_yes) {
-                findNavController().navigateUp()
-            }
-
-            cancelButton()
-            show()
-        }
-    }
-
-    private fun createFragmentPagerAdapter() = GenericFragmentPagerAdapter(this,
+    override fun getFragmentInfoList() =
         intArray(R.array.config_fingerprint_map_fragments).map {
             when (it) {
-
                 int(R.integer.fragment_id_action_list) ->
-                    it to { FingerprintActionListFragment() }
-
-                int(R.integer.fragment_id_constraint_list) ->
-                    it to { FingerprintConstraintListFragment() }
+                    it to FingerprintActionListFragment.Info()
 
                 int(R.integer.fragment_id_fingerprint_map_options) ->
-                    it to { FingerprintMapOptionsFragment() }
+                    it to FingerprintMapOptionsFragment.Info()
+
+                int(R.integer.fragment_id_constraint_list) ->
+                    it to FingerprintConstraintListFragment.Info()
 
                 int(R.integer.fragment_id_constraints_and_options) ->
-                    it to { ConstraintsAndOptionsFragment() }
+                    it to FragmentInfo(R.string.tab_constraints_and_more) {
+                        ConstraintsAndOptionsFragment()
+                    }
 
-                else -> throw Exception("Don't know how to instantiate a fragment for this id $id")
+                else -> throw Exception("Don't know how to create FragmentInfo for this fragment $it")
             }
         }
-    )
 
     class ConstraintsAndOptionsFragment : TwoFragments(
-        top = Triple(
-            R.string.option_list_header,
-            FingerprintMapOptionsFragment::class.java,
-            R.string.url_fingerprint_map_options_guide),
-
-        bottom = Triple(
-            R.string.constraint_list_header,
-            FingerprintConstraintListFragment::class.java,
-            R.string.url_constraints_guide)
+        FingerprintMapOptionsFragment.Info(),
+        FingerprintConstraintListFragment.Info()
     )
 }

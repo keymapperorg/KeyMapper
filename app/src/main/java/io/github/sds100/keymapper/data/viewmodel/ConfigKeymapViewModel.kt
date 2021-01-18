@@ -26,7 +26,7 @@ import java.util.*
 class ConfigKeymapViewModel(private val keymapRepository: ConfigKeymapUseCase,
                             private val deviceInfoRepository: DeviceInfoRepository,
                             preferenceDataStore: IPreferenceDataStore
-) : ViewModel(), IPreferenceDataStore by preferenceDataStore {
+) : ViewModel(), IPreferenceDataStore by preferenceDataStore, IConfigMappingViewModel {
 
     companion object {
         const val NEW_KEYMAP_ID = -2L
@@ -38,28 +38,29 @@ class ConfigKeymapViewModel(private val keymapRepository: ConfigKeymapUseCase,
     private val _uid = MutableLiveData<String>()
     val uid: LiveData<String> = _uid
 
-    val actionListViewModel = object : ActionListViewModel<KeymapActionOptions>(viewModelScope, deviceInfoRepository) {
-        override val stateKey = "keymap_action_list_view_model"
+    override val actionListViewModel =
+        object : ActionListViewModel<KeymapActionOptions>(viewModelScope, deviceInfoRepository) {
+            override val stateKey = "keymap_action_list_view_model"
 
-        override fun getActionOptions(action: Action): KeymapActionOptions {
-            return KeymapActionOptions(
-                action,
-                actionList.value!!.size,
-                triggerViewModel.mode.value,
-                triggerViewModel.keys.value
-            )
-        }
+            override fun getActionOptions(action: Action): KeymapActionOptions {
+                return KeymapActionOptions(
+                    action,
+                    actionList.value!!.size,
+                    triggerViewModel.mode.value,
+                    triggerViewModel.keys.value
+                )
+            }
 
-        override fun onAddAction(action: Action) {
-            if (action.type == ActionType.KEY_EVENT) {
-                getActionOptions(action).apply {
-                    setValue(KeymapActionOptions.ID_REPEAT, true)
+            override fun onAddAction(action: Action) {
+                if (action.type == ActionType.KEY_EVENT) {
+                    getActionOptions(action).apply {
+                        setValue(KeymapActionOptions.ID_REPEAT, true)
 
-                    setOptions(this)
+                        setOptions(this)
+                    }
                 }
             }
         }
-    }
 
     val triggerViewModel = TriggerViewModel(
         deviceInfoRepository,
@@ -69,7 +70,7 @@ class ConfigKeymapViewModel(private val keymapRepository: ConfigKeymapUseCase,
 
     val constraintListViewModel = ConstraintListViewModel(viewModelScope)
 
-    val isEnabled = MutableLiveData(false)
+    override val isEnabled = MutableLiveData(false)
 
     private val _eventStream = LiveEvent<Event>().apply {
         addSource(constraintListViewModel.eventStream) {
@@ -91,7 +92,7 @@ class ConfigKeymapViewModel(private val keymapRepository: ConfigKeymapUseCase,
         }
     }
 
-    val eventStream: LiveData<Event> = _eventStream
+    override val eventStream: LiveData<Event> = _eventStream
 
     init {
         actionListViewModel.setActionList(emptyList())
@@ -109,15 +110,26 @@ class ConfigKeymapViewModel(private val keymapRepository: ConfigKeymapUseCase,
         }
     }
 
-    fun saveKeymap(scope: CoroutineScope) {
+    override fun save(coroutineScope: CoroutineScope) {
         val keymap = createKeymap()
 
-        scope.launch {
+        coroutineScope.launch {
             if (id == NEW_KEYMAP_ID) {
                 keymapRepository.insertKeymap(keymap.copy(id = 0))
             } else {
                 keymapRepository.updateKeymap(keymap)
             }
+        }
+    }
+
+    override fun saveState(outState: Bundle) {
+        outState.putParcelable(STATE_KEY, createKeymap())
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override fun restoreState(state: Bundle) {
+        state.getParcelable<KeyMap>(STATE_KEY)?.let {
+            loadKeymap(it)
         }
     }
 
@@ -151,17 +163,6 @@ class ConfigKeymapViewModel(private val keymapRepository: ConfigKeymapUseCase,
         constraintListViewModel.setConstraintList(keymap.constraintList, keymap.constraintMode)
         isEnabled.value = keymap.isEnabled
         _uid.value = keymap.uid
-    }
-
-    fun saveState(outState: Bundle) {
-        outState.putParcelable(STATE_KEY, createKeymap())
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    fun restoreState(state: Bundle) {
-        state.getParcelable<KeyMap>(STATE_KEY)?.let {
-            loadKeymap(it)
-        }
     }
 
     class Factory(

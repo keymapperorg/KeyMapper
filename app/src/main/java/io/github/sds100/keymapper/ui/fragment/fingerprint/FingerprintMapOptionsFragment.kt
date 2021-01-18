@@ -10,6 +10,7 @@ import io.github.sds100.keymapper.data.viewmodel.ConfigFingerprintMapViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.ui.adapter.OptionsController
 import io.github.sds100.keymapper.ui.fragment.DefaultRecyclerViewFragment
+import io.github.sds100.keymapper.util.FragmentInfo
 import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.delegate.IModelState
 
@@ -17,6 +18,12 @@ import io.github.sds100.keymapper.util.delegate.IModelState
  * Created by sds100 on 29/11/20.
  */
 class FingerprintMapOptionsFragment : DefaultRecyclerViewFragment<OptionsListModel>() {
+
+    class Info : FragmentInfo(
+        R.string.option_list_header,
+        R.string.url_fingerprint_map_options_guide,
+        { FingerprintMapOptionsFragment() }
+    )
 
     val optionsViewModel: BaseOptionsViewModel<FingerprintMapOptions> by lazy {
         navGraphViewModels<ConfigFingerprintMapViewModel>(R.id.nav_config_fingerprint_map) {

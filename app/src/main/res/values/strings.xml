@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="app_name" translatable="false">Key Mapper</string>
     <string name="developer_email" translatable="false">developer.sds100@gmail.com</string>
 
@@ -109,9 +109,8 @@
     <!--  Headers  -->
     <string name="option_list_header">Options</string>
     <string name="action_list_header">Actions</string>
-    <string name="trigger_list_header">Trigger</string>
+    <string name="trigger_header">Trigger</string>
     <string name="constraint_list_header">Constraints</string>
-    <string name="trigger_options_header">Options</string>
     <string name="header_fingerprint_gesture_up">Swipe Up</string>
     <string name="header_fingerprint_gesture_down">Swipe Down</string>
     <string name="header_fingerprint_gesture_left">Swipe Left</string>
@@ -151,7 +150,6 @@
     <string name="radio_button_intent_target_activity">Activity</string>
     <string name="radio_button_intent_target_service">Service</string>
     <string name="radio_button_intent_target_broadcast_receiver">Broadcast Receiver</string>
-
     <!--  Radio buttons  -->
 
     <!--  Tabs  -->
@@ -163,6 +161,11 @@
     <string name="tab_trigger">Trigger</string>
     <string name="tab_keyevents" translatable="false">Key Events</string>
     <string name="tab_fingerprint">Fingerprint</string>
+
+    <string-array name="home_tab_titles">
+        <item>@string/tab_keyevents</item>
+        <item>@string/tab_fingerprint</item>
+    </string-array>
     <!--  Tabs  -->
 
     <!--  Navigation argument ids  -->
@@ -281,6 +284,7 @@
     <string name="action_about">About</string>
     <string name="action_search">Search</string>
     <string name="action_help_home">Quick Start Guide</string>
+    <string name="action_help">Help</string>
     <string name="action_enable">Enable</string>
     <string name="action_disable">Disable</string>
     <string name="action_disable_all_keymaps">Disable all</string>
@@ -515,56 +519,6 @@
     <string name="action_type_intent">Intent</string>
     <string name="action_type_phone_call">Phone Call</string>
     <!--Action Types Titles-->
-
-    <!--    Fragment ids    -->
-    <integer name="fragment_id_trigger">10</integer>
-    <integer name="fragment_id_action_list">11</integer>
-    <integer name="fragment_id_trigger_and_action_list">12</integer>
-    <integer name="fragment_id_constraints_and_options">13</integer>
-    <integer name="fragment_id_constraint_list">14</integer>
-    <integer name="fragment_id_trigger_options">15</integer>
-    <integer name="fragment_id_config_keymap_all">16</integer>
-    <integer name="fragment_id_fingerprint_map_options">17</integer>
-    <!--    Fragment ids    -->
-
-    <!-- The tabs that should be shown when configuring a keymap -->
-    <string-array name="config_keymap_tab_titles" tools:ignore="InconsistentArrays">
-        <item>@string/tab_trigger</item>
-        <item>@string/tab_actions</item>
-        <item>@string/tab_constraints</item>
-        <item>@string/tab_options</item>
-    </string-array>
-    <!-- The tabs that should be shown when configuring a keymap -->
-
-    <!-- The fragments that should be shown when configuring a keymap -->
-    <integer-array name="config_keymap_fragments" tools:ignore="InconsistentArrays">
-        <item>@integer/fragment_id_trigger</item>
-        <item>@integer/fragment_id_action_list</item>
-        <item>@integer/fragment_id_constraint_list</item>
-        <item>@integer/fragment_id_trigger_options</item>
-    </integer-array>
-
-    <!-- The tabs that should be shown when configuring a keymap -->
-    <string-array name="config_fingerprint_map_tab_titles" tools:ignore="InconsistentArrays">
-        <item>@string/tab_actions</item>
-        <item>@string/tab_constraints</item>
-        <item>@string/tab_options</item>
-    </string-array>
-    <!-- The tabs that should be shown when configuring a keymap -->
-
-    <!-- The fragments that should be shown when configuring a keymap -->
-    <integer-array name="config_fingerprint_map_fragments" tools:ignore="InconsistentArrays">
-        <item>@integer/fragment_id_action_list</item>
-        <item>@integer/fragment_id_constraint_list</item>
-        <item>@integer/fragment_id_fingerprint_map_options</item>
-    </integer-array>
-
-    <!-- The fragments on the homescreen -->
-    <string-array name="home_tab_titles">
-        <item>@string/tab_keyevents</item>
-        <item>@string/tab_fingerprint</item>
-    </string-array>
-    <!-- The fragments on the homescreen -->
 
     <!--flags-->
     <string name="flag_show_volume_dialog">Show volume dialog</string>

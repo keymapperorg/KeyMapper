@@ -18,6 +18,7 @@ import com.google.android.material.textfield.TextInputLayout
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
+import io.github.sds100.keymapper.ui.view.SquareImageButton
 import io.github.sds100.keymapper.ui.view.StatusLayout
 import io.github.sds100.keymapper.util.result.getBriefMessage
 import io.noties.markwon.Markwon
@@ -369,6 +370,15 @@ fun Button.openUrlOnClick(url: String?) {
     url ?: return
 
     setOnClickListener {
-        context.openUrl(url)
+        UrlUtils.openUrl(context, url)
+    }
+}
+
+@BindingAdapter("app:openUrlOnClick")
+fun SquareImageButton.openUrlOnClick(url: Int?) {
+    url ?: return
+
+    setOnClickListener {
+        UrlUtils.openUrl(context, context.str(url))
     }
 }

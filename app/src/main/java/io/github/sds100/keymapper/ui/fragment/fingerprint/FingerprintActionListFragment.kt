@@ -7,6 +7,7 @@ import io.github.sds100.keymapper.data.model.options.FingerprintActionOptions
 import io.github.sds100.keymapper.data.viewmodel.ActionListViewModel
 import io.github.sds100.keymapper.data.viewmodel.ConfigFingerprintMapViewModel
 import io.github.sds100.keymapper.ui.fragment.ActionListFragment
+import io.github.sds100.keymapper.util.FragmentInfo
 import io.github.sds100.keymapper.util.InjectorUtils
 
 /**
@@ -14,6 +15,15 @@ import io.github.sds100.keymapper.util.InjectorUtils
  */
 
 class FingerprintActionListFragment : ActionListFragment<FingerprintActionOptions>() {
+
+    class Info : FragmentInfo(
+        R.string.action_list_header,
+        R.string.url_action_guide,
+        { FingerprintActionListFragment() }
+    )
+
+    override var isAppBarVisible = false
+
     private val viewModel: ConfigFingerprintMapViewModel
         by navGraphViewModels(R.id.nav_config_fingerprint_map) {
             InjectorUtils.provideFingerprintMapListViewModel(requireContext())

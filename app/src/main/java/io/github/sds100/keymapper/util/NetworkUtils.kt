@@ -1,16 +1,12 @@
 package io.github.sds100.keymapper.util
 
-import android.content.ActivityNotFoundException
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.telephony.TelephonyManager
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.result.DownloadFailed
 import io.github.sds100.keymapper.util.result.Result
 import io.github.sds100.keymapper.util.result.SSLHandshakeError
@@ -18,7 +14,6 @@ import io.github.sds100.keymapper.util.result.Success
 import kotlinx.coroutines.suspendCancellableCoroutine
 import splitties.init.appCtx
 import splitties.systemservices.wifiManager
-import splitties.toast.toast
 import java.io.File
 import javax.net.ssl.SSLHandshakeException
 import kotlin.coroutines.resume
@@ -135,14 +130,4 @@ object NetworkUtils {
     }
 
     private fun isWifiEnabled(): Boolean = wifiManager?.isWifiEnabled ?: false
-}
-
-fun Context.openUrl(url: String) {
-    Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
-        try {
-            startActivity(this)
-        } catch (e: ActivityNotFoundException) {
-            toast(R.string.error_no_app_found_to_open_url)
-        }
-    }
 }

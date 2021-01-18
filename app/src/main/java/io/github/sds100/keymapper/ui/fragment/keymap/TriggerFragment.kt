@@ -44,6 +44,12 @@ import kotlin.coroutines.suspendCoroutine
 
 class TriggerFragment : Fragment() {
 
+    class Info : FragmentInfo(
+        R.string.trigger_header,
+        R.string.url_trigger_guide,
+        { TriggerFragment() }
+    )
+
     private lateinit var binding: FragmentTriggerBinding
 
     private val triggerViewModel: TriggerViewModel by lazy {

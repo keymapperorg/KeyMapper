@@ -160,7 +160,7 @@ class MenuFragment : BottomSheetDialogFragment(),
 
             negativeButton(R.string.neutral_discord) {
                 dismiss()
-                requireContext().openUrl(str(R.string.url_discord_server_invite))
+                UrlUtils.openUrl(requireContext(), str(R.string.url_discord_server_invite))
             }
 
             neutralButton(R.string.neg_email) {

@@ -14,6 +14,7 @@ import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.triggerByIntent
 import io.github.sds100.keymapper.ui.adapter.OptionsController
 import io.github.sds100.keymapper.ui.fragment.OptionsFragment
+import io.github.sds100.keymapper.util.FragmentInfo
 import io.github.sds100.keymapper.util.InjectorUtils
 import io.github.sds100.keymapper.util.str
 import splitties.systemservices.clipboardManager
@@ -23,6 +24,12 @@ import splitties.toast.toast
  * Created by sds100 on 29/11/20.
  */
 class TriggerOptionsFragment : OptionsFragment<TriggerOptions>() {
+
+    class Info : FragmentInfo(
+        R.string.option_list_header,
+        R.string.url_trigger_options_guide,
+        { TriggerOptionsFragment() }
+    )
 
     override val optionsViewModel: TriggerOptionsViewModel by lazy {
         navGraphViewModels<ConfigKeymapViewModel>(R.id.nav_config_keymap) {

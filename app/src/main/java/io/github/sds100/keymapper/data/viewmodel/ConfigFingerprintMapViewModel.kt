@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 class ConfigFingerprintMapViewModel(private val fingerprintMapRepository: FingerprintMapRepository,
                                     private val deviceInfoRepository: DeviceInfoRepository,
                                     preferenceDataStore: IPreferenceDataStore
-) : ViewModel(), IPreferenceDataStore by preferenceDataStore {
+) : ViewModel(), IPreferenceDataStore by preferenceDataStore, IConfigMappingViewModel {
 
     companion object {
         private const val MAP_STATE_KEY = "config_fingerprint_map"
@@ -36,7 +36,7 @@ class ConfigFingerprintMapViewModel(private val fingerprintMapRepository: Finger
 
     private var gestureId: String? = null
 
-    val actionListViewModel = object : ActionListViewModel<FingerprintActionOptions>(
+    override val actionListViewModel = object : ActionListViewModel<FingerprintActionOptions>(
         viewModelScope, deviceInfoRepository) {
 
         override val stateKey = "fingerprint_action_list_view_model"
@@ -53,7 +53,7 @@ class ConfigFingerprintMapViewModel(private val fingerprintMapRepository: Finger
 
     val constraintListViewModel = ConstraintListViewModel(viewModelScope)
 
-    val isEnabled = MutableLiveData(true)
+    override val isEnabled = MutableLiveData(true)
 
     private val _eventStream = LiveEvent<Event>().apply {
         addSource(constraintListViewModel.eventStream) {
@@ -69,10 +69,10 @@ class ConfigFingerprintMapViewModel(private val fingerprintMapRepository: Finger
         }
     }
 
-    val eventStream: LiveData<Event> = _eventStream
+    override val eventStream: LiveData<Event> = _eventStream
 
-    fun save(scope: CoroutineScope) {
-        scope.launch {
+    override fun save(coroutineScope: CoroutineScope) {
+        coroutineScope.launch {
             val map = createFingerprintMap()
 
             gestureId?.let {
@@ -81,6 +81,19 @@ class ConfigFingerprintMapViewModel(private val fingerprintMapRepository: Finger
                 }
             }
         }
+    }
+
+    override fun saveState(outState: Bundle) {
+        outState.putString(GESTURE_ID_STATE_KEY, gestureId)
+        outState.putParcelable(MAP_STATE_KEY, createFingerprintMap())
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override fun restoreState(state: Bundle) {
+        val gestureId = state.getString(GESTURE_ID_STATE_KEY) ?: return
+        val map = state.getParcelable<FingerprintMap>(MAP_STATE_KEY) ?: return
+
+        loadFingerprintMap(gestureId, map)
     }
 
     private fun createFingerprintMap(): FingerprintMap {
@@ -118,19 +131,6 @@ class ConfigFingerprintMapViewModel(private val fingerprintMapRepository: Finger
         constraintListViewModel.setConstraintList(map.constraintList, map.constraintMode)
         isEnabled.value = map.isEnabled
         optionsViewModel.setOptions(FingerprintMapOptions(gestureId, map))
-    }
-
-    fun saveState(outState: Bundle) {
-        outState.putString(GESTURE_ID_STATE_KEY, gestureId)
-        outState.putParcelable(MAP_STATE_KEY, createFingerprintMap())
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    fun restoreState(state: Bundle) {
-        val gestureId = state.getString(GESTURE_ID_STATE_KEY) ?: return
-        val map = state.getParcelable<FingerprintMap>(MAP_STATE_KEY) ?: return
-
-        loadFingerprintMap(gestureId, map)
     }
 
     class Factory(

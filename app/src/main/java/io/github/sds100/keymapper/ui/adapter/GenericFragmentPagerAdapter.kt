@@ -8,23 +8,22 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
  */
 
 class GenericFragmentPagerAdapter(fragment: Fragment,
-                                  fragmentCreatorsWithId: List<Pair<Int, () -> Fragment>>
+                                  private val fragmentCreatorsList: List<Pair<Long, () -> Fragment>>
 ) : FragmentStateAdapter(fragment) {
 
-    private val itemIds = fragmentCreatorsWithId.map { it.first.toLong() }
-    private val fragmentCreatorsList = fragmentCreatorsWithId.map { it.second }
+    private val itemIds = fragmentCreatorsList.map { it.first }
 
     override fun getItemCount() = fragmentCreatorsList.size
 
     override fun createFragment(position: Int): Fragment {
-        return fragmentCreatorsList[position].invoke()
+        return fragmentCreatorsList[position].second.invoke()
     }
 
     override fun getItemId(position: Int): Long {
         return itemIds[position]
     }
 
-    override fun containsItem(iteid: Long): Boolean {
-        return itemIds.contains(iteid)
+    override fun containsItem(itemId: Long): Boolean {
+        return itemIds.contains(itemId)
     }
 }

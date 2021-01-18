@@ -65,9 +65,10 @@ class KeymapListFragment : DefaultRecyclerViewFragment<List<KeymapListItemModel>
 
         viewModel.eventStream.observe(viewLifecycleOwner, {
             when (it) {
-                is BuildKeymapListModels -> viewLifecycleScope.launchWhenResumed {
-                    viewModel.setModelList(buildModelList(it.keymapList))
-                }
+                is BuildKeymapListModels ->
+                    viewLifecycleScope.launchWhenResumed {
+                        viewModel.setModelList(buildModelList(it.keymapList))
+                    }
 
                 is RequestBackupSelectedKeymaps -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {

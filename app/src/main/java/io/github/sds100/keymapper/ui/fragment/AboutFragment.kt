@@ -14,7 +14,7 @@ import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentAboutBinding
 import io.github.sds100.keymapper.util.FeedbackUtils
-import io.github.sds100.keymapper.util.openUrl
+import io.github.sds100.keymapper.util.UrlUtils
 import io.github.sds100.keymapper.util.str
 
 /**
@@ -115,37 +115,37 @@ class AboutPreferenceFragment : PreferenceFragmentCompat() {
         }
 
         findPreference<Preference>(str(R.string.key_pref_xda_thread))?.setOnPreferenceClickListener {
-            requireContext().openUrl(str(R.string.url_xda_thread))
+            UrlUtils.openUrl(requireContext(), str(R.string.url_xda_thread))
             true
         }
 
         findPreference<Preference>(str(R.string.key_pref_discord))?.setOnPreferenceClickListener {
-            requireContext().openUrl(str(R.string.url_discord_server_invite))
+            UrlUtils.openUrl(requireContext(), str(R.string.url_discord_server_invite))
             true
         }
 
         findPreference<Preference>(str(R.string.key_pref_rate_review))?.setOnPreferenceClickListener {
-            requireContext().openUrl(str(R.string.url_play_store_listing))
+            UrlUtils.openUrl(requireContext(), str(R.string.url_play_store_listing))
             true
         }
 
         findPreference<Preference>(str(R.string.key_pref_developer_github))?.setOnPreferenceClickListener {
-            requireContext().openUrl(str(R.string.url_developer_github))
+            UrlUtils.openUrl(requireContext(), str(R.string.url_developer_github))
             true
         }
 
         findPreference<Preference>(str(R.string.key_pref_source_code))?.setOnPreferenceClickListener {
-            requireContext().openUrl(str(R.string.url_source_code))
+            UrlUtils.openUrl(requireContext(), str(R.string.url_source_code))
             true
         }
 
         findPreference<Preference>(str(R.string.key_pref_translate))?.setOnPreferenceClickListener {
-            requireContext().openUrl(str(R.string.url_translate))
+            UrlUtils.openUrl(requireContext(), str(R.string.url_translate))
             true
         }
 
         findPreference<Preference>(str(R.string.key_pref_youtube_channel))?.setOnPreferenceClickListener {
-            requireContext().openUrl(str(R.string.url_youtube_channel))
+            UrlUtils.openUrl(requireContext(), str(R.string.url_youtube_channel))
             true
         }
 

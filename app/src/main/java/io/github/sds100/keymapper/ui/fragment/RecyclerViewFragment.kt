@@ -107,14 +107,19 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
 
             setupSearchView(binding)
 
-            getBottomAppBar(binding)?.isVisible = isAppBarVisible
+            getBottomAppBar(binding)?.let {
+                it.isVisible = isAppBarVisible
 
-            getBottomAppBar(binding)?.setNavigationOnClickListener {
-                findNavController().navigateUp()
+                it.setNavigationOnClickListener {
+                    findNavController().navigateUp()
+                }
             }
 
-            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-                findNavController().navigateUp()
+            if (isAppBarVisible) {
+                //don't override back button if another fragment is controlling the app bar
+                requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+                    findNavController().navigateUp()
+                }
             }
         }
     }

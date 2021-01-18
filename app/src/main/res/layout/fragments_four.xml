@@ -7,37 +7,23 @@
 
         <import type="android.view.View" />
 
-        <variable
-            name="topLeftFragmentHeader"
-            type="String" />
+        <import type="io.github.sds100.keymapper.util.FragmentInfo" />
 
         <variable
-            name="onTopLeftFragmentHelpClick"
-            type="View.OnClickListener" />
+            name="topLeftFragmentInfo"
+            type="FragmentInfo" />
 
         <variable
-            name="topRightFragmentHeader"
-            type="String" />
+            name="topRightFragmentInfo"
+            type="FragmentInfo" />
 
         <variable
-            name="onTopRightFragmentHelpClick"
-            type="View.OnClickListener" />
+            name="bottomLeftFragmentInfo"
+            type="FragmentInfo" />
 
         <variable
-            name="bottomLeftFragmentHeader"
-            type="String" />
-
-        <variable
-            name="onBottomLeftFragmentHelpClick"
-            type="View.OnClickListener" />
-
-        <variable
-            name="bottomRightFragmentHeader"
-            type="String" />
-
-        <variable
-            name="onBottomRightFragmentHelpClick"
-            type="View.OnClickListener" />
+            name="bottomRightFragmentInfo"
+            type="FragmentInfo" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -78,7 +64,7 @@
                         android:layout_marginTop="@dimen/cardview_padding_top"
                         android:layout_marginEnd="@dimen/cardview_padding_right"
                         android:paddingBottom="@dimen/cardview_header_bottom_padding"
-                        android:text="@{topLeftFragmentHeader}"
+                        android:text="@{topLeftFragmentInfo.header}"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
                         android:textColor="?attr/colorAccent"
                         android:textSize="14sp"
@@ -93,11 +79,12 @@
                         android:layout_height="0dp"
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="8dp"
-                        android:onClick="@{onTopLeftFragmentHelpClick}"
                         android:tint="?attr/colorOnSurface"
+                        android:visibility="@{topLeftFragmentInfo.supportUrl == null ? View.INVISIBLE : View.VISIBLE}"
                         app:layout_constraintBottom_toBottomOf="@id/textViewTopLeftHeader"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
+                        app:openUrlOnClick="@{topLeftFragmentInfo.supportUrl}"
                         app:srcCompat="@drawable/ic_baseline_help_outline_24" />
 
                     <androidx.fragment.app.FragmentContainerView
@@ -139,7 +126,7 @@
                         android:layout_marginTop="@dimen/cardview_padding_top"
                         android:layout_marginEnd="@dimen/cardview_padding_right"
                         android:paddingBottom="@dimen/cardview_header_bottom_padding"
-                        android:text="@{bottomLeftFragmentHeader}"
+                        android:text="@{bottomLeftFragmentInfo.header}"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
                         android:textColor="?attr/colorAccent"
                         android:textSize="14sp"
@@ -154,11 +141,12 @@
                         android:layout_height="0dp"
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="8dp"
-                        android:onClick="@{onBottomLeftFragmentHelpClick}"
                         android:tint="?attr/colorOnSurface"
+                        android:visibility="@{bottomLeftFragmentInfo.supportUrl == null ? View.INVISIBLE : View.VISIBLE}"
                         app:layout_constraintBottom_toBottomOf="@id/textViewBottomLeftHeader"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
+                        app:openUrlOnClick="@{bottomLeftFragmentInfo.supportUrl}"
                         app:srcCompat="@drawable/ic_baseline_help_outline_24" />
 
                     <androidx.fragment.app.FragmentContainerView
@@ -199,7 +187,7 @@
                         android:layout_marginTop="@dimen/cardview_padding_top"
                         android:layout_marginEnd="@dimen/cardview_padding_right"
                         android:paddingBottom="@dimen/cardview_header_bottom_padding"
-                        android:text="@{topRightFragmentHeader}"
+                        android:text="@{topRightFragmentInfo.header}"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
                         android:textColor="?attr/colorAccent"
                         android:textSize="14sp"
@@ -214,11 +202,12 @@
                         android:layout_height="0dp"
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="8dp"
-                        android:onClick="@{onTopRightFragmentHelpClick}"
                         android:tint="?attr/colorOnSurface"
+                        android:visibility="@{topRightFragmentInfo.supportUrl == null ? View.INVISIBLE : View.VISIBLE}"
                         app:layout_constraintBottom_toBottomOf="@id/textViewTopRightHeader"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
+                        app:openUrlOnClick="@{topRightFragmentInfo.supportUrl}"
                         app:srcCompat="@drawable/ic_baseline_help_outline_24" />
 
                     <androidx.fragment.app.FragmentContainerView
@@ -260,7 +249,7 @@
                         android:layout_marginTop="@dimen/cardview_padding_bottom"
                         android:layout_marginEnd="@dimen/cardview_padding_right"
                         android:paddingBottom="@dimen/cardview_header_bottom_padding"
-                        android:text="@{bottomRightFragmentHeader}"
+                        android:text="@{bottomRightFragmentInfo.header}"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
                         android:textColor="?attr/colorAccent"
                         android:textSize="14sp"
@@ -275,11 +264,12 @@
                         android:layout_height="0dp"
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="8dp"
-                        android:onClick="@{onBottomRightFragmentHelpClick}"
                         android:tint="?attr/colorOnSurface"
+                        android:visibility="@{topRightFragmentInfo.supportUrl == null ? View.INVISIBLE : View.VISIBLE}"
                         app:layout_constraintBottom_toBottomOf="@id/textViewBottomRightHeader"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
+                        app:openUrlOnClick="@{bottomRightFragmentInfo.supportUrl}"
                         app:srcCompat="@drawable/ic_baseline_help_outline_24" />
 
                     <androidx.fragment.app.FragmentContainerView

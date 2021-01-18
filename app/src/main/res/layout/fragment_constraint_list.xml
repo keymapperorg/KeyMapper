@@ -59,7 +59,7 @@
 
             <RadioGroup
                 android:id="@+id/radioGroup"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/cardview_padding_left"
                 android:layout_marginEnd="@dimen/cardview_padding_right"

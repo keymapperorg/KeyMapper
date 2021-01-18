@@ -103,7 +103,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="@string/trigger_list_header"
+                    android:text="@string/trigger_header"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     android:textStyle="bold"
                     android:visibility="@{model.hasTrigger ? View.VISIBLE : View.GONE}"
