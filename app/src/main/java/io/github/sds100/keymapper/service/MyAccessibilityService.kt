@@ -74,6 +74,8 @@ class MyAccessibilityService : AccessibilityService(),
         const val ACTION_ON_STOP = "$PACKAGE_NAME.ON_ACCESSIBILITY_SERVICE_STOP"
         const val ACTION_PERFORM_ACTIONS = "$PACKAGE_NAME.PERFORM_ACTIONS"
         const val ACTION_UPDATE_KEYMAP_LIST_CACHE = "$PACKAGE_NAME.UPDATE_KEYMAP_LIST_CACHE"
+        const val ACTION_CHECK_FINGERPRINT_GESTURES_AVAILABILITY =
+            "$PACKAGE_NAME.ACTION_CHECK_FINGERPRINT_GESTURES_AVAILABILITY"
 
         const val EXTRA_KEY_EVENT = "$PACKAGE_NAME.KEY_EVENT"
         const val EXTRA_TIME_LEFT = "$PACKAGE_NAME.TIME_LEFT"
@@ -189,6 +191,10 @@ class MyAccessibilityService : AccessibilityService(),
                         }
                     }
                 }
+                ACTION_CHECK_FINGERPRINT_GESTURES_AVAILABILITY ->
+                    if (VERSION.SDK_INT >= VERSION_CODES.O) {
+                        checkFingerprintGesturesIsAvailable()
+                    }
             }
         }
     }
@@ -312,6 +318,7 @@ class MyAccessibilityService : AccessibilityService(),
             addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
             addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
             addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
+            addAction(ACTION_CHECK_FINGERPRINT_GESTURES_AVAILABILITY)
 
             registerReceiver(mBroadcastReceiver, this)
         }
@@ -360,12 +367,7 @@ class MyAccessibilityService : AccessibilityService(),
 
         if (VERSION.SDK_INT >= VERSION_CODES.O) {
 
-            requestFingerprintGestureDetection()
-
-            lifecycleScope.launchWhenStarted {
-                mFingerprintMapRepository.setFingerprintGesturesAvailable(
-                    fingerprintGestureController.isGestureDetectionAvailable)
-            }
+            checkFingerprintGesturesIsAvailable()
 
             mFingerprintGestureCallback =
                 object : FingerprintGestureController.FingerprintGestureCallback() {
@@ -641,5 +643,20 @@ class MyAccessibilityService : AccessibilityService(),
         mScreenOffTriggersEnabled = keymapList.any { keymap ->
             keymap.trigger.flags.hasFlag(Trigger.TRIGGER_FLAG_SCREEN_OFF_TRIGGERS)
         }
+    }
+
+    @RequiresApi(VERSION_CODES.O)
+    private fun checkFingerprintGesturesIsAvailable() {
+        requestFingerprintGestureDetection()
+
+        //this is important
+        runBlocking {
+            if (fingerprintGestureController.isGestureDetectionAvailable) {
+                ServiceLocator.fingerprintMapRepository(this@MyAccessibilityService)
+                    .setFingerprintGesturesAvailable(true)
+            }
+        }
+
+        denyFingerprintGestureDetection()
     }
 }
