@@ -6,6 +6,11 @@ package io.github.sds100.keymapper.util
  * Created by sds100 on 06/11/20.
  */
 
+sealed class ViewState
+class ViewPopulated : ViewState()
+class ViewLoading : ViewState()
+class ViewEmpty : ViewState()
+
 sealed class State<out T>
 
 data class Data<out T>(val data: T) : State<T>()

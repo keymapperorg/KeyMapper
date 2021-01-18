@@ -98,7 +98,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
     // random stuff
-    implementation 'com.google.android.material:material:1.3.0-alpha03'
+    implementation 'com.google.android.material:material:1.3.0-rc01'
     implementation 'com.github.salomonbrys.kotson:kotson:2.5.0'
     implementation 'net.cachapa.expandablelayout:expandablelayout:2.9.2'
     implementation "com.airbnb.android:epoxy:$epoxy_version"
