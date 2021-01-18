@@ -69,9 +69,8 @@ abstract class ConfigMappingFragment : Fragment() {
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             val tabTitleRes = fragmentInfoList[position].second.header
-                ?: throw Exception("don't know how to create a tab title for this fragment")
 
-            tab.text = str(tabTitleRes)
+            tab.text = tabTitleRes?.let { str(it) }
         }.attach()
 
         binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
