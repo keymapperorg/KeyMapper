@@ -19,6 +19,7 @@ Here are words and phrases that can be spelt or capitalised in multiple ways.
 | A constraint    | **constraint**                                               | Constraint                         |
 | A key event | **key event** | Key Event, keyevent |
 | A key code | **key code**. In variable and class names it should be keycode instead of keyCode. | keycode, Key Code |
+| A home screen | **home screen** | homescreen, Home Screen |
 
 ### Documentation
 
