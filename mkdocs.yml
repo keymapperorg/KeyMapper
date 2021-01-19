@@ -33,7 +33,7 @@ extra:
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/sds100/KeyMapper
-    - icon: fontawesome/brands/android
+    - icon: fdroid
       link: https://www.f-droid.org/en/packages/io.github.sds100.keymapper/
     - icon: fontawesome/brands/discord
       link: https://keymapper.club
