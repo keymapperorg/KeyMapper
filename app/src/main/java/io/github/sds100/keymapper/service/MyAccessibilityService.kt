@@ -37,6 +37,7 @@ import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.*
 import io.github.sds100.keymapper.util.result.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.first
 import splitties.bitflags.hasFlag
 import splitties.bitflags.minusFlag
 import splitties.bitflags.withFlag
@@ -676,8 +677,15 @@ class MyAccessibilityService : AccessibilityService(),
         //this is important
         runBlocking {
             if (VERSION.SDK_INT >= VERSION_CODES.O) {
-                ServiceLocator.fingerprintMapRepository(this@MyAccessibilityService)
-                    .setFingerprintGesturesAvailable(fingerprintGestureController.isGestureDetectionAvailable)
+                val repository = ServiceLocator.fingerprintMapRepository(this@MyAccessibilityService)
+
+                /* Don't update whether fingerprint gesture detection is supported if it has
+                * been supported at some point. Just in case the fingerprint reader is being
+                * used while this is called. */
+                if (repository.fingerprintGesturesAvailable.first() != true) {
+                    repository.setFingerprintGesturesAvailable(
+                        fingerprintGestureController.isGestureDetectionAvailable)
+                }
             }
         }
 
