@@ -485,7 +485,7 @@
     <string name="summary_pref_category_root">These options will only work on root devices! If you don\'t know what root is or whether your device is rooted, please don\'t leave a poor review if they don\'t work. :)</string>
 
     <string name="title_pref_category_secure_settings">Require WRITE_SECURE_SETTINGS permission</string>
-    <string name="summary_pref_category_secure_settings">These options are only enabled if Key Mapper has WRITE_SECURE_SETTINGS permission. There are instructions to grant it in the Help page.</string>
+    <string name="summary_pref_category_secure_settings">These options are only enabled if Key Mapper has WRITE_SECURE_SETTINGS permission. Click the relevant Fix button at the top of the home screen for instructions.</string>
     <!--Preference categories-->
 
     <!-- About activity-->
