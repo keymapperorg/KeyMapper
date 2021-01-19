@@ -29,6 +29,7 @@ class KeyEventActionTypeFragment : Fragment() {
         const val REQUEST_KEY = "request_key_event"
         const val EXTRA_KEYCODE = "extra_keycode"
         const val EXTRA_META_STATE = "extra_meta_state"
+        const val EXTRA_USE_SHELL = "extra_use_shell"
         const val EXTRA_DEVICE_DESCRIPTOR = "extra_device_descriptor"
     }
 
@@ -66,7 +67,8 @@ class KeyEventActionTypeFragment : Fragment() {
             setFragmentResult(REQUEST_KEY,
                 bundleOf(
                     EXTRA_KEYCODE to viewModel.keyCode.value?.toInt(),
-                    EXTRA_META_STATE to viewModel.metaState.value
+                    EXTRA_META_STATE to viewModel.metaState.value,
+                    EXTRA_USE_SHELL to viewModel.useShell.value
                 ).apply {
                     viewModel.chosenDevice.value?.let {
                         putString(EXTRA_DEVICE_DESCRIPTOR, it.descriptor)

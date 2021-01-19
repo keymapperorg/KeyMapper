@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.KeyEvent
+import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.*
@@ -140,6 +141,10 @@ fun Action.getTitle(ctx: Context, deviceInfoList: List<DeviceInfo>): Result<Stri
                 }
             }
 
+            val useShell = extras.getData(Action.EXTRA_KEY_EVENT_USE_SHELL)
+                .valueOrNull()
+                .toBoolean()
+
             val title = extras.getData(Action.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR).handle(
                 onSuccess = { descriptor ->
                     val deviceName = deviceInfoList.find { it.descriptor == descriptor }?.name?.let { name ->
@@ -150,14 +155,26 @@ fun Action.getTitle(ctx: Context, deviceInfoList: List<DeviceInfo>): Result<Stri
                         }
                     }
 
+                    val strRes = if (useShell) {
+                        R.string.description_keyevent_from_device_through_shell
+                    } else {
+                        R.string.description_keyevent_from_device
+                    }
+
                     ctx.str(
-                        R.string.description_keyevent_from_device,
+                        strRes,
                         formatArgArray = arrayOf(metaStateString, key, deviceName)
                     )
                 },
 
                 onFailure = {
-                    ctx.str(R.string.description_keyevent, formatArgArray = arrayOf(metaStateString, key))
+                    val strRes = if (useShell) {
+                        R.string.description_keyevent_through_shell
+                    } else {
+                        R.string.description_keyevent
+                    }
+
+                    ctx.str(strRes, formatArgArray = arrayOf(metaStateString, key))
                 }
             )
 
@@ -248,13 +265,14 @@ fun Action.getTitle(ctx: Context, deviceInfoList: List<DeviceInfo>): Result<Stri
 
         ActionType.PHONE_CALL -> Success(ctx.str(R.string.description_phone_call, data))
 
-    }.then {
-        extras.getData(Action.EXTRA_MULTIPLIER).valueOrNull()?.toIntOrNull()?.let { multiplier ->
-            return@then Success("(${multiplier}x) $it")
-        }
-
-        Success(it)
     }
+        .then {
+            extras.getData(Action.EXTRA_MULTIPLIER).valueOrNull()?.toIntOrNull()?.let { multiplier ->
+                return@then Success("(${multiplier}x) $it")
+            }
+
+            Success(it)
+        }
 }
 
 /**
@@ -338,6 +356,16 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
                 } else {
                     it
                 }
+            }
+        }
+
+        ActionType.KEY_EVENT -> {
+            val useShell = extras.getData(Action.EXTRA_KEY_EVENT_USE_SHELL)
+                .valueOrNull()
+                .toBoolean()
+
+            if (useShell && !AppPreferences.hasRootPermission) {
+                return PermissionDenied(Constants.PERMISSION_ROOT)
             }
         }
 
@@ -428,12 +456,18 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
 }
 
 val Action.canBeHeldDown: Boolean
-    get() = type in arrayOf(ActionType.KEY_EVENT, ActionType.TAP_COORDINATE)
-        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+    get() {
+        val useShell = extras.getData(Action.EXTRA_KEY_EVENT_USE_SHELL).valueOrNull().toBoolean()
+
+        return (type == ActionType.KEY_EVENT && !useShell)
+            || type == ActionType.TAP_COORDINATE
+            && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+    }
 
 val Action.requiresIME: Boolean
     get() {
-        return type == ActionType.KEY_EVENT ||
+        val useShell = extras.getData(Action.EXTRA_KEY_EVENT_USE_SHELL).valueOrNull().toBoolean()
+        return (type == ActionType.KEY_EVENT && !useShell) ||
             type == ActionType.TEXT_BLOCK ||
             data == SystemAction.MOVE_CURSOR_TO_END
     }

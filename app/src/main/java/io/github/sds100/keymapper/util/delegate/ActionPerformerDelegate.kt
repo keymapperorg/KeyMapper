@@ -33,7 +33,6 @@ import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
 import splitties.toast.longToast
 import splitties.toast.toast
-import timber.log.Timber
 
 
 /**
@@ -71,8 +70,9 @@ class ActionPerformerDelegate(context: Context,
     fun performAction(
         performActionModel: PerformAction,
         chosenImePackageName: String?,
-        currentPackageName: String?
-    ) {
+        currentPackageName: String?,
+
+        ) {
         val (action, showToast, additionalMetaState, keyEventAction) = performActionModel
 
         ctx.apply {
@@ -190,6 +190,15 @@ class ActionPerformerDelegate(context: Context,
                 }
 
                 ActionType.KEY_EVENT -> {
+                    val useShell = action.extras.getData(Action.EXTRA_KEY_EVENT_USE_SHELL)
+                        .valueOrNull()
+                        .toBoolean()
+
+                    if (useShell) {
+                        val keyCode = action.data
+                        suProcessDelegate.runCommand("input keyevent $keyCode")
+                    }
+
                     val deviceId = action.extras.getData(Action.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR).handle(
                         onSuccess = {
                             InputDeviceUtils.getDeviceIdFromDescriptor(it)
@@ -202,7 +211,9 @@ class ActionPerformerDelegate(context: Context,
                             it,
                             keyCode = action.data.toInt(),
                             metaState = additionalMetaState.withFlag(
-                                action.extras.getData(Action.EXTRA_KEY_EVENT_META_STATE).valueOrNull()?.toInt()
+                                action.extras.getData(Action.EXTRA_KEY_EVENT_META_STATE)
+                                    .valueOrNull()
+                                    ?.toInt()
                                     ?: 0
                             ),
                             keyEventAction = keyEventAction,
@@ -372,25 +383,7 @@ class ActionPerformerDelegate(context: Context,
                 SystemAction.OPEN_MENU -> {
                     if (AppPreferences.hasRootPermission) {
 
-                        if (suProcessDelegate.process == null) {
-                            suProcessDelegate.createSuProcess()
-                        }
-
-                        suProcessDelegate.process?.let {
-                            //the \n is very important. it is like pressing enter
-
-                            try {
-                                with(it.outputStream.bufferedWriter()) {
-                                    write("input keyevent ${KeyEvent.KEYCODE_MENU}\n")
-                                    flush()
-                                }
-                            } catch (e: Exception) {
-                                Timber.e(e)
-
-                                e.message?.let { message -> toast(message) }
-                            }
-                        }
-
+                        suProcessDelegate.runCommand("input keyevent ${KeyEvent.KEYCODE_MENU}\n")
                     } else {
                         rootNode.findNodeRecursively {
                             it.contentDescription == OVERFLOW_MENU_CONTENT_DESCRIPTION
@@ -427,7 +420,8 @@ class ActionPerformerDelegate(context: Context,
                     startActivity(intent)
                 }
 
-                SystemAction.LOCK_DEVICE_ROOT -> RootUtils.executeRootCommand("input keyevent ${KeyEvent.KEYCODE_POWER}")
+                SystemAction.LOCK_DEVICE_ROOT ->
+                    suProcessDelegate.runCommand("input keyevent ${KeyEvent.KEYCODE_POWER}")
 
                 SystemAction.SHOW_KEYBOARD_PICKER, SystemAction.SHOW_KEYBOARD_PICKER_ROOT ->
                     KeyboardUtils.showInputMethodPickerDialogOutsideApp()
@@ -438,7 +432,7 @@ class ActionPerformerDelegate(context: Context,
                 }
 
                 SystemAction.POWER_ON_OFF_DEVICE -> {
-                    RootUtils.executeRootCommand("input keyevent ${KeyEvent.KEYCODE_POWER}")
+                    suProcessDelegate.runCommand("input keyevent ${KeyEvent.KEYCODE_POWER}")
                 }
 
                 SystemAction.MOVE_CURSOR_TO_END -> chosenImePackageName?.let {

@@ -101,6 +101,7 @@ data class Action(
          */
         const val EXTRA_KEY_EVENT_META_STATE = "extra_meta_state"
         const val EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR = "extra_device_descriptor"
+        const val EXTRA_KEY_EVENT_USE_SHELL = "extra_key_event_use_shell"
 
         const val EXTRA_IME_ID = "extra_ime_id"
         const val EXTRA_IME_NAME = "extra_ime_name"
@@ -137,13 +138,25 @@ data class Action(
             return keyEventAction(keyCode, metaState = 0)
         }
 
-        fun keyEventAction(keyCode: Int, metaState: Int, deviceDescriptor: String? = null): Action {
+        fun keyEventAction(
+            keyCode: Int,
+            metaState: Int,
+            deviceDescriptor: String? = null,
+            useShell: Boolean = false
+        ): Action {
             val extras = sequence {
+                if (useShell) {
+                    yield(Extra(EXTRA_KEY_EVENT_USE_SHELL, useShell.toString()))
+                    //no other options are allowed if using the shell
+                    return@sequence
+                }
+
                 yield(Extra(EXTRA_KEY_EVENT_META_STATE, metaState.toString()))
 
                 deviceDescriptor?.let {
                     yield(Extra(EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR, it))
                 }
+
             }.toList()
 
             return Action(

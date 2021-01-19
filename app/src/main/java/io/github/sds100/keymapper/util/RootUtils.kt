@@ -16,8 +16,8 @@ object RootUtils {
     /**
      * @return whether the command was executed successfully
      */
-    fun executeRootCommand(command: String, waitFor: Boolean = false): Boolean {
-        return Shell.run("su", "-c", command, waitFor = waitFor)
+    fun executeRootCommand(vararg command: String, waitFor: Boolean = false): Boolean {
+        return Shell.run("su", "-c", *command, waitFor = waitFor)
     }
 
     /**

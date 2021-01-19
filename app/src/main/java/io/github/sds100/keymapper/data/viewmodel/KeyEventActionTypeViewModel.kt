@@ -46,6 +46,8 @@ class KeyEventActionTypeViewModel(private val deviceInfoRepository: DeviceInfoRe
 
     val metaState = MutableLiveData(0)
 
+    val useShell = MutableLiveData(false)
+
     private val _eventStream = LiveEvent<Event>()
     val eventStream: LiveData<Event> = _eventStream
 

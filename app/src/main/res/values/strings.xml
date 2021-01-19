@@ -93,13 +93,16 @@
     <string name="action_title_intent_send_broadcast">Send broadcast: %s</string>
 
     <string name="clipboard_label_keymap_uid">Key map UUID</string>
+    <string name="check_box_key_event_option_use_shell">Use shell (ROOT only)</string>
 
     <!--  Action descriptions  -->
     <string name="description_open_app">Open %s</string>
     <string name="description_key">Press \'%s\' key</string>
     <string name="description_text_block">Type \'%s\'</string>
     <string name="description_keyevent">Input %s%s</string>
+    <string name="description_keyevent_through_shell">Input %s%s through shell</string>
     <string name="description_keyevent_from_device">Input %s%s from %s</string>
+    <string name="description_keyevent_from_device_through_shell">Input %s%s from %s through shell</string>
     <string name="description_url">Open %s</string>
     <string name="description_tap_coordinate_default">Tap coordinates %s, %s</string>
     <string name="description_tap_coordinate_with_description">Tap coordinates %s, %s (%s)</string>
