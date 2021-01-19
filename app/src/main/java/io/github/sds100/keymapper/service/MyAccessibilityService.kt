@@ -694,10 +694,8 @@ class MyAccessibilityService : AccessibilityService(),
         //this is important
         runBlocking {
             if (VERSION.SDK_INT >= VERSION_CODES.O) {
-                if (fingerprintGestureController.isGestureDetectionAvailable) {
-                    ServiceLocator.fingerprintMapRepository(this@MyAccessibilityService)
-                        .setFingerprintGesturesAvailable(true)
-                }
+                ServiceLocator.fingerprintMapRepository(this@MyAccessibilityService)
+                    .setFingerprintGesturesAvailable(fingerprintGestureController.isGestureDetectionAvailable)
             }
         }
 
