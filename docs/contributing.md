@@ -19,14 +19,15 @@ Here are words and phrases that can be spelt or capitalised in multiple ways.
 | A constraint    | **constraint**                                               | Constraint                         |
 | A key event | **key event** | Key Event, keyevent |
 | A key code | **key code**. In variable and class names it should be keycode instead of keyCode. | keycode, Key Code |
+| A home screen | **home screen** | homescreen, Home Screen |
 
 ### Documentation
 
 #### Headings
 
-If a heading is for a particular feature then it should include the minimum supported Key Mapper version except version 1.0 and whether it requires root.
+If a heading is for a particular feature then it should include the minimum supported Key Mapper version except version 2.0.* because 1.* isn't supported at all and whether it requires root.
 
-E.g "Trigger When Screen is Off (ROOT, 2.0.0+)"
+E.g "Trigger When Screen is Off (ROOT, 2.1.0+)"
 
 ### Committing
 

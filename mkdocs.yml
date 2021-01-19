@@ -9,7 +9,7 @@ nav:
   - User Guide:
       - Triggers: user-guide/triggers.md
       - Actions: user-guide/actions.md
-      - Constraints (2.0.0+): user-guide/constraints.md
+      - Constraints: user-guide/constraints.md
       - ADB Permissions: user-guide/adb-permissions.md
       - Fingerprint Gestures (2.2.0+): user-guide/fingerprint-gestures.md
       - Backup and Restore (2.1.0+, Android 4.4+): user-guide/backup-restore.md
