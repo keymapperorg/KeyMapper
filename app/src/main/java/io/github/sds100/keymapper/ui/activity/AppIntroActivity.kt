@@ -134,9 +134,9 @@ class AccessibilityServiceSlide : AppIntroScrollableFragment() {
         imageDrawable = drawable(R.drawable.ic_outline_error_outline_64)
         backgroundColor = color(R.color.purple)
 
-        buttonText = str(R.string.enable)
+        buttonText1 = str(R.string.enable)
 
-        setOnButtonClickListener {
+        setOnButton1ClickListener {
             AccessibilityUtils.enableService(requireContext())
         }
     }
@@ -148,7 +148,7 @@ class AccessibilityServiceSlide : AppIntroScrollableFragment() {
         imageDrawable = drawable(R.drawable.ic_baseline_check_64)
         backgroundColor = color(R.color.purple)
 
-        buttonText = null
+        buttonText1 = null
     }
 }
 
@@ -157,24 +157,60 @@ class BatteryOptimisationSlide : AppIntroScrollableFragment() {
     override fun onBind(binding: FragmentAppIntroSlideBinding) {
         binding.apply {
             title = str(R.string.showcase_disable_battery_optimisation_title)
-            description = str(R.string.showcase_disable_battery_optimisation_message)
 
             imageDrawable = drawable(R.drawable.ic_battery_std_white_64dp)
             backgroundColor = color(R.color.blue)
 
-            buttonText = str(R.string.showcase_disable_battery_optimisation_button)
-
-            setOnButtonClickListener {
-                try {
-                    val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-                    startActivity(intent)
-                } catch (e: ActivityNotFoundException) {
-                    longToast(R.string.error_battery_optimisation_activity_not_found)
-                }
-            }
+            invalidate()
         }
 
         viewLoaded()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        viewLifecycleScope.launchWhenResumed {
+            invalidate()
+        }
+    }
+
+    private fun invalidate() {
+        if (powerManager.isIgnoringBatteryOptimizations(Constants.PACKAGE_NAME)) {
+            binding.offLayout()
+        } else {
+            binding.onLayout()
+        }
+    }
+
+    private fun FragmentAppIntroSlideBinding.offLayout() {
+        description = str(R.string.showcase_disable_battery_optimisation_message_good)
+        buttonText1 = str(R.string.showcase_disable_battery_optimisation_button_dont_kill_my_app)
+
+        setOnButton1ClickListener {
+            UrlUtils.openUrl(requireContext(), str(R.string.url_dont_kill_my_app))
+        }
+
+        buttonText2 = null
+    }
+
+    private fun FragmentAppIntroSlideBinding.onLayout() {
+        description = str(R.string.showcase_disable_battery_optimisation_message_bad)
+        buttonText1 = str(R.string.showcase_disable_battery_optimisation_button_turn_off)
+        buttonText2 = str(R.string.showcase_disable_battery_optimisation_button_dont_kill_my_app)
+
+        setOnButton1ClickListener {
+            try {
+                val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                startActivity(intent)
+            } catch (e: ActivityNotFoundException) {
+                longToast(R.string.error_battery_optimisation_activity_not_found)
+            }
+        }
+
+        setOnButton2ClickListener {
+            UrlUtils.openUrl(requireContext(), str(R.string.url_dont_kill_my_app))
+        }
     }
 }
 
@@ -205,7 +241,7 @@ class FingerprintGestureSupportSlide : AppIntroScrollableFragment() {
             str(R.string.showcase_fingerprint_gesture_support_message_supported)
         imageDrawable = drawable(R.drawable.ic_baseline_check_64)
 
-        buttonText = null
+        buttonText1 = null
     }
 
     private fun FragmentAppIntroSlideBinding.supportedUnknownLayout() {
@@ -215,9 +251,9 @@ class FingerprintGestureSupportSlide : AppIntroScrollableFragment() {
             str(R.string.showcase_fingerprint_gesture_support_message_supported_unknown)
         imageDrawable = drawable(R.drawable.ic_baseline_fingerprint_64)
 
-        buttonText = str(R.string.showcase_fingerprint_gesture_support_button)
+        buttonText1 = str(R.string.showcase_fingerprint_gesture_support_button)
 
-        setOnButtonClickListener {
+        setOnButton1ClickListener {
             AccessibilityUtils.enableService(requireContext())
         }
     }
@@ -229,7 +265,7 @@ class FingerprintGestureSupportSlide : AppIntroScrollableFragment() {
             str(R.string.showcase_fingerprint_gesture_support_message_not_supported)
         imageDrawable = drawable(R.drawable.ic_baseline_cross_64)
 
-        buttonText = null
+        buttonText1 = null
     }
 }
 
@@ -260,9 +296,9 @@ class DndAccessSlide : AppIntroScrollableFragment() {
             imageDrawable = drawable(R.drawable.ic_outline_dnd_circle_outline_64)
             backgroundColor = color(R.color.red)
 
-            buttonText = str(R.string.pos_grant)
+            buttonText1 = str(R.string.pos_grant)
 
-            setOnButtonClickListener {
+            setOnButton1ClickListener {
                 PermissionUtils.requestAccessNotificationPolicy(requestAccessNotificationPolicy)
             }
         }
