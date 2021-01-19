@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.data
 
-import androidx.appcompat.app.AppCompatDelegate.*
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.bool
 import io.github.sds100.keymapper.util.int
@@ -14,22 +13,6 @@ import splitties.preferences.DefaultPreferences
 
 @Suppress("EXPERIMENTAL_API_USAGE")
 object AppPreferences : DefaultPreferences() {
-
-    private var darkThemeModePref by StringPref(
-        appCtx.str(R.string.key_pref_dark_theme_mode),
-        appCtx.str(R.string.default_value_dark_theme_mode)
-    )
-
-    @NightMode
-    var darkThemeMode: Int
-        get() = getSdkNightMode(darkThemeModePref)
-        set(value) {
-            when (value) {
-                MODE_NIGHT_YES -> darkThemeModePref = appCtx.str(R.string.value_pref_dark_theme_enabled)
-                MODE_NIGHT_NO -> darkThemeModePref = appCtx.str(R.string.value_pref_dark_theme_disabled)
-                MODE_NIGHT_FOLLOW_SYSTEM -> darkThemeModePref = appCtx.str(R.string.value_pref_dark_theme_follow_system)
-            }
-        }
 
     val hasRootPermission by BoolPref(
         appCtx.str(R.string.key_pref_root_permission),
@@ -139,14 +122,4 @@ object AppPreferences : DefaultPreferences() {
         appCtx.str(R.string.key_pref_hold_down_duration),
         appCtx.int(R.integer.default_value_hold_down_duration)
     )
-
-    @NightMode
-    fun getSdkNightMode(darkThemePrefValue: String): Int {
-        return when (darkThemePrefValue) {
-            appCtx.str(R.string.value_pref_dark_theme_enabled) -> MODE_NIGHT_YES
-            appCtx.str(R.string.value_pref_dark_theme_disabled) -> MODE_NIGHT_NO
-            appCtx.str(R.string.value_pref_dark_theme_follow_system) -> MODE_NIGHT_FOLLOW_SYSTEM
-            else -> MODE_NIGHT_FOLLOW_SYSTEM
-        }
-    }
 }

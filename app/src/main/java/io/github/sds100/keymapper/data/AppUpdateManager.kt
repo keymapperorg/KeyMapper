@@ -7,13 +7,13 @@ import io.github.sds100.keymapper.Constants
  * Created by sds100 on 18/01/21.
  */
 
-class AppUpdateManager(private val dataStore: IPreferenceDataStore) : IPreferenceDataStore by dataStore {
+class AppUpdateManager(private val dataStoreManager: IDataStoreManager) : IDataStoreManager by dataStoreManager {
 
     suspend fun getLastVersionCodeHomeScreen() =
-        dataStore.get(PreferenceKeys.LAST_INSTALLED_VERSION_CODE_HOME_SCREEN) ?: -1
+        dataStoreManager.get(PreferenceKeys.LAST_INSTALLED_VERSION_CODE_HOME_SCREEN) ?: -1
 
     suspend fun getLastVersionCodeAccessibilityService() =
-        dataStore.get(PreferenceKeys.LAST_INSTALLED_VERSION_CODE_ACCESSIBILITY_SERVICE) ?: -1
+        dataStoreManager.get(PreferenceKeys.LAST_INSTALLED_VERSION_CODE_ACCESSIBILITY_SERVICE) ?: -1
 
     suspend fun handledAppUpdateOnHomeScreen() {
         set(PreferenceKeys.LAST_INSTALLED_VERSION_CODE_HOME_SCREEN, Constants.VERSION_CODE)

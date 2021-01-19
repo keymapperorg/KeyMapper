@@ -50,11 +50,6 @@
     <string name="key_pref_category_secure_settings" translatable="false">pref_category_secure_settings</string>
     <string name="key_pref_category_root" translatable="false">pref_category_root</string>
 
-    <string name="key_pref_fingerprint_swipe_down_json" translatable="false">pref_fingerprint_swipe_down_json</string>
-    <string name="key_pref_fingerprint_swipe_up_json" translatable="false">pref_fingerprint_swipe_up_json</string>
-    <string name="key_pref_fingerprint_swipe_left_json" translatable="false">pref_fingerprint_swipe_left_json</string>
-    <string name="key_pref_fingerprint_swipe_right_json" translatable="false">pref_fingerprint_swipe_right_json</string>
-
     <!-- Dark theme preference values -->
     <string name="value_pref_dark_theme_enabled">0</string>
     <string name="value_pref_dark_theme_disabled">1</string>

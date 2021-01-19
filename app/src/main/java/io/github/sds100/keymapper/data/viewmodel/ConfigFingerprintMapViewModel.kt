@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.data.viewmodel
 import android.os.Bundle
 import androidx.lifecycle.*
 import com.hadilq.liveevent.LiveEvent
-import io.github.sds100.keymapper.data.IPreferenceDataStore
+import io.github.sds100.keymapper.data.IDataStoreManager
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.options.FingerprintActionOptions
 import io.github.sds100.keymapper.data.model.options.FingerprintMapOptions
@@ -26,8 +26,8 @@ import kotlinx.coroutines.launch
 
 class ConfigFingerprintMapViewModel(private val fingerprintMapRepository: FingerprintMapRepository,
                                     private val deviceInfoRepository: DeviceInfoRepository,
-                                    preferenceDataStore: IPreferenceDataStore
-) : ViewModel(), IPreferenceDataStore by preferenceDataStore, IConfigMappingViewModel {
+                                    dataStoreManager: IDataStoreManager
+) : ViewModel(), IDataStoreManager by dataStoreManager, IConfigMappingViewModel {
 
     companion object {
         private const val MAP_STATE_KEY = "config_fingerprint_map"
@@ -136,14 +136,14 @@ class ConfigFingerprintMapViewModel(private val fingerprintMapRepository: Finger
     class Factory(
         private val fingerprintMapRepository: FingerprintMapRepository,
         private val deviceInfoRepository: DeviceInfoRepository,
-        private val iPreferenceDataStore: IPreferenceDataStore) : ViewModelProvider.Factory {
+        private val iDataStoreManager: IDataStoreManager) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>) =
             ConfigFingerprintMapViewModel(
                 fingerprintMapRepository,
                 deviceInfoRepository,
-                iPreferenceDataStore
+                iDataStoreManager
             ) as T
     }
 }

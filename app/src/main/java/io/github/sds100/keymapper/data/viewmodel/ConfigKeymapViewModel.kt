@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.data.viewmodel
 import android.os.Bundle
 import androidx.lifecycle.*
 import com.hadilq.liveevent.LiveEvent
-import io.github.sds100.keymapper.data.IPreferenceDataStore
+import io.github.sds100.keymapper.data.IDataStoreManager
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.KeyMap
@@ -25,8 +25,8 @@ import java.util.*
 
 class ConfigKeymapViewModel(private val keymapRepository: ConfigKeymapUseCase,
                             private val deviceInfoRepository: DeviceInfoRepository,
-                            preferenceDataStore: IPreferenceDataStore
-) : ViewModel(), IPreferenceDataStore by preferenceDataStore, IConfigMappingViewModel {
+                            dataStoreManager: IDataStoreManager
+) : ViewModel(), IDataStoreManager by dataStoreManager, IConfigMappingViewModel {
 
     companion object {
         const val NEW_KEYMAP_ID = -2L
@@ -64,7 +64,7 @@ class ConfigKeymapViewModel(private val keymapRepository: ConfigKeymapUseCase,
 
     val triggerViewModel = TriggerViewModel(
         deviceInfoRepository,
-        preferenceDataStore = this,
+        dataStoreManager = this,
         this.uid
     )
 
@@ -168,10 +168,10 @@ class ConfigKeymapViewModel(private val keymapRepository: ConfigKeymapUseCase,
     class Factory(
         private val configKeymapUseCase: ConfigKeymapUseCase,
         private val deviceInfoRepository: DeviceInfoRepository,
-        private val iPreferenceDataStore: IPreferenceDataStore) : ViewModelProvider.Factory {
+        private val iDataStoreManager: IDataStoreManager) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>) =
-            ConfigKeymapViewModel(configKeymapUseCase, deviceInfoRepository, iPreferenceDataStore) as T
+            ConfigKeymapViewModel(configKeymapUseCase, deviceInfoRepository, iDataStoreManager) as T
     }
 }

@@ -12,9 +12,9 @@ import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.preference.*
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
@@ -22,6 +22,7 @@ import io.github.sds100.keymapper.NotificationController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
+import io.github.sds100.keymapper.data.viewmodel.SettingsViewModel
 import io.github.sds100.keymapper.databinding.FragmentSettingsBinding
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
@@ -133,7 +134,13 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
         }
     }
 
+    private val viewModel by viewModels<SettingsViewModel> {
+        InjectorUtils.provideSettingsViewModel(requireContext())
+    }
+
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        preferenceManager.preferenceDataStore = viewModel.sharedPrefsDataStoreWrapper
+
         addPreferencesFromResource(R.xml.preferences)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -293,8 +300,8 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
         if (newValue is String) {
             when (preference) {
                 darkThemePreference -> {
-                    val mode = AppPreferences.getSdkNightMode(newValue)
-                    AppCompatDelegate.setDefaultNightMode(mode)
+//                    val mode = AppPreferences.getSdkNightMode(newValue)
+//                    AppCompatDelegate.setDefaultNightMode(mode)
                 }
             }
         }

@@ -62,10 +62,6 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
         InjectorUtils.provideFingerprintMapListViewModel(requireContext())
     }
 
-    private val homeViewModel: HomeViewModel by activityViewModels {
-        InjectorUtils.provideHomeViewModel(requireContext())
-    }
-
     /**
      * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
      */

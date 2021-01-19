@@ -16,6 +16,7 @@
 package io.github.sds100.keymapper.util
 
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatDelegate
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.options.BaseOptions
@@ -51,6 +52,7 @@ class RequestRestore : Event()
 class RequestBackupAll : Event()
 class ShowErrorMessage(val failure: Failure) : Event()
 class BuildIntentExtraListItemModels(val extraModels: List<IntentExtraModel>) : Event()
+class SetTheme(@AppCompatDelegate.NightMode val theme: Int) : Event()
 
 //trigger
 class BuildTriggerKeyModels(val source: List<Trigger.Key>) : Event()

@@ -140,6 +140,10 @@ object InjectorUtils {
     }
 
     fun provideHomeViewModel(context: Context): HomeViewModel.Factory {
-        return HomeViewModel.Factory()
+        return HomeViewModel.Factory(ServiceLocator.globalPreferences(context))
+    }
+
+    fun provideSettingsViewModel(context: Context): SettingsViewModel.Factory {
+        return SettingsViewModel.Factory(ServiceLocator.preferenceDataStore(context))
     }
 }

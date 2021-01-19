@@ -3,9 +3,7 @@ package io.github.sds100.keymapper
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.room.Room
-import io.github.sds100.keymapper.data.AppUpdateManager
-import io.github.sds100.keymapper.data.DefaultPreferenceDataStore
-import io.github.sds100.keymapper.data.IPreferenceDataStore
+import io.github.sds100.keymapper.data.*
 import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.repository.*
 import kotlinx.coroutines.runBlocking
@@ -25,7 +23,7 @@ object ServiceLocator {
     private var deviceInfoRepository: DeviceInfoRepository? = null
 
     @Volatile
-    private var preferenceDataStore: IPreferenceDataStore? = null
+    private var dataStoreManager: IDataStoreManager? = null
 
     @Volatile
     private var fingerprintMapRepository: FingerprintMapRepository? = null
@@ -42,6 +40,9 @@ object ServiceLocator {
     @Volatile
     private var appUpdateManager: AppUpdateManager? = null
 
+    @Volatile
+    private var globalPreferences: IGlobalPreferences? = null
+
     fun keymapRepository(context: Context): DefaultKeymapRepository {
         synchronized(this) {
             return keymapRepository ?: createKeymapRepository(context)
@@ -54,9 +55,16 @@ object ServiceLocator {
         }
     }
 
-    fun preferenceDataStore(context: Context): IPreferenceDataStore {
+    //TODO make private
+    fun preferenceDataStore(context: Context): IDataStoreManager {
         synchronized(this) {
-            return preferenceDataStore ?: createPreferenceDataStore(context)
+            return dataStoreManager ?: createPreferenceDataStore(context)
+        }
+    }
+
+    fun globalPreferences(context: Context): IGlobalPreferences {
+        synchronized(this) {
+            return globalPreferences ?: createGlobalPreferences(context)
         }
     }
 
@@ -122,10 +130,10 @@ object ServiceLocator {
         return deviceInfoRepository!!
     }
 
-    private fun createPreferenceDataStore(context: Context): IPreferenceDataStore {
-        return preferenceDataStore
-            ?: DefaultPreferenceDataStore(context.applicationContext).also {
-                this.preferenceDataStore = it
+    private fun createPreferenceDataStore(context: Context): IDataStoreManager {
+        return dataStoreManager
+            ?: DefaultDataStoreManager(context.applicationContext).also {
+                this.dataStoreManager = it
             }
     }
 
@@ -165,6 +173,15 @@ object ServiceLocator {
         return appUpdateManager ?: AppUpdateManager(preferenceDataStore).also {
             this.appUpdateManager = it
         }
+    }
+
+    private fun createGlobalPreferences(context: Context): IGlobalPreferences {
+        val dataStore = preferenceDataStore(context).globalPreferenceDataStore
+
+        return globalPreferences
+            ?: GlobalPreferences(dataStore).also {
+                this.globalPreferences = it
+            }
     }
 
     private fun createDatabase(context: Context): AppDatabase {

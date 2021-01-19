@@ -8,7 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
 import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.IPreferenceDataStore
+import io.github.sds100.keymapper.data.IDataStoreManager
 import io.github.sds100.keymapper.data.model.DeviceInfo
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.model.TriggerKeyModel
@@ -24,12 +24,12 @@ import java.util.*
 
 class TriggerViewModel(
     private val deviceInfoRepository: DeviceInfoRepository,
-    preferenceDataStore: IPreferenceDataStore,
+    dataStoreManager: IDataStoreManager,
     keymapUid: LiveData<String>
-) : IPreferenceDataStore by preferenceDataStore {
+) : IDataStoreManager by dataStoreManager {
 
     val optionsViewModel = TriggerOptionsViewModel(
-        preferenceDataStore,
+        dataStoreManager,
         getTriggerKeys = { keys.value ?: emptyList() },
         getTriggerMode = { mode.value ?: Trigger.DEFAULT_TRIGGER_MODE },
         keymapUid

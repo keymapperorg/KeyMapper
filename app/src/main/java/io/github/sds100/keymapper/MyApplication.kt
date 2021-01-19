@@ -2,7 +2,9 @@ package io.github.sds100.keymapper
 
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
-import io.github.sds100.keymapper.data.AppPreferences
+import io.github.sds100.keymapper.data.darkThemeMode
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 
 /**
@@ -10,7 +12,13 @@ import timber.log.Timber
  */
 class MyApplication : MultiDexApplication() {
     override fun onCreate() {
-        AppCompatDelegate.setDefaultNightMode(AppPreferences.darkThemeMode)
+        runBlocking {
+            ServiceLocator.globalPreferences(this@MyApplication)
+                .darkThemeMode()
+                .first()
+                .let { AppCompatDelegate.setDefaultNightMode(it) }
+        }
+
         super.onCreate()
 
         if (BuildConfig.DEBUG) {

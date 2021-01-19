@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.IPreferenceDataStore
+import io.github.sds100.keymapper.data.IDataStoreManager
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.options.BoolOption
 import io.github.sds100.keymapper.data.model.options.IntOption
@@ -17,11 +17,11 @@ import io.github.sds100.keymapper.util.OkDialog
  * Created by sds100 on 29/11/20.
  */
 class TriggerOptionsViewModel(
-    preferenceDataStore: IPreferenceDataStore,
+    dataStoreManager: IDataStoreManager,
     val getTriggerKeys: () -> List<Trigger.Key>,
     val getTriggerMode: () -> Int,
     private val keymapUid: LiveData<String>
-) : BaseOptionsViewModel<TriggerOptions>(), IPreferenceDataStore by preferenceDataStore {
+) : BaseOptionsViewModel<TriggerOptions>(), IDataStoreManager by dataStoreManager {
 
     override val stateKey = "trigger_options_view_model"
 
