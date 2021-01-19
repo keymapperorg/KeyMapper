@@ -567,10 +567,13 @@
     <string name="showcase_action_list">Tap the 3 dots to change the repeat behaviour and more. You can test an action and fix action errors by tapping it.</string>
     <string name="showcase_screen_off_triggers">This option will only work if your device is rooted and you have told Key Mapper that it has root permission in the Key Mapper settings. If you don\'t know what root is then this option will not work. It will also only work for some keys (e.g volume buttons) so see the Help page for a list of supported keys.</string>
 
-    <string name="showcase_fingerprint_gesture_support_title">Remapping fingerprint reader gestures</string>
+    <string name="showcase_fingerprint_gesture_support_title_supported_unknown">Remapping fingerprint reader gestures</string>
+    <string name="showcase_fingerprint_gesture_support_title_supported">You can remap fingerprint reader gestures! :)</string>
+    <string name="showcase_fingerprint_gesture_support_title_not_supported">You can not remap fingerprint reader gestures!</string>
+
     <string name="showcase_fingerprint_gesture_support_message_supported_unknown">You\'ll need to enable the accessibility service so that Key Mapper can check whether your device can detect fingerprint gestures.</string>
     <string name="showcase_fingerprint_gesture_support_message_supported">Your device can detect fingerprint gestures! There is a tab at the top of the home screen for remapping fingerprint gestures.</string>
-    <string name="showcase_fingerprint_gesture_support_message_not_supported">Your device does NOT allow 3rd party apps to detect fingerprint gestures! There isn\'t anything the developer can do about this. Some devices have the setting to swipe down on the fingerprint reader to open the notification drawer and do NOT allow 3rd party apps to detect fingerprint gestures.</string>
+    <string name="showcase_fingerprint_gesture_support_message_not_supported">Your device does not allow 3rd party apps to detect fingerprint gestures! There isn\'t anything the developer can do about this. Some devices have the setting to swipe down on the fingerprint reader to open the notification drawer and do not allow 3rd party apps to detect fingerprint gestures.</string>
     <string name="showcase_fingerprint_gesture_support_button">Enable</string>
     <!-- Showcase -->
 
