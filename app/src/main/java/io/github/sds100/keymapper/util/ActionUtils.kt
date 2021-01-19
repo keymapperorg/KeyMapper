@@ -460,8 +460,7 @@ val Action.canBeHeldDown: Boolean
         val useShell = extras.getData(Action.EXTRA_KEY_EVENT_USE_SHELL).valueOrNull().toBoolean()
 
         return (type == ActionType.KEY_EVENT && !useShell)
-            || type == ActionType.TAP_COORDINATE
-            && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+            || (type == ActionType.TAP_COORDINATE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
     }
 
 val Action.requiresIME: Boolean
