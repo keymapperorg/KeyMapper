@@ -183,9 +183,6 @@ class FingerprintGestureSupportSlide : AppIntroScrollableFragment() {
 
     override fun onBind(binding: FragmentAppIntroSlideBinding) {
         binding.apply {
-            title = str(R.string.showcase_fingerprint_gesture_support_title)
-
-            imageDrawable = drawable(R.drawable.ic_baseline_fingerprint_64)
             backgroundColor = color(R.color.orange)
 
             ServiceLocator.fingerprintMapRepository(requireContext()).fingerprintGesturesAvailable
@@ -202,15 +199,21 @@ class FingerprintGestureSupportSlide : AppIntroScrollableFragment() {
     }
 
     private fun FragmentAppIntroSlideBinding.gesturesSupportedLayout() {
+        title =
+            str(R.string.showcase_fingerprint_gesture_support_title_supported)
         description =
             str(R.string.showcase_fingerprint_gesture_support_message_supported)
+        imageDrawable = drawable(R.drawable.ic_baseline_check_64)
 
         buttonText = null
     }
 
     private fun FragmentAppIntroSlideBinding.supportedUnknownLayout() {
+        title =
+            str(R.string.showcase_fingerprint_gesture_support_title_supported_unknown)
         description =
             str(R.string.showcase_fingerprint_gesture_support_message_supported_unknown)
+        imageDrawable = drawable(R.drawable.ic_baseline_fingerprint_64)
 
         buttonText = str(R.string.showcase_fingerprint_gesture_support_button)
 
@@ -220,8 +223,11 @@ class FingerprintGestureSupportSlide : AppIntroScrollableFragment() {
     }
 
     private fun FragmentAppIntroSlideBinding.gesturesUnsupportedLayout() {
+        title =
+            str(R.string.showcase_fingerprint_gesture_support_title_not_supported)
         description =
             str(R.string.showcase_fingerprint_gesture_support_message_not_supported)
+        imageDrawable = drawable(R.drawable.ic_baseline_cross_64)
 
         buttonText = null
     }
