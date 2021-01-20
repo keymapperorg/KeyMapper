@@ -12,6 +12,10 @@
         <item name="actionButtonStyle">@style/ActionButton</item>
     </style>
 
+    <style name="Base.Splash" parent="Theme.MaterialComponents.DayNight" />
+
+    <style name="Splash" parent="Base.Splash" />
+
     <style name="AppTheme" parent="Base.AppTheme" />
 
     <style name="AppTheme.NoActionBar">

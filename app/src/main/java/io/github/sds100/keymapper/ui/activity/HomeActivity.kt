@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.ui.activity
 
 import android.Manifest
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
@@ -17,7 +16,6 @@ import androidx.navigation.findNavController
 import com.google.gson.Gson
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
-import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
 import io.github.sds100.keymapper.data.viewmodel.HomeViewModel
 import io.github.sds100.keymapper.data.viewmodel.KeyActionTypeViewModel
@@ -122,10 +120,6 @@ class HomeActivity : AppCompatActivity() {
 
         if (BuildConfig.DEBUG && PermissionUtils.isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
             AccessibilityUtils.enableService(this)
-        }
-
-        if (!AppPreferences.shownAppIntro) {
-            startActivity(Intent(this, AppIntroActivity::class.java))
         }
 
         homeViewModel.eventStream.observe(this, {
