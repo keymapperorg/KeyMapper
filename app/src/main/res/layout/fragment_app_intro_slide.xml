@@ -25,7 +25,11 @@
             type="String" />
 
         <variable
-            name="buttonText"
+            name="buttonText1"
+            type="String" />
+
+        <variable
+            name="buttonText2"
             type="String" />
 
         <variable
@@ -37,7 +41,11 @@
             type="Integer" />
 
         <variable
-            name="onButtonClickListener"
+            name="onButton1ClickListener"
+            type="View.OnClickListener" />
+
+        <variable
+            name="onButton2ClickListener"
             type="View.OnClickListener" />
 
         <variable
@@ -88,7 +96,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:visibility="@{viewState instanceof ViewPopulated ? View.VISIBLE : View.INVISIBLE}"
-            app:layout_constraintBottom_toTopOf="@id/button"
+            app:layout_constraintBottom_toTopOf="@id/button1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
@@ -110,7 +118,7 @@
             android:indeterminate="true"
             android:visibility="@{viewState instanceof ViewLoading ? View.VISIBLE : View.GONE}"
             app:indicatorColor="#FFFFFF"
-            app:layout_constraintBottom_toTopOf="@id/button"
+            app:layout_constraintBottom_toTopOf="@id/button1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
@@ -118,19 +126,34 @@
 
         <!--    Set INVISIBLE rather than GONE so that the text doesn't move up and down between slides.    -->
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/button"
+            android:id="@+id/button1"
             style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="@{onButtonClickListener}"
-            android:text="@{buttonText}"
-            android:visibility="@{buttonText == null ? View.INVISIBLE : View.VISIBLE}"
+            android:onClick="@{onButton1ClickListener}"
+            android:text="@{buttonText1}"
+            android:visibility="@{buttonText1 == null ? View.INVISIBLE : View.VISIBLE}"
+            app:backgroundTint="@color/appintro_default_fab_background_color"
+            app:elevation="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/button2"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="Button 1" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button2"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{onButton2ClickListener}"
+            android:text="@{buttonText2}"
+            android:visibility="@{buttonText2 == null ? View.GONE : View.VISIBLE}"
             app:backgroundTint="@color/appintro_default_fab_background_color"
             app:elevation="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="Button" />
+            app:layout_constraintStart_toEndOf="@id/button1"
+            tools:text="Button 2" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
