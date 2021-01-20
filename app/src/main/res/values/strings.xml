@@ -363,8 +363,9 @@
     <string name="notification_accessibility_service_disabled_title">Accessibility service disabled</string>
     <string name="notification_accessibility_service_disabled_text">Tap to start the accessibility service.</string>
 
-    <string name="notification_action_open_app">Open App</string>
-    <string name="notification_action_stop_acc_service">Stop Accessibility Service</string>
+    <string name="notification_action_open_app">Open app</string>
+    <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
+    <string name="notification_action_stop_acc_service">Stop service</string>
 
     <string name="notification_keyboard_hidden_title">Keyboard is hidden!</string>
     <string name="notification_keyboard_hidden_text">Tap to start showing the keyboard again.</string>
