@@ -399,8 +399,8 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
 }
 
 val Action.canBeHeldDown: Boolean
-    get() = type in arrayOf(ActionType.KEY_EVENT, ActionType.TAP_COORDINATE)
-        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+    get() = type == ActionType.KEY_EVENT
+        || (type == ActionType.TAP_COORDINATE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
 
 val Action.requiresIME: Boolean
     get() {
