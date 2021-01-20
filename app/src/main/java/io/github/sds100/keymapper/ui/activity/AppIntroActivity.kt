@@ -289,21 +289,45 @@ class DndAccessSlide : AppIntroScrollableFragment() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
 
     override fun onBind(binding: FragmentAppIntroSlideBinding) {
-        binding.apply {
-            title = str(R.string.showcase_dnd_access_title)
-            description = str(R.string.showcase_dnd_access_description)
+        binding.backgroundColor = color(R.color.red)
 
-            imageDrawable = drawable(R.drawable.ic_outline_dnd_circle_outline_64)
-            backgroundColor = color(R.color.red)
-
-            buttonText1 = str(R.string.pos_grant)
-
-            setOnButton1ClickListener {
-                PermissionUtils.requestAccessNotificationPolicy(requestAccessNotificationPolicy)
-            }
-        }
+        invalidate()
 
         viewLoaded()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        invalidate()
+    }
+
+    private fun invalidate() {
+        if (PermissionUtils.isPermissionGranted(Manifest.permission.ACCESS_NOTIFICATION_POLICY)) {
+            binding.enabledLayout()
+        } else {
+            binding.disabledLayout()
+        }
+    }
+
+    private fun FragmentAppIntroSlideBinding.disabledLayout() {
+
+        title = str(R.string.showcase_dnd_access_title_disabled)
+        description = str(R.string.showcase_dnd_access_description_disabled)
+        buttonText1 = str(R.string.pos_grant)
+        imageDrawable = drawable(R.drawable.ic_outline_dnd_circle_outline_64)
+
+        setOnButton1ClickListener {
+            PermissionUtils.requestAccessNotificationPolicy(requestAccessNotificationPolicy)
+        }
+    }
+
+    private fun FragmentAppIntroSlideBinding.enabledLayout() {
+
+        title = str(R.string.showcase_dnd_access_title_enabled)
+        description = str(R.string.showcase_dnd_access_description_enabled)
+        buttonText1 = null
+        imageDrawable = drawable(R.drawable.ic_baseline_check_64)
     }
 }
 

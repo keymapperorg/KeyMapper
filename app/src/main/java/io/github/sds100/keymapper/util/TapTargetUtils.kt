@@ -15,17 +15,21 @@ import uk.co.samuelwall.materialtaptargetprompt.extras.focals.CirclePromptFocal
  * Created by sds100 on 17/01/21.
  */
 
-sealed class TapTarget(private val key: Preferences.Key<Boolean>,
-                       @StringRes val primaryText: Int,
-                       @StringRes val secondaryText: Int) {
+sealed class TapTarget(
+    private val key: Preferences.Key<Boolean>,
+    @StringRes val primaryText: Int,
+    @StringRes val secondaryText: Int
+) {
 
     /**
      * Only works on app bar items if called during or after
      * the resumed state in the view lifecycle.
      */
-    suspend fun show(fragment: Fragment,
-                     @IdRes viewId: Int,
-                     promptFocal: PromptFocal = CirclePromptFocal()) {
+    suspend fun show(
+        fragment: Fragment,
+        @IdRes viewId: Int,
+        promptFocal: PromptFocal = CirclePromptFocal()
+    ) {
         val dataStore = ServiceLocator.preferenceDataStore(fragment.requireContext())
 
         if (dataStore.get(key) == true) return
@@ -47,9 +51,9 @@ sealed class TapTarget(private val key: Preferences.Key<Boolean>,
                         dataStore.set(key, true)
                     }
                 }
-            }
 
-            show()
+                show()
+            }
         }
     }
 }
@@ -57,4 +61,5 @@ sealed class TapTarget(private val key: Preferences.Key<Boolean>,
 class QuickStartGuideTapTarget : TapTarget(
     preferencesKey("tap_target_quick_start_guide"),
     R.string.tap_target_quick_start_guide_primary,
-    R.string.tap_target_quick_start_guide_secondary)
+    R.string.tap_target_quick_start_guide_secondary
+)
