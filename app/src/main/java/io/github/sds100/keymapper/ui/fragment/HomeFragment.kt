@@ -395,6 +395,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                     show()
                 }
             }
+            
 
             setDismissNewGuiKeyboardAd {
                 AppPreferences.showGuiKeyboardAd = false
