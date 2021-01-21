@@ -61,6 +61,7 @@ data class FingerprintMap(
         }
 
         const val FLAG_VIBRATE = 1
+        const val FLAG_SHOW_TOAST = 2
         const val EXTRA_VIBRATION_DURATION = "extra_vibration_duration"
 
         val FLAG_LABEL_MAP = mapOf(
