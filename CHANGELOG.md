@@ -22,7 +22,7 @@ Android 8.0+ and only on devices which support them. Even devices with the setti
 - Save and restore state for all view models. #519
 - Use View Binding in fragments properly. This should stop random crashes for some users. #518
 - Hold Down action option doesn't work for long press triggers. #504
-- A trigger for a specific device can still be detected if the same buttons smb://@sds-pc.local:445/Home/Desktop/Android-Projects/release/keymapper-2.2.0-beta.1.apkon another device are pressed. #523
+- A trigger for a specific device can still be detected if the same buttons on another device are pressed. #523
 - Fix layout of the trigger fragment on some screen sizes so that some things aren't cut off. #522
 
 ## [2.1.0](https://github.com/sds100/KeyMapper/releases/tag/v2.1.0) 
