@@ -415,11 +415,11 @@ class MyAccessibilityService : AccessibilityService(),
                 value = it
             }
 
-            addSource(fingerprintGestureMapController.vibrate) {
+            addSource(fingerprintGestureMapController.vibrateEvent) {
                 value = it
             }
 
-            addSource(triggerKeymapByIntentController.vibrate) {
+            addSource(triggerKeymapByIntentController.vibrateEvent) {
                 value = it
             }
 
@@ -461,6 +461,14 @@ class MyAccessibilityService : AccessibilityService(),
 
         MediatorLiveData<Unit>().apply {
             addSource(keymapDetectionDelegate.showTriggeredKeymapToast) {
+                value = it
+            }
+
+            addSource(triggerKeymapByIntentController.showTriggeredToastEvent) {
+                value = it
+            }
+
+            addSource(fingerprintGestureMapController.showTriggeredToastEvent) {
                 value = it
             }
 

@@ -8,7 +8,6 @@ import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.isFailure
 import io.github.sds100.keymapper.util.result.valueOrNull
 import kotlinx.coroutines.*
-import splitties.bitflags.hasFlag
 
 /**
  * Created by sds100 on 10/01/21.
@@ -24,7 +23,8 @@ abstract class SimpleMappingController(
     private val actionsBeingHeldDown = mutableListOf<Action>()
 
     val performAction = LiveEvent<PerformAction>()
-    val vibrate: LiveEvent<Vibrate> = LiveEvent()
+    val vibrateEvent: LiveEvent<Vibrate> = LiveEvent()
+    val showTriggeredToastEvent = LiveEvent<Unit>()
 
     fun onDetected(
         mappingId: String,
@@ -32,8 +32,9 @@ abstract class SimpleMappingController(
         constraintList: List<Constraint>,
         constraintMode: Int,
         isEnabled: Boolean,
-        flags: Int,
-        extras: List<Extra>
+        extras: List<Extra>,
+        vibrate: Boolean,
+        showTriggeredToast: Boolean
     ) {
         if (!isEnabled) return
         if (actionList.isEmpty()) return
@@ -90,11 +91,15 @@ abstract class SimpleMappingController(
             this@SimpleMappingController.repeatJobs[mappingId] = repeatJobs
         }
 
-        if (flags.hasFlag(FingerprintMap.FLAG_VIBRATE)) {
+        if (vibrate) {
             val duration = extras.getData(FingerprintMap.EXTRA_VIBRATION_DURATION)
                 .valueOrNull()?.toLong() ?: AppPreferences.vibrateDuration.toLong()
 
-            vibrate.value = Vibrate(duration)
+            vibrateEvent.value = Vibrate(duration)
+        }
+
+        if (showTriggeredToast) {
+            showTriggeredToastEvent.value = Unit
         }
     }
 

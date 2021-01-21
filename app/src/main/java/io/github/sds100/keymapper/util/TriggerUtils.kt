@@ -125,3 +125,6 @@ val Trigger.triggerByIntent: Boolean
 
 val Trigger.showToast: Boolean
     get() = flags.hasFlag(Trigger.TRIGGER_FLAG_SHOW_TOAST)
+
+val Trigger.vibrate: Boolean
+    get() = flags.hasFlag(Trigger.TRIGGER_FLAG_VIBRATE)

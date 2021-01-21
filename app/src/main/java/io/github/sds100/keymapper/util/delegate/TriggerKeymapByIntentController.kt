@@ -1,9 +1,7 @@
 package io.github.sds100.keymapper.util.delegate
 
 import io.github.sds100.keymapper.data.model.KeyMap
-import io.github.sds100.keymapper.util.IActionError
-import io.github.sds100.keymapper.util.IConstraintDelegate
-import io.github.sds100.keymapper.util.triggerByIntent
+import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.CoroutineScope
 
 /**
@@ -26,8 +24,9 @@ class TriggerKeymapByIntentController(
                     it.constraintList,
                     it.constraintMode,
                     it.isEnabled,
-                    it.trigger.flags,
-                    it.trigger.extras
+                    it.trigger.extras,
+                    it.trigger.vibrate,
+                    it.trigger.showToast
                 )
             }
     }

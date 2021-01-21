@@ -36,7 +36,6 @@
     <string name="this_device">This device</string>
     <string name="any_device">Any device</string>
     <string name="trigger_device_name_not_found">The name for this device isn\'t known</string>
-    <string name="performing_action">Key Mapper is performing an action…</string>
     <string name="slider_default">Default</string>
     <string name="button_enable_accessibility_service">Enable accessibility service</string>
     <string name="stop_repeating_dot_dot_dot">Stop repeating when trigger is…</string>
@@ -190,7 +189,8 @@
     <string name="toast_io_exception_shrug">IO exception ¯\\_(ツ)_/¯</string>
     <string name="toast_incorrect_screenshot_resolution">Screenshot resolution doesn\'t match this device\'s resolution!</string>
     <string name="toast_copied_keymap_uid_to_clipboard">Copied key map UUID to clipboard</string>
-    <!--  Toasts  -->
+    <string name="toast_triggered_keymap">You\'ve triggered a key map</string>
+    <!--  Toasts  -->,
 
     <!-- Extra labels -->
     <string name="extra_label_sequence_trigger_timeout">Sequence trigger timeout (ms)</string>

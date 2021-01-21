@@ -5,6 +5,7 @@ import io.github.sds100.keymapper.util.FingerprintMapUtils
 import io.github.sds100.keymapper.util.IActionError
 import io.github.sds100.keymapper.util.IConstraintDelegate
 import kotlinx.coroutines.CoroutineScope
+import splitties.bitflags.hasFlag
 
 /**
  * Created by sds100 on 11/12/20.
@@ -32,8 +33,9 @@ class FingerprintGestureMapController(
                 constraintList,
                 constraintMode,
                 isEnabled,
-                flags,
-                extras
+                extras,
+                flags.hasFlag(FingerprintMap.FLAG_VIBRATE),
+                flags.hasFlag(FingerprintMap.FLAG_SHOW_TOAST)
             )
         }
     }
