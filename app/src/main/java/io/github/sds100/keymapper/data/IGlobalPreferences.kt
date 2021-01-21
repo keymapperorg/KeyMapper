@@ -22,3 +22,7 @@ fun IGlobalPreferences.darkThemeMode() = getFlow(PreferenceKeys.darkTheme).map {
         else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
     }
 }
+
+fun IGlobalPreferences.appIntro() = getFlow(PreferenceKeys.appIntro).map {
+    it ?: false
+}

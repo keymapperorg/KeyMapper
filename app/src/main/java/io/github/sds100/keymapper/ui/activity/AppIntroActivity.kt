@@ -14,12 +14,13 @@ import com.github.appintro.AppIntro2
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
-import io.github.sds100.keymapper.data.AppPreferences
+import io.github.sds100.keymapper.data.PreferenceKeys
 import io.github.sds100.keymapper.databinding.FragmentAppIntroSlideBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.fragment.AppIntroScrollableFragment
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.DexUtils.isDexSupported
+import kotlinx.coroutines.runBlocking
 import splitties.systemservices.powerManager
 import splitties.toast.longToast
 
@@ -64,7 +65,9 @@ class AppIntroActivity : AppIntro2() {
     override fun onDonePressed(currentFragment: Fragment?) {
         super.onDonePressed(currentFragment)
 
-        AppPreferences.shownAppIntro = true
+        runBlocking {
+            ServiceLocator.globalPreferences(this@AppIntroActivity).set(PreferenceKeys.appIntro, true)
+        }
         startActivity(Intent(this, HomeActivity::class.java))
 
         finish()

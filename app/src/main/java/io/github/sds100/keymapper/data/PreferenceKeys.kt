@@ -7,4 +7,5 @@ import androidx.datastore.preferences.core.preferencesKey
  */
 object PreferenceKeys {
     val darkTheme = preferencesKey<String>("pref_dark_theme_mode")
+    val appIntro = preferencesKey<Boolean>("pref_first_time")
 }
