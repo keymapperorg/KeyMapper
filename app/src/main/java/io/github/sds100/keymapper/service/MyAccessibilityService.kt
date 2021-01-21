@@ -459,6 +459,16 @@ class MyAccessibilityService : AccessibilityService(),
             })
         }
 
+        MediatorLiveData<Unit>().apply {
+            addSource(keymapDetectionDelegate.showTriggeredKeymapToast) {
+                value = it
+            }
+
+            observe(this@MyAccessibilityService, Observer {
+                toast(R.string.toast_triggered_keymap)
+            })
+        }
+
         controller = AccessibilityServiceController(
             lifecycleOwner = this,
             iConstraintState = this,
