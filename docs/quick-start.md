@@ -6,7 +6,7 @@ Where screenshots are necessary, this guide uses two devices to demonstrate.
 1. OnePlus 7 Pro, Android 10, Dark theme, 1440p, tiny font size
 2. Samsung J3 6, Android 5, Light theme, 720p, medium font size
 
-App interface pictured: `keymapper-2.3.0-alpha-ci.715`
+App interface pictured: `keymapper-2.3.0-alpha-ci.778`
 
 This guide is updated to match current stable release UI. [Report inaccuracies.](https://github.com/sds100/KeyMapper/issues/new)
 
@@ -21,7 +21,7 @@ Tapping the FIX button next to the accessibility service prompt will allow you t
 
 ![](images/hg-warn-service.png)
 
-You can then tap Key Mapper in your list of available services. There may be many others on this screen and your interface may be slightly different. If nothing happens when you tap FIX, or if you can't enable the service, see [this page](#) or ask for help in the [Discord server](http://keymapper.club).
+You can then tap Key Mapper in your list of available services. There may be many others on this screen and your interface may be slightly different. If nothing happens when you tap FIX, or if you can't enable the service, see [this page](#) or ask for help in the [Discord server.](http://keymapper.club)
 
 ![](images/hg-settings-services.png) ![](images/hg-settings-services-light.png)
 
@@ -31,7 +31,7 @@ Tapping the FIX button next to the input method prompt will allow you to enable 
 
 If you have only installed the Key Mapper app, your list of available keyboards will contain "Key Mapper Basic Input Method" only. If you aim to use a physical keyboard (not on-screen) when using Key Mapper, this will be suitable for you.
 
-If you want an on-screen keyboard to be available while using Key Mapper, you need to install "Key Mapper GUI Keyboard". It is available on the [Google Play Store](http://gui.keymapper.club), [F-Droid](https://www.f-droid.org/en/packages/io.github.sds100.keymapper.inputmethod.latin/) and [GitHub](https://github.com/sds100/KeyMapperKeyboard/releases).
+If you want an on-screen keyboard to be available while using Key Mapper, you need to install "Key Mapper GUI Keyboard". It is available on the [Google Play Store](http://gui.keymapper.club), [F-Droid](https://www.f-droid.org/en/packages/io.github.sds100.keymapper.inputmethod.latin/) and [GitHub.](https://github.com/sds100/KeyMapperKeyboard/releases)
 
 ![](images/hg-settings-input-method.png) ![](images/hg-settings-input-method-light.png)
 
@@ -79,6 +79,8 @@ In either case, the first step is to record a trigger. Tap the red RECORD TRIGGE
 
 Key Mapper can also create a key map with multiple triggers. If you want to use more than one trigger for one key map, you can press the buttons in the order you will press them to execute the key map. For example, if you wanted to map 'Ctrl' + 'H' to show the device home menu, you should press 'Ctrl' and then 'H'.
 
+Key Mapper can also remap fingerprint gestures on many devices. You can learn how to do this [here.](#)
+
 ![](images/hg-keymap-1.png) ![](images/hg-keymap-1-light.png)
 
 ### Setting the action(s)
@@ -111,7 +113,7 @@ Key Mapper can also create a key map with multiple actions. If you want to add m
 
 ## Customising a key map
 
-In the next section, I will explain in more detail how to customise your triggers and actions to be more in line with what you want. Most people will want to do at least some customisation.
+You may wish to customise your triggers and actions to have specific behaviours. Most people will want to do at least some customisation.
 
 ### Trigger settings
 
@@ -139,6 +141,7 @@ When this is turned on, the following notice will come up at the bottom of the s
 
 ![](images/ui-toast.png)
 
+You can have your device vibrate instead of an on-screen message if you want. The setting [is found here.](#)
 ___
 
 The following details refer to action timing settings.
@@ -217,6 +220,27 @@ You can use turn on both of these settings to unlock an additional setting. A re
 
 This allows you to set how long the action is held down for before repeating.
 
+## Special options
+
+For extra key map customisation, tap the 'Constraints and more' tab at the top of the screen when editing or creating a key map.
+
+:fontawesome-solid-check-square:{: .accent-light } &nbsp; Trigger by Intent
+
+For information about Trigger by Intent go to [this page.](../user-guide/actions/#intent-230)
+
+___
+
+:fontawesome-solid-check-square:{: .accent-light } &nbsp; Vibrate
+
+&nbsp;Vibrate duration (ms)<br /> 
+![](images/ui-slider-default-light-450px.png)
+
+Tapping 'Vibrate' will cause your device to vibrate whenever your key map is triggered (and therefore behaves similarly to the [toast message](#))
+
+## Constraints
+
+You can add special constraints to your key maps in order to customise when they are allowed to run.
+
 ## Managing key maps
 
 To save your key map and return to the home screen, tap the save :fontawesome-solid-save: icon in the bottom right of the screen.
@@ -230,11 +254,10 @@ On the Key Mapper home screen, tap the 3 bar :fontawesome-solid-bars: menu to op
 ![](images/hg-general-settings.png) ![](images/hg-general-settings-light.png)
 
 Here you can pause/unpause/enable/disable all of your key maps at once.<br />
-You can also backup and restore key maps here. [Learn more about backup and restore.](#)
+You can also back up and restore key maps here. [Learn more about back up and restore.](#)
 
 Tapping 'Show input method picker' allows for switching between a Key Mapper compatible keyboard and any other.<br />
 
-The 'About' menu is explained [here.](#)<br />
-Tapping 'Settings' shows more advanced settings and preferences you can learn about [here.](#)
+Key Mapper can also remap fingerprint gestures on many devices. You can learn how to do this [here.](#)
 
 [Go to top.](#)
