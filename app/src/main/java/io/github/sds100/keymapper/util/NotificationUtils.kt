@@ -27,6 +27,7 @@ import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.activity.HomeActivity
 import splitties.init.appCtx
 import splitties.systemservices.notificationManager
+import timber.log.Timber
 
 /**
  * Created by sds100 on 30/09/2018.
@@ -52,6 +53,7 @@ object NotificationUtils {
     const val CHANNEL_ID_PERSISTENT = "channel_persistent"
 
     fun updateToggleKeymapsNotification(ctx: Context, @WidgetsManager.Event event: Int) {
+        Timber.e(AppPreferences.showToggleKeymapsNotification.toString())
         if (SDK_INT < Build.VERSION_CODES.O) {
             val showNotification = AppPreferences.showToggleKeymapsNotification
 
@@ -220,13 +222,18 @@ object NotificationUtils {
                 setOngoing(true)
             }
 
-            //can't use vector drawables for KitKat or older
-            if (SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                val bitmap = VectorDrawableCompat.create(ctx.resources, icon, ctx.theme)?.toBitmap()
-                setLargeIcon(bitmap)
-                setSmallIcon(R.mipmap.ic_launcher)
-            } else {
-                setSmallIcon(icon)
+            when {
+                SDK_INT < Build.VERSION_CODES.LOLLIPOP -> {
+                    val bitmap = VectorDrawableCompat.create(ctx.resources, icon, ctx.theme)?.toBitmap()
+                    setLargeIcon(bitmap)
+                    setSmallIcon(R.mipmap.ic_launcher)
+                }
+
+                SDK_INT == Build.VERSION_CODES.LOLLIPOP -> {
+                    setLargeIcon(ctx.drawable(icon)?.toBitmap())
+                }
+
+                else -> setSmallIcon(icon)
             }
 
             if (!showOnLockscreen) setVisibility(NotificationCompat.VISIBILITY_SECRET) //hide on lockscreen
