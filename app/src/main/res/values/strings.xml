@@ -29,7 +29,7 @@
     <string name="plus" translatable="false">+</string>
     <string name="unknown_keycode">Unknown key code: %s</string>
     <string name="chip_while">while</string>
-    <string name="google_app_package_name">com.google.android.googlequicksearchbox</string>
+    <string name="google_app_package_name" translatable="false">com.google.android.googlequicksearchbox</string>
     <string name="on">On</string>
     <string name="off">Off</string>
     <string name="follow_system">Follow system</string>
