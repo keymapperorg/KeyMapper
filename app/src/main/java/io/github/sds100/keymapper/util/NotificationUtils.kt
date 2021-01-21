@@ -220,13 +220,18 @@ object NotificationUtils {
                 setOngoing(true)
             }
 
-            //can't use vector drawables for KitKat or older
-            if (SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                val bitmap = VectorDrawableCompat.create(ctx.resources, icon, ctx.theme)?.toBitmap()
-                setLargeIcon(bitmap)
-                setSmallIcon(R.mipmap.ic_launcher)
-            } else {
-                setSmallIcon(icon)
+            when {
+                SDK_INT < Build.VERSION_CODES.LOLLIPOP -> {
+                    val bitmap = VectorDrawableCompat.create(ctx.resources, icon, ctx.theme)?.toBitmap()
+                    setLargeIcon(bitmap)
+                    setSmallIcon(R.mipmap.ic_launcher)
+                }
+
+                SDK_INT == Build.VERSION_CODES.LOLLIPOP -> {
+                    setLargeIcon(ctx.drawable(icon)?.toBitmap())
+                }
+
+                else -> setSmallIcon(icon)
             }
 
             if (!showOnLockscreen) setVisibility(NotificationCompat.VISIBILITY_SECRET) //hide on lockscreen
