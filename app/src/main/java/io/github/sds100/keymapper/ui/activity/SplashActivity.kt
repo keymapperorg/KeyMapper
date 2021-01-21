@@ -18,5 +18,6 @@ class SplashActivity : FragmentActivity() {
         } else {
             startActivity(Intent(this, HomeActivity::class.java))
         }
+        finish()
     }
 }
