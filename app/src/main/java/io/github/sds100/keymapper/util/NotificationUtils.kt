@@ -27,7 +27,6 @@ import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.activity.HomeActivity
 import splitties.init.appCtx
 import splitties.systemservices.notificationManager
-import timber.log.Timber
 
 /**
  * Created by sds100 on 30/09/2018.
@@ -53,7 +52,6 @@ object NotificationUtils {
     const val CHANNEL_ID_PERSISTENT = "channel_persistent"
 
     fun updateToggleKeymapsNotification(ctx: Context, @WidgetsManager.Event event: Int) {
-        Timber.e(AppPreferences.showToggleKeymapsNotification.toString())
         if (SDK_INT < Build.VERSION_CODES.O) {
             val showNotification = AppPreferences.showToggleKeymapsNotification
 
