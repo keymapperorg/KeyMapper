@@ -47,6 +47,12 @@ class FingerprintMapOptionsViewModel : BaseOptionsViewModel<FingerprintMapOption
             isChecked = option.value
         )
 
+        FingerprintMapOptions.ID_SHOW_TOAST -> CheckBoxListItemModel(
+            id = option.id,
+            label = R.string.flag_show_toast,
+            isChecked = option.value
+        )
+
         else -> throw Exception(
             "Don't know how to create a SliderListItemModel for this option $option.id")
     }

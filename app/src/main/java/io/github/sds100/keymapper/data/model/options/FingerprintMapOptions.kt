@@ -55,6 +55,8 @@ class FingerprintMapOptions(
                 vibrate.value = value
                 vibrateDuration.isAllowed = value
             }
+
+            ID_SHOW_TOAST -> showToast.value = value
         }
 
         return this
@@ -72,11 +74,14 @@ class FingerprintMapOptions(
         get() = listOf(vibrateDuration)
 
     override val boolOptions: List<BoolOption>
-        get() = listOf(vibrate)
+        get() = listOf(
+            vibrate,
+            showToast)
 
     override fun apply(old: FingerprintMap): FingerprintMap {
         val newFlags = old.flags
             .saveBoolOption(vibrate, FingerprintMap.FLAG_VIBRATE)
+            .saveBoolOption(showToast, FingerprintMap.FLAG_SHOW_TOAST)
 
         val newExtras = old.extras
             .saveIntOption(vibrateDuration, FingerprintMap.EXTRA_VIBRATION_DURATION)
