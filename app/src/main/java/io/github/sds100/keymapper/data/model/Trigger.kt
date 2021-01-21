@@ -47,12 +47,14 @@ data class Trigger(
         const val TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION = 2
         const val TRIGGER_FLAG_SCREEN_OFF_TRIGGERS = 4
         const val TRIGGER_FLAG_BY_INTENT = 8
+        const val TRIGGER_FLAG_SHOW_TOAST = 16
 
         val TRIGGER_FLAG_LABEL_MAP = mapOf(
             TRIGGER_FLAG_VIBRATE to R.string.flag_vibrate,
             TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION to R.string.flag_long_press_double_vibration,
             TRIGGER_FLAG_SCREEN_OFF_TRIGGERS to R.string.flag_detect_triggers_screen_off,
-            TRIGGER_FLAG_BY_INTENT to R.string.flag_trigger_by_intent
+            TRIGGER_FLAG_BY_INTENT to R.string.flag_trigger_by_intent,
+            TRIGGER_FLAG_SHOW_TOAST to R.string.flag_show_toast
         )
 
         const val DEFAULT_TRIGGER_MODE = UNDEFINED

@@ -34,6 +34,7 @@ object Migration_4_5 {
     private const val NEW_KEYMAP_FLAG_VIBRATE = 1
     private const val NEW_KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION = 2
     private const val NEW_KEYMAP_FLAG_SCREEN_OFF_TRIGGERS = 4
+    private const val NEW_FLAG_ACTION_SHOW_PERFORMING_TOAST = 2
 
     fun migrate(database: SupportSQLiteDatabase) = database.apply {
         val query = SupportSQLiteQueryBuilder
@@ -62,7 +63,7 @@ object Migration_4_5 {
 
                 if (flags.hasFlag(OLD_KEYMAP_FLAG_SHOW_PERFORMING_ACTION_TOAST)) {
                     actionList = actionList.map {
-                        it.copy(flags = it.flags.withFlag(Action.ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST))
+                        it.copy(flags = it.flags.withFlag(NEW_FLAG_ACTION_SHOW_PERFORMING_TOAST))
                     }
                 }
 

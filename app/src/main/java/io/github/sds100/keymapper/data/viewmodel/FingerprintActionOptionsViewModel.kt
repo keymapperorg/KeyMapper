@@ -84,14 +84,6 @@ class FingerprintActionOptionsViewModel : BaseOptionsDialogViewModel<Fingerprint
 
     override fun createCheckboxListItemModel(option: BoolOption): CheckBoxListItemModel =
         when (option.id) {
-            FingerprintActionOptions.ID_SHOW_PERFORMING_ACTION_TOAST -> {
-                CheckBoxListItemModel(
-                    id = option.id,
-                    label = R.string.flag_performing_action_toast,
-                    isChecked = option.value
-                )
-            }
-
             FingerprintActionOptions.ID_SHOW_VOLUME_UI -> {
                 CheckBoxListItemModel(
                     id = option.id,

@@ -16,12 +16,14 @@ import splitties.bitflags.hasFlag
 class FingerprintMapOptions(
     override val id: String,
     val vibrate: BoolOption,
-    private val vibrateDuration: IntOption
+    private val vibrateDuration: IntOption,
+    private val showToast: BoolOption
 
 ) : BaseOptions<FingerprintMap> {
     companion object {
         const val ID_VIBRATE = "vibrate"
         const val ID_VIBRATION_DURATION = "vibration_duration"
+        const val ID_SHOW_TOAST = "show_toast"
     }
 
     constructor(gestureId: String, fingerprintMap: FingerprintMap) : this(
@@ -39,6 +41,11 @@ class FingerprintMapOptions(
                 .getData(FingerprintMap.EXTRA_VIBRATION_DURATION).valueOrNull()?.toInt()
                 ?: IntOption.DEFAULT,
             isAllowed = fingerprintMap.flags.hasFlag(FingerprintMap.FLAG_VIBRATE)
+        ),
+        showToast = BoolOption(
+            id = ID_SHOW_TOAST,
+            value = fingerprintMap.flags.hasFlag(FingerprintMap.FLAG_SHOW_TOAST),
+            isAllowed = true
         )
     )
 

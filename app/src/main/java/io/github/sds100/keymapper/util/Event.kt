@@ -31,7 +31,6 @@ class FixFailure(val failure: Failure) : Event()
 class Vibrate(val duration: Long) : Event()
 
 data class PerformAction(val action: Action,
-                         val showPerformingActionToast: Boolean = false,
                          val additionalMetaState: Int = 0,
                          val keyEventAction: KeyEventAction = KeyEventAction.DOWN_UP) : Event()
 

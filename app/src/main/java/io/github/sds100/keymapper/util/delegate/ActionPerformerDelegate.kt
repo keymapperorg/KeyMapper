@@ -73,14 +73,9 @@ class ActionPerformerDelegate(context: Context,
         currentPackageName: String?,
 
         ) {
-        val (action, showToast, additionalMetaState, keyEventAction) = performActionModel
+        val (action, additionalMetaState, keyEventAction) = performActionModel
 
         ctx.apply {
-            //Only show a toast message that Key Mapper is performing an action if the user has enabled it
-            if (showToast) {
-                toast(R.string.performing_action)
-            }
-
             when (action.type) {
                 ActionType.APP -> {
                     val packageName = action.data

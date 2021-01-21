@@ -106,7 +106,6 @@ abstract class SimpleMappingController(
         repeat(action.multiplier ?: 1) {
             performAction.value = PerformAction(
                 action,
-                action.showPerformingActionToast,
                 0,
                 keyEventAction)
         }

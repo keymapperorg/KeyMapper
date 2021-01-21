@@ -187,7 +187,8 @@ object ServiceLocator {
     private fun createDatabase(context: Context): AppDatabase {
         val result = Room.databaseBuilder(
             context.applicationContext,
-            AppDatabase::class.java, AppDatabase.DATABASE_NAME
+            AppDatabase::class.java,
+            AppDatabase.DATABASE_NAME
         ).addMigrations(
             AppDatabase.MIGRATION_1_2,
             AppDatabase.MIGRATION_2_3,
@@ -196,7 +197,10 @@ object ServiceLocator {
             AppDatabase.MIGRATION_5_6,
             AppDatabase.MIGRATION_6_7,
             AppDatabase.MIGRATION_7_8,
-            AppDatabase.MIGRATION_8_9).build()
+            AppDatabase.MIGRATION_8_9,
+            AppDatabase.MIGRATION_9_10).build()
+        /* REMINDER!!!! Need to migrate fingerprint maps and other stuff???
+         * Keep this note at the bottom */
         database = result
         return result
     }

@@ -480,9 +480,6 @@ val Action.holdDown: Boolean
 val Action.showVolumeUi: Boolean
     get() = flags.hasFlag(Action.ACTION_FLAG_SHOW_VOLUME_UI)
 
-val Action.showPerformingActionToast: Boolean
-    get() = flags.hasFlag(Action.ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST)
-
 val Action.stopRepeatingWhenTriggerPressedAgain: Boolean
     get() = extras.getData(Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR).valueOrNull()?.toInt() ==
         Action.STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN

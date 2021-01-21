@@ -7,6 +7,7 @@ import io.github.sds100.keymapper.data.model.options.BoolOption.Companion.saveBo
 import io.github.sds100.keymapper.data.model.options.IntOption.Companion.saveIntOption
 import io.github.sds100.keymapper.util.KeyEventUtils
 import io.github.sds100.keymapper.util.result.valueOrNull
+import io.github.sds100.keymapper.util.showToast
 import io.github.sds100.keymapper.util.triggerByIntent
 import kotlinx.android.parcel.Parcelize
 import splitties.bitflags.hasFlag
@@ -25,7 +26,8 @@ class TriggerOptions(
     private val doublePressDelay: IntOption,
     private val vibrateDuration: IntOption,
     private val sequenceTriggerTimeout: IntOption,
-    val triggerByIntent: BoolOption
+    val triggerByIntent: BoolOption,
+    private val showToast: BoolOption
 ) : BaseOptions<Trigger> {
 
     companion object {
@@ -37,6 +39,7 @@ class TriggerOptions(
         const val ID_LONG_PRESS_DOUBLE_VIBRATION = "long_press_double_vibration"
         const val ID_SCREEN_OFF_TRIGGER = "screen_off_trigger"
         const val ID_TRIGGER_BY_INTENT = "trigger_by_intent"
+        const val ID_SHOW_TOAST = "show_toast"
     }
 
     constructor(trigger: Trigger) : this(
@@ -94,6 +97,11 @@ class TriggerOptions(
             id = ID_TRIGGER_BY_INTENT,
             value = trigger.triggerByIntent,
             isAllowed = true
+        ),
+        showToast = BoolOption(
+            id = ID_SHOW_TOAST,
+            value = trigger.showToast,
+            isAllowed = true
         )
     )
 
@@ -108,6 +116,7 @@ class TriggerOptions(
     override val boolOptions: List<BoolOption>
         get() = listOf(
             vibrate,
+            showToast,
             longPressDoubleVibration,
             screenOffTrigger
         )
@@ -139,6 +148,7 @@ class TriggerOptions(
 
             ID_SCREEN_OFF_TRIGGER -> screenOffTrigger.value = value
             ID_TRIGGER_BY_INTENT -> triggerByIntent.value = value
+            ID_SHOW_TOAST -> showToast.value = value
         }
 
         return this
@@ -164,6 +174,7 @@ class TriggerOptions(
             .saveBoolOption(longPressDoubleVibration, Trigger.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION)
             .saveBoolOption(screenOffTrigger, Trigger.TRIGGER_FLAG_SCREEN_OFF_TRIGGERS)
             .saveBoolOption(triggerByIntent, Trigger.TRIGGER_FLAG_BY_INTENT)
+            .saveBoolOption(showToast, Trigger.TRIGGER_FLAG_SHOW_TOAST)
     }
 
     private fun applyToTriggerExtras(extras: List<Extra>): List<Extra> {

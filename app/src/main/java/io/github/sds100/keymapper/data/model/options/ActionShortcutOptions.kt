@@ -13,14 +13,12 @@ import kotlinx.android.parcel.Parcelize
 class ActionShortcutOptions(
     override val id: String,
     val showVolumeUi: BoolOption,
-    val showPerformingActionToast: BoolOption,
     val delayBeforeNextAction: IntOption,
     val multiplier: IntOption
 ) : BaseOptions<Action> {
 
     companion object {
         const val ID_SHOW_VOLUME_UI = "show_volume_ui"
-        const val ID_SHOW_PERFORMING_ACTION_TOAST = "show_performing_action_toast"
         const val ID_MULTIPLIER = "multiplier"
         const val ID_DELAY_BEFORE_NEXT_ACTION = "delay_before_next_action"
     }
@@ -33,12 +31,6 @@ class ActionShortcutOptions(
             id = ID_SHOW_VOLUME_UI,
             value = action.showVolumeUi,
             isAllowed = ActionUtils.isVolumeAction(action.data)
-        ),
-
-        showPerformingActionToast = BoolOption(
-            id = ID_SHOW_PERFORMING_ACTION_TOAST,
-            value = action.showPerformingActionToast,
-            isAllowed = true
         ),
 
         multiplier = IntOption(
@@ -60,7 +52,6 @@ class ActionShortcutOptions(
     )
 
     override val boolOptions = listOf(
-        showPerformingActionToast,
         showVolumeUi
     )
 
@@ -77,7 +68,6 @@ class ActionShortcutOptions(
         when (id) {
 
             ID_SHOW_VOLUME_UI -> showVolumeUi.value = value
-            ID_SHOW_PERFORMING_ACTION_TOAST -> showPerformingActionToast.value = value
         }
 
         return this
@@ -86,7 +76,6 @@ class ActionShortcutOptions(
     override fun apply(old: Action): Action {
         val newFlags = old.flags
             .saveBoolOption(showVolumeUi, Action.ACTION_FLAG_SHOW_VOLUME_UI)
-            .saveBoolOption(showPerformingActionToast, Action.ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST)
 
         val newExtras = old.extras
             .saveIntOption(multiplier, Action.EXTRA_MULTIPLIER)

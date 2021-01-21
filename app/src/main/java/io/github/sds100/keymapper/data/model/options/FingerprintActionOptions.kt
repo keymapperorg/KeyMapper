@@ -14,7 +14,6 @@ import kotlinx.android.parcel.Parcelize
 class FingerprintActionOptions(
     override val id: String,
     private val showVolumeUi: BoolOption,
-    private val showPerformingActionToast: BoolOption,
     private val delayBeforeNextAction: IntOption,
     private val multiplier: IntOption,
     private val repeatUntilSwipedAgain: BoolOption,
@@ -26,7 +25,6 @@ class FingerprintActionOptions(
 
     companion object {
         const val ID_SHOW_VOLUME_UI = "show_volume_ui"
-        const val ID_SHOW_PERFORMING_ACTION_TOAST = "show_performing_action_toast"
         const val ID_MULTIPLIER = "multiplier"
         const val ID_DELAY_BEFORE_NEXT_ACTION = "delay_before_next_action"
         const val ID_REPEAT_UNTIL_SWIPED_AGAIN = "repeat_until_swiped_again"
@@ -43,12 +41,6 @@ class FingerprintActionOptions(
             id = ID_SHOW_VOLUME_UI,
             value = action.showVolumeUi,
             isAllowed = ActionUtils.isVolumeAction(action.data)
-        ),
-
-        showPerformingActionToast = BoolOption(
-            id = ID_SHOW_PERFORMING_ACTION_TOAST,
-            value = action.showPerformingActionToast,
-            isAllowed = true
         ),
 
         multiplier = IntOption(
@@ -96,7 +88,6 @@ class FingerprintActionOptions(
     )
 
     override val boolOptions = listOf(
-        showPerformingActionToast,
         showVolumeUi,
         repeatUntilSwipedAgain,
         holdDownUntilSwipedAgain
@@ -124,7 +115,6 @@ class FingerprintActionOptions(
             }
 
             ID_SHOW_VOLUME_UI -> showVolumeUi.value = value
-            ID_SHOW_PERFORMING_ACTION_TOAST -> showPerformingActionToast.value = value
             ID_HOLD_DOWN_UNTIL_SWIPED_AGAIN -> {
                 holdDownUntilSwipedAgain.value = value
 
@@ -139,8 +129,6 @@ class FingerprintActionOptions(
     override fun apply(old: Action): Action {
         val newFlags = old.flags
             .saveBoolOption(showVolumeUi, Action.ACTION_FLAG_SHOW_VOLUME_UI)
-            .saveBoolOption(showPerformingActionToast,
-                Action.ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST)
             .saveBoolOption(repeatUntilSwipedAgain, Action.ACTION_FLAG_REPEAT)
             .saveBoolOption(holdDownUntilSwipedAgain, Action.ACTION_FLAG_HOLD_DOWN)
 

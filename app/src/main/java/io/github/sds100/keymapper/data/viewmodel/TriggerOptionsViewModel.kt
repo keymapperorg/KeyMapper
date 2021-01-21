@@ -88,6 +88,12 @@ class TriggerOptionsViewModel(
             isChecked = option.value
         )
 
+        TriggerOptions.ID_SHOW_TOAST -> CheckBoxListItemModel(
+            id = option.id,
+            label = R.string.flag_show_toast,
+            isChecked = option.value
+        )
+
         TriggerOptions.ID_SCREEN_OFF_TRIGGER -> CheckBoxListItemModel(
             id = option.id,
             label = R.string.flag_detect_triggers_screen_off,

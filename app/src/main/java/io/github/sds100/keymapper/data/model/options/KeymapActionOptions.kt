@@ -18,7 +18,6 @@ class KeymapActionOptions(
     override val id: String,
     val repeat: BoolOption,
     private val showVolumeUi: BoolOption,
-    private val showPerformingActionToast: BoolOption,
     val holdDown: BoolOption,
     val stopRepeatingWhenTriggerReleased: BoolOption,
     val stopRepeatingWhenTriggerPressedAgain: BoolOption,
@@ -37,7 +36,6 @@ class KeymapActionOptions(
         const val ID_REPEAT_RATE = "repeat_rate"
         const val ID_REPEAT = "repeat"
         const val ID_SHOW_VOLUME_UI = "show_volume_ui"
-        const val ID_SHOW_PERFORMING_ACTION_TOAST = "show_performing_action_toast"
         const val ID_STOP_REPEATING_TRIGGER_RELEASED = "stop_repeating_trigger_released"
         const val ID_MULTIPLIER = "multiplier"
         const val ID_STOP_REPEATING_TRIGGER_PRESSED_AGAIN = "stop_repeating_trigger_pressed_again"
@@ -69,12 +67,6 @@ class KeymapActionOptions(
             } else {
                 false
             }
-        ),
-
-        showPerformingActionToast = BoolOption(
-            id = ID_SHOW_PERFORMING_ACTION_TOAST,
-            value = action.showPerformingActionToast,
-            isAllowed = true
         ),
 
         holdDown = BoolOption(
@@ -152,7 +144,6 @@ class KeymapActionOptions(
     )
 
     override val boolOptions = listOf(
-        showPerformingActionToast,
         showVolumeUi,
         repeat,
         holdDown
@@ -191,7 +182,6 @@ class KeymapActionOptions(
             }
 
             ID_SHOW_VOLUME_UI -> showVolumeUi.value = value
-            ID_SHOW_PERFORMING_ACTION_TOAST -> showPerformingActionToast.value = value
 
             ID_STOP_REPEATING_TRIGGER_PRESSED_AGAIN -> {
                 stopRepeatingWhenTriggerPressedAgain.value = value
@@ -229,7 +219,6 @@ class KeymapActionOptions(
         val newFlags = old.flags
             .saveBoolOption(repeat, Action.ACTION_FLAG_REPEAT)
             .saveBoolOption(showVolumeUi, Action.ACTION_FLAG_SHOW_VOLUME_UI)
-            .saveBoolOption(showPerformingActionToast, Action.ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST)
             .saveBoolOption(holdDown, Action.ACTION_FLAG_HOLD_DOWN)
 
         val newExtras = old.extras

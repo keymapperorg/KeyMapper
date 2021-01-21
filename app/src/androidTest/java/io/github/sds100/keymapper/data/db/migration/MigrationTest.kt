@@ -82,6 +82,18 @@ class MigrationTest {
         private val MIGRATION_5_6_EXPECTED_DATA = arrayOf(
             arrayOf(1, "{\"extras\":[{\"data\":\"2930\",\"id\":\"extra_sequence_trigger_timeout\"},{\"data\":\"1840\",\"id\":\"extra_long_press_delay\"},{\"data\":\"3580\",\"id\":\"extra_double_press_timeout\"},{\"data\":\"390\",\"id\":\"extra_vibration_duration\"}],\"flags\":5,\"keys\":[{\"clickType\":1,\"deviceId\":\"io.github.sds100.keymapper.THIS_DEVICE\",\"keyCode\":25},{\"clickType\":2,\"deviceId\":\"io.github.sds100.keymapper.THIS_DEVICE\",\"keyCode\":24}],\"mode\":1}", "[{\"data\":\"volume_up\",\"extras\":[],\"flags\":1,\"type\":\"SYSTEM_ACTION\"}]", "[]", 1, 0, "NULL", 1)
         )
+
+        private val MIGRATION_9_10_TEST_DATA = arrayOf(
+            arrayOf(1, "{\"extras\":[],\"flags\":0,\"keys\":[],\"mode\":2}", "[{\"data\":\"com.google.android.contacts\",\"extras\":[],\"flags\":2,\"type\":\"APP\",\"uid\":\"dc2d8c69-aaa5-4471-b981-17cba7677c1a\"}]", "[]", 1, 0, "", 1, "d314e9e8-fac9-43e7-b540-0b9c0bfb4238"),
+            arrayOf(2, "{\"extras\":[],\"flags\":1,\"keys\":[{\"clickType\":0,\"deviceId\":\"io.github.sds100.keymapper.THIS_DEVICE\",\"flags\":0,\"keyCode\":25,\"uid\":\"9d5d6f0b-1b9a-44ba-9406-1caaacea05de\"}],\"mode\":2}", "[{\"data\":\"com.discord\",\"extras\":[],\"flags\":2,\"type\":\"APP\",\"uid\":\"86c78374-59ce-4050-94a4-299f4778658f\"}]", "[]", 1, 0, "", 1, "b854ece7-2f0e-45c4-9cf3-bb5aa4fad288"),
+            arrayOf(3, "{\"extras\":[],\"flags\":0,\"keys\":[],\"mode\":2}", "[{\"data\":\"com.google.android.vr.home\",\"extras\":[],\"flags\":2,\"type\":\"APP\",\"uid\":\"ca5b18ee-2673-4443-b2a7-cedef2c455b2\"},{\"data\":\"com.google.android.calendar\",\"extras\":[],\"flags\":0,\"type\":\"APP\",\"uid\":\"d274a5a8-f48e-4fbf-acbd-ed3c4b4ff377\"},{\"data\":\"enable_mobile_data\",\"extras\":[],\"flags\":2,\"type\":\"SYSTEM_ACTION\",\"uid\":\"f6b2afc5-4265-403d-8a0f-4eacf245286f\"}]", "[]", 1, 0, "", 1, "75ab7552-c175-4df4-9f50-1a9b86e717cc")
+        )
+
+        private val MIGRATION_9_10_EXPECTED_DATA = arrayOf(
+            arrayOf(1, "{\"extras\":[],\"flags\":16,\"keys\":[],\"mode\":2}", "[{\"data\":\"com.google.android.contacts\",\"extras\":[],\"flags\":0,\"type\":\"APP\",\"uid\":\"dc2d8c69-aaa5-4471-b981-17cba7677c1a\"}]", "[]", 1, 0, "", 1, "d314e9e8-fac9-43e7-b540-0b9c0bfb4238"),
+            arrayOf(2, "{\"extras\":[],\"flags\":17,\"keys\":[{\"clickType\":0,\"deviceId\":\"io.github.sds100.keymapper.THIS_DEVICE\",\"flags\":0,\"keyCode\":25,\"uid\":\"9d5d6f0b-1b9a-44ba-9406-1caaacea05de\"}],\"mode\":2}", "[{\"data\":\"com.discord\",\"extras\":[],\"flags\":0,\"type\":\"APP\",\"uid\":\"86c78374-59ce-4050-94a4-299f4778658f\"}]", "[]", 1, 0, "", 1, "b854ece7-2f0e-45c4-9cf3-bb5aa4fad288"),
+            arrayOf(3, "{\"extras\":[],\"flags\":16,\"keys\":[],\"mode\":2}", "[{\"data\":\"com.google.android.vr.home\",\"extras\":[],\"flags\":0,\"type\":\"APP\",\"uid\":\"ca5b18ee-2673-4443-b2a7-cedef2c455b2\"},{\"data\":\"com.google.android.calendar\",\"extras\":[],\"flags\":0,\"type\":\"APP\",\"uid\":\"d274a5a8-f48e-4fbf-acbd-ed3c4b4ff377\"},{\"data\":\"enable_mobile_data\",\"extras\":[],\"flags\":0,\"type\":\"SYSTEM_ACTION\",\"uid\":\"f6b2afc5-4265-403d-8a0f-4eacf245286f\"}]", "[]", 1, 0, "", 1, "75ab7552-c175-4df4-9f50-1a9b86e717cc")
+        )
     }
 
     @get:Rule
@@ -90,6 +102,45 @@ class MigrationTest {
         AppDatabase::class.java.canonicalName,
         FrameworkSQLiteOpenHelperFactory()
     )
+
+    @Suppress("VARIABLE_WITH_REDUNDANT_INITIALIZER")
+    @Test
+    @Throws(IOException::class)
+    fun migrate9to10() {
+        var db = helper.createDatabase(TEST_DB, 9).apply {
+
+            MIGRATION_9_10_TEST_DATA.forEach { row ->
+
+                execSQL(
+                    """
+                    INSERT INTO keymaps (id, trigger, action_list, constraint_list, constraint_mode, flags, folder_name, is_enabled, uid)
+                    VALUES (${row.joinToString { "'$it'" }})
+                    """)
+            }
+            close()
+        }
+
+        db = helper.runMigrationsAndValidate(TEST_DB, 10, true, AppDatabase.MIGRATION_9_10)
+
+        val cursor = db.query("SELECT trigger, action_list FROM keymaps")
+
+        MIGRATION_9_10_EXPECTED_DATA.forEachIndexed { row, expectedData ->
+            val expectedTrigger = expectedData[1]
+            val expectedActionList = expectedData[2]
+
+            cursor.moveToNext()
+
+            val triggerColumnIndex = cursor.getColumnIndex("trigger")
+            val actualTrigger = cursor.getString(triggerColumnIndex)
+
+            assertThat("trigger at row $row", actualTrigger, `is`(expectedTrigger))
+
+            val actionListColumnIndex = cursor.getColumnIndex("action_list")
+            val actualActionList = cursor.getString(actionListColumnIndex)
+
+            assertThat("action_list at row $row", actualActionList, `is`(expectedActionList))
+        }
+    }
 
     @Suppress("VARIABLE_WITH_REDUNDANT_INITIALIZER")
     @Test
