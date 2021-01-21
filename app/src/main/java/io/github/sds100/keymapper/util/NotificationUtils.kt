@@ -27,6 +27,7 @@ import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.activity.HomeActivity
 import splitties.init.appCtx
 import splitties.systemservices.notificationManager
+import timber.log.Timber
 
 /**
  * Created by sds100 on 30/09/2018.
