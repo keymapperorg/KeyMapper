@@ -10,3 +10,7 @@
 
 
 This wiki aims to provide users with a comprehensive guide to using and setting up Key Mapper for typical implementations. For specific help with more complicated key maps or if this wiki does not answer your questions, you can join the [Key Mapper Discord support server](http://keymapper.club) and ask for help.
+
+[Download the app :fontawesome-solid-download:](#){ .md-button .md-button--primary }
+[Get help :fontawesome-brands-discord:](#){: .md-button .md-button--primary }
+[Support the project :fontawesome-solid-heart:](#){: .md-button }
