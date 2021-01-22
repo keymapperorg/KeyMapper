@@ -10,6 +10,9 @@ App interface pictured: `keymapper-2.3.0-alpha-ci.778`
 
 This guide is updated to match current stable release UI. [Report inaccuracies.](https://github.com/sds100/KeyMapper/issues/new)
 
+!!! warning
+    This feature of Key Mapper does not support all devices. If you are having trouble with remapping fingerprint gestures, make sure you have read and understood the disclaimer below.
+
 ## Disclaimer
 
 On some devices, the fingerprint sensor can be remapped by Key Mapper. There are generally 3 categories of devices with varying degrees of support for this feature:
