@@ -16,7 +16,7 @@ nav:
   - Contributing: contributing.md
   - Known Issues: known-issues.md
 
-theme: 
+theme:
   name: material
   palette:
     accent: red
@@ -47,6 +47,8 @@ extra:
 markdown_extensions:
   - attr_list
   - admonition
+  - pymdownx.snippets:
+      base_path: docs/includes
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg

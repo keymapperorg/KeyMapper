@@ -1,15 +1,7 @@
 This page aims to give users an introduction to the Key Mapper interface and a demonstration on how to perform typical tasks with the app.
 For specific troubleshooting, [consult the FAQ.](../faq)
 
-!!! info
-    Where screenshots are necessary, this guide uses two devices to demonstrate.
-
-    1. OnePlus 7 Pro, Android 10, Dark theme, 1440p, tiny font size
-    2. Samsung J3 6, Android 5, Light theme, 720p, medium font size
-
-    App interface pictured: `keymapper-2.3.0-alpha-ci.778`
-
-    This guide is updated to match current stable release UI. [Report inaccuracies.](https://github.com/sds100/KeyMapper/issues/new)
+--8<-- "screenshot-version.md"
 
 ## First time setup
 
@@ -77,11 +69,11 @@ Most people can ignore the final prompt. If you want to create an action to chan
 
     Key Mapper lets you assign actions to triggers that may be different from their default use. A 'volume up' trigger normally increases the volume when pressed, but this app can change that to something else.
 
-This guide deals with 'Key event' triggers. If you want to remap fingerprint gestures, [check out this guide.](#)
+This guide deals with 'Key event' triggers. If you want to remap fingerprint gestures, [check out this guide.](user-guide/fingerprint-gestures.md)
 
 ### Setting the trigger(s)
 
-To create your first key map, tap the + icon at the bottom of the Key Mapper home screen. You will see one of the two menus below.
+To create your first key map, tap the + icon at the bottom of the Key Mapper home screen. You will see one of the two screens below.
 
 ![](images/hg-keymap-0.png) ![](images/hg-keymap-0-light.png)
 
@@ -101,19 +93,7 @@ Next, it's time to choose an action. If you have a high-resolution display, you 
 
 Tap the 'Add action' button at the bottom of this screen. The action selection screen will open. Here you can choose from a wide variety of actions. Swipe left and right to change category, and scroll up and down the list until you find the action you want to add. Below is a table of the different kinds of actions you can choose from in each tab.
 
-Tab | Description |
-|-|-|
-| App | Choose an app to open when you press your trigger. |
-| App shortcut | Choose an app operation (such as sharing location, checking local traffic, sending a text message) |
-| Keycode | Emulate a keyboard key press (such as an alphanumeric character or multimedia key) |
-| System | Choose a system operation (such as toggling Bluetooth, opening the home menu, toggling flashlight) |
-| Key | An alternative way to choose a key press action, by pressing the key that you want to map to. |
-| Tap screen | Emulate a screen tap at a specific location on your screen. |
-| Key event | Emulate a key press from a specifc connected device. |
-| Text | Emulate typing a string. |
-| Intent | See [this page.](../user-guide/actions/#intent-230) |
-| Phone call | Call a telephone number. Network and carrier rates will apply. |
-| Unsupported actions | A list of actions that your device won't allow you to use. Android frequently changes what users are allowed to do between versions. |
+--8<-- "action-type-list.md"
 
 For this simple demonstration I will choose KEYCODE_E from the Keycode tab. This action will emulate pressing an E key on a keyboard.
 
@@ -146,54 +126,23 @@ Here you can customise a lot of the operation of your key map, including timing,
 
 ___
 
-:fontawesome-solid-check-square:{: .accent-light } &nbsp; Show a toast message when performing
-
-When this is turned on, the following notice will come up at the bottom of the screen when ever your trigger is pressed.
-
-![](images/ui-toast.png)
-
-You can have your device vibrate instead of an on-screen message if you want. The setting [is found here.](#)
-___
-
 The following details refer to action timing settings.
 
-&nbsp;Delay before next action (ms)<br /> 
-![](images/ui-slider-default-light-450px.png)
-
-This option takes effect if you have multiple actions in your key map. The slider sets the amount of time between this action and the next.
-
+--8<-- "action-options/delay-before-next-action.md"
 ___
 
-&nbsp;Action count<br /> 
-![](images/ui-slider-default-light-450px.png)
-
-This option serves as a multiplier. If action count is equal to 1, when your key map is triggered, your action will be performed once. If it is equal to 5, the action will be performed 5 times, etc.
-
+--8<-- "action-options/action-count.md"
 ___
 
 #### Repeating actions
 
-:fontawesome-solid-check-square:{: .accent-light } &nbsp; Repeat
-
-When this is turned on, Key Mapper will execute your actions repeatedly. This is particularly useful when emulating a keyboard key press, where in most applications holding down the key would result in a repeating output. The default settings in Key Mapper are designed to emulate that behaviour when 'Repeat' is turned on.
-
+--8<-- "action-options/repeat.md"
 ___
 
-&nbsp;Repeat every... (ms)<br /> 
-![](images/ui-slider-default-light-450px.png)
-
-This option sets the time period for your repeating action. If this is set to 200, your action will repeat every 200ms, or in terms of frequency, 5 times per second. Some people prefer to think about this setting as a repeat rate, commonly measured in 'clicks' per second or cps. To calculate the appropriate time period for this option from a desired frequency, use this equation:
-
-```
-Time period (ms) = 1000 / Frequency ('cps')
-```
+--8<-- "action-options/repeat-every.md"
 ___
 
-&nbsp;Delay until repeat... (ms)<br /> 
-![](images/ui-slider-default-light-450px.png)
-
-This option sets the amount of time between the first action and the second action (or the first repeat). This is part of the keyboard key behaviour simulation. If you want your repeating action to begin straight away, you can make this 0. 
-
+--8<-- "action-options/delay-until-repeat.md"
 ___
 
 <sup><sub>&nbsp;Stop repeating when trigger is...</sup></sub><br />
@@ -209,12 +158,15 @@ ___
 
 :fontawesome-solid-check-square:{: .accent-light } &nbsp; Hold down
 
-This setting provides the ability to simulate holding down a key. With this turned on (and repeat turned off), the default behaviour is that holding down your trigger will translate to holding down the action, for as long as you hold down the trigger.
+!!! info "Key Mapper 2.1.0+"
 
+This setting provides the ability to simulate holding down a key. With this turned on (and repeat turned off), the default behaviour is that holding down your trigger will translate to holding down the action, for as long as you hold down the trigger.
 ___
 
 <sup><sub>&nbsp;Hold down until trigger is...</sup></sub><br />
 &nbsp;&nbsp;&nbsp;:radiobox-marked:{: .accent-light } <sup><sub>Released</sup></sub>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:radiobox-marked:{: .accent-light } <sup><sub>Pressed again</sup></sub>
+
+!!! info "Key Mapper 2.2.0+"
 
 This setting allows you to choose from two behaviours. If 'Released' is selected, holding down your trigger key(s) will translate to holding down the action, for as long as you hold down the trigger key(s).
 
@@ -223,6 +175,8 @@ If you choose 'Pressed again', pressing your trigger key(s) once will be suffici
 ___
 
 #### Using 'Hold down' and 'Repeat' together
+
+!!! info "Key Mapper 2.2.0+"
 
 You can use turn on both of these settings to unlock an additional setting. A repeating hold down action behaves like a normal 'Repeat' action in that the action repeats itself with a given frequency. It also behaves like a 'Hold down' action in that each individual action will be held for a certain amount of time in each cycle.
 
@@ -237,18 +191,24 @@ For extra key map customisation, tap the 'Constraints and more' tab at the top o
 
 ![](images/hg-keymap-4.png) ![](images/hg-keymap-4-light.png)
 
-:fontawesome-solid-check-square:{: .accent-light } &nbsp; Trigger by Intent
+:fontawesome-solid-check-square:{: .accent-light } &nbsp; Trigger from other apps
 
-For information about Trigger by Intent go to [this page.](../user-guide/actions/#intent-230)
-
+For information about "trigger from other apps" go to [this page.](../user-guide/trigger/#trigger-from-other-apps-230)
 ___
 
-:fontawesome-solid-check-square:{: .accent-light } &nbsp; Vibrate
+--8<-- "trigger-options/on-screen-message.md"
 
-&nbsp;Vibrate duration (ms)<br /> 
-![](images/ui-slider-default-light-450px.png)
+You can have your device vibrate instead of an on-screen message if you want. This option is below.
 
-Tapping 'Vibrate' will cause your device to vibrate whenever your key map is triggered (and therefore behaves similarly to the [toast message](#))
+---
+--8<-- "trigger-options/vibrate.md"
+
+This behaves similarly to the on-screen message option above.
+
+---
+:fontawesome-solid-check-square:{: .accent-light } &nbsp; Detect trigger when screen is off. ROOT only.
+
+--8<-- "trigger-options/trigger-when-screen-off.md"
 
 ## Adding constraints
 
@@ -256,17 +216,7 @@ You can add special constraints to your key maps in order to customise when they
 
 To add a constraint fron the 'Constraints and more' tab, tap 'Add constraint'.
 
-You can choose from the following options:
-
-![](images/hg-constraints-add.png) ![](images/hg-constraints-add-light.png) 
-
-Choosing 'App in foreground' will allow you to restrict your key map to working only if your app of choice is the actively selected window, i.e. on screen and being interacted with. 'App not in foreground' will likewise restrict your key map to working only if your app of choice isn't in focus.
-
-Choosing 'Bluetooth device is connected/disconnected' can restrict your key map to working only if a specific bluetooth device is connected/disconnected.
-
-If you have [root permission](#), you can restrict your key maps to work only when the screen is on or off.
-
-Choosing 'Orientation' can restrict your key map to working only when the device is set to specific screen orientation.
+You can view the list of constraints to choose from [here](constraints.md).
 
 ## Managing key maps
 
