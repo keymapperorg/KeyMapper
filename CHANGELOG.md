@@ -14,6 +14,7 @@ Android 8.0+ and only on devices which support them. Even devices with the setti
 - Orientation constraint. #505
 - Key Event action option to pretend that the Key Event came from a particular device. #509
 - Use duplicates of the same key in a sequence trigger. #513
+- Hold down repeatedly if repeat and hold down are enabled. #500
 
 ### Changes
 - No max limit for sliders (except in settings). #458
