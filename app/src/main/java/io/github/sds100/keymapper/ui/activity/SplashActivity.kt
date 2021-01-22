@@ -21,11 +21,13 @@ class SplashActivity : FragmentActivity() {
         val globalPreferences = ServiceLocator.globalPreferences(this)
 
         when {
-            runBlocking { !globalPreferences.appIntro().first() } ->
+            !runBlocking { globalPreferences.appIntro().first() } ->
                 startActivity(Intent(this, AppIntroActivity::class.java))
 
-            runBlocking { globalPreferences.get(PreferenceKeys.approvedFingerprintFeaturePrompt) != true }
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
+            !runBlocking {
+                globalPreferences.get(PreferenceKeys.approvedFingerprintFeaturePrompt)
+                    ?: false
+            } && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
                 startActivity(Intent(this, FingerprintGestureIntroActivity::class.java))
 
             else -> startActivity(Intent(this, HomeActivity::class.java))
