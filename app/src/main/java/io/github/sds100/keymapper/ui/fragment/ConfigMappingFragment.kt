@@ -73,12 +73,18 @@ abstract class ConfigMappingFragment : Fragment() {
             tab.text = tabTitleRes?.let { str(it) }
         }.attach()
 
+        viewLifecycleScope.launchWhenResumed {
+            binding.invalidateHelpMenuItemVisibility(
+                fragmentInfoList,
+                binding.viewPager.currentItem
+            )
+        }
+
         binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
 
-                val supportUrl = fragmentInfoList[position].second.supportUrl
-                binding.appBar.menu.findItem(R.id.action_help).isVisible = supportUrl != null
+                binding.invalidateHelpMenuItemVisibility(fragmentInfoList, position)
             }
         })
 
@@ -147,6 +153,17 @@ abstract class ConfigMappingFragment : Fragment() {
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
+    }
+
+    private fun FragmentConfigMappingBinding.invalidateHelpMenuItemVisibility(
+        fragmentInfoList: List<Pair<Int, FragmentInfo>>,
+        position: Int) {
+        val visible = fragmentInfoList[position].second.supportUrl != null
+
+        appBar.menu.findItem(R.id.action_help).apply {
+            isEnabled = visible
+            isVisible = visible
+        }
     }
 
     private fun showOnBackPressedWarning() {
