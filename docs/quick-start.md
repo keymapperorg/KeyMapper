@@ -206,8 +206,6 @@ You can have your device vibrate instead of an on-screen message if you want. Th
 This behaves similarly to the on-screen message option above.
 
 ---
-:fontawesome-solid-check-square:{: .accent-light } &nbsp; Detect trigger when screen is off. ROOT only.
-
 --8<-- "trigger-options/trigger-when-screen-off.md"
 
 ## Adding constraints
