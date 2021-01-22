@@ -72,7 +72,7 @@ class KeymapDetectionDelegateTest {
     }
 
     private lateinit var delegate: KeymapDetectionDelegate
-    private lateinit var mPerformActionTest: LiveEventTestWrapper<PerformAction>
+    private lateinit var performActionTest: LiveEventTestWrapper<PerformAction>
     private var currentPackage = ""
 
     @get:Rule
@@ -123,7 +123,7 @@ class KeymapDetectionDelegateTest {
             constraintDelegate
         )
 
-        mPerformActionTest = LiveEventTestWrapper(delegate.performAction)
+        performActionTest = LiveEventTestWrapper(delegate.performAction)
     }
 
     @After
@@ -131,7 +131,7 @@ class KeymapDetectionDelegateTest {
         delegate.keymapListCache = listOf()
         delegate.reset()
 
-        mPerformActionTest.reset()
+        performActionTest.reset()
     }
 
     @Test
@@ -157,7 +157,7 @@ class KeymapDetectionDelegateTest {
         advanceUntilIdle()
 
         //THEN
-        assertThat(mPerformActionTest.history.map { it.action }, `is`(listOf(TEST_ACTION_2)))
+        assertThat(performActionTest.history.map { it.action }, `is`(listOf(TEST_ACTION_2)))
     }
 
     @Test
@@ -177,7 +177,7 @@ class KeymapDetectionDelegateTest {
         advanceUntilIdle()
 
         //THEN
-        assertThat(mPerformActionTest.history, `is`(emptyList()))
+        assertThat(performActionTest.history, `is`(emptyList()))
     }
 
     @Test
