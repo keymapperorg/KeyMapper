@@ -77,6 +77,10 @@
         <argument
             android:name="@string/nav_arg_choose_constraint_request_key"
             app:argType="string" />
+
+        <argument
+            android:name="@string/nav_arg_supported_constraint_list"
+            app:argType="string[]" />
     </action>
 
     <include app:graph="@navigation/nav_choose_action" />

@@ -34,11 +34,12 @@ class DefaultDataStoreManager(context: Context) : IDataStoreManager {
         migrations = listOf(sharedPreferencesMigration))
 
     override fun getBoolPref(key: Int): Boolean {
-        TODO()
+        //TODO
+        return false
     }
 
     override fun setBoolPref(key: Int, value: Boolean) {
-        TODO()
+        //TODO
     }
 
     override fun <T> getFlow(key: Preferences.Key<T>): Flow<T?> {

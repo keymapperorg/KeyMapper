@@ -44,7 +44,9 @@ abstract class ConstraintListFragment
         binding.viewModel = constraintListViewModel
 
         binding.setOnAddConstraintClick {
-            val direction = NavAppDirections.actionGlobalChooseConstraint(CHOOSE_CONSTRAINT_REQUEST_KEY)
+            val direction = NavAppDirections.actionGlobalChooseConstraint(
+                CHOOSE_CONSTRAINT_REQUEST_KEY,
+                constraintListViewModel.supportedConstraintList.toTypedArray())
             findNavController().navigate(direction)
         }
 

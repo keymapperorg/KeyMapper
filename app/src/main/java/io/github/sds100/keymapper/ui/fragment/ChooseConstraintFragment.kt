@@ -27,8 +27,11 @@ class ChooseConstraintFragment
         const val EXTRA_CONSTRAINT = "extra_constraint"
     }
 
+    private val navArgs by navArgs<ChooseConstraintFragmentArgs>()
+
     private val viewModel: ChooseConstraintListViewModel by viewModels {
-        InjectorUtils.provideChooseConstraintListViewModel()
+        val supportedConstraints = navArgs.StringNavArgSupportedConstraintList
+        InjectorUtils.provideChooseConstraintListViewModel(supportedConstraints.toList())
     }
 
     override val modelState: IModelState<Map<Int, List<ChooseConstraintListItemModel>>>
