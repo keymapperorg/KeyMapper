@@ -12,6 +12,7 @@ import io.github.sds100.keymapper.data.model.DeviceInfo
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.activity.LaunchKeymapShortcutActivity
 import io.github.sds100.keymapper.util.result.valueOrNull
+import java.util.*
 
 /**
  * Created by sds100 on 21/01/21.
@@ -22,7 +23,7 @@ object KeymapShortcutUtils {
         uuid: String,
         actionList: List<Action>,
         deviceInfoList: List<DeviceInfo>
-    ): ShortcutInfoCompat = ShortcutInfoCompat.Builder(activity, uuid).apply {
+    ): ShortcutInfoCompat = ShortcutInfoCompat.Builder(activity, UUID.randomUUID().toString()).apply {
 
         val ctx: Context = activity
         val icon = createShortcutIcon(ctx, actionList)
