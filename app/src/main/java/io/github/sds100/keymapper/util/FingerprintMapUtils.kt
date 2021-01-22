@@ -5,8 +5,8 @@ import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.broadcastreceiver.KeyMapperBroadcastReceiver
 import io.github.sds100.keymapper.data.model.FingerprintMap
-import io.github.sds100.keymapper.ui.activity.HomeActivity
 import splitties.bitflags.hasFlag
 
 /**
@@ -47,7 +47,8 @@ object FingerprintMapUtils {
     }
 
     fun showFeatureNotification(ctx: Context) {
-        val pendingIntent = IntentUtils.createPendingActivityIntent(ctx, HomeActivity::class.java)
+        val pendingIntent = IntentUtils.createPendingBroadcastIntent(
+            ctx, KeyMapperBroadcastReceiver.ACTION_ON_FINGERPRINT_FEAT_NOTIFICATION_CLICK)
 
         NotificationUtils.showNotification(
             ctx,

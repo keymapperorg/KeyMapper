@@ -65,6 +65,7 @@ class AppIntroActivity : AppIntro2() {
         super.onDonePressed(currentFragment)
 
         AppPreferences.shownAppIntro = true
+        AppPreferences.approvedFingerprintFeaturePrompt = true
         startActivity(Intent(this, HomeActivity::class.java))
 
         finish()

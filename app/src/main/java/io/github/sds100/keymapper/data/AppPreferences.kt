@@ -147,6 +147,11 @@ object AppPreferences : DefaultPreferences() {
         appCtx.int(R.integer.default_value_hold_down_duration)
     )
 
+    var approvedFingerprintFeaturePrompt by BoolPref(
+        "pref_approved_fingerprint_feature_prompt",
+        false
+    )
+
     @NightMode
     fun getSdkNightMode(darkThemePrefValue: String): Int {
         return when (darkThemePrefValue) {
