@@ -51,7 +51,10 @@ class ConfigFingerprintMapViewModel(private val mFingerprintMapRepository: Finge
 
     val optionsViewModel = FingerprintMapOptionsViewModel()
 
-    val constraintListViewModel = ConstraintListViewModel(viewModelScope)
+    val constraintListViewModel = ConstraintListViewModel(
+        viewModelScope,
+        Constraint.COMMON_SUPPORTED_CONSTRAINTS
+    )
 
     val isEnabled = MutableLiveData(true)
 

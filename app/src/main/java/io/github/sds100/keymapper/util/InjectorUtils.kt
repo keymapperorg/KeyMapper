@@ -34,8 +34,10 @@ object InjectorUtils {
         )
     }
 
-    fun provideChooseConstraintListViewModel(): ChooseConstraintListViewModel.Factory {
-        return ChooseConstraintListViewModel.Factory()
+    fun provideChooseConstraintListViewModel(
+        supportedConstraints: List<String>
+    ): ChooseConstraintListViewModel.Factory {
+        return ChooseConstraintListViewModel.Factory(supportedConstraints)
     }
 
     fun provideKeyActionTypeViewModel(): KeyActionTypeViewModel.Factory {

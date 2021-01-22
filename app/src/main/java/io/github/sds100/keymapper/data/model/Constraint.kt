@@ -83,6 +83,22 @@ data class Constraint(@ConstraintType
         const val ORIENTATION_LANDSCAPE = "constraint_orientation_landscape"
         //types
 
+        /**
+         * Constraints supported by all types of mappings.
+         */
+        val COMMON_SUPPORTED_CONSTRAINTS = listOf(
+            APP_FOREGROUND,
+            APP_NOT_FOREGROUND,
+            BT_DEVICE_CONNECTED,
+            BT_DEVICE_DISCONNECTED,
+            ORIENTATION_PORTRAIT,
+            ORIENTATION_LANDSCAPE,
+            ORIENTATION_0,
+            ORIENTATION_90,
+            ORIENTATION_180,
+            ORIENTATION_270
+        )
+
         val ORIENTATION_CONSTRAINTS = arrayOf(
             ORIENTATION_PORTRAIT,
             ORIENTATION_LANDSCAPE,

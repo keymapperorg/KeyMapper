@@ -24,8 +24,11 @@ class ChooseConstraintFragment : DefaultRecyclerViewFragment() {
         const val EXTRA_CONSTRAINT = "extra_constraint"
     }
 
+    private val mNavArgs by navArgs<ChooseConstraintFragmentArgs>()
+
     private val mViewModel: ChooseConstraintListViewModel by viewModels {
-        InjectorUtils.provideChooseConstraintListViewModel()
+        val supportedConstraints = mNavArgs.StringNavArgSupportedConstraintList
+        InjectorUtils.provideChooseConstraintListViewModel(supportedConstraints.toList())
     }
 
     @Suppress("SuspiciousVarProperty")

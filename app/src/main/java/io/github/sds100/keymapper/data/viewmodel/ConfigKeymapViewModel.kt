@@ -67,7 +67,13 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
         this.uid
     )
 
-    val constraintListViewModel = ConstraintListViewModel(viewModelScope)
+    private val supportedConstraints =
+        Constraint.COMMON_SUPPORTED_CONSTRAINTS.toMutableList().apply {
+            add(Constraint.SCREEN_ON)
+            add(Constraint.SCREEN_OFF)
+        }.toList()
+
+    val constraintListViewModel = ConstraintListViewModel(viewModelScope, supportedConstraints)
 
     val isEnabled = MutableLiveData(false)
 

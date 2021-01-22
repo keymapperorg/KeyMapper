@@ -13,7 +13,8 @@ import kotlinx.coroutines.launch
  * Created by sds100 on 29/11/20.
  */
 
-class ConstraintListViewModel(private val mCoroutineScope: CoroutineScope) {
+class ConstraintListViewModel(private val mCoroutineScope: CoroutineScope,
+                              val supportedConstraintList: List<String>) {
 
     private val _constraintList = MutableLiveData<List<Constraint>>()
     val constraintList: LiveData<List<Constraint>> = _constraintList

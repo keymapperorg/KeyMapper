@@ -156,6 +156,7 @@
     <string name="nav_arg_choose_action_request_key" translatable="false">choose_action_request_key</string>
     <string name="nav_arg_choose_constraint_request_key" translatable="false">choose_constraint_request_key</string>
     <string name="nav_arg_fingerprint_action_options" translatable="false">fingerprint_action_options</string>
+    <string name="nav_arg_supported_constraint_list" translatable="false">supported_constraint_list</string>
     <!--  Navigation argument ids  -->
 
     <!--  Toasts  -->
