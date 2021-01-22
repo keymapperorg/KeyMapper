@@ -1,6 +1,8 @@
 package io.github.sds100.keymapper.service
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.lifecycleScope
 import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.data.AppUpdateManager
@@ -33,7 +35,7 @@ class AccessibilityServiceController(
             if (oldVersion < FingerprintMapUtils.FINGERPRINT_GESTURES_MIN_VERSION
                 && fingerprintGestureDetectionAvailable
                 && !handledUpdateInHomeScreen) {
-                _eventStream.value = ShowFingerprintFeatureNotification()
+                _eventStream.postValue(ShowFingerprintFeatureNotification())
             }
 
             denyFingerprintGestureDetection()

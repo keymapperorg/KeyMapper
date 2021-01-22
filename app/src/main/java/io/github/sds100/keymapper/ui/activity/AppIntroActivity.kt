@@ -66,8 +66,12 @@ class AppIntroActivity : AppIntro2() {
         super.onDonePressed(currentFragment)
 
         runBlocking {
-            ServiceLocator.globalPreferences(this@AppIntroActivity).set(PreferenceKeys.appIntro, true)
+            ServiceLocator.globalPreferences(this@AppIntroActivity).apply {
+                set(PreferenceKeys.appIntro, true)
+                set(PreferenceKeys.approvedFingerprintFeaturePrompt, true)
+            }
         }
+
         startActivity(Intent(this, HomeActivity::class.java))
 
         finish()

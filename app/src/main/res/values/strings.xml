@@ -191,7 +191,7 @@
     <string name="toast_incorrect_screenshot_resolution">Screenshot resolution doesn\'t match this device\'s resolution!</string>
     <string name="toast_copied_keymap_uid_to_clipboard">Copied key map UUID to clipboard</string>
     <string name="toast_triggered_keymap">You\'ve triggered a key map</string>
-    <!--  Toasts  -->,
+    <!--  Toasts  -->
 
     <!-- Extra labels -->
     <string name="extra_label_sequence_trigger_timeout">Sequence trigger timeout (ms)</string>
