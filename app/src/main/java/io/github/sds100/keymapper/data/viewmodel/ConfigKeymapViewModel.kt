@@ -71,9 +71,6 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
 
     val isEnabled = MutableLiveData(false)
 
-    private val _uid = MutableLiveData<String>()
-    val uid: LiveData<String> = _uid
-
     private val _eventStream = LiveEvent<Event>().apply {
         addSource(constraintListViewModel.eventStream) {
             when (it) {
