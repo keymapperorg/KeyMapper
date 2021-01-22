@@ -12,7 +12,6 @@
     <string name="everything_looks_good">Alles sieht gut aus!</string>
     <string name="press_dot_dot_dot">Drücke…</string>
     <string name="trigger_device_name_not_found">Der Name für dieses Gerät ist nicht bekannt</string>
-    <string name="performing_action">Key Mapper führt eine Aktion aus …</string>
     <string name="trigger_pressed_again">Erneut gedrückt</string>
     <string name="dont_know_device_name">Kenne den Gerätenamen nicht!</string>
     <string name="switch_enabled">Aktiviert</string>
