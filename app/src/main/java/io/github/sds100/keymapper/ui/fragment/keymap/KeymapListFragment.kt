@@ -106,7 +106,8 @@ class KeymapListFragment : DefaultRecyclerViewFragment() {
                 constraintList = keymap.constraintList.map { it.buildModel(requireContext()) },
                 constraintMode = keymap.constraintMode,
                 flagsDescription = keymap.trigger.buildTriggerFlagsDescription(requireContext()),
-                isEnabled = keymap.isEnabled
+                isEnabled = keymap.isEnabled,
+                uid = keymap.uid
             )
         }
 

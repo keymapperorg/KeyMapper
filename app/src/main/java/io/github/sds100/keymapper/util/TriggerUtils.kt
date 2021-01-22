@@ -120,5 +120,8 @@ fun Trigger.Key.getFlagLabelList(ctx: Context): List<String> = sequence {
     }
 }.toList()
 
-val Trigger.triggerByIntent: Boolean
-    get() = flags.hasFlag(Trigger.TRIGGER_FLAG_BY_INTENT)
+val Trigger.triggerFromOtherApps: Boolean
+    get() = flags.hasFlag(Trigger.TRIGGER_FLAG_FROM_OTHER_APPS)
+
+val Trigger.vibrate: Boolean
+    get() = flags.hasFlag(Trigger.TRIGGER_FLAG_VIBRATE)

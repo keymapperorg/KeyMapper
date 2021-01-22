@@ -17,9 +17,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
 import androidx.lifecycle.*
 import com.github.salomonbrys.kotson.fromJson
-import com.github.salomonbrys.kotson.registerTypeAdapter
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
@@ -73,7 +71,6 @@ class MyAccessibilityService : AccessibilityService(),
         const val ACTION_STOPPED_RECORDING_TRIGGER = "$PACKAGE_NAME.STOPPED_RECORDING_TRIGGER"
         const val ACTION_ON_START = "$PACKAGE_NAME.ON_ACCESSIBILITY_SERVICE_START"
         const val ACTION_ON_STOP = "$PACKAGE_NAME.ON_ACCESSIBILITY_SERVICE_STOP"
-        const val ACTION_PERFORM_ACTIONS = "$PACKAGE_NAME.PERFORM_ACTIONS"
         const val ACTION_UPDATE_KEYMAP_LIST_CACHE = "$PACKAGE_NAME.UPDATE_KEYMAP_LIST_CACHE"
 
         //DONT CHANGE!!!
@@ -83,7 +80,6 @@ class MyAccessibilityService : AccessibilityService(),
         const val EXTRA_KEY_EVENT = "$PACKAGE_NAME.KEY_EVENT"
         const val EXTRA_TIME_LEFT = "$PACKAGE_NAME.TIME_LEFT"
         const val EXTRA_ACTION = "$PACKAGE_NAME.ACTION"
-        const val EXTRA_ACTION_LIST = "$PACKAGE_NAME.ACTION_LIST"
         const val EXTRA_KEYMAP_LIST = "$PACKAGE_NAME.KEYMAP_LIST"
 
         /**
@@ -160,16 +156,6 @@ class MyAccessibilityService : AccessibilityService(),
 
                     if (wasRecordingTrigger) {
                         sendPackageBroadcast(ACTION_STOPPED_RECORDING_TRIGGER)
-                    }
-                }
-
-                ACTION_PERFORM_ACTIONS -> {
-                    val gson = GsonBuilder().registerTypeAdapter(Action.DESERIALIZER).create()
-                    val actionListJson = intent.getStringExtra(EXTRA_ACTION_LIST) ?: return
-                    val actionList = gson.fromJson<List<Action>>(actionListJson)
-
-                    actionList.forEach {
-                        mActionPerformerDelegate.performAction(it, mChosenImePackageName)
                     }
                 }
 
@@ -334,7 +320,6 @@ class MyAccessibilityService : AccessibilityService(),
             addAction(ACTION_RECORD_TRIGGER)
             addAction(ACTION_TEST_ACTION)
             addAction(ACTION_STOPPED_RECORDING_TRIGGER)
-            addAction(ACTION_PERFORM_ACTIONS)
             addAction(ACTION_UPDATE_KEYMAP_LIST_CACHE)
             addAction(ACTION_STOP_RECORDING_TRIGGER)
             addAction(Intent.ACTION_SCREEN_ON)

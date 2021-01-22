@@ -18,6 +18,18 @@
         <variable
             name="onCopyClick"
             type="View.OnClickListener" />
+
+        <variable
+            name="onCreateLauncherShortcutClick"
+            type="View.OnClickListener" />
+
+        <variable
+            name="openIntentGuide"
+            type="View.OnClickListener" />
+
+        <variable
+            name="isCreatingLauncherShortcutsSupported"
+            type="Boolean" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -35,7 +47,7 @@
             android:checked="@{model.isEnabled}"
             android:onClick="@{onClick}"
             android:paddingHorizontal="8dp"
-            android:text="@string/flag_trigger_by_intent"
+            android:text="@string/flag_trigger_from_other_apps"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="?attr/colorOnSurface"
             app:layout_constraintEnd_toStartOf="@+id/buttonCopyToClipboard"
@@ -66,5 +78,31 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_content_copy" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonCreateLauncherShortcut"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:onClick="@{onCreateLauncherShortcutClick}"
+            android:text="@string/button_create_keymap_shortcut_in_launcher"
+            android:visibility="@{isCreatingLauncherShortcutsSupported &amp;&amp; model.isEnabled ? View.VISIBLE : View.GONE}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewUid" />
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:onClick="@{openIntentGuide}"
+            android:text="@string/button_open_trigger_keymap_from_intent_guide"
+            android:visibility="@{model.isEnabled ? View.VISIBLE : View.GONE}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/buttonCreateLauncherShortcut" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

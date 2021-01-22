@@ -50,6 +50,10 @@ class RequestBackup(val keymapList: List<KeyMap>) : Event()
 class RequestRestore : Event()
 class RequestBackupAll : Event()
 class ShowErrorMessage(val failure: Failure) : Event()
+class CreateKeymapShortcutEvent(
+    val uuid: String,
+    val actionList: List<Action>
+) : Event()
 
 //trigger
 class BuildTriggerKeyModels(val source: List<Trigger.Key>) : Event()

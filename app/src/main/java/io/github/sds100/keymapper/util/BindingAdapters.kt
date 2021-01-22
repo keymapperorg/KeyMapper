@@ -138,7 +138,7 @@ fun TextInputLayout.errorWhenEmpty(enabled: Boolean) {
 }
 
 @BindingAdapter("app:onLongClick")
-fun setLongClickListener(view: View, onLongClickListener: View.OnLongClickListener) {
+fun setLongClickListener(view: View, onLongClickListener: View.OnLongClickListener?) {
     view.setOnLongClickListener(onLongClickListener)
 }
 

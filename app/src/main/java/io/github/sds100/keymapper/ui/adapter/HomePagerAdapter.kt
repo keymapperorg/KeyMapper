@@ -20,8 +20,6 @@ class HomePagerAdapter(
 
     private var mTabFragmentsCreators = emptyList<() -> Fragment>()
 
-    private var tabFragmentsCreators = emptyList<() -> Fragment>()
-
     init {
         invalidateFragments(fingerprintGesturesAvailable)
     }

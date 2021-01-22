@@ -21,10 +21,7 @@ import androidx.viewpager2.widget.ViewPager2
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.google.android.material.tabs.TabLayoutMediator
-import io.github.sds100.keymapper.Constants
-import io.github.sds100.keymapper.NavAppDirections
-import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.ServiceLocator
+import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.ChooseAppStoreModel
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
@@ -48,10 +45,8 @@ import splitties.alertdialog.appcompat.messageResource
 import splitties.systemservices.powerManager
 import splitties.toast.longToast
 import splitties.toast.toast
+import java.util.*
 
-/**
- * A placeholder fragment containing a simple view.
- */
 class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val mKeyMapListViewModel: KeymapListViewModel by activityViewModels {
@@ -395,7 +390,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                     show()
                 }
             }
-            
+
 
             setDismissNewGuiKeyboardAd {
                 AppPreferences.showGuiKeyboardAd = false

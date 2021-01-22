@@ -67,6 +67,7 @@
     <string name="caption_action_type_text">Type some text you want to be inserted when you perform this action.</string>
     <string name="caption_action_type_url">Type a url which you want to be opened. The http://, https:// or www. isn\'t required.</string>
     <string name="caption_no_paired_bt_devices">Can\'t find any paired devices. Is Bluetooth turned on?</string>
+    <string name="caption_create_keymap_shortcut">The \"trigger from other apps\" option will be turned on for the key map that you select if it isn\'t already. If you turn this option off later then any shortcuts or Intents to trigger this key map will not work.</string>
 
     <string name="switch_enabled">Enabled</string>
     <string name="disabled">Disabled</string>
@@ -238,6 +239,7 @@
     <string name="url_github_releases_key_mapper" translatable="false">https://github.com/sds100/KeyMapper/releases</string>
     <string name="url_youtube_channel" translatable="false">https://www.youtube.com/channel/UC87daDTKj8hpQQolhB81mYA</string>
     <string name="url_dont_kill_my_app" translatable="false">https://dontkillmyapp.com</string>
+    <string name="url_trigger_by_intent_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/trigger-by-intent</string>
 
     <string name="url_play_store_keymapper_gui_keyboard" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin</string>
     <string name="url_fdroid_keymapper_gui_keyboard" translatable="false">https://f-droid.org/en/packages/io.github.sds100.keymapper.inputmethod.latin</string>
@@ -284,7 +286,9 @@
     <string name="button_add_constraint">Add Constraint</string>
     <string name="button_choose_keycode">Choose Key Code</string>
     <string name="button_yes">Yes!</string>
-    <string name="button_choose_action">Choose Action</string>
+    <string name="button_choose_action">Choose action</string>
+    <string name="button_create_keymap_shortcut_in_launcher">Create launcher shortcut</string>
+    <string name="button_open_trigger_keymap_from_intent_guide">Intent guide</string>
     <!-- Button titles -->
 
     <!-- Dialog titles -->
@@ -565,10 +569,10 @@
     <string name="flag_detect_triggers_screen_off">Detect trigger when screen is off. ROOT only.</string>
     <string name="flag_repeat_actions">Repeat</string>
     <string name="flag_hold_down">Hold down</string>
-    <string name="flag_dont_override_default_action">Do Not Override Default Action</string>
-    <string name="flag_repeat_until_swiped_again">Repeat Until Swiped Again</string>
-    <string name="flag_hold_down_until_swiped_again">Hold Down Until Swiped Again</string>
-    <string name="flag_trigger_by_intent">Trigger By Intent</string>
+    <string name="flag_dont_override_default_action">Do not override default action</string>
+    <string name="flag_repeat_until_swiped_again">Repeat until swiped again</string>
+    <string name="flag_hold_down_until_swiped_again">Hold down until swiped again</string>
+    <string name="flag_trigger_from_other_apps">Trigger from other apps</string>
     <!--flags-->
 
     <!-- Showcase -->

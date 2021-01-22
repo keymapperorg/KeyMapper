@@ -131,8 +131,10 @@ object InjectorUtils {
     }
 
     fun provideCreateActionShortcutViewModel(context: Context
-    ): CreateActionShortcutViewModel.Factory {
-        return CreateActionShortcutViewModel.Factory(ServiceLocator.deviceInfoRepository(context))
+    ): CreateKeymapShortcutViewModel.Factory {
+        return CreateKeymapShortcutViewModel.Factory(
+            ServiceLocator.keymapRepository(context),
+            ServiceLocator.deviceInfoRepository(context))
     }
 
     fun provideHomeViewModel(context: Context): HomeViewModel.Factory {

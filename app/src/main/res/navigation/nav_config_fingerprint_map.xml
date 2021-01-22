@@ -9,7 +9,7 @@
         android:id="@+id/config_fingerprint_map_fragment"
         android:name="io.github.sds100.keymapper.ui.fragment.fingerprint.ConfigFingerprintMapFragment"
         android:label="Edit Fingerprint Map"
-        tools:layout="@layout/fragment_config_fingerprint_map">
+        tools:layout="@layout/fragment_config_mapping">
 
         <argument
             android:name="gestureId"

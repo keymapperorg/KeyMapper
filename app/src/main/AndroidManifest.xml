@@ -55,20 +55,24 @@
 
         <activity android:name=".ui.activity.AppIntroActivity" />
 
+        <!-- Use a different task affinity so this activity doesn't close other activities -->
         <activity
-            android:name=".ui.activity.LaunchActionShortcutActivity"
+            android:name=".ui.activity.LaunchKeymapShortcutActivity"
             android:excludeFromRecents="true"
             android:finishOnTaskLaunch="true"
             android:launchMode="singleInstance"
+            android:taskAffinity=""
             android:theme="@android:style/Theme.NoDisplay">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
 
+        <!-- Use a different task affinity so this activity can be opened at the same time as others -->
         <activity
-            android:name=".ui.activity.CreateActionShortcutActivity"
-            android:label="@string/shortcut_label_action">
+            android:name=".ui.activity.CreateKeymapShortcutActivity"
+            android:label="@string/shortcut_label_action"
+            android:taskAffinity="">
             <intent-filter>
                 <action android:name="android.intent.action.CREATE_SHORTCUT" />
             </intent-filter>

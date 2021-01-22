@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.util.delegate
 import io.github.sds100.keymapper.IConstraintDelegate
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.util.IActionError
-import io.github.sds100.keymapper.util.triggerByIntent
+import io.github.sds100.keymapper.util.triggerFromOtherApps
 import kotlinx.coroutines.CoroutineScope
 
 /**
@@ -35,6 +35,6 @@ class TriggerKeymapByIntentController(
     fun onKeymapListUpdate(keymapList: List<KeyMap>) {
         reset()
 
-        mKeymapList = keymapList.filter { it.trigger.triggerByIntent }
+        mKeymapList = keymapList.filter { it.trigger.triggerFromOtherApps }
     }
 }
