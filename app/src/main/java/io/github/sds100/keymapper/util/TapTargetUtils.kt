@@ -51,9 +51,9 @@ sealed class TapTarget(
                         dataStore.set(key, true)
                     }
                 }
-
-                show()
             }
+
+            show()
         }
     }
 }
