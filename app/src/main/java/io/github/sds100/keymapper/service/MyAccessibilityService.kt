@@ -76,6 +76,10 @@ class MyAccessibilityService : AccessibilityService(),
         const val ACTION_PERFORM_ACTIONS = "$PACKAGE_NAME.PERFORM_ACTIONS"
         const val ACTION_UPDATE_KEYMAP_LIST_CACHE = "$PACKAGE_NAME.UPDATE_KEYMAP_LIST_CACHE"
 
+        //DONT CHANGE!!!
+        const val ACTION_TRIGGER_KEYMAP_BY_UID = "$PACKAGE_NAME.TRIGGER_KEYMAP_BY_UID"
+        const val EXTRA_KEYMAP_UID = "$PACKAGE_NAME.KEYMAP_UID"
+
         const val EXTRA_KEY_EVENT = "$PACKAGE_NAME.KEY_EVENT"
         const val EXTRA_TIME_LEFT = "$PACKAGE_NAME.TIME_LEFT"
         const val EXTRA_ACTION = "$PACKAGE_NAME.ACTION"
@@ -190,6 +194,12 @@ class MyAccessibilityService : AccessibilityService(),
                         }
                     }
                 }
+
+                ACTION_TRIGGER_KEYMAP_BY_UID -> {
+                    intent.getStringExtra(EXTRA_KEYMAP_UID)?.let {
+                        mTriggerKeymapByIntentController.onDetected(it)
+                    }
+                }
             }
         }
     }
@@ -206,6 +216,8 @@ class MyAccessibilityService : AccessibilityService(),
     private lateinit var mKeymapDetectionDelegate: KeymapDetectionDelegate
     private lateinit var mActionPerformerDelegate: ActionPerformerDelegate
     private lateinit var mConstraintDelegate: ConstraintDelegate
+
+    private lateinit var mTriggerKeymapByIntentController: TriggerKeymapByIntentController
 
     //fingerprint gesture stuff
     private lateinit var mFingerprintGestureMapController: FingerprintGestureMapController
@@ -309,6 +321,12 @@ class MyAccessibilityService : AccessibilityService(),
             iAccessibilityService = this,
             lifecycle = lifecycle)
 
+        mTriggerKeymapByIntentController = TriggerKeymapByIntentController(
+            coroutineScope = lifecycleScope,
+            mConstraintDelegate,
+            iActionError = this
+        )
+
         IntentFilter().apply {
             addAction(ACTION_PAUSE_REMAPPINGS)
             addAction(ACTION_RESUME_REMAPPINGS)
@@ -324,6 +342,7 @@ class MyAccessibilityService : AccessibilityService(),
             addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
             addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
             addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
+            addAction(ACTION_TRIGGER_KEYMAP_BY_UID)
 
             registerReceiver(mBroadcastReceiver, this)
         }
@@ -406,10 +425,12 @@ class MyAccessibilityService : AccessibilityService(),
                 value = it
             }
 
-            if (VERSION.SDK_INT >= VERSION_CODES.O) {
-                addSource(mFingerprintGestureMapController.vibrate) {
-                    value = it
-                }
+            addSource(mFingerprintGestureMapController.vibrate) {
+                value = it
+            }
+
+            addSource(mTriggerKeymapByIntentController.vibrate) {
+                value = it
             }
 
             observe(this@MyAccessibilityService, Observer {
@@ -431,10 +452,12 @@ class MyAccessibilityService : AccessibilityService(),
                 value = it
             }
 
-            if (VERSION.SDK_INT >= VERSION_CODES.O) {
-                addSource(mFingerprintGestureMapController.performAction) {
-                    value = it
-                }
+            addSource(mFingerprintGestureMapController.performAction) {
+                value = it
+            }
+
+            addSource(mTriggerKeymapByIntentController.performAction) {
+                value = it
             }
 
             observe(this@MyAccessibilityService, Observer {
@@ -669,6 +692,8 @@ class MyAccessibilityService : AccessibilityService(),
         mScreenOffTriggersEnabled = keymapList.any { keymap ->
             keymap.trigger.flags.hasFlag(Trigger.TRIGGER_FLAG_SCREEN_OFF_TRIGGERS)
         }
+
+        mTriggerKeymapByIntentController.onKeymapListUpdate(keymapList)
     }
 
     private fun checkFingerprintGesturesAvailability() {
