@@ -28,7 +28,6 @@
     <string name="this_device">Это устройство</string>
     <string name="any_device">Любое устройство</string>
     <string name="trigger_device_name_not_found">Неизвестное имя для этого устройства</string>
-    <string name="performing_action">Key Mapper выполняет действие…</string>
     <string name="slider_default">По умолчанию</string>
     <string name="button_enable_accessibility_service">Включение службы спец. возможностей</string>
     <string name="stop_repeating_dot_dot_dot">Прекратить повтор когда нажатие…</string>
