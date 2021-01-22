@@ -19,7 +19,6 @@
     <string name="off">معطل</string>
     <string name="follow_system">اتبع النظام</string>
     <string name="trigger_device_name_not_found">إسم هذا الجهاز غير معروف</string>
-    <string name="performing_action">Key Mapper يقوم بإجراء…</string>
     <string name="slider_default">العادي</string>
     <string name="stop_repeating_dot_dot_dot">إيقاف التكرار عندما يكون المحفز…</string>
     <string name="trigger_released">تم إيقافه</string>
