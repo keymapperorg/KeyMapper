@@ -15,12 +15,10 @@
     <string name="requires_root">WYMAGA ROOT</string>
     <string name="press_dot_dot_dot">Naciśnij…</string>
     <string name="chip_while">gdy</string>
-    <string name="google_app_package_name">com.google.android.googlequicksearchbox</string>
     <string name="on">Włącz</string>
     <string name="off">Wyłącz</string>
     <string name="follow_system">Z motywu systemu</string>
     <string name="trigger_device_name_not_found">Nazwa tego urządzenia nie jest znana</string>
-    <string name="performing_action">Key Mapper wykonuje działanie…</string>
     <string name="slider_default">Domyślny</string>
     <string name="stop_repeating_dot_dot_dot">Przestań powtarzać, gdy trigger to…</string>
     <string name="trigger_released">Zwolnione</string>
