@@ -11,7 +11,7 @@ nav:
       - Actions: user-guide/actions.md
       - Constraints: user-guide/constraints.md
       - ADB Permissions: user-guide/adb-permissions.md
-      - Fingerprint Gestures (2.2.0+): user-guide/fingerprint-gestures.md
+      - Fingerprint Gestures (2.2.0+, Android 8.0+): user-guide/fingerprint-gestures.md
       - Back up and Restore (2.1.0+, Android 4.4+): user-guide/backup-restore.md
   - Contributing: contributing.md
   - Known Issues: known-issues.md
