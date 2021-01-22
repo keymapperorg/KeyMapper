@@ -16,7 +16,6 @@
     <string name="off">关闭</string>
     <string name="follow_system">跟随系统</string>
     <string name="trigger_device_name_not_found">此设备的名称未知</string>
-    <string name="performing_action"> Key Mapper 正在执行一个操作…</string>
     <string name="switch_enabled">已启用</string>
     <string name="disabled">已禁用</string>
     <string name="email_subject"> Key Mapper 查询</string>
