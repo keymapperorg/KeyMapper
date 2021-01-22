@@ -15,7 +15,6 @@
     <string name="off">Apagado</string>
     <string name="follow_system">Igual que el sistema</string>
     <string name="trigger_device_name_not_found">El nombre de este dispositivo es desconocido</string>
-    <string name="performing_action">Key Mapper está realizando una acción…</string>
     <string name="slider_default">Predeterminado</string>
     <string name="stop_repeating_dot_dot_dot">Detener la repetición cuando el disparador es…</string>
     <string name="trigger_released">Liberado</string>
