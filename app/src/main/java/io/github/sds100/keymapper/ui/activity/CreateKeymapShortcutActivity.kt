@@ -7,19 +7,19 @@ import androidx.databinding.DataBindingUtil
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.data.darkThemeMode
-import io.github.sds100.keymapper.databinding.ActivityActionShortcutBinding
+import io.github.sds100.keymapper.databinding.ActivityCreateKeymapShortcutBinding
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
 /**
  * Created by sds100 on 08/09/20.
  */
-class CreateActionShortcutActivity : AppCompatActivity() {
+class CreateKeymapShortcutActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         runBlocking {
-            ServiceLocator.globalPreferences(this@CreateActionShortcutActivity)
+            ServiceLocator.globalPreferences(this@CreateKeymapShortcutActivity)
                 .darkThemeMode()
                 .first()
                 .let {
@@ -27,6 +27,6 @@ class CreateActionShortcutActivity : AppCompatActivity() {
                 }
         }
 
-        DataBindingUtil.setContentView<ActivityActionShortcutBinding>(this, R.layout.activity_action_shortcut)
+        DataBindingUtil.setContentView<ActivityCreateKeymapShortcutBinding>(this, R.layout.activity_create_keymap_shortcut)
     }
 }

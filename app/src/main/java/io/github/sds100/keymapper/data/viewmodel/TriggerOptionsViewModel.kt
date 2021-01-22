@@ -10,6 +10,7 @@ import io.github.sds100.keymapper.data.model.options.BoolOption
 import io.github.sds100.keymapper.data.model.options.IntOption
 import io.github.sds100.keymapper.data.model.options.IntOption.Companion.nullIfDefault
 import io.github.sds100.keymapper.data.model.options.TriggerOptions
+import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.OkDialog
 
@@ -18,6 +19,7 @@ import io.github.sds100.keymapper.util.OkDialog
  */
 class TriggerOptionsViewModel(
     dataStoreManager: IDataStoreManager,
+    private val deviceInfoRepository: DeviceInfoRepository,
     val getTriggerKeys: () -> List<Trigger.Key>,
     val getTriggerMode: () -> Int,
     private val keymapUid: LiveData<String>
@@ -109,13 +111,13 @@ class TriggerOptionsViewModel(
         else -> throw Exception("Don't know how to create a CheckboxListItemModel for this option $option.id")
     }
 
-    private val _triggerByIntent = MediatorLiveData<TriggerByIntentModel>().apply {
+    private val _triggerFromOtherApps = MediatorLiveData<TriggerByIntentModel>().apply {
         value = null
 
         fun invalidate() {
             value = TriggerByIntentModel(
                 keymapUid.value ?: return,
-                options.value?.triggerByIntent?.value ?: return
+                options.value?.triggerFromOtherApps?.value ?: return
             )
         }
 
@@ -127,7 +129,7 @@ class TriggerOptionsViewModel(
             invalidate()
         }
     }
-    val triggerByIntent: LiveData<TriggerByIntentModel> = _triggerByIntent
+    val triggerFromOtherApps: LiveData<TriggerByIntentModel> = _triggerFromOtherApps
 
     override fun setValue(id: String, newValue: Boolean) {
         super.setValue(id, newValue)
@@ -154,4 +156,6 @@ class TriggerOptionsViewModel(
             setOptions(dependentDataChanged(getTriggerKeys.invoke(), getTriggerMode.invoke()))
         }
     }
+
+    suspend fun getDeviceInfoList() = deviceInfoRepository.getAll()
 }

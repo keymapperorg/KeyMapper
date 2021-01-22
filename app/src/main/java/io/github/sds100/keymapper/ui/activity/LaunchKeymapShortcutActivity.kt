@@ -12,19 +12,18 @@ import splitties.toast.toast
 /**
  * Created by sds100 on 08/09/20.
  */
-class LaunchActionShortcutActivity : AppCompatActivity() {
+class LaunchKeymapShortcutActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         if (AccessibilityUtils.isServiceEnabled(this)) {
-            if (intent.action == MyAccessibilityService.ACTION_PERFORM_ACTIONS) {
-                Intent(MyAccessibilityService.ACTION_PERFORM_ACTIONS).apply {
+            if (intent.action == MyAccessibilityService.ACTION_TRIGGER_KEYMAP_BY_UID) {
+                Intent(MyAccessibilityService.ACTION_TRIGGER_KEYMAP_BY_UID).apply {
                     setPackage(Constants.PACKAGE_NAME)
 
-                    val actionListJson = intent.getStringExtra(MyAccessibilityService.EXTRA_ACTION_LIST)
-
-                    putExtra(MyAccessibilityService.EXTRA_ACTION_LIST, actionListJson)
+                    val uuid = intent.getStringExtra(MyAccessibilityService.EXTRA_KEYMAP_UID)
+                    putExtra(MyAccessibilityService.EXTRA_KEYMAP_UID, uuid)
 
                     sendBroadcast(this)
                 }

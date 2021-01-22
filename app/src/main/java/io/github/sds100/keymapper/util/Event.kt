@@ -52,6 +52,10 @@ class RequestBackupAll : Event()
 class ShowErrorMessage(val failure: Failure) : Event()
 class BuildIntentExtraListItemModels(val extraModels: List<IntentExtraModel>) : Event()
 class SetTheme(@AppCompatDelegate.NightMode val theme: Int) : Event()
+class CreateKeymapShortcutEvent(
+    val uuid: String,
+    val actionList: List<Action>
+) : Event()
 
 //trigger
 class BuildTriggerKeyModels(val source: List<Trigger.Key>) : Event()

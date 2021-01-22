@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.ui.fragment.keymap
 import android.content.ClipData
 import android.content.Context
 import android.widget.CheckBox
+import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.navigation.navGraphViewModels
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.TriggerByIntentModel
@@ -11,12 +12,10 @@ import io.github.sds100.keymapper.data.viewmodel.BaseOptionsViewModel
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.data.viewmodel.TriggerOptionsViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
-import io.github.sds100.keymapper.triggerByIntent
+import io.github.sds100.keymapper.triggerFromOtherApps
 import io.github.sds100.keymapper.ui.adapter.OptionsController
 import io.github.sds100.keymapper.ui.fragment.OptionsFragment
-import io.github.sds100.keymapper.util.FragmentInfo
-import io.github.sds100.keymapper.util.InjectorUtils
-import io.github.sds100.keymapper.util.str
+import io.github.sds100.keymapper.util.*
 import splitties.systemservices.clipboardManager
 import splitties.toast.toast
 
@@ -31,11 +30,12 @@ class TriggerOptionsFragment : OptionsFragment<TriggerOptions>() {
         { TriggerOptionsFragment() }
     )
 
-    override val optionsViewModel: TriggerOptionsViewModel by lazy {
-        navGraphViewModels<ConfigKeymapViewModel>(R.id.nav_config_keymap) {
-            InjectorUtils.provideConfigKeymapViewModel(requireContext())
-        }.value.triggerViewModel.optionsViewModel
+    val configKeymapViewModel: ConfigKeymapViewModel by navGraphViewModels(R.id.nav_config_keymap) {
+        InjectorUtils.provideConfigKeymapViewModel(requireContext())
     }
+
+    override val optionsViewModel: TriggerOptionsViewModel
+        get() = configKeymapViewModel.triggerViewModel.optionsViewModel
 
     override var isAppBarVisible = false
 
@@ -44,7 +44,7 @@ class TriggerOptionsFragment : OptionsFragment<TriggerOptions>() {
     override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
         super.subscribeUi(binding)
 
-        optionsViewModel.triggerByIntent.observe(viewLifecycleOwner, {
+        optionsViewModel.triggerFromOtherApps.observe(viewLifecycleOwner, {
             controller.triggerByIntentModel = it
         })
     }
@@ -64,14 +64,14 @@ class TriggerOptionsFragment : OptionsFragment<TriggerOptions>() {
 
         override fun buildModels() {
             if (triggerByIntentModel != null) {
-                triggerByIntent {
+                triggerFromOtherApps {
                     id("trigger_by_intent")
 
                     model(triggerByIntentModel)
 
                     onClick { view ->
                         viewModel.setValue(
-                            TriggerOptions.ID_TRIGGER_BY_INTENT, (view as CheckBox).isChecked)
+                            TriggerOptions.ID_TRIGGER_FROM_OTHER_APPS, (view as CheckBox).isChecked)
                     }
 
                     onCopyClick { _ ->
@@ -85,11 +85,46 @@ class TriggerOptionsFragment : OptionsFragment<TriggerOptions>() {
 
                         toast(R.string.toast_copied_keymap_uid_to_clipboard)
                     }
+
+                    isCreatingLauncherShortcutsSupported(
+                        ShortcutManagerCompat.isRequestPinShortcutSupported(requireContext())
+                    )
+
+                    onCreateLauncherShortcutClick { _ ->
+                        triggerByIntentModel?.uid?.let {
+                            viewLifecycleScope.launchWhenResumed {
+                                createLauncherShortcut(it)
+                            }
+                        }
+                    }
+
+                    openIntentGuide { _ ->
+                        UrlUtils.openUrl(
+                            requireContext(),
+                            str(R.string.url_trigger_by_intent_guide)
+                        )
+                    }
                 }
             }
 
             super.buildModels()
         }
+    }
+
+    private suspend fun createLauncherShortcut(uuid: String) {
+        if (!ShortcutManagerCompat.isRequestPinShortcutSupported(requireContext())) return
+
+        val actionList = configKeymapViewModel.actionListViewModel.actionList.value ?: return
+
+        val shortcutInfo = KeymapShortcutUtils.createShortcut(
+            requireContext(),
+            viewLifecycleOwner,
+            uuid,
+            actionList,
+            optionsViewModel.getDeviceInfoList()
+        )
+
+        ShortcutManagerCompat.requestPinShortcut(requireContext(), shortcutInfo, null)
     }
 }
 

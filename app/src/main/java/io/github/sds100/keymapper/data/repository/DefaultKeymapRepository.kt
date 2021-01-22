@@ -13,7 +13,12 @@ import kotlinx.coroutines.withContext
  * Created by sds100 on 26/01/2020.
  */
 class DefaultKeymapRepository internal constructor(private val keymapDao: KeyMapDao
-) : GlobalKeymapUseCase, KeymapListUseCase, ConfigKeymapUseCase, BackupRestoreUseCase, MenuKeymapUseCase {
+) : GlobalKeymapUseCase,
+    KeymapListUseCase,
+    ConfigKeymapUseCase,
+    BackupRestoreUseCase,
+    MenuKeymapUseCase,
+    CreateKeymapShortcutUseCase {
 
     override val requestBackup = MutableLiveData<RequestBackup>()
     override val keymapList: LiveData<List<KeyMap>> = keymapDao.observeAll()

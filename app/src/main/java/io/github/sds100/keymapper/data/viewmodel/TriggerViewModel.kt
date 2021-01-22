@@ -30,6 +30,7 @@ class TriggerViewModel(
 
     val optionsViewModel = TriggerOptionsViewModel(
         dataStoreManager,
+        deviceInfoRepository,
         getTriggerKeys = { keys.value ?: emptyList() },
         getTriggerMode = { mode.value ?: Trigger.DEFAULT_TRIGGER_MODE },
         keymapUid

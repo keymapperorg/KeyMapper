@@ -34,6 +34,6 @@ class TriggerKeymapByIntentController(
     fun onKeymapListUpdate(keymapList: List<KeyMap>) {
         reset()
 
-        this.keymapList = keymapList.filter { it.trigger.triggerByIntent }
+        this.keymapList = keymapList.filter { it.trigger.triggerFromOtherApps }
     }
 }
