@@ -24,7 +24,7 @@ class SplashActivity : FragmentActivity() {
             runBlocking { !globalPreferences.appIntro().first() } ->
                 startActivity(Intent(this, AppIntroActivity::class.java))
 
-            runBlocking { globalPreferences.get(PreferenceKeys.approvedFingerprintFeaturePrompt) == false }
+            runBlocking { globalPreferences.get(PreferenceKeys.approvedFingerprintFeaturePrompt) != true }
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
                 startActivity(Intent(this, FingerprintGestureIntroActivity::class.java))
 
