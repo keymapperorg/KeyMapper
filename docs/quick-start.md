@@ -67,7 +67,9 @@ A key map is an association between a user input (such as pushing a key or butto
 
 In Key Mapper, 'user inputs' that are recognised by the app are called 'triggers'. The responses from your device that were due to a trigger being pressed are called 'actions'.
 
-Key Mapper lets you assign actions to triggers that may be different from their default use. A 'volume-up' trigger normally increases the volume when pressed, but this app can change that to something else.
+Key Mapper lets you assign actions to triggers that may be different from their default use. A 'volume up' trigger normally increases the volume when pressed, but this app can change that to something else.
+
+This guide deals with 'Key event' triggers. If you want to remap fingerprint gestures, [check out this guide.](#)
 
 ### Setting the trigger(s)
 
@@ -75,7 +77,7 @@ To create your first key map, tap the + icon at the bottom of the Key Mapper hom
 
 ![](images/hg-keymap-0.png) ![](images/hg-keymap-0-light.png)
 
-In either case, the first step is to record a trigger. Tap the red RECORD TRIGGER button and then press the physical button that you want to change the function of. In this guide I will demonstrate with Volume Down.
+In either case, the first step is to record a trigger. Tap the red 'Record trigger' button and then press the physical button that you want to change the function of. In this guide I will demonstrate with 'volume down'.
 
 Key Mapper can also create a key map with multiple triggers. If you want to use more than one trigger for one key map, you can press the buttons in the order you will press them to execute the key map. For example, if you wanted to map 'Ctrl' + 'H' to show the device home menu, you should press 'Ctrl' and then 'H'.
 
@@ -164,7 +166,7 @@ ___
 
 :fontawesome-solid-check-square:{: .accent-light } &nbsp; Repeat
 
-When this is turned on, Key Mapper will execute your key map repeatedly. This is particularly useful when emulating a keyboard key press, where in most applications holding down the key would result in a repeating output. The default settings in Key Mapper are designed to emulate that behaviour when 'Repeat' is turned on.
+When this is turned on, Key Mapper will execute your actions repeatedly. This is particularly useful when emulating a keyboard key press, where in most applications holding down the key would result in a repeating output. The default settings in Key Mapper are designed to emulate that behaviour when 'Repeat' is turned on.
 
 ___
 
@@ -224,6 +226,8 @@ This allows you to set how long the action is held down for before repeating.
 
 For extra key map customisation, tap the 'Constraints and more' tab at the top of the screen when editing or creating a key map.
 
+![](images/hg-keymap-4.png) ![](images/hg-keymap-4-light.png)
+
 :fontawesome-solid-check-square:{: .accent-light } &nbsp; Trigger by Intent
 
 For information about Trigger by Intent go to [this page.](../user-guide/actions/#intent-230)
@@ -237,9 +241,25 @@ ___
 
 Tapping 'Vibrate' will cause your device to vibrate whenever your key map is triggered (and therefore behaves similarly to the [toast message](#))
 
-## Constraints
+## Adding constraints
 
 You can add special constraints to your key maps in order to customise when they are allowed to run.
+
+To add a constraint fron the 'Constraints and more' tab, tap 'Add constraint'.
+
+You can choose from the following options:
+
+![](images/hg-constraints-add.png) ![](images/hg-constraints-add-light.png) 
+
+Choosing 'App in foreground' will allow you to restrict your key map to working only if your app of choice is the actively selected window, i.e. on screen and being interacted with. 'App not in foreground' will likewise restrict your key map to working only if your app of choice isn't in focus.
+
+Choosing 'Bluetooth device is connected/disconnected' can restrict your key map to working only if a specific bluetooth device is connected/disconnected.
+
+If you have [root permission](#), you can restrict your key maps to work only when the screen is on or off.
+
+Choosing 'Orientation' can restrict your key map to working only when the device is set to specific screen orientation.
+
+Make sure to save :fontawesome-solid-save: your key map after applying these changes.
 
 ## Managing key maps
 
