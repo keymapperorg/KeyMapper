@@ -79,7 +79,7 @@ class ConfigFingerprintMapViewModel(private val fingerprintMapRepository: Finger
             val map = createFingerprintMap()
 
             gestureId?.let {
-                fingerprintMapRepository.editGesture(it) {
+                fingerprintMapRepository.updateGesture(it) {
                     map
                 }
             }
@@ -88,6 +88,7 @@ class ConfigFingerprintMapViewModel(private val fingerprintMapRepository: Finger
 
     override fun saveState(outState: Bundle) {
         outState.putString(GESTURE_ID_STATE_KEY, gestureId)
+
         outState.putParcelable(MAP_STATE_KEY, createFingerprintMap())
     }
 

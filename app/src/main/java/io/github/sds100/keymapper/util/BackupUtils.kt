@@ -31,6 +31,7 @@ object BackupUtils {
     const val DEFAULT_AUTOMATIC_BACKUP_NAME = "keymapper_keymaps.json"
 
     //DON'T CHANGE THESE. Used for serialization and parsing.
+    private const val NAME_KEYMAP_DB_VERSION = "keymap_db_version"
     private const val NAME_KEYMAP_LIST = "keymap_list"
     private const val NAME_DEVICE_INFO = "device_info"
     private const val NAME_FINGERPRINT_SWIPE_DOWN = "fingerprint_swipe_down"
@@ -43,6 +44,7 @@ object BackupUtils {
 
     suspend fun backup(
         outputStream: OutputStream,
+        keymapDbVersion: Int,
         keymapList: List<KeyMap>,
         allDeviceInfo: List<DeviceInfo>,
         fingerprintSwipeDown: FingerprintMap?,
@@ -70,6 +72,7 @@ object BackupUtils {
 
                 outputStream.bufferedWriter().use { bufferedWriter ->
                     val json = Gson().toJson(BackupModel(
+                        keymapDbVersion,
                         keymapList,
                         deviceInfoList,
                         fingerprintSwipeDown,
@@ -108,6 +111,9 @@ object BackupUtils {
                     .registerTypeAdapter(FingerprintMap.DESERIALIZER).create()
 
                 val rootElement = parser.parse(json)
+
+                val keymapDbVersion by rootElement.byNullableInt(NAME_KEYMAP_DB_VERSION)
+
                 val keymapListJsonArray by rootElement.byArray(NAME_KEYMAP_LIST)
                 val keymapList = gson.fromJson<List<KeyMap>>(keymapListJsonArray)
 
@@ -116,6 +122,7 @@ object BackupUtils {
 
                 return@withContext Success(
                     RestoreModel(
+                        keymapDbVersion ?: 9, //started storing database version at db version 10
                         keymapList,
                         deviceInfoList,
                         getFingerprintMap(gson, rootElement, NAME_FINGERPRINT_SWIPE_DOWN),
@@ -170,6 +177,7 @@ object BackupUtils {
     }
 
     class RestoreModel(
+        val keymapDbVersion: Int,
         val keymapList: List<KeyMap>,
         val deviceInfo: List<DeviceInfo>,
         val fingerprintSwipeDown: FingerprintMap? = null,
@@ -178,22 +186,26 @@ object BackupUtils {
         val fingerprintSwipeRight: FingerprintMap? = null
     )
 
-    private class BackupModel(@SerializedName(NAME_KEYMAP_LIST)
-                              val keymapList: List<KeyMap>,
+    private class BackupModel(
+        @SerializedName(NAME_KEYMAP_DB_VERSION)
+        val keymapDbVersion: Int,
 
-                              @SerializedName(NAME_DEVICE_INFO)
-                              val deviceInfo: List<DeviceInfo>,
+        @SerializedName(NAME_KEYMAP_LIST)
+        val keymapList: List<KeyMap>,
 
-                              @SerializedName(NAME_FINGERPRINT_SWIPE_DOWN)
-                              val fingerprintSwipeDown: FingerprintMap?,
+        @SerializedName(NAME_DEVICE_INFO)
+        val deviceInfo: List<DeviceInfo>,
 
-                              @SerializedName(NAME_FINGERPRINT_SWIPE_UP)
-                              val fingerprintSwipeUp: FingerprintMap?,
+        @SerializedName(NAME_FINGERPRINT_SWIPE_DOWN)
+        val fingerprintSwipeDown: FingerprintMap?,
 
-                              @SerializedName(NAME_FINGERPRINT_SWIPE_LEFT)
-                              val fingerprintSwipeLeft: FingerprintMap?,
+        @SerializedName(NAME_FINGERPRINT_SWIPE_UP)
+        val fingerprintSwipeUp: FingerprintMap?,
 
-                              @SerializedName(NAME_FINGERPRINT_SWIPE_RIGHT)
-                              val fingerprintSwipeRight: FingerprintMap?
+        @SerializedName(NAME_FINGERPRINT_SWIPE_LEFT)
+        val fingerprintSwipeLeft: FingerprintMap?,
+
+        @SerializedName(NAME_FINGERPRINT_SWIPE_RIGHT)
+        val fingerprintSwipeRight: FingerprintMap?
     )
 }

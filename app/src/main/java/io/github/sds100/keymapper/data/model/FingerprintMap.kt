@@ -1,10 +1,7 @@
 package io.github.sds100.keymapper.data.model
 
 import android.os.Parcelable
-import com.github.salomonbrys.kotson.byArray
-import com.github.salomonbrys.kotson.byBool
-import com.github.salomonbrys.kotson.byInt
-import com.github.salomonbrys.kotson.jsonDeserializer
+import com.github.salomonbrys.kotson.*
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.R
 import kotlinx.android.parcel.Parcelize
@@ -14,6 +11,9 @@ import kotlinx.android.parcel.Parcelize
  */
 @Parcelize
 data class FingerprintMap(
+    @SerializedName(NAME_VERSION)
+    val version: Int = CURRENT_VERSION,
+
     @SerializedName(NAME_ACTION_LIST)
     val actionList: List<Action> = listOf(),
 
@@ -33,6 +33,8 @@ data class FingerprintMap(
     val isEnabled: Boolean = true
 ) : Parcelable {
     companion object {
+        const val NAME_VERSION = "db_version" // NEVER EVER CHANGE THIS BECAUSE USED TO DETERMINE HOW TO MIGRATE
+
         //DON'T CHANGE THESE. Used for JSON serialization and parsing.
         private const val NAME_ACTION_LIST = "action_list"
         private const val NAME_EXTRAS = "extras"
@@ -42,6 +44,9 @@ data class FingerprintMap(
         private const val NAME_CONSTRAINT_MODE = "constraint_mode"
 
         val DESERIALIZER = jsonDeserializer {
+
+            val version by it.json.byNullableInt(NAME_VERSION)
+
             val actionListJson by it.json.byArray(NAME_ACTION_LIST)
             val actionList = it.context.deserialize<List<Action>>(actionListJson)
 
@@ -57,15 +62,26 @@ data class FingerprintMap(
 
             val isEnabled by it.json.byBool(NAME_ENABLED)
 
-            FingerprintMap(actionList, constraints, constraintMode, extras, flags, isEnabled)
+            FingerprintMap(
+                version ?: 0, //versioning was added at version 1.
+                actionList,
+                constraints,
+                constraintMode,
+                extras,
+                flags,
+                isEnabled
+            )
         }
+
+        const val CURRENT_VERSION = 1
 
         const val FLAG_VIBRATE = 1
         const val FLAG_SHOW_TOAST = 2
         const val EXTRA_VIBRATION_DURATION = "extra_vibration_duration"
 
         val FLAG_LABEL_MAP = mapOf(
-            FLAG_VIBRATE to R.string.flag_vibrate
+            FLAG_VIBRATE to R.string.flag_vibrate,
+            FLAG_SHOW_TOAST to R.string.flag_show_toast
         )
     }
 }

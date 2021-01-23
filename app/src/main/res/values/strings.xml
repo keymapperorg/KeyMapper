@@ -741,7 +741,7 @@
     <string name="error_denied_notification_listener_service_permission">Denied notification access permission!</string>
     <string name="error_invalid_intent_extra_value">Invalid!</string>
     <string name="error_denied_call_phone_permission">Denied permission to start phone calls!</string>
-
+    <string name="error_incompatible_backup">You will need to update Key Mapper to the latest version to use this backup.</string>
     <!-- Error messages -->
 
     <!-- System action labels -->

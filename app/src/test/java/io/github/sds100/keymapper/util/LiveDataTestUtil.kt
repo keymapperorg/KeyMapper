@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.util.delegate
+package io.github.sds100.keymapper.util
 
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.Observer

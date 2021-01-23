@@ -62,7 +62,7 @@ class FingerprintMapListViewModel(
     }
 
     fun setEnabled(id: String, isEnabled: Boolean) = viewModelScope.launch {
-        repository.editGesture(id) {
+        repository.updateGesture(id) {
             it.copy(isEnabled = isEnabled)
         }
     }

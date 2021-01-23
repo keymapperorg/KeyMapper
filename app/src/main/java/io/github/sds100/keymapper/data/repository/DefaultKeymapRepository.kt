@@ -2,10 +2,14 @@ package io.github.sds100.keymapper.data.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.usecase.*
 import io.github.sds100.keymapper.util.RequestBackup
+import io.github.sds100.keymapper.util.result.IncompatibleBackup
+import io.github.sds100.keymapper.util.result.Result
+import io.github.sds100.keymapper.util.result.Success
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -31,6 +35,17 @@ class DefaultKeymapRepository internal constructor(private val keymapDao: KeyMap
         keymapDao.insert(*keymap)
 
         requestBackup()
+    }
+
+    override suspend fun insertKeymap(dbVersion: Int, vararg keymap: KeyMap): Result<Unit> {
+
+        if (dbVersion > AppDatabase.DATABASE_VERSION) {
+            return IncompatibleBackup()
+        }
+
+        insertKeymap()
+
+        return Success(Unit)
     }
 
     override suspend fun updateKeymap(keymap: KeyMap) {

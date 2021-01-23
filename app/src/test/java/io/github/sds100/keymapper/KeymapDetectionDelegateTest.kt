@@ -1,16 +1,18 @@
-package io.github.sds100.keymapper.util.delegate
+package io.github.sds100.keymapper
 
 import android.view.KeyEvent
 import android.view.Surface
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
-import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.Trigger.Companion.DOUBLE_PRESS
 import io.github.sds100.keymapper.data.model.Trigger.Companion.LONG_PRESS
 import io.github.sds100.keymapper.data.model.Trigger.Companion.SHORT_PRESS
 import io.github.sds100.keymapper.data.model.Trigger.Key.Companion.FLAG_DO_NOT_CONSUME_KEY_EVENT
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.delegate.ConstraintDelegate
+import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
+import io.github.sds100.keymapper.util.delegate.KeymapDetectionPreferences
 import io.github.sds100.keymapper.util.result.Success
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertNull

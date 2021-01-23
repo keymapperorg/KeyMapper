@@ -6,6 +6,7 @@ import androidx.room.Room
 import io.github.sds100.keymapper.data.*
 import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.repository.*
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -141,7 +142,8 @@ object ServiceLocator {
         val dataStore = preferenceDataStore(context).fingerprintGestureDataStore
 
         return fingerprintMapRepository
-            ?: FingerprintMapRepository(dataStore).also {
+        //TODO
+            ?: FingerprintMapRepository(dataStore, MainScope()).also {
                 this.fingerprintMapRepository = it
             }
     }

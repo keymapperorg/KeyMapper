@@ -8,7 +8,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import io.github.sds100.keymapper.data.db.AppDatabase.Companion.DATABASE_VERSION
 import io.github.sds100.keymapper.data.db.dao.DeviceInfoDao
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
-import io.github.sds100.keymapper.data.db.migration.*
+import io.github.sds100.keymapper.data.db.migration.keymaps.*
 import io.github.sds100.keymapper.data.db.typeconverter.ActionListTypeConverter
 import io.github.sds100.keymapper.data.db.typeconverter.ConstraintListTypeConverter
 import io.github.sds100.keymapper.data.db.typeconverter.ExtraListTypeConverter

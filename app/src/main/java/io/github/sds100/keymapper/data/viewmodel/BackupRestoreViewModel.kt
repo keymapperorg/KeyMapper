@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.model.FingerprintMap
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
@@ -16,9 +17,7 @@ import io.github.sds100.keymapper.util.FingerprintMapUtils.SWIPE_DOWN
 import io.github.sds100.keymapper.util.FingerprintMapUtils.SWIPE_LEFT
 import io.github.sds100.keymapper.util.FingerprintMapUtils.SWIPE_RIGHT
 import io.github.sds100.keymapper.util.FingerprintMapUtils.SWIPE_UP
-import io.github.sds100.keymapper.util.result.GenericFailure
-import io.github.sds100.keymapper.util.result.handle
-import io.github.sds100.keymapper.util.result.handleAsync
+import io.github.sds100.keymapper.util.result.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -66,7 +65,13 @@ class BackupRestoreViewModel internal constructor(
         viewModelScope.launch {
             BackupUtils.restore(inputStream!!).handleAsync(
                 onSuccess = {
-                    keymapRepository.insertKeymap(*it.keymapList.toTypedArray())
+                    keymapRepository.insertKeymap(it.keymapDbVersion, *it.keymapList.toTypedArray())
+                        .onFailure { failure ->
+                            if (failure is IncompatibleBackup) {
+                                _eventStream.value = MessageEvent(R.string.error_incompatible_backup)
+                            }
+                        }
+
                     deviceInfoRepository.insertDeviceInfo(*it.deviceInfo.toTypedArray())
 
                     restoreFingerprintMap(SWIPE_DOWN, it.fingerprintSwipeDown)
@@ -124,6 +129,7 @@ class BackupRestoreViewModel internal constructor(
 
         BackupUtils.backup(
             outputStream!!,
+            AppDatabase.DATABASE_VERSION,
             keymapList,
             deviceInfo,
             fingerprintSwipeDown,
@@ -142,9 +148,11 @@ class BackupRestoreViewModel internal constructor(
     private suspend fun restoreFingerprintMap(gestureId: String, fingerprintMap: FingerprintMap?) {
         fingerprintMap ?: return
 
-        fingerprintMapRepository.editGesture(gestureId) {
-            fingerprintMap
-        }
+//        fingerprintMapRepository.rest(gestureId, fingerprintMap).onFailure {
+//            if (it is IncompatibleBackup) {
+//                _eventStream.value = MessageEvent(R.string.error_incompatible_backup)
+//            }
+//        }
     }
 
     @Suppress("UNCHECKED_CAST")

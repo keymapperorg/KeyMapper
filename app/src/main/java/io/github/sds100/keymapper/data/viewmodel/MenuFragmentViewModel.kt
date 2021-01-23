@@ -24,7 +24,7 @@ class MenuFragmentViewModel(private val keymapUseCase: MenuKeymapUseCase,
         keymapUseCase.enableAll()
 
         FingerprintMapUtils.GESTURES.forEach { gestureId ->
-            fingerprintMapRepository.editGesture(gestureId) {
+            fingerprintMapRepository.updateGesture(gestureId) {
                 it.copy(isEnabled = true)
             }
         }
@@ -34,7 +34,7 @@ class MenuFragmentViewModel(private val keymapUseCase: MenuKeymapUseCase,
         keymapUseCase.disableAll()
 
         FingerprintMapUtils.GESTURES.forEach { gestureId ->
-            fingerprintMapRepository.editGesture(gestureId) {
+            fingerprintMapRepository.updateGesture(gestureId) {
                 it.copy(isEnabled = false)
             }
         }
