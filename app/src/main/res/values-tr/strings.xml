@@ -30,7 +30,7 @@
     <string name="show_hidden_apps">Olmayan uygulamaları göster</string>
     <string name="toggle">Değiştir</string>
     <string name="tap_coordinate_screenshot_message">ÖNEMLİ!!!  Bu koordinatlar yalnızca ekranınız ekran görüntüsü ile aynı yöndeyse doğrudur!  Bu eylem, ekranda yaptığınız tüm dokunuşları veya hareketleri iptal edecektir. \n\nEkranınızdaki bir noktanın koordinatlarını bulma konusunda yardıma ihtiyacınız varsa, bir ekran görüntüsü alın ve ardından bu eylemin basmasını istediğiniz ekran görüntüsüne dokunun.</string>
-    <string name="dont_know_device_name">Cihaz adını bilmiyorum!</string>
+    <string name="dont_know_device_name">Cihaz adını algılanamıyor!</string>
     <!--  Action descriptions  -->
     <!--  Action descriptions  -->
     <!--  Headers  -->
