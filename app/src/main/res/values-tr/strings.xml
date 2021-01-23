@@ -1,5 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="accessibility_service_description">Anahtar Eşleştiricinin, düğme / tuş basışlarını dinleyebilmesi ve seçtiğiniz eylemleri gerçekleştirebilmesi için bir erişilebilirlik hizmeti kullanması gerekir.
+ Erişilebilirlik hizmeti yalnızca önemli olayları dinler ve hangi uygulamada olduğunuzu algılar. Bunu doğrulamak için Hakkında ekranında bağlanan kaynak koda bakabilirsiniz.</string>
+    <string name="selection_count">%d seçildi</string>
+    <string name="enable">Çalıştırma</string>
+    <string name="open">Açık</string>
+    <string name="recyclerview_placeholder">¯ \\ _ (ツ) _ / ¯ \n\nBurada hiçbir şey yok!</string>
+    <string name="triggers_recyclerview_placeholder">Bir tuş belirle!</string>
+    <string name="actions_recyclerview_placeholder">1 tuş belirle!</string>
+    <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nBu kısayol için herhangi bir eylem seçmediniz!</string>
+    <string name="warning_the_app_will_work">Uygulama çalışacaktır ancak ne yaptığınıza bağlı olarak bazı şeylerin düzeltilmesi gerekebilir.</string>
+    <string name="your_device_doesnt_support_some_actions">Cihaz bazı fonksiyonları desteklemiyor.</string>
+    <string name="tab_unsupported_actions">Desteklenmeyen işlemler</string>
+    <string name="press_dot_dot_dot">Bura basın…</string>
+    <string name="no_trigger">Etkileyici yok</string>
+    <string name="unknown_keycode">Bilinmeyen anahtar kodu: %s</string>
+    <string name="chip_while">zaman</string>
+    <string name="on">Açık</string>
+    <string name="off">Kapatıldı</string>
+    <string name="follow_system">Sistem yönlendiriyo</string>
+    <string name="this_device">Bu cihaz</string>
+    <string name="any_device">Cihaz farketmez</string>
+    <string name="trigger_device_name_not_found">Bu cihazın adı bilinmiyor</string>
+    <string name="slider_default">Varsayılan</string>
+    <string name="button_enable_accessibility_service">Erişilebilirlik servisi aç</string>
+    <string name="stop_repeating_dot_dot_dot">Tetikleyici mevcut olduğundan tekrarlamayı durdur…</string>
+    <string name="trigger_released">Yollamdı</string>
+    <string name="trigger_pressed_again">Tekrar basın</string>
+    <string name="show_hidden_apps">Olmayan uygulamaları göster</string>
+    <string name="toggle">Değiştir</string>
+    <string name="tap_coordinate_screenshot_message">ÖNEMLİ!!!  Bu koordinatlar yalnızca ekranınız ekran görüntüsü ile aynı yöndeyse doğrudur!  Bu eylem, ekranda yaptığınız tüm dokunuşları veya hareketleri iptal edecektir. \n\nEkranınızdaki bir noktanın koordinatlarını bulma konusunda yardıma ihtiyacınız varsa, bir ekran görüntüsü alın ve ardından bu eylemin basmasını istediğiniz ekran görüntüsüne dokunun.</string>
+    <string name="dont_know_device_name">Cihaz adını bilmiyorum!</string>
     <!--  Action descriptions  -->
     <!--  Action descriptions  -->
     <!--  Headers  -->
