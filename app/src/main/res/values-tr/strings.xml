@@ -9,6 +9,7 @@
     <string name="recyclerview_placeholder">¯ \\ _ (ツ) _ / ¯ \n\nBurada hiçbir şey yok!</string>
     <string name="triggers_recyclerview_placeholder">Bir tuş belirle!</string>
     <string name="actions_recyclerview_placeholder">1 tuş belirle!</string>
+    <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nörnek bir anahtar oluştur!</string>
     <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nBu kısayol için herhangi bir eylem seçmediniz!</string>
     <string name="warning_the_app_will_work">Uygulama çalışacaktır ancak ne yaptığınıza bağlı olarak bazı şeylerin düzeltilmesi gerekebilir.</string>
     <string name="your_device_doesnt_support_some_actions">Cihaz bazı fonksiyonları desteklemiyor.</string>
