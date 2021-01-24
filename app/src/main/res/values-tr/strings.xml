@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="no_action_chosen">Seçilen etkinlik yok</string>
     <string name="accessibility_service_description">Anahtar Eşleştiricinin, düğme / tuş basışlarını dinleyebilmesi ve seçtiğiniz eylemleri gerçekleştirebilmesi için bir erişilebilirlik hizmeti kullanması gerekir.
  Erişilebilirlik hizmeti yalnızca önemli olayları dinler ve hangi uygulamada olduğunuzu algılar. Bunu doğrulamak için Hakkında ekranında bağlanan kaynak koda bakabilirsiniz.</string>
     <string name="selection_count">%d seçildi</string>
