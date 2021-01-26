@@ -11,7 +11,7 @@ Android 8.0+ and only on devices which support them. Even devices with the setti
 - Show a warning at the top of the homescreen if the user hasn't disabled battery optimisation for Key Mapper. #496
 - Action option to hold down until the trigger is pressed again. #479
 - Action option to change the delay before the next action in the list. #476
-- Orientation constraint. #505
+- Orientation constraint. #505 
 - Constraint for when a specific app is playing media. #508
 - Key Event action option to pretend that the Key Event came from a particular device. #509
 - Use duplicates of the same key in a sequence trigger. #513
