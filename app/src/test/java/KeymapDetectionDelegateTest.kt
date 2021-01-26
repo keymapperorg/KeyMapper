@@ -159,7 +159,7 @@ class KeymapDetectionDelegateTest {
         advanceUntilIdle()
 
         //THEN
-        assertThat(performActionTest.history.map { it.action }, `is`(listOf(TEST_ACTION_2)))
+        assertThat(performActionTest.history.map { it.action }, `is`(listOf(TEST_ACTION)))
     }
 
     @Test
