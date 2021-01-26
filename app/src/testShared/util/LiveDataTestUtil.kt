@@ -1,3 +1,5 @@
+package util
+
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.Observer
 import com.hadilq.liveevent.LiveEvent
