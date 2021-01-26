@@ -54,12 +54,9 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
-        
+sfseowru
         val MIGRATION_5_6 = object : Migration(5, 6) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                Migration_5_6.migrate(database)
-            }
-        }
+            override fun migrate(database: Supsdfsdf
 
         val MIGRATION_6_7 = object : Migration(6, 7) {
             override fun migrate(database: SupportSQLiteDatabase) {
