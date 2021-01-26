@@ -48,7 +48,6 @@ abstract class AppDatabase : RoomDatabase() {
                 Migration_3_4.migrate(database)
             }
         }
-
         val MIGRATION_4_5 = object : Migration(4, 5) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 Migration_4_5.migrate(database)
