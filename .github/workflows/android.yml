@@ -84,29 +84,29 @@ jobs:
           title: "Build apk"
           webhook: ${{ secrets.DISCORD_BUILD_STATUS_WEBHOOK }}
 
-    instrumentationTests:
-      name: Run instrumentation tests
-      runs-on: macOS-latest
-      steps:
-        - name: checkout
-          uses: actions/checkout@v2
+  instrumentationTests:
+    name: Run instrumentation tests
+    runs-on: macOS-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
 
-        # Restore the cache.
-        # Intentionally don't set 'restore-keys' so the cache never contains redundant dependencies.
-        - uses: actions/cache@v2
-          with:
-            path: ~/.gradle/caches
-            key: gradle-${{ runner.os }}-${{ hashFiles('**/build.gradle.kts') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/src/main/kotlin/Library.kt') }}
+      # Restore the cache.
+      # Intentionally don't set 'restore-keys' so the cache never contains redundant dependencies.
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/build.gradle.kts') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/src/main/kotlin/Library.kt') }}
 
-        - name: run tests
-          uses: reactivecircus/android-emulator-runner@v2
-          with:
-            api-level: 29
-            script: ./gradlew connectedCheck
+      - name: run tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          script: ./gradlew connectedCheck
 
-        - name: Report build status to Discord
-          uses: sarisia/actions-status-discord@v1
-          if: always()
-          with:
-            title: "Instrumentation tests"
-            webhook: ${{ secrets.DISCORD_BUILD_STATUS_WEBHOOK }}
+      - name: Report build status to Discord
+        uses: sarisia/actions-status-discord@v1
+        if: always()
+        with:
+          title: "Instrumentation tests"
+          webhook: ${{ secrets.DISCORD_BUILD_STATUS_WEBHOOK }}
