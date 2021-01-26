@@ -21,7 +21,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-
       - name: Update Run Number in properties
         uses: christian-draeger/write-properties@1.0.1
         with:
