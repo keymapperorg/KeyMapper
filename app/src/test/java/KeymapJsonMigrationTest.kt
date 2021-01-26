@@ -1,21 +1,17 @@
-package io.github.sds100.keymapper
-
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import io.github.sds100.keymapper.data.db.migration.JsonMigration
 import io.github.sds100.keymapper.data.db.migration.keymaps.Migration_9_10
-import io.github.sds100.keymapper.util.JsonTestUtils
+import util.JsonTestUtils
 import io.github.sds100.keymapper.util.MigrationUtils
-import junitparams.JUnitParamsRunner
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
 /**
  * Created by sds100 on 22/01/21.

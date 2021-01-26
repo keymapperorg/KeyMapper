@@ -1,9 +1,8 @@
-package io.github.sds100.keymapper
-
 import android.view.KeyEvent
 import android.view.Surface
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
+import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.Trigger.Companion.DOUBLE_PRESS
 import io.github.sds100.keymapper.data.model.Trigger.Companion.LONG_PRESS

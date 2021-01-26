@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.util
+package util
 
 import com.github.salomonbrys.kotson.contains
 import com.github.salomonbrys.kotson.forEach
@@ -8,7 +8,6 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.core.Is
 import org.hamcrest.core.Is.`is`
 import org.junit.Assert
 
@@ -25,7 +24,7 @@ object JsonTestUtils {
                     val newPath = if (parentNamePath.isBlank()) {
                         name
                     } else {
-                        "$parentNamePath${NAME_SEPARATOR}$name"
+                        "$parentNamePath$NAME_SEPARATOR$name"
                     }
 
                     compare(newPath, jsonElement, elementName, rootToCompare, rootName)

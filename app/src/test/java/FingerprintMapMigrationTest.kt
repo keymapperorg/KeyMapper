@@ -1,5 +1,3 @@
-package io.github.sds100.keymapper
-
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -11,10 +9,7 @@ import com.google.gson.JsonParser
 import io.github.sds100.keymapper.data.model.FingerprintMap
 import io.github.sds100.keymapper.data.repository.DefaultFingerprintMapRepository
 import io.github.sds100.keymapper.data.repository.FingerprintMapRepository
-import io.github.sds100.keymapper.util.FakeDataStore
-import io.github.sds100.keymapper.util.JsonTestUtils
-import io.github.sds100.keymapper.util.LiveDataTestWrapper
-import junitparams.JUnitParamsRunner
+import util.JsonTestUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -23,7 +18,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
 /**
  * Created by sds100 on 22/01/21.
