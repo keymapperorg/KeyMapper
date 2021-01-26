@@ -12,6 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/build.gradle.kts') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/src/main/kotlin/Library.kt') }}
+
       - name: Unit tests
         run: bash ./gradlew test
       - name: Report build status to Discord
@@ -34,6 +39,11 @@ jobs:
           path: gradle.properties
           property: RUN_NUMBER
           value: ${{ github.run_number }}
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/build.gradle.kts') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/src/main/kotlin/Library.kt') }}
 
       - name: set up JDK 1.8
         uses: actions/setup-java@v1
@@ -74,22 +84,29 @@ jobs:
           title: "Build apk"
           webhook: ${{ secrets.DISCORD_BUILD_STATUS_WEBHOOK }}
 
-  instrumentationTests:
-    name: Run instrumentation tests
-    runs-on: macOS-latest
-    steps:
-      - name: checkout
-        uses: actions/checkout@v2
+    instrumentationTests:
+      name: Run instrumentation tests
+      runs-on: macOS-latest
+      steps:
+        - name: checkout
+          uses: actions/checkout@v2
 
-      - name: run tests
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 29
-          script: ./gradlew connectedCheck
+        # Restore the cache.
+        # Intentionally don't set 'restore-keys' so the cache never contains redundant dependencies.
+        - uses: actions/cache@v2
+          with:
+            path: ~/.gradle/caches
+            key: gradle-${{ runner.os }}-${{ hashFiles('**/build.gradle.kts') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/src/main/kotlin/Library.kt') }}
 
-      - name: Report build status to Discord
-        uses: sarisia/actions-status-discord@v1
-        if: always()
-        with:
-          title: "Instrumentation tests"
-          webhook: ${{ secrets.DISCORD_BUILD_STATUS_WEBHOOK }}
+        - name: run tests
+          uses: reactivecircus/android-emulator-runner@v2
+          with:
+            api-level: 29
+            script: ./gradlew connectedCheck
+
+        - name: Report build status to Discord
+          uses: sarisia/actions-status-discord@v1
+          if: always()
+          with:
+            title: "Instrumentation tests"
+            webhook: ${{ secrets.DISCORD_BUILD_STATUS_WEBHOOK }}
