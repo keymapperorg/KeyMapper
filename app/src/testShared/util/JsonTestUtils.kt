@@ -10,6 +10,7 @@ import com.google.gson.JsonPrimitive
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
 import org.junit.Assert
+import timber.log.Timber
 
 /**
  * Created by sds100 on 25/01/21.
@@ -17,7 +18,12 @@ import org.junit.Assert
 object JsonTestUtils {
     private const val NAME_SEPARATOR = '/'
 
-    fun compare(parentNamePath: String = "", element: JsonElement, elementName: String, rootToCompare: JsonElement, rootName: String) {
+    fun compareBothWays(element: JsonElement, elementName: String, other: JsonElement, otherName: String) {
+        compare("", element, elementName, other, otherName)
+        compare("", other, elementName, element, elementName)
+    }
+
+    private fun compare(parentNamePath: String = "", element: JsonElement, elementName: String, rootToCompare: JsonElement, rootName: String) {
         when (element) {
             is JsonObject -> {
                 element.forEach { name, jsonElement ->
@@ -37,6 +43,8 @@ object JsonTestUtils {
 
                 var parentElement: JsonElement = rootToCompare
                 pathToArrayToCompare.forEach {
+                    if (it == "") return@forEach
+
                     parentElement = parentElement[it]
                 }
 
@@ -52,7 +60,7 @@ object JsonTestUtils {
 
                     assertThat("$rootName/${pathToArrayToCompare.last()} doesn't contain $arrayElement at $index index", validIndex)
 
-                    compare("", arrayElement, elementName, arrayToCompare[index]!!, "$rootName/${pathToArrayToCompare.last()}")
+                    compare("", arrayElement, "$elementName/${pathToArrayToCompare.last()}", arrayToCompare[index]!!, "$rootName/${pathToArrayToCompare.last()}")
                 }
             }
 

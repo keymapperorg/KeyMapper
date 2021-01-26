@@ -2,12 +2,17 @@
 
 package io.github.sds100.keymapper.data.db.migration.keymaps
 
+import androidx.core.database.getStringOrNull
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.SupportSQLiteQueryBuilder
-import com.github.salomonbrys.kotson.fromJson
+import com.github.salomonbrys.kotson.addAll
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.putAll
 import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import io.github.sds100.keymapper.data.model.Action
-import io.github.sds100.keymapper.data.model.Extra
 import io.github.sds100.keymapper.data.model.Trigger
 import splitties.bitflags.hasFlag
 import timber.log.Timber
@@ -67,6 +72,9 @@ object Migration_1_2 {
 
     private const val FLAG_VIBRATE_2 = 1
 
+    private const val MODE_PARALLEL = 0
+    private const val MODE_SEQUENCE = 1
+
     fun migrate(database: SupportSQLiteDatabase) = database.apply {
         execSQL("""
                 CREATE TABLE IF NOT EXISTS `new_keymaps` (
@@ -87,70 +95,68 @@ object Migration_1_2 {
 
         query(query).apply {
             try {
+                val parser = JsonParser()
                 val gson = Gson()
                 var id = 1
 
                 while (moveToNext()) {
-                    val triggerListOldJsonElement: List<Trigger1> = gson.fromJson(getString(1))
+                    val triggerListOld = parser.parse(getString(1)).asJsonArray
                     val flagsOld = getInt(2)
                     val isEnabledOld = getInt(3)
 
-                    val actionTypeJson = getString(4)
-                    val actionTypeOld: ActionType1? = if (actionTypeJson.isNullOrBlank() || actionTypeJson == "NULL") {
-                        null
-                    } else {
-                        gson.fromJson(actionTypeJson)
+                    val actionTypeOld = getStringOrNull(4).let {
+                        if (it.isNullOrBlank() || it == "NULL") {
+                            null
+                        } else {
+                            parser.parse(it).asString
+                        }
                     }
 
                     val actionDataOld = getString(5)
 
-                    val actionExtrasJson = getString(6)
-                    val actionExtrasOld: List<Extra1> = if (actionExtrasJson.isNullOrBlank() || actionExtrasJson == "NULL") {
-                        listOf()
-                    } else {
-                        gson.fromJson(actionExtrasJson)
+                    val actionExtrasOld = getStringOrNull(6).let {
+                        if (it.isNullOrBlank() || it == "NULL") {
+                            null
+                        } else {
+                            parser.parse(it).asJsonArray
+                        }
                     }
 
                     val isLongPress = flagsOld.hasFlag(FLAG_LONG_PRESS_1)
 
-                    val newTriggerJsonList = mutableListOf<String>()
+                    val triggerListNew = JsonArray()
 
-                    if (triggerListOld.isEmpty()) {
-                        newTriggerJsonList.add(gson.toJson(Trigger2()))
+                    if (triggerListOld.size() == 0) {
+                        triggerListNew.add(createTrigger2())
                     }
 
                     triggerListOld.forEach { trigger ->
-                        val newTriggerKeys = trigger.keys.map {
-                            val clickType = if (isLongPress) {
-                                Trigger.LONG_PRESS
-                            } else {
-                                Trigger.SHORT_PRESS
-                            }
+                        val newTriggerKeys = trigger["keys"].asJsonArray.map {
+                            val clickType = if (isLongPress) 1 else 0 //long press else short press
 
-                            Trigger2.Key(it, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType)
+                            createTriggerKey2(it.asInt, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType)
+                        }
+
+                        val newTriggerKeysJsonArray = JsonArray().apply {
+                            addAll(newTriggerKeys)
                         }
 
                         val triggerMode = if (newTriggerKeys.size <= 1) {
-                            Trigger.SEQUENCE
+                            MODE_SEQUENCE
                         } else {
-                            Trigger.PARALLEL
+                            MODE_PARALLEL
                         }
 
-                        val triggerNew = Trigger2(newTriggerKeys, mode = triggerMode)
-                        newTriggerJsonList.add(gson.toJson(triggerNew))
+                        val triggerNew = createTrigger2(newTriggerKeysJsonArray, triggerMode)
+                        triggerListNew.add(triggerNew)
                     }
 
                     val actionTypeNew = when (actionTypeOld) {
-                        ActionType1.KEY, ActionType1.KEYCODE -> ActionType2.KEY_EVENT
-                        ActionType1.APP -> ActionType2.APP
-                        ActionType1.APP_SHORTCUT -> ActionType2.APP_SHORTCUT
-                        ActionType1.TEXT_BLOCK -> ActionType2.TEXT_BLOCK
-                        ActionType1.URL -> ActionType2.URL
-                        ActionType1.SYSTEM_ACTION -> ActionType2.SYSTEM_ACTION
-                        else -> null
+                        "KEY", "KEYCODE" -> "KEY_EVENT"
+                        else -> actionTypeOld
                     }
 
-                    val actionListNew = mutableListOf<Action2>()
+                    val actionListNew = JsonArray()
 
                     if (actionTypeNew != null) {
                         val actionFlags = if (flagsOld.hasFlag(FLAG_SHOW_VOLUME_UI_1)) {
@@ -159,25 +165,23 @@ object Migration_1_2 {
                             0
                         }
 
-                        val actionExtras = actionExtrasOld.map {
-                            Extra(it.id, it.data)
-                        }.toMutableList()
-
-                        actionListNew.add(Action2(actionTypeNew, actionDataOld, actionExtras, actionFlags))
+                        actionListNew.add(createAction2(
+                            actionTypeNew,
+                            actionDataOld,
+                            actionExtrasOld
+                                ?: JsonArray(),
+                            actionFlags
+                        ))
                     }
 
-                    val flagsNew = if (flagsOld.hasFlag(FLAG_VIBRATE_1)) {
-                        FLAG_VIBRATE_2
-                    } else {
-                        0
-                    }
+                    val flagsNew = if (flagsOld.hasFlag(FLAG_VIBRATE_1)) FLAG_VIBRATE_2 else 0
 
-                    newTriggerJsonList.forEach {
+                    triggerListNew.forEach {
 
                         execSQL(
                             """
                             INSERT INTO 'new_keymaps' ('id', 'trigger', 'action_list', 'constraint_list', 'constraint_mode', 'flags', 'folder_name', 'is_enabled')
-                            VALUES ($id, '${it}', '${gson.toJson(actionListNew)}', '[]', 1, '$flagsNew', 'NULL', ${isEnabledOld})
+                            VALUES ($id, '${gson.toJson(it)}', '${gson.toJson(actionListNew)}', '[]', 1, '$flagsNew', 'NULL', ${isEnabledOld})
                             """.trimIndent())
                         id++
                     }
@@ -193,5 +197,39 @@ object Migration_1_2 {
         execSQL("DROP TABLE keymaps")
         execSQL("ALTER TABLE new_keymaps RENAME TO keymaps")
         execSQL("CREATE TABLE IF NOT EXISTS `deviceinfo` (`descriptor` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`descriptor`))")
+    }
+
+    private fun createTriggerKey2(keyCode: Int, deviceId: String, clickType: Int) =
+        JsonObject().apply {
+            putAll(
+                "keyCode" to keyCode,
+                "deviceId" to deviceId,
+                "clickType" to clickType
+            )
+        }
+
+    private fun createTrigger2(
+        keys: JsonArray = JsonArray(),
+        mode: Int = MODE_SEQUENCE
+    ) = JsonObject().apply {
+        putAll(
+            "keys" to keys,
+            "extras" to JsonArray(),
+            "mode" to mode
+        )
+    }
+
+    private fun createAction2(
+        type: String,
+        data: String,
+        extras: JsonArray,
+        flags: Int
+    ) = JsonObject().apply {
+        putAll(
+            "type" to type,
+            "data" to data,
+            "extras" to extras,
+            "flags" to flags
+        )
     }
 }

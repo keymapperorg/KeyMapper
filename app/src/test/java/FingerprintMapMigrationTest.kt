@@ -4,12 +4,10 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.preferencesKey
 import com.google.gson.Gson
-import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import io.github.sds100.keymapper.data.model.FingerprintMap
 import io.github.sds100.keymapper.data.repository.DefaultFingerprintMapRepository
 import io.github.sds100.keymapper.data.repository.FingerprintMapRepository
-import util.JsonTestUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -18,6 +16,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import util.JsonTestUtils
 
 /**
  * Created by sds100 on 22/01/21.
@@ -121,14 +120,10 @@ class FingerprintMapMigrationTest {
         val expectedDataRootObject = jsonParser.parse(expectedData).asJsonObject
 
 //        println("data-store json: $dataStoreJson")
-        compare(expectedDataRootObject, "expected", dataStoreRootObject, "data-store")
+        JsonTestUtils.compareBothWays(expectedDataRootObject, "expected", dataStoreRootObject, "data-store")
 
 //        println("live-data json: $liveDataJson")
-        compare(expectedDataRootObject, "expected", liveDataRootObject, "live-data")
+        JsonTestUtils.compareBothWays(expectedDataRootObject, "expected", liveDataRootObject, "live-data")
     }
 
-    private fun compare(element: JsonElement, elementName: String, other: JsonElement, otherName: String) {
-        JsonTestUtils.compare("", element, elementName, other, otherName)
-        JsonTestUtils.compare("", other, elementName, element, elementName)
-    }
 }

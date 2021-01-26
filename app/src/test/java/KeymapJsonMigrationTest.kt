@@ -1,10 +1,8 @@
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.gson.Gson
-import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import io.github.sds100.keymapper.data.db.migration.JsonMigration
 import io.github.sds100.keymapper.data.db.migration.keymaps.Migration_9_10
-import util.JsonTestUtils
 import io.github.sds100.keymapper.util.MigrationUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
@@ -12,6 +10,7 @@ import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Rule
 import org.junit.Test
+import util.JsonTestUtils
 
 /**
  * Created by sds100 on 22/01/21.
@@ -66,12 +65,7 @@ class KeymapJsonMigrationTest {
             val expectedElement = parser.parse(expectedData[index])
             val migratedElement = parser.parse(migratedJson)
 
-            compare(expectedElement, "expected", migratedElement, "migrated")
+            JsonTestUtils.compareBothWays(expectedElement, "expected", migratedElement, "migrated")
         }
-    }
-
-    private fun compare(element: JsonElement, elementName: String, other: JsonElement, otherName: String) {
-        JsonTestUtils.compare("", element, elementName, other, otherName)
-        JsonTestUtils.compare("", other, elementName, element, elementName)
     }
 }
