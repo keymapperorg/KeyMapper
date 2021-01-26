@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.util
 import androidx.datastore.preferences.core.preferencesKey
 import androidx.datastore.preferences.core.preferencesSetKey
 import androidx.preference.PreferenceDataStore
-import io.github.sds100.keymapper.data.IDataStoreManager
+import io.github.sds100.keymapper.data.db.IDataStoreManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking

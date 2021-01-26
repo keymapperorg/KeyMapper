@@ -10,4 +10,5 @@ object PreferenceKeys {
     val appIntro = preferencesKey<Boolean>("pref_first_time")
     val approvedFingerprintFeaturePrompt =
         preferencesKey<Boolean>("pref_approved_fingerprint_feature_prompt")
+    val automaticBackupLocation = preferencesKey<String>("pref_automatic_backup_location")
 }

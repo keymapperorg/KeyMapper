@@ -37,6 +37,12 @@ infix fun <T, U> Result<T>.then(f: (T) -> Result<U>) =
         is Failure -> this
     }
 
+suspend infix fun <T, U> Result<T>.suspendThen(f: suspend (T) -> Result<U>) =
+    when (this) {
+        is Success -> f(this.value)
+        is Failure -> this
+    }
+
 infix fun <T> Result<T>.otherwise(f: (failure: Failure) -> Result<T>) =
     when (this) {
         is Success -> this

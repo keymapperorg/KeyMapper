@@ -40,7 +40,7 @@ class KeymapListFragment : DefaultRecyclerViewFragment<List<KeymapListItemModel>
 
             backupRestoreViewModel.backupKeymaps(
                 requireContext().contentResolver.openOutputStream(it),
-                viewModel.getSelectedKeymaps())
+                selectionProvider.selectedIds.toList())
 
             selectionProvider.stopSelecting()
         }

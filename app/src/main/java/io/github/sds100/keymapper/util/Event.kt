@@ -22,6 +22,7 @@ import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.options.BaseOptions
 import io.github.sds100.keymapper.data.model.options.TriggerKeyOptions
 import io.github.sds100.keymapper.util.result.Failure
+import io.github.sds100.keymapper.util.result.Result
 
 sealed class Event
 
@@ -56,6 +57,15 @@ class CreateKeymapShortcutEvent(
     val uuid: String,
     val actionList: List<Action>
 ) : Event()
+
+
+sealed class ResultEvent<T> : Event() {
+    abstract val result: Result<T>
+}
+
+data class BackupResult(override val result: Result<Unit>) : ResultEvent<Unit>()
+data class RestoreResult(override val result: Result<Unit>) : ResultEvent<Unit>()
+data class AutomaticBackupResult(override val result: Result<Unit>) : ResultEvent<Unit>()
 
 //trigger
 class BuildTriggerKeyModels(val source: List<Trigger.Key>) : Event()

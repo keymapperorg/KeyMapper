@@ -4,10 +4,12 @@ package io.github.sds100.keymapper.data.db.migration.keymaps
 
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.SupportSQLiteQueryBuilder
-import com.github.salomonbrys.kotson.byInt
-import com.github.salomonbrys.kotson.set
+import com.github.salomonbrys.kotson.*
 import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonElement
 import com.google.gson.JsonParser
+import io.github.sds100.keymapper.data.db.migration.JsonMigration
 import splitties.bitflags.hasFlag
 import splitties.bitflags.minusFlag
 import splitties.bitflags.withFlag
@@ -22,7 +24,10 @@ object Migration_9_10 {
     private const val TRIGGER_NAME_FLAGS = "flags"
     private const val ACTION_NAME_FLAGS = "flags"
 
-    fun migrate(database: SupportSQLiteDatabase) = database.apply {
+    private const val NAME_TRIGGER = "trigger"
+    private const val NAME_ACTION_LIST = "actionList"
+
+    fun migrateDatabase(database: SupportSQLiteDatabase) = database.apply {
         val parser = JsonParser()
         val gson = Gson()
 
@@ -40,32 +45,56 @@ object Migration_9_10 {
                 val actionListJson = getString(getColumnIndex("action_list"))
                 val actionListJsonArray = parser.parse(actionListJson).asJsonArray
 
-                var showToast = false
+                val triggerJson = getString(getColumnIndex("trigger"))
+                val triggerJsonElement = parser.parse(triggerJson)
 
-                actionListJsonArray.forEach {
-                    val flags by it.byInt(ACTION_NAME_FLAGS)
+                val (newTrigger, newActionList) = migrate(triggerJsonElement, actionListJsonArray)
+                val newTriggerJson = gson.toJson(newTrigger)
+                val newActionListJson = gson.toJson(newActionList)
 
-                    if (flags.hasFlag(FLAG_ACTION_SHOW_PERFORMING_TOAST)) showToast = true
-
-                    it[ACTION_NAME_FLAGS] = flags.minusFlag(FLAG_ACTION_SHOW_PERFORMING_TOAST)
-                }
-
-                val newActionListJson = gson.toJson(actionListJsonArray)
-
-                if (showToast) {
-                    val triggerJson = getString(getColumnIndex("trigger"))
-                    val rootTriggerElement = parser.parse(triggerJson)
-                    val flags by rootTriggerElement.byInt(TRIGGER_NAME_FLAGS)
-
-                    rootTriggerElement[TRIGGER_NAME_FLAGS] = flags.withFlag(FLAG_TRIGGER_SHOW_TOAST)
-
-                    val newTriggerJson = gson.toJson(rootTriggerElement)
-
-                    execSQL("UPDATE keymaps SET trigger='$newTriggerJson', action_list='$newActionListJson' WHERE id=$id")
-                }
+                execSQL("UPDATE keymaps SET trigger='$newTriggerJson', action_list='$newActionListJson' WHERE id=$id")
             }
 
             close()
         }
     }
+
+    fun migrateJson(gson: Gson, json: String): String {
+        val parser = JsonParser()
+
+        val root = parser.parse(json)
+
+        val oldTrigger by root.byObject(NAME_TRIGGER)
+        val oldActionList by root.byArray(NAME_ACTION_LIST)
+
+        val (newTrigger, newActionList) = migrate(oldTrigger, oldActionList)
+
+        root[NAME_TRIGGER] = newTrigger
+        root[NAME_ACTION_LIST] = newActionList
+
+        return gson.toJson(root)
+    }
+
+    private fun migrate(trigger: JsonElement,
+                        actionList: JsonArray): MigrateModel {
+        var showToast = false
+
+        actionList.forEach {
+            val flags by it.byInt(ACTION_NAME_FLAGS)
+
+            if (flags.hasFlag(FLAG_ACTION_SHOW_PERFORMING_TOAST)) showToast = true
+
+            it[ACTION_NAME_FLAGS] = flags.minusFlag(FLAG_ACTION_SHOW_PERFORMING_TOAST)
+        }
+
+        if (showToast) {
+            val flags by trigger.byInt(TRIGGER_NAME_FLAGS)
+
+            trigger[TRIGGER_NAME_FLAGS] = flags.withFlag(FLAG_TRIGGER_SHOW_TOAST)
+        }
+
+        return MigrateModel(trigger, actionList)
+    }
+
+    private data class MigrateModel(val trigger: JsonElement, val actionList: JsonArray)
 }

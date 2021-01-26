@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.data
+package io.github.sds100.keymapper.data.db
 
 import androidx.annotation.StringRes
 import androidx.datastore.core.DataStore

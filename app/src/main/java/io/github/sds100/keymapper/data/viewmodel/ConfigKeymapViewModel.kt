@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.data.viewmodel
 import android.os.Bundle
 import androidx.lifecycle.*
 import com.hadilq.liveevent.LiveEvent
-import io.github.sds100.keymapper.data.IDataStoreManager
+import io.github.sds100.keymapper.data.db.IDataStoreManager
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.KeyMap

@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.data.db.migration.fingerprintmaps
 import com.github.salomonbrys.kotson.*
 import com.google.gson.Gson
 import com.google.gson.JsonParser
-import io.github.sds100.keymapper.data.db.migration.JsonMigration
 import splitties.bitflags.hasFlag
 import splitties.bitflags.minusFlag
 import splitties.bitflags.withFlag
@@ -15,17 +14,15 @@ import splitties.bitflags.withFlag
 /**
  * Move the action option "show performing toast when performing" to a trigger option.
  */
-class Migration_0_1 : JsonMigration(0, 1) {
-    companion object {
-        private const val NAME_VERSION = "db_version"
-        private const val NAME_ACTION_LIST = "action_list"
-        private const val FLAG_ACTION_SHOW_PERFORMING_TOAST = 2
-        private const val FLAG_SHOW_TOAST = 2
-        private const val TRIGGER_NAME_FLAGS = "flags"
-        private const val ACTION_NAME_FLAGS = "flags"
-    }
+object Migration_0_1 {
+    private const val NAME_VERSION = "db_version"
+    private const val NAME_ACTION_LIST = "action_list"
+    private const val FLAG_ACTION_SHOW_PERFORMING_TOAST = 2
+    private const val FLAG_SHOW_TOAST = 2
+    private const val TRIGGER_NAME_FLAGS = "flags"
+    private const val ACTION_NAME_FLAGS = "flags"
 
-    override fun migrate(gson: Gson, json: String): String {
+    fun migrate(gson: Gson, json: String): String {
         val parser = JsonParser()
 
         val rootElement = parser.parse(json)

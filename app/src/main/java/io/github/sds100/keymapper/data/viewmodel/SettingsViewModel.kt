@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.data.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import io.github.sds100.keymapper.data.IDataStoreManager
+import io.github.sds100.keymapper.data.db.IDataStoreManager
 import io.github.sds100.keymapper.util.SharedPrefsDataStoreWrapper
 
 /**

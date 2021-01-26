@@ -20,13 +20,15 @@ import androidx.preference.*
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.NotificationController
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.data.AppPreferences
+import io.github.sds100.keymapper.data.PreferenceKeys
 import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
 import io.github.sds100.keymapper.data.viewmodel.SettingsViewModel
 import io.github.sds100.keymapper.databinding.FragmentSettingsBinding
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
-import io.github.sds100.keymapper.util.result.valueOrNull
+import kotlinx.coroutines.runBlocking
 import splitties.alertdialog.appcompat.*
 
 class SettingsFragment : Fragment() {
@@ -208,7 +210,10 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
             invalidateAutomaticBackupLocationSummary()
 
             automaticBackupLocation?.setOnPreferenceClickListener {
-                val backupLocation = BackupUtils.getAutomaticBackupLocation().valueOrNull()
+                val backupLocation = runBlocking {
+                    ServiceLocator.globalPreferences(requireContext())
+                        .get(PreferenceKeys.automaticBackupLocation)
+                }
 
                 if (backupLocation.isNullOrBlank()) {
                     chooseAutomaticBackupLocationLauncher.launch(BackupUtils.DEFAULT_AUTOMATIC_BACKUP_NAME)
@@ -367,7 +372,10 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
     private fun invalidateAutomaticBackupLocationSummary() {
-        val backupLocation = BackupUtils.getAutomaticBackupLocation().valueOrNull()
+        val backupLocation = runBlocking {
+            ServiceLocator.globalPreferences(requireContext())
+                .get(PreferenceKeys.automaticBackupLocation)
+        }
 
         if (backupLocation.isNullOrBlank()) {
             automaticBackupLocation?.summary = str(R.string.summary_pref_automatic_backup_location_disabled)

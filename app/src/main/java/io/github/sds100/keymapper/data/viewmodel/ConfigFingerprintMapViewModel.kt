@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.data.viewmodel
 import android.os.Bundle
 import androidx.lifecycle.*
 import com.hadilq.liveevent.LiveEvent
-import io.github.sds100.keymapper.data.IDataStoreManager
+import io.github.sds100.keymapper.data.db.IDataStoreManager
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.options.FingerprintActionOptions
 import io.github.sds100.keymapper.data.model.options.FingerprintMapOptions
@@ -75,14 +75,10 @@ class ConfigFingerprintMapViewModel(private val fingerprintMapRepository: Finger
     override val eventStream: LiveData<Event> = _eventStream
 
     override fun save(coroutineScope: CoroutineScope) {
-        coroutineScope.launch {
-            val map = createFingerprintMap()
+        val map = createFingerprintMap()
 
-            gestureId?.let {
-                fingerprintMapRepository.updateGesture(it) {
-                    map
-                }
-            }
+        gestureId?.let {
+            fingerprintMapRepository.updateGesture(it) { map }
         }
     }
 

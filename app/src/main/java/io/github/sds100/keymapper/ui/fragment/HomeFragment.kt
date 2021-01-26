@@ -95,7 +95,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
         }
     }
 
-    private val backupLauncher =
+    private val backupAllKeymapsLauncher =
         registerForActivityResult(ActivityResultContracts.CreateDocument()) {
             it ?: return@registerForActivityResult
 
@@ -282,7 +282,8 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
                     is MessageEvent -> toast(it.textRes)
                     is ShowErrorMessage -> toast(it.failure.getFullMessage(requireContext()))
                     is RequestRestore -> restoreLauncher.launch(FileUtils.MIME_TYPE_ALL)
-                    is RequestBackupAll -> backupLauncher.launch(BackupUtils.createFileName())
+                    is RequestBackupAll ->
+                        backupAllKeymapsLauncher.launch(BackupUtils.createFileName())
                 }
             })
 

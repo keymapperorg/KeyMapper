@@ -97,16 +97,6 @@ class KeymapListViewModel internal constructor(
         _eventStream.value = FixFailure(failure)
     }
 
-    fun getSelectedKeymaps(): List<KeyMap> {
-        keymapRepository.keymapList.value?.let { keymapList ->
-            return selectionProvider.selectedIds.map { selectedId ->
-                keymapList.single { it.id == selectedId }
-            }
-        }
-
-        return emptyList()
-    }
-
     suspend fun getDeviceInfoList() = deviceInfoRepository.getAll()
 
     @Suppress("UNCHECKED_CAST")

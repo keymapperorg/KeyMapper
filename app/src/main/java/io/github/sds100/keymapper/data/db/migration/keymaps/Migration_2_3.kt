@@ -28,7 +28,27 @@ object Migration_2_3 {
                                 @Trigger.Mode
                                 val mode: Int = Trigger.SEQUENCE)
 
-    private val KEYMAP_FLAG_REPEAT_ACTIONS = 16
+    private enum class ActionType2 {
+        APP,
+        APP_SHORTCUT,
+        KEY_EVENT,
+        KEY,
+        TEXT_BLOCK,
+        URL,
+        SYSTEM_ACTION
+    }
+
+    private data class Action2(
+        val type: ActionType2,
+
+        val data: String,
+
+        val extras: List<Extra> = listOf(),
+
+        val flags: Int = 0
+    )
+
+    private const val KEYMAP_FLAG_REPEAT_ACTIONS = 16
 
     fun migrate(database: SupportSQLiteDatabase) = database.apply {
         val query = SupportSQLiteQueryBuilder
@@ -49,7 +69,7 @@ object Migration_2_3 {
                 val trigger = gson.fromJson<Trigger2>(triggerJson)
 
                 val actionListJson = getString(2)
-                val actionList = gson.fromJson<List<Action>>(actionListJson)
+                val actionList = gson.fromJson<List<Action2>>(actionListJson)
 
                 val flags = getInt(3)
 
@@ -73,9 +93,9 @@ object Migration_2_3 {
         }
     }
 
-    private fun isRepeatable(trigger: Trigger2, actionList: List<Action>): Boolean {
+    private fun isRepeatable(trigger: Trigger2, actionList: List<Action2>): Boolean {
         return actionList.any {
-            it.type in arrayOf(ActionType.KEY_EVENT, ActionType.TEXT_BLOCK) ||
+            it.type in arrayOf(ActionType2.KEY_EVENT, ActionType2.TEXT_BLOCK) ||
                 listOf(
                     SystemAction.VOLUME_DECREASE_STREAM,
                     SystemAction.VOLUME_INCREASE_STREAM,

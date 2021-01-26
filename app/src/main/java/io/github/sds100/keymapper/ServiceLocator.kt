@@ -5,8 +5,9 @@ import androidx.annotation.VisibleForTesting
 import androidx.room.Room
 import io.github.sds100.keymapper.data.*
 import io.github.sds100.keymapper.data.db.AppDatabase
+import io.github.sds100.keymapper.data.db.DefaultDataStoreManager
+import io.github.sds100.keymapper.data.db.IDataStoreManager
 import io.github.sds100.keymapper.data.repository.*
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -43,6 +44,9 @@ object ServiceLocator {
 
     @Volatile
     private var globalPreferences: IGlobalPreferences? = null
+
+    @Volatile
+    var backupManager: IBackupManager? = null
 
     fun keymapRepository(context: Context): DefaultKeymapRepository {
         synchronized(this) {
@@ -100,6 +104,12 @@ object ServiceLocator {
         }
     }
 
+    fun backupManager(context: Context): IBackupManager {
+        synchronized(this) {
+            return backupManager ?: createBackupManager(context)
+        }
+    }
+
     @VisibleForTesting
     fun resetKeymapRepository() {
         synchronized(lock) {
@@ -121,7 +131,9 @@ object ServiceLocator {
 
     private fun createKeymapRepository(context: Context): DefaultKeymapRepository {
         val database = database ?: createDatabase(context.applicationContext)
-        keymapRepository = DefaultKeymapRepository(database.keymapDao())
+        keymapRepository = DefaultKeymapRepository(
+            database.keymapDao(),
+            (context.applicationContext as MyApplication).appCoroutineScope)
         return keymapRepository!!
     }
 
@@ -140,10 +152,10 @@ object ServiceLocator {
 
     private fun createFingerprintMapRepository(context: Context): FingerprintMapRepository {
         val dataStore = preferenceDataStore(context).fingerprintGestureDataStore
+        val scope = (context.applicationContext as MyApplication).appCoroutineScope
 
         return fingerprintMapRepository
-        //TODO
-            ?: FingerprintMapRepository(dataStore, MainScope()).also {
+            ?: DefaultFingerprintMapRepository(dataStore, scope).also {
                 this.fingerprintMapRepository = it
             }
     }
@@ -184,6 +196,19 @@ object ServiceLocator {
             ?: GlobalPreferences(dataStore).also {
                 this.globalPreferences = it
             }
+    }
+
+    private fun createBackupManager(context: Context): IBackupManager {
+        return backupManager ?: BackupManager(
+            keymapRepository(context),
+            fingerprintMapRepository(context),
+            deviceInfoRepository(context),
+            (context.applicationContext as MyApplication).appCoroutineScope,
+            (context.applicationContext as MyApplication),
+            globalPreferences(context)
+        ).also {
+            this.backupManager = it
+        }
     }
 
     private fun createDatabase(context: Context): AppDatabase {

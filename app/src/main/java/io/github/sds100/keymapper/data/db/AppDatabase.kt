@@ -71,7 +71,7 @@ abstract class AppDatabase : RoomDatabase() {
             override fun migrate(database: SupportSQLiteDatabase) {
                 //DO NOTHING
                 //I added a change and then removed it in a later commit. this will only affect testers so not a big
-                //dela
+                //deal
             }
         }
 
@@ -83,7 +83,7 @@ abstract class AppDatabase : RoomDatabase() {
 
         val MIGRATION_9_10 = object : Migration(9, 10) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                Migration_9_10.migrate(database)
+                Migration_9_10.migrateDatabase(database)
             }
         }
     }

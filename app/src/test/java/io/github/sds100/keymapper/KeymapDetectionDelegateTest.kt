@@ -74,7 +74,7 @@ class KeymapDetectionDelegateTest {
     }
 
     private lateinit var delegate: KeymapDetectionDelegate
-    private lateinit var performActionTest: LiveEventTestWrapper<PerformAction>
+    private lateinit var performActionTest: LiveDataTestWrapper<PerformAction>
     private var currentPackage = ""
 
     @get:Rule
@@ -125,7 +125,7 @@ class KeymapDetectionDelegateTest {
             constraintDelegate
         )
 
-        performActionTest = LiveEventTestWrapper(delegate.performAction)
+        performActionTest = LiveDataTestWrapper(delegate.performAction)
     }
 
     @After

@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.data
+package io.github.sds100.keymapper.data.db
 
 import android.content.Context
 import androidx.datastore.preferences.SharedPreferencesMigration

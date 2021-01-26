@@ -187,6 +187,8 @@
     <!--  Toasts  -->
     <string name="toast_chose_keyboard">Chose %s</string>
     <string name="toast_backup_successful">Back up successful!</string>
+    <string name="toast_restore_successful">Restore successful!</string>
+    <string name="toast_automatic_backup_successful">Automatic back up successful!</string>
     <string name="toast_screenshot_taken">Screenshot taken</string>
     <string name="toast_io_exception_shrug">IO exception ¯\\_(ツ)_/¯</string>
     <string name="toast_incorrect_screenshot_resolution">Screenshot resolution doesn\'t match this device\'s resolution!</string>

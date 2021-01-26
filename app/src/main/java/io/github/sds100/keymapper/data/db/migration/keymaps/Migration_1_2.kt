@@ -9,34 +9,56 @@ import com.google.gson.Gson
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Extra
 import io.github.sds100.keymapper.data.model.Trigger
-import io.github.sds100.keymapper.util.ActionType
 import splitties.bitflags.hasFlag
 import timber.log.Timber
 
 /**
  * Created by sds100 on 06/06/20.
  */
-
-private data class Trigger1(val keys: List<Int>)
-
-private enum class ActionType1 {
-    APP,
-    APP_SHORTCUT,
-    KEYCODE,
-    KEY,
-    TEXT_BLOCK,
-    URL,
-    SYSTEM_ACTION
-}
-
-private data class Extra1(val id: String, val data: String)
-
-private data class Trigger2(val keys: List<Trigger.Key> = listOf(),
-
-                            val extras: List<Extra> = listOf(),
-
-                            @Trigger.Mode
-                            val mode: Int = Trigger.SEQUENCE)
+//
+//private data class Trigger1(val keys: List<Int>)
+//
+//private enum class ActionType1 {
+//    APP,
+//    APP_SHORTCUT,
+//    KEYCODE,
+//    KEY,
+//    TEXT_BLOCK,
+//    URL,
+//    SYSTEM_ACTION
+//}
+//
+//private enum class ActionType2 {
+//    APP,
+//    APP_SHORTCUT,
+//    KEY_EVENT,
+//    KEY,
+//    TEXT_BLOCK,
+//    URL,
+//    SYSTEM_ACTION
+//}
+//
+//private data class Extra1(val id: String, val data: String)
+//
+//private data class Trigger2(val keys: List<Key> = listOf(),
+//                            val extras: List<Extra> = listOf(),
+//                            val mode: Int = Trigger.SEQUENCE) {
+//    data class Key(
+//        val keyCode: Int,
+//        val deviceId: String,
+//        val clickType: Int
+//    )
+//}
+//
+//private data class Action2(
+//    val type: ActionType2,
+//
+//    val data: String,
+//
+//    val extras: List<Extra> = listOf(),
+//
+//    val flags: Int = 0
+//)
 
 object Migration_1_2 {
     private const val FLAG_VIBRATE_1 = 4
@@ -66,11 +88,10 @@ object Migration_1_2 {
         query(query).apply {
             try {
                 val gson = Gson()
-                fun Any.json() = gson.toJson(this)
                 var id = 1
 
                 while (moveToNext()) {
-                    val triggerListOld: List<Trigger1> = gson.fromJson(getString(1))
+                    val triggerListOldJsonElement: List<Trigger1> = gson.fromJson(getString(1))
                     val flagsOld = getInt(2)
                     val isEnabledOld = getInt(3)
 
@@ -95,7 +116,7 @@ object Migration_1_2 {
                     val newTriggerJsonList = mutableListOf<String>()
 
                     if (triggerListOld.isEmpty()) {
-                        newTriggerJsonList.add(Trigger2().json())
+                        newTriggerJsonList.add(gson.toJson(Trigger2()))
                     }
 
                     triggerListOld.forEach { trigger ->
@@ -106,7 +127,7 @@ object Migration_1_2 {
                                 Trigger.SHORT_PRESS
                             }
 
-                            Trigger.Key(it, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType)
+                            Trigger2.Key(it, Trigger.Key.DEVICE_ID_ANY_DEVICE, clickType)
                         }
 
                         val triggerMode = if (newTriggerKeys.size <= 1) {
@@ -116,20 +137,20 @@ object Migration_1_2 {
                         }
 
                         val triggerNew = Trigger2(newTriggerKeys, mode = triggerMode)
-                        newTriggerJsonList.add(triggerNew.json())
+                        newTriggerJsonList.add(gson.toJson(triggerNew))
                     }
 
                     val actionTypeNew = when (actionTypeOld) {
-                        ActionType1.KEY, ActionType1.KEYCODE -> ActionType.KEY_EVENT
-                        ActionType1.APP -> ActionType.APP
-                        ActionType1.APP_SHORTCUT -> ActionType.APP_SHORTCUT
-                        ActionType1.TEXT_BLOCK -> ActionType.TEXT_BLOCK
-                        ActionType1.URL -> ActionType.URL
-                        ActionType1.SYSTEM_ACTION -> ActionType.SYSTEM_ACTION
+                        ActionType1.KEY, ActionType1.KEYCODE -> ActionType2.KEY_EVENT
+                        ActionType1.APP -> ActionType2.APP
+                        ActionType1.APP_SHORTCUT -> ActionType2.APP_SHORTCUT
+                        ActionType1.TEXT_BLOCK -> ActionType2.TEXT_BLOCK
+                        ActionType1.URL -> ActionType2.URL
+                        ActionType1.SYSTEM_ACTION -> ActionType2.SYSTEM_ACTION
                         else -> null
                     }
 
-                    val actionListNew = mutableListOf<Action>()
+                    val actionListNew = mutableListOf<Action2>()
 
                     if (actionTypeNew != null) {
                         val actionFlags = if (flagsOld.hasFlag(FLAG_SHOW_VOLUME_UI_1)) {
@@ -142,7 +163,7 @@ object Migration_1_2 {
                             Extra(it.id, it.data)
                         }.toMutableList()
 
-                        actionListNew.add(Action(actionTypeNew, actionDataOld, actionExtras, actionFlags))
+                        actionListNew.add(Action2(actionTypeNew, actionDataOld, actionExtras, actionFlags))
                     }
 
                     val flagsNew = if (flagsOld.hasFlag(FLAG_VIBRATE_1)) {
@@ -156,7 +177,7 @@ object Migration_1_2 {
                         execSQL(
                             """
                             INSERT INTO 'new_keymaps' ('id', 'trigger', 'action_list', 'constraint_list', 'constraint_mode', 'flags', 'folder_name', 'is_enabled')
-                            VALUES ($id, '${it}', '${actionListNew.json()}', '[]', 1, '$flagsNew', 'NULL', ${isEnabledOld})
+                            VALUES ($id, '${it}', '${gson.toJson(actionListNew)}', '[]', 1, '$flagsNew', 'NULL', ${isEnabledOld})
                             """.trimIndent())
                         id++
                     }

@@ -1,12 +1,12 @@
 package io.github.sds100.keymapper.util
 
-import com.hadilq.liveevent.LiveEvent
+import androidx.lifecycle.LiveData
 
 /**
  * Created by sds100 on 23/12/20.
  */
 
-class LiveEventTestWrapper<T>(liveEvent: LiveEvent<T>) {
+class LiveDataTestWrapper<T>(liveData: LiveData<T>) {
     private val _history = mutableListOf<T>()
     val history
         get() = _history.toList()
@@ -15,10 +15,12 @@ class LiveEventTestWrapper<T>(liveEvent: LiveEvent<T>) {
         get() = history.size
 
     init {
-        liveEvent.observeForever {
+        liveData.observeForever {
             _history.add(it)
         }
     }
+
+    fun latestValue() = history.last()
 
     fun reset() {
         _history.clear()

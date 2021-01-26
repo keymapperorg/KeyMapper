@@ -6,15 +6,19 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.preferencesKey
 import com.google.gson.Gson
+import com.google.gson.JsonElement
+import com.google.gson.JsonParser
+import io.github.sds100.keymapper.data.model.FingerprintMap
+import io.github.sds100.keymapper.data.repository.DefaultFingerprintMapRepository
 import io.github.sds100.keymapper.data.repository.FingerprintMapRepository
 import io.github.sds100.keymapper.util.FakeDataStore
+import io.github.sds100.keymapper.util.JsonTestUtils
+import io.github.sds100.keymapper.util.LiveDataTestWrapper
 import junitparams.JUnitParamsRunner
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.*
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.core.Is.`is`
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -26,11 +30,16 @@ import org.junit.runner.RunWith
  */
 
 @ExperimentalCoroutinesApi
-@RunWith(JUnitParamsRunner::class)
 class FingerprintMapMigrationTest {
     companion object {
-        private const val MIGRATION_0_1_TEST_DATA = "{\"action_list\":[{\"data\":\"com.google.android.contacts\",\"extras\":[],\"flags\":2,\"type\":\"APP\",\"uid\":\"cd19c16a-4835-4b85-92d9-d27afe1a242f\"}],\"constraints\":[],\"constraint_mode\":1,\"extras\":[],\"flags\":1,\"enabled\":true}"
-        private const val MIGRATION_0_1_EXPECTED_DATA = "{\"db_version\":1,\"action_list\":[{\"type\":\"APP\",\"data\":\"com.google.android.contacts\",\"extras\":[],\"flags\":0,\"uid\":\"cd19c16a-4835-4b85-92d9-d27afe1a242f\"}],\"constraints\":[],\"constraint_mode\":1,\"extras\":[],\"flags\":3,\"enabled\":true}"
+        private val MIGRATION_0_1_TEST_DATA = arrayOf(
+            "{\"action_list\":[{\"data\":\"com.google.android.contacts\",\"extras\":[],\"flags\":2,\"type\":\"APP\",\"uid\":\"cd19c16a-4835-4b85-92d9-d27afe1a242f\"}],\"constraints\":[],\"constraint_mode\":1,\"extras\":[],\"flags\":1,\"enabled\":true}",
+            "{\"action_list\":[],\"constraints\":[],\"constraint_mode\":1,\"extras\":[],\"flags\":0,\"enabled\":true}",
+        )
+        private val MIGRATION_0_1_EXPECTED_DATA = arrayOf(
+            "{\"db_version\":1,\"action_list\":[{\"type\":\"APP\",\"data\":\"com.google.android.contacts\",\"extras\":[],\"flags\":0,\"uid\":\"cd19c16a-4835-4b85-92d9-d27afe1a242f\"}],\"constraints\":[],\"constraint_mode\":1,\"extras\":[],\"flags\":3,\"enabled\":true}",
+            "{\"db_version\":1,\"action_list\":[],\"constraints\":[],\"constraint_mode\":1,\"extras\":[],\"flags\":0,\"enabled\":true}",
+        )
         private val SWIPE_DOWN_KEY = preferencesKey<String>("swipe_down")
     }
 
@@ -41,12 +50,14 @@ class FingerprintMapMigrationTest {
     private val coroutineScope = TestCoroutineScope(testDispatcher)
     private lateinit var repository: FingerprintMapRepository
     private lateinit var dataStore: DataStore<Preferences>
+    private lateinit var liveDataTestWrapper: LiveDataTestWrapper<Map<String, FingerprintMap>>
 
     @Before
     fun init() {
         Dispatchers.setMain(testDispatcher)
         dataStore = FakeDataStore()
-        repository = FingerprintMapRepository(dataStore, coroutineScope)
+        repository = DefaultFingerprintMapRepository(dataStore, coroutineScope)
+        liveDataTestWrapper = LiveDataTestWrapper(repository.fingerprintGestureMapsLiveData)
     }
 
     @After
@@ -55,18 +66,75 @@ class FingerprintMapMigrationTest {
     }
 
     @Test
-    fun migrate0to1() = coroutineScope.runBlockingTest {
+    fun `migrate 0 to 1 after update`() {
+        testUpdate(MIGRATION_0_1_TEST_DATA, MIGRATION_0_1_EXPECTED_DATA)
+    }
 
-        dataStore.edit {
-            it[SWIPE_DOWN_KEY] = MIGRATION_0_1_TEST_DATA
+    @Test
+    fun `migrate 0 to 1 after restore`() {
+        testRestore(MIGRATION_0_1_TEST_DATA, MIGRATION_0_1_EXPECTED_DATA)
+    }
+
+    private fun testUpdate(testData: Array<String>, expectedData: Array<String>) {
+        coroutineScope.runBlockingTest {
+            testData.forEachIndexed { index, data ->
+                println("test update at index $index")
+                dataStore.edit {
+                    it[SWIPE_DOWN_KEY] = data
+                }
+
+                //must come before getting value from live data test wrapper
+                advanceUntilIdle()
+
+                testOutput(expectedData[index])
+            }
         }
+    }
 
-        repository.fingerprintGestureMapsLiveData.observeForever {
-            val json = it[SWIPE_DOWN_KEY.name]!!
+    private fun testRestore(testData: Array<String>, expectedData: Array<String>) {
+        coroutineScope.runBlockingTest {
 
-            assertThat(Gson().toJson(json), `is`(MIGRATION_0_1_EXPECTED_DATA))
+            testData.forEachIndexed { index, data ->
+                println("test restore at index $index")
+
+                dataStore.edit {
+                    it[SWIPE_DOWN_KEY] = data
+                }
+                repository.restore(SWIPE_DOWN_KEY.name, data)
+
+                //must come before getting value from live data test wrapper
+                advanceUntilIdle()
+
+                testOutput(expectedData[index])
+            }
         }
+    }
 
-        assertThat(dataStore.data.first()[SWIPE_DOWN_KEY], `is`(MIGRATION_0_1_EXPECTED_DATA))
+    private suspend fun testOutput(expectedData: String) {
+        val liveDataJson = liveDataTestWrapper
+            .latestValue()
+            .let {
+                val map = it[SWIPE_DOWN_KEY.name]!!
+
+                Gson().toJson(map)
+            }
+
+        val dataStoreJson = dataStore.data.first()[SWIPE_DOWN_KEY]
+
+        val jsonParser = JsonParser()
+        val liveDataRootObject = jsonParser.parse(liveDataJson).asJsonObject
+        val dataStoreRootObject = jsonParser.parse(dataStoreJson).asJsonObject
+        val expectedDataRootObject = jsonParser.parse(expectedData).asJsonObject
+
+//        println("data-store json: $dataStoreJson")
+        compare(expectedDataRootObject, "expected", dataStoreRootObject, "data-store")
+
+//        println("live-data json: $liveDataJson")
+        compare(expectedDataRootObject, "expected", liveDataRootObject, "live-data")
+    }
+
+    private fun compare(element: JsonElement, elementName: String, other: JsonElement, otherName: String) {
+        JsonTestUtils.compare("", element, elementName, other, otherName)
+        JsonTestUtils.compare("", other, elementName, element, elementName)
     }
 }

@@ -27,11 +27,7 @@ object InjectorUtils {
     }
 
     fun provideBackupRestoreViewModel(context: Context): BackupRestoreViewModel.Factory {
-        return BackupRestoreViewModel.Factory(
-            ServiceLocator.keymapRepository(context),
-            ServiceLocator.deviceInfoRepository(context),
-            ServiceLocator.fingerprintMapRepository(context)
-        )
+        return BackupRestoreViewModel.Factory(ServiceLocator.backupManager(context))
     }
 
     fun provideChooseConstraintListViewModel(

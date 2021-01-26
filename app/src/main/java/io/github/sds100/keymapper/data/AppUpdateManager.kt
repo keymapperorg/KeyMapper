@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.data
 
 import androidx.datastore.preferences.core.preferencesKey
 import io.github.sds100.keymapper.Constants
+import io.github.sds100.keymapper.data.db.IDataStoreManager
 
 /**
  * Created by sds100 on 18/01/21.
