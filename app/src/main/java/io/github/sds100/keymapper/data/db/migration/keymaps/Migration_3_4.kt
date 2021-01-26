@@ -4,23 +4,22 @@ package io.github.sds100.keymapper.data.db.migration.keymaps
 
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.SupportSQLiteQueryBuilder
-import com.github.salomonbrys.kotson.fromJson
+import com.github.salomonbrys.kotson.set
 import com.google.gson.Gson
-import io.github.sds100.keymapper.data.model.Extra
-import io.github.sds100.keymapper.data.model.Trigger
+import com.google.gson.JsonParser
+import kotlin.collections.forEach
+import kotlin.collections.mutableMapOf
+import kotlin.collections.set
 
 /**
  * Created by sds100 on 25/06/20.
  */
 
-private data class Trigger3(val keys: List<Trigger.Key> = listOf(),
-
-                            val extras: List<Extra> = listOf(),
-
-                            @Trigger.Mode
-                            val mode: Int = Trigger.UNDEFINED)
-
-
+/**
+ * #376 make trigger mode settings always visible.
+ * Added UNDEFINED trigger mode if the number of keys is <= 1.
+ * Also added migration for the db to support this on older keymaps.
+ */
 object Migration_3_4 {
 
     fun migrate(database: SupportSQLiteDatabase) = database.apply {
@@ -34,15 +33,15 @@ object Migration_3_4 {
 
         query(query).apply {
             val gson = Gson()
+            val parser = JsonParser()
 
             while (moveToNext()) {
                 val id = getLong(0)
 
-                val triggerJson = getString(1)
-                var trigger = gson.fromJson<Trigger3>(triggerJson)
+                val trigger = parser.parse(getString(1)).asJsonObject
 
-                if (trigger.keys.size <= 1) {
-                    trigger = Trigger3(trigger.keys, trigger.extras, mode = Trigger.UNDEFINED)
+                if (trigger["keys"].asJsonArray.size() <= 1) {
+                    trigger["mode"] = 2 //undefined mode
                 }
 
                 newTriggerMap[id] = gson.toJson(trigger)

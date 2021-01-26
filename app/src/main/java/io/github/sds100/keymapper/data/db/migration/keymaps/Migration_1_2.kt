@@ -20,51 +20,10 @@ import timber.log.Timber
 /**
  * Created by sds100 on 06/06/20.
  */
-//
-//private data class Trigger1(val keys: List<Int>)
-//
-//private enum class ActionType1 {
-//    APP,
-//    APP_SHORTCUT,
-//    KEYCODE,
-//    KEY,
-//    TEXT_BLOCK,
-//    URL,
-//    SYSTEM_ACTION
-//}
-//
-//private enum class ActionType2 {
-//    APP,
-//    APP_SHORTCUT,
-//    KEY_EVENT,
-//    KEY,
-//    TEXT_BLOCK,
-//    URL,
-//    SYSTEM_ACTION
-//}
-//
-//private data class Extra1(val id: String, val data: String)
-//
-//private data class Trigger2(val keys: List<Key> = listOf(),
-//                            val extras: List<Extra> = listOf(),
-//                            val mode: Int = Trigger.SEQUENCE) {
-//    data class Key(
-//        val keyCode: Int,
-//        val deviceId: String,
-//        val clickType: Int
-//    )
-//}
-//
-//private data class Action2(
-//    val type: ActionType2,
-//
-//    val data: String,
-//
-//    val extras: List<Extra> = listOf(),
-//
-//    val flags: Int = 0
-//)
 
+/**
+ * Mahoosive update/overhaul from 1.0 to 2.0
+ */
 object Migration_1_2 {
     private const val FLAG_VIBRATE_1 = 4
     private const val FLAG_LONG_PRESS_1 = 1

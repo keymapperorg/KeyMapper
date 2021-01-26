@@ -4,49 +4,20 @@ package io.github.sds100.keymapper.data.db.migration.keymaps
 
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.SupportSQLiteQueryBuilder
-import com.github.salomonbrys.kotson.fromJson
-import com.google.gson.Gson
-import io.github.sds100.keymapper.data.model.Action
-import io.github.sds100.keymapper.data.model.Extra
-import io.github.sds100.keymapper.data.model.Trigger
-import io.github.sds100.keymapper.util.ActionType
-import io.github.sds100.keymapper.util.SystemAction
-import io.github.sds100.keymapper.util.delegate.KeymapDetectionDelegate
+import com.github.salomonbrys.kotson.get
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import splitties.bitflags.withFlag
 
 /**
  * Created by sds100 on 25/06/20.
  */
 
-
+/**
+ * #379 feat: add option to repeat for all types of actions
+ */
 object Migration_2_3 {
-
-    private data class Trigger2(val keys: List<Trigger.Key> = listOf(),
-
-                                val extras: List<Extra> = listOf(),
-
-                                @Trigger.Mode
-                                val mode: Int = Trigger.SEQUENCE)
-
-    private enum class ActionType2 {
-        APP,
-        APP_SHORTCUT,
-        KEY_EVENT,
-        KEY,
-        TEXT_BLOCK,
-        URL,
-        SYSTEM_ACTION
-    }
-
-    private data class Action2(
-        val type: ActionType2,
-
-        val data: String,
-
-        val extras: List<Extra> = listOf(),
-
-        val flags: Int = 0
-    )
 
     private const val KEYMAP_FLAG_REPEAT_ACTIONS = 16
 
@@ -56,21 +27,17 @@ object Migration_2_3 {
             .columns(arrayOf("id", "trigger", "action_list", "flags"))
             .create()
 
+        val parser = JsonParser()
+
         //maps the new flags to each keymap id
         val newFlagsMap = mutableMapOf<Long, Int>()
 
         query(query).apply {
-            val gson = Gson()
-
             while (moveToNext()) {
                 val id = getLong(0)
 
-                val triggerJson = getString(1)
-                val trigger = gson.fromJson<Trigger2>(triggerJson)
-
-                val actionListJson = getString(2)
-                val actionList = gson.fromJson<List<Action2>>(actionListJson)
-
+                val trigger = parser.parse(getString(1)).asJsonObject
+                val actionList = parser.parse(getString(2)).asJsonArray
                 val flags = getInt(3)
 
                 var newFlags = flags
@@ -93,19 +60,24 @@ object Migration_2_3 {
         }
     }
 
-    private fun isRepeatable(trigger: Trigger2, actionList: List<Action2>): Boolean {
+    private fun isRepeatable(trigger: JsonObject, actionList: JsonArray): Boolean {
         return actionList.any {
-            it.type in arrayOf(ActionType2.KEY_EVENT, ActionType2.TEXT_BLOCK) ||
-                listOf(
-                    SystemAction.VOLUME_DECREASE_STREAM,
-                    SystemAction.VOLUME_INCREASE_STREAM,
-                    SystemAction.VOLUME_DOWN,
-                    SystemAction.VOLUME_UP,
-                    SystemAction.VOLUME_MUTE,
-                    SystemAction.VOLUME_TOGGLE_MUTE,
-                    SystemAction.VOLUME_UNMUTE
-                ).contains(it.data)
+            it["type"].asString in arrayOf("KEY_EVENT", "TEXT_BLOCK")
+                || it["data"].asString in arrayOf(
+                "volume_decrease_stream",
+                "volume_increase_stream",
+                "volume_down",
+                "volume_up",
+                "volume_mute",
+                "volume_toggle_mute",
+                "volume_unmute"
+            )
         }
-            && KeymapDetectionDelegate.performActionOnDown(trigger.keys, trigger.mode)
+            && performActionOnDown(trigger["keys"].asJsonArray, trigger["mode"].asInt)
+    }
+
+    private fun performActionOnDown(triggerKeys: JsonArray, triggerMode: Int): Boolean {
+        return (triggerKeys.size() == 1 && triggerKeys[0]["clickType"].asInt != 2) //2 = double press
+            || triggerMode == 0 //parallel mode
     }
 }

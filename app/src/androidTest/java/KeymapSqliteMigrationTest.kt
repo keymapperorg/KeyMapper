@@ -1,8 +1,10 @@
 import androidx.room.testing.MigrationTestHelper
+import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
 import io.github.sds100.keymapper.data.db.AppDatabase
 import org.hamcrest.Matchers.`is`
@@ -126,24 +128,7 @@ class KeymapSqliteMigrationTest {
 
         db = helper.runMigrationsAndValidate(TEST_DB, 10, true, AppDatabase.MIGRATION_9_10)
 
-        val cursor = db.query("SELECT trigger, action_list FROM keymaps")
-
-        MIGRATION_9_10_EXPECTED_DATA.forEachIndexed { row, expectedData ->
-            val expectedTrigger = expectedData[1]
-            val expectedActionList = expectedData[2]
-
-            cursor.moveToNext()
-
-            val triggerColumnIndex = cursor.getColumnIndex("trigger")
-            val actualTrigger = cursor.getString(triggerColumnIndex)
-
-            assertThat("trigger at row $row", actualTrigger, `is`(expectedTrigger))
-
-            val actionListColumnIndex = cursor.getColumnIndex("action_list")
-            val actualActionList = cursor.getString(actionListColumnIndex)
-
-            assertThat("action_list at row $row", actualActionList, `is`(expectedActionList))
-        }
+        testColumnsMatch(db, MIGRATION_9_10_EXPECTED_DATA)
     }
 
     @Suppress("VARIABLE_WITH_REDUNDANT_INITIALIZER")
@@ -165,24 +150,7 @@ class KeymapSqliteMigrationTest {
 
         db = helper.runMigrationsAndValidate(TEST_DB, 6, true, AppDatabase.MIGRATION_5_6)
 
-        val cursor = db.query("SELECT trigger, flags FROM keymaps")
-
-        MIGRATION_5_6_EXPECTED_DATA.forEachIndexed { row, expectedData ->
-            val expectedTrigger = expectedData[1]
-            val expectedFlags = expectedData[5]
-
-            cursor.moveToNext()
-
-            val triggerColumnIndex = cursor.getColumnIndex("trigger")
-            val actualTrigger = cursor.getString(triggerColumnIndex)
-
-            assertThat("trigger at row $row", actualTrigger, `is`(expectedTrigger))
-
-            val flagsColumnIndex = cursor.getColumnIndex("flags")
-            val actualFlags = cursor.getInt(flagsColumnIndex)
-
-            assertThat("flags at row $row", actualFlags, `is`(expectedFlags))
-        }
+        testColumnsMatch(db, MIGRATION_5_6_EXPECTED_DATA)
     }
 
     @Suppress("VARIABLE_WITH_REDUNDANT_INITIALIZER")
@@ -204,30 +172,7 @@ class KeymapSqliteMigrationTest {
 
         db = helper.runMigrationsAndValidate(TEST_DB, 5, true, AppDatabase.MIGRATION_4_5)
 
-        val cursor = db.query("SELECT action_list, trigger, flags FROM keymaps")
-
-        MIGRATION_4_5_EXPECTED_DATA.forEachIndexed { row, expectedData ->
-            val expectedTrigger = expectedData[1]
-            val expectedActionList = expectedData[2]
-            val expectedFlags = expectedData[5]
-
-            cursor.moveToNext()
-
-            val actionListColumnIndex = cursor.getColumnIndex("action_list")
-            val actualActionList = cursor.getString(actionListColumnIndex)
-
-            assertThat("action list at row $row", actualActionList, `is`(expectedActionList))
-
-            val triggerColumnIndex = cursor.getColumnIndex("trigger")
-            val actualTrigger = cursor.getString(triggerColumnIndex)
-
-            assertThat("trigger at row $row", actualTrigger, `is`(expectedTrigger))
-
-            val flagsColumnIndex = cursor.getColumnIndex("flags")
-            val actualFlags = cursor.getInt(flagsColumnIndex)
-
-            assertThat("flags at row $row", actualFlags, `is`(expectedFlags))
-        }
+        testColumnsMatch(db, MIGRATION_4_5_EXPECTED_DATA)
     }
 
     @Suppress("VARIABLE_WITH_REDUNDANT_INITIALIZER")
@@ -249,17 +194,7 @@ class KeymapSqliteMigrationTest {
 
         db = helper.runMigrationsAndValidate(TEST_DB, 4, true, AppDatabase.MIGRATION_3_4)
 
-        val cursor = db.query("SELECT trigger FROM keymaps")
-
-        MIGRATION_3_4_EXPECTED_DATA.forEachIndexed { row, expectedData ->
-            val expectedTrigger = expectedData[1]
-
-            cursor.moveToNext()
-            val triggerColumnIndex = cursor.getColumnIndex("trigger")
-            val actualTrigger = cursor.getString(triggerColumnIndex)
-
-            assertThat("trigger at row $row", actualTrigger, `is`(expectedTrigger))
-        }
+        testColumnsMatch(db, MIGRATION_3_4_EXPECTED_DATA)
     }
 
     @Suppress("VARIABLE_WITH_REDUNDANT_INITIALIZER")
@@ -281,17 +216,7 @@ class KeymapSqliteMigrationTest {
 
         db = helper.runMigrationsAndValidate(TEST_DB, 3, true, AppDatabase.MIGRATION_2_3)
 
-        val cursor = db.query("SELECT flags FROM keymaps")
-
-        MIGRATION_2_3_EXPECTED_DATA.forEachIndexed { row, expectedData ->
-            val expectedFlags = expectedData[5]
-
-            cursor.moveToNext()
-            val flagsColumnIndex = cursor.getColumnIndex("flags")
-            val actualFlags = cursor.getInt(flagsColumnIndex)
-
-            assertThat("flags at row $row", actualFlags, `is`(expectedFlags))
-        }
+        testColumnsMatch(db, MIGRATION_2_3_EXPECTED_DATA)
     }
 
     @Suppress("VARIABLE_WITH_REDUNDANT_INITIALIZER")
@@ -309,54 +234,49 @@ class KeymapSqliteMigrationTest {
                     VALUES (${row.joinToString { "'$it'" }})
                     """)
             }
+
             close()
         }
 
         db = helper.runMigrationsAndValidate(TEST_DB, 2, true, AppDatabase.MIGRATION_1_2)
+        testColumnsMatch(db, MIGRATION_1_2_EXPECTED_DATA)
+    }
+
+    private fun testColumnsMatch(db: SupportSQLiteDatabase, expectedData: Array<out Array<out Any>>) {
 
         val cursor = db.query("SELECT * FROM keymaps")
 
-        assertThat("Check the logcat", cursor.count, `is`(MIGRATION_1_2_EXPECTED_DATA.size))
+        assertThat("Check the logcat", cursor.count, `is`(expectedData.size))
 
         while (cursor.moveToNext()) {
-            val row = cursor.position
-            val expectedColumnValues: Array<out Any> = MIGRATION_1_2_EXPECTED_DATA[row]
+            cursor.columnNames.forEachIndexed { columnIndex, columnName ->
+                val row = cursor.position
+                val expectedColumnValues: Array<out Any> = expectedData[row]
 
-            //id
-            assertThat("id at row $row", cursor.getInt(0), `is`(expectedColumnValues[0] as Int))
+                val expectedColumnValue = expectedColumnValues[columnIndex]
 
-            //trigger
-            JsonTestUtils.compareBothWays(
-                element = jsonParser.parse(expectedColumnValues[1] as String),
-                elementName = "expected trigger at row $row",
-                other = jsonParser.parse(cursor.getString(1)),
-                otherName = "migrated trigger at row $row")
+                val columnValue: Any = when (expectedColumnValue) {
+                    is Int -> cursor.getInt(columnIndex)
+                    is String -> cursor.getString(columnIndex)
+                    else -> throw Exception("Don't know how to get this type ${expectedColumnValue::class.simpleName} from cursor")
+                }
 
-            //action list
-            JsonTestUtils.compareBothWays(
-                element = jsonParser.parse(expectedColumnValues[2] as String),
-                elementName = "expected action list at row $row",
-                other = jsonParser.parse(cursor.getString(2)),
-                otherName = "migrated action list at row $row")
+                when (expectedColumnValue) {
+                    is Int -> assertThat("$columnName at row $row doesn't match", columnValue, `is`(expectedColumnValue))
+                    is String -> {
+                        try {
+                            JsonTestUtils.compareBothWays(
+                                element = jsonParser.parse(expectedColumnValue),
+                                elementName = "expected $columnName at row $row",
+                                other = jsonParser.parse(columnValue as String),
+                                otherName = "migrated $columnName at row $row")
 
-            //constraint list
-            JsonTestUtils.compareBothWays(
-                element = jsonParser.parse(expectedColumnValues[3] as String),
-                elementName = "expected constraint list at row $row",
-                other = jsonParser.parse(cursor.getString(3)),
-                otherName = "migrated constraint list at row $row")
-
-            //constraint mode
-            assertThat("constraint mode at row $row", cursor.getInt(4), `is`(expectedColumnValues[4] as Int))
-
-            //flags
-            assertThat("flags at row $row", cursor.getInt(5), `is`(expectedColumnValues[5] as Int))
-
-            //folder name
-            assertThat("folder name at row $row", cursor.getString(6), `is`(expectedColumnValues[6] as String))
-
-            //is enabled
-            assertThat("isEnabled at row $row", cursor.getInt(7), `is`(expectedColumnValues[7] as Int))
+                        } catch (e: JsonParseException) {
+                            assertThat("$columnName at row $row doesn't match", columnValue, `is`(expectedColumnValue))
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -10,7 +10,6 @@ import com.google.gson.JsonPrimitive
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
 import org.junit.Assert
-import timber.log.Timber
 
 /**
  * Created by sds100 on 25/01/21.
@@ -68,15 +67,19 @@ object JsonTestUtils {
                 val names = parentNamePath.split(NAME_SEPARATOR)
                 var parentElement: JsonElement = rootToCompare
 
-                names.forEachIndexed { index, name ->
-                    if (parentElement is JsonObject) {
-                        assertThat("$elementName/$parentNamePath not found in $rootName", (parentElement as JsonObject).contains(name))
-                    }
+                if (names == listOf("")) {
+                    assertThat("$elementName/:$element doesn't match $rootName/:$parentElement", (parentElement as JsonPrimitive), `is`(element))
+                } else {
+                    names.forEachIndexed { index, name ->
+                        if (parentElement is JsonObject) {
+                            assertThat("$elementName/$parentNamePath not found in $rootName", (parentElement as JsonObject).contains(name))
+                        }
 
-                    parentElement = parentElement[name]
+                        parentElement = parentElement[name]
 
-                    if (index == names.lastIndex) {
-                        assertThat("$elementName/$parentNamePath:$element doesn't match $rootName/$parentNamePath:$parentElement", (parentElement as JsonPrimitive), `is`(element))
+                        if (index == names.lastIndex) {
+                            assertThat("$elementName/$parentNamePath:$element doesn't match $rootName/$parentNamePath:$parentElement", (parentElement as JsonPrimitive), `is`(element))
+                        }
                     }
                 }
             }
