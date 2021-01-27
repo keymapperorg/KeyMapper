@@ -25,7 +25,7 @@ fastlane android ci_alpha_apk
 ```
 fastlane android beta
 ```
-Submit a new Beta Build to Crashlytics Beta
+Create and deploy beta release
 ### android deploy
 ```
 fastlane android deploy

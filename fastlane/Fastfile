@@ -33,22 +33,24 @@ platform :android do
 
   desc "Create and deploy beta release"
   lane :beta do
+    set_properties_value(
+        path: "./app/version.properties",
+        key: "VERSION_NAME",
+        value: ENV['VERSION_NAME']
+    )
+
+    gradle(task: "assembleDebug")
+
     gradle(
-      task: "assemble",
-      build_type: "Release",
-      print_command: false,
-      properties: {
-        "android.injected.signing.store.file" => ENV['KEYSTORE_PATH'],
+        task: "assemble",
+        build_type: "Release",
+        print_command: false,
+        properties: {
+        "android.injected.signing.store.file" => "app/keystore.jks",
         "android.injected.signing.store.password" => ENV['STORE_PASSWORD'],
         "android.injected.signing.key.alias" => ENV['KEY_ALIAS'],
         "android.injected.signing.key.password" => ENV['KEY_PASSWORD'],
       }
     )
-  end
-
-  desc "Deploy a new version to the Google Play"
-  lane :deploy do
-    gradle(task: "clean assembleRelease")
-    upload_to_play_store
   end
 end
