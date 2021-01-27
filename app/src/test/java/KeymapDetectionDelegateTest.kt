@@ -151,7 +151,7 @@ class KeymapDetectionDelegateTest {
         delegate.keymapListCache = listOf(
             KeyMap(0, trigger = oneKeyTrigger, actionList = listOf(TEST_ACTION_2)),
             KeyMap(1, trigger = twoKeyTrigger, actionList = listOf(TEST_ACTION))
-            )
+        )
 
         //test 1. test triggering 2 key trigger
         //WHEN
@@ -164,8 +164,8 @@ class KeymapDetectionDelegateTest {
 
         //THEN
 
-        assertThat(mPerformActionTest.history.map { it.action }, `is`(listOf(TEST_ACTION)))
-        mPerformActionTest.reset()
+        assertThat(performActionTest.history.map { it.action }, `is`(listOf(TEST_ACTION)))
+        performActionTest.reset()
 
         //test 2. test triggering 1 key trigger
         //WHEN
@@ -176,8 +176,8 @@ class KeymapDetectionDelegateTest {
 
         //THEN
 
-        assertThat(mPerformActionTest.history.map { it.action }, `is`(listOf(TEST_ACTION_2)))
-        mPerformActionTest.reset()
+        assertThat(performActionTest.history.map { it.action }, `is`(listOf(TEST_ACTION_2)))
+        performActionTest.reset()
     }
 
     @Test
