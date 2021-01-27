@@ -77,7 +77,7 @@ jobs:
 
       - name: Report build status to Discord
         uses: sarisia/actions-status-discord@v1
-        if: always()
+        if: failure()
         with:
           title: "Build apk"
           webhook: ${{ secrets.DISCORD_BUILD_STATUS_WEBHOOK }}
@@ -106,7 +106,7 @@ jobs:
 
       - name: Report build status to Discord
         uses: sarisia/actions-status-discord@v1
-        if: always()
+        if: failure()
         with:
           title: "Instrumentation tests"
           webhook: ${{ secrets.DISCORD_BUILD_STATUS_WEBHOOK }}
