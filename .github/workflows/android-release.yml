@@ -11,8 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - name: Unit tests
-        run: bash ./gradlew test
+        run: bash ./gradlew testDebugUnitTest
+
       - name: Report build status to Discord
         uses: sarisia/actions-status-discord@v1
         if: failure()
@@ -25,7 +27,7 @@ jobs:
     runs-on: ubuntu-18.04
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: Update Run Number in properties
         uses: christian-draeger/write-properties@1.0.1
