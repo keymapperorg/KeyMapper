@@ -36,13 +36,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2.1.0
 
-      - name: Update Run Number in properties
-        uses: christian-draeger/write-properties@1.0.0
-        with:
-          path: version.properties
-          property: RUN_NUMBER
-          value: ${{ github.run_number }}
-
       - uses: actions/cache@v2
         with:
           path: |
