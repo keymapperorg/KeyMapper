@@ -155,8 +155,8 @@ class KeymapDetectionDelegateTest {
 
         //test 1. test triggering 2 key trigger
         //WHEN
-        inputKeyEvent(KeyEvent.KEYCODE_SHIFT_LEFT, KeyEvent.ACTION_DOWN)
-        inputKeyEvent(KeyEvent.KEYCODE_A, KeyEvent.ACTION_DOWN)
+        failthis
+        testinputKeyEvent(KeyEvent.KEYCODE_A, KeyEvent.ACTION_DOWN)
 
         inputKeyEvent(KeyEvent.KEYCODE_SHIFT_LEFT, KeyEvent.ACTION_UP)
         inputKeyEvent(KeyEvent.KEYCODE_A, KeyEvent.ACTION_UP)
