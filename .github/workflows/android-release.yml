@@ -55,9 +55,13 @@ jobs:
         with:
           ruby-version: '>= 2.6'
 
-      - uses: maierj/fastlane-action@v2.0.0
-        with:
-          lane: 'ci_alpha_apk'
+      - name: Install bundle
+        run: |
+          bundle config path vendor/bundle
+          bundle install --jobs 4 --retry 3
+
+      - name: Build apk with fastlane
+        run: bundle exec fastlane ci_alpha_apk
 
       - name: set apk name env
         run: echo "APK_NAME=$(basename app/build/outputs/apk/ci/*.apk .apk)" >> $GITHUB_ENV
