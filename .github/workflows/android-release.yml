@@ -1,4 +1,4 @@
-name: Build and test app
+name: Build and test app (release branch)
 
 on:
   push:
