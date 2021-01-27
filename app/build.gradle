@@ -8,12 +8,15 @@ android {
     compileSdkVersion 30
     buildToolsVersion = '30.0.3'
 
+    def props = new Properties()
+    file("version.properties").withInputStream { props.load(it) }
+
     defaultConfig {
         applicationId "io.github.sds100.keymapper"
         minSdkVersion 17
         targetSdkVersion 30
-        versionCode 41
-        versionName "2.3.0-alpha"
+        versionCode props.getProperty("VERSION_CODE").toInteger()
+        versionName props.getProperty("VERSION_NAME")
         multiDexEnabled true
 
         vectorDrawables.useSupportLibrary = true
@@ -34,13 +37,13 @@ android {
         }
         debug {
             applicationIdSuffix ".debug"
-            versionNameSuffix "-debug"
+            versionNameSuffix "." + props.getProperty("VERSION_NUM") + "-debug"
         }
         ci {
             debuggable = true
 
             applicationIdSuffix ".ci"
-            versionNameSuffix "-ci.$RUN_NUMBER"
+            versionNameSuffix "." + props.getProperty("VERSION_NUM") + "-ci"
             signingConfig signingConfigs.debug
         }
     }

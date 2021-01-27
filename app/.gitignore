@@ -67,4 +67,3 @@ fastlane/test_output
 fastlane/readme.md
 
 /src/main/res/values/private-strings.xml
-/version.properties
