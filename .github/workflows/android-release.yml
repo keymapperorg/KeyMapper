@@ -29,13 +29,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Update Run Number in properties
-        uses: christian-draeger/write-properties@1.0.1
-        with:
-          path: app/version.properties
-          property: RUN_NUMBER
-          value: ${{ github.run_number }}
-
       - uses: actions/cache@v2
         with:
           path: |
@@ -58,8 +51,13 @@ jobs:
           echo "${{ secrets.CI_KEYSTORE }}" > debug.keystore.asc
           gpg -d --passphrase "${{ secrets.CI_KEYSTORE_DECRYPT }}" --batch debug.keystore.asc > /home/runner/.android/debug.keystore
 
-      - name: Build debug APK
-        run: bash ./gradlew assembleCi --stacktrace
+      - uses: actions/setup-ruby@v1
+        with:
+          ruby-version: '>= 2.6'
+
+      - uses: maierj/fastlane-action@v2.0.0
+        with:
+          lane: 'ci_alpha_apk'
 
       - name: set apk name env
         run: echo "APK_NAME=$(basename app/build/outputs/apk/ci/*.apk .apk)" >> $GITHUB_ENV

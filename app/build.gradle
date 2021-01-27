@@ -37,13 +37,13 @@ android {
         }
         debug {
             applicationIdSuffix ".debug"
-            versionNameSuffix "-debug"
+            versionNameSuffix "." + props.getProperty("VERSION_NUM") + "-debug"
         }
         ci {
             debuggable = true
 
             applicationIdSuffix ".ci"
-            versionNameSuffix "-ci." + props.getProperty("RUN_NUMBER")
+            versionNameSuffix "." + props.getProperty("VERSION_NUM") + "-ci"
             signingConfig signingConfigs.debug
         }
     }

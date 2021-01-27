@@ -16,9 +16,19 @@
 default_platform(:android)
 
 platform :android do
-  desc "Runs all the tests"
-  lane :test do
-    gradle(task: "testDebugUnitTest")
+
+  lane :ci_alpha_apk do
+    gradle(task: "clean assembleCi")
+
+    # increment version code for next build
+    increment_version_code_in_properties_file(
+        key: "VERSION_NUM",
+        path: "./app/version.properties"
+      )
+
+    git_commit(path: "app/version.properties", message: "ci: version num bump")
+    #push_to_git_remote()
+
   end
 
   desc "Submit a new Beta Build to Crashlytics Beta"
