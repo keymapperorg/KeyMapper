@@ -1,42 +1,34 @@
-name: Android CI
+name: Build and test app
 
 on:
   push:
     branches:
-      - 'develop'
+      - 'release/*'
 
 jobs:
-  unit-test:
-    name: Run unit tests
+  release-unit-tests:
+    name: Run unit tests for release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/cache@v2
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
       - name: Unit tests
         run: bash ./gradlew test
       - name: Report build status to Discord
         uses: sarisia/actions-status-discord@v1
-        if: ${{ !env.ACT }}
+        if: always()
         with:
           title: "Unit tests"
           webhook: ${{ secrets.DISCORD_BUILD_STATUS_WEBHOOK }}
 
-  apk:
-    name: Generate APK
-    runs-on: ubuntu-latest
+  release-ci-apk:
+    name: Generate release APK
+    runs-on: ubuntu-18.04
+
     steps:
-      - uses: actions/checkout@v2.1.0
+      - uses: actions/checkout@v1
 
       - name: Update Run Number in properties
-        uses: christian-draeger/write-properties@1.0.0
+        uses: christian-draeger/write-properties@1.0.1
         with:
           path: gradle.properties
           property: RUN_NUMBER
@@ -58,11 +50,11 @@ jobs:
 
       - name: Make .android folder
         run: mkdir /home/runner/.android
-        
+
       - name: Create debug keystore
         run: |
-           echo "${{ secrets.CI_KEYSTORE }}" > debug.keystore.asc
-           gpg -d --passphrase "${{ secrets.CI_KEYSTORE_DECRYPT }}" --batch debug.keystore.asc > /home/runner/.android/debug.keystore
+          echo "${{ secrets.CI_KEYSTORE }}" > debug.keystore.asc
+          gpg -d --passphrase "${{ secrets.CI_KEYSTORE_DECRYPT }}" --batch debug.keystore.asc > /home/runner/.android/debug.keystore
 
       - name: Build debug APK
         run: bash ./gradlew assembleCi --stacktrace
@@ -88,4 +80,33 @@ jobs:
         if: always()
         with:
           title: "Build apk"
+          webhook: ${{ secrets.DISCORD_BUILD_STATUS_WEBHOOK }}
+
+  release-instrumentation-tests:
+    name: Run instrumentation tests
+    runs-on: macOS-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: run tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          script: ./gradlew connectedCheck
+
+      - name: Report build status to Discord
+        uses: sarisia/actions-status-discord@v1
+        if: always()
+        with:
+          title: "Instrumentation tests"
           webhook: ${{ secrets.DISCORD_BUILD_STATUS_WEBHOOK }}
