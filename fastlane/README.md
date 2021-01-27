@@ -16,14 +16,9 @@ or alternatively using `brew install fastlane`
 
 # Available Actions
 ## Android
-### android unit_test
+### android ci_alpha_apk
 ```
-fastlane android unit_test
-```
-Runs all the unit tests
-### android ci
-```
-fastlane android ci
+fastlane android ci_alpha_apk
 ```
 
 ### android beta
