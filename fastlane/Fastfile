@@ -26,7 +26,12 @@ platform :android do
         path: "./app/version.properties"
       )
 
-    git_commit(path: "app/version.properties", message: "ci: version num bump")
+    version_num = get_properties_value(
+        key: "VERSION_NUM",
+        path: "./app/version.properties"
+    )
+
+    git_commit(path: "app/version.properties", message: "ci: version num bump to " + version_num)
     push_to_git_remote()
 
   end
