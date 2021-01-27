@@ -57,6 +57,11 @@ jobs:
         with:
           java-version: 1.8
 
+      - name: set up Ruby for fastlane
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: '>= 2.6'
+
       - name: Make .android folder
         run: mkdir /home/runner/.android
 
@@ -65,8 +70,9 @@ jobs:
           echo "${{ secrets.CI_KEYSTORE }}" > debug.keystore.asc
           gpg -d --passphrase "${{ secrets.CI_KEYSTORE_DECRYPT }}" --batch debug.keystore.asc > /home/runner/.android/debug.keystore
 
-      - name: Build debug APK
-        run: bash ./gradlew assembleCi --stacktrace
+      - uses: maierj/fastlane-action@v2.0.0
+        with:
+          lane: 'ci_alpha_apk'
 
       - name: set apk name env
         run: echo "APK_NAME=$(basename app/build/outputs/apk/ci/*.apk .apk)" >> $GITHUB_ENV
