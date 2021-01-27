@@ -23,8 +23,8 @@ jobs:
           webhook: ${{ secrets.DISCORD_BUILD_STATUS_WEBHOOK }}
 
   release-ci-apk:
-    name: Generate release APK
-    runs-on: ubuntu-18.04
+    name: Generate release ci APK
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -43,6 +43,11 @@ jobs:
         with:
           java-version: 1.8
 
+      - name: set up Ruby for fastlane
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: '2.7'
+
       - name: Make .android folder
         run: mkdir /home/runner/.android
 
@@ -51,14 +56,13 @@ jobs:
           echo "${{ secrets.CI_KEYSTORE }}" > debug.keystore.asc
           gpg -d --passphrase "${{ secrets.CI_KEYSTORE_DECRYPT }}" --batch debug.keystore.asc > /home/runner/.android/debug.keystore
 
-      - uses: actions/setup-ruby@v1
-        with:
-          ruby-version: '>= 2.6'
-
       - name: Install bundle
+        run: bundle install
+
+      - name: Set Git credentials
         run: |
-          bundle config path vendor/bundle
-          bundle install --jobs 4 --retry 3
+          git config user.name "GitHub Actions"
+          git config user.email noreply@github.com
 
       - name: Build apk with fastlane
         run: bundle exec fastlane ci_alpha_apk
