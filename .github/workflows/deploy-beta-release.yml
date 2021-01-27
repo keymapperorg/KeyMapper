@@ -51,14 +51,14 @@ jobs:
           KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
           KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
 
-#      - name: run instrumentation tests TODO uncomment tests
-#        uses: reactivecircus/android-emulator-runner@v2
-#        with:
-#          api-level: 29
-#          script: ./gradlew connectedCheck
+      - name: run instrumentation tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          script: ./gradlew connectedCheck
 
-#      - name: Unit tests
-#        run: bash ./gradlew testDebugUnitTest
+      - name: Unit tests
+        run: bash ./gradlew testDebugUnitTest
 
       - name: Build apk with fastlane
         run: bundle exec fastlane beta
