@@ -15,7 +15,7 @@ jobs:
         run: bash ./gradlew test
       - name: Report build status to Discord
         uses: sarisia/actions-status-discord@v1
-        if: always()
+        if: failure()
         with:
           title: "Unit tests"
           webhook: ${{ secrets.DISCORD_BUILD_STATUS_WEBHOOK }}
