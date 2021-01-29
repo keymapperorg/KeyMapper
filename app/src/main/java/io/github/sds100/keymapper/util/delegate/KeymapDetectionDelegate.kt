@@ -506,7 +506,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
     private var mModifierKeyEventActions = false
     private var mNotModifierKeyEventActions = false
-    private var mUnmappedKeycodesToConsumeOnUp = mutableSetOf<Int>()
+    private var keyCodesToImitateUpAction = mutableSetOf<Int>()
     private var mMetaStateFromActions = 0
     private var mMetaStateFromKeyEvent = 0
 
@@ -557,7 +557,8 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         descriptor: String,
         isExternal: Boolean,
         metaState: Int,
-        deviceId: Int
+        deviceId: Int,
+        scanCode: Int = 0
     ): Boolean {
         if (!mDetectKeymaps) return false
 
@@ -587,8 +588,8 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             }
 
         when (action) {
-            KeyEvent.ACTION_DOWN -> return onKeyDown(event, deviceId)
-            KeyEvent.ACTION_UP -> return onKeyUp(event, deviceId)
+            KeyEvent.ACTION_DOWN -> return onKeyDown(event, deviceId, scanCode)
+            KeyEvent.ACTION_UP -> return onKeyUp(event, deviceId, scanCode)
         }
 
         return false
@@ -597,7 +598,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
     /**
      * @return whether to consume the [KeyEvent].
      */
-    private fun onKeyDown(event: Event, deviceId: Int): Boolean {
+    private fun onKeyDown(event: Event, deviceId: Int, scanCode: Int): Boolean {
 
         mEventDownTimeMap[event] = currentTime
 
@@ -763,17 +764,23 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
             }
         }
 
-        if (mModifierKeyEventActions && !isModifierKeyCode && mMetaStateFromActions != 0
+        if (mModifierKeyEventActions
+            && !isModifierKeyCode
+            && mMetaStateFromActions != 0
             && !mappedToParallelTriggerAction) {
 
             consumeEvent = true
-            mUnmappedKeycodesToConsumeOnUp.add(event.keyCode)
+            keyCodesToImitateUpAction.add(event.keyCode)
 
-            imitateButtonPress.value = ImitateButtonPress(event.keyCode,
-                mMetaStateFromKeyEvent.withFlag(mMetaStateFromActions), deviceId)
+            imitateButtonPress.value = ImitateButtonPress(
+                event.keyCode,
+                mMetaStateFromKeyEvent.withFlag(mMetaStateFromActions),
+                deviceId,
+                KeyEventAction.DOWN,
+                scanCode)
 
             mCoroutineScope.launch {
-                repeatImitatingKey(event.keyCode, deviceId)
+                repeatImitatingKey(event.keyCode, deviceId, scanCode)
             }
         }
 
@@ -915,14 +922,15 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
     /**
      * @return whether to consume the event.
      */
-    private fun onKeyUp(event: Event, deviceId: Int): Boolean {
+    private fun onKeyUp(event: Event, deviceId: Int, scanCode: Int): Boolean {
         val keyCode = event.keyCode
 
         val downTime = mEventDownTimeMap[event] ?: currentTime
         mEventDownTimeMap.remove(event)
 
         var consumeEvent = false
-        var imitateButtonPress = false
+        var imitateDownUpKeyEvent = false
+        var imitateUpKeyEvent = false
 
         var successfulLongPress = false
         var successfulDoublePress = false
@@ -940,9 +948,12 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
         val imitateKeyAfterDoublePressTimeout = mutableListOf<Long>()
 
-        if (mUnmappedKeycodesToConsumeOnUp.contains(keyCode)) {
+        var metaStateFromActionsToRemove = 0
+
+        if (keyCodesToImitateUpAction.contains(keyCode)) {
             consumeEvent = true
-            mUnmappedKeycodesToConsumeOnUp.remove(keyCode)
+            imitateUpKeyEvent = true
+            keyCodesToImitateUpAction.remove(keyCode)
         }
 
         if (mDetectSequenceDoublePresses) {
@@ -1000,7 +1011,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                     successfulLongPress = true
                 } else if (mDetectSequenceLongPresses &&
                     mLongPressSequenceEvents.any { it.first.matchesEvent(event.withLongPress) }) {
-                    imitateButtonPress = true
+                    imitateDownUpKeyEvent = true
                 }
 
                 val encodedEventWithClickType = when {
@@ -1127,12 +1138,12 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                             longPressSingleKeyTriggerJustReleased = true
                         }
 
-                        if (!imitateButtonPress) {
+                        if (!imitateDownUpKeyEvent) {
                             if (singleKeyTrigger && !successfulLongPress) {
-                                imitateButtonPress = true
+                                imitateDownUpKeyEvent = true
                             } else if (lastMatchedIndex > -1 &&
                                 lastMatchedIndex < mParallelTriggerEvents[triggerIndex].lastIndex) {
-                                imitateButtonPress = true
+                                imitateDownUpKeyEvent = true
                             }
                         }
                     }
@@ -1145,6 +1156,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                 }
 
                 mLastMatchedParallelEventIndices[triggerIndex] = lastHeldDownEventIndex
+                mMetaStateFromActions = mMetaStateFromActions.minusFlag(metaStateFromActionsToRemove)
 
                 //cancel repeating action jobs for this trigger
                 if (lastHeldDownEventIndex != mParallelTriggerEvents[triggerIndex].lastIndex) {
@@ -1272,18 +1284,32 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
                         return@launch
                     }
 
-                    this@KeymapDetectionDelegate.imitateButtonPress.value = ImitateButtonPress(keyCode)
+                    this@KeymapDetectionDelegate.imitateButtonPress.value =
+                        ImitateButtonPress(keyCode, keyEventAction = KeyEventAction.DOWN_UP, scanCode = scanCode)
                 }
             }
         }
         //only imitate a key if an action isn't going to be performed
-        else if (imitateButtonPress
+        else if ((imitateDownUpKeyEvent || imitateUpKeyEvent)
             && detectedSequenceTriggerIndexes.isEmpty()
             && detectedParallelTriggerIndexes.isEmpty()
             && !shortPressSingleKeyTriggerJustReleased
             && !mappedToDoublePress) {
 
-            this.imitateButtonPress.value = ImitateButtonPress(keyCode)
+            val keyEventAction = if (imitateUpKeyEvent) {
+                KeyEventAction.UP
+            } else {
+                KeyEventAction.DOWN_UP
+            }
+
+            this.imitateButtonPress.value = ImitateButtonPress(
+                keyCode,
+                mMetaStateFromKeyEvent.withFlag(mMetaStateFromActions),
+                deviceId,
+                keyEventAction,
+                scanCode)
+
+            keyCodesToImitateUpAction.remove(event.keyCode)
         }
 
         return consumeEvent
@@ -1319,7 +1345,7 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
 
         mMetaStateFromActions = 0
         mMetaStateFromKeyEvent = 0
-        mUnmappedKeycodesToConsumeOnUp = mutableSetOf()
+        keyCodesToImitateUpAction = mutableSetOf()
 
         mRepeatJobs.valueIterator().forEach {
             it.forEach { job ->
@@ -1420,12 +1446,16 @@ class KeymapDetectionDelegate(private val mCoroutineScope: CoroutineScope,
         throw Exception("Action $action not in the action map!")
     }
 
-    private suspend fun repeatImitatingKey(keyCode: Int, deviceId: Int) {
+    private suspend fun repeatImitatingKey(keyCode: Int, deviceId: Int, scanCode: Int) {
         delay(400)
 
-        while (mUnmappedKeycodesToConsumeOnUp.contains(keyCode)) {
-            imitateButtonPress.postValue(ImitateButtonPress(keyCode,
-                mMetaStateFromKeyEvent.withFlag(mMetaStateFromActions), deviceId))
+        while (keyCodesToImitateUpAction.contains(keyCode)) {
+            imitateButtonPress.postValue(ImitateButtonPress(
+                keyCode,
+                mMetaStateFromKeyEvent.withFlag(mMetaStateFromActions),
+                deviceId,
+                KeyEventAction.DOWN,
+                scanCode)) //use down action because this is what Android does
 
             delay(50)
         }

@@ -23,4 +23,10 @@ class LiveEventTestWrapper<T>(liveEvent: LiveEvent<T>) {
     fun reset() {
         _history.clear()
     }
+
+    fun printHistory() {
+        history.forEach {
+            println(it)
+        }
+    }
 }

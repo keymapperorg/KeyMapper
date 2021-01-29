@@ -4,6 +4,7 @@ import android.view.KeyEvent
 import android.view.Surface
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
+import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.Trigger.Companion.DOUBLE_PRESS
@@ -31,7 +32,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import splitties.bitflags.hasFlag
+import splitties.bitflags.withFlag
 import kotlin.random.Random
 
 /**
@@ -44,6 +45,7 @@ class KeymapDetectionDelegateTest {
 
     companion object {
         private const val FAKE_KEYBOARD_DESCRIPTOR = "fake_keyboard"
+        private const val FAKE_KEYBOARD_DEVICE_ID = 123
         private const val FAKE_HEADPHONE_DESCRIPTOR = "fake_headphone"
 
         private const val FAKE_PACKAGE_NAME = "test_package"
@@ -71,8 +73,11 @@ class KeymapDetectionDelegateTest {
         )
     }
 
+    private var currentPackage = ""
     private lateinit var mDelegate: KeymapDetectionDelegate
     private lateinit var mPerformActionTest: LiveEventTestWrapper<PerformAction>
+    private lateinit var mImitateButtonPressTest: LiveEventTestWrapper<ImitateButtonPress>
+    private lateinit var mEventStream: LiveEventTestWrapper<Event>
     private var mCurrentPackage = ""
 
     @get:Rule
@@ -126,6 +131,23 @@ class KeymapDetectionDelegateTest {
         )
 
         mPerformActionTest = LiveEventTestWrapper(mDelegate.performAction)
+        mImitateButtonPressTest = LiveEventTestWrapper(mDelegate.imitateButtonPress)
+
+        val eventStreamLiveData = LiveEvent<Event>().apply {
+            addSource(mDelegate.performAction) {
+                value = it
+            }
+
+            addSource(mDelegate.imitateButtonPress) {
+                value = it
+            }
+
+            addSource(mDelegate.vibrate) {
+                value = it
+            }
+        }
+
+        mEventStream = LiveEventTestWrapper(eventStreamLiveData)
     }
 
     @After
@@ -134,6 +156,54 @@ class KeymapDetectionDelegateTest {
         mDelegate.reset()
 
         mPerformActionTest.reset()
+    }
+
+    /**
+     * issue #563
+     */
+    @Test
+    fun sendKeyEventActionWhenImitatingButtonPresses() = mCoroutineScope.runBlockingTest {
+        val trigger = parallelTrigger(
+            Trigger.Key(KeyEvent.KEYCODE_META_LEFT, deviceId = FAKE_KEYBOARD_DESCRIPTOR))
+
+        val action = Action.keyCodeAction(KeyEvent.KEYCODE_META_LEFT)
+            .copy(flags = Action.ACTION_FLAG_HOLD_DOWN)
+
+        mDelegate.keyMapListCache = listOf(
+            KeyMap(0, trigger, listOf(action))
+        )
+        val metaState = KeyEvent.META_META_ON.withFlag(KeyEvent.META_META_LEFT_ON)
+
+        inputKeyEvent(KeyEvent.KEYCODE_META_LEFT, KeyEvent.ACTION_DOWN, FAKE_KEYBOARD_DESCRIPTOR, metaState, FAKE_KEYBOARD_DEVICE_ID, scanCode = 117)
+        inputKeyEvent(KeyEvent.KEYCODE_E, KeyEvent.ACTION_DOWN, FAKE_KEYBOARD_DESCRIPTOR, metaState, FAKE_KEYBOARD_DEVICE_ID, scanCode = 33)
+        inputKeyEvent(KeyEvent.KEYCODE_META_LEFT, KeyEvent.ACTION_UP, FAKE_KEYBOARD_DESCRIPTOR, metaState, deviceId = FAKE_KEYBOARD_DEVICE_ID, scanCode = 117)
+        inputKeyEvent(KeyEvent.KEYCODE_E, KeyEvent.ACTION_UP, FAKE_KEYBOARD_DESCRIPTOR, deviceId = FAKE_KEYBOARD_DEVICE_ID, scanCode = 33)
+
+        val expectedEvents = listOf(
+            PerformAction(action, additionalMetaState = metaState, keyEventAction = KeyEventAction.DOWN),
+            ImitateButtonPress(KeyEvent.KEYCODE_E, metaState, FAKE_KEYBOARD_DEVICE_ID, KeyEventAction.DOWN, scanCode = 33),
+            PerformAction(action, additionalMetaState = 0, keyEventAction = KeyEventAction.UP),
+            ImitateButtonPress(KeyEvent.KEYCODE_E, metaState = 0, FAKE_KEYBOARD_DEVICE_ID, KeyEventAction.UP, scanCode = 33)
+        )
+
+        assertThat(mEventStream.history, `is`(expectedEvents))
+        mEventStream.reset()
+
+        inputKeyEvent(KeyEvent.KEYCODE_META_LEFT, KeyEvent.ACTION_DOWN, FAKE_KEYBOARD_DESCRIPTOR, metaState, FAKE_KEYBOARD_DEVICE_ID, scanCode = 117)
+        inputKeyEvent(KeyEvent.KEYCODE_E, KeyEvent.ACTION_DOWN, FAKE_KEYBOARD_DESCRIPTOR, metaState, FAKE_KEYBOARD_DEVICE_ID, scanCode = 33)
+        inputKeyEvent(KeyEvent.KEYCODE_E, KeyEvent.ACTION_UP, FAKE_KEYBOARD_DESCRIPTOR, metaState, FAKE_KEYBOARD_DEVICE_ID, scanCode = 33)
+        inputKeyEvent(KeyEvent.KEYCODE_META_LEFT, KeyEvent.ACTION_UP, FAKE_KEYBOARD_DESCRIPTOR, metaState = 0, FAKE_KEYBOARD_DEVICE_ID, scanCode = 117)
+
+        advanceUntilIdle()
+
+        val expectedEvents2 = listOf(
+            PerformAction(action, additionalMetaState = metaState, keyEventAction = KeyEventAction.DOWN),
+            ImitateButtonPress(KeyEvent.KEYCODE_E, metaState, FAKE_KEYBOARD_DEVICE_ID, KeyEventAction.DOWN, scanCode = 33),
+            ImitateButtonPress(KeyEvent.KEYCODE_E, metaState, FAKE_KEYBOARD_DEVICE_ID, KeyEventAction.UP, scanCode = 33),
+            PerformAction(action, additionalMetaState = 0, keyEventAction = KeyEventAction.UP),
+        )
+
+        assertThat(mEventStream.history, `is`(expectedEvents2))
     }
 
     @Test
@@ -151,7 +221,7 @@ class KeymapDetectionDelegateTest {
         mDelegate.keyMapListCache = listOf(
             KeyMap(0, trigger = oneKeyTrigger, actionList = listOf(TEST_ACTION_2)),
             KeyMap(1, trigger = twoKeyTrigger, actionList = listOf(TEST_ACTION))
-            )
+        )
 
         //test 1. test triggering 2 key trigger
         //WHEN
@@ -266,6 +336,9 @@ class KeymapDetectionDelegateTest {
         assertThat(mDelegate.performAction.value?.keyEventAction, `is`(KeyEventAction.UP))
     }
 
+    /**
+     * #478
+     */
     @Test
     fun `trigger with modifier key and modifier keycode action, don't include metastate from the trigger modifier key when an unmapped modifier key is pressed`() =
         mCoroutineScope.runBlockingTest {
@@ -274,14 +347,6 @@ class KeymapDetectionDelegateTest {
             mDelegate.keyMapListCache = listOf(
                 KeyMap(0, trigger, actionList = listOf(Action.keyCodeAction(KeyEvent.KEYCODE_ALT_LEFT)))
             )
-
-            var imitatedKeyMetaState: Int? = null
-
-            val observer = Observer<ImitateButtonPress> {
-                imitatedKeyMetaState = it.metaState
-            }
-
-            mDelegate.imitateButtonPress.observeForever(observer)
 
             //imitate how modifier keys are sent on Android by also changing the metastate of the keyevent
 
@@ -295,11 +360,14 @@ class KeymapDetectionDelegateTest {
 
             advanceUntilIdle()
 
-            assert(imitatedKeyMetaState?.hasFlag(KeyEvent.META_CTRL_LEFT_ON + KeyEvent.META_CTRL_ON) == false
-                && imitatedKeyMetaState?.hasFlag(KeyEvent.META_SHIFT_LEFT_ON + KeyEvent.META_SHIFT_ON) == true
-                && imitatedKeyMetaState?.hasFlag(KeyEvent.META_ALT_LEFT_ON + KeyEvent.META_ALT_ON) == true)
+            val imitatedKeyMetaState = mImitateButtonPressTest.history.map { it.metaState }
 
-            mDelegate.imitateButtonPress.removeObserver(observer)
+            val expectedMetaState = listOf(
+                KeyEvent.META_ALT_LEFT_ON + KeyEvent.META_ALT_ON + KeyEvent.META_SHIFT_LEFT_ON + KeyEvent.META_SHIFT_ON,
+                0
+            )
+
+            assertThat(imitatedKeyMetaState, `is`(expectedMetaState))
         }
 
     @Test
@@ -1062,15 +1130,22 @@ class KeymapDetectionDelegateTest {
         }
     }
 
-    private fun inputKeyEvent(keyCode: Int, action: Int, deviceDescriptor: String? = null, metaState: Int? = null) =
-        mDelegate.onKeyEvent(
-            keyCode,
-            action,
-            deviceDescriptor ?: "",
-            isExternal = deviceDescriptor != null,
-            metaState = metaState ?: 0,
-            deviceId = 0
-        )
+    private fun inputKeyEvent(
+        keyCode: Int,
+        action: Int,
+        deviceDescriptor: String? = null,
+        metaState: Int? = null,
+        deviceId: Int = 0,
+        scanCode: Int = 0
+    ) = mDelegate.onKeyEvent(
+        keyCode,
+        action,
+        deviceDescriptor ?: "",
+        isExternal = deviceDescriptor != null,
+        metaState = metaState ?: 0,
+        deviceId,
+        scanCode
+    )
 
     private suspend fun mockParallelTriggerKeys(
         vararg key: Trigger.Key,
