@@ -137,6 +137,50 @@ class KeymapDetectionDelegateTest {
     }
 
     @Test
+    fun `parallel trigger with 2 keys and the 2nd key is another trigger, press 2 key trigger, only the action for 2 key trigger should be performed `() = mCoroutineScope.runBlockingTest {
+        //GIVEN
+        val twoKeyTrigger = parallelTrigger(
+            Trigger.Key(KeyEvent.KEYCODE_SHIFT_LEFT),
+            Trigger.Key(KeyEvent.KEYCODE_A)
+        )
+
+        val oneKeyTrigger = undefinedTrigger(
+            Trigger.Key(KeyEvent.KEYCODE_A)
+        )
+
+        mDelegate.keyMapListCache = listOf(
+            KeyMap(0, trigger = oneKeyTrigger, actionList = listOf(TEST_ACTION_2)),
+            KeyMap(1, trigger = twoKeyTrigger, actionList = listOf(TEST_ACTION))
+            )
+
+        //test 1. test triggering 2 key trigger
+        //WHEN
+        inputKeyEvent(KeyEvent.KEYCODE_SHIFT_LEFT, KeyEvent.ACTION_DOWN)
+        inputKeyEvent(KeyEvent.KEYCODE_A, KeyEvent.ACTION_DOWN)
+
+        inputKeyEvent(KeyEvent.KEYCODE_SHIFT_LEFT, KeyEvent.ACTION_UP)
+        inputKeyEvent(KeyEvent.KEYCODE_A, KeyEvent.ACTION_UP)
+        advanceUntilIdle()
+
+        //THEN
+
+        assertThat(mPerformActionTest.history.map { it.action }, `is`(listOf(TEST_ACTION)))
+        mPerformActionTest.reset()
+
+        //test 2. test triggering 1 key trigger
+        //WHEN
+        inputKeyEvent(KeyEvent.KEYCODE_A, KeyEvent.ACTION_DOWN)
+
+        inputKeyEvent(KeyEvent.KEYCODE_A, KeyEvent.ACTION_UP)
+        advanceUntilIdle()
+
+        //THEN
+
+        assertThat(mPerformActionTest.history.map { it.action }, `is`(listOf(TEST_ACTION_2)))
+        mPerformActionTest.reset()
+    }
+
+    @Test
     fun `trigger for a specific device and trigger for any device, input trigger from a different device, only detect trigger for any device`() = mCoroutineScope.runBlockingTest {
         //GIVEN
         val triggerHeadphone = Trigger(
