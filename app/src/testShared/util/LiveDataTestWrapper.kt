@@ -25,4 +25,10 @@ class LiveDataTestWrapper<T>(liveData: LiveData<T>) {
     fun reset() {
         _history.clear()
     }
+
+    fun printHistory() {
+        history.forEach {
+            println(it)
+        }
+    }
 }

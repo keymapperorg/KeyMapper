@@ -35,7 +35,14 @@ data class PerformAction(val action: Action,
                          val additionalMetaState: Int = 0,
                          val keyEventAction: KeyEventAction = KeyEventAction.DOWN_UP) : Event()
 
-class ImitateButtonPress(val keyCode: Int, val metaState: Int = 0, val deviceId: Int = 0) : Event()
+data class ImitateButtonPress(
+    val keyCode: Int,
+    val metaState: Int = 0,
+    val deviceId: Int = 0,
+    val keyEventAction: KeyEventAction,
+    val scanCode: Int = 0
+) : Event()
+
 class ChoosePackage : Event()
 class ChooseBluetoothDevice : Event()
 class OpenUrl(val url: String) : Event()

@@ -345,7 +345,9 @@ class MyAccessibilityService : AccessibilityService(),
                             imePackageName = imePackageName,
                             keyCode = it.keyCode,
                             metaState = it.metaState,
-                            deviceId = it.deviceId
+                            keyEventAction = it.keyEventAction,
+                            deviceId = it.deviceId,
+                            scanCode = it.scanCode
                         )
                     }
                 }
@@ -516,13 +518,16 @@ class MyAccessibilityService : AccessibilityService(),
 
         if (!AppPreferences.keymapsPaused) {
             try {
-                return keymapDetectionDelegate.onKeyEvent(
+                val consume = keymapDetectionDelegate.onKeyEvent(
                     event.keyCode,
                     event.action,
                     event.device.descriptor,
                     event.device.isExternalCompat,
                     event.metaState,
-                    event.deviceId)
+                    event.deviceId,
+                    event.scanCode)
+
+                return consume
             } catch (e: Exception) {
                 Timber.e(e)
             }
