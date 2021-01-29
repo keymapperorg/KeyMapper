@@ -13,6 +13,8 @@ There is NO GUARANTEE any of these buttons will work and this app is NOT designe
 
 You can combine multiple keys from a specific device or any device to form a "trigger". Each trigger can have multiple actions. The keys can be set to be pressed at the same time or one after another in a sequence. Keys can be remapped when they are short pressed, long pressed or double pressed. A keymap can have a set of "constraints" so it only has an effect in certain situations.
 
+!!! Join the Discord server at www.keymapper.club !!!
+
 What can’t be remapped?
  * Pixel Active Edge
  * OnePlus Alert Slider
@@ -92,5 +94,3 @@ You don't have to grant all the permissions for the app to work. The app will te
  * Camera: To control the flashlight.
 
  On some devices, enabling the accessibility service will disable "enhanced data encryption".
-
-Discord: https://discord.gg/Suj6nyw
