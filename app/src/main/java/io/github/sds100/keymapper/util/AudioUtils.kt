@@ -56,7 +56,7 @@ object AudioUtils {
                      @AdjustMode adjustMode: Int,
                      showVolumeUi: Boolean = false) {
 
-        if (PermissionUtils.isPermissionGranted(Manifest.permission.ACCESS_NOTIFICATION_POLICY)) {
+        if (PermissionUtils.isPermissionGranted(ctx, Manifest.permission.ACCESS_NOTIFICATION_POLICY)) {
 
             val audioManager = ctx.applicationContext.getSystemService(Context.AUDIO_SERVICE)
                 as AudioManager
@@ -76,7 +76,7 @@ object AudioUtils {
                              showVolumeUi: Boolean = false,
                              @StreamType streamType: Int) {
 
-        if (PermissionUtils.isPermissionGranted(Manifest.permission.ACCESS_NOTIFICATION_POLICY)) {
+        if (PermissionUtils.isPermissionGranted(ctx, Manifest.permission.ACCESS_NOTIFICATION_POLICY)) {
             val audioManager = ctx.applicationContext.getSystemService(Context.AUDIO_SERVICE)
                 as AudioManager
 
@@ -112,7 +112,7 @@ object AudioUtils {
     }
 
     fun changeRingerMode(ctx: Context, @RingerMode ringerMode: Int) {
-        if (PermissionUtils.isPermissionGranted(Manifest.permission.ACCESS_NOTIFICATION_POLICY)) {
+        if (PermissionUtils.isPermissionGranted(ctx, Manifest.permission.ACCESS_NOTIFICATION_POLICY)) {
             val audioManager = ctx.applicationContext.getSystemService(Context.AUDIO_SERVICE)
                 as AudioManager
 

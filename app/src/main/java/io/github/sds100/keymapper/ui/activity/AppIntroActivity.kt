@@ -16,6 +16,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.data.PreferenceKeys
 import io.github.sds100.keymapper.databinding.FragmentAppIntroSlideBinding
+import io.github.sds100.keymapper.globalPreferences
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.fragment.AppIntroScrollableFragment
 import io.github.sds100.keymapper.util.*
@@ -54,7 +55,7 @@ class AppIntroActivity : AppIntro2() {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-            && !PermissionUtils.isPermissionGranted(Manifest.permission.ACCESS_NOTIFICATION_POLICY)) {
+            && !PermissionUtils.isPermissionGranted(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY)) {
 
             addSlide(DndAccessSlide())
         }
@@ -66,8 +67,8 @@ class AppIntroActivity : AppIntro2() {
         super.onDonePressed(currentFragment)
 
         runBlocking {
-            ServiceLocator.globalPreferences(this@AppIntroActivity).apply {
-                set(PreferenceKeys.appIntro, true)
+            globalPreferences.apply {
+                set(PreferenceKeys.shownAppIntro, true)
                 set(PreferenceKeys.approvedFingerprintFeaturePrompt, true)
             }
         }
@@ -310,7 +311,10 @@ class DndAccessSlide : AppIntroScrollableFragment() {
     }
 
     private fun invalidate() {
-        if (PermissionUtils.isPermissionGranted(Manifest.permission.ACCESS_NOTIFICATION_POLICY)) {
+        if (PermissionUtils.isPermissionGranted(
+                requireContext(),
+                Manifest.permission.ACCESS_NOTIFICATION_POLICY
+            )) {
             binding.enabledLayout()
         } else {
             binding.disabledLayout()

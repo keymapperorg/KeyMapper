@@ -1,9 +1,6 @@
 package io.github.sds100.keymapper.ui.activity
 
 import android.Manifest
-import android.content.Intent
-import android.media.audiofx.AudioEffect
-import android.media.audiofx.Equalizer
 import android.os.Bundle
 import android.view.KeyEvent
 import androidx.activity.viewModels
@@ -84,7 +81,8 @@ class HomeActivity : AppCompatActivity() {
             })
         }
 
-        if (BuildConfig.DEBUG && PermissionUtils.isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
+        if (BuildConfig.DEBUG
+            && PermissionUtils.isPermissionGranted(this, Manifest.permission.WRITE_SECURE_SETTINGS)) {
             AccessibilityUtils.enableService(this)
         }
 

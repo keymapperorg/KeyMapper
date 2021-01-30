@@ -44,9 +44,9 @@ object KeyboardUtils {
         KEY_MAPPER_GUI_IME_PACKAGE
     )
 
-    fun enableCompatibleInputMethods() {
+    fun enableCompatibleInputMethods(ctx: Context) {
 
-        if (isPermissionGranted(Constants.PERMISSION_ROOT)) {
+        if (isPermissionGranted(ctx, Constants.PERMISSION_ROOT)) {
             enableCompatibleInputMethodsRoot()
         } else {
             openImeSettings()

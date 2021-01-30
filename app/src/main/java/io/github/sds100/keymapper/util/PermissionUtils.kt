@@ -17,7 +17,8 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.AppPreferences
+import io.github.sds100.keymapper.data.hasRootPermission
+import io.github.sds100.keymapper.globalPreferences
 import io.github.sds100.keymapper.service.DeviceAdmin
 import splitties.alertdialog.appcompat.*
 import splitties.init.appCtx
@@ -133,14 +134,16 @@ object PermissionUtils {
     }
 
     @Suppress("EXPERIMENTAL_API_USAGE")
-    fun isPermissionGranted(permission: String): Boolean {
+    fun isPermissionGranted(ctx: Context, permission: String): Boolean {
+        val hasRootPermission = ctx.globalPreferences.hasRootPermission.firstBlocking()
+
         when {
             permission == Manifest.permission.WRITE_SETTINGS &&
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ->
                 return Settings.System.canWrite(appCtx)
 
             permission == Constants.PERMISSION_ROOT ->
-                return AppPreferences.hasRootPermission
+                return hasRootPermission
 
             permission == Manifest.permission.BIND_DEVICE_ADMIN -> {
                 return devicePolicyManager?.isAdminActive(ComponentName(appCtx, DeviceAdmin::class.java)) == true
@@ -157,7 +160,7 @@ object PermissionUtils {
                 return NotificationManagerCompat.getEnabledListenerPackages(appCtx).contains(Constants.PACKAGE_NAME)
             }
 
-            permission == Manifest.permission.WRITE_SECURE_SETTINGS && AppPreferences.hasRootPermission -> {
+            permission == Manifest.permission.WRITE_SECURE_SETTINGS && hasRootPermission -> {
                 RootUtils.executeRootCommand("pm grant ${Constants.PACKAGE_NAME} ${Manifest.permission.WRITE_SECURE_SETTINGS}")
             }
         }
@@ -168,7 +171,7 @@ object PermissionUtils {
 
 
 val Context.haveWriteSettingsPermission: Boolean
-    get() = PermissionUtils.isPermissionGranted(Manifest.permission.WRITE_SETTINGS)
+    get() = PermissionUtils.isPermissionGranted(this, Manifest.permission.WRITE_SETTINGS)
 
 val Context.haveWriteSecureSettingsPermission: Boolean
-    get() = PermissionUtils.isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)
+    get() = PermissionUtils.isPermissionGranted(this, Manifest.permission.WRITE_SECURE_SETTINGS)

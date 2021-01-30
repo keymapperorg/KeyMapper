@@ -1,7 +1,9 @@
 package io.github.sds100.keymapper
 
+import android.app.Service
 import android.content.Context
 import androidx.annotation.VisibleForTesting
+import androidx.fragment.app.Fragment
 import androidx.room.Room
 import io.github.sds100.keymapper.data.*
 import io.github.sds100.keymapper.data.db.AppDatabase
@@ -195,7 +197,10 @@ object ServiceLocator {
         val dataStore = preferenceDataStore(context).globalPreferenceDataStore
 
         return globalPreferences
-            ?: GlobalPreferences(dataStore).also {
+            ?: GlobalPreferences(
+                dataStore,
+                (context.applicationContext as MyApplication).appCoroutineScope
+            ).also {
                 this.globalPreferences = it
             }
     }
@@ -241,3 +246,12 @@ object ServiceLocator {
         }
     }
 }
+
+val Context.globalPreferences: IGlobalPreferences
+    get() = ServiceLocator.globalPreferences(this)
+
+val Service.globalPreferences: IGlobalPreferences
+    get() = ServiceLocator.globalPreferences(this)
+
+val Fragment.globalPreferences: IGlobalPreferences
+    get() = ServiceLocator.globalPreferences(requireContext())

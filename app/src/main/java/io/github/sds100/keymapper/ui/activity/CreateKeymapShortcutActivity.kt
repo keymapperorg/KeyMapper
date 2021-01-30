@@ -8,8 +8,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.data.darkThemeMode
 import io.github.sds100.keymapper.databinding.ActivityCreateKeymapShortcutBinding
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import io.github.sds100.keymapper.util.firstBlocking
 
 /**
  * Created by sds100 on 08/09/20.
@@ -18,14 +17,12 @@ class CreateKeymapShortcutActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        runBlocking {
-            ServiceLocator.globalPreferences(this@CreateKeymapShortcutActivity)
-                .darkThemeMode()
-                .first()
-                .let {
-                    AppCompatDelegate.setDefaultNightMode(it)
-                }
-        }
+        ServiceLocator.globalPreferences(this@CreateKeymapShortcutActivity)
+            .darkThemeMode
+            .firstBlocking()
+            .let {
+                AppCompatDelegate.setDefaultNightMode(it)
+            }
 
         DataBindingUtil.setContentView<ActivityCreateKeymapShortcutBinding>(this, R.layout.activity_create_keymap_shortcut)
     }

@@ -107,7 +107,8 @@ object InjectorUtils {
     fun provideMenuFragmentViewModel(context: Context): MenuFragmentViewModel.Factory {
         return MenuFragmentViewModel.Factory(
             ServiceLocator.keymapRepository(context),
-            ServiceLocator.fingerprintMapRepository(context))
+            ServiceLocator.fingerprintMapRepository(context),
+            ServiceLocator.globalPreferences(context))
     }
 
     fun provideConfigKeymapViewModel(context: Context

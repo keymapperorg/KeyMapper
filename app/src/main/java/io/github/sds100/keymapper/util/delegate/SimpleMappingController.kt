@@ -2,8 +2,11 @@ package io.github.sds100.keymapper.util.delegate
 
 import androidx.annotation.MainThread
 import com.hadilq.liveevent.LiveEvent
-import io.github.sds100.keymapper.data.AppPreferences
+import io.github.sds100.keymapper.data.IGlobalPreferences
+import io.github.sds100.keymapper.data.holdDownDuration
 import io.github.sds100.keymapper.data.model.*
+import io.github.sds100.keymapper.data.repeatRate
+import io.github.sds100.keymapper.data.vibrationDuration
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.isFailure
 import io.github.sds100.keymapper.util.result.valueOrNull
@@ -14,6 +17,7 @@ import kotlinx.coroutines.*
  */
 abstract class SimpleMappingController(
     private val coroutineScope: CoroutineScope,
+    private val globalPreferences: IGlobalPreferences,
     iConstraintDelegate: IConstraintDelegate,
     iActionError: IActionError
 ) : IActionError by iActionError, IConstraintDelegate by iConstraintDelegate {
@@ -92,8 +96,11 @@ abstract class SimpleMappingController(
         }
 
         if (vibrate) {
-            val duration = extras.getData(FingerprintMap.EXTRA_VIBRATION_DURATION)
-                .valueOrNull()?.toLong() ?: AppPreferences.vibrateDuration.toLong()
+            val duration = extras
+                .getData(FingerprintMap.EXTRA_VIBRATION_DURATION)
+                .valueOrNull()
+                ?.toLong()
+                ?: globalPreferences.vibrationDuration.firstBlocking().toLong()
 
             vibrateEvent.value = Vibrate(duration)
         }
@@ -117,10 +124,11 @@ abstract class SimpleMappingController(
     }
 
     private fun repeatAction(action: Action) = coroutineScope.launch(start = CoroutineStart.LAZY) {
-        val repeatRate = action.repeatRate?.toLong() ?: AppPreferences.repeatRate.toLong()
+        val repeatRate = action.repeatRate?.toLong()
+            ?: globalPreferences.repeatRate.firstBlocking().toLong()
 
         val holdDownDuration = action.holdDownDuration?.toLong()
-            ?: AppPreferences.holdDownDuration.toLong()
+            ?: globalPreferences.holdDownDuration.firstBlocking().toLong()
 
         val holdDown = action.holdDown
 

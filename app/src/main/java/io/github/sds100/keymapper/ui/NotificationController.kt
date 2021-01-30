@@ -6,12 +6,11 @@ import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.IntDef
 import androidx.core.app.NotificationCompat
-import io.github.sds100.keymapper.data.AppPreferences
+import io.github.sds100.keymapper.data.PreferenceKeys
+import io.github.sds100.keymapper.data.keymapsPaused
+import io.github.sds100.keymapper.data.showImePickerNotification
 import io.github.sds100.keymapper.service.MyAccessibilityService
-import io.github.sds100.keymapper.util.AccessibilityUtils
-import io.github.sds100.keymapper.util.IntentUtils
-import io.github.sds100.keymapper.util.NotificationUtils
-import io.github.sds100.keymapper.util.PermissionUtils
+import io.github.sds100.keymapper.util.*
 
 /**
  * Created by sds100 on 24/03/2019.
@@ -67,7 +66,7 @@ object NotificationController {
         NotificationUtils.updateToggleKeymapsNotification(ctx, event)
 
         if (event == EVENT_ACCESSIBILITY_SERVICE_STARTED) {
-            if (AppPreferences.keymapsPaused) {
+            if (ctx.globalPreferences.keymapsPaused.firstBlocking()) {
                 onEvent(ctx, EVENT_PAUSE_REMAPS)
             } else {
                 onEvent(ctx, EVENT_RESUME_REMAPS)
@@ -77,7 +76,7 @@ object NotificationController {
 
     fun invalidateNotifications(ctx: Context) {
         if (AccessibilityUtils.isServiceEnabled(ctx)) {
-            if (AppPreferences.keymapsPaused) {
+            if (ctx.globalPreferences.keymapsPaused.firstBlocking()) {
                 onEvent(ctx, EVENT_PAUSE_REMAPS)
             } else {
                 onEvent(ctx, EVENT_RESUME_REMAPS)
@@ -91,7 +90,7 @@ object NotificationController {
         }
 
         //visibility of the notification is handled by the system on API >= 26 but is only supported up to API 28
-        if (AppPreferences.showImePickerNotification ||
+        if (ctx.globalPreferences.showImePickerNotification.firstBlocking() ||
             (SDK_INT >= Build.VERSION_CODES.O && SDK_INT < Build.VERSION_CODES.Q)) {
 
             NotificationUtils.showIMEPickerNotification(ctx)
@@ -99,8 +98,13 @@ object NotificationController {
             NotificationUtils.dismissNotification(NotificationUtils.ID_IME_PICKER)
         }
 
-        if (PermissionUtils.isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)
-            || AppPreferences.showToggleKeyboardNotification) {
+        val showToggleKeyboardNotification =
+            ctx.globalPreferences
+                .getFlow(PreferenceKeys.showToggleKeyboardNotification).firstBlocking()
+                ?: false
+
+        if (PermissionUtils.isPermissionGranted(ctx, Manifest.permission.WRITE_SECURE_SETTINGS)
+            || showToggleKeyboardNotification) {
             NotificationUtils.showToggleKeyboardNotification(ctx)
 
         } else {

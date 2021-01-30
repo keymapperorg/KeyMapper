@@ -6,9 +6,11 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import io.github.sds100.keymapper.data.AppPreferences
+import io.github.sds100.keymapper.data.PreferenceKeys
+import io.github.sds100.keymapper.globalPreferences
 import io.github.sds100.keymapper.util.KeyboardUtils
 import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
+import io.github.sds100.keymapper.util.firstBlocking
 
 /**
  * Created by sds100 on 28/12/2018.
@@ -20,28 +22,34 @@ import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
 class BluetoothConnectionBroadcastReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
-        if (intent == null) return
+        context ?: return
+        intent ?: return
 
         if (intent.action == BluetoothDevice.ACTION_ACL_CONNECTED ||
             intent.action == BluetoothDevice.ACTION_ACL_DISCONNECTED) {
 
             //get the properties of the device which just connected/disconnected
-            val device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE) ?: return
+            val device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
+                ?: return
 
             //get the bluetooth devices chosen by the user. return if no bluetooth devices are chosen
-            val selectedDevices = AppPreferences.bluetoothDevices ?: return
+            val selectedDevices = context.globalPreferences
+                .getFlow(PreferenceKeys.bluetoothDevicesThatToggleKeymaps).firstBlocking() ?: return
 
             //don't show the dialog if the user hasn't selected this device
             if (selectedDevices.contains(device.address)) {
-                val automaticallySwitchIme = AppPreferences.autoChangeImeOnBtConnect
+                val automaticallySwitchIme = context.globalPreferences
+                    .getFlow(PreferenceKeys.autoChangeImeOnBtConnect).firstBlocking() ?: false
+
                 val haveWriteSecureSettingsPermission =
-                    isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)
+                    isPermissionGranted(context, Manifest.permission.WRITE_SECURE_SETTINGS)
 
                 if (automaticallySwitchIme && haveWriteSecureSettingsPermission) {
-                    automaticallySwitchIme(context!!, intent.action!!)
+                    automaticallySwitchIme(context, intent.action!!)
                 }
 
-                val showIMEPickerAutomatically = AppPreferences.autoShowImePicker
+                val showIMEPickerAutomatically = context.globalPreferences
+                    .getFlow(PreferenceKeys.autoShowImePicker).firstBlocking() ?: false
 
                 //only show the dialog automatically if the user wants it to.
                 if (showIMEPickerAutomatically && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {

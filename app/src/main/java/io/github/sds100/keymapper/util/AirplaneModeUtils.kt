@@ -2,7 +2,8 @@ package io.github.sds100.keymapper.util
 
 import android.content.Context
 import android.provider.Settings
-import io.github.sds100.keymapper.data.AppPreferences
+import io.github.sds100.keymapper.data.hasRootPermission
+import io.github.sds100.keymapper.globalPreferences
 
 /**
  * Created by sds100 on 16/06/2020.
@@ -10,24 +11,24 @@ import io.github.sds100.keymapper.data.AppPreferences
 
 object AirplaneModeUtils {
     fun toggleAirplaneMode(ctx: Context) {
-        if (!AppPreferences.hasRootPermission) return
+        if (!ctx.globalPreferences.hasRootPermission.firstBlocking()) return
 
         if (ctx.getGlobalSetting<Int>(Settings.Global.AIRPLANE_MODE_ON) == 0) {
-            enableAirplaneMode()
+            enableAirplaneMode(ctx)
         } else {
-            disableAirplaneMode()
+            disableAirplaneMode(ctx)
         }
     }
 
-    fun enableAirplaneMode() {
-        if (!AppPreferences.hasRootPermission) return
+    fun enableAirplaneMode(ctx: Context) {
+        if (!ctx.globalPreferences.hasRootPermission.firstBlocking()) return
 
         RootUtils.executeRootCommand("settings put global airplane_mode_on 1")
         broadcastAirplaneModeChanged(true)
     }
 
-    fun disableAirplaneMode() {
-        if (!AppPreferences.hasRootPermission) return
+    fun disableAirplaneMode(ctx: Context) {
+        if (!ctx.globalPreferences.hasRootPermission.firstBlocking()) return
 
         RootUtils.executeRootCommand("settings put global airplane_mode_on 0")
         broadcastAirplaneModeChanged(false)

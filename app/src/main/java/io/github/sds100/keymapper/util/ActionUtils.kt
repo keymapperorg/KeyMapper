@@ -9,8 +9,10 @@ import android.os.Build
 import android.view.KeyEvent
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.AppPreferences
+import io.github.sds100.keymapper.data.hasRootPermission
 import io.github.sds100.keymapper.data.model.*
+import io.github.sds100.keymapper.data.showDeviceDescriptors
+import io.github.sds100.keymapper.globalPreferences
 import io.github.sds100.keymapper.util.SystemActionUtils.getDescriptionWithOption
 import io.github.sds100.keymapper.util.SystemActionUtils.getDescriptionWithOptionSet
 import io.github.sds100.keymapper.util.result.*
@@ -148,7 +150,7 @@ fun Action.getTitle(ctx: Context, deviceInfoList: List<DeviceInfo>): Result<Stri
             val title = extras.getData(Action.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR).handle(
                 onSuccess = { descriptor ->
                     val deviceName = deviceInfoList.find { it.descriptor == descriptor }?.name?.let { name ->
-                        if (AppPreferences.showDeviceDescriptors) {
+                        if (ctx.globalPreferences.showDeviceDescriptors.firstBlocking()) {
                             "$name (${descriptor.substring(0..4)})"
                         } else {
                             name
@@ -364,7 +366,7 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
                 .valueOrNull()
                 .toBoolean()
 
-            if (useShell && !AppPreferences.hasRootPermission) {
+            if (useShell && !ctx.globalPreferences.hasRootPermission.firstBlocking()) {
                 return PermissionDenied(Constants.PERMISSION_ROOT)
             }
         }
@@ -376,7 +378,7 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
         }
 
         ActionType.PHONE_CALL -> {
-            if (!PermissionUtils.isPermissionGranted(Manifest.permission.CALL_PHONE)) {
+            if (!PermissionUtils.isPermissionGranted(ctx, Manifest.permission.CALL_PHONE)) {
                 return PermissionDenied(Manifest.permission.CALL_PHONE)
             }
         }
@@ -403,7 +405,7 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
                 }
 
                 systemActionDef.permissions.forEach { permission ->
-                    if (!PermissionUtils.isPermissionGranted(permission)) {
+                    if (!PermissionUtils.isPermissionGranted(ctx, permission)) {
                         return PermissionDenied(permission)
                     }
                 }

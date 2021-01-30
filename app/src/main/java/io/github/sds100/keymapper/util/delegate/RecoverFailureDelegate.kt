@@ -111,7 +111,7 @@ class RecoverFailureDelegate(
                 }
             }
 
-            is NoCompatibleImeEnabled -> KeyboardUtils.enableCompatibleInputMethods()
+            is NoCompatibleImeEnabled -> KeyboardUtils.enableCompatibleInputMethods(ctx)
             is NoCompatibleImeChosen -> KeyboardUtils.chooseCompatibleInputMethod(ctx)
         }
     }

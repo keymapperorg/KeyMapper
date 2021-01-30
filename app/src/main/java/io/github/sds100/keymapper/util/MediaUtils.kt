@@ -104,6 +104,7 @@ object MediaUtils {
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun getActiveMediaSessions(ctx: Context): Result<List<MediaController>> {
         if (PermissionUtils.isPermissionGranted(
+                ctx,
                 Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE)
             && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 

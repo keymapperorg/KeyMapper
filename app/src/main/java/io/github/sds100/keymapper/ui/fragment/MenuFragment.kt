@@ -12,16 +12,16 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.AppPreferences
+import io.github.sds100.keymapper.data.PreferenceKeys
 import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
 import io.github.sds100.keymapper.data.viewmodel.MenuFragmentViewModel
 import io.github.sds100.keymapper.databinding.FragmentMenuBinding
+import io.github.sds100.keymapper.globalPreferences
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.util.*
 import splitties.alertdialog.appcompat.*
 
-class MenuFragment : BottomSheetDialogFragment(),
-    SharedPreferences.OnSharedPreferenceChangeListener {
+class MenuFragment : BottomSheetDialogFragment() {
 
     private val viewModel: MenuFragmentViewModel by activityViewModels {
         InjectorUtils.provideMenuFragmentViewModel(requireContext())
@@ -63,8 +63,6 @@ class MenuFragment : BottomSheetDialogFragment(),
 
             requireContext().registerReceiver(broadcastReceiver, this)
         }
-
-        requireContext().defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
     }
 
     override fun onCreateView(
@@ -90,7 +88,6 @@ class MenuFragment : BottomSheetDialogFragment(),
         binding.viewModel = viewModel
 
         viewModel.apply {
-            keymapsPaused.value = AppPreferences.keymapsPaused
             accessibilityServiceEnabled.value = AccessibilityUtils.isServiceEnabled(requireContext())
 
             eventStream.observe(viewLifecycleOwner, {
@@ -111,8 +108,8 @@ class MenuFragment : BottomSheetDialogFragment(),
                         dismiss()
                     }
 
-                    is PauseKeymaps -> AppPreferences.keymapsPaused = true
-                    is ResumeKeymaps -> AppPreferences.keymapsPaused = false
+                    is PauseKeymaps -> globalPreferences.set(PreferenceKeys.keymapsPaused, true)
+                    is ResumeKeymaps -> globalPreferences.set(PreferenceKeys.keymapsPaused, false)
 
                     is EnableAccessibilityService ->
                         AccessibilityUtils.enableService(requireContext())
@@ -135,15 +132,8 @@ class MenuFragment : BottomSheetDialogFragment(),
 
     override fun onDestroy() {
         requireContext().unregisterReceiver(broadcastReceiver)
-        requireContext().defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
 
         super.onDestroy()
-    }
-
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        if (key == str(R.string.key_pref_keymaps_paused)) {
-            viewModel.keymapsPaused.value = AppPreferences.keymapsPaused
-        }
     }
 
     private fun sendFeedback() {

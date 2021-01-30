@@ -22,9 +22,10 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.*
-import io.github.sds100.keymapper.data.AppPreferences
+import io.github.sds100.keymapper.data.PreferenceKeys
 import io.github.sds100.keymapper.data.model.ChooseAppStoreModel
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
+import io.github.sds100.keymapper.data.showGuiKeyboardAd
 import io.github.sds100.keymapper.data.viewmodel.*
 import io.github.sds100.keymapper.databinding.DialogChooseAppStoreBinding
 import io.github.sds100.keymapper.databinding.FragmentHomeBinding
@@ -47,7 +48,7 @@ import splitties.toast.longToast
 import splitties.toast.toast
 import java.util.*
 
-class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
+class HomeFragment : Fragment() {
 
     private val keymapListViewModel: KeymapListViewModel by activityViewModels {
         InjectorUtils.provideKeymapListViewModel(requireContext())
@@ -310,7 +311,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             setEnableImeService {
                 lifecycleScope.launchWhenStarted {
 
-                    KeyboardUtils.enableCompatibleInputMethods()
+                    KeyboardUtils.enableCompatibleInputMethods(requireContext())
 
                     viewLifecycleScope.launch {
                         delay(3000)
@@ -394,10 +395,14 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
 
 
             setDismissNewGuiKeyboardAd {
-                AppPreferences.showGuiKeyboardAd = false
+                globalPreferences.set(PreferenceKeys.showGuiKeyboardAd, false)
             }
 
-            showNewGuiKeyboardAd = AppPreferences.showGuiKeyboardAd
+            showNewGuiKeyboardAd = globalPreferences.showGuiKeyboardAd.firstBlocking()
+
+            globalPreferences.showGuiKeyboardAd.collectWhenResumed(viewLifecycleOwner, {
+                binding.showNewGuiKeyboardAd = it
+            })
 
             keymapListViewModel.eventStream.observe(viewLifecycleOwner, {
                 when (it) {
@@ -434,11 +439,10 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
         fingerprintMapListViewModel.rebuildModels()
 
         updateStatusLayouts()
-        requireContext().defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
 
         if (PackageUtils.isAppInstalled(KeyboardUtils.KEY_MAPPER_GUI_IME_PACKAGE)
             || Build.VERSION.SDK_INT < KeyboardUtils.KEY_MAPPER_GUI_IME_MIN_API) {
-            AppPreferences.showGuiKeyboardAd = false
+            globalPreferences.set(PreferenceKeys.showGuiKeyboardAd, false)
         }
 
         FingerprintMapUtils.dismissFeatureNotification()
@@ -452,20 +456,13 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
 
     override fun onDestroy() {
         requireContext().unregisterReceiver(broadcastReceiver)
-        requireContext().defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
 
         super.onDestroy()
     }
 
-    override fun onSharedPreferenceChanged(preferences: SharedPreferences?, key: String?) {
-        when (key) {
-            str(R.string.key_pref_show_gui_keyboard_ad) ->
-                binding.showNewGuiKeyboardAd = AppPreferences.showGuiKeyboardAd
-        }
-    }
-
     private fun updateStatusLayouts() {
-        binding.hideAlerts = AppPreferences.hideHomeScreenAlerts
+        binding.hideAlerts = globalPreferences
+            .getFlow(PreferenceKeys.hideHomeScreenAlerts).firstBlocking()
 
         if (AccessibilityUtils.isServiceEnabled(requireContext())) {
             accessibilityServiceStatusState.value = StatusLayout.State.POSITIVE
@@ -474,7 +471,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             accessibilityServiceStatusState.value = StatusLayout.State.ERROR
         }
 
-        if (PermissionUtils.isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
+        if (requireContext().haveWriteSecureSettingsPermission) {
             writeSettingsStatusState.value = StatusLayout.State.POSITIVE
         } else {
             writeSettingsStatusState.value = StatusLayout.State.WARN
@@ -498,7 +495,10 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (PermissionUtils.isPermissionGranted(Manifest.permission.ACCESS_NOTIFICATION_POLICY)) {
+            if (PermissionUtils.isPermissionGranted(
+                    requireContext(),
+                    Manifest.permission.ACCESS_NOTIFICATION_POLICY)) {
+
                 dndAccessStatusState.value = StatusLayout.State.POSITIVE
             } else {
                 dndAccessStatusState.value = StatusLayout.State.WARN
