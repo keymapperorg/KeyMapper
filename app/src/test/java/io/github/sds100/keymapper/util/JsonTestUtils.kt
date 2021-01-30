@@ -1,4 +1,4 @@
-package util
+package io.github.sds100.keymapper.util
 
 import com.github.salomonbrys.kotson.contains
 import com.github.salomonbrys.kotson.forEach

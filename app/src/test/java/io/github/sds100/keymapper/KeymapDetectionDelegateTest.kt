@@ -1,9 +1,10 @@
+package io.github.sds100.keymapper
+
 import android.view.KeyEvent
 import android.view.Surface
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import com.hadilq.liveevent.LiveEvent
-import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.Trigger.Companion.DOUBLE_PRESS
 import io.github.sds100.keymapper.data.model.Trigger.Companion.LONG_PRESS
@@ -34,7 +35,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import splitties.bitflags.withFlag
-import util.LiveDataTestWrapper
+import io.github.sds100.keymapper.util.LiveDataTestWrapper
 import kotlin.random.Random
 
 /**

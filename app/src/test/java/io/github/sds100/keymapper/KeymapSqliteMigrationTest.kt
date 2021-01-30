@@ -1,3 +1,5 @@
+package io.github.sds100.keymapper
+
 import androidx.room.testing.MigrationTestHelper
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
@@ -11,7 +13,7 @@ import org.hamcrest.Matchers.`is`
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import util.JsonTestUtils
+import io.github.sds100.keymapper.util.JsonTestUtils
 import java.io.IOException
 
 /**
