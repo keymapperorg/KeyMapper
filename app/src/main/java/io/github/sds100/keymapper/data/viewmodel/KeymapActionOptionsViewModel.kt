@@ -17,6 +17,7 @@ import io.github.sds100.keymapper.data.model.options.KeymapActionOptions
  */
 class KeymapActionOptionsViewModel : BaseOptionsDialogViewModel<KeymapActionOptions>() {
 
+    override val helpUrl = R.string.url_keymap_action_options_guide
     override val stateKey = "state_choose_action_options"
 
     val stopRepeatWhenTriggerPressedAgain = MediatorLiveData<Boolean>().apply {

@@ -275,6 +275,9 @@
     <string name="url_faq" translatable="false">https://sds100.github.io/KeyMapper/redirects/faq</string>
     <string name="url_grant_write_secure_settings_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/grant-write-secure-settings</string>
     <string name="url_dont_kill_my_app" translatable="false">https://dontkillmyapp.com</string>
+    <string name="url_keymap_action_options_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/keymap-action-options</string>
+    <string name="url_fingerprint_action_options_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/fingerprint-action-options</string>
+    <string name="url_trigger_key_options_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/trigger-key-options</string>
 
     <string name="url_play_store_keymapper_gui_keyboard" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin</string>
     <string name="url_fdroid_keymapper_gui_keyboard" translatable="false">https://f-droid.org/en/packages/io.github.sds100.keymapper.inputmethod.latin</string>
@@ -325,6 +328,7 @@
     <string name="button_add_intent_extra">Add extra</string>
     <string name="button_create_keymap_shortcut_in_launcher">Create launcher shortcut</string>
     <string name="button_open_trigger_keymap_from_intent_guide">Intent guide</string>
+    <string name="button_help">Help</string>
     <!-- Button titles -->
 
     <!-- Dialog titles -->

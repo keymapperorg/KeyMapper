@@ -16,6 +16,7 @@ import io.github.sds100.keymapper.data.model.options.TriggerKeyOptions
  */
 class TriggerKeyOptionsViewModel : BaseOptionsDialogViewModel<TriggerKeyOptions>() {
 
+    override val helpUrl = R.string.url_trigger_key_options_guide
     override val stateKey = "state_trigger_options"
 
     override fun createSliderListItemModel(option: IntOption): SliderListItemModel {

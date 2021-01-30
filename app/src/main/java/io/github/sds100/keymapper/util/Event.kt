@@ -46,6 +46,7 @@ data class ImitateButtonPress(
 class ChoosePackage : Event()
 class ChooseBluetoothDevice : Event()
 class OpenUrl(val url: String) : Event()
+class OpenUrlRes(@StringRes val url: Int) : Event()
 class CloseDialog : Event()
 class SelectScreenshot : Event()
 class ChooseKeycode : Event()
@@ -65,6 +66,7 @@ class CreateKeymapShortcutEvent(
     val actionList: List<Action>
 ) : Event()
 
+data class SaveEvent<T>(val model: T) : Event()
 
 sealed class ResultEvent<T> : Event() {
     abstract val result: Result<T>
