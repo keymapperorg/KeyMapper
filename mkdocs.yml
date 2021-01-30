@@ -7,7 +7,7 @@ nav:
   - Quick Start Guide: quick-start.md
   - FAQ: faq.md
   - User Guide:
-      - Triggers: user-guide/triggers.md
+      - Key Maps: user-guide/keymaps.md
       - Actions: user-guide/actions.md
       - Constraints: user-guide/constraints.md
       - ADB Permissions: user-guide/adb-permissions.md
@@ -61,15 +61,15 @@ markdown_extensions:
 plugins:
   - redirects:
       redirect_maps:
-        'redirects/trigger-by-intent.md': 'https://sds100.github.io/KeyMapper/user-guide/triggers/#trigger-by-intent-v230'
+        'redirects/trigger-by-intent.md': 'https://sds100.github.io/KeyMapper/user-guide/keymaps/#trigger-by-intent-v230'
         'redirects/grant-write-secure-settings.md': 'https://sds100.github.io/KeyMapper/user-guide/adb-permissions/#write_secure_settings'
         'redirects/faq.md': 'https://sds100.github.io/KeyMapper/faq'
         'redirects/quick-start.md': 'https://sds100.github.io/KeyMapper/quick-start'
         'redirects/fingerprint-map-options.md': 'https://sds100.github.io/KeyMapper/user-guide/fingerprint-gestures'
         'redirects/constraints.md': 'https://sds100.github.io/KeyMapper/user-guide/constraints'
         'redirects/action.md': 'https://sds100.github.io/KeyMapper/user-guide/actions'
-        'redirects/trigger.md': 'https://sds100.github.io/KeyMapper/user-guide/triggers'
-        'redirects/trigger-options.md': 'https://sds100.github.io/KeyMapper/user-guide/triggers/#options'
+        'redirects/trigger.md': 'https://sds100.github.io/KeyMapper/user-guide/keymaps'
+        'redirects/trigger-options.md': 'https://sds100.github.io/KeyMapper/user-guide/keymaps/#options'
         'redirects/keymap-action-options.md': 'https://sds100.github.io/KeyMapper/quick-start/#customising-a-key-map'
         'redirects/fingerprint-action-options.md': 'https://sds100.github.io/KeyMapper/user-guide/fingerprint-gestures/#customising-fingerprint-gesture-maps'
   - search:
