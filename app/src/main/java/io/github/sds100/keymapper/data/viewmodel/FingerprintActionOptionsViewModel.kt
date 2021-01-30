@@ -17,6 +17,7 @@ import io.github.sds100.keymapper.data.model.options.IntOption.Companion.nullIfD
 class FingerprintActionOptionsViewModel : BaseOptionsDialogViewModel<FingerprintActionOptions>() {
 
     override val stateKey = "state_fingerprint_action_options"
+    override val helpUrl = R.string.url_fingerprint_action_options_guide
 
     override fun createSliderListItemModel(option: IntOption): SliderListItemModel =
         when (option.id) {

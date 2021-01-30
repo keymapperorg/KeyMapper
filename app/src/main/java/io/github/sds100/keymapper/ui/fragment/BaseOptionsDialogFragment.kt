@@ -17,7 +17,7 @@ import io.github.sds100.keymapper.data.model.options.BaseOptions
 import io.github.sds100.keymapper.data.viewmodel.BaseOptionsDialogViewModel
 import io.github.sds100.keymapper.data.viewmodel.BaseOptionsViewModel
 import io.github.sds100.keymapper.ui.adapter.OptionsController
-import io.github.sds100.keymapper.util.ifIsData
+import io.github.sds100.keymapper.util.*
 
 /**
  * Created by sds100 on 27/06/2020.
@@ -72,15 +72,21 @@ abstract class BaseOptionsDialogFragment<BINDING : ViewDataBinding, O : BaseOpti
         val dialog = requireDialog() as BottomSheetDialog
         dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
 
+        optionsViewModel.eventStream.observe(viewLifecycleOwner, { event ->
+            when (event) {
+                is SaveEvent<*> -> {
+                    setFragmentResult(requestKey, bundleOf(EXTRA_OPTIONS to event.model))
+                    findNavController().navigateUp()
+                }
+
+                is OpenUrlRes -> UrlUtils.openUrl(requireContext(), str(event.url))
+            }
+        })
+
         optionsViewModel.model.observe(viewLifecycleOwner, { options ->
             options.ifIsData {
                 controller.optionsListModel = it
             }
-        })
-
-        optionsViewModel.onSaveEvent.observe(viewLifecycleOwner, {
-            setFragmentResult(requestKey, bundleOf(EXTRA_OPTIONS to it))
-            findNavController().navigateUp()
         })
 
         setRecyclerViewAdapter(binding, controller.adapter)
