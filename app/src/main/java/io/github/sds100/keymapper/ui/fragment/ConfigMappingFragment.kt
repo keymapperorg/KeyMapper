@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
@@ -104,7 +103,7 @@ abstract class ConfigMappingFragment : Fragment() {
         binding.appBar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.action_save -> {
-                    viewModel.save(lifecycleScope)
+                    viewModel.save()
                     findNavController().navigateUp()
 
                     true

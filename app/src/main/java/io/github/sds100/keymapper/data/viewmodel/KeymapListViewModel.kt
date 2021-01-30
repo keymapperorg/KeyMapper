@@ -1,15 +1,16 @@
 package io.github.sds100.keymapper.data.viewmodel
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.hadilq.liveevent.LiveEvent
-import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.data.usecase.KeymapListUseCase
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.IModelState
 import io.github.sds100.keymapper.util.result.Failure
-import kotlinx.coroutines.launch
 
 class KeymapListViewModel internal constructor(
     private val keymapRepository: KeymapListUseCase,
@@ -32,41 +33,12 @@ class KeymapListViewModel internal constructor(
 
     val eventStream: LiveData<Event> = _eventStream
 
-    fun duplicate(vararg id: Long) {
-        viewModelScope.launch {
-            keymapRepository.duplicateKeymap(*id)
-        }
-    }
-
-    fun delete(vararg id: Long) {
-        viewModelScope.launch {
-            keymapRepository.deleteKeymap(*id)
-        }
-    }
-
-    fun enableSelectedKeymaps() {
-        viewModelScope.launch {
-            keymapRepository.enableKeymapById(*selectionProvider.selectedIds)
-        }
-    }
-
-    fun disableSelectedKeymaps() {
-        viewModelScope.launch {
-            keymapRepository.disableKeymapById(*selectionProvider.selectedIds)
-        }
-    }
-
-    fun enableAll() {
-        viewModelScope.launch {
-            keymapRepository.enableAll()
-        }
-    }
-
-    fun disableAll() {
-        viewModelScope.launch {
-            keymapRepository.disableAll()
-        }
-    }
+    fun duplicate(vararg id: Long) = keymapRepository.duplicateKeymap(*id)
+    fun delete(vararg id: Long) = keymapRepository.deleteKeymap(*id)
+    fun enableSelectedKeymaps() = keymapRepository.enableKeymapById(*selectionProvider.selectedIds)
+    fun disableSelectedKeymaps() = keymapRepository.disableKeymapById(*selectionProvider.selectedIds)
+    fun enableAll() = keymapRepository.enableAll()
+    fun disableAll() = keymapRepository.disableAll()
 
     fun rebuildModels() {
         if (keymapRepository.keymapList.value == null) return

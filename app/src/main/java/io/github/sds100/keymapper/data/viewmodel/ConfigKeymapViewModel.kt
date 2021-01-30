@@ -12,7 +12,6 @@ import io.github.sds100.keymapper.data.model.options.KeymapActionOptions
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.data.usecase.ConfigKeymapUseCase
 import io.github.sds100.keymapper.util.*
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -118,15 +117,13 @@ class ConfigKeymapViewModel(private val keymapRepository: ConfigKeymapUseCase,
         }
     }
 
-    override fun save(coroutineScope: CoroutineScope) {
+    override fun save() {
         val keymap = createKeymap()
 
-        coroutineScope.launch {
-            if (id == NEW_KEYMAP_ID) {
-                keymapRepository.insertKeymap(keymap.copy(id = 0))
-            } else {
-                keymapRepository.updateKeymap(keymap)
-            }
+        if (id == NEW_KEYMAP_ID) {
+            keymapRepository.insertKeymap(keymap.copy(id = 0))
+        } else {
+            keymapRepository.updateKeymap(keymap)
         }
     }
 

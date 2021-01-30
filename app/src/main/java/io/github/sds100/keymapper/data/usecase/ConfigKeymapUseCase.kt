@@ -7,6 +7,6 @@ import io.github.sds100.keymapper.data.model.KeyMap
  */
 interface ConfigKeymapUseCase {
     suspend fun getKeymap(id: Long): KeyMap
-    suspend fun insertKeymap(vararg keymap: KeyMap)
-    suspend fun updateKeymap(keymap: KeyMap)
+    fun insertKeymap(vararg keymap: KeyMap)
+    fun updateKeymap(keymap: KeyMap)
 }

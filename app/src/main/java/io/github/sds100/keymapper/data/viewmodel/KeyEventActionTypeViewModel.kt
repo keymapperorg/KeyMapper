@@ -13,7 +13,6 @@ import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.KeyEventUtils
 import io.github.sds100.keymapper.util.result.CantBeEmpty
 import io.github.sds100.keymapper.util.result.InvalidNumber
-import kotlinx.coroutines.launch
 import splitties.bitflags.hasFlag
 import splitties.bitflags.minusFlag
 import splitties.bitflags.withFlag
@@ -97,9 +96,7 @@ class KeyEventActionTypeViewModel(private val deviceInfoRepository: DeviceInfoRe
 
     fun chooseDevice(index: Int) {
         deviceInfoModels.value?.getOrNull(index)?.let {
-            viewModelScope.launch {
-                deviceInfoRepository.insertDeviceInfo(it)
-            }
+            deviceInfoRepository.insertDeviceInfo(it)
 
             chosenDevice.value = it
         }

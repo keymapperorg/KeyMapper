@@ -139,7 +139,9 @@ object ServiceLocator {
 
     private fun createDeviceInfoRepository(context: Context): DeviceInfoRepository {
         val database = database ?: createDatabase(context.applicationContext)
-        deviceInfoRepository = DefaultDeviceInfoRepository(database.deviceInfoDao())
+        deviceInfoRepository = DefaultDeviceInfoRepository(
+            database.deviceInfoDao(),
+            (context.applicationContext as MyApplication).appCoroutineScope)
         return deviceInfoRepository!!
     }
 

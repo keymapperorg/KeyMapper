@@ -61,10 +61,8 @@ class FingerprintMapListViewModel(
         _model.value = Data(models)
     }
 
-    fun setEnabled(id: String, isEnabled: Boolean) = viewModelScope.launch {
-        repository.updateGesture(id) {
-            it.copy(isEnabled = isEnabled)
-        }
+    fun setEnabled(id: String, isEnabled: Boolean) = repository.updateGesture(id) {
+        it.copy(isEnabled = isEnabled)
     }
 
     fun rebuildModels() {
@@ -85,11 +83,7 @@ class FingerprintMapListViewModel(
 
     fun requestReset() = run { _eventStream.value = RequestFingerprintMapReset() }
 
-    fun reset() {
-        viewModelScope.launch {
-            repository.reset()
-        }
-    }
+    fun reset() = repository.reset()
 
     suspend fun getDeviceInfoList() = deviceInfoRepository.getAll()
 

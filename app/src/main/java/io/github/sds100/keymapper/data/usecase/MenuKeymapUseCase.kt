@@ -5,6 +5,6 @@ package io.github.sds100.keymapper.data.usecase
  */
 
 interface MenuKeymapUseCase {
-    suspend fun enableAll()
-    suspend fun disableAll()
+    fun enableAll()
+    fun disableAll()
 }

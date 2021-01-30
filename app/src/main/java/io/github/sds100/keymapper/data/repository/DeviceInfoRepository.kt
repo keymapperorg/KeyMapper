@@ -7,7 +7,7 @@ import io.github.sds100.keymapper.data.model.DeviceInfo
  */
 interface DeviceInfoRepository {
     suspend fun getAll(): List<DeviceInfo>
-    suspend fun insertDeviceInfo(vararg deviceInfo: DeviceInfo)
-    suspend fun getDeviceInfo(descriptor: String)
-    suspend fun deleteAll()
+    fun insertDeviceInfo(vararg deviceInfo: DeviceInfo)
+    fun getDeviceInfo(descriptor: String)
+    fun deleteAll()
 }

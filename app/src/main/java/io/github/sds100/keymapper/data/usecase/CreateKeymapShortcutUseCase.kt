@@ -9,5 +9,5 @@ import io.github.sds100.keymapper.data.model.KeyMap
 
 interface CreateKeymapShortcutUseCase {
     val keymapList: LiveData<List<KeyMap>>
-    suspend fun updateKeymap(keymap: KeyMap)
+    fun updateKeymap(keymap: KeyMap)
 }
