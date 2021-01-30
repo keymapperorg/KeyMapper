@@ -1,0 +1,103 @@
+{
+  "fingerprint_swipe_down": {
+    "action_list": [
+      {
+        "data": "com.google.android.contacts",
+        "extras": [],
+        "flags": 0,
+        "type": "APP",
+        "uid": "332b1102-6327-4b00-9b79-7465188475d0"
+      }
+    ],
+    "constraints": [
+      {
+        "extras": [
+          {
+            "data": "com.google.android.contacts",
+            "id": "extra_package_name"
+          }
+        ],
+        "type": "constraint_app_foreground"
+      },
+      {
+        "extras": [],
+        "type": "constraint_orientation_portrait"
+      }
+    ],
+    "constraint_mode": 1,
+    "extras": [],
+    "flags": 3,
+    "enabled": true,
+    "db_version": 1
+  },
+  "fingerprint_swipe_left": {
+    "action_list": [
+      {
+        "data": "io.github.sds100.keymapper.ci",
+        "extras": [],
+        "flags": 0,
+        "type": "APP",
+        "uid": "d722fbcf-c40a-46a5-8fec-af3e0730bbaa"
+      }
+    ],
+    "constraints": [],
+    "constraint_mode": 1,
+    "extras": [],
+    "flags": 0,
+    "enabled": true,
+    "db_version": 1
+  },
+  "fingerprint_swipe_right": {
+    "action_list": [
+      {
+        "data": "io.github.sds100.keymapper",
+        "extras": [],
+        "flags": 0,
+        "type": "APP",
+        "uid": "eb8a8c85-6f45-4e75-b39c-532fda49cda6"
+      },
+      {
+        "data": "io.github.sds100.keymapper.ci",
+        "extras": [],
+        "flags": 0,
+        "type": "APP",
+        "uid": "18fce766-83ba-41fd-97cf-4c051585e930"
+      },
+      {
+        "data": "io.github.sds100.keymapper.debug",
+        "extras": [],
+        "flags": 0,
+        "type": "APP",
+        "uid": "d6ec842f-f8cd-45bf-a5be-5e0c3f063828"
+      }
+    ],
+    "constraints": [],
+    "constraint_mode": 1,
+    "extras": [],
+    "flags": 0,
+    "enabled": true,
+    "db_version": 1
+  },
+  "fingerprint_swipe_up": {
+    "action_list": [
+      {
+        "data": "com.google.android.apps.messaging",
+        "extras": [],
+        "flags": 0,
+        "type": "APP",
+        "uid": "8d53a5ac-eb14-4e17-b4e5-c8a133d7f7b6"
+      }
+    ],
+    "constraints": [
+      {
+        "extras": [],
+        "type": "constraint_orientation_0"
+      }
+    ],
+    "constraint_mode": 1,
+    "extras": [],
+    "flags": 0,
+    "enabled": true,
+    "db_version": 1
+  }
+}
