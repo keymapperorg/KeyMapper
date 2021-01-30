@@ -90,7 +90,7 @@ val IGlobalPreferences.keymapsPaused
     }
 
 val IGlobalPreferences.showImePickerNotification
-    get() = getFlow(PreferenceKeys.shownAppIntro).map {
+    get() = getFlow(PreferenceKeys.showImePickerNotification).map {
         it ?: false
     }
 
@@ -125,11 +125,11 @@ val IGlobalPreferences.repeatRate
     }
 
 val IGlobalPreferences.sequenceTriggerTimeout
-    get() = getFlow(PreferenceKeys.repeatRate).map {
+    get() = getFlow(PreferenceKeys.sequenceTriggerTimeout).map {
         it ?: PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT
     }
 
 val IGlobalPreferences.holdDownDuration
-    get() = getFlow(PreferenceKeys.repeatRate).map {
+    get() = getFlow(PreferenceKeys.holdDownDuration).map {
         it ?: PreferenceDefaults.HOLD_DOWN_DURATION
     }
