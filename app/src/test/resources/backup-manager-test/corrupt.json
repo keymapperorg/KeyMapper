@@ -1,0 +1,10 @@
+{
+  "fingerprint_swipe_down": {
+    "action_list": [],
+    "constraints": [],
+    "constraint_mode": 1,
+    "extras": []
+    "flags": 0,
+    "enabled": true,
+    "db_version": 1
+  }

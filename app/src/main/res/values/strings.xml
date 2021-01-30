@@ -743,7 +743,8 @@
     <string name="error_denied_notification_listener_service_permission">Denied notification access permission!</string>
     <string name="error_invalid_intent_extra_value">Invalid!</string>
     <string name="error_denied_call_phone_permission">Denied permission to start phone calls!</string>
-    <string name="error_incompatible_backup">You will need to update Key Mapper to the latest version to use this backup.</string>
+    <string name="error_backup_version_too_new">You will need to update Key Mapper to the latest version to use this backup.</string>
+    <string name="error_corrupt_json_file">Corrupt JSON file!</string>
     <!-- Error messages -->
 
     <!-- System action labels -->

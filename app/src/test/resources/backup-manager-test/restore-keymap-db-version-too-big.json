@@ -1,0 +1,182 @@
+{
+  "device_info": [
+    {
+      "descriptor": "a183206cfdbb578b89aee0b514cb98f50fc64d52",
+      "name": "Logitech USB Keyboard"
+    }
+  ],
+  "keymap_db_version": 10000,
+  "keymap_list": [
+    {
+      "actionList": [
+        {
+          "data": "117",
+          "extras": [
+            {
+              "data": "0",
+              "id": "extra_meta_state"
+            }
+          ],
+          "flags": 8,
+          "type": "KEY_EVENT",
+          "uid": "f70be937-978f-4258-a430-fa816dc78838"
+        }
+      ],
+      "constraintList": [],
+      "constraintMode": 1,
+      "flags": 0,
+      "id": 1,
+      "isEnabled": true,
+      "trigger": {
+        "extras": [],
+        "flags": 0,
+        "keys": [
+          {
+            "clickType": 0,
+            "deviceId": "a183206cfdbb578b89aee0b514cb98f50fc64d52",
+            "flags": 0,
+            "keyCode": 117,
+            "uid": "03108898-1a3d-454d-a29a-5b7d5b4491c8"
+          }
+        ],
+        "mode": 2
+      },
+      "uid": "2aa5fb65-d4db-49f2-850d-b4a4ab986b3f"
+    },
+    {
+      "actionList": [
+        {
+          "data": "117",
+          "extras": [
+            {
+              "data": "0",
+              "id": "extra_meta_state"
+            }
+          ],
+          "flags": 8,
+          "type": "KEY_EVENT",
+          "uid": "f70be937-978f-4258-a430-fa816dc78838"
+        }
+      ],
+      "constraintList": [
+        {
+          "extras": [
+            {
+              "data": "io.github.sds100.keymapper.ci",
+              "id": "extra_package_name"
+            }
+          ],
+          "type": "constraint_app_foreground"
+        }
+      ],
+      "constraintMode": 1,
+      "flags": 0,
+      "id": 2,
+      "isEnabled": true,
+      "trigger": {
+        "extras": [],
+        "flags": 0,
+        "keys": [
+          {
+            "clickType": 0,
+            "deviceId": "a183206cfdbb578b89aee0b514cb98f50fc64d52",
+            "flags": 0,
+            "keyCode": 117,
+            "uid": "03108898-1a3d-454d-a29a-5b7d5b4491c8"
+          }
+        ],
+        "mode": 2
+      },
+      "uid": "2aa5fb65-d4db-49f2-850d-b4a4ab986b3f"
+    },
+    {
+      "actionList": [
+        {
+          "data": "117",
+          "extras": [
+            {
+              "data": "0",
+              "id": "extra_meta_state"
+            }
+          ],
+          "flags": 0,
+          "type": "KEY_EVENT",
+          "uid": "f70be937-978f-4258-a430-fa816dc78838"
+        }
+      ],
+      "constraintList": [],
+      "constraintMode": 1,
+      "flags": 0,
+      "id": 3,
+      "isEnabled": true,
+      "trigger": {
+        "extras": [],
+        "flags": 0,
+        "keys": [
+          {
+            "clickType": 0,
+            "deviceId": "io.github.sds100.keymapper.THIS_DEVICE",
+            "flags": 0,
+            "keyCode": 24,
+            "uid": "3a802846-80e9-4b02-9801-78e0b48c32c1"
+          },
+          {
+            "clickType": 0,
+            "deviceId": "io.github.sds100.keymapper.THIS_DEVICE",
+            "flags": 0,
+            "keyCode": 25,
+            "uid": "20458a86-c452-4632-9689-24ff60aa4cf1"
+          }
+        ],
+        "mode": 0
+      },
+      "uid": "2aa5fb65-d4db-49f2-850d-b4a4ab986b3f"
+    },
+    {
+      "actionList": [
+        {
+          "data": "117",
+          "extras": [
+            {
+              "data": "0",
+              "id": "extra_meta_state"
+            }
+          ],
+          "flags": 12,
+          "type": "KEY_EVENT",
+          "uid": "f70be937-978f-4258-a430-fa816dc78838"
+        }
+      ],
+      "constraintList": [
+        {
+          "extras": [
+            {
+              "data": "io.github.sds100.keymapper.ci",
+              "id": "extra_package_name"
+            }
+          ],
+          "type": "constraint_app_foreground"
+        }
+      ],
+      "constraintMode": 1,
+      "flags": 0,
+      "id": 4,
+      "isEnabled": true,
+      "trigger": {
+        "extras": [],
+        "flags": 17,
+        "keys": [
+          {
+            "clickType": 0,
+            "deviceId": "a183206cfdbb578b89aee0b514cb98f50fc64d52",
+            "flags": 0,
+            "keyCode": 117,
+            "uid": "03108898-1a3d-454d-a29a-5b7d5b4491c8"
+          }
+        ],
+        "mode": 2
+      },
+      "uid": "2aa5fb65-d4db-49f2-850d-b4a4ab986b3f"
+    }
+  ]
+}

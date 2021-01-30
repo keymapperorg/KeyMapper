@@ -82,7 +82,9 @@ class BackupRestoreViewModel internal constructor(
             event.result
                 .onFailure {
                     _eventStream.value = when (it) {
-                        is IncompatibleBackup -> MessageEvent(R.string.error_incompatible_backup)
+                        is BackupVersionTooNew -> MessageEvent(R.string.error_backup_version_too_new)
+                        is EmptyJson -> MessageEvent(R.string.error_empty_json)
+                        is CorruptJsonFile -> MessageEvent(R.string.error_corrupt_json_file)
                         is FileAccessDenied -> AutomaticBackupResult(it)
                         else -> ShowErrorMessage(it)
                     }
