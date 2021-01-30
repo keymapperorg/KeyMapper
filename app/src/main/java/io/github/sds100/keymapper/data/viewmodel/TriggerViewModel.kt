@@ -55,9 +55,8 @@ class TriggerViewModel(
                     prefs.getFlow(Keys.shownParallelTriggerOrderExplanation)
                         .firstBlocking() == false) {
 
-                    notifyUser(R.string.dialog_message_parallel_trigger_order) {
-                        prefs.set(Keys.shownParallelTriggerOrderExplanation, true)
-                    }
+                    notifyUser(Keys.shownParallelTriggerOrderExplanation.name,
+                        R.string.dialog_message_parallel_trigger_order)
                 }
 
                 if (value != Trigger.PARALLEL) {
@@ -93,9 +92,8 @@ class TriggerViewModel(
                     prefs.getFlow(Keys.shownSequenceTriggerExplanation)
                         .firstBlocking() == false) {
 
-                    notifyUser(R.string.dialog_message_sequence_trigger_explanation) {
-                        prefs.set(Keys.shownSequenceTriggerExplanation, true)
-                    }
+                    notifyUser(Keys.shownSequenceTriggerExplanation.name,
+                        R.string.dialog_message_sequence_trigger_explanation)
                 }
             }
         }
@@ -250,9 +248,8 @@ class TriggerViewModel(
 
             if (prefs.getFlow(Keys.shownMultipleOfSameKeyInSequenceTriggerExplanation)
                     .firstBlocking() == false) {
-                notifyUser(R.string.dialog_message_use_key_multiple_times_in_sequence_trigger)
-
-                prefs.set(Keys.shownMultipleOfSameKeyInSequenceTriggerExplanation, true)
+                notifyUser(Keys.shownMultipleOfSameKeyInSequenceTriggerExplanation.name,
+                    R.string.dialog_message_use_key_multiple_times_in_sequence_trigger)
             }
         }
 
@@ -271,9 +268,9 @@ class TriggerViewModel(
                 if (prefs.getFlow(Keys.shownMultipleOfSameKeyInSequenceTriggerExplanation)
                         .firstBlocking() == false) {
 
-                    notifyUser(R.string.dialog_message_use_key_multiple_times_in_sequence_trigger)
+                    notifyUser(Keys.shownMultipleOfSameKeyInSequenceTriggerExplanation.name,
+                        R.string.dialog_message_use_key_multiple_times_in_sequence_trigger)
 
-                    prefs.set(Keys.shownMultipleOfSameKeyInSequenceTriggerExplanation, true)
                 }
             }
         }
@@ -371,8 +368,26 @@ class TriggerViewModel(
         _eventStream.value = EnableAccessibilityServicePrompt()
     }
 
-    private fun notifyUser(@StringRes message: Int, onOk: () -> Unit = {}) {
-        _eventStream.value = OkDialog(message, onOk)
+    fun onDialogResponse(key: String, response: DialogResponse) {
+        when (key) {
+            Keys.shownParallelTriggerOrderExplanation.name ->
+                prefs.set(Keys.shownParallelTriggerOrderExplanation, true)
+
+            Keys.shownMultipleOfSameKeyInSequenceTriggerExplanation.name ->
+                prefs.set(Keys.shownMultipleOfSameKeyInSequenceTriggerExplanation, true)
+
+            Keys.shownMultipleOfSameKeyInSequenceTriggerExplanation.name ->
+                prefs.set(Keys.shownMultipleOfSameKeyInSequenceTriggerExplanation, true)
+
+            Keys.shownSequenceTriggerExplanation.name ->
+                prefs.set(Keys.shownSequenceTriggerExplanation, true)
+
+            else -> optionsViewModel.onDialogResponse(key, response)
+        }
+    }
+
+    private fun notifyUser(responseKey: String, @StringRes message: Int) {
+        _eventStream.value = OkDialog(responseKey, message)
     }
 
     suspend fun getDeviceInfoList() = deviceInfoRepository.getAll()

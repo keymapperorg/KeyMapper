@@ -82,7 +82,7 @@ class ChooseConstraintFragment
                         messageResource = event.message
 
                         okButton {
-                            event.onOk.invoke()
+                            viewModel.onDialogResponse(event.responseKey, DialogResponse.POSITIVE)
                         }
 
                         show()

@@ -12,6 +12,7 @@ import io.github.sds100.keymapper.data.model.options.IntOption
 import io.github.sds100.keymapper.data.model.options.IntOption.Companion.nullIfDefault
 import io.github.sds100.keymapper.data.model.options.TriggerOptions
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
+import io.github.sds100.keymapper.util.DialogResponse
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.OkDialog
 import io.github.sds100.keymapper.util.firstBlocking
@@ -26,6 +27,10 @@ class TriggerOptionsViewModel(
     val getTriggerMode: () -> Int,
     private val keymapUid: LiveData<String>
 ) : BaseOptionsViewModel<TriggerOptions>() {
+
+    companion object {
+        private const val KEY_SCREEN_OFF_TRIGGERS = "screen_off_triggers"
+    }
 
     override val stateKey = "trigger_options_view_model"
 
@@ -145,9 +150,8 @@ class TriggerOptionsViewModel(
         if (id == TriggerOptions.ID_SCREEN_OFF_TRIGGER &&
             prefs.getFlow(Keys.shownScreenOffTriggersExplanation).firstBlocking() == false) {
 
-            _eventStream.value = OkDialog(R.string.showcase_screen_off_triggers) {
-                prefs.set(Keys.shownScreenOffTriggersExplanation, true)
-            }
+            _eventStream.value = OkDialog(KEY_SCREEN_OFF_TRIGGERS,
+                R.string.showcase_screen_off_triggers)
         }
 
         invalidateOptions()
@@ -156,6 +160,12 @@ class TriggerOptionsViewModel(
     fun invalidateOptions() {
         options.value?.apply {
             setOptions(dependentDataChanged(getTriggerKeys.invoke(), getTriggerMode.invoke()))
+        }
+    }
+
+    fun onDialogResponse(key: String, response: DialogResponse) {
+        when (key) {
+            KEY_SCREEN_OFF_TRIGGERS -> prefs.set(Keys.shownScreenOffTriggersExplanation, true)
         }
     }
 

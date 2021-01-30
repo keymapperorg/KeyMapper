@@ -200,7 +200,8 @@ class TriggerFragment : Fragment() {
                     }.showAndAwait(okValue = true, cancelValue = null, dismissValue = false)
 
                     if (approvedWarning) {
-                        event.onOk.invoke()
+                        triggerViewModel.onDialogResponse(event.responseKey,
+                            DialogResponse.POSITIVE)
                     }
                 }
 

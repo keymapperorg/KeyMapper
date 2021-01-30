@@ -88,6 +88,10 @@ class ChooseConstraintListViewModel(
                 R.string.constraint_choose_orientation_270
             ),
         )
+
+        private const val KEY_BT_CONSTRAINT_LIMITATION = "bt_constraint_limitation"
+        private const val KEY_SCREEN_OFF_CONSTRAINT_LIMITATION = "bt_constraint_screen_off_limitation"
+        private const val KEY_SCREEN_ON_CONSTRAINT_LIMITATION = "bt_constraint_screen_on_limitation"
     }
 
     override val model = liveData {
@@ -124,19 +128,16 @@ class ChooseConstraintListViewModel(
             -> _eventStream.value = ChoosePackage()
 
             Constraint.BT_DEVICE_CONNECTED, Constraint.BT_DEVICE_DISCONNECTED -> {
-                _eventStream.value = OkDialog(R.string.dialog_message_bt_constraint_limitation) {
-                    _eventStream.value = ChooseBluetoothDevice()
-                }
+                _eventStream.value = OkDialog(KEY_BT_CONSTRAINT_LIMITATION,
+                    R.string.dialog_message_bt_constraint_limitation)
             }
             Constraint.SCREEN_ON -> {
-                _eventStream.value = OkDialog(R.string.dialog_message_screen_constraints_limitation) {
-                    _eventStream.value = SelectConstraint(Constraint(Constraint.SCREEN_ON))
-                }
+                _eventStream.value = OkDialog(KEY_SCREEN_OFF_CONSTRAINT_LIMITATION,
+                    R.string.dialog_message_screen_constraints_limitation)
             }
             Constraint.SCREEN_OFF -> {
-                _eventStream.value = OkDialog(R.string.dialog_message_screen_constraints_limitation) {
-                    _eventStream.value = SelectConstraint(Constraint(Constraint.SCREEN_OFF))
-                }
+                _eventStream.value = OkDialog(KEY_SCREEN_OFF_CONSTRAINT_LIMITATION,
+                    R.string.dialog_message_screen_constraints_limitation)
             }
             else -> {
                 _eventStream.value = SelectConstraint(Constraint(constraintType))
@@ -153,6 +154,21 @@ class ChooseConstraintListViewModel(
         _eventStream.value = SelectConstraint(Constraint.btConstraint(chosenConstraintType!!, address, name))
         chosenConstraintType = null
     }
+
+
+    fun onDialogResponse(key: String, response: DialogResponse) {
+        when (key) {
+            KEY_BT_CONSTRAINT_LIMITATION ->
+                _eventStream.value = ChooseBluetoothDevice()
+
+            KEY_SCREEN_OFF_CONSTRAINT_LIMITATION ->
+                _eventStream.value = SelectConstraint(Constraint(Constraint.SCREEN_OFF))
+
+            KEY_SCREEN_ON_CONSTRAINT_LIMITATION ->
+                _eventStream.value = SelectConstraint(Constraint(Constraint.SCREEN_ON))
+        }
+    }
+
 
     @Suppress("UNCHECKED_CAST")
     class Factory(private val supportedConstraints: List<String>) : ViewModelProvider.NewInstanceFactory() {
