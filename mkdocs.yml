@@ -72,6 +72,7 @@ plugins:
         'redirects/trigger-options.md': 'https://sds100.github.io/KeyMapper/user-guide/keymaps/#options'
         'redirects/keymap-action-options.md': 'https://sds100.github.io/KeyMapper/quick-start/#customising-a-key-map'
         'redirects/fingerprint-action-options.md': 'https://sds100.github.io/KeyMapper/user-guide/fingerprint-gestures/#customising-fingerprint-gesture-maps'
+        'redirects/trigger-key-options.md': 'https://sds100.github.io/KeyMapper/user-guide/keymaps'
   - search:
       lang:
         - en
