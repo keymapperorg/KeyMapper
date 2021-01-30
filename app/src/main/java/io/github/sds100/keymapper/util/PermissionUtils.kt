@@ -21,7 +21,6 @@ import io.github.sds100.keymapper.data.hasRootPermission
 import io.github.sds100.keymapper.globalPreferences
 import io.github.sds100.keymapper.service.DeviceAdmin
 import splitties.alertdialog.appcompat.*
-import splitties.init.appCtx
 import splitties.systemservices.devicePolicyManager
 import splitties.systemservices.notificationManager
 import splitties.toast.toast
@@ -140,13 +139,13 @@ object PermissionUtils {
         when {
             permission == Manifest.permission.WRITE_SETTINGS &&
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ->
-                return Settings.System.canWrite(appCtx)
+                return Settings.System.canWrite(ctx)
 
             permission == Constants.PERMISSION_ROOT ->
                 return hasRootPermission
 
             permission == Manifest.permission.BIND_DEVICE_ADMIN -> {
-                return devicePolicyManager?.isAdminActive(ComponentName(appCtx, DeviceAdmin::class.java)) == true
+                return devicePolicyManager?.isAdminActive(ComponentName(ctx, DeviceAdmin::class.java)) == true
             }
 
             permission == Manifest.permission.ACCESS_NOTIFICATION_POLICY ->
@@ -157,7 +156,7 @@ object PermissionUtils {
                 }
 
             permission == Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE -> {
-                return NotificationManagerCompat.getEnabledListenerPackages(appCtx).contains(Constants.PACKAGE_NAME)
+                return NotificationManagerCompat.getEnabledListenerPackages(ctx).contains(Constants.PACKAGE_NAME)
             }
 
             permission == Manifest.permission.WRITE_SECURE_SETTINGS && hasRootPermission -> {
@@ -165,7 +164,7 @@ object PermissionUtils {
             }
         }
 
-        return ContextCompat.checkSelfPermission(appCtx, permission) == PERMISSION_GRANTED
+        return ContextCompat.checkSelfPermission(ctx, permission) == PERMISSION_GRANTED
     }
 }
 

@@ -12,7 +12,6 @@ import io.github.sds100.keymapper.util.result.Result
 import io.github.sds100.keymapper.util.result.SSLHandshakeError
 import io.github.sds100.keymapper.util.result.Success
 import kotlinx.coroutines.suspendCancellableCoroutine
-import splitties.init.appCtx
 import splitties.systemservices.wifiManager
 import java.io.File
 import javax.net.ssl.SSLHandshakeException
@@ -24,11 +23,12 @@ import kotlin.coroutines.resume
 object NetworkUtils {
 
     suspend fun downloadFile(
+        ctx: Context,
         url: String,
         filePath: String
     ): Result<File> = suspendCancellableCoroutine {
 
-        val queue = Volley.newRequestQueue(appCtx)
+        val queue = Volley.newRequestQueue(ctx)
 
         val request = StringRequest(Request.Method.GET, url,
             { response ->

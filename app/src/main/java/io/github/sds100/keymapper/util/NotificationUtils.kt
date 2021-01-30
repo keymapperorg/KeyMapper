@@ -27,7 +27,6 @@ import io.github.sds100.keymapper.data.hasRootPermission
 import io.github.sds100.keymapper.globalPreferences
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.activity.HomeActivity
-import splitties.init.appCtx
 import splitties.systemservices.notificationManager
 
 /**
@@ -307,14 +306,14 @@ object NotificationUtils {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun openChannelSettings(channelId: String) {
+    fun openChannelSettings(ctx: Context, channelId: String) {
         Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS).apply {
             putExtra(Settings.EXTRA_APP_PACKAGE, Constants.PACKAGE_NAME)
             putExtra(Settings.EXTRA_CHANNEL_ID, channelId)
 
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
-            appCtx.startActivity(this)
+            ctx.startActivity(this)
         }
     }
 }

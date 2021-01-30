@@ -16,7 +16,7 @@ class FileRepository(private val context: Context) {
         val fileName = extractFileName(url)
         val path = FileUtils.getPathToFileInAppData(context, fileName)
 
-        return NetworkUtils.downloadFile(url, path).otherwise {
+        return NetworkUtils.downloadFile(context, url, path).otherwise {
             if (it is DownloadFailed) {
                 val file = File(path)
 

@@ -129,7 +129,9 @@ class ActionPerformerDelegate(context: Context,
                     }
                 }
 
-                ActionType.TEXT_BLOCK -> chosenImePackageName?.let { KeyboardUtils.inputTextFromImeService(it, action.data) }
+                ActionType.TEXT_BLOCK -> chosenImePackageName?.let {
+                    KeyboardUtils.inputTextFromImeService(ctx, it, action.data)
+                }
 
                 ActionType.URL -> {
                     val guessedUrl = URLUtil.guessUrl(action.data)
@@ -195,15 +197,16 @@ class ActionPerformerDelegate(context: Context,
                         suProcessDelegate.runCommand("input keyevent $keyCode")
                     }
 
-                    val deviceId = action.extras.getData(Action.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR).handle(
-                        onSuccess = {
-                            InputDeviceUtils.getDeviceIdFromDescriptor(it)
-                        },
-                        onFailure = { 0 }
-                    )
+                    val deviceId = action.extras
+                        .getData(Action.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR)
+                        .handle(
+                            onSuccess = { InputDeviceUtils.getDeviceIdFromDescriptor(it) },
+                            onFailure = { 0 }
+                        )
 
                     chosenImePackageName?.let {
                         KeyboardUtils.inputKeyEventFromImeService(
+                            ctx,
                             it,
                             keyCode = action.data.toInt(),
                             metaState = additionalMetaState.withFlag(
@@ -420,7 +423,7 @@ class ActionPerformerDelegate(context: Context,
                     suProcessDelegate.runCommand("input keyevent ${KeyEvent.KEYCODE_POWER}")
 
                 SystemAction.SHOW_KEYBOARD_PICKER, SystemAction.SHOW_KEYBOARD_PICKER_ROOT ->
-                    KeyboardUtils.showInputMethodPickerDialogOutsideApp()
+                    KeyboardUtils.showInputMethodPickerDialogOutsideApp(ctx)
 
                 SystemAction.SECURE_LOCK_DEVICE -> {
                     val dpm = getSystemService(DEVICE_POLICY_SERVICE) as DevicePolicyManager
@@ -433,6 +436,7 @@ class ActionPerformerDelegate(context: Context,
 
                 SystemAction.MOVE_CURSOR_TO_END -> chosenImePackageName?.let {
                     KeyboardUtils.inputKeyEventFromImeService(
+                        ctx,
                         it,
                         keyCode = KeyEvent.KEYCODE_MOVE_END,
                         metaState = KeyEvent.META_CTRL_ON,

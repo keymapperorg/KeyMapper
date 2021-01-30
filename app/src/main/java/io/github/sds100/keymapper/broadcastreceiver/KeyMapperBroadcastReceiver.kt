@@ -30,7 +30,7 @@ class KeyMapperBroadcastReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent?) {
         when (intent?.action) {
-            ACTION_SHOW_IME_PICKER -> KeyboardUtils.showInputMethodPickerDialogOutsideApp()
+            ACTION_SHOW_IME_PICKER -> KeyboardUtils.showInputMethodPickerDialogOutsideApp(context)
             ACTION_TOGGLE_KEYBOARD -> KeyboardUtils.toggleCompatibleIme(context)
 
             MyAccessibilityService.ACTION_START -> AccessibilityUtils.enableService(context)

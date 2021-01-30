@@ -100,7 +100,7 @@ class RecoverFailureDelegate(
                 AppNotFound(ctx.str(R.string.google_app_package_name)),
                 navController)
 
-            is AppNotFound -> PackageUtils.viewAppOnline(failure.packageName)
+            is AppNotFound -> PackageUtils.viewAppOnline(ctx, failure.packageName)
 
             is AppDisabled -> {
                 Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {

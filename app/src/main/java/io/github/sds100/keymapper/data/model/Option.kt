@@ -160,7 +160,7 @@ object Option {
                 return Success(ServiceLocator.packageRepository(ctx).getAppName(optionId))
 
             SystemAction.SWITCH_KEYBOARD -> {
-                return KeyboardUtils.getInputMethodLabel(optionId)
+                return KeyboardUtils.getInputMethodLabel(ctx, optionId)
             }
         }
 

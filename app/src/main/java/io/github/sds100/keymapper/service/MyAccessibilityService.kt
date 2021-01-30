@@ -348,6 +348,7 @@ class MyAccessibilityService : AccessibilityService(),
                 else -> {
                     chosenImePackageName?.let { imePackageName ->
                         KeyboardUtils.inputKeyEventFromImeService(
+                            this,
                             imePackageName = imePackageName,
                             keyCode = it.keyCode,
                             metaState = it.metaState,

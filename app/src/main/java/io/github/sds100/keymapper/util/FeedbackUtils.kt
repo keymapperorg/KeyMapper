@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import io.github.sds100.keymapper.R
-import splitties.init.appCtx
 import splitties.toast.toast
 
 /**
@@ -24,9 +23,9 @@ object FeedbackUtils {
             addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_NEW_TASK)
 
             try {
-                appCtx.startActivity(this)
+                ctx.startActivity(this)
             } catch (e: ActivityNotFoundException) {
-                appCtx.toast(R.string.error_no_app_found_to_send_feedback)
+                ctx.toast(R.string.error_no_app_found_to_send_feedback)
             }
         }
     }

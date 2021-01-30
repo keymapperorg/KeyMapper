@@ -155,13 +155,17 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
             }
 
             showImeNotificationPreference?.setOnPreferenceClickListener {
-                NotificationUtils.openChannelSettings(NotificationUtils.CHANNEL_IME_PICKER)
+                NotificationUtils.openChannelSettings(
+                    requireContext(),
+                    NotificationUtils.CHANNEL_IME_PICKER
+                )
 
                 true
             }
 
             toggleKeyboardNotificationPref?.setOnPreferenceClickListener {
-                NotificationUtils.openChannelSettings(NotificationUtils.CHANNEL_TOGGLE_KEYBOARD)
+                NotificationUtils.openChannelSettings(requireContext(),
+                    NotificationUtils.CHANNEL_TOGGLE_KEYBOARD)
 
                 true
             }
