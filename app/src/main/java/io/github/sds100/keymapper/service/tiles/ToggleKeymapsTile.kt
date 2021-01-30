@@ -10,7 +10,6 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.PreferenceKeys
 import io.github.sds100.keymapper.data.keymapsPaused
 import io.github.sds100.keymapper.globalPreferences
-import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.util.AccessibilityUtils
 import io.github.sds100.keymapper.util.defaultSharedPreferences
 import io.github.sds100.keymapper.util.firstBlocking
@@ -38,7 +37,7 @@ class ToggleKeymapsTile : TileService(), SharedPreferences.OnSharedPreferenceCha
             intent ?: return
 
             when (intent.action) {
-                MyAccessibilityService.ACTION_ON_START, MyAccessibilityService.ACTION_ON_STOP -> invalidateTile()
+//      TODO          MyAccessibilityService.ACTION_ON_START, MyAccessibilityService.ACTION_ON_STOP -> invalidateTile()
             }
         }
     }
@@ -48,8 +47,8 @@ class ToggleKeymapsTile : TileService(), SharedPreferences.OnSharedPreferenceCha
         defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
 
         IntentFilter().apply {
-            addAction(MyAccessibilityService.ACTION_ON_START)
-            addAction(MyAccessibilityService.ACTION_ON_STOP)
+//   TODO         addAction(MyAccessibilityService.ACTION_ON_START)
+//     TODO       addAction(MyAccessibilityService.ACTION_ON_STOP)
 
             registerReceiver(broadcastReceiver, this)
         }

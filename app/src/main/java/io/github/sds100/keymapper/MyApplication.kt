@@ -6,6 +6,7 @@ import androidx.multidex.MultiDexApplication
 import io.github.sds100.keymapper.data.automaticBackupLocation
 import io.github.sds100.keymapper.data.darkThemeMode
 import io.github.sds100.keymapper.util.IContentResolver
+import io.github.sds100.keymapper.util.UpdateNotificationEvent
 import io.github.sds100.keymapper.util.firstBlocking
 import io.github.sds100.keymapper.util.result.FileAccessDenied
 import io.github.sds100.keymapper.util.result.GenericFailure
@@ -32,6 +33,12 @@ class MyApplication : MultiDexApplication(), IContentResolver {
 
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
+        }
+
+        ServiceLocator.eventBus().observeForever { event ->
+            if (event is UpdateNotificationEvent) {
+                NotificationController.onEvent(applicationContext, event)
+            }
         }
     }
 

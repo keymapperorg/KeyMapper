@@ -17,7 +17,6 @@ import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.data.PreferenceKeys
 import io.github.sds100.keymapper.databinding.FragmentAppIntroSlideBinding
 import io.github.sds100.keymapper.globalPreferences
-import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.fragment.AppIntroScrollableFragment
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.DexUtils.isDexSupported
@@ -90,15 +89,9 @@ class NoteFromDeveloperSlide : AppIntroScrollableFragment() {
 class AccessibilityServiceSlide : AppIntroScrollableFragment() {
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent?.action == MyAccessibilityService.ACTION_ON_START) {
-                binding.apply {
-                    if (AccessibilityUtils.isServiceEnabled(requireContext())) {
-                        serviceEnabledLayout()
-                    } else {
-                        serviceDisabledLayout()
-                    }
-                }
-            }
+//       TODO     if (intent?.action == MyAccessibilityService.ACTION_ON_START) {
+
+//            }
         }
     }
 
@@ -106,10 +99,24 @@ class AccessibilityServiceSlide : AppIntroScrollableFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         IntentFilter().apply {
-            addAction(MyAccessibilityService.ACTION_ON_START)
+//     TODO       addAction(MyAccessibilityService.ACTION_ON_START)
 
             requireContext().registerReceiver(broadcastReceiver, this)
         }
+
+        ServiceLocator.eventBus().observe(viewLifecycleOwner, { event ->
+            when (event) {
+                is AccessibilityServiceStarted,
+                is AccessibilityServiceStopped ->
+                    binding.apply {
+                        if (AccessibilityUtils.isServiceEnabled(requireContext())) {
+                            serviceEnabledLayout()
+                        } else {
+                            serviceDisabledLayout()
+                        }
+                    }
+            }
+        })
     }
 
     override fun onDestroyView() {

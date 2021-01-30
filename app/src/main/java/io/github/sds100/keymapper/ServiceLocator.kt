@@ -5,11 +5,13 @@ import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.fragment.app.Fragment
 import androidx.room.Room
+import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.data.*
 import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.db.DefaultDataStoreManager
 import io.github.sds100.keymapper.data.db.IDataStoreManager
 import io.github.sds100.keymapper.data.repository.*
+import io.github.sds100.keymapper.util.Event
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -19,6 +21,9 @@ object ServiceLocator {
 
     private val lock = Any()
     private var database: AppDatabase? = null
+
+    @Volatile
+    private var eventBus: LiveEvent<Event>? = null
 
     @Volatile
     private var keymapRepository: DefaultKeymapRepository? = null
@@ -49,6 +54,12 @@ object ServiceLocator {
 
     @Volatile
     var backupManager: IBackupManager? = null
+
+    fun eventBus(): LiveEvent<Event> {
+        synchronized(this) {
+            return eventBus ?: createEventBus()
+        }
+    }
 
     fun keymapRepository(context: Context): DefaultKeymapRepository {
         synchronized(this) {
@@ -129,6 +140,13 @@ object ServiceLocator {
             keymapRepository = null
             deviceInfoRepository = null
         }
+    }
+
+    private fun createEventBus(): LiveEvent<Event> {
+        val bus = LiveEvent<Event>()
+        this.eventBus = bus
+
+        return bus
     }
 
     private fun createKeymapRepository(context: Context): DefaultKeymapRepository {

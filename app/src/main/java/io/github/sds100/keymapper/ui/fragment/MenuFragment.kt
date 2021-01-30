@@ -17,7 +17,6 @@ import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
 import io.github.sds100.keymapper.data.viewmodel.MenuFragmentViewModel
 import io.github.sds100.keymapper.databinding.FragmentMenuBinding
 import io.github.sds100.keymapper.globalPreferences
-import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.util.*
 import splitties.alertdialog.appcompat.*
 
@@ -36,13 +35,13 @@ class MenuFragment : BottomSheetDialogFragment() {
             intent ?: return
 
             when (intent.action) {
-                MyAccessibilityService.ACTION_ON_START -> {
-                    viewModel.accessibilityServiceEnabled.value = true
-                }
-
-                MyAccessibilityService.ACTION_ON_STOP -> {
-                    viewModel.accessibilityServiceEnabled.value = false
-                }
+//      TODO          MyAccessibilityService.ACTION_ON_START -> {
+//                    viewModel.accessibilityServiceEnabled.value = true
+//                }
+//
+//                MyAccessibilityService.ACTION_ON_STOP -> {
+//                    viewModel.accessibilityServiceEnabled.value = false
+//                }
             }
         }
     }
@@ -58,8 +57,8 @@ class MenuFragment : BottomSheetDialogFragment() {
         super.onCreate(savedInstanceState)
 
         IntentFilter().apply {
-            addAction(MyAccessibilityService.ACTION_ON_START)
-            addAction(MyAccessibilityService.ACTION_ON_STOP)
+//   TODO         addAction(MyAccessibilityService.ACTION_ON_START)
+//            addAction(MyAccessibilityService.ACTION_ON_STOP)
 
             requireContext().registerReceiver(broadcastReceiver, this)
         }

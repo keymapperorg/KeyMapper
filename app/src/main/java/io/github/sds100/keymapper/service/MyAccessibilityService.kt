@@ -18,11 +18,6 @@ import androidx.lifecycle.*
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
-import io.github.sds100.keymapper.NotificationController
-import io.github.sds100.keymapper.NotificationController.EVENT_ACCESSIBILITY_SERVICE_STARTED
-import io.github.sds100.keymapper.NotificationController.EVENT_ACCESSIBILITY_SERVICE_STOPPED
-import io.github.sds100.keymapper.NotificationController.EVENT_PAUSE_REMAPS
-import io.github.sds100.keymapper.NotificationController.EVENT_RESUME_REMAPS
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.data.*
@@ -69,6 +64,7 @@ class MyAccessibilityService : AccessibilityService(),
         const val ACTION_STOPPED_RECORDING_TRIGGER = "$PACKAGE_NAME.STOPPED_RECORDING_TRIGGER"
         const val ACTION_ON_START = "$PACKAGE_NAME.ON_ACCESSIBILITY_SERVICE_START"
         const val ACTION_ON_STOP = "$PACKAGE_NAME.ON_ACCESSIBILITY_SERVICE_STOP"
+        const val ACTION_PERFORM_ACTIONS = "$PACKAGE_NAME.PERFORM_ACTIONS"
         const val ACTION_UPDATE_KEYMAP_LIST_CACHE = "$PACKAGE_NAME.UPDATE_KEYMAP_LIST_CACHE"
 
         //DONT CHANGE!!!
@@ -95,13 +91,13 @@ class MyAccessibilityService : AccessibilityService(),
 
                 ACTION_PAUSE_REMAPPINGS -> {
                     keymapDetectionDelegate.reset()
-                    globalPreferences.set(PreferenceKeys.keymapsPaused, true)
+                    AppPreferences.keymapsPaused = true
                     NotificationController.onEvent(this@MyAccessibilityService, EVENT_PAUSE_REMAPS)
                 }
 
                 ACTION_RESUME_REMAPPINGS -> {
                     keymapDetectionDelegate.reset()
-                    globalPreferences.set(PreferenceKeys.keymapsPaused, false)
+                    AppPreferences.keymapsPaused = false
                     NotificationController.onEvent(this@MyAccessibilityService, EVENT_RESUME_REMAPS)
                 }
 
@@ -324,6 +320,8 @@ class MyAccessibilityService : AccessibilityService(),
             registerReceiver(broadcastReceiver, this)
         }
 
+        defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
+
         NotificationController.onEvent(this, EVENT_ACCESSIBILITY_SERVICE_STARTED)
         sendPackageBroadcast(ACTION_ON_START)
 
@@ -481,6 +479,8 @@ class MyAccessibilityService : AccessibilityService(),
                     FingerprintMapUtils.showFeatureNotification(this)
             }
         })
+
+        ServiceLocator.eventBus().value = AccessibilityServiceStarted()
     }
 
     override fun onInterrupt() {}
@@ -495,6 +495,8 @@ class MyAccessibilityService : AccessibilityService(),
 
         sendPackageBroadcast(ACTION_ON_STOP)
 
+        defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+
         unregisterReceiver(broadcastReceiver)
 
         if (VERSION.SDK_INT >= VERSION_CODES.O) {
@@ -503,6 +505,8 @@ class MyAccessibilityService : AccessibilityService(),
 
             fingerprintGestureMapController.reset()
         }
+
+        ServiceLocator.eventBus().value = AccessibilityServiceStopped()
 
         super.onDestroy()
     }
@@ -540,6 +544,72 @@ class MyAccessibilityService : AccessibilityService(),
         }
 
         return super.onKeyEvent(event)
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        when (key) {
+            str(R.string.key_pref_long_press_delay) -> {
+                keymapDetectionDelegate.preferences.defaultLongPressDelay =
+                    AppPreferences.longPressDelay
+            }
+
+            str(R.string.key_pref_double_press_delay) -> {
+                keymapDetectionDelegate.preferences.defaultDoublePressDelay =
+                    AppPreferences.doublePressDelay
+            }
+
+            str(R.string.key_pref_repeat_delay) -> {
+                keymapDetectionDelegate.preferences.defaultRepeatDelay =
+                    AppPreferences.repeatDelay
+            }
+
+            str(R.string.key_pref_repeat_rate) -> {
+                keymapDetectionDelegate.preferences.defaultRepeatRate = AppPreferences.repeatRate
+            }
+
+            str(R.string.key_pref_sequence_trigger_timeout) -> {
+                keymapDetectionDelegate.preferences.defaultSequenceTriggerTimeout =
+                    AppPreferences.sequenceTriggerTimeout
+            }
+
+            str(R.string.key_pref_vibrate_duration) -> {
+                keymapDetectionDelegate.preferences.defaultVibrateDuration =
+                    AppPreferences.vibrateDuration
+            }
+
+            str(R.string.key_pref_force_vibrate) -> {
+                keymapDetectionDelegate.preferences.forceVibrate = AppPreferences.forceVibrate
+            }
+
+            str(R.string.key_pref_hold_down_duration) -> {
+                keymapDetectionDelegate.preferences.defaultHoldDownDuration =
+                    AppPreferences.holdDownDuration
+            }
+
+            str(R.string.key_pref_keymaps_paused) -> {
+                if (AppPreferences.keymapsPaused) {
+                    NotificationController.onEvent(this, EVENT_PAUSE_REMAPS)
+
+                    if (AppPreferences.toggleKeyboardOnToggleKeymaps) {
+                        KeyboardUtils.chooseLastUsedIncompatibleInputMethod(this)
+                    }
+
+                    if (VERSION.SDK_INT >= VERSION_CODES.O) {
+                        denyFingerprintGestureDetection()
+                    }
+                } else {
+                    NotificationController.onEvent(this, EVENT_RESUME_REMAPS)
+
+                    if (AppPreferences.toggleKeyboardOnToggleKeymaps) {
+                        KeyboardUtils.chooseCompatibleInputMethod(this)
+                    }
+
+                    if (VERSION.SDK_INT >= VERSION_CODES.O) {
+                        requestFingerprintGestureDetection()
+                    }
+                }
+            }
+        }
     }
 
     override fun isBluetoothDeviceConnected(address: String) = connectedBtAddresses.contains(address)
