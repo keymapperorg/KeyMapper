@@ -11,10 +11,7 @@ import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.model.options.KeymapActionOptions
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.data.usecase.ConfigKeymapUseCase
-import io.github.sds100.keymapper.util.ActionType
-import io.github.sds100.keymapper.util.EnableAccessibilityServicePrompt
-import io.github.sds100.keymapper.util.Event
-import io.github.sds100.keymapper.util.FixFailure
+import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.util.*
@@ -54,7 +51,12 @@ class ConfigKeymapViewModel(private val keymapRepository: ConfigKeymapUseCase,
             override fun onAddAction(action: Action) {
                 if (action.type == ActionType.KEY_EVENT) {
                     getActionOptions(action).apply {
-                        setValue(KeymapActionOptions.ID_REPEAT, true)
+                        if (KeyEventUtils.isModifierKey(action.data.toInt())) {
+                            setValue(KeymapActionOptions.ID_HOLD_DOWN, true)
+                            setValue(KeymapActionOptions.ID_REPEAT, false)
+                        } else {
+                            setValue(KeymapActionOptions.ID_REPEAT, true)
+                        }
 
                         setOptions(this)
                     }

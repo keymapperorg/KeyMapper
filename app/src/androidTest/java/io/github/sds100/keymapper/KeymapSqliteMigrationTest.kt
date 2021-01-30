@@ -1,17 +1,19 @@
+package io.github.sds100.keymapper
+
 import androidx.room.testing.MigrationTestHelper
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
-import androidx.test.espresso.matcher.ViewMatchers.assertThat
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
 import io.github.sds100.keymapper.data.db.AppDatabase
-import org.hamcrest.Matchers.`is`
+import io.github.sds100.keymapper.util.JsonTestUtils
+import org.hamcrest.Matchers
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import util.JsonTestUtils
 import java.io.IOException
 
 /**
@@ -126,7 +128,7 @@ class KeymapSqliteMigrationTest {
             close()
         }
 
-        db = helper.runMigrationsAndValidate(TEST_DB, 10, true, AppDatabase.MIGRATION_9_10)
+        db = helper.runMigrationsAndValidate(TEST_DB, 10, true, AppDatabase.Companion.MIGRATION_9_10)
 
         testColumnsMatch(db, MIGRATION_9_10_EXPECTED_DATA)
     }
@@ -246,7 +248,7 @@ class KeymapSqliteMigrationTest {
 
         val cursor = db.query("SELECT * FROM keymaps")
 
-        assertThat("Check the logcat", cursor.count, `is`(expectedData.size))
+        ViewMatchers.assertThat("Check the logcat", cursor.count, Matchers.`is`(expectedData.size))
 
         while (cursor.moveToNext()) {
             cursor.columnNames.forEachIndexed { columnIndex, columnName ->
@@ -262,7 +264,7 @@ class KeymapSqliteMigrationTest {
                 }
 
                 when (expectedColumnValue) {
-                    is Int -> assertThat("$columnName at row $row doesn't match", columnValue, `is`(expectedColumnValue))
+                    is Int -> ViewMatchers.assertThat("$columnName at row $row doesn't match", columnValue, Matchers.`is`(expectedColumnValue))
                     is String -> {
                         try {
                             JsonTestUtils.compareBothWays(
@@ -272,7 +274,7 @@ class KeymapSqliteMigrationTest {
                                 otherName = "migrated $columnName at row $row")
 
                         } catch (e: JsonParseException) {
-                            assertThat("$columnName at row $row doesn't match", columnValue, `is`(expectedColumnValue))
+                            ViewMatchers.assertThat("$columnName at row $row doesn't match", columnValue, Matchers.`is`(expectedColumnValue))
                         }
                     }
                 }

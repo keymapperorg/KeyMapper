@@ -1,3 +1,5 @@
+package io.github.sds100.keymapper
+
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.gson.Gson
 import com.google.gson.JsonParser
@@ -10,7 +12,7 @@ import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Rule
 import org.junit.Test
-import util.JsonTestUtils
+import io.github.sds100.keymapper.util.JsonTestUtils
 
 /**
  * Created by sds100 on 22/01/21.

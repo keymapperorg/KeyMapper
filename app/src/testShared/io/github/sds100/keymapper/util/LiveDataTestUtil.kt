@@ -1,4 +1,4 @@
-package util
+package io.github.sds100.keymapper.util
 
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.Observer

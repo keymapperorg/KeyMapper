@@ -1,3 +1,5 @@
+package io.github.sds100.keymapper
+
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -16,9 +18,9 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import util.FakeDataStore
-import util.JsonTestUtils
-import util.LiveDataTestWrapper
+import io.github.sds100.keymapper.util.FakeDataStore
+import io.github.sds100.keymapper.util.JsonTestUtils
+import io.github.sds100.keymapper.util.LiveDataTestWrapper
 
 /**
  * Created by sds100 on 22/01/21.
