@@ -3,12 +3,14 @@ package io.github.sds100.keymapper
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.github.salomonbrys.kotson.byObject
 import com.github.salomonbrys.kotson.contains
+import com.github.salomonbrys.kotson.get
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.data.BackupManager
 import io.github.sds100.keymapper.data.IBackupManager
 import io.github.sds100.keymapper.data.IGlobalPreferences
+import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.model.FingerprintMap
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
@@ -30,9 +32,9 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers.*
 import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnitRunner
-import io.github.sds100.keymapper.util.LiveDataTestWrapper
 import java.io.InputStream
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
@@ -268,7 +270,7 @@ class BackupManagerTest {
             MatcherAssert.assertThat(actualKeymapJson, Is.`is`(expectedKeymapJson))
         }
 
-        MatcherAssert.assertThat(rootElement["keymap_db_version"].asInt, Is.`is`(io.github.sds100.keymapper.data.db.AppDatabase.Companion.DATABASE_VERSION))
+        MatcherAssert.assertThat(rootElement["keymap_db_version"].asInt, Is.`is`(AppDatabase.DATABASE_VERSION))
 
         MatcherAssert.assertThat(eventStream.history, Is.`is`(listOf(BackupResult(Success(Unit)))))
     }
@@ -304,7 +306,7 @@ class BackupManagerTest {
             MatcherAssert.assertThat("doesn't contain $jsonKey fingerprint map", gson.toJson(rootElement[jsonKey]), Is.`is`(gson.toJson(FingerprintMap())))
         }
 
-        MatcherAssert.assertThat(rootElement["keymap_db_version"].asInt, Is.`is`(io.github.sds100.keymapper.data.db.AppDatabase.Companion.DATABASE_VERSION))
+        MatcherAssert.assertThat(rootElement["keymap_db_version"].asInt, Is.`is`(AppDatabase.DATABASE_VERSION))
 
         MatcherAssert.assertThat(eventStream.history, Is.`is`(listOf(BackupResult(Success(Unit)))))
     }
