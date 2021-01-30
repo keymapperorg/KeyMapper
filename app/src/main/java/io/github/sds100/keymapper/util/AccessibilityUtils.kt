@@ -8,7 +8,6 @@ import android.view.accessibility.AccessibilityNodeInfo
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.activity.HomeActivity
-import splitties.init.appCtx
 
 /**
  * Created by sds100 on 06/08/2019.
@@ -18,7 +17,7 @@ object AccessibilityUtils {
     fun enableService(context: Context) {
         when {
             context.haveWriteSecureSettingsPermission -> {
-                val enabledServices = appCtx.getSecureSetting<String>(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
+                val enabledServices = context.getSecureSetting<String>(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
 
                 val className = MyAccessibilityService::class.java.name
 
@@ -30,7 +29,7 @@ object AccessibilityUtils {
                     //append the keymapper entry to the rest of the other services.
                     "$keyMapperEntry:$enabledServices"
                 }
-                appCtx.putSecureSetting(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, newEnabledServices)
+                context.putSecureSetting(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, newEnabledServices)
             }
 
             else -> openAccessibilitySettings(context)
@@ -40,7 +39,7 @@ object AccessibilityUtils {
     fun disableService(context: Context) {
         when {
             context.haveWriteSecureSettingsPermission -> {
-                val enabledServices = appCtx.getSecureSetting<String>(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
+                val enabledServices = context.getSecureSetting<String>(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
 
                 enabledServices ?: return
 
@@ -56,7 +55,7 @@ object AccessibilityUtils {
                 } else {
                     enabledServices
                 }
-                appCtx.putSecureSetting(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, newEnabledServices)
+                context.putSecureSetting(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, newEnabledServices)
             }
 
             else -> openAccessibilitySettings(context)
@@ -71,7 +70,7 @@ object AccessibilityUtils {
                 or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
 
-            appCtx.startActivity(settingsIntent)
+            context.startActivity(settingsIntent)
 
         } catch (e: ActivityNotFoundException) {
             //open the app to show a dialog to tell the user to give the app WRITE_SECURE_SETTINGS permission

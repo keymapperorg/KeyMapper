@@ -4,9 +4,9 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
-import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.data.approvedFingerprintFeaturePrompt
 import io.github.sds100.keymapper.data.shownAppIntro
+import io.github.sds100.keymapper.globalPreferences
 import io.github.sds100.keymapper.util.firstBlocking
 
 /**
@@ -17,13 +17,11 @@ class SplashActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val globalPreferences = ServiceLocator.globalPreferences(this)
-
         when {
-            globalPreferences.shownAppIntro.firstBlocking() ->
+            !globalPreferences.shownAppIntro.firstBlocking() ->
                 startActivity(Intent(this, AppIntroActivity::class.java))
 
-            globalPreferences.approvedFingerprintFeaturePrompt.firstBlocking()
+            !globalPreferences.approvedFingerprintFeaturePrompt.firstBlocking()
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
                 startActivity(Intent(this, FingerprintGestureIntroActivity::class.java))
 

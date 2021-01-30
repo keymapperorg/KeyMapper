@@ -21,7 +21,6 @@ import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.fragment.AppIntroScrollableFragment
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.DexUtils.isDexSupported
-import kotlinx.coroutines.runBlocking
 import splitties.systemservices.powerManager
 import splitties.toast.longToast
 
@@ -66,12 +65,8 @@ class AppIntroActivity : AppIntro2() {
     override fun onDonePressed(currentFragment: Fragment?) {
         super.onDonePressed(currentFragment)
 
-        runBlocking {
-            globalPreferences.apply {
-                set(PreferenceKeys.shownAppIntro, true)
-                set(PreferenceKeys.approvedFingerprintFeaturePrompt, true)
-            }
-        }
+        globalPreferences.set(PreferenceKeys.shownAppIntro, true)
+        globalPreferences.set(PreferenceKeys.approvedFingerprintFeaturePrompt, true)
 
         startActivity(Intent(this, HomeActivity::class.java))
 

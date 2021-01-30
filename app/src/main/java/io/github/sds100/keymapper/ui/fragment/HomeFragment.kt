@@ -440,7 +440,7 @@ class HomeFragment : Fragment() {
 
         updateStatusLayouts()
 
-        if (PackageUtils.isAppInstalled(KeyboardUtils.KEY_MAPPER_GUI_IME_PACKAGE)
+        if (PackageUtils.isAppInstalled(requireContext(), KeyboardUtils.KEY_MAPPER_GUI_IME_PACKAGE)
             || Build.VERSION.SDK_INT < KeyboardUtils.KEY_MAPPER_GUI_IME_MIN_API) {
             globalPreferences.set(PreferenceKeys.showGuiKeyboardAd, false)
         }

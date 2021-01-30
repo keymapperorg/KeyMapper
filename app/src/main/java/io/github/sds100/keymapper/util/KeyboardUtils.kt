@@ -16,7 +16,6 @@ import io.github.sds100.keymapper.NotificationController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
 import io.github.sds100.keymapper.util.result.*
-import splitties.init.appCtx
 import splitties.systemservices.inputMethodManager
 import splitties.toast.toast
 
@@ -49,7 +48,7 @@ object KeyboardUtils {
         if (isPermissionGranted(ctx, Constants.PERMISSION_ROOT)) {
             enableCompatibleInputMethodsRoot()
         } else {
-            openImeSettings()
+            openImeSettings(ctx)
         }
     }
 
@@ -100,7 +99,7 @@ object KeyboardUtils {
 
         //only show the toast message if it is successful
         if (switchIme(ctx, imeId)) {
-            getInputMethodLabel(imeId).onSuccess { imeLabel ->
+            getInputMethodLabel(ctx, imeId).onSuccess { imeLabel ->
                 toast(ctx.str(R.string.toast_chose_keyboard, imeLabel))
             }
         }
@@ -124,7 +123,7 @@ object KeyboardUtils {
         inputMethodManager.showInputMethodPicker()
     }
 
-    fun showInputMethodPickerDialogOutsideApp() {
+    fun showInputMethodPickerDialogOutsideApp(ctx: Context) {
         /* Android 8.1 and higher don't seem to allow you to open the input method picker dialog
              * from outside the app :( but it can be achieved by sending a broadcast with a
              * system process id (requires root access) */
@@ -135,13 +134,13 @@ object KeyboardUtils {
             val command = "am broadcast -a com.android.server.InputMethodManagerService.SHOW_INPUT_METHOD_PICKER"
             RootUtils.executeRootCommand(command)
         } else {
-            appCtx.toast(R.string.error_this_is_unsupported)
+            ctx.toast(R.string.error_this_is_unsupported)
         }
     }
 
-    fun getInputMethodLabel(id: String): Result<String> {
+    fun getInputMethodLabel(ctx: Context, id: String): Result<String> {
         val label = inputMethodManager.enabledInputMethodList.find { it.id == id }
-            ?.loadLabel(appCtx.packageManager)?.toString() ?: return InputMethodNotFound(id)
+            ?.loadLabel(ctx.packageManager)?.toString() ?: return InputMethodNotFound(id)
 
         return Success(label)
     }
@@ -187,12 +186,12 @@ object KeyboardUtils {
             .valueOrNull() ?: false
     }
 
-    fun openImeSettings() {
+    fun openImeSettings(ctx: Context) {
         try {
             val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)
             intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_NEW_TASK
 
-            appCtx.startActivity(intent)
+            ctx.startActivity(intent)
         } catch (e: Exception) {
             toast(R.string.error_cant_find_ime_settings)
         }
@@ -201,12 +200,12 @@ object KeyboardUtils {
     /**
      * Must verify that a compatible ime is being used before calling this.
      */
-    fun inputTextFromImeService(imePackageName: String, text: String) {
+    fun inputTextFromImeService(ctx: Context, imePackageName: String, text: String) {
         Intent(KEY_MAPPER_INPUT_METHOD_ACTION_TEXT).apply {
             setPackage(imePackageName)
 
             putExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_TEXT, text)
-            appCtx.sendBroadcast(this)
+            ctx.sendBroadcast(this)
         }
     }
 
@@ -214,6 +213,7 @@ object KeyboardUtils {
      * Must verify that a compatible ime is being used before calling this.
      */
     fun inputKeyEventFromImeService(
+        ctx: Context,
         imePackageName: String,
         keyCode: Int,
         metaState: Int = 0,
@@ -241,7 +241,7 @@ object KeyboardUtils {
 
             putExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT, keyEvent)
 
-            appCtx.sendBroadcast(this)
+            ctx.sendBroadcast(this)
         }
     }
 

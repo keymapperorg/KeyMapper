@@ -53,7 +53,7 @@ class BluetoothConnectionBroadcastReceiver : BroadcastReceiver() {
 
                 //only show the dialog automatically if the user wants it to.
                 if (showIMEPickerAutomatically && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                    KeyboardUtils.showInputMethodPickerDialogOutsideApp()
+                    KeyboardUtils.showInputMethodPickerDialogOutsideApp(context)
                 }
             }
         }
