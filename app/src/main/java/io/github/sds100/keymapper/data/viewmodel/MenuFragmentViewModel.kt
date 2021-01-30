@@ -1,11 +1,13 @@
 package io.github.sds100.keymapper.data.viewmodel
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.data.repository.FingerprintMapRepository
 import io.github.sds100.keymapper.data.usecase.MenuKeymapUseCase
 import io.github.sds100.keymapper.util.*
-import kotlinx.coroutines.launch
 
 /**
  * Created by sds100 on 17/11/20.
@@ -20,7 +22,7 @@ class MenuFragmentViewModel(private val keymapUseCase: MenuKeymapUseCase,
     private val _eventStream = LiveEvent<Event>()
     val eventStream: LiveData<Event> = _eventStream
 
-    fun enableAll() = viewModelScope.launch {
+    fun enableAll() {
         keymapUseCase.enableAll()
 
         FingerprintMapUtils.GESTURES.forEach { gestureId ->
@@ -30,7 +32,7 @@ class MenuFragmentViewModel(private val keymapUseCase: MenuKeymapUseCase,
         }
     }
 
-    fun disableAll() = viewModelScope.launch {
+    fun disableAll() {
         keymapUseCase.disableAll()
 
         FingerprintMapUtils.GESTURES.forEach { gestureId ->

@@ -11,5 +11,5 @@ interface GlobalKeymapUseCase {
 
     suspend fun getKeymaps(): List<KeyMap>
 
-    suspend fun deleteAll()
+    fun deleteAll()
 }

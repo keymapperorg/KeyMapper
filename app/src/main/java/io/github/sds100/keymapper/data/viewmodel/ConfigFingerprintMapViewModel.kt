@@ -16,7 +16,6 @@ import io.github.sds100.keymapper.util.FingerprintMapUtils.SWIPE_LEFT
 import io.github.sds100.keymapper.util.FingerprintMapUtils.SWIPE_RIGHT
 import io.github.sds100.keymapper.util.FingerprintMapUtils.SWIPE_UP
 import io.github.sds100.keymapper.util.FixFailure
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -74,7 +73,7 @@ class ConfigFingerprintMapViewModel(private val fingerprintMapRepository: Finger
 
     override val eventStream: LiveData<Event> = _eventStream
 
-    override fun save(coroutineScope: CoroutineScope) {
+    override fun save() {
         val map = createFingerprintMap()
 
         gestureId?.let {

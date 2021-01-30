@@ -66,7 +66,7 @@ class DefaultKeymapRepository internal constructor(
         }
     }
 
-    override suspend fun insertKeymap(vararg keymap: KeyMap) {
+    override fun insertKeymap(vararg keymap: KeyMap) {
         coroutineScope.launch {
             keymapDao.insert(*keymap)
 
@@ -74,56 +74,72 @@ class DefaultKeymapRepository internal constructor(
         }
     }
 
-    override suspend fun updateKeymap(keymap: KeyMap) {
-        keymapDao.update(keymap)
+    override fun updateKeymap(keymap: KeyMap) {
+        coroutineScope.launch {
+            keymapDao.update(keymap)
 
-        requestBackup()
-    }
-
-    override suspend fun duplicateKeymap(vararg id: Long) {
-        val keymaps = mutableListOf<KeyMap>()
-
-        id.forEach {
-            keymaps.add(getKeymap(it).copy(id = 0))
+            requestBackup()
         }
-
-        insertKeymap(*keymaps.toTypedArray())
     }
 
-    override suspend fun enableKeymapById(vararg id: Long) {
-        keymapDao.enableKeymapById(*id)
+    override fun duplicateKeymap(vararg id: Long) {
+        coroutineScope.launch {
+            val keymaps = mutableListOf<KeyMap>()
 
-        requestBackup()
+            id.forEach {
+                keymaps.add(getKeymap(it).copy(id = 0))
+            }
+
+            insertKeymap(*keymaps.toTypedArray())
+        }
     }
 
-    override suspend fun disableKeymapById(vararg id: Long) {
-        keymapDao.disableKeymapById(*id)
+    override fun enableKeymapById(vararg id: Long) {
+        coroutineScope.launch {
+            keymapDao.enableKeymapById(*id)
 
-        requestBackup()
+            requestBackup()
+        }
     }
 
-    override suspend fun deleteKeymap(vararg id: Long) {
-        keymapDao.deleteById(*id)
+    override fun disableKeymapById(vararg id: Long) {
+        coroutineScope.launch {
+            keymapDao.disableKeymapById(*id)
 
-        requestBackup()
+            requestBackup()
+        }
     }
 
-    override suspend fun deleteAll() {
-        keymapDao.deleteAll()
+    override fun deleteKeymap(vararg id: Long) {
+        coroutineScope.launch {
+            keymapDao.deleteById(*id)
 
-        requestBackup()
+            requestBackup()
+        }
     }
 
-    override suspend fun enableAll() {
-        keymapDao.enableAll()
+    override fun deleteAll() {
+        coroutineScope.launch {
+            keymapDao.deleteAll()
 
-        requestBackup()
+            requestBackup()
+        }
     }
 
-    override suspend fun disableAll() {
-        keymapDao.disableAll()
+    override fun enableAll() {
+        coroutineScope.launch {
+            keymapDao.enableAll()
 
-        requestBackup()
+            requestBackup()
+        }
+    }
+
+    override fun disableAll() {
+        coroutineScope.launch {
+            keymapDao.disableAll()
+
+            requestBackup()
+        }
     }
 
     private suspend fun requestBackup() {

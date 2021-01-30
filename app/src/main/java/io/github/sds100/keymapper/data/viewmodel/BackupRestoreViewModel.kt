@@ -3,13 +3,11 @@ package io.github.sds100.keymapper.data.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.IBackupManager
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.*
-import kotlinx.coroutines.launch
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -61,9 +59,7 @@ class BackupRestoreViewModel internal constructor(
             return
         }
 
-        viewModelScope.launch {
-            backupManager.backupKeymaps(outputStream, keymapIds)
-        }
+        backupManager.backupKeymaps(outputStream, keymapIds)
     }
 
     fun backupFingerprintMaps(outputStream: OutputStream?) {
@@ -72,9 +68,7 @@ class BackupRestoreViewModel internal constructor(
             return
         }
 
-        viewModelScope.launch {
-            backupManager.backupFingerprintMaps(outputStream)
-        }
+        backupManager.backupFingerprintMaps(outputStream)
     }
 
     private fun onBackupManagerEvent(event: Event) {
