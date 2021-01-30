@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.util
 
-import android.Manifest
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -9,7 +8,6 @@ import android.view.accessibility.AccessibilityNodeInfo
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.activity.HomeActivity
-import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
 import splitties.init.appCtx
 
 /**
@@ -19,7 +17,7 @@ import splitties.init.appCtx
 object AccessibilityUtils {
     fun enableService(context: Context) {
         when {
-            isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS) -> {
+            context.haveWriteSecureSettingsPermission -> {
                 val enabledServices = appCtx.getSecureSetting<String>(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
 
                 val className = MyAccessibilityService::class.java.name
@@ -41,7 +39,7 @@ object AccessibilityUtils {
 
     fun disableService(context: Context) {
         when {
-            isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS) -> {
+            context.haveWriteSecureSettingsPermission -> {
                 val enabledServices = appCtx.getSecureSetting<String>(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
 
                 enabledServices ?: return

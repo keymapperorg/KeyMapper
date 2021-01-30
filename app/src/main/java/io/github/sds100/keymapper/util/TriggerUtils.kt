@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.util
 
 import android.content.Context
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.DeviceInfo
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.model.Trigger.Companion.DOUBLE_PRESS
@@ -11,6 +10,8 @@ import io.github.sds100.keymapper.data.model.Trigger.Companion.PARALLEL
 import io.github.sds100.keymapper.data.model.Trigger.Companion.SEQUENCE
 import io.github.sds100.keymapper.data.model.Trigger.Companion.TRIGGER_FLAG_LABEL_MAP
 import io.github.sds100.keymapper.data.model.TriggerKeyModel
+import io.github.sds100.keymapper.data.showDeviceDescriptors
+import io.github.sds100.keymapper.globalPreferences
 import splitties.bitflags.hasFlag
 
 /**
@@ -105,7 +106,8 @@ fun Trigger.Key.getDeviceName(ctx: Context, deviceInfoList: List<DeviceInfo>): S
             when {
                 deviceInfo == null -> ctx.str(R.string.dont_know_device_name)
 
-                AppPreferences.showDeviceDescriptors -> "${deviceInfo.name} ${deviceInfo.descriptor.substring(0..4)}"
+                ctx.globalPreferences.showDeviceDescriptors.firstBlocking() ->
+                    "${deviceInfo.name} ${deviceInfo.descriptor.substring(0..4)}"
 
                 else -> deviceInfo.name
             }

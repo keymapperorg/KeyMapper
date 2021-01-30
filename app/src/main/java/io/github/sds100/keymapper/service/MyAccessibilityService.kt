@@ -25,11 +25,12 @@ import io.github.sds100.keymapper.NotificationController.EVENT_PAUSE_REMAPS
 import io.github.sds100.keymapper.NotificationController.EVENT_RESUME_REMAPS
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
-import io.github.sds100.keymapper.data.AppPreferences
+import io.github.sds100.keymapper.data.*
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.repository.FingerprintMapRepository
+import io.github.sds100.keymapper.globalPreferences
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.*
 import io.github.sds100.keymapper.util.result.*
@@ -48,7 +49,6 @@ import timber.log.Timber
  */
 class MyAccessibilityService : AccessibilityService(),
     LifecycleOwner,
-    SharedPreferences.OnSharedPreferenceChangeListener,
     IClock,
     IAccessibilityService,
     IConstraintState,
@@ -95,13 +95,13 @@ class MyAccessibilityService : AccessibilityService(),
 
                 ACTION_PAUSE_REMAPPINGS -> {
                     keymapDetectionDelegate.reset()
-                    AppPreferences.keymapsPaused = true
+                    globalPreferences.set(PreferenceKeys.keymapsPaused, true)
                     NotificationController.onEvent(this@MyAccessibilityService, EVENT_PAUSE_REMAPS)
                 }
 
                 ACTION_RESUME_REMAPPINGS -> {
                     keymapDetectionDelegate.reset()
-                    AppPreferences.keymapsPaused = false
+                    globalPreferences.set(PreferenceKeys.keymapsPaused, false)
                     NotificationController.onEvent(this@MyAccessibilityService, EVENT_RESUME_REMAPS)
                 }
 
@@ -165,9 +165,14 @@ class MyAccessibilityService : AccessibilityService(),
 
                 Intent.ACTION_SCREEN_OFF -> {
                     _isScreenOn = false
-                    if (AppPreferences.hasRootPermission && screenOffTriggersEnabled) {
-                        if (!getEventDelegate.startListening(lifecycleScope)) {
-                            toast(R.string.error_failed_execute_getevent)
+
+                    lifecycleScope.launchWhenCreated {
+                        val hasRootPermission = globalPreferences.hasRootPermission.first()
+
+                        if (hasRootPermission && screenOffTriggersEnabled) {
+                            if (!getEventDelegate.startListening(lifecycleScope)) {
+                                toast(R.string.error_failed_execute_getevent)
+                            }
                         }
                     }
                 }
@@ -244,7 +249,7 @@ class MyAccessibilityService : AccessibilityService(),
 
     private val getEventDelegate = GetEventDelegate { keyCode, action, deviceDescriptor, isExternal, deviceId ->
 
-        if (!AppPreferences.keymapsPaused) {
+        if (!globalPreferences.keymapsPaused.firstBlocking()) {
             withContext(Dispatchers.Main.immediate) {
                 keymapDetectionDelegate.onKeyEvent(
                     keyCode,
@@ -267,14 +272,14 @@ class MyAccessibilityService : AccessibilityService(),
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
 
         val preferences = KeymapDetectionPreferences(
-            AppPreferences.longPressDelay,
-            AppPreferences.doublePressDelay,
-            AppPreferences.repeatDelay,
-            AppPreferences.repeatRate,
-            AppPreferences.sequenceTriggerTimeout,
-            AppPreferences.vibrateDuration,
-            AppPreferences.holdDownDuration,
-            AppPreferences.forceVibrate
+            globalPreferences.longPressDelay.firstBlocking(),
+            globalPreferences.doublePressDelay.firstBlocking(),
+            globalPreferences.repeatDelay.firstBlocking(),
+            globalPreferences.repeatRate.firstBlocking(),
+            globalPreferences.sequenceTriggerTimeout.firstBlocking(),
+            globalPreferences.vibrationDuration.firstBlocking(),
+            globalPreferences.holdDownDuration.firstBlocking(),
+            globalPreferences.getFlow(PreferenceKeys.forceVibrate).firstBlocking() ?: false
         )
 
         constraintDelegate = ConstraintDelegate(this)
@@ -293,9 +298,12 @@ class MyAccessibilityService : AccessibilityService(),
 
         triggerKeymapByIntentController = TriggerKeymapByIntentController(
             coroutineScope = lifecycleScope,
+            globalPreferences,
             constraintDelegate,
             iActionError = this
         )
+
+        subscribeToPreferenceChanges()
 
         IntentFilter().apply {
             addAction(ACTION_PAUSE_REMAPPINGS)
@@ -315,8 +323,6 @@ class MyAccessibilityService : AccessibilityService(),
 
             registerReceiver(broadcastReceiver, this)
         }
-
-        defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
 
         NotificationController.onEvent(this, EVENT_ACCESSIBILITY_SERVICE_STARTED)
         sendPackageBroadcast(ACTION_ON_START)
@@ -358,6 +364,7 @@ class MyAccessibilityService : AccessibilityService(),
 
         fingerprintGestureMapController = FingerprintGestureMapController(
             lifecycleScope,
+            globalPreferences,
             iConstraintDelegate = constraintDelegate,
             iActionError = this
         )
@@ -487,8 +494,6 @@ class MyAccessibilityService : AccessibilityService(),
 
         sendPackageBroadcast(ACTION_ON_STOP)
 
-        defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
-
         unregisterReceiver(broadcastReceiver)
 
         if (VERSION.SDK_INT >= VERSION_CODES.O) {
@@ -516,7 +521,7 @@ class MyAccessibilityService : AccessibilityService(),
             return true
         }
 
-        if (!AppPreferences.keymapsPaused) {
+        if (!globalPreferences.keymapsPaused.firstBlocking()) {
             try {
                 val consume = keymapDetectionDelegate.onKeyEvent(
                     event.keyCode,
@@ -534,72 +539,6 @@ class MyAccessibilityService : AccessibilityService(),
         }
 
         return super.onKeyEvent(event)
-    }
-
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        when (key) {
-            str(R.string.key_pref_long_press_delay) -> {
-                keymapDetectionDelegate.preferences.defaultLongPressDelay =
-                    AppPreferences.longPressDelay
-            }
-
-            str(R.string.key_pref_double_press_delay) -> {
-                keymapDetectionDelegate.preferences.defaultDoublePressDelay =
-                    AppPreferences.doublePressDelay
-            }
-
-            str(R.string.key_pref_repeat_delay) -> {
-                keymapDetectionDelegate.preferences.defaultRepeatDelay =
-                    AppPreferences.repeatDelay
-            }
-
-            str(R.string.key_pref_repeat_rate) -> {
-                keymapDetectionDelegate.preferences.defaultRepeatRate = AppPreferences.repeatRate
-            }
-
-            str(R.string.key_pref_sequence_trigger_timeout) -> {
-                keymapDetectionDelegate.preferences.defaultSequenceTriggerTimeout =
-                    AppPreferences.sequenceTriggerTimeout
-            }
-
-            str(R.string.key_pref_vibrate_duration) -> {
-                keymapDetectionDelegate.preferences.defaultVibrateDuration =
-                    AppPreferences.vibrateDuration
-            }
-
-            str(R.string.key_pref_force_vibrate) -> {
-                keymapDetectionDelegate.preferences.forceVibrate = AppPreferences.forceVibrate
-            }
-
-            str(R.string.key_pref_hold_down_duration) -> {
-                keymapDetectionDelegate.preferences.defaultHoldDownDuration =
-                    AppPreferences.holdDownDuration
-            }
-
-            str(R.string.key_pref_keymaps_paused) -> {
-                if (AppPreferences.keymapsPaused) {
-                    NotificationController.onEvent(this, EVENT_PAUSE_REMAPS)
-
-                    if (AppPreferences.toggleKeyboardOnToggleKeymaps) {
-                        KeyboardUtils.chooseLastUsedIncompatibleInputMethod(this)
-                    }
-
-                    if (VERSION.SDK_INT >= VERSION_CODES.O) {
-                        denyFingerprintGestureDetection()
-                    }
-                } else {
-                    NotificationController.onEvent(this, EVENT_RESUME_REMAPS)
-
-                    if (AppPreferences.toggleKeyboardOnToggleKeymaps) {
-                        KeyboardUtils.chooseCompatibleInputMethod(this)
-                    }
-
-                    if (VERSION.SDK_INT >= VERSION_CODES.O) {
-                        requestFingerprintGestureDetection()
-                    }
-                }
-            }
-        }
     }
 
     override fun isBluetoothDeviceConnected(address: String) = connectedBtAddresses.contains(address)
@@ -658,7 +597,7 @@ class MyAccessibilityService : AccessibilityService(),
     private fun invalidateFingerprintGestureDetection() {
         fingerprintGestureMapController.fingerprintMaps.let { maps ->
             if (maps.any { it.value.isEnabled && it.value.actionList.isNotEmpty() }
-                && !AppPreferences.keymapsPaused) {
+                && !globalPreferences.keymapsPaused.firstBlocking()) {
                 requestFingerprintGestureDetection()
             } else {
                 denyFingerprintGestureDetection()
@@ -712,5 +651,71 @@ class MyAccessibilityService : AccessibilityService(),
         }
 
         denyFingerprintGestureDetection()
+    }
+
+    private fun subscribeToPreferenceChanges() {
+        globalPreferences.longPressDelay.collectWhenStarted(this) {
+            keymapDetectionDelegate.preferences.defaultLongPressDelay = it
+        }
+
+        globalPreferences.doublePressDelay.collectWhenStarted(this) {
+            keymapDetectionDelegate.preferences.defaultDoublePressDelay = it
+        }
+
+        globalPreferences.repeatDelay.collectWhenStarted(this) {
+            keymapDetectionDelegate.preferences.defaultRepeatDelay = it
+        }
+
+        globalPreferences.repeatRate.collectWhenStarted(this) {
+            keymapDetectionDelegate.preferences.defaultRepeatRate = it
+        }
+
+        globalPreferences.sequenceTriggerTimeout.collectWhenStarted(this) {
+            keymapDetectionDelegate.preferences.defaultSequenceTriggerTimeout = it
+        }
+
+        globalPreferences.vibrationDuration.collectWhenStarted(this) {
+            keymapDetectionDelegate.preferences.defaultVibrateDuration = it
+        }
+
+        globalPreferences.holdDownDuration.collectWhenStarted(this) {
+            keymapDetectionDelegate.preferences.defaultHoldDownDuration = it
+        }
+
+        globalPreferences.getFlow(PreferenceKeys.forceVibrate).collectWhenStarted(this) {
+            keymapDetectionDelegate.preferences.forceVibrate = it ?: false
+        }
+
+        globalPreferences.keymapsPaused.collectWhenStarted(this) { paused ->
+            if (paused) {
+                NotificationController.onEvent(this, EVENT_PAUSE_REMAPS)
+
+                globalPreferences.getFlow(PreferenceKeys.toggleKeyboardOnToggleKeymaps)
+                    .firstBlocking()
+                    .let {
+                        if (it == true) {
+                            KeyboardUtils.chooseLastUsedIncompatibleInputMethod(this)
+                        }
+                    }
+
+                if (VERSION.SDK_INT >= VERSION_CODES.O) {
+                    denyFingerprintGestureDetection()
+                }
+            } else {
+                NotificationController.onEvent(this, EVENT_RESUME_REMAPS)
+
+                globalPreferences.getFlow(PreferenceKeys.toggleKeyboardOnToggleKeymaps)
+                    .firstBlocking()
+                    .let {
+                        if (it == true) {
+                            KeyboardUtils.chooseCompatibleInputMethod(this)
+                        }
+                    }
+
+                if (VERSION.SDK_INT >= VERSION_CODES.O) {
+                    requestFingerprintGestureDetection()
+                }
+            }
+        }
     }
 }

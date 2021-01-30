@@ -21,10 +21,11 @@ import androidx.core.os.bundleOf
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.lifecycle.Lifecycle
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.AppPreferences
+import io.github.sds100.keymapper.data.hasRootPermission
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Option
 import io.github.sds100.keymapper.data.model.getData
+import io.github.sds100.keymapper.globalPreferences
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.*
 import kotlinx.coroutines.delay
@@ -376,7 +377,7 @@ class ActionPerformerDelegate(context: Context,
                 SystemAction.GO_HOME -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
                 SystemAction.OPEN_RECENTS -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
                 SystemAction.OPEN_MENU -> {
-                    if (AppPreferences.hasRootPermission) {
+                    if (ctx.globalPreferences.hasRootPermission.firstBlocking()) {
 
                         suProcessDelegate.runCommand("input keyevent ${KeyEvent.KEYCODE_MENU}\n")
                     } else {
@@ -453,8 +454,8 @@ class ActionPerformerDelegate(context: Context,
                 }
 
                 SystemAction.TOGGLE_AIRPLANE_MODE -> AirplaneModeUtils.toggleAirplaneMode(this)
-                SystemAction.ENABLE_AIRPLANE_MODE -> AirplaneModeUtils.enableAirplaneMode()
-                SystemAction.DISABLE_AIRPLANE_MODE -> AirplaneModeUtils.disableAirplaneMode()
+                SystemAction.ENABLE_AIRPLANE_MODE -> AirplaneModeUtils.enableAirplaneMode(this)
+                SystemAction.DISABLE_AIRPLANE_MODE -> AirplaneModeUtils.disableAirplaneMode(this)
 
                 SystemAction.SCREENSHOT_ROOT -> ScreenshotUtils.takeScreenshotRoot()
 

@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.ui.fragment
 
-import android.Manifest
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
@@ -21,13 +20,12 @@ import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.NotificationController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
-import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.PreferenceKeys
 import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
 import io.github.sds100.keymapper.data.viewmodel.SettingsViewModel
 import io.github.sds100.keymapper.databinding.FragmentSettingsBinding
+import io.github.sds100.keymapper.globalPreferences
 import io.github.sds100.keymapper.util.*
-import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
 import kotlinx.coroutines.runBlocking
 import splitties.alertdialog.appcompat.*
 
@@ -125,7 +123,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
         it ?: return@registerForActivityResult
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            AppPreferences.automaticBackupLocation = it.toString()
+            globalPreferences.set(PreferenceKeys.automaticBackupLocation, it.toString())
 
             val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or
                 Intent.FLAG_GRANT_WRITE_URI_PERMISSION
@@ -211,7 +209,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
 
             automaticBackupLocation?.setOnPreferenceClickListener {
                 val backupLocation = runBlocking {
-                    ServiceLocator.globalPreferences(requireContext())
+                    requireContext().globalPreferences
                         .get(PreferenceKeys.automaticBackupLocation)
                 }
 
@@ -227,7 +225,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
                         }
 
                         negativeButton(R.string.neg_turn_off) {
-                            AppPreferences.automaticBackupLocation = ""
+                            globalPreferences.set(PreferenceKeys.automaticBackupLocation, "")
                         }
 
                         show()
@@ -318,9 +316,9 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
         super.onResume()
 
         //only enable the WRITE_SECURE_SETTINGS prefs if WRITE_SECURE_SETTINGS permisison is granted
-        secureSettingsCategory.isEnabled = isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)
+        secureSettingsCategory.isEnabled = requireContext().haveWriteSecureSettingsPermission
 
-        if (!isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
+        if (!requireContext().haveWriteSecureSettingsPermission) {
             //uncheck all prefs which require WRITE_SECURE_SETTINGS permission
             for (i in 0 until secureSettingsCategory.preferenceCount) {
                 val preference = secureSettingsCategory.getPreference(i)

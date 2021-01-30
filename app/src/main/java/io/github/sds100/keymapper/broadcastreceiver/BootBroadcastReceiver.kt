@@ -4,8 +4,10 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import io.github.sds100.keymapper.NotificationController
-import io.github.sds100.keymapper.data.AppPreferences
+import io.github.sds100.keymapper.data.showImePickerNotification
+import io.github.sds100.keymapper.globalPreferences
 import io.github.sds100.keymapper.util.NotificationUtils
+import io.github.sds100.keymapper.util.firstBlocking
 
 /**
  * Created by sds100 on 24/03/2019.
@@ -17,7 +19,7 @@ class BootBroadcastReceiver : BroadcastReceiver() {
         starts on boot */
         if (intent?.action == Intent.ACTION_BOOT_COMPLETED) {
             context?.apply {
-                if (AppPreferences.showImePickerNotification) {
+                if (globalPreferences.showImePickerNotification.firstBlocking()) {
                     NotificationUtils.showIMEPickerNotification(this)
                 } else {
                     NotificationUtils.dismissNotification(NotificationUtils.ID_IME_PICKER)

@@ -7,10 +7,13 @@ import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.AppPreferences
+import io.github.sds100.keymapper.data.PreferenceKeys
+import io.github.sds100.keymapper.data.keymapsPaused
+import io.github.sds100.keymapper.globalPreferences
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.util.AccessibilityUtils
 import io.github.sds100.keymapper.util.defaultSharedPreferences
+import io.github.sds100.keymapper.util.firstBlocking
 import io.github.sds100.keymapper.util.str
 
 /**
@@ -23,7 +26,7 @@ class ToggleKeymapsTile : TileService(), SharedPreferences.OnSharedPreferenceCha
         get() = when {
             !AccessibilityUtils.isServiceEnabled(this) -> State.DISABLED
 
-            else -> if (AppPreferences.keymapsPaused) {
+            else -> if (globalPreferences.keymapsPaused.firstBlocking()) {
                 State.PAUSED
             } else {
                 State.RESUMED
@@ -93,11 +96,9 @@ class ToggleKeymapsTile : TileService(), SharedPreferences.OnSharedPreferenceCha
     override fun onClick() {
         super.onClick()
 
-        if (!AccessibilityUtils.isServiceEnabled(this)) {
-            return
-        }
+        if (!AccessibilityUtils.isServiceEnabled(this)) return
 
-        AppPreferences.keymapsPaused = !AppPreferences.keymapsPaused
+        globalPreferences.toggle(PreferenceKeys.keymapsPaused)
 
         qsTile?.updateTile()
     }

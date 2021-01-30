@@ -6,6 +6,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 /**
  * Created by sds100 on 18/11/20.
@@ -22,3 +24,14 @@ fun <T> Flow<T>.collectWhenResumed(lifecycleOwner: LifecycleOwner,
         }
     }
 }
+
+fun <T> Flow<T>.collectWhenStarted(lifecycleOwner: LifecycleOwner,
+                                   block: suspend (value: T) -> Unit) {
+    lifecycleOwner.lifecycle.coroutineScope.launchWhenStarted {
+        collect {
+            block.invoke(it)
+        }
+    }
+}
+
+fun <T> Flow<T>.firstBlocking(): T = runBlocking { first() }

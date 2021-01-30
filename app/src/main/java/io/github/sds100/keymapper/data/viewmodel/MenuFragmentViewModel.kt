@@ -1,10 +1,9 @@
 package io.github.sds100.keymapper.data.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
 import com.hadilq.liveevent.LiveEvent
+import io.github.sds100.keymapper.data.IGlobalPreferences
+import io.github.sds100.keymapper.data.keymapsPaused
 import io.github.sds100.keymapper.data.repository.FingerprintMapRepository
 import io.github.sds100.keymapper.data.usecase.MenuKeymapUseCase
 import io.github.sds100.keymapper.util.*
@@ -13,10 +12,11 @@ import io.github.sds100.keymapper.util.*
  * Created by sds100 on 17/11/20.
  */
 class MenuFragmentViewModel(private val keymapUseCase: MenuKeymapUseCase,
-                            private val fingerprintMapRepository: FingerprintMapRepository
+                            private val fingerprintMapRepository: FingerprintMapRepository,
+                            globalPreferences: IGlobalPreferences
 ) : ViewModel() {
 
-    val keymapsPaused = MutableLiveData(false)
+    val keymapsPaused = globalPreferences.keymapsPaused.asLiveData()
     val accessibilityServiceEnabled = MutableLiveData(false)
 
     private val _eventStream = LiveEvent<Event>()
@@ -55,11 +55,16 @@ class MenuFragmentViewModel(private val keymapUseCase: MenuKeymapUseCase,
     @Suppress("UNCHECKED_CAST")
     class Factory(
         private val keymapUseCase: MenuKeymapUseCase,
-        private val fingerprintMapRepository: FingerprintMapRepository
+        private val fingerprintMapRepository: FingerprintMapRepository,
+        private val globalPreferences: IGlobalPreferences
     ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return MenuFragmentViewModel(keymapUseCase, fingerprintMapRepository) as T
+            return MenuFragmentViewModel(
+                keymapUseCase,
+                fingerprintMapRepository,
+                globalPreferences
+            ) as T
         }
     }
 }

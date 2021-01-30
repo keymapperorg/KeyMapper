@@ -22,12 +22,13 @@ import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.NotificationController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.broadcastreceiver.KeyMapperBroadcastReceiver
-import io.github.sds100.keymapper.data.AppPreferences
+import io.github.sds100.keymapper.data.PreferenceKeys
+import io.github.sds100.keymapper.data.hasRootPermission
+import io.github.sds100.keymapper.globalPreferences
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.activity.HomeActivity
 import splitties.init.appCtx
 import splitties.systemservices.notificationManager
-import timber.log.Timber
 
 /**
  * Created by sds100 on 30/09/2018.
@@ -54,7 +55,9 @@ object NotificationUtils {
 
     fun updateToggleKeymapsNotification(ctx: Context, @NotificationController.Event event: Int) {
         if (SDK_INT < Build.VERSION_CODES.O) {
-            val showNotification = AppPreferences.showToggleKeymapsNotification
+            val showNotification = ctx.globalPreferences
+                .getFlow(PreferenceKeys.showToggleKeymapsNotification)
+                .firstBlocking() ?: false
 
             if (!showNotification) {
                 dismissNotification(ID_TOGGLE_KEYMAPS)
@@ -274,7 +277,7 @@ object NotificationUtils {
             )
         )
 
-        if (PermissionUtils.isPermissionGranted(Manifest.permission.WRITE_SECURE_SETTINGS)) {
+        if (PermissionUtils.isPermissionGranted(ctx, Manifest.permission.WRITE_SECURE_SETTINGS)) {
             val toggleKeyboardChannel = NotificationChannel(
                 CHANNEL_TOGGLE_KEYBOARD,
                 ctx.str(R.string.notification_channel_toggle_keyboard),
@@ -286,7 +289,8 @@ object NotificationUtils {
             notificationManager.deleteNotificationChannel(CHANNEL_TOGGLE_KEYBOARD)
         }
 
-        if ((AppPreferences.hasRootPermission && SDK_INT >= O_MR1 && SDK_INT < Q) || SDK_INT < O_MR1) {
+        if ((ctx.globalPreferences.hasRootPermission.firstBlocking()
+                && SDK_INT >= O_MR1 && SDK_INT < Q) || SDK_INT < O_MR1) {
 
             val imePickerChannel = NotificationChannel(
                 CHANNEL_IME_PICKER,

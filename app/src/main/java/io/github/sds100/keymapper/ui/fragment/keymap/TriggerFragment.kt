@@ -21,12 +21,13 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.radiobutton.MaterialRadioButton
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.TriggerKeyBindingModel_
-import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.model.TriggerKeyModel
+import io.github.sds100.keymapper.data.showDeviceDescriptors
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
 import io.github.sds100.keymapper.data.viewmodel.TriggerViewModel
 import io.github.sds100.keymapper.databinding.FragmentTriggerBinding
+import io.github.sds100.keymapper.globalPreferences
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.triggerKey
 import io.github.sds100.keymapper.util.*
@@ -293,7 +294,7 @@ class TriggerFragment : Fragment() {
                 yield(str(R.string.this_device))
                 yield(str(R.string.any_device))
 
-                if (AppPreferences.showDeviceDescriptors) {
+                if (globalPreferences.showDeviceDescriptors.firstBlocking()) {
                     InputDeviceUtils.getExternalDeviceDescriptors().forEach { descriptor ->
                         InputDeviceUtils.getName(descriptor).onSuccess { name ->
                             yield("$name ${descriptor.substring(0..4)}")

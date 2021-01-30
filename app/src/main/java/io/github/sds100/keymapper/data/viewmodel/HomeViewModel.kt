@@ -22,7 +22,7 @@ class HomeViewModel(private val globalPreferences: IGlobalPreferences) : ViewMod
 
     init {
         viewModelScope.launch {
-            globalPreferences.darkThemeMode().collect {
+            globalPreferences.darkThemeMode.collect {
                 _eventStream.value = SetTheme(it)
             }
         }

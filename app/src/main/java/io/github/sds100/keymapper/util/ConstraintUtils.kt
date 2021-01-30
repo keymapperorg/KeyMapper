@@ -27,13 +27,13 @@ object ConstraintUtils {
             }
 
             Constraint.SCREEN_OFF, Constraint.SCREEN_ON -> {
-                if (!PermissionUtils.isPermissionGranted(Constants.PERMISSION_ROOT)) {
+                if (!PermissionUtils.isPermissionGranted(ctx, Constants.PERMISSION_ROOT)) {
                     return PermissionDenied(Constants.PERMISSION_ROOT)
                 }
             }
 
             in Constraint.ORIENTATION_CONSTRAINTS -> {
-                if (!PermissionUtils.isPermissionGranted(Manifest.permission.WRITE_SETTINGS)) {
+                if (!PermissionUtils.isPermissionGranted(ctx, Manifest.permission.WRITE_SETTINGS)) {
                     return PermissionDenied(Manifest.permission.WRITE_SETTINGS)
                 }
             }
@@ -43,7 +43,7 @@ object ConstraintUtils {
                     return SdkVersionTooLow(Build.VERSION_CODES.LOLLIPOP)
                 }
 
-                if (!PermissionUtils.isPermissionGranted(Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE)) {
+                if (!PermissionUtils.isPermissionGranted(ctx, Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE)) {
                     return PermissionDenied(Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE)
                 }
             }
