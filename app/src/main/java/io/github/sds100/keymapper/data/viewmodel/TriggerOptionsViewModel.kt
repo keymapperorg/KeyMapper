@@ -4,7 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.db.IDataStoreManager
+import io.github.sds100.keymapper.data.IGlobalPreferences
+import io.github.sds100.keymapper.data.PreferenceKeys
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.options.BoolOption
 import io.github.sds100.keymapper.data.model.options.IntOption
@@ -13,17 +14,18 @@ import io.github.sds100.keymapper.data.model.options.TriggerOptions
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.OkDialog
+import io.github.sds100.keymapper.util.firstBlocking
 
 /**
  * Created by sds100 on 29/11/20.
  */
 class TriggerOptionsViewModel(
-    dataStoreManager: IDataStoreManager,
+    private val prefs: IGlobalPreferences,
     private val deviceInfoRepository: DeviceInfoRepository,
     val getTriggerKeys: () -> List<Trigger.Key>,
     val getTriggerMode: () -> Int,
     private val keymapUid: LiveData<String>
-) : BaseOptionsViewModel<TriggerOptions>(), IDataStoreManager by dataStoreManager {
+) : BaseOptionsViewModel<TriggerOptions>() {
 
     override val stateKey = "trigger_options_view_model"
 
@@ -141,10 +143,10 @@ class TriggerOptionsViewModel(
         super.setValue(id, newValue)
 
         if (id == TriggerOptions.ID_SCREEN_OFF_TRIGGER &&
-            !getBoolPref(R.string.key_pref_shown_screen_off_triggers_explanation)) {
+            prefs.getFlow(PreferenceKeys.shownScreenOffTriggersExplanation).firstBlocking() == false) {
 
             _eventStream.value = OkDialog(R.string.showcase_screen_off_triggers) {
-                setBoolPref(R.string.key_pref_shown_screen_off_triggers_explanation, true)
+                prefs.set(PreferenceKeys.shownScreenOffTriggersExplanation, true)
             }
         }
 

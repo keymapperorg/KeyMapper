@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.data.viewmodel
 import android.os.Bundle
 import androidx.lifecycle.*
 import com.hadilq.liveevent.LiveEvent
-import io.github.sds100.keymapper.data.db.IDataStoreManager
+import io.github.sds100.keymapper.data.IGlobalPreferences
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.KeyMap
@@ -21,8 +21,8 @@ import java.util.*
 
 class ConfigKeymapViewModel(private val keymapRepository: ConfigKeymapUseCase,
                             private val deviceInfoRepository: DeviceInfoRepository,
-                            dataStoreManager: IDataStoreManager
-) : ViewModel(), IDataStoreManager by dataStoreManager, IConfigMappingViewModel {
+                            globalPreferences: IGlobalPreferences
+) : ViewModel(), IConfigMappingViewModel {
 
     companion object {
         const val NEW_KEYMAP_ID = -2L
@@ -65,7 +65,7 @@ class ConfigKeymapViewModel(private val keymapRepository: ConfigKeymapUseCase,
 
     val triggerViewModel = TriggerViewModel(
         deviceInfoRepository,
-        dataStoreManager = this,
+        globalPreferences,
         this.uid
     )
 
@@ -173,10 +173,10 @@ class ConfigKeymapViewModel(private val keymapRepository: ConfigKeymapUseCase,
     class Factory(
         private val configKeymapUseCase: ConfigKeymapUseCase,
         private val deviceInfoRepository: DeviceInfoRepository,
-        private val iDataStoreManager: IDataStoreManager) : ViewModelProvider.Factory {
+        private val globalPreferences: IGlobalPreferences) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>) =
-            ConfigKeymapViewModel(configKeymapUseCase, deviceInfoRepository, iDataStoreManager) as T
+            ConfigKeymapViewModel(configKeymapUseCase, deviceInfoRepository, globalPreferences) as T
     }
 }

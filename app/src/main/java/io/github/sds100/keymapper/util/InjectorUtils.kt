@@ -117,20 +117,16 @@ object InjectorUtils {
             return ConfigKeymapViewModel.Factory(
                 ServiceLocator.keymapRepository(context),
                 ServiceLocator.deviceInfoRepository(context),
-                ServiceLocator.preferenceDataStore(context)
+                ServiceLocator.globalPreferences(context)
             )
         }
     }
 
     fun provideConfigFingerprintMapViewModel(context: Context
     ): ConfigFingerprintMapViewModel.Factory {
-        (context.applicationContext as MyApplication).apply {
-            return ConfigFingerprintMapViewModel.Factory(
-                ServiceLocator.fingerprintMapRepository(context),
-                ServiceLocator.deviceInfoRepository(context),
-                ServiceLocator.preferenceDataStore(context)
-            )
-        }
+        return ConfigFingerprintMapViewModel.Factory(
+            ServiceLocator.fingerprintMapRepository(context),
+            ServiceLocator.deviceInfoRepository(context))
     }
 
     fun provideCreateActionShortcutViewModel(context: Context
@@ -145,6 +141,6 @@ object InjectorUtils {
     }
 
     fun provideSettingsViewModel(context: Context): SettingsViewModel.Factory {
-        return SettingsViewModel.Factory(ServiceLocator.preferenceDataStore(context))
+        return SettingsViewModel.Factory(ServiceLocator.globalPreferences(context))
     }
 }

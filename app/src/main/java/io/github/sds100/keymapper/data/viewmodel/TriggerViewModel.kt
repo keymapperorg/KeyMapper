@@ -8,7 +8,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
 import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.db.IDataStoreManager
+import io.github.sds100.keymapper.data.IGlobalPreferences
+import io.github.sds100.keymapper.data.PreferenceKeys
 import io.github.sds100.keymapper.data.model.DeviceInfo
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.model.TriggerKeyModel
@@ -24,12 +25,12 @@ import java.util.*
 
 class TriggerViewModel(
     private val deviceInfoRepository: DeviceInfoRepository,
-    dataStoreManager: IDataStoreManager,
+    private val prefs: IGlobalPreferences,
     keymapUid: LiveData<String>
-) : IDataStoreManager by dataStoreManager {
+) {
 
     val optionsViewModel = TriggerOptionsViewModel(
-        dataStoreManager,
+        prefs,
         deviceInfoRepository,
         getTriggerKeys = { keys.value ?: emptyList() },
         getTriggerMode = { mode.value ?: Trigger.DEFAULT_TRIGGER_MODE },
@@ -51,10 +52,11 @@ class TriggerViewModel(
                 the order in which they list the keys is the order in which they will need to be held down.
                  */
                 if (keys.value?.size!! > 1 &&
-                    !getBoolPref(R.string.key_pref_shown_parallel_trigger_order_dialog)) {
+                    prefs.getFlow(PreferenceKeys.shownParallelTriggerOrderExplanation)
+                        .firstBlocking() == false) {
 
                     notifyUser(R.string.dialog_message_parallel_trigger_order) {
-                        setBoolPref(R.string.key_pref_shown_parallel_trigger_order_dialog, true)
+                        prefs.set(PreferenceKeys.shownParallelTriggerOrderExplanation, true)
                     }
                 }
 
@@ -88,10 +90,11 @@ class TriggerViewModel(
                 value = Trigger.SEQUENCE
 
                 if (_keys.value?.size!! > 1 &&
-                    !getBoolPref(R.string.key_pref_shown_sequence_trigger_explanation_dialog)) {
+                    prefs.getFlow(PreferenceKeys.shownSequenceTriggerExplanation)
+                        .firstBlocking() == false) {
 
                     notifyUser(R.string.dialog_message_sequence_trigger_explanation) {
-                        setBoolPref(R.string.key_pref_shown_sequence_trigger_explanation_dialog, true)
+                        prefs.set(PreferenceKeys.shownSequenceTriggerExplanation, true)
                     }
                 }
             }
@@ -245,11 +248,11 @@ class TriggerViewModel(
         if (containsKey) {
             triggerInSequence.value = true
 
-            if (!getBoolPref(R.string.key_pref_shown_multiple_of_same_key_in_sequence_trigger_info)) {
+            if (prefs.getFlow(PreferenceKeys.shownMultipleOfSameKeyInSequenceTriggerExplanation)
+                    .firstBlocking() == false) {
                 notifyUser(R.string.dialog_message_use_key_multiple_times_in_sequence_trigger)
 
-                setBoolPref(R.string.key_pref_shown_multiple_of_same_key_in_sequence_trigger_info,
-                    true)
+                prefs.set(PreferenceKeys.shownMultipleOfSameKeyInSequenceTriggerExplanation, true)
             }
         }
 
@@ -265,15 +268,12 @@ class TriggerViewModel(
             if (keysWithSameKeycodeAndDevice.isNotEmpty()) {
                 clickType = keysWithSameKeycodeAndDevice[0].clickType
 
-                if (!getBoolPref(
-                        R.string.key_pref_shown_multiple_of_same_key_in_sequence_trigger_info)) {
+                if (prefs.getFlow(PreferenceKeys.shownMultipleOfSameKeyInSequenceTriggerExplanation)
+                        .firstBlocking() == false) {
 
                     notifyUser(R.string.dialog_message_use_key_multiple_times_in_sequence_trigger)
 
-                    setBoolPref(
-                        R.string.key_pref_shown_multiple_of_same_key_in_sequence_trigger_info,
-                        true
-                    )
+                    prefs.set(PreferenceKeys.shownMultipleOfSameKeyInSequenceTriggerExplanation, true)
                 }
             }
         }

@@ -6,7 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.preferencesKey
 import androidx.fragment.app.Fragment
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.ServiceLocator
+import io.github.sds100.keymapper.globalPreferences
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
 import uk.co.samuelwall.materialtaptargetprompt.extras.PromptFocal
 import uk.co.samuelwall.materialtaptargetprompt.extras.focals.CirclePromptFocal
@@ -30,9 +30,9 @@ sealed class TapTarget(
         @IdRes viewId: Int,
         promptFocal: PromptFocal = CirclePromptFocal()
     ) {
-        val dataStore = ServiceLocator.preferenceDataStore(fragment.requireContext())
+        val prefs = fragment.requireContext().globalPreferences
 
-        if (dataStore.get(key) == true) return
+        if (prefs.get(key) == true) return
 
         MaterialTapTargetPrompt.Builder(fragment).apply {
             setTarget(viewId)
@@ -47,9 +47,7 @@ sealed class TapTarget(
                 if (state == MaterialTapTargetPrompt.STATE_DISMISSED
                     || state == MaterialTapTargetPrompt.STATE_FINISHED) {
 
-                    fragment.viewLifecycleScope.launchWhenCreated {
-                        dataStore.set(key, true)
-                    }
+                    prefs.set(key, true)
                 }
             }
 
