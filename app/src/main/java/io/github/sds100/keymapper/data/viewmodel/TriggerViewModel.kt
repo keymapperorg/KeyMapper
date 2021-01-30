@@ -9,7 +9,7 @@ import androidx.lifecycle.map
 import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.IGlobalPreferences
-import io.github.sds100.keymapper.data.PreferenceKeys
+import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.model.DeviceInfo
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.model.TriggerKeyModel
@@ -52,11 +52,11 @@ class TriggerViewModel(
                 the order in which they list the keys is the order in which they will need to be held down.
                  */
                 if (keys.value?.size!! > 1 &&
-                    prefs.getFlow(PreferenceKeys.shownParallelTriggerOrderExplanation)
+                    prefs.getFlow(Keys.shownParallelTriggerOrderExplanation)
                         .firstBlocking() == false) {
 
                     notifyUser(R.string.dialog_message_parallel_trigger_order) {
-                        prefs.set(PreferenceKeys.shownParallelTriggerOrderExplanation, true)
+                        prefs.set(Keys.shownParallelTriggerOrderExplanation, true)
                     }
                 }
 
@@ -90,11 +90,11 @@ class TriggerViewModel(
                 value = Trigger.SEQUENCE
 
                 if (_keys.value?.size!! > 1 &&
-                    prefs.getFlow(PreferenceKeys.shownSequenceTriggerExplanation)
+                    prefs.getFlow(Keys.shownSequenceTriggerExplanation)
                         .firstBlocking() == false) {
 
                     notifyUser(R.string.dialog_message_sequence_trigger_explanation) {
-                        prefs.set(PreferenceKeys.shownSequenceTriggerExplanation, true)
+                        prefs.set(Keys.shownSequenceTriggerExplanation, true)
                     }
                 }
             }
@@ -248,11 +248,11 @@ class TriggerViewModel(
         if (containsKey) {
             triggerInSequence.value = true
 
-            if (prefs.getFlow(PreferenceKeys.shownMultipleOfSameKeyInSequenceTriggerExplanation)
+            if (prefs.getFlow(Keys.shownMultipleOfSameKeyInSequenceTriggerExplanation)
                     .firstBlocking() == false) {
                 notifyUser(R.string.dialog_message_use_key_multiple_times_in_sequence_trigger)
 
-                prefs.set(PreferenceKeys.shownMultipleOfSameKeyInSequenceTriggerExplanation, true)
+                prefs.set(Keys.shownMultipleOfSameKeyInSequenceTriggerExplanation, true)
             }
         }
 
@@ -268,12 +268,12 @@ class TriggerViewModel(
             if (keysWithSameKeycodeAndDevice.isNotEmpty()) {
                 clickType = keysWithSameKeycodeAndDevice[0].clickType
 
-                if (prefs.getFlow(PreferenceKeys.shownMultipleOfSameKeyInSequenceTriggerExplanation)
+                if (prefs.getFlow(Keys.shownMultipleOfSameKeyInSequenceTriggerExplanation)
                         .firstBlocking() == false) {
 
                     notifyUser(R.string.dialog_message_use_key_multiple_times_in_sequence_trigger)
 
-                    prefs.set(PreferenceKeys.shownMultipleOfSameKeyInSequenceTriggerExplanation, true)
+                    prefs.set(Keys.shownMultipleOfSameKeyInSequenceTriggerExplanation, true)
                 }
             }
         }

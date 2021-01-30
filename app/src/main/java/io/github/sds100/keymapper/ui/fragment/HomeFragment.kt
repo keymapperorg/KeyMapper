@@ -22,7 +22,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.*
-import io.github.sds100.keymapper.data.PreferenceKeys
+import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.model.ChooseAppStoreModel
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
 import io.github.sds100.keymapper.data.showGuiKeyboardAd
@@ -395,7 +395,7 @@ class HomeFragment : Fragment() {
 
 
             setDismissNewGuiKeyboardAd {
-                globalPreferences.set(PreferenceKeys.showGuiKeyboardAd, false)
+                globalPreferences.set(Keys.showGuiKeyboardAd, false)
             }
 
             showNewGuiKeyboardAd = globalPreferences.showGuiKeyboardAd.firstBlocking()
@@ -442,7 +442,7 @@ class HomeFragment : Fragment() {
 
         if (PackageUtils.isAppInstalled(requireContext(), KeyboardUtils.KEY_MAPPER_GUI_IME_PACKAGE)
             || Build.VERSION.SDK_INT < KeyboardUtils.KEY_MAPPER_GUI_IME_MIN_API) {
-            globalPreferences.set(PreferenceKeys.showGuiKeyboardAd, false)
+            globalPreferences.set(Keys.showGuiKeyboardAd, false)
         }
 
         FingerprintMapUtils.dismissFeatureNotification()
@@ -462,7 +462,7 @@ class HomeFragment : Fragment() {
 
     private fun updateStatusLayouts() {
         binding.hideAlerts = globalPreferences
-            .getFlow(PreferenceKeys.hideHomeScreenAlerts).firstBlocking()
+            .getFlow(Keys.hideHomeScreenAlerts).firstBlocking()
 
         if (AccessibilityUtils.isServiceEnabled(requireContext())) {
             accessibilityServiceStatusState.value = StatusLayout.State.POSITIVE

@@ -6,7 +6,7 @@ import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import androidx.annotation.IntDef
 import androidx.core.app.NotificationCompat
-import io.github.sds100.keymapper.data.PreferenceKeys
+import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.keymapsPaused
 import io.github.sds100.keymapper.data.showImePickerNotification
 import io.github.sds100.keymapper.service.MyAccessibilityService
@@ -100,7 +100,7 @@ object NotificationController {
 
         val showToggleKeyboardNotification =
             ctx.globalPreferences
-                .getFlow(PreferenceKeys.showToggleKeyboardNotification).firstBlocking()
+                .getFlow(Keys.showToggleKeyboardNotification).firstBlocking()
                 ?: false
 
         if (PermissionUtils.isPermissionGranted(ctx, Manifest.permission.WRITE_SECURE_SETTINGS)

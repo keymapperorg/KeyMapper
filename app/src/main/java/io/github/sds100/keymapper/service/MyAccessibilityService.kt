@@ -95,13 +95,13 @@ class MyAccessibilityService : AccessibilityService(),
 
                 ACTION_PAUSE_REMAPPINGS -> {
                     keymapDetectionDelegate.reset()
-                    globalPreferences.set(PreferenceKeys.keymapsPaused, true)
+                    globalPreferences.set(Keys.keymapsPaused, true)
                     NotificationController.onEvent(this@MyAccessibilityService, EVENT_PAUSE_REMAPS)
                 }
 
                 ACTION_RESUME_REMAPPINGS -> {
                     keymapDetectionDelegate.reset()
-                    globalPreferences.set(PreferenceKeys.keymapsPaused, false)
+                    globalPreferences.set(Keys.keymapsPaused, false)
                     NotificationController.onEvent(this@MyAccessibilityService, EVENT_RESUME_REMAPS)
                 }
 
@@ -279,7 +279,7 @@ class MyAccessibilityService : AccessibilityService(),
             globalPreferences.sequenceTriggerTimeout.firstBlocking(),
             globalPreferences.vibrationDuration.firstBlocking(),
             globalPreferences.holdDownDuration.firstBlocking(),
-            globalPreferences.getFlow(PreferenceKeys.forceVibrate).firstBlocking() ?: false
+            globalPreferences.getFlow(Keys.forceVibrate).firstBlocking() ?: false
         )
 
         constraintDelegate = ConstraintDelegate(this)
@@ -683,7 +683,7 @@ class MyAccessibilityService : AccessibilityService(),
             keymapDetectionDelegate.preferences.defaultHoldDownDuration = it
         }
 
-        globalPreferences.getFlow(PreferenceKeys.forceVibrate).collectWhenStarted(this) {
+        globalPreferences.getFlow(Keys.forceVibrate).collectWhenStarted(this) {
             keymapDetectionDelegate.preferences.forceVibrate = it ?: false
         }
 
@@ -691,7 +691,7 @@ class MyAccessibilityService : AccessibilityService(),
             if (paused) {
                 NotificationController.onEvent(this, EVENT_PAUSE_REMAPS)
 
-                globalPreferences.getFlow(PreferenceKeys.toggleKeyboardOnToggleKeymaps)
+                globalPreferences.getFlow(Keys.toggleKeyboardOnToggleKeymaps)
                     .firstBlocking()
                     .let {
                         if (it == true) {
@@ -705,7 +705,7 @@ class MyAccessibilityService : AccessibilityService(),
             } else {
                 NotificationController.onEvent(this, EVENT_RESUME_REMAPS)
 
-                globalPreferences.getFlow(PreferenceKeys.toggleKeyboardOnToggleKeymaps)
+                globalPreferences.getFlow(Keys.toggleKeyboardOnToggleKeymaps)
                     .firstBlocking()
                     .let {
                         if (it == true) {

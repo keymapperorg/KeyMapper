@@ -6,7 +6,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import io.github.sds100.keymapper.data.PreferenceKeys
+import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.globalPreferences
 import io.github.sds100.keymapper.util.KeyboardUtils
 import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
@@ -34,12 +34,12 @@ class BluetoothConnectionBroadcastReceiver : BroadcastReceiver() {
 
             //get the bluetooth devices chosen by the user. return if no bluetooth devices are chosen
             val selectedDevices = context.globalPreferences
-                .getFlow(PreferenceKeys.bluetoothDevicesThatToggleKeymaps).firstBlocking() ?: return
+                .getFlow(Keys.bluetoothDevicesThatToggleKeymaps).firstBlocking() ?: return
 
             //don't show the dialog if the user hasn't selected this device
             if (selectedDevices.contains(device.address)) {
                 val automaticallySwitchIme = context.globalPreferences
-                    .getFlow(PreferenceKeys.autoChangeImeOnBtConnect).firstBlocking() ?: false
+                    .getFlow(Keys.autoChangeImeOnBtConnect).firstBlocking() ?: false
 
                 val haveWriteSecureSettingsPermission =
                     isPermissionGranted(context, Manifest.permission.WRITE_SECURE_SETTINGS)
@@ -49,7 +49,7 @@ class BluetoothConnectionBroadcastReceiver : BroadcastReceiver() {
                 }
 
                 val showIMEPickerAutomatically = context.globalPreferences
-                    .getFlow(PreferenceKeys.autoShowImePicker).firstBlocking() ?: false
+                    .getFlow(Keys.autoShowImePicker).firstBlocking() ?: false
 
                 //only show the dialog automatically if the user wants it to.
                 if (showIMEPickerAutomatically && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {

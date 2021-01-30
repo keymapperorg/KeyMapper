@@ -5,7 +5,7 @@ import androidx.lifecycle.MediatorLiveData
 import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.IGlobalPreferences
-import io.github.sds100.keymapper.data.PreferenceKeys
+import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.options.BoolOption
 import io.github.sds100.keymapper.data.model.options.IntOption
@@ -143,10 +143,10 @@ class TriggerOptionsViewModel(
         super.setValue(id, newValue)
 
         if (id == TriggerOptions.ID_SCREEN_OFF_TRIGGER &&
-            prefs.getFlow(PreferenceKeys.shownScreenOffTriggersExplanation).firstBlocking() == false) {
+            prefs.getFlow(Keys.shownScreenOffTriggersExplanation).firstBlocking() == false) {
 
             _eventStream.value = OkDialog(R.string.showcase_screen_off_triggers) {
-                prefs.set(PreferenceKeys.shownScreenOffTriggersExplanation, true)
+                prefs.set(Keys.shownScreenOffTriggersExplanation, true)
             }
         }
 

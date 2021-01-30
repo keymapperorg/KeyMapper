@@ -20,7 +20,7 @@ import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.NotificationController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
-import io.github.sds100.keymapper.data.PreferenceKeys
+import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
 import io.github.sds100.keymapper.data.viewmodel.SettingsViewModel
 import io.github.sds100.keymapper.databinding.FragmentSettingsBinding
@@ -123,7 +123,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
         it ?: return@registerForActivityResult
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            globalPreferences.set(PreferenceKeys.automaticBackupLocation, it.toString())
+            globalPreferences.set(Keys.automaticBackupLocation, it.toString())
 
             val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or
                 Intent.FLAG_GRANT_WRITE_URI_PERMISSION
@@ -214,7 +214,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
             automaticBackupLocation?.setOnPreferenceClickListener {
                 val backupLocation = runBlocking {
                     requireContext().globalPreferences
-                        .get(PreferenceKeys.automaticBackupLocation)
+                        .get(Keys.automaticBackupLocation)
                 }
 
                 if (backupLocation.isNullOrBlank()) {
@@ -229,7 +229,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
                         }
 
                         negativeButton(R.string.neg_turn_off) {
-                            globalPreferences.set(PreferenceKeys.automaticBackupLocation, "")
+                            globalPreferences.set(Keys.automaticBackupLocation, "")
                         }
 
                         show()
@@ -376,7 +376,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
     private fun invalidateAutomaticBackupLocationSummary() {
         val backupLocation = runBlocking {
             ServiceLocator.globalPreferences(requireContext())
-                .get(PreferenceKeys.automaticBackupLocation)
+                .get(Keys.automaticBackupLocation)
         }
 
         if (backupLocation.isNullOrBlank()) {

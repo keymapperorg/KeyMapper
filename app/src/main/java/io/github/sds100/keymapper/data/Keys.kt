@@ -6,7 +6,7 @@ import androidx.datastore.preferences.core.preferencesSetKey
 /**
  * Created by sds100 on 19/01/21.
  */
-object PreferenceKeys {
+object Keys {
     val darkTheme = preferencesKey<String>("pref_dark_theme_mode")
     val hasRootPermission = preferencesKey<Boolean>("pref_allow_root_features")
     val shownAppIntro = preferencesKey<Boolean>("pref_first_time")
