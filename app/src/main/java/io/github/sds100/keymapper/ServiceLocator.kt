@@ -73,8 +73,7 @@ object ServiceLocator {
         }
     }
 
-    //TODO make private
-    fun preferenceDataStore(context: Context): IDataStoreManager {
+    private fun dataStoreManager(context: Context): IDataStoreManager {
         synchronized(this) {
             return dataStoreManager ?: createPreferenceDataStore(context)
         }
@@ -173,7 +172,7 @@ object ServiceLocator {
     }
 
     private fun createFingerprintMapRepository(context: Context): FingerprintMapRepository {
-        val dataStore = preferenceDataStore(context).fingerprintGestureDataStore
+        val dataStore = dataStoreManager(context).fingerprintGestureDataStore
         val scope = (context.applicationContext as MyApplication).appCoroutineScope
 
         return fingerprintMapRepository
@@ -204,15 +203,13 @@ object ServiceLocator {
     }
 
     private fun createAppUpdateManager(context: Context): AppUpdateManager {
-        val preferenceDataStore = preferenceDataStore(context)
-
-        return appUpdateManager ?: AppUpdateManager(preferenceDataStore).also {
+        return appUpdateManager ?: AppUpdateManager(globalPreferences(context)).also {
             this.appUpdateManager = it
         }
     }
 
     private fun createGlobalPreferences(context: Context): IGlobalPreferences {
-        val dataStore = preferenceDataStore(context).globalPreferenceDataStore
+        val dataStore = dataStoreManager(context).globalPreferenceDataStore
 
         return globalPreferences
             ?: GlobalPreferences(

@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.ServiceLocator
-import io.github.sds100.keymapper.data.PreferenceKeys
+import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.activity.HomeActivity
 import io.github.sds100.keymapper.util.AccessibilityUtils
@@ -43,7 +43,7 @@ class KeyMapperBroadcastReceiver : BroadcastReceiver() {
             ACTION_ON_FINGERPRINT_FEAT_NOTIFICATION_CLICK -> {
                 runBlocking {
                     ServiceLocator.globalPreferences(context)
-                        .set(PreferenceKeys.approvedFingerprintFeaturePrompt, true)
+                        .set(Keys.approvedFingerprintFeaturePrompt, true)
                 }
 
                 Intent(context, HomeActivity::class.java).apply {

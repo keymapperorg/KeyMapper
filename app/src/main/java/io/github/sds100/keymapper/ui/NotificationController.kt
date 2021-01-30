@@ -103,7 +103,7 @@ class NotificationController {
 
         val showToggleKeyboardNotification =
             ctx.globalPreferences
-                .getFlow(PreferenceKeys.showToggleKeyboardNotification).firstBlocking()
+                .getFlow(Keys.showToggleKeyboardNotification).firstBlocking()
                 ?: false
 
         if (PermissionUtils.isPermissionGranted(ctx, Manifest.permission.WRITE_SECURE_SETTINGS)

@@ -6,7 +6,7 @@ import androidx.datastore.preferences.core.preferencesSetKey
 /**
  * Created by sds100 on 19/01/21.
  */
-object PreferenceKeys {
+object Keys {
     val darkTheme = preferencesKey<String>("pref_dark_theme_mode")
     val hasRootPermission = preferencesKey<Boolean>("pref_allow_root_features")
     val shownAppIntro = preferencesKey<Boolean>("pref_first_time")
@@ -31,4 +31,9 @@ object PreferenceKeys {
     val showDeviceDescriptors = preferencesKey<Boolean>("pref_show_device_descriptors")
     val holdDownDuration = preferencesKey<Int>("pref_hold_down_duration")
     val approvedFingerprintFeaturePrompt = preferencesKey<Boolean>("pref_approved_fingerprint_feature_prompt")
+
+    val shownScreenOffTriggersExplanation = preferencesKey<Boolean>("pref_screen_off_triggers_explanation")
+    val shownParallelTriggerOrderExplanation = preferencesKey<Boolean>("key_shown_parallel_trigger_order_warning")
+    val shownSequenceTriggerExplanation = preferencesKey<Boolean>("key_shown_sequence_trigger_explanation_dialog")
+    val shownMultipleOfSameKeyInSequenceTriggerExplanation = preferencesKey<Boolean>("pref_shown_multiple_of_same_key_in_sequence_trigger_info")
 }

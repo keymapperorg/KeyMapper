@@ -7,7 +7,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import com.github.appintro.AppIntro2
 import io.github.sds100.keymapper.ServiceLocator
-import io.github.sds100.keymapper.data.PreferenceKeys
+import io.github.sds100.keymapper.data.Keys
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -30,7 +30,7 @@ class FingerprintGestureIntroActivity : AppIntro2() {
 
         runBlocking {
             ServiceLocator.globalPreferences(this@FingerprintGestureIntroActivity)
-                .set(PreferenceKeys.approvedFingerprintFeaturePrompt, true)
+                .set(Keys.approvedFingerprintFeaturePrompt, true)
         }
 
         startActivity(Intent(this, HomeActivity::class.java))

@@ -2,26 +2,22 @@ package io.github.sds100.keymapper.data.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
-import io.github.sds100.keymapper.data.db.IDataStoreManager
+import io.github.sds100.keymapper.data.IGlobalPreferences
 import io.github.sds100.keymapper.util.SharedPrefsDataStoreWrapper
 
 /**
  * Created by sds100 on 19/01/21.
  */
-class SettingsViewModel(private val dataStoreManager: IDataStoreManager) : ViewModel() {
-    val sharedPrefsDataStoreWrapper = SharedPrefsDataStoreWrapper(
-        viewModelScope,
-        dataStoreManager
-    )
+class SettingsViewModel(globalPreferences: IGlobalPreferences) : ViewModel() {
+    val sharedPrefsDataStoreWrapper = SharedPrefsDataStoreWrapper(globalPreferences)
 
     @Suppress("UNCHECKED_CAST")
     class Factory(
-        private val dataStoreManager: IDataStoreManager
+        private val globalPreferences: IGlobalPreferences
     ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return SettingsViewModel(dataStoreManager) as T
+            return SettingsViewModel(globalPreferences) as T
         }
     }
 }

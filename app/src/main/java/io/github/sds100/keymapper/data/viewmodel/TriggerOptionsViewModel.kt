@@ -4,26 +4,33 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.db.IDataStoreManager
+import io.github.sds100.keymapper.data.IGlobalPreferences
+import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.data.model.options.BoolOption
 import io.github.sds100.keymapper.data.model.options.IntOption
 import io.github.sds100.keymapper.data.model.options.IntOption.Companion.nullIfDefault
 import io.github.sds100.keymapper.data.model.options.TriggerOptions
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
+import io.github.sds100.keymapper.util.DialogResponse
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.OkDialog
+import io.github.sds100.keymapper.util.firstBlocking
 
 /**
  * Created by sds100 on 29/11/20.
  */
 class TriggerOptionsViewModel(
-    dataStoreManager: IDataStoreManager,
+    private val prefs: IGlobalPreferences,
     private val deviceInfoRepository: DeviceInfoRepository,
     val getTriggerKeys: () -> List<Trigger.Key>,
     val getTriggerMode: () -> Int,
     private val keymapUid: LiveData<String>
-) : BaseOptionsViewModel<TriggerOptions>(), IDataStoreManager by dataStoreManager {
+) : BaseOptionsViewModel<TriggerOptions>() {
+
+    companion object {
+        private const val KEY_SCREEN_OFF_TRIGGERS = "screen_off_triggers"
+    }
 
     override val stateKey = "trigger_options_view_model"
 
@@ -141,11 +148,10 @@ class TriggerOptionsViewModel(
         super.setValue(id, newValue)
 
         if (id == TriggerOptions.ID_SCREEN_OFF_TRIGGER &&
-            !getBoolPref(R.string.key_pref_shown_screen_off_triggers_explanation)) {
+            prefs.getFlow(Keys.shownScreenOffTriggersExplanation).firstBlocking() == false) {
 
-            _eventStream.value = OkDialog(R.string.showcase_screen_off_triggers) {
-                setBoolPref(R.string.key_pref_shown_screen_off_triggers_explanation, true)
-            }
+            _eventStream.value = OkDialog(KEY_SCREEN_OFF_TRIGGERS,
+                R.string.showcase_screen_off_triggers)
         }
 
         invalidateOptions()
@@ -154,6 +160,12 @@ class TriggerOptionsViewModel(
     fun invalidateOptions() {
         options.value?.apply {
             setOptions(dependentDataChanged(getTriggerKeys.invoke(), getTriggerMode.invoke()))
+        }
+    }
+
+    fun onDialogResponse(key: String, response: DialogResponse) {
+        when (key) {
+            KEY_SCREEN_OFF_TRIGGERS -> prefs.set(Keys.shownScreenOffTriggersExplanation, true)
         }
     }
 

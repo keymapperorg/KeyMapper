@@ -21,7 +21,7 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.broadcastreceiver.KeyMapperBroadcastReceiver
-import io.github.sds100.keymapper.data.PreferenceKeys
+import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.hasRootPermission
 import io.github.sds100.keymapper.globalPreferences
 import io.github.sds100.keymapper.ui.activity.HomeActivity
@@ -53,7 +53,7 @@ object NotificationUtils {
     fun updateToggleKeymapsNotification(ctx: Context, event: Int) {
         if (SDK_INT < Build.VERSION_CODES.O) {
             val showNotification = ctx.globalPreferences
-                .getFlow(PreferenceKeys.showToggleKeymapsNotification)
+                .getFlow(Keys.showToggleKeymapsNotification)
                 .firstBlocking() ?: false
 
             if (!showNotification) {

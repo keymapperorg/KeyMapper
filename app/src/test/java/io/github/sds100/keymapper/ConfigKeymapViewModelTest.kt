@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import io.github.sds100.keymapper.data.db.IDataStoreManager
+import io.github.sds100.keymapper.data.IGlobalPreferences
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.data.usecase.ConfigKeymapUseCase
@@ -33,7 +33,7 @@ class ConfigKeymapViewModelTest {
 
     private lateinit var mockDeviceInfoRepository: DeviceInfoRepository
     private lateinit var mockKeymapRepository: ConfigKeymapUseCase
-    private lateinit var mockDataStoreManager: IDataStoreManager
+    private lateinit var mockGlobalPreferences: IGlobalPreferences
 
     private lateinit var viewModel: ConfigKeymapViewModel
 
@@ -41,12 +41,12 @@ class ConfigKeymapViewModelTest {
     fun init() {
         mockKeymapRepository = Mockito.mock(ConfigKeymapUseCase::class.java)
         mockDeviceInfoRepository = Mockito.mock(DeviceInfoRepository::class.java)
-        mockDataStoreManager = Mockito.mock(IDataStoreManager::class.java)
+        mockGlobalPreferences = Mockito.mock(IGlobalPreferences::class.java)
 
         viewModel = ConfigKeymapViewModel(
             mockKeymapRepository,
             mockDeviceInfoRepository,
-            mockDataStoreManager
+            mockGlobalPreferences
         )
 
         Dispatchers.setMain(testDispatcher)

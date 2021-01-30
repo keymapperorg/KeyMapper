@@ -50,7 +50,7 @@ class GlobalPreferences(private val dataStore: DataStore<Preferences>,
 }
 
 val IGlobalPreferences.darkThemeMode
-    get() = getFlow(PreferenceKeys.darkTheme).map {
+    get() = getFlow(Keys.darkTheme).map {
         when (it) {
             "0" -> AppCompatDelegate.MODE_NIGHT_YES
             "1" -> AppCompatDelegate.MODE_NIGHT_NO
@@ -60,76 +60,76 @@ val IGlobalPreferences.darkThemeMode
     }
 
 val IGlobalPreferences.hasRootPermission
-    get() = getFlow(PreferenceKeys.hasRootPermission).map {
+    get() = getFlow(Keys.hasRootPermission).map {
         it ?: false
     }
 
 val IGlobalPreferences.automaticBackupLocation
-    get() = getFlow(PreferenceKeys.automaticBackupLocation).map {
+    get() = getFlow(Keys.automaticBackupLocation).map {
         it ?: ""
     }
 
 val IGlobalPreferences.shownAppIntro
-    get() = getFlow(PreferenceKeys.shownAppIntro).map {
+    get() = getFlow(Keys.shownAppIntro).map {
         it ?: false
     }
 
 val IGlobalPreferences.showGuiKeyboardAd
-    get() = getFlow(PreferenceKeys.showGuiKeyboardAd).map {
+    get() = getFlow(Keys.showGuiKeyboardAd).map {
         it ?: false
     }
 
 val IGlobalPreferences.showDeviceDescriptors
-    get() = getFlow(PreferenceKeys.showDeviceDescriptors).map {
+    get() = getFlow(Keys.showDeviceDescriptors).map {
         it ?: false
     }
 
 val IGlobalPreferences.keymapsPaused
-    get() = getFlow(PreferenceKeys.keymapsPaused).map {
+    get() = getFlow(Keys.keymapsPaused).map {
         it ?: false
     }
 
 val IGlobalPreferences.showImePickerNotification
-    get() = getFlow(PreferenceKeys.showImePickerNotification).map {
+    get() = getFlow(Keys.showImePickerNotification).map {
         it ?: false
     }
 
 val IGlobalPreferences.approvedFingerprintFeaturePrompt
-    get() = getFlow(PreferenceKeys.approvedFingerprintFeaturePrompt).map {
+    get() = getFlow(Keys.approvedFingerprintFeaturePrompt).map {
         it ?: false
     }
 
 val IGlobalPreferences.longPressDelay
-    get() = getFlow(PreferenceKeys.longPressDelay).map {
+    get() = getFlow(Keys.longPressDelay).map {
         it ?: PreferenceDefaults.LONG_PRESS_DELAY
     }
 
 val IGlobalPreferences.doublePressDelay
-    get() = getFlow(PreferenceKeys.doublePressDelay).map {
+    get() = getFlow(Keys.doublePressDelay).map {
         it ?: PreferenceDefaults.DOUBLE_PRESS_DELAY
     }
 
 val IGlobalPreferences.vibrationDuration
-    get() = getFlow(PreferenceKeys.vibrateDuration).map {
+    get() = getFlow(Keys.vibrateDuration).map {
         it ?: PreferenceDefaults.VIBRATION_DURATION
     }
 
 val IGlobalPreferences.repeatDelay
-    get() = getFlow(PreferenceKeys.repeatDelay).map {
+    get() = getFlow(Keys.repeatDelay).map {
         it ?: PreferenceDefaults.REPEAT_DELAY
     }
 
 val IGlobalPreferences.repeatRate
-    get() = getFlow(PreferenceKeys.repeatRate).map {
+    get() = getFlow(Keys.repeatRate).map {
         it ?: PreferenceDefaults.REPEAT_RATE
     }
 
 val IGlobalPreferences.sequenceTriggerTimeout
-    get() = getFlow(PreferenceKeys.sequenceTriggerTimeout).map {
+    get() = getFlow(Keys.sequenceTriggerTimeout).map {
         it ?: PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT
     }
 
 val IGlobalPreferences.holdDownDuration
-    get() = getFlow(PreferenceKeys.holdDownDuration).map {
+    get() = getFlow(Keys.holdDownDuration).map {
         it ?: PreferenceDefaults.HOLD_DOWN_DURATION
     }

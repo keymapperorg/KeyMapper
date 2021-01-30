@@ -14,7 +14,7 @@ import com.github.appintro.AppIntro2
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
-import io.github.sds100.keymapper.data.PreferenceKeys
+import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.databinding.FragmentAppIntroSlideBinding
 import io.github.sds100.keymapper.globalPreferences
 import io.github.sds100.keymapper.ui.fragment.AppIntroScrollableFragment
@@ -64,8 +64,8 @@ class AppIntroActivity : AppIntro2() {
     override fun onDonePressed(currentFragment: Fragment?) {
         super.onDonePressed(currentFragment)
 
-        globalPreferences.set(PreferenceKeys.shownAppIntro, true)
-        globalPreferences.set(PreferenceKeys.approvedFingerprintFeaturePrompt, true)
+        globalPreferences.set(Keys.shownAppIntro, true)
+        globalPreferences.set(Keys.approvedFingerprintFeaturePrompt, true)
 
         startActivity(Intent(this, HomeActivity::class.java))
 

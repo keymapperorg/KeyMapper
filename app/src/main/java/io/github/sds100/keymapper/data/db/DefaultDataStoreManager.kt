@@ -2,14 +2,8 @@ package io.github.sds100.keymapper.data.db
 
 import android.content.Context
 import androidx.datastore.preferences.SharedPreferencesMigration
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.remove
 import androidx.datastore.preferences.createDataStore
 import io.github.sds100.keymapper.Constants
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 
 /**
  * Created by sds100 on 20/02/2020.
@@ -32,31 +26,4 @@ class DefaultDataStoreManager(context: Context) : IDataStoreManager {
     override val globalPreferenceDataStore = ctx.createDataStore(
         name = "preferences",
         migrations = listOf(sharedPreferencesMigration))
-
-    override fun getBoolPref(key: Int): Boolean {
-        //TODO
-        return false
-    }
-
-    override fun setBoolPref(key: Int, value: Boolean) {
-        //TODO
-    }
-
-    override fun <T> getFlow(key: Preferences.Key<T>): Flow<T?> {
-        return globalPreferenceDataStore.data.map { it[key] }
-    }
-
-    override suspend fun <T> get(key: Preferences.Key<T>): T? {
-        return globalPreferenceDataStore.data.first()[key]
-    }
-
-    override suspend fun <T> set(key: Preferences.Key<T>, value: T?) {
-        globalPreferenceDataStore.edit {
-            if (value == null) {
-                it.remove(key)
-            } else {
-                it[key] = value
-            }
-        }
-    }
 }

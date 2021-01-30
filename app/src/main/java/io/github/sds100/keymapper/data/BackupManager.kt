@@ -66,7 +66,7 @@ class BackupManager(
             coroutineScope.launch {
                 if (!shouldBackupAutomatically()) return@launch
 
-                val uriString = globalPreferences.get(PreferenceKeys.automaticBackupLocation)
+                val uriString = globalPreferences.get(Keys.automaticBackupLocation)
                     ?: return@launch
 
                 val result = contentResolver
@@ -259,7 +259,7 @@ class BackupManager(
     }
 
     private suspend fun shouldBackupAutomatically() =
-        globalPreferences.get(PreferenceKeys.automaticBackupLocation)?.isNotBlank() ?: false
+        globalPreferences.get(Keys.automaticBackupLocation)?.isNotBlank() ?: false
 
     private class BackupModel(
         @SerializedName(NAME_KEYMAP_DB_VERSION)
