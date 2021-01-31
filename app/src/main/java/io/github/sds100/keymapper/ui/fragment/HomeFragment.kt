@@ -29,6 +29,7 @@ import io.github.sds100.keymapper.data.showGuiKeyboardAd
 import io.github.sds100.keymapper.data.viewmodel.*
 import io.github.sds100.keymapper.databinding.DialogChooseAppStoreBinding
 import io.github.sds100.keymapper.databinding.FragmentHomeBinding
+import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.adapter.HomePagerAdapter
 import io.github.sds100.keymapper.ui.view.StatusLayout
 import io.github.sds100.keymapper.util.*
@@ -84,13 +85,13 @@ class HomeFragment : Fragment() {
                     fingerprintMapListViewModel.rebuildModels()
                 }
 
-//     TODO           MyAccessibilityService.ACTION_ON_START -> {
-//                    accessibilityServiceStatusState.value = StatusLayout.State.POSITIVE
-//                }
-//
-//                MyAccessibilityService.ACTION_ON_STOP -> {
-//                    accessibilityServiceStatusState.value = StatusLayout.State.ERROR
-//                }
+                MyAccessibilityService.ACTION_ON_START -> {
+                    accessibilityServiceStatusState.value = StatusLayout.State.POSITIVE
+                }
+
+                MyAccessibilityService.ACTION_ON_STOP -> {
+                    accessibilityServiceStatusState.value = StatusLayout.State.ERROR
+                }
             }
         }
     }
@@ -136,8 +137,8 @@ class HomeFragment : Fragment() {
 
         IntentFilter().apply {
             addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
-//     TODO       addAction(MyAccessibilityService.ACTION_ON_START)
-//            addAction(MyAccessibilityService.ACTION_ON_STOP)
+            addAction(MyAccessibilityService.ACTION_ON_START)
+            addAction(MyAccessibilityService.ACTION_ON_STOP)
 
             requireContext().registerReceiver(broadcastReceiver, this)
         }

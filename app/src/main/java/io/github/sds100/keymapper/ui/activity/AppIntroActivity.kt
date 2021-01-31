@@ -90,9 +90,15 @@ class NoteFromDeveloperSlide : AppIntroScrollableFragment() {
 class AccessibilityServiceSlide : AppIntroScrollableFragment() {
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-//       TODO     if (intent?.action == MyAccessibilityService.ACTION_ON_START) {
-
-//            }
+            if (intent?.action == MyAccessibilityService.ACTION_ON_START) {
+                binding.apply {
+                    if (AccessibilityUtils.isServiceEnabled(requireContext())) {
+                        serviceEnabledLayout()
+                    } else {
+                        serviceDisabledLayout()
+                    }
+                }
+            }
         }
     }
 
