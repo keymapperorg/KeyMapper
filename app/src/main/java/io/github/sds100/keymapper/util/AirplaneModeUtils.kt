@@ -13,7 +13,7 @@ object AirplaneModeUtils {
     fun toggleAirplaneMode(ctx: Context) {
         if (!ctx.globalPreferences.hasRootPermission.firstBlocking()) return
 
-        if (ctx.getGlobalSetting<Int>(Settings.Global.AIRPLANE_MODE_ON) == 0) {
+        if (SettingsUtils.getGlobalSetting<Int>(ctx, Settings.Global.AIRPLANE_MODE_ON) == 0) {
             enableAirplaneMode(ctx)
         } else {
             disableAirplaneMode(ctx)

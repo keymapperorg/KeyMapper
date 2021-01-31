@@ -62,7 +62,7 @@ object KeyboardUtils {
 
     fun chooseCompatibleInputMethod(ctx: Context) {
 
-        if (ctx.haveWriteSecureSettingsPermission) {
+        if (PermissionUtils.haveWriteSecureSettingsPermission(ctx)) {
             getLastUsedCompatibleImeId(ctx).onSuccess {
                 switchIme(ctx, it)
                 return
@@ -110,12 +110,12 @@ object KeyboardUtils {
      */
     @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
     fun switchIme(ctx: Context, imeId: String): Boolean {
-        if (!ctx.haveWriteSecureSettingsPermission) {
+        if (!PermissionUtils.haveWriteSecureSettingsPermission(ctx)) {
             ctx.toast(R.string.error_need_write_secure_settings_permission)
             return false
         }
 
-        ctx.putSecureSetting(Settings.Secure.DEFAULT_INPUT_METHOD, imeId)
+        Settings.System.putString(ctx.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD, imeId)
         return true
     }
 

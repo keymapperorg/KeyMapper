@@ -166,11 +166,10 @@ object PermissionUtils {
 
         return ContextCompat.checkSelfPermission(ctx, permission) == PERMISSION_GRANTED
     }
+
+    fun haveWriteSettingsPermission(ctx: Context) =
+        isPermissionGranted(ctx, Manifest.permission.WRITE_SETTINGS)
+
+    fun haveWriteSecureSettingsPermission(ctx: Context) =
+        isPermissionGranted(ctx, Manifest.permission.WRITE_SECURE_SETTINGS)
 }
-
-
-val Context.haveWriteSettingsPermission: Boolean
-    get() = PermissionUtils.isPermissionGranted(this, Manifest.permission.WRITE_SETTINGS)
-
-val Context.haveWriteSecureSettingsPermission: Boolean
-    get() = PermissionUtils.isPermissionGranted(this, Manifest.permission.WRITE_SECURE_SETTINGS)

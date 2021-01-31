@@ -83,6 +83,6 @@ class MyApplication : MultiDexApplication(),
     }
 
     override fun haveWriteSecureSettingsPermission(): Boolean {
-        return haveWriteSecureSettingsPermission
+        return PermissionUtils.haveWriteSecureSettingsPermission(this)
     }
 }
