@@ -544,10 +544,10 @@ class KeymapDetectionDelegate(private val coroutineScope: CoroutineScope,
      */
     private var actionsBeingHeldDown = mutableSetOf<Int>()
 
-    val showTriggeredKeymapToast = LiveEvent<Unit>()
+    val showTriggeredKeymapToast = LiveEvent<ShowTriggeredKeymapToast>()
     val performAction = LiveEvent<PerformAction>()
     val imitateButtonPress: LiveEvent<ImitateButtonPress> = LiveEvent()
-    val vibrate: LiveEvent<Vibrate> = LiveEvent()
+    val vibrate: LiveEvent<VibrateEvent> = LiveEvent()
 
     /**
      * @return whether to consume the [KeyEvent].
@@ -750,7 +750,7 @@ class KeymapDetectionDelegate(private val coroutineScope: CoroutineScope,
 
                         if (parallelTriggerFlags[triggerIndex]
                                 .hasFlag(Trigger.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION)) {
-                            vibrate.value = Vibrate(vibrateDuration(parallelTriggerOptions[triggerIndex]))
+                            vibrate.value = VibrateEvent(vibrateDuration(parallelTriggerOptions[triggerIndex]))
                         }
 
                         val oldJob = parallelTriggerLongPressJobs[triggerIndex]
@@ -866,7 +866,7 @@ class KeymapDetectionDelegate(private val coroutineScope: CoroutineScope,
                                 val vibrateDuration = vibrateDurations[index]
 
                                 if (vibrateDuration != -1L) {
-                                    vibrate.value = Vibrate(vibrateDuration)
+                                    vibrate.value = VibrateEvent(vibrateDuration)
                                 }
 
                                 if (action.repeat && action.holdDown) {
@@ -890,7 +890,7 @@ class KeymapDetectionDelegate(private val coroutineScope: CoroutineScope,
         }
 
         if (showToast) {
-            showTriggeredKeymapToast.value = Unit
+            showTriggeredKeymapToast.value = ShowTriggeredKeymapToast
         }
 
         if (consumeEvent) {
@@ -1233,7 +1233,7 @@ class KeymapDetectionDelegate(private val coroutineScope: CoroutineScope,
                     performAction(action, actionMultiplier(actionKey))
 
                     if (vibrateDurations[index] != -1L || preferences.forceVibrate) {
-                        vibrate.value = Vibrate(vibrateDurations[index])
+                        vibrate.value = VibrateEvent(vibrateDurations[index])
                     }
 
                     delay(delayBeforeNextAction(actionKey))
@@ -1252,7 +1252,7 @@ class KeymapDetectionDelegate(private val coroutineScope: CoroutineScope,
                     performAction(action, actionMultiplier(actionKey))
 
                     if (vibrateDurations[index] != -1L || preferences.forceVibrate) {
-                        vibrate.value = Vibrate(vibrateDurations[index])
+                        vibrate.value = VibrateEvent(vibrateDurations[index])
                     }
 
                     delay(delayBeforeNextAction(actionKey))
@@ -1261,7 +1261,7 @@ class KeymapDetectionDelegate(private val coroutineScope: CoroutineScope,
         }
 
         if (showToast) {
-            showTriggeredKeymapToast.value = Unit
+            showTriggeredKeymapToast.value = ShowTriggeredKeymapToast
         }
 
         if (imitateKeyAfterDoublePressTimeout.isNotEmpty()
@@ -1407,7 +1407,7 @@ class KeymapDetectionDelegate(private val coroutineScope: CoroutineScope,
         performActionsOnFailedDoublePress.clear()
 
         if (showToast) {
-            showTriggeredKeymapToast.value = Unit
+            showTriggeredKeymapToast.value = ShowTriggeredKeymapToast
         }
 
         detectedTriggerIndexes.forEach { triggerIndex ->
@@ -1421,7 +1421,7 @@ class KeymapDetectionDelegate(private val coroutineScope: CoroutineScope,
                     performAction(action, actionMultiplier(actionKey))
 
                     if (vibrateDurations[index] != -1L || preferences.forceVibrate) {
-                        vibrate.value = Vibrate(vibrateDurations[index])
+                        vibrate.value = VibrateEvent(vibrateDurations[index])
                     }
 
                     delay(delayBeforeNextAction(actionKey))
@@ -1548,7 +1548,7 @@ class KeymapDetectionDelegate(private val coroutineScope: CoroutineScope,
 
                     if (parallelTriggerFlags.vibrate(triggerIndex) || preferences.forceVibrate
                         || parallelTriggerFlags[triggerIndex].hasFlag(Trigger.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION)) {
-                        vibrate.value = Vibrate(vibrateDuration(parallelTriggerOptions[triggerIndex]))
+                        vibrate.value = VibrateEvent(vibrateDuration(parallelTriggerOptions[triggerIndex]))
                     }
                 }
 
@@ -1559,7 +1559,7 @@ class KeymapDetectionDelegate(private val coroutineScope: CoroutineScope,
         }
 
         if (showToast) {
-            showTriggeredKeymapToast.value = Unit
+            showTriggeredKeymapToast.value = ShowTriggeredKeymapToast
         }
     }
 

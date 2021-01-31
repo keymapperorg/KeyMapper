@@ -17,7 +17,7 @@ interface IAccessibilityService {
 
     val keyboardController: AccessibilityService.SoftKeyboardController?
     val rootNode: AccessibilityNodeInfo?
-    val fingerprintGestureDetectionAvailable: Boolean
+    val isGestureDetectionAvailable: Boolean
     fun requestFingerprintGestureDetection()
     fun denyFingerprintGestureDetection()
 }

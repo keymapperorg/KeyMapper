@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -70,19 +69,20 @@ class TriggerFragment : Fragment() {
             when (intent.action) {
 
                 MyAccessibilityService.ACTION_RECORDED_TRIGGER_KEY -> {
-                    intent.getParcelableExtra<KeyEvent>(MyAccessibilityService.EXTRA_KEY_EVENT)?.let { keyEvent ->
-                        if (!successfullyRecordedTrigger) {
-                            successfullyRecordedTrigger = true
-                        }
+                    intent.getParcelableExtra<RecordedTriggerKeyEvent>(MyAccessibilityService.EXTRA_RECORDED_TRIGGER_KEY_EVENT)
+                        ?.let { event ->
+                            if (!successfullyRecordedTrigger) {
+                                successfullyRecordedTrigger = true
+                            }
 
-                        lifecycleScope.launch {
-                            val deviceName = keyEvent.device.name
-                            val deviceDescriptor = keyEvent.device.descriptor
-                            val isExternal = keyEvent.device.isExternalCompat
+                            lifecycleScope.launch {
+                                val deviceName = event.deviceName
+                                val deviceDescriptor = event.deviceDescriptor
+                                val isExternal = event.isExternal
 
-                            triggerViewModel.addTriggerKey(keyEvent.keyCode, deviceDescriptor, deviceName, isExternal)
+                                triggerViewModel.addTriggerKey(event.keyCode, deviceDescriptor, deviceName, isExternal)
+                            }
                         }
-                    }
                 }
 
                 MyAccessibilityService.ACTION_RECORD_TRIGGER_TIMER_INCREMENTED -> {

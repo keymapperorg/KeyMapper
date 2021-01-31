@@ -27,8 +27,8 @@ abstract class SimpleMappingController(
     private val actionsBeingHeldDown = mutableListOf<Action>()
 
     val performAction = LiveEvent<PerformAction>()
-    val vibrateEvent: LiveEvent<Vibrate> = LiveEvent()
-    val showTriggeredToastEvent = LiveEvent<Unit>()
+    val vibrateEvent: LiveEvent<VibrateEvent> = LiveEvent()
+    val showTriggeredToastEvent = LiveEvent<ShowTriggeredKeymapToast>()
 
     fun onDetected(
         mappingId: String,
@@ -102,11 +102,11 @@ abstract class SimpleMappingController(
                 ?.toLong()
                 ?: globalPreferences.vibrationDuration.firstBlocking().toLong()
 
-            vibrateEvent.value = Vibrate(duration)
+            vibrateEvent.value = VibrateEvent(duration)
         }
 
         if (showTriggeredToast) {
-            showTriggeredToastEvent.value = Unit
+            showTriggeredToastEvent.value = ShowTriggeredKeymapToast
         }
     }
 

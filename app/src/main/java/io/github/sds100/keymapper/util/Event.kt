@@ -15,6 +15,7 @@
  */
 package io.github.sds100.keymapper.util
 
+import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import io.github.sds100.keymapper.R
@@ -23,14 +24,15 @@ import io.github.sds100.keymapper.data.model.options.BaseOptions
 import io.github.sds100.keymapper.data.model.options.TriggerKeyOptions
 import io.github.sds100.keymapper.util.result.Failure
 import io.github.sds100.keymapper.util.result.Result
+import kotlinx.android.parcel.Parcelize
 
 sealed class Event
 
 open class MessageEvent(@StringRes val textRes: Int) : Event()
 
 class FixFailure(val failure: Failure) : Event()
-class Vibrate(val duration: Long) : Event()
-
+class VibrateEvent(val duration: Long) : Event()
+object ShowTriggeredKeymapToast : Event()
 data class PerformAction(val action: Action,
                          val additionalMetaState: Int = 0,
                          val keyEventAction: KeyEventAction = KeyEventAction.DOWN_UP) : Event()
@@ -78,6 +80,16 @@ data class AutomaticBackupResult(override val result: Result<Unit>) : ResultEven
 
 object OnBootEvent : Event(), UpdateNotificationEvent
 
+@Parcelize
+data class RecordedTriggerKeyEvent(
+    val keyCode: Int,
+    val deviceName: String,
+    val deviceDescriptor: String,
+    val isExternal: Boolean
+) : Event(), Parcelable
+
+class OnIncrementRecordTriggerTimer(val timeLeft: Int) : Event()
+object OnStoppedRecordingTrigger : Event()
 object OnAccessibilityServiceStarted : Event(), UpdateNotificationEvent
 object OnAccessibilityServiceStopped : Event(), UpdateNotificationEvent
 object OnHideKeyboard : Event(), UpdateNotificationEvent
