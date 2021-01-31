@@ -124,7 +124,9 @@ class BackupManager(
                 fingerprintMapRepository.swipeRight.firstOrNull())
                 .await()
 
-            _eventStream.value = BackupResult(result)
+            withContext(dispatchers.main()) {
+                _eventStream.value = BackupResult(result)
+            }
         }
     }
 
