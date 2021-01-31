@@ -282,10 +282,6 @@
     <string name="notification_channel_new_features">Новые возможности</string>
     <string name="notification_ime_persistent_text">Нажмите, чтобы изменить клавиатуру.</string>
     <string name="notification_ime_persistent_title">Выбор клавиатуры</string>
-    <string name="notification_keymaps_pause_title">Выполняется</string>
-    <string name="notification_keymaps_pause_text">Нажмите, чтобы приостановить ваши карты ключей.</string>
-    <string name="notification_keymaps_start_title">Пауза</string>
-    <string name="notification_keymaps_start_text">Нажмите, чтобы возобновить карты ключей.</string>
     <string name="notification_action_dismiss">Отклонить</string>
     <string name="notification_accessibility_service_disabled_title">Служба специальных возможностей отключена</string>
     <string name="notification_accessibility_service_disabled_text">Нажмите, чтобы запустить службу специальных возможностей.</string>
