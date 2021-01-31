@@ -1,22 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="no_action_chosen">未选择动作</string>
+    <string name="accessibility_service_description">Key Mapper需要使用无障碍服务，时期能够监听按键并执行您选择的操作。
+    无障碍服务只监听按键事件和检测你在哪个应用程序中。如果你怀疑我在偷窥，你可以通过查看应用内关于章节中链接的源代码以验证。</string>
     <string name="selection_count">已选择 %d 个</string>
     <string name="enable">启用</string>
     <string name="open">打开</string>
     <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nএইখানে তো কিছু নাই!</string>
     <string name="triggers_recyclerview_placeholder">录制触发器!</string>
     <string name="actions_recyclerview_placeholder">添加操作</string>
+    <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\n创建一个按键映射！</string>
+    <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\n你没有为此快捷方式选择任何动作！</string>
+    <string name="no_key_maps">你没有创建任何按键映射！</string>
     <string name="everything_looks_good">一切正常！</string>
     <string name="warning_the_app_will_work">应用将正常工作，但有些东西可能需要修复，取决于你做什么。</string>
     <string name="your_device_doesnt_support_some_actions">您的设备不支持一些操作。</string>
+    <string name="tab_unsupported_actions">不支持的动作</string>
     <string name="requires_root">需要 ROOT</string>
     <string name="press_dot_dot_dot">按…</string>
+    <string name="no_actions">没有动作</string>
+    <string name="no_trigger">没有触发器</string>
+    <string name="unknown_keycode">未知的键盘编码器：%s</string>
     <string name="chip_while">同时</string>
     <string name="on">打开</string>
     <string name="off">关闭</string>
     <string name="follow_system">跟随系统</string>
+    <string name="this_device">此设备</string>
+    <string name="any_device">任何设备</string>
     <string name="trigger_device_name_not_found">此设备的名称未知</string>
+    <string name="slider_default">默认</string>
+    <string name="button_enable_accessibility_service">启用无障碍服务</string>
+    <string name="stop_repeating_dot_dot_dot">当触发器为…时停止重复</string>
+    <string name="trigger_released">已发布</string>
+    <string name="trigger_pressed_again">再次按下</string>
+    <string name="show_hidden_apps">显示隐藏的应用</string>
+    <string name="modifiers">修改器</string>
+    <string name="toggle">切换</string>
+    <string name="tap_coordinate_screenshot_message">重要！！！这些坐标只有当你的显示方向与屏幕截图相同时才是正确的！ 此操作将取消您在屏幕上所做的任何触摸或手势。\n\n如果你寻找您屏幕上某点的坐标需要帮助，就采取屏幕截图的方法，然后在屏幕截图上点击您想让此动作按下的地方。</string>
     <string name="switch_enabled">已启用</string>
     <string name="disabled">已禁用</string>
     <string name="email_subject"> Key Mapper 查询</string>
