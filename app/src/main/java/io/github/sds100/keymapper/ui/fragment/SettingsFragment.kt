@@ -17,7 +17,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.preference.*
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
-import io.github.sds100.keymapper.NotificationController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.data.Keys
@@ -260,55 +259,15 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
         if (newValue is Boolean) {
             when (preference) {
 
-                showImeNotificationPreference -> {
-                    //show/hide the notification when the preference is toggled
-                    if (newValue) {
-                        NotificationUtils.showIMEPickerNotification(requireContext())
-                    } else {
-                        NotificationUtils.dismissNotification(NotificationUtils.ID_IME_PICKER)
-                    }
-                }
-
-                toggleKeyboardNotificationPref -> {
-                    //show/hide the notification when the preference is toggled
-                    if (newValue) {
-                        NotificationController.invalidateNotifications(requireContext())
-                    } else {
-                        NotificationUtils.dismissNotification(NotificationUtils.ID_TOGGLE_KEYBOARD)
-                    }
-                }
-
-                toggleRemappingsNotificationPref -> {
-
-                    if (newValue) {
-                        NotificationController.invalidateNotifications(requireContext())
-                    } else {
-
-                        NotificationUtils.dismissNotification(NotificationUtils.ID_TOGGLE_KEYMAPS)
-                    }
-                }
-
                 //Only enable the root preferences if the user has enabled root features
                 rootPermissionPreference -> {
                     enableRootPreferences(newValue)
-
-                    //the pending intents need to be updated so they don't use the root methods
-                    NotificationController.invalidateNotifications(requireContext())
                 }
 
                 automaticBackupLocation -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                         invalidateAutomaticBackupLocationSummary()
                     }
-                }
-            }
-        }
-
-        if (newValue is String) {
-            when (preference) {
-                darkThemePreference -> {
-//                    val mode = AppPreferences.getSdkNightMode(newValue)
-//                    AppCompatDelegate.setDefaultNightMode(mode)
                 }
             }
         }

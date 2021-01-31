@@ -17,6 +17,7 @@ import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.databinding.FragmentAppIntroSlideBinding
 import io.github.sds100.keymapper.globalPreferences
+import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.fragment.AppIntroScrollableFragment
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.DexUtils.isDexSupported
@@ -99,24 +100,10 @@ class AccessibilityServiceSlide : AppIntroScrollableFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         IntentFilter().apply {
-//     TODO       addAction(MyAccessibilityService.ACTION_ON_START)
+            addAction(MyAccessibilityService.ACTION_ON_START)
 
             requireContext().registerReceiver(broadcastReceiver, this)
         }
-
-        ServiceLocator.eventBus().observe(viewLifecycleOwner, { event ->
-            when (event) {
-                is AccessibilityServiceStarted,
-                is AccessibilityServiceStopped ->
-                    binding.apply {
-                        if (AccessibilityUtils.isServiceEnabled(requireContext())) {
-                            serviceEnabledLayout()
-                        } else {
-                            serviceDisabledLayout()
-                        }
-                    }
-            }
-        })
     }
 
     override fun onDestroyView() {

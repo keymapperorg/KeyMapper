@@ -5,13 +5,11 @@ import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.fragment.app.Fragment
 import androidx.room.Room
-import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.data.*
 import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.db.DefaultDataStoreManager
 import io.github.sds100.keymapper.data.db.IDataStoreManager
 import io.github.sds100.keymapper.data.repository.*
-import io.github.sds100.keymapper.util.Event
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -21,9 +19,6 @@ object ServiceLocator {
 
     private val lock = Any()
     private var database: AppDatabase? = null
-
-    @Volatile
-    private var eventBus: LiveEvent<Event>? = null
 
     @Volatile
     private var keymapRepository: DefaultKeymapRepository? = null
@@ -53,13 +48,7 @@ object ServiceLocator {
     private var globalPreferences: IGlobalPreferences? = null
 
     @Volatile
-    var backupManager: IBackupManager? = null
-
-    fun eventBus(): LiveEvent<Event> {
-        synchronized(this) {
-            return eventBus ?: createEventBus()
-        }
-    }
+    private var backupManager: IBackupManager? = null
 
     fun keymapRepository(context: Context): DefaultKeymapRepository {
         synchronized(this) {
@@ -75,7 +64,7 @@ object ServiceLocator {
 
     private fun dataStoreManager(context: Context): IDataStoreManager {
         synchronized(this) {
-            return dataStoreManager ?: createPreferenceDataStore(context)
+            return dataStoreManager ?: createDataStoreManager(context)
         }
     }
 
@@ -122,6 +111,10 @@ object ServiceLocator {
         }
     }
 
+    fun notificationController(context: Context): NotificationController {
+        return (context.applicationContext as MyApplication).notificationController
+    }
+
     @VisibleForTesting
     fun resetKeymapRepository() {
         synchronized(lock) {
@@ -141,13 +134,6 @@ object ServiceLocator {
         }
     }
 
-    private fun createEventBus(): LiveEvent<Event> {
-        val bus = LiveEvent<Event>()
-        this.eventBus = bus
-
-        return bus
-    }
-
     private fun createKeymapRepository(context: Context): DefaultKeymapRepository {
         val database = database ?: createDatabase(context.applicationContext)
         keymapRepository = DefaultKeymapRepository(
@@ -164,11 +150,10 @@ object ServiceLocator {
         return deviceInfoRepository!!
     }
 
-    private fun createPreferenceDataStore(context: Context): IDataStoreManager {
-        return dataStoreManager
-            ?: DefaultDataStoreManager(context.applicationContext).also {
-                this.dataStoreManager = it
-            }
+    private fun createDataStoreManager(context: Context): IDataStoreManager {
+        return dataStoreManager ?: DefaultDataStoreManager(context.applicationContext).also {
+            this.dataStoreManager = it
+        }
     }
 
     private fun createFingerprintMapRepository(context: Context): FingerprintMapRepository {

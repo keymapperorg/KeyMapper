@@ -444,7 +444,8 @@ class HomeFragment : Fragment() {
             globalPreferences.set(Keys.showGuiKeyboardAd, false)
         }
 
-        FingerprintMapUtils.dismissFeatureNotification()
+        ServiceLocator.notificationController(requireContext())
+            .onEvent(DismissFingerprintFeatureNotification)
     }
 
     override fun onDestroyView() {
