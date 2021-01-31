@@ -175,8 +175,6 @@
     <string name="notification_channel_ime_picker">Wybór klawiatury</string>
     <string name="notification_channel_keyboard_hidden">Ostrzeżenie dotyczące ukrytej klawiatury</string>
     <string name="notification_ime_persistent_text">Kliknij aby zmienić klawiaturę.</string>
-    <string name="notification_keymaps_pause_title">Uruchomione</string>
-    <string name="notification_keymaps_start_title">Zatrzymano</string>
     <string name="notification_action_dismiss">Odrzuć</string>
     <string name="notification_accessibility_service_disabled_title">Usługa ułatwień dostępu jest wyłączona</string>
     <string name="notification_accessibility_service_disabled_text">Kliknij aby uruchomić usługę ułatwień dostępu.</string>
