@@ -1,5 +1,7 @@
 package io.github.sds100.keymapper.util
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -71,12 +73,52 @@ object NotificationUtils {
         NotificationManagerCompat.from(ctx).cancel(id)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun createChannel(ctx: Context, vararg channelId: String) {
+        channelId.forEach { createChannel(ctx, it) }
+    }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun createChannel(ctx: Context, channelId: String) {
+        val channel = when (channelId) {
+            CHANNEL_TOGGLE_KEYMAPS -> NotificationChannel(
+                CHANNEL_TOGGLE_KEYMAPS,
+                ctx.str(R.string.notification_channel_toggle_remaps),
+                NotificationManager.IMPORTANCE_MIN
+            )
+
+            CHANNEL_KEYBOARD_HIDDEN -> NotificationChannel(
+                CHANNEL_KEYBOARD_HIDDEN,
+                ctx.str(R.string.notification_channel_keyboard_hidden),
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+
+            CHANNEL_NEW_FEATURES -> NotificationChannel(
+                CHANNEL_NEW_FEATURES,
+                ctx.str(R.string.notification_channel_new_features),
+                NotificationManager.IMPORTANCE_LOW
+            )
+
+            CHANNEL_TOGGLE_KEYBOARD -> NotificationChannel(
+                CHANNEL_TOGGLE_KEYBOARD,
+                ctx.str(R.string.notification_channel_toggle_keyboard),
+                NotificationManager.IMPORTANCE_MIN
+            )
+
+            CHANNEL_IME_PICKER -> NotificationChannel(
+                CHANNEL_IME_PICKER,
+                ctx.str(R.string.notification_channel_ime_picker),
+                NotificationManager.IMPORTANCE_MIN
+            )
+
+            else -> throw Exception("don't know how to create this channel $channelId")
+        }
+
+        NotificationManagerCompat.from(ctx).createNotificationChannel(channel)
     }
 
     fun deleteChannel(ctx: Context, channelId: String) {
-
+        NotificationManagerCompat.from(ctx).deleteNotificationChannel(channelId)
     }
 
     private fun showNotification(ctx: Context,

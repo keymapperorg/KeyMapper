@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper
 
 import android.net.Uri
+import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
 import io.github.sds100.keymapper.data.automaticBackupLocation
@@ -68,7 +69,9 @@ class MyApplication : MultiDexApplication(),
     }
 
     override fun createChannel(vararg channelId: String) {
-        NotificationUtils.createChannel(this, *channelId)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationUtils.createChannel(this, *channelId)
+        }
     }
 
     override fun deleteChannel(channelId: String) {
