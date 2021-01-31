@@ -115,7 +115,7 @@ object KeyboardUtils {
             return false
         }
 
-        Settings.System.putString(ctx.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD, imeId)
+        SettingsUtils.putSecureSetting(ctx, Settings.Secure.DEFAULT_INPUT_METHOD, imeId)
         return true
     }
 
