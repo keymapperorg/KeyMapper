@@ -63,7 +63,7 @@ class BackupManager(
 
     init {
         keymapRepository.requestBackup.observeForever {
-            coroutineScope.launch {
+            coroutineScope.launch(dispatchers.default()) {
                 if (!shouldBackupAutomatically()) return@launch
 
                 val uriString = globalPreferences.get(Keys.automaticBackupLocation)
@@ -83,7 +83,9 @@ class BackupManager(
                             fingerprintMapRepository.swipeRight.firstOrNull()).await()
                     }
 
-                _eventStream.value = AutomaticBackupResult(result)
+                withContext(dispatchers.main()) {
+                    _eventStream.value = AutomaticBackupResult(result)
+                }
             }
         }
     }
