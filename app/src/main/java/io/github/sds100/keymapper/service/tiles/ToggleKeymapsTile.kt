@@ -1,18 +1,24 @@
 package io.github.sds100.keymapper.service.tiles
 
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.drawable.Icon
 import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.keymapsPaused
 import io.github.sds100.keymapper.globalPreferences
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.util.AccessibilityUtils
-import io.github.sds100.keymapper.util.defaultSharedPreferences
+import io.github.sds100.keymapper.util.collectWhenStarted
 import io.github.sds100.keymapper.util.firstBlocking
 import io.github.sds100.keymapper.util.str
 
@@ -20,7 +26,7 @@ import io.github.sds100.keymapper.util.str
  * Created by sds100 on 12/06/2020.
  */
 @RequiresApi(Build.VERSION_CODES.N)
-class ToggleKeymapsTile : TileService(), SharedPreferences.OnSharedPreferenceChangeListener {
+class ToggleKeymapsTile : TileService(), LifecycleOwner {
 
     private val state: State
         get() = when {
@@ -38,14 +44,17 @@ class ToggleKeymapsTile : TileService(), SharedPreferences.OnSharedPreferenceCha
             intent ?: return
 
             when (intent.action) {
-                MyAccessibilityService.ACTION_ON_START, MyAccessibilityService.ACTION_ON_STOP -> invalidateTile()
+                MyAccessibilityService.ACTION_ON_START,
+                MyAccessibilityService.ACTION_ON_STOP -> invalidateTile()
             }
         }
     }
 
+    private lateinit var lifecycleRegistry: LifecycleRegistry
+
     override fun onCreate() {
 
-        defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
+        lifecycleRegistry = LifecycleRegistry(this)
 
         IntentFilter().apply {
             addAction(MyAccessibilityService.ACTION_ON_START)
@@ -55,6 +64,9 @@ class ToggleKeymapsTile : TileService(), SharedPreferences.OnSharedPreferenceCha
         }
 
         invalidateTile()
+
+        lifecycleRegistry.currentState = Lifecycle.State.CREATED
+
         super.onCreate()
     }
 
@@ -72,25 +84,30 @@ class ToggleKeymapsTile : TileService(), SharedPreferences.OnSharedPreferenceCha
 
     override fun onStartListening() {
 
-        defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
-
         invalidateTile()
+        lifecycleRegistry.currentState = Lifecycle.State.STARTED
+
+        globalPreferences.keymapsPaused.collectWhenStarted(this, {
+            invalidateTile()
+        })
+
         super.onStartListening()
     }
 
     override fun onStopListening() {
 
-        defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
-
         invalidateTile()
+
+        lifecycleRegistry.currentState = Lifecycle.State.CREATED
         super.onStopListening()
     }
 
     override fun onDestroy() {
-        super.onDestroy()
 
-        defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
         unregisterReceiver(broadcastReceiver)
+
+        lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+        super.onDestroy()
     }
 
     override fun onClick() {
@@ -101,12 +118,6 @@ class ToggleKeymapsTile : TileService(), SharedPreferences.OnSharedPreferenceCha
         globalPreferences.toggle(Keys.keymapsPaused)
 
         qsTile?.updateTile()
-    }
-
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        if (key == str(R.string.key_pref_keymaps_paused)) {
-            invalidateTile()
-        }
     }
 
     private fun invalidateTile() {
@@ -137,6 +148,8 @@ class ToggleKeymapsTile : TileService(), SharedPreferences.OnSharedPreferenceCha
 
         qsTile.updateTile()
     }
+
+    override fun getLifecycle() = lifecycleRegistry
 
     private enum class State {
         PAUSED, RESUMED, DISABLED

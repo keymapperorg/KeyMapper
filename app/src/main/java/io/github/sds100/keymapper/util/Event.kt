@@ -76,6 +76,13 @@ data class BackupResult(override val result: Result<Unit>) : ResultEvent<Unit>()
 data class RestoreResult(override val result: Result<Unit>) : ResultEvent<Unit>()
 data class AutomaticBackupResult(override val result: Result<Unit>) : ResultEvent<Unit>()
 
+object OnBootEvent : Event(), UpdateNotificationEvent
+
+object OnAccessibilityServiceStarted : Event(), UpdateNotificationEvent
+object OnAccessibilityServiceStopped : Event(), UpdateNotificationEvent
+object OnHideKeyboard : Event(), UpdateNotificationEvent
+object OnShowKeyboard : Event(), UpdateNotificationEvent
+
 //trigger
 class BuildTriggerKeyModels(val source: List<Trigger.Key>) : Event()
 class EditTriggerKeyOptions(val options: TriggerKeyOptions) : Event()
@@ -107,5 +114,8 @@ class ResumeKeymaps : Event()
 class PauseKeymaps : Event()
 class EnableAccessibilityService : Event()
 
-//accessibility service
-class ShowFingerprintFeatureNotification : Event()
+//notifications
+object ShowFingerprintFeatureNotification : Event(), UpdateNotificationEvent
+object DismissFingerprintFeatureNotification : Event(), UpdateNotificationEvent
+class DismissNotification(val id: Int) : Event(), UpdateNotificationEvent
+interface UpdateNotificationEvent

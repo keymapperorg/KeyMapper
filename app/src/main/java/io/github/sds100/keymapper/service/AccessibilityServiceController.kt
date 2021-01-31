@@ -35,7 +35,7 @@ class AccessibilityServiceController(
             if (oldVersion < FingerprintMapUtils.FINGERPRINT_GESTURES_MIN_VERSION
                 && fingerprintGestureDetectionAvailable
                 && !handledUpdateInHomeScreen) {
-                _eventStream.postValue(ShowFingerprintFeatureNotification())
+                _eventStream.postValue(ShowFingerprintFeatureNotification)
             }
 
             denyFingerprintGestureDetection()

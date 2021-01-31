@@ -94,6 +94,16 @@ val IGlobalPreferences.showImePickerNotification
         it ?: false
     }
 
+val IGlobalPreferences.showToggleKeyboardNotification
+    get() = getFlow(Keys.showToggleKeyboardNotification).map {
+        it ?: false
+    }
+
+val IGlobalPreferences.showToggleKeymapsNotification
+    get() = getFlow(Keys.showToggleKeymapsNotification).map {
+        it ?: false
+    }
+
 val IGlobalPreferences.approvedFingerprintFeaturePrompt
     get() = getFlow(Keys.approvedFingerprintFeaturePrompt).map {
         it ?: false

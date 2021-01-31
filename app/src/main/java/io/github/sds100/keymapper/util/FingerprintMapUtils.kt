@@ -5,7 +5,6 @@ import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.broadcastreceiver.KeyMapperBroadcastReceiver
 import io.github.sds100.keymapper.data.model.FingerprintMap
 import splitties.bitflags.hasFlag
 
@@ -40,27 +39,6 @@ object FingerprintMapUtils {
         FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_LEFT to SWIPE_LEFT,
         FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_RIGHT to SWIPE_RIGHT
     )
-
-    fun dismissFeatureNotification() {
-        NotificationUtils.dismissNotification(
-            NotificationUtils.ID_FEATURE_REMAP_FINGERPRINT_GESTURES)
-    }
-
-    fun showFeatureNotification(ctx: Context) {
-        val pendingIntent = IntentUtils.createPendingBroadcastIntent(
-            ctx, KeyMapperBroadcastReceiver.ACTION_ON_FINGERPRINT_FEAT_NOTIFICATION_CLICK)
-
-        NotificationUtils.showNotification(
-            ctx,
-            id = NotificationUtils.ID_FEATURE_REMAP_FINGERPRINT_GESTURES,
-            channel = NotificationUtils.CHANNEL_NEW_FEATURES,
-            icon = R.drawable.ic_notification_fingerprint,
-            title = R.string.notification_feature_fingerprint_title,
-            text = R.string.notification_feature_fingerprint_text,
-            intent = pendingIntent,
-            autoCancel = true
-        )
-    }
 }
 
 fun FingerprintMap.getFlagLabelList(ctx: Context): List<String> = sequence {

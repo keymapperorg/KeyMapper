@@ -48,7 +48,7 @@ object ServiceLocator {
     private var globalPreferences: IGlobalPreferences? = null
 
     @Volatile
-    var backupManager: IBackupManager? = null
+    private var backupManager: IBackupManager? = null
 
     fun keymapRepository(context: Context): DefaultKeymapRepository {
         synchronized(this) {
@@ -64,7 +64,7 @@ object ServiceLocator {
 
     private fun dataStoreManager(context: Context): IDataStoreManager {
         synchronized(this) {
-            return dataStoreManager ?: createPreferenceDataStore(context)
+            return dataStoreManager ?: createDataStoreManager(context)
         }
     }
 
@@ -111,6 +111,10 @@ object ServiceLocator {
         }
     }
 
+    fun notificationController(context: Context): NotificationController {
+        return (context.applicationContext as MyApplication).notificationController
+    }
+
     @VisibleForTesting
     fun resetKeymapRepository() {
         synchronized(lock) {
@@ -146,11 +150,10 @@ object ServiceLocator {
         return deviceInfoRepository!!
     }
 
-    private fun createPreferenceDataStore(context: Context): IDataStoreManager {
-        return dataStoreManager
-            ?: DefaultDataStoreManager(context.applicationContext).also {
-                this.dataStoreManager = it
-            }
+    private fun createDataStoreManager(context: Context): IDataStoreManager {
+        return dataStoreManager ?: DefaultDataStoreManager(context.applicationContext).also {
+            this.dataStoreManager = it
+        }
     }
 
     private fun createFingerprintMapRepository(context: Context): FingerprintMapRepository {

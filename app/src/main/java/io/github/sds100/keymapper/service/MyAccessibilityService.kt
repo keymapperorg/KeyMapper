@@ -19,10 +19,6 @@ import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.NotificationController
-import io.github.sds100.keymapper.NotificationController.EVENT_ACCESSIBILITY_SERVICE_STARTED
-import io.github.sds100.keymapper.NotificationController.EVENT_ACCESSIBILITY_SERVICE_STOPPED
-import io.github.sds100.keymapper.NotificationController.EVENT_PAUSE_REMAPS
-import io.github.sds100.keymapper.NotificationController.EVENT_RESUME_REMAPS
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.data.*
@@ -56,10 +52,8 @@ class MyAccessibilityService : AccessibilityService(),
 
     companion object {
 
-        const val ACTION_PAUSE_REMAPPINGS = "$PACKAGE_NAME.PAUSE_REMAPPINGS"
-        const val ACTION_RESUME_REMAPPINGS = "$PACKAGE_NAME.RESUME_REMAPPINGS"
-        const val ACTION_START = "$PACKAGE_NAME.START_ACCESSIBILITY_SERVICE"
-        const val ACTION_STOP = "$PACKAGE_NAME.STOP_ACCESSIBILITY_SERVICE"
+        const val ACTION_START_SERVICE = "$PACKAGE_NAME.START_ACCESSIBILITY_SERVICE"
+        const val ACTION_STOP_SERVICE = "$PACKAGE_NAME.STOP_ACCESSIBILITY_SERVICE"
         const val ACTION_SHOW_KEYBOARD = "$PACKAGE_NAME.SHOW_KEYBOARD"
         const val ACTION_RECORD_TRIGGER = "$PACKAGE_NAME.RECORD_TRIGGER"
         const val ACTION_TEST_ACTION = "$PACKAGE_NAME.TEST_ACTION"
@@ -92,18 +86,6 @@ class MyAccessibilityService : AccessibilityService(),
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
-
-                ACTION_PAUSE_REMAPPINGS -> {
-                    keymapDetectionDelegate.reset()
-                    globalPreferences.set(Keys.keymapsPaused, true)
-                    NotificationController.onEvent(this@MyAccessibilityService, EVENT_PAUSE_REMAPS)
-                }
-
-                ACTION_RESUME_REMAPPINGS -> {
-                    keymapDetectionDelegate.reset()
-                    globalPreferences.set(Keys.keymapsPaused, false)
-                    NotificationController.onEvent(this@MyAccessibilityService, EVENT_RESUME_REMAPS)
-                }
 
                 BluetoothDevice.ACTION_ACL_CONNECTED, BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
                     val device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
@@ -263,6 +245,9 @@ class MyAccessibilityService : AccessibilityService(),
         }
     }
 
+    private val notificationController: NotificationController
+        get() = ServiceLocator.notificationController(this)
+
     private lateinit var controller: AccessibilityServiceController
 
     override fun onServiceConnected() {
@@ -306,8 +291,6 @@ class MyAccessibilityService : AccessibilityService(),
         subscribeToPreferenceChanges()
 
         IntentFilter().apply {
-            addAction(ACTION_PAUSE_REMAPPINGS)
-            addAction(ACTION_RESUME_REMAPPINGS)
             addAction(ACTION_SHOW_KEYBOARD)
             addAction(ACTION_RECORD_TRIGGER)
             addAction(ACTION_TEST_ACTION)
@@ -324,7 +307,7 @@ class MyAccessibilityService : AccessibilityService(),
             registerReceiver(broadcastReceiver, this)
         }
 
-        NotificationController.onEvent(this, EVENT_ACCESSIBILITY_SERVICE_STARTED)
+        notificationController.onEvent(OnAccessibilityServiceStarted)
         sendPackageBroadcast(ACTION_ON_START)
 
         keymapDetectionDelegate.imitateButtonPress.observe(this, Observer {
@@ -478,7 +461,7 @@ class MyAccessibilityService : AccessibilityService(),
         controller.eventStream.observe(this, Observer {
             when (it) {
                 is ShowFingerprintFeatureNotification ->
-                    FingerprintMapUtils.showFeatureNotification(this)
+                    notificationController.onEvent(ShowFingerprintFeatureNotification)
             }
         })
     }
@@ -491,7 +474,7 @@ class MyAccessibilityService : AccessibilityService(),
             lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
         }
 
-        NotificationController.onEvent(this, EVENT_ACCESSIBILITY_SERVICE_STOPPED)
+        notificationController.onEvent(OnAccessibilityServiceStopped)
 
         sendPackageBroadcast(ACTION_ON_STOP)
 
@@ -688,9 +671,9 @@ class MyAccessibilityService : AccessibilityService(),
         }
 
         globalPreferences.keymapsPaused.collectWhenStarted(this) { paused ->
-            if (paused) {
-                NotificationController.onEvent(this, EVENT_PAUSE_REMAPS)
+            keymapDetectionDelegate.reset()
 
+            if (paused) {
                 globalPreferences.getFlow(Keys.toggleKeyboardOnToggleKeymaps)
                     .firstBlocking()
                     .let {
@@ -703,8 +686,6 @@ class MyAccessibilityService : AccessibilityService(),
                     denyFingerprintGestureDetection()
                 }
             } else {
-                NotificationController.onEvent(this, EVENT_RESUME_REMAPS)
-
                 globalPreferences.getFlow(Keys.toggleKeyboardOnToggleKeymaps)
                     .firstBlocking()
                     .let {

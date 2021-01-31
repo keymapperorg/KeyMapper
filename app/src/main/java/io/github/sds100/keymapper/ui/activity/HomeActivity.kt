@@ -107,7 +107,7 @@ class HomeActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        NotificationController.invalidateNotifications(this)
+        ServiceLocator.notificationController(this).invalidateNotifications()
     }
 
     override fun onDestroy() {

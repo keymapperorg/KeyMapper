@@ -404,11 +404,11 @@
     <string name="notification_ime_persistent_text">Tap to change your keyboard.</string>
     <string name="notification_ime_persistent_title">Keyboard picker</string>
 
-    <string name="notification_keymaps_pause_title">Running</string>
-    <string name="notification_keymaps_pause_text">Tap to pause your key maps.</string>
+    <string name="notification_keymaps_resumed_title">Running</string>
+    <string name="notification_keymaps_resumed_text">Tap to pause your key maps.</string>
 
-    <string name="notification_keymaps_start_title">Paused</string>
-    <string name="notification_keymaps_start_text">Tap to resume your key maps.</string>
+    <string name="notification_keymaps_paused_title">Paused</string>
+    <string name="notification_keymaps_paused_text">Tap to resume your key maps.</string>
 
     <string name="notification_action_dismiss">Dismiss</string>
 
