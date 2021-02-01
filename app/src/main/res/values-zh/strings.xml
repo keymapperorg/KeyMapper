@@ -20,7 +20,7 @@
     <string name="press_dot_dot_dot">按…</string>
     <string name="no_actions">没有动作</string>
     <string name="no_trigger">没有触发器</string>
-    <string name="unknown_keycode">未知的键盘编码器：%s</string>
+    <string name="unknown_keycode">未知的键盘编码器: %s</string>
     <string name="chip_while">同时</string>
     <string name="on">打开</string>
     <string name="off">关闭</string>
