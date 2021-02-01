@@ -42,6 +42,14 @@
     <string name="tap_actions_to_fix">点击动作以修复！</string>
     <string name="new_gui_keyboard_ad_message">获取带有屏幕键盘的新Key Mapper键盘！</string>
     <string name="shortcut_label_action">执行动作</string>
+    <string name="hold_down_until_trigger_is_dot_dot_dot">按住直到触发器…</string>
+    <string name="from_no_device">没有设备</string>
+    <string name="intent_extras_recycler_view_placeholder">¯\\_(ツ)_/¯\n\n无扩展！</string>
+    <string name="content_description_fab_new_keymap">创建一个新的按键映射</string>
+    <string name="whats_new">更新了什么</string>
+    <string name="caption_action_type_key">点按你想要输入的设备上的按键。
+            \n\n重要！
+            只有当你使用Key Mapper兼容的键盘时，才能将此按键作为动作。</string>
     <string name="switch_enabled">已启用</string>
     <string name="disabled">已禁用</string>
     <string name="email_subject"> Key Mapper 查询</string>
@@ -124,18 +132,13 @@
     <!-- Notification strings -->
     <!--Preference titles and summaries-->
     <string name="title_pref_force_vibrate">强制振动</string>
-    <string name="title_pref_show_ime_notification">键盘选择器通知</string>
-    <string name="summary_pref_show_ime_notification">显示常驻通知以允许您选择键盘。</string>
-    <string name="title_pref_bluetooth_devices">选择蓝牙设备…</string>
     <string name="title_pref_auto_show_ime_picker">自动显示键盘选择器</string>
-    <string name="summary_pref_auto_show_ime_picker">当您选择连接或断开连接时，键盘选择器将自动显示。选择下面的设备。</string>
     <string name="title_pref_root_permission">Key Mapper 拥有 root 权限</string>
     <!--Preference titles and summaries-->
     <!--Preference categories-->
     <string name="title_pref_category_notifications">通知</string>
     <string name="title_pref_category_root">ROOT</string>
     <string name="summary_pref_category_root">这些选项只适用于 root 设备！ 如果您不知道什么 root 或您的设备是否 root，他们无效时请不要留下不好的评论。:)</string>
-    <string name="title_pref_category_secure_settings">请求 WRITE_SECURE_SETTINGS 权限</string>
     <!--Preference categories-->
     <!-- About activity-->
     <string name="pref_title_changelog">更新日志</string>
