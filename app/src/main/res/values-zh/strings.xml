@@ -20,7 +20,7 @@
     <string name="press_dot_dot_dot">按…</string>
     <string name="no_actions">没有动作</string>
     <string name="no_trigger">没有触发器</string>
-    <string name="unknown_keycode">未知的键盘编码器: %s</string>
+    <string name="unknown_keycode">未知的键码: %s</string>
     <string name="chip_while">同时</string>
     <string name="on">打开</string>
     <string name="off">关闭</string>
@@ -50,8 +50,20 @@
     <string name="caption_action_type_key">点按你想要输入的设备上的按键。
             \n\n重要！
             只有当你使用Key Mapper兼容的键盘时，才能将此按键作为动作。</string>
+    <string name="caption_action_type_keycode">重要！
+            只有当你使用Key Mapper兼容的键盘时，才能将输入的键码作为一个动作。</string>
+    <string name="caption_action_type_text">输入一些在执行此动作时你想插入的文本</string>
+    <string name="caption_action_type_phone_call">输入电话号码。</string>
+    <string name="caption_action_type_url">输入你想打开的URL。不需要http://、https://或www.</string>
+    <string name="caption_no_paired_bt_devices">找不到任何已配对的设备。蓝牙开启了吗？</string>
     <string name="switch_enabled">已启用</string>
     <string name="disabled">已禁用</string>
+    <string name="reset">重置</string>
+    <string name="enable_device_admin_message">一旦您启用了设备管理器，您必须停用它才能卸载该应用。</string>
+    <string name="debug_trigger_chip_name">长按<b>音量减</b> • USB键盘</string>
+    <string name="debug_trigger_chip_name2">单击<b>首页</b> • 此设备</string>
+    <string name="constraints_recyclerview_placeholder">无限制！</string>
+    <string name="action_title_wait">等待 %sms</string>
     <string name="email_subject"> Key Mapper 查询</string>
     <!--  Action descriptions  -->
     <string name="description_open_app">打开 %s</string>
@@ -61,6 +73,7 @@
     <!--  Headers  -->
     <!--  Headers  -->
     <!--  Hints  -->
+    <string name="hint_keycode">键码</string>
     <!--  Hints  -->
     <!--  Radio buttons  -->
     <!--  Radio buttons  -->
@@ -96,6 +109,7 @@
     <string name="button_done">完成</string>
     <string name="button_fix">修复</string>
     <string name="button_recording_trigger_countdown">%d…</string>
+    <string name="button_choose_keycode">选择键码</string>
     <!-- Button titles -->
     <!-- Dialog titles -->
     <string name="dialog_title_are_you_sure">您是否确定？</string>
@@ -151,6 +165,7 @@
     <string name="action_type_title_application">应用</string>
     <string name="action_type_title_application_shortcut">应用快捷方式</string>
     <string name="action_type_title_key">键</string>
+    <string name="action_type_title_key_code">键码</string>
     <string name="action_type_title_text_block">文本</string>
     <!--Action Types Titles-->
     <!--flags-->
@@ -210,6 +225,7 @@
     <string name="error_cant_find_dnd_access_settings">无法找到“勿扰”访问权限设置！</string>
     <string name="error_need_write_secure_settings_permission">Key Mapper 需要 WRITE_SECURE_SETTINGS 权限。</string>
     <string name="error_camera_in_use">相机正在使用中！</string>
+    <string name="error_camera_disconnected">相机已断开连接！</string>
     <string name="error_camera_disabled">相机已禁用！</string>
     <string name="error_camera_error">相机错误！</string>
     <string name="error_max_cameras_in_use">正在使用的摄像头的最大数量！</string>
@@ -218,6 +234,7 @@
     <string name="warning_need_write_secure_settings_permission">某些功能需要 WRITE_SECURE_SETTINGS 权限。</string>
     <string name="fixed_need_write_secure_settings_permission">已授予 WRITE_SECURE_SETTTINGS 权限。</string>
     <string name="error_cant_move_to_end_of_text_in_this_field">您不能移动到这个字段的文本结尾！</string>
+    <string name="error_fingerprint_gesture_map_constraint_exists">这个手势已经有此限制了！</string>
     <!-- Error messages -->
     <!-- System action labels -->
     <string name="action_toggle_bluetooth">切换蓝牙</string>
@@ -230,6 +247,7 @@
     <string name="action_nfc_disable">禁用 NFC</string>
     <string name="action_nfc_toggle">切换 NFC</string>
     <string name="action_screenshot">屏幕截图</string>
+    <string name="action_open_camera">打开相机</string>
     <string name="action_move_to_end_of_text_message">必须选择 Key Mapper 键盘才能使这个动作正常工作，而这个动作在某些应用中可能无法正常工作。</string>
     <string name="action_toggle_keyboard_message">这个动作只有在您点击了键盘应该显示的输入字段时才能起作用。</string>
     <!-- System action labels -->
