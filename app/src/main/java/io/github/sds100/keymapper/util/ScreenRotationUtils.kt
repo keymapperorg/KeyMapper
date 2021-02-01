@@ -11,7 +11,7 @@ import timber.log.Timber
 object ScreenRotationUtils {
 
     fun forcePortraitMode(ctx: Context) {
-        if (!ctx.haveWriteSettingsPermission) return
+        if (!PermissionUtils.haveWriteSettingsPermission(ctx)) return
 
         //auto rotate must be disabled for this to work
         disableAutoRotate(ctx)
@@ -19,7 +19,7 @@ object ScreenRotationUtils {
     }
 
     fun forceLandscapeMode(ctx: Context) {
-        if (!ctx.haveWriteSettingsPermission) return
+        if (!PermissionUtils.haveWriteSettingsPermission(ctx)) return
 
         //auto rotate must be disabled for this to work
         disableAutoRotate(ctx)
@@ -53,21 +53,24 @@ object ScreenRotationUtils {
 
     fun enableAutoRotate(ctx: Context) {
         //don't attempt to enable auto rotate if they app doesn't have permission
-        if (!ctx.haveWriteSettingsPermission) return
+        if (!PermissionUtils.haveWriteSettingsPermission(ctx)) return
 
-        ctx.putSystemSetting(Settings.System.ACCELEROMETER_ROTATION, 1)
+        SettingsUtils.putSystemSetting(ctx, Settings.System.ACCELEROMETER_ROTATION, 1)
     }
 
     fun disableAutoRotate(ctx: Context) {
         //don't attempt to enable auto rotate if they app doesn't have permission
-        if (!ctx.haveWriteSettingsPermission) return
+        if (!PermissionUtils.haveWriteSettingsPermission(ctx)) return
 
-        ctx.putSystemSetting(Settings.System.ACCELEROMETER_ROTATION, 0)
+        SettingsUtils.putSystemSetting(ctx, Settings.System.ACCELEROMETER_ROTATION, 0)
     }
 
     fun toggleAutoRotate(ctx: Context) {
 
-        val autoRotateState = ctx.getSystemSetting<Int>(Settings.System.ACCELEROMETER_ROTATION)
+        val autoRotateState = SettingsUtils.getSystemSetting<Int>(
+            ctx,
+            Settings.System.ACCELEROMETER_ROTATION
+        )
 
         if (autoRotateState == 0) {
             enableAutoRotate(ctx)
@@ -77,7 +80,7 @@ object ScreenRotationUtils {
     }
 
     private fun isPortrait(ctx: Context): Boolean {
-        val rotation = ctx.getSystemSetting<Int>(Settings.System.USER_ROTATION)
+        val rotation = SettingsUtils.getSystemSetting<Int>(ctx, Settings.System.USER_ROTATION)
         return rotation?.let { isPortrait(it) } ?: false
     }
 
@@ -93,10 +96,9 @@ object ScreenRotationUtils {
     }
 
     fun getRotation(ctx: Context): Int? {
-        Timber.e(ctx.getSystemSetting<Int>(Settings.System.USER_ROTATION).toString())
-
-        return ctx.getSystemSetting<Int>(Settings.System.USER_ROTATION)
+        return SettingsUtils.getSystemSetting<Int>(ctx, Settings.System.USER_ROTATION)
     }
 
-    private fun setRotation(ctx: Context, rotation: Int) = ctx.putSystemSetting(Settings.System.USER_ROTATION, rotation)
+    private fun setRotation(ctx: Context, rotation: Int) =
+        SettingsUtils.putSystemSetting(ctx, Settings.System.USER_ROTATION, rotation)
 }

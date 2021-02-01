@@ -13,11 +13,11 @@ import androidx.preference.MultiSelectListPreference
  */
 class CancellableMultiSelectListPreference(
     context: Context?,
-    attrs: AttributeSet?
+    attrs: AttributeSet? = null
 ) : MultiSelectListPreference(context, attrs) {
 
     override fun onClick() {
-        if (onPreferenceClickListener.onPreferenceClick(this)) {
+        if (onPreferenceClickListener?.onPreferenceClick(this) == true) {
             super.onClick()
         }
     }

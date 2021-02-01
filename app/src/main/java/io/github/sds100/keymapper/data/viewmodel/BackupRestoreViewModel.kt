@@ -73,19 +73,18 @@ class BackupRestoreViewModel internal constructor(
 
     private fun onBackupManagerEvent(event: Event) {
         if (event is ResultEvent<*>) {
-            event.result
-                .onFailure {
-                    _eventStream.value = when (it) {
-                        is BackupVersionTooNew -> MessageEvent(R.string.error_backup_version_too_new)
-                        is EmptyJson -> MessageEvent(R.string.error_empty_json)
-                        is CorruptJsonFile -> MessageEvent(R.string.error_corrupt_json_file)
-                        is FileAccessDenied -> AutomaticBackupResult(it)
-                        else -> ShowErrorMessage(it)
-                    }
+            event.result.onFailure {
+                _eventStream.value = when (it) {
+                    is BackupVersionTooNew -> MessageEvent(R.string.error_backup_version_too_new)
+                    is EmptyJson -> MessageEvent(R.string.error_empty_json)
+                    is CorruptJsonFile -> MessageEvent(R.string.error_corrupt_json_file)
+                    is FileAccessDenied -> AutomaticBackupResult(it)
+                    else -> ShowErrorMessage(it)
                 }
+            }
 
             event.result.onSuccess {
-                when (event) {
+                _eventStream.value = when (event) {
                     is BackupResult ->
                         MessageEvent(R.string.toast_backup_successful)
 

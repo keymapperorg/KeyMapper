@@ -18,6 +18,7 @@ import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
 import io.github.sds100.keymapper.util.result.*
 import splitties.systemservices.inputMethodManager
 import splitties.toast.toast
+import timber.log.Timber
 
 /**
  * Created by sds100 on 28/12/2018.
@@ -62,13 +63,15 @@ object KeyboardUtils {
 
     fun chooseCompatibleInputMethod(ctx: Context) {
 
-        if (ctx.haveWriteSecureSettingsPermission) {
+        if (PermissionUtils.haveWriteSecureSettingsPermission(ctx)) {
             getLastUsedCompatibleImeId(ctx).onSuccess {
+                Timber.e("onsuccess " + it)
                 switchIme(ctx, it)
                 return
             }
 
             getImeId(Constants.PACKAGE_NAME).valueOrNull()?.let {
+                Timber.e("getimeid $it")
                 switchIme(ctx, it)
                 return
             }
@@ -110,12 +113,12 @@ object KeyboardUtils {
      */
     @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
     fun switchIme(ctx: Context, imeId: String): Boolean {
-        if (!ctx.haveWriteSecureSettingsPermission) {
+        if (!PermissionUtils.haveWriteSecureSettingsPermission(ctx)) {
             ctx.toast(R.string.error_need_write_secure_settings_permission)
             return false
         }
 
-        ctx.putSecureSetting(Settings.Secure.DEFAULT_INPUT_METHOD, imeId)
+        SettingsUtils.putSecureSetting(ctx, Settings.Secure.DEFAULT_INPUT_METHOD, imeId)
         return true
     }
 

@@ -14,10 +14,13 @@ import io.github.sds100.keymapper.ui.activity.HomeActivity
  */
 
 object AccessibilityUtils {
-    fun enableService(context: Context) {
+    fun enableService(ctx: Context) {
         when {
-            context.haveWriteSecureSettingsPermission -> {
-                val enabledServices = context.getSecureSetting<String>(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
+            PermissionUtils.haveWriteSecureSettingsPermission(ctx) -> {
+                val enabledServices = SettingsUtils.getSecureSetting<String>(
+                    ctx,
+                    Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+                )
 
                 val className = MyAccessibilityService::class.java.name
 
@@ -29,17 +32,22 @@ object AccessibilityUtils {
                     //append the keymapper entry to the rest of the other services.
                     "$keyMapperEntry:$enabledServices"
                 }
-                context.putSecureSetting(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, newEnabledServices)
+
+                SettingsUtils.putSecureSetting(ctx,
+                    Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, newEnabledServices)
             }
 
-            else -> openAccessibilitySettings(context)
+            else -> openAccessibilitySettings(ctx)
         }
     }
 
-    fun disableService(context: Context) {
+    fun disableService(ctx: Context) {
         when {
-            context.haveWriteSecureSettingsPermission -> {
-                val enabledServices = context.getSecureSetting<String>(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
+            PermissionUtils.haveWriteSecureSettingsPermission(ctx) -> {
+                val enabledServices = SettingsUtils.getSecureSetting<String>(
+                    ctx,
+                    Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+                )
 
                 enabledServices ?: return
 
@@ -55,10 +63,15 @@ object AccessibilityUtils {
                 } else {
                     enabledServices
                 }
-                context.putSecureSetting(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, newEnabledServices)
+
+                SettingsUtils.putSecureSetting(
+                    ctx,
+                    Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
+                    newEnabledServices
+                )
             }
 
-            else -> openAccessibilitySettings(context)
+            else -> openAccessibilitySettings(ctx)
         }
     }
 

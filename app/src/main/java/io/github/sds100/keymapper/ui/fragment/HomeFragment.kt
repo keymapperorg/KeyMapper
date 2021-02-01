@@ -309,7 +309,7 @@ class HomeFragment : Fragment() {
             }
 
             setEnableImeService {
-                lifecycleScope.launchWhenStarted {
+                viewLifecycleScope.launchWhenResumed {
 
                     KeyboardUtils.enableCompatibleInputMethods(requireContext())
 
@@ -472,7 +472,7 @@ class HomeFragment : Fragment() {
             accessibilityServiceStatusState.value = StatusLayout.State.ERROR
         }
 
-        if (requireContext().haveWriteSecureSettingsPermission) {
+        if (PermissionUtils.haveWriteSecureSettingsPermission(requireContext())) {
             writeSettingsStatusState.value = StatusLayout.State.POSITIVE
         } else {
             writeSettingsStatusState.value = StatusLayout.State.WARN

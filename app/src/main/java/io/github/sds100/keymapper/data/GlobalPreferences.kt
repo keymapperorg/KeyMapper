@@ -101,7 +101,7 @@ val IGlobalPreferences.showToggleKeyboardNotification
 
 val IGlobalPreferences.showToggleKeymapsNotification
     get() = getFlow(Keys.showToggleKeymapsNotification).map {
-        it ?: false
+        it ?: true
     }
 
 val IGlobalPreferences.approvedFingerprintFeaturePrompt

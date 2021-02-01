@@ -438,8 +438,8 @@
     <string name="title_pref_double_press_delay">Default double press duration (ms)</string>
     <string name="summary_pref_double_press_delay">How fast does a button have to be double pressed for it to be detected as a double press. Default is 300ms. Can be overridden in a key map\'s options.</string>
 
-    <string name="summary_pref_vibrate_duration">How long to vibrate if vibrating is enabled for a key map. Default is 200ms. Can be overridden in a key map\'s options.</string>
-    <string name="title_pref_vibrate_duration">Default vibrate duration (ms)</string>
+    <string name="summary_pref_vibration_duration">How long to vibrate if vibrating is enabled for a key map. Default is 200ms. Can be overridden in a key map\'s options.</string>
+    <string name="title_pref_vibration_duration">Default vibrate duration (ms)</string>
 
     <string name="summary_pref_repeat_delay">How long a key map needs to be held down for the action to start repeating. Default is 400ms. Can be overridden in a key map\'s options.</string>
     <string name="title_pref_repeat_delay">Default delay until repeat (ms)</string>
@@ -453,19 +453,19 @@
     <string name="summary_pref_force_vibrate">Force all key maps to vibrate.</string>
     <string name="title_pref_force_vibrate">Force vibrate</string>
 
-    <string name="title_pref_show_ime_notification">Keyboard picker notification</string>
-    <string name="summary_pref_show_ime_notification">Show a persistent notification to allow you to pick a keyboard.</string>
+    <string name="title_pref_show_ime_picker_notification">Keyboard picker notification</string>
+    <string name="summary_pref_show_ime_picker_notification">Show a persistent notification to allow you to pick a keyboard.</string>
 
-    <string name="title_pref_show_toggle_keymappings_notification">Pause/resume key maps notification</string>
-    <string name="summary_pref_show_toggle_keymappings_notification">Show a persistent notification which starts/pauses your key maps and has a link to start/stop the accessibility service.</string>
+    <string name="title_pref_show_toggle_keymaps_notification">Pause/resume key maps notification</string>
+    <string name="summary_pref_show_toggle_keymaps_notification">Show a persistent notification which starts/pauses your key maps and has a link to start/stop the accessibility service.</string>
 
     <string name="title_pref_automatic_backup_location">Automatically back up key maps to a specified location</string>
     <string name="summary_pref_automatic_backup_location_disabled">No location chosen.</string>
 
-    <string name="title_pref_bluetooth_devices">Choose bluetooth devices…</string>
+    <string name="title_pref_bluetooth_devices">Choose Bluetooth devices…</string>
 
     <string name="title_pref_auto_show_ime_picker">Automatically show keyboard picker</string>
-    <string name="summary_pref_auto_show_ime_picker">When a Bluetooth device you have chosen connects or disconnects, the keyboard picker will show automatically. Choose the devices below.</string>
+    <string name="summary_pref_auto_show_ime_picker">When a Bluetooth device that you have chosen connects or disconnects the keyboard picker will show automatically. Choose the devices below.</string>
 
     <string name="title_pref_auto_change_ime_on_connection">Automatically change the keyboard on Bluetooth connection</string>
     <string name="summary_pref_auto_change_ime_on_connection">The Key Mapper keyboard will be automatically selected when a chosen bluetooth device is connected. Your old keyboard will be automatically selected when the device disconnects.
@@ -479,8 +479,8 @@
 
     <string name="title_pref_notification_settings">Notification settings</string>
 
-    <string name="summary_pref_toggle_keyboard_notification">Switch between the Key Mapper keyboard and your default keyboard when you tap the notification.</string>
-    <string name="title_pref_toggle_keyboard_notification">Toggle Key Mapper keyboard notification</string>
+    <string name="summary_pref_show_toggle_keyboard_notification">Switch between the Key Mapper keyboard and your default keyboard when you tap the notification.</string>
+    <string name="title_pref_show_toggle_keyboard_notification">Toggle Key Mapper keyboard notification</string>
 
     <string name="title_pref_toggle_keyboard_on_toggle_keymaps">Automatically change the keyboard when toggling key maps</string>
     <string name="summary_pref_toggle_keyboard_on_toggle_keymaps">Automatically select the Key Mapper keyboard when you resume your key maps and select your default keyboard when pausing them.</string>
@@ -495,12 +495,13 @@
     <!--Preference categories-->
     <string name="title_pref_category_ime_picker">Keyboard picker</string>
     <string name="title_pref_category_notifications">Notifications</string>
+    <string name="title_pref_category_defaults">Defaults</string>
 
     <string name="title_pref_category_root">ROOT</string>
     <string name="summary_pref_category_root">These options will only work on root devices! If you don\'t know what root is or whether your device is rooted, please don\'t leave a poor review if they don\'t work. :)</string>
 
-    <string name="title_pref_category_secure_settings">Require WRITE_SECURE_SETTINGS permission</string>
-    <string name="summary_pref_category_secure_settings">These options are only enabled if Key Mapper has WRITE_SECURE_SETTINGS permission. Click the relevant Fix button at the top of the home screen for instructions.</string>
+    <string name="title_pref_category_write_secure_settings">Require WRITE_SECURE_SETTINGS permission</string>
+    <string name="summary_pref_category_write_secure_settings">These options are only enabled if Key Mapper has WRITE_SECURE_SETTINGS permission. Click the relevant Fix button at the top of the home screen for instructions.</string>
     <!--Preference categories-->
 
     <!-- About activity-->

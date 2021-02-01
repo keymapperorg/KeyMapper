@@ -33,11 +33,11 @@ class BluetoothConnectionBroadcastReceiver : BroadcastReceiver() {
                 ?: return
 
             //get the bluetooth devices chosen by the user. return if no bluetooth devices are chosen
-            val selectedDevices = context.globalPreferences
-                .getFlow(Keys.bluetoothDevicesThatToggleKeymaps).firstBlocking() ?: return
+            val selectedDevicesThatToggleKeyboard = context.globalPreferences
+                .getFlow(Keys.bluetoothDevicesThatToggleKeyboard).firstBlocking() ?: return
 
             //don't show the dialog if the user hasn't selected this device
-            if (selectedDevices.contains(device.address)) {
+            if (selectedDevicesThatToggleKeyboard.contains(device.address)) {
                 val automaticallySwitchIme = context.globalPreferences
                     .getFlow(Keys.autoChangeImeOnBtConnect).firstBlocking() ?: false
 
@@ -47,7 +47,12 @@ class BluetoothConnectionBroadcastReceiver : BroadcastReceiver() {
                 if (automaticallySwitchIme && haveWriteSecureSettingsPermission) {
                     automaticallySwitchIme(context, intent.action!!)
                 }
+            }
 
+            val selectedDevicesThatShowImePicker = context.globalPreferences
+                .getFlow(Keys.bluetoothDevicesThatShowImePicker).firstBlocking() ?: return
+
+            if (selectedDevicesThatShowImePicker.contains(device.address)) {
                 val showIMEPickerAutomatically = context.globalPreferences
                     .getFlow(Keys.autoShowImePicker).firstBlocking() ?: false
 
