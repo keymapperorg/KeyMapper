@@ -178,18 +178,27 @@
     <string name="constraint_choose_bluetooth_device_disconnected">蓝牙设备已断开连接</string>
     <string name="constraint_choose_screen_on_description">屏幕开启</string>
     <string name="constraint_choose_screen_off_description">屏幕关闭</string>
-    <string name="constraint_choose_orientation_0">纵向 (0°)</string>
-    <string name="constraint_choose_orientation_90">横向 (90°)</string>
+    <string name="constraint_choose_orientation_0">纵向(0°)</string>
+    <string name="constraint_choose_orientation_90">横向(90°)</string>
     <string name="constraint_choose_orientation_180">纵向(180°)</string>
     <string name="constraint_choose_orientation_270">横向(270°)</string>
     <string name="constraint_choose_orientation_portrait">纵向(任何)</string>
+    <string name="constraint_choose_orientation_landscape">横向(任何)</string>
+    <string name="constraint_choose_app_playing_media">特定应用播放媒体</string>
+    <string name="orientation_0">纵向(0°)</string>
+    <string name="orientation_90">横向(90°)</string>
+    <string name="orientation_180">纵向(180°)</string>
+    <string name="orientation_270">横向(270°)</string>
     <!-- Constraints -->
     <!-- Click types -->
     <string name="clicktype_short_press">短按</string>
+    <string name="clicktype_long_press">长按</string>
+    <string name="clicktype_double_press">双击</string>
     <!-- Click types -->
     <!-- URLs -->
     <!-- URLs -->
     <!-- Activity titles -->
+    <string name="title_choose_action">选择动作</string>
     <!-- Activity titles -->
     <!-- Menu action titles-->
     <string name="action_settings">设置</string>
@@ -197,27 +206,54 @@
     <string name="action_select_all">全选</string>
     <string name="action_about">关于</string>
     <string name="action_search">搜索</string>
+    <string name="action_help_home">快速入门指南</string>
+    <string name="action_help">帮助</string>
     <string name="action_enable">启用</string>
     <string name="action_disable">禁用</string>
     <string name="action_disable_all_keymaps">全部禁用</string>
     <string name="action_enable_all_keymaps">全部启用</string>
     <string name="action_send_feedback">发送反馈</string>
+    <string name="action_change_keyboard">显示输入法选择器</string>
+    <string name="action_seed_database">初始数据库</string>
+    <string name="action_save">保存</string>
+    <string name="action_duplicate_keymap">重复</string>
+    <string name="action_backup">备份</string>
+    <string name="action_restore">还原</string>
+    <string name="action_backup_everything">备份所有内容</string>
+    <string name="action_backup_all">备份所有</string>
+    <string name="action_tap_to_pause_keymaps">点击以暂停</string>
+    <string name="action_tap_to_resume_keymaps">点击以继续</string>
+    <string name="action_reset">重置</string>
     <!-- Menu action titles-->
     <!-- Button titles -->
+    <string name="button_add_action">添加动作</string>
+    <string name="button_record_trigger">录制触发器</string>
     <string name="button_done">完成</string>
+    <string name="button_save">保存</string>
     <string name="button_fix">修复</string>
     <string name="button_recording_trigger_countdown">%d…</string>
+    <string name="button_add_constraint">添加约束</string>
     <string name="button_choose_keycode">选择键码</string>
+    <string name="button_yes">是！</string>
+    <string name="button_choose_action">选择动作</string>
+    <string name="button_add_intent_extra">添加额外的</string>
+    <string name="button_create_keymap_shortcut_in_launcher">创建启动器快捷方式</string>
+    <string name="button_open_trigger_keymap_from_intent_guide">Intent指南</string>
+    <string name="button_help">帮助</string>
     <!-- Button titles -->
     <!-- Dialog titles -->
     <string name="dialog_title_are_you_sure">您是否确定？</string>
+    <string name="dialog_title_create_shortcut_title">创建快捷方式标题</string>
     <string name="dialog_title_cant_find_paired_devices">找不到任何配对的设备</string>
     <string name="dialog_title_root_prompt">需要 Root 权限！</string>
     <string name="dialog_title_flags">更多</string>
     <string name="dialog_title_pick_stream">选择流</string>
     <string name="dialog_title_choose_flash">选择闪光灯</string>
+    <string name="dialog_title_cant_find_accessibility_settings_page">无法找到无障碍服务设置页面</string>
+    <string name="dialog_title_cant_record_trigger">无法录制触发器？</string>
     <!-- Dialog titles -->
     <!-- Dialog messages -->
+    <string name="dialog_message_are_you_sure_want_to_leave_without_saving">你确定要在不保存的情况下离开？</string>
     <string name="dialog_message_downloading">正在下载...</string>
     <string name="dialog_message_describe_your_issue_in_the_email">请在电子邮件中描述您的问题，否则我无法帮助您。谢谢！</string>
     <string name="dialog_message_long_press_warning">长按只适用于物理音量和导航按钮。 如果您对其它键启用，它们将仅在长按时工作。</string>
