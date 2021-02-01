@@ -309,7 +309,7 @@ class HomeFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListe
             }
 
             setEnableImeService {
-                lifecycleScope.launchWhenStarted {
+                viewLifecycleScope.launchWhenResumed {
 
                     KeyboardUtils.enableCompatibleInputMethods()
 
