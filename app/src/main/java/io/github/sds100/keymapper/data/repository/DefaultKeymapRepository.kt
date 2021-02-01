@@ -38,7 +38,7 @@ class DefaultKeymapRepository internal constructor(
 
     private val gson = Gson()
 
-    override val requestBackup = MutableLiveData<RequestBackup>()
+    override val requestBackup = MutableLiveData<RequestBackup<List<KeyMap>>>()
     override val keymapList: LiveData<List<KeyMap>> = keymapDao.observeAll()
 
     override suspend fun getKeymaps(): List<KeyMap> = keymapDao.getAll()

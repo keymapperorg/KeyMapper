@@ -62,30 +62,19 @@ class BackupManager(
     private val gson = Gson()
 
     init {
-        keymapRepository.requestBackup.observeForever {
+        fingerprintMapRepository.requestBackup.observeForever {
             coroutineScope.launch(dispatchers.default()) {
-                if (!shouldBackupAutomatically()) return@launch
+                doAutomaticBackup(keymapRepository.getKeymaps(), it.model)
+            }
+        }
 
-                val uriString = globalPreferences.get(Keys.automaticBackupLocation)
-                    ?: return@launch
-
-                val result = contentResolver
-                    .openOutputStream(uriString)
-                    .suspendThen {
-                        val keymaps = keymapRepository.getKeymaps()
-
-                        backupAsync(
-                            it,
-                            keymaps,
-                            fingerprintMapRepository.swipeDown.firstOrNull(),
-                            fingerprintMapRepository.swipeUp.firstOrNull(),
-                            fingerprintMapRepository.swipeLeft.firstOrNull(),
-                            fingerprintMapRepository.swipeRight.firstOrNull()).await()
-                    }
-
-                withContext(dispatchers.main()) {
-                    _eventStream.value = AutomaticBackupResult(result)
+        keymapRepository.requestBackup.observeForever { event ->
+            coroutineScope.launch(dispatchers.default()) {
+                val fingerprintMaps = withContext(dispatchers.main()) {
+                    fingerprintMapRepository.fingerprintGestureMapsLiveData.value!!
                 }
+
+                doAutomaticBackup(event.model, fingerprintMaps)
             }
         }
     }
@@ -158,7 +147,7 @@ class BackupManager(
     }
 
     @Throws(MalformedJsonException::class, JsonSyntaxException::class)
-    private suspend fun restore(json: String): Result<Unit> {
+    private fun restore(json: String): Result<Unit> {
         val parser = JsonParser()
         val gson = Gson()
 
@@ -259,6 +248,32 @@ class BackupManager(
             if (throwExceptions) throw e
 
             return@async GenericFailure(e)
+        }
+    }
+
+    private suspend fun doAutomaticBackup(keymaps: List<KeyMap>,
+                                          fingerprintMaps: Map<String, FingerprintMap>) {
+
+        if (!shouldBackupAutomatically()) return
+
+        val uriString = globalPreferences.get(Keys.automaticBackupLocation)
+            ?: return
+
+        val result = contentResolver
+            .openOutputStream(uriString)
+            .suspendThen {
+                backupAsync(
+                    it,
+                    keymaps,
+                    fingerprintMaps[FingerprintMapUtils.SWIPE_DOWN],
+                    fingerprintMaps[FingerprintMapUtils.SWIPE_UP],
+                    fingerprintMaps[FingerprintMapUtils.SWIPE_LEFT],
+                    fingerprintMaps[FingerprintMapUtils.SWIPE_RIGHT]
+                ).await()
+            }
+
+        withContext(dispatchers.main()) {
+            _eventStream.value = AutomaticBackupResult(result)
         }
     }
 

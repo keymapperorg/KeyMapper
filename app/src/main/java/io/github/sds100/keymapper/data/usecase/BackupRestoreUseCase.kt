@@ -9,7 +9,7 @@ import io.github.sds100.keymapper.util.RequestBackup
  * Created by sds100 on 06/11/20.
  */
 interface BackupRestoreUseCase {
-    val requestBackup: LiveData<RequestBackup>
+    val requestBackup: LiveData<RequestBackup<List<KeyMap>>>
     suspend fun getKeymaps(): List<KeyMap>
 
     fun restore(dbVersion: Int, keymapListJson: List<String>)
