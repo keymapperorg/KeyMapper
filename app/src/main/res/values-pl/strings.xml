@@ -187,15 +187,10 @@
     <!--Preference titles and summaries-->
     <string name="title_pref_long_press_delay">Domyślny czas przytrzymania (ms)</string>
     <string name="title_pref_double_press_delay">Domyślny limit czasu dwukrotnego kliknięcia (ms)</string>
-    <string name="title_pref_vibrate_duration">Domyślny czas trwania wibracji (ms)</string>
     <string name="title_pref_sequence_trigger_timeout">Domyślny limit czasu kolejkowego triggera (ms)</string>
     <string name="title_pref_force_vibrate">Wymuś wibracje</string>
-    <string name="title_pref_show_ime_notification">Powiadomienie wyboru klawiatury</string>
-    <string name="summary_pref_show_ime_notification">Pokaż trwałe powiadomienie, które pozwala wybrać klawiaturę.</string>
     <string name="summary_pref_automatic_backup_location_disabled">Nie wybrano lokalizacji.</string>
-    <string name="title_pref_bluetooth_devices">Wybierz urządzenia Bluetooth…</string>
     <string name="title_pref_auto_show_ime_picker">Automatycznie pokazuj wybór klawiatury</string>
-    <string name="summary_pref_auto_show_ime_picker">Gdy wybrane urządzenie Bluetooth połączy się lub rozłączy, wybór klawiatury automatycznie się pojawi. Wybierz swoje urządzenia poniżej.</string>
     <string name="title_pref_auto_change_ime_on_connection">Automatycznie zmieniaj klawiaturę po podłączeniu urządzenia przez Bluetooth</string>
     <!--Preference titles and summaries-->
     <!--Preference categories-->
