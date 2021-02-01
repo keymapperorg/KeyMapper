@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -34,6 +35,8 @@ abstract class ConfigMappingFragment : Fragment() {
     private var _binding: FragmentConfigMappingBinding? = null
     val binding: FragmentConfigMappingBinding
         get() = _binding!!
+
+    private var onBackPressedDialog: AlertDialog? = null
 
     private lateinit var recoverFailureDelegate: RecoverFailureDelegate
 
@@ -151,6 +154,10 @@ abstract class ConfigMappingFragment : Fragment() {
 
     override fun onDestroyView() {
         _binding = null
+
+        //prevents leaking window if configuration change when the dialog is showing
+        onBackPressedDialog?.dismiss()
+        onBackPressedDialog = null
         super.onDestroyView()
     }
 
@@ -166,7 +173,7 @@ abstract class ConfigMappingFragment : Fragment() {
     }
 
     private fun showOnBackPressedWarning() {
-        requireContext().alertDialog {
+        onBackPressedDialog = requireContext().alertDialog {
             messageResource = R.string.dialog_message_are_you_sure_want_to_leave_without_saving
 
             positiveButton(R.string.pos_yes) {
@@ -174,8 +181,9 @@ abstract class ConfigMappingFragment : Fragment() {
             }
 
             cancelButton()
-            show()
         }
+
+        onBackPressedDialog?.show()
     }
 
     abstract fun getFragmentInfoList(): List<Pair<Int, FragmentInfo>>
