@@ -56,38 +56,136 @@
     <string name="caption_action_type_phone_call">输入电话号码。</string>
     <string name="caption_action_type_url">输入你想打开的URL。不需要http://、https://或www.</string>
     <string name="caption_no_paired_bt_devices">找不到任何已配对的设备。蓝牙开启了吗？</string>
+    <string name="caption_create_keymap_shortcut">当你选择的按键映射没有打开“从其他应用触发”这个选项时，它将被打开。如果你稍后关闭此选项，任何触发此按键映射的快捷方式和Intent都将无法工作。</string>
     <string name="switch_enabled">已启用</string>
     <string name="disabled">已禁用</string>
     <string name="reset">重置</string>
     <string name="enable_device_admin_message">一旦您启用了设备管理器，您必须停用它才能卸载该应用。</string>
     <string name="debug_trigger_chip_name">长按<b>音量减</b> • USB键盘</string>
     <string name="debug_trigger_chip_name2">单击<b>首页</b> • 此设备</string>
-    <string name="constraints_recyclerview_placeholder">无限制！</string>
+    <string name="constraints_recyclerview_placeholder">无约束！</string>
     <string name="action_title_wait">等待 %sms</string>
     <string name="email_subject"> Key Mapper 查询</string>
+    <string name="email_default_message">帮助页面解决了你的问题吗？你的设备是什么？\n\n 你在使用哪个OEM皮肤或ROM？\n\n 请描述你正在遇到问题：</string>
+    <string name="action_title_intent_start_activity">启动活动: %s</string>
+    <string name="action_title_intent_start_service">启动服务: %s</string>
+    <string name="action_title_intent_send_broadcast">发送广播: %s</string>
+    <string name="clipboard_label_keymap_uid">按键映射UUID</string>
+    <string name="check_box_key_event_option_use_shell">使用shell (仅ROOT)</string>
     <!--  Action descriptions  -->
     <string name="description_open_app">打开 %s</string>
     <string name="description_key">按 \'%s\' 键</string>
     <string name="description_text_block">输入 \'%s\'</string>
+    <string name="description_keyevent">输入 %s%s</string>
+    <string name="description_keyevent_through_shell">通过shell输入 %s%s</string>
+    <string name="description_keyevent_from_device">输入 %s%s 来自 %s</string>
+    <string name="description_keyevent_from_device_through_shell">通过shell输入 %s%s 来自 %s</string>
+    <string name="description_url">打开 %s</string>
+    <string name="description_tap_coordinate_default">点击坐标 %s, %s</string>
+    <string name="description_tap_coordinate_with_description">点击坐标 %s, %s (%s)</string>
+    <string name="description_phone_call">呼叫 %s</string>
     <!--  Action descriptions  -->
     <!--  Headers  -->
+    <string name="option_list_header">选项</string>
+    <string name="action_list_header">动作</string>
+    <string name="trigger_header">触发器</string>
+    <string name="constraint_list_header">制约因素</string>
+    <string name="header_fingerprint_gesture_up">上滑</string>
+    <string name="header_fingerprint_gesture_down">下滑</string>
+    <string name="header_fingerprint_gesture_left">左滑</string>
+    <string name="header_fingerprint_gesture_right">右滑</string>
+    <string name="header_click_type">点击类型</string>
+    <string name="header_intent_extras">扩展</string>
     <!--  Headers  -->
     <!--  Hints  -->
     <string name="hint_keycode">键码</string>
+    <string name="hint_from_device">来自设备</string>
+    <string name="hint_shortcut_name">快捷方式名称</string>
+    <string name="hint_tap_coordinate_title">坐标描述 (可选)</string>
+    <string name="hint_intent_action">动作</string>
+    <string name="hint_intent_categories">类别</string>
+    <string name="hint_intent_data">数据</string>
+    <string name="hint_intent_package">包名</string>
+    <string name="hint_intent_class">分类</string>
+    <string name="hint_intent_extra_name">名称</string>
+    <string name="hint_intent_extra_value_with_type">值 (%s)</string>
+    <string name="hint_intent_description">Key Mapper描述(必需)</string>
     <!--  Hints  -->
     <!--  Radio buttons  -->
+    <string name="radio_button_parallel">在同一时间</string>
+    <string name="radio_button_sequence">在序列</string>
+    <string name="radio_button_and">和</string>
+    <string name="radio_button_or">或</string>
+    <string name="radio_button_short_press">短按</string>
+    <string name="radio_button_long_press">长按</string>
+    <string name="radio_button_double_press">双击</string>
+    <string name="radio_button_intent_extra_value_true">真</string>
+    <string name="radio_button_intent_extra_value_false">假</string>
+    <string name="radio_button_intent_target_activity">活动</string>
+    <string name="radio_button_intent_target_service">服务</string>
+    <string name="radio_button_intent_target_broadcast_receiver">广播接收器</string>
     <!--  Radio buttons  -->
     <!--  Tabs  -->
+    <string name="tab_trigger_and_actions">触发器和动作</string>
+    <string name="tab_constraints_and_more">约束等</string>
+    <string name="tab_options">选项</string>
+    <string name="tab_constraints">制约因素</string>
+    <string name="tab_actions">动作</string>
+    <string name="tab_trigger">触发器</string>
+    <string name="tab_fingerprint">指纹</string>
     <!--  Tabs  -->
     <!--  Navigation argument ids  -->
     <!--  Navigation argument ids  -->
     <!--  Toasts  -->
+    <string name="toast_chose_keyboard">选择 %s</string>
+    <string name="toast_backup_successful">备份成功！</string>
+    <string name="toast_restore_successful">还原成功！</string>
+    <string name="toast_automatic_backup_successful">自动备份成功！</string>
+    <string name="toast_screenshot_taken">屏幕截图完成</string>
+    <string name="toast_io_exception_shrug">IO异常值 ¯\\_(ツ)_/¯</string>
+    <string name="toast_incorrect_screenshot_resolution">屏幕截图分辨率与该设备的分辨率不匹配！</string>
+    <string name="toast_copied_keymap_uid_to_clipboard">复制按键映射UUID到剪贴板</string>
+    <string name="toast_triggered_keymap">你已经触发了按键映射</string>
     <!--  Toasts  -->
     <!-- Extra labels -->
+    <string name="extra_label_sequence_trigger_timeout">序列触发超时 (ms)</string>
+    <string name="extra_label_long_press_delay_timeout">长按延迟 (ms)</string>
+    <string name="extra_label_double_press_delay_timeout">双按超时 (ms)</string>
+    <string name="extra_label_repeat_delay">延迟到重复 (ms)</string>
+    <string name="extra_label_repeat_rate">每… 重复 (ms)</string>
+    <string name="extra_label_vibration_duration">振动持续时间 (ms)</string>
+    <string name="extra_label_action_multiplier">动作数</string>
+    <string name="extra_label_delay_before_next_action">下一个动作之前的延迟 (ms)</string>
+    <string name="extra_label_hold_down_duration">按住时长 (ms)</string>
     <!-- Extra labels -->
     <!-- Constraints -->
+    <string name="constraint_app_foreground_description">%s 处于前台状态</string>
+    <string name="constraint_app_not_foreground_description">%s 不处于前台状态</string>
+    <string name="constraint_app_playing_media_description">%s 正在播放媒体</string>
+    <string name="constraint_bt_device_connected_description">%s 已连接</string>
+    <string name="constraint_bt_device_disconnected_description">%s 已断开连接</string>
+    <string name="constraint_screen_on_description">屏幕开启</string>
+    <string name="constraint_screen_off_description">屏幕关闭</string>
+    <string name="constraint_mode_and">和</string>
+    <string name="constraint_mode_or">或</string>
+    <string name="constraint_category_app">应用程序</string>
+    <string name="constraint_category_bluetooth">蓝牙</string>
+    <string name="constraint_category_screen">屏幕</string>
+    <string name="constraint_category_orientation">方向</string>
+    <string name="constraint_choose_app_foreground">前台应用</string>
+    <string name="constraint_choose_app_not_foreground">非前台应用</string>
+    <string name="constraint_choose_bluetooth_device_connected">蓝牙设备已连接</string>
+    <string name="constraint_choose_bluetooth_device_disconnected">蓝牙设备已断开连接</string>
+    <string name="constraint_choose_screen_on_description">屏幕开启</string>
+    <string name="constraint_choose_screen_off_description">屏幕关闭</string>
+    <string name="constraint_choose_orientation_0">纵向 (0°)</string>
+    <string name="constraint_choose_orientation_90">横向 (90°)</string>
+    <string name="constraint_choose_orientation_180">纵向(180°)</string>
+    <string name="constraint_choose_orientation_270">横向(270°)</string>
+    <string name="constraint_choose_orientation_portrait">纵向(任何)</string>
     <!-- Constraints -->
     <!-- Click types -->
+    <string name="clicktype_short_press">短按</string>
     <!-- Click types -->
     <!-- URLs -->
     <!-- URLs -->
@@ -234,6 +332,7 @@
     <string name="warning_need_write_secure_settings_permission">某些功能需要 WRITE_SECURE_SETTINGS 权限。</string>
     <string name="fixed_need_write_secure_settings_permission">已授予 WRITE_SECURE_SETTTINGS 权限。</string>
     <string name="error_cant_move_to_end_of_text_in_this_field">您不能移动到这个字段的文本结尾！</string>
+    <string name="error_duplicate_constraint">你不能有重复的约束！</string>
     <string name="error_fingerprint_gesture_map_constraint_exists">这个手势已经有此限制了！</string>
     <!-- Error messages -->
     <!-- System action labels -->
