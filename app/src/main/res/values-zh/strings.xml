@@ -324,38 +324,101 @@
     <!-- Notification strings -->
     <!--Preference titles and summaries-->
     <string name="title_pref_long_press_delay">默认长按延迟 (ms)</string>
-    <string name="summary_pref_long_press_delay">检测到按钮长按需要多长时间。默认值为 500ms。可在按键映射的选项中被覆盖。</string>
+    <string name="summary_pref_long_press_delay">检测到按钮长按需要多长时间。默认值为 500ms。可被按键映射选项覆盖。</string>
     <string name="title_pref_double_press_delay">默认双击持续时间 (ms)</string>
-    <string name="summary_pref_double_press_delay">检测到按钮双击需要多快。默认值为 300ms。可在按键映射的选项中被覆盖。</string>
+    <string name="summary_pref_double_press_delay">检测到按钮双击需要多快。默认值为 300ms。可被按键映射选项覆盖。</string>
+    <string name="summary_pref_vibration_duration">如果按键映射启用了震动，将震动多长时间。默认值为 200ms。可被按键映射选项覆盖。</string>
+    <string name="title_pref_vibration_duration">默认振动持续时间 (ms)</string>
+    <string name="summary_pref_repeat_delay">按键映射需要按住多长时间才能开始重复动作。默认值为 400ms。可被按键映射选项覆盖。</string>
+    <string name="title_pref_repeat_delay">默认延迟到重复 (ms)</string>
+    <string name="summary_pref_repeat_rate">每次重复动作之间的延迟。默认值为 50ms。可被按键映射选项覆盖。</string>
+    <string name="title_pref_repeat_rate">默认重复之间的延迟 (ms)</string>
+    <string name="summary_pref_sequence_trigger_timeout">允许完成序列触发器的时间。默认值为 1000ms。可被按键映射选项覆盖。</string>
+    <string name="title_pref_sequence_trigger_timeout">默认序列触发超时 (ms)</string>
+    <string name="summary_pref_force_vibrate">强制所有按键映射震动。</string>
     <string name="title_pref_force_vibrate">强制振动</string>
+    <string name="title_pref_show_ime_picker_notification">键盘选择器通知</string>
+    <string name="summary_pref_show_ime_picker_notification">显示常驻通知以允许你选择键盘。</string>
+    <string name="title_pref_show_toggle_keymaps_notification">暂停/继续按键映射通知</string>
+    <string name="summary_pref_show_toggle_keymaps_notification">显示启动/暂停你的按键映射及开始/停止无障碍服务链接的常驻通知。</string>
+    <string name="title_pref_automatic_backup_location">自动备份按键映射到指定位置</string>
+    <string name="summary_pref_automatic_backup_location_disabled">未选择位置。</string>
+    <string name="title_pref_bluetooth_devices">选择蓝牙设备…</string>
     <string name="title_pref_auto_show_ime_picker">自动显示键盘选择器</string>
+    <string name="summary_pref_auto_show_ime_picker">当你选择的蓝牙设备连接或断开连接时，键盘选择器将自动显示。选择下面的设备。</string>
+    <string name="title_pref_auto_change_ime_on_connection">蓝牙连接时自动更改键盘</string>
+    <string name="summary_pref_auto_change_ime_on_connection">Key Mapper键盘将在选择的蓝牙设备连接时被自动选择。你之前的键盘将在这个设备断开连接时被选择。
+            可能在断开连接你的设备时，会有5-10秒的延迟才会更改键盘。</string>
     <string name="title_pref_root_permission">Key Mapper 拥有 root 权限</string>
+    <string name="summary_pref_root_permission">如果你想使用仅适用于已root设备的功能/动作，请启用这个选项。为了让这些功能工作，Key Mapper必须有来自你的root-access-management应用(例如 Magisk、SuperSU)的root。
+            只有在你知道你的设备已root，并且你有给予Key Mapper root权限，才启用此选项。</string>
+    <string name="title_pref_dark_theme">深色主题</string>
+    <string name="title_pref_notification_settings">通知设置</string>
+    <string name="summary_pref_show_toggle_keyboard_notification">点击通知将在Key Mapper键盘和你的默认键盘之间切换。</string>
+    <string name="title_pref_show_toggle_keyboard_notification">切换Key Mapper键盘通知</string>
+    <string name="title_pref_toggle_keyboard_on_toggle_keymaps">切换按键映射时自动更改键盘</string>
+    <string name="summary_pref_toggle_keyboard_on_toggle_keymaps">自动在你恢复你的按键映射时选择Key Mapper键盘，以及暂停它们时自动选择你的默认键盘。</string>
+    <string name="title_pref_hide_home_screen_alerts">隐藏主屏幕提醒</string>
+    <string name="summary_pref_hide_home_screen_alerts">隐藏主屏幕顶部的提醒。</string>
+    <string name="title_pref_show_device_descriptors">显示设备特定触发器的设备ID的前5个字符</string>
+    <string name="summary_pref_show_device_descriptors">这有助于区分具有相同名称的设备。</string>
     <!--Preference titles and summaries-->
     <!--Preference categories-->
+    <string name="title_pref_category_ime_picker">键盘选择器</string>
     <string name="title_pref_category_notifications">通知</string>
+    <string name="title_pref_category_defaults">默认</string>
     <string name="title_pref_category_root">ROOT</string>
     <string name="summary_pref_category_root">这些选项只适用于 root 设备！ 如果您不知道什么 root 或您的设备是否 root，他们无效时请不要留下不好的评论。:)</string>
+    <string name="title_pref_category_write_secure_settings">请求WRITE_SECURE_SETTINGS权限</string>
+    <string name="summary_pref_category_write_secure_settings">仅在Key Mapoer具有WRITE_SECURE_SETTINGS权限启用这些选项。点击主屏幕顶部相关的修复按钮以获取说明。</string>
     <!--Preference categories-->
     <!-- About activity-->
     <string name="pref_title_changelog">更新日志</string>
     <string name="pref_title_license">许可证</string>
+    <string name="pref_title_privacy_policy">隐私政策</string>
     <string name="pref_title_credits">致谢</string>
+    <string name="pref_title_source_code">源代码</string>
+    <string name="pref_title_developer_github">开发者的GitHub资料</string>
+    <string name="pref_title_rate_review">评分和评论</string>
+    <string name="pref_title_xda_thread">XDA论坛</string>
     <string name="pref_title_version">版本</string>
+    <string name="pref_title_developer_email">给开发者发送电子邮件</string>
     <string name="pref_title_translate">翻译</string>
+    <string name="pref_title_discord">Discord服务器</string>
+    <string name="pref_title_youtube_channel">YouTube频道(教程)</string>
     <!-- About activity-->
     <!--Action Types Titles-->
     <string name="action_type_title_application">应用</string>
     <string name="action_type_title_application_shortcut">应用快捷方式</string>
     <string name="action_type_title_key">键</string>
     <string name="action_type_title_key_code">键码</string>
+    <string name="action_type_title_keyevent">按键事件</string>
+    <string name="action_type_title_system_action">系统</string>
     <string name="action_type_title_text_block">文本</string>
+    <string name="action_type_url">URL</string>
+    <string name="action_type_tap_coordinate">点击屏幕</string>
+    <string name="action_type_intent">Intent</string>
+    <string name="action_type_phone_call">电话</string>
     <!--Action Types Titles-->
     <!--flags-->
     <string name="flag_show_volume_dialog">显示音量对话框</string>
     <string name="flag_long_press">长按</string>
     <string name="flag_vibrate">振动</string>
+    <string name="flag_show_toast">显示屏幕消息</string>
+    <string name="flag_long_press_double_vibration">最初按下按键时和再次长按按键时震动。</string>
+    <string name="flag_detect_triggers_screen_off">屏幕关闭时检测触发器。仅ROOT。</string>
+    <string name="flag_repeat_actions">重复</string>
+    <string name="flag_hold_down">按住</string>
+    <string name="flag_dont_override_default_action">不要覆盖默认动作</string>
+    <string name="flag_repeat_until_swiped_again">重复直到再刷</string>
+    <string name="flag_hold_down_until_swiped_again">按住直到再刷</string>
+    <string name="flag_trigger_from_other_apps">从其他应用触发</string>
     <!--flags-->
     <!-- Showcase -->
+    <string name="showcase_accessibility_service_title_enabled">无障碍服务已启用 :)</string>
+    <string name="showcase_accessibility_service_description_enabled">一切准备就绪。</string>
+    <string name="showcase_accessibility_service_title_disabled">启用无障碍服务</string>
+    <string name="showcase_accessibility_service_description_disabled">你的按键映射只有在你启用无障碍服务后才能正常工作。它也需要打开以创建触发器。</string>
     <string name="showcase_record_trigger_title">无障碍服务已禁用</string>
     <string name="showcase_record_trigger_description">如果启用辅助功能，您只能录制触发器。</string>
     <string name="showcase_note_from_the_developer_title">开发者提醒</string>
