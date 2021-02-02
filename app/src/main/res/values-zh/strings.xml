@@ -254,6 +254,7 @@
     <!-- Dialog titles -->
     <!-- Dialog messages -->
     <string name="dialog_message_are_you_sure_want_to_leave_without_saving">你确定要在不保存的情况下离开？</string>
+    <string name="dialog_message_cant_find_paired_devices">请确保蓝牙已开启，你已配对设备，然后重试。</string>
     <string name="dialog_message_downloading">正在下载...</string>
     <string name="dialog_message_describe_your_issue_in_the_email">请在电子邮件中描述您的问题，否则我无法帮助您。谢谢！</string>
     <string name="dialog_message_long_press_warning">长按只适用于物理音量和导航按钮。 如果您对其它键启用，它们将仅在长按时工作。</string>
