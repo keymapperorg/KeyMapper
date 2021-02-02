@@ -496,10 +496,15 @@
     <string name="error_must_have_atleast_one_trigger">您必须至少有一个触发器</string>
     <string name="error_must_choose_action">您必须选择一个动作！</string>
     <string name="error_must_have_a_title">快捷键必须有一个标题！</string>
+    <string name="error_ime_must_be_chosen">你必须使用Key Mapper键盘来让这个动作工作！</string>
     <string name="error_shortcut_not_found">找不到快捷方式。应用是否已安装或启用？</string>
+    <string name="error_app_isnt_installed">包名为 %s 的应用未安装！</string>
+    <string name="error_app_isnt_installed_brief">应用未安装！</string>
     <string name="error_app_is_disabled">应用已禁用！</string>
     <string name="error_action_requires_write_settings_permission">您需要授予 Key Mapper 权限以修改系统设置才能使用此操作。</string>
+    <string name="error_requires_root">这需要root权限！</string>
     <string name="error_action_requires_camera_permission">此操作需要相机权限！</string>
+    <string name="error_sdk_version_too_low">这需要Android %s</string>
     <string name="error_feature_not_available">您的设备不支持 %s。</string>
     <string name="error_flag_not_found">找不到标记 \"%s“！</string>
     <string name="error_google_app_not_installed">未安装 Google 应用！</string>
