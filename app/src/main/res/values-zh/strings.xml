@@ -133,6 +133,10 @@
     <string name="tab_actions">动作</string>
     <string name="tab_trigger">触发器</string>
     <string name="tab_fingerprint">指纹</string>
+    <string-array name="home_tab_titles">
+        <item>按键事件</item>
+        <item>指纹</item>
+    </string-array>
     <!--  Tabs  -->
     <!--  Navigation argument ids  -->
     <!--  Navigation argument ids  -->
@@ -287,6 +291,7 @@
     <string name="pos_join">加入</string>
     <string name="pos_change_location">更改</string>
     <string name="neg_turn_off">关闭</string>
+    <string name="neg_stay_out">留下来</string>
     <string name="neg_no">否</string>
     <string name="neg_cancel">取消</string>
     <string name="neg_dont_show_again">不再显示</string>
@@ -387,6 +392,11 @@
     <string name="pref_title_discord">Discord服务器</string>
     <string name="pref_title_youtube_channel">YouTube频道(教程)</string>
     <!-- About activity-->
+    <string-array name="pref_dark_theme_entries">
+        <item>开</item>
+        <item>关</item>
+        <item>跟随系统</item>
+    </string-array>
     <!--Action Types Titles-->
     <string name="action_type_title_application">应用</string>
     <string name="action_type_title_application_shortcut">应用快捷方式</string>
@@ -725,30 +735,40 @@
     <string name="intent_type_int_array_header">整数组</string>
     <string name="intent_type_string_header">字符串</string>
     <string name="intent_type_string_array_header">字符串数组</string>
-    <string name="intent_type_long_header">长</string>
-    <string name="intent_type_long_array_header">长数组</string>
+    <string name="intent_type_long_header">长整形</string>
+    <string name="intent_type_long_array_header">长整形数组</string>
     <string name="intent_type_byte_header">字节</string>
     <string name="intent_type_byte_array_header">字节数组</string>
-    <string name="intent_type_double_header">双</string>
-    <string name="intent_type_double_array_header">双数组</string>
+    <string name="intent_type_double_header">双精度浮点数</string>
+    <string name="intent_type_double_array_header">双精度浮点数数组</string>
     <string name="intent_type_char_header">字符</string>
     <string name="intent_type_char_array_header">字符数组</string>
-    <string name="intent_type_float_header">浮动</string>
-    <string name="intent_type_float_array_header">浮动数组</string>
-    <string name="intent_type_short_header">短</string>
-    <string name="intent_type_short_array_header">短数组</string>
-    <string name="intent_type_bool_example">只能为“true”或“false”</string>
+    <string name="intent_type_float_header">单精度浮点数</string>
+    <string name="intent_type_float_array_header">单精度浮点数数组</string>
+    <string name="intent_type_short_header">短整形</string>
+    <string name="intent_type_short_array_header">短整形数组</string>
+    <string name="intent_type_bool_example">只能为\"true\"或\"false\"</string>
     <string name="intent_type_bool_array_example">逗号分隔“true”和“false”列表。例如 true,false,true</string>
     <string name="intent_type_int_example">一个Java编程语言中的有效整数。</string>
     <string name="intent_type_int_array_example">一个逗号分隔Java编程语言中的有效整数列表。例如 100,399</string>
     <string name="intent_categories_example">一个逗号分隔列表。例如 类别1,类别2</string>
     <string name="intent_type_string_example">任何文本。</string>
     <string name="intent_type_string_array_example">一个逗号分隔字符串列表。例如 字符串1,字符串2</string>
-    <string name="intent_type_long_example">一个Java编程语言的有效期。</string>
-    <string name="intent_type_long_array_example">一个逗号分隔Java编程语言的有效长程列表。例如 10230223234234234,3990834234429</string>
+    <string name="intent_type_long_example">一个Java编程语言中有效的长整形。</string>
+    <string name="intent_type_long_array_example">一个逗号分隔Java编程语言中有效的长整形列表。例如 10230223234234234,3990834234429</string>
     <string name="intent_type_byte_example">一个Java编程语言中的有效字节。</string>
     <string name="intent_type_byte_array_example">一个逗号分隔Java编程语言中有效字节的列表。例如 123,3</string>
+    <string name="intent_type_double_example">Java编程语言中有效的双精度浮点数。</string>
+    <string name="intent_type_double_array_example">一个逗号分隔Java编程语言中有效的双精度浮点数列表。例如 1.0,3.234</string>
+    <string name="intent_type_char_example">Java编程语言中的有效字符。例如 \'a\'和\'b\'</string>
+    <string name="intent_type_char_array_example">一个逗号分隔Java编程语言的有效字符列表。例如 a,b,c</string>
+    <string name="intent_type_float_example">一个Java编程语言中的有效单精度浮点数。例如 3.145</string>
+    <string name="intent_type_float_array_example">一个逗号分隔Java编程语言的单精度浮点数的有效的列表，例如 1241.123</string>
+    <string name="intent_type_short_example">一个Java编程语言中的有效短整形。例如2342</string>
+    <string name="intent_type_short_array_example">一个逗号分隔Java编程语言的有效短整形列表。例如 3242,12354</string>
     <!--  Intent action type strings  -->
     <!--  Tap targets  -->
+    <string name="tap_target_quick_start_guide_primary">快速入门指南</string>
+    <string name="tap_target_quick_start_guide_secondary">如果您被卡住，请查看快速启动指南。</string>
     <!--  Tap targets  -->
 </resources>
