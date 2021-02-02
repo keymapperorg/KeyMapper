@@ -66,7 +66,7 @@
     <string name="constraints_recyclerview_placeholder">无约束！</string>
     <string name="action_title_wait">等待 %sms</string>
     <string name="email_subject"> Key Mapper 查询</string>
-    <string name="email_default_message">帮助页面解决了你的问题吗？你的设备是什么？\n\n 你在使用哪个OEM皮肤或ROM？\n\n 请描述你正在遇到问题：</string>
+    <string name="email_default_message">帮助页面解决了你的问题吗？你的设备是什么？\n\n 你在使用哪个定制OEM或ROM？\n\n 请描述你正在遇到问题：</string>
     <string name="action_title_intent_start_activity">启动活动: %s</string>
     <string name="action_title_intent_start_service">启动服务: %s</string>
     <string name="action_title_intent_send_broadcast">发送广播: %s</string>
@@ -422,8 +422,29 @@
     <string name="showcase_record_trigger_title">无障碍服务已禁用</string>
     <string name="showcase_record_trigger_description">如果启用辅助功能，您只能录制触发器。</string>
     <string name="showcase_note_from_the_developer_title">开发者提醒</string>
+    <string name="showcase_note_from_the_developer_description">无法保证您的设备上的每个操作都能正常运行，每个按钮都会被检测到。 原因是有许多Android系统版本、OEM可能无意或故意破坏功能。如果某些不起作用，请通知开发者，不要给应用评分太低，因为问题常常超出开发者控制。=)</string>
+    <string name="showcase_disable_battery_optimisation_title">Key Mapper可能会停止随机工作！</string>
+    <string name="showcase_disable_battery_optimisation_message_bad">危急！！！点击“关闭”以阻止Android停止后台应用。你的定制OEM，例如MIUI或Samsung Experience可能有其他“省电”功能，因此强烈建议为Key Mapper关闭它们，以及去dontkillmyapp.com</string>
+    <string name="showcase_disable_battery_optimisation_message_good">现有的Android的电池优化已关闭。这对于大多数设备来说还不够，因此请转到dontkillmyapp.com的教程，其中展示了如何关闭更多的在你的设备上的杀应用功能。</string>
+    <string name="showcase_disable_battery_optimisation_button_turn_off">关闭</string>
+    <string name="showcase_disable_battery_optimisation_button_dont_kill_my_app">转到Don\'t Kill My App</string>
     <string name="showcase_dex_mode_supported_title">您的设备似乎支持 Samsung Dex</string>
     <string name="showcase_dex_mode_supported_message">三星不允许在 Dex 模式下打开第三方键盘的应用。 因此，这个应用不会打开，当您处于 Dex 模式时，键盘将无法使用。 您不需要 Key Mapper 键盘的键映射在您处于 Dex 模式时仍然有效。</string>
+    <string name="showcase_dnd_access_title_disabled">要重新映射音量按钮吗？</string>
+    <string name="showcase_dnd_access_title_enabled">你可以重新映射音量按钮了</string>
+    <string name="showcase_dnd_access_description_disabled">如果你想要动作更改音量和重新映射音量按钮，Key Mapper需要访问“勿扰”</string>
+    <string name="showcase_dnd_access_description_enabled">一切准备就绪! :)</string>
+    <string name="showcase_contributing_title">参与贡献</string>
+    <string name="showcase_contributing_description">"这个应用是开源的！你可以通过跳转到GitHub的sds100/KeyMapper存储库并加入Discord服务器来开始作出贡献。即使你不会代码，您也可以通过帮助他人和测试最新功能来作出贡献。"</string>
+    <string name="showcase_action_list">点击3个点来更改重复行为和更多。你可以通过点击它来测试和修复一个动作的错误。</string>
+    <string name="showcase_screen_off_triggers">此选项仅在你的设备已root，并且你已经在Key Mapper设置中告诉Key Mapper拥有root权限的情况下，才能正常工作。如果你不知道什么是root，那么此选项将无法工作。它也只适用于某些键(例如音量键)，可以看看帮助页面的支持按键列表。</string>
+    <string name="showcase_fingerprint_gesture_support_title_supported_unknown">重新映射指纹读取器手势</string>
+    <string name="showcase_fingerprint_gesture_support_title_supported">你可以重新映射指纹读取器手势! :)</string>
+    <string name="showcase_fingerprint_gesture_support_title_not_supported">你不能重新映射指纹读取器手势！</string>
+    <string name="showcase_fingerprint_gesture_support_message_supported_unknown">你需要启用无障碍服务，以便Key Maoper能够检查你的设备是否能够检测指纹手势。</string>
+    <string name="showcase_fingerprint_gesture_support_message_supported">你的设备可以检测指纹手势！主屏幕顶部有一个标签来重新映射指纹。</string>
+    <string name="showcase_fingerprint_gesture_support_message_not_supported">你的设备不允许第三方应用检测指纹手势！开发者无法做任何事情。 某些设备设置在指纹读取器上下滑动以打开通知抽屉，不允许第三方应用检测指纹手势。</string>
+    <string name="showcase_fingerprint_gesture_support_button">启用</string>
     <!-- Showcase -->
     <!-- system action options -->
     <string name="stream_accessibility">无障碍</string>
@@ -439,11 +460,36 @@
     <string name="ringer_mode_silent">静音</string>
     <string name="lens_front">前</string>
     <string name="lens_back">后</string>
+    <string name="dnd_mode_alarms">提醒</string>
+    <string name="dnd_mode_priority">优先级</string>
+    <string name="dnd_mode_none">无</string>
     <!-- system action options -->
     <!-- Tiles -->
+    <string name="tile_pause">暂停按键映射</string>
     <string name="tile_resume">恢复按键映射</string>
+    <string name="tile_service_disabled">服务已禁用</string>
+    <string name="tile_accessibility_service_disabled_content_description">Key Mapper无障碍服务已禁用</string>
+    <string name="tile_keymapper_keyboard_service_disabled_content_description">Key Mapper键盘服务已禁用</string>
+    <string name="tile_toggle_keymapper_keyboard">切换Key Mapper键盘</string>
     <!-- Tiles -->
     <!-- Meta States -->
+    <string name="meta_state_ctrl">Ctrl</string>
+    <string name="meta_state_ctrl_left">左Ctrl</string>
+    <string name="meta_state_ctrl_right">右Ctrl</string>
+    <string name="meta_state_alt">Alt</string>
+    <string name="meta_state_alt_left">左Alt</string>
+    <string name="meta_state_alt_right">右Alt</string>
+    <string name="meta_state_shift">Shift</string>
+    <string name="meta_state_shift_left">左Shift</string>
+    <string name="meta_state_shift_right">右Shift</string>
+    <string name="meta_state_meta">Meta</string>
+    <string name="meta_state_meta_left">左Meta</string>
+    <string name="meta_state_meta_right">右Meta</string>
+    <string name="meta_state_sym">Sym</string>
+    <string name="meta_state_function">Func</string>
+    <string name="meta_state_caps_lock">Caps Lock</string>
+    <string name="meta_state_num_lock">Num Lock</string>
+    <string name="meta_state_scroll_lock">Scroll Lock</string>
     <!-- Meta States -->
     <!-- Error messages -->
     <string name="error_must_type_a_key">您必须输入一个键！</string>
