@@ -222,7 +222,7 @@
     <string name="action_backup_everything">备份所有内容</string>
     <string name="action_backup_all">备份所有</string>
     <string name="action_tap_to_pause_keymaps">点击以暂停</string>
-    <string name="action_tap_to_resume_keymaps">点击以继续</string>
+    <string name="action_tap_to_resume_keymaps">点击以恢复</string>
     <string name="action_reset">重置</string>
     <!-- Menu action titles-->
     <!-- Button titles -->
@@ -270,26 +270,63 @@
     <string name="dialog_message_bt_constraint_limitation">Android不允许应用获取已连接(未配对)的蓝牙设备列表。它们只有在连接和和断开连接时才能被应用检测到。因此，如果在无障碍服务启动前，蓝牙设备已经连接到了你的设备，你将必须重新连接它，为了让这个应用知道它已经连接了。</string>
     <string name="dialog_message_change_location_or_disable">要更改位置或关闭自动备份吗？</string>
     <string name="dialog_message_screen_constraints_limitation">屏幕开启/关闭约束，将只在你打开了“屏幕关闭时检测触发器”这个按键映射选项时工作。此选项仅支持部分按键(例如音量键)。如果你root了，就在帮助页面查看支持的按键列表。</string>
+    <string name="dialog_message_password_screen_lock_warning">如果你选择了任何其他的屏幕锁定，例如PIN或图案，那么你不必担心。但是如果你有密码屏幕锁定，并且在使用Key Mapper基本输入法时，你将*不能*解锁你的手机，因为它没有GUI。你可以授予Key Mapper WRITE_SECURE_SETTINGS权限，以便它显示一个切换键盘和从键盘切换的通知。如果你点击屏幕下方的问号，将有一个执行此操作的指南。</string>
+    <string name="dialog_message_select_compatible_ime">选择一个动作需要的输入法。你可以稍候在主屏幕的底部菜单，点击“选择动作键盘”来更改此项。</string>
+    <string name="dialog_message_select_app_store_gui_keyboard">你想从哪里获取新的键盘？</string>
+    <string name="dialog_message_cant_record_trigger">如果“记录触发器”按钮正在递减计数，并且你所按的按钮未显示，<b>重新启动</b>你的设备。如果在重新启动后你的按钮仍然不显示，则Key Mapper不支持你的按钮。尝试这样修复它并没有用。</string>
+    <string name="dialog_message_use_key_multiple_times_in_sequence_trigger">如果你有来自同一设备的重复的相同按键的序列触发器，你只能把他们设置为相同的点击类型(短/长按/双击)。</string>
     <!-- Dialog messages -->
     <!-- Dialog buttons -->
     <string name="pos_yes">是</string>
     <string name="pos_done">完成</string>
     <string name="pos_opt_in">选择加入</string>
+    <string name="pos_faq_page">常见问题解答</string>
+    <string name="pos_grant_write_secure_settings_guide">指南</string>
     <string name="pos_enable_root_features">启用 root 功能</string>
     <string name="pos_grant">授权</string>
+    <string name="pos_join">加入</string>
+    <string name="pos_change_location">更改</string>
+    <string name="neg_turn_off">关闭</string>
     <string name="neg_no">否</string>
     <string name="neg_cancel">取消</string>
     <string name="neg_dont_show_again">不再显示</string>
+    <string name="neg_email">电子邮箱</string>
+    <string name="neutral_discord">Discord</string>
+    <string name="snackbar_cancel">取消</string>
+    <string name="snackbar_fix">修复</string>
     <!-- Dialog buttons -->
     <!-- Notification strings -->
+    <string name="notification_channel_ime_picker">键盘选择器</string>
+    <string name="notification_channel_toggle_remaps">暂停/恢复按键映射</string>
+    <string name="notification_channel_keyboard_hidden">键盘隐藏警告</string>
+    <string name="notification_channel_toggle_keyboard">切换Key Mapper键盘</string>
+    <string name="notification_channel_new_features">新功能</string>
     <string name="notification_ime_persistent_text">点击更改您的键盘。</string>
+    <string name="notification_ime_persistent_title">键盘选择器</string>
+    <string name="notification_keymaps_resumed_title">运行中</string>
+    <string name="notification_keymaps_resumed_text">点击以暂停你的按键映射。</string>
+    <string name="notification_keymaps_paused_title">已暂停</string>
+    <string name="notification_keymaps_paused_text">点击以恢复你的按键映射。</string>
+    <string name="notification_action_dismiss">忽略</string>
     <string name="notification_accessibility_service_disabled_title">无障碍服务已禁用</string>
     <string name="notification_accessibility_service_disabled_text">点击以启动无障碍服务。</string>
+    <string name="notification_action_open_app">打开应用</string>
     <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
+    <string name="notification_action_stop_acc_service">停止服务</string>
     <string name="notification_keyboard_hidden_title">键盘已隐藏！</string>
     <string name="notification_keyboard_hidden_text">点击重新显示键盘。</string>
+    <string name="notification_toggle_keyboard_title">切换Key Mapper键盘</string>
+    <string name="notification_toggle_keyboard_text">点击以切换到Key Mapper键盘，或从Key Mapper键盘切换。</string>
+    <string name="notification_ime_service_disabled_title">Key Mapper键盘已禁用！</string>
+    <string name="notification_ime_service_disabled_text">点击以启用Key Mapper键盘。</string>
+    <string name="notification_feature_fingerprint_title">使用Key Mapper重新映射指纹手势！</string>
+    <string name="notification_feature_fingerprint_text">你的设备支持重新映射指纹传感器上的滑动。点击开始重新映射！</string>
     <!-- Notification strings -->
     <!--Preference titles and summaries-->
+    <string name="title_pref_long_press_delay">默认长按延迟 (ms)</string>
+    <string name="summary_pref_long_press_delay">检测到按钮长按需要多长时间。默认值为 500ms。可在按键映射的选项中被覆盖。</string>
+    <string name="title_pref_double_press_delay">默认双击持续时间 (ms)</string>
+    <string name="summary_pref_double_press_delay">检测到按钮双击需要多快。默认值为 300ms。可在按键映射的选项中被覆盖。</string>
     <string name="title_pref_force_vibrate">强制振动</string>
     <string name="title_pref_auto_show_ime_picker">自动显示键盘选择器</string>
     <string name="title_pref_root_permission">Key Mapper 拥有 root 权限</string>
@@ -341,6 +378,7 @@
     <string name="lens_back">后</string>
     <!-- system action options -->
     <!-- Tiles -->
+    <string name="tile_resume">恢复按键映射</string>
     <!-- Tiles -->
     <!-- Meta States -->
     <!-- Meta States -->
