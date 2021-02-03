@@ -33,7 +33,6 @@ import splitties.bitflags.withFlag
 import splitties.systemservices.displayManager
 import splitties.systemservices.vibrator
 import splitties.toast.toast
-import timber.log.Timber
 
 /**
  * Created by sds100 on 05/04/2020.
@@ -255,7 +254,6 @@ class MyAccessibilityService : AccessibilityService(),
         })
 
         globalPreferences.keymapsPaused.collectWhenStarted(this) { paused ->
-            Timber.e("paused $paused")
             if (paused) {
                 globalPreferences.getFlow(Keys.toggleKeyboardOnToggleKeymaps)
                     .firstBlocking()
