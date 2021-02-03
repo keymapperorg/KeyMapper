@@ -61,8 +61,6 @@
     <string name="disabled">已禁用</string>
     <string name="reset">重置</string>
     <string name="enable_device_admin_message">一旦您启用了设备管理器，您必须停用它才能卸载该应用。</string>
-    <string name="debug_trigger_chip_name">长按<b>音量减</b> • USB键盘</string>
-    <string name="debug_trigger_chip_name2">单击<b>首页</b> • 此设备</string>
     <string name="constraints_recyclerview_placeholder">无约束！</string>
     <string name="action_title_wait">等待 %sms</string>
     <string name="email_subject"> Key Mapper 查询</string>
@@ -113,7 +111,7 @@
     <!--  Hints  -->
     <!--  Radio buttons  -->
     <string name="radio_button_parallel">在同一时间</string>
-    <string name="radio_button_sequence">在序列</string>
+    <string name="radio_button_sequence">按顺序</string>
     <string name="radio_button_and">和</string>
     <string name="radio_button_or">或</string>
     <string name="radio_button_short_press">短按</string>
@@ -430,7 +428,7 @@
     <string name="showcase_accessibility_service_title_disabled">启用无障碍服务</string>
     <string name="showcase_accessibility_service_description_disabled">你的按键映射只有在你启用无障碍服务后才能正常工作。它也需要打开以创建触发器。</string>
     <string name="showcase_record_trigger_title">无障碍服务已禁用</string>
-    <string name="showcase_record_trigger_description">如果启用辅助功能，您只能录制触发器。</string>
+    <string name="showcase_record_trigger_description">你只能在启用无障碍服务后录制触发器。</string>
     <string name="showcase_note_from_the_developer_title">开发者提醒</string>
     <string name="showcase_note_from_the_developer_description">无法保证您的设备上的每个操作都能正常运行，每个按钮都会被检测到。 原因是有许多Android系统版本、OEM可能无意或故意破坏功能。如果某些不起作用，请通知开发者，不要给应用评分太低，因为问题常常超出开发者控制。=)</string>
     <string name="showcase_disable_battery_optimisation_title">Key Mapper可能会停止随机工作！</string>
