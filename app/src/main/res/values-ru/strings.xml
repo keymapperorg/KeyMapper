@@ -60,8 +60,6 @@
     <string name="disabled">Отключено</string>
     <string name="reset">Сброс</string>
     <string name="enable_device_admin_message">После того, как вы добавили администратора устройства, вы должны удалить его, если вы хотите удалить приложение.</string>
-    <string name="debug_trigger_chip_name">Долгое нажатие на <b>громкость вниз</b> • USB клавиатура</string>
-    <string name="debug_trigger_chip_name2">Однократное нажатие  <b>Домой</b> • Это устройство</string>
     <string name="constraints_recyclerview_placeholder">Без ограничений!</string>
     <string name="action_title_wait">Подождите %sмс</string>
     <string name="email_subject">Запрос Key Mapper</string>
