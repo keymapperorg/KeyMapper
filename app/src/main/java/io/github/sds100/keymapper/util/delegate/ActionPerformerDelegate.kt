@@ -685,9 +685,11 @@ class ActionPerformerDelegate(context: Context,
                 event.scanCode
         )
 
+        //2 = InputManager.INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH
         injectInputEventMethod.invoke(im, firstEvent, 2)
 
         if (event.keyEventAction == KeyEventAction.DOWN_UP) {
+            //2 = InputManager.INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH
             injectInputEventMethod.invoke(
                     im,
                     KeyEvent.changeAction(firstEvent, KeyEvent.ACTION_UP),
