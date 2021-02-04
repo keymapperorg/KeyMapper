@@ -32,6 +32,13 @@
         android:name="android.hardware.camera"
         android:required="false" />
 
+    <uses-sdk tools:overrideLibrary="rikka.shizuku.api,
+                                    rikka.shizuku.provider,
+                                    rikka.shizuku.shared,
+                                    rikka.shizuku.aidl,
+                                    org.chickenhook.restrictionbypass"
+                                />
+
     <application
         android:name=".MyApplication"
         android:allowBackup="true"

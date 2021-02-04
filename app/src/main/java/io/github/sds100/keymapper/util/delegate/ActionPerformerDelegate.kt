@@ -21,6 +21,7 @@ import android.view.InputEvent
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.webkit.URLUtil
+import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.lifecycle.Lifecycle
@@ -34,7 +35,8 @@ import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import rikka.shizuku.*
+import rikka.shizuku.ShizukuBinderWrapper
+import rikka.shizuku.SystemServiceHelper
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
 import splitties.toast.longToast
@@ -209,7 +211,7 @@ class ActionPerformerDelegate(context: Context,
                                     onFailure = { 0 }
                             )
 
-                    if (PermissionUtils.hasShizukuPermission(ctx) && Shizuku.pingBinder()) {
+                    if (PermissionUtils.canUseShizuku(this)) {
                         performKeyActionThroughShizuku(
                                 ImitateButtonPress(
                                         keyCode = action.data.toInt(),
@@ -455,7 +457,7 @@ class ActionPerformerDelegate(context: Context,
                 }
 
                 SystemAction.MOVE_CURSOR_TO_END -> {
-                    if (PermissionUtils.hasShizukuPermission(ctx) && Shizuku.pingBinder()) {
+                    if (PermissionUtils.canUseShizuku(this)) {
                         performKeyActionThroughShizuku(
                                 ImitateButtonPress(
                                         keyCode = KeyEvent.KEYCODE_MOVE_END,
@@ -662,6 +664,7 @@ class ActionPerformerDelegate(context: Context,
     }
 
     @SuppressLint("PrivateApi", "DiscouragedPrivateApi")
+    @RequiresApi(Build.VERSION_CODES.M)
     fun performKeyActionThroughShizuku(
             event: ImitateButtonPress
     ) {

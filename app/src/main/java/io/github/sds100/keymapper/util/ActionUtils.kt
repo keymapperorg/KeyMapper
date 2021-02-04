@@ -16,7 +16,6 @@ import io.github.sds100.keymapper.globalPreferences
 import io.github.sds100.keymapper.util.SystemActionUtils.getDescriptionWithOption
 import io.github.sds100.keymapper.util.SystemActionUtils.getDescriptionWithOptionSet
 import io.github.sds100.keymapper.util.result.*
-import rikka.shizuku.Shizuku
 import splitties.bitflags.hasFlag
 
 /**
@@ -320,7 +319,7 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
     //the action has no data
     if (data.isEmpty()) return NoActionData()
 
-    if (!Shizuku.pingBinder() && !PermissionUtils.hasShizukuPermission(ctx) && requiresIME) {
+    if (!PermissionUtils.canUseShizuku(ctx) && requiresIME) {
         if (!KeyboardUtils.isCompatibleImeEnabled()) {
             return NoCompatibleImeEnabled()
         }

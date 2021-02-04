@@ -177,6 +177,13 @@ object PermissionUtils {
     fun haveWriteSecureSettingsPermission(ctx: Context) =
         isPermissionGranted(ctx, Manifest.permission.WRITE_SECURE_SETTINGS)
 
+    fun canUseShizuku(ctx: Context): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                && hasShizukuPermission(ctx)
+                && Shizuku.pingBinder()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
     fun hasShizukuPermission(ctx: Context): Boolean {
         return if (Shizuku.isPreV11() && Shizuku.getVersion() < 11) {
             ctx.checkSelfPermission(ShizukuProvider.PERMISSION) == PERMISSION_GRANTED
@@ -185,6 +192,7 @@ object PermissionUtils {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     fun requestShizukuPermission(ctx: Context, reqCode: Int, listener: ((requestCode: Int, grantResult: Int) -> Unit)? = null) {
         if (Shizuku.isPreV11() && Shizuku.getVersion() < 11) {
             if (ctx !is Activity) {

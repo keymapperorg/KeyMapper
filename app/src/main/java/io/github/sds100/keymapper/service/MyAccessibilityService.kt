@@ -28,7 +28,6 @@ import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.*
 import io.github.sds100.keymapper.util.result.*
 import kotlinx.coroutines.*
-import rikka.shizuku.Shizuku
 import splitties.bitflags.minusFlag
 import splitties.bitflags.withFlag
 import splitties.systemservices.displayManager
@@ -317,7 +316,7 @@ class MyAccessibilityService : AccessibilityService(),
     override fun isBluetoothDeviceConnected(address: String) = connectedBtAddresses.contains(address)
 
     override fun canActionBePerformed(action: Action): Result<Action> {
-        if (action.requiresIME && !Shizuku.pingBinder() && !PermissionUtils.hasShizukuPermission(this)) {
+        if (action.requiresIME && !PermissionUtils.canUseShizuku(this)) {
             return if (isCompatibleImeChosen) {
                 Success(action)
             } else {
@@ -395,7 +394,7 @@ class MyAccessibilityService : AccessibilityService(),
                     bundleOf(EXTRA_RECORDED_TRIGGER_KEY_EVENT to event))
 
             is ImitateButtonPress -> {
-                if (PermissionUtils.hasShizukuPermission(this) && Shizuku.pingBinder()) {
+                if (PermissionUtils.canUseShizuku(this)) {
                     actionPerformerDelegate.performKeyActionThroughShizuku(event)
                 } else {
                     when (event.keyCode) {

@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId "io.github.sds100.keymapper"
-        minSdkVersion 23
+        minSdkVersion 17
         targetSdkVersion 30
         versionCode props.getProperty("VERSION_CODE").toInteger()
         versionName props.getProperty("VERSION_NAME")

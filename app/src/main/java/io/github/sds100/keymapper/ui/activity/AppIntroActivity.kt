@@ -21,7 +21,6 @@ import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.fragment.AppIntroScrollableFragment
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.DexUtils.isDexSupported
-import rikka.shizuku.Shizuku
 import splitties.systemservices.powerManager
 import splitties.toast.longToast
 

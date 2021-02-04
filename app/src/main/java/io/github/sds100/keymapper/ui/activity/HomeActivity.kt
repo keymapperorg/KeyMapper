@@ -24,7 +24,6 @@ import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.FileAccessDenied
 import io.github.sds100.keymapper.util.result.onFailure
 import kotlinx.android.synthetic.main.activity_home.*
-import rikka.shizuku.Shizuku
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.messageResource
 import splitties.alertdialog.appcompat.okButton
@@ -76,7 +75,7 @@ class HomeActivity : AppCompatActivity() {
 
         packageManager.setComponentEnabledSetting(
                 ComponentName(this, KeyMapperImeService::class.java),
-                if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED)
+                if (PermissionUtils.canUseShizuku(this))
                     PackageManager.COMPONENT_ENABLED_STATE_DISABLED
                 else PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
                 0
