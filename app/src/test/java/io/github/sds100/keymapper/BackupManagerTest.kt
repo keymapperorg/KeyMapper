@@ -87,6 +87,7 @@ class BackupManagerTest {
         mockFingerprintMapRepository = Mockito.mock(FingerprintMapRepository::class.java)
 
         Mockito.`when`(mockKeymapRepository.requestBackup).thenReturn(LiveEvent())
+        Mockito.`when`(mockFingerprintMapRepository.requestBackup).thenReturn(LiveEvent())
 
         backupManager = BackupManager(
             mockKeymapRepository,
