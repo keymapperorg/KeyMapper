@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.data
 
-import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.preferencesKey
 import io.github.sds100.keymapper.Constants
 
 /**
@@ -27,9 +27,9 @@ class AppUpdateManager(private val globalPreferences: IGlobalPreferences) {
 
     private object PreferenceKeys {
         val LAST_INSTALLED_VERSION_CODE_HOME_SCREEN =
-            intPreferencesKey("last_installed_version_home_screen")
+            preferencesKey<Int>("last_installed_version_home_screen")
 
         val LAST_INSTALLED_VERSION_CODE_ACCESSIBILITY_SERVICE =
-            intPreferencesKey("last_installed_version_accessibility_service")
+            preferencesKey<Int>("last_installed_version_accessibility_service")
     }
 }

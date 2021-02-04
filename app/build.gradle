@@ -86,12 +86,12 @@ android.applicationVariants.all { variant ->
 
 dependencies {
     def room_version = "2.2.6"
-    def coroutinesVersion = "1.4.2"
-    def nav_version = '2.3.3'
-    def work_version = "2.5.0"
+    def coroutinesVersion = "1.4.1"
+    def nav_version = '2.3.2'
+    def work_version = "2.4.0"
     def epoxy_version = "4.0.0"
     def splitties_version = "3.0.0-alpha06"
-    def markwonVersion = "4.6.0"
+    def markwonVersion = "4.3.1"
     def multidex_version = "2.0.1"
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
@@ -130,7 +130,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-core-ui:1.0.0'
     implementation 'androidx.core:core-ktx:1.3.2'
 
-    implementation 'androidx.fragment:fragment-ktx:1.3.0-rc02'
+    implementation 'androidx.fragment:fragment-ktx:1.3.0-beta02'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
@@ -147,7 +147,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.viewpager2:viewpager2:1.0.0"
-    implementation "androidx.datastore:datastore-preferences:1.0.0-alpha06"
+    implementation "androidx.datastore:datastore-preferences:1.0.0-alpha05"
     kapt "androidx.room:room-compiler:$room_version"
 
 //    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.6'

@@ -29,44 +29,25 @@ class SharedPrefsDataStoreWrapper(
 
     private inline fun <reified T> getFromSharedPrefs(key: String, default: T): T {
         return runBlocking {
-            globalPreferences.get(
-                    when (default) {
-                        is Int -> intPreferencesKey(key)
-                        is Long -> longPreferencesKey(key)
-                        is String -> stringPreferencesKey(key)
-                        is Boolean -> booleanPreferencesKey(key)
-                        is Double -> doublePreferencesKey(key)
-                        is Float -> floatPreferencesKey(key)
-                        else -> throw IllegalArgumentException("Invalid type ${T::class.java}")
-                    }
-            ) as T? ?: default
+            globalPreferences.get(preferencesKey(key)) ?: default
         }
     }
 
     private inline fun <reified T : Any> setFromSharedPrefs(key: String?, value: T?) {
         key ?: return
 
-        globalPreferences.set(
-                when (value) {
-                    is Int -> intPreferencesKey(key)
-                    is Long -> longPreferencesKey(key)
-                    is String -> stringPreferencesKey(key)
-                    is Boolean -> booleanPreferencesKey(key)
-                    is Double -> doublePreferencesKey(key)
-                    is Float -> floatPreferencesKey(key)
-                    else -> throw IllegalArgumentException("Invalid type ${T::class.java}")
-                } as Preferences.Key<T>, value)
+        globalPreferences.set(preferencesKey(key), value)
     }
 
     private inline fun <reified T : Any> getSetFromSharedPrefs(key: String, default: Set<T>?): Set<T> {
         return runBlocking {
-            globalPreferences.get(stringSetPreferencesKey(key)) as Set<T>? ?: emptySet()
+            globalPreferences.get(preferencesSetKey(key)) ?: emptySet()
         }
     }
 
     private inline fun <reified T : Any> setSetFromSharedPrefs(key: String?, value: Set<T>?) {
         key ?: return
 
-        globalPreferences.set(stringSetPreferencesKey(key) as Preferences.Key<Set<T>>, value)
+        globalPreferences.set(preferencesSetKey(key), value)
     }
 }
