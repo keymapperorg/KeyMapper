@@ -21,6 +21,7 @@ import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.fragment.AppIntroScrollableFragment
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.DexUtils.isDexSupported
+import rikka.shizuku.Shizuku
 import splitties.systemservices.powerManager
 import splitties.toast.longToast
 
@@ -29,7 +30,6 @@ import splitties.toast.longToast
  */
 
 class AppIntroActivity : AppIntro2() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -37,6 +37,8 @@ class AppIntroActivity : AppIntro2() {
 
         addSlide(NoteFromDeveloperSlide())
         addSlide(AccessibilityServiceSlide())
+
+        addSlide(ShizukuSlide())
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
             && !powerManager.isIgnoringBatteryOptimizations(Constants.PACKAGE_NAME)) {
@@ -81,6 +83,37 @@ class NoteFromDeveloperSlide : AppIntroScrollableFragment() {
             description = str(R.string.showcase_note_from_the_developer_description)
             imageDrawable = drawable(R.mipmap.ic_launcher_round)
             backgroundColor = color(R.color.red)
+        }
+
+        viewLoaded()
+    }
+}
+
+class ShizukuSlide : AppIntroScrollableFragment() {
+    companion object {
+        const val REQ_SHIZUKU_PERMISSION = 1000
+    }
+
+    override fun onBind(binding: FragmentAppIntroSlideBinding) {
+        binding.apply {
+            title = getString(R.string.showcase_shizuku_title)
+            description = getString(R.string.showcase_shizuku_message)
+
+            buttonText1 = getString(R.string.showcase_shizuku_grant)
+            buttonText2 = getString(R.string.showcase_shizuku_install)
+
+            imageDrawable = drawable(R.drawable.ic_outline_error_outline_64)
+            backgroundColor = color(R.color.orange)
+
+            setOnButton1ClickListener {
+                if (!PermissionUtils.hasShizukuPermission(requireContext())) {
+                    PermissionUtils.requestShizukuPermission(requireContext(), REQ_SHIZUKU_PERMISSION)
+                }
+            }
+
+            setOnButton2ClickListener {
+                UrlUtils.openUrl(requireContext(), "https://play.google.com/store/apps/details?id=moe.shizuku.privileged.api")
+            }
         }
 
         viewLoaded()

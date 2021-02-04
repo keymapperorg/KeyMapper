@@ -1,6 +1,8 @@
 package io.github.sds100.keymapper.ui.activity
 
 import android.Manifest
+import android.content.ComponentName
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.KeyEvent
 import androidx.activity.viewModels
@@ -16,11 +18,13 @@ import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
 import io.github.sds100.keymapper.data.viewmodel.HomeViewModel
 import io.github.sds100.keymapper.data.viewmodel.KeyActionTypeViewModel
 import io.github.sds100.keymapper.databinding.ActivityHomeBinding
+import io.github.sds100.keymapper.service.KeyMapperImeService
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.FileAccessDenied
 import io.github.sds100.keymapper.util.result.onFailure
 import kotlinx.android.synthetic.main.activity_home.*
+import rikka.shizuku.Shizuku
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.messageResource
 import splitties.alertdialog.appcompat.okButton
@@ -69,6 +73,14 @@ class HomeActivity : AppCompatActivity() {
                 show()
             }
         }
+
+        packageManager.setComponentEnabledSetting(
+                ComponentName(this, KeyMapperImeService::class.java),
+                if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED)
+                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+                else PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                0
+        )
 
         ServiceLocator.keymapRepository(this).apply {
             keymapList.observe(this@HomeActivity, {

@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.util
 
-import androidx.datastore.preferences.core.preferencesKey
-import androidx.datastore.preferences.core.preferencesSetKey
+import androidx.datastore.preferences.core.*
 import androidx.preference.PreferenceDataStore
 import io.github.sds100.keymapper.data.IGlobalPreferences
 import kotlinx.coroutines.runBlocking
@@ -30,25 +29,44 @@ class SharedPrefsDataStoreWrapper(
 
     private inline fun <reified T> getFromSharedPrefs(key: String, default: T): T {
         return runBlocking {
-            globalPreferences.get(preferencesKey(key)) ?: default
+            globalPreferences.get(
+                    when (default) {
+                        is Int -> intPreferencesKey(key)
+                        is Long -> longPreferencesKey(key)
+                        is String -> stringPreferencesKey(key)
+                        is Boolean -> booleanPreferencesKey(key)
+                        is Double -> doublePreferencesKey(key)
+                        is Float -> floatPreferencesKey(key)
+                        else -> throw IllegalArgumentException("Invalid type ${T::class.java}")
+                    }
+            ) as T? ?: default
         }
     }
 
     private inline fun <reified T : Any> setFromSharedPrefs(key: String?, value: T?) {
         key ?: return
 
-        globalPreferences.set(preferencesKey(key), value)
+        globalPreferences.set(
+                when (value) {
+                    is Int -> intPreferencesKey(key)
+                    is Long -> longPreferencesKey(key)
+                    is String -> stringPreferencesKey(key)
+                    is Boolean -> booleanPreferencesKey(key)
+                    is Double -> doublePreferencesKey(key)
+                    is Float -> floatPreferencesKey(key)
+                    else -> throw IllegalArgumentException("Invalid type ${T::class.java}")
+                } as Preferences.Key<T>, value)
     }
 
     private inline fun <reified T : Any> getSetFromSharedPrefs(key: String, default: Set<T>?): Set<T> {
         return runBlocking {
-            globalPreferences.get(preferencesSetKey(key)) ?: emptySet()
+            globalPreferences.get(stringSetPreferencesKey(key)) as Set<T>? ?: emptySet()
         }
     }
 
     private inline fun <reified T : Any> setSetFromSharedPrefs(key: String?, value: Set<T>?) {
         key ?: return
 
-        globalPreferences.set(preferencesSetKey(key), value)
+        globalPreferences.set(stringSetPreferencesKey(key) as Preferences.Key<Set<T>>, value)
     }
 }

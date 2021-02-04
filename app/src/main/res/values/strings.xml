@@ -577,6 +577,11 @@
     <string name="showcase_dex_mode_supported_title">Your device seems to support Samsung Dex</string>
     <string name="showcase_dex_mode_supported_message">Samsung doesn\'t allow apps with a 3rd party keyboard to open while in Dex mode. Therefore, this app won\'t open and the Key Mapper keyboard won\'t work while you are in Dex mode. Your key maps which don\'t require the Key Mapper keyboard will still work while you\'re in Dex mode.</string>
 
+    <string name="showcase_shizuku_title">Shizuku</string>
+    <string name="showcase_shizuku_message">Shizuku will allow this app to execute key commands without using a custom keyboard. Make sure to install the Shizuku app from the Play Store and then tap the button below.</string>
+    <string name="showcase_shizuku_install">Install</string>
+    <string name="showcase_shizuku_grant">Grant</string>
+
     <string name="showcase_dnd_access_title_disabled">Remapping volume buttons?</string>
     <string name="showcase_dnd_access_title_enabled">You can remap volume buttons</string>
     <string name="showcase_dnd_access_description_disabled">Key Mapper needs Do Not Disturb access if you want actions which change the volume and remapped volume buttons to work.</string>

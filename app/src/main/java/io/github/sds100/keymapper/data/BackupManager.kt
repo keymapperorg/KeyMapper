@@ -278,7 +278,7 @@ class BackupManager(
     }
 
     private suspend fun shouldBackupAutomatically() =
-        globalPreferences.get(Keys.automaticBackupLocation)?.isNotBlank() ?: false
+        globalPreferences.get<String>(Keys.automaticBackupLocation)?.isNotBlank() ?: false
 
     private class BackupModel(
         @SerializedName(NAME_KEYMAP_DB_VERSION)

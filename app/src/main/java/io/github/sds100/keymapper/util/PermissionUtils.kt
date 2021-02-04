@@ -2,10 +2,12 @@ package io.github.sds100.keymapper.util
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.Uri
 import android.os.Build
@@ -20,6 +22,8 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.hasRootPermission
 import io.github.sds100.keymapper.globalPreferences
 import io.github.sds100.keymapper.service.DeviceAdmin
+import rikka.shizuku.Shizuku
+import rikka.shizuku.ShizukuProvider
 import splitties.alertdialog.appcompat.*
 import splitties.systemservices.devicePolicyManager
 import splitties.systemservices.notificationManager
@@ -172,4 +176,31 @@ object PermissionUtils {
 
     fun haveWriteSecureSettingsPermission(ctx: Context) =
         isPermissionGranted(ctx, Manifest.permission.WRITE_SECURE_SETTINGS)
+
+    fun hasShizukuPermission(ctx: Context): Boolean {
+        return if (Shizuku.isPreV11() && Shizuku.getVersion() < 11) {
+            ctx.checkSelfPermission(ShizukuProvider.PERMISSION) == PERMISSION_GRANTED
+        } else {
+            Shizuku.checkSelfPermission() == PERMISSION_GRANTED
+        }
+    }
+
+    fun requestShizukuPermission(ctx: Context, reqCode: Int, listener: ((requestCode: Int, grantResult: Int) -> Unit)? = null) {
+        if (Shizuku.isPreV11() && Shizuku.getVersion() < 11) {
+            if (ctx !is Activity) {
+                throw IllegalArgumentException("Context must be Activity")
+            }
+
+            if (reqCode == -1) {
+                throw IllegalArgumentException("Request code can't be -1")
+            }
+
+            ctx.requestPermissions(arrayOf(ShizukuProvider.PERMISSION), reqCode)
+        } else {
+            if (listener != null) {
+                Shizuku.addRequestPermissionResultListener(listener)
+            }
+            Shizuku.requestPermission(reqCode)
+        }
+    }
 }

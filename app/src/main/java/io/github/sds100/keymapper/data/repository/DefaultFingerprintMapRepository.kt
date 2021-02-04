@@ -2,9 +2,9 @@ package io.github.sds100.keymapper.data.repository
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.preferencesKey
-import androidx.datastore.preferences.core.remove
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import com.github.salomonbrys.kotson.fromJson
@@ -187,10 +187,10 @@ class DefaultFingerprintMapRepository(private val dataStore: DataStore<Preferenc
     }
 
     private object PreferenceKeys {
-        val FINGERPRINT_GESTURE_SWIPE_DOWN = preferencesKey<String>("swipe_down")
-        val FINGERPRINT_GESTURE_SWIPE_UP = preferencesKey<String>("swipe_up")
-        val FINGERPRINT_GESTURE_SWIPE_LEFT = preferencesKey<String>("swipe_left")
-        val FINGERPRINT_GESTURE_SWIPE_RIGHT = preferencesKey<String>("swipe_right")
+        val FINGERPRINT_GESTURE_SWIPE_DOWN = stringPreferencesKey("swipe_down")
+        val FINGERPRINT_GESTURE_SWIPE_UP = stringPreferencesKey("swipe_up")
+        val FINGERPRINT_GESTURE_SWIPE_LEFT = stringPreferencesKey("swipe_left")
+        val FINGERPRINT_GESTURE_SWIPE_RIGHT = stringPreferencesKey("swipe_right")
 
         val ALL_SWIPE_KEYS = arrayOf(
             FINGERPRINT_GESTURE_SWIPE_DOWN,
@@ -199,6 +199,6 @@ class DefaultFingerprintMapRepository(private val dataStore: DataStore<Preferenc
             FINGERPRINT_GESTURE_SWIPE_RIGHT)
 
         val FINGERPRINT_GESTURES_AVAILABLE =
-            preferencesKey<Boolean>("fingerprint_gestures_available")
+            booleanPreferencesKey("fingerprint_gestures_available")
     }
 }

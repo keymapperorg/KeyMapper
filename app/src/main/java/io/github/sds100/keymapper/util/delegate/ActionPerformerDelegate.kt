@@ -9,9 +9,12 @@ import android.content.Context.DEVICE_POLICY_SERVICE
 import android.content.Intent
 import android.graphics.Path
 import android.hardware.camera2.CameraCharacteristics
+import android.hardware.input.IInputManager
+import android.hardware.input.InputManager
 import android.media.AudioManager
 import android.net.Uri
 import android.os.Build
+import android.os.SystemClock
 import android.provider.MediaStore
 import android.provider.Settings
 import android.view.KeyEvent
@@ -30,6 +33,7 @@ import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import rikka.shizuku.*
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
 import splitties.toast.longToast
@@ -63,17 +67,17 @@ class ActionPerformerDelegate(context: Context,
     }
 
     fun performAction(
-        action: Action,
-        chosenImePackageName: String?,
-        currentPackageName: String?
+            action: Action,
+            chosenImePackageName: String?,
+            currentPackageName: String?
     ) = performAction(PerformAction(action), chosenImePackageName, currentPackageName)
 
     fun performAction(
-        performActionModel: PerformAction,
-        chosenImePackageName: String?,
-        currentPackageName: String?,
+            performActionModel: PerformAction,
+            chosenImePackageName: String?,
+            currentPackageName: String?,
 
-        ) {
+            ) {
         val (action, additionalMetaState, keyEventAction) = performActionModel
 
         ctx.apply {
@@ -82,11 +86,11 @@ class ActionPerformerDelegate(context: Context,
                     val packageName = action.data
 
                     val leanbackIntent =
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            packageManager.getLeanbackLaunchIntentForPackage(packageName)
-                        } else {
-                            null
-                        }
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                packageManager.getLeanbackLaunchIntentForPackage(packageName)
+                            } else {
+                                null
+                            }
 
                     val normalIntent = packageManager.getLaunchIntentForPackage(packageName)
 
@@ -148,9 +152,9 @@ class ActionPerformerDelegate(context: Context,
                 }
 
                 ActionType.SYSTEM_ACTION -> performSystemAction(
-                    action,
-                    chosenImePackageName,
-                    currentPackageName
+                        action,
+                        chosenImePackageName,
+                        currentPackageName
                 )
 
                 ActionType.TAP_COORDINATE -> {
@@ -165,7 +169,7 @@ class ActionPerformerDelegate(context: Context,
                         }
 
                         val strokeDescription = if (action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)
-                            && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
                             when (keyEventAction) {
                                 KeyEventAction.DOWN -> GestureDescription.StrokeDescription(path, 0, duration, true)
@@ -189,8 +193,8 @@ class ActionPerformerDelegate(context: Context,
 
                 ActionType.KEY_EVENT -> {
                     val useShell = action.extras.getData(Action.EXTRA_KEY_EVENT_USE_SHELL)
-                        .valueOrNull()
-                        .toBoolean()
+                            .valueOrNull()
+                            .toBoolean()
 
                     if (useShell) {
                         val keyCode = action.data
@@ -198,25 +202,40 @@ class ActionPerformerDelegate(context: Context,
                     }
 
                     val deviceId = action.extras
-                        .getData(Action.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR)
-                        .handle(
-                            onSuccess = { InputDeviceUtils.getDeviceIdFromDescriptor(it) },
-                            onFailure = { 0 }
-                        )
+                            .getData(Action.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR)
+                            .handle(
+                                    onSuccess = { InputDeviceUtils.getDeviceIdFromDescriptor(it) },
+                                    onFailure = { 0 }
+                            )
 
-                    chosenImePackageName?.let {
-                        KeyboardUtils.inputKeyEventFromImeService(
-                            ctx,
-                            it,
-                            keyCode = action.data.toInt(),
-                            metaState = additionalMetaState.withFlag(
-                                action.extras.getData(Action.EXTRA_KEY_EVENT_META_STATE)
-                                    .valueOrNull()
-                                    ?.toInt()
-                                    ?: 0
-                            ),
-                            keyEventAction = keyEventAction,
-                            deviceId = deviceId ?: 0)
+                    if (PermissionUtils.hasShizukuPermission(ctx) && Shizuku.pingBinder()) {
+                        performKeyActionThroughShizuku(
+                                ImitateButtonPress(
+                                        keyCode = action.data.toInt(),
+                                        metaState = additionalMetaState.withFlag(
+                                                action.extras.getData(Action.EXTRA_KEY_EVENT_META_STATE)
+                                                        .valueOrNull()
+                                                        ?.toInt()
+                                                        ?: 0),
+                                        keyEventAction = keyEventAction,
+                                        deviceId = deviceId ?: 0
+                                )
+                        )
+                    } else {
+                        chosenImePackageName?.let {
+                            KeyboardUtils.inputKeyEventFromImeService(
+                                    ctx,
+                                    it,
+                                    keyCode = action.data.toInt(),
+                                    metaState = additionalMetaState.withFlag(
+                                            action.extras.getData(Action.EXTRA_KEY_EVENT_META_STATE)
+                                                    .valueOrNull()
+                                                    ?.toInt()
+                                                    ?: 0
+                                    ),
+                                    keyEventAction = keyEventAction,
+                                    deviceId = deviceId ?: 0)
+                        }
                     }
                 }
 
@@ -251,13 +270,13 @@ class ActionPerformerDelegate(context: Context,
     }
 
     fun performSystemAction(
-        id: String,
-        chosenImePackageName: String?,
-        currentPackageName: String?
+            id: String,
+            chosenImePackageName: String?,
+            currentPackageName: String?
     ) = performSystemAction(
-        Action(ActionType.SYSTEM_ACTION, id),
-        chosenImePackageName,
-        currentPackageName
+            Action(ActionType.SYSTEM_ACTION, id),
+            chosenImePackageName,
+            currentPackageName
     )
 
     private fun performSystemAction(action: Action,
@@ -341,19 +360,19 @@ class ActionPerformerDelegate(context: Context,
 
                 SystemAction.VOLUME_DECREASE_STREAM -> getSdkValueForOption { stream ->
                     AudioUtils.adjustSpecificStream(
-                        this,
-                        AudioManager.ADJUST_LOWER,
-                        showVolumeUi,
-                        stream
+                            this,
+                            AudioManager.ADJUST_LOWER,
+                            showVolumeUi,
+                            stream
                     )
                 }
 
                 SystemAction.VOLUME_INCREASE_STREAM -> getSdkValueForOption { stream ->
                     AudioUtils.adjustSpecificStream(
-                        this,
-                        AudioManager.ADJUST_RAISE,
-                        showVolumeUi,
-                        stream
+                            this,
+                            AudioManager.ADJUST_RAISE,
+                            showVolumeUi,
+                            stream
                     )
                 }
 
@@ -434,14 +453,27 @@ class ActionPerformerDelegate(context: Context,
                     suProcessDelegate.runCommand("input keyevent ${KeyEvent.KEYCODE_POWER}")
                 }
 
-                SystemAction.MOVE_CURSOR_TO_END -> chosenImePackageName?.let {
-                    KeyboardUtils.inputKeyEventFromImeService(
-                        ctx,
-                        it,
-                        keyCode = KeyEvent.KEYCODE_MOVE_END,
-                        metaState = KeyEvent.META_CTRL_ON,
-                        deviceId = 0
-                    )
+                SystemAction.MOVE_CURSOR_TO_END -> {
+                    if (PermissionUtils.hasShizukuPermission(ctx) && Shizuku.pingBinder()) {
+                        performKeyActionThroughShizuku(
+                                ImitateButtonPress(
+                                        keyCode = KeyEvent.KEYCODE_MOVE_END,
+                                        metaState = KeyEvent.META_CTRL_ON,
+                                        deviceId = 0,
+                                        keyEventAction = KeyEventAction.DOWN_UP
+                                )
+                        )
+                    } else {
+                        chosenImePackageName?.let {
+                            KeyboardUtils.inputKeyEventFromImeService(
+                                    ctx,
+                                    it,
+                                    keyCode = KeyEvent.KEYCODE_MOVE_END,
+                                    metaState = KeyEvent.META_CTRL_ON,
+                                    deviceId = 0
+                            )
+                        }
+                    }
                 }
 
                 SystemAction.OPEN_SETTINGS -> {
@@ -484,16 +516,16 @@ class ActionPerformerDelegate(context: Context,
                                         val cursorPosition = it.textSelectionStart
 
                                         val wordBoundary =
-                                            it.text.toString().getWordBoundaries(cursorPosition)
-                                                ?: return@focusedNode
+                                                it.text.toString().getWordBoundaries(cursorPosition)
+                                                        ?: return@focusedNode
 
                                         val bundle = bundleOf(
-                                            AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT
-                                                to wordBoundary.first,
+                                                AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT
+                                                        to wordBoundary.first,
 
-                                            //The index of the cursor is the index of the last char in the word + 1
-                                            AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT
-                                                to wordBoundary.second + 1
+                                                //The index of the cursor is the index of the last char in the word + 1
+                                                AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT
+                                                        to wordBoundary.second + 1
                                         )
 
                                         it.performAction(AccessibilityNodeInfo.ACTION_SET_SELECTION, bundle)
@@ -569,15 +601,15 @@ class ActionPerformerDelegate(context: Context,
 
                         when (id) {
                             SystemAction.VOLUME_UNMUTE -> AudioUtils.adjustVolume(
-                                this,
-                                AudioManager.ADJUST_UNMUTE,
-                                showVolumeUi
+                                    this,
+                                    AudioManager.ADJUST_UNMUTE,
+                                    showVolumeUi
                             )
 
                             SystemAction.VOLUME_MUTE -> AudioUtils.adjustVolume(
-                                this,
-                                AudioManager.ADJUST_MUTE,
-                                showVolumeUi
+                                    this,
+                                    AudioManager.ADJUST_MUTE,
+                                    showVolumeUi
                             )
 
                             SystemAction.VOLUME_TOGGLE_MUTE ->
@@ -625,6 +657,33 @@ class ActionPerformerDelegate(context: Context,
                     }
                 }
             }
+        }
+    }
+
+    fun performKeyActionThroughShizuku(
+            event: ImitateButtonPress
+    ) {
+        val im = IInputManager.Stub.asInterface(ShizukuBinderWrapper(SystemServiceHelper.getSystemService(Context.INPUT_SERVICE)))
+
+        val now = SystemClock.uptimeMillis()
+
+        val firstEvent = KeyEvent(
+                now, now,
+                if (event.keyEventAction == KeyEventAction.UP) KeyEvent.ACTION_UP else KeyEvent.ACTION_DOWN,
+                event.keyCode,
+                0,
+                event.metaState,
+                event.deviceId,
+                event.scanCode
+        )
+
+        im.injectInputEvent(firstEvent, InputManager.INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH)
+
+        if (event.keyEventAction == KeyEventAction.DOWN_UP) {
+            im.injectInputEvent(
+                    KeyEvent.changeAction(firstEvent, KeyEvent.ACTION_UP),
+                    InputManager.INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH
+            )
         }
     }
 }
