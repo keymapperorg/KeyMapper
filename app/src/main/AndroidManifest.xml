@@ -36,8 +36,7 @@
                                     rikka.shizuku.provider,
                                     rikka.shizuku.shared,
                                     rikka.shizuku.aidl,
-                                    org.chickenhook.restrictionbypass"
-                                />
+                                    org.chickenhook.restrictionbypass" />
 
     <application
         android:name=".MyApplication"
