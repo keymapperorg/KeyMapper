@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.util.delegate
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.GestureDescription
+import android.annotation.SuppressLint
 import android.app.admin.DevicePolicyManager
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -9,14 +10,15 @@ import android.content.Context.DEVICE_POLICY_SERVICE
 import android.content.Intent
 import android.graphics.Path
 import android.hardware.camera2.CameraCharacteristics
-import android.hardware.input.IInputManager
 import android.hardware.input.InputManager
 import android.media.AudioManager
 import android.net.Uri
 import android.os.Build
+import android.os.IBinder
 import android.os.SystemClock
 import android.provider.MediaStore
 import android.provider.Settings
+import android.view.InputEvent
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.webkit.URLUtil
@@ -660,10 +662,17 @@ class ActionPerformerDelegate(context: Context,
         }
     }
 
+    @SuppressLint("PrivateApi", "DiscouragedPrivateApi")
     fun performKeyActionThroughShizuku(
             event: ImitateButtonPress
     ) {
-        val im = IInputManager.Stub.asInterface(ShizukuBinderWrapper(SystemServiceHelper.getSystemService(Context.INPUT_SERVICE)))
+        val im = Class.forName("android.hardware.input.IInputManager\$Stub")
+                .getDeclaredMethod("asInterface", IBinder::class.java)
+                .invoke(null, ShizukuBinderWrapper(SystemServiceHelper.getSystemService(Context.INPUT_SERVICE)))
+
+        val injectInputEventMethod = im::class.java.getDeclaredMethod(
+                "injectInputEvent", InputEvent::class.java, Int::class.java
+        )
 
         val now = SystemClock.uptimeMillis()
 
@@ -677,10 +686,11 @@ class ActionPerformerDelegate(context: Context,
                 event.scanCode
         )
 
-        im.injectInputEvent(firstEvent, InputManager.INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH)
+        injectInputEventMethod.invoke(im, firstEvent, InputManager.INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH)
 
         if (event.keyEventAction == KeyEventAction.DOWN_UP) {
-            im.injectInputEvent(
+            injectInputEventMethod.invoke(
+                    im,
                     KeyEvent.changeAction(firstEvent, KeyEvent.ACTION_UP),
                     InputManager.INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH
             )
