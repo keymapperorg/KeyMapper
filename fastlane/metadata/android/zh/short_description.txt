@@ -1,1 +1,1 @@
-Remaps the buttons on your device and other devices and fingerprint gestures.
+重新映射你的设备和其他设备的按钮以及指纹手势。
