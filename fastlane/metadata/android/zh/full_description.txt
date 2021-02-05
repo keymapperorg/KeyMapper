@@ -9,7 +9,7 @@
  * Chubby Buttons 2。
 
 只有实体按键能重新映射。
-不保证这些按钮都将工作，并且这个应用不是为了控制游戏而设计的。 你的设备的OEM/供应商 可以阻止它们被重新映射。
+不保证这些按钮都将工作，并且这个应用不是为了控制游戏而设计的。 你的设备的OEM/供应商可以阻止它们被重新映射。
 
 你可以组合来自特定设备或多个设备的多个按键来构成“触发器”。 每个触发器都可以有多个动作。 可以将按键设置为同时按下或依次按下。 按键可以在它们被短按、长按或双击时被重新映射。 按键映射可以有一组“约束，因此它仅在某些情况下有效。
 
@@ -21,34 +21,34 @@
  * 鼠标按钮
  * 游戏手柄上的的Dpad、类比摇杆和触发器
 
-如果屏幕关闭，你的按键映射将不起作用。 这是Android中的一个限制。 There is nothing the dev can do.
+如果屏幕关闭，你的按键映射将不起作用。 这是Android中的一个限制。 开发者无能为力。
 
-What can I remap my keys to do?
- Some actions will only work on rooted devices and specific Android versions.
+我重新映射我的按键能些做什么？
+ 某些动作只在已root的设备和特定的Android版本上起作用。
 
- * Open an app
- * Open an app shortcut.
- * Open a URL
- * Create Intents
- * Go back
- * Go home
- * Open recents
- * Open menu
- * Expand notification drawer
- * Expand quick settings
- * Collapse status bar
- * Toggle/enable/disable WiFi (ROOT only for Android 10+)
- * Toggle/enable/disable Bluetooth
- * Toggle/enable/disable mobile data (ROOT only)
- * Toggle Play/pause media
- * Pause/play media
- * Fast forward/rewind
- * Next/previous track
- * Volume up/down
- * Increase/decrease a specific volume stream
- * Show the volume dialog
- * Cycle through and change the ringer mode
- * Mute/unmute/toggle mute (Android 6.0+)
+ * 打开应用
+ * 打开应用快捷方式
+ * 打开URL
+ * 创建Intent
+ * 返回
+ * 主屏幕
+ * 打开最近任务
+ * 打开菜单
+ * 展开通知栏
+ * 展开快速设置
+ * 折叠状态栏
+ * 切换/启用/禁用WIFI (仅适用于Android 10+的ROOT)
+ * 切换/启用/禁用蓝牙
+ * 切换/启用/禁用移动数据 (仅限ROOT)
+ * 切换播放/暂停媒体
+ * 暂停/播放媒体
+ * 快进/快退
+ * 下/上一曲
+ * 音量加/减
+ * 增加/减少特定的音量流
+ * 显示音量对话框
+ * 周期循环和更改铃响模式
+ * 静音/取消静音/切换静音 (Android 6.0+)
  * Toggle/enable/disable auto-rotate
  * Switch between portrait and landscape mode
  * Force portrait/landscape mode
