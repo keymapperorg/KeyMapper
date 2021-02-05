@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityFlags="flagDefault"
+    android:canPerformGestures="true"
+    android:description="@string/tap_accessibility_service_description"
+    android:settingsActivity="io.github.sds100.keymapper.activity.HomeActivity" />

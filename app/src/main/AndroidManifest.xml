@@ -132,6 +132,19 @@
         </service>
 
         <service
+            android:name=".service.TapperAcessibilityService"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:label="@string/tap_accessibility_service_title">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/config_tap_accessibility_service" />
+        </service>
+
+        <service
             android:name=".service.KeyMapperImeService"
             android:label="@string/ime_service_label"
             android:permission="android.permission.BIND_INPUT_METHOD">

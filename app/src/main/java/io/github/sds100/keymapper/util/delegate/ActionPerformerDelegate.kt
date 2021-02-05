@@ -26,11 +26,13 @@ import androidx.core.os.bundleOf
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.lifecycle.Lifecycle
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.data.TapGesture
 import io.github.sds100.keymapper.data.hasRootPermission
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Option
 import io.github.sds100.keymapper.data.model.getData
 import io.github.sds100.keymapper.globalPreferences
+import io.github.sds100.keymapper.service.TapperAccessibilityService
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.*
 import kotlinx.coroutines.delay
@@ -165,32 +167,43 @@ class ActionPerformerDelegate(context: Context,
                         val x = action.data.split(',')[0]
                         val y = action.data.split(',')[1]
 
-                        val duration = 1L //ms
-
-                        val path = Path().apply {
-                            moveTo(x.toFloat(), y.toFloat())
+                        if (AccessibilityUtils.isTapperServiceEnabled(this)) {
+                            TapperAccessibilityService.sendTapGesture(
+                                    this,
+                                    TapGesture(
+                                            action,
+                                            keyEventAction,
+                                            x.toFloat(), y.toFloat()
+                                    )
+                            )
                         }
 
-                        val strokeDescription = if (action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)
-                                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
-                            when (keyEventAction) {
-                                KeyEventAction.DOWN -> GestureDescription.StrokeDescription(path, 0, duration, true)
-                                KeyEventAction.UP -> GestureDescription.StrokeDescription(path, 59999, duration, false)
-                                else -> null
-                            }
-
-                        } else {
-                            GestureDescription.StrokeDescription(path, 0, duration)
-                        }
-
-                        strokeDescription?.let {
-                            val gestureDescription = GestureDescription.Builder().apply {
-                                addStroke(it)
-                            }.build()
-
-                            dispatchGesture(gestureDescription, null, null)
-                        }
+//                        val duration = 1L //ms
+//
+//                        val path = Path().apply {
+//                            moveTo(x.toFloat(), y.toFloat())
+//                        }
+//
+//                        val strokeDescription = if (action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)
+//                                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//
+//                            when (keyEventAction) {
+//                                KeyEventAction.DOWN -> GestureDescription.StrokeDescription(path, 0, duration, true)
+//                                KeyEventAction.UP -> GestureDescription.StrokeDescription(path, 59999, duration, false)
+//                                else -> null
+//                            }
+//
+//                        } else {
+//                            GestureDescription.StrokeDescription(path, 0, duration)
+//                        }
+//
+//                        strokeDescription?.let {
+//                            val gestureDescription = GestureDescription.Builder().apply {
+//                                addStroke(it)
+//                            }.build()
+//
+//                            dispatchGesture(gestureDescription, null, null)
+//                        }
                     }
                 }
 

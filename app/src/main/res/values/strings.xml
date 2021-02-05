@@ -2,9 +2,12 @@
     <string name="app_name" translatable="false">Key Mapper</string>
     <string name="developer_email" translatable="false">developer.sds100@gmail.com</string>
 
+    <string name="tap_accessibility_service_title">Key Mapper Tapper</string>
+
     <string name="no_action_chosen">No action chosen</string>
     <string name="accessibility_service_description">Key Mapper needs to use an accessibility service so it can listen to button/key presses and perform the actions you\'ve chosen.
     The accessibility service only listens for key events and detects which app you are in. You can look at the source code, which is linked in the About screen, to verify this.</string>
+    <string name="tap_accessibility_service_description">Enable this service to allow Key Mapper to inject tap events onto the display.</string>
     <string name="selection_count">%d selected</string>
     <string name="ime_service_label" translatable="false">Key Mapper Basic Input Method</string>
     <string name="enable">Enable</string>
