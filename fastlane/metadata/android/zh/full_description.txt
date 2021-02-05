@@ -49,25 +49,25 @@
  * 显示音量对话框
  * 周期循环和更改铃响模式
  * 静音/取消静音/切换静音 (Android 6.0+)
- * Toggle/enable/disable auto-rotate
- * Switch between portrait and landscape mode
- * Force portrait/landscape mode
- * Toggle/enable/disable auto-brightness
- * Increase/decrease brightness
- * Toggle/enable/disable flashlight (Android 6.0+)
- * Toggle/enable/disable airplane mode (ROOT only)
- * Toggle/enable/disable a dnd mode (Android 6.0+)
- * Switch between vibrate and ring
- * Take a screenshot (Android 9.0+)
- * Open the Voice Assistant
- * Open the Device Assistant
- * Open camera
+ * 切换/启用/禁用自动旋转
+ * 在竖屏和横屏模式之间切换
+ * 强制竖屏/横屏模式
+ * 切换/启用/禁用自动亮度
+ * 调高/调低亮度
+ * 切换/启用/禁用闪光灯 (Android 6.0+)
+ * 切换/启用/禁用飞行模式 (仅限ROOT)
+ * 切换/启用/禁用勿扰模式 (Android 6.0+)
+ * 在振动和铃响之间切换
+ * 屏幕截图 (Android 9.0+)
+ * 打开语音助手
+ * 打开设备助手
+ * 打开相机
  * Consume key event. (Do nothing)
- * Lock the device
- * Show the power dialog (Android 5.0+)
- * Move the cursor to the end of a file
+ * 锁定设备
+ * 显示电源菜单 (Android 5.0+)
+ * 移动光标到行尾
 
-And more....
+以及更多....
 
 A Key Mapper keyboard needs to be selected for these to work:
 
