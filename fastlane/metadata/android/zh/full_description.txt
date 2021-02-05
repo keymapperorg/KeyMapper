@@ -1,9 +1,9 @@
-What can be remapped?
+可以重新映射什么？
 
- * Fingerprint gestures on supported devices.
- * Volume buttons.
- * Navigation buttons.
- * Bluetooth/wired keyboards.
+ * 在支持的设备上的指纹手势。
+ * 音量键
+ * 导航按钮。
+ * 蓝牙/有线键盘。
  * Buttons on other connected devices should also work.
  * Nintendo Switch JoyCons.
  * Chubby Buttons 2.
