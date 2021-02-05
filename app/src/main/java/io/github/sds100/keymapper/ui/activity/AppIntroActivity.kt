@@ -111,7 +111,7 @@ class ShizukuSlide : AppIntroScrollableFragment() {
             }
 
             setOnButton2ClickListener {
-                UrlUtils.openUrl(requireContext(), "https://play.google.com/store/apps/details?id=moe.shizuku.privileged.api")
+                UrlUtils.openUrl(requireContext(), str(R.string.url_shizuku_play_store_listing))
             }
         }
 
