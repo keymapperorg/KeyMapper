@@ -1,27 +1,27 @@
-可以重新映射什么？
+什么可以重新映射？
 
  * 在支持的设备上的指纹手势。
  * 音量键
  * 导航按钮。
  * 蓝牙/有线键盘。
- * Buttons on other connected devices should also work.
- * Nintendo Switch JoyCons.
- * Chubby Buttons 2.
+ * 其他已连接的设备的按钮也应该起作用。
+ * 任天堂Switch的JoyCon。
+ * Chubby Buttons 2。
 
-ONLY HARDWARE buttons can be remapped.
-There is NO GUARANTEE any of these buttons will work and this app is NOT designed to control games. Your device's OEM/vendor can prevent them from being remapped.
+只有实体按键能重新映射。
+不保证这些按钮都将工作，并且这个应用不是为了控制游戏而设计的。 你的设备的OEM/供应商 可以阻止它们被重新映射。
 
-You can combine multiple keys from a specific device or any device to form a "trigger". Each trigger can have multiple actions. The keys can be set to be pressed at the same time or one after another in a sequence. Keys can be remapped when they are short pressed, long pressed or double pressed. A keymap can have a set of "constraints" so it only has an effect in certain situations.
+你可以组合来自特定设备或多个设备的多个按键来构成“触发器”。 每个触发器都可以有多个动作。 可以将按键设置为同时按下或依次按下。 按键可以在它们被短按、长按或双击时被重新映射。 按键映射可以有一组“约束，因此它仅在某些情况下有效。
 
-What can’t be remapped?
- * Pixel Active Edge
- * OnePlus Alert Slider
- * Power button
- * Bixby button
- * Mouse buttons
- * Dpad, thumb sticks or triggers on game controllers
+什么不可以重新映射？
+ * Pixel的Active Edge
+ * OnePlus的三段式按键。
+ * 电源键
+ * Bixby按钮
+ * 鼠标按钮
+ * 游戏手柄上的的Dpad、类比摇杆和触发器
 
-Your key maps don't work if the screen is OFF. This is a limitation in Android. There is nothing the dev can do.
+如果屏幕关闭，你的按键映射将不起作用。 这是Android中的一个限制。 There is nothing the dev can do.
 
 What can I remap my keys to do?
  Some actions will only work on rooted devices and specific Android versions.
