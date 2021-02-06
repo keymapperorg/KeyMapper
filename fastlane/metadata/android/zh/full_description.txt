@@ -1,7 +1,7 @@
 什么可以重新映射？
 
  * 在支持的设备上的指纹手势。
- * 音量键
+ * 音量键。
  * 导航按钮。
  * 蓝牙/有线键盘。
  * 其他已连接的设备的按钮也应该起作用。
@@ -17,9 +17,9 @@
  * Pixel的Active Edge
  * OnePlus的三段式按键。
  * 电源键
- * Bixby按钮
- * 鼠标按钮
- * 游戏手柄上的的Dpad、类比摇杆和触发器
+ * Bixby键
+ * 鼠标键
+ * 游戏手柄上的Dpad、类比摇杆和触发器
 
 如果屏幕关闭，你的按键映射将不起作用。 这是Android中的一个限制。 开发者无能为力。
 
@@ -62,36 +62,36 @@
  * 打开语音助手
  * 打开设备助手
  * 打开相机
- * 消除按键事件。 (什么也不做)
+ * 抵消按键事件。 (什么也不做)
  * 锁定设备
  * 显示电源菜单 (Android 5.0+)
  * 移动光标到行尾
 
 以及更多....
 
-A Key Mapper keyboard needs to be selected for these to work:
+它们需要选择一个Key Mapper键盘才能正常工作:
 
-** It is recommended to install the Key Mapper GUI Keyboard app because this is a proper keyboard unlike the one built-in to Key Mapper **
+** 建议安装Key Mapper GUI Keyboard应用，因为它是个恰当的键盘，不像Key Mapper内置的一个键盘 **
 
- * Input a specific keycode
- * Input a key
- * Input a Key Event
- * Insert a block of text
+ * 输入特定的键码
+ * 输入按键
+ * 输入按键事件
+ * 插入一段文本
 
-What other things can the app do?
- * Option to show a persistent notification which can pause/resume your keymaps.
- * Automatically change the keyboard to the Key Mapper one and/or show the keyboard picker when a chosen Bluetooth device is connected and switch back to the old one when it is disconnected.
- * Quick settings to pause/resume keymaps and toggle the Key Mapper keyboard.
- * Create home screen widget to perform the actions mentioned above.
+这个应用能做什么其他的事情？
+ * 显示能暂停/恢复你的按键映射的持久性通知。
+ * 当连接了选定的蓝牙设备时，自动将键盘更改为一个Key Mapper键盘和/或显示键盘选择器，并在它断开连接时切换回原来的键盘。
+ * 使用快速设置来暂停/恢复按键映射和切换Key Mapper键盘。
+ * 创建主屏幕微件以执行上述动作。
 
-Permissions
-You don't have to grant all the permissions for the app to work. The app will tell you if a permission needs to be granted for a feature to work.
+权限
+你无需授予所有权限来让这个应用工作。 如果一个功能需要授予权限才能工作，这个应用将告诉你。
 
- * Accessibility Service: Basic requirement for remapping to work. It is needed so the app can listen to and block keyevents.
- * Device Admin: To turn the screen off when using the action to turn off the screen.
- * Modify System Settings: To change the brightness and rotation settings.
- * Camera: To control the flashlight.
+ * 无障碍服务: 让重新映射工作的基本要求。 应用需要它才能监听和阻止按键事件。
+ * 设备管理员: 用于在使用关闭屏幕的动作时关闭屏幕。
+ * 修改系统设置: 用于更改亮度和旋转设置。
+ * 相机: 用于控制闪光灯。
 
- On some devices, enabling the accessibility service will disable "enhanced data encryption".
+ 在某些设备上，启用无障碍服务将会禁用“增强数据加密”。
 
 Discord: https://discord.gg/Suj6nyw
