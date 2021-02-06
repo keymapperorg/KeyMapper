@@ -689,7 +689,7 @@
     <string name="action_secure_lock_device_message">你将只能使用你的PIN重新解锁。指纹扫描仪和面部解锁将被禁用。这是我发现的在Android Pie 9.0之前锁定无root设备的唯一可靠方法。</string>
     <string name="action_power_on_off_device">睡眠/唤醒设备</string>
     <string name="action_power_on_off_device_message">你必须打开这个选择，才能在屏幕关闭时检测触发器！</string>
-    <string name="action_consume_keyevent">无</string>
+    <string name="action_consume_keyevent">什么也不做</string>
     <string name="action_move_to_end_of_text">移动光标到末尾</string>
     <string name="action_move_to_end_of_text_message">必须选择 Key Mapper 键盘才能使这个动作正常工作，而这个动作在某些应用中可能无法正常工作。</string>
     <string name="action_toggle_keyboard">切换键盘</string>
