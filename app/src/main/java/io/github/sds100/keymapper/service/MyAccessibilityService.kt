@@ -409,21 +409,21 @@ class MyAccessibilityService : AccessibilityService(),
                         KeyEvent.KEYCODE_APP_SWITCH -> performGlobalAction(GLOBAL_ACTION_RECENTS)
                         KeyEvent.KEYCODE_MENU ->
                             actionPerformerDelegate.performSystemAction(
-                                    SystemAction.OPEN_MENU,
-                                    chosenImePackageName,
-                                    currentPackageName
+                                SystemAction.OPEN_MENU,
+                                chosenImePackageName,
+                                currentPackageName
                             )
 
                         else -> {
                             chosenImePackageName?.let { imePackageName ->
                                 KeyboardUtils.inputKeyEventFromImeService(
-                                        this,
-                                        imePackageName = imePackageName,
-                                        keyCode = event.keyCode,
-                                        metaState = event.metaState,
-                                        keyEventAction = event.keyEventAction,
-                                        deviceId = event.deviceId,
-                                        scanCode = event.scanCode
+                                    this,
+                                    imePackageName = imePackageName,
+                                    keyCode = event.keyCode,
+                                    metaState = event.metaState,
+                                    keyEventAction = event.keyEventAction,
+                                    deviceId = event.deviceId,
+                                    scanCode = event.scanCode
                                 )
                             }
                         }
