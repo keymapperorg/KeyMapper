@@ -132,7 +132,7 @@
         </service>
 
         <service
-            android:name=".service.TapperAcessibilityService"
+            android:name=".service.TapperAccessibilityService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             android:label="@string/tap_accessibility_service_title">
             <intent-filter>
