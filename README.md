@@ -23,7 +23,7 @@ To build and help with code stuff...
 2. Clone the repo to your device. It will clone to a folder called KeyMapper by default.
 3. [Install](https://developer.android.com/studio/install) Android Studio if you don't have it already. It is available for Windows, Linux and macOS.
 4. Open the cloned KeyMapper folder in Android Studio. Install anything Android Studio prompts you to install. E.g the gradle wrapper version used by KeyMapper or older Android SDK versions.
-5. Checkout (switch to) the "develop" branch.
+5. Create a new branch off develop which begins with "feature/" if it is a new feature or "fix/" if it is a bug fix. Then put a brief description of the feature/bug fix. 
 6. Make any changes then commit them to your forked repo then make a pull request!
 
 ### I need help in the app!
