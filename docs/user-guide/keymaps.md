@@ -6,9 +6,13 @@ There are options for each trigger key by pressing the 3-dots on them. There are
 
 ![](../images/hg-trigger-from-other-apps.png)
 
-This allows you to trigger the key map by using a shortcut or by sending an [Intent](https://developer.android.com/reference/android/content/Intent) to Key Mapper. Turning this option will stop any shortcuts or Intents for this key map from working.
+This allows you to trigger the key map by using a shortcut or by sending an [Intent](https://developer.android.com/reference/android/content/Intent) to Key Mapper. Turning this off will stop any shortcuts or Intents for this key map from working.
 
-You can add the shortcut to your home screen by tapping "create launcher shortcut" or by adding the shortcut to your home screen like it is a widget. You can use the shortcut from automation apps like Tasker and Automate.
+### Home screen (launcher) shortcut
+
+You can create a home screen shortcut by tapping "create launcher shortcut" or by adding the shortcut to your home screen in the same way as a widget. You can also use this shortcut from automation apps like Tasker and Automate without having to create a home screen shortcut.
+
+### Intent
 
 There are many apps that can automate broadcasting Intents such as Tasker and Automate.
 
