@@ -1,3 +1,11 @@
+### Committing
+
+### Versioning
+
+### Code
+
+Follow Google's Kotlin style guide. [https://developer.android.com/kotlin/style-guide](https://developer.android.com/kotlin/style-guide)
+
 ## Consistency Standards
 
 ### Writing
@@ -29,11 +37,3 @@ Here are words and phrases that can be spelt or capitalised in multiple ways.
 If a heading is for a particular feature then it should include the minimum supported Key Mapper version except version 2.0.* because 1.* isn't supported at all and whether it requires root.
 
 E.g "Trigger When Screen is Off (ROOT, 2.1.0+)"
-
-### Committing
-
-### Versioning
-
-### Code
-
-Follow Google's Kotlin style guide. [https://developer.android.com/kotlin/style-guide](https://developer.android.com/kotlin/style-guide)
