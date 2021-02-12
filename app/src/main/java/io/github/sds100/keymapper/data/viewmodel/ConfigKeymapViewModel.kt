@@ -152,8 +152,12 @@ class ConfigKeymapViewModel(private val mKeymapRepository: ConfigKeymapUseCase,
 
     private fun loadKeymap(keymap: KeyMap) {
         mId = keymap.id
-        actionListViewModel.setActionList(keymap.actionList)
+
+        /* this must be before everything else because action options might be deselected if
+        * there is no trigger. issue #593 */
         triggerViewModel.setTrigger(keymap.trigger)
+
+        actionListViewModel.setActionList(keymap.actionList)
         constraintListViewModel.setConstraintList(keymap.constraintList, keymap.constraintMode)
         isEnabled.value = keymap.isEnabled
         _uid.value = keymap.uid
