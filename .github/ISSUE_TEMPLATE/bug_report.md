@@ -11,6 +11,7 @@ assignees: sds100
 - [ ] create new branch
 - [ ] write tests
 - [ ] update documentation
+- [ ] delete branch
 
 **Describe the bug**
 A clear and concise description of what the bug is.

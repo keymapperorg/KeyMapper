@@ -11,3 +11,4 @@ assignees: sds100
 - [ ] create new branch
 - [ ] write tests before working on feature
 - [ ] update documentation
+- [ ] delete branch
