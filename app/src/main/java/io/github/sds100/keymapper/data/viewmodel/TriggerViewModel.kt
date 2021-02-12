@@ -210,7 +210,7 @@ class TriggerViewModel(
     /**
      * @return whether the key already exists has been added to the list
      */
-    suspend fun addTriggerKey(keyCode: Int, deviceDescriptor: String, deviceName: String, isExternal: Boolean): Boolean {
+    fun addTriggerKey(keyCode: Int, deviceDescriptor: String, deviceName: String, isExternal: Boolean): Boolean {
         deviceInfoRepository.insertDeviceInfo(DeviceInfo(deviceDescriptor, deviceName))
 
         var clickType = Trigger.SHORT_PRESS
