@@ -1,8 +1,11 @@
 package io.github.sds100.keymapper
 
+import android.view.KeyEvent
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.github.sds100.keymapper.data.IGlobalPreferences
 import io.github.sds100.keymapper.data.model.Action
+import io.github.sds100.keymapper.data.model.KeyMap
+import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
 import io.github.sds100.keymapper.data.usecase.ConfigKeymapUseCase
 import io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel
@@ -11,11 +14,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
 import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.core.Is.`is`
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.Mockito.`when`
 import splitties.bitflags.hasFlag
 
 /**
@@ -43,19 +48,43 @@ class ConfigKeymapViewModelTest {
         mockDeviceInfoRepository = Mockito.mock(DeviceInfoRepository::class.java)
         mockGlobalPreferences = Mockito.mock(IGlobalPreferences::class.java)
 
+        Dispatchers.setMain(testDispatcher)
+
         viewModel = ConfigKeymapViewModel(
             mockKeymapRepository,
             mockDeviceInfoRepository,
             mockGlobalPreferences
         )
-
-        Dispatchers.setMain(testDispatcher)
     }
 
     @After
     fun tearDown() {
         Dispatchers.resetMain()
         testDispatcher.cleanupTestCoroutines()
+    }
+
+    /**
+     * issue #593
+     */
+    @Test
+    fun `key map with hold down action, load key map, hold down flag shouldn't disappear`() = coroutineScope.runBlockingTest {
+        //given
+        val action = Action.tapCoordinateAction(100, 100, null)
+            .copy(flags = Action.ACTION_FLAG_HOLD_DOWN)
+
+        val keymap = KeyMap(0,
+            trigger = Trigger(keys = listOf(Trigger.Key(KeyEvent.KEYCODE_0))),
+            actionList = listOf(action))
+
+        //when
+        `when`(mockKeymapRepository.getKeymap(0)).then { keymap }
+
+        viewModel.loadKeymap(0)
+
+        advanceUntilIdle()
+
+        //then
+        assertThat(viewModel.actionListViewModel.actionList.value, `is`(listOf(action)))
     }
 
     @Test
