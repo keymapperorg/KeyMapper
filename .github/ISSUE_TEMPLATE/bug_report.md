@@ -9,7 +9,7 @@ assignees: sds100
 
 **Developer TODO (don't remove)**
 - [ ] create new branch
-- [ ] write tests
+- [ ] write tests. put issue number in comment
 - [ ] update documentation
 - [ ] delete branch
 
