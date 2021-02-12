@@ -89,7 +89,7 @@ class BackupManager(
     }
 
     override fun backupFingerprintMaps(outputStream: OutputStream) {
-        coroutineScope.launch {
+        coroutineScope.launch(dispatchers.default()) {
             val result = backupAsync(
                 outputStream,
                 fingerprintSwipeDown = fingerprintMapRepository.swipeDown.firstOrNull(),
@@ -121,8 +121,9 @@ class BackupManager(
         }
     }
 
+    @Suppress("BlockingMethodInNonBlockingContext")
     override fun restore(inputStream: InputStream) {
-        coroutineScope.launch {
+        coroutineScope.launch(dispatchers.default()) {
             try {
                 val json = inputStream.bufferedReader().use { it.readText() }
                 val result = restore(json)
