@@ -376,9 +376,6 @@ class TriggerViewModel(
             Keys.shownMultipleOfSameKeyInSequenceTriggerExplanation.name ->
                 prefs.set(Keys.shownMultipleOfSameKeyInSequenceTriggerExplanation, true)
 
-            Keys.shownMultipleOfSameKeyInSequenceTriggerExplanation.name ->
-                prefs.set(Keys.shownMultipleOfSameKeyInSequenceTriggerExplanation, true)
-
             Keys.shownSequenceTriggerExplanation.name ->
                 prefs.set(Keys.shownSequenceTriggerExplanation, true)
 
