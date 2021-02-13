@@ -7,7 +7,7 @@
 Follow Google's Kotlin style guide. [https://developer.android.com/kotlin/style-guide](https://developer.android.com/kotlin/style-guide)
 
 ## Translating
-You can translate this project on the [CrowdIn page](https://crowdin.com/project/key-mapper). Translations will be merged into production once 70% of the language has been translated. This is to improve the user experience. If your language isn't available on the CrowdIn page then contact the developer so we can add it. Our contact details are in the footer of every page.
+You can translate this project on the [CrowdIn page](https://crowdin.com/project/key-mapper). Translations will be merged into production once 70% of the language has been translated. This is to improve the user experience. If your language isn't available on the CrowdIn page then contact the developer so we can add it. Our contact details are in the footer of every page on this site.
 
 We really appreciate translators so thank you! 🙂
 
