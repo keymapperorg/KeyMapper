@@ -7,6 +7,8 @@ assignees: sds100
 
 ---
 
-Developer TODO. Don't delete.
-- [ ] create new branch
-- [ ] write tests before implementing so can think about expected behaviour.
+**Developer TODO (don't remove)**
+- [ ] create new branch. put issue number at start of name
+- [ ] write tests before working on feature. put issue number in comment
+- [ ] update documentation
+- [ ] delete branch

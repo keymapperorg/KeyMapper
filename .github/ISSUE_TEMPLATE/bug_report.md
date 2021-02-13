@@ -7,6 +7,12 @@ assignees: sds100
 
 ---
 
+**Developer TODO (don't remove)**
+- [ ] create new branch. put issue number at start of name
+- [ ] write tests. put issue number in comment
+- [ ] update documentation
+- [ ] delete branch
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 
