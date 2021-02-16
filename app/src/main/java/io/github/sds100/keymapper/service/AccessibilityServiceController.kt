@@ -283,7 +283,7 @@ class AccessibilityServiceController(
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun observeFingerprintMaps() {
-        fingerprintMapRepository.fingerprintGestureMapsLiveData.collectWhenStarted(this, { maps ->
+        fingerprintMapRepository.fingerprintGestureMaps.collectWhenStarted(this, { maps ->
             fingerprintGestureMapController.fingerprintMaps = maps
 
             invalidateFingerprintGestureDetection()

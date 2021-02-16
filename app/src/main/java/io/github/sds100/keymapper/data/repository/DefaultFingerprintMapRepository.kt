@@ -70,7 +70,7 @@ class DefaultFingerprintMapRepository(private val dataStore: DataStore<Preferenc
         prefs.getGesture(PreferenceKeys.FINGERPRINT_GESTURE_SWIPE_RIGHT)
     }.dropWhile { it.version < FingerprintMap.CURRENT_VERSION }
 
-    override val fingerprintGestureMapsLiveData = combine(
+    override val fingerprintGestureMaps = combine(
         swipeDown,
         swipeUp,
         swipeLeft,

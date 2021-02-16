@@ -7,20 +7,19 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.preferencesKey
 import com.google.gson.Gson
 import com.google.gson.JsonParser
-import io.github.sds100.keymapper.data.model.FingerprintMap
 import io.github.sds100.keymapper.data.repository.DefaultFingerprintMapRepository
 import io.github.sds100.keymapper.data.repository.FingerprintMapRepository
+import io.github.sds100.keymapper.util.FakeDataStore
+import io.github.sds100.keymapper.util.JsonTestUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.test.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import io.github.sds100.keymapper.util.FakeDataStore
-import io.github.sds100.keymapper.util.JsonTestUtils
-import io.github.sds100.keymapper.util.LiveDataTestWrapper
 
 /**
  * Created by sds100 on 22/01/21.
@@ -47,14 +46,12 @@ class FingerprintMapMigrationTest {
     private val coroutineScope = TestCoroutineScope(testDispatcher)
     private lateinit var repository: FingerprintMapRepository
     private lateinit var dataStore: DataStore<Preferences>
-    private lateinit var liveDataTestWrapper: LiveDataTestWrapper<Map<String, FingerprintMap>>
 
     @Before
     fun init() {
         Dispatchers.setMain(testDispatcher)
         dataStore = FakeDataStore()
         repository = DefaultFingerprintMapRepository(dataStore, coroutineScope)
-        liveDataTestWrapper = LiveDataTestWrapper(repository.fingerprintGestureMapsLiveData)
     }
 
     @After
@@ -108,26 +105,30 @@ class FingerprintMapMigrationTest {
     }
 
     private suspend fun testOutput(expectedData: String) {
-        val liveDataJson = liveDataTestWrapper
-            .latestValue()
-            .let {
+        val flowJson = repository.fingerprintGestureMaps
+            .mapLatest {
                 val map = it[SWIPE_DOWN_KEY.name]!!
 
                 Gson().toJson(map)
-            }
+            }.first()
 
         val dataStoreJson = dataStore.data.first()[SWIPE_DOWN_KEY]
 
         val jsonParser = JsonParser()
-        val liveDataRootObject = jsonParser.parse(liveDataJson).asJsonObject
+        val flowRootObject = jsonParser.parse(flowJson).asJsonObject
         val dataStoreRootObject = jsonParser.parse(dataStoreJson).asJsonObject
         val expectedDataRootObject = jsonParser.parse(expectedData).asJsonObject
 
 //        println("data-store json: $dataStoreJson")
-        JsonTestUtils.compareBothWays(expectedDataRootObject, "expected", dataStoreRootObject, "data-store")
+        JsonTestUtils.compareBothWays(
+            expectedDataRootObject,
+            "expected",
+            dataStoreRootObject,
+            "data-store"
+        )
 
-//        println("live-data json: $liveDataJson")
-        JsonTestUtils.compareBothWays(expectedDataRootObject, "expected", liveDataRootObject, "live-data")
+//        println("flow json: $flowJson")
+        JsonTestUtils.compareBothWays(expectedDataRootObject, "expected", flowRootObject, "flow")
     }
 
 }

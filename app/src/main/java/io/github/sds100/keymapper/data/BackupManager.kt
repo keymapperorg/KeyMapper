@@ -72,7 +72,7 @@ class BackupManager(
         keymapRepository.requestBackup.observeForever { event ->
             coroutineScope.launch(dispatchers.default()) {
                 val fingerprintMaps =
-                    fingerprintMapRepository.fingerprintGestureMapsLiveData.first()
+                    fingerprintMapRepository.fingerprintGestureMaps.first()
 
                 doAutomaticBackup(event.model, fingerprintMaps)
             }

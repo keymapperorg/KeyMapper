@@ -16,7 +16,7 @@ interface FingerprintMapRepository {
     val swipeLeft: Flow<FingerprintMap>
     val swipeRight: Flow<FingerprintMap>
 
-    val fingerprintGestureMapsLiveData: Flow<Map<String, FingerprintMap>>
+    val fingerprintGestureMaps: Flow<Map<String, FingerprintMap>>
     val fingerprintGesturesAvailable: Flow<Boolean?>
 
     fun setFingerprintGesturesAvailable(available: Boolean)
