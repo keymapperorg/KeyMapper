@@ -18,6 +18,7 @@ import io.github.sds100.keymapper.data.usecase.BackupRestoreUseCase
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -70,9 +71,8 @@ class BackupManager(
 
         keymapRepository.requestBackup.observeForever { event ->
             coroutineScope.launch(dispatchers.default()) {
-                val fingerprintMaps = withContext(dispatchers.main()) {
-                    fingerprintMapRepository.fingerprintGestureMapsLiveData.value!!
-                }
+                val fingerprintMaps =
+                    fingerprintMapRepository.fingerprintGestureMapsLiveData.first()
 
                 doAutomaticBackup(event.model, fingerprintMaps)
             }

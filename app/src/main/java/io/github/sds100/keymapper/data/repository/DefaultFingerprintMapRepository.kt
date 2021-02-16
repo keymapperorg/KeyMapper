@@ -6,7 +6,6 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.preferencesKey
 import androidx.datastore.preferences.core.remove
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asLiveData
 import com.github.salomonbrys.kotson.fromJson
 import com.github.salomonbrys.kotson.nullInt
 import com.github.salomonbrys.kotson.registerTypeAdapter
@@ -83,7 +82,7 @@ class DefaultFingerprintMapRepository(private val dataStore: DataStore<Preferenc
             FingerprintMapUtils.SWIPE_LEFT to swipeLeft,
             FingerprintMapUtils.SWIPE_RIGHT to swipeRight
         )
-    }.asLiveData(coroutineScope.coroutineContext)
+    }
 
     override val fingerprintGesturesAvailable = dataStore.data.map {
         it[PreferenceKeys.FINGERPRINT_GESTURES_AVAILABLE]
