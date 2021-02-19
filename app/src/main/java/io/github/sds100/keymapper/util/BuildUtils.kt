@@ -29,7 +29,6 @@ object BuildUtils {
             P -> "Pie 9.0"
             Q -> "10"
             R -> "11"
-            S -> "12"
             else -> throw Exception("No name found for this sdk version: $version")
         }
     }
