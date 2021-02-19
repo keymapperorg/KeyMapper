@@ -5,8 +5,8 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 
 android {
-    compileSdkVersion 'android-S'
-    buildToolsVersion = '31.0.0 rc1'
+    compileSdkVersion 30
+    buildToolsVersion = '30.0.3'
 
     def props = new Properties()
     file("version.properties").withInputStream { props.load(it) }
