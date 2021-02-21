@@ -17,6 +17,7 @@ Key Mapper is a free and open source Android app that can map a single or multip
 You can help by suggesting ideas, notifying me of any bugs or contributing to the code directly. You can post suggestions and bug fixes in the Discord server, XDA thread, GitHub issues page for this repo. The latest cutting edge builds are uploaded to the #testing-builds channel in the Discord server everytime someone pushes to this repo. 
 
 [![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/M4M41032E)
+<span class="badge-paypal"><a href="https://www.paypal.com/donate?hosted_button_id=K9NBSSWJY9TVY" title="Donate to this project using Paypal"><img src="https://img.shields.io/badge/paypal-donate-blue.svg" alt="PayPal donate button" /></a></span>
 
 To build and help with code stuff...
 1. Fork the KeyMapper repository (repo).
