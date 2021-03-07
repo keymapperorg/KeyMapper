@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.KeyEvent
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.util.SystemActionUtils.getDescriptionWithOption
 import io.github.sds100.keymapper.util.SystemActionUtils.getDescriptionWithOptionSet
@@ -33,44 +34,51 @@ object ActionUtils {
 }
 
 @Suppress("EXPERIMENTAL_API_USAGE")
-fun Action.buildModel(ctx: Context): ActionModel {
+fun Action.buildModel(ctx: Context, deviceInfoList: List<DeviceInfo>): ActionModel {
     var title: String? = null
     var icon: Drawable? = null
 
-    val error = getTitle(ctx).onSuccess { title = it }
+    val error = getTitle(ctx, deviceInfoList).onSuccess { title = it }
         .then { getIcon(ctx).onSuccess { icon = it } }
         .then { canBePerformed(ctx) }
         .failureOrNull()
 
-    val flags = if (flags == 0) {
-        null
-    } else {
-        buildString {
-            val flagLabels = getFlagLabelList(ctx)
+    val extraInfo = buildString {
+        val interpunct = ctx.str(R.string.interpunct)
+        val flagLabels = getFlagLabelList(ctx)
 
-            flagLabels.forEachIndexed { index, label ->
-                if (index != 0) {
-                    append(" ${ctx.str(R.string.interpunct)} ")
-                }
-
-                append(label)
+        flagLabels.forEachIndexed { index, label ->
+            if (index != 0) {
+                append(" $interpunct ")
             }
-        }
-    }
 
-    return ActionModel(uniqueId, type, title, icon, flags, error, error?.getBriefMessage(ctx))
+            append(label)
+        }
+
+        extras.getData(Action.EXTRA_DELAY_BEFORE_NEXT_ACTION).onSuccess {
+            if (this.isNotBlank()) {
+                append(" $interpunct ")
+            }
+
+            append(ctx.str(R.string.action_title_wait, it))
+        }
+    }.takeIf { it.isNotBlank() }
+
+    return ActionModel(uid, type, title, icon, extraInfo, error, error?.getBriefMessage(ctx))
 }
 
-fun Action.buildChipModel(ctx: Context): ActionChipModel {
+fun Action.buildChipModel(ctx: Context, deviceInfoList: List<DeviceInfo>): ActionChipModel {
     var title: String? = null
     var icon: Drawable? = null
 
-    val error = getTitle(ctx).onSuccess { title = it }
+    val error = getTitle(ctx, deviceInfoList).onSuccess { title = it }
         .then { getIcon(ctx).onSuccess { icon = it } }
         .then { canBePerformed(ctx) }
         .failureOrNull()
 
     val description = buildString {
+        val interpunct = ctx.str(R.string.interpunct)
+
         val flagLabels = getFlagLabelList(ctx)
 
         if (title == null) {
@@ -80,14 +88,18 @@ fun Action.buildChipModel(ctx: Context): ActionChipModel {
         }
 
         flagLabels.forEach {
-            append(" • $it")
+            append(" $interpunct $it")
         }
-    }
 
-    return ActionChipModel(uniqueId, type, description, error, icon)
+        extras.getData(Action.EXTRA_DELAY_BEFORE_NEXT_ACTION).onSuccess {
+            append(" $interpunct ${ctx.str(R.string.action_title_wait, it)}")
+        }
+    }.takeIf { it.isNotBlank() }
+
+    return ActionChipModel(type, description, error, icon)
 }
 
-private fun Action.getTitle(ctx: Context): Result<String> {
+fun Action.getTitle(ctx: Context, deviceInfoList: List<DeviceInfo>): Result<String> {
     return when (type) {
         ActionType.APP -> {
             try {
@@ -127,7 +139,28 @@ private fun Action.getTitle(ctx: Context): Result<String> {
                 }
             }
 
-            Success(ctx.str(R.string.description_keyevent, formatArgArray = arrayOf(metaStateString, key)))
+            val title = extras.getData(Action.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR).handle(
+                onSuccess = { descriptor ->
+                    val deviceName = deviceInfoList.find { it.descriptor == descriptor }?.name?.let { name ->
+                        if (AppPreferences.showDeviceDescriptors) {
+                            "$name (${descriptor.substring(0..4)})"
+                        } else {
+                            name
+                        }
+                    }
+
+                    ctx.str(
+                        R.string.description_keyevent_from_device,
+                        formatArgArray = arrayOf(metaStateString, key, deviceName)
+                    )
+                },
+
+                onFailure = {
+                    ctx.str(R.string.description_keyevent, formatArgArray = arrayOf(metaStateString, key))
+                }
+            )
+
+            Success(title)
         }
 
         ActionType.TEXT_BLOCK -> {
@@ -204,7 +237,7 @@ private fun Action.getTitle(ctx: Context): Result<String> {
 /**
  * Get the icon for any Action
  */
-private fun Action.getIcon(ctx: Context): Result<Drawable?> = when (type) {
+fun Action.getIcon(ctx: Context): Result<Drawable?> = when (type) {
     ActionType.APP -> {
         try {
             Success(ctx.packageManager.getApplicationIcon(data))
@@ -365,17 +398,9 @@ fun Action.canBePerformed(ctx: Context): Result<Action> {
     return Success(this)
 }
 
-/**
- * A string representation of all the extras in an [Action] that are necessary to perform it.
- */
-val Action.dataExtraString: String
-    get() = buildString {
-        Action.DATA_EXTRAS.forEach {
-            extras.getData(it).onSuccess { data ->
-                append("$it$data")
-            }
-        }
-    }
+val Action.canBeHeldDown: Boolean
+    get() = type == ActionType.KEY_EVENT
+        || (type == ActionType.TAP_COORDINATE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
 
 val Action.requiresIME: Boolean
     get() {
@@ -383,6 +408,47 @@ val Action.requiresIME: Boolean
             type == ActionType.TEXT_BLOCK ||
             data == SystemAction.MOVE_CURSOR_TO_END
     }
+
+val Action.repeat: Boolean
+    get() = flags.hasFlag(Action.ACTION_FLAG_REPEAT)
+
+val Action.holdDown: Boolean
+    get() = flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)
+
+val Action.showVolumeUi: Boolean
+    get() = flags.hasFlag(Action.ACTION_FLAG_SHOW_VOLUME_UI)
+
+val Action.showPerformingActionToast: Boolean
+    get() = flags.hasFlag(Action.ACTION_FLAG_SHOW_PERFORMING_ACTION_TOAST)
+
+val Action.stopRepeatingWhenTriggerPressedAgain: Boolean
+    get() = extras.getData(Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR).valueOrNull()?.toInt() ==
+        Action.STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN
+
+val Action.stopRepeatingWhenTriggerReleased: Boolean
+    get() = !stopRepeatingWhenTriggerPressedAgain
+
+val Action.stopHoldDownWhenTriggerPressedAgain: Boolean
+    get() = extras.getData(Action.EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR).valueOrNull()?.toInt() ==
+        Action.STOP_HOLD_DOWN_BEHAVIOR_TRIGGER_PRESSED_AGAIN
+
+val Action.stopHoldDownWhenTriggerReleased: Boolean
+    get() = !stopHoldDownWhenTriggerPressedAgain
+
+val Action.delayBeforeNextAction: Int?
+    get() = extras.getData(Action.EXTRA_DELAY_BEFORE_NEXT_ACTION).valueOrNull()?.toInt()
+
+val Action.multiplier: Int?
+    get() = extras.getData(Action.EXTRA_MULTIPLIER).valueOrNull()?.toInt()
+
+val Action.holdDownDuration: Int?
+    get() = extras.getData(Action.EXTRA_HOLD_DOWN_DURATION).valueOrNull()?.toInt()
+
+val Action.repeatRate: Int?
+    get() = extras.getData(Action.EXTRA_REPEAT_RATE).valueOrNull()?.toInt()
+
+val Action.repeatDelay: Int?
+    get() = extras.getData(Action.EXTRA_REPEAT_DELAY).valueOrNull()?.toInt()
 
 fun Action.getFlagLabelList(ctx: Context): List<String> = sequence {
     Action.ACTION_FLAG_LABEL_MAP.keys.forEach { flag ->

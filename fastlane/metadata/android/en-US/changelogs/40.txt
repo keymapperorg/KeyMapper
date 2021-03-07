@@ -1,0 +1,40 @@
+Added
+- Remap fingerprint gestures! #378
+Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
+- Show the fingerprint gesture intro slide when updating to 2.2 #545
+- Show a silent notification, which advertises the remapping fingerprint gesture feature, when the user updates to 2.2 #546
+- Trigger key maps from an Intent #490
+- Prompt the user to go to https://dontkillmyapp.com when they first setup the app.
+- Add Fdroid link to the Key Mapper GUI Keyboard ad. #524
+
+BREAKING CHANGES
+- Key Mapper action shortcuts work completely differently. See https://docs.keymapper.club/user-guide/triggers/#trigger-from-other-apps-230
+
+Changes
+- The app intro slides will show feedback if the steps have been done correctly.
+
+Removed
+- XDA Labs links because it has been shut down.
+
+Bug Fixes
+- Remapping modifier keys to the same key didn't work as expected. #563
+- Parallel triggers which contained another parallel trigger didn't cancel the other. #571
+- Don't allow screen on/off constraints for fingerprint gestures #570
+- Rename Key Mapper CI Keyboard to Key Mapper CI Basic Input Method.
+- Notifications had no icon on Android Lollipop.
+- remove coloured navigation bar on Android Lollipop.
+- Hold Down option wasn't allowed on Android 8.0 or older.
+- Detecting whether remapping fingerprint gestures are supported didn't work.
+- The flashlight action would sometimes crash the app.
+- The error message for an app being disabled was the wrong one.
+- Actions to open Android TV apps didn't work #503
+- The app list didn't show Android TV-only apps. #487
+- Settings for repeat rate and delay until repeat didn't match their names when configuring an action.
+- Text would move up/down when sliding between slides in the app intro. #540
+- Icon for "specific app playing media" constraint had the wrong tint. #535
+- Limit Media actions to Android 4.4 KitKat+ because they don't work on older versions.
+- Up Key Event was sent from all keymaps with the "hold down" action option regardless of whether the trigger was released. #533
+- Testing actions didn't work.
+- Scroll position was lost when reloading the key map list.
+- Try to fix random crashes when navigating.
+- Duplicating key maps didn't work.

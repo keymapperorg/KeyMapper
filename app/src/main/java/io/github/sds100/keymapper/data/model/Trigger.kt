@@ -1,12 +1,12 @@
 package io.github.sds100.keymapper.data.model
 
-import android.view.KeyEvent
+import android.os.Parcelable
 import androidx.annotation.IntDef
 import com.github.salomonbrys.kotson.*
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.util.KeyEventUtils
-import splitties.bitflags.withFlag
+import kotlinx.android.parcel.Parcelize
+import java.util.*
 
 /**
  * Created by sds100 on 16/07/2018.
@@ -15,7 +15,8 @@ import splitties.bitflags.withFlag
 /**
  * @property [keys] The key codes which will trigger the action
  */
-class Trigger(
+@Parcelize
+data class Trigger(
     @SerializedName(NAME_KEYS)
     val keys: List<Key> = listOf(),
 
@@ -28,7 +29,7 @@ class Trigger(
 
     @SerializedName(NAME_FLAGS)
     val flags: Int = 0
-) {
+) : Parcelable {
 
     companion object {
         //DON'T CHANGE THESE. Used for JSON serialization and parsing.
@@ -45,15 +46,16 @@ class Trigger(
         const val TRIGGER_FLAG_VIBRATE = 1
         const val TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION = 2
         const val TRIGGER_FLAG_SCREEN_OFF_TRIGGERS = 4
+        const val TRIGGER_FLAG_FROM_OTHER_APPS = 8
 
         val TRIGGER_FLAG_LABEL_MAP = mapOf(
             TRIGGER_FLAG_VIBRATE to R.string.flag_vibrate,
             TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION to R.string.flag_long_press_double_vibration,
             TRIGGER_FLAG_SCREEN_OFF_TRIGGERS to R.string.flag_detect_triggers_screen_off,
+            TRIGGER_FLAG_FROM_OTHER_APPS to R.string.flag_trigger_from_other_apps
         )
 
         const val DEFAULT_TRIGGER_MODE = UNDEFINED
-        const val DEFAULT_FLAGS = 0
 
         const val UNDETERMINED = -1
         const val SHORT_PRESS = 0
@@ -64,13 +66,6 @@ class Trigger(
         const val EXTRA_LONG_PRESS_DELAY = "extra_long_press_delay"
         const val EXTRA_DOUBLE_PRESS_DELAY = "extra_double_press_timeout"
         const val EXTRA_VIBRATION_DURATION = "extra_vibration_duration"
-
-        val EXTRAS = arrayOf(
-            EXTRA_SEQUENCE_TRIGGER_TIMEOUT,
-            EXTRA_LONG_PRESS_DELAY,
-            EXTRA_DOUBLE_PRESS_DELAY,
-            EXTRA_VIBRATION_DURATION
-        )
 
         val DESERIALIZER = jsonDeserializer {
             val triggerKeysJsonArray by it.json.byArray(NAME_KEYS)
@@ -87,19 +82,23 @@ class Trigger(
         }
     }
 
-    class Key(
+    @Parcelize
+    data class Key(
         @SerializedName(NAME_KEYCODE)
         val keyCode: Int,
         @SerializedName(NAME_DEVICE_ID)
-        var deviceId: String = DEVICE_ID_THIS_DEVICE,
+        val deviceId: String = DEVICE_ID_THIS_DEVICE,
 
         @ClickType
         @SerializedName(NAME_CLICK_TYPE)
-        var clickType: Int = SHORT_PRESS,
+        val clickType: Int = SHORT_PRESS,
 
         @SerializedName(NAME_FLAGS)
-        var flags: Int = 0
-    ) {
+        val flags: Int = 0,
+
+        @SerializedName(NAME_UID)
+        val uid: String = UUID.randomUUID().toString()
+    ) : Parcelable {
 
         companion object {
             //DON'T CHANGE THESE. Used for JSON serialization and parsing.
@@ -107,49 +106,37 @@ class Trigger(
             const val NAME_DEVICE_ID = "deviceId"
             const val NAME_CLICK_TYPE = "clickType"
             const val NAME_FLAGS = "flags"
+            const val NAME_UID = "uid"
 
             //IDS! DON'T CHANGE
             const val DEVICE_ID_THIS_DEVICE = "io.github.sds100.keymapper.THIS_DEVICE"
             const val DEVICE_ID_ANY_DEVICE = "io.github.sds100.keymapper.ANY_DEVICE"
-
-            val DESERIALIZER = jsonDeserializer {
-                val keycode by it.json.byInt(NAME_KEYCODE)
-                val deviceId by it.json.byString(NAME_DEVICE_ID)
-                val clickType by it.json.byInt(NAME_CLICK_TYPE)
-
-                Key(keycode, deviceId, clickType)
-            }
 
             const val FLAG_DO_NOT_CONSUME_KEY_EVENT = 1
 
             val TRIGGER_KEY_FLAG_LABEL_MAP = mapOf(
                 FLAG_DO_NOT_CONSUME_KEY_EVENT to R.string.flag_dont_override_default_action
             )
-        }
 
-        val uniqueId: String
-            get() = "$keyCode$clickType$deviceId"
+            val DESERIALIZER = jsonDeserializer {
+                val keycode by it.json.byInt(NAME_KEYCODE)
+                val deviceId by it.json.byString(NAME_DEVICE_ID)
+                val clickType by it.json.byInt(NAME_CLICK_TYPE)
 
-        init {
-            if (KeyEventUtils.isModifierKey(keyCode)) {
-                flags = flags.withFlag(FLAG_DO_NOT_CONSUME_KEY_EVENT)
+                //nullable because this property was added after backup and restore was released.
+                val flags by it.json.byNullableInt(NAME_FLAGS)
+                val uid by it.json.byNullableString(NAME_UID)
+
+                Key(keycode, deviceId, clickType, flags ?: 0, uid ?: UUID.randomUUID().toString())
             }
         }
 
         override fun equals(other: Any?): Boolean {
-            return (other as Key).keyCode == keyCode
+            return (other as Key?)?.keyCode == keyCode
         }
 
-        override fun hashCode() = keyCode
+        override fun hashCode() = keyCode.hashCode()
     }
-
-    fun clone(
-        keys: List<Key> = this.keys,
-        extras: List<Extra> = this.extras,
-        @Mode mode: Int = this.mode,
-        flags: Int = this.flags
-    ) =
-        Trigger(keys, extras, mode, flags)
 
     @IntDef(value = [PARALLEL, SEQUENCE, UNDEFINED])
     annotation class Mode

@@ -30,11 +30,31 @@ class UrlActionTypeFragment : Fragment() {
         InjectorUtils.provideUrlActionTypeViewModel()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    /**
+     * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
+     */
+    private var _binding: FragmentEdittextBinding? = null
+    val binding: FragmentEdittextBinding
+        get() = _binding!!
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         FragmentEdittextBinding.inflate(inflater, container, false).apply {
 
             lifecycleOwner = viewLifecycleOwner
+            _binding = this
 
+            return this.root
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.apply {
             text = mViewModel.url
             caption = str(R.string.caption_action_type_url)
 
@@ -44,8 +64,11 @@ class UrlActionTypeFragment : Fragment() {
                 setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_URL to mViewModel.url.value))
                 findNavController().navigateUp()
             }
-
-            return this.root
         }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 }

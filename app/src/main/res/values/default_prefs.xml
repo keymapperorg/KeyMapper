@@ -11,6 +11,7 @@
     <string name="default_value_automatic_backup_location" />
     <bool name="default_value_keymaps_paused">false</bool>
     <bool name="default_value_hide_home_screen_alerts">false</bool>
+    <bool name="default_value_show_device_descriptors">false</bool>
 
     <string name="default_value_dark_theme_mode">@string/value_pref_dark_theme_follow_system</string>
     <integer name="default_value_long_press_delay">500</integer>
@@ -19,4 +20,5 @@
     <integer name="default_value_repeat_delay">400</integer>
     <integer name="default_value_repeat_rate">50</integer>
     <integer name="default_value_sequence_trigger_timeout">1000</integer>
+    <integer name="default_value_hold_down_duration">1000</integer>
 </resources>

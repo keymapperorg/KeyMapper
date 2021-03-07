@@ -1,9 +1,7 @@
 package io.github.sds100.keymapper.ui.fragment
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.airbnb.epoxy.EpoxyController
@@ -16,7 +14,6 @@ import io.github.sds100.keymapper.data.viewmodel.SystemActionListViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.sectionHeader
 import io.github.sds100.keymapper.simple
-import io.github.sds100.keymapper.ui.callback.ProgressCallback
 import io.github.sds100.keymapper.ui.callback.StringResourceProvider
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.getFullMessage
@@ -50,41 +47,43 @@ class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourcePr
     override var searchStateKey: String? = SEARCH_STATE_KEY
     override var requestKey: String? = REQUEST_KEY
 
-    override val progressCallback: ProgressCallback?
-        get() = mViewModel
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
 
         mViewModel.registerStringResourceProvider(this)
 
-        return super.onCreateView(inflater, container, savedInstanceState)
-    }
-
-    @ExperimentalSplittiesApi
-    override fun subscribeList(binding: FragmentRecyclerviewBinding) {
         binding.apply {
 
             mViewModel.unsupportedSystemActions.observe(viewLifecycleOwner, {
-                if (it.isNotEmpty()) {
+                if (it !is Data) return@observe
+
+                if (it.data.isNotEmpty()) {
                     caption = str(R.string.your_device_doesnt_support_some_actions)
                 }
             })
+        }
+    }
 
-            mViewModel.filteredModelList.observe(viewLifecycleOwner, {
-                epoxyRecyclerView.withModels {
-                    for ((sectionHeader, systemActions) in it) {
-                        sectionHeader {
-                            id(sectionHeader)
-                            header(str(sectionHeader))
-                        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        
+        mViewModel.filteredModelList.observe(viewLifecycleOwner, {
+            binding.state = it
 
-                        systemActions.forEach { systemAction ->
-                            createSimpleListItem(systemAction)
-                        }
+            if (it !is Data) return@observe
+
+            binding.epoxyRecyclerView.withModels {
+                for ((sectionHeader, systemActions) in it.data) {
+                    sectionHeader {
+                        id(sectionHeader)
+                        header(str(sectionHeader))
+                    }
+
+                    systemActions.forEach { systemAction ->
+                        createSimpleListItem(systemAction)
                     }
                 }
-            })
-        }
+            }
+        })
     }
 
     override fun onSearchQuery(query: String?) {
@@ -100,92 +99,94 @@ class SystemActionListFragment : DefaultRecyclerViewFragment(), StringResourcePr
     }
 
     @ExperimentalSplittiesApi
-    private suspend fun onSystemActionClick(systemActionDef: SystemActionDef) = withContext(lifecycleScope.coroutineContext) {
+    private suspend fun onSystemActionClick(systemActionDef: SystemActionDef) =
+        withContext(lifecycleScope.coroutineContext) {
 
-        var selectedOptionData: String? = null
+            var selectedOptionData: String? = null
 
-        if (systemActionDef.messageOnSelection != null) {
-            requireActivity().alertDialog {
-                titleResource = systemActionDef.descriptionRes
-                messageResource = systemActionDef.messageOnSelection
-            }.showAndAwaitOkOrDismiss()
-        }
-
-        systemActionDef.getOptions().onSuccess { options ->
-            val optionLabels = options.map { optionId ->
-                Option.getOptionLabel(requireContext(), systemActionDef.id, optionId).handle(
-                    onSuccess = { it },
-                    onFailure = { it.getFullMessage(requireContext()) }
-                )
+            if (systemActionDef.messageOnSelection != null) {
+                requireActivity().alertDialog {
+                    titleResource = systemActionDef.descriptionRes
+                    messageResource = systemActionDef.messageOnSelection
+                }.showAndAwaitOkOrDismiss()
             }
 
-            selectedOptionData = suspendCoroutine<String> {
-                requireActivity().alertDialog {
+            systemActionDef.getOptions().onSuccess { options ->
+                val optionLabels = options.map { optionId ->
+                    Option.getOptionLabel(requireContext(), systemActionDef.id, optionId).handle(
+                        onSuccess = { it },
+                        onFailure = { it.getFullMessage(requireContext()) }
+                    )
+                }
 
-                    when (systemActionDef.optionType) {
-                        OptionType.SINGLE -> {
-                            setItems(optionLabels.toTypedArray()) { _, which ->
-                                val option = options[which]
+                selectedOptionData = suspendCoroutine<String> {
+                    requireActivity().alertDialog {
 
-                                it.resume(option)
+                        when (systemActionDef.optionType) {
+                            OptionType.SINGLE -> {
+                                setItems(optionLabels.toTypedArray()) { _, which ->
+                                    val option = options[which]
+
+                                    it.resume(option)
+                                }
+                            }
+
+                            OptionType.MULTIPLE -> {
+                                val checkedOptions = BooleanArray(optionLabels.size) { false }
+
+                                setMultiChoiceItems(
+                                    optionLabels.toTypedArray(),
+                                    checkedOptions
+                                ) { _, which, checked ->
+                                    checkedOptions[which] = checked
+                                }
+
+                                okButton { _ ->
+                                    val data = Option.optionSetToString(
+                                        options.filterIndexed { index, _ -> checkedOptions[index] }.toSet())
+
+                                    it.resume(data)
+                                }
                             }
                         }
 
-                        OptionType.MULTIPLE -> {
-                            val checkedOptions = BooleanArray(optionLabels.size) { false }
-
-                            setMultiChoiceItems(
-                                optionLabels.toTypedArray(),
-                                checkedOptions
-                            ) { _, which, checked ->
-                                checkedOptions[which] = checked
-                            }
-
-                            okButton { _ ->
-                                val data = Option.optionSetToString(
-                                    options.filterIndexed { index, _ -> checkedOptions[index] }.toSet())
-
-                                it.resume(data)
-                            }
+                        cancelButton {
+                            cancel()
                         }
-                    }
 
-                    cancelButton {
-                        cancel()
+                        show()
                     }
-
-                    show()
                 }
             }
-        }
 
-        returnResult(
-            EXTRA_SYSTEM_ACTION_ID to systemActionDef.id,
-            EXTRA_SYSTEM_ACTION_OPTION_DATA to selectedOptionData
-        )
-    }
+            returnResult(
+                EXTRA_SYSTEM_ACTION_ID to systemActionDef.id,
+                EXTRA_SYSTEM_ACTION_OPTION_DATA to selectedOptionData
+            )
+        }
 
     @ExperimentalSplittiesApi
-    private fun EpoxyController.createSimpleListItem(systemAction: SystemActionListItemModel) = simple {
-        id(systemAction.id)
-        primaryText(str(systemAction.descriptionRes))
-        icon(drawable(systemAction.iconRes))
-        tintType(TintType.ON_SURFACE)
+    private fun EpoxyController.createSimpleListItem(systemAction: SystemActionListItemModel) =
+        simple {
+            id(systemAction.id)
+            primaryText(str(systemAction.descriptionRes))
+            icon(drawable(systemAction.iconRes))
+            tintType(TintType.ON_SURFACE)
 
-        isSecondaryTextAnError(systemAction.requiresRoot)
+            isSecondaryTextAnError(systemAction.requiresRoot)
 
-        if (systemAction.requiresRoot) {
-            secondaryText(str(R.string.requires_root))
-        } else {
-            secondaryText(null)
-        }
+            if (systemAction.requiresRoot) {
+                secondaryText(str(R.string.requires_root))
+            } else {
+                secondaryText(null)
+            }
 
-        onClick { _ ->
-            SystemActionUtils.getSystemActionDef(systemAction.id).onSuccess {
-                lifecycleScope.launch {
-                    onSystemActionClick(it)
+            onClick { _ ->
+                SystemActionUtils.getSystemActionDef(systemAction.id).onSuccess {
+                    lifecycleScope.launch {
+                        onSystemActionClick(it)
+                    }
                 }
             }
         }
-    }
 }

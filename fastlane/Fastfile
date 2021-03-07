@@ -1,0 +1,59 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:android)
+
+platform :android do
+
+  lane :ci_alpha_apk do
+    gradle(task: "clean assembleCi")
+
+    # increment version code for next build
+    increment_version_code_in_properties_file(
+        key: "VERSION_NUM",
+        path: "./app/version.properties"
+      )
+
+    version_num = get_properties_value(
+        key: "VERSION_NUM",
+        path: "./app/version.properties"
+    )
+
+    git_commit(path: "app/version.properties", message: "ci: version num bump to " + version_num)
+    push_to_git_remote()
+
+  end
+
+  desc "Create and deploy beta release"
+  lane :beta do
+    gradle(
+      task: "assemble",
+      build_type: "Release",
+      print_command: false,
+      properties: {
+        "android.injected.signing.store.file" => ENV['KEYSTORE_PATH'],
+        "android.injected.signing.store.password" => ENV['STORE_PASSWORD'],
+        "android.injected.signing.key.alias" => ENV['KEY_ALIAS'],
+        "android.injected.signing.key.password" => ENV['KEY_PASSWORD'],
+      }
+    )
+  end
+
+  desc "Deploy a new version to the Google Play"
+  lane :deploy do
+    gradle(task: "clean assembleRelease")
+    upload_to_play_store
+  end
+end

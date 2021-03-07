@@ -4,6 +4,8 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.simple
 import io.github.sds100.keymapper.util.BluetoothUtils
+import io.github.sds100.keymapper.util.Data
+import io.github.sds100.keymapper.util.Empty
 import io.github.sds100.keymapper.util.str
 
 /**
@@ -19,7 +21,7 @@ class BluetoothDeviceListFragment : DefaultRecyclerViewFragment() {
 
     override var requestKey: String? = REQUEST_KEY
 
-    override fun subscribeList(binding: FragmentRecyclerviewBinding) {
+    override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
         binding.epoxyRecyclerView.withModels {
             val pairedDevices = BluetoothUtils.getPairedDevices()
 
@@ -39,6 +41,12 @@ class BluetoothDeviceListFragment : DefaultRecyclerViewFragment() {
                         returnResult(EXTRA_ADDRESS to device.address, EXTRA_NAME to device.name)
                     }
                 }
+            }
+
+            if (pairedDevices.isNullOrEmpty()) {
+                binding.state = Empty()
+            } else {
+                binding.state = Data(pairedDevices)
             }
         }
     }

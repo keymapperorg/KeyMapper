@@ -2,11 +2,12 @@ package io.github.sds100.keymapper.data.viewmodel
 
 import android.graphics.Bitmap
 import android.graphics.Point
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
+import com.hadilq.liveevent.LiveEvent
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.Event
+import io.github.sds100.keymapper.util.MessageEvent
+import io.github.sds100.keymapper.util.SelectScreenshot
 import kotlin.math.roundToInt
 
 /**
@@ -34,8 +35,8 @@ class TapCoordinateActionTypeViewModel : ViewModel() {
 
     val bitmap = MutableLiveData<Bitmap>()
 
-    val selectScreenshotEvent = MutableLiveData<Event<Unit>>()
-    val incorrectScreenshotResolutionEvent = MutableLiveData<Event<Unit>>()
+    private val _eventStream = LiveEvent<Event>()
+    val eventStream: LiveData<Event> = _eventStream
 
     fun selectedScreenshot(newBitmap: Bitmap, displaySize: Point) {
         //check whether the height and width of the bitmap match the display size, even when it is rotated.
@@ -46,7 +47,7 @@ class TapCoordinateActionTypeViewModel : ViewModel() {
             (displaySize.y != newBitmap.width
                 && displaySize.x != newBitmap.height)
         ) {
-            incorrectScreenshotResolutionEvent.value = Event(Unit)
+            _eventStream.value = MessageEvent(R.string.toast_incorrect_screenshot_resolution)
             return
         }
 
@@ -54,7 +55,7 @@ class TapCoordinateActionTypeViewModel : ViewModel() {
     }
 
     fun selectScreenshot() {
-        selectScreenshotEvent.value = Event(Unit)
+        _eventStream.value = SelectScreenshot()
     }
 
     /**

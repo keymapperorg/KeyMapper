@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="onChooseActionClick"
+            type="View.OnClickListener" />
+
+        <variable
+            name="onAddConstraintClick"
+            type="View.OnClickListener" />
+
+        <variable
+            name="onErrorClick"
+            type="io.github.sds100.keymapper.ui.callback.ErrorClickCallback" />
+
+        <variable
+            name="onEnabledSwitchClick"
+            type="View.OnClickListener" />
+
+        <variable
+            name="onClick"
+            type="View.OnClickListener" />
+
+        <variable
+            name="model"
+            type="io.github.sds100.keymapper.data.model.FingerprintGestureMapListItemModel" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        style="@style/MyCardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="4dp"
+        android:onClick="@{onClick}">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/cardview_padding_left"
+            android:paddingTop="@dimen/cardview_padding_top"
+            android:paddingEnd="@dimen/cardview_padding_right"
+            android:paddingBottom="@dimen/cardview_padding_bottom">
+
+            <TextView
+                android:id="@+id/textViewHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/cardview_padding_right"
+                android:paddingBottom="@dimen/cardview_header_bottom_padding"
+                android:text="@{model.header}"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                android:textColor="?attr/colorAccent"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Swipe Down" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switchEnabled"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:checked="@{model.isEnabled}"
+                android:onClick="@{onEnabledSwitchClick}"
+                app:layout_constraintBottom_toBottomOf="@id/textViewHeader"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="@id/textViewHeader"
+                app:layout_constraintTop_toTopOf="@id/textViewHeader" />
+
+            <TextView
+                android:id="@+id/textViewExtraInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+                android:textColor="?attr/colorError"
+                android:textSize="14sp"
+                android:visibility="@{model.isEnabled &amp;&amp; model.hasActions &amp;&amp; !model.actionsHaveErrors ? View.GONE : View.VISIBLE}"
+                app:actionsHaveErrors="@{model.actionsHaveErrors}"
+                app:isKeymapEnabled="@{model.isEnabled}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textViewHeader"
+                app:noActions="@{!model.hasActions}"
+                tools:text="Disabled • No Actions • No Triggers"
+                tools:visibility="visible" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupActionsAndConstraints"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:theme="@style/ActionChipGroup"
+                android:visibility="@{model.hasActions || model.hasConstraints ? View.VISIBLE : View.GONE}"
+                app:actions="@{model.actionModels}"
+                app:constraintMode="@{model.constraintMode}"
+                app:constraints="@{model.constraintModels}"
+                app:errorClickCallback="@{onErrorClick}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textViewExtraInfo"
+                app:layout_goneMarginStart="16dp"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/textViewOptionsHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/option_list_header"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textStyle="bold"
+                android:visibility="@{model.hasOptions ? View.VISIBLE : View.GONE}"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/chipGroupActionsAndConstraints" />
+
+            <TextView
+                android:id="@+id/textViewSecondary"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="@{model.optionsDescription}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:visibility="@{model.hasOptions ? View.VISIBLE : View.GONE}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/textViewOptionsHeader"
+                app:layout_constraintTop_toTopOf="@id/textViewOptionsHeader"
+                tools:text="Vibrate" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

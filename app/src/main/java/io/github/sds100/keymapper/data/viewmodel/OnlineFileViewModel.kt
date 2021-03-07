@@ -3,10 +3,9 @@
 package io.github.sds100.keymapper.data.viewmodel
 
 import androidx.lifecycle.*
-import io.github.sds100.keymapper.data.FileRepository
-import io.github.sds100.keymapper.ui.callback.ProgressCallback
-import io.github.sds100.keymapper.util.Event
-import io.github.sds100.keymapper.util.result.Failure
+import com.hadilq.liveevent.LiveEvent
+import io.github.sds100.keymapper.data.repository.FileRepository
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.result.SSLHandshakeError
 import io.github.sds100.keymapper.util.result.handle
 
@@ -18,41 +17,38 @@ class OnlineFileViewModel(
     private val mRepository: FileRepository,
     private val mFileUrl: String,
     private val mAlternateUrl: String? = null,
-    val header: String) : ViewModel(), ProgressCallback {
-
-    override val loadingContent = MutableLiveData(false)
+    val header: String) : ViewModel() {
 
     private val mMarkdownResult = liveData {
-        loadingContent.value = true
+        emit(Loading())
 
-        emit(mRepository.getFile(mFileUrl))
-
-        loadingContent.value = false
+        emit(Data(mRepository.getFile(mFileUrl)))
     }
 
     val markdownText = mMarkdownResult.map { result ->
-        result.handle(
-            onSuccess = {
-                it
-            },
-            onFailure = {
-                if (it is SSLHandshakeError) {
-                    if (mAlternateUrl != null) {
-                        openUrlExternallyEvent.value = Event(mAlternateUrl)
+        result.mapData { data ->
+            data.handle(
+                onSuccess = {
+                    it
+                },
+                onFailure = {
+                    if (it is SSLHandshakeError) {
+                        if (mAlternateUrl != null) {
+                            _eventStream.value = OpenUrl(mAlternateUrl)
+                        }
                     }
+
+                    _eventStream.value = ShowErrorMessage(it)
+                    _eventStream.value = CloseDialog()
+
+                    ""
                 }
-
-                showErrorEvent.value = Event(it)
-                closeDialogEvent.value = Event(Unit)
-
-                ""
-            }
-        )
+            )
+        }
     }
 
-    val openUrlExternallyEvent = MutableLiveData<Event<String>>()
-    val showErrorEvent = MutableLiveData<Event<Failure>>()
-    val closeDialogEvent = MutableLiveData<Event<Unit>>()
+    private val _eventStream = LiveEvent<Event>()
+    val eventStream: LiveData<Event> = _eventStream
 
     class Factory(
         private val mRepository: FileRepository,

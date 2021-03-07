@@ -4,6 +4,7 @@ import androidx.fragment.app.activityViewModels
 import io.github.sds100.keymapper.data.viewmodel.KeycodeListViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.simple
+import io.github.sds100.keymapper.util.Data
 import io.github.sds100.keymapper.util.InjectorUtils
 
 /**
@@ -24,10 +25,15 @@ class KeycodeListFragment : DefaultRecyclerViewFragment() {
         InjectorUtils.provideKeycodeListViewModel()
     }
 
-    override fun subscribeList(binding: FragmentRecyclerviewBinding) {
+    override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
         mViewModel.filteredKeycodeLabelList.observe(viewLifecycleOwner, { labelList ->
+
+            binding.state = labelList
+
             binding.epoxyRecyclerView.withModels {
-                labelList.forEach {
+                if (labelList !is Data) return@withModels
+
+                labelList.data.forEach {
                     val keycode = it.key
                     val label = it.value
 

@@ -41,23 +41,29 @@ class TapCoordinateActionTypeFragment : Fragment() {
         InjectorUtils.provideTapCoordinateActionTypeViewModel()
     }
 
-    private val mScreenshotLauncher by lazy {
-        requireActivity().registerForActivityResult(ActivityResultContracts.GetContent()) {
-            it ?: return@registerForActivityResult
+    private val mScreenshotLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {
+        it ?: return@registerForActivityResult
 
-            val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                ImageDecoder.createSource(requireContext().contentResolver, it).decodeBitmap { _, _ -> }
-            } else {
-                MediaStore.Images.Media.getBitmap(requireContext().contentResolver, it)
-            }
-
-            val displaySize = Point().apply {
-                windowManager.defaultDisplay.getRealSize(this)
-            }
-
-            mViewModel.selectedScreenshot(bitmap, displaySize)
+        val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            ImageDecoder.createSource(requireContext().contentResolver, it).decodeBitmap { _, _ -> }
+        } else {
+            MediaStore.Images.Media.getBitmap(requireContext().contentResolver, it)
         }
+
+        val displaySize = Point().apply {
+            windowManager.defaultDisplay.getRealSize(this)
+        }
+
+        mViewModel.selectedScreenshot(bitmap, displaySize)
     }
+
+    /**
+     * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
+     */
+    private var _binding: FragmentTapCoordinateActionTypeBinding? = null
+    val binding: FragmentTapCoordinateActionTypeBinding
+        get() = _binding!!
+
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -65,18 +71,27 @@ class TapCoordinateActionTypeFragment : Fragment() {
         FragmentTapCoordinateActionTypeBinding.inflate(inflater, container, false).apply {
 
             lifecycleOwner = viewLifecycleOwner
+            _binding = this
+
+            return this.root
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.apply {
             viewModel = mViewModel
 
             mViewModel.bitmap.observe(viewLifecycleOwner, {
                 imageViewScreenshot.setImageBitmap(it)
             })
 
-            mViewModel.selectScreenshotEvent.observe(viewLifecycleOwner, EventObserver {
-                mScreenshotLauncher.launch(FileUtils.MIME_TYPE_IMAGES)
-            })
-
-            mViewModel.incorrectScreenshotResolutionEvent.observe(viewLifecycleOwner, EventObserver {
-                toast(R.string.toast_incorrect_screenshot_resolution)
+            mViewModel.eventStream.observe(viewLifecycleOwner, {
+                when (it) {
+                    is SelectScreenshot -> mScreenshotLauncher.launch(FileUtils.MIME_TYPE_IMAGES)
+                    is MessageEvent -> toast(it.textRes)
+                }
             })
 
             imageViewScreenshot.pointCoordinates.observe(viewLifecycleOwner, {
@@ -88,7 +103,7 @@ class TapCoordinateActionTypeFragment : Fragment() {
 
             setOnDoneClick {
                 lifecycleScope.launch {
-                    val description = requireActivity().editTextAlertDialog(
+                    val description = requireActivity().editTextStringAlertDialog(
                         str(R.string.hint_tap_coordinate_title),
                         allowEmpty = true
                     )
@@ -103,8 +118,11 @@ class TapCoordinateActionTypeFragment : Fragment() {
                     findNavController().navigateUp()
                 }
             }
-
-            return this.root
         }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 }

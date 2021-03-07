@@ -3,9 +3,11 @@ package io.github.sds100.keymapper
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.room.Room
-import com.example.architecturetest.data.DefaultDeviceInfoRepository
-import io.github.sds100.keymapper.data.*
+import io.github.sds100.keymapper.data.AppUpdateManager
+import io.github.sds100.keymapper.data.DefaultPreferenceDataStore
+import io.github.sds100.keymapper.data.IPreferenceDataStore
 import io.github.sds100.keymapper.data.db.AppDatabase
+import io.github.sds100.keymapper.data.repository.*
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -17,37 +19,92 @@ object ServiceLocator {
     private var database: AppDatabase? = null
 
     @Volatile
-    var keymapRepository: KeymapRepository? = null
-        @VisibleForTesting set
+    private var keymapRepository: DefaultKeymapRepository? = null
 
     @Volatile
-    var deviceInfoRepository: DeviceInfoRepository? = null
-        @VisibleForTesting set
+    private var deviceInfoRepository: DeviceInfoRepository? = null
 
     @Volatile
-    var onboardingState: IOnboardingState? = null
-        @VisibleForTesting set
+    private var preferenceDataStore: IPreferenceDataStore? = null
 
-    fun provideKeymapRepository(context: Context): KeymapRepository {
+    @Volatile
+    private var fingerprintMapRepository: FingerprintMapRepository? = null
+
+    @Volatile
+    private var fileRepository: FileRepository? = null
+
+    @Volatile
+    private var systemActionRepository: SystemActionRepository? = null
+
+    @Volatile
+    private var systemRepository: SystemRepository? = null
+
+    private fun getSystemActionRepository(context: Context): SystemActionRepository {
+        synchronized(this) {
+            return systemActionRepository ?: createSystemActionRepository(context)
+        }
+    }
+
+    private fun getSystemRepository(context: Context): SystemRepository {
+        synchronized(this) {
+            return systemRepository ?: createSystemRepository(context)
+        }
+    }
+
+    @Volatile
+    private var appUpdateManager: AppUpdateManager? = null
+
+    fun keymapRepository(context: Context): DefaultKeymapRepository {
         synchronized(this) {
             return keymapRepository ?: createKeymapRepository(context)
         }
     }
 
-    fun provideDeviceInfoRepository(context: Context): DeviceInfoRepository {
+    fun deviceInfoRepository(context: Context): DeviceInfoRepository {
         synchronized(this) {
             return deviceInfoRepository ?: createDeviceInfoRepository(context)
         }
     }
 
-    fun provideOnboardingState(context: Context): IOnboardingState {
+    fun preferenceDataStore(context: Context): IPreferenceDataStore {
         synchronized(this) {
-            return onboardingState ?: createOnboardingState(context)
+            return preferenceDataStore ?: createPreferenceDataStore(context)
+        }
+    }
+
+    fun fingerprintMapRepository(context: Context): FingerprintMapRepository {
+        synchronized(this) {
+            return fingerprintMapRepository
+                ?: createFingerprintMapRepository(context)
+        }
+    }
+
+    fun fileRepository(context: Context): FileRepository {
+        synchronized(this) {
+            return fileRepository ?: createFileRepository(context)
+        }
+    }
+
+    fun systemActionRepository(context: Context): SystemActionRepository {
+        synchronized(this) {
+            return systemActionRepository ?: createSystemActionRepository(context)
+        }
+    }
+
+    fun systemRepository(context: Context): SystemRepository {
+        synchronized(this) {
+            return systemRepository ?: createSystemRepository(context)
+        }
+    }
+
+    fun appUpdateManager(context: Context): AppUpdateManager {
+        synchronized(this) {
+            return appUpdateManager ?: createAppUpdateManager(context)
         }
     }
 
     @VisibleForTesting
-    fun resetRepository() {
+    fun resetKeymapRepository() {
         synchronized(lock) {
             runBlocking {
                 keymapRepository?.deleteAll()
@@ -65,23 +122,61 @@ object ServiceLocator {
         }
     }
 
-    private fun createKeymapRepository(context: Context): KeymapRepository {
-        val database = database ?: createDatabase(context)
+    private fun createKeymapRepository(context: Context): DefaultKeymapRepository {
+        val database = database ?: createDatabase(context.applicationContext)
         keymapRepository = DefaultKeymapRepository(database.keymapDao())
         return keymapRepository!!
     }
 
     private fun createDeviceInfoRepository(context: Context): DeviceInfoRepository {
-        val database = database ?: createDatabase(context)
+        val database = database ?: createDatabase(context.applicationContext)
         deviceInfoRepository = DefaultDeviceInfoRepository(database.deviceInfoDao())
         return deviceInfoRepository!!
     }
 
-    private fun createOnboardingState(context: Context): IOnboardingState {
-        val onboardingState = onboardingState ?: OnboardingState(context)
-        this.onboardingState = onboardingState
+    private fun createPreferenceDataStore(context: Context): IPreferenceDataStore {
+        return preferenceDataStore
+            ?: DefaultPreferenceDataStore(context.applicationContext).also {
+                this.preferenceDataStore = it
+            }
+    }
 
-        return onboardingState
+    private fun createFingerprintMapRepository(context: Context): FingerprintMapRepository {
+        val dataStore = preferenceDataStore(context).fingerprintGestureDataStore
+
+        return fingerprintMapRepository
+            ?: FingerprintMapRepository(dataStore).also {
+                this.fingerprintMapRepository = it
+            }
+    }
+
+    private fun createSystemActionRepository(context: Context): SystemActionRepository {
+        return systemActionRepository
+            ?: DefaultSystemActionRepository(context.applicationContext).also {
+                this.systemActionRepository = it
+            }
+    }
+
+    private fun createSystemRepository(context: Context): SystemRepository {
+        return systemRepository
+            ?: SystemRepository(context.applicationContext).also {
+                this.systemRepository = it
+            }
+    }
+
+    private fun createFileRepository(context: Context): FileRepository {
+        return fileRepository
+            ?: FileRepository(context.applicationContext).also {
+                this.fileRepository = it
+            }
+    }
+
+    private fun createAppUpdateManager(context: Context): AppUpdateManager {
+        val preferenceDataStore = preferenceDataStore(context)
+
+        return appUpdateManager ?: AppUpdateManager(preferenceDataStore).also {
+            this.appUpdateManager = it
+        }
     }
 
     private fun createDatabase(context: Context): AppDatabase {
@@ -95,7 +190,8 @@ object ServiceLocator {
             AppDatabase.MIGRATION_4_5,
             AppDatabase.MIGRATION_5_6,
             AppDatabase.MIGRATION_6_7,
-            AppDatabase.MIGRATION_7_8).build()
+            AppDatabase.MIGRATION_7_8,
+            AppDatabase.MIGRATION_8_9).build()
         database = result
         return result
     }

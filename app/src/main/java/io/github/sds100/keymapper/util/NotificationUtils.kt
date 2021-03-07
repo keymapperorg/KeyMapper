@@ -37,11 +37,13 @@ object NotificationUtils {
     const val ID_KEYBOARD_HIDDEN = 747
     const val ID_TOGGLE_KEYMAPS = 231
     const val ID_TOGGLE_KEYBOARD = 143
+    const val ID_FEATURE_REMAP_FINGERPRINT_GESTURES = 1
 
     const val CHANNEL_TOGGLE_REMAPS = "channel_toggle_remaps"
     const val CHANNEL_IME_PICKER = "channel_ime_picker"
     const val CHANNEL_KEYBOARD_HIDDEN = "channel_warning_keyboard_hidden"
     const val CHANNEL_TOGGLE_KEYBOARD = "channel_toggle_keymapper_keyboard"
+    const val CHANNEL_NEW_FEATURES = "channel_new_features"
 
     @Deprecated("Removed in 2.0. This channel shouldn't exist")
     const val CHANNEL_ID_WARNINGS = "channel_warnings"
@@ -199,7 +201,8 @@ object NotificationUtils {
                          showOnLockscreen: Boolean = false,
                          onGoing: Boolean = false,
                          priority: Int = NotificationCompat.PRIORITY_DEFAULT,
-                         vararg actions: NotificationCompat.Action = arrayOf()) {
+                         vararg actions: NotificationCompat.Action = arrayOf(),
+                         autoCancel: Boolean = false) {
 
         if (SDK_INT >= Build.VERSION_CODES.O) {
             invalidateChannels(ctx)
@@ -210,19 +213,25 @@ object NotificationUtils {
             setContentTitle(ctx.str(title))
             setContentText(ctx.str(text))
             setContentIntent(intent)
+            setAutoCancel(autoCancel)
             setPriority(priority)
 
             if (onGoing) {
                 setOngoing(true)
             }
 
-            //can't use vector drawables for KitKat
-            if (SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                val bitmap = VectorDrawableCompat.create(ctx.resources, icon, ctx.theme)?.toBitmap()
-                setLargeIcon(bitmap)
-                setSmallIcon(R.mipmap.ic_launcher)
-            } else {
-                setSmallIcon(icon)
+            when {
+                SDK_INT < Build.VERSION_CODES.LOLLIPOP -> {
+                    val bitmap = VectorDrawableCompat.create(ctx.resources, icon, ctx.theme)?.toBitmap()
+                    setLargeIcon(bitmap)
+                    setSmallIcon(R.mipmap.ic_launcher)
+                }
+
+                SDK_INT == Build.VERSION_CODES.LOLLIPOP -> {
+                    setLargeIcon(ctx.drawable(icon)?.toBitmap())
+                }
+
+                else -> setSmallIcon(icon)
             }
 
             if (!showOnLockscreen) setVisibility(NotificationCompat.VISIBILITY_SECRET) //hide on lockscreen
@@ -255,6 +264,12 @@ object NotificationUtils {
                 CHANNEL_KEYBOARD_HIDDEN,
                 ctx.str(R.string.notification_channel_keyboard_hidden),
                 NotificationManager.IMPORTANCE_DEFAULT
+            ),
+
+            NotificationChannel(
+                CHANNEL_NEW_FEATURES,
+                ctx.str(R.string.notification_channel_new_features),
+                NotificationManager.IMPORTANCE_LOW
             )
         )
 

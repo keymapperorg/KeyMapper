@@ -15,50 +15,80 @@
  */
 package io.github.sds100.keymapper.util
 
-import androidx.lifecycle.Observer
-import java.io.Serializable
+import androidx.annotation.StringRes
+import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.data.model.*
+import io.github.sds100.keymapper.data.model.options.BaseOptions
+import io.github.sds100.keymapper.data.model.options.TriggerKeyOptions
+import io.github.sds100.keymapper.util.result.Failure
 
-/**
- * Used as a wrapper for data that is exposed via a LiveData that represents an event.
- */
-open class Event<out T>(private val content: T) : Serializable {
+sealed class Event
 
-    @Suppress("MemberVisibilityCanBePrivate")
-    var hasBeenHandled = false
-        private set // Allow external read but not write
+open class MessageEvent(@StringRes val textRes: Int) : Event()
 
-    /**
-     * Returns the content and prevents its use again.
-     */
-    fun getContentIfNotHandled(): T? {
-        return if (hasBeenHandled) {
-            null
-        } else {
-            hasBeenHandled = true
-            content
-        }
-    }
+class FixFailure(val failure: Failure) : Event()
+class Vibrate(val duration: Long) : Event()
 
-    fun handled() {
-        hasBeenHandled = true
-    }
+data class PerformAction(val action: Action,
+                         val showPerformingActionToast: Boolean = false,
+                         val additionalMetaState: Int = 0,
+                         val keyEventAction: KeyEventAction = KeyEventAction.DOWN_UP) : Event()
 
-    /**
-     * Returns the content, even if it's already been handled.
-     */
-    fun peekContent(): T = content
-}
+data class ImitateButtonPress(
+    val keyCode: Int,
+    val metaState: Int = 0,
+    val deviceId: Int = 0,
+    val keyEventAction: KeyEventAction,
+    val scanCode: Int = 0
+) : Event()
 
-/**
- * An [Observer] for [Event]s, simplifying the pattern of checking if the [Event]'s content has
- * already been handled.
- *
- * [onEventUnhandledContent] is *only* called if the [Event]'s contents has not been handled.
- */
-class EventObserver<T>(private val onEventUnhandledContent: (T) -> Unit) : Observer<Event<T>> {
-    override fun onChanged(event: Event<T>?) {
-        event?.getContentIfNotHandled()?.let {
-            onEventUnhandledContent(it)
-        }
-    }
-}
+class ChoosePackage : Event()
+class ChooseBluetoothDevice : Event()
+class OpenUrl(val url: String) : Event()
+class CloseDialog : Event()
+class SelectScreenshot : Event()
+class ChooseKeycode : Event()
+class BuildDeviceInfoModels : Event()
+class RequestBackupSelectedKeymaps : Event()
+class BuildKeymapListModels(val keymapList: List<KeyMap>) : Event()
+class OkDialog(@StringRes val message: Int, val onOk: () -> Unit) : Event()
+class EnableAccessibilityServicePrompt : Event()
+class RequestBackup(val keymapList: List<KeyMap>) : Event()
+class RequestRestore : Event()
+class RequestBackupAll : Event()
+class ShowErrorMessage(val failure: Failure) : Event()
+class CreateKeymapShortcutEvent(
+    val uuid: String,
+    val actionList: List<Action>
+) : Event()
+
+//trigger
+class BuildTriggerKeyModels(val source: List<Trigger.Key>) : Event()
+class EditTriggerKeyOptions(val options: TriggerKeyOptions) : Event()
+class EnableCapsLockKeyboardLayoutPrompt : Event()
+class StartRecordingTriggerInService : Event()
+class StopRecordingTriggerInService : Event()
+
+//action list
+class BuildActionListModels(val source: List<Action>) : Event()
+class TestAction(val action: Action) : Event()
+class EditActionOptions(val options: BaseOptions<Action>) : Event()
+
+//constraints
+class DuplicateConstraints : MessageEvent(R.string.error_duplicate_constraint)
+class BuildConstraintListModels(val source: List<Constraint>) : Event()
+class SelectConstraint(val constraint: Constraint) : Event()
+
+//fingerprint gesture maps
+class BuildFingerprintMapModels(val maps: Map<String, FingerprintMap>) : Event()
+class BackupFingerprintMaps : Event()
+class RequestFingerprintMapReset : Event()
+
+//menu
+class OpenSettings : Event()
+class OpenAbout : Event()
+class ChooseKeyboard : Event()
+class SendFeedback : Event()
+class ResumeKeymaps : Event()
+class PauseKeymaps : Event()
+class EnableAccessibilityService : Event()

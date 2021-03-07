@@ -22,20 +22,39 @@ import io.github.sds100.keymapper.util.str
  */
 
 class AboutFragment : BottomSheetDialogFragment() {
+
+    /**
+     * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
+     */
+    private var _binding: FragmentAboutBinding? = null
+    val binding: FragmentAboutBinding
+        get() = _binding!!
+
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         FragmentAboutBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
 
-            requireActivity().onBackPressedDispatcher.addCallback {
-                findNavController().navigateUp()
-            }
-
-            appBar.setNavigationOnClickListener {
-                findNavController().navigateUp()
-            }
-
+            _binding = this
             return this.root
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        requireActivity().onBackPressedDispatcher.addCallback {
+            findNavController().navigateUp()
+        }
+
+        binding.appBar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 }
 

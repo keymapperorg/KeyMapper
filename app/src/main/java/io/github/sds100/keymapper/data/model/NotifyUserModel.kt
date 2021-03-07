@@ -5,4 +5,4 @@ import androidx.annotation.StringRes
 /**
  * Created by sds100 on 19/05/2020.
  */
-class NotifyUserModel(@StringRes val message: Int, val onApproved: () -> Unit)
+data class NotifyUserModel(@StringRes val message: Int, val onApproved: () -> Unit = {})

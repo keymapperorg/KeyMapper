@@ -1,12 +1,19 @@
 package io.github.sds100.keymapper.data.viewmodel
 
+import android.annotation.SuppressLint
 import android.view.KeyEvent
 import androidx.lifecycle.*
+import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.data.model.CheckBoxListItemModel
+import io.github.sds100.keymapper.data.model.DeviceInfo
+import io.github.sds100.keymapper.data.repository.DeviceInfoRepository
+import io.github.sds100.keymapper.util.BuildDeviceInfoModels
+import io.github.sds100.keymapper.util.ChooseKeycode
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.KeyEventUtils
 import io.github.sds100.keymapper.util.result.CantBeEmpty
 import io.github.sds100.keymapper.util.result.InvalidNumber
+import kotlinx.coroutines.launch
 import splitties.bitflags.hasFlag
 import splitties.bitflags.minusFlag
 import splitties.bitflags.withFlag
@@ -15,7 +22,8 @@ import splitties.bitflags.withFlag
  * Created by sds100 on 30/03/2020.
  */
 
-class KeyEventActionTypeViewModel : ViewModel() {
+class KeyEventActionTypeViewModel(private val mDeviceInfoRepository: DeviceInfoRepository
+) : ViewModel() {
 
     val keyCode = MutableLiveData<String>(null)
 
@@ -32,8 +40,14 @@ class KeyEventActionTypeViewModel : ViewModel() {
         }
     }
 
+    val chosenDevice = MutableLiveData<DeviceInfo?>(null)
+
+    val deviceInfoModels = MutableLiveData<List<DeviceInfo>>()
+
     val metaState = MutableLiveData(0)
-    val chooseKeycode = MutableLiveData<Event<Unit>>()
+
+    private val _eventStream = LiveEvent<Event>()
+    val eventStream: LiveData<Event> = _eventStream
 
     val failure = keyCode.map {
         when {
@@ -58,8 +72,12 @@ class KeyEventActionTypeViewModel : ViewModel() {
         }
     }
 
+    init {
+        refreshDevices()
+    }
+
     fun chooseKeycode() {
-        chooseKeycode.value = Event(Unit)
+        _eventStream.value = ChooseKeycode()
     }
 
     fun setModifierKey(flag: Int, isChecked: Boolean) {
@@ -70,11 +88,35 @@ class KeyEventActionTypeViewModel : ViewModel() {
         }
     }
 
+    @SuppressLint("NullSafeMutableLiveData")
+    fun chooseNoDevice() {
+        chosenDevice.value = null
+    }
+
+    fun chooseDevice(index: Int) {
+        deviceInfoModels.value?.getOrNull(index)?.let {
+            viewModelScope.launch {
+                mDeviceInfoRepository.insertDeviceInfo(it)
+            }
+
+            chosenDevice.value = it
+        }
+    }
+
+    fun refreshDevices() {
+        _eventStream.value = BuildDeviceInfoModels()
+    }
+
+    fun setDeviceInfoModels(models: List<DeviceInfo>) {
+        deviceInfoModels.value = models
+    }
+
     @Suppress("UNCHECKED_CAST")
-    class Factory : ViewModelProvider.NewInstanceFactory() {
+    class Factory(private val mDeviceInfoRepository: DeviceInfoRepository
+    ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return KeyEventActionTypeViewModel() as T
+            return KeyEventActionTypeViewModel(mDeviceInfoRepository) as T
         }
     }
 }

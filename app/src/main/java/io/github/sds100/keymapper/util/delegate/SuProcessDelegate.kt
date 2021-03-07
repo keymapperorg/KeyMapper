@@ -17,21 +17,18 @@ class SuProcessDelegate : LifecycleObserver {
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     private fun onCreate() {
         createSuProcess()
-
-        Timber.d("oncreate")
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     private fun stopSuProcess() {
         process?.destroy()
-        Timber.d("ondestroy")
     }
 
     fun createSuProcess() {
         try {
             process = RootUtils.getSuProcess()
         } catch (e: IOException) {
-            Timber.e(e)
+            Timber.i("No root $e")
         }
     }
 }

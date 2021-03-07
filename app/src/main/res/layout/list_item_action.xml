@@ -16,8 +16,8 @@
             type="io.github.sds100.keymapper.data.model.ActionModel" />
 
         <variable
-            name="icon"
-            type="android.graphics.drawable.Drawable" />
+            name="actionCount"
+            type="Integer" />
 
         <variable
             name="onRemoveClick"
@@ -61,8 +61,8 @@
                 android:id="@+id/layoutDescription"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
                 android:gravity="center_vertical"
+                android:layout_marginStart="8dp"
                 android:minHeight="40dp"
                 android:orientation="vertical"
                 app:layout_constraintEnd_toStartOf="@+id/buttonMore"
@@ -82,7 +82,7 @@
                     android:id="@+id/textViewSecondary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@{model.flags}"
+                    android:text="@{model.extraInfo}"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                     android:visibility='@{model.hasFlags ? View.VISIBLE : View.GONE}'
                     tools:text="Show Volume Dialog"
@@ -100,15 +100,29 @@
                     tools:visibility="visible" />
             </LinearLayout>
 
+            <io.github.sds100.keymapper.ui.view.SquareImageButton
+                android:id="@+id/buttonDrag"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:tint="?attr/colorOnSurface"
+                android:visibility="@{actionCount > 1 ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="@id/layoutDescription"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/layoutDescription"
+                app:layout_constraintVertical_bias="0.0"
+                app:srcCompat="@drawable/ic_baseline_drag_handle_24" />
+
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imageView"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:padding="4dp"
-                android:src="@{model.hasError ? @drawable/ic_baseline_error_outline_24 : icon}"
+                android:layout_marginStart="8dp"
+                android:src="@{model.hasError ? @drawable/ic_baseline_error_outline_24 : model.icon}"
                 app:layout_constraintBottom_toBottomOf="@id/layoutDescription"
                 app:layout_constraintEnd_toStartOf="@+id/layoutDescription"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@id/buttonDrag"
                 app:layout_constraintTop_toTopOf="@id/layoutDescription"
                 app:layout_constraintVertical_bias="0.0"
                 app:tintType="@{model.hasError ? TintType.ERROR : model.type == ActionType.SYSTEM_ACTION ? TintType.ON_SURFACE : TintType.NONE}"
@@ -121,11 +135,11 @@
                 android:layout_width="36dp"
                 android:layout_height="0dp"
                 android:onClick="@{onMoreClick}"
-                app:srcCompat="@drawable/ic_outline_more_vert_24"
                 android:tint="?attr/colorOnSurface"
                 app:layout_constraintBottom_toBottomOf="@+id/buttonRemove"
                 app:layout_constraintEnd_toStartOf="@+id/buttonRemove"
-                app:layout_constraintTop_toTopOf="@id/buttonRemove" />
+                app:layout_constraintTop_toTopOf="@id/buttonRemove"
+                app:srcCompat="@drawable/ic_outline_more_vert_24" />
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/buttonRemove"
@@ -133,12 +147,12 @@
                 android:layout_width="36dp"
                 android:layout_height="0dp"
                 android:onClick="@{onRemoveClick}"
-                app:srcCompat="@drawable/ic_outline_clear_24"
                 android:tint="?attr/colorOnSurface"
                 app:layout_constraintBottom_toBottomOf="@id/imageView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/imageView"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintVertical_bias="0.0"
+                app:srcCompat="@drawable/ic_outline_clear_24" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 </layout>

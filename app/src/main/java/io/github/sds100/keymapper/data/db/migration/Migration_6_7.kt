@@ -40,14 +40,14 @@ object Migration_6_7 {
 
                 val newTriggerKeys = trigger.keys.map {
                     if (trigger.flags.hasFlag(TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION)) {
-                        it.flags = it.flags.withFlag(Trigger.Key.FLAG_DO_NOT_CONSUME_KEY_EVENT)
+                        it.copy(flags = it.flags.withFlag(Trigger.Key.FLAG_DO_NOT_CONSUME_KEY_EVENT))
+                    } else {
+                        it
                     }
-
-                    it
                 }
 
                 val newTriggerFlags = trigger.flags.minusFlag(TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION)
-                val newTrigger = trigger.clone(keys = newTriggerKeys, flags = newTriggerFlags)
+                val newTrigger = trigger.copy(keys = newTriggerKeys, flags = newTriggerFlags)
 
                 execSQL("UPDATE keymaps SET trigger='${newTrigger.json}', flags=0 WHERE id=$id")
             }

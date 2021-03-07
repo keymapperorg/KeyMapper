@@ -7,6 +7,7 @@ import com.google.android.material.bottomappbar.BottomAppBar
 import io.github.sds100.keymapper.data.viewmodel.AppListViewModel
 import io.github.sds100.keymapper.databinding.FragmentAppListBinding
 import io.github.sds100.keymapper.simple
+import io.github.sds100.keymapper.util.Data
 import io.github.sds100.keymapper.util.InjectorUtils
 
 /**
@@ -20,9 +21,6 @@ class AppListFragment : RecyclerViewFragment<FragmentAppListBinding>() {
         const val SEARCH_STATE_KEY = "key_app_search_state"
     }
 
-    override val progressCallback
-        get() = mViewModel
-
     override var searchStateKey: String? = SEARCH_STATE_KEY
     override var requestKey: String? = REQUEST_KEY
 
@@ -33,10 +31,14 @@ class AppListFragment : RecyclerViewFragment<FragmentAppListBinding>() {
         InjectorUtils.provideAppListViewModel(requireContext())
     }
 
-    override fun subscribeList(binding: FragmentAppListBinding) {
+    override fun subscribeUi(binding: FragmentAppListBinding) {
         mViewModel.filteredAppModelList.observe(viewLifecycleOwner, { appModelList ->
+
             binding.epoxyRecyclerView.withModels {
-                appModelList.forEach {
+
+                if (appModelList !is Data) return@withModels
+
+                appModelList.data.forEach {
                     simple {
                         id(it.packageName)
                         primaryText(it.appName)
@@ -57,7 +59,6 @@ class AppListFragment : RecyclerViewFragment<FragmentAppListBinding>() {
 
     override fun bind(inflater: LayoutInflater, container: ViewGroup?) =
         FragmentAppListBinding.inflate(inflater, container, false).apply {
-            progressCallback = this.progressCallback
             lifecycleOwner = viewLifecycleOwner
             viewModel = mViewModel
         }

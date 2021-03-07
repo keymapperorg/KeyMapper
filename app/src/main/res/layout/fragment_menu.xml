@@ -7,48 +7,8 @@
         <import type="android.view.View" />
 
         <variable
-            name="isLoggingEnabled"
-            type="Boolean" />
-
-        <variable
-            name="keymapsPaused"
-            type="androidx.lifecycle.LiveData&lt;Boolean>" />
-
-        <variable
-            name="accessibilityServiceEnabled"
-            type="androidx.lifecycle.LiveData&lt;Boolean>" />
-
-        <variable
-            name="openAbout"
-            type="View.OnClickListener" />
-
-        <variable
-            name="openSettings"
-            type="View.OnClickListener" />
-
-        <variable
-            name="sendFeedback"
-            type="View.OnClickListener" />
-
-        <variable
-            name="changeKeyboard"
-            type="View.OnClickListener" />
-
-        <variable
-            name="enableAll"
-            type="View.OnClickListener" />
-
-        <variable
-            name="disableAll"
-            type="View.OnClickListener" />
-
-        <variable
-            name="toggleKeymaps"
-            type="View.OnClickListener" />
-
-        <variable
-            name="enableAccessibilityService"
-            type="View.OnClickListener" />
+            name="viewModel"
+            type="io.github.sds100.keymapper.data.viewmodel.MenuFragmentViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -70,7 +30,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:onClick="@{changeKeyboard}"
+                android:onClick="@{() -> viewModel.chooseKeyboard()}"
                 android:text="@string/action_change_keyboard"
                 app:icon="@drawable/ic_notification_keyboard"
                 app:iconTint="?attr/colorOnSurface" />
@@ -81,7 +41,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:onClick="@{sendFeedback}"
+                android:onClick="@{() -> viewModel.sendFeedback()}"
                 android:text="@string/action_send_feedback"
                 app:icon="@drawable/ic_outline_feedback_24"
                 app:iconTint="?attr/colorOnSurface" />
@@ -91,7 +51,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:onClick="@{openAbout}"
+                android:onClick="@{() -> viewModel.openAbout()}"
                 android:text="@string/action_about"
                 app:icon="@drawable/ic_outline_info_24"
                 app:iconTint="?attr/colorOnSurface" />
@@ -101,7 +61,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:onClick="@{openSettings}"
+                android:onClick="@{() -> viewModel.openSettings()}"
                 android:text="@string/action_settings"
                 app:icon="@drawable/ic_outline_settings_24"
                 app:iconTint="?attr/colorOnSurface" />
@@ -113,9 +73,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:onClick="@{accessibilityServiceEnabled ? toggleKeymaps : enableAccessibilityService}"
-            android:text="@{!accessibilityServiceEnabled ? @string/button_enable_accessibility_service : keymapsPaused ? @string/action_tap_to_resume_keymaps : @string/action_tap_to_pause_keymaps}"
-            app:customBackgroundTint="@{!accessibilityServiceEnabled ? @color/red : keymapsPaused ? @color/green : @color/red}"
+            android:onClick="@{() -> !viewModel.accessibilityServiceEnabled ? viewModel.enableAccessibilityService() : viewModel.keymapsPaused ? viewModel.resumeKeymaps() : viewModel.pauseKeymaps()}"
+            android:text="@{!viewModel.accessibilityServiceEnabled ? @string/button_enable_accessibility_service : viewModel.keymapsPaused ? @string/action_tap_to_resume_keymaps : @string/action_tap_to_pause_keymaps}"
+            app:customBackgroundTint="@{!viewModel.accessibilityServiceEnabled ? @color/red : viewModel.keymapsPaused ? @color/green : @color/red}"
             app:layout_constraintBottom_toTopOf="@+id/buttonEnableAll"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -130,7 +90,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="16dp"
-            android:onClick="@{enableAll}"
+            android:onClick="@{() -> viewModel.enableAll()}"
             android:text="@string/action_enable_all_keymaps"
             android:textColor="@color/green"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -146,7 +106,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
-            android:onClick="@{disableAll}"
+            android:onClick="@{() -> viewModel.disableAll()}"
             android:text="@string/action_disable_all_keymaps"
             android:textColor="@color/red"
             app:layout_constraintBottom_toBottomOf="parent"

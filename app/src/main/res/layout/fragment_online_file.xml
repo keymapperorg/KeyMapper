@@ -7,6 +7,12 @@
 
         <import type="android.view.View" />
 
+        <import type="io.github.sds100.keymapper.util.Data" />
+
+        <import type="io.github.sds100.keymapper.util.Loading" />
+
+        <import type="io.github.sds100.keymapper.util.Empty" />
+
         <variable
             name="viewModel"
             type="io.github.sds100.keymapper.data.viewmodel.OnlineFileViewModel" />
@@ -37,7 +43,7 @@
             android:layout_height="wrap_content"
             android:indeterminate="true"
             android:paddingBottom="16dp"
-            android:visibility="@{viewModel.loadingContent ? View.VISIBLE : View.GONE}"
+            android:visibility="@{viewModel.markdownText instanceof Loading ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewHeader" />
@@ -45,7 +51,7 @@
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="@{viewModel.loadingContent ? View.GONE : View.VISIBLE}"
+            android:visibility="@{viewModel.markdownText instanceof Data ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewHeader"

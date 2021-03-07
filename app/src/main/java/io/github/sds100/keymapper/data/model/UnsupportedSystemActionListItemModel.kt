@@ -1,7 +1,5 @@
 package io.github.sds100.keymapper.data.model
 
-import android.content.Context
-import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import io.github.sds100.keymapper.util.result.Failure

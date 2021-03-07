@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.data.viewmodel
 
 import android.view.KeyEvent
 import androidx.lifecycle.*
-import io.github.sds100.keymapper.util.KeyEventUtils
+import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
@@ -27,11 +27,13 @@ class KeycodeListViewModel : ViewModel() {
 
     val searchQuery: MutableLiveData<String> = MutableLiveData("")
 
-    val filteredKeycodeLabelList = MediatorLiveData<Map<Int, String>>().apply {
+    val filteredKeycodeLabelList = MediatorLiveData<State<Map<Int, String>>>().apply {
         fun filter(query: String) {
+            value = Loading()
+
             value = mKeycodeLabelMap.value?.filter {
                 it.value.toLowerCase(Locale.getDefault()).contains(query)
-            } ?: mapOf()
+            }.getState()
         }
 
         addSource(searchQuery) { query ->
@@ -39,7 +41,7 @@ class KeycodeListViewModel : ViewModel() {
         }
 
         addSource(mKeycodeLabelMap) {
-            value = it
+            value = Data(it)
 
             searchQuery.value?.let { query ->
                 filter(query)

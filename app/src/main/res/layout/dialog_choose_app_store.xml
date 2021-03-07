@@ -48,14 +48,5 @@
             app:chipIconTint="?attr/colorAccent"
             app:openUrlOnClick="@{model.githubLink}" />
 
-        <com.google.android.material.chip.Chip
-            style="@style/UrlLinkChip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/chip_xda_labs"
-            android:visibility="@{model.xdaLink != null ? View.VISIBLE : View.GONE}"
-            app:chipIconTint="?attr/colorAccent"
-            app:openUrlOnClick="@{model.xdaLink}" />
-
     </com.google.android.material.chip.ChipGroup>
 </layout>

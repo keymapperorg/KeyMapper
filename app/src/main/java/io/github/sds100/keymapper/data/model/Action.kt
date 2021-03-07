@@ -1,18 +1,17 @@
 package io.github.sds100.keymapper.data.model
 
 import android.content.Context
-import com.github.salomonbrys.kotson.byArray
-import com.github.salomonbrys.kotson.byInt
-import com.github.salomonbrys.kotson.byString
-import com.github.salomonbrys.kotson.jsonDeserializer
+import android.os.Parcelable
+import com.github.salomonbrys.kotson.*
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.ActionType
 import io.github.sds100.keymapper.util.ActionUtils
 import io.github.sds100.keymapper.util.SystemAction
 import io.github.sds100.keymapper.util.result.onSuccess
+import kotlinx.android.parcel.Parcelize
 import splitties.bitflags.withFlag
-import java.io.Serializable
+import java.util.*
 
 /**
  * Created by sds100 on 16/07/2018.
@@ -30,6 +29,7 @@ import java.io.Serializable
  * - Insert a block of text
  * - System actions/settings
  */
+@Parcelize
 data class Action(
     @SerializedName(NAME_ACTION_TYPE)
     val type: ActionType,
@@ -42,7 +42,7 @@ data class Action(
      * - Key Event: the keycode. Any extra information is stored in [extras]
      * - Block of text: text to insert
      * - System action: the system action id
-     * - Tap coordinate: comma separated x and y values
+     * - Tap coordinate: comma separated x and y valuesk
      */
     @SerializedName(NAME_DATA)
     val data: String,
@@ -51,9 +51,12 @@ data class Action(
     val extras: List<Extra> = listOf(),
 
     @SerializedName(NAME_FLAGS)
-    val flags: Int = 0
+    val flags: Int = 0,
 
-) : Serializable {
+    @SerializedName(NAME_UID)
+    val uid: String = UUID.randomUUID().toString()
+
+) : Parcelable {
     companion object {
 
         //DON'T CHANGE THESE. Used for JSON serialization and parsing.
@@ -61,8 +64,10 @@ data class Action(
         const val NAME_DATA = "data"
         const val NAME_EXTRAS = "extras"
         const val NAME_FLAGS = "flags"
+        const val NAME_UID = "uid"
 
-        const val STOP_REPEAT_BEHAVIOUR_TRIGGER_AGAIN = 0
+        const val STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN = 0
+        const val STOP_HOLD_DOWN_BEHAVIOR_TRIGGER_PRESSED_AGAIN = 0
 
         //Behaviour flags
         const val ACTION_FLAG_SHOW_VOLUME_UI = 1
@@ -78,7 +83,6 @@ data class Action(
         )
 
         //DON'T CHANGE THESE IDs!!!!
-        //Data Extras. Extras that are required to perform an action.
         const val EXTRA_SHORTCUT_TITLE = "extra_title"
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
         const val EXTRA_STREAM_TYPE = "extra_stream_type"
@@ -92,29 +96,18 @@ data class Action(
          * The KeyEvent meta state is stored as bit flags.
          */
         const val EXTRA_KEY_EVENT_META_STATE = "extra_meta_state"
+        const val EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR = "extra_device_descriptor"
 
         const val EXTRA_IME_ID = "extra_ime_id"
         const val EXTRA_IME_NAME = "extra_ime_name"
 
-        //Behaviour extras. Extras that tweak how and when an action is performed.
         const val EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR = "extra_custom_stop_repeat_behaviour"
+        const val EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR = "extra_custom_hold_down_behaviour"
         const val EXTRA_REPEAT_DELAY = "extra_hold_down_until_repeat_delay"
         const val EXTRA_REPEAT_RATE = "extra_repeat_delay"
         const val EXTRA_MULTIPLIER = "extra_multiplier"
-
-        val DATA_EXTRAS = arrayOf(
-            EXTRA_SHORTCUT_TITLE,
-            EXTRA_PACKAGE_NAME,
-            EXTRA_STREAM_TYPE,
-            EXTRA_LENS,
-            EXTRA_RINGER_MODE,
-            EXTRA_DND_MODE,
-            EXTRA_KEY_EVENT_META_STATE,
-            EXTRA_IME_ID,
-            EXTRA_IME_NAME,
-            EXTRA_ORIENTATIONS,
-            EXTRA_COORDINATE_DESCRIPTION
-        )
+        const val EXTRA_DELAY_BEFORE_NEXT_ACTION = "extra_delay_before_next_action"
+        const val EXTRA_HOLD_DOWN_DURATION = "extra_hold_down_duration"
 
         fun appAction(packageName: String): Action {
             return Action(ActionType.APP, packageName)
@@ -140,12 +133,19 @@ data class Action(
             return keyEventAction(keyCode, metaState = 0)
         }
 
-        fun keyEventAction(keyCode: Int, metaState: Int): Action {
+        fun keyEventAction(keyCode: Int, metaState: Int, deviceDescriptor: String? = null): Action {
+            val extras = sequence {
+                yield(Extra(EXTRA_KEY_EVENT_META_STATE, metaState.toString()))
+
+                deviceDescriptor?.let {
+                    yield(Extra(EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR, it))
+                }
+            }.toList()
+
             return Action(
                 ActionType.KEY_EVENT,
                 keyCode.toString(),
-                flags = ACTION_FLAG_REPEAT,
-                extras = listOf(Extra(EXTRA_KEY_EVENT_META_STATE, metaState.toString()))
+                extras = extras
             )
         }
 
@@ -205,31 +205,13 @@ data class Action(
 
             val flags by it.json.byInt(NAME_FLAGS)
 
-            Action(type, data, extraList.toMutableList(), flags)
+            val uid by it.json.byNullableString(NAME_UID)
+
+            Action(type, data, extraList.toMutableList(), flags, uid
+                ?: UUID.randomUUID().toString())
         }
     }
 
-    constructor(type: ActionType, data: String, extra: Extra) : this(type, data, mutableListOf(extra))
-
-    /**
-     * A unique identifier describing this action
-     */
-    val uniqueId: String
-        get() = buildString {
-            append(type)
-            append(data)
-            extras.forEach {
-                append("${it.id}${it.data}")
-            }
-            append(flags)
-        }
-
-    fun clone(
-        type: ActionType = this.type,
-        data: String = this.data,
-        flags: Int = this.flags,
-        extras: List<Extra> = this.extras
-    ) = Action(type, data, extras, flags)
-
-    override fun equals(other: Any?) = this.uniqueId == (other as Action?)?.uniqueId
+    constructor(type: ActionType, data: String, extra: Extra
+    ) : this(type, data, mutableListOf(extra))
 }

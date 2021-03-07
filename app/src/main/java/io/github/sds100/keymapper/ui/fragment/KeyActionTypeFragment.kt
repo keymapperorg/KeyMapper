@@ -27,20 +27,45 @@ class KeyActionTypeFragment : Fragment() {
         InjectorUtils.provideKeyActionTypeViewModel()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    /**
+     * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
+     */
+    private var _binding: FragmentKeyActionTypeBinding? = null
+    val binding: FragmentKeyActionTypeBinding
+        get() = _binding!!
+
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         FragmentKeyActionTypeBinding.inflate(inflater, container, false).apply {
 
             lifecycleOwner = viewLifecycleOwner
-            mViewModel.clearKey()
-
+            _binding = this
             viewModel = mViewModel
-
-            setOnDoneClick {
-                setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_KEYCODE to mViewModel.keyEvent.value?.keyCode))
-                findNavController().navigateUp()
-            }
 
             return this.root
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.apply {
+            mViewModel.clearKey()
+
+            setOnDoneClick {
+                setFragmentResult(REQUEST_KEY,
+                    bundleOf(EXTRA_KEYCODE to mViewModel.keyEvent.value?.keyCode))
+                findNavController().navigateUp()
+            }
+        }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 }

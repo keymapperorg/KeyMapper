@@ -30,20 +30,37 @@ import splitties.alertdialog.appcompat.*
 
 class SettingsFragment : Fragment() {
 
+    /**
+     * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
+     */
+    private var _binding: FragmentSettingsBinding? = null
+    val binding: FragmentSettingsBinding
+        get() = _binding!!
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         FragmentSettingsBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
-
-            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-                findNavController().navigateUp()
-            }
-
-            appBar.setNavigationOnClickListener {
-                findNavController().navigateUp()
-            }
+            _binding = this
 
             return this.root
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            findNavController().navigateUp()
+        }
+
+        binding.appBar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 }
 
@@ -101,20 +118,18 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(),
         InjectorUtils.provideBackupRestoreViewModel(requireContext())
     }
 
-    private val mChooseAutomaticBackupLocationLauncher by lazy {
-        requireActivity().registerForActivityResult(ActivityResultContracts.CreateDocument()) {
-            it ?: return@registerForActivityResult
+    private val mChooseAutomaticBackupLocationLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument()) {
+        it ?: return@registerForActivityResult
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                AppPreferences.automaticBackupLocation = it.toString()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            AppPreferences.automaticBackupLocation = it.toString()
 
-                val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                Intent.FLAG_GRANT_WRITE_URI_PERMISSION
 
-                requireContext().contentResolver.takePersistableUriPermission(it, takeFlags)
+            requireContext().contentResolver.takePersistableUriPermission(it, takeFlags)
 
-                mBackupRestoreViewModel.backupAll(requireContext().contentResolver.openOutputStream(it))
-            }
+            mBackupRestoreViewModel.backupAll(requireContext().contentResolver.openOutputStream(it))
         }
     }
 

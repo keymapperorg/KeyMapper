@@ -16,6 +16,10 @@
         <variable
             name="onSliderChangeListener"
             type="com.google.android.material.slider.Slider.OnChangeListener" />
+
+        <variable
+            name="onSliderValueClickListener"
+            type="android.view.View.OnClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -45,6 +49,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textViewLabel"
             app:sliderModel="@{model}"
+            app:onSliderValueClickListener="@{onSliderValueClickListener}"
             app:onChangeListener="@{onSliderChangeListener}" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

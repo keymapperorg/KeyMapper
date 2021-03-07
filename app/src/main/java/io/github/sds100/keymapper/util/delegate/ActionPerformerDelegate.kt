@@ -24,9 +24,9 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Option
-import io.github.sds100.keymapper.data.model.PerformActionModel
 import io.github.sds100.keymapper.data.model.getData
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.result.handle
 import io.github.sds100.keymapper.util.result.onSuccess
 import io.github.sds100.keymapper.util.result.valueOrNull
 import kotlinx.coroutines.delay
@@ -42,9 +42,9 @@ import timber.log.Timber
  */
 
 class ActionPerformerDelegate(context: Context,
-                              iPerformAccessibilityAction: IPerformAccessibilityAction,
+                              iAccessibilityService: IAccessibilityService,
                               lifecycle: Lifecycle
-) : IPerformAccessibilityAction by iPerformAccessibilityAction {
+) : IAccessibilityService by iAccessibilityService {
 
     companion object {
         private const val OVERFLOW_MENU_CONTENT_DESCRIPTION = "More options"
@@ -63,9 +63,10 @@ class ActionPerformerDelegate(context: Context,
         lifecycle.addObserver(mSuProcessDelegate)
     }
 
-    fun performAction(action: Action, chosenImePackageName: String?) = performAction(PerformActionModel(action), chosenImePackageName)
+    fun performAction(action: Action, chosenImePackageName: String?
+    ) = performAction(PerformAction(action), chosenImePackageName)
 
-    fun performAction(performActionModel: PerformActionModel, chosenImePackageName: String?) {
+    fun performAction(performActionModel: PerformAction, chosenImePackageName: String?) {
         val (action, showToast, additionalMetaState, keyEventAction) = performActionModel
 
         mCtx.apply {
@@ -76,7 +77,17 @@ class ActionPerformerDelegate(context: Context,
 
             when (action.type) {
                 ActionType.APP -> {
-                    val intent = packageManager.getLaunchIntentForPackage(action.data)
+                    Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT
+                    val leanbackIntent =
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            packageManager.getLeanbackLaunchIntentForPackage(action.data)
+                        } else {
+                            null
+                        }
+
+                    val normalIntent = packageManager.getLaunchIntentForPackage(action.data)
+
+                    val intent = leanbackIntent ?: normalIntent
 
                     //intent = null if the app doesn't exist
                     if (intent != null) {
@@ -155,15 +166,23 @@ class ActionPerformerDelegate(context: Context,
 
                 else -> {
                     if (action.type == ActionType.KEY_EVENT) {
+                        val deviceId = action.extras.getData(Action.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR).handle(
+                            onSuccess = {
+                                InputDeviceUtils.getDeviceIdFromDescriptor(it)
+                            },
+                            onFailure = { 0 }
+                        )
+
                         chosenImePackageName?.let {
                             KeyboardUtils.inputKeyEventFromImeService(
                                 it,
                                 keyCode = action.data.toInt(),
                                 metaState = additionalMetaState.withFlag(
-                                    action.extras.getData(Action.EXTRA_KEY_EVENT_META_STATE).valueOrNull()?.toInt() ?: 0
+                                    action.extras.getData(Action.EXTRA_KEY_EVENT_META_STATE).valueOrNull()?.toInt()
+                                        ?: 0
                                 ),
                                 keyEventAction = keyEventAction,
-                                deviceId = 0)
+                                deviceId = deviceId ?: 0)
                         }
                     }
                 }
@@ -282,14 +301,6 @@ class ActionPerformerDelegate(context: Context,
                 SystemAction.ENABLE_NFC -> NfcUtils.enable()
                 SystemAction.DISABLE_NFC -> NfcUtils.disable()
                 SystemAction.TOGGLE_NFC -> NfcUtils.toggle(this)
-
-                SystemAction.PAUSE_MEDIA -> MediaUtils.pauseMediaPlayback(this)
-                SystemAction.PLAY_MEDIA -> MediaUtils.playMedia(this)
-                SystemAction.PLAY_PAUSE_MEDIA -> MediaUtils.playPauseMediaPlayback(this)
-                SystemAction.NEXT_TRACK -> MediaUtils.nextTrack(this)
-                SystemAction.PREVIOUS_TRACK -> MediaUtils.previousTrack(this)
-                SystemAction.FAST_FORWARD -> MediaUtils.fastForward(this)
-                SystemAction.REWIND -> MediaUtils.rewind(this)
 
                 SystemAction.GO_BACK -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
                 SystemAction.GO_HOME -> performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
@@ -415,7 +426,8 @@ class ActionPerformerDelegate(context: Context,
                                         val cursorPosition = it.textSelectionStart
 
                                         val wordBoundary =
-                                            it.text.toString().getWordBoundaries(cursorPosition) ?: return@focusedNode
+                                            it.text.toString().getWordBoundaries(cursorPosition)
+                                                ?: return@focusedNode
 
                                         val bundle = bundleOf(
                                             AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT
@@ -430,6 +442,18 @@ class ActionPerformerDelegate(context: Context,
                                     }
                                 }
                             }
+                        }
+                    }
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        when (id) {
+                            SystemAction.PAUSE_MEDIA -> MediaUtils.pauseMediaPlayback(this)
+                            SystemAction.PLAY_MEDIA -> MediaUtils.playMedia(this)
+                            SystemAction.PLAY_PAUSE_MEDIA -> MediaUtils.playPauseMediaPlayback(this)
+                            SystemAction.NEXT_TRACK -> MediaUtils.nextTrack(this)
+                            SystemAction.PREVIOUS_TRACK -> MediaUtils.previousTrack(this)
+                            SystemAction.FAST_FORWARD -> MediaUtils.fastForward(this)
+                            SystemAction.REWIND -> MediaUtils.rewind(this)
                         }
                     }
 

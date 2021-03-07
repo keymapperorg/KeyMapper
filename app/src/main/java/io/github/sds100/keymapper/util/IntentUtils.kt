@@ -30,7 +30,7 @@ object IntentUtils {
     }
 
     fun createPendingActivityIntent(ctx: Context, intent: Intent): PendingIntent {
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
         return PendingIntent.getActivity(ctx, 0, intent, 0)
     }

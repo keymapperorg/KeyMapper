@@ -8,11 +8,9 @@
 
         <import type="com.google.android.material.bottomappbar.BottomAppBar" />
 
-        <import type="io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel" />
-
         <variable
             name="viewModel"
-            type="ConfigKeymapViewModel" />
+            type="io.github.sds100.keymapper.data.viewmodel.ConfigKeymapViewModel" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout

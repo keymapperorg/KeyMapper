@@ -44,9 +44,17 @@
     <string name="key_pref_showcase_action_list" translatable="false">pref_showcase_action_list</string>
     <string name="key_pref_last_used_compatible_ime" translatable="false">pref_last_used_compatible_ime</string>
     <string name="key_pref_show_gui_keyboard_ad" translatable="false">pref_show_gui_keyboard_ad</string>
+    <string name="key_pref_show_device_descriptors" translatable="false">pref_show_device_descriptors</string>
+    <string name="key_pref_hold_down_duration" translatable="false">pref_hold_down_duration</string>
+    <string name="key_pref_shown_multiple_of_same_key_in_sequence_trigger_info" translatable="false">pref_shown_multiple_of_same_key_in_sequence_trigger_info</string>
 
     <string name="key_pref_category_secure_settings" translatable="false">pref_category_secure_settings</string>
     <string name="key_pref_category_root" translatable="false">pref_category_root</string>
+
+    <string name="key_pref_fingerprint_swipe_down_json" translatable="false">pref_fingerprint_swipe_down_json</string>
+    <string name="key_pref_fingerprint_swipe_up_json" translatable="false">pref_fingerprint_swipe_up_json</string>
+    <string name="key_pref_fingerprint_swipe_left_json" translatable="false">pref_fingerprint_swipe_left_json</string>
+    <string name="key_pref_fingerprint_swipe_right_json" translatable="false">pref_fingerprint_swipe_right_json</string>
 
     <!-- Dark theme preference values -->
     <string name="value_pref_dark_theme_enabled">0</string>

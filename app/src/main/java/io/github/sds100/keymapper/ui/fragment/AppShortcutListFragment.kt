@@ -8,12 +8,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.SystemRepository
+import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.data.viewmodel.AppShortcutListViewModel
 import io.github.sds100.keymapper.databinding.FragmentRecyclerviewBinding
 import io.github.sds100.keymapper.simple
+import io.github.sds100.keymapper.util.Data
 import io.github.sds100.keymapper.util.InjectorUtils
-import io.github.sds100.keymapper.util.editTextAlertDialog
+import io.github.sds100.keymapper.util.editTextStringAlertDialog
 import io.github.sds100.keymapper.util.str
 import splitties.toast.toast
 
@@ -74,7 +75,7 @@ class AppShortcutListFragment : DefaultRecyclerViewFragment() {
                         val appName = if (packageName == null) {
                             null
                         } else {
-                            SystemRepository.getInstance(requireContext()).getAppName(packageName)
+                            ServiceLocator.systemRepository(requireContext()).getAppName(packageName)
                         }
 
                         val shortcutName = if (appName == null) {
@@ -93,11 +94,14 @@ class AppShortcutListFragment : DefaultRecyclerViewFragment() {
             }
         }
 
-    override fun subscribeList(binding: FragmentRecyclerviewBinding) {
+    override fun subscribeUi(binding: FragmentRecyclerviewBinding) {
         mViewModel.filteredAppShortcutModelList.observe(viewLifecycleOwner, { appShortcutList ->
+            binding.state = appShortcutList
 
             binding.epoxyRecyclerView.withModels {
-                appShortcutList.forEach {
+                if (appShortcutList !is Data) return@withModels
+
+                appShortcutList.data.forEach {
                     simple {
                         id(it.activityInfo.name)
                         primaryText(it.label)
@@ -134,7 +138,7 @@ class AppShortcutListFragment : DefaultRecyclerViewFragment() {
         @Suppress("DEPRECATION") var shortcutName: String? = data.getStringExtra(Intent.EXTRA_SHORTCUT_NAME)
 
         if (shortcutName.isNullOrBlank()) {
-            shortcutName = requireActivity().editTextAlertDialog(str(R.string.dialog_title_create_shortcut_title))
+            shortcutName = requireActivity().editTextStringAlertDialog(str(R.string.dialog_title_create_shortcut_title))
         }
 
         return shortcutName

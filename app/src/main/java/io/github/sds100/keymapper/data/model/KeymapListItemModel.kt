@@ -10,7 +10,8 @@ data class KeymapListItemModel(
     val constraintList: List<ConstraintModel>,
     val constraintMode: Int,
     val flagsDescription: String,
-    val isEnabled: Boolean
+    val isEnabled: Boolean,
+    val uid: String
 ) {
     val hasActions: Boolean
         get() = actionList.isNotEmpty()

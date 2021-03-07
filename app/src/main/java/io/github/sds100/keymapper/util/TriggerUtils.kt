@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.util
 
 import android.content.Context
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.data.AppPreferences
 import io.github.sds100.keymapper.data.model.DeviceInfo
 import io.github.sds100.keymapper.data.model.Trigger
 import io.github.sds100.keymapper.data.model.Trigger.Companion.DOUBLE_PRESS
@@ -86,7 +87,7 @@ fun Trigger.Key.buildModel(ctx: Context, deviceInfoList: List<DeviceInfo>): Trig
     }
 
     return TriggerKeyModel(
-        id = uniqueId,
+        id = uid,
         keyCode = keyCode,
         name = KeyEventUtils.keycodeToString(keyCode),
         clickType = clickType,
@@ -98,7 +99,17 @@ fun Trigger.Key.getDeviceName(ctx: Context, deviceInfoList: List<DeviceInfo>): S
     when (deviceId) {
         Trigger.Key.DEVICE_ID_THIS_DEVICE -> ctx.str(R.string.this_device)
         Trigger.Key.DEVICE_ID_ANY_DEVICE -> ctx.str(R.string.any_device)
-        else -> deviceInfoList.find { it.descriptor == deviceId }?.name ?: ctx.str(R.string.dont_know_device_name)
+        else -> {
+            val deviceInfo = deviceInfoList.find { it.descriptor == deviceId }
+
+            when {
+                deviceInfo == null -> ctx.str(R.string.dont_know_device_name)
+
+                AppPreferences.showDeviceDescriptors -> "${deviceInfo.name} ${deviceInfo.descriptor.substring(0..4)}"
+
+                else -> deviceInfo.name
+            }
+        }
     }
 
 fun Trigger.Key.getFlagLabelList(ctx: Context): List<String> = sequence {
@@ -108,3 +119,9 @@ fun Trigger.Key.getFlagLabelList(ctx: Context): List<String> = sequence {
         }
     }
 }.toList()
+
+val Trigger.triggerFromOtherApps: Boolean
+    get() = flags.hasFlag(Trigger.TRIGGER_FLAG_FROM_OTHER_APPS)
+
+val Trigger.vibrate: Boolean
+    get() = flags.hasFlag(Trigger.TRIGGER_FLAG_VIBRATE)

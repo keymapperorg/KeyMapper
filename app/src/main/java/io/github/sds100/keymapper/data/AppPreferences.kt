@@ -108,11 +108,6 @@ object AppPreferences : DefaultPreferences() {
         false
     )
 
-    var lastInstalledVersionCode by IntPref(
-        appCtx.str(R.string.key_pref_last_installed_version),
-        -1
-    )
-
     val toggleKeyboardOnToggleKeymaps by BoolPref(
         appCtx.str(R.string.key_pref_toggle_keyboard_on_toggle_keymaps),
         appCtx.bool(R.bool.default_value_toggle_keyboard_on_toggle_keymaps)
@@ -140,6 +135,21 @@ object AppPreferences : DefaultPreferences() {
     var showGuiKeyboardAd by BoolPref(
         appCtx.str(R.string.key_pref_show_gui_keyboard_ad),
         true
+    )
+
+    val showDeviceDescriptors by BoolPref(
+        appCtx.str(R.string.key_pref_show_device_descriptors),
+        appCtx.bool(R.bool.default_value_show_device_descriptors)
+    )
+
+    val holdDownDuration by IntPref(
+        appCtx.str(R.string.key_pref_hold_down_duration),
+        appCtx.int(R.integer.default_value_hold_down_duration)
+    )
+
+    var approvedFingerprintFeaturePrompt by BoolPref(
+        "pref_approved_fingerprint_feature_prompt",
+        false
     )
 
     @NightMode

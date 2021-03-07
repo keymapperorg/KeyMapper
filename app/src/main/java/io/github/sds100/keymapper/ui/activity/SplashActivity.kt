@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.ui.activity
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -18,10 +19,16 @@ class SplashActivity : AppCompatActivity() {
         val darkThemeMode = AppPreferences.darkThemeMode
         AppCompatDelegate.setDefaultNightMode(darkThemeMode)
 
-        if (AppPreferences.shownAppIntro) {
-            startActivity(Intent(this, HomeActivity::class.java))
-        } else {
-            startActivity(Intent(this, AppIntroActivity::class.java))
+
+        when {
+            !AppPreferences.shownAppIntro ->
+                startActivity(Intent(this, AppIntroActivity::class.java))
+
+            !AppPreferences.approvedFingerprintFeaturePrompt
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
+                startActivity(Intent(this, FingerprintGestureIntroActivity::class.java))
+
+            else -> startActivity(Intent(this, HomeActivity::class.java))
         }
 
         finish()

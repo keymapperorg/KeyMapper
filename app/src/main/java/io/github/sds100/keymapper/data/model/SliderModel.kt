@@ -8,5 +8,5 @@ import androidx.annotation.IntegerRes
 data class SliderModel(val value: Int?,
                        val isDefaultStepEnabled: Boolean,
                        @IntegerRes val min: Int,
-                       @IntegerRes val max: Int,
+                       @IntegerRes val maxSlider: Int,
                        @IntegerRes val stepSize: Int)

@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.util
 import android.content.Context
 import android.provider.Settings
 import android.view.Surface
+import timber.log.Timber
 
 /**
  * Created by sds100 on 24/10/2018.
@@ -75,13 +76,13 @@ object ScreenRotationUtils {
         }
     }
 
-    /**
-     * @return If the rotation setting can't be found, it returns null
-     */
     private fun isPortrait(ctx: Context): Boolean {
         val rotation = ctx.getSystemSetting<Int>(Settings.System.USER_ROTATION)
-        return rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180
+        return rotation?.let { isPortrait(it) } ?: false
     }
+
+    fun isPortrait(rotation: Int) = rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180
+    fun isLandscape(rotation: Int) = rotation == Surface.ROTATION_270 || rotation == Surface.ROTATION_90
 
     /**
      * @return If the rotation setting can't be found, it returns null
@@ -91,6 +92,11 @@ object ScreenRotationUtils {
         return rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270
     }
 
-    private fun getRotation(ctx: Context) = ctx.getSystemSetting<Int>(Settings.System.USER_ROTATION)
+    fun getRotation(ctx: Context): Int? {
+        Timber.e(ctx.getSystemSetting<Int>(Settings.System.USER_ROTATION).toString())
+
+        return ctx.getSystemSetting<Int>(Settings.System.USER_ROTATION)
+    }
+
     private fun setRotation(ctx: Context, rotation: Int) = ctx.putSystemSetting(Settings.System.USER_ROTATION, rotation)
 }

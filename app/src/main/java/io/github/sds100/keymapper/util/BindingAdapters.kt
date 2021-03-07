@@ -87,11 +87,13 @@ fun StatusLayout.setStatusLayoutState(
 }
 
 @BindingAdapter("app:markdown")
-fun TextView.markdown(markdown: String?) {
-    markdown ?: return
+fun TextView.markdown(markdown: State<String>) {
+    when (markdown) {
+        is Data -> Markwon.create(context).apply {
+            setMarkdown(this@markdown, markdown.data)
+        }
 
-    Markwon.create(context).apply {
-        setMarkdown(this@markdown, markdown)
+        is Loading, is Empty -> text = ""
     }
 }
 
@@ -136,7 +138,7 @@ fun TextInputLayout.errorWhenEmpty(enabled: Boolean) {
 }
 
 @BindingAdapter("app:onLongClick")
-fun setLongClickListener(view: View, onLongClickListener: View.OnLongClickListener) {
+fun setLongClickListener(view: View, onLongClickListener: View.OnLongClickListener?) {
     view.setOnLongClickListener(onLongClickListener)
 }
 
@@ -299,6 +301,10 @@ fun ChipGroup.bindConstraints(
             text = model.description
             chipIcon = model.icon
             isCloseIconVisible = model.hasError
+
+            if (model.iconTintOnSurface) {
+                chipIconTint = styledColorSL(R.attr.colorOnSurface)
+            }
 
             if (model.description == null && model.hasError) {
                 text = model.errorMessage

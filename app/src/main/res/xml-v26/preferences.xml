@@ -30,6 +30,12 @@
         android:summary="@string/summary_pref_force_vibrate"
         android:title="@string/title_pref_force_vibrate" />
 
+    <androidx.preference.SwitchPreference
+        android:defaultValue="@bool/default_value_show_device_descriptors"
+        android:key="@string/key_pref_show_device_descriptors"
+        android:summary="@string/summary_pref_show_device_descriptors"
+        android:title="@string/title_pref_show_device_descriptors" />
+
     <androidx.preference.SeekBarPreference
         android:defaultValue="@integer/default_value_long_press_delay"
         android:key="@string/key_pref_long_press_delay"
