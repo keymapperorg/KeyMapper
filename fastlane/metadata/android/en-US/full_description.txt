@@ -1,6 +1,6 @@
 What can be remapped?
 
- * Fingerprint gestures on supported devices.
+ * Fingerprint reader gestures on supported devices.
  * Volume buttons.
  * Navigation buttons.
  * Bluetooth/wired keyboards.
