@@ -276,7 +276,6 @@
     <string name="dialog_message_select_compatible_ime">选择一个动作需要的输入法。你可以稍候在主屏幕的底部菜单，点击“选择动作键盘”来更改此项。</string>
     <string name="dialog_message_select_app_store_gui_keyboard">你想从哪里获取新的键盘？</string>
     <string name="dialog_message_cant_record_trigger">如果“记录触发器”按钮正在递减计数，并且你所按的按钮未显示，<b>重新启动</b>你的设备。如果在重新启动后你的按钮仍然不显示，则Key Mapper不支持你的按钮。尝试这样修复它并没有用。</string>
-    <string name="dialog_message_use_key_multiple_times_in_sequence_trigger">如果你有来自同一设备的重复的相同按键的序列触发器，你只能把他们设置为相同的点击类型(短/长按/双击)。</string>
     <!-- Dialog messages -->
     <!-- Dialog buttons -->
     <string name="pos_yes">是</string>
