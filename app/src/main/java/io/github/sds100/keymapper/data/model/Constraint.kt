@@ -141,15 +141,6 @@ data class Constraint(@ConstraintType
 
             Constraint(type, extraList)
         }
-
-        val DESERIALIZER = jsonDeserializer {
-            val type by it.json.byString(NAME_TYPE)
-
-            val extrasJsonArray by it.json.byArray(NAME_EXTRAS)
-            val extraList = it.context.deserialize<List<Extra>>(extrasJsonArray) ?: listOf()
-
-            Constraint(type, extraList)
-        }
     }
 
     fun getExtraData(extraId: String): Result<String> {

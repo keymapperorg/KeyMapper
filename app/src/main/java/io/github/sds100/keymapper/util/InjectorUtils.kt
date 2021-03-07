@@ -86,10 +86,6 @@ object InjectorUtils {
         return TriggerKeyOptionsViewModel.Factory()
     }
 
-    fun provideTriggerKeyBehaviorViewModel(): TriggerKeyBehaviorViewModel.Factory {
-        return TriggerKeyBehaviorViewModel.Factory()
-    }
-
     fun provideOnlineViewModel(context: Context,
                                fileUrl: String,
                                alternateUrl: String? = null,
