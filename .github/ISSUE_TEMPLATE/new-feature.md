@@ -11,4 +11,5 @@ assignees: sds100
 - [ ] create new branch. put issue number at start of name
 - [ ] write tests before working on feature. put issue number in comment
 - [ ] update documentation
+- [ ] squash and merge
 - [ ] delete branch
