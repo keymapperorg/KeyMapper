@@ -1,3 +1,65 @@
+## [2.2.0](https://github.com/sds100/KeyMapper/releases/tag/v2.2.0) 
+
+#### 07 March 2021
+
+This sums up all the changes for 2.2
+
+### Added
+- Remap fingerprint gestures! #378
+Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
+
+- Widget/shortcut to launch actions. #459
+- Setting to show the first 5 digits of input devices so devices with the same name can be differentiated in Key Mapper lists. #470
+- Show a warning at the top of the homescreen if the user hasn't disabled battery optimisation for Key Mapper. #496
+- Action option to hold down until the trigger is pressed again. #479
+- Action option to change the delay before the next action in the list. #476
+- Orientation constraint. #505
+- Key Event action option to pretend that the Key Event came from a particular device. #509
+- Use duplicates of the same key in a sequence trigger. #513
+- Show the fingerprint gesture intro slide when updating to 2.2 #545
+- Show a silent notification, which advertises the remapping fingerprint gesture feature, when the user updates to 2.2 #546
+- Trigger key maps from an Intent #490
+- Prompt the user to go to https://dontkillmyapp.com when they first setup the app.
+- Add Fdroid link to the Key Mapper GUI Keyboard ad. #524
+
+### BREAKING CHANGES
+- Key Mapper action shortcuts work completely differently. See https://docs.keymapper.club/user-guide/triggers/#trigger-from-other-apps-230
+
+### Changes
+- No max limit for sliders (except in settings). #458
+- The app intro slides will show feedback if the steps have been done correctly.
+
+### Removed
+- XDA Labs links because it has been shut down.
+
+### Bug Fixes
+- Save and restore state for all view models. #519
+- Use View Binding in fragments properly. This should stop random crashes for some users. #518
+- Hold Down action option doesn't work for long press triggers. #504
+- A trigger for a specific device can still be detected if the same buttons on another device are pressed. #523
+- Fix layout of the trigger fragment on some screen sizes so that some things aren't cut off. #522
+- Remapping modifier keys to the same key didn't work as expected. #563
+- Parallel triggers which contained another parallel trigger didn't cancel the other. #571
+- Don't allow screen on/off constraints for fingerprint gestures #570
+- Rename Key Mapper CI Keyboard to Key Mapper CI Basic Input Method.
+- Notifications had no icon on Android Lollipop.
+- remove coloured navigation bar on Android Lollipop.
+- Hold Down option wasn't allowed on Android 8.0 or older.
+- Detecting whether remapping fingerprint gestures are supported didn't work.
+- The flashlight action would sometimes crash the app.
+- The error message for an app being disabled was the wrong one.
+- Actions to open Android TV apps didn't work #503
+- The app list didn't show Android TV-only apps. #487
+- Settings for repeat rate and delay until repeat didn't match their names when configuring an action.
+- Text would move up/down when sliding between slides in the app intro. #540
+- Icon for "specific app playing media" constraint had the wrong tint. #535
+- Limit Media actions to Android 4.4 KitKat+ because they don't work on older versions.
+- Up Key Event was sent from all keymaps with the "hold down" action option regardless of whether the trigger was released. #533
+- Testing actions didn't work.
+- Scroll position was lost when reloading the key map list.
+- Try to fix random crashes when navigating.
+- Duplicating key maps didn't work.
+
 ## [2.2.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v2.2.0-beta.2) 
 
 #### 29 Jan 2021
