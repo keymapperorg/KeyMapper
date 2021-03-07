@@ -327,7 +327,6 @@
     <string name="dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout">You need to choose the \"Caps Lock to Camera\" keyboard layout for your keyboard otherwise the Caps Lock key will still caps lock. You can find this setting in your device settings -> Languages and Input -> Physical Keyboard -> Tap on your keyboard -> Set Up Keyboard Layouts. This will remap the Caps Lock key to KEYCODE_CAMERA so Key Mapper can remap it properly.\n\nAfter you\'ve done this you must remove the Caps Lock trigger key and record the Caps Lock key again. It should say \"Camera\" instead of \"Caps Lock\" if you did the steps correctly.</string>
     <string name="dialog_message_select_app_store_gui_keyboard">Where do you want to get the new keyboard?</string>
     <string name="dialog_message_cant_record_trigger"><b>Reboot</b> your device if the "Record Trigger" button is counting down and the buttons that you are pressing aren\'t showing up. If your buttons are still not showing up after rebooting then Key Mapper doesn\'t support your buttons. There isn\'t a fix for this.</string>
-    <string name="dialog_message_use_key_multiple_times_in_sequence_trigger">You can only have duplicates of the same key from the same device in a sequence trigger if they all have the same click type (short/long/double press).</string>
 
     <!-- Dialog messages -->
 

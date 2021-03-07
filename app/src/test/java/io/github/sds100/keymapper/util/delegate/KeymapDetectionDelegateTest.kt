@@ -158,6 +158,35 @@ class KeymapDetectionDelegateTest {
         mPerformActionTest.reset()
     }
 
+     /**
+     * this helped fix issue #608
+     */
+    @Test
+    fun `short press key and double press same key sequence trigger, double press key, don't perform action`() =
+        mCoroutineScope.runBlockingTest {
+            val trigger = sequenceTrigger(
+                Trigger.Key(KeyEvent.KEYCODE_A),
+                Trigger.Key(KeyEvent.KEYCODE_A, clickType = DOUBLE_PRESS)
+            )
+
+            mDelegate.keyMapListCache = listOf(
+                KeyMap(
+                    id = 0,
+                    trigger = trigger,
+                    actionList = listOf(TEST_ACTION)
+                )
+            )
+
+            mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_A, clickType = DOUBLE_PRESS))
+
+            assertThat(mPerformActionTest.history, `is`(emptyList()))
+
+            mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_A))
+            mockTriggerKeyInput(Trigger.Key(KeyEvent.KEYCODE_A, clickType = DOUBLE_PRESS))
+
+            assertThat(mPerformActionTest.history.map { it.action }, `is`(listOf(TEST_ACTION)))
+        }
+
     /**
      * issue #563
      */

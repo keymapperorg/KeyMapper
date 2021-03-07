@@ -212,7 +212,7 @@ class TriggerViewModel(
     suspend fun addTriggerKey(keyCode: Int, deviceDescriptor: String, deviceName: String, isExternal: Boolean): Boolean {
         mDeviceInfoRepository.insertDeviceInfo(DeviceInfo(deviceDescriptor, deviceName))
 
-        var clickType = Trigger.SHORT_PRESS
+        val clickType = Trigger.SHORT_PRESS
 
         val deviceId = if (isExternal) {
             deviceDescriptor
@@ -244,38 +244,6 @@ class TriggerViewModel(
 
         if (containsKey) {
             triggerInSequence.value = true
-
-            if (!getBoolPref(R.string.key_pref_shown_multiple_of_same_key_in_sequence_trigger_info)) {
-                notifyUser(R.string.dialog_message_use_key_multiple_times_in_sequence_trigger)
-
-                setBoolPref(R.string.key_pref_shown_multiple_of_same_key_in_sequence_trigger_info,
-                    true)
-            }
-        }
-
-        /*
-        multiple of the same key from the same device in a sequence trigger must all have the same click type.
-        Therefore, set the click type of the new key to the same as the other keys.
-         */
-        if (triggerInSequence.value == true) {
-            val keysWithSameKeycodeAndDevice = keys.value?.filter {
-                it.keyCode == keyCode && it.deviceId == deviceId
-            } ?: listOf()
-
-            if (keysWithSameKeycodeAndDevice.isNotEmpty()) {
-                clickType = keysWithSameKeycodeAndDevice[0].clickType
-
-                if (!getBoolPref(
-                        R.string.key_pref_shown_multiple_of_same_key_in_sequence_trigger_info)) {
-
-                    notifyUser(R.string.dialog_message_use_key_multiple_times_in_sequence_trigger)
-
-                    setBoolPref(
-                        R.string.key_pref_shown_multiple_of_same_key_in_sequence_trigger_info,
-                        true
-                    )
-                }
-            }
         }
 
         _keys.value = keys.value?.toMutableList()?.apply {

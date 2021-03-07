@@ -56,7 +56,6 @@ class TriggerKeyOptions(
         get() = listOf(doNotConsumeKeyEvents)
 
     override fun apply(trigger: Trigger): Trigger {
-        var keyToApplyOptions: Trigger.Key? = null
 
         val newTriggerKeys = trigger.keys
             .toMutableList()
@@ -70,19 +69,7 @@ class TriggerKeyOptions(
                         )
                     )
 
-                    keyToApplyOptions = it
-
                     return@map newKey
-                }
-
-                it
-            }.map {
-                //set the click type of all duplicate keys to the same click type
-                if (trigger.mode == Trigger.SEQUENCE
-                    && it.keyCode == keyToApplyOptions?.keyCode
-                    && it.deviceId == keyToApplyOptions?.deviceId) {
-
-                    return@map it.copy(clickType = clickType.value)
                 }
 
                 it
