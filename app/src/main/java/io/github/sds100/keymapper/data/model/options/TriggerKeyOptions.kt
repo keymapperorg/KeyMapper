@@ -56,33 +56,18 @@ class TriggerKeyOptions(
         get() = listOf(doNotConsumeKeyEvents)
 
     override fun apply(trigger: Trigger): Trigger {
-        var keyToApplyOptions: Trigger.Key? = null
-
         val newTriggerKeys = trigger.keys
             .toMutableList()
             .map {
                 if (it.uid == id) {
-                    val newKey = it.copy(
+
+                    return@map it.copy(
                         clickType = clickType.value,
                         flags = it.flags.saveBoolOption(
                             doNotConsumeKeyEvents,
                             Trigger.Key.FLAG_DO_NOT_CONSUME_KEY_EVENT
                         )
                     )
-
-                    keyToApplyOptions = it
-
-                    return@map newKey
-                }
-
-                it
-            }.map {
-                //set the click type of all duplicate keys to the same click type
-                if (trigger.mode == Trigger.SEQUENCE
-                    && it.keyCode == keyToApplyOptions?.keyCode
-                    && it.deviceId == keyToApplyOptions?.deviceId) {
-
-                    return@map it.copy(clickType = clickType.value)
                 }
 
                 it
