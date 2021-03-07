@@ -111,7 +111,7 @@ class KeymapDetectionDelegate(
 
                 val longPressSequenceEvents = mutableListOf<Pair<Event, Int>>()
 
-                val doublePressEvents = mutableListOf<Pair<Event, Int>>()
+                val doublePressEvents = mutableListOf<TriggerKeyLocation>()
 
                 setActionMapAndOptions(value.flatMap { it.actionList }.toSet())
 
@@ -147,7 +147,7 @@ class KeymapDetectionDelegate(
 
                     val eventList = mutableListOf<Event>()
 
-                    keymap.trigger.keys.forEachIndexed { _, key ->
+                    keymap.trigger.keys.forEachIndexed { keyIndex, key ->
                         val sequenceTriggerIndex = sequenceTriggerEvents.size
 
                         if (keymap.trigger.mode == Trigger.SEQUENCE && key.clickType == LONG_PRESS) {
@@ -167,11 +167,10 @@ class KeymapDetectionDelegate(
                             && key.clickType == DOUBLE_PRESS
                         ) {
                             doublePressEvents.add(
-                                Event(
-                                    key.keyCode,
-                                    key.clickType,
-                                    key.deviceId
-                                ) to sequenceTriggerIndex
+                                TriggerKeyLocation(
+                                    sequenceTriggerIndex,
+                                    keyIndex
+                                )
                             )
                         }
 
@@ -410,7 +409,7 @@ class KeymapDetectionDelegate(
      * All double press sequence events and the index of their corresponding trigger. first is the event and second is
      * the trigger index.
      */
-    private var doublePressEvents = arrayOf<Pair<Event, Int>>()
+    private var doublePressEvents = arrayOf<TriggerKeyLocation>()
 
     /**
      * order matches with [doublePressEvents]
@@ -653,8 +652,10 @@ class KeymapDetectionDelegate(
                 doublePressEventStates[doublePressEventIndex] = NOT_PRESSED
 
             } else {
-                val doublePressEvent = doublePressEvents[doublePressEventIndex].first
-                val triggerIndex = doublePressEvents[doublePressEventIndex].second
+                val eventLocation = doublePressEvents[doublePressEventIndex]
+                val doublePressEvent =
+                    sequenceTriggerEvents[eventLocation.triggerIndex][eventLocation.keyIndex]
+                val triggerIndex = eventLocation.triggerIndex
 
                 sequenceTriggerEvents[triggerIndex].forEachIndexed { eventIndex, event ->
                     if (event == doublePressEvent
@@ -824,7 +825,7 @@ class KeymapDetectionDelegate(
 
         if (detectedShortPressTriggers.isNotEmpty()) {
             val matchingDoublePressEvent = doublePressEvents.any {
-                it.first.matchesEvent(event.withDoublePress)
+                sequenceTriggerEvents[it.triggerIndex][it.keyIndex].matchesEvent(event.withDoublePress)
             }
 
             /* to prevent the actions of keys mapped to a short press and, a long press or a double press
@@ -1002,11 +1003,15 @@ class KeymapDetectionDelegate(
 
         if (detectSequenceDoublePresses) {
             //iterate over each possible double press event to detect
-            for ((index, pair) in doublePressEvents.withIndex()) {
-                val doublePressEvent = pair.first
-                val triggerIndex = pair.second
+            for (index in doublePressEvents.indices) {
+                val eventLocation = doublePressEvents[index]
+                val doublePressEvent =
+                    sequenceTriggerEvents[eventLocation.triggerIndex][eventLocation.keyIndex]
+                val triggerIndex = eventLocation.triggerIndex
 
                 if (!areSequenceTriggerConstraintsSatisfied(triggerIndex)) continue
+
+                if (lastMatchedSequenceEventIndices[triggerIndex] != eventLocation.keyIndex - 1) continue
 
                 if (doublePressEvent.matchesEvent(event.withDoublePress)) {
                     mappedToDoublePress = true
@@ -1888,4 +1893,5 @@ class KeymapDetectionDelegate(
 
     private data class Event(val keyCode: Int, val clickType: Int, val deviceId: String)
     private class RepeatJob(val actionKey: Int, launch: () -> Job) : Job by launch.invoke()
+    private data class TriggerKeyLocation(val triggerIndex: Int, val keyIndex: Int)
 }

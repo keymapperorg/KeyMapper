@@ -213,7 +213,7 @@ class TriggerViewModel(
     fun addTriggerKey(keyCode: Int, deviceDescriptor: String, deviceName: String, isExternal: Boolean): Boolean {
         deviceInfoRepository.insertDeviceInfo(DeviceInfo(deviceDescriptor, deviceName))
 
-        var clickType = Trigger.SHORT_PRESS
+        val clickType = Trigger.SHORT_PRESS
 
         val deviceId = if (isExternal) {
             deviceDescriptor
@@ -245,34 +245,6 @@ class TriggerViewModel(
 
         if (containsKey) {
             triggerInSequence.value = true
-
-            if (prefs.getFlow(Keys.shownMultipleOfSameKeyInSequenceTriggerExplanation)
-                    .firstBlocking() == false) {
-                notifyUser(Keys.shownMultipleOfSameKeyInSequenceTriggerExplanation.name,
-                    R.string.dialog_message_use_key_multiple_times_in_sequence_trigger)
-            }
-        }
-
-        /*
-        multiple of the same key from the same device in a sequence trigger must all have the same click type.
-        Therefore, set the click type of the new key to the same as the other keys.
-         */
-        if (triggerInSequence.value == true) {
-            val keysWithSameKeycodeAndDevice = keys.value?.filter {
-                it.keyCode == keyCode && it.deviceId == deviceId
-            } ?: listOf()
-
-            if (keysWithSameKeycodeAndDevice.isNotEmpty()) {
-                clickType = keysWithSameKeycodeAndDevice[0].clickType
-
-                if (prefs.getFlow(Keys.shownMultipleOfSameKeyInSequenceTriggerExplanation)
-                        .firstBlocking() == false) {
-
-                    notifyUser(Keys.shownMultipleOfSameKeyInSequenceTriggerExplanation.name,
-                        R.string.dialog_message_use_key_multiple_times_in_sequence_trigger)
-
-                }
-            }
         }
 
         _keys.value = keys.value?.toMutableList()?.apply {
@@ -372,9 +344,6 @@ class TriggerViewModel(
         when (key) {
             Keys.shownParallelTriggerOrderExplanation.name ->
                 prefs.set(Keys.shownParallelTriggerOrderExplanation, true)
-
-            Keys.shownMultipleOfSameKeyInSequenceTriggerExplanation.name ->
-                prefs.set(Keys.shownMultipleOfSameKeyInSequenceTriggerExplanation, true)
 
             Keys.shownSequenceTriggerExplanation.name ->
                 prefs.set(Keys.shownSequenceTriggerExplanation, true)

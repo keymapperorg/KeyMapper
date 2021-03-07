@@ -36,5 +36,4 @@ object Keys {
     val shownScreenOffTriggersExplanation = preferencesKey<Boolean>("pref_screen_off_triggers_explanation")
     val shownParallelTriggerOrderExplanation = preferencesKey<Boolean>("key_shown_parallel_trigger_order_warning")
     val shownSequenceTriggerExplanation = preferencesKey<Boolean>("key_shown_sequence_trigger_explanation_dialog")
-    val shownMultipleOfSameKeyInSequenceTriggerExplanation = preferencesKey<Boolean>("pref_shown_multiple_of_same_key_in_sequence_trigger_info")
 }
