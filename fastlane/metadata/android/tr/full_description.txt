@@ -63,35 +63,36 @@ Anahtarlarımı ne yapmak için atayabilirim?
  * Cihaz Asistanını açın
  *Kamerayı aç
  * Anahtar olayı tüketin. (Hiçbir şey yapmaz) 
- * Lock the device
- * Show the power dialog (Android 5.0+)
- * Move the cursor to the end of a file
+ *Cihazı kapa
+ * Güç iletişim kutusunu göster (Android 5.0+)
+ * İmleci bir dosyanın sonuna taşıyın
 
-And more....
+Ve dahası...
 
-A Key Mapper keyboard needs to be selected for these to work:
+Bunların çalışması için Keymapper klavyesinin seçilmesi gerekir:
 
-** It is recommended to install the Key Mapper GUI Keyboard app because this is a proper keyboard unlike the one built-in to Key Mapper **
+** Key Mapper GUI Keyboard uygulamasını kurmanız önerilir çünkü bu, Key Mapper'da yerleşik olandan farklı olarak uygun bir klavyedir **
 
- * Input a specific keycode
- * Input a key
- * Input a Key Event
- * Insert a block of text
+ *Özel tuş kodu gir
+ *Tuş gir
+ *Tuş olayı gir
+ *Metin bloğu ekle
 
-What other things can the app do?
- * Option to show a persistent notification which can pause/resume your keymaps.
- * Automatically change the keyboard to the Key Mapper one and/or show the keyboard picker when a chosen Bluetooth device is connected and switch back to the old one when it is disconnected.
- * Quick settings to pause/resume keymaps and toggle the Key Mapper keyboard.
- * Create home screen widget to perform the actions mentioned above.
+Uygulama başka neler yapabilir?
+ * Tuş eşlemelerinizi duraklatabilecek / devam ettirebilecek kalıcı bir bildirim gösterme seçeneği.
+ * Klavyeyi otomatik olarak Anahtar Eşleştiriciye değiştirin ve / veya seçilen bir Bluetooth cihazı bağlandığında klavye seçiciyi gösterin ve bağlantısı kesildiğinde eskisine geri dönün.
+ * Tuş eşlemelerini durdurma/devam ettirme ya da Keymapper klavyesini değiştirmek için kolay ayarlar.
+ Yukarıda belirtilen eylemleri gerçekleştirmek için ana ekran widget'ı oluşturun.
 
-Permissions
-You don't have to grant all the permissions for the app to work. The app will tell you if a permission needs to be granted for a feature to work.
+İzinler
+İzinlerin hepsini vermek zorunda değilsin. Uygulama vermen gereken izinleri belirtecektir.
 
- * Accessibility Service: Basic requirement for remapping to work. It is needed so the app can listen to and block keyevents.
- * Device Admin: To turn the screen off when using the action to turn off the screen.
- * Modify System Settings: To change the brightness and rotation settings.
- * Camera: To control the flashlight.
+ * Erişilebilirlik Hizmeti: Çalışmak üzere yeniden eşleme için temel gereksinim. Uygulamanın tuş olaylarını dinleyebilmesi ve engelleyebilmesi için gereklidir.
+ * Aygıt Yöneticisi: Ekranı kapatma eylemini kullanırken ekranı kapatmak için.
+ * Sistem Ayarlarını Değiştirme: Parlaklık ve döndürme ayarlarını değiştirmek için.
+ Kamera: El fenerini kontrol etmek için.
 
- On some devices, enabling the accessibility service will disable "enhanced data encryption".
+ Bazı cihazlarda erişilebilirlik hizmetini etkinleştirmek "gelişmiş veri şifrelemeyi" devre dışı bırakır.
 
 Discord: https://discord.gg/Suj6nyw
+Çeviren:Ali Efe Çolak
