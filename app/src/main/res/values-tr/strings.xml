@@ -11,10 +11,14 @@
     <string name="actions_recyclerview_placeholder">1 tuş belirle!</string>
     <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nörnek bir anahtar oluştur!</string>
     <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nBu kısayol için herhangi bir eylem seçmediniz!</string>
+    <string name="no_key_maps">Hiç tuş atamadın agam! </string>
+    <string name="everything_looks_good">Herşey iyi görünüyor :) ! </string>
     <string name="warning_the_app_will_work">Uygulama çalışacaktır ancak ne yaptığınıza bağlı olarak bazı şeylerin düzeltilmesi gerekebilir.</string>
     <string name="your_device_doesnt_support_some_actions">Cihaz bazı fonksiyonları desteklemiyor.</string>
     <string name="tab_unsupported_actions">Desteklenmeyen işlemler</string>
+    <string name="requires_root">KÖK ERİŞİMİNE İHTİYACI VAR</string>
     <string name="press_dot_dot_dot">Bura basın…</string>
+    <string name="no_actions">Eylem yok</string>
     <string name="no_trigger">Etkileyici yok</string>
     <string name="unknown_keycode">Bilinmeyen anahtar kodu: %s</string>
     <string name="chip_while">zaman</string>
@@ -30,6 +34,7 @@
     <string name="trigger_released">Yollamdı</string>
     <string name="trigger_pressed_again">Tekrar basın</string>
     <string name="show_hidden_apps">Olmayan uygulamaları göster</string>
+    <string name="modifiers">Değiştiriciler</string>
     <string name="toggle">Değiştir</string>
     <string name="tap_coordinate_screenshot_message">ÖNEMLİ!!!  Bu koordinatlar yalnızca ekranınız ekran görüntüsü ile aynı yöndeyse doğrudur!  Bu eylem, ekranda yaptığınız tüm dokunuşları veya hareketleri iptal edecektir. \n\nEkranınızdaki bir noktanın koordinatlarını bulma konusunda yardıma ihtiyacınız varsa, bir ekran görüntüsü alın ve ardından bu eylemin basmasını istediğiniz ekran görüntüsüne dokunun.</string>
     <string name="dont_know_device_name">Cihaz adını algılanamıyor!</string>
