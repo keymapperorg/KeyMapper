@@ -11,7 +11,7 @@
     <string name="actions_recyclerview_placeholder">1 tuş belirle!</string>
     <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nörnek bir anahtar oluştur!</string>
     <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nBu kısayol için herhangi bir eylem seçmediniz!</string>
-    <string name="no_key_maps">Hiç tuş atamadın agam! </string>
+    <string name="no_key_maps">Hiç tuş eşlemedin agam!</string>
     <string name="everything_looks_good">Herşey iyi görünüyor :) ! </string>
     <string name="warning_the_app_will_work">Uygulama çalışacaktır ancak ne yaptığınıza bağlı olarak bazı şeylerin düzeltilmesi gerekebilir.</string>
     <string name="your_device_doesnt_support_some_actions">Cihaz bazı fonksiyonları desteklemiyor.</string>
@@ -45,22 +45,38 @@
     <string name="hold_down_until_trigger_is_dot_dot_dot">Başarılı olana kadar basılı tutın. Çeviren: Ali Efe Çolak </string>
     <string name="from_no_device">Cihaz yok</string>
     <string name="intent_extras_recycler_view_placeholder">¯\\_(ツ)_/¯\n\n Ekstralar yok! </string>
-    <string name="content_description_fab_new_keymap">Yeni tuş ataması yap. </string>
+    <string name="content_description_fab_new_keymap">Yeni tuş eşle</string>
     <string name="whats_new">Yenilikler :) </string>
     <string name="caption_action_type_key">Girmek istediğiniz cihazdaki tuşa tıklayın
             \n\nÖNEMLİ!
-            Bu tuşu bir atamak, yalnızca Key Mapper uyumlu bir klavye kullanıyorsanız işe yarar.</string>
+            Bu tuşu bir eşlemek, yalnızca Key Mapper uyumlu bir klavye kullanıyorsanız işe yarar.</string>
     <string name="caption_action_type_keycode">ÖNEMLİ!
-            Bu anahtar kodunu atamak, yalnızca Key Mapper uyumlu bir klavye kullanıyorsanız işe yarar.</string>
+            Bu anahtar kodunu eşlemek, yalnızca Key Mapper uyumlu bir klavye kullanıyorsanız işe yarar.</string>
     <string name="caption_action_type_text">Bu eylemi gerçekleştirdiğinizde eklenmesini istediğiniz metni yazın.</string>
     <string name="caption_action_type_phone_call">Telefon numarasını gir 😉. </string>
     <string name="caption_action_type_url">Açmak istediğiniz URL\'yi girin. https://, http://, www. koymana gerek yok. </string>
     <string name="caption_no_paired_bt_devices">Eşleştirilmiş bir cihaz BULUNAMADI. Bluetooth açık mı? </string>
-    <string name="caption_create_keymap_shortcut">Zaten değilse, seçtiğiniz anahtar harita için \"diğer uygulamalardan tetikle\" seçeneği açılacaktır.  Bu seçeneği daha sonra kapatırsanız, bu tuş haritasını tetikleyen kısayollar veya Amaçlar çalışmayacaktır.</string>
+    <string name="caption_create_keymap_shortcut">Zaten değilse, seçtiğiniz anahtar eşlemesi için \"diğer uygulamalardan tetikle\" seçeneği açılacaktır. Bu seçeneği daha sonra kapatırsanız, bu tuş haritasını tetikleyen kısayollar veya Amaçlar çalışmayacaktır.</string>
     <string name="switch_enabled">Etkin </string>
     <string name="disabled">Pasif </string>
     <string name="reset">Sıfırla </string>
+    <string name="enable_device_admin_message">Cihaz yöneticisini etkinleştirdikten sonra, uygulamayı kaldırmak istiyorsanız onu DEVRE DIŞI BIRAKMALISINIZ.</string>
+    <string name="constraints_recyclerview_placeholder">Kısıtlamalar yok!</string>
+    <string name="action_title_wait">Bekle %sms</string>
+    <string name="email_subject">Key Mapper sorgu</string>
+    <string name="email_default_message">Yardım sayfası sorununuzu çözüyor mu? Cihazınız nedir? \n \n Hangi OEM kaplamasını veya ROM\'u kullanıyorsunuz? \n \n Lütfen yaşadığınız sorunu açıklayın:</string>
+    <string name="action_title_intent_start_activity">%s etkinliği başlatılıyor</string>
+    <string name="action_title_intent_start_service">Servisi Başlat %s</string>
+    <string name="action_title_intent_send_broadcast">Yayın gönder:%s</string>
+    <string name="clipboard_label_keymap_uid">Anahtar eşleme UUID\'si</string>
+    <string name="check_box_key_event_option_use_shell">Kabuk kullan (sadece KÖK)</string>
     <!--  Action descriptions  -->
+    <string name="description_open_app">Aç %s</string>
+    <string name="description_key">%s tuşuna bas</string>
+    <string name="description_text_block">%s yazın</string>
+    <string name="description_keyevent">%s%s\'i girin</string>
+    <string name="description_keyevent_through_shell">Kabuk üzerinden %s%s girişi</string>
+    <string name="description_keyevent_from_device">%s \'den %s%s girişi</string>
     <!--  Action descriptions  -->
     <!--  Headers  -->
     <!--  Headers  -->
