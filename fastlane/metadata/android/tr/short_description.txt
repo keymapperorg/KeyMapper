@@ -1,1 +1,1 @@
-Remaps the buttons on your device and other devices and fingerprint gestures.
+Cihazınıdaki tuşlara, başka cihazlardaki tuşlara ve parmak hareketlerinize yeni işlevler atar :)
