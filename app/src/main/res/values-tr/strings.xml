@@ -38,6 +38,28 @@
     <string name="toggle">Değiştir</string>
     <string name="tap_coordinate_screenshot_message">ÖNEMLİ!!!  Bu koordinatlar yalnızca ekranınız ekran görüntüsü ile aynı yöndeyse doğrudur!  Bu eylem, ekranda yaptığınız tüm dokunuşları veya hareketleri iptal edecektir. \n\nEkranınızdaki bir noktanın koordinatlarını bulma konusunda yardıma ihtiyacınız varsa, bir ekran görüntüsü alın ve ardından bu eylemin basmasını istediğiniz ekran görüntüsüne dokunun.</string>
     <string name="dont_know_device_name">Cihaz adını algılanamıyor!</string>
+    <string name="permission_description_key_mapper_input_method">Klavye olarak Keymapper\'i seçmelisin </string>
+    <string name="tap_actions_to_fix">Eylemleri düzeltmek için tıkla. </string>
+    <string name="new_gui_keyboard_ad_message">Yeni Keymapper klavyesini indir. Ekran üstünde klavye! </string>
+    <string name="shortcut_label_action">Performans eylemleri</string>
+    <string name="hold_down_until_trigger_is_dot_dot_dot">Başarılı olana kadar basılı tutın. Çeviren: Ali Efe Çolak </string>
+    <string name="from_no_device">Cihaz yok</string>
+    <string name="intent_extras_recycler_view_placeholder">¯\\_(ツ)_/¯\n\n Ekstralar yok! </string>
+    <string name="content_description_fab_new_keymap">Yeni tuş ataması yap. </string>
+    <string name="whats_new">Yenilikler :) </string>
+    <string name="caption_action_type_key">Girmek istediğiniz cihazdaki tuşa tıklayın
+            \n\nÖNEMLİ!
+            Bu tuşu bir atamak, yalnızca Key Mapper uyumlu bir klavye kullanıyorsanız işe yarar.</string>
+    <string name="caption_action_type_keycode">ÖNEMLİ!
+            Bu anahtar kodunu atamak, yalnızca Key Mapper uyumlu bir klavye kullanıyorsanız işe yarar.</string>
+    <string name="caption_action_type_text">Bu eylemi gerçekleştirdiğinizde eklenmesini istediğiniz metni yazın.</string>
+    <string name="caption_action_type_phone_call">Telefon numarasını gir 😉. </string>
+    <string name="caption_action_type_url">Açmak istediğiniz URL\'yi girin. https://, http://, www. koymana gerek yok. </string>
+    <string name="caption_no_paired_bt_devices">Eşleştirilmiş bir cihaz BULUNAMADI. Bluetooth açık mı? </string>
+    <string name="caption_create_keymap_shortcut">Zaten değilse, seçtiğiniz anahtar harita için \"diğer uygulamalardan tetikle\" seçeneği açılacaktır.  Bu seçeneği daha sonra kapatırsanız, bu tuş haritasını tetikleyen kısayollar veya Amaçlar çalışmayacaktır.</string>
+    <string name="switch_enabled">Etkin </string>
+    <string name="disabled">Pasif </string>
+    <string name="reset">Sıfırla </string>
     <!--  Action descriptions  -->
     <!--  Action descriptions  -->
     <!--  Headers  -->
