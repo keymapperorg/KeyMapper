@@ -434,7 +434,6 @@
     <string name="showcase_disable_battery_optimisation_message_bad">危急！！！点击“关闭”以阻止Android停止后台应用。你的定制OEM，例如MIUI或Samsung Experience可能有其他“省电”功能，因此强烈建议为Key Mapper关闭它们，以及去dontkillmyapp.com</string>
     <string name="showcase_disable_battery_optimisation_message_good">现有的Android的电池优化已关闭。这对于大多数设备来说还不够，因此请转到dontkillmyapp.com的教程，其中展示了如何关闭更多的在你的设备上的杀应用功能。</string>
     <string name="showcase_disable_battery_optimisation_button_turn_off">关闭</string>
-    <string name="showcase_disable_battery_optimisation_button_dont_kill_my_app">转到Don\'t Kill My App</string>
     <string name="showcase_dex_mode_supported_title">您的设备似乎支持 Samsung Dex</string>
     <string name="showcase_dex_mode_supported_message">三星不允许在 Dex 模式下打开第三方键盘的应用。 因此，这个应用不会打开，当您处于 Dex 模式时，键盘将无法使用。 您不需要 Key Mapper 键盘的键映射在您处于 Dex 模式时仍然有效。</string>
     <string name="showcase_dnd_access_title_disabled">要重新映射音量按钮吗？</string>
