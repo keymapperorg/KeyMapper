@@ -32,6 +32,7 @@ platform :android do
     )
 
     git_commit(path: "app/version.properties", message: "ci: version num bump to " + version_num)
+    git_pull()
     push_to_git_remote()
 
   end
