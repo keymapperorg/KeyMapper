@@ -352,6 +352,7 @@
     <!--Preference categories-->
     <string name="title_pref_category_ime_picker">Выбор клавиатуры</string>
     <string name="title_pref_category_notifications">Уведомления</string>
+    <string name="title_pref_category_defaults">Настройки по умолчанию</string>
     <string name="title_pref_category_root">ROOT</string>
     <string name="summary_pref_category_root">Эти настройки будут работать только на устройствах с Root правами! Если вы не знаете, что такое Root или есть ли на вашем устройстве Root права, пожалуйста, не оставляйте плохих отзывов что они не работают. :)</string>
     <string name="title_pref_category_write_secure_settings">Требуется разрешение WRIT_SECURE_SETTINGS</string>
@@ -404,7 +405,7 @@
     <!--flags-->
     <!-- Showcase -->
     <string name="showcase_accessibility_service_title_enabled">Служба спец.возможностей включена :)</string>
-    <string name="showcase_accessibility_service_description_enabled">Всё ок! :)</string>
+    <string name="showcase_accessibility_service_description_enabled">Порядок.</string>
     <string name="showcase_accessibility_service_title_disabled">Включите службу спец.возможностей</string>
     <string name="showcase_accessibility_service_description_disabled">Ваши переназначения будут работать только если включена служба спец.возможностей. Ее включение также требуется для записи событий.</string>
     <string name="showcase_record_trigger_title">Служба спец.возможностей отключена</string>
@@ -418,11 +419,19 @@
     <string name="showcase_disable_battery_optimisation_button_dont_kill_my_app">Перейти на dontkillmyapp.com</string>
     <string name="showcase_dex_mode_supported_title">Похоже, что ваше устройство поддерживает Samsung Dex</string>
     <string name="showcase_dnd_access_title_disabled">Переназначить клавиши громкости?</string>
+    <string name="showcase_dnd_access_title_enabled">Вы можете переназначить клавиши управления громкостью.</string>
+    <string name="showcase_dnd_access_description_disabled">Приложению Key Mapper требуется доступ к управлению режимом \"Не беспокосить\" если вы хотите переназначить действия связанные с событием нажатия на клавишу громкости.</string>
     <string name="showcase_dnd_access_description_enabled">Всё ок! :)</string>
     <string name="showcase_contributing_title">Помощь проекту</string>
     <string name="showcase_contributing_description">"Это приложение с открытым исходным кодом! Вы можете начать вносить свой вклад в репозиторий sds100/KeyMapper на GitHub и присоединившись к серверу Discord. Даже если вы не можете программировать, вы можете помочь, помогая другим и тестируя последние возможности."</string>
+    <string name="showcase_action_list">Нажмите на три точки чтобы изменить режим повтора и другие особенности. Вы можете протестировать результат и исправить ошибки действия нажав на него.</string>
+    <string name="showcase_screen_off_triggers">Эта опция будет работать только в том случае, если ваше устройство имеет Root доступ и вы указали это в настройках Key Mapper. Если вы не знаете, что такое root, то эта опция не будет работать. Она также будет работать только для некоторых клавиш (например - Кнопки громкости) поэтому смотрите на странице Справки список поддерживаемых клавиш.</string>
+    <string name="showcase_fingerprint_gesture_support_title_supported_unknown">Переназначение жестов датчика отпечатка пальцев</string>
+    <string name="showcase_fingerprint_gesture_support_title_supported">Вы можете переназначить жесты датчика отпечатка пальцев! :)</string>
+    <string name="showcase_fingerprint_gesture_support_title_not_supported">Вы НЕ можете переназначить жесты датчика отпечатка пальцев!</string>
     <string name="showcase_fingerprint_gesture_support_message_supported_unknown">Вам нужно включить службу спец.возможностей, чтобы Key Mapper мог проверить, может ли ваше устройство обнаружить жесты сканера отпечатков пальцев.</string>
     <string name="showcase_fingerprint_gesture_support_message_supported">Ваше устройство может определить жесты сканера отпечатков пальцев! В верхней части главного экрана есть вкладка для переназначения этих жестов.</string>
+    <string name="showcase_fingerprint_gesture_support_message_not_supported">Возможно ваш датчик не поддерживает жесты или ваше устройство не позволяет сторонним приложениям определять жесты. К сожалению разработчик ничем не может помочь в этом случае. Некоторые устройства, например, открывают по свайпу вниз панель уведомлений и не отдают этот жест сторонним программам.</string>
     <string name="showcase_fingerprint_gesture_support_button">Включить</string>
     <!-- Showcase -->
     <!-- system action options -->
