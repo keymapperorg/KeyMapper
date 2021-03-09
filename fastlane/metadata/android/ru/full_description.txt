@@ -29,7 +29,7 @@
  * Открыть приложение
  * Открыть ярлык приложения.
  * Открыть URL
- * Create Intents
+ * Создать Intent
  * Вернуться назад
  * Домой
  * Открыть недавние файлы
@@ -40,8 +40,7 @@
  * Включить / Выключить / Переключить WiFi (при наличии Root прав и только для Android 10+)
  * Включить / Выключить / Переключить Bluetooth
  * Включить / Выключить / Переключить передачу мобильных данных (только при наличии Root прав)
- * Поставить на паузу / Снять с паузы воспроизведение мультимедиа
- * Pause/play media
+ * Toggle between play and pause/just play/just pause media
  * Быстрая перемотка вперед/назад
  * Следующий / предыдущий трек
  * Громкость больше/меньше
@@ -67,7 +66,7 @@
  * Показать диалог питания (Android 5.0+)
  * Переместить курсор в конец файла
 
-и многое другое...
+And more...
 
 Специальная клавиатура Key Mapper требуется для выполнения следующих действий:
 
@@ -84,14 +83,14 @@
  * Добавить пункты для быстрых настроек позволяющие ставить приложение на паузу и менять клавиатуру.
  * Создать виджет на домашнем экране для быстрого выполнения указанных выше действий.
 
-Permissions
-You don't have to grant all the permissions for the app to work. The app will tell you if a permission needs to be granted for a feature to work.
+Разрешения
+Вам не нужно предоставлять все разрешения для работы приложения. Приложение сообщит, нужно ли вам разрешение для работы функции.
 
- * Accessibility Service: Basic requirement for remapping to work. It is needed so the app can listen to and block keyevents.
- * Device Admin: To turn the screen off when using the action to turn off the screen.
- * Modify System Settings: To change the brightness and rotation settings.
- * Camera: To control the flashlight.
+ * Служба спец.возможностей: Базовое требование для работы переназначения клавиш. Это необходимо, чтобы приложение могло слушать и блокировать события нажатий.
+ * Администратор устройства: Чтобы выключить экран при использовании действия для выключения экрана.
+ * Изменение системных настроек: для изменения яркости и параметров вращения.
+ * Камера: Для управления фонариком.
 
- On some devices, enabling the accessibility service will disable "enhanced data encryption".
+ На некоторых устройствах, включение службы специальных возможностей отключит "расширенное шифрование данных".
 
 Discord: https://discord.gg/Suj6nyw
