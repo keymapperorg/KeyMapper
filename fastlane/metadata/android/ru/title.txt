@@ -1,1 +1,1 @@
-Keyboard/Button Mapper
+Сервис переназначения клавиш
