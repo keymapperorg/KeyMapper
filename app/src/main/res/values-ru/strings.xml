@@ -137,6 +137,7 @@
     <string name="toast_chose_keyboard">Выберите %s</string>
     <string name="toast_backup_successful">Резервная копия сделана!</string>
     <string name="toast_restore_successful">Восстановление успешно завершено!</string>
+    <string name="toast_automatic_backup_successful">Автоматическое резервное копирование прошло успешно!</string>
     <string name="toast_screenshot_taken">Снимок экрана сделан</string>
     <string name="toast_io_exception_shrug">Исключение ввода-вывода ¯\\_(ツ)_/¯</string>
     <string name="toast_incorrect_screenshot_resolution">Разрешение скриншота не соответствует разрешению этого устройства!</string>
@@ -253,6 +254,9 @@
     <string name="dialog_message_downloading">Загрузка…</string>
     <string name="dialog_message_describe_your_issue_in_the_email">Просьба описать в письме проблему, с которой вы столкнулись. В противном случае я не могу вам помочь. Спасибо!</string>
     <string name="dialog_message_long_press_warning">Длительное нажатие работает только для кнопок громкости и навигации. Если вы включите его для других клавиш, клавиши не будут работать, если они не будут длительно нажаты.</string>
+    <string name="dialog_message_double_press_restricted_to_single_key">"Нельзя обработать одновременное двойное нажатие нескольких клавиш."</string>
+    <string name="dialog_message_parallel_trigger_order">Клавиши должны быть перечислены сверху вниз в том порядке в котором они должны быть нажаты.</string>
+    <string name="dialog_message_select_app_store_gui_keyboard">Где вы хотите скачать новую клавиатуру с GUI?</string>
     <!-- Dialog messages -->
     <!-- Dialog buttons -->
     <string name="pos_yes">Да</string>
@@ -283,6 +287,7 @@
     <string name="notification_ime_persistent_text">Нажмите, чтобы изменить клавиатуру.</string>
     <string name="notification_ime_persistent_title">Выбор клавиатуры</string>
     <string name="notification_keymaps_resumed_title">Выполняется</string>
+    <string name="notification_keymaps_resumed_text">Нажмите чтобы приостановить работу приложения.</string>
     <string name="notification_keymaps_paused_title">Приостановлено</string>
     <string name="notification_keymaps_paused_text">Нажмите, чтобы возобновить работу.</string>
     <string name="notification_action_dismiss">Отклонить</string>
@@ -302,10 +307,25 @@
     <!-- Notification strings -->
     <!--Preference titles and summaries-->
     <string name="title_pref_long_press_delay">Задержка долгого нажатия по умолчанию (мс)</string>
+    <string name="summary_pref_long_press_delay">Как долго клавиша должна быть нажата чтобы сработало определение \"Длительное нажатие\". По умолчанию - 500 мс. Может быть переопределено в настройках.</string>
+    <string name="title_pref_double_press_delay">Длительность двойного нажатия по умолчанию (мс)</string>
+    <string name="summary_pref_double_press_delay">Как быстро клавишу надо нажать второй раз чтобы сработало определение \"Двойное нажатие\". По умолчанию - 300 мс. Может быть переопределено в настройках.</string>
+    <string name="summary_pref_vibration_duration">Как долго вибрировать если включена функция вибрации. По умолчанию - 200 мс. Может быть переопределено в настройках.</string>
+    <string name="title_pref_vibration_duration">Длительность вибрации по умолчанию (мс)</string>
+    <string name="title_pref_repeat_delay">По умолчанию задержка до повтора (мс)</string>
+    <string name="title_pref_repeat_rate">Задержка между повторами (мс)</string>
+    <string name="title_pref_sequence_trigger_timeout">Таймаут по умолчанию для события \"последовательность\" (мс)</string>
     <string name="title_pref_force_vibrate">Принудительно вибрировать</string>
+    <string name="title_pref_show_ime_picker_notification">Уведомление выбора клавиатуры</string>
+    <string name="summary_pref_show_ime_picker_notification">Показывать постоянное уведомление, позволяющее выбрать клавиатуру.</string>
     <string name="summary_pref_automatic_backup_location_disabled">Местоположение не выбрано.</string>
     <string name="title_pref_bluetooth_devices">Выберите устройства Bluetooth…</string>
     <string name="title_pref_auto_show_ime_picker">Автоматически показывать выбор клавиатуры</string>
+    <string name="title_pref_root_permission">Key Mapper имеет Root права</string>
+    <string name="title_pref_dark_theme">Тёмная тема</string>
+    <string name="title_pref_notification_settings">Настройка уведомлений</string>
+    <string name="summary_pref_show_toggle_keyboard_notification">Переключение между клавиатурой Key Mapper и вашей клавиатурой по умолчанию при нажатии на уведомление.</string>
+    <string name="summary_pref_toggle_keyboard_on_toggle_keymaps">Автоматически выбирать клавиатуру Key Mapper когда снимаете приложение с паузы и выбирать вашу клавиатуру по умолчанию при установки приложения на паузу.</string>
     <!--Preference titles and summaries-->
     <!--Preference categories-->
     <string name="title_pref_category_ime_picker">Выбор клавиатуры</string>
@@ -342,15 +362,23 @@
     <string name="flag_long_press">Длительное нажатие</string>
     <string name="flag_vibrate">Вибрация</string>
     <string name="flag_show_toast">Вывод сообщения на экран</string>
+    <string name="flag_detect_triggers_screen_off">Определять события когда экран выключен. Только при наличии Root прав.</string>
     <string name="flag_repeat_actions">Повторять</string>
     <string name="flag_hold_down">Удерживать</string>
     <string name="flag_dont_override_default_action">Не переопределять действие по умолчанию</string>
     <string name="flag_repeat_until_swiped_again">Повторять до свайпа снова</string>
     <string name="flag_hold_down_until_swiped_again">Удерживать до свайпа снова</string>
+    <string name="flag_trigger_from_other_apps">Событие из другого приложения</string>
     <!--flags-->
     <!-- Showcase -->
+    <string name="showcase_disable_battery_optimisation_button_turn_off">Выключить</string>
+    <string name="showcase_dex_mode_supported_title">Похоже, что ваше устройство поддерживает Samsung Dex</string>
+    <string name="showcase_dnd_access_description_enabled">Всё ок! :)</string>
+    <string name="showcase_fingerprint_gesture_support_button">Включить</string>
     <!-- Showcase -->
     <!-- system action options -->
+    <string name="stream_accessibility">Спец. возможности</string>
+    <string name="stream_alarm">Будильник</string>
     <string name="stream_dtmf">Тональный набор (DTMF)</string>
     <string name="stream_music">Музыка</string>
     <string name="stream_notification">Уведомления</string>
@@ -362,6 +390,9 @@
     <string name="ringer_mode_silent">Бесшумный звонок</string>
     <string name="lens_front">Передняя камера</string>
     <string name="lens_back">Задняя камера</string>
+    <string name="dnd_mode_alarms">Будильники</string>
+    <string name="dnd_mode_priority">Приоритет</string>
+    <string name="dnd_mode_none">Ничего</string>
     <!-- system action options -->
     <!-- Tiles -->
     <string name="tile_pause">Приостановить работу</string>
@@ -395,11 +426,115 @@
     <string name="error_must_have_atleast_one_trigger">Вы должны иметь хотя бы одно событие</string>
     <string name="error_must_choose_action">Вы должны выбрать действие!</string>
     <string name="error_must_have_a_title">Ярлык должен иметь название!</string>
+    <string name="error_shortcut_not_found">Не удается найти ярлык. Приложение установлено / включено?</string>
+    <string name="error_app_isnt_installed">Приложение с именем пакета %s не установлено!</string>
     <string name="error_app_isnt_installed_brief">Приложение не установлено!</string>
     <string name="error_app_is_disabled">Приложение отключено!</string>
+    <string name="error_requires_root">Для этого требуются Root права!</string>
+    <string name="error_action_requires_camera_permission">Это действие требует разрешение для работы с камерой!</string>
     <string name="error_sdk_version_too_low">Это требует Android %s</string>
+    <string name="error_sdk_version_too_high">Это поддерживается только до Android %s</string>
+    <string name="error_feature_not_available">Ваше устройство не поддерживает %s.</string>
+    <string name="error_flag_not_found">Флаг \"%s\" не найден!</string>
+    <string name="error_google_app_not_installed">Приложение Google не установлено!</string>
+    <string name="error_cant_find_ime_settings">Не удается найти страницу настроек клавиатуры!</string>
+    <string name="error_need_to_enable_device_admin">Key Mapper должен быть администратором устройства для использования этого действия!</string>
+    <string name="error_in_do_not_disturb_mode">В режиме «Не беспокоить»!</string>
+    <string name="error_opening_app_shortcut">Ошибка при открытии ярлыка этого приложения</string>
+    <string name="error_no_app_found_to_send_feedback">Не найдено совместимых приложений для отправки отзыва.</string>
+    <string name="error_no_action_data">Нет данных о действии!</string>
+    <string name="error_constraint_not_found">Ограничение не найдено</string>
+    <string name="error_duplicate_constraint">Вы не можете иметь двойные ограничения!</string>
+    <string name="error_fingerprint_gesture_map_constraint_exists">У этого жеста уже есть это ограничение!</string>
+    <string name="error_cant_be_empty">Не может быть пустым!</string>
+    <string name="error_invalid_action_type">Недопустимый тип действия: %s</string>
+    <string name="error_options_not_required">Настройки не требуются</string>
+    <string name="error_key_mapper_ime_not_found">Невозможно найти метод ввода Key Mapper!</string>
+    <string name="error_download_failed">Загрузка не удалась!</string>
+    <string name="error_file_not_exists">Файл не существует!</string>
+    <string name="error_ssl_handshake_exception">Ошибка SSL соединения</string>
+    <string name="error_file_not_cached">Файл не кэширован! Подключитесь к интернету, чтобы загрузить его.</string>
+    <string name="error_this_is_unsupported">Это не поддерживается. :(</string>
+    <string name="error_device_not_found">Устройство не найдено!</string>
+    <string name="error_invalid_intent_extra_value">Недопустимо!</string>
+    <string name="error_corrupt_json_file">Поврежден файл JSON!</string>
     <!-- Error messages -->
     <!-- System action labels -->
+    <string name="action_toggle_wifi">Переключить WiFi (не root)</string>
+    <string name="action_enable_wifi">Включить WiFi (не root)</string>
+    <string name="action_disable_wifi">Отключить WiFi (не root)</string>
+    <string name="action_toggle_wifi_root">Переключить WiFi (root)</string>
+    <string name="action_enable_wifi_root">Включить WiFi (root)</string>
+    <string name="action_disable_wifi_root">Отключить WiFi (root)</string>
+    <string name="action_toggle_bluetooth">Переключить Bluetooth</string>
+    <string name="action_enable_bluetooth">Включить Bluetooth</string>
+    <string name="action_disable_bluetooth">Отключить Bluetooth</string>
+    <string name="action_volume_up">Увеличить громкость</string>
+    <string name="action_toggle_mobile_data">Переключение передачи мобильных данных</string>
+    <string name="action_enable_mobile_data">Включить передачу мобильных данных</string>
+    <string name="action_disable_mobile_data">Отключить передачу мобильных данных</string>
+    <string name="action_toggle_auto_brightness">Переключить автояркость</string>
+    <string name="action_disable_auto_brightness">Отключить автояркость</string>
+    <string name="action_enable_auto_brightness">Включить автояркость</string>
+    <string name="action_increase_brightness">Увеличить яркость</string>
+    <string name="action_decrease_brightness">Уменьшить яркость</string>
+    <string name="action_expand_notification_drawer">Развернуть панель уведомлений</string>
+    <string name="action_toggle_notification_drawer">Переключить панель уведомлений</string>
+    <string name="action_expand_quick_settings">Развернуть панель быстрых настроек</string>
+    <string name="action_toggle_quick_settings">Переключить панель быстрых настроек</string>
+    <string name="action_collapse_status_bar">Свернуть строку состояния</string>
+    <string name="action_pause_media">Приостановить воспроизведение медиа</string>
+    <string name="action_pause_media_package">Приостановить воспроизведение медиа для приложения</string>
+    <string name="action_pause_media_package_formatted">Приостановить воспроизведение медиа для %s</string>
+    <string name="action_play_media">Возобновить воспроизведение медиа</string>
+    <string name="action_play_media_package">Возобновить воспроизведение медиа для приложения</string>
+    <string name="action_play_media_package_formatted">Возобновить воспроизведение медиа для %s</string>
+    <string name="action_play_pause_media">Воспроизведение/Пауза мультимедиа</string>
+    <string name="action_play_pause_media_package">Воспроизведение/Пауза медиа для приложения</string>
+    <string name="action_play_pause_media_package_formatted">Воспроизведение/Пауза медиа для %s</string>
+    <string name="action_next_track">Следующий трек</string>
+    <string name="action_next_track_package">Следующий трек для приложения</string>
+    <string name="action_next_track_package_formatted">Следующий трек для %s</string>
+    <string name="action_previous_track">Предыдущий трек</string>
+    <string name="action_previous_track_package">Предыдущий трек для приложения</string>
+    <string name="action_previous_track_package_formatted">Предыдущий трек для %s</string>
+    <string name="action_fast_forward">Перемотка вперед</string>
+    <string name="action_fast_forward_package">Перемотка вперед для приложения</string>
+    <string name="action_fast_forward_package_formatted">Перемотка вперед для %s</string>
+    <string name="action_fast_forward_message">Не все медиа приложения поддерживают перемотку вперед. Например Google Play Music не поддерживает.</string>
+    <string name="action_rewind">Перемотка назад</string>
+    <string name="action_rewind_package">Перемотка назад для приложения</string>
+    <string name="action_rewind_package_formatted">Перемотка назад для %s</string>
+    <string name="action_rewind_message">Не все медиа приложения поддерживают перемотку назад. Например Google Play Music не поддерживает.</string>
+    <string name="action_go_back">Вернуться назад</string>
+    <string name="action_go_home">Домой</string>
+    <string name="action_open_recents">Открыть недавние приложения</string>
+    <string name="action_open_menu">Открыть меню</string>
+    <string name="action_toggle_split_screen">Разделить экран</string>
+    <string name="action_go_last_app">Перейти к последнему приложению. (двойное нажатие на \"недавние приложения\")</string>
+    <string name="action_toggle_flashlight">Вкл/выкл фонарик</string>
+    <string name="action_enable_flashlight">Включить фонарик</string>
+    <string name="action_disable_flashlight">Выключить фонарик</string>
+    <string name="action_toggle_flashlight_formatted">Вкл/выкл фонарик %s</string>
+    <string name="action_enable_flashlight_formatted">Включить фонарик %s</string>
+    <string name="action_disable_flashlight_formatted">Выключить фонарик %s</string>
+    <string name="action_nfc_enable">Включить NFC</string>
+    <string name="action_nfc_disable">Отключить NFC</string>
+    <string name="action_nfc_toggle">Переключить NFC</string>
+    <string name="action_screenshot">Скриншот</string>
+    <string name="action_screenshot_root">Скриншот (root)</string>
+    <string name="action_open_assistant">Запустить голосового ассистента</string>
+    <string name="action_open_device_assistant">Запустить помощника устройства</string>
+    <string name="action_open_camera">Открыть камеру</string>
+    <string name="action_lock_device">Блокировка устройства (не root)</string>
+    <string name="action_lock_device_root">Блокировка устройства (root)</string>
+    <string name="action_secure_lock_device">Безопасная блокировка устройства</string>
+    <string name="action_secure_lock_device_message">Вы сможете войти только с PIN-кодом / паролем. Сканер отпечатков пальцев и разблокировка лица будет отключена. Это единственный надежный способ, который я нашел для блокировки устройств, не являющихся root, до Android Pie 9.0.</string>
+    <string name="action_power_on_off_device">Усыпить / Разбудить устройство</string>
+    <string name="action_consume_keyevent">Ничего не делать</string>
+    <string name="action_move_to_end_of_text">Переместить курсор в конец</string>
+    <string name="action_move_to_end_of_text_message">Для этого действия должны быть выбрана клавиатура Key Mapper, однако в некоторых приложениях это действие может работать не так, как запланировано.</string>
+    <string name="action_toggle_keyboard">Переключить клавиатуру</string>
     <!-- System action labels -->
     <!-- System action category labels -->
     <!-- System action category labels -->
