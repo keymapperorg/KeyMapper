@@ -40,8 +40,7 @@
  * 切换/启用/禁用WIFI (仅适用于Android 10+的ROOT)
  * 切换/启用/禁用蓝牙
  * 切换/启用/禁用移动数据 (仅限ROOT)
- * 切换播放/暂停媒体
- * 暂停/播放媒体
+ * Toggle between play and pause/just play/just pause media
  * 快进/快退
  * 下/上一曲
  * 音量加/减
@@ -67,7 +66,7 @@
  * 显示电源菜单 (Android 5.0+)
  * 移动光标到行尾
 
-以及更多....
+And more...
 
 它们需要选择一个Key Mapper键盘才能正常工作:
 
