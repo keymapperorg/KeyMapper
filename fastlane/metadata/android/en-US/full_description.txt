@@ -40,8 +40,7 @@ What can I remap my keys to do?
  * Toggle/enable/disable WiFi (ROOT only for Android 10+)
  * Toggle/enable/disable Bluetooth
  * Toggle/enable/disable mobile data (ROOT only)
- * Toggle Play/pause media
- * Pause/play media
+ * Toggle between play and pause/just play/just pause media
  * Fast forward/rewind
  * Next/previous track
  * Volume up/down
