@@ -261,8 +261,10 @@
     <string name="dialog_message_downloading">Загрузка…</string>
     <string name="dialog_message_describe_your_issue_in_the_email">Просьба описать в письме проблему, с которой вы столкнулись. В противном случае я не могу вам помочь. Спасибо!</string>
     <string name="dialog_message_long_press_warning">Длительное нажатие работает только для кнопок громкости и навигации. Если вы включите его для других клавиш, клавиши не будут работать, если они не будут длительно нажаты.</string>
+    <string name="dialog_message_cant_find_accessibility_settings_page">Кажется на вашем устройстве нет страницы настроек спец.возможностей. Вы можете включить службу спец.возможностей, предоставив приложению разрешение WRITE_SECURE_SETTINGS. После нажатия \'ОК\' следуйте руководству.</string>
     <string name="dialog_message_double_press_restricted_to_single_key">"Нельзя обработать одновременное двойное нажатие нескольких клавиш."</string>
     <string name="dialog_message_parallel_trigger_order">Клавиши должны быть перечислены сверху вниз в том порядке в котором они должны быть нажаты.</string>
+    <string name="dialog_message_sequence_trigger_explanation">Событие со свойством \"последовательность\" имеет таймаут в отличие от параллельных событий. Это означает, что после нажатия первой клавиши у вас будет заданное время для нажатия остальных клавиш в событии. Все клавиши, которые вы добавили в событие, не будут выполнять свои обычные действия до тех пор, пока не будет достигнут таймаут. Этот таймаут можно изменить на вкладке \"Параметры\".</string>
     <string name="dialog_message_view_faq_and_use_discord_over_email">Пожалуйста, ознакомьтесь с часто задаваемыми вопросами, чтобы узнать, был ли ответ на ваш вопрос. Если нет, то разработчик предпочел бы, если бы вы запросили помощь и/или предложили доработки на сервере Discord. Если у вас нет Discord, вы можете отправить сообщение по электронной почте разработчику напрямую.</string>
     <string name="dialog_message_bt_constraint_limitation">Android не разрешает приложениям получать список подключенных (не сопряженных) Bluetooth-устройств. Приложения могут определять только когда подключены и отключены сопряженные устройства. Таким образом, если ваше Bluetooth устройство уже подключено к вашему основному устройству при запуске службы спец.возможностей, вам придется перепривязать его, чтобы приложение поняло, что оно подключено.</string>
     <string name="dialog_message_change_location_or_disable">Изменить место для автоматического резервного копирования или отключить его?</string>
@@ -317,30 +319,39 @@
     <!-- Notification strings -->
     <!--Preference titles and summaries-->
     <string name="title_pref_long_press_delay">Задержка долгого нажатия по умолчанию (мс)</string>
-    <string name="summary_pref_long_press_delay">Как долго клавиша должна быть нажата чтобы сработало определение \"Длительное нажатие\". По умолчанию - 500 мс. Может быть переопределено в настройках.</string>
+    <string name="summary_pref_long_press_delay">Как долго клавиша должна быть нажата чтобы сработало определение \"Длительное нажатие\". По умолчанию - 500 мс. Может быть переопределено в настройках конкретного события.</string>
     <string name="title_pref_double_press_delay">Длительность двойного нажатия по умолчанию (мс)</string>
-    <string name="summary_pref_double_press_delay">Как быстро клавишу надо нажать второй раз чтобы сработало определение \"Двойное нажатие\". По умолчанию - 300 мс. Может быть переопределено в настройках.</string>
-    <string name="summary_pref_vibration_duration">Как долго вибрировать если включена функция вибрации. По умолчанию - 200 мс. Может быть переопределено в настройках.</string>
+    <string name="summary_pref_double_press_delay">Как быстро клавишу надо нажать второй раз чтобы сработало определение \"Двойное нажатие\". По умолчанию - 300 мс. Может быть переопределено в настройках конкретного события.</string>
+    <string name="summary_pref_vibration_duration">Как долго вибрировать если включена функция вибрации. По умолчанию - 200 мс. Может быть переопределено в настройках конкретного события.</string>
     <string name="title_pref_vibration_duration">Длительность вибрации по умолчанию (мс)</string>
     <string name="title_pref_repeat_delay">По умолчанию задержка до повтора (мс)</string>
     <string name="title_pref_repeat_rate">Задержка между повторами (мс)</string>
     <string name="title_pref_sequence_trigger_timeout">Таймаут по умолчанию для события \"последовательность\" (мс)</string>
+    <string name="summary_pref_force_vibrate">Принудительно включать вибрацию для всех событий.</string>
     <string name="title_pref_force_vibrate">Принудительно вибрировать</string>
     <string name="title_pref_show_ime_picker_notification">Уведомление выбора клавиатуры</string>
     <string name="summary_pref_show_ime_picker_notification">Показывать постоянное уведомление, позволяющее выбрать клавиатуру.</string>
+    <string name="title_pref_automatic_backup_location">Автоматическая резервная копия всех переназначений в указанном месте</string>
     <string name="summary_pref_automatic_backup_location_disabled">Местоположение не выбрано.</string>
     <string name="title_pref_bluetooth_devices">Выберите устройства Bluetooth…</string>
     <string name="title_pref_auto_show_ime_picker">Автоматически показывать выбор клавиатуры</string>
+    <string name="summary_pref_auto_show_ime_picker">Когда подключится или отключится Bluetooth устройство по вашему выбору будет показан инструмент выбора клавиатуры. Укажите это устройство ниже.</string>
+    <string name="title_pref_auto_change_ime_on_connection">Автоматически менять клавиатуру при Bluetooth-подключении</string>
     <string name="title_pref_root_permission">Key Mapper имеет Root права</string>
     <string name="title_pref_dark_theme">Тёмная тема</string>
     <string name="title_pref_notification_settings">Настройка уведомлений</string>
     <string name="summary_pref_show_toggle_keyboard_notification">Переключение между клавиатурой Key Mapper и вашей клавиатурой по умолчанию при нажатии на уведомление.</string>
     <string name="summary_pref_toggle_keyboard_on_toggle_keymaps">Автоматически выбирать клавиатуру Key Mapper когда снимаете приложение с паузы и выбирать вашу клавиатуру по умолчанию при установки приложения на паузу.</string>
+    <string name="title_pref_hide_home_screen_alerts">Скрыть оповещения на главном экране</string>
+    <string name="title_pref_show_device_descriptors">Показать первые 5 символов id устройства для событий связанных с конкретными устройствами</string>
+    <string name="summary_pref_show_device_descriptors">Это используется чтобы отличить друг от друга устройства с одним и тем же именем.</string>
     <!--Preference titles and summaries-->
     <!--Preference categories-->
     <string name="title_pref_category_ime_picker">Выбор клавиатуры</string>
     <string name="title_pref_category_notifications">Уведомления</string>
     <string name="title_pref_category_root">ROOT</string>
+    <string name="summary_pref_category_root">Эти настройки будут работать только на устройствах с Root правами! Если вы не знаете, что такое Root или есть ли на вашем устройстве Root права, пожалуйста, не оставляйте плохих отзывов что они не работают. :)</string>
+    <string name="title_pref_category_write_secure_settings">Требуется разрешение WRIT_SECURE_SETTINGS</string>
     <!--Preference categories-->
     <!-- About activity-->
     <string name="pref_title_changelog">Список изменений</string>
@@ -396,10 +407,17 @@
     <string name="showcase_record_trigger_title">Служба спец.возможностей отключена</string>
     <string name="showcase_record_trigger_description">Запись события возможна только при включенной службе спец.возможностей.</string>
     <string name="showcase_note_from_the_developer_title">Примечание от разработчика</string>
+    <string name="showcase_note_from_the_developer_description">Нет никаких гарантий того, что все действия смогут отработать на вашем устройстве или что каждая кнопка/стик/колесико может быть обнаружена и переназначена. Это потому, что существует много вкусов Android, да и разные бренды могут случайно или намеренно нарушить работу функций. Если что-то не работает, пожалуйста, сообщите разработчику и воздержитесь от плохой оценки приложения, так как проблема часто находится вне контроля разработчика =)</string>
+    <string name="showcase_disable_battery_optimisation_title">Key Mapper может перестать работать случайным образом!</string>
+    <string name="showcase_disable_battery_optimisation_message_bad">КРИТИЧЕСКИ ВАЖНО!!! Нажмите \"Выключить\" чтобы не дать Android остановить приложение пока оно находится на фоне. Оболочка вашего бренда (MIUI или Samsung Experience) могут иметь свои настройки \"экономии батареи\", так что НАСТОЯТЕЛЬНО рекомендуется выключить всю экономию для приложения Key Mapper там или с помощью dontkillmyapp.com</string>
+    <string name="showcase_disable_battery_optimisation_message_good">Стандартная оптимизация батареи Android выключена. Однако этого бывает недостаточно для большинства устройств, так что перейдите на dontkillmyapp.com, чтобы посмотреть, как выключить ещё больше функций энергосбережения на вашем устройстве.</string>
     <string name="showcase_disable_battery_optimisation_button_turn_off">Выключить</string>
     <string name="showcase_disable_battery_optimisation_button_dont_kill_my_app">Перейти на dontkillmyapp.com</string>
     <string name="showcase_dex_mode_supported_title">Похоже, что ваше устройство поддерживает Samsung Dex</string>
     <string name="showcase_dnd_access_description_enabled">Всё ок! :)</string>
+    <string name="showcase_contributing_title">Помощь проекту</string>
+    <string name="showcase_contributing_description">"Это приложение с открытым исходным кодом! Вы можете начать вносить свой вклад в репозиторий sds100/KeyMapper на GitHub и присоединившись к серверу Discord. Даже если вы не можете программировать, вы можете помочь, помогая другим и тестируя последние возможности."</string>
+    <string name="showcase_fingerprint_gesture_support_message_supported_unknown">Вам нужно включить службу спец.возможностей, чтобы Key Mapper мог проверить, может ли ваше устройство обнаружить жесты сканера отпечатков пальцев.</string>
     <string name="showcase_fingerprint_gesture_support_button">Включить</string>
     <!-- Showcase -->
     <!-- system action options -->
@@ -452,10 +470,12 @@
     <string name="error_must_have_atleast_one_trigger">Вы должны иметь хотя бы одно событие</string>
     <string name="error_must_choose_action">Вы должны выбрать действие!</string>
     <string name="error_must_have_a_title">Ярлык должен иметь название!</string>
+    <string name="error_ime_must_be_chosen">Вы должны использовать одну из клавиатур Key Mapper чтобы это действие сработало!</string>
     <string name="error_shortcut_not_found">Не удается найти ярлык. Приложение установлено / включено?</string>
     <string name="error_app_isnt_installed">Приложение с именем пакета %s не установлено!</string>
     <string name="error_app_isnt_installed_brief">Приложение не установлено!</string>
     <string name="error_app_is_disabled">Приложение отключено!</string>
+    <string name="error_action_requires_write_settings_permission">Вам нужно предоставить разрешение Key Mapper для изменения системных настроек, чтобы использовать это действие.</string>
     <string name="error_requires_root">Для этого требуются Root права!</string>
     <string name="error_action_requires_camera_permission">Это действие требует разрешение для работы с камерой!</string>
     <string name="error_sdk_version_too_low">Это требует Android %s</string>
@@ -466,9 +486,43 @@
     <string name="error_cant_find_ime_settings">Не удается найти страницу настроек клавиатуры!</string>
     <string name="error_need_to_enable_device_admin">Key Mapper должен быть администратором устройства для использования этого действия!</string>
     <string name="error_in_do_not_disturb_mode">В режиме «Не беспокоить»!</string>
+    <string name="error_keymapper_doesnt_have_permission_app_shortcut">Key Mapper не имеет разрешения для использования этого ярлыка.</string>
+    <string name="error_action_notification_policy_permission">Приложению необходимо разрешение на изменение состояния «Не беспокоить»!</string>
+    <string name="error_action_requires_read_phone_state_permission">Это действие требует разрешения на чтение состояния телефона!</string>
+    <string name="error_cant_find_write_settings_page">Не удается найти страницу прав доступа WRITE_SETTINGS!</string>
     <string name="error_opening_app_shortcut">Ошибка при открытии ярлыка этого приложения</string>
     <string name="error_no_app_found_to_send_feedback">Не найдено совместимых приложений для отправки отзыва.</string>
+    <string name="error_dnd_access_not_granted">Если вы переназначаете кнопки громкости, вам нужно дать приложению доступ к режиму \"Не беспокоить\" если вы хотите, чтобы кнопки работали в режиме «Не беспокоить»!</string>
+    <string name="dnd_access_granted">Получено разрешение на изменение режима «Не беспокоить»!</string>
+    <string name="error_cant_find_dnd_access_settings">Не удается найти настройки прав доступа для режима \"Не беспокоить\"!</string>
+    <string name="error_need_write_secure_settings_permission">Key Mapper требуется разрешение WRITE_SECURE_SETTINGS.</string>
+    <string name="error_no_app_found_to_open_url">Не найдено приложений для открытия этого URL-адреса</string>
+    <string name="error_failed_execute_getevent">Не удалось выполнить команду \"getevent\". Вы уверены, что имеете Root права?</string>
+    <string name="error_camera_in_use">Камера используется!</string>
+    <string name="error_camera_disconnected">Камера отключена!</string>
+    <string name="error_camera_disabled">Камера отключена!</string>
+    <string name="error_camera_error">Ошибка камеры!</string>
+    <string name="error_max_cameras_in_use">Максимальное количество используемых камер!</string>
+    <string name="error_camera_access_exception">Нет доступа к камере!</string>
+    <string name="error_front_flash_not_found">Нет передней вспышки</string>
+    <string name="error_back_flash_not_found">Нет задней вспышки</string>
+    <string name="error_accessibility_service_disabled_home_screen">Служба спец.возможностей должна быть включена для работы этого приложения!</string>
+    <string name="error_accessibility_service_disabled_record_trigger">Служба спец.возможностей должна быть включена!</string>
+    <string name="error_accessibility_service_enabled">Служба спец.возможностей включена!</string>
+    <string name="error_accessibility_service_disabled">Служба спец.возможностей должна быть включена!</string>
+    <string name="warning_need_write_secure_settings_permission">Для некоторых функций требуется разрешение WRITE_SECURE_SETTINGS.</string>
+    <string name="fixed_need_write_secure_settings_permission">Предоставлено разрешение WRITE_SECURE_SETTINGS.</string>
+    <string name="error_ime_service_disabled">Ни одна из клавиатур Key Mapper не включена!</string>
+    <string name="error_ime_service_enabled">Клавиатура Key Mapper включена!</string>
+    <string name="error_critical_ime_service_disabled">Клавиатура Key Mapper должна быть включена и выбрана для некоторых ваших действий!</string>
+    <string name="error_ime_not_found">Can\'t find the %s input method</string>
+    <string name="error_no_enabled_imes">На этом устройстве нет включенных методов ввода!</string>
+    <string name="error_cant_move_to_end_of_text_in_this_field">Вы не можете перемещаться в конец текста в этом поле!</string>
+    <string name="error_battery_optimisation_activity_not_found">Настройки оптимизации батареи не найдены! Если они существуют, откройте их вручную.</string>
+    <string name="error_cant_find_option_label">error: Can\'t find a label for this option \"%s\"</string>
+    <string name="error_system_action_not_found">System action not found %s!</string>
     <string name="error_no_action_data">Нет данных о действии!</string>
+    <string name="error_extra_not_found">Extra (%s) not found!</string>
     <string name="error_constraint_not_found">Ограничение не найдено</string>
     <string name="error_duplicate_constraint">Вы не можете иметь двойные ограничения!</string>
     <string name="error_fingerprint_gesture_map_constraint_exists">У этого жеста уже есть это ограничение!</string>
@@ -482,7 +536,21 @@
     <string name="error_file_not_cached">Файл не кэширован! Подключитесь к интернету, чтобы загрузить его.</string>
     <string name="error_this_is_unsupported">Это не поддерживается. :(</string>
     <string name="error_device_not_found">Устройство не найдено!</string>
+    <string name="error_failed_to_pick_file">Не удалось найти файл</string>
+    <string name="error_empty_json">Пустой файл JSON!</string>
+    <string name="error_file_access_denied">Доступ к файлу запрещен! Удален?</string>
+    <string name="error_file_access_denied_automatic_backup">Не удалось создать резервную копию в файл. Может он удалён?</string>
+    <string name="error_failed_to_split_string">Не удалось разделить строку %s</string>
+    <string name="error_invalid_number">Неверное число!</string>
+    <string name="error_number_too_small">Должно быть по крайней мере %s!</string>
+    <string name="error_number_too_big">Должно быть не более %s!</string>
+    <string name="error_battery_optimisation_enabled">Оптимизация батареи включена! Это может привести к отключению работы Key Mapper случайным образом.</string>
+    <string name="error_battery_optimisation_disabled">Оптимизация батареи выключена!</string>
+    <string name="error_cant_find_notification_listener_settings">Не удается найти настройки доступа к уведомлениям!</string>
+    <string name="error_denied_notification_listener_service_permission">Отказано в доступе к уведомлениям!</string>
     <string name="error_invalid_intent_extra_value">Недопустимо!</string>
+    <string name="error_denied_call_phone_permission">Отказано в доступе к использованию телефонных звонков!</string>
+    <string name="error_backup_version_too_new">Вам нужно обновить Key Mapper до последней версии, чтобы использовать эту резервную копию.</string>
     <string name="error_corrupt_json_file">Поврежден файл JSON!</string>
     <!-- Error messages -->
     <!-- System action labels -->
@@ -496,6 +564,23 @@
     <string name="action_enable_bluetooth">Включить Bluetooth</string>
     <string name="action_disable_bluetooth">Отключить Bluetooth</string>
     <string name="action_volume_up">Увеличить громкость</string>
+    <string name="action_volume_down">Уменьшение громкости</string>
+    <string name="action_volume_mute">Отключить звук</string>
+    <string name="action_toggle_mute">Включить/выключить звук</string>
+    <string name="action_volume_unmute">Включить звук</string>
+    <string name="action_volume_show_dialog">Показать диалог громкости</string>
+    <string name="action_cycle_ringer_mode">Цикл режимов звонка (Обычный звонок, Вибрация, Без звука)</string>
+    <string name="action_cycle_vibrate_ring">Цикл режимов звонка (Обычный звонок, Вибрация)</string>
+    <string name="action_change_ringer_mode">Изменить режим звонка</string>
+    <string name="action_toggle_dnd_mode">Переключить режим \"Не беспокоить\"</string>
+    <string name="action_enable_dnd_mode">Включить режим \"Не беспокоить\"</string>
+    <string name="action_disable_dnd_mode">Отключить режим \"Не беспокоить\"</string>
+    <string name="action_enable_auto_rotate">Включить автоповорот</string>
+    <string name="action_disable_auto_rotate">Отключить автоповорот</string>
+    <string name="action_toggle_auto_rotate">Переключение автоповорота</string>
+    <string name="action_portrait_mode">Портретный режим</string>
+    <string name="action_landscape_mode">Альбомный режим</string>
+    <string name="action_switch_orientation">Переключить ориентацию</string>
     <string name="action_toggle_mobile_data">Переключение передачи мобильных данных</string>
     <string name="action_enable_mobile_data">Включить передачу мобильных данных</string>
     <string name="action_disable_mobile_data">Отключить передачу мобильных данных</string>
@@ -589,9 +674,52 @@
     <string name="system_action_cat_status_bar">Строка состояния</string>
     <string name="system_action_cat_media">Медиа</string>
     <string name="system_action_cat_flashlight">Фонарик</string>
+    <string name="system_action_cat_nfc">NFC</string>
+    <string name="system_action_cat_other">Другое</string>
+    <string name="system_action_cat_keyboard">Клавиатура</string>
+    <string name="system_action_cat_airplane_mode">Режим полёта</string>
     <!-- System action category labels -->
     <!--  Intent action type strings  -->
+    <string name="intent_type_bool_header">Boolean</string>
+    <string name="intent_type_bool_array_header">Boolean array</string>
+    <string name="intent_type_int_header">Integer</string>
+    <string name="intent_type_int_array_header">Integer array</string>
+    <string name="intent_type_string_header">String</string>
+    <string name="intent_type_string_array_header">String array</string>
+    <string name="intent_type_long_header">Long</string>
+    <string name="intent_type_long_array_header">Long array</string>
+    <string name="intent_type_byte_header">Byte</string>
+    <string name="intent_type_byte_array_header">Byte array</string>
+    <string name="intent_type_double_header">Double</string>
+    <string name="intent_type_double_array_header">Double array</string>
+    <string name="intent_type_char_header">Char</string>
+    <string name="intent_type_char_array_header">Char array</string>
+    <string name="intent_type_float_header">Float</string>
+    <string name="intent_type_float_array_header">Float array</string>
+    <string name="intent_type_short_header">Short</string>
+    <string name="intent_type_short_array_header">Short array</string>
+    <string name="intent_type_bool_example">Может быть только \"true\" или \"false\"</string>
+    <string name="intent_type_bool_array_example">Разделенный запятыми список «true» и «false». Например true,false,true</string>
+    <string name="intent_type_int_example">Допустимое целое число на языке программирования Java.</string>
+    <string name="intent_type_int_array_example">Разделенный запятыми список допустимых целых чисел на языке программирования Java. Например, 100,399</string>
+    <string name="intent_categories_example">Перечень через запятую. Например категория1, категория2</string>
+    <string name="intent_type_string_example">Любой текст.</string>
+    <string name="intent_type_string_array_example">Разделенный запятыми список строк. Например: строка1,строка2</string>
+    <string name="intent_type_long_example">Допустимое LongInteger число на языке программирования Java.</string>
+    <string name="intent_type_long_array_example">Разделенный запятыми список допустимых LongInteger на языке программирования Java. Например: 102302234234, 3990834234429</string>
+    <string name="intent_type_byte_example">Допустимый байт на языке программирования Java.</string>
+    <string name="intent_type_byte_array_example">Разделенный запятыми список допустимых байт на языке программирования Java. Например: 123,3</string>
+    <string name="intent_type_double_example">Допустимое число двойной длительности в языке программирования Java.</string>
+    <string name="intent_type_double_array_example">Разделенный запятыми список чисел двойной длительности на языке программирования Java. Например: 1.0,3.234</string>
+    <string name="intent_type_char_example">Допустимый символ на языке программирования Java. Например, \'а\' или \'b\'</string>
+    <string name="intent_type_char_array_example">Разделенный запятыми список допустимых символов на языке программирования Java. Например: a,b,c</string>
+    <string name="intent_type_float_example">Подходящий Float на языке программирования Java. Например: 3.145</string>
+    <string name="intent_type_float_array_example">Разделенный запятыми список допустимых Float на языке программирования Java. Например: 1241.123</string>
+    <string name="intent_type_short_example">Допустимое число Short на языке программирования Java. Например: 2342</string>
+    <string name="intent_type_short_array_example">Разделенный запятыми список допустимых Short на языке программирования Java. Например: 3242,12354</string>
     <!--  Intent action type strings  -->
     <!--  Tap targets  -->
+    <string name="tap_target_quick_start_guide_primary">Краткое руководство</string>
+    <string name="tap_target_quick_start_guide_secondary">Прочтите краткое руководство если что-то пошло не так.</string>
     <!--  Tap targets  -->
 </resources>
