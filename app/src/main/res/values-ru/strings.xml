@@ -261,6 +261,7 @@
     <string name="dialog_message_downloading">Загрузка…</string>
     <string name="dialog_message_describe_your_issue_in_the_email">Просьба описать в письме проблему, с которой вы столкнулись. В противном случае я не могу вам помочь. Спасибо!</string>
     <string name="dialog_message_long_press_warning">Длительное нажатие работает только для кнопок громкости и навигации. Если вы включите его для других клавиш, клавиши не будут работать, если они не будут длительно нажаты.</string>
+    <string name="dialog_message_write_secure_settings">Чтобы предоставить Key Mapper разрешение WRITE_SECURE_SETTINGS - включите \"функционал требующий Root прав\" в настройках приложения (Если у вашего устройства конечно есть Root права). Если таких прав на устройстве нет - следуйте указаниям как дать это разрешение с помощью PC/Mac.</string>
     <string name="dialog_message_cant_find_accessibility_settings_page">Кажется на вашем устройстве нет страницы настроек спец.возможностей. Вы можете включить службу спец.возможностей, предоставив приложению разрешение WRITE_SECURE_SETTINGS. После нажатия \'ОК\' следуйте руководству.</string>
     <string name="dialog_message_double_press_restricted_to_single_key">"Нельзя обработать одновременное двойное нажатие нескольких клавиш."</string>
     <string name="dialog_message_parallel_trigger_order">Клавиши должны быть перечислены сверху вниз в том порядке в котором они должны быть нажаты.</string>
@@ -268,6 +269,8 @@
     <string name="dialog_message_view_faq_and_use_discord_over_email">Пожалуйста, ознакомьтесь с часто задаваемыми вопросами, чтобы узнать, был ли ответ на ваш вопрос. Если нет, то разработчик предпочел бы, если бы вы запросили помощь и/или предложили доработки на сервере Discord. Если у вас нет Discord, вы можете отправить сообщение по электронной почте разработчику напрямую.</string>
     <string name="dialog_message_bt_constraint_limitation">Android не разрешает приложениям получать список подключенных (не сопряженных) Bluetooth-устройств. Приложения могут определять только когда подключены и отключены сопряженные устройства. Таким образом, если ваше Bluetooth устройство уже подключено к вашему основному устройству при запуске службы спец.возможностей, вам придется перепривязать его, чтобы приложение поняло, что оно подключено.</string>
     <string name="dialog_message_change_location_or_disable">Изменить место для автоматического резервного копирования или отключить его?</string>
+    <string name="dialog_message_screen_constraints_limitation">Ограничение на включенный или выключенный экран будет работать только в том случае, если вы включили \"Определять события когда экран выключен\" в настройках этого переназначения. Эта настройка имеется только для некоторых клавиш (например для громкости) и только если у вас есть Root права. Полный список поддерживаемых клавиш смотрите на странице справки.</string>
+    <string name="dialog_message_select_compatible_ime">Выберите метод ввода для действий, которые требуют его. Вы можете изменить это позже, нажав на кнопку \"Выбрать клавиатуру для действий\" в нижнем меню главного экрана.</string>
     <string name="dialog_message_select_app_store_gui_keyboard">Где вы хотите скачать новую клавиатуру с GUI?</string>
     <!-- Dialog messages -->
     <!-- Dialog buttons -->
@@ -414,10 +417,12 @@
     <string name="showcase_disable_battery_optimisation_button_turn_off">Выключить</string>
     <string name="showcase_disable_battery_optimisation_button_dont_kill_my_app">Перейти на dontkillmyapp.com</string>
     <string name="showcase_dex_mode_supported_title">Похоже, что ваше устройство поддерживает Samsung Dex</string>
+    <string name="showcase_dnd_access_title_disabled">Переназначить клавиши громкости?</string>
     <string name="showcase_dnd_access_description_enabled">Всё ок! :)</string>
     <string name="showcase_contributing_title">Помощь проекту</string>
     <string name="showcase_contributing_description">"Это приложение с открытым исходным кодом! Вы можете начать вносить свой вклад в репозиторий sds100/KeyMapper на GitHub и присоединившись к серверу Discord. Даже если вы не можете программировать, вы можете помочь, помогая другим и тестируя последние возможности."</string>
     <string name="showcase_fingerprint_gesture_support_message_supported_unknown">Вам нужно включить службу спец.возможностей, чтобы Key Mapper мог проверить, может ли ваше устройство обнаружить жесты сканера отпечатков пальцев.</string>
+    <string name="showcase_fingerprint_gesture_support_message_supported">Ваше устройство может определить жесты сканера отпечатков пальцев! В верхней части главного экрана есть вкладка для переназначения этих жестов.</string>
     <string name="showcase_fingerprint_gesture_support_button">Включить</string>
     <!-- Showcase -->
     <!-- system action options -->
