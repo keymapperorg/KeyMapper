@@ -146,7 +146,6 @@
     <string name="dialog_message_downloading">Pobieranie…</string>
     <string name="dialog_message_describe_your_issue_in_the_email">Czy możesz opisać swój problem przez email? Bo inaczej nie mogę ci pomóc. Dzięki!</string>
     <string name="dialog_message_long_press_warning">Przytrzymanie działa tylko w przypadku fizycznych przycisków głośności i nawigacji. Jeśli jest włączone dla innych klawiszy, nie będą działać bez przytrzymania.</string>
-    <string name="dialog_message_write_secure_settings_for_accessibility_service">Aby nadać uprawnienia WRITE_SECURE_SETTINGS do Key Mapper, włącz \"funkcje roota\" w ustawieniach jeśli urządzenie jest zrootowane. Jeśli urządzenie nie jest zrootowane, przejdź do strony pomocy i postępuj zgodnie z instrukcją, aby nadać uprawnienia za pomocą komputera PC/Mac.</string>
     <string name="dialog_message_cant_find_accessibility_settings_page">Wygląda na to, że Twoje urządzenie nie ma strony usług ułatwień dostępu w ustawieniach. Nadal możesz włączyć usługę, nadając aplikacji uprawnienia WRITE_SECURE_SETTINGS. Po naciśnięciu \"OK\", wyskakujące okienko poprowadzi Cię jak to zrobić.</string>
     <string name="dialog_message_double_press_restricted_to_single_key">"Wielu klawiszy nie można jednocześnie nacisnąć dwukrotnie."</string>
     <string name="dialog_message_parallel_trigger_order">Klawisze muszą być ułożone od góry do dołu w kolejności, w jakiej będą przytrzymywane.</string>
