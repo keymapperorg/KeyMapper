@@ -89,7 +89,6 @@
     <string name="dialog_message_downloading">ডাউনলোডিং…</string>
     <string name="dialog_message_describe_your_issue_in_the_email">অনুগ্রহ করে আপনার সমস্যাটি ই-মেইলের মাধ্যমে বর্ণনা করুন। ধন্যবাদ!</string>
     <string name="dialog_message_long_press_warning">লং প্রেসিং শুধুমাত্র ফিজিক্যাল ভলিউম ও নেভিগেশন বাটনের জন্য প্রযোজ্য। অন্য কোন বাটনের জন্য এটি সক্রিয় করলে বাটনটি লং প্রেস ছাড়া অন্য কোন ক্ষেত্রে কাজ করবে না।</string>
-    <string name="dialog_message_write_secure_settings_for_accessibility_service">কি-ম্যাপারকে WRITE_SECURE_SETTINGS পারমিশন দেওয়ার জন্য আপনাকে অবশ্যই \"root features\" সক্রিয় করতে হবে। যদি আপনার ডিভাইস \"rooted\" না হয়ে থাকে তাহলে  তাহলে \"Help\" পেজে যান এবং পিসি/ম্যাক ব্যবহার করে পারমিশন প্রদান করার গাইডটি ফলো করুন।</string>
     <string name="dialog_message_double_press_restricted_to_single_key">"একাধিক কি একই সময়ে ডাবল প্রেস করা যাবে না।"</string>
     <string name="dialog_message_bt_constraint_limitation">অ্যান্ড্রয়েড কোন অ্যাপকে এই মুহুর্তে কোন কোন ব্লুটুথ ডিভাইস কানেক্টেড আছে তা দেখার অনুমতি দেয় না। অ্যাপ গুলো শুধুমাত্র কোন ডিভাইস কানেক্টেড অথবা ডিসকানেক্টেড হলে তা ডিটেক্ট করতে পারে। accessibility service স্টার্ট করার পূর্বে যদি কোন ব্লুটথ ডিভাইস কানেক্টে করে থাকেন, তাহলে ব্লুটুথ ডিভাইসটি পুনরায় কানেক্ট না করলে এই অ্যাপটি সেটি ডিটেক্ট করতে পারবে না।</string>
     <!-- Dialog messages -->
