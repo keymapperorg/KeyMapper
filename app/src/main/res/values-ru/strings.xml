@@ -36,18 +36,18 @@
     <string name="show_hidden_apps">Показать скрытые приложения</string>
     <string name="modifiers">Модификаторы</string>
     <string name="toggle">Переключить</string>
-    <string name="tap_coordinate_screenshot_message">Внимание!!! Эти координаты корректны только если ваш экран в той же ориентации как на скриншоте! Это действие отменит любые касания или жесты которые вы делаете на экране.\n\nЕсли вам нужна помощь в определении координат курсора на экране - сделайте скриншот и затем нажмите на область скриншота где вы будет действие нажатия.</string>
+    <string name="tap_coordinate_screenshot_message">Внимание!!! Эти координаты корректны только если ваш экран в той же ориентации как на скриншоте! Это действие отменит любые касания или жесты которые вы делаете на экране.\n\nЕсли вам нужна помощь в определении координат курсора на экране - сделайте скриншот и затем нажмите на область скриншота где вы хотите произвести это действие.</string>
     <string name="dont_know_device_name">Неизвестное имя устройства!</string>
     <string name="permission_description_key_mapper_input_method">выполните действия Key Mapper которые требуют клавиатуру</string>
     <string name="tap_actions_to_fix">Нажмите действия для исправления!</string>
-    <string name="new_gui_keyboard_ad_message">Получите новую Key Mapper наэкранную клавиатуру!</string>
+    <string name="new_gui_keyboard_ad_message">Получите новую Key Mapper экранную клавиатуру с отображаемыми клавишами!</string>
     <string name="shortcut_label_action">Выполнить действия</string>
-    <string name="hold_down_until_trigger_is_dot_dot_dot">Зажмите до тех пор пока событие…</string>
+    <string name="hold_down_until_trigger_is_dot_dot_dot">Нажать и удерживать до события…</string>
     <string name="from_no_device">Нет устройства</string>
     <string name="intent_extras_recycler_view_placeholder">¯\\_(ツ)_/¯\n\nНет дополнительного!</string>
     <string name="content_description_fab_new_keymap">Создайте новое сопоставление кнопок</string>
     <string name="whats_new">Что нового</string>
-    <string name="caption_action_type_key">Нажмите кнопку на устройстве, которое вы хотите ввести.
+    <string name="caption_action_type_key">Нажмите кнопку на устройстве, которую вы хотите ввести.
             \n\nВАЖНО!
             Ввод кода этой кнопки в качестве действия будет работать только если вы используете совместимую с  Key Mapper клавиатуру.</string>
     <string name="caption_action_type_keycode">ВАЖНО!
@@ -119,7 +119,7 @@
     <string name="radio_button_intent_extra_value_true">Истина</string>
     <string name="radio_button_intent_extra_value_false">Ложь</string>
     <string name="radio_button_intent_target_activity">Активность</string>
-    <string name="radio_button_intent_target_service">Служба</string>
+    <string name="radio_button_intent_target_service">Service</string>
     <string name="radio_button_intent_target_broadcast_receiver">Трансляция приёмника</string>
     <!--  Radio buttons  -->
     <!--  Tabs  -->
@@ -130,6 +130,10 @@
     <string name="tab_actions">Действия</string>
     <string name="tab_trigger">События</string>
     <string name="tab_fingerprint">Отпечаток пальцев</string>
+    <string-array name="home_tab_titles">
+        <item>События нажатий</item>
+        <item>Отпечаток пальца</item>
+    </string-array>
     <!--  Tabs  -->
     <!--  Navigation argument ids  -->
     <!--  Navigation argument ids  -->
@@ -142,6 +146,7 @@
     <string name="toast_io_exception_shrug">Исключение ввода-вывода ¯\\_(ツ)_/¯</string>
     <string name="toast_incorrect_screenshot_resolution">Разрешение скриншота не соответствует разрешению этого устройства!</string>
     <string name="toast_copied_keymap_uid_to_clipboard">UUID карта клавиши скопирована в буфер обмена</string>
+    <string name="toast_triggered_keymap">Сработало событие переназначения</string>
     <!--  Toasts  -->
     <!-- Extra labels -->
     <string name="extra_label_sequence_trigger_timeout">Таймаут последовательности события (мс)</string>
@@ -150,7 +155,7 @@
     <string name="extra_label_repeat_delay">Задержка до повтора (мс)</string>
     <string name="extra_label_repeat_rate">Повторять каждые… (мс)</string>
     <string name="extra_label_vibration_duration">Длительность вибрации (мс)</string>
-    <string name="extra_label_action_multiplier">Счетчик действий</string>
+    <string name="extra_label_action_multiplier">Сколько раз</string>
     <string name="extra_label_delay_before_next_action">Задержка до следующего действия (мс)</string>
     <string name="extra_label_hold_down_duration">Длительность удержания (мс)</string>
     <!-- Extra labels -->
@@ -233,6 +238,8 @@
     <string name="button_yes">Да!</string>
     <string name="button_choose_action">Выберите действие</string>
     <string name="button_add_intent_extra">Добавить дополнение</string>
+    <string name="button_create_keymap_shortcut_in_launcher">Создать ярлык</string>
+    <string name="button_open_trigger_keymap_from_intent_guide">Руководство по Intent</string>
     <string name="button_help">Справка</string>
     <!-- Button titles -->
     <!-- Dialog titles -->
@@ -256,6 +263,9 @@
     <string name="dialog_message_long_press_warning">Длительное нажатие работает только для кнопок громкости и навигации. Если вы включите его для других клавиш, клавиши не будут работать, если они не будут длительно нажаты.</string>
     <string name="dialog_message_double_press_restricted_to_single_key">"Нельзя обработать одновременное двойное нажатие нескольких клавиш."</string>
     <string name="dialog_message_parallel_trigger_order">Клавиши должны быть перечислены сверху вниз в том порядке в котором они должны быть нажаты.</string>
+    <string name="dialog_message_view_faq_and_use_discord_over_email">Пожалуйста, ознакомьтесь с часто задаваемыми вопросами, чтобы узнать, был ли ответ на ваш вопрос. Если нет, то разработчик предпочел бы, если бы вы запросили помощь и/или предложили доработки на сервере Discord. Если у вас нет Discord, вы можете отправить сообщение по электронной почте разработчику напрямую.</string>
+    <string name="dialog_message_bt_constraint_limitation">Android не разрешает приложениям получать список подключенных (не сопряженных) Bluetooth-устройств. Приложения могут определять только когда подключены и отключены сопряженные устройства. Таким образом, если ваше Bluetooth устройство уже подключено к вашему основному устройству при запуске службы спец.возможностей, вам придется перепривязать его, чтобы приложение поняло, что оно подключено.</string>
+    <string name="dialog_message_change_location_or_disable">Изменить место для автоматического резервного копирования или отключить его?</string>
     <string name="dialog_message_select_app_store_gui_keyboard">Где вы хотите скачать новую клавиатуру с GUI?</string>
     <!-- Dialog messages -->
     <!-- Dialog buttons -->
@@ -346,15 +356,22 @@
     <string name="pref_title_discord">Discord сервер</string>
     <string name="pref_title_youtube_channel">Канал YouTube (Учебники)</string>
     <!-- About activity-->
+    <string-array name="pref_dark_theme_entries">
+        <item>Вкл</item>
+        <item>Выкл</item>
+        <item>Как в системе</item>
+    </string-array>
     <!--Action Types Titles-->
     <string name="action_type_title_application">Приложение</string>
     <string name="action_type_title_application_shortcut">Ярлык приложения</string>
     <string name="action_type_title_key">Клавиша</string>
     <string name="action_type_title_key_code">Коды клавиши</string>
+    <string name="action_type_title_keyevent">Событие нажатия</string>
     <string name="action_type_title_system_action">Системные события</string>
     <string name="action_type_title_text_block">Текст</string>
     <string name="action_type_url">Адрес URL</string>
     <string name="action_type_tap_coordinate">Коснуться экрана</string>
+    <string name="action_type_intent">Intent</string>
     <string name="action_type_phone_call">Телефонный вызов</string>
     <!--Action Types Titles-->
     <!--flags-->
@@ -362,6 +379,7 @@
     <string name="flag_long_press">Длительное нажатие</string>
     <string name="flag_vibrate">Вибрация</string>
     <string name="flag_show_toast">Вывод сообщения на экран</string>
+    <string name="flag_long_press_double_vibration">Вибрировать при первом нажатии клавиши и при срабатывании \"длительного нажатия\".</string>
     <string name="flag_detect_triggers_screen_off">Определять события когда экран выключен. Только при наличии Root прав.</string>
     <string name="flag_repeat_actions">Повторять</string>
     <string name="flag_hold_down">Удерживать</string>
@@ -371,7 +389,15 @@
     <string name="flag_trigger_from_other_apps">Событие из другого приложения</string>
     <!--flags-->
     <!-- Showcase -->
+    <string name="showcase_accessibility_service_title_enabled">Служба спец.возможностей включена :)</string>
+    <string name="showcase_accessibility_service_description_enabled">Всё ок! :)</string>
+    <string name="showcase_accessibility_service_title_disabled">Включите службу спец.возможностей</string>
+    <string name="showcase_accessibility_service_description_disabled">Ваши переназначения будут работать только если включена служба спец.возможностей. Ее включение также требуется для записи событий.</string>
+    <string name="showcase_record_trigger_title">Служба спец.возможностей отключена</string>
+    <string name="showcase_record_trigger_description">Запись события возможна только при включенной службе спец.возможностей.</string>
+    <string name="showcase_note_from_the_developer_title">Примечание от разработчика</string>
     <string name="showcase_disable_battery_optimisation_button_turn_off">Выключить</string>
+    <string name="showcase_disable_battery_optimisation_button_dont_kill_my_app">Перейти на dontkillmyapp.com</string>
     <string name="showcase_dex_mode_supported_title">Похоже, что ваше устройство поддерживает Samsung Dex</string>
     <string name="showcase_dnd_access_description_enabled">Всё ок! :)</string>
     <string name="showcase_fingerprint_gesture_support_button">Включить</string>
@@ -535,8 +561,34 @@
     <string name="action_move_to_end_of_text">Переместить курсор в конец</string>
     <string name="action_move_to_end_of_text_message">Для этого действия должны быть выбрана клавиатура Key Mapper, однако в некоторых приложениях это действие может работать не так, как запланировано.</string>
     <string name="action_toggle_keyboard">Переключить клавиатуру</string>
+    <string name="action_toggle_keyboard_message">Это действие будет работать только если вы коснулись пальцем поля ввода, и при этом должна отобразиться клавиатура.</string>
+    <string name="action_show_keyboard">Показать клавиатуру</string>
+    <string name="action_hide_keyboard">Скрыть клавиатуру</string>
+    <string name="action_show_keyboard_picker">Показать выбор клавиатуры (не root)</string>
+    <string name="action_show_keyboard_picker_root">Показать выбор клавиатуры (root)</string>
+    <string name="action_switch_keyboard">Переключить клавиатуру</string>
+    <string name="action_switch_keyboard_formatted">Переключиться на %s</string>
+    <string name="action_text_cut">Вырезать</string>
+    <string name="action_text_copy">Копировать</string>
+    <string name="action_text_paste">Вставить</string>
+    <string name="action_select_word_at_cursor">Выберите слово под курсором</string>
+    <string name="action_open_settings">Открыть настройки</string>
+    <string name="action_show_power_menu">Показать меню питания</string>
+    <string name="action_toggle_airplane_mode">Переключить режим полета</string>
+    <string name="action_enable_airplane_mode">Включить режим полета</string>
+    <string name="action_disable_airplane_mode">Отключить режим полета</string>
     <!-- System action labels -->
     <!-- System action category labels -->
+    <string name="system_action_cat_wifi">Wi-Fi</string>
+    <string name="system_action_cat_bluetooth">Bluetooth</string>
+    <string name="system_action_cat_mobile_data">Мобильные данные</string>
+    <string name="system_action_cat_navigation">Панель навигации</string>
+    <string name="system_action_cat_volume">Громкость</string>
+    <string name="system_action_cat_screen_rotation">Поворот экрана</string>
+    <string name="system_action_cat_brightness">Яркость</string>
+    <string name="system_action_cat_status_bar">Строка состояния</string>
+    <string name="system_action_cat_media">Медиа</string>
+    <string name="system_action_cat_flashlight">Фонарик</string>
     <!-- System action category labels -->
     <!--  Intent action type strings  -->
     <!--  Intent action type strings  -->
