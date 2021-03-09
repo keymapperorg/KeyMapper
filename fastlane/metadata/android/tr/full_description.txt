@@ -40,8 +40,7 @@ Anahtarlarımı ne yapmak için atayabilirim?
  *Wi-Fi'yi aç/kapa/değiştir (Android 10 ve üstü)
  *Bluetooth'u aç/kapa/değiştir
  *Mobil veriyi aç/kapa/değiştir (KÖK ERİŞİMİ GEREKİR)
- *Medyayı değiştir
- *Medyayı durdur/oynat
+ * Toggle between play and pause/just play/just pause media
  *İleri/Geri sar
  *Önceki/Sonraki parçayı aç
  *Sesi aç/kapa
@@ -67,7 +66,7 @@ Anahtarlarımı ne yapmak için atayabilirim?
  * Güç iletişim kutusunu göster (Android 5.0+)
  * İmleci bir dosyanın sonuna taşıyın
 
-Ve dahası...
+And more...
 
 Bunların çalışması için Keymapper klavyesinin seçilmesi gerekir:
 
