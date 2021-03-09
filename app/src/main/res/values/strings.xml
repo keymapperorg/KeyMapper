@@ -568,7 +568,7 @@
     <string name="showcase_disable_battery_optimisation_message_bad">CRITICAL!!! Tap \"turn off\" to prevent Android from stopping the app while it is in the background. Your OEM\'s skin such as MIUI or Samsung Experience may have other \"battery saving\" features so it is STRONGLY recommended to turn them off for Key Mapper as well by going to dontkillmyapp.com</string>
     <string name="showcase_disable_battery_optimisation_message_good">Stock Android battery optimisation is off. This is not good enough for most devices so go to dontkillmyapp.com for tutorials which show how to turn off even more app-killing features on your device.</string>
     <string name="showcase_disable_battery_optimisation_button_turn_off">Turn off</string>
-    <string name="showcase_disable_battery_optimisation_button_dont_kill_my_app">Go to Don\'t Kill My App</string>
+    <string name="showcase_disable_battery_optimisation_button_dont_kill_my_app">Go to dontkillmyapp.com</string>
 
     <string name="showcase_dex_mode_supported_title">Your device seems to support Samsung Dex</string>
     <string name="showcase_dex_mode_supported_message">Samsung doesn\'t allow apps with a 3rd party keyboard to open while in Dex mode. Therefore, this app won\'t open and the Key Mapper keyboard won\'t work while you are in Dex mode. Your key maps which don\'t require the Key Mapper keyboard will still work while you\'re in Dex mode.</string>
