@@ -1,1 +1,1 @@
-Remaps the buttons on your device and other devices and fingerprint gestures.
+Позволяет переназначить клавиши и жесты датчика отпечатка пальцев на вашем устройстве или любых других подключенных устройствах.
