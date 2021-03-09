@@ -136,6 +136,7 @@
     <!--  Toasts  -->
     <string name="toast_chose_keyboard">Выберите %s</string>
     <string name="toast_backup_successful">Резервная копия сделана!</string>
+    <string name="toast_restore_successful">Восстановление успешно завершено!</string>
     <string name="toast_screenshot_taken">Снимок экрана сделан</string>
     <string name="toast_io_exception_shrug">Исключение ввода-вывода ¯\\_(ツ)_/¯</string>
     <string name="toast_incorrect_screenshot_resolution">Разрешение скриншота не соответствует разрешению этого устройства!</string>
@@ -231,6 +232,7 @@
     <string name="button_yes">Да!</string>
     <string name="button_choose_action">Выберите действие</string>
     <string name="button_add_intent_extra">Добавить дополнение</string>
+    <string name="button_help">Справка</string>
     <!-- Button titles -->
     <!-- Dialog titles -->
     <string name="dialog_title_are_you_sure">Вы уверены?</string>
@@ -280,11 +282,15 @@
     <string name="notification_channel_new_features">Новые возможности</string>
     <string name="notification_ime_persistent_text">Нажмите, чтобы изменить клавиатуру.</string>
     <string name="notification_ime_persistent_title">Выбор клавиатуры</string>
+    <string name="notification_keymaps_resumed_title">Выполняется</string>
+    <string name="notification_keymaps_paused_title">Приостановлено</string>
+    <string name="notification_keymaps_paused_text">Нажмите, чтобы возобновить работу.</string>
     <string name="notification_action_dismiss">Отклонить</string>
     <string name="notification_accessibility_service_disabled_title">Служба специальных возможностей отключена</string>
     <string name="notification_accessibility_service_disabled_text">Нажмите, чтобы запустить службу специальных возможностей.</string>
     <string name="notification_action_open_app">Открыть приложение</string>
     <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
+    <string name="notification_action_stop_acc_service">Остановить службу</string>
     <string name="notification_keyboard_hidden_title">Клавиатура скрыта!</string>
     <string name="notification_keyboard_hidden_text">Нажмите, чтобы снова начать отображать клавиатуру.</string>
     <string name="notification_toggle_keyboard_title">Сменить клавиатуру Key Mapper</string>
@@ -296,10 +302,20 @@
     <!-- Notification strings -->
     <!--Preference titles and summaries-->
     <string name="title_pref_long_press_delay">Задержка долгого нажатия по умолчанию (мс)</string>
+    <string name="title_pref_force_vibrate">Принудительно вибрировать</string>
+    <string name="summary_pref_automatic_backup_location_disabled">Местоположение не выбрано.</string>
+    <string name="title_pref_bluetooth_devices">Выберите устройства Bluetooth…</string>
+    <string name="title_pref_auto_show_ime_picker">Автоматически показывать выбор клавиатуры</string>
     <!--Preference titles and summaries-->
     <!--Preference categories-->
+    <string name="title_pref_category_ime_picker">Выбор клавиатуры</string>
+    <string name="title_pref_category_notifications">Уведомления</string>
+    <string name="title_pref_category_root">ROOT</string>
     <!--Preference categories-->
     <!-- About activity-->
+    <string name="pref_title_changelog">Список изменений</string>
+    <string name="pref_title_license">Лицензия</string>
+    <string name="pref_title_privacy_policy">Политика конфиденциальности</string>
     <!-- About activity-->
     <!--Action Types Titles-->
     <!--Action Types Titles-->
