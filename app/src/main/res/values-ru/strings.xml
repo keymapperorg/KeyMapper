@@ -123,7 +123,7 @@
     <string name="radio_button_intent_target_broadcast_receiver">Трансляция приёмника</string>
     <!--  Radio buttons  -->
     <!--  Tabs  -->
-    <string name="tab_trigger_and_actions">События и действия</string>
+    <string name="tab_trigger_and_actions">Событие и действия</string>
     <string name="tab_constraints_and_more">Ограничения и многое другое</string>
     <string name="tab_options">Параметры</string>
     <string name="tab_constraints">Ограничения</string>
@@ -213,9 +213,9 @@
     <string name="action_save">Сохранить</string>
     <string name="action_duplicate_keymap">Дублировать</string>
     <string name="action_backup">Сделать резервную копию</string>
-    <string name="action_restore">Восстановление</string>
+    <string name="action_restore">Восcтановить</string>
     <string name="action_backup_everything">Резервное копирование всего</string>
-    <string name="action_backup_all">Резервное копирование всех</string>
+    <string name="action_backup_all">Резервное копирование всего</string>
     <string name="action_tap_to_pause_keymaps">Нажмите для приостановки</string>
     <string name="action_tap_to_resume_keymaps">Нажмите, чтобы возобновить</string>
     <string name="action_reset">Сброс</string>
@@ -243,7 +243,7 @@
     <string name="dialog_title_pick_stream">Выбрать поток</string>
     <string name="dialog_title_choose_flash">Выберите мигание</string>
     <string name="dialog_title_cant_find_accessibility_settings_page">Страница настроек специальных возможностей не найдена</string>
-    <string name="dialog_title_cant_record_trigger">Не удается записать триггер?</string>
+    <string name="dialog_title_cant_record_trigger">Не удается записать событие?</string>
     <!-- Dialog titles -->
     <!-- Dialog messages -->
     <string name="dialog_message_are_you_sure_want_to_leave_without_saving">Вы уверены, что хотите уйти без сохранения?</string>
@@ -316,20 +316,88 @@
     <string name="pref_title_changelog">Список изменений</string>
     <string name="pref_title_license">Лицензия</string>
     <string name="pref_title_privacy_policy">Политика конфиденциальности</string>
+    <string name="pref_title_credits">Cписок участников</string>
+    <string name="pref_title_source_code">Исходный код</string>
+    <string name="pref_title_developer_github">Профиль GitHub разработчика</string>
+    <string name="pref_title_rate_review">Оценить и дать отзыв</string>
+    <string name="pref_title_xda_thread">Тема на форуме XDA</string>
+    <string name="pref_title_version">Версия</string>
+    <string name="pref_title_developer_email">Отправить письмо разработчику</string>
+    <string name="pref_title_discord">Discord сервер</string>
+    <string name="pref_title_youtube_channel">Канал YouTube (Учебники)</string>
     <!-- About activity-->
     <!--Action Types Titles-->
+    <string name="action_type_title_application">Приложение</string>
+    <string name="action_type_title_application_shortcut">Ярлык приложения</string>
+    <string name="action_type_title_key">Клавиша</string>
+    <string name="action_type_title_key_code">Коды клавиши</string>
+    <string name="action_type_title_system_action">Системные события</string>
+    <string name="action_type_title_text_block">Текст</string>
+    <string name="action_type_url">Адрес URL</string>
+    <string name="action_type_tap_coordinate">Коснуться экрана</string>
+    <string name="action_type_phone_call">Телефонный вызов</string>
     <!--Action Types Titles-->
     <!--flags-->
+    <string name="flag_show_volume_dialog">Показать диалог громкости</string>
+    <string name="flag_long_press">Длительное нажатие</string>
+    <string name="flag_vibrate">Вибрация</string>
+    <string name="flag_show_toast">Вывод сообщения на экран</string>
+    <string name="flag_repeat_actions">Повторять</string>
+    <string name="flag_hold_down">Удерживать</string>
+    <string name="flag_dont_override_default_action">Не переопределять действие по умолчанию</string>
+    <string name="flag_repeat_until_swiped_again">Повторять до свайпа снова</string>
+    <string name="flag_hold_down_until_swiped_again">Удерживать до свайпа снова</string>
     <!--flags-->
     <!-- Showcase -->
     <!-- Showcase -->
     <!-- system action options -->
+    <string name="stream_dtmf">Тональный набор (DTMF)</string>
+    <string name="stream_music">Музыка</string>
+    <string name="stream_notification">Уведомления</string>
+    <string name="stream_ring">Звонок</string>
+    <string name="stream_system">Система</string>
+    <string name="stream_voice_call">Голосовой вызов</string>
+    <string name="ringer_mode_normal">Нормальный звонок</string>
+    <string name="ringer_mode_vibrate">Звонок с вибрацией</string>
+    <string name="ringer_mode_silent">Бесшумный звонок</string>
+    <string name="lens_front">Передняя камера</string>
+    <string name="lens_back">Задняя камера</string>
     <!-- system action options -->
     <!-- Tiles -->
+    <string name="tile_pause">Приостановить работу</string>
+    <string name="tile_resume">Продолжить работу</string>
+    <string name="tile_service_disabled">Служба отключена</string>
+    <string name="tile_accessibility_service_disabled_content_description">Служба специальных возможностей Key Mapper отключена</string>
+    <string name="tile_keymapper_keyboard_service_disabled_content_description">Клавиатура Key Mapper выключена</string>
+    <string name="tile_toggle_keymapper_keyboard">Сменить клавиатуру Key Mapper</string>
     <!-- Tiles -->
     <!-- Meta States -->
+    <string name="meta_state_ctrl">Ctrl</string>
+    <string name="meta_state_ctrl_left">Ctrl слева</string>
+    <string name="meta_state_ctrl_right">Ctrl справа</string>
+    <string name="meta_state_alt">Alt</string>
+    <string name="meta_state_alt_left">Alt слева</string>
+    <string name="meta_state_alt_right">Alt справа</string>
+    <string name="meta_state_shift">Shift</string>
+    <string name="meta_state_shift_left">Shift слева</string>
+    <string name="meta_state_shift_right">Shift справа</string>
+    <string name="meta_state_meta">Мета</string>
+    <string name="meta_state_meta_left">Meta слева</string>
+    <string name="meta_state_meta_right">Meta справа</string>
+    <string name="meta_state_sym">Sym</string>
+    <string name="meta_state_function">Func</string>
+    <string name="meta_state_caps_lock">Caps Lock</string>
+    <string name="meta_state_num_lock">Num Lock</string>
+    <string name="meta_state_scroll_lock">Scroll Lock</string>
     <!-- Meta States -->
     <!-- Error messages -->
+    <string name="error_must_type_a_key">Вы должны нажать клавишу!</string>
+    <string name="error_must_have_atleast_one_trigger">Вы должны иметь хотя бы одно событие</string>
+    <string name="error_must_choose_action">Вы должны выбрать действие!</string>
+    <string name="error_must_have_a_title">Ярлык должен иметь название!</string>
+    <string name="error_app_isnt_installed_brief">Приложение не установлено!</string>
+    <string name="error_app_is_disabled">Приложение отключено!</string>
+    <string name="error_sdk_version_too_low">Это требует Android %s</string>
     <!-- Error messages -->
     <!-- System action labels -->
     <!-- System action labels -->
