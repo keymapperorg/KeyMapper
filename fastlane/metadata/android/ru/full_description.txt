@@ -1,88 +1,88 @@
-What can be remapped?
+Что можно переназначить?
 
- * Fingerprint gestures on supported devices.
- * Volume buttons.
- * Navigation buttons.
- * Bluetooth/wired keyboards.
- * Buttons on other connected devices should also work.
- * Nintendo Switch JoyCons.
+ * Жесты отпечатка пальца на поддерживаемых устройствах.
+ * Кнопки громкости.
+ * Кнопки навигации.
+ * Проводные и Bluetooth клавиатуры.
+ * Кнопки на других подключенных устройствах также должны работать.
+ * Nintendo Switch Joy-Con контроллеры.
  * Chubby Buttons 2.
 
-ONLY HARDWARE buttons can be remapped.
-There is NO GUARANTEE any of these buttons will work and this app is NOT designed to control games. Your device's OEM/vendor can prevent them from being remapped.
+Переназначены могут быть ТОЛЬКО ФИЗИЧЕСКИЕ кнопки.
+Нет НИКАКОЙ ГАРАНТИИ что кнопки вашего устройства могут быть переназначены. Также - это приложение НЕ ПЛАНИРОВАЛОСЬ для управления играми. Производитель вашего устройства мог заблокировать переназначение клавиш.
 
-You can combine multiple keys from a specific device or any device to form a "trigger". Each trigger can have multiple actions. The keys can be set to be pressed at the same time or one after another in a sequence. Keys can be remapped when they are short pressed, long pressed or double pressed. A keymap can have a set of "constraints" so it only has an effect in certain situations.
+Вы можете совместить нажатие нескольких кнопок на определенном устройстве или нескольких устройствах для создания "события". У каждого события может быть несколько действий. Можно назначить событие на одновременное или последовательное нажатие клавиш. Клавиши можно переназначить при их коротком, длительном или двойном нажатии. Переназначение может иметь набор "ограничений" для того чтобы срабатывать только в определенных ситуациях.
 
-What can’t be remapped?
+Что НЕ может быть переназначено:
  * Pixel Active Edge
  * OnePlus Alert Slider
- * Power button
- * Bixby button
- * Mouse buttons
- * Dpad, thumb sticks or triggers on game controllers
+ * Кнопка питания
+ * Кнопка Bixby
+ * Кнопки мыши
+ * Dpad, джойстики или триггеры на игровых контроллерах
 
-Your key maps don't work if the screen is OFF. This is a limitation in Android. There is nothing the dev can do.
+Переназначения клавиш не работают когда экран вашего устройства выключен. Это ограничение самого Android. К сожалению с этим ничего нельзя сделать.
 
-What can I remap my keys to do?
- Some actions will only work on rooted devices and specific Android versions.
+Каким образом можно переназначить клавиши?
+ Некоторые действия будут работать только на устройствах с Root правами и/или на конкретных версиях Android.
 
- * Open an app
- * Open an app shortcut.
- * Open a URL
+ * Открыть приложение
+ * Открыть ярлык приложения.
+ * Открыть URL
  * Create Intents
- * Go back
- * Go home
- * Open recents
- * Open menu
- * Expand notification drawer
- * Expand quick settings
- * Collapse status bar
- * Toggle/enable/disable WiFi (ROOT only for Android 10+)
- * Toggle/enable/disable Bluetooth
- * Toggle/enable/disable mobile data (ROOT only)
- * Toggle Play/pause media
+ * Вернуться назад
+ * Домой
+ * Открыть недавние файлы
+ * Открыть меню
+ * Развернуть панель уведомлений
+ * Развернуть панель быстрых настроек
+ * Свернуть строку состояния
+ * Включить / Выключить / Переключить WiFi (при наличии Root прав и только для Android 10+)
+ * Включить / Выключить / Переключить Bluetooth
+ * Включить / Выключить / Переключить передачу мобильных данных (только при наличии Root прав)
+ * Поставить на паузу / Снять с паузы воспроизведение мультимедиа
  * Pause/play media
- * Fast forward/rewind
- * Next/previous track
- * Volume up/down
- * Increase/decrease a specific volume stream
- * Show the volume dialog
- * Cycle through and change the ringer mode
- * Mute/unmute/toggle mute (Android 6.0+)
- * Toggle/enable/disable auto-rotate
- * Switch between portrait and landscape mode
- * Force portrait/landscape mode
- * Toggle/enable/disable auto-brightness
- * Increase/decrease brightness
- * Toggle/enable/disable flashlight (Android 6.0+)
- * Toggle/enable/disable airplane mode (ROOT only)
- * Toggle/enable/disable a dnd mode (Android 6.0+)
- * Switch between vibrate and ring
- * Take a screenshot (Android 9.0+)
- * Open the Voice Assistant
- * Open the Device Assistant
- * Open camera
- * Consume key event. (Do nothing)
- * Lock the device
- * Show the power dialog (Android 5.0+)
- * Move the cursor to the end of a file
+ * Быстрая перемотка вперед/назад
+ * Следующий / предыдущий трек
+ * Громкость больше/меньше
+ * Увеличить / Уменьшить громкость конкретного аудио потока
+ * Показать диалог громкости
+ * Поменять режима звонка или перебрать режим звонка в цикле
+ * Включить / Выключить / Переключить звук (Android 6.0+)
+ * Включить / Выключить / Переключить автоповорот
+ * Переключение между портретным и альбомным режимом
+ * Принудительный портретный/ландшафтный режим
+ * Включить / Выключить / Переключить автояркость
+ * Увеличить / Уменьшить яркость
+ * Включить / Выключить / Переключить фонарик (Android 6.0+)
+ * Включить / Выключить / Переключить режим полета (только при наличии Root прав)
+ * Включить / Выключить / Переключить режим "Не беспокоить" (Android 6.0+)
+ * Переключение между вибрацией и звонком
+ * Сделать скриншот (Android 9.0+)
+ * Открыть голосового ассистента
+ * Открыть помощника устройства
+ * Открыть камеру
+ * Не передавать нажатие. (Ничего не делать)
+ * Заблокировать устройство
+ * Показать диалог питания (Android 5.0+)
+ * Переместить курсор в конец файла
 
-And more....
+и многое другое...
 
-A Key Mapper keyboard needs to be selected for these to work:
+Специальная клавиатура Key Mapper требуется для выполнения следующих действий:
 
-** It is recommended to install the Key Mapper GUI Keyboard app because this is a proper keyboard unlike the one built-in to Key Mapper **
+** Рекомендуется установить приложение "Key Mapper GUI keyboard" если требуется отображать на экране клавиши, встроенная в Key Mapper клавиатура их не содержит **
 
- * Input a specific keycode
- * Input a key
- * Input a Key Event
- * Insert a block of text
+ * Нажатие клавиши с определенным Keycode (например Esc или Insert)
+ * Нажатие специфической кнопки устройства
+ * Сочетание клавиши на устройстве и клавиши "модификатора" (Ctrl, Alt, Shift...)
+ * Вставка блока текста
 
-What other things can the app do?
- * Option to show a persistent notification which can pause/resume your keymaps.
- * Automatically change the keyboard to the Key Mapper one and/or show the keyboard picker when a chosen Bluetooth device is connected and switch back to the old one when it is disconnected.
- * Quick settings to pause/resume keymaps and toggle the Key Mapper keyboard.
- * Create home screen widget to perform the actions mentioned above.
+Что еще может это приложение?
+ * Есть возможность показывать постоянное уведомление позволяющее ставить на паузу / снимать с паузы переназначение клавиш.
+ * Автоматически менять клавиатуру на встроенную в Key Mapper и/или показывать диалог выбора клавиатуры при подключении Bluetooth устройства. А также переключаться обратно при отключении этого устройства. (Это включается в настройках приложения).
+ * Добавить пункты для быстрых настроек позволяющие ставить приложение на паузу и менять клавиатуру.
+ * Создать виджет на домашнем экране для быстрого выполнения указанных выше действий.
 
 Permissions
 You don't have to grant all the permissions for the app to work. The app will tell you if a permission needs to be granted for a feature to work.
