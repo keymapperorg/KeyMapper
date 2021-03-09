@@ -263,7 +263,6 @@
     <string name="dialog_message_describe_your_issue_in_the_email">请在电子邮件中描述您的问题，否则我无法帮助您。谢谢！</string>
     <string name="dialog_message_long_press_warning">长按只适用于物理音量和导航按钮。 如果您对其它键启用，它们将仅在长按时工作。</string>
     <string name="dialog_message_write_secure_settings">若要授予Key Mapper  WRITE_SECURE_SETTINGS权限，如果你的设备已root，请在设置中启用\"root功能\"。如果你的设备未root，请前往帮助页面并按照指南使用PC/Mac授予权限。</string>
-    <string name="dialog_message_write_secure_settings_for_accessibility_service">为授予 Key Mapper  WRITE_SECURE_SETTINGS 权限，如果您的设备已 root，请在设置中启用\"root 功能\"。 如果您的设备未 root，请前往帮助页面并按照指南使用 PC/Mac 授予权限。</string>
     <string name="dialog_message_cant_find_accessibility_settings_page">您的设备似乎没有无障碍服务设置页面。 您可以通过授予应用 WRITE_SECURE_SETTINGS 权限来启用无障碍服务。当您点击“确定”后，弹出窗口将指导您如何操作。</string>
     <string name="dialog_message_double_press_restricted_to_single_key">"不能同时双击多个键。"</string>
     <string name="dialog_message_parallel_trigger_order">这些按键需要按照从上到下的顺序按下。</string>
