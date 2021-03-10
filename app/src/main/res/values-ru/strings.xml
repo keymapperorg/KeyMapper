@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="no_action_chosen">Действие не выбрано</string>
-    <string name="accessibility_service_description">Key Mapper должен использовать службу спец. возможностей для возможности определения нажатия кнопок и выполнения заданных вами действий.
-   Служба спец. возможностей используется только для определения нажатия кнопок и определения используемого приложения. Вы можете проверить это в исходный код, ссылка на который находится на странице \"О программе\".</string>
+    <string name="accessibility_service_description">Key Mapper должен использовать службу спец.возможностей для определения нажатия кнопок и выполнения заданных вами действий.
+   Служба спец.возможностей используется только для определения нажатия кнопок и определения используемого приложения. Вы можете проверить это в исходном коде ссылка на который находится на странице \"О программе\".</string>
     <string name="selection_count">%d выбрано</string>
     <string name="enable">Включить</string>
     <string name="open">Открыть</string>
     <string name="recyclerview_placeholder">¯ \ _ (ツ) _ / ¯\n\n Здесь ничего!</string>
     <string name="triggers_recyclerview_placeholder">Запишите событие!</string>
     <string name="actions_recyclerview_placeholder">Добавьте действие!</string>
-    <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nСоздайте привязку кнопки!</string>
+    <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nСоздайте отображение кнопки!</string>
     <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nВы не выбрали никаких действий для этого ярлыка!</string>
     <string name="no_key_maps">Вы не создали привязку кнопки!</string>
     <string name="everything_looks_good">Все отлично!</string>
