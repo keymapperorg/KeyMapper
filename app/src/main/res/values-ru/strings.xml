@@ -368,6 +368,7 @@
     <string name="pref_title_xda_thread">Тема на форуме XDA</string>
     <string name="pref_title_version">Версия</string>
     <string name="pref_title_developer_email">Отправить письмо разработчику</string>
+    <string name="pref_title_translate">Помочь переводу</string>
     <string name="pref_title_discord">Discord сервер</string>
     <string name="pref_title_youtube_channel">Канал YouTube (Учебники)</string>
     <!-- About activity-->
@@ -656,6 +657,7 @@
     <string name="action_secure_lock_device">Безопасная блокировка устройства</string>
     <string name="action_secure_lock_device_message">Вы сможете войти только с PIN-кодом / паролем. Сканер отпечатков пальцев и разблокировка лица будет отключена. Это единственный надежный способ, который я нашел для блокировки устройств, не являющихся root, до Android Pie 9.0.</string>
     <string name="action_power_on_off_device">Усыпить / Разбудить устройство</string>
+    <string name="action_power_on_off_device_message">Не забудьте включить настройку позволяющую определить событие при выключенном экране!</string>
     <string name="action_consume_keyevent">Ничего не делать</string>
     <string name="action_move_to_end_of_text">Переместить курсор в конец</string>
     <string name="action_move_to_end_of_text_message">Для этого действия должны быть выбрана клавиатура Key Mapper, однако в некоторых приложениях это действие может работать не так, как запланировано.</string>
