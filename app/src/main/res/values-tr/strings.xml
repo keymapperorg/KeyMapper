@@ -38,7 +38,6 @@
     <string name="toggle">Değiştir</string>
     <string name="tap_coordinate_screenshot_message">ÖNEMLİ!!!  Bu koordinatlar yalnızca ekranınız ekran görüntüsü ile aynı yöndeyse doğrudur!  Bu eylem, ekranda yaptığınız tüm dokunuşları veya hareketleri iptal edecektir. \n\nEkranınızdaki bir noktanın koordinatlarını bulma konusunda yardıma ihtiyacınız varsa, bir ekran görüntüsü alın ve ardından bu eylemin basmasını istediğiniz ekran görüntüsüne dokunun.</string>
     <string name="dont_know_device_name">Cihaz adını algılanamıyor!</string>
-    <string name="permission_description_key_mapper_input_method">Klavye olarak Keymapper\'i seçmelisin </string>
     <string name="tap_actions_to_fix">Eylemleri düzeltmek için tıkla. </string>
     <string name="new_gui_keyboard_ad_message">Yeni Keymapper klavyesini indir. Ekran üstünde klavye! </string>
     <string name="shortcut_label_action">Performans eylemleri</string>
