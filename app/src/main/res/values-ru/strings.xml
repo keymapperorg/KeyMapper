@@ -9,9 +9,9 @@
     <string name="recyclerview_placeholder">¯ \ _ (ツ) _ / ¯\n\n Здесь ничего!</string>
     <string name="triggers_recyclerview_placeholder">Запишите событие!</string>
     <string name="actions_recyclerview_placeholder">Добавьте действие!</string>
-    <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nСоздайте отображение кнопки!</string>
+    <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nСоздайте мэппинг!</string>
     <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nВы не выбрали никаких действий для этого ярлыка!</string>
-    <string name="no_key_maps">Вы не создали привязку кнопки!</string>
+    <string name="no_key_maps">Вы не создали ни одного мэппинга!</string>
     <string name="everything_looks_good">Все отлично!</string>
     <string name="warning_the_app_will_work">Приложение будет работать, но некоторые настройки могут потребовать исправления в зависимости от того, что вы выберите в дальнейшем.</string>
     <string name="your_device_doesnt_support_some_actions">Ваше устройство не поддерживает некоторые действия.</string>
@@ -21,7 +21,7 @@
     <string name="no_actions">Нет действий</string>
     <string name="no_trigger">Нет события</string>
     <string name="unknown_keycode">Неизвестный код кнопки: %s</string>
-    <string name="chip_while">в то время как</string>
+    <string name="chip_while">пока</string>
     <string name="on">Вкл</string>
     <string name="off">Выкл</string>
     <string name="follow_system">Использовать системные настройки</string>
@@ -30,7 +30,7 @@
     <string name="trigger_device_name_not_found">Неизвестное имя для этого устройства</string>
     <string name="slider_default">По умолчанию</string>
     <string name="button_enable_accessibility_service">Включение службы спец. возможностей</string>
-    <string name="stop_repeating_dot_dot_dot">Прекратить повтор когда нажатие…</string>
+    <string name="stop_repeating_dot_dot_dot">Прекратить повтор по событию…</string>
     <string name="trigger_released">Отпущено</string>
     <string name="trigger_pressed_again">Снова нажато</string>
     <string name="show_hidden_apps">Показать скрытые приложения</string>
@@ -38,8 +38,7 @@
     <string name="toggle">Переключить</string>
     <string name="tap_coordinate_screenshot_message">Внимание!!! Эти координаты корректны только если ваш экран в той же ориентации как на скриншоте! Это действие отменит любые касания или жесты которые вы делаете на экране.\n\nЕсли вам нужна помощь в определении координат курсора на экране - сделайте скриншот и затем нажмите на область скриншота где вы хотите произвести это действие.</string>
     <string name="dont_know_device_name">Неизвестное имя устройства!</string>
-    <string name="permission_description_key_mapper_input_method">выполните действия Key Mapper которые требуют клавиатуру</string>
-    <string name="tap_actions_to_fix">Нажмите действия для исправления!</string>
+    <string name="tap_actions_to_fix">Нажмите на действие для исправления!</string>
     <string name="new_gui_keyboard_ad_message">Получите новую Key Mapper экранную клавиатуру с отображаемыми клавишами!</string>
     <string name="shortcut_label_action">Выполнить действия</string>
     <string name="hold_down_until_trigger_is_dot_dot_dot">Нажать и удерживать до события…</string>
@@ -372,11 +371,6 @@
     <string name="pref_title_discord">Discord сервер</string>
     <string name="pref_title_youtube_channel">Канал YouTube (Учебники)</string>
     <!-- About activity-->
-    <string-array name="pref_dark_theme_entries">
-        <item>Вкл</item>
-        <item>Выкл</item>
-        <item>Как в системе</item>
-    </string-array>
     <!--Action Types Titles-->
     <string name="action_type_title_application">Приложение</string>
     <string name="action_type_title_application_shortcut">Ярлык приложения</string>
