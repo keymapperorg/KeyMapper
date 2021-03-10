@@ -28,7 +28,6 @@
     <string name="toggle">Włącz/wyłącz</string>
     <string name="tap_coordinate_screenshot_message">UWAGA!!! Te współrzędne są poprawne tylko wtedy, gdy urządzenie i zrzut ekranu są w tej samej orientacji! To działanie spowoduje anulowanie wszelkich dotknięć lub gestów, które wykonujesz na ekranie.\n\nJeśli potrzebujesz pomocy w znalezieniu współrzędnych punktu na ekranie, zrób zrzut ekranu, a następnie dotknij go w miejscu, w którym ma zostać wykonane to działanie.</string>
     <string name="dont_know_device_name">Nie znam nazwy urządzenia!</string>
-    <string name="permission_description_key_mapper_input_method">wykonywać działania Key Mapper, które wymagają klawiatury</string>
     <string name="tap_actions_to_fix">Kliknij działania, aby naprawić!</string>
     <string name="whats_new">Co nowego</string>
     <string name="caption_action_type_key">Kliknij klawisz na urządzeniu, który chcesz wprowadzić.
