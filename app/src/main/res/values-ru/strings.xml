@@ -45,7 +45,7 @@
     <string name="hold_down_until_trigger_is_dot_dot_dot">Нажать и удерживать до события…</string>
     <string name="from_no_device">Нет устройства</string>
     <string name="intent_extras_recycler_view_placeholder">¯\\_(ツ)_/¯\n\nНет дополнительного!</string>
-    <string name="content_description_fab_new_keymap">Создайте новое сопоставление кнопок</string>
+    <string name="content_description_fab_new_keymap">Создайте новый мэппинг</string>
     <string name="whats_new">Что нового</string>
     <string name="caption_action_type_key">Нажмите кнопку на устройстве, которую вы хотите ввести.
             \n\nВАЖНО!
@@ -64,9 +64,9 @@
     <string name="action_title_wait">Подождите %sмс</string>
     <string name="email_subject">Запрос Key Mapper</string>
     <string name="email_default_message">Помогла ли страница решить вашу проблему? Какое ваше устройство?\n\n Какой OEM оболочка или ROM вы используете?\n\n Пожалуйста, опишите проблему:</string>
-    <string name="action_title_intent_start_activity">Начало действий: %s</string>
+    <string name="action_title_intent_start_activity">Начать Activity: %s</string>
     <string name="action_title_intent_start_service">Запуск службы: %s</string>
-    <string name="action_title_intent_send_broadcast">Отправить трансляцию: %s</string>
+    <string name="action_title_intent_send_broadcast">Отправить Broadcast: %s</string>
     <string name="clipboard_label_keymap_uid">Связь кнопки UUID</string>
     <string name="check_box_key_event_option_use_shell">Использовать оболочку (только ROOT)</string>
     <!--  Action descriptions  -->
