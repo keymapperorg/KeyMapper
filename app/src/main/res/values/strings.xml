@@ -514,7 +514,7 @@
     <string name="pref_title_youtube_channel">YouTube channel (Tutorials)</string>
     <!-- About activity-->
 
-    <string-array name="pref_dark_theme_entries">
+    <string-array name="pref_dark_theme_entries" translatable="false">
         <item>@string/on</item>
         <item>@string/off</item>
         <item>@string/follow_system</item>
