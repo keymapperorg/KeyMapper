@@ -38,7 +38,6 @@
     <string name="toggle">切换</string>
     <string name="tap_coordinate_screenshot_message">重要！！！这些坐标只有当你的显示方向与屏幕截图相同时才是正确的！ 此操作将取消您在屏幕上所做的任何触摸或手势。\n\n如果你寻找您屏幕上某点的坐标需要帮助，就采取屏幕截图的方法，然后在屏幕截图上点击您想让此动作按下的地方。</string>
     <string name="dont_know_device_name">不知道设备名称！</string>
-    <string name="permission_description_key_mapper_input_method">执行需要键盘的Key Mapper动作</string>
     <string name="tap_actions_to_fix">点击动作以修复！</string>
     <string name="new_gui_keyboard_ad_message">获取带有屏幕键盘的新Key Mapper键盘！</string>
     <string name="shortcut_label_action">执行动作</string>
@@ -388,11 +387,6 @@
     <string name="pref_title_discord">Discord服务器</string>
     <string name="pref_title_youtube_channel">YouTube频道(教程)</string>
     <!-- About activity-->
-    <string-array name="pref_dark_theme_entries">
-        <item>开</item>
-        <item>关</item>
-        <item>跟随系统</item>
-    </string-array>
     <!--Action Types Titles-->
     <string name="action_type_title_application">应用</string>
     <string name="action_type_title_application_shortcut">应用快捷方式</string>
