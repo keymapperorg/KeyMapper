@@ -49,7 +49,6 @@
     <string name="chip_github" translatable="false">GitHub</string>
     <string name="tap_coordinate_screenshot_message">IMPORTANT!!! These coordinates are only correct when your display is in the same orientation as the screenshot! This action will cancel any touches or gestures you are doing on the screen.\n\nIf you need help finding the coordinates of a point on your screen take a screenshot and then tap on the screenshot where you want this action to press.</string>
     <string name="dont_know_device_name">Don\'t know device name!</string>
-    <string name="permission_description_key_mapper_input_method">perform Key Mapper actions that require a keyboard</string>
     <string name="tap_actions_to_fix">Tap actions to fix!</string>
     <string name="new_gui_keyboard_ad_message">Get the new Key Mapper keyboard that has an on-screen keyboard!</string>
     <string name="shortcut_label_action">Perform actions</string>
