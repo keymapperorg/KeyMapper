@@ -28,7 +28,6 @@
     <string name="toggle">تبديل</string>
     <string name="tap_coordinate_screenshot_message">مهم!! هذه الإحداثيات صحيحة فقط عندما تكون شاشتك في نفس الوضعية كما في الصورة! هذا الإجراء سيقوم بإلغاء أي لمسات أو إيماءات تقوم بها على شاشتك.\n\nإذا كنت بحاجة للمساعدة لإيجاد الإحداثيات نقطة خد صورة لشاشتك ثم قم بالضغط على الصورة في المكان الذي تريد للإجراء بالضغط فيه.</string>
     <string name="dont_know_device_name">لا أعلم إسم الجهاز!</string>
-    <string name="permission_description_key_mapper_input_method">قم بإجراءات Key Mapper التي تتطلب لوحة مفاتيح</string>
     <string name="tap_actions_to_fix">إضغط على الإجراءات للإصلاح!</string>
     <string name="hold_down_until_trigger_is_dot_dot_dot">إضغط حتى يكون المحفز…</string>
     <string name="whats_new">ما الجديد</string>
