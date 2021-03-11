@@ -128,7 +128,7 @@ fun AppCompatImageView.tintType(tintType: TintType?) {
 fun TextInputLayout.errorWhenEmpty(enabled: Boolean) {
 
     //need to set it up when the view is created
-    if (editText.text.isNullOrBlank()) {
+    if (editText?.text.isNullOrBlank()) {
         error = if (enabled) {
             str(R.string.error_cant_be_empty)
         } else {
@@ -136,7 +136,7 @@ fun TextInputLayout.errorWhenEmpty(enabled: Boolean) {
         }
     }
 
-    editText.addTextChangedListener {
+    editText?.addTextChangedListener {
         error = if (it.isNullOrBlank() && enabled) {
             str(R.string.error_cant_be_empty)
         } else {
