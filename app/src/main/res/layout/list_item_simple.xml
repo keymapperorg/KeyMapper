@@ -89,7 +89,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@{secondaryText}"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                 android:textColor="?attr/colorOnSurface"
                 android:visibility='@{isSecondaryTextAnError == false ? View.VISIBLE : View.GONE}'
                 tools:text="Here is some secondary text. Let's make it really long."
@@ -99,7 +99,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@{secondaryText}"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                 android:textColor="?attr/colorError"
                 android:visibility='@{isSecondaryTextAnError == true ? View.VISIBLE : View.GONE}'
                 tools:text="Here is some secondary text. Let's make it really long."
