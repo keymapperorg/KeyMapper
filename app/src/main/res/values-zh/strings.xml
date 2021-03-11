@@ -329,7 +329,6 @@
     <string name="summary_pref_double_press_delay">检测到按钮双击需要多快。默认值为 300ms。可被按键映射选项覆盖。</string>
     <string name="summary_pref_vibration_duration">如果按键映射启用了震动，将震动多长时间。默认值为 200ms。可被按键映射选项覆盖。</string>
     <string name="title_pref_vibration_duration">默认振动持续时间 (ms)</string>
-    <string name="summary_pref_repeat_delay">按键映射需要按住多长时间才能开始重复动作。默认值为 400ms。可被按键映射选项覆盖。</string>
     <string name="title_pref_repeat_delay">默认延迟到重复 (ms)</string>
     <string name="summary_pref_repeat_rate">每次重复动作之间的延迟。默认值为 50ms。可被按键映射选项覆盖。</string>
     <string name="title_pref_repeat_rate">默认重复之间的延迟 (ms)</string>
