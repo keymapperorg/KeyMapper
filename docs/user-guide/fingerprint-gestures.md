@@ -26,6 +26,8 @@ Here you can set actions for the 4 directional gestures. Tapping any one of them
 
 After choosing an action (or actions) you can press the save :fontawesome-solid-save: icon in the bottom right to save the mapping.
 
+Make sure to save :fontawesome-solid-save: your fingerprint gesture map after applying these changes.
+
 ## Customising actions
 
 If you would like to customise how the actions are performed you can tap the 3 dot menu :fontawesome-solid-ellipsis-v: to the right of an action.
@@ -66,10 +68,4 @@ On this screen you can choose from the following options:
 
 ## Adding constraints
 
-You can add special constraints to your gestures maps in order to customise when they are allowed to run.
-
-To add a constraint fron the 'Constraints and more' tab, tap 'Add constraint'.
-
-You can view the list of constraints to choose from [here](constraints.md).
-
-Make sure to save :fontawesome-solid-save: your gesture map after applying these changes.
+--8<-- "configuring-constraints.md"

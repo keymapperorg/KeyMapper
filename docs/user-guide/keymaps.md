@@ -1,4 +1,6 @@
- Refer to the [Quick Start Guide](../quick-start.md) for help with creating key maps. This page gives more detail about every option.
+Refer to the [Quick Start Guide](../quick-start.md) for help with creating key maps. This page gives more detail about every option.
+
+Make sure to save :fontawesome-solid-save: your key map after applying these changes.
 
 ## Trigger
 
@@ -170,4 +172,6 @@ This behaves similarly to the on-screen message option above.
 
 --8<-- "trigger-options/sequence-trigger-timeout.md"
 
----
+## Adding constraints
+
+--8<-- "configuring-constraints.md"
