@@ -435,7 +435,7 @@
     <string name="summary_pref_vibration_duration">How long to vibrate if vibrating is enabled for a key map. Default is 200ms. Can be overridden in a key map\'s options.</string>
     <string name="title_pref_vibration_duration">Default vibrate duration (ms)</string>
 
-    <string name="summary_pref_repeat_delay">How long a key map needs to be held down for the action to start repeating. Default is 400ms. Can be overridden in a key map\'s options.</string>
+    <string name="summary_pref_repeat_delay">How long the trigger needs to be held down for the action to start repeating. Default is 400ms. Can be overridden in a key map\'s options.</string>
     <string name="title_pref_repeat_delay">Default delay until repeat (ms)</string>
 
     <string name="summary_pref_repeat_rate">The delay between every time an action is repeated. Default is 50ms. Can be overridden in a key map\'s options.</string>
