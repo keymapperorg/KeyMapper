@@ -66,7 +66,7 @@
     <string name="action_title_intent_start_activity">Начать Activity: %s</string>
     <string name="action_title_intent_start_service">Запуск службы: %s</string>
     <string name="action_title_intent_send_broadcast">Отправить Broadcast: %s</string>
-    <string name="clipboard_label_keymap_uid">Связь кнопки UUID</string>
+    <string name="clipboard_label_keymap_uid">UUID мэппинга</string>
     <string name="check_box_key_event_option_use_shell">Использовать оболочку (только ROOT)</string>
     <!--  Action descriptions  -->
     <string name="description_open_app">Открыть %s</string>
@@ -144,8 +144,8 @@
     <string name="toast_screenshot_taken">Снимок экрана сделан</string>
     <string name="toast_io_exception_shrug">Исключение ввода-вывода ¯\\_(ツ)_/¯</string>
     <string name="toast_incorrect_screenshot_resolution">Разрешение скриншота не соответствует разрешению этого устройства!</string>
-    <string name="toast_copied_keymap_uid_to_clipboard">UUID карта клавиши скопирована в буфер обмена</string>
-    <string name="toast_triggered_keymap">Сработало событие переназначения</string>
+    <string name="toast_copied_keymap_uid_to_clipboard">UUID мэппинга скопирован в буфер обмена</string>
+    <string name="toast_triggered_keymap">Сработал мэппинг</string>
     <!--  Toasts  -->
     <!-- Extra labels -->
     <string name="extra_label_sequence_trigger_timeout">Таймаут последовательности события (мс)</string>
@@ -326,6 +326,7 @@
     <string name="summary_pref_double_press_delay">Как быстро клавишу надо нажать второй раз чтобы сработало определение \"Двойное нажатие\". По умолчанию - 300 мс. Может быть переопределено в настройках конкретного события.</string>
     <string name="summary_pref_vibration_duration">Как долго вибрировать если включена функция вибрации. По умолчанию - 200 мс. Может быть переопределено в настройках конкретного события.</string>
     <string name="title_pref_vibration_duration">Длительность вибрации по умолчанию (мс)</string>
+    <string name="summary_pref_repeat_delay">Как долго клавиша должна быть нажата до того как событие начнет повторяться. По умолчанию 400 мс. Может быть переопределено в свойствах мэппинга.</string>
     <string name="title_pref_repeat_delay">По умолчанию задержка до повтора (мс)</string>
     <string name="title_pref_repeat_rate">Задержка между повторами (мс)</string>
     <string name="title_pref_sequence_trigger_timeout">Таймаут по умолчанию для события \"последовательность\" (мс)</string>
@@ -333,7 +334,7 @@
     <string name="title_pref_force_vibrate">Принудительно вибрировать</string>
     <string name="title_pref_show_ime_picker_notification">Уведомление выбора клавиатуры</string>
     <string name="summary_pref_show_ime_picker_notification">Показывать постоянное уведомление, позволяющее выбрать клавиатуру.</string>
-    <string name="title_pref_automatic_backup_location">Автоматическая резервная копия всех переназначений в указанном месте</string>
+    <string name="title_pref_automatic_backup_location">Автоматическая резервная копия всех мэппингов в указанном месте</string>
     <string name="summary_pref_automatic_backup_location_disabled">Местоположение не выбрано.</string>
     <string name="title_pref_bluetooth_devices">Выберите устройства Bluetooth…</string>
     <string name="title_pref_auto_show_ime_picker">Автоматически показывать выбор клавиатуры</string>
@@ -402,7 +403,7 @@
     <string name="showcase_accessibility_service_title_enabled">Служба спец.возможностей включена :)</string>
     <string name="showcase_accessibility_service_description_enabled">Порядок.</string>
     <string name="showcase_accessibility_service_title_disabled">Включите службу спец.возможностей</string>
-    <string name="showcase_accessibility_service_description_disabled">Ваши переназначения будут работать только если включена служба спец.возможностей. Ее включение также требуется для записи событий.</string>
+    <string name="showcase_accessibility_service_description_disabled">Ваши мэппинги будут работать только если включена служба спец.возможностей. Ее включение также требуется для записи событий.</string>
     <string name="showcase_record_trigger_title">Служба спец.возможностей отключена</string>
     <string name="showcase_record_trigger_description">Запись события возможна только при включенной службе спец.возможностей.</string>
     <string name="showcase_note_from_the_developer_title">Примечание от разработчика</string>
