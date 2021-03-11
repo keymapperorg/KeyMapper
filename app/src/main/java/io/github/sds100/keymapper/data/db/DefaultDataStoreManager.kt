@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.data.db
 
 import android.content.Context
 import androidx.datastore.preferences.SharedPreferencesMigration
-import androidx.datastore.preferences.createDataStore
+import androidx.datastore.preferences.preferencesDataStore
 import io.github.sds100.keymapper.Constants
 
 /**
@@ -22,8 +22,15 @@ class DefaultDataStoreManager(context: Context) : IDataStoreManager {
         DEFAULT_SHARED_PREFS_NAME
     )
 
-    override val fingerprintGestureDataStore = ctx.createDataStore("fingerprint_gestures")
-    override val globalPreferenceDataStore = ctx.createDataStore(
+    private val Context.fingerprintGestureDataStore by preferencesDataStore("fingerprint_gestures")
+    override val fingerprintGestureDataStore
+        get() = ctx.fingerprintGestureDataStore
+
+    private val Context.globalPreferenceDataStore by preferencesDataStore(
         name = "preferences",
-        migrations = listOf(sharedPreferencesMigration))
+        migrations = listOf(sharedPreferencesMigration)
+    )
+
+    override val globalPreferenceDataStore
+        get() = ctx.globalPreferenceDataStore
 }

@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.util
 
-import androidx.datastore.preferences.core.preferencesKey
-import androidx.datastore.preferences.core.preferencesSetKey
+import androidx.datastore.preferences.core.*
 import androidx.preference.PreferenceDataStore
 import io.github.sds100.keymapper.data.IGlobalPreferences
 import kotlinx.coroutines.runBlocking
@@ -23,32 +22,54 @@ class SharedPrefsDataStoreWrapper(
     override fun putInt(key: String, value: Int) = setFromSharedPrefs(key, value)
 
     override fun getStringSet(key: String, defValues: MutableSet<String>?) =
-        getSetFromSharedPrefs(key, defValues)
+        getStringSetFromSharedPrefs(key, defValues)
 
     override fun putStringSet(key: String, defValues: MutableSet<String>?) =
-        setSetFromSharedPrefs(key, defValues)
+        setStringSetFromSharedPrefs(key, defValues)
 
     private inline fun <reified T> getFromSharedPrefs(key: String, default: T): T {
         return runBlocking {
-            globalPreferences.get(preferencesKey(key)) ?: default
+            when (default) {
+                is String? -> globalPreferences.get(stringPreferencesKey(key)) ?: default
+                is Boolean? -> globalPreferences.get(booleanPreferencesKey(key)) ?: default
+                is Int? -> globalPreferences.get(intPreferencesKey(key)) ?: default
+                is Long? -> globalPreferences.get(longPreferencesKey(key)) ?: default
+                is Float? -> globalPreferences.get(floatPreferencesKey(key)) ?: default
+                is Double? -> globalPreferences.get(doublePreferencesKey(key)) ?: default
+                else -> {
+                    val type = T::class.java.name
+                    throw IllegalArgumentException("Don't know how to set a value in shared preferences for this type $type")
+                }
+            } as T
         }
     }
 
     private inline fun <reified T : Any> setFromSharedPrefs(key: String?, value: T?) {
         key ?: return
 
-        globalPreferences.set(preferencesKey(key), value)
-    }
-
-    private inline fun <reified T : Any> getSetFromSharedPrefs(key: String, default: Set<T>?): Set<T> {
-        return runBlocking {
-            globalPreferences.get(preferencesSetKey(key)) ?: emptySet()
+        when (value) {
+            is String -> globalPreferences.set(stringPreferencesKey(key), value)
+            is Boolean -> globalPreferences.set(booleanPreferencesKey(key), value)
+            is Int -> globalPreferences.set(intPreferencesKey(key), value)
+            is Long -> globalPreferences.set(longPreferencesKey(key), value)
+            is Float -> globalPreferences.set(floatPreferencesKey(key), value)
+            is Double -> globalPreferences.set(doublePreferencesKey(key), value)
+            else -> {
+                val type = value?.let { it::class.java.name }
+                throw IllegalArgumentException("Don't know how to set a value in shared preferences for this type $type")
+            }
         }
     }
 
-    private inline fun <reified T : Any> setSetFromSharedPrefs(key: String?, value: Set<T>?) {
+    private fun getStringSetFromSharedPrefs(key: String, default: Set<String>?): Set<String> {
+        return runBlocking {
+            globalPreferences.get(stringSetPreferencesKey(key)) ?: emptySet()
+        }
+    }
+
+    private fun setStringSetFromSharedPrefs(key: String?, value: Set<String>?) {
         key ?: return
 
-        globalPreferences.set(preferencesSetKey(key), value)
+        globalPreferences.set(stringSetPreferencesKey(key), value)
     }
 }
