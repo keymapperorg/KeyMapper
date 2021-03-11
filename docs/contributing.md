@@ -21,7 +21,7 @@ It is important to use consistent language within the app's code and documentati
 
 No title case unless it is the title of a webpage, section heading. No title case in the string resources in the source code at all.
 
-Here are words and phrases that can be spelt or capitalised in multiple ways.
+Here are words and phrases that have been spelt inconsistently by the developer and everyone should follow these guidelines. 
 
 | Terminology           | Correct 😍                                                    | Incorrect 👿                        |
 | --------------- | ------------------------------------------------------------ | ---------------------------------- |

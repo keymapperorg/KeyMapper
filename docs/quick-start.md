@@ -1,5 +1,5 @@
 This page aims to give users an introduction to the Key Mapper interface and a demonstration on how to perform typical tasks with the app.
-For specific troubleshooting, [consult the FAQ.](../faq)
+For specific troubleshooting, [consult the FAQ.](faq.md)
 
 --8<-- "screenshot-version.md"
 
@@ -116,13 +116,13 @@ You can choose from four different settings. Turning on "Do not override default
 
 One trigger can have three different click types. Choose from short press, long press and double press. [Read more.](#)
 
-### Action settings
+### Customising actions
 
 Next, tap the 3 stacked dots :fontawesome-solid-ellipsis-v: to the right of the action's name to bring up the following menu.
 
 ![](images/hg-action-settings.png) ![](images/hg-action-settings-light.png)
 
-Here you can customise a lot of the operation of your key map, including timing, multipliers and debug messages.
+Here you can customise a lot of the operation of your key map, including timing and multipliers.
 
 ___
 
@@ -145,68 +145,22 @@ ___
 --8<-- "action-options/delay-until-repeat.md"
 ___
 
-<sup><sub>&nbsp;Stop repeating when trigger is...</sup></sub><br />
-&nbsp;&nbsp;&nbsp;:radiobox-marked:{: .accent-light } <sup><sub>Released</sup></sub>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:radiobox-marked:{: .accent-light } <sup><sub>Pressed again</sup></sub>
-
-This option allows you to choose from 2 simple behaviours. If you choose 'Released', you will need to hold down the trigger key(s) in order to have the key map execute. If you let go of the key(s), the key map will stop.
-
-If you choose 'Pressed again', pressing your trigger key(s) once will be sufficient to start your repeating key map. To stop the key map, you will need to press the trigger key(s) a second time.
-
-___
+--8<-- "action-options/repeat-behaviour.md"
 
 #### Hold down actions
 
-:fontawesome-solid-check-square:{: .accent-light } &nbsp; Hold down
-
-!!! info "Key Mapper 2.1.0+"
-
-This setting provides the ability to simulate holding down a key. With this turned on (and repeat turned off), the default behaviour is that holding down your trigger will translate to holding down the action, for as long as you hold down the trigger.
+--8<-- "action-options/hold-down.md"
 ___
 
-<sup><sub>&nbsp;Hold down until trigger is...</sup></sub><br />
-&nbsp;&nbsp;&nbsp;:radiobox-marked:{: .accent-light } <sup><sub>Released</sup></sub>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:radiobox-marked:{: .accent-light } <sup><sub>Pressed again</sup></sub>
-
-!!! info "Key Mapper 2.2.0+"
-
-This setting allows you to choose from two behaviours. If 'Released' is selected, holding down your trigger key(s) will translate to holding down the action, for as long as you hold down the trigger key(s).
-
-If you choose 'Pressed again', pressing your trigger key(s) once will be sufficient to start holding down the action. To stop the key map, you will need to press the trigger key(s) a second time.
-
-___
+--8<-- "action-options/hold-down-behaviour.md"
 
 #### Using 'Hold down' and 'Repeat' together
 
-!!! info "Key Mapper 2.2.0+"
-
-You can use turn on both of these settings to unlock an additional setting. A repeating hold down action behaves like a normal 'Repeat' action in that the action repeats itself with a given frequency. It also behaves like a 'Hold down' action in that each individual action will be held for a certain amount of time in each cycle.
-
-&nbsp;Hold down duration (ms)<br /> 
-![](images/ui-slider-default-light-450px.png)
-
-This allows you to set how long the action is held down for before repeating.
+--8<-- "action-options/using-hold-down-and-repeat-together.md"
 
 ## Special options
 
-For extra key map customisation, tap the 'Constraints and more' tab at the top of the screen when editing or creating a key map.
-
-![](images/hg-keymap-4.png) ![](images/hg-keymap-4-light.png)
-
-:fontawesome-solid-check-square:{: .accent-light } &nbsp; Trigger from other apps
-
-For information about "trigger from other apps" go to [this page.](../user-guide/trigger/#trigger-from-other-apps-230)
-___
-
---8<-- "trigger-options/on-screen-message.md"
-
-You can have your device vibrate instead of an on-screen message if you want. This option is below.
-
----
---8<-- "trigger-options/vibrate.md"
-
-This behaves similarly to the on-screen message option above.
-
----
---8<-- "trigger-options/trigger-when-screen-off.md"
+You can see explanations of more options [here](../user-guide/keymaps/#special-options).
 
 ## Adding constraints
 

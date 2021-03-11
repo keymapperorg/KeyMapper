@@ -58,6 +58,7 @@ markdown_extensions:
           - docs/overrides/.icons
   - toc:
       permalink: true
+      toc_depth: 4
 
 plugins:
   - redirects:
@@ -69,11 +70,11 @@ plugins:
         'redirects/fingerprint-map-options.md': 'https://sds100.github.io/KeyMapper/user-guide/fingerprint-gestures'
         'redirects/constraints.md': 'https://sds100.github.io/KeyMapper/user-guide/constraints'
         'redirects/action.md': 'https://sds100.github.io/KeyMapper/user-guide/actions'
-        'redirects/trigger.md': 'https://sds100.github.io/KeyMapper/user-guide/keymaps'
-        'redirects/trigger-options.md': 'https://sds100.github.io/KeyMapper/user-guide/keymaps/#options'
-        'redirects/keymap-action-options.md': 'https://sds100.github.io/KeyMapper/quick-start/#action-settings'
+        'redirects/trigger.md': 'https://sds100.github.io/KeyMapper/user-guide/keymaps/#trigger'
+        'redirects/trigger-options.md': 'https://sds100.github.io/KeyMapper/user-guide/keymaps/#special-options'
+        'redirects/keymap-action-options.md': 'https://sds100.github.io/KeyMapper/user-guide/keymaps/#customising-actions'
         'redirects/fingerprint-action-options.md': 'https://sds100.github.io/KeyMapper/user-guide/fingerprint-gestures/#customising-fingerprint-gesture-maps'
-        'redirects/trigger-key-options.md': 'https://sds100.github.io/KeyMapper/user-guide/keymaps'
+        'redirects/trigger-key-options.md': 'https://sds100.github.io/KeyMapper/user-guide/keymaps/#key-options'
   - search:
       lang:
         - en
