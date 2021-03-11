@@ -1,6 +1,8 @@
 package io.github.sds100.keymapper.util
 
+import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.drawable.Drawable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.*
@@ -13,6 +15,7 @@ import androidx.databinding.BindingAdapter
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.shape.ShapeAppearanceModel
 import com.google.android.material.slider.Slider
 import com.google.android.material.textfield.TextInputLayout
 import io.github.sds100.keymapper.R
@@ -20,6 +23,7 @@ import io.github.sds100.keymapper.data.model.*
 import io.github.sds100.keymapper.ui.callback.ErrorClickCallback
 import io.github.sds100.keymapper.ui.view.SquareImageButton
 import io.github.sds100.keymapper.ui.view.StatusLayout
+import io.github.sds100.keymapper.util.result.Failure
 import io.github.sds100.keymapper.util.result.getBriefMessage
 import io.noties.markwon.Markwon
 import kotlinx.android.synthetic.main.list_item_status.view.*
@@ -159,36 +163,32 @@ fun CompoundButton.onCheckedChange(onCheckedChangeListener: CompoundButton.OnChe
 @BindingAdapter("app:actions", "app:errorClickCallback", requireAll = true)
 fun ChipGroup.bindActions(actions: List<ActionChipModel>, callback: ErrorClickCallback) {
 
-    actions.forEach {
-        Chip(context).apply {
-            text = it.description
-            chipIcon = it.icon
-            isCloseIconVisible = it.hasError
-
-            if (it.type == ActionType.SYSTEM_ACTION) {
-                chipIconTint = styledColorSL(R.attr.colorOnSurface)
+    actions.forEach { action ->
+        if (action.hasError) {
+            context.errorChipButton(action.error!!, callback).apply {
+                addView(this)
             }
-
-            if (it.description == null && it.hasError) {
-                text = it.error?.getBriefMessage(context)
-            }
-
-            if (it.hasError) {
-                isClickable = true
-                setOnClickListener { _ ->
-                    callback.onErrorClick(it.error!!)
-                }
-                setChipBackgroundColorResource(R.color.cardTintRed)
+        } else {
+            val iconTint = if (action.type == ActionType.SYSTEM_ACTION) {
+                styledColorSL(R.attr.colorOnSurface)
             } else {
-                isClickable = false
+                null
             }
 
-            addView(this)
+            context.normalChipButton(action.description, action.icon, iconTint).apply {
+                addView(this)
+            }
         }
     }
 }
 
-@BindingAdapter("app:actions", "app:constraints", "app:constraintMode", "app:errorClickCallback", requireAll = true)
+@BindingAdapter(
+    "app:actions",
+    "app:constraints",
+    "app:constraintMode",
+    "app:errorClickCallback",
+    requireAll = true
+)
 fun ChipGroup.bindActionsAndConstraints(
     actions: List<ActionChipModel>,
     constraints: List<ConstraintModel>,
@@ -203,6 +203,11 @@ fun ChipGroup.bindActionsAndConstraints(
         Chip(context).apply {
             text = str(R.string.chip_while)
 
+            isClickable = false
+            isFocusable = false
+            isCheckable = false
+            isEnabled = false
+
             chipStrokeWidth = 0f
 
             addView(this)
@@ -212,8 +217,19 @@ fun ChipGroup.bindActionsAndConstraints(
     bindConstraints(constraints, constraintMode, callback)
 }
 
-@BindingAdapter("app:isKeymapEnabled", "app:noActions", "app:noTrigger", "app:actionsHaveErrors", requireAll = false)
-fun TextView.setKeymapExtraInfo(isKeymapEnabled: Boolean = false, noActions: Boolean = false, noTrigger: Boolean = false, actionsHaveErrors: Boolean = false) {
+@BindingAdapter(
+    "app:isKeymapEnabled",
+    "app:noActions",
+    "app:noTrigger",
+    "app:actionsHaveErrors",
+    requireAll = false
+)
+fun TextView.setKeymapExtraInfo(
+    isKeymapEnabled: Boolean = false,
+    noActions: Boolean = false,
+    noTrigger: Boolean = false,
+    actionsHaveErrors: Boolean = false
+) {
     text = buildString {
         val interpunct = str(R.string.interpunct)
 
@@ -281,7 +297,12 @@ fun ChipGroup.bindTriggerModel(triggerChipModel: TriggerChipModel) {
     }
 }
 
-@BindingAdapter("app:constraints", "app:constraintMode", "app:errorClickCallback", requireAll = true)
+@BindingAdapter(
+    "app:constraints",
+    "app:constraintMode",
+    "app:errorClickCallback",
+    requireAll = true
+)
 fun ChipGroup.bindConstraints(
     constraintList: List<ConstraintModel>,
     constraintMode: Int,
@@ -306,27 +327,20 @@ fun ChipGroup.bindConstraints(
             }
         }
 
-        Chip(context).apply {
-            text = model.description
-            chipIcon = model.icon
-            isCloseIconVisible = model.hasError
-
-            if (model.iconTintOnSurface) {
-                chipIconTint = styledColorSL(R.attr.colorOnSurface)
+        if (model.hasError) {
+            context.errorChipButton(model.failure!!, callback).apply {
+                addView(this)
+            }
+        } else {
+            val iconTint = if (model.iconTintOnSurface) {
+                styledColorSL(R.attr.colorOnSurface)
+            } else {
+                null
             }
 
-            if (model.description == null && model.hasError) {
-                text = model.errorMessage
+            context.normalChipButton(model.description, model.icon, iconTint).apply {
+                addView(this)
             }
-
-            if (model.hasError) {
-                isClickable = true
-                setOnClickListener {
-                    callback.onErrorClick(model.failure!!)
-                }
-            }
-
-            addView(this)
         }
     }
 }
@@ -382,3 +396,52 @@ fun SquareImageButton.openUrlOnClick(url: Int?) {
         UrlUtils.openUrl(context, context.str(url))
     }
 }
+
+private fun Context.normalChipButton(
+    text: String?,
+    icon: Drawable?,
+    iconTint: ColorStateList?
+) = baseChipButton().apply {
+    isEnabled = false
+
+    this.text = text
+    this.icon = icon
+    this.iconTint = iconTint
+    setBackgroundColor(styledColor(R.attr.colorSurface))
+}
+
+private fun Context.errorChipButton(
+    error: Failure,
+    callback: ErrorClickCallback
+) = baseChipButton().apply {
+    isEnabled = true
+    icon = context.safeVectorDrawable(R.drawable.ic_outline_error_outline_64)
+    setBackgroundColor(color(R.color.cardTintRed))
+    iconTint = styledColorSL(R.attr.colorError)
+
+    text = error.getBriefMessage(context)
+    setOnClickListener { callback.onErrorClick(error) }
+}
+
+private fun Context.baseChipButton() =
+    MaterialButton(this, null, R.attr.materialButtonOutlinedStyle).apply {
+        id = View.generateViewId()
+        setTextColor(styledColorSL(R.attr.colorOnSurface))
+
+        shapeAppearanceModel = ShapeAppearanceModel.builder(
+            context,
+            R.style.ShapeAppearanceOverlay_MaterialComponents_Chip,
+            R.style.ShapeAppearanceOverlay_MaterialComponents_Chip
+        ).build()
+
+        TextViewCompat.setTextAppearance(this, R.style.TextAppearance_MaterialComponents_Body2)
+        isAllCaps = false
+
+        isClickable = false
+        isCheckable = false
+        isFocusable = false
+
+        setTextColor(styledColor(R.attr.colorOnSurface))
+
+        iconSize = resources.getDimensionPixelSize(R.dimen.button_chip_icon_size)
+    }
