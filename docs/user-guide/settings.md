@@ -20,19 +20,20 @@
 Steps to work around this bug...
 
 1. Enable the Key Mapper accessibility service.
-2. Connect the device that you want to fix to your Android device.
-3. 
+2. 
  --8<-- "go-to-settings.md"
 
-4. Scroll down to the 'Workaround for Android 11 bug that sets the device id for input events to -1' section.
-5. Tap 'Choose devices' and select the devices that should be fixed.
-6. It is highly recommended to install the [Key Mapper GUI Keyboard](https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin) so that you can have an on-screen keyboard while using this feature. The Basic Input Method built-in to Key Mapper doesn't show anything on-screen.
-7. Tap 'Enable the Key Mapper keyboard' and turn on the Key Mapper GUI Keyboard or the Key Mapper Basic Input Method.
-8. Tap 'Use the Key Mapper keyboard' and select the keyboard that you just enabled. There are multiple ways to show this again.
+3. Scroll down to the 'Workaround for Android 11 bug that sets the device id for input events to -1' section.
+4. Tap 'Choose devices' and select the devices that should be fixed.
+5. It is highly recommended to install the [Key Mapper GUI Keyboard](https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin) so that you can have an on-screen keyboard while using this feature. The Basic Input Method built-in to Key Mapper doesn't show anything on-screen.
+6. Tap 'Enable the Key Mapper keyboard' and turn on the Key Mapper GUI Keyboard or the Key Mapper Basic Input Method.
+7. Tap 'Use the Key Mapper keyboard' and select the keyboard that you just enabled. There are multiple ways to show this again.
 
     - Tap the keyboard button at the bottom of your display when you are typing something. Not all devices have this and some devices have this feature hidden behind a setting somewhere.
     - Tap the notification that allows you to change the keyboard when you are typing something. Not all devices have this.
     - Open Key Mapper and tap "show input method picker" in the menu :material-menu:.
+
+8. Connect the device that you want to fix to your Android device.
 
 9. Your keyboard layout should be fixed! 🎉 If you're having issues checkout the FAQ below or [join](http://www.keymapper.club) the Discord server.
 
