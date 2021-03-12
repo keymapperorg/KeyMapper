@@ -37,7 +37,11 @@ class SettingsFragment : Fragment() {
     val binding: FragmentSettingsBinding
         get() = _binding!!
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         FragmentSettingsBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             _binding = this
@@ -81,20 +85,25 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
         InjectorUtils.provideBackupRestoreViewModel(requireContext())
     }
 
-    private val chooseAutomaticBackupLocationLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument()) {
-        it ?: return@registerForActivityResult
+    private val chooseAutomaticBackupLocationLauncher =
+        registerForActivityResult(ActivityResultContracts.CreateDocument()) {
+            it ?: return@registerForActivityResult
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            globalPreferences.set(Keys.automaticBackupLocation, it.toString())
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                globalPreferences.set(Keys.automaticBackupLocation, it.toString())
 
-            val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION
 
-            requireContext().contentResolver.takePersistableUriPermission(it, takeFlags)
+                requireContext().contentResolver.takePersistableUriPermission(it, takeFlags)
 
-            backupRestoreViewModel.backupAll(requireContext().contentResolver.openOutputStream(it))
+                backupRestoreViewModel.backupAll(
+                    requireContext().contentResolver.openOutputStream(
+                        it
+                    )
+                )
+            }
         }
-    }
 
     private val viewModel by viewModels<SettingsViewModel> {
         InjectorUtils.provideSettingsViewModel(requireContext())
@@ -150,6 +159,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             entries = strArray(R.array.pref_dark_theme_entries)
             entryValues = arrayOf("0", "1", "2")
             summaryProvider = ListPreference.SimpleSummaryProvider.getInstance()
+            isSingleLineTitle = false
 
             addPreference(this)
         }
@@ -161,6 +171,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                 setDefaultValue("")
 
                 setTitle(R.string.title_pref_automatic_backup_location)
+                isSingleLineTitle = false
 
                 viewLifecycleScope.launchWhenResumed {
                     globalPreferences.automaticBackupLocation.collectLatest { backupLocation ->
@@ -207,6 +218,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
             setTitle(R.string.title_pref_hide_home_screen_alerts)
             setSummary(R.string.summary_pref_hide_home_screen_alerts)
+            isSingleLineTitle = false
 
             addPreference(this)
         }
@@ -218,6 +230,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
             setTitle(R.string.title_pref_force_vibrate)
             setSummary(R.string.summary_pref_force_vibrate)
+            isSingleLineTitle = false
 
             addPreference(this)
         }
@@ -230,6 +243,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
             setTitle(R.string.title_pref_show_device_descriptors)
             setSummary(R.string.summary_pref_show_device_descriptors)
+            isSingleLineTitle = false
 
             addPreference(this)
         }
@@ -242,6 +256,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
                 setTitle(R.string.title_pref_show_toggle_keymaps_notification)
                 setSummary(R.string.summary_pref_show_toggle_keymaps_notification)
+                isSingleLineTitle = false
 
                 setOnPreferenceClickListener {
                     NotificationUtils.openChannelSettings(
@@ -262,6 +277,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
                 setTitle(R.string.title_pref_show_toggle_keymaps_notification)
                 setSummary(R.string.summary_pref_show_toggle_keymaps_notification)
+                isSingleLineTitle = false
 
                 addPreference(this)
             }
@@ -286,6 +302,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
         Preference(requireContext()).apply {
             isSelectable = false
             setSummary(R.string.summary_pref_category_root)
+            isSingleLineTitle = false
 
             addPreference(this)
         }
@@ -295,9 +312,9 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             key = Keys.hasRootPermission.name
             setDefaultValue(false)
 
-            isSingleLineTitle = false
             setTitle(R.string.title_pref_root_permission)
             setSummary(R.string.summary_pref_root_permission)
+            isSingleLineTitle = false
 
             addPreference(this)
         }
@@ -308,7 +325,8 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                 globalPreferences.hasRootPermission.collectLatest {
                     findPreference<Preference>(Keys.showImePickerNotification.name)?.isEnabled = it
                     findPreference<Preference>(Keys.autoShowImePicker.name)?.isEnabled = it
-                    findPreference<Preference>(Keys.bluetoothDevicesThatShowImePicker.name)?.isEnabled = it
+                    findPreference<Preference>(Keys.bluetoothDevicesThatShowImePicker.name)?.isEnabled =
+                        it
                 }
             }
 
@@ -318,6 +336,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
                 setTitle(R.string.title_pref_show_ime_picker_notification)
                 setSummary(R.string.summary_pref_show_ime_picker_notification)
+                isSingleLineTitle = false
 
                 setOnPreferenceClickListener {
                     NotificationUtils.openChannelSettings(
@@ -337,6 +356,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
                 setTitle(R.string.title_pref_auto_show_ime_picker)
                 setSummary(R.string.summary_pref_auto_show_ime_picker)
+                isSingleLineTitle = false
 
                 addPreference(this)
             }
@@ -352,6 +372,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
         Preference(requireContext()).apply {
             isSelectable = false
             setSummary(R.string.summary_pref_category_write_secure_settings)
+            isSingleLineTitle = false
 
             addPreference(this)
         }
@@ -361,9 +382,9 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             key = Keys.autoChangeImeOnBtConnect.name
             setDefaultValue(false)
 
-            isSingleLineTitle = false
             setTitle(R.string.title_pref_auto_change_ime_on_connection)
             setSummary(R.string.summary_pref_auto_change_ime_on_connection)
+            isSingleLineTitle = false
             isEnabled = PermissionUtils.haveWriteSecureSettingsPermission(requireContext())
 
             addPreference(this)
@@ -379,6 +400,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             isSingleLineTitle = false
             setTitle(R.string.title_pref_toggle_keyboard_on_toggle_keymaps)
             setSummary(R.string.summary_pref_toggle_keyboard_on_toggle_keymaps)
+            isSingleLineTitle = false
             isEnabled = PermissionUtils.haveWriteSecureSettingsPermission(requireContext())
 
             addPreference(this)
@@ -392,6 +414,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
                 setTitle(R.string.title_pref_show_toggle_keyboard_notification)
                 setSummary(R.string.summary_pref_show_toggle_keyboard_notification)
+                isSingleLineTitle = false
 
                 setOnPreferenceClickListener {
                     NotificationUtils.openChannelSettings(
@@ -412,6 +435,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
                 setTitle(R.string.title_pref_show_toggle_keyboard_notification)
                 setSummary(R.string.summary_pref_show_toggle_keyboard_notification)
+                isSingleLineTitle = false
 
                 addPreference(this)
             }
@@ -431,6 +455,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
                 setTitle(R.string.title_pref_show_ime_picker_notification)
                 setSummary(R.string.summary_pref_show_ime_picker_notification)
+                isSingleLineTitle = false
 
                 setOnPreferenceClickListener {
                     NotificationUtils.openChannelSettings(
@@ -450,6 +475,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
                 setTitle(R.string.title_pref_show_ime_picker_notification)
                 setSummary(R.string.summary_pref_show_ime_picker_notification)
+                isSingleLineTitle = false
 
                 addPreference(this)
             }
@@ -462,6 +488,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
             setTitle(R.string.title_pref_auto_show_ime_picker)
             setSummary(R.string.summary_pref_auto_show_ime_picker)
+            isSingleLineTitle = false
 
             addPreference(this)
         }
@@ -480,6 +507,8 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
             setTitle(R.string.title_pref_long_press_delay)
             setSummary(R.string.summary_pref_long_press_delay)
+            isSingleLineTitle = false
+
             min = int(R.integer.long_press_delay_min)
             max = int(R.integer.long_press_delay_max)
             showSeekBarValue = true
@@ -494,6 +523,8 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
             setTitle(R.string.title_pref_double_press_delay)
             setSummary(R.string.summary_pref_double_press_delay)
+            isSingleLineTitle = false
+
             min = int(R.integer.double_press_delay_min)
             max = int(R.integer.double_press_delay_max)
             showSeekBarValue = true
@@ -508,6 +539,8 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
             setTitle(R.string.title_pref_vibration_duration)
             setSummary(R.string.summary_pref_vibration_duration)
+            isSingleLineTitle = false
+
             min = int(R.integer.vibrate_duration_min)
             max = int(R.integer.vibrate_duration_max)
             showSeekBarValue = true
@@ -522,6 +555,8 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
             setTitle(R.string.title_pref_repeat_delay)
             setSummary(R.string.summary_pref_repeat_delay)
+            isSingleLineTitle = false
+
             min = int(R.integer.repeat_delay_min)
             max = int(R.integer.repeat_delay_max)
             showSeekBarValue = true
@@ -536,6 +571,8 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
             setTitle(R.string.title_pref_repeat_rate)
             setSummary(R.string.summary_pref_repeat_rate)
+            isSingleLineTitle = false
+
             min = int(R.integer.repeat_rate_min)
             max = int(R.integer.repeat_rate_max)
             showSeekBarValue = true
@@ -550,6 +587,8 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
             setTitle(R.string.title_pref_sequence_trigger_timeout)
             setSummary(R.string.summary_pref_sequence_trigger_timeout)
+            isSingleLineTitle = false
+
             min = int(R.integer.sequence_trigger_timeout_min)
             max = int(R.integer.sequence_trigger_timeout_max)
             showSeekBarValue = true
@@ -563,6 +602,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             this.key = key
 
             setTitle(R.string.title_pref_bluetooth_devices)
+            isSingleLineTitle = false
 
             setOnPreferenceClickListener {
                 populateBluetoothDevicesPreferences()
@@ -598,6 +638,5 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
             addPreference(this)
         }
-
     }
 }
