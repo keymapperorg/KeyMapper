@@ -552,6 +552,7 @@
     <string name="error_file_not_cached">Файл не кэширован! Подключитесь к интернету, чтобы загрузить его.</string>
     <string name="error_this_is_unsupported">Это не поддерживается. :(</string>
     <string name="error_device_not_found">Устройство не найдено!</string>
+    <string name="error_no_keymaps">Нет мэппингов!</string>
     <string name="error_failed_to_pick_file">Не удалось найти файл</string>
     <string name="error_empty_json">Пустой файл JSON!</string>
     <string name="error_file_access_denied">Доступ к файлу запрещен! Удален?</string>
@@ -585,9 +586,14 @@
     <string name="action_toggle_mute">Включить/выключить звук</string>
     <string name="action_volume_unmute">Включить звук</string>
     <string name="action_volume_show_dialog">Показать диалог громкости</string>
+    <string name="action_increase_stream">Поток громче</string>
+    <string name="action_increase_stream_formatted">Громче поток %s</string>
+    <string name="action_decrease_stream">Тише поток</string>
+    <string name="action_decrease_stream_formatted">Тише поток %s</string>
     <string name="action_cycle_ringer_mode">Цикл режимов звонка (Обычный звонок, Вибрация, Без звука)</string>
     <string name="action_cycle_vibrate_ring">Цикл режимов звонка (Обычный звонок, Вибрация)</string>
     <string name="action_change_ringer_mode">Изменить режим звонка</string>
+    <string name="action_change_ringer_mode_formatted">Сменить режим звонка %s</string>
     <string name="action_toggle_dnd_mode">Переключить режим \"Не беспокоить\"</string>
     <string name="action_enable_dnd_mode">Включить режим \"Не беспокоить\"</string>
     <string name="action_disable_dnd_mode">Отключить режим \"Не беспокоить\"</string>
