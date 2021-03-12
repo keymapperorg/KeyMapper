@@ -1,7 +1,7 @@
 This page serves to answer frequently asked questions about Key Mapper, and help solve any problems you may be facing.
-See the [Quick Start Guide](../quick-start) for more general help with using Key Mapper.
+See the [Quick Start Guide](quick-start.md) for more general help with using Key Mapper.
 
-## "My Keyboard doesn't appear when using the app."
+## "My Kkyboard doesn't appear when using the app."
 
 Key Mapper Basic Input Method (the keyboard built-in to the app) has no GUI/buttons. You can install the [Key Mapper GUI Keyboard](https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin) to get a proper keyboard that can also perform Key Mapper actions.
 
