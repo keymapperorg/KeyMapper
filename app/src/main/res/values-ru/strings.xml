@@ -91,7 +91,7 @@
     <string name="header_fingerprint_gesture_down">Жест вниз</string>
     <string name="header_fingerprint_gesture_left">Жест влево</string>
     <string name="header_fingerprint_gesture_right">Жест вправо</string>
-    <string name="header_click_type">Тип нажатие</string>
+    <string name="header_click_type">Тип нажатия</string>
     <string name="header_intent_extras">Дополнения</string>
     <!--  Headers  -->
     <!--  Hints  -->
@@ -357,6 +357,7 @@
     <string name="title_pref_notification_settings">Настройка уведомлений</string>
     <string name="summary_pref_show_toggle_keyboard_notification">Переключение между клавиатурой Key Mapper и вашей клавиатурой по умолчанию при нажатии на уведомление.</string>
     <string name="title_pref_show_toggle_keyboard_notification">Уведомление для смены клавиатуры используемой Key Mapper</string>
+    <string name="title_pref_toggle_keyboard_on_toggle_keymaps">Смена клавиатуры при включении мэппинга</string>
     <string name="summary_pref_toggle_keyboard_on_toggle_keymaps">Автоматически выбирать клавиатуру Key Mapper когда снимаете приложение с паузы и выбирать вашу клавиатуру по умолчанию при установки приложения на паузу.</string>
     <string name="title_pref_hide_home_screen_alerts">Скрыть оповещения на главном экране</string>
     <string name="summary_pref_hide_home_screen_alerts">Скрыть оповещения в верхней части главного экрана.</string>
@@ -538,9 +539,8 @@
     <string name="error_accessibility_service_disabled">Служба спец.возможностей должна быть включена!</string>
     <string name="warning_need_write_secure_settings_permission">Для некоторых функций требуется разрешение WRITE_SECURE_SETTINGS.</string>
     <string name="fixed_need_write_secure_settings_permission">Предоставлено разрешение WRITE_SECURE_SETTINGS.</string>
-    <string name="error_ime_service_disabled">Ни одна из клавиатур Key Mapper не включена!</string>
-    <string name="error_ime_service_enabled">Клавиатура Key Mapper включена!</string>
-    <string name="error_critical_ime_service_disabled">Клавиатура Key Mapper должна быть включена и выбрана для некоторых ваших действий!</string>
+    <string name="error_ime_service_disabled">Не включена ни одна из клавиатур совместимых с Key Mapper!</string>
+    <string name="error_ime_service_enabled">Включена клавиатура совместимая с Key Mapper!</string>
     <string name="error_ime_not_found">Can\'t find the %s input method</string>
     <string name="error_no_enabled_imes">На этом устройстве нет включенных методов ввода!</string>
     <string name="error_the_app_wont_work">Мэппинги не будут работать! Что-то надо исправить!</string>
