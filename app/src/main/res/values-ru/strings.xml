@@ -55,6 +55,7 @@
     <string name="caption_action_type_phone_call">Введите номер телефона.</string>
     <string name="caption_action_type_url">Введите URL, который вы хотите открыть. http://, https:// или www. не требуется.</string>
     <string name="caption_no_paired_bt_devices">Не удалось найти сопряженные устройства. Включен ли Bluetooth?</string>
+    <string name="caption_create_keymap_shortcut">Свойство \"Событие из другого приложения\" будет включено для этого мэппинга (если не было включено до сих пор). Если позднее вы отключите это свойство, то ярлыки или Intent\'ы ссылающиеся на этот мэппинг перестанут работать.</string>
     <string name="switch_enabled">Включено</string>
     <string name="disabled">Отключено</string>
     <string name="reset">Сброс</string>
@@ -269,8 +270,11 @@
     <string name="dialog_message_bt_constraint_limitation">Android не разрешает приложениям получать список подключенных (не сопряженных) Bluetooth-устройств. Приложения могут определять только когда подключены и отключены сопряженные устройства. Таким образом, если ваше Bluetooth устройство уже подключено к вашему основному устройству при запуске службы спец.возможностей, вам придется перепривязать его, чтобы приложение поняло, что оно подключено.</string>
     <string name="dialog_message_change_location_or_disable">Изменить место для автоматического резервного копирования или отключить его?</string>
     <string name="dialog_message_screen_constraints_limitation">Ограничение на включенный или выключенный экран будет работать только в том случае, если вы включили \"Определять события когда экран выключен\" в настройках этого переназначения. Эта настройка имеется только для некоторых клавиш (например для громкости) и только если у вас есть Root права. Полный список поддерживаемых клавиш смотрите на странице справки.</string>
+    <string name="dialog_message_password_screen_lock_warning">Если у вас выбрана другая блокировка экрана, например PIN-код или узор, вам не стоит беспокоиться. Но если у вас блокировка по паролю, вы *НЕ* сможете разблокировать ваш телефон при использовании клавиатуры Key Mapper как основного метода ввода. Это связано с тем, что у этой клавиатуры нет графического интерфейса. Вы можете предоставить разрешение WRITE_SECURE_SETTINGS для Key Mapper и приложение будет отображать уведомление для переключения клавиатуры. Нажмите на вопросительный знак в нижней части этого экрана - там есть инструкция.</string>
     <string name="dialog_message_select_compatible_ime">Выберите метод ввода для действий, которые требуют его. Вы можете изменить это позже, нажав на кнопку \"Выбрать клавиатуру для действий\" в нижнем меню главного экрана.</string>
+    <string name="dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout">Вам необходимо переключить раскладку клавиатуры на \"Caps Lock для камеры\" в противном случае клавиша Caps Lock будет менять регистр букв, не более. Эту настройку можно найти в общих настройках вашего устройства -&gt; Языки и методы ввода -&gt; Физическая клавиатура -&gt; Нажать на соответствующую клавиатуру -&gt; Выбрать раскладку. Это переназначит клавишу Caps Lock на отправку KEYCODE_CAMERA, таким образом Key Mapper сможет правильно ее обработать.\n\nПОсле того как вы это сделаете нужно удалить событие \"Caps Lock\" и записать событие для клавиши Caps Lock снова. Если при записи будет отображено \"Камера\" вместо \"Caps Lock\" значит вы все проделали верно.</string>
     <string name="dialog_message_select_app_store_gui_keyboard">Где вы хотите скачать новую клавиатуру с GUI?</string>
+    <string name="dialog_message_cant_record_trigger"><b>Перезагрузите</b> свое устройство если кнопка \"Запишите событие\" ведет отсчет, но не регистрирует нажатий. Или даже НЕ ведет отсчет. Если после перезагрузки устройства нажатия клавиши все равно не регистрируются значит Key Mapper не поддерживает этот тип клавиш. К сожалению эту ситуацию не исправить. Дополнительно можно обратиться к разделу 7 часто задаваемых вопросов.</string>
     <!-- Dialog messages -->
     <!-- Dialog buttons -->
     <string name="pos_yes">Да</string>
@@ -326,6 +330,7 @@
     <string name="summary_pref_double_press_delay">Как быстро клавишу надо нажать второй раз чтобы сработало определение \"Двойное нажатие\". По умолчанию - 300 мс. Может быть переопределено в настройках конкретного события.</string>
     <string name="summary_pref_vibration_duration">Как долго вибрировать если включена функция вибрации. По умолчанию - 200 мс. Может быть переопределено в настройках конкретного события.</string>
     <string name="title_pref_vibration_duration">Длительность вибрации по умолчанию (мс)</string>
+    <string name="summary_pref_repeat_delay">Как долго клавиша должна быть нажата до того как событие начнет повторяться. По умолчанию 400 мс. Может быть переопределено в свойствах мэппинга.</string>
     <string name="title_pref_repeat_delay">По умолчанию задержка до повтора (мс)</string>
     <string name="summary_pref_repeat_rate">Задержка между каждым выполнением действий. По умолчанию 50 мс. Может быть переопределно в свойствах мэппинга.</string>
     <string name="title_pref_repeat_rate">Задержка между повторами (мс)</string>
@@ -346,12 +351,15 @@
     <string name="summary_pref_auto_change_ime_on_connection">Клавиатура Key Mapper будет автоматически выбрана при подключении определенного Bluetooth устройства. Ваша старая клавиатура будет автоматически выбрана при отключении этого устройства.
             Возможна задержка в 5-10 секунд после отключения устройства до того как сменится клавиатура.</string>
     <string name="title_pref_root_permission">Key Mapper имеет Root права</string>
+    <string name="summary_pref_root_permission">Включайте это в том случае если вам нужны функции/возможности, которые работают только на устройствах с Root правами. Key Mapper должен получить соответствующие разрешения через приложение по управлению Root доступом (например Magisk, SuperSU).
+            Включать только в том случае если устройство обладает Root доступом и для Key Mapper выданы соответсвующие разрешения.</string>
     <string name="title_pref_dark_theme">Тёмная тема</string>
     <string name="title_pref_notification_settings">Настройка уведомлений</string>
     <string name="summary_pref_show_toggle_keyboard_notification">Переключение между клавиатурой Key Mapper и вашей клавиатурой по умолчанию при нажатии на уведомление.</string>
     <string name="title_pref_show_toggle_keyboard_notification">Уведомление для смены клавиатуры используемой Key Mapper</string>
     <string name="summary_pref_toggle_keyboard_on_toggle_keymaps">Автоматически выбирать клавиатуру Key Mapper когда снимаете приложение с паузы и выбирать вашу клавиатуру по умолчанию при установки приложения на паузу.</string>
     <string name="title_pref_hide_home_screen_alerts">Скрыть оповещения на главном экране</string>
+    <string name="summary_pref_hide_home_screen_alerts">Скрыть оповещения в верхней части главного экрана.</string>
     <string name="title_pref_show_device_descriptors">Показать первые 5 символов id устройства для событий связанных с конкретными устройствами</string>
     <string name="summary_pref_show_device_descriptors">Это используется чтобы отличить друг от друга устройства с одним и тем же именем.</string>
     <!--Preference titles and summaries-->
@@ -362,6 +370,7 @@
     <string name="title_pref_category_root">ROOT</string>
     <string name="summary_pref_category_root">Эти настройки будут работать только на устройствах с Root правами! Если вы не знаете, что такое Root или есть ли на вашем устройстве Root права, пожалуйста, не оставляйте плохих отзывов что они не работают. :)</string>
     <string name="title_pref_category_write_secure_settings">Требуется разрешение WRIT_SECURE_SETTINGS</string>
+    <string name="summary_pref_category_write_secure_settings">Эти параметры включены, только если Key Mapper имеет разрешение WRITE_SECURE_SETTINGS. Нажмите соответствующую кнопку в верхней части главного экрана для получения инструкций.</string>
     <!--Preference categories-->
     <!-- About activity-->
     <string name="pref_title_changelog">Список изменений</string>
@@ -420,6 +429,7 @@
     <string name="showcase_disable_battery_optimisation_button_turn_off">Выключить</string>
     <string name="showcase_disable_battery_optimisation_button_dont_kill_my_app">Перейти на dontkillmyapp.com</string>
     <string name="showcase_dex_mode_supported_title">Похоже, что ваше устройство поддерживает Samsung Dex</string>
+    <string name="showcase_dex_mode_supported_message">Samsung запрещает приложениям с сторонней клавиатурой открываться в режиме Dex. Поэтому это приложение не будет открываться и клавиатура Key Mapper не будет работать, пока вы находитесь в режиме Dex. Ваши мэппинги, которые не требуют клавиатуры Key Mapper по-прежнему будут работать, пока вы находитесь в режиме Dex.</string>
     <string name="showcase_dnd_access_title_disabled">Переназначить клавиши громкости?</string>
     <string name="showcase_dnd_access_title_enabled">Вы можете переназначить клавиши управления громкостью.</string>
     <string name="showcase_dnd_access_description_disabled">Приложению Key Mapper требуется доступ к управлению режимом \"Не беспокосить\" если вы хотите переназначить действия связанные с событием нажатия на клавишу громкости.</string>
@@ -533,6 +543,7 @@
     <string name="error_critical_ime_service_disabled">Клавиатура Key Mapper должна быть включена и выбрана для некоторых ваших действий!</string>
     <string name="error_ime_not_found">Can\'t find the %s input method</string>
     <string name="error_no_enabled_imes">На этом устройстве нет включенных методов ввода!</string>
+    <string name="error_the_app_wont_work">Мэппинги не будут работать! Что-то надо исправить!</string>
     <string name="error_cant_move_to_end_of_text_in_this_field">Вы не можете перемещаться в конец текста в этом поле!</string>
     <string name="error_battery_optimisation_activity_not_found">Настройки оптимизации батареи не найдены! Если они существуют, откройте их вручную.</string>
     <string name="error_cant_find_option_label">error: Can\'t find a label for this option \"%s\"</string>
@@ -595,7 +606,9 @@
     <string name="action_change_ringer_mode">Изменить режим звонка</string>
     <string name="action_change_ringer_mode_formatted">Сменить режим звонка %s</string>
     <string name="action_toggle_dnd_mode">Переключить режим \"Не беспокоить\"</string>
+    <string name="action_toggle_dnd_mode_formatted">В режиме \"Не беспокоить\" переключить режим: %s</string>
     <string name="action_enable_dnd_mode">Включить режим \"Не беспокоить\"</string>
+    <string name="action_enable_dnd_mode_formatted">В режиме \"Не беспокоить\" включить режим: %s</string>
     <string name="action_disable_dnd_mode">Отключить режим \"Не беспокоить\"</string>
     <string name="action_enable_auto_rotate">Включить автоповорот</string>
     <string name="action_disable_auto_rotate">Отключить автоповорот</string>
@@ -603,6 +616,8 @@
     <string name="action_portrait_mode">Портретный режим</string>
     <string name="action_landscape_mode">Альбомный режим</string>
     <string name="action_switch_orientation">Переключить ориентацию</string>
+    <string name="action_cycle_rotations">Изменить поворот</string>
+    <string name="action_cycle_rotations_formatted">Переключиться на следующий режим поворота: %s</string>
     <string name="action_toggle_mobile_data">Переключение передачи мобильных данных</string>
     <string name="action_enable_mobile_data">Включить передачу мобильных данных</string>
     <string name="action_disable_mobile_data">Отключить передачу мобильных данных</string>
