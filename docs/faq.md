@@ -27,6 +27,15 @@ This is important for everyone to do if you are experiencing an issue with the a
 If you have tried BOTH steps and Key Mapper still stops working randomly, consider how you are using the app. If you have low-end hardware, and are playing a game while using repeating key maps, it's probably not a bug. It's probably just too much for your device.
 If you think you are using Key Mapper in a reasonable way and still experience random crashes, ask about it in [the discord server.](http://keymapper.club)
 
+## "How do I change the keyboard?"
+
+If you want to switch between one of the Key Mapper keyboards and a normal keyboard when a device connects/disconnects then Key Mapper can do this for you automatically. Set it up [here](user-guide/settings.md#automatically-change-the-on-screen-keyboard-when-a-device-connectsdisconnects-230).
+There are multiple ways to do this.
+
+- Tap the keyboard button at the bottom of your display when you are typing something. Not all devices have this and some devices have this feature hidden behind a setting somewhere.
+- Tap the notification that allows you to change the keyboard when you are typing something. Not all devices have this.
+- Open Key Mapper and tap "show input method picker" in the menu :material-menu:.
+
 ## "My Keyboard doesn't appear when using the app."
 
 Key Mapper Basic Input Method (the keyboard built-in to the app) has no GUI/buttons. You can install the [Key Mapper GUI Keyboard](https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin) to get a proper keyboard that can also perform Key Mapper actions.

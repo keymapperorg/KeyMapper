@@ -1,6 +1,6 @@
 --8<-- "go-to-settings.md"
 
-## Automatically change the on-screen keyboard when a device connects/disconnects.
+## Automatically change the on-screen keyboard when a device connects/disconnects (2.3.0+)
 
 ## Key Mapper has root permission
 
@@ -24,21 +24,14 @@ Steps to work around this bug...
  --8<-- "go-to-settings.md"
 
 3. Scroll down to the 'Workaround for Android 11 bug that sets the device id for input events to -1' section.
-4. Tap 'Choose devices' and select the devices that should be fixed.
-5. It is highly recommended to install the [Key Mapper GUI Keyboard](https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin) so that you can have an on-screen keyboard while using this feature. The Basic Input Method built-in to Key Mapper doesn't show anything on-screen.
-6. Tap 'Enable the Key Mapper keyboard' and turn on the Key Mapper GUI Keyboard or the Key Mapper Basic Input Method.
-7. Tap 'Use the Key Mapper keyboard' and select the keyboard that you just enabled. There are multiple ways to show this again.
+4. It is highly recommended to install the [Key Mapper GUI Keyboard](https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin) so that you can have an on-screen keyboard while using this feature. The Basic Input Method built-in to Key Mapper doesn't show anything on-screen.
+5. Tap 'Enable the Key Mapper keyboard' and turn on the Key Mapper GUI Keyboard or the Key Mapper Basic Input Method.
+6. Tap 'Use the Key Mapper keyboard' and select the keyboard that you just enabled.
+   It is recommended that you setup the setting to automatically change the on-screen keyboard when devices connect and disconnect. You can find this further up the page. This is useful if you don't want to use one of the Key Mapper keyboards all the time. If you want to change the keyboard manually then see [this](../faq.md#how-do-i-change-the-keyboard) question in the faq.
 
-    - Tap the keyboard button at the bottom of your display when you are typing something. Not all devices have this and some devices have this feature hidden behind a setting somewhere.
-    - Tap the notification that allows you to change the keyboard when you are typing something. Not all devices have this.
-    - Open Key Mapper and tap "show input method picker" in the menu :material-menu:.
-
-8. Connect the device that you want to fix to your Android device.
-
+7. Connect the device that you want to fix to your Android device.
+8. Tap 'Choose devices' and select the devices that should be fixed.
 9. Your keyboard layout should be fixed! 🎉 If you're having issues checkout the FAQ below or [join](http://www.keymapper.club) the Discord server.
-
-!!! tip
-    Key Mapper has a setting to automatically change the on-screen keyboard when devices that you specify connect and disconnect. This is useful if you don't want to use one of the Key Mapper keyboards all the time.
 
 !!! faq
     - Can I use a non Key Mapper keyboard like Gboard instead? No because Key Mapper isn't allowed to tell other input methods what to type.
