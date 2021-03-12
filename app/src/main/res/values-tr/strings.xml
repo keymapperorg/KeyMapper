@@ -76,20 +76,86 @@
     <string name="description_keyevent">%s%s\'i girin</string>
     <string name="description_keyevent_through_shell">Kabuk üzerinden %s%s girişi</string>
     <string name="description_keyevent_from_device">%s \'den %s%s girişi</string>
+    <string name="description_keyevent_from_device_through_shell">Kabuk üzerinden %s üzerinden%s%s girin</string>
+    <string name="description_url">%s\'i Aç</string>
+    <string name="description_tap_coordinate_default">Koordinatlara dokunun%s, %s</string>
+    <string name="description_tap_coordinate_with_description">Koordinatlara dokunun%s, %s(%s)</string>
+    <string name="description_phone_call">Ara %s</string>
     <!--  Action descriptions  -->
     <!--  Headers  -->
+    <string name="option_list_header">Ayarlar</string>
+    <string name="action_list_header">Eylemler</string>
+    <string name="trigger_header">Tetikleyici</string>
+    <string name="constraint_list_header">Kısıtlamalar</string>
+    <string name="header_fingerprint_gesture_up">Yukarı kaydır</string>
+    <string name="header_fingerprint_gesture_down">Aşağı kaydır</string>
+    <string name="header_fingerprint_gesture_left">Sola kaydır</string>
+    <string name="header_fingerprint_gesture_right">Sağa kaydır</string>
+    <string name="header_click_type">Tıklama türü</string>
+    <string name="header_intent_extras">Ekstralar</string>
     <!--  Headers  -->
     <!--  Hints  -->
+    <string name="hint_keycode">Anahtar kodu</string>
+    <string name="hint_from_device">Cihazdan</string>
+    <string name="hint_shortcut_name">Kısayol adı</string>
+    <string name="hint_tap_coordinate_title">Koordinat açıklaması (isteğe bağlı)</string>
+    <string name="hint_intent_action">Eylem</string>
+    <string name="hint_intent_categories">Kategoriler</string>
+    <string name="hint_intent_data">Veri</string>
+    <string name="hint_intent_package">Paket</string>
+    <string name="hint_intent_class">Sınıf</string>
+    <string name="hint_intent_extra_name">Ad</string>
+    <string name="hint_intent_extra_value_with_type">Değeri (%s)</string>
+    <string name="hint_intent_description">Keymapper için açıklama (gerekli)</string>
     <!--  Hints  -->
     <!--  Radio buttons  -->
+    <string name="radio_button_parallel">Aynı Zamanda</string>
+    <string name="radio_button_sequence">Sırayla</string>
+    <string name="radio_button_and">VE</string>
+    <string name="radio_button_or">YA DA</string>
+    <string name="radio_button_short_press">Kısa basma</string>
+    <string name="radio_button_long_press">Uzun basma</string>
+    <string name="radio_button_double_press">Çift basma</string>
+    <string name="radio_button_intent_extra_value_true">Doğru</string>
+    <string name="radio_button_intent_extra_value_false">Yanlış</string>
+    <string name="radio_button_intent_target_activity">Etkinlik</string>
+    <string name="radio_button_intent_target_service">Servis</string>
+    <string name="radio_button_intent_target_broadcast_receiver">Yayın alıcı</string>
     <!--  Radio buttons  -->
     <!--  Tabs  -->
+    <string name="tab_trigger_and_actions">Tetikleyici ve eylemler</string>
+    <string name="tab_constraints_and_more">Kısıtlamalar ve diğerleri</string>
+    <string name="tab_options">Ayarlar</string>
+    <string name="tab_constraints">Kısıtlamalar</string>
+    <string name="tab_actions">Eylemler</string>
+    <string name="tab_trigger">Tetikleyici</string>
+    <string name="tab_fingerprint">Parmak izi</string>
+    <string-array name="home_tab_titles">
+        <item>@string/tab_keyevents</item>
+        <item>@string/tab_fingerprint</item>
+    </string-array>
     <!--  Tabs  -->
     <!--  Navigation argument ids  -->
     <!--  Navigation argument ids  -->
     <!--  Toasts  -->
+    <string name="toast_chose_keyboard">%s\'i seç</string>
+    <string name="toast_backup_successful">Yedekleme başarılı!</string>
+    <string name="toast_restore_successful">Geri yükleme başarılı!</string>
+    <string name="toast_automatic_backup_successful">Otomatik yedekleme başarılı!</string>
+    <string name="toast_screenshot_taken">Ekran görüntüsü alındı</string>
+    <string name="toast_io_exception_shrug">GÇ istisnası ¯ \\ _ (ツ) _ / ¯</string>
+    <string name="toast_incorrect_screenshot_resolution">Ekran görüntüsü kalitesi cihazınki ile eşleşmiyor!</string>
+    <string name="toast_copied_keymap_uid_to_clipboard">Anahtar eşlemesi UUID\'si panoya kopyalandı</string>
+    <string name="toast_triggered_keymap">Bir tetikleyiciyi eşledin</string>
     <!--  Toasts  -->
     <!-- Extra labels -->
+    <string name="extra_label_sequence_trigger_timeout">Sıra tetikleme zaman aşımı (ms)</string>
+    <string name="extra_label_long_press_delay_timeout">Uzun basma bekleme süre (ms)</string>
+    <string name="extra_label_double_press_delay_timeout">Çift basış zaman aşımı (ms)</string>
+    <string name="extra_label_repeat_delay">Tekrarlamadan önceki bekleme süresi (ms)</string>
+    <string name="extra_label_repeat_rate">Her… (ms) tekrarla</string>
+    <string name="extra_label_vibration_duration">Titreşim süresi (ms)</string>
+    <string name="extra_label_action_multiplier">Eylem sayısı</string>
     <!-- Extra labels -->
     <!-- Constraints -->
     <!-- Constraints -->
@@ -135,9 +201,36 @@
     <!-- System action labels -->
     <!-- System action labels -->
     <!-- System action category labels -->
+    <string name="system_action_cat_wifi">Kablosuz</string>
+    <string name="system_action_cat_bluetooth">Bluetooth</string>
+    <string name="system_action_cat_mobile_data">Mobil veri</string>
+    <string name="system_action_cat_navigation">Navigasyon</string>
+    <string name="system_action_cat_volume">Ses</string>
+    <string name="system_action_cat_screen_rotation">Ekran döndürme</string>
+    <string name="system_action_cat_brightness">Parlaklık</string>
+    <string name="system_action_cat_status_bar">Durum çubuğu</string>
+    <string name="system_action_cat_media">Medya</string>
+    <string name="system_action_cat_flashlight">Fener</string>
+    <string name="system_action_cat_nfc">NFC (Yakın Alan İletişimi)</string>
+    <string name="system_action_cat_other">Diğer</string>
+    <string name="system_action_cat_keyboard">Klavye</string>
+    <string name="system_action_cat_airplane_mode">Uçak modu</string>
     <!-- System action category labels -->
     <!--  Intent action type strings  -->
+    <string name="intent_type_bool_header">Boole</string>
+    <string name="intent_type_bool_array_header">Boole dizisi</string>
+    <string name="intent_type_int_header">Integer</string>
+    <string name="intent_type_int_array_header">Tamsayı dizisi</string>
+    <string name="intent_type_string_header">Dizge</string>
+    <string name="intent_type_string_array_header">Dizge dizisi</string>
+    <string name="intent_type_long_header">Uzun</string>
+    <string name="intent_type_long_array_header">Uzun dizisi</string>
+    <string name="intent_type_byte_header">Bayt</string>
+    <string name="intent_type_byte_array_header">Bayt dizisi</string>
+    <string name="intent_type_short_array_example">Java programlama dilinde geçerli Kısaların virgülle ayrılmış listesi. Örneğin 3242,12354</string>
     <!--  Intent action type strings  -->
     <!--  Tap targets  -->
+    <string name="tap_target_quick_start_guide_primary">Basit Başlangıç Kılavuzı</string>
+    <string name="tap_target_quick_start_guide_secondary">Takılırsanız Hızlı Başlangıç ​​Kılavuzuna bakın.</string>
     <!--  Tap targets  -->
 </resources>
