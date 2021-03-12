@@ -1,7 +1,33 @@
 This page serves to answer frequently asked questions about Key Mapper, and help solve any problems you may be facing.
 See the [Quick Start Guide](quick-start.md) for more general help with using Key Mapper.
 
-## "My Kkyboard doesn't appear when using the app."
+## "Can I remap joysticks/dpad/mouse buttons/mouse motion?"
+
+No. Here is why:
+
+Joysticks are complicated to remap because they are axes, so their inputs are a range depending on how much you press the stick. It would be a lot of work to integrate them into Key Mapper. The developer currently doesn't have a way to interpret the motion, and if they did, they might not add it into this app anyway because Key Mapper is for mapping keys, not motion.
+
+The D-pad is interpreted differently by Android to other keys. That makes it hard to remap. However, the developer has found a way that might be able to remap them. Therefore you can consider this a planned feature. It might take something like 6 months to see this in a build of Key Mapper.
+
+Mouse buttons are not possible to remap with an accessibility service. There will never be support for them in this app. If other apps can do it, they do not work the same way Key Mapper does. If you want to remap mouse buttons, do not use Key Mapper.
+
+Remapping the movement of the mouse is completely out of scope for this app. This is an app for remapping keys, not motion. If you want that kind of functionality, please don't look for it in Key Mapper or request this as a feature. There may be other apps that can help you (I don't know any of them though).
+
+## "Key Mapper keeps randomly stopping/crashing/bugging/freezing"
+
+Please follow the following steps:
+
+- Turn off battery and memory optimisations in your device settings.
+This is especially important for Huawei and Xiaomi devices, and devices with 2GB of RAM or less.
+You can read about how to do this on your particular device at [dontkillmyapp.com](http://dontkillmyapp.com/)
+
+- Reboot your device.
+This is important for everyone to do if you are experiencing an issue with the app stopping. You must try rebooting your device. It works most of the time.
+
+If you have tried BOTH steps and Key Mapper still stops working randomly, consider how you are using the app. If you have low-end hardware, and are playing a game while using repeating key maps, it's probably not a bug. It's probably just too much for your device.
+If you think you are using Key Mapper in a reasonable way and still experience random crashes, ask about it in [the discord server.](http://keymapper.club)
+
+## "My Keyboard doesn't appear when using the app."
 
 Key Mapper Basic Input Method (the keyboard built-in to the app) has no GUI/buttons. You can install the [Key Mapper GUI Keyboard](https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin) to get a proper keyboard that can also perform Key Mapper actions.
 
@@ -84,20 +110,6 @@ Follow this guide if you are remapping buttons on a game controller to different
 
 This is not an app designed for gaming. Please look elsewhere for help with this, such as YouTube tutorials or ask in [the discord server.](http://keymapper.club) Also note that use of 'jump bridging' or very fast attacks on Minecraft servers where it is not allowed has absolutely nothing to do with the developer and it is not endorsed or encouraged. Again, this is not an app optimised for playing mobile games.
 
-## "Key Mapper keeps randomly stopping/crashing/bugging/freezing"
-
-Please follow the following steps:
-
-- Turn off battery and memory optimisations in your device settings.
-This is especially important for Huawei and Xiaomi devices, and devices with 2GB of RAM or less.
-You can read about how to do this on your particular device at [dontkillmyapp.com](http://dontkillmyapp.com/)
-
-- Reboot your device
-This is important for everyone to do if you are experiencing an issue with the app stopping. You must try rebooting your device. It works most of the time.
-
-If you have tried BOTH steps and Key Mapper still stops working randomly, consider how you are using the app. If you have low-end hardware, and are playing a game while using repeating key maps, it's probably not a bug. It's probably just too much for your device.
-If you think you are using Key Mapper in a reasonable way and still experience random crashes, ask about it in [the discord server.](http://keymapper.club)
-
 ## "Can I use the app on Chromebook?"
 
 Not all features work on Chromebook. The app is not supported on Chromebook.
@@ -108,17 +120,5 @@ That being said, many features should work, such as remapping keyboard buttons.
 ## "Can I remap on-screen controls to buttons with Key Mapper?"
 
 Technically yes but it would be a horrendous gaming experience. There is an action in Key Mapper to touch the screen but Key Mapper is only allowed to tap/swipe in one place at a time. Therefore, you wouldn't be able to tap forward on an on-screen joystick and shoot at the same time for example. This is how the Android API works and there is nothing I can do to change it.
-
-## "Can I remap joysticks/dpad/mouse buttons/mouse motion?"
-
-No. Here is why:
-
-Joysticks are complicated to remap because they are axes, so their inputs are a range depending on how much you press the stick. It would be a lot of work to integrate them into Key Mapper. The developer currently doesn't have a way to interpret the motion, and if they did, they might not add it into this app anyway because Key Mapper is for mapping keys, not motion.
-
-The D-pad is interpreted differently by Android to other keys. That makes it hard to remap. However, the developer has found a way that might be able to remap them. Therefore you can consider this a planned feature. It might take something like 6 months to see this in a build of Key Mapper.
-
-Mouse buttons are not possible to remap with an accessibility service. There will never be support for them in this app. If other apps can do it, they do not work the same way Key Mapper does. If you want to remap mouse buttons, do not use Key Mapper.
-
-Remapping the movement of the mouse is completely out of scope for this app. This is an app for remapping keys, not motion. If you want that kind of functionality, please don't look for it in Key Mapper or request this as a feature. There may be other apps that can help you (I don't know any of them though).
 
 [Ask for help :fontawesome-brands-discord:](http://keymapper.club){: .md-button .md-button--primary }
