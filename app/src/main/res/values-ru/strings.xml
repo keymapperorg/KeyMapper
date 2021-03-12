@@ -539,8 +539,10 @@
     <string name="error_accessibility_service_disabled">Служба спец.возможностей должна быть включена!</string>
     <string name="warning_need_write_secure_settings_permission">Для некоторых функций требуется разрешение WRITE_SECURE_SETTINGS.</string>
     <string name="fixed_need_write_secure_settings_permission">Предоставлено разрешение WRITE_SECURE_SETTINGS.</string>
+    <string name="error_ime_service_disabled_status_layout">Должна быть включена клавиатура совместимая с Key Mapper чтобы \"Событие нажатия\", \"Клавиша\", \"Текст\" и некоторые другие действия работали.</string>
     <string name="error_ime_service_disabled">Не включена ни одна из клавиатур совместимых с Key Mapper!</string>
     <string name="error_ime_service_enabled">Включена клавиатура совместимая с Key Mapper!</string>
+    <string name="error_critical_ime_service_disabled">Должна быть включена клавиатура совместимая с Key Mapper для того чтобы ваши действия отработали!</string>
     <string name="error_ime_not_found">Can\'t find the %s input method</string>
     <string name="error_no_enabled_imes">На этом устройстве нет включенных методов ввода!</string>
     <string name="error_the_app_wont_work">Мэппинги не будут работать! Что-то надо исправить!</string>
