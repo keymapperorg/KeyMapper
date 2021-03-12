@@ -227,7 +227,6 @@
     <string name="error_opening_app_shortcut">Błąd podczas otwierania tego skrótu aplikacji</string>
     <string name="dnd_access_granted">Uprawienie na zmianę trybu Nie przeszkadzać zostało udzielone!</string>
     <string name="error_accessibility_service_disabled_record_trigger">Usługa ułatwień dostępu musi być włączona!</string>
-    <string name="error_critical_ime_service_disabled">Klawiatura Key Mapper musi być włączona i wybrana aby naprawić niektóre działania!</string>
     <!-- Error messages -->
     <!-- System action labels -->
     <string name="action_power_on_off_device_message">Musisz włączyć opcję wykrywania triggera gdy ekran jest wyłączony!</string>
