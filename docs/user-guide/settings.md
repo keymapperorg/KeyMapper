@@ -1,6 +1,8 @@
 --8<-- "go-to-settings.md"
 
-## Automatically change the on-screen keyboard when a device connects/disconnects (2.3.0+)
+## Automatically change the on-screen keyboard when a device connects/disconnects
+
+This is restricted to Bluetooth devices in Key Mapper 2.2.0 and older. After updating to Key Mapper 2.3.0 you will need to set this up again.
 
 ## Key Mapper has root permission
 
@@ -23,7 +25,7 @@ Steps to work around this bug...
 2. 
  --8<-- "go-to-settings.md"
 
-3. Scroll down to the 'Workaround for Android 11 bug that sets the device id for input events to -1' section.
+3. Scroll down to the 'Workaround for Android 11 bug that sets the device id for input events to -1' setting and turn it on.
 4. It is highly recommended to install the [Key Mapper GUI Keyboard](https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin) so that you can have an on-screen keyboard while using this feature. The Basic Input Method built-in to Key Mapper doesn't show anything on-screen.
 5. Tap 'Enable the Key Mapper keyboard' and turn on the Key Mapper GUI Keyboard or the Key Mapper Basic Input Method.
 6. Tap 'Use the Key Mapper keyboard' and select the keyboard that you just enabled.
