@@ -536,10 +536,6 @@
     <string name="error_accessibility_service_disabled">无障碍服务需要启用！</string>
     <string name="warning_need_write_secure_settings_permission">某些功能需要 WRITE_SECURE_SETTINGS 权限。</string>
     <string name="fixed_need_write_secure_settings_permission">已授予 WRITE_SECURE_SETTTINGS 权限。</string>
-    <string name="error_ime_service_disabled_status_layout">你需要选择输入法需要启用并让“按键事件”、“键”、“文本”和其他一些动作正常工作。</string>
-    <string name="error_ime_service_disabled">没有Key Mepper键盘启用！</string>
-    <string name="error_ime_service_enabled">一个Key Mapper键盘已启用！</string>
-    <string name="error_critical_ime_service_disabled">一个Key Mapper键盘必须启用并选择，以让一些动作正常工作！</string>
     <string name="error_ime_not_found">找不到 %s 输入法</string>
     <string name="error_no_enabled_imes">此设备没有启用输入法！</string>
     <string name="error_the_app_wont_work">你的Key Mapper无法正常工作！有些东西需要修复！</string>
