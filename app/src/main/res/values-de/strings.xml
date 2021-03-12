@@ -11,6 +11,8 @@
     <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nSie haben keine Aktionen für diese Verknüpfung ausgewählt!</string>
     <string name="everything_looks_good">Alles sieht gut aus!</string>
     <string name="press_dot_dot_dot">Drücke…</string>
+    <string name="on">An</string>
+    <string name="off">Aus</string>
     <string name="trigger_device_name_not_found">Der Name für dieses Gerät ist nicht bekannt</string>
     <string name="trigger_pressed_again">Erneut gedrückt</string>
     <string name="dont_know_device_name">Kenne den Gerätenamen nicht!</string>
