@@ -19,16 +19,17 @@
 
 Steps to work around this bug...
 
-1. Connect the device that you want to fix to your Android device.
-2. 
+1. Enable the Key Mapper accessibility service.
+2. Connect the device that you want to fix to your Android device.
+3. 
  --8<-- "go-to-settings.md"
 
-3. Scroll down to the 'Workaround for Android 11 bug that sets the device id for input events to -1' section.
-4. Tap 'Choose devices' and select the devices that should be fixed.
-5. It is highly recommended to install the [Key Mapper GUI Keyboard](https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin) so that you can have an on-screen keyboard while using this feature. The Basic Input Method built-in to Key Mapper doesn't show anything on-screen.
-6. Tap 'Enable the Key Mapper keyboard' and turn on the Key Mapper GUI Keyboard or the Key Mapper Basic Input Method.
-7. Tap 'Use the Key Mapper keyboard' and select the keyboard that you just enabled.
-8. Your keyboard layout should be fixed! 🎉 If you're having issues checkout the FAQ below or [join](http://www.keymapper.club) the Discord server.
+4. Scroll down to the 'Workaround for Android 11 bug that sets the device id for input events to -1' section.
+5. Tap 'Choose devices' and select the devices that should be fixed.
+6. It is highly recommended to install the [Key Mapper GUI Keyboard](https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin) so that you can have an on-screen keyboard while using this feature. The Basic Input Method built-in to Key Mapper doesn't show anything on-screen.
+7. Tap 'Enable the Key Mapper keyboard' and turn on the Key Mapper GUI Keyboard or the Key Mapper Basic Input Method.
+8. Tap 'Use the Key Mapper keyboard' and select the keyboard that you just enabled.
+9. Your keyboard layout should be fixed! 🎉 If you're having issues checkout the FAQ below or [join](http://www.keymapper.club) the Discord server.
 
 !!! tip
     Key Mapper has a setting to automatically change the on-screen keyboard when devices that specify connect and disconnect. This is useful if you don't want to use the Key Mapper GUI Keyboard all the time.
