@@ -30,7 +30,7 @@ Steps to work around this bug...
 7. Tap 'Enable the Key Mapper keyboard' and turn on the Key Mapper GUI Keyboard or the Key Mapper Basic Input Method.
 8. Tap 'Use the Key Mapper keyboard' and select the keyboard that you just enabled. There are multiple ways to show this again.
 
-    - Tap the keyboard button at the bottom of your display when you are typing something. Not all devices have this.
+    - Tap the keyboard button at the bottom of your display when you are typing something. Not all devices have this and some devices have this feature hidden behind a setting somewhere.
     - Tap the notification that allows you to change the keyboard when you are typing something. Not all devices have this.
     - Open Key Mapper and tap "show input method picker" in the menu :material-menu:.
 
