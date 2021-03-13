@@ -52,7 +52,7 @@
     <string name="caption_action_type_keycode">ÖNEMLİ!
             Bu anahtar kodunu eşlemek, yalnızca Key Mapper uyumlu bir klavye kullanıyorsanız işe yarar.</string>
     <string name="caption_action_type_text">Bu eylemi gerçekleştirdiğinizde eklenmesini istediğiniz metni yazın.</string>
-    <string name="caption_action_type_phone_call">Telefon numarasını gir 😉. </string>
+    <string name="caption_action_type_phone_call">Telefon numarasını gir.</string>
     <string name="caption_action_type_url">Açmak istediğiniz URL\'yi girin. https://, http://, www. koymana gerek yok. </string>
     <string name="caption_no_paired_bt_devices">Eşleştirilmiş bir cihaz BULUNAMADI. Bluetooth açık mı? </string>
     <string name="caption_create_keymap_shortcut">Zaten değilse, seçtiğiniz anahtar eşlemesi için \"diğer uygulamalardan tetikle\" seçeneği açılacaktır. Bu seçeneği daha sonra kapatırsanız, bu tuş haritasını tetikleyen kısayollar veya Amaçlar çalışmayacaktır.</string>
