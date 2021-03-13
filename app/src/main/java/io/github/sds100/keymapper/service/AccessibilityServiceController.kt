@@ -17,6 +17,8 @@ import io.github.sds100.keymapper.data.usecase.GlobalKeymapUseCase
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.first
 import splitties.bitflags.hasFlag
 import splitties.toast.toast
@@ -93,6 +95,18 @@ class AccessibilityServiceController(
         constraintDelegate
     )
 
+    private val rerouteKeyEventsDelegate = RerouteKeyEventsDelegate(
+        coroutineScope = lifecycleScope,
+        isCompatibleImeChosen = {
+            KeyboardUtils.KEY_MAPPER_IME_PACKAGE_LIST.contains(chosenImePackageName)
+        }
+    ).apply {
+        runBlocking {
+            devicesToRerouteKeyEvents =
+                globalPreferences.get(Keys.devicesToRerouteKeyEvents) ?: emptySet()
+        }
+    }
+
     private val _eventStream = LiveEvent<Event>().apply {
         //vibrate
         addSource(keymapDetectionDelegate.vibrate) {
@@ -133,6 +147,11 @@ class AccessibilityServiceController(
             value = it
         }
 
+        //imitate button press
+
+        addSource(rerouteKeyEventsDelegate.imitateButtonPress) {
+            value = it
+        }
     }
 
     val eventStream: LiveData<Event> = _eventStream
@@ -194,6 +213,11 @@ class AccessibilityServiceController(
             }
         }
 
+        globalPreferences.getFlow(Keys.devicesToRerouteKeyEvents)
+            .onEach {
+                rerouteKeyEventsDelegate.devicesToRerouteKeyEvents = it ?: emptySet()
+            }.launchIn(lifecycleScope)
+
         subscribeToPreferenceChanges()
     }
 
@@ -223,7 +247,9 @@ class AccessibilityServiceController(
 
         if (!globalPreferences.keymapsPaused.firstBlocking()) {
             try {
-                val consume = keymapDetectionDelegate.onKeyEvent(
+                var consume: Boolean
+
+                consume = keymapDetectionDelegate.onKeyEvent(
                     keyCode,
                     action,
                     descriptor,
@@ -232,6 +258,14 @@ class AccessibilityServiceController(
                     deviceId,
                     scanCode
                 )
+
+                if (!consume &&
+                    globalPreferences.getFlow(Keys.rerouteKeyEvents).firstBlocking() == true
+                ) {
+                    consume = rerouteKeyEventsDelegate.onKeyEvent(
+                        keyCode, action, descriptor, isExternal, metaState, deviceId, scanCode
+                    )
+                }
 
                 return consume
 

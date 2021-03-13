@@ -58,4 +58,8 @@ object Keys {
         booleanPreferencesKey("key_shown_parallel_trigger_order_warning")
     val shownSequenceTriggerExplanation =
         booleanPreferencesKey("key_shown_sequence_trigger_explanation_dialog")
+
+    val rerouteKeyEvents = booleanPreferencesKey("key_reroute_key_events_from_specified_devices")
+    val devicesToRerouteKeyEvents =
+        stringSetPreferencesKey("key_devices_to_reroute_key_events")
 }

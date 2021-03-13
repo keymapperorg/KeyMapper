@@ -274,6 +274,7 @@
     <string name="url_keymap_action_options_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/keymap-action-options</string>
     <string name="url_fingerprint_action_options_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/fingerprint-action-options</string>
     <string name="url_trigger_key_options_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/trigger-key-options</string>
+    <string name="url_android_11_bug_reset_id_work_around_setting_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/android-11-device-id-bug-work-around</string>
 
     <string name="url_play_store_keymapper_gui_keyboard" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin</string>
     <string name="url_fdroid_keymapper_gui_keyboard" translatable="false">https://f-droid.org/en/packages/io.github.sds100.keymapper.inputmethod.latin</string>
@@ -486,6 +487,14 @@
 
     <string name="title_pref_show_device_descriptors">Show the first 5 characters of the device id for device specific triggers</string>
     <string name="summary_pref_show_device_descriptors">This is useful to differentiate between devices that have the same name.</string>
+
+    <string name="title_pref_devices_to_reroute_keyevents">Workaround for Android 11 bug that sets the device id for input events to -1</string>
+    <string name="summary_pref_devices_to_reroute_keyevents">Select the devices that Key Mapper should intercept all key events and then reroute through the chosen Key Mapper keyboard. You MUST be using the Key Mapper GUI Keyboard or the Key Mapper Basic Input Method for this to work. This is a partial workaround for https://issuetracker.google.com/issues/163120692. This will NOT work with game controllers.</string>
+    <string name="title_pref_devices_to_reroute_keyevents_choose_devices">4. Choose devices</string>
+    <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Install the Key Mapper GUI Keyboard (optional)</string>
+    <string name="title_pref_devices_to_reroute_keyevents_enable_ime">2. Enable the Key Mapper GUI Keyboard or the Key Mapper Basic Input Method</string>
+    <string name="title_pref_devices_to_reroute_keyevents_choose_ime">3. Use the keyboard that you just enabled</string>
+    <string name="title_pref_devices_to_reroute_keyevents_guide">Help</string>
     <!--Preference titles and summaries-->
 
     <!--Preference categories-->

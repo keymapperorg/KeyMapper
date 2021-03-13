@@ -11,12 +11,16 @@ import android.view.accessibility.AccessibilityNodeInfo
  */
 interface IAccessibilityService {
     fun performGlobalAction(action: Int): Boolean
-    fun dispatchGesture(gesture: GestureDescription,
-                        callback: GestureResultCallback?,
-                        handler: Handler?): Boolean
+    fun dispatchGesture(
+        gesture: GestureDescription,
+        callback: GestureResultCallback?,
+        handler: Handler?
+    ): Boolean
 
     val keyboardController: AccessibilityService.SoftKeyboardController?
     val rootNode: AccessibilityNodeInfo?
+
+    val chosenImePackageName: String?
     val isGestureDetectionAvailable: Boolean
     fun requestFingerprintGestureDetection()
     fun denyFingerprintGestureDetection()

@@ -184,7 +184,7 @@ class MyAccessibilityService : AccessibilityService(),
 
     private val connectedBtAddresses = mutableSetOf<String>()
 
-    private var chosenImePackageName: String? = null
+    override var chosenImePackageName: String? = null
 
     private val isCompatibleImeChosen
         get() = KeyboardUtils.KEY_MAPPER_IME_PACKAGE_LIST.contains(chosenImePackageName)
@@ -484,7 +484,8 @@ class MyAccessibilityService : AccessibilityService(),
                             metaState = event.metaState,
                             keyEventAction = event.keyEventAction,
                             deviceId = event.deviceId,
-                            scanCode = event.scanCode
+                            scanCode = event.scanCode,
+                            repeat = event.repeat
                         )
                     }
                 }

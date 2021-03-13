@@ -22,11 +22,9 @@ import androidx.work.WorkManager
 import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.data.Keys
-import io.github.sds100.keymapper.data.model.ChooseAppStoreModel
 import io.github.sds100.keymapper.data.model.KeymapListItemModel
 import io.github.sds100.keymapper.data.showGuiKeyboardAd
 import io.github.sds100.keymapper.data.viewmodel.*
-import io.github.sds100.keymapper.databinding.DialogChooseAppStoreBinding
 import io.github.sds100.keymapper.databinding.FragmentHomeBinding
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.adapter.HomePagerAdapter
@@ -39,9 +37,6 @@ import io.github.sds100.keymapper.worker.SeedDatabaseWorker
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import splitties.alertdialog.appcompat.alertDialog
-import splitties.alertdialog.appcompat.cancelButton
-import splitties.alertdialog.appcompat.messageResource
 import splitties.systemservices.powerManager
 import splitties.toast.longToast
 import splitties.toast.toast
@@ -151,7 +146,8 @@ class HomeFragment : Fragment() {
         recoverFailureDelegate = RecoverFailureDelegate(
             "HomeFragment",
             requireActivity().activityResultRegistry,
-            viewLifecycleOwner) {
+            viewLifecycleOwner
+        ) {
 
             keymapListViewModel.rebuildModels()
         }
@@ -323,7 +319,8 @@ class HomeFragment : Fragment() {
             setGrantWriteSecureSettingsPermission {
                 PermissionUtils.requestWriteSecureSettingsPermission(
                     requireContext(),
-                    findNavController())
+                    findNavController()
+                )
             }
 
             setGrantDndAccess {
@@ -373,23 +370,7 @@ class HomeFragment : Fragment() {
             }
 
             setGetNewGuiKeyboard {
-                requireContext().alertDialog {
-                    messageResource = R.string.dialog_message_select_app_store_gui_keyboard
-
-                    DialogChooseAppStoreBinding.inflate(layoutInflater).apply {
-                        model = ChooseAppStoreModel(
-                            playStoreLink = str(R.string.url_play_store_keymapper_gui_keyboard),
-                            githubLink = str(R.string.url_github_keymapper_gui_keyboard),
-                            fdroidLink = str(R.string.url_fdroid_keymapper_gui_keyboard)
-                        )
-
-                        setView(this.root)
-                    }
-
-                    cancelButton()
-
-                    show()
-                }
+                KeyboardUtils.showDialogToInstallKeyMapperGuiKeyboard(requireContext())
             }
 
             setDismissNewGuiKeyboardAd {
@@ -408,7 +389,8 @@ class HomeFragment : Fragment() {
                         it.failure,
                         requireContext(),
                         recoverFailureDelegate,
-                        findNavController())
+                        findNavController()
+                    )
                 }
             })
 
@@ -418,14 +400,16 @@ class HomeFragment : Fragment() {
                         it.failure,
                         requireContext(),
                         recoverFailureDelegate,
-                        findNavController())
+                        findNavController()
+                    )
                 }
             })
 
             viewLifecycleScope.launchWhenResumed {
                 QuickStartGuideTapTarget().show(
                     this@HomeFragment,
-                    R.id.action_help)
+                    R.id.action_help
+                )
             }
         }
     }
@@ -488,10 +472,16 @@ class HomeFragment : Fragment() {
             if ((keymapListViewModel.model.value as Data<List<KeymapListItemModel>>)
                     .data.any { keymap ->
                         keymap.actionList.any { it.error is NoCompatibleImeEnabled }
-                    }) {
+                    }
+            ) {
 
                 imeServiceStatusState.value = StatusLayout.State.ERROR
             }
+
+        } else if (globalPreferences.getFlow(Keys.devicesToRerouteKeyEvents)
+                .firstBlocking()?.isNotEmpty() == true
+        ) {
+            imeServiceStatusState.value = StatusLayout.State.ERROR
 
         } else {
             imeServiceStatusState.value = StatusLayout.State.WARN
@@ -500,7 +490,9 @@ class HomeFragment : Fragment() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (PermissionUtils.isPermissionGranted(
                     requireContext(),
-                    Manifest.permission.ACCESS_NOTIFICATION_POLICY)) {
+                    Manifest.permission.ACCESS_NOTIFICATION_POLICY
+                )
+            ) {
 
                 dndAccessStatusState.value = StatusLayout.State.POSITIVE
             } else {

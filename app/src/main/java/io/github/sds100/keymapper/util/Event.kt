@@ -42,7 +42,8 @@ data class ImitateButtonPress(
     val metaState: Int = 0,
     val deviceId: Int = 0,
     val keyEventAction: KeyEventAction,
-    val scanCode: Int = 0
+    val scanCode: Int = 0,
+    val repeat: Int = 0
 ) : Event()
 
 class ChoosePackage : Event()

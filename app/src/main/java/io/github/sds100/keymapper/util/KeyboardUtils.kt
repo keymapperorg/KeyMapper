@@ -14,9 +14,15 @@ import androidx.annotation.RequiresPermission
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
+import io.github.sds100.keymapper.data.model.ChooseAppStoreModel
+import io.github.sds100.keymapper.databinding.DialogChooseAppStoreBinding
 import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
 import io.github.sds100.keymapper.util.result.*
+import splitties.alertdialog.appcompat.alertDialog
+import splitties.alertdialog.appcompat.cancelButton
+import splitties.alertdialog.appcompat.messageResource
 import splitties.systemservices.inputMethodManager
+import splitties.systemservices.layoutInflater
 import splitties.toast.toast
 
 /**
@@ -25,13 +31,19 @@ import splitties.toast.toast
 
 object KeyboardUtils {
     //DON'T CHANGE THESE!!!
-    private const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN_UP = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_DOWN_UP"
-    private const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_DOWN"
-    private const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_UP = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_UP"
-    private const val KEY_MAPPER_INPUT_METHOD_ACTION_TEXT = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_TEXT"
+    private const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN_UP =
+        "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_DOWN_UP"
+    private const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN =
+        "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_DOWN"
+    private const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_UP =
+        "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_UP"
+    private const val KEY_MAPPER_INPUT_METHOD_ACTION_TEXT =
+        "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_TEXT"
 
-    private const val KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT = "io.github.sds100.keymapper.inputmethod.EXTRA_KEY_EVENT"
-    private const val KEY_MAPPER_INPUT_METHOD_EXTRA_TEXT = "io.github.sds100.keymapper.inputmethod.EXTRA_TEXT"
+    private const val KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT =
+        "io.github.sds100.keymapper.inputmethod.EXTRA_KEY_EVENT"
+    private const val KEY_MAPPER_INPUT_METHOD_EXTRA_TEXT =
+        "io.github.sds100.keymapper.inputmethod.EXTRA_TEXT"
 
     const val KEY_MAPPER_GUI_IME_PACKAGE = "io.github.sds100.keymapper.inputmethod.latin"
     const val KEY_MAPPER_GUI_IME_MIN_API = Build.VERSION_CODES.KITKAT
@@ -131,7 +143,8 @@ object KeyboardUtils {
         if (Build.VERSION.SDK_INT < O_MR1) {
             inputMethodManager.showInputMethodPicker()
         } else if ((O_MR1..Build.VERSION_CODES.P).contains(Build.VERSION.SDK_INT)) {
-            val command = "am broadcast -a com.android.server.InputMethodManagerService.SHOW_INPUT_METHOD_PICKER"
+            val command =
+                "am broadcast -a com.android.server.InputMethodManagerService.SHOW_INPUT_METHOD_PICKER"
             RootUtils.executeRootCommand(command)
         } else {
             ctx.toast(R.string.error_this_is_unsupported)
@@ -219,7 +232,8 @@ object KeyboardUtils {
         metaState: Int = 0,
         keyEventAction: KeyEventAction = KeyEventAction.DOWN_UP,
         deviceId: Int,
-        scanCode: Int = 0
+        scanCode: Int = 0,
+        repeat: Int = 0
     ) {
         val intentAction = when (keyEventAction) {
             KeyEventAction.DOWN -> KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN
@@ -237,8 +251,16 @@ object KeyboardUtils {
 
             val eventTime = SystemClock.uptimeMillis()
 
-            val keyEvent =
-                KeyEvent(eventTime, eventTime, action, keyCode, 0, metaState, deviceId, scanCode)
+            val keyEvent = KeyEvent(
+                eventTime,
+                eventTime,
+                action,
+                keyCode,
+                repeat,
+                metaState,
+                deviceId,
+                scanCode
+            )
 
             putExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT, keyEvent)
 
@@ -246,8 +268,24 @@ object KeyboardUtils {
         }
     }
 
-    private fun getChosenImeId(ctx: Context): String {
-        return Settings.Secure.getString(ctx.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD)
+    fun showDialogToInstallKeyMapperGuiKeyboard(ctx: Context) {
+        ctx.alertDialog {
+            messageResource = R.string.dialog_message_select_app_store_gui_keyboard
+
+            DialogChooseAppStoreBinding.inflate(ctx.layoutInflater).apply {
+                model = ChooseAppStoreModel(
+                    playStoreLink = ctx.str(R.string.url_play_store_keymapper_gui_keyboard),
+                    githubLink = ctx.str(R.string.url_github_keymapper_gui_keyboard),
+                    fdroidLink = ctx.str(R.string.url_fdroid_keymapper_gui_keyboard)
+                )
+
+                setView(this.root)
+            }
+
+            cancelButton()
+
+            show()
+        }
     }
 
     fun getImeId(packageName: String): Result<String> {
@@ -255,6 +293,10 @@ object KeyboardUtils {
             ?: return KeyMapperImeNotFound()
 
         return Success(inputMethod.id)
+    }
+
+    private fun getChosenImeId(ctx: Context): String {
+        return Settings.Secure.getString(ctx.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD)
     }
 
     private fun getSubtypeHistoryString(ctx: Context): String {

@@ -572,7 +572,7 @@ class KeymapDetectionDelegate(
     val vibrate: LiveEvent<VibrateEvent> = LiveEvent()
 
     /**
-     * @return whether to consume the [KeyEvent].
+     * @return whether to consume the key event.
      */
     fun onKeyEvent(
         keyCode: Int,
