@@ -10,6 +10,7 @@ import io.github.sds100.keymapper.globalPreferences
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.activity.HomeActivity
 import io.github.sds100.keymapper.util.AccessibilityUtils
+import io.github.sds100.keymapper.util.AppNotification
 import io.github.sds100.keymapper.util.DismissNotification
 import io.github.sds100.keymapper.util.KeyboardUtils
 import kotlinx.coroutines.runBlocking
@@ -25,9 +26,15 @@ class KeyMapperBroadcastReceiver : BroadcastReceiver() {
          */
         const val ACTION_SHOW_IME_PICKER = "$PACKAGE_NAME.ACTION_SHOW_IME_PICKER"
         const val ACTION_TOGGLE_KEYBOARD = "$PACKAGE_NAME.ACTION_TOGGLE_KEYBOARD"
-        const val ACTION_DISMISS_NOTIFICATION = "$PACKAGE_NAME.ACTION_DISMISS_NOTIFICATION"
-        const val EXTRA_DISMISS_NOTIFICATION_ID = "$PACKAGE_NAME.EXTRA_DISMISS_NOTIFICATION_ID"
-        const val ACTION_ON_FINGERPRINT_FEAT_NOTIFICATION_CLICK = "$PACKAGE_NAME.ACTION_ON_FINGERPRINT_FEAT_NOTIFICATION_CLICK"
+        const val ACTION_DISMISS_TOGGLE_KEYMAPS_NOTIFICATION =
+            "$PACKAGE_NAME.ACTION_DISMISS_NOTIFICATION"
+
+        const val ACTION_ON_FINGERPRINT_FEAT_NOTIFICATION_CLICK =
+            "$PACKAGE_NAME.ACTION_ON_FINGERPRINT_FEAT_NOTIFICATION_CLICK"
+
+        const val ACTION_ON_SETUP_CHOSEN_DEVICES_AGAIN_NOTIFICATION_CLICK =
+            "$PACKAGE_NAME.ACTION_ON_SETUP_CHOSEN_DEVICES_AGAIN_NOTIFICATION_CLICK"
+
         const val ACTION_PAUSE_KEYMAPS = "$PACKAGE_NAME.PAUSE_KEYMAPS"
         const val ACTION_RESUME_KEYMAPS = "$PACKAGE_NAME.RESUME_KEYMAPS"
     }
@@ -46,12 +53,13 @@ class KeyMapperBroadcastReceiver : BroadcastReceiver() {
 
             MyAccessibilityService.ACTION_STOP_SERVICE -> AccessibilityUtils.disableService(context)
 
-            ACTION_DISMISS_NOTIFICATION -> {
-                val id = intent.getIntExtra(EXTRA_DISMISS_NOTIFICATION_ID, -1)
-
-                if (id == -1) return
-
-                ServiceLocator.notificationController(context).onEvent(DismissNotification(id))
+            ACTION_DISMISS_TOGGLE_KEYMAPS_NOTIFICATION -> {
+                ServiceLocator.notificationController(context)
+                    .onEvent(
+                        DismissNotification(
+                            AppNotification.ToggleKeymaps(AppNotification.ToggleKeymaps.State.ANY)
+                        )
+                    )
             }
 
             ACTION_ON_FINGERPRINT_FEAT_NOTIFICATION_CLICK -> {
@@ -60,13 +68,26 @@ class KeyMapperBroadcastReceiver : BroadcastReceiver() {
                         .set(Keys.approvedFingerprintFeaturePrompt, true)
                 }
 
-                Intent(context, HomeActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    context.startActivity(this)
+                goToHomeScreen(context)
+            }
+
+            ACTION_ON_SETUP_CHOSEN_DEVICES_AGAIN_NOTIFICATION_CLICK -> {
+                runBlocking {
+                    ServiceLocator.globalPreferences(context)
+                        .set(Keys.approvedSetupChosenDevicesAgain, true)
                 }
+
+                goToHomeScreen(context)
             }
 
             else -> context.sendBroadcast(Intent(intent.action))
+        }
+    }
+
+    private fun goToHomeScreen(ctx: Context) {
+        Intent(ctx, HomeActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            ctx.startActivity(this)
         }
     }
 }

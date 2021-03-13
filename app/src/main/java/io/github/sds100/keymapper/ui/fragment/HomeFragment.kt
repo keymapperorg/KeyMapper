@@ -392,7 +392,6 @@ class HomeFragment : Fragment() {
                 }
             }
 
-
             setDismissNewGuiKeyboardAd {
                 globalPreferences.set(Keys.showGuiKeyboardAd, false)
             }
@@ -440,12 +439,16 @@ class HomeFragment : Fragment() {
         updateStatusLayouts()
 
         if (PackageUtils.isAppInstalled(requireContext(), KeyboardUtils.KEY_MAPPER_GUI_IME_PACKAGE)
-            || Build.VERSION.SDK_INT < KeyboardUtils.KEY_MAPPER_GUI_IME_MIN_API) {
+            || Build.VERSION.SDK_INT < KeyboardUtils.KEY_MAPPER_GUI_IME_MIN_API
+        ) {
             globalPreferences.set(Keys.showGuiKeyboardAd, false)
         }
 
         ServiceLocator.notificationController(requireContext())
-            .onEvent(DismissFingerprintFeatureNotification)
+            .onEvent(DismissNotification(AppNotification.FingerprintFeature))
+
+        ServiceLocator.notificationController(requireContext())
+            .onEvent(DismissNotification(AppNotification.SetupChosenDevicesAgain))
     }
 
     override fun onDestroyView() {

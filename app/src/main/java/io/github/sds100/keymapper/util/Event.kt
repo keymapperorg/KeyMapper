@@ -127,7 +127,8 @@ class PauseKeymaps : Event()
 class EnableAccessibilityService : Event()
 
 //notifications
-object ShowFingerprintFeatureNotification : Event(), UpdateNotificationEvent
-object DismissFingerprintFeatureNotification : Event(), UpdateNotificationEvent
-class DismissNotification(val id: Int) : Event(), UpdateNotificationEvent
+
+data class ShowNotification(val notification: AppNotification) : Event(), UpdateNotificationEvent
+data class DismissNotification(val notification: AppNotification) : Event(), UpdateNotificationEvent
+
 interface UpdateNotificationEvent

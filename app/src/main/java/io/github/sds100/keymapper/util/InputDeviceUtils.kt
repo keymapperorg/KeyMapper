@@ -34,6 +34,16 @@ object InputDeviceUtils {
         }
     }.toList()
 
+    fun createDeviceInfoModelsForExternal() = sequence {
+        InputDevice.getDeviceIds().forEach {
+            val device = InputDevice.getDevice(it)
+
+            if (device.isExternalCompat) {
+                yield(DeviceInfo(device.descriptor, device.name))
+            }
+        }
+    }.toList()
+
     fun getDeviceNames() = sequence {
         InputDevice.getDeviceIds().forEach {
             val device = InputDevice.getDevice(it)

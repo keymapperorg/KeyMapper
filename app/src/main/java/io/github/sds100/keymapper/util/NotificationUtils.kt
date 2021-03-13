@@ -13,7 +13,6 @@ import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.graphics.drawable.toBitmap
-import androidx.core.os.bundleOf
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
@@ -27,11 +26,12 @@ import io.github.sds100.keymapper.util.AppNotification.*
  */
 
 object NotificationUtils {
-    const val ID_IME_PICKER = 123
-    const val ID_KEYBOARD_HIDDEN = 747
-    const val ID_TOGGLE_KEYMAPS = 231
-    const val ID_TOGGLE_KEYBOARD = 143
-    const val ID_FEATURE_REMAP_FINGERPRINT_GESTURES = 1
+    private const val ID_IME_PICKER = 123
+    private const val ID_KEYBOARD_HIDDEN = 747
+    private const val ID_TOGGLE_KEYMAPS = 231
+    private const val ID_TOGGLE_KEYBOARD = 143
+    private const val ID_FEATURE_REMAP_FINGERPRINT_GESTURES = 1
+    private const val ID_SETUP_CHOSEN_DEVICES_AGAIN = 2
 
     const val CHANNEL_TOGGLE_KEYMAPS = "channel_toggle_remaps"
     const val CHANNEL_IME_PICKER = "channel_ime_picker"
@@ -59,17 +59,30 @@ object NotificationUtils {
 
     fun showNotification(ctx: Context, notification: AppNotification) {
         when (notification) {
-            KEYMAPS_PAUSED -> keymapsPausedNotification(ctx)
-            KEYMAPS_RESUMED -> keymapsResumedNotification(ctx)
-            ACCESSIBILITY_SERVICE_DISABLED -> accessibilityServiceDisabledNotification(ctx)
-            TOGGLE_KEYBOARD -> toggleKeyboardNotification(ctx)
-            SHOW_IME_PICKER -> showImePickerNotification(ctx)
-            KEYBOARD_HIDDEN -> keyboardHiddenNotification(ctx)
-            FINGERPRINT_FEATURE -> fingerprintFeatureNotification(ctx)
+            is ToggleKeymaps -> when (notification.state) {
+                ToggleKeymaps.State.KEYMAPS_PAUSED -> keymapsPausedNotification(ctx)
+                ToggleKeymaps.State.KEYMAPS_RESUMED -> keymapsResumedNotification(ctx)
+                ToggleKeymaps.State.SERVICE_DISABLED -> accessibilityServiceDisabledNotification(ctx)
+            }
+            FingerprintFeature -> fingerprintFeatureNotification(ctx)
+            KeyboardHidden -> keyboardHiddenNotification(ctx)
+
+            SetupChosenDevicesAgain -> setupChosenDevicesAgainNotification(ctx)
+            ShowImePicker -> showImePickerNotification(ctx)
+            ToggleKeyboard -> toggleKeyboardNotification(ctx)
         }
     }
 
-    fun dismissNotification(ctx: Context, id: Int) {
+    fun dismissNotification(ctx: Context, notification: AppNotification) {
+        val id = when (notification) {
+            FingerprintFeature -> ID_FEATURE_REMAP_FINGERPRINT_GESTURES
+            KeyboardHidden -> ID_KEYBOARD_HIDDEN
+            SetupChosenDevicesAgain -> ID_SETUP_CHOSEN_DEVICES_AGAIN
+            ShowImePicker -> ID_IME_PICKER
+            ToggleKeyboard -> ID_TOGGLE_KEYBOARD
+            is ToggleKeymaps -> ID_TOGGLE_KEYMAPS
+        }
+
         NotificationManagerCompat.from(ctx).cancel(id)
     }
 
@@ -121,18 +134,21 @@ object NotificationUtils {
         NotificationManagerCompat.from(ctx).deleteNotificationChannel(channelId)
     }
 
-    private fun showNotification(ctx: Context,
-                                 id: Int,
-                                 pendingIntent: PendingIntent? = null,
-                                 channel: String,
-                                 @DrawableRes icon: Int,
-                                 @StringRes title: Int,
-                                 @StringRes text: Int,
-                                 showOnLockScreen: Boolean = false,
-                                 onGoing: Boolean = false,
-                                 priority: Int = NotificationCompat.PRIORITY_DEFAULT,
-                                 vararg actions: NotificationCompat.Action = arrayOf(),
-                                 autoCancel: Boolean = false) {
+    private fun showNotification(
+        ctx: Context,
+        id: Int,
+        pendingIntent: PendingIntent? = null,
+        channel: String,
+        @DrawableRes icon: Int,
+        @StringRes title: Int,
+        @StringRes text: Int,
+        showOnLockScreen: Boolean = false,
+        onGoing: Boolean = false,
+        priority: Int = NotificationCompat.PRIORITY_DEFAULT,
+        vararg actions: NotificationCompat.Action = arrayOf(),
+        autoCancel: Boolean = false,
+        bigTextStyle: Boolean = false
+    ) {
 
         val builder = NotificationCompat.Builder(ctx, channel).apply {
             color = ctx.color(R.color.colorAccent)
@@ -141,6 +157,10 @@ object NotificationUtils {
             setContentIntent(pendingIntent)
             setAutoCancel(autoCancel)
             this.priority = priority
+
+            if (bigTextStyle) {
+                setStyle(NotificationCompat.BigTextStyle())
+            }
 
             if (onGoing) {
                 setOngoing(true)
@@ -177,13 +197,16 @@ object NotificationUtils {
         title = R.string.notification_keymaps_paused_title,
         text = R.string.notification_keymaps_paused_text,
         icon = R.drawable.ic_notification_play,
-        pendingIntent = IntentUtils.createPendingBroadcastIntent(ctx, KeyMapperBroadcastReceiver.ACTION_RESUME_KEYMAPS),
+        pendingIntent = IntentUtils.createPendingBroadcastIntent(
+            ctx,
+            KeyMapperBroadcastReceiver.ACTION_RESUME_KEYMAPS
+        ),
         showOnLockScreen = true,
         onGoing = true,
         priority = NotificationCompat.PRIORITY_MIN,
         actions = arrayOf(
             stopAccessibilityServiceAction(ctx),
-            dismissNotificationAction(ctx, ID_TOGGLE_KEYMAPS),
+            dismissToggleKeymapsNotificationAction(ctx),
             openKeyMapperAction(ctx)
         ),
     )
@@ -195,13 +218,16 @@ object NotificationUtils {
         title = R.string.notification_keymaps_resumed_title,
         text = R.string.notification_keymaps_resumed_text,
         icon = R.drawable.ic_notification_pause,
-        pendingIntent = IntentUtils.createPendingBroadcastIntent(ctx, KeyMapperBroadcastReceiver.ACTION_PAUSE_KEYMAPS),
+        pendingIntent = IntentUtils.createPendingBroadcastIntent(
+            ctx,
+            KeyMapperBroadcastReceiver.ACTION_PAUSE_KEYMAPS
+        ),
         showOnLockScreen = true,
         onGoing = true,
         priority = NotificationCompat.PRIORITY_MIN,
         actions = arrayOf(
             stopAccessibilityServiceAction(ctx),
-            dismissNotificationAction(ctx, ID_TOGGLE_KEYMAPS),
+            dismissToggleKeymapsNotificationAction(ctx),
             openKeyMapperAction(ctx)
         )
     )
@@ -213,12 +239,15 @@ object NotificationUtils {
         title = R.string.notification_accessibility_service_disabled_title,
         text = R.string.notification_accessibility_service_disabled_text,
         icon = R.drawable.ic_notification_error,
-        pendingIntent = IntentUtils.createPendingBroadcastIntent(ctx, MyAccessibilityService.ACTION_START_SERVICE),
+        pendingIntent = IntentUtils.createPendingBroadcastIntent(
+            ctx,
+            MyAccessibilityService.ACTION_START_SERVICE
+        ),
         showOnLockScreen = true,
         onGoing = true,
         priority = NotificationCompat.PRIORITY_MIN,
         actions = arrayOf(
-            dismissNotificationAction(ctx, ID_TOGGLE_KEYMAPS),
+            dismissToggleKeymapsNotificationAction(ctx),
             openKeyMapperAction(ctx)
         )
     )
@@ -230,7 +259,10 @@ object NotificationUtils {
         title = R.string.notification_toggle_keyboard_title,
         text = R.string.notification_toggle_keyboard_text,
         icon = R.drawable.ic_notification_keyboard,
-        pendingIntent = IntentUtils.createPendingBroadcastIntent(ctx, MyAccessibilityService.ACTION_START_SERVICE),
+        pendingIntent = IntentUtils.createPendingBroadcastIntent(
+            ctx,
+            MyAccessibilityService.ACTION_START_SERVICE
+        ),
         showOnLockScreen = true,
         onGoing = true,
         priority = NotificationCompat.PRIORITY_MIN,
@@ -244,7 +276,10 @@ object NotificationUtils {
         title = R.string.notification_ime_persistent_title,
         text = R.string.notification_ime_persistent_text,
         icon = R.drawable.ic_notification_keyboard,
-        pendingIntent = IntentUtils.createPendingBroadcastIntent(ctx, KeyMapperBroadcastReceiver.ACTION_SHOW_IME_PICKER),
+        pendingIntent = IntentUtils.createPendingBroadcastIntent(
+            ctx,
+            KeyMapperBroadcastReceiver.ACTION_SHOW_IME_PICKER
+        ),
         onGoing = true,
         priority = NotificationCompat.PRIORITY_MIN
     )
@@ -256,7 +291,10 @@ object NotificationUtils {
         title = R.string.notification_keyboard_hidden_title,
         text = R.string.notification_keyboard_hidden_text,
         icon = R.drawable.ic_notification_keyboard_hide,
-        pendingIntent = IntentUtils.createPendingBroadcastIntent(ctx, MyAccessibilityService.ACTION_SHOW_KEYBOARD),
+        pendingIntent = IntentUtils.createPendingBroadcastIntent(
+            ctx,
+            MyAccessibilityService.ACTION_SHOW_KEYBOARD
+        ),
         onGoing = true,
         priority = NotificationCompat.PRIORITY_LOW
     )
@@ -268,18 +306,37 @@ object NotificationUtils {
         title = R.string.notification_feature_fingerprint_title,
         text = R.string.notification_feature_fingerprint_text,
         icon = R.drawable.ic_notification_fingerprint,
-        pendingIntent = IntentUtils.createPendingActivityIntent(ctx, HomeActivity::class.java),
+        pendingIntent = IntentUtils.createPendingBroadcastIntent(
+            ctx,
+            KeyMapperBroadcastReceiver.ACTION_ON_FINGERPRINT_FEAT_NOTIFICATION_CLICK
+        ),
         autoCancel = true,
-        priority = NotificationCompat.PRIORITY_LOW
+        priority = NotificationCompat.PRIORITY_LOW,
+        bigTextStyle = true
     )
 
-    private fun dismissNotificationAction(ctx: Context, id: Int) = NotificationCompat.Action(
+    private fun setupChosenDevicesAgainNotification(ctx: Context) = showNotification(
+        ctx,
+        id = ID_SETUP_CHOSEN_DEVICES_AGAIN,
+        channel = CHANNEL_NEW_FEATURES,
+        title = R.string.notification_setup_chosen_devices_again_title,
+        text = R.string.notification_setup_chosen_devices_again_text,
+        icon = R.drawable.ic_notifications_settings,
+        pendingIntent = IntentUtils.createPendingBroadcastIntent(
+            ctx,
+            KeyMapperBroadcastReceiver.ACTION_ON_SETUP_CHOSEN_DEVICES_AGAIN_NOTIFICATION_CLICK
+        ),
+        autoCancel = true,
+        priority = NotificationCompat.PRIORITY_LOW,
+        bigTextStyle = true
+    )
+
+    private fun dismissToggleKeymapsNotificationAction(ctx: Context) = NotificationCompat.Action(
         0,
         ctx.str(R.string.notification_action_dismiss),
         IntentUtils.createPendingBroadcastIntent(
             ctx,
-            action = KeyMapperBroadcastReceiver.ACTION_DISMISS_NOTIFICATION,
-            extras = bundleOf(KeyMapperBroadcastReceiver.EXTRA_DISMISS_NOTIFICATION_ID to id)
+            action = KeyMapperBroadcastReceiver.ACTION_DISMISS_TOGGLE_KEYMAPS_NOTIFICATION
         )
     )
 
@@ -298,16 +355,26 @@ object NotificationUtils {
     private fun toggleKeyboardAction(ctx: Context) = NotificationCompat.Action(
         0,
         ctx.str(R.string.toggle),
-        IntentUtils.createPendingBroadcastIntent(ctx, KeyMapperBroadcastReceiver.ACTION_TOGGLE_KEYBOARD)
+        IntentUtils.createPendingBroadcastIntent(
+            ctx,
+            KeyMapperBroadcastReceiver.ACTION_TOGGLE_KEYBOARD
+        )
     )
 }
 
-enum class AppNotification {
-    KEYMAPS_PAUSED,
-    KEYMAPS_RESUMED,
-    ACCESSIBILITY_SERVICE_DISABLED,
-    TOGGLE_KEYBOARD,
-    SHOW_IME_PICKER,
-    KEYBOARD_HIDDEN,
-    FINGERPRINT_FEATURE
+sealed class AppNotification {
+    data class ToggleKeymaps(val state: State) : AppNotification() {
+        enum class State {
+            ANY,
+            KEYMAPS_RESUMED,
+            KEYMAPS_PAUSED,
+            SERVICE_DISABLED
+        }
+    }
+
+    object ToggleKeyboard : AppNotification()
+    object ShowImePicker : AppNotification()
+    object KeyboardHidden : AppNotification()
+    object FingerprintFeature : AppNotification()
+    object SetupChosenDevicesAgain : AppNotification()
 }

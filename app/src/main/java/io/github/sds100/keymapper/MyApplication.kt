@@ -64,8 +64,8 @@ class MyApplication : MultiDexApplication(),
         NotificationUtils.showNotification(this, notification)
     }
 
-    override fun dismissNotification(notificationId: Int) {
-        NotificationUtils.dismissNotification(this, notificationId)
+    override fun dismissNotification(notification: AppNotification) {
+        NotificationUtils.dismissNotification(this, notification)
     }
 
     override fun createChannel(vararg channelId: String) {

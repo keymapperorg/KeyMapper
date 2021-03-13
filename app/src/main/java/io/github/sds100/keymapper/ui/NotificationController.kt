@@ -12,10 +12,6 @@ import io.github.sds100.keymapper.util.NotificationUtils.CHANNEL_KEYBOARD_HIDDEN
 import io.github.sds100.keymapper.util.NotificationUtils.CHANNEL_NEW_FEATURES
 import io.github.sds100.keymapper.util.NotificationUtils.CHANNEL_TOGGLE_KEYBOARD
 import io.github.sds100.keymapper.util.NotificationUtils.CHANNEL_TOGGLE_KEYMAPS
-import io.github.sds100.keymapper.util.NotificationUtils.ID_IME_PICKER
-import io.github.sds100.keymapper.util.NotificationUtils.ID_KEYBOARD_HIDDEN
-import io.github.sds100.keymapper.util.NotificationUtils.ID_TOGGLE_KEYBOARD
-import io.github.sds100.keymapper.util.NotificationUtils.ID_TOGGLE_KEYMAPS
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
@@ -38,7 +34,8 @@ class NotificationController(
                 globalPreferences.showImePickerNotification,
                 globalPreferences.showToggleKeyboardNotification,
                 globalPreferences.showToggleKeymapsNotification,
-                globalPreferences.keymapsPaused) { _, _, _, _ ->
+                globalPreferences.keymapsPaused
+            ) { _, _, _, _ ->
 
                 invalidateNotifications()
             }.collect()
@@ -60,23 +57,25 @@ class NotificationController(
             }
 
             is OnAccessibilityServiceStopped -> {
-                manager.showNotification(AppNotification.ACCESSIBILITY_SERVICE_DISABLED)
-                manager.dismissNotification(ID_KEYBOARD_HIDDEN)
+                manager.showNotification(
+                    AppNotification.ToggleKeymaps(
+                        AppNotification.ToggleKeymaps.State.SERVICE_DISABLED
+                    )
+                )
+
+                manager.dismissNotification(AppNotification.KeyboardHidden)
             }
 
             is OnHideKeyboard ->
-                manager.showNotification(AppNotification.KEYBOARD_HIDDEN)
+                manager.showNotification(AppNotification.KeyboardHidden)
 
             is OnShowKeyboard ->
-                manager.dismissNotification(ID_KEYBOARD_HIDDEN)
+                manager.dismissNotification(AppNotification.KeyboardHidden)
 
-            is ShowFingerprintFeatureNotification ->
-                manager.showNotification(AppNotification.FINGERPRINT_FEATURE)
+            is ShowNotification ->
+                manager.showNotification(event.notification)
 
-            is DismissFingerprintFeatureNotification ->
-                manager.dismissNotification(NotificationUtils.ID_FEATURE_REMAP_FINGERPRINT_GESTURES)
-
-            is DismissNotification -> manager.dismissNotification(event.id)
+            is DismissNotification -> manager.dismissNotification(event.notification)
         }
     }
 
@@ -90,16 +89,21 @@ class NotificationController(
             invalidateToggleKeymapsNotification(keymapsPaused)
 
         } else {
-            manager.showNotification(AppNotification.ACCESSIBILITY_SERVICE_DISABLED)
+            manager.showNotification(
+                AppNotification.ToggleKeymaps(
+                    AppNotification.ToggleKeymaps.State.SERVICE_DISABLED
+                )
+            )
         }
 
         //visibility of the notification is handled by the system on API >= 26 but is only supported up to API 28
         if (globalPreferences.showImePickerNotification.firstBlocking() ||
-            (SDK_INT >= Build.VERSION_CODES.O && SDK_INT < Build.VERSION_CODES.Q)) {
+            (SDK_INT >= Build.VERSION_CODES.O && SDK_INT < Build.VERSION_CODES.Q)
+        ) {
 
-            manager.showNotification(AppNotification.SHOW_IME_PICKER)
+            manager.showNotification(AppNotification.ShowImePicker)
         } else if (SDK_INT < Build.VERSION_CODES.O) {
-            manager.dismissNotification(ID_IME_PICKER)
+            manager.dismissNotification(AppNotification.ShowImePicker)
         }
 
         val showToggleKeyboardNotification =
@@ -108,10 +112,10 @@ class NotificationController(
                 ?: false
 
         if (haveWriteSecureSettingsPermission() || showToggleKeyboardNotification) {
-            manager.showNotification(AppNotification.TOGGLE_KEYBOARD)
+            manager.showNotification(AppNotification.ToggleKeyboard)
 
         } else {
-            manager.dismissNotification(ID_TOGGLE_KEYBOARD)
+            manager.dismissNotification(AppNotification.ToggleKeyboard)
         }
     }
 
@@ -122,15 +126,25 @@ class NotificationController(
                 .firstBlocking() ?: false
 
             if (!showNotification) {
-                manager.dismissNotification(ID_TOGGLE_KEYMAPS)
+                manager.dismissNotification(
+                    AppNotification.ToggleKeymaps(AppNotification.ToggleKeymaps.State.ANY)
+                )
                 return
             }
         }
 
         if (keymapsPaused) {
-            manager.showNotification(AppNotification.KEYMAPS_PAUSED)
+            manager.showNotification(
+                AppNotification.ToggleKeymaps(
+                    AppNotification.ToggleKeymaps.State.KEYMAPS_PAUSED
+                )
+            )
         } else {
-            manager.showNotification(AppNotification.KEYMAPS_RESUMED)
+            manager.showNotification(
+                AppNotification.ToggleKeymaps(
+                    AppNotification.ToggleKeymaps.State.KEYMAPS_RESUMED
+                )
+            )
         }
     }
 
@@ -153,7 +167,8 @@ class NotificationController(
 
         if ((globalPreferences.hasRootPermission.firstBlocking()
                 && SDK_INT >= Build.VERSION_CODES.O_MR1 && SDK_INT < Build.VERSION_CODES.Q)
-            || SDK_INT < Build.VERSION_CODES.O_MR1) {
+            || SDK_INT < Build.VERSION_CODES.O_MR1
+        ) {
 
             channels.add(CHANNEL_IME_PICKER)
         } else {

@@ -16,12 +16,22 @@ object Keys {
     val showToggleKeymapsNotification = booleanPreferencesKey("pref_show_remappings_notification")
     val showToggleKeyboardNotification =
         booleanPreferencesKey("pref_toggle_key_mapper_keyboard_notification")
+
+    val autoChangeImeOnDeviceConnect =
+        booleanPreferencesKey("pref_auto_change_ime_on_connect_disconnect")
+
+    @Deprecated(message = "Replaced with devicesThatToggleKeyboard")
     val bluetoothDevicesThatToggleKeyboard = stringSetPreferencesKey("pref_bluetooth_devices")
+    val devicesThatToggleKeyboard = stringSetPreferencesKey("pref_bluetooth_devices")
+
+    val autoShowImePickerOnDeviceConnect = booleanPreferencesKey("pref_auto_show_ime_picker")
+
+    @Deprecated(message = "Replaced with devicesThatShowImePicker")
     val bluetoothDevicesThatShowImePicker =
         stringSetPreferencesKey("pref_bluetooth_devices_show_ime_picker")
-    val autoChangeImeOnBtConnect =
-        booleanPreferencesKey("pref_auto_change_ime_on_connect_disconnect")
-    val autoShowImePicker = booleanPreferencesKey("pref_auto_show_ime_picker")
+    val devicesThatShowImePicker =
+        stringSetPreferencesKey("pref_bluetooth_devices_show_ime_picker")
+
     val longPressDelay = intPreferencesKey("pref_long_press_delay")
     val doublePressDelay = intPreferencesKey("pref_double_press_delay")
     val forceVibrate = booleanPreferencesKey("pref_force_vibrate")
@@ -39,6 +49,8 @@ object Keys {
     val holdDownDuration = intPreferencesKey("pref_hold_down_duration")
     val approvedFingerprintFeaturePrompt =
         booleanPreferencesKey("pref_approved_fingerprint_feature_prompt")
+    val approvedSetupChosenDevicesAgain =
+        booleanPreferencesKey("pref_approved_new_choose_devices_settings")
 
     val shownScreenOffTriggersExplanation =
         booleanPreferencesKey("pref_screen_off_triggers_explanation")

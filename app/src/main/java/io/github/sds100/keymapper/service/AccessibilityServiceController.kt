@@ -17,6 +17,7 @@ import io.github.sds100.keymapper.data.usecase.GlobalKeymapUseCase
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.delegate.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.first
 import splitties.bitflags.hasFlag
 import splitties.toast.toast
 import timber.log.Timber
@@ -33,7 +34,8 @@ class AccessibilityServiceController(
     private val appUpdateManager: AppUpdateManager,
     private val globalPreferences: IGlobalPreferences,
     private val fingerprintMapRepository: FingerprintMapRepository,
-    private val keymapRepository: GlobalKeymapUseCase
+    private val keymapRepository: GlobalKeymapUseCase,
+    private val inputMethodUtils: InputMethodUtils
 ) : IAccessibilityService by iAccessibilityService, LifecycleOwner by lifecycleOwner {
 
     companion object {
@@ -64,21 +66,22 @@ class AccessibilityServiceController(
     private val recordingTrigger: Boolean
         get() = recordingTriggerJob != null && recordingTriggerJob?.isActive == true
 
-    private val getEventDelegate = GetEventDelegate { keyCode, action, deviceDescriptor, isExternal, deviceId ->
+    private val getEventDelegate =
+        GetEventDelegate { keyCode, action, deviceDescriptor, isExternal, deviceId ->
 
-        if (!globalPreferences.keymapsPaused.firstBlocking()) {
-            withContext(Dispatchers.Main.immediate) {
-                keymapDetectionDelegate.onKeyEvent(
-                    keyCode,
-                    action,
-                    deviceDescriptor,
-                    isExternal,
-                    0,
-                    deviceId
-                )
+            if (!globalPreferences.keymapsPaused.firstBlocking()) {
+                withContext(Dispatchers.Main.immediate) {
+                    keymapDetectionDelegate.onKeyEvent(
+                        keyCode,
+                        action,
+                        deviceDescriptor,
+                        isExternal,
+                        0,
+                        deviceId
+                    )
+                }
             }
         }
-    }
 
     private var screenOffTriggersEnabled = false
 
@@ -134,23 +137,42 @@ class AccessibilityServiceController(
 
     val eventStream: LiveData<Event> = _eventStream
 
-    init {
-        lifecycleScope.launch {
+    fun init() {
+        lifecycleScope.launchWhenStarted {
             val oldVersion = appUpdateManager.getLastVersionCodeAccessibilityService()
-            if (oldVersion == Constants.VERSION_CODE) return@launch
+            if (oldVersion == Constants.VERSION_CODE) return@launchWhenStarted
 
             requestFingerprintGestureDetection()
 
-            val handledUpdateInHomeScreen =
-                appUpdateManager.getLastVersionCodeHomeScreen() == Constants.VERSION_CODE
+            val approvedFingerprintFeature =
+                globalPreferences.getFlow(Keys.approvedFingerprintFeaturePrompt)
+                    .first().let { it != null && it }
 
             if (oldVersion < FingerprintMapUtils.FINGERPRINT_GESTURES_MIN_VERSION
+                && !approvedFingerprintFeature
                 && isGestureDetectionAvailable
-                && !handledUpdateInHomeScreen) {
-                _eventStream.postValue(ShowFingerprintFeatureNotification)
+            ) {
+                _eventStream.value = ShowNotification(AppNotification.FingerprintFeature)
             }
 
             denyFingerprintGestureDetection()
+
+            val approvedNewChooseDevicesSettings =
+                globalPreferences.getFlow(Keys.approvedSetupChosenDevicesAgain)
+                    .first() == true
+
+            val previouslyChoseBluetoothDevices =
+                globalPreferences.getFlow(Keys.bluetoothDevicesThatShowImePicker)
+                    .first()?.isNotEmpty() == true
+                    || globalPreferences.getFlow(Keys.bluetoothDevicesThatToggleKeyboard)
+                    .first()?.isNotEmpty() == true
+
+            if (oldVersion < 43 //version 2.3.0
+                && !approvedNewChooseDevicesSettings
+                && previouslyChoseBluetoothDevices
+            ) {
+                _eventStream.value = ShowNotification(AppNotification.SetupChosenDevicesAgain)
+            }
 
             appUpdateManager.handledAppUpdateInAccessibilityService()
         }
@@ -175,14 +197,16 @@ class AccessibilityServiceController(
         subscribeToPreferenceChanges()
     }
 
-    fun onKeyEvent(keyCode: Int,
-                   action: Int,
-                   deviceName: String,
-                   descriptor: String,
-                   isExternal: Boolean,
-                   metaState: Int,
-                   deviceId: Int,
-                   scanCode: Int = 0): Boolean {
+    fun onKeyEvent(
+        keyCode: Int,
+        action: Int,
+        deviceName: String,
+        descriptor: String,
+        isExternal: Boolean,
+        metaState: Int,
+        deviceId: Int,
+        scanCode: Int = 0
+    ): Boolean {
 
         if (recordingTrigger) {
             if (action == KeyEvent.ACTION_DOWN) {
@@ -206,7 +230,8 @@ class AccessibilityServiceController(
                     isExternal,
                     metaState,
                     deviceId,
-                    scanCode)
+                    scanCode
+                )
 
                 return consume
 
@@ -216,6 +241,35 @@ class AccessibilityServiceController(
         }
 
         return false
+    }
+
+    fun onInputDeviceConnectionChange(descriptor: String, connectionState: ConnectionState) {
+        lifecycleScope.launchWhenStarted {
+            val autoShowImePicker =
+                globalPreferences.get(Keys.autoShowImePickerOnDeviceConnect) ?: false
+            val devicesThatShowImePicker =
+                globalPreferences.get(Keys.devicesThatShowImePicker) ?: emptySet()
+
+            if (autoShowImePicker && devicesThatShowImePicker.contains(descriptor)) {
+                inputMethodUtils.showInputMethodPickerDialogOutsideApp()
+            }
+
+            val autoToggleKeyboard =
+                globalPreferences.get(Keys.autoChangeImeOnDeviceConnect) ?: false
+
+            val devicesThatToggleKeyboard =
+                globalPreferences.get(Keys.devicesThatToggleKeyboard) ?: emptySet()
+
+            if (autoToggleKeyboard && devicesThatToggleKeyboard.contains(descriptor)) {
+                when (connectionState) {
+                    ConnectionState.CONNECTED ->
+                        inputMethodUtils.chooseCompatibleInputMethod()
+
+                    ConnectionState.DISCONNECTED ->
+                        inputMethodUtils.chooseLastUsedIncompatibleInputMethod()
+                }
+            }
+        }
     }
 
     fun onFingerprintGesture(sdkGestureId: Int) {

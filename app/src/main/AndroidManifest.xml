@@ -93,13 +93,6 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".broadcastreceiver.BluetoothConnectionBroadcastReceiver">
-            <intent-filter>
-                <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
-                <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
-            </intent-filter>
-        </receiver>
-
         <receiver
             android:name=".service.DeviceAdmin"
             android:permission="android.permission.BIND_DEVICE_ADMIN">

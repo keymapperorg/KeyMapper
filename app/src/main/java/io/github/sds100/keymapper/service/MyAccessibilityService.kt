@@ -5,10 +5,13 @@ import android.accessibilityservice.AccessibilityServiceInfo
 import android.accessibilityservice.FingerprintGestureController
 import android.bluetooth.BluetoothDevice
 import android.content.*
+import android.hardware.input.InputManager
 import android.media.AudioManager
 import android.os.Build.*
+import android.os.Handler
 import android.os.SystemClock
 import android.os.VibrationEffect
+import android.view.InputDevice
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
@@ -31,6 +34,7 @@ import kotlinx.coroutines.*
 import splitties.bitflags.minusFlag
 import splitties.bitflags.withFlag
 import splitties.systemservices.displayManager
+import splitties.systemservices.inputManager
 import splitties.systemservices.vibrator
 import splitties.toast.toast
 
@@ -52,7 +56,8 @@ class MyAccessibilityService : AccessibilityService(),
         const val ACTION_RECORD_TRIGGER = "$PACKAGE_NAME.RECORD_TRIGGER"
         const val ACTION_TEST_ACTION = "$PACKAGE_NAME.TEST_ACTION"
         const val ACTION_RECORDED_TRIGGER_KEY = "$PACKAGE_NAME.RECORDED_TRIGGER_KEY"
-        const val ACTION_RECORD_TRIGGER_TIMER_INCREMENTED = "$PACKAGE_NAME.RECORD_TRIGGER_TIMER_INCREMENTED"
+        const val ACTION_RECORD_TRIGGER_TIMER_INCREMENTED =
+            "$PACKAGE_NAME.RECORD_TRIGGER_TIMER_INCREMENTED"
         const val ACTION_STOP_RECORDING_TRIGGER = "$PACKAGE_NAME.STOP_RECORDING_TRIGGER"
         const val ACTION_STOPPED_RECORDING_TRIGGER = "$PACKAGE_NAME.STOPPED_RECORDING_TRIGGER"
         const val ACTION_ON_START = "$PACKAGE_NAME.ON_ACCESSIBILITY_SERVICE_START"
@@ -63,7 +68,8 @@ class MyAccessibilityService : AccessibilityService(),
         const val ACTION_TRIGGER_KEYMAP_BY_UID = "$PACKAGE_NAME.TRIGGER_KEYMAP_BY_UID"
         const val EXTRA_KEYMAP_UID = "$PACKAGE_NAME.KEYMAP_UID"
 
-        const val EXTRA_RECORDED_TRIGGER_KEY_EVENT = "$PACKAGE_NAME.EXTRA_RECORDED_TRIGGER_KEY_EVENT"
+        const val EXTRA_RECORDED_TRIGGER_KEY_EVENT =
+            "$PACKAGE_NAME.EXTRA_RECORDED_TRIGGER_KEY_EVENT"
 
         const val EXTRA_TIME_LEFT = "$PACKAGE_NAME.EXTRA_TIME_LEFT"
         const val EXTRA_ACTION = "$PACKAGE_NAME.EXTRA_ACTION"
@@ -78,8 +84,9 @@ class MyAccessibilityService : AccessibilityService(),
             when (intent?.action) {
 
                 BluetoothDevice.ACTION_ACL_CONNECTED, BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
-                    val device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
-                        ?: return
+                    val device =
+                        intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
+                            ?: return
 
                     if (intent.action == BluetoothDevice.ACTION_ACL_DISCONNECTED) {
                         connectedBtAddresses.remove(device.address)
@@ -187,6 +194,36 @@ class MyAccessibilityService : AccessibilityService(),
 
     private lateinit var controller: AccessibilityServiceController
 
+    /**
+     * Need to use this because when a device disconnects you can't retrieve the descriptor
+     * from the device id.
+     */
+    private val deviceIdToDescriptorMap = mutableMapOf<Int, String>().apply {
+        InputDevice.getDeviceIds().forEach { id ->
+            val descriptor: String? = InputDevice.getDevice(id)?.descriptor
+
+            if (descriptor != null) {
+                put(id, descriptor)
+            }
+        }
+    }
+
+    private val inputDeviceListener = object : InputManager.InputDeviceListener {
+        override fun onInputDeviceAdded(deviceId: Int) {
+            val descriptor = InputDevice.getDevice(deviceId)?.descriptor ?: return
+            deviceIdToDescriptorMap[deviceId] = descriptor
+            controller.onInputDeviceConnectionChange(descriptor, ConnectionState.CONNECTED)
+        }
+
+        override fun onInputDeviceRemoved(deviceId: Int) {
+            val descriptor = deviceIdToDescriptorMap[deviceId] ?: return
+            deviceIdToDescriptorMap.remove(deviceId)
+            controller.onInputDeviceConnectionChange(descriptor, ConnectionState.DISCONNECTED)
+        }
+
+        override fun onInputDeviceChanged(deviceId: Int) {}
+    }
+
     override fun onServiceConnected() {
         super.onServiceConnected()
 
@@ -196,7 +233,8 @@ class MyAccessibilityService : AccessibilityService(),
         actionPerformerDelegate = ActionPerformerDelegate(
             context = this,
             iAccessibilityService = this,
-            lifecycle = lifecycle)
+            lifecycle = lifecycle
+        )
 
         IntentFilter().apply {
             addAction(ACTION_SHOW_KEYBOARD)
@@ -237,6 +275,17 @@ class MyAccessibilityService : AccessibilityService(),
             }
         }
 
+        val inputMethodUtils = object : InputMethodUtils {
+            override fun showInputMethodPickerDialogOutsideApp() =
+                KeyboardUtils.showInputMethodPickerDialogOutsideApp(this@MyAccessibilityService)
+
+            override fun chooseCompatibleInputMethod() =
+                KeyboardUtils.chooseCompatibleInputMethod(this@MyAccessibilityService)
+
+            override fun chooseLastUsedIncompatibleInputMethod() =
+                KeyboardUtils.chooseLastUsedIncompatibleInputMethod(this@MyAccessibilityService)
+        }
+
         controller = AccessibilityServiceController(
             lifecycleOwner = this,
             constraintState = this,
@@ -246,12 +295,18 @@ class MyAccessibilityService : AccessibilityService(),
             appUpdateManager = ServiceLocator.appUpdateManager(this),
             globalPreferences = ServiceLocator.globalPreferences(this),
             fingerprintMapRepository = ServiceLocator.fingerprintMapRepository(this),
-            keymapRepository = ServiceLocator.keymapRepository(this)
+            keymapRepository = ServiceLocator.keymapRepository(this),
+            inputMethodUtils = inputMethodUtils
         )
 
         controller.eventStream.observe(this, Observer {
             onControllerEvent(it)
         })
+
+        /*
+        Init after observing to event stream so that no events are missed in the init stage
+         */
+        controller.init()
 
         globalPreferences.keymapsPaused.collectWhenStarted(this) { paused ->
             if (paused) {
@@ -272,6 +327,8 @@ class MyAccessibilityService : AccessibilityService(),
                     }
             }
         }
+
+        inputManager.registerInputDeviceListener(inputDeviceListener, Handler(mainLooper))
     }
 
     override fun onInterrupt() {}
@@ -293,6 +350,8 @@ class MyAccessibilityService : AccessibilityService(),
                 .unregisterFingerprintGestureCallback(fingerprintGestureCallback)
         }
 
+        inputManager.unregisterInputDeviceListener(inputDeviceListener)
+
         super.onDestroy()
     }
 
@@ -301,17 +360,20 @@ class MyAccessibilityService : AccessibilityService(),
     override fun onKeyEvent(event: KeyEvent?): Boolean {
         event ?: return super.onKeyEvent(event)
 
-        return controller.onKeyEvent(event.keyCode,
+        return controller.onKeyEvent(
+            event.keyCode,
             event.action,
             event.device.name,
             event.device.descriptor,
             event.device.isExternalCompat,
             event.metaState,
             event.deviceId,
-            event.scanCode)
+            event.scanCode
+        )
     }
 
-    override fun isBluetoothDeviceConnected(address: String) = connectedBtAddresses.contains(address)
+    override fun isBluetoothDeviceConnected(address: String) =
+        connectedBtAddresses.contains(address)
 
     override fun canActionBePerformed(action: Action): Result<Action> {
         if (action.requiresIME) {
@@ -360,8 +422,8 @@ class MyAccessibilityService : AccessibilityService(),
                 bundleOf(EXTRA_TIME_LEFT to event.timeLeft)
             )
 
-            is ShowFingerprintFeatureNotification ->
-                notificationController.onEvent(ShowFingerprintFeatureNotification)
+            is UpdateNotificationEvent ->
+                notificationController.onEvent(event)
 
             is OnStoppedRecordingTrigger ->
                 sendPackageBroadcast(ACTION_STOPPED_RECORDING_TRIGGER)
@@ -371,7 +433,10 @@ class MyAccessibilityService : AccessibilityService(),
 
                 if (VERSION.SDK_INT >= VERSION_CODES.O) {
                     val effect =
-                        VibrationEffect.createOneShot(event.duration, VibrationEffect.DEFAULT_AMPLITUDE)
+                        VibrationEffect.createOneShot(
+                            event.duration,
+                            VibrationEffect.DEFAULT_AMPLITUDE
+                        )
 
                     vibrator.vibrate(effect)
                 } else {
@@ -388,8 +453,10 @@ class MyAccessibilityService : AccessibilityService(),
             is ShowTriggeredKeymapToast -> toast(R.string.toast_triggered_keymap)
 
             is RecordedTriggerKeyEvent ->  //tell the UI that a key has been pressed
-                sendPackageBroadcast(ACTION_RECORDED_TRIGGER_KEY,
-                    bundleOf(EXTRA_RECORDED_TRIGGER_KEY_EVENT to event))
+                sendPackageBroadcast(
+                    ACTION_RECORDED_TRIGGER_KEY,
+                    bundleOf(EXTRA_RECORDED_TRIGGER_KEY_EVENT to event)
+                )
 
             is ImitateButtonPress -> when (event.keyCode) {
                 KeyEvent.KEYCODE_VOLUME_UP ->

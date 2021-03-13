@@ -18,7 +18,6 @@ import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
 import io.github.sds100.keymapper.util.result.*
 import splitties.systemservices.inputMethodManager
 import splitties.toast.toast
-import timber.log.Timber
 
 /**
  * Created by sds100 on 28/12/2018.
@@ -65,13 +64,11 @@ object KeyboardUtils {
 
         if (PermissionUtils.haveWriteSecureSettingsPermission(ctx)) {
             getLastUsedCompatibleImeId(ctx).onSuccess {
-                Timber.e("onsuccess " + it)
                 switchIme(ctx, it)
                 return
             }
 
             getImeId(Constants.PACKAGE_NAME).valueOrNull()?.let {
-                Timber.e("getimeid $it")
                 switchIme(ctx, it)
                 return
             }
@@ -240,7 +237,8 @@ object KeyboardUtils {
 
             val eventTime = SystemClock.uptimeMillis()
 
-            val keyEvent = KeyEvent(eventTime, eventTime, action, keyCode, 0, metaState, deviceId, scanCode)
+            val keyEvent =
+                KeyEvent(eventTime, eventTime, action, keyCode, 0, metaState, deviceId, scanCode)
 
             putExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT, keyEvent)
 

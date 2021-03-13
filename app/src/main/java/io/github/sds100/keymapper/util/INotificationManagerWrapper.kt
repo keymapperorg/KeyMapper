@@ -5,7 +5,7 @@ package io.github.sds100.keymapper.util
  */
 interface INotificationManagerWrapper {
     fun showNotification(notification: AppNotification)
-    fun dismissNotification(notificationId: Int)
+    fun dismissNotification(notification: AppNotification)
     fun createChannel(vararg channelId: String)
     fun deleteChannel(channelId: String)
 }

@@ -23,7 +23,6 @@ import io.github.sds100.keymapper.data.viewmodel.BackupRestoreViewModel
 import io.github.sds100.keymapper.data.viewmodel.SettingsViewModel
 import io.github.sds100.keymapper.databinding.FragmentSettingsBinding
 import io.github.sds100.keymapper.globalPreferences
-import io.github.sds100.keymapper.ui.view.CancellableMultiSelectListPreference
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.flow.collectLatest
 import splitties.alertdialog.appcompat.*
@@ -72,10 +71,10 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
     companion object {
         private val KEYS_REQUIRING_WRITE_SECURE_SETTINGS = arrayOf(
-            Keys.autoChangeImeOnBtConnect,
+            Keys.autoChangeImeOnDeviceConnect,
             Keys.toggleKeyboardOnToggleKeymaps,
             Keys.showToggleKeyboardNotification,
-            Keys.bluetoothDevicesThatToggleKeyboard
+            Keys.devicesThatToggleKeyboard
         )
     }
 
@@ -129,22 +128,24 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private fun populateBluetoothDevicesPreferences() {
-        val pairedDevices = BluetoothUtils.getPairedDevices()
+    private fun populateDevicesPreferences() {
+        val devices = InputDeviceUtils.createDeviceInfoModelsForExternal()
 
-        if (pairedDevices != null) {
-            //the user will see the names of the devices
-            val preferences = arrayOf<CancellableMultiSelectListPreference?>(
-                findPreference(Keys.bluetoothDevicesThatToggleKeyboard.name),
-                findPreference(Keys.bluetoothDevicesThatShowImePicker.name)
-            )
+        //the user will see the names of the devices
+        val preferences = arrayOf<MultiSelectListPreference?>(
+            findPreference(Keys.devicesThatShowImePicker.name),
+            findPreference(Keys.devicesThatToggleKeyboard.name)
+        )
 
-            preferences.forEach { preference ->
-                preference ?: return@forEach
-                preference.entries = pairedDevices.map { it.name }.toTypedArray()
+        preferences.forEach { preference ->
+            preference ?: return@forEach
+            preference.entries = devices.map { it.name }.toTypedArray()
+            preference.entryValues = devices.map { it.descriptor }.toTypedArray()
 
-                //the unique addresses of the device will be saved to shared preferences
-                preference.entryValues = pairedDevices.map { it.address }.toTypedArray()
+            if (devices.isEmpty()) {
+                preference.setDialogMessage(R.string.dialog_message_no_external_devices_connected)
+            } else {
+                preference.dialogMessage = null
             }
         }
     }
@@ -324,9 +325,9 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             viewLifecycleScope.launchWhenResumed {
                 globalPreferences.hasRootPermission.collectLatest {
                     findPreference<Preference>(Keys.showImePickerNotification.name)?.isEnabled = it
-                    findPreference<Preference>(Keys.autoShowImePicker.name)?.isEnabled = it
-                    findPreference<Preference>(Keys.bluetoothDevicesThatShowImePicker.name)?.isEnabled =
+                    findPreference<Preference>(Keys.autoShowImePickerOnDeviceConnect.name)?.isEnabled =
                         it
+                    findPreference<Preference>(Keys.devicesThatShowImePicker.name)?.isEnabled = it
                 }
             }
 
@@ -351,7 +352,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             }
 
             SwitchPreferenceCompat(requireContext()).apply {
-                key = Keys.autoShowImePicker.name
+                key = Keys.autoShowImePickerOnDeviceConnect.name
                 setDefaultValue(false)
 
                 setTitle(R.string.title_pref_auto_show_ime_picker)
@@ -361,7 +362,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                 addPreference(this)
             }
 
-            createBluetoothDevicesPreference(Keys.bluetoothDevicesThatShowImePicker.name)
+            createDevicesPreference(Keys.devicesThatShowImePicker.name)
         }
     }
 
@@ -377,9 +378,9 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             addPreference(this)
         }
 
-        //automatically change the keyboard when a bluetooth device (dis)connects
+        //automatically change the keyboard when a device (dis)connects
         SwitchPreferenceCompat(requireContext()).apply {
-            key = Keys.autoChangeImeOnBtConnect.name
+            key = Keys.autoChangeImeOnDeviceConnect.name
             setDefaultValue(false)
 
             setTitle(R.string.title_pref_auto_change_ime_on_connection)
@@ -390,7 +391,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             addPreference(this)
         }
 
-        createBluetoothDevicesPreference(Keys.bluetoothDevicesThatToggleKeyboard.name)
+        createDevicesPreference(Keys.devicesThatToggleKeyboard.name)
 
         //toggle keyboard when toggling key maps
         SwitchPreferenceCompat(requireContext()).apply {
@@ -483,7 +484,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
         //auto show keyboard picker
         SwitchPreferenceCompat(requireContext()).apply {
-            key = Keys.autoShowImePicker.name
+            key = Keys.autoShowImePickerOnDeviceConnect.name
             setDefaultValue(false)
 
             setTitle(R.string.title_pref_auto_show_ime_picker)
@@ -493,7 +494,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             addPreference(this)
         }
 
-        createBluetoothDevicesPreference(Keys.bluetoothDevicesThatShowImePicker.name)
+        createDevicesPreference(Keys.devicesThatShowImePicker.name)
     }
 
     private fun createCategoryDefaults() = PreferenceCategory(requireContext()).apply {
@@ -597,39 +598,17 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private fun PreferenceGroup.createBluetoothDevicesPreference(key: String) {
-        CancellableMultiSelectListPreference(requireContext()).apply {
+    private fun PreferenceGroup.createDevicesPreference(key: String) {
+        MultiSelectListPreference(requireContext()).apply {
             this.key = key
 
-            setTitle(R.string.title_pref_bluetooth_devices)
+            setTitle(R.string.title_pref_choose_devices)
             isSingleLineTitle = false
 
-            setOnPreferenceClickListener {
-                populateBluetoothDevicesPreferences()
+            setOnPreferenceClickListener { preference ->
+                populateDevicesPreferences()
 
-                //if there are no bluetooth device entries, explain to the user why
-                if ((it as CancellableMultiSelectListPreference).entries.isNullOrEmpty()) {
-
-                    /* This awkward way of showing the "can't find any paired devices" dialog
-                     * with a CancellableMultiSelectPreference is necessary since you can't
-                     * cancel showing the dialog once the preference has been clicked.*/
-
-                    if (!showingNoPairedDevicesDialog) {
-                        showingNoPairedDevicesDialog = true
-
-                        requireContext().alertDialog {
-                            title = getString(R.string.dialog_title_cant_find_paired_devices)
-                            message = getString(R.string.dialog_message_cant_find_paired_devices)
-                            okButton { dialog ->
-                                showingNoPairedDevicesDialog = false
-                                dialog.dismiss()
-                            }
-
-                            //if the dialog is closed by clicking outside the dialog
-                            setOnCancelListener { showingNoPairedDevicesDialog = false }
-                        }.show()
-                    }
-
+                if ((preference as MultiSelectListPreference).entries.isNullOrEmpty()) {
                     return@setOnPreferenceClickListener false
                 }
 

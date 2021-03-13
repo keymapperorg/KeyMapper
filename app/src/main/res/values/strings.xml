@@ -341,7 +341,6 @@
 
     <!-- Dialog messages -->
     <string name="dialog_message_are_you_sure_want_to_leave_without_saving">Are you sure you want to leave without saving?</string>
-    <string name="dialog_message_cant_find_paired_devices">Make sure Bluetooth is turned on and you have paired devices, then try again.</string>
     <string name="dialog_message_root_prompt">When you tap \"OK\", you will be taken to the settings.
             In the settings, scroll to the bottom and tap "Enable root features" so you can use root features/actions. If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use features which only work on rooted devices.</string>
     <string name="dialog_message_downloading">Downloading…</string>
@@ -361,6 +360,7 @@
     <string name="dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout">You need to choose the \"Caps Lock to camera\" keyboard layout for your keyboard otherwise the Caps Lock key will still lock caps. You can find this setting in your device settings -> Languages and Input -> Physical Keyboard -> Tap on your keyboard -> Set Up Keyboard Layouts. This will remap the Caps Lock key to KEYCODE_CAMERA so Key Mapper can remap it properly.\n\nAfter you\'ve done this you must remove the Caps Lock trigger key and record the Caps Lock key again. It should say \"Camera\" instead of \"Caps Lock\" if you did the steps correctly.</string>
     <string name="dialog_message_select_app_store_gui_keyboard">Where do you want to get the new keyboard?</string>
     <string name="dialog_message_cant_record_trigger"><b>Reboot</b> your device if the "Record trigger" button is counting down and the buttons that you are pressing aren\'t showing up. If your buttons are still not showing up after rebooting then Key Mapper doesn\'t support your buttons. There isn\'t a fix for this.</string>
+    <string name="dialog_message_no_external_devices_connected">No external devices connected.</string>
 
     <!-- Dialog messages -->
 
@@ -423,6 +423,9 @@
 
     <string name="notification_feature_fingerprint_title">Remap fingerprint gestures with Key Mapper!</string>
     <string name="notification_feature_fingerprint_text">Your device supports remapping swipes on the fingerprint sensor. Tap to start remapping!</string>
+
+    <string name="notification_setup_chosen_devices_again_title">You need to setup some settings again!</string>
+    <string name="notification_setup_chosen_devices_again_text">It looks like you were using the setting to automatically change the keyboard or show the input method picker when a Bluetooth device connects and disconnects. Key Mapper now allows you to use any input device and not just Bluetooth devices. There isn\'t a way to migrate the old settings in a way that the new functionality will work so you\'ll have to choose the devices again in the Key Mapper settings. Tap to open Key Mapper.</string>
     <!-- Notification strings -->
 
     <!--Preference titles and summaries-->
@@ -456,14 +459,13 @@
     <string name="title_pref_automatic_backup_location">Automatically back up key maps to a specified location</string>
     <string name="summary_pref_automatic_backup_location_disabled">No location chosen.</string>
 
-    <string name="title_pref_bluetooth_devices">Choose Bluetooth devices…</string>
+    <string name="title_pref_choose_devices">Choose devices</string>
 
     <string name="title_pref_auto_show_ime_picker">Automatically show keyboard picker</string>
-    <string name="summary_pref_auto_show_ime_picker">When a Bluetooth device that you have chosen connects or disconnects the keyboard picker will show automatically. Choose the devices below.</string>
+    <string name="summary_pref_auto_show_ime_picker">When a device that you have chosen connects or disconnects the keyboard picker will show automatically. Choose the devices below.</string>
 
-    <string name="title_pref_auto_change_ime_on_connection">Automatically change the keyboard on Bluetooth connection</string>
-    <string name="summary_pref_auto_change_ime_on_connection">The Key Mapper keyboard will be automatically selected when a chosen bluetooth device is connected. Your old keyboard will be automatically selected when the device disconnects.
-            There may be a 5-10 second delay after disconnecting your device for the keyboard to change.</string>
+    <string name="title_pref_auto_change_ime_on_connection">Automatically change the on-screen keyboard when a device connects/disconnects</string>
+    <string name="summary_pref_auto_change_ime_on_connection">The last used Key Mapper keyboard will be automatically selected when a chosen device is connected. Your normal keyboard will be automatically selected when the device disconnects.</string>
 
     <string name="title_pref_root_permission">Key Mapper has root permission</string>
     <string name="summary_pref_root_permission">Enable this if you want to use features/actions which only work on rooted devices. Key Mapper must have root permission from your root-access-management app (e.g Magisk, SuperSU) for these features to work.
@@ -589,6 +591,9 @@
     <string name="showcase_fingerprint_gesture_support_message_supported">Your device can detect fingerprint gestures! There is a tab at the top of the home screen for remapping fingerprint gestures.</string>
     <string name="showcase_fingerprint_gesture_support_message_not_supported">Your device does not allow 3rd party apps to detect fingerprint gestures! There isn\'t anything the developer can do about this. Some devices have the setting to swipe down on the fingerprint reader to open the notification drawer and do not allow 3rd party apps to detect fingerprint gestures.</string>
     <string name="showcase_fingerprint_gesture_support_button">Enable</string>
+
+    <string name="showcase_setup_chosen_devices_again_title">You need to setup some settings again</string>
+    <string name="showcase_setup_chosen_devices_again_message">It looks like you were using the setting to automatically change the keyboard or show the input method picker when a Bluetooth device connects and disconnects. Key Mapper now allows you to use any input device and not just Bluetooth devices. There isn\'t a way to migrate the old settings in a way that the new functionality will work so you\'ll have to choose the devices again.</string>
     <!-- Showcase -->
 
     <!-- system action options -->

@@ -20,7 +20,6 @@ import io.github.sds100.keymapper.globalPreferences
 import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.ui.fragment.AppIntroScrollableFragment
 import io.github.sds100.keymapper.util.*
-import io.github.sds100.keymapper.util.DexUtils.isDexSupported
 import splitties.systemservices.powerManager
 import splitties.toast.longToast
 
@@ -30,47 +29,122 @@ import splitties.toast.longToast
 
 class AppIntroActivity : AppIntro2() {
 
+    companion object {
+        const val EXTRA_SLIDES = "${Constants.PACKAGE_NAME}.EXTRA_SLIDES"
+
+        const val SLIDE_NOTE_FROM_DEVELOPER = "slide_note_from_developer"
+        const val SLIDE_ACCESSIBILITY_SERVICE = "slide_accessibility_service"
+        const val SLIDE_BATTERY_OPTIMISATION = "slide_battery_optimisation"
+        const val SLIDE_FINGERPRINT_GESTURE_SUPPORT = "slide_fingerprint_gesture_support"
+        const val SLIDE_DEX = "slide_dex"
+        const val SLIDE_DO_NOT_DISTURB = "slide_dnd"
+        const val SLIDE_CONTRIBUTING = "slide_contributing"
+        const val SLIDE_SETUP_CHOSEN_DEVICES_IN_SETTINGS_AGAIN =
+            "slide_setup_chosen_devices_in_settings_again"
+    }
+
+    private val slidesToShowIfValid by lazy {
+        intent.getStringArrayExtra(EXTRA_SLIDES) ?: emptyArray()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         isSkipButtonEnabled = false
 
-        addSlide(NoteFromDeveloperSlide())
-        addSlide(AccessibilityServiceSlide())
+        val slidesThatAreAdded = mutableListOf<String>()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-            && !powerManager.isIgnoringBatteryOptimizations(Constants.PACKAGE_NAME)) {
-
-            addSlide(BatteryOptimisationSlide())
+        slidesToShowIfValid.forEach {
+            if (addSlideIfValid(it)) {
+                slidesThatAreAdded.add(it)
+            }
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-            && packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
-            addSlide(FingerprintGestureSupportSlide())
+        if (slidesThatAreAdded.isEmpty()) {
+            onDonePressed(null)
         }
-
-        if (isDexSupported(this)) {
-            addSlide(DexSlide())
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-            && !PermissionUtils.isPermissionGranted(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY)) {
-
-            addSlide(DndAccessSlide())
-        }
-
-        addSlide(ContributingSlide())
     }
 
     override fun onDonePressed(currentFragment: Fragment?) {
         super.onDonePressed(currentFragment)
 
         globalPreferences.set(Keys.shownAppIntro, true)
-        globalPreferences.set(Keys.approvedFingerprintFeaturePrompt, true)
+
+        if (slidesToShowIfValid.contains(SLIDE_FINGERPRINT_GESTURE_SUPPORT)) {
+            globalPreferences.set(Keys.approvedFingerprintFeaturePrompt, true)
+        }
+
+        if (slidesToShowIfValid.contains(SLIDE_SETUP_CHOSEN_DEVICES_IN_SETTINGS_AGAIN)) {
+            globalPreferences.set(Keys.approvedSetupChosenDevicesAgain, true)
+        }
 
         startActivity(Intent(this, HomeActivity::class.java))
 
         finish()
+    }
+
+    /**
+     * @return whether the slide was added
+     */
+    private fun addSlideIfValid(slide: String): Boolean {
+        when (slide) {
+            SLIDE_NOTE_FROM_DEVELOPER -> {
+                addSlide(NoteFromDeveloperSlide())
+                return true
+            }
+            SLIDE_ACCESSIBILITY_SERVICE -> {
+                addSlide(AccessibilityServiceSlide())
+                return true
+            }
+            SLIDE_BATTERY_OPTIMISATION -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                    && !powerManager.isIgnoringBatteryOptimizations(Constants.PACKAGE_NAME)
+                ) {
+                    addSlide(BatteryOptimisationSlide())
+                    return true
+                }
+            }
+
+            SLIDE_FINGERPRINT_GESTURE_SUPPORT -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                && packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)
+            ) {
+                addSlide(FingerprintGestureSupportSlide())
+                return true
+            }
+
+            SLIDE_DEX -> if (DexUtils.isDexSupported(this)) {
+                addSlide(DexSlide())
+                return true
+            }
+
+            SLIDE_DO_NOT_DISTURB -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                && !PermissionUtils.isPermissionGranted(
+                    this,
+                    Manifest.permission.ACCESS_NOTIFICATION_POLICY
+                )
+            ) {
+
+                addSlide(DndAccessSlide())
+                return true
+            }
+
+            SLIDE_CONTRIBUTING -> {
+                addSlide(ContributingSlide())
+                return true
+            }
+
+            SLIDE_SETUP_CHOSEN_DEVICES_IN_SETTINGS_AGAIN ->
+                if (globalPreferences.getFlow(Keys.bluetoothDevicesThatShowImePicker)
+                        .firstBlocking()?.isNotEmpty() == true
+                    || globalPreferences.getFlow(Keys.bluetoothDevicesThatToggleKeyboard)
+                        .firstBlocking()?.isNotEmpty() == true
+                ) {
+                    addSlide(SetupChosenDevicesAgainSlide())
+                    return true
+                }
+        }
+
+        return false
     }
 }
 
@@ -309,7 +383,8 @@ class DndAccessSlide : AppIntroScrollableFragment() {
         if (PermissionUtils.isPermissionGranted(
                 requireContext(),
                 Manifest.permission.ACCESS_NOTIFICATION_POLICY
-            )) {
+            )
+        ) {
             binding.enabledLayout()
         } else {
             binding.disabledLayout()
@@ -344,6 +419,19 @@ class ContributingSlide : AppIntroScrollableFragment() {
             description = str(R.string.showcase_contributing_description)
             imageDrawable = drawable(R.drawable.ic_outline_feedback_64)
             backgroundColor = color(R.color.green)
+        }
+
+        viewLoaded()
+    }
+}
+
+class SetupChosenDevicesAgainSlide : AppIntroScrollableFragment() {
+    override fun onBind(binding: FragmentAppIntroSlideBinding) {
+        binding.apply {
+            title = str(R.string.showcase_setup_chosen_devices_again_title)
+            description = str(R.string.showcase_setup_chosen_devices_again_message)
+            imageDrawable = drawable(R.drawable.ic_baseline_devices_other_64)
+            backgroundColor = color(R.color.blue)
         }
 
         viewLoaded()
