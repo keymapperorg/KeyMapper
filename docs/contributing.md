@@ -41,4 +41,4 @@ Here are words and phrases that have been spelt inconsistently by the developer 
 
 If a heading is for a particular feature then it should include the minimum supported Key Mapper version except version 2.0.
 
-E.g "Trigger When Screen is Off (ROOT, 2.1.0+)"
+E.g "Trigger When Screen is Off (ROOT, 2.1.0+, Android 8.1+)"
