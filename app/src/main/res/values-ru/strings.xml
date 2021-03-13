@@ -255,7 +255,6 @@
     <!-- Dialog titles -->
     <!-- Dialog messages -->
     <string name="dialog_message_are_you_sure_want_to_leave_without_saving">Вы уверены, что хотите уйти без сохранения?</string>
-    <string name="dialog_message_cant_find_paired_devices">Убедитесь, что Bluetooth включен и у вас есть сопряженные устройства, а затем повторите попытку.</string>
     <string name="dialog_message_root_prompt">Когда вы нажмете \"OK\", откроются настройки
             В настройках, прокрутите вниз и нажмите «Включить Root права», чтобы вы могли использовать функции/действия root. Если вы знаете, что ваш телефон не имеет прав Суперпользователя или вы не знаете, что это такое, то вы не сможете использовать функции, которые работают только на устройствах с правами суперпользователя.</string>
     <string name="dialog_message_downloading">Загрузка…</string>
@@ -344,12 +343,7 @@
     <string name="summary_pref_show_toggle_keymaps_notification">Показывает постоянное уведомление позволяющее запускать / приостанавливать ваши мэппинги. А также есть ссылка для запуска или остановки службы спец.возможностей.</string>
     <string name="title_pref_automatic_backup_location">Автоматическая резервная копия всех мэппингов в указанном месте</string>
     <string name="summary_pref_automatic_backup_location_disabled">Местоположение не выбрано.</string>
-    <string name="title_pref_bluetooth_devices">Выберите устройства Bluetooth…</string>
     <string name="title_pref_auto_show_ime_picker">Автоматически показывать выбор клавиатуры</string>
-    <string name="summary_pref_auto_show_ime_picker">Когда подключится или отключится Bluetooth устройство по вашему выбору будет показан инструмент выбора клавиатуры. Укажите это устройство ниже.</string>
-    <string name="title_pref_auto_change_ime_on_connection">Автоматически менять клавиатуру при Bluetooth-подключении</string>
-    <string name="summary_pref_auto_change_ime_on_connection">Клавиатура Key Mapper будет автоматически выбрана при подключении определенного Bluetooth устройства. Ваша старая клавиатура будет автоматически выбрана при отключении этого устройства.
-            Возможна задержка в 5-10 секунд после отключения устройства до того как сменится клавиатура.</string>
     <string name="title_pref_root_permission">Key Mapper имеет Root права</string>
     <string name="summary_pref_root_permission">Включайте это в том случае если вам нужны функции/возможности, которые работают только на устройствах с Root правами. Key Mapper должен получить соответствующие разрешения через приложение по управлению Root доступом (например Magisk, SuperSU).
             Включать только в том случае если устройство обладает Root доступом и для Key Mapper выданы соответсвующие разрешения.</string>
