@@ -2,7 +2,21 @@
 
 ## Automatically change the on-screen keyboard when a device connects/disconnects
 
-This is restricted to Bluetooth devices in Key Mapper 2.2.0 and older. After updating to Key Mapper 2.3.0 you will need to set this up again.
+!!! warning
+    This requires WRITE_SECURE_SETTINGS permission.
+
+This is restricted to Bluetooth devices in Key Mapper 2.2.0 and older. After updating to Key Mapper 2.3.0 you will need to set this up again because the data for the Bluetooth devices can't be migrated in a way that the new feature will work.
+
+The last used Key Mapper keyboard will be automatically selected when a chosen device is connected. Your normal keyboard will be automatically selected when the device disconnects.
+
+## Automatically show keyboard picker (up to Android 9.0)
+
+!!! warning
+    This requires ROOT permission on Android 8.1 and Android 9.0 because Android blocked the ability for apps to show the input method picker when they are running in the background. Android removed the ability to show this even with ROOT on versions later than Android 9.0.
+
+This is restricted to Bluetooth devices in Key Mapper 2.2.0 and older. After updating to Key Mapper 2.3.0 you will need to set this up again because the data for the Bluetooth devices can't be migrated in a way that the new feature will work.
+
+When a device that you have chosen connects or disconnects the keyboard picker will show automatically. Choose the devices below.
 
 ## Key Mapper has root permission
 
