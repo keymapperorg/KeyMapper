@@ -81,8 +81,6 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
         )
     }
 
-    private var showingNoPairedDevicesDialog = false
-
     private val backupRestoreViewModel: BackupRestoreViewModel by activityViewModels {
         InjectorUtils.provideBackupRestoreViewModel(requireContext())
     }
@@ -137,7 +135,8 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
         //the user will see the names of the devices
         val preferences = arrayOf<MultiSelectListPreference?>(
             findPreference(Keys.devicesThatShowImePicker.name),
-            findPreference(Keys.devicesThatToggleKeyboard.name)
+            findPreference(Keys.devicesThatToggleKeyboard.name),
+            findPreference(Keys.devicesToRerouteKeyEvents.name)
         )
 
         preferences.forEach { preference ->
@@ -342,41 +341,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                 category.addPreference(this)
             }
 
-            MultiSelectListPreference(requireContext()).apply {
-                fun populate() {
-                    InputDeviceUtils.createDeviceInfoModelsForExternal().let { devices ->
-                        entries = devices.map { it.name }.toTypedArray()
-                        entryValues = devices.map { it.descriptor }.toTypedArray()
-
-                        if (devices.isEmpty()) {
-                            setDialogMessage(R.string.dialog_message_no_external_devices_connected)
-                        } else {
-                            dialogMessage = null
-                        }
-                    }
-                }
-
-
-                key = Keys.devicesToRerouteKeyEvents.name
-
-                isSingleLineTitle = false
-
-                setTitle(R.string.title_pref_devices_to_reroute_keyevents_choose_devices)
-
-                populate()
-
-                setOnPreferenceClickListener { preference ->
-                    populate()
-
-                    if ((preference as MultiSelectListPreference).entries.isNullOrEmpty()) {
-                        return@setOnPreferenceClickListener false
-                    }
-
-                    true
-                }
-
-                category.addPreference(this)
-            }
+            createDevicesPreference(Keys.devicesToRerouteKeyEvents.name)
 
             Preference(requireContext()).apply {
                 setTitle(R.string.title_pref_devices_to_reroute_keyevents_guide)
