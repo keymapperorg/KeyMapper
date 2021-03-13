@@ -255,7 +255,6 @@
     <!-- Dialog titles -->
     <!-- Dialog messages -->
     <string name="dialog_message_are_you_sure_want_to_leave_without_saving">你确定要在不保存的情况下离开？</string>
-    <string name="dialog_message_cant_find_paired_devices">请确保蓝牙已开启，你已配对设备，然后重试。</string>
     <string name="dialog_message_root_prompt">当你点击\"确定\"时，你将被带到设置。
         在设置中，滚动到底部并点击\"启用Root功能\"以便您可以使用 Root 功能/操作。如果你知道你的手机没有Root或者你不知道什么是Root，你不能使用仅适用于Root设备的功能。</string>
     <string name="dialog_message_downloading">正在下载...</string>
@@ -342,12 +341,7 @@
     <string name="summary_pref_show_toggle_keymaps_notification">显示启动/暂停你的按键映射及开始/停止无障碍服务链接的常驻通知。</string>
     <string name="title_pref_automatic_backup_location">自动备份按键映射到指定位置</string>
     <string name="summary_pref_automatic_backup_location_disabled">未选择位置。</string>
-    <string name="title_pref_bluetooth_devices">选择蓝牙设备…</string>
     <string name="title_pref_auto_show_ime_picker">自动显示键盘选择器</string>
-    <string name="summary_pref_auto_show_ime_picker">当你选择的蓝牙设备连接或断开连接时，键盘选择器将自动显示。选择下面的设备。</string>
-    <string name="title_pref_auto_change_ime_on_connection">蓝牙连接时自动更改键盘</string>
-    <string name="summary_pref_auto_change_ime_on_connection">Key Mapper键盘将在选择的蓝牙设备连接时被自动选择。你之前的键盘将在这个设备断开连接时被选择。
-            可能在断开连接你的设备时，会有5-10秒的延迟才会更改键盘。</string>
     <string name="title_pref_root_permission">Key Mapper 拥有 root 权限</string>
     <string name="summary_pref_root_permission">如果你想使用仅适用于已root设备的功能/动作，请启用这个选项。为了让这些功能工作，Key Mapper必须有来自你的root-access-management应用(例如 Magisk、SuperSU)的root。
             只有在你知道你的设备已root，并且你有给予Key Mapper root权限，才启用此选项。</string>
