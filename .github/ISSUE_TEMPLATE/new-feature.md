@@ -11,5 +11,6 @@ assignees: sds100
 - [ ] create new branch. put issue number at start of name
 - [ ] write tests before working on feature. put issue number in comment
 - [ ] update documentation
+- [ ] let translators in Discord server know there are strings to translate
 - [ ] squash and merge
 - [ ] delete branch
