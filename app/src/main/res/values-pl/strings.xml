@@ -189,7 +189,6 @@
     <string name="title_pref_force_vibrate">Wymuś wibracje</string>
     <string name="summary_pref_automatic_backup_location_disabled">Nie wybrano lokalizacji.</string>
     <string name="title_pref_auto_show_ime_picker">Automatycznie pokazuj wybór klawiatury</string>
-    <string name="title_pref_auto_change_ime_on_connection">Automatycznie zmieniaj klawiaturę po podłączeniu urządzenia przez Bluetooth</string>
     <!--Preference titles and summaries-->
     <!--Preference categories-->
     <!--Preference categories-->
