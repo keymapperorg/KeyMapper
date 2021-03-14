@@ -128,6 +128,11 @@ object KeyboardUtils {
         }
 
         SettingsUtils.putSecureSetting(ctx, Settings.Secure.DEFAULT_INPUT_METHOD, imeId)
+
+        inputMethodManager.inputMethodList.find { it.id == imeId }
+            ?.loadLabel(ctx.packageManager)
+            ?.let { ctx.toast(ctx.str(R.string.toast_chose_keyboard, it)) }
+
         return true
     }
 
