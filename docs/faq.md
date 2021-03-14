@@ -36,7 +36,7 @@ There are multiple ways to do this.
 - Tap the notification that allows you to change the keyboard when you are typing something. Not all devices have this.
 - Open Key Mapper and tap "show input method picker" in the menu :material-menu:.
 
-## "My Keyboard doesn't appear when using the app."
+## "My keyboard doesn't appear when using the app."
 
 Key Mapper Basic Input Method (the keyboard built-in to the app) has no GUI/buttons. You can install the [Key Mapper GUI Keyboard](https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin) to get a proper keyboard that can also perform Key Mapper actions.
 
@@ -51,10 +51,6 @@ Samsung Dex doesn't allow apps with a 3rd party keyboard to open while in Dex mo
 
 ## "Why doesn't the app uninstall?"
 You have probably enabled the app's device administrator in your device's settings. To uninstall the app, you must turn it off. The location of the device admin settings page varies on devices but on skins close to stock-Android it is under "Security" -> "Device admin apps". If you need help, [ask in the Discord server.](http://keymapper.club)
-
-## "Why aren’t the Keycode, Key or Text actions working?"
-The Key Mapper keyboard must be enabled in your device settings and chosen as the active keyboard.
-See Quick Start Guide for help.
 
 ## "Why can't I remap some of my Joy Con buttons?"
 Not all the Joy Con buttons are visible to accessibility services. There isn't anything the developer can do.

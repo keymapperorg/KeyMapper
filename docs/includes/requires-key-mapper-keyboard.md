@@ -1,0 +1,2 @@
+!!! attention  
+    You need to be using the Key Mapper GUI Keyboard or the Key Mapper Basic Input Method for this to work. Follow [this guide](../quick-start.md#set-up-a-key-mapper-keyboard) to set it up.

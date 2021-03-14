@@ -8,12 +8,21 @@ Launch an app shortcut. This is a great way to add more functionality to Key Map
 
 ## Key code
 
+--8<-- "requires-key-mapper-keyboard.md"
 
-PUT AN ADMONITION HERE THAT TELLS THEM TO CHOOSE A KEY MAPPER KEYBOARD
-
-Input a key event with this key code.
+Input a simple key event with this key code.
 
 ## System
+
+There are many actions of this type. They all do something related to your device's system.
+
+#### Toggle/Enable/Disable WiFi
+
+!!! attention "Requires ROOT permission on Android 10+"
+
+#### Toggle/Enable/Disable mobile data
+
+!!! attention "Requires ROOT permission"
 
 ## Key
 

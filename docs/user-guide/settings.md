@@ -33,6 +33,11 @@ When a device that you have chosen connects or disconnects the keyboard picker w
 
 ## Key Mapper has root permission
 
+!!! error "Don't turn this on if you don't know what 'rooting' is."
+    Read more [here](https://en.wikipedia.org/wiki/Rooting_(Android)).
+
+This setting needs to be turned on for some features in Key Mapper to work. You **must** grant Key Mapper root permission in your root management app (e.g Magisk, SuperSU) before you turn this on.
+
 ## Workaround for Android 11 bug that sets the device id for input events to -1 (2.3.0+, Android 11+)
 
 !!! info
@@ -53,7 +58,7 @@ Steps to work around this bug...
  --8<-- "go-to-settings.md"
 
 3. Scroll down to the 'Workaround for Android 11 bug that sets the device id for input events to -1' setting and turn it on.
-4. It is highly recommended to install the [Key Mapper GUI Keyboard](https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin) so that you can have an on-screen keyboard while using this feature. The Basic Input Method built-in to Key Mapper doesn't show anything on-screen.
+4. **To avoid confusion and headaches** read about how input methods work with Key Mapper [here](../quick-start.md#set-up-a-key-mapper-keyboard).
 5. Tap 'Enable the Key Mapper keyboard' and turn on the Key Mapper GUI Keyboard or the Key Mapper Basic Input Method.
 6. Tap 'Use the Key Mapper keyboard' and select the keyboard that you just enabled.
    It is recommended that you setup the setting to automatically change the on-screen keyboard when devices connect and disconnect. You can find this further up the page. This is useful if you don't want to use one of the Key Mapper keyboards all the time. If you want to change the keyboard manually then see [this](../faq.md#how-do-i-change-the-keyboard) question in the faq.
