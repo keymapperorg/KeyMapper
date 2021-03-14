@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -341,7 +342,12 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                 category.addPreference(this)
             }
 
-            createDevicesPreference(Keys.devicesToRerouteKeyEvents.name)
+            createDevicesPreference(
+                Keys.devicesToRerouteKeyEvents.name,
+                R.string.title_pref_devices_to_reroute_keyevents_choose_devices
+            ).apply {
+                category.addPreference(this)
+            }
 
             Preference(requireContext()).apply {
                 setTitle(R.string.title_pref_devices_to_reroute_keyevents_guide)
@@ -458,7 +464,9 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                 addPreference(this)
             }
 
-            createDevicesPreference(Keys.devicesThatShowImePicker.name)
+            createDevicesPreference(Keys.devicesThatShowImePicker.name).apply {
+                addPreference(this)
+            }
         }
     }
 
@@ -487,7 +495,9 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             addPreference(this)
         }
 
-        createDevicesPreference(Keys.devicesThatToggleKeyboard.name)
+        createDevicesPreference(Keys.devicesThatToggleKeyboard.name).apply {
+            addPreference(this)
+        }
 
         //toggle keyboard when toggling key maps
         SwitchPreferenceCompat(requireContext()).apply {
@@ -590,7 +600,9 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             addPreference(this)
         }
 
-        createDevicesPreference(Keys.devicesThatShowImePicker.name)
+        createDevicesPreference(Keys.devicesThatShowImePicker.name).apply {
+            addPreference(this)
+        }
     }
 
     private fun createCategoryDefaults() = PreferenceCategory(requireContext()).apply {
@@ -694,24 +706,23 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private fun PreferenceGroup.createDevicesPreference(key: String) {
-        MultiSelectListPreference(requireContext()).apply {
-            this.key = key
+    private fun createDevicesPreference(
+        key: String,
+        @StringRes title: Int = R.string.title_pref_choose_devices
+    ) = MultiSelectListPreference(requireContext()).apply {
+        this.key = key
 
-            setTitle(R.string.title_pref_choose_devices)
-            isSingleLineTitle = false
+        setTitle(title)
+        isSingleLineTitle = false
 
-            setOnPreferenceClickListener { preference ->
-                populateDevicesPreferences()
+        setOnPreferenceClickListener { preference ->
+            populateDevicesPreferences()
 
-                if ((preference as MultiSelectListPreference).entries.isNullOrEmpty()) {
-                    return@setOnPreferenceClickListener false
-                }
-
-                true
+            if ((preference as MultiSelectListPreference).entries.isNullOrEmpty()) {
+                return@setOnPreferenceClickListener false
             }
 
-            addPreference(this)
+            true
         }
     }
 }
