@@ -274,6 +274,7 @@
     <string name="dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout">Вам необходимо переключить раскладку клавиатуры на \"Caps Lock для камеры\" в противном случае клавиша Caps Lock будет менять регистр букв, не более. Эту настройку можно найти в общих настройках вашего устройства -&gt; Языки и методы ввода -&gt; Физическая клавиатура -&gt; Нажать на соответствующую клавиатуру -&gt; Выбрать раскладку. Это переназначит клавишу Caps Lock на отправку KEYCODE_CAMERA, таким образом Key Mapper сможет правильно ее обработать.\n\nПОсле того как вы это сделаете нужно удалить событие \"Caps Lock\" и записать событие для клавиши Caps Lock снова. Если при записи будет отображено \"Камера\" вместо \"Caps Lock\" значит вы все проделали верно.</string>
     <string name="dialog_message_select_app_store_gui_keyboard">Где вы хотите скачать новую клавиатуру с GUI?</string>
     <string name="dialog_message_cant_record_trigger"><b>Перезагрузите</b> свое устройство если кнопка \"Запишите событие\" ведет отсчет, но не регистрирует нажатий. Или даже НЕ ведет отсчет. Если после перезагрузки устройства нажатия клавиши все равно не регистрируются значит Key Mapper не поддерживает этот тип клавиш. К сожалению эту ситуацию не исправить. Дополнительно можно обратиться к разделу 7 часто задаваемых вопросов.</string>
+    <string name="dialog_message_no_external_devices_connected">Внешние устройства не подключены.</string>
     <!-- Dialog messages -->
     <!-- Dialog buttons -->
     <string name="pos_yes">Да</string>
@@ -321,6 +322,7 @@
     <string name="notification_ime_service_disabled_text">Нажмите, чтобы включить клавиатуру Mapper.</string>
     <string name="notification_feature_fingerprint_title">Переопределить жесты отпечатков пальцев с помощью Key Mapper!</string>
     <string name="notification_feature_fingerprint_text">Ваше устройство поддерживает переопределение жестов по датчику отпечатков пальцев. Нажмите, чтобы начать переопределение!</string>
+    <string name="notification_setup_chosen_devices_again_title">Вам нужно снова произвести некоторые настройки!</string>
     <!-- Notification strings -->
     <!--Preference titles and summaries-->
     <string name="title_pref_long_press_delay">Задержка долгого нажатия по умолчанию (мс)</string>
@@ -343,6 +345,7 @@
     <string name="summary_pref_show_toggle_keymaps_notification">Показывает постоянное уведомление позволяющее запускать / приостанавливать ваши мэппинги. А также есть ссылка для запуска или остановки службы спец.возможностей.</string>
     <string name="title_pref_automatic_backup_location">Автоматическая резервная копия всех мэппингов в указанном месте</string>
     <string name="summary_pref_automatic_backup_location_disabled">Местоположение не выбрано.</string>
+    <string name="title_pref_choose_devices">Выберите устройства</string>
     <string name="title_pref_auto_show_ime_picker">Автоматически показывать выбор клавиатуры</string>
     <string name="title_pref_root_permission">Key Mapper имеет Root права</string>
     <string name="summary_pref_root_permission">Включайте это в том случае если вам нужны функции/возможности, которые работают только на устройствах с Root правами. Key Mapper должен получить соответствующие разрешения через приложение по управлению Root доступом (например Magisk, SuperSU).
@@ -357,6 +360,7 @@
     <string name="summary_pref_hide_home_screen_alerts">Скрыть оповещения в верхней части главного экрана.</string>
     <string name="title_pref_show_device_descriptors">Показать первые 5 символов id устройства для событий связанных с конкретными устройствами</string>
     <string name="summary_pref_show_device_descriptors">Это используется чтобы отличить друг от друга устройства с одним и тем же именем.</string>
+    <string name="title_pref_devices_to_reroute_keyevents_guide">Руководство по настройке</string>
     <!--Preference titles and summaries-->
     <!--Preference categories-->
     <string name="title_pref_category_ime_picker">Выбор клавиатуры</string>
