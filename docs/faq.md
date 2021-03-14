@@ -43,13 +43,6 @@ Key Mapper Basic Input Method (the keyboard built-in to the app) has no GUI/butt
 ## "Why don't my volume buttons work when I press them?"
 Give the app Do Not Disturb access in your device settings. At the top of the homescreen in the Key Mapper app there is a "Fix" button to do this.
 
-## "Why aren't my key maps being triggered?"
-1. Disable all battery and memory optimisation features on your device. Consult https://dontkillmyapp.com for how to do this on your device.
-2. Restart/reboot your device. This works in most cases.
-3. Make sure your key maps are enabled. You can check in your notification tray, and unpause them by tapping the notification if necessary.
-4. Restart the accessibility service by turning it off and on again. 
-If none of these steps solve your problem, or the problem keeps coming back, [report an issue](https://github.com/sds100/KeyMapper/issues/new) or ask for help in [the Discord server](http://keymapper.club).
-
 ## "Why aren't the buttons on my Bluetooth device detected?"
 Many Bluetooth devices (like headphones) aren't supported by Key Mapper out of the box. Bluetooth keyboards work most of the time. If you are willing and able to do some simple debugging, perhaps by installing utility apps or using ADB, [join the Discord server](http://keymapper.club) and we will try our best to get it working for you.
 
