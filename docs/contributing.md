@@ -2,6 +2,12 @@
 
 You can test pre-release versions in 2 ways:
 
+1. Join [the Discord server](http://keymapper.club) and download the apks from the #testing-builds channel.
+2. Download the apks from GitHub Actions. This requires a GitHub account.
+    You can get alpha builds [here](https://github.com/sds100/KeyMapper/actions/workflows/android.yml) and beta builds [here](https://github.com/sds100/KeyMapper/actions/workflows/android-release.yml).
+
+    Click on a 'workflow run' and then scroll down to see the 'artifacts'. If a build was successful then you can find the apk here.
+
 !!! info
     All testing builds have `.ci.num` at the end of the version name where 'num' is a number is incremented every time a new build is made. Builds are made when a new feature or bug fix is implemented.
 
@@ -9,12 +15,6 @@ You can test pre-release versions in 2 ways:
 
     - **Alpha**.  These have ".alpha" in the version name and are the most unstable. Expect the most crashes and broken features in these builds. BEWARE! Your data in Key Mapper isn't considered compatible between alpha builds so it is possible that Key Mapper will crash and refuse to fix itself.
     - **Beta**. These builds have some of the latest features and contain a few bugs. You can safely update between versions. These have ".beta.num" in the version name. These are pre-release builds for the the open-testing channel on Google Play and F-droid always has beta builds. When all known bugs are fixed a new build is released to the app stores.
-
-1. Join [the Discord server](http://keymapper.club) and download the apks from the #testing-builds channel.
-2. Download the apks from GitHub Actions. This requires a GitHub account.
-    You can get alpha builds [here](https://github.com/sds100/KeyMapper/actions/workflows/android.yml) and beta builds [here](https://github.com/sds100/KeyMapper/actions/workflows/android-release.yml).
-
-    Click on a 'workflow run' and then scroll down to see the 'artifacts'. If a build was successful then you can find the apk here.
 
 ### How can I help?
 - Test and experiment new features. All features and bug-fixes that are being worked on for a release can be found on the Projects page [here](https://github.com/sds100/KeyMapper/projects).
