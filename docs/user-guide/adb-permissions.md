@@ -4,6 +4,9 @@ If your device is **not rooted** you must do the following.
 
 ## Prepare ADB (Android Debug Bridge)
 
+!!! tip
+    You might need to attempt this process multiple times because it can be flaky.
+
 1. Enable developer options on your device by going to device Settings -> About Phone and tapping Build Number many times until it says you've enabled developer options. The location of the Build Number may vary between devices.
 2. Enable USB Debugging in developer options and plug your device into your PC.
 3. Download the [Android SDK platform tools](https://developer.android.com/studio/releases/platform-tools.html) from here and unzip it.
