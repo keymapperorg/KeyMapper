@@ -8,6 +8,7 @@ For specific troubleshooting, [consult the FAQ.](faq.md)
 When you open Key Mapper, you will be presented with this screen.
 This screen is referred to as the Key Mapper home screen.
 
+### Setup the accessibility service
 ![](images/hg-home-empty.png) ![](images/hg-home-empty-light.png)
 
 Tapping the FIX button next to the accessibility service prompt will allow you to grant Key Mapper permission to run its accessibility service. You must do this for the app to work at all.
@@ -16,21 +17,27 @@ Tapping the FIX button next to the accessibility service prompt will allow you t
 
 You can then tap Key Mapper in your list of available services. There may be many others on this screen and your interface may be slightly different.
 
-!!! warning
+!!! attention
     If nothing happens when you tap FIX, or if you can't enable the service, see [this page](#) or ask for help in the [Discord server.](http://keymapper.club)
 
 ![](images/hg-settings-services.png) ![](images/hg-settings-services-light.png)
 
-Tapping the FIX button next to the input method prompt will allow you to enable a Key Mapper compatible keyboard. If you want to perform actions like pressing keyboard keys or entering text you must enable this.
+### Setup a Key Mapper keyboard
+
+'A Key Mapper keyboard' through out this documentation refers to any input method that works with Key Mapper. The one built-in to Key Mapper is called the "Key Mapper Basic Input Method". This one has **NO** on-screen keyboard.
+
+!!! tip
+    If you want an on-screen keyboard to be available while using Key Mapper, you need to install "Key Mapper GUI Keyboard". It is available on the [Google Play Store](http://gui.keymapper.club), [F-Droid](https://www.f-droid.org/en/packages/io.github.sds100.keymapper.inputmethod.latin/) and [GitHub.](https://github.com/sds100/KeyMapperKeyboard/releases)
+
+Tapping the FIX button next to the input method prompt will allow you to enable a Key Mapper keyboard. If you want to perform actions like pressing keyboard keys or entering text you must enable this.
 
 ![](images/hg-warn-input-method.png)
 
 If you have only installed the Key Mapper app, your list of available keyboards will contain "Key Mapper Basic Input Method" only. If you aim to use a physical keyboard (not on-screen) when using Key Mapper, this will be suitable for you.
 
-!!! tip
-    If you want an on-screen keyboard to be available while using Key Mapper, you need to install "Key Mapper GUI Keyboard". It is available on the [Google Play Store](http://gui.keymapper.club), [F-Droid](https://www.f-droid.org/en/packages/io.github.sds100.keymapper.inputmethod.latin/) and [GitHub.](https://github.com/sds100/KeyMapperKeyboard/releases)
-
 ![](images/hg-settings-input-method.png) ![](images/hg-settings-input-method-light.png)
+
+### Disable app-killing
 
 !!! failure "Important"
     If you are using a Huawei or Xiaomi branded device, a device with 2GB of RAM or less, or intend to use the app while playing a mobile game, it is especially important to follow the next step.
@@ -45,6 +52,8 @@ The screen that opens after tapping FIX may vary depending on your device. In my
 
 !!! tip
     There is an excellent guide at [dontkillmyapp.com](http://dontkillmyapp.com) that explains how to disable battery and/or memory optimisation for your specific device. If Key Mapper randomly stops working even after you complete these steps, ask for help in [the Discord server.](http://keymapper.club)
+
+### Setup the ability to properly remap volume buttons
 
 ![](images/hg-settings-battery-optimisation.png) ![](images/hg-settings-battery-optimisation-light.png)
 
