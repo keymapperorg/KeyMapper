@@ -261,7 +261,7 @@ object NotificationUtils {
         icon = R.drawable.ic_notification_keyboard,
         pendingIntent = IntentUtils.createPendingBroadcastIntent(
             ctx,
-            MyAccessibilityService.ACTION_START_SERVICE
+            KeyMapperBroadcastReceiver.ACTION_TOGGLE_KEYBOARD
         ),
         showOnLockScreen = true,
         onGoing = true,

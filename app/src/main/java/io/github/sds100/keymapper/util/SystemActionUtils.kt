@@ -482,7 +482,8 @@ object SystemActionUtils {
             descriptionRes = R.string.action_cycle_vibrate_ring,
             permissions = arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY)
         ),
-        SystemActionDef(id = SystemAction.CHANGE_RINGER_MODE,
+        SystemActionDef(
+            id = SystemAction.CHANGE_RINGER_MODE,
             category = CATEGORY_VOLUME,
             descriptionRes = R.string.action_change_ringer_mode,
             descriptionFormattedRes = R.string.action_change_ringer_mode_formatted,
@@ -520,30 +521,36 @@ object SystemActionUtils {
             permissions = arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY)
         ),
 
-        SystemActionDef(id = SystemAction.TOGGLE_DND_MODE,
+        SystemActionDef(
+            id = SystemAction.TOGGLE_DND_MODE,
             category = CATEGORY_VOLUME,
             minApi = Build.VERSION_CODES.M,
             iconRes = R.drawable.dnd_circle_outline,
             descriptionRes = R.string.action_toggle_dnd_mode,
             descriptionFormattedRes = R.string.action_toggle_dnd_mode_formatted,
             permissions = arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY),
-            options = Option.DND_MODES),
+            options = Option.DND_MODES
+        ),
 
-        SystemActionDef(id = SystemAction.ENABLE_DND_MODE,
+        SystemActionDef(
+            id = SystemAction.ENABLE_DND_MODE,
             category = CATEGORY_VOLUME,
             minApi = Build.VERSION_CODES.M,
             iconRes = R.drawable.dnd_circle_outline,
             descriptionRes = R.string.action_enable_dnd_mode,
             descriptionFormattedRes = R.string.action_enable_dnd_mode_formatted,
             permissions = arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY),
-            options = Option.DND_MODES),
+            options = Option.DND_MODES
+        ),
 
-        SystemActionDef(id = SystemAction.DISABLE_DND_MODE,
+        SystemActionDef(
+            id = SystemAction.DISABLE_DND_MODE,
             category = CATEGORY_VOLUME,
             minApi = Build.VERSION_CODES.M,
             iconRes = R.drawable.dnd_circle_off_outline,
             descriptionRes = R.string.action_disable_dnd_mode,
-            permissions = arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY)),
+            permissions = arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY)
+        ),
         //VOLUME
 
         //SCREEN ORIENTATION
@@ -700,51 +707,67 @@ object SystemActionUtils {
         ),
 
         //KEYBOARD
-        SystemActionDef(id = MOVE_CURSOR_TO_END,
+        SystemActionDef(
+            id = MOVE_CURSOR_TO_END,
             category = CATEGORY_KEYBOARD,
             iconRes = R.drawable.ic_cursor,
             messageOnSelection = R.string.action_move_to_end_of_text_message,
-            descriptionRes = R.string.action_move_to_end_of_text),
+            descriptionRes = R.string.action_move_to_end_of_text
+        ),
 
-        SystemActionDef(id = TOGGLE_KEYBOARD,
+        SystemActionDef(
+            id = TOGGLE_KEYBOARD,
             category = CATEGORY_KEYBOARD,
             minApi = Build.VERSION_CODES.N,
             iconRes = R.drawable.ic_notification_keyboard,
             messageOnSelection = R.string.action_toggle_keyboard_message,
-            descriptionRes = R.string.action_toggle_keyboard),
+            descriptionRes = R.string.action_toggle_keyboard
+        ),
 
-        SystemActionDef(id = SHOW_KEYBOARD,
+        SystemActionDef(
+            id = SHOW_KEYBOARD,
             category = CATEGORY_KEYBOARD,
             minApi = Build.VERSION_CODES.N,
             iconRes = R.drawable.ic_notification_keyboard,
             messageOnSelection = R.string.action_toggle_keyboard_message,
-            descriptionRes = R.string.action_show_keyboard),
+            descriptionRes = R.string.action_show_keyboard
+        ),
 
-        SystemActionDef(id = HIDE_KEYBOARD,
+        SystemActionDef(
+            id = HIDE_KEYBOARD,
             category = CATEGORY_KEYBOARD,
             minApi = Build.VERSION_CODES.N,
             iconRes = R.drawable.ic_outline_keyboard_hide_24,
             messageOnSelection = R.string.action_toggle_keyboard_message,
-            descriptionRes = R.string.action_hide_keyboard),
+            descriptionRes = R.string.action_hide_keyboard
+        ),
 
-        SystemActionDef(id = SHOW_KEYBOARD_PICKER,
+        SystemActionDef(
+            id = SHOW_KEYBOARD_PICKER,
             category = CATEGORY_KEYBOARD,
             iconRes = R.drawable.ic_notification_keyboard,
             maxApi = Build.VERSION_CODES.O,
-            descriptionRes = R.string.action_show_keyboard_picker),
+            descriptionRes = R.string.action_show_keyboard_picker
+        ),
 
-        SystemActionDef(id = SHOW_KEYBOARD_PICKER_ROOT,
+        SystemActionDef(
+            id = SHOW_KEYBOARD_PICKER_ROOT,
             category = CATEGORY_KEYBOARD,
             iconRes = R.drawable.ic_notification_keyboard,
             permissions = arrayOf(Constants.PERMISSION_ROOT),
             minApi = Build.VERSION_CODES.O_MR1,
             maxApi = Build.VERSION_CODES.P,
-            descriptionRes = R.string.action_show_keyboard_picker_root),
+            descriptionRes = R.string.action_show_keyboard_picker_root
+        ),
 
         SystemActionDef(id = SWITCH_KEYBOARD,
             category = CATEGORY_KEYBOARD,
             iconRes = R.drawable.ic_notification_keyboard,
-            permissions = arrayOf(Manifest.permission.WRITE_SECURE_SETTINGS),
+            permissions = if (KeyboardUtils.IS_WRITE_SECURE_SETTINGS_REQUIRED_TO_SWITCH_KEYBOARD) {
+                arrayOf(Manifest.permission.WRITE_SECURE_SETTINGS)
+            } else {
+                emptyArray()
+            },
             descriptionRes = R.string.action_switch_keyboard,
             descriptionFormattedRes = R.string.action_switch_keyboard_formatted,
             getOptions = {
@@ -752,43 +775,54 @@ object SystemActionUtils {
             }
         ),
 
-        SystemActionDef(id = TEXT_CUT,
+        SystemActionDef(
+            id = TEXT_CUT,
             category = CATEGORY_KEYBOARD,
             iconRes = R.drawable.ic_content_cut,
             descriptionRes = R.string.action_text_cut,
-            minApi = Build.VERSION_CODES.JELLY_BEAN_MR2),
+            minApi = Build.VERSION_CODES.JELLY_BEAN_MR2
+        ),
 
-        SystemActionDef(id = TEXT_COPY,
+        SystemActionDef(
+            id = TEXT_COPY,
             category = CATEGORY_KEYBOARD,
             iconRes = R.drawable.ic_content_copy,
             descriptionRes = R.string.action_text_copy,
-            minApi = Build.VERSION_CODES.JELLY_BEAN_MR2),
+            minApi = Build.VERSION_CODES.JELLY_BEAN_MR2
+        ),
 
-        SystemActionDef(id = TEXT_PASTE,
+        SystemActionDef(
+            id = TEXT_PASTE,
             category = CATEGORY_KEYBOARD,
             iconRes = R.drawable.ic_content_paste,
             descriptionRes = R.string.action_text_paste,
-            minApi = Build.VERSION_CODES.JELLY_BEAN_MR2),
+            minApi = Build.VERSION_CODES.JELLY_BEAN_MR2
+        ),
 
-        SystemActionDef(id = SELECT_WORD_AT_CURSOR,
+        SystemActionDef(
+            id = SELECT_WORD_AT_CURSOR,
             category = CATEGORY_KEYBOARD,
             descriptionRes = R.string.action_select_word_at_cursor,
-            minApi = Build.VERSION_CODES.JELLY_BEAN_MR2),
+            minApi = Build.VERSION_CODES.JELLY_BEAN_MR2
+        ),
 
         //AIRPLANE MODE
-        SystemActionDef(id = TOGGLE_AIRPLANE_MODE,
+        SystemActionDef(
+            id = TOGGLE_AIRPLANE_MODE,
             category = CATEGORY_AIRPLANE_MODE,
             iconRes = R.drawable.ic_outline_airplanemode_active_24,
             descriptionRes = R.string.action_toggle_airplane_mode,
             permissions = arrayOf(Constants.PERMISSION_ROOT)
         ),
-        SystemActionDef(id = ENABLE_AIRPLANE_MODE,
+        SystemActionDef(
+            id = ENABLE_AIRPLANE_MODE,
             category = CATEGORY_AIRPLANE_MODE,
             iconRes = R.drawable.ic_outline_airplanemode_active_24,
             descriptionRes = R.string.action_enable_airplane_mode,
             permissions = arrayOf(Constants.PERMISSION_ROOT)
         ),
-        SystemActionDef(id = DISABLE_AIRPLANE_MODE,
+        SystemActionDef(
+            id = DISABLE_AIRPLANE_MODE,
             category = CATEGORY_AIRPLANE_MODE,
             iconRes = R.drawable.ic_outline_airplanemode_inactive_24,
             descriptionRes = R.string.action_disable_airplane_mode,
@@ -931,7 +965,10 @@ object SystemActionUtils {
         return ctx.str(descriptionFormattedRes, optionText)
     }
 
-    fun SystemActionDef.getDescriptionWithOptionSet(ctx: Context, optionSetLabels: Set<String>): String {
+    fun SystemActionDef.getDescriptionWithOptionSet(
+        ctx: Context,
+        optionSetLabels: Set<String>
+    ): String {
         descriptionFormattedRes
             ?: throw Exception("System action $id has options and doesn't have a formatted description")
 

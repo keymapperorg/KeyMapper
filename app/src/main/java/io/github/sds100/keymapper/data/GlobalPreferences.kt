@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -18,7 +19,7 @@ class GlobalPreferences(private val dataStore: DataStore<Preferences>,
                         private val coroutineScope: CoroutineScope) : IGlobalPreferences {
 
     override fun <T> getFlow(key: Preferences.Key<T>): Flow<T?> {
-        return dataStore.data.map { it[key] }
+        return dataStore.data.map { it[key] }.distinctUntilChanged()
     }
 
     override suspend fun <T> get(key: Preferences.Key<T>): T? {

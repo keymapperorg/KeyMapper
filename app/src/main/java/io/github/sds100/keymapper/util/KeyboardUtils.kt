@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.util
 
-import android.Manifest
 import android.accessibilityservice.AccessibilityService
 import android.content.Context
 import android.content.Intent
@@ -10,12 +9,13 @@ import android.os.SystemClock
 import android.provider.Settings
 import android.view.KeyEvent
 import androidx.annotation.RequiresApi
-import androidx.annotation.RequiresPermission
+import androidx.core.os.bundleOf
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.data.model.ChooseAppStoreModel
 import io.github.sds100.keymapper.databinding.DialogChooseAppStoreBinding
+import io.github.sds100.keymapper.service.MyAccessibilityService
 import io.github.sds100.keymapper.util.PermissionUtils.isPermissionGranted
 import io.github.sds100.keymapper.util.result.*
 import splitties.alertdialog.appcompat.alertDialog
@@ -50,6 +50,12 @@ object KeyboardUtils {
 
     private const val SETTINGS_SECURE_SUBTYPE_HISTORY_KEY = "input_methods_subtype_history"
 
+    val IS_WRITE_SECURE_SETTINGS_REQUIRED_TO_SWITCH_KEYBOARD =
+        Build.VERSION.SDK_INT < Build.VERSION_CODES.R
+
+    val IS_ACCESSIBILITY_SERVICE_REQUIRED_TO_SWITCH_KEYBOARD =
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+
     val KEY_MAPPER_IME_PACKAGE_LIST = arrayOf(
         Constants.PACKAGE_NAME,
         KEY_MAPPER_GUI_IME_PACKAGE
@@ -74,16 +80,14 @@ object KeyboardUtils {
 
     fun chooseCompatibleInputMethod(ctx: Context) {
 
-        if (PermissionUtils.haveWriteSecureSettingsPermission(ctx)) {
-            getLastUsedCompatibleImeId(ctx).onSuccess {
-                switchIme(ctx, it)
-                return
-            }
+        getLastUsedCompatibleImeId(ctx).onSuccess {
+            switchIme(ctx, it)
+            return
+        }
 
-            getImeId(Constants.PACKAGE_NAME).valueOrNull()?.let {
-                switchIme(ctx, it)
-                return
-            }
+        getImeId(Constants.PACKAGE_NAME).valueOrNull()?.let {
+            switchIme(ctx, it)
+            return
         }
 
         showInputMethodPicker()
@@ -92,7 +96,10 @@ object KeyboardUtils {
     fun chooseLastUsedIncompatibleInputMethod(ctx: Context) {
         getLastUsedIncompatibleImeId(ctx).onSuccess {
             switchIme(ctx, it)
+            return
         }
+
+        showInputMethodPicker()
     }
 
     fun toggleCompatibleIme(ctx: Context) {
@@ -109,29 +116,44 @@ object KeyboardUtils {
 
         imeId ?: return
 
-        //only show the toast message if it is successful
-        if (switchIme(ctx, imeId)) {
-            getInputMethodLabel(ctx, imeId).onSuccess { imeLabel ->
-                toast(ctx.str(R.string.toast_chose_keyboard, imeLabel))
-            }
-        }
+        switchIme(ctx, imeId)
     }
 
     /**
      * @return whether the ime was changed successfully
      */
-    @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
     fun switchIme(ctx: Context, imeId: String): Boolean {
-        if (!PermissionUtils.haveWriteSecureSettingsPermission(ctx)) {
-            ctx.toast(R.string.error_need_write_secure_settings_permission)
-            return false
+        when {
+            IS_WRITE_SECURE_SETTINGS_REQUIRED_TO_SWITCH_KEYBOARD -> {
+                if (!PermissionUtils.haveWriteSecureSettingsPermission(ctx)) {
+
+                    ctx.toast(R.string.error_need_write_secure_settings_permission)
+                    return false
+                }
+
+                SettingsUtils.putSecureSetting(ctx, Settings.Secure.DEFAULT_INPUT_METHOD, imeId)
+
+                getInputMethodLabel(ctx, imeId).onSuccess {
+                    ctx.toast(ctx.str(R.string.toast_chose_keyboard, it))
+                }
+            }
+
+            IS_ACCESSIBILITY_SERVICE_REQUIRED_TO_SWITCH_KEYBOARD -> {
+                if (!AccessibilityUtils.isServiceEnabled(ctx)) {
+                    ctx.toast(R.string.error_accessibility_service_disabled)
+
+                    return false
+                }
+
+                ctx.sendPackageBroadcast(
+                    MyAccessibilityService.ACTION_SWITCH_IME,
+                    bundleOf(MyAccessibilityService.EXTRA_IME_ID to imeId)
+                )
+
+                /*the accessibility service will show the toast message to make sure that
+                it was changed successfully*/
+            }
         }
-
-        SettingsUtils.putSecureSetting(ctx, Settings.Secure.DEFAULT_INPUT_METHOD, imeId)
-
-        inputMethodManager.inputMethodList.find { it.id == imeId }
-            ?.loadLabel(ctx.packageManager)
-            ?.let { ctx.toast(ctx.str(R.string.toast_chose_keyboard, it)) }
 
         return true
     }

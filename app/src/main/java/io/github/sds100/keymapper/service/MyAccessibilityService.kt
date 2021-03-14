@@ -68,6 +68,9 @@ class MyAccessibilityService : AccessibilityService(),
         const val ACTION_TRIGGER_KEYMAP_BY_UID = "$PACKAGE_NAME.TRIGGER_KEYMAP_BY_UID"
         const val EXTRA_KEYMAP_UID = "$PACKAGE_NAME.KEYMAP_UID"
 
+        const val ACTION_SWITCH_IME = "$PACKAGE_NAME.ACTION_SWITCH_IME"
+        const val EXTRA_IME_ID = "$PACKAGE_NAME.EXTRA_IME_ID"
+
         const val EXTRA_RECORDED_TRIGGER_KEY_EVENT =
             "$PACKAGE_NAME.EXTRA_RECORDED_TRIGGER_KEY_EVENT"
 
@@ -81,6 +84,7 @@ class MyAccessibilityService : AccessibilityService(),
      */
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
+            context ?: return
             when (intent?.action) {
 
                 BluetoothDevice.ACTION_ACL_CONNECTED, BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
@@ -143,6 +147,16 @@ class MyAccessibilityService : AccessibilityService(),
                     chosenImePackageName =
                         KeyboardUtils.getChosenInputMethodPackageName(this@MyAccessibilityService)
                             .valueOrNull()
+                }
+
+                ACTION_SWITCH_IME -> if (VERSION.SDK_INT >= VERSION_CODES.R) {
+                    val imeId = intent.getStringExtra(EXTRA_IME_ID) ?: return
+                    softKeyboardController.switchToInputMethod(imeId)
+
+                    KeyboardUtils.getInputMethodLabel(context, imeId)
+                        .onSuccess {
+                            toast(str(R.string.toast_chose_keyboard, it))
+                        }
                 }
             }
         }
@@ -224,6 +238,8 @@ class MyAccessibilityService : AccessibilityService(),
         override fun onInputDeviceChanged(deviceId: Int) {}
     }
 
+    private var initialized = false
+
     override fun onServiceConnected() {
         super.onServiceConnected()
 
@@ -249,6 +265,7 @@ class MyAccessibilityService : AccessibilityService(),
             addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
             addAction(ACTION_TRIGGER_KEYMAP_BY_UID)
             addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
+            addAction(ACTION_SWITCH_IME)
 
             registerReceiver(broadcastReceiver, this)
         }
@@ -309,6 +326,12 @@ class MyAccessibilityService : AccessibilityService(),
         controller.init()
 
         globalPreferences.keymapsPaused.collectWhenStarted(this) { paused ->
+            /*
+            This prevents the ime from changing when the service starts because the flow is collected
+            initially.
+             */
+            if (!initialized) return@collectWhenStarted
+
             if (paused) {
                 globalPreferences.getFlow(Keys.toggleKeyboardOnToggleKeymaps)
                     .firstBlocking()
@@ -329,6 +352,9 @@ class MyAccessibilityService : AccessibilityService(),
         }
 
         inputManager.registerInputDeviceListener(inputDeviceListener, Handler(mainLooper))
+
+        //ensure this is the last line
+        initialized = true
     }
 
     override fun onInterrupt() {}

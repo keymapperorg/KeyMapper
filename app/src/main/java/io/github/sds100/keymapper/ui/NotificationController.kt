@@ -54,6 +54,8 @@ class NotificationController(
                 val keymapsPaused = globalPreferences.keymapsPaused.firstBlocking()
 
                 invalidateToggleKeymapsNotification(keymapsPaused)
+
+                invalidateNotifications()
             }
 
             is OnAccessibilityServiceStopped -> {
@@ -64,6 +66,8 @@ class NotificationController(
                 )
 
                 manager.dismissNotification(AppNotification.KeyboardHidden)
+
+                invalidateNotifications()
             }
 
             is OnHideKeyboard ->
@@ -106,14 +110,19 @@ class NotificationController(
             manager.dismissNotification(AppNotification.ShowImePicker)
         }
 
-        val showToggleKeyboardNotification =
-            globalPreferences
-                .getFlow(Keys.showToggleKeyboardNotification).firstBlocking()
+        val showToggleKeyboardNotification = when {
+            KeyboardUtils.IS_WRITE_SECURE_SETTINGS_REQUIRED_TO_SWITCH_KEYBOARD
+                && haveWriteSecureSettingsPermission() -> true
+
+            KeyboardUtils.IS_ACCESSIBILITY_SERVICE_REQUIRED_TO_SWITCH_KEYBOARD ->
+                isAccessibilityServiceEnabled()
+
+            else -> globalPreferences.getFlow(Keys.showToggleKeyboardNotification).firstBlocking()
                 ?: false
+        }
 
-        if (haveWriteSecureSettingsPermission() || showToggleKeyboardNotification) {
+        if (showToggleKeyboardNotification) {
             manager.showNotification(AppNotification.ToggleKeyboard)
-
         } else {
             manager.dismissNotification(AppNotification.ToggleKeyboard)
         }
@@ -159,7 +168,17 @@ class NotificationController(
             CHANNEL_NEW_FEATURES
         )
 
-        if (haveWriteSecureSettingsPermission()) {
+        val addToggleKeyboardChannel = when {
+            KeyboardUtils.IS_WRITE_SECURE_SETTINGS_REQUIRED_TO_SWITCH_KEYBOARD
+                && haveWriteSecureSettingsPermission() -> true
+
+            KeyboardUtils.IS_ACCESSIBILITY_SERVICE_REQUIRED_TO_SWITCH_KEYBOARD ->
+                isAccessibilityServiceEnabled()
+
+            else -> false
+        }
+
+        if (addToggleKeyboardChannel) {
             channels.add(CHANNEL_TOGGLE_KEYBOARD)
         } else {
             manager.deleteChannel(CHANNEL_TOGGLE_KEYBOARD)

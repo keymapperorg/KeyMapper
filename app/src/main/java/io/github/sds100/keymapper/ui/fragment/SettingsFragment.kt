@@ -74,12 +74,15 @@ class SettingsFragment : Fragment() {
 class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
     companion object {
-        private val KEYS_REQUIRING_WRITE_SECURE_SETTINGS = arrayOf(
-            Keys.autoChangeImeOnDeviceConnect,
-            Keys.toggleKeyboardOnToggleKeymaps,
-            Keys.showToggleKeyboardNotification,
-            Keys.devicesThatToggleKeyboard
-        )
+
+        private val KEYS_REQUIRING_WRITE_SECURE_SETTINGS = sequence {
+            if (KeyboardUtils.IS_WRITE_SECURE_SETTINGS_REQUIRED_TO_SWITCH_KEYBOARD) {
+                yield(Keys.autoChangeImeOnDeviceConnect)
+                yield(Keys.toggleKeyboardOnToggleKeymaps)
+                yield(Keys.showToggleKeyboardNotification)
+                yield(Keys.devicesThatToggleKeyboard)
+            }
+        }.toList()
     }
 
     private val backupRestoreViewModel: BackupRestoreViewModel by activityViewModels {
@@ -393,7 +396,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             createKeyboardPickerCategory()
         }
 
-        createWriteSecureSettingsCategory()
+        createCategoryToAutomaticallySwitchTheKeyboard()
         createRootCategory()
     }
 
@@ -470,16 +473,24 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private fun createWriteSecureSettingsCategory() = PreferenceCategory(requireContext()).apply {
-        setTitle(R.string.title_pref_category_write_secure_settings)
-        preferenceScreen.addPreference(this)
+    private fun createCategoryToAutomaticallySwitchTheKeyboard() {
+        val category = PreferenceCategory(requireContext())
+        preferenceScreen.addPreference(category)
 
-        Preference(requireContext()).apply {
-            isSelectable = false
-            setSummary(R.string.summary_pref_category_write_secure_settings)
-            isSingleLineTitle = false
+        //accessibility services in Android 11+ can change the input method without needing special permissions
+        val requireWriteSecureSettingsPermission =
+            KeyboardUtils.IS_WRITE_SECURE_SETTINGS_REQUIRED_TO_SWITCH_KEYBOARD
 
-            addPreference(this)
+        if (requireWriteSecureSettingsPermission) {
+            category.setTitle(R.string.title_pref_category_write_secure_settings)
+
+            Preference(requireContext()).apply {
+                isSelectable = false
+                setSummary(R.string.summary_pref_category_write_secure_settings)
+                isSingleLineTitle = false
+
+                category.addPreference(this)
+            }
         }
 
         //automatically change the keyboard when a device (dis)connects
@@ -490,13 +501,16 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             setTitle(R.string.title_pref_auto_change_ime_on_connection)
             setSummary(R.string.summary_pref_auto_change_ime_on_connection)
             isSingleLineTitle = false
-            isEnabled = PermissionUtils.haveWriteSecureSettingsPermission(requireContext())
 
-            addPreference(this)
+            if (requireWriteSecureSettingsPermission) {
+                isEnabled = PermissionUtils.haveWriteSecureSettingsPermission(requireContext())
+            }
+
+            category.addPreference(this)
         }
 
         createDevicesPreference(Keys.devicesThatToggleKeyboard.name).apply {
-            addPreference(this)
+            category.addPreference(this)
         }
 
         //toggle keyboard when toggling key maps
@@ -508,9 +522,12 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             setTitle(R.string.title_pref_toggle_keyboard_on_toggle_keymaps)
             setSummary(R.string.summary_pref_toggle_keyboard_on_toggle_keymaps)
             isSingleLineTitle = false
-            isEnabled = PermissionUtils.haveWriteSecureSettingsPermission(requireContext())
 
-            addPreference(this)
+            if (requireWriteSecureSettingsPermission) {
+                isEnabled = PermissionUtils.haveWriteSecureSettingsPermission(requireContext())
+            }
+
+            category.addPreference(this)
         }
 
         //toggle keyboard notification
@@ -532,7 +549,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                     true
                 }
 
-                addPreference(this)
+                category.addPreference(this)
             }
 
         } else {
@@ -544,13 +561,13 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                 setSummary(R.string.summary_pref_show_toggle_keyboard_notification)
                 isSingleLineTitle = false
 
-                addPreference(this)
+                category.addPreference(this)
             }
         }
-
     }
 
     private fun createKeyboardPickerCategory() = PreferenceCategory(requireContext()).apply {
+
         setTitle(R.string.title_pref_category_ime_picker)
         preferenceScreen.addPreference(this)
 
