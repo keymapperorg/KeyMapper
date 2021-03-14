@@ -84,7 +84,10 @@ class BackupManager(
             val keymaps = keymapRepository.getKeymaps().filter { keymapIds.contains(it.id) }
 
             val result = backupAsync(outputStream, keymaps).await()
-            _eventStream.value = BackupResult(result)
+
+            withContext(dispatchers.main()) {
+                _eventStream.value = BackupResult(result)
+            }
         }
     }
 
@@ -98,7 +101,9 @@ class BackupManager(
                 fingerprintSwipeRight = fingerprintMapRepository.swipeRight.firstOrNull()
             ).await()
 
-            _eventStream.value = BackupResult(result)
+            withContext(dispatchers.main()) {
+                _eventStream.value = BackupResult(result)
+            }
         }
     }
 
