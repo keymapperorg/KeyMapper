@@ -20,7 +20,9 @@ Type or paste in a terminal:
 adb shell pm grant io.github.sds100.keymapper android.permission.WRITE_SECURE_SETTINGS
 ```
 
-_For CI builds the package name is_ `io.github.sds100.keymapper.ci`.
+!!! attention
+    For CI builds (the app icon with a green square) the package name is `io.github.sds100.keymapper.ci`.
+    For Debug builds (the app icon with a yellow square) the package name is `io.github.sds100.keymapper.debug`.
 
 More features which rely on this set of permission will come in the future. These permissions persist across reboots but need to be granted again if the app is reinstalled.
 
