@@ -112,7 +112,8 @@ class BackupManager(
                 fingerprintMapRepository.swipeDown.firstOrNull(),
                 fingerprintMapRepository.swipeUp.firstOrNull(),
                 fingerprintMapRepository.swipeLeft.firstOrNull(),
-                fingerprintMapRepository.swipeRight.firstOrNull())
+                fingerprintMapRepository.swipeRight.firstOrNull()
+            )
                 .await()
 
             withContext(dispatchers.main()) {
@@ -127,17 +128,26 @@ class BackupManager(
             try {
                 val json = inputStream.bufferedReader().use { it.readText() }
                 val result = restore(json)
-                _eventStream.value = RestoreResult(result)
+
+                withContext(dispatchers.main()) {
+                    _eventStream.value = RestoreResult(result)
+                }
 
             } catch (e: MalformedJsonException) {
-                _eventStream.value = RestoreResult(CorruptJsonFile)
+                withContext(dispatchers.main()) {
+                    _eventStream.value = RestoreResult(CorruptJsonFile)
+                }
 
             } catch (e: JsonSyntaxException) {
-                _eventStream.value = RestoreResult(CorruptJsonFile)
+                withContext(dispatchers.main()) {
+                    _eventStream.value = RestoreResult(CorruptJsonFile)
+                }
 
             } catch (e: Exception) {
 
-                _eventStream.value = RestoreResult(GenericFailure(e))
+                withContext(dispatchers.main()) {
+                    _eventStream.value = RestoreResult(GenericFailure(e))
+                }
 
                 if (throwExceptions) {
                     e.printStackTrace()
@@ -217,7 +227,8 @@ class BackupManager(
             keymapList?.forEach { keymap ->
                 keymap.trigger.keys.forEach { key ->
                     if (key.deviceId != Trigger.Key.DEVICE_ID_ANY_DEVICE
-                        && key.deviceId != Trigger.Key.DEVICE_ID_THIS_DEVICE) {
+                        && key.deviceId != Trigger.Key.DEVICE_ID_THIS_DEVICE
+                    ) {
                         deviceInfoIdsToBackup.add(key.deviceId)
                     }
                 }
@@ -239,7 +250,8 @@ class BackupManager(
                         fingerprintSwipeUp,
                         fingerprintSwipeLeft,
                         fingerprintSwipeRight
-                    ))
+                    )
+                )
 
                 writer.write(json)
             }
@@ -252,8 +264,10 @@ class BackupManager(
         }
     }
 
-    private suspend fun doAutomaticBackup(keymaps: List<KeyMap>,
-                                          fingerprintMaps: Map<String, FingerprintMap>) {
+    private suspend fun doAutomaticBackup(
+        keymaps: List<KeyMap>,
+        fingerprintMaps: Map<String, FingerprintMap>
+    ) {
 
         if (!shouldBackupAutomatically()) return
 
