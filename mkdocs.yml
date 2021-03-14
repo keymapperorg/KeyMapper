@@ -15,6 +15,7 @@ nav:
       - Back up and Restore (2.1.0+, Android 4.4+): user-guide/backup-restore.md
       - ADB Permissions: user-guide/adb-permissions.md
   - Contributing: contributing.md
+  - Report Issues: report-issues.md
   - Known Issues: known-issues.md
 
 theme:
@@ -48,6 +49,7 @@ extra:
 markdown_extensions:
   - attr_list
   - admonition
+  - pymdownx.superfences
   - pymdownx.snippets:
       base_path: docs/includes
   - pymdownx.emoji:
