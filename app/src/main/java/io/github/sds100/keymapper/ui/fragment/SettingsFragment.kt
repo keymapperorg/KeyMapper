@@ -349,6 +349,20 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             }
 
             Preference(requireContext()).apply {
+                setTitle(R.string.title_pref_devices_to_reroute_keyevents_guide)
+                setOnPreferenceClickListener {
+                    UrlUtils.openUrl(
+                        requireContext(),
+                        str(R.string.url_android_11_bug_reset_id_work_around_setting_guide)
+                    )
+
+                    true
+                }
+
+                category.addPreference(this)
+            }
+
+            Preference(requireContext()).apply {
                 setTitle(R.string.title_pref_devices_to_reroute_keyevents_install_gui_keyboard)
                 isSingleLineTitle = false
 
@@ -395,20 +409,6 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                 Keys.devicesToRerouteKeyEvents.name,
                 R.string.title_pref_devices_to_reroute_keyevents_choose_devices
             ).apply {
-                category.addPreference(this)
-            }
-
-            Preference(requireContext()).apply {
-                setTitle(R.string.title_pref_devices_to_reroute_keyevents_guide)
-                setOnPreferenceClickListener {
-                    UrlUtils.openUrl(
-                        requireContext(),
-                        str(R.string.url_android_11_bug_reset_id_work_around_setting_guide)
-                    )
-
-                    true
-                }
-
                 category.addPreference(this)
             }
 

@@ -495,7 +495,7 @@
     <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Install the Key Mapper GUI Keyboard (optional)</string>
     <string name="title_pref_devices_to_reroute_keyevents_enable_ime">2. Enable the Key Mapper GUI Keyboard or the Key Mapper Basic Input Method</string>
     <string name="title_pref_devices_to_reroute_keyevents_choose_ime">3. Use the keyboard that you just enabled</string>
-    <string name="title_pref_devices_to_reroute_keyevents_guide">Help</string>
+    <string name="title_pref_devices_to_reroute_keyevents_guide">(Recommended) Read user guide for this setting.</string>
     <!--Preference titles and summaries-->
 
     <!--Preference categories-->
