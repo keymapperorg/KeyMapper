@@ -275,6 +275,7 @@
     <string name="url_fingerprint_action_options_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/fingerprint-action-options</string>
     <string name="url_trigger_key_options_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/trigger-key-options</string>
     <string name="url_android_11_bug_reset_id_work_around_setting_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/android-11-device-id-bug-work-around</string>
+    <string name="url_settings_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/settings</string>
 
     <string name="url_play_store_keymapper_gui_keyboard" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin</string>
     <string name="url_fdroid_keymapper_gui_keyboard" translatable="false">https://f-droid.org/en/packages/io.github.sds100.keymapper.inputmethod.latin</string>

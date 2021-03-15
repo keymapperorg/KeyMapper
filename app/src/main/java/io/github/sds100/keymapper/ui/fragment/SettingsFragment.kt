@@ -63,6 +63,17 @@ class SettingsFragment : Fragment() {
         binding.appBar.setNavigationOnClickListener {
             findNavController().navigateUp()
         }
+
+        binding.appBar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.action_help -> {
+                    UrlUtils.openUrl(requireContext(), str(R.string.url_settings_guide))
+                    true
+                }
+
+                else -> false
+            }
+        }
     }
 
     override fun onDestroyView() {
