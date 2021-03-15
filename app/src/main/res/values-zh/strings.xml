@@ -352,7 +352,6 @@
     <string name="title_pref_toggle_keyboard_on_toggle_keymaps">切换按键映射时自动更改键盘</string>
     <string name="summary_pref_toggle_keyboard_on_toggle_keymaps">自动在你恢复你的按键映射时选择Key Mapper键盘，以及暂停它们时自动选择你的默认键盘。</string>
     <string name="title_pref_hide_home_screen_alerts">隐藏主屏幕提醒</string>
-    <string name="summary_pref_hide_home_screen_alerts">隐藏主屏幕顶部的提醒。</string>
     <string name="title_pref_show_device_descriptors">显示设备特定触发器的设备ID的前5个字符</string>
     <string name="summary_pref_show_device_descriptors">这有助于区分具有相同名称的设备。</string>
     <!--Preference titles and summaries-->
