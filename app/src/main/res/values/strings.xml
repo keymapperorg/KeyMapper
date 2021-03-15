@@ -484,7 +484,7 @@
     <string name="summary_pref_toggle_keyboard_on_toggle_keymaps">Automatically select the Key Mapper keyboard when you resume your key maps and select your default keyboard when pausing them.</string>
 
     <string name="title_pref_hide_home_screen_alerts">Hide home screen alerts</string>
-    <string name="summary_pref_hide_home_screen_alerts">Hide the alerts at the top of the home screen.</string>
+    <string name="summary_pref_hide_home_screen_alerts">Hide the alerts at the top of the Key Mapper home screen.</string>
 
     <string name="title_pref_show_device_descriptors">Show the first 5 characters of the device id for device specific triggers</string>
     <string name="summary_pref_show_device_descriptors">This is useful to differentiate between devices that have the same name.</string>
