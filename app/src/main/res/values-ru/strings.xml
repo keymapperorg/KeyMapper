@@ -6,7 +6,7 @@
     <string name="selection_count">%d выбрано</string>
     <string name="enable">Включить</string>
     <string name="open">Открыть</string>
-    <string name="recyclerview_placeholder">¯ \ _ (ツ) _ / ¯\n\n Здесь ничего!</string>
+    <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\n Здесь ничего!</string>
     <string name="triggers_recyclerview_placeholder">Запишите событие!</string>
     <string name="actions_recyclerview_placeholder">Добавьте действие!</string>
     <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nСоздайте мэппинг!</string>
@@ -138,7 +138,7 @@
     <!--  Navigation argument ids  -->
     <!--  Navigation argument ids  -->
     <!--  Toasts  -->
-    <string name="toast_chose_keyboard">Выберите %s</string>
+    <string name="toast_chose_keyboard">Выбрано: %s</string>
     <string name="toast_backup_successful">Резервная копия сделана!</string>
     <string name="toast_restore_successful">Восстановление успешно завершено!</string>
     <string name="toast_automatic_backup_successful">Автоматическое резервное копирование прошло успешно!</string>
