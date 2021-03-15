@@ -6,7 +6,7 @@
     <string name="selection_count">已选择 %d 个</string>
     <string name="enable">启用</string>
     <string name="open">打开</string>
-    <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nএইখানে তো কিছু নাই!</string>
+    <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\n这里没有什么！</string>
     <string name="triggers_recyclerview_placeholder">录制触发器!</string>
     <string name="actions_recyclerview_placeholder">添加操作</string>
     <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\n创建一个按键映射！</string>
