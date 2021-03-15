@@ -347,6 +347,7 @@
     <string name="summary_pref_automatic_backup_location_disabled">Местоположение не выбрано.</string>
     <string name="title_pref_choose_devices">Выберите устройства</string>
     <string name="title_pref_auto_show_ime_picker">Автоматически показывать выбор клавиатуры</string>
+    <string name="summary_pref_auto_show_ime_picker">Когда подключится или отключится устройство по вашему выбору будет показан инструмент выбора клавиатуры. Укажите это устройство ниже.</string>
     <string name="title_pref_auto_change_ime_on_connection">Автоматически переключать экранную клавиатуру при подключении/отключении устройства</string>
     <string name="summary_pref_auto_change_ime_on_connection">Последняя использованная клавиатура Key Mapper будет автоматически выбрана при подключении указанного устройства. Ваша обычная клавиатура будет автоматически выбрана при отключении устройства.</string>
     <string name="title_pref_root_permission">Key Mapper имеет Root права</string>
@@ -365,6 +366,8 @@
     <string name="title_pref_devices_to_reroute_keyevents">Обработка ошибки Android 11, которая задает идентификатор устройства для событий ввода равным -1</string>
     <string name="title_pref_devices_to_reroute_keyevents_choose_devices">4. Выберите устройства</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Установите клавиатуру Key Mapper GUI Keyboard (опционально)</string>
+    <string name="title_pref_devices_to_reroute_keyevents_enable_ime">2. Выберите \'Key Mapper GUI\' клавиатуру или \'Key Mapper Basic Input Method\'</string>
+    <string name="title_pref_devices_to_reroute_keyevents_choose_ime">3. Используйте только что включенную клавиатуру</string>
     <string name="title_pref_devices_to_reroute_keyevents_guide">Руководство по настройке</string>
     <!--Preference titles and summaries-->
     <!--Preference categories-->
@@ -449,6 +452,7 @@
     <string name="showcase_fingerprint_gesture_support_message_supported">Ваше устройство может определить жесты сканера отпечатков пальцев! В верхней части главного экрана есть вкладка для переназначения этих жестов.</string>
     <string name="showcase_fingerprint_gesture_support_message_not_supported">Возможно ваш датчик не поддерживает жесты или ваше устройство не позволяет сторонним приложениям определять жесты. К сожалению разработчик ничем не может помочь в этом случае. Некоторые устройства, например, открывают по свайпу вниз панель уведомлений и не отдают этот жест сторонним программам.</string>
     <string name="showcase_fingerprint_gesture_support_button">Включить</string>
+    <string name="showcase_setup_chosen_devices_again_title">Вам нужно снова произвести некоторые настройки</string>
     <!-- Showcase -->
     <!-- system action options -->
     <string name="stream_accessibility">Спец. возможности</string>
