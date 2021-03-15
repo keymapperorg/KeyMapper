@@ -134,6 +134,7 @@
     <string name="hint_intent_extra_name">Name</string>
     <string name="hint_intent_extra_value_with_type">Value (%s)</string>
     <string name="hint_intent_description">Description for Key Mapper (required)</string>
+    <string name="hint_intent_flags">Flags</string>
     <!--  Hints  -->
 
     <!--  Radio buttons  -->
@@ -276,6 +277,7 @@
     <string name="url_trigger_key_options_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/trigger-key-options</string>
     <string name="url_android_11_bug_reset_id_work_around_setting_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/android-11-device-id-bug-work-around</string>
     <string name="url_settings_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/settings</string>
+    <string name="url_intent_set_flags_help" translatable="false">https://developer.android.com/reference/android/content/Intent#setFlags(int)</string>
 
     <string name="url_play_store_keymapper_gui_keyboard" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin</string>
     <string name="url_fdroid_keymapper_gui_keyboard" translatable="false">https://f-droid.org/en/packages/io.github.sds100.keymapper.inputmethod.latin</string>
@@ -328,6 +330,7 @@
     <string name="button_open_trigger_keymap_from_intent_guide">Intent guide</string>
     <string name="button_help">Help</string>
     <string name="button_config_intent_choose_activity">Choose activity</string>
+    <string name="button_config_intent_set_flags">Set flags</string>
     <!-- Button titles -->
 
     <!-- Dialog titles -->
@@ -386,6 +389,7 @@
 
     <string name="neg_email">Email</string>
     <string name="neutral_discord">Discord</string>
+    <string name="neutral_intent_docs">Docs</string>
 
     <string name="snackbar_cancel">Cancel</string>
     <string name="snackbar_fix">Fix</string>
@@ -960,6 +964,8 @@
     <string name="intent_type_float_array_example">A comma-separated list of valid Floats in the Java programming language. E.g 1241.123</string>
     <string name="intent_type_short_example">A valid Short in the Java programming language. E.g 2342</string>
     <string name="intent_type_short_array_example">A comma-separated list of valid Shorts in the Java programming language. E.g 3242,12354</string>
+
+    <string name="intent_flags_example">The flags for an Intent are stored as bit flags. These flags alter how the Intent is handled. If this is blank for an Activity Intent then Key Mapper will use FLAG_ACTIVITY_NEW_TASK by default. For much more information tap \'docs\' to see the Android developers documentation.</string>
     <!--  Intent action type strings  -->
 
     <!--  Tap targets  -->

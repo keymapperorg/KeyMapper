@@ -23,10 +23,9 @@ import io.github.sds100.keymapper.databinding.ListItemIntentExtraBoolBinding
 import io.github.sds100.keymapper.intentExtraBool
 import io.github.sds100.keymapper.intentExtraGeneric
 import io.github.sds100.keymapper.util.*
-import splitties.alertdialog.appcompat.alertDialog
-import splitties.alertdialog.appcompat.message
-import splitties.alertdialog.appcompat.messageResource
-import splitties.alertdialog.appcompat.okButton
+import splitties.alertdialog.appcompat.*
+import splitties.bitflags.minusFlag
+import splitties.bitflags.withFlag
 
 /**
  * Created by sds100 on 30/03/2020.
@@ -107,13 +106,16 @@ class IntentActionTypeFragment : Fragment() {
                 if (viewModel.targetPackage.value?.isNotEmpty() == true) {
                     this.`package` = viewModel.targetPackage.value
 
-
                     if (viewModel.targetClass.value?.isNotEmpty() == true) {
                         this.setClassName(
                             viewModel.targetPackage.value!!,
                             viewModel.targetClass.value!!
                         )
                     }
+                }
+
+                if (viewModel.flags.value?.isNotBlank() == true) {
+                    this.flags = viewModel.flags.value?.toIntOrNull() ?: 0
                 }
 
                 viewModel.extras.value?.forEach { model ->
@@ -171,6 +173,43 @@ class IntentActionTypeFragment : Fragment() {
             findNavController().navigate(
                 ChooseActionFragmentDirections.toActivityListFragment()
             )
+        }
+
+        binding.setSetFlags {
+            requireContext().alertDialog {
+                var flags = 0
+
+                val flagList = viewModel.availableIntentFlags.map { it.first }.toTypedArray()
+                val labels = viewModel.availableIntentFlags.map { it.second }.toTypedArray()
+                val checkedList = labels.map { false }.toBooleanArray()
+
+                setMultiChoiceItems(labels, checkedList) { _, position, checked ->
+                    flags = if (checked) {
+                        flags.withFlag(flagList[position])
+                    } else {
+                        flags.minusFlag(flagList[position])
+                    }
+                }
+
+                okButton {
+                    viewModel.setFlags(flags)
+                }
+
+                show()
+            }
+        }
+
+        binding.setOnShowFlagsExampleClick {
+            requireContext().alertDialog {
+                messageResource = R.string.intent_flags_example
+
+                neutralButton(R.string.neutral_intent_docs) {
+                    UrlUtils.openUrl(requireContext(), str(R.string.url_intent_set_flags_help))
+                }
+
+                okButton()
+                show()
+            }
         }
 
         subscribeExtrasList()

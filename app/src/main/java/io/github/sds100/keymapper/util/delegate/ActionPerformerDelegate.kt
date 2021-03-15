@@ -244,7 +244,10 @@ class ActionPerformerDelegate(
                         action.extras.getData(Action.EXTRA_INTENT_TARGET).onSuccess {
                             when (IntentTarget.valueOf(it)) {
                                 IntentTarget.ACTIVITY -> {
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    if (intent.flags == 0) {
+                                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                    }
+
                                     startActivity(intent)
                                 }
                                 IntentTarget.BROADCAST_RECEIVER -> sendBroadcast(intent)

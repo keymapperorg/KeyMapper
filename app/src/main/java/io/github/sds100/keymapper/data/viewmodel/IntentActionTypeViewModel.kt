@@ -1,5 +1,7 @@
 package io.github.sds100.keymapper.data.viewmodel
 
+import android.content.Intent
+import android.os.Build
 import androidx.lifecycle.*
 import com.hadilq.liveevent.LiveEvent
 import io.github.sds100.keymapper.data.model.IntentExtraListItemModel
@@ -22,6 +24,8 @@ class IntentActionTypeViewModel : ViewModel() {
         it.split(',')
     }
 
+    val flags = MutableLiveData("")
+
     val data = MutableLiveData("")
     val targetPackage = MutableLiveData("")
     val targetClass = MutableLiveData("")
@@ -42,6 +46,87 @@ class IntentActionTypeViewModel : ViewModel() {
         }
     }
     val eventStream: LiveData<Event> = _eventStream
+
+    val availableIntentFlags: List<Pair<Int, String>> =
+        sequence {
+            yield(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT to "FLAG_ACTIVITY_BROUGHT_TO_FRONT")
+            yield(Intent.FLAG_ACTIVITY_CLEAR_TASK to "FLAG_ACTIVITY_CLEAR_TASK")
+            yield(Intent.FLAG_ACTIVITY_CLEAR_TOP to "FLAG_ACTIVITY_CLEAR_TOP")
+
+            yield(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET to "FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET")
+
+            yield(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS to "FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS")
+            yield(Intent.FLAG_ACTIVITY_FORWARD_RESULT to "FLAG_ACTIVITY_FORWARD_RESULT")
+            yield(Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY to "FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY")
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                yield(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT to "FLAG_ACTIVITY_LAUNCH_ADJACENT")
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                yield(Intent.FLAG_ACTIVITY_MATCH_EXTERNAL to "FLAG_ACTIVITY_MATCH_EXTERNAL")
+            }
+
+            yield(Intent.FLAG_ACTIVITY_MULTIPLE_TASK to "FLAG_ACTIVITY_MULTIPLE_TASK")
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                yield(Intent.FLAG_ACTIVITY_NEW_DOCUMENT to "FLAG_ACTIVITY_NEW_DOCUMENT")
+            }
+
+            yield(Intent.FLAG_ACTIVITY_NEW_TASK to "FLAG_ACTIVITY_NEW_TASK")
+            yield(Intent.FLAG_ACTIVITY_NO_ANIMATION to "FLAG_ACTIVITY_NO_ANIMATION")
+            yield(Intent.FLAG_ACTIVITY_NO_HISTORY to "FLAG_ACTIVITY_NO_HISTORY")
+            yield(Intent.FLAG_ACTIVITY_NO_USER_ACTION to "FLAG_ACTIVITY_NO_USER_ACTION")
+            yield(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP to "FLAG_ACTIVITY_PREVIOUS_IS_TOP")
+            yield(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT to "FLAG_ACTIVITY_REORDER_TO_FRONT")
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                yield(Intent.FLAG_ACTIVITY_REQUIRE_DEFAULT to "FLAG_ACTIVITY_REQUIRE_DEFAULT")
+                yield(Intent.FLAG_ACTIVITY_REQUIRE_NON_BROWSER to "FLAG_ACTIVITY_REQUIRE_NON_BROWSER")
+            }
+
+            yield(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED to "FLAG_ACTIVITY_RESET_TASK_IF_NEEDED")
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                yield(Intent.FLAG_ACTIVITY_RETAIN_IN_RECENTS to "FLAG_ACTIVITY_RETAIN_IN_RECENTS")
+            }
+
+            yield(Intent.FLAG_ACTIVITY_SINGLE_TOP to "FLAG_ACTIVITY_SINGLE_TOP")
+            yield(Intent.FLAG_ACTIVITY_TASK_ON_HOME to "FLAG_ACTIVITY_TASK_ON_HOME")
+            yield(Intent.FLAG_DEBUG_LOG_RESOLUTION to "FLAG_DEBUG_LOG_RESOLUTION")
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                yield(Intent.FLAG_DIRECT_BOOT_AUTO to "FLAG_DIRECT_BOOT_AUTO")
+            }
+
+            yield(Intent.FLAG_EXCLUDE_STOPPED_PACKAGES to "FLAG_EXCLUDE_STOPPED_PACKAGES")
+            yield(Intent.FLAG_FROM_BACKGROUND to "FLAG_FROM_BACKGROUND")
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                yield(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION to "FLAG_GRANT_PERSISTABLE_URI_PERMISSION")
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                yield(Intent.FLAG_GRANT_PREFIX_URI_PERMISSION to "FLAG_GRANT_PREFIX_URI_PERMISSION")
+            }
+
+            yield(Intent.FLAG_GRANT_READ_URI_PERMISSION to "FLAG_GRANT_READ_URI_PERMISSION")
+            yield(Intent.FLAG_GRANT_WRITE_URI_PERMISSION to "FLAG_GRANT_WRITE_URI_PERMISSION")
+            yield(Intent.FLAG_INCLUDE_STOPPED_PACKAGES to "FLAG_INCLUDE_STOPPED_PACKAGES")
+            yield(Intent.FLAG_RECEIVER_FOREGROUND to "FLAG_RECEIVER_FOREGROUND")
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                yield(Intent.FLAG_RECEIVER_NO_ABORT to "FLAG_RECEIVER_NO_ABORT")
+            }
+
+            yield(Intent.FLAG_RECEIVER_REGISTERED_ONLY to "FLAG_RECEIVER_REGISTERED_ONLY")
+            yield(Intent.FLAG_RECEIVER_REPLACE_PENDING to "FLAG_RECEIVER_REPLACE_PENDING")
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                yield(Intent.FLAG_RECEIVER_VISIBLE_TO_INSTANT_APPS to "FLAG_RECEIVER_VISIBLE_TO_INSTANT_APPS")
+            }
+
+        }.toList()
 
     private val _isValid = MediatorLiveData<Boolean>().apply {
 
@@ -128,6 +213,10 @@ class IntentActionTypeViewModel : ViewModel() {
     fun setActivity(activityInfo: ActivityInfo) {
         targetPackage.value = activityInfo.packageName
         targetClass.value = activityInfo.activityName
+    }
+
+    fun setFlags(flags: Int) {
+        this.flags.value = flags.toString()
     }
 
     @Suppress("UNCHECKED_CAST")
