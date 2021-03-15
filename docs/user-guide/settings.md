@@ -3,7 +3,7 @@
 ## Automatically change the on-screen keyboard when a device connects/disconnects
 
 !!! attention
-    This requires WRITE_SECURE_SETTINGS permission on Android 10 and older. Follow [this guide](adb-permissions.md#write_secure_settings) to grant Key Mapper this permission.
+    You must [grant Key Mapper WRITE_SECURE_SETTINGS permission](../adb-permissions/#write_secure_settings) for this to notification to be shown. Alternatively on Android 11+ you can just turn on the accessibility service.
 
 !!! info
     This is restricted to Bluetooth devices in Key Mapper 2.2.0 and older. After updating to Key Mapper 2.3.0 you will need to set this up again because the data for the Bluetooth devices can't be migrated in a way that the new feature will work.
@@ -13,11 +13,14 @@ The last used Key Mapper keyboard will be automatically selected when a chosen d
 ## Automatically change the on-screen keyboard when toggling key maps
 
 !!! attention
-    This requires WRITE_SECURE_SETTINGS permission on Android 10 and older. Follow [this guide](adb-permissions.md#write_secure_settings) to grant Key Mapper this permission.
+    You must [grant Key Mapper WRITE_SECURE_SETTINGS permission](../adb-permissions/#write_secure_settings) for this to notification to be shown. Alternatively on Android 11+ you can just turn on the accessibility service.
 
 The last used Key Mapper keyboard will be automatically selected when you unpause your key maps. Your normal keyboard will be automatically selected when they are paused.
 
 ## Toggle Key Mapper keyboard notification
+
+!!! attention
+    You must [grant Key Mapper WRITE_SECURE_SETTINGS permission](../adb-permissions/#write_secure_settings) for this to notification to be shown. Alternatively on Android 11+ you can just turn on the accessibility service.
 
 This notification will select the last used Key Mapper keyboard if you are using your normal keyboard and will select your normal keyboard if the Key Mapper keyboard is being used.
 
