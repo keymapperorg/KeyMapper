@@ -64,7 +64,7 @@ Steps to work around this bug...
 4. **To avoid confusion and headaches** read about how input methods work with Key Mapper [here](../quick-start.md#set-up-a-key-mapper-keyboard).
 5. Tap 'Enable the Key Mapper keyboard' and turn on the Key Mapper GUI Keyboard or the Key Mapper Basic Input Method.
 6. Tap 'Use the Key Mapper keyboard' and select the keyboard that you just enabled.
-   It is recommended that you setup the setting to automatically change the on-screen keyboard when devices connect and disconnect. You can find this further up the page. This is useful if you don't want to use one of the Key Mapper keyboards all the time. If you want to change the keyboard manually then see [this](../faq.md#how-do-i-change-the-keyboard) question in the faq.
+   It is recommended that you setup the setting to automatically change the on-screen keyboard when the device connects and disconnects. You can find this further up this page. This is useful if you don't want to use one of the Key Mapper keyboards all the time. If you want to change the keyboard manually then see [this](../faq.md#how-do-i-change-the-keyboard) question in the faq.
 
 7. Connect the device that you want to fix to your Android device.
 8. Tap 'Choose devices' and select the devices that should be fixed.
