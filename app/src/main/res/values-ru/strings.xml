@@ -256,8 +256,6 @@
     <!-- Dialog titles -->
     <!-- Dialog messages -->
     <string name="dialog_message_are_you_sure_want_to_leave_without_saving">Вы уверены, что хотите уйти без сохранения?</string>
-    <string name="dialog_message_root_prompt">Когда вы нажмете \"OK\", откроются настройки
-            В настройках, прокрутите вниз и нажмите «Включить Root права», чтобы вы могли использовать функции/действия root. Если вы знаете, что ваш телефон не имеет прав Суперпользователя или вы не знаете, что это такое, то вы не сможете использовать функции, которые работают только на устройствах с правами суперпользователя.</string>
     <string name="dialog_message_downloading">Загрузка…</string>
     <string name="dialog_message_describe_your_issue_in_the_email">Просьба описать в письме проблему, с которой вы столкнулись. В противном случае я не могу вам помочь. Спасибо!</string>
     <string name="dialog_message_long_press_warning">Длительное нажатие работает только для кнопок громкости и навигации. Если вы включите его для других клавиш, клавиши не будут работать, если они не будут длительно нажаты.</string>
@@ -597,12 +595,6 @@ https://issuetracker.google.com/issues/163120692
     <string name="error_corrupt_json_file">Поврежден файл JSON!</string>
     <!-- Error messages -->
     <!-- System action labels -->
-    <string name="action_toggle_wifi">Переключить WiFi (не root)</string>
-    <string name="action_enable_wifi">Включить WiFi (не root)</string>
-    <string name="action_disable_wifi">Отключить WiFi (не root)</string>
-    <string name="action_toggle_wifi_root">Переключить WiFi (root)</string>
-    <string name="action_enable_wifi_root">Включить WiFi (root)</string>
-    <string name="action_disable_wifi_root">Отключить WiFi (root)</string>
     <string name="action_toggle_bluetooth">Переключить Bluetooth</string>
     <string name="action_enable_bluetooth">Включить Bluetooth</string>
     <string name="action_disable_bluetooth">Отключить Bluetooth</string>
@@ -685,12 +677,9 @@ https://issuetracker.google.com/issues/163120692
     <string name="action_nfc_disable">Отключить NFC</string>
     <string name="action_nfc_toggle">Переключить NFC</string>
     <string name="action_screenshot">Скриншот</string>
-    <string name="action_screenshot_root">Скриншот (root)</string>
     <string name="action_open_assistant">Запустить голосового ассистента</string>
     <string name="action_open_device_assistant">Запустить помощника устройства</string>
     <string name="action_open_camera">Открыть камеру</string>
-    <string name="action_lock_device">Блокировка устройства (не root)</string>
-    <string name="action_lock_device_root">Блокировка устройства (root)</string>
     <string name="action_secure_lock_device">Безопасная блокировка устройства</string>
     <string name="action_secure_lock_device_message">Вы сможете войти только с PIN-кодом / паролем. Сканер отпечатков пальцев и разблокировка лица будет отключена. Это единственный надежный способ, который я нашел для блокировки устройств, не являющихся root, до Android Pie 9.0.</string>
     <string name="action_power_on_off_device">Усыпить / Разбудить устройство</string>
@@ -702,8 +691,6 @@ https://issuetracker.google.com/issues/163120692
     <string name="action_toggle_keyboard_message">Это действие будет работать только если вы коснулись пальцем поля ввода, и при этом должна отобразиться клавиатура.</string>
     <string name="action_show_keyboard">Показать клавиатуру</string>
     <string name="action_hide_keyboard">Скрыть клавиатуру</string>
-    <string name="action_show_keyboard_picker">Показать выбор клавиатуры (не root)</string>
-    <string name="action_show_keyboard_picker_root">Показать выбор клавиатуры (root)</string>
     <string name="action_switch_keyboard">Переключить клавиатуру</string>
     <string name="action_switch_keyboard_formatted">Переключиться на %s</string>
     <string name="action_text_cut">Вырезать</string>
