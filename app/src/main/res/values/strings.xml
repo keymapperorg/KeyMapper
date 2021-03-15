@@ -466,7 +466,7 @@
     <string name="title_pref_auto_show_ime_picker">Automatically show keyboard picker</string>
     <string name="summary_pref_auto_show_ime_picker">When a device that you have chosen connects or disconnects the keyboard picker will show automatically. Choose the devices below.</string>
 
-    <string name="title_pref_auto_change_ime_on_connection">Automatically change the on-screen keyboard when a device connects/disconnects</string>
+    <string name="title_pref_auto_change_ime_on_connection">Automatically change the on-screen keyboard when a device (e.g a keyboard) connects/disconnects</string>
     <string name="summary_pref_auto_change_ime_on_connection">The last used Key Mapper keyboard will be automatically selected when a chosen device is connected. Your normal keyboard will be automatically selected when the device disconnects.</string>
 
     <string name="title_pref_root_permission">Key Mapper has root permission</string>
