@@ -26,11 +26,15 @@ class IntentActionTypeViewModel : ViewModel() {
     val targetPackage = MutableLiveData("")
     val targetClass = MutableLiveData("")
 
+    val showChooseActivityButton = targetActivity
+
     private val _extras = MutableLiveData(emptyList<IntentExtraModel>())
     val extras: LiveData<List<IntentExtraModel>> = _extras
 
-    private val _extrasListItemModels = MutableLiveData<DataState<List<IntentExtraListItemModel>>>(Empty())
-    val extrasListItemModels: LiveData<DataState<List<IntentExtraListItemModel>>> = _extrasListItemModels
+    private val _extrasListItemModels =
+        MutableLiveData<DataState<List<IntentExtraListItemModel>>>(Empty())
+    val extrasListItemModels: LiveData<DataState<List<IntentExtraListItemModel>>> =
+        _extrasListItemModels
 
     private val _eventStream = LiveEvent<Event>().apply {
         addSource(_extras) {
@@ -119,6 +123,11 @@ class IntentActionTypeViewModel : ViewModel() {
         targetBroadcastReceiver.value == true -> IntentTarget.BROADCAST_RECEIVER
         targetService.value == true -> IntentTarget.SERVICE
         else -> throw Exception("No target selected.")
+    }
+
+    fun setActivity(activityInfo: ActivityInfo) {
+        targetPackage.value = activityInfo.packageName
+        targetClass.value = activityInfo.activityName
     }
 
     @Suppress("UNCHECKED_CAST")
