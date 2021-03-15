@@ -323,6 +323,7 @@
     <string name="notification_feature_fingerprint_title">Переопределить жесты отпечатков пальцев с помощью Key Mapper!</string>
     <string name="notification_feature_fingerprint_text">Ваше устройство поддерживает переопределение жестов по датчику отпечатков пальцев. Нажмите, чтобы начать переопределение!</string>
     <string name="notification_setup_chosen_devices_again_title">Вам нужно снова произвести некоторые настройки!</string>
+    <string name="notification_setup_chosen_devices_again_text">Похоже, вы использовали настройки, чтобы автоматически изменять клавиатуру или показать выбор метода ввода при подключении и отключении устройства Bluetooth. Key Mapper теперь позволяет использовать для этого любое устройство ввода, а не только устройства Bluetooth. К сожалению не существует способа переноса старых настроек. Таким образом чтобы этот функционал заработал вам придется выбрать устройство снова в настройках программы. Нажмите, чтобы открыть Key Mapper.</string>
     <!-- Notification strings -->
     <!--Preference titles and summaries-->
     <string name="title_pref_long_press_delay">Задержка долгого нажатия по умолчанию (мс)</string>
@@ -348,6 +349,7 @@
     <string name="title_pref_choose_devices">Выберите устройства</string>
     <string name="title_pref_auto_show_ime_picker">Автоматически показывать выбор клавиатуры</string>
     <string name="summary_pref_auto_show_ime_picker">Когда подключится или отключится устройство по вашему выбору будет показан инструмент выбора клавиатуры. Укажите это устройство ниже.</string>
+    <string name="title_pref_auto_change_ime_on_connection">Автоматически переключать экранную клавиатуру при подключении/отключении устройства (например клавиатуры)</string>
     <string name="summary_pref_auto_change_ime_on_connection">Последняя использованная клавиатура Key Mapper будет автоматически выбрана при подключении указанного устройства. Ваша обычная клавиатура будет автоматически выбрана при отключении устройства.</string>
     <string name="title_pref_root_permission">Key Mapper имеет Root права</string>
     <string name="summary_pref_root_permission">Включайте это в том случае если вам нужны функции/возможности, которые работают только на устройствах с Root правами. Key Mapper должен получить соответствующие разрешения через приложение по управлению Root доступом (например Magisk, SuperSU).
@@ -359,13 +361,18 @@
     <string name="title_pref_toggle_keyboard_on_toggle_keymaps">Смена клавиатуры при включении мэппинга</string>
     <string name="summary_pref_toggle_keyboard_on_toggle_keymaps">Автоматически выбирать клавиатуру Key Mapper когда снимаете приложение с паузы и выбирать вашу клавиатуру по умолчанию при установки приложения на паузу.</string>
     <string name="title_pref_hide_home_screen_alerts">Скрыть оповещения на главном экране</string>
+    <string name="summary_pref_hide_home_screen_alerts">Скрыть оповещения в верхней части главного экрана Key Mapper.</string>
     <string name="title_pref_show_device_descriptors">Показать первые 5 символов id устройства для событий связанных с конкретными устройствами</string>
     <string name="summary_pref_show_device_descriptors">Это используется чтобы отличить друг от друга устройства с одним и тем же именем.</string>
     <string name="title_pref_devices_to_reroute_keyevents">Обработка ошибки Android 11, которая задает идентификатор устройства для событий ввода равным -1</string>
+    <string name="summary_pref_devices_to_reroute_keyevents">Выберите устройство события нажатий которого необходимо перехватывать и перенаправлять через выбранную клавиатуру Key Mapper. Для этого надо выбрать либо \'Key Mapper GUI Keyboard\', либо \'Key Mapper Basic Input Method\'. Это частичное решение проблемы описанной тут:
+https://issuetracker.google.com/issues/163120692
+К сожалению этот метод НЕ РАБОТАЕТ с игровыми контроллерами.</string>
     <string name="title_pref_devices_to_reroute_keyevents_choose_devices">4. Выберите устройства</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Установите клавиатуру Key Mapper GUI Keyboard (опционально)</string>
     <string name="title_pref_devices_to_reroute_keyevents_enable_ime">2. Выберите \'Key Mapper GUI\' клавиатуру или \'Key Mapper Basic Input Method\'</string>
     <string name="title_pref_devices_to_reroute_keyevents_choose_ime">3. Используйте только что включенную клавиатуру</string>
+    <string name="title_pref_devices_to_reroute_keyevents_guide">(Рекомендуется) Прочитать руководство пользователя для этого параметра.</string>
     <!--Preference titles and summaries-->
     <!--Preference categories-->
     <string name="title_pref_category_ime_picker">Выбор клавиатуры</string>
@@ -450,6 +457,7 @@
     <string name="showcase_fingerprint_gesture_support_message_not_supported">Возможно ваш датчик не поддерживает жесты или ваше устройство не позволяет сторонним приложениям определять жесты. К сожалению разработчик ничем не может помочь в этом случае. Некоторые устройства, например, открывают по свайпу вниз панель уведомлений и не отдают этот жест сторонним программам.</string>
     <string name="showcase_fingerprint_gesture_support_button">Включить</string>
     <string name="showcase_setup_chosen_devices_again_title">Вам нужно снова произвести некоторые настройки</string>
+    <string name="showcase_setup_chosen_devices_again_message">Похоже, вы использовали настройки, чтобы автоматически изменять клавиатуру или показать выбор метода ввода при подключении и отключении устройства Bluetooth. Key Mapper теперь позволяет использовать для этого любое устройство ввода, а не только устройства Bluetooth. К сожалению не существует способа переноса старых настроек. Таким образом чтобы этот функционал заработал вам придется выбрать устройство снова.</string>
     <!-- Showcase -->
     <!-- system action options -->
     <string name="stream_accessibility">Спец. возможности</string>
