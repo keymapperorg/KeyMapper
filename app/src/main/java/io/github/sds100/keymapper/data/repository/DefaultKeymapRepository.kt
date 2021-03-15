@@ -7,6 +7,7 @@ import com.google.gson.Gson
 import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 import io.github.sds100.keymapper.data.db.migration.JsonMigration
+import io.github.sds100.keymapper.data.db.migration.keymaps.Migration_10_11
 import io.github.sds100.keymapper.data.db.migration.keymaps.Migration_9_10
 import io.github.sds100.keymapper.data.model.KeyMap
 import io.github.sds100.keymapper.data.usecase.*
@@ -31,8 +32,9 @@ class DefaultKeymapRepository internal constructor(
     CreateKeymapShortcutUseCase {
 
     companion object {
-        private val MIGRATIONS = listOf(
-            JsonMigration(9, 10) { gson, json -> Migration_9_10.migrateJson(gson, json) }
+        val MIGRATIONS = listOf(
+            JsonMigration(9, 10) { gson, json -> Migration_9_10.migrateJson(gson, json) },
+            JsonMigration(10, 11) { gson, json -> Migration_10_11.migrateJson(gson, json) }
         )
     }
 

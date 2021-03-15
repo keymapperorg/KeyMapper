@@ -4,9 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.github.salomonbrys.kotson.get
 import com.google.gson.Gson
 import com.google.gson.JsonParser
-import io.github.sds100.keymapper.data.db.migration.JsonMigration
-import io.github.sds100.keymapper.data.db.migration.keymaps.Migration_10_11
-import io.github.sds100.keymapper.data.db.migration.keymaps.Migration_9_10
+import io.github.sds100.keymapper.data.repository.DefaultKeymapRepository
 import io.github.sds100.keymapper.util.JsonTestUtils
 import io.github.sds100.keymapper.util.MigrationUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -32,11 +30,6 @@ class KeymapJsonMigrationTest {
         private val MIGRATION_9_10_EXPECTED_DATA = listOf(
             "{\"actionList\":[{\"data\":\"com.google.android.contacts\",\"extras\":[],\"flags\":0,\"type\":\"APP\"}],\"constraintList\":[],\"constraintMode\":1,\"flags\":0,\"id\":0,\"isEnabled\":true,\"trigger\":{\"extras\":[],\"flags\":17,\"keys\":[{\"clickType\":0,\"deviceId\":\"io.github.sds100.keymapper.THIS_DEVICE\",\"flags\":0,\"keyCode\":25}],\"mode\":2}}",
             "{\"actionList\":[{\"data\":\"com.google.android.contacts\",\"extras\":[],\"flags\":4,\"type\":\"APP\"}],\"constraintList\":[],\"constraintMode\":1,\"flags\":0,\"id\":0,\"isEnabled\":true,\"trigger\":{\"extras\":[],\"flags\":16,\"keys\":[{\"clickType\":0,\"deviceId\":\"io.github.sds100.keymapper.THIS_DEVICE\",\"flags\":0,\"keyCode\":25}],\"mode\":2}}"
-        )
-
-        private val MIGRATIONS = listOf(
-            JsonMigration(9, 10) { gson, json -> Migration_9_10.migrateJson(gson, json) },
-            JsonMigration(10, 11) { gson, json -> Migration_10_11.migrateJson(gson, json) },
         )
     }
 
@@ -88,7 +81,7 @@ class KeymapJsonMigrationTest {
         testData.forEachIndexed { index, json ->
             val migratedJson = MigrationUtils.migrate(
                 gson,
-                MIGRATIONS,
+                DefaultKeymapRepository.MIGRATIONS,
                 inputVersion,
                 json,
                 outputVersion

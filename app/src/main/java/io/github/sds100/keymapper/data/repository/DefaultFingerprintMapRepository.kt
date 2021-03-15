@@ -28,8 +28,9 @@ import kotlinx.coroutines.launch
 /**
  * Created by sds100 on 17/11/20.
  */
-class DefaultFingerprintMapRepository(private val dataStore: DataStore<Preferences>,
-                                      private val coroutineScope: CoroutineScope
+class DefaultFingerprintMapRepository(
+    private val dataStore: DataStore<Preferences>,
+    private val coroutineScope: CoroutineScope
 ) : FingerprintMapRepository {
 
     companion object {
@@ -40,7 +41,7 @@ class DefaultFingerprintMapRepository(private val dataStore: DataStore<Preferenc
             FingerprintMapUtils.SWIPE_RIGHT to PreferenceKeys.FINGERPRINT_GESTURE_SWIPE_RIGHT
         )
 
-        private val MIGRATIONS = listOf(
+        val MIGRATIONS = listOf(
             JsonMigration(0, 1) { gson, json -> FingerprintMapMigration_0_1.migrate(gson, json) },
             JsonMigration(1, 2) { gson, json -> FingerprintMapMigration_1_2.migrate(gson, json) },
         )
@@ -145,8 +146,10 @@ class DefaultFingerprintMapRepository(private val dataStore: DataStore<Preferenc
         }
     }
 
-    private suspend fun setGesture(gestureId: String,
-                                   fingerprintMapJson: String) {
+    private suspend fun setGesture(
+        gestureId: String,
+        fingerprintMapJson: String
+    ) {
         dataStore.edit { prefs ->
             val key = PREF_KEYS_MAP[gestureId]!!
             prefs[key] = fingerprintMapJson
