@@ -28,6 +28,10 @@
             type="View.OnClickListener" />
 
         <variable
+            name="onChooseActivityClick"
+            type="View.OnClickListener" />
+
+        <variable
             name="viewModel"
             type="io.github.sds100.keymapper.data.viewmodel.IntentActionTypeViewModel" />
     </data>
@@ -225,6 +229,19 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonChooseActivity"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:onClick="@{onChooseActivityClick}"
+                    android:text="@string/button_config_intent_choose_activity"
+                    android:visibility="@{viewModel.showChooseActivityButton ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintTop_toBottomOf="@+id/textInputLayoutClass" />
+
                 <TextView
                     android:id="@+id/headerExtras"
                     android:layout_width="match_parent"
@@ -239,7 +256,7 @@
                     android:textSize="14sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textInputLayoutClass" />
+                    app:layout_constraintTop_toBottomOf="@+id/buttonChooseActivity" />
 
                 <com.airbnb.epoxy.EpoxyRecyclerView
                     android:id="@+id/epoxyRecyclerViewExtras"

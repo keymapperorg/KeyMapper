@@ -18,10 +18,19 @@
         <action
             android:id="@+id/action_choose_action_fragment_to_keycodeListFragment"
             app:destination="@id/keycodeListFragment" />
+
+        <action
+            android:id="@+id/to_activityListFragment"
+            app:destination="@id/activityListFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/keycodeListFragment"
         android:name="io.github.sds100.keymapper.ui.fragment.KeycodeListFragment"
         android:label="KeycodeListFragment" />
+
+    <fragment
+        android:id="@+id/activityListFragment"
+        android:name="io.github.sds100.keymapper.ui.fragment.ActivityListFragment"
+        android:label="Activity List Fragment" />
 </navigation>

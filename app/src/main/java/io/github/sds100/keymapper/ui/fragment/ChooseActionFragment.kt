@@ -19,6 +19,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.viewmodel.ChooseActionViewModel
+import io.github.sds100.keymapper.data.viewmodel.IntentActionTypeViewModel
 import io.github.sds100.keymapper.data.viewmodel.KeyEventActionTypeViewModel
 import io.github.sds100.keymapper.databinding.FragmentChooseActionBinding
 import io.github.sds100.keymapper.ui.adapter.ChooseActionPagerAdapter
@@ -137,6 +138,16 @@ class ChooseActionFragment : Fragment() {
             }
         }
 
+        setFragmentResultListener(ActivityListFragment.REQUEST_KEY) { _, result ->
+            val viewModel by activityViewModels<IntentActionTypeViewModel> {
+                InjectorUtils.provideIntentActionTypeViewModel()
+            }
+
+            result.getParcelable<ActivityInfo>(ActivityListFragment.EXTRA_ACTIVITY_INFO).let {
+                viewModel.setActivity(it ?: return@let)
+            }
+        }
+
         FragmentChooseActionBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             _binding = this
@@ -188,17 +199,22 @@ class ChooseActionFragment : Fragment() {
         requestKey: String,
         createAction: (bundle: Bundle) -> Action
     ) {
-        childFragmentManager.setFragmentResultListener(requestKey, viewLifecycleOwner) { _, result ->
+        childFragmentManager.setFragmentResultListener(
+            requestKey,
+            viewLifecycleOwner
+        ) { _, result ->
             val action = createAction(result)
 
             setFragmentResult(
                 this.mArgs.StringNavArgChooseActionRequestKey,
-                bundleOf(EXTRA_ACTION to action))
+                bundleOf(EXTRA_ACTION to action)
+            )
         }
     }
 
     private fun FragmentChooseActionBinding.subscribeSearchView(
-        pagerAdapter: ChooseActionPagerAdapter) {
+        pagerAdapter: ChooseActionPagerAdapter
+    ) {
         val searchViewMenuItem = appBar.menu.findItem(R.id.action_search)
         val searchView = searchViewMenuItem.actionView as SearchView
 

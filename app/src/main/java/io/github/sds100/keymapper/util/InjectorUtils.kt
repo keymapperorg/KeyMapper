@@ -15,6 +15,10 @@ object InjectorUtils {
         return AppListViewModel.Factory(ServiceLocator.packageRepository(context))
     }
 
+    fun provideActivityListViewModel(context: Context): ActivityListViewModel.Factory {
+        return ActivityListViewModel.Factory(ServiceLocator.packageRepository(context))
+    }
+
     fun provideAppShortcutListViewModel(context: Context): AppShortcutListViewModel.Factory {
         return AppShortcutListViewModel.Factory(ServiceLocator.packageRepository(context))
     }

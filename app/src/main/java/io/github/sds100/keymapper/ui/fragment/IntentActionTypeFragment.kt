@@ -107,6 +107,7 @@ class IntentActionTypeFragment : Fragment() {
                 if (viewModel.targetPackage.value?.isNotEmpty() == true) {
                     this.`package` = viewModel.targetPackage.value
 
+
                     if (viewModel.targetClass.value?.isNotEmpty() == true) {
                         this.setClassName(
                             viewModel.targetPackage.value!!,
@@ -125,7 +126,8 @@ class IntentActionTypeFragment : Fragment() {
 
             val uri = intent.toUri(0)
 
-            setFragmentResult(REQUEST_KEY,
+            setFragmentResult(
+                REQUEST_KEY,
                 bundleOf(
                     EXTRA_DESCRIPTION to viewModel.description.value,
                     EXTRA_TARGET to viewModel.getTarget().toString(),
@@ -164,6 +166,12 @@ class IntentActionTypeFragment : Fragment() {
                 }
             }
         })
+
+        binding.setOnChooseActivityClick {
+            findNavController().navigate(
+                ChooseActionFragmentDirections.toActivityListFragment()
+            )
+        }
 
         subscribeExtrasList()
     }
@@ -214,11 +222,21 @@ class IntentActionTypeFragment : Fragment() {
                 }
 
                 valueTextWatcher(object : TextWatcher {
-                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                    override fun beforeTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        count: Int,
+                        after: Int
+                    ) {
 
                     }
 
-                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    override fun onTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        before: Int,
+                        count: Int
+                    ) {
                     }
 
                     override fun afterTextChanged(s: Editable?) {
@@ -227,11 +245,21 @@ class IntentActionTypeFragment : Fragment() {
                 })
 
                 nameTextWatcher(object : TextWatcher {
-                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                    override fun beforeTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        count: Int,
+                        after: Int
+                    ) {
 
                     }
 
-                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    override fun onTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        before: Int,
+                        count: Int
+                    ) {
                     }
 
                     override fun afterTextChanged(s: Editable?) {

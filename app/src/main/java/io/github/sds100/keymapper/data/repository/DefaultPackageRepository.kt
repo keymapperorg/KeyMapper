@@ -7,6 +7,10 @@ import android.content.pm.PackageManager.GET_META_DATA
 import android.content.pm.ResolveInfo
 import android.graphics.drawable.Drawable
 import android.os.Build
+import io.github.sds100.keymapper.util.ActivityInfo
+import io.github.sds100.keymapper.util.result.AppNotFound
+import io.github.sds100.keymapper.util.result.Result
+import io.github.sds100.keymapper.util.result.Success
 
 /**
  * Created by sds100 on 27/01/2020.
@@ -50,5 +54,17 @@ class DefaultPackageRepository(private val packageManager: PackageManager) : Pac
 
     override fun getIntentLabel(resolveInfo: ResolveInfo): String {
         return resolveInfo.loadLabel(packageManager).toString()
+    }
+
+    override fun getActivitiesForPackage(packageName: String): Result<List<ActivityInfo>> {
+        return try {
+            packageManager.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
+                ?.activities?.map {
+                    ActivityInfo(it.name, it.packageName)
+                }
+                .let { Success(it ?: emptyList()) }
+        } catch (e: PackageManager.NameNotFoundException) {
+            AppNotFound(packageName)
+        }
     }
 }
