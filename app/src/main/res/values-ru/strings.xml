@@ -347,6 +347,8 @@
     <string name="summary_pref_automatic_backup_location_disabled">Местоположение не выбрано.</string>
     <string name="title_pref_choose_devices">Выберите устройства</string>
     <string name="title_pref_auto_show_ime_picker">Автоматически показывать выбор клавиатуры</string>
+    <string name="title_pref_auto_change_ime_on_connection">Автоматически переключать экранную клавиатуру при подключении/отключении устройства</string>
+    <string name="summary_pref_auto_change_ime_on_connection">Последняя использованная клавиатура Key Mapper будет автоматически выбрана при подключении указанного устройства. Ваша обычная клавиатура будет автоматически выбрана при отключении устройства.</string>
     <string name="title_pref_root_permission">Key Mapper имеет Root права</string>
     <string name="summary_pref_root_permission">Включайте это в том случае если вам нужны функции/возможности, которые работают только на устройствах с Root правами. Key Mapper должен получить соответствующие разрешения через приложение по управлению Root доступом (например Magisk, SuperSU).
             Включать только в том случае если устройство обладает Root доступом и для Key Mapper выданы соответсвующие разрешения.</string>
@@ -360,6 +362,9 @@
     <string name="summary_pref_hide_home_screen_alerts">Скрыть оповещения в верхней части главного экрана.</string>
     <string name="title_pref_show_device_descriptors">Показать первые 5 символов id устройства для событий связанных с конкретными устройствами</string>
     <string name="summary_pref_show_device_descriptors">Это используется чтобы отличить друг от друга устройства с одним и тем же именем.</string>
+    <string name="title_pref_devices_to_reroute_keyevents">Обработка ошибки Android 11, которая задает идентификатор устройства для событий ввода равным -1</string>
+    <string name="title_pref_devices_to_reroute_keyevents_choose_devices">4. Выберите устройства</string>
+    <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Установите клавиатуру Key Mapper GUI Keyboard (опционально)</string>
     <string name="title_pref_devices_to_reroute_keyevents_guide">Руководство по настройке</string>
     <!--Preference titles and summaries-->
     <!--Preference categories-->
