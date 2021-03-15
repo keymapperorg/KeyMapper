@@ -11,4 +11,5 @@ assignees: ''
 - [ ] create new branch. put issue number at start of name
 - [ ] write tests. put issue number in comment
 - [ ] update documentation
+- [ ] merge and squash
 - [ ] delete branch
