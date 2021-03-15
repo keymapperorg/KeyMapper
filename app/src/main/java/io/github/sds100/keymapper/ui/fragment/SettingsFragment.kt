@@ -1,7 +1,10 @@
 package io.github.sds100.keymapper.ui.fragment
 
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -44,7 +47,7 @@ class SettingsFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         FragmentSettingsBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             _binding = this
@@ -94,6 +97,9 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                 yield(Keys.devicesThatToggleKeyboard)
             }
         }.toList()
+
+        private const val KEY_ENABLE_COMPATIBLE_IME = "pref_key_enable_compatible_ime"
+        private const val KEY_CHOSE_COMPATIBLE_IME = "pref_key_chose_compatible_ime"
     }
 
     private val backupRestoreViewModel: BackupRestoreViewModel by activityViewModels {
@@ -124,6 +130,17 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
         InjectorUtils.provideSettingsViewModel(requireContext())
     }
 
+    private val broadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            context ?: return
+            intent ?: return
+
+            when (intent.action) {
+                Intent.ACTION_INPUT_METHOD_CHANGED -> invalidatePreferenceIcons()
+            }
+        }
+    }
+
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceManager.preferenceDataStore = viewModel.sharedPrefsDataStoreWrapper
         addPreferencesFromResource(R.xml.preferences_empty)
@@ -133,6 +150,12 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
         super.onViewCreated(view, savedInstanceState)
 
         populatePreferenceScreen()
+        invalidatePreferenceIcons()
+
+        IntentFilter().apply {
+            addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
+            requireContext().registerReceiver(broadcastReceiver, this)
+        }
     }
 
     override fun onResume() {
@@ -142,6 +165,13 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             findPreference<Preference>(it.name)?.isEnabled =
                 PermissionUtils.haveWriteSecureSettingsPermission(requireContext())
         }
+
+        invalidatePreferenceIcons()
+    }
+
+    override fun onDestroyView() {
+        requireContext().unregisterReceiver(broadcastReceiver)
+        super.onDestroyView()
     }
 
     private fun populateDevicesPreferences() {
@@ -332,6 +362,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             }
 
             Preference(requireContext()).apply {
+                key = KEY_ENABLE_COMPATIBLE_IME
                 setTitle(R.string.title_pref_devices_to_reroute_keyevents_enable_ime)
                 isSingleLineTitle = false
 
@@ -345,6 +376,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             }
 
             Preference(requireContext()).apply {
+                key = KEY_CHOSE_COMPATIBLE_IME
                 setTitle(R.string.title_pref_devices_to_reroute_keyevents_choose_ime)
                 isSingleLineTitle = false
                 setOnPreferenceClickListener {
@@ -754,6 +786,25 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             }
 
             true
+        }
+    }
+
+    private fun invalidatePreferenceIcons() {
+
+        findPreference<Preference>(KEY_ENABLE_COMPATIBLE_IME)?.apply {
+            icon = if (KeyboardUtils.isCompatibleImeEnabled()) {
+                drawable(R.drawable.ic_outline_check_circle_outline_24)
+            } else {
+                drawable(R.drawable.ic_baseline_error_outline_24)
+            }
+        }
+
+        findPreference<Preference>(KEY_CHOSE_COMPATIBLE_IME)?.apply {
+            icon = if (KeyboardUtils.isCompatibleImeChosen(requireContext())) {
+                drawable(R.drawable.ic_outline_check_circle_outline_24)
+            } else {
+                drawable(R.drawable.ic_baseline_error_outline_24)
+            }
         }
     }
 }
