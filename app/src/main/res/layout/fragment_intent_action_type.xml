@@ -32,6 +32,14 @@
             type="View.OnClickListener" />
 
         <variable
+            name="setFlags"
+            type="View.OnClickListener" />
+
+        <variable
+            name="onShowFlagsExampleClick"
+            type="View.OnClickListener" />
+
+        <variable
             name="viewModel"
             type="io.github.sds100.keymapper.data.viewmodel.IntentActionTypeViewModel" />
     </data>
@@ -44,7 +52,7 @@
             android:id="@+id/scrollView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@id/buttonAddExtra"
+            app:layout_constraintBottom_toTopOf="@id/buttonDone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -188,6 +196,53 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputLayoutFlags"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:hint="@string/hint_intent_flags"
+                    app:layout_constraintEnd_toStartOf="@+id/buttonShowFlagsExample"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/textInputLayoutData">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:text="@={viewModel.flags}" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/buttonShowFlagsExample"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:layout_width="36dp"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="16dp"
+                    android:baselineAlignBottom="true"
+                    android:onClick="@{onShowFlagsExampleClick}"
+                    android:tint="?attr/colorOnSurface"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/textInputLayoutFlags"
+                    app:layout_constraintTop_toTopOf="@id/textInputLayoutFlags"
+                    app:srcCompat="@drawable/ic_baseline_help_outline_24" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonSetFlags"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:onClick="@{setFlags}"
+                    android:text="@string/button_config_intent_set_flags"
+                    app:layout_constraintTop_toBottomOf="@+id/textInputLayoutFlags" />
+
+                <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textInputLayoutPackage"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
@@ -198,7 +253,7 @@
                     android:hint="@string/hint_intent_package"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/textInputLayoutData">
+                    app:layout_constraintTop_toBottomOf="@id/buttonSetFlags">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
@@ -258,47 +313,52 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/buttonChooseActivity" />
 
-                <com.airbnb.epoxy.EpoxyRecyclerView
-                    android:id="@+id/epoxyRecyclerViewExtras"
+                <LinearLayout
+                    android:id="@+id/recyclerViewLinearLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    android:orientation="vertical"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/headerExtras"
-                    tools:visibility="gone" />
+                    app:layout_constraintTop_toBottomOf="@id/headerExtras">
 
-                <TextView
-                    style="@style/RecyclerViewPlaceholderTextView"
-                    android:layout_width="wrap_content"
+                    <com.airbnb.epoxy.EpoxyRecyclerView
+                        android:id="@+id/epoxyRecyclerViewExtras"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        tools:visibility="gone" />
+
+                    <TextView
+                        style="@style/RecyclerViewPlaceholderTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:paddingBottom="16dp"
+                        android:text="@string/intent_extras_recycler_view_placeholder"
+                        android:visibility="@{viewModel.extrasListItemModels instanceof Empty ? View.VISIBLE : View.GONE}"
+                        tools:visibility="visible" />
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonAddExtra"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
-                    android:paddingBottom="16dp"
-                    android:text="@string/intent_extras_recycler_view_placeholder"
-                    android:visibility="@{viewModel.extrasListItemModels instanceof Empty ? View.VISIBLE : View.GONE}"
+                    android:onClick="@{onAddExtraClick}"
+                    android:text="@string/button_add_intent_extra"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/headerExtras"
-                    tools:visibility="visible" />
+                    app:layout_constraintTop_toBottomOf="@id/recyclerViewLinearLayout" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
-
-        <Button
-            android:id="@+id/buttonAddExtra"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:onClick="@{onAddExtraClick}"
-            android:text="@string/button_add_intent_extra"
-            app:layout_constraintBottom_toTopOf="@id/buttonDone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
 
         <Button
             android:id="@+id/buttonDone"
