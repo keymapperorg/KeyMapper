@@ -763,7 +763,7 @@ object SystemActionUtils {
         SystemActionDef(id = SWITCH_KEYBOARD,
             category = CATEGORY_KEYBOARD,
             iconRes = R.drawable.ic_notification_keyboard,
-            permissions = if (KeyboardUtils.IS_WRITE_SECURE_SETTINGS_REQUIRED_TO_SWITCH_KEYBOARD) {
+            permissions = if (!KeyboardUtils.CAN_ACCESSIBILITY_SERVICE_SWITCH_KEYBOARD) {
                 arrayOf(Manifest.permission.WRITE_SECURE_SETTINGS)
             } else {
                 emptyArray()

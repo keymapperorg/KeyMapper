@@ -111,10 +111,11 @@ class NotificationController(
         }
 
         val showToggleKeyboardNotification = when {
-            KeyboardUtils.IS_WRITE_SECURE_SETTINGS_REQUIRED_TO_SWITCH_KEYBOARD
-                && haveWriteSecureSettingsPermission() -> true
 
-            KeyboardUtils.IS_ACCESSIBILITY_SERVICE_REQUIRED_TO_SWITCH_KEYBOARD ->
+            haveWriteSecureSettingsPermission() -> true
+
+            //must be after the check for write secure settings permission
+            KeyboardUtils.CAN_ACCESSIBILITY_SERVICE_SWITCH_KEYBOARD ->
                 isAccessibilityServiceEnabled()
 
             else -> globalPreferences.getFlow(Keys.showToggleKeyboardNotification).firstBlocking()
@@ -169,10 +170,10 @@ class NotificationController(
         )
 
         val addToggleKeyboardChannel = when {
-            KeyboardUtils.IS_WRITE_SECURE_SETTINGS_REQUIRED_TO_SWITCH_KEYBOARD
-                && haveWriteSecureSettingsPermission() -> true
+            haveWriteSecureSettingsPermission() -> true
 
-            KeyboardUtils.IS_ACCESSIBILITY_SERVICE_REQUIRED_TO_SWITCH_KEYBOARD ->
+            //must be after the check for write secure settings permission
+            KeyboardUtils.CAN_ACCESSIBILITY_SERVICE_SWITCH_KEYBOARD ->
                 isAccessibilityServiceEnabled()
 
             else -> false

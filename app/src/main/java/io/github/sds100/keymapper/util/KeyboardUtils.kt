@@ -50,11 +50,11 @@ object KeyboardUtils {
 
     private const val SETTINGS_SECURE_SUBTYPE_HISTORY_KEY = "input_methods_subtype_history"
 
-    val IS_WRITE_SECURE_SETTINGS_REQUIRED_TO_SWITCH_KEYBOARD =
-        Build.VERSION.SDK_INT < Build.VERSION_CODES.R
-
-    val IS_ACCESSIBILITY_SERVICE_REQUIRED_TO_SWITCH_KEYBOARD =
+    val CAN_ACCESSIBILITY_SERVICE_SWITCH_KEYBOARD =
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+
+    val CAN_SHOW_INPUT_METHOD_PICKER_OUTSIDE_APP =
+        Build.VERSION.SDK_INT < O_MR1
 
     val KEY_MAPPER_IME_PACKAGE_LIST = arrayOf(
         Constants.PACKAGE_NAME,
@@ -78,31 +78,31 @@ object KeyboardUtils {
         }
     }
 
-    fun chooseCompatibleInputMethod(ctx: Context) {
+    fun chooseCompatibleInputMethod(ctx: Context, fromForeground: Boolean) {
 
         getLastUsedCompatibleImeId(ctx).onSuccess {
-            switchIme(ctx, it)
+            switchIme(ctx, it, fromForeground)
             return
         }
 
         getImeId(Constants.PACKAGE_NAME).valueOrNull()?.let {
-            switchIme(ctx, it)
+            switchIme(ctx, it, fromForeground)
             return
         }
 
         showInputMethodPicker()
     }
 
-    fun chooseLastUsedIncompatibleInputMethod(ctx: Context) {
+    fun chooseLastUsedIncompatibleInputMethod(ctx: Context, fromForeground: Boolean) {
         getLastUsedIncompatibleImeId(ctx).onSuccess {
-            switchIme(ctx, it)
+            switchIme(ctx, it, fromForeground)
             return
         }
 
         showInputMethodPicker()
     }
 
-    fun toggleCompatibleIme(ctx: Context) {
+    fun toggleCompatibleIme(ctx: Context, fromForeground: Boolean) {
         if (!isCompatibleImeEnabled()) {
             ctx.toast(R.string.error_ime_service_disabled)
             return
@@ -116,42 +116,54 @@ object KeyboardUtils {
 
         imeId ?: return
 
-        switchIme(ctx, imeId)
+        switchIme(ctx, imeId, fromForeground)
     }
 
     /**
      * @return whether the ime was changed successfully
+     * @param [fromForeground] whether this is being called when Key Mapper is in the foreground
      */
-    fun switchIme(ctx: Context, imeId: String): Boolean {
-        when {
-            IS_WRITE_SECURE_SETTINGS_REQUIRED_TO_SWITCH_KEYBOARD -> {
-                if (!PermissionUtils.haveWriteSecureSettingsPermission(ctx)) {
-
-                    ctx.toast(R.string.error_need_write_secure_settings_permission)
-                    return false
-                }
-
-                SettingsUtils.putSecureSetting(ctx, Settings.Secure.DEFAULT_INPUT_METHOD, imeId)
-
-                getInputMethodLabel(ctx, imeId).onSuccess {
-                    ctx.toast(ctx.str(R.string.toast_chose_keyboard, it))
-                }
-            }
-
-            IS_ACCESSIBILITY_SERVICE_REQUIRED_TO_SWITCH_KEYBOARD -> {
-                if (!AccessibilityUtils.isServiceEnabled(ctx)) {
-                    ctx.toast(R.string.error_accessibility_service_disabled)
-
-                    return false
-                }
-
+    fun switchIme(ctx: Context, imeId: String, fromForeground: Boolean): Boolean {
+        val switchedIme = when {
+            CAN_ACCESSIBILITY_SERVICE_SWITCH_KEYBOARD && AccessibilityUtils.isServiceEnabled(ctx) -> {
                 ctx.sendPackageBroadcast(
                     MyAccessibilityService.ACTION_SWITCH_IME,
                     bundleOf(MyAccessibilityService.EXTRA_IME_ID to imeId)
                 )
+                getInputMethodLabel(ctx, imeId).onSuccess {
+                    ctx.toast(ctx.str(R.string.toast_chose_keyboard, it))
+                }
 
-                /*the accessibility service will show the toast message to make sure that
-                it was changed successfully*/
+                true
+            }
+
+            PermissionUtils.haveWriteSecureSettingsPermission(ctx) -> {
+                SettingsUtils.putSecureSetting(
+                    ctx,
+                    Settings.Secure.DEFAULT_INPUT_METHOD,
+                    imeId
+                )
+
+                getInputMethodLabel(ctx, imeId).onSuccess {
+                    ctx.toast(ctx.str(R.string.toast_chose_keyboard, it))
+                }
+                true
+            }
+
+            else -> if (fromForeground) {
+                showInputMethodPicker()
+                true
+            } else {
+                showInputMethodPickerDialogOutsideApp(ctx)
+            }
+
+        }
+
+        if (!switchedIme) {
+            if (CAN_ACCESSIBILITY_SERVICE_SWITCH_KEYBOARD) {
+                ctx.toast(R.string.error_accessibility_service_disabled)
+            } else {
+                ctx.toast(R.string.error_need_write_secure_settings_permission)
             }
         }
 
@@ -162,19 +174,26 @@ object KeyboardUtils {
         inputMethodManager.showInputMethodPicker()
     }
 
-    fun showInputMethodPickerDialogOutsideApp(ctx: Context) {
+    /**
+     * @return whether the input method picker was successfully shown
+     */
+    fun showInputMethodPickerDialogOutsideApp(ctx: Context): Boolean {
         /* Android 8.1 and higher don't seem to allow you to open the input method picker dialog
              * from outside the app :( but it can be achieved by sending a broadcast with a
              * system process id (requires root access) */
 
-        if (Build.VERSION.SDK_INT < O_MR1) {
+        return if (CAN_SHOW_INPUT_METHOD_PICKER_OUTSIDE_APP) {
             inputMethodManager.showInputMethodPicker()
+            true
         } else if ((O_MR1..Build.VERSION_CODES.P).contains(Build.VERSION.SDK_INT)) {
             val command =
                 "am broadcast -a com.android.server.InputMethodManagerService.SHOW_INPUT_METHOD_PICKER"
             RootUtils.executeRootCommand(command)
+            true
         } else {
             ctx.toast(R.string.error_this_is_unsupported)
+
+            false
         }
     }
 

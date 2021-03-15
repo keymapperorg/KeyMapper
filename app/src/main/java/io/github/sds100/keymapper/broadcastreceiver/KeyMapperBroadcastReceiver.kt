@@ -44,7 +44,10 @@ class KeyMapperBroadcastReceiver : BroadcastReceiver() {
 
         when (intent.action) {
             ACTION_SHOW_IME_PICKER -> KeyboardUtils.showInputMethodPickerDialogOutsideApp(context)
-            ACTION_TOGGLE_KEYBOARD -> KeyboardUtils.toggleCompatibleIme(context)
+            ACTION_TOGGLE_KEYBOARD -> KeyboardUtils.toggleCompatibleIme(
+                context,
+                fromForeground = false
+            )
 
             ACTION_PAUSE_KEYMAPS -> context.globalPreferences.set(Keys.keymapsPaused, true)
             ACTION_RESUME_KEYMAPS -> context.globalPreferences.set(Keys.keymapsPaused, false)

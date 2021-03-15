@@ -62,7 +62,10 @@ class RecoverFailureDelegate(
                         }
 
                     Manifest.permission.CAMERA ->
-                        PermissionUtils.requestStandardPermission(requestPermissionLauncher, Manifest.permission.CAMERA)
+                        PermissionUtils.requestStandardPermission(
+                            requestPermissionLauncher,
+                            Manifest.permission.CAMERA
+                        )
 
                     Manifest.permission.BIND_DEVICE_ADMIN ->
                         PermissionUtils.requestDeviceAdmin(ctx, startActivityForResultLauncher)
@@ -75,7 +78,9 @@ class RecoverFailureDelegate(
 
                     Manifest.permission.ACCESS_NOTIFICATION_POLICY ->
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            PermissionUtils.requestAccessNotificationPolicy(startActivityForResultLauncher)
+                            PermissionUtils.requestAccessNotificationPolicy(
+                                startActivityForResultLauncher
+                            )
                         }
 
                     Manifest.permission.WRITE_SECURE_SETTINGS ->
@@ -87,18 +92,25 @@ class RecoverFailureDelegate(
                     )
 
                     Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE ->
-                        PermissionUtils.requestNotificationListenerAccess(startActivityForResultLauncher)
+                        PermissionUtils.requestNotificationListenerAccess(
+                            startActivityForResultLauncher
+                        )
 
                     Manifest.permission.CALL_PHONE ->
-                        PermissionUtils.requestStandardPermission(requestPermissionLauncher, Manifest.permission.CALL_PHONE)
+                        PermissionUtils.requestStandardPermission(
+                            requestPermissionLauncher,
+                            Manifest.permission.CALL_PHONE
+                        )
 
                     else -> throw Exception("Don't know how to ask for permission ${failure.permission}")
                 }
             }
 
-            is GoogleAppNotFound -> recover(ctx,
+            is GoogleAppNotFound -> recover(
+                ctx,
                 AppNotFound(ctx.str(R.string.google_app_package_name)),
-                navController)
+                navController
+            )
 
             is AppNotFound -> PackageUtils.viewAppOnline(ctx, failure.packageName)
 
@@ -112,7 +124,10 @@ class RecoverFailureDelegate(
             }
 
             is NoCompatibleImeEnabled -> KeyboardUtils.enableCompatibleInputMethods(ctx)
-            is NoCompatibleImeChosen -> KeyboardUtils.chooseCompatibleInputMethod(ctx)
+            is NoCompatibleImeChosen -> KeyboardUtils.chooseCompatibleInputMethod(
+                ctx,
+                fromForeground = true
+            )
         }
     }
 }

@@ -58,7 +58,7 @@ class ToggleKeyMapperKeyboardTile : TileService() {
         invalidateTile()
 
         when (state) {
-            State.DEFAULT -> KeyboardUtils.toggleCompatibleIme(this)
+            State.DEFAULT -> KeyboardUtils.toggleCompatibleIme(this, fromForeground = false)
 
             State.DISABLED -> {
                 KeyboardUtils.enableCompatibleInputMethodsRoot()

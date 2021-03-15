@@ -453,7 +453,7 @@ class ActionPerformerDelegate(context: Context,
 
                 SystemAction.SWITCH_KEYBOARD -> {
                     action.extras.getData(Action.EXTRA_IME_ID).onSuccess {
-                        KeyboardUtils.switchIme(this, it)
+                        KeyboardUtils.switchIme(this, it, fromForeground = false)
                     }
                 }
 

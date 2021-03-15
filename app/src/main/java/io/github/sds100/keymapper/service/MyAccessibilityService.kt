@@ -293,14 +293,21 @@ class MyAccessibilityService : AccessibilityService(),
         }
 
         val inputMethodUtils = object : InputMethodUtils {
-            override fun showInputMethodPickerDialogOutsideApp() =
+            override fun showInputMethodPickerDialogOutsideApp() {
                 KeyboardUtils.showInputMethodPickerDialogOutsideApp(this@MyAccessibilityService)
+            }
 
             override fun chooseCompatibleInputMethod() =
-                KeyboardUtils.chooseCompatibleInputMethod(this@MyAccessibilityService)
+                KeyboardUtils.chooseCompatibleInputMethod(
+                    this@MyAccessibilityService,
+                    fromForeground = false
+                )
 
             override fun chooseLastUsedIncompatibleInputMethod() =
-                KeyboardUtils.chooseLastUsedIncompatibleInputMethod(this@MyAccessibilityService)
+                KeyboardUtils.chooseLastUsedIncompatibleInputMethod(
+                    this@MyAccessibilityService,
+                    fromForeground = false
+                )
         }
 
         controller = AccessibilityServiceController(
@@ -337,7 +344,10 @@ class MyAccessibilityService : AccessibilityService(),
                     .firstBlocking()
                     .let {
                         if (it == true) {
-                            KeyboardUtils.chooseLastUsedIncompatibleInputMethod(this)
+                            KeyboardUtils.chooseLastUsedIncompatibleInputMethod(
+                                this,
+                                fromForeground = false
+                            )
                         }
                     }
             } else {
@@ -345,7 +355,7 @@ class MyAccessibilityService : AccessibilityService(),
                     .firstBlocking()
                     .let {
                         if (it == true) {
-                            KeyboardUtils.chooseCompatibleInputMethod(this)
+                            KeyboardUtils.chooseCompatibleInputMethod(this, fromForeground = false)
                         }
                     }
             }

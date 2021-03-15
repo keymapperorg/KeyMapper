@@ -87,7 +87,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
     companion object {
 
         private val KEYS_REQUIRING_WRITE_SECURE_SETTINGS = sequence {
-            if (KeyboardUtils.IS_WRITE_SECURE_SETTINGS_REQUIRED_TO_SWITCH_KEYBOARD) {
+            if (!KeyboardUtils.CAN_ACCESSIBILITY_SERVICE_SWITCH_KEYBOARD) {
                 yield(Keys.autoChangeImeOnDeviceConnect)
                 yield(Keys.toggleKeyboardOnToggleKeymaps)
                 yield(Keys.showToggleKeyboardNotification)
@@ -348,7 +348,10 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                 setTitle(R.string.title_pref_devices_to_reroute_keyevents_choose_ime)
                 isSingleLineTitle = false
                 setOnPreferenceClickListener {
-                    KeyboardUtils.chooseCompatibleInputMethod(requireContext())
+                    KeyboardUtils.chooseCompatibleInputMethod(
+                        requireContext(),
+                        fromForeground = true
+                    )
 
                     true
                 }
@@ -490,7 +493,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
         //accessibility services in Android 11+ can change the input method without needing special permissions
         val requireWriteSecureSettingsPermission =
-            KeyboardUtils.IS_WRITE_SECURE_SETTINGS_REQUIRED_TO_SWITCH_KEYBOARD
+            !KeyboardUtils.CAN_ACCESSIBILITY_SERVICE_SWITCH_KEYBOARD
 
         if (requireWriteSecureSettingsPermission) {
             category.setTitle(R.string.title_pref_category_write_secure_settings)
