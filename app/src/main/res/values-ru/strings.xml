@@ -348,7 +348,6 @@
     <string name="title_pref_choose_devices">Выберите устройства</string>
     <string name="title_pref_auto_show_ime_picker">Автоматически показывать выбор клавиатуры</string>
     <string name="summary_pref_auto_show_ime_picker">Когда подключится или отключится устройство по вашему выбору будет показан инструмент выбора клавиатуры. Укажите это устройство ниже.</string>
-    <string name="title_pref_auto_change_ime_on_connection">Автоматически переключать экранную клавиатуру при подключении/отключении устройства</string>
     <string name="summary_pref_auto_change_ime_on_connection">Последняя использованная клавиатура Key Mapper будет автоматически выбрана при подключении указанного устройства. Ваша обычная клавиатура будет автоматически выбрана при отключении устройства.</string>
     <string name="title_pref_root_permission">Key Mapper имеет Root права</string>
     <string name="summary_pref_root_permission">Включайте это в том случае если вам нужны функции/возможности, которые работают только на устройствах с Root правами. Key Mapper должен получить соответствующие разрешения через приложение по управлению Root доступом (например Magisk, SuperSU).
@@ -360,7 +359,6 @@
     <string name="title_pref_toggle_keyboard_on_toggle_keymaps">Смена клавиатуры при включении мэппинга</string>
     <string name="summary_pref_toggle_keyboard_on_toggle_keymaps">Автоматически выбирать клавиатуру Key Mapper когда снимаете приложение с паузы и выбирать вашу клавиатуру по умолчанию при установки приложения на паузу.</string>
     <string name="title_pref_hide_home_screen_alerts">Скрыть оповещения на главном экране</string>
-    <string name="summary_pref_hide_home_screen_alerts">Скрыть оповещения в верхней части главного экрана.</string>
     <string name="title_pref_show_device_descriptors">Показать первые 5 символов id устройства для событий связанных с конкретными устройствами</string>
     <string name="summary_pref_show_device_descriptors">Это используется чтобы отличить друг от друга устройства с одним и тем же именем.</string>
     <string name="title_pref_devices_to_reroute_keyevents">Обработка ошибки Android 11, которая задает идентификатор устройства для событий ввода равным -1</string>
@@ -368,7 +366,6 @@
     <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Установите клавиатуру Key Mapper GUI Keyboard (опционально)</string>
     <string name="title_pref_devices_to_reroute_keyevents_enable_ime">2. Выберите \'Key Mapper GUI\' клавиатуру или \'Key Mapper Basic Input Method\'</string>
     <string name="title_pref_devices_to_reroute_keyevents_choose_ime">3. Используйте только что включенную клавиатуру</string>
-    <string name="title_pref_devices_to_reroute_keyevents_guide">Руководство по настройке</string>
     <!--Preference titles and summaries-->
     <!--Preference categories-->
     <string name="title_pref_category_ime_picker">Выбор клавиатуры</string>
