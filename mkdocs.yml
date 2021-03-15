@@ -78,6 +78,7 @@ plugins:
         'redirects/fingerprint-action-options.md': 'https://sds100.github.io/KeyMapper/user-guide/fingerprint-gestures/#customising-fingerprint-gesture-maps'
         'redirects/trigger-key-options.md': 'https://sds100.github.io/KeyMapper/user-guide/keymaps/#key-options'
         'redirects/android-11-device-id-bug-work-around.md': 'https://sds100.github.io/KeyMapper/user-guide/settings/#workaround-for-android-11-bug-that-sets-the-device-id-for-input-events-to-1-230-android-11'
+        'redirects/settings.md': 'https://sds100.github.io/KeyMapper/user-guide/settings'
   - search:
       lang:
         - en
