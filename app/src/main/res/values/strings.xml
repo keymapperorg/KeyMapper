@@ -275,7 +275,6 @@
     <string name="url_fingerprint_action_options_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/fingerprint-action-options</string>
     <string name="url_trigger_key_options_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/trigger-key-options</string>
     <string name="url_android_11_bug_reset_id_work_around_setting_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/android-11-device-id-bug-work-around</string>
-    <string name="url_settings_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/settings</string>
 
     <string name="url_play_store_keymapper_gui_keyboard" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin</string>
     <string name="url_fdroid_keymapper_gui_keyboard" translatable="false">https://f-droid.org/en/packages/io.github.sds100.keymapper.inputmethod.latin</string>
@@ -343,8 +342,8 @@
 
     <!-- Dialog messages -->
     <string name="dialog_message_are_you_sure_want_to_leave_without_saving">Are you sure you want to leave without saving?</string>
-    <string name="dialog_message_root_prompt">When you tap \"OK\", you will be taken to the settings.
-            In the settings, scroll to the bottom and tap "Enable root features" so you can use root features/actions. If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use features which only work on rooted devices.</string>
+    <string name="dialog_message_root_prompt">If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use features which only work on rooted devices. When you tap \'OK\', you will be taken to the settings.
+            In the settings, scroll to the bottom and tap \'Key Mapper has root permission\' so you can use root features/actions.</string>
     <string name="dialog_message_downloading">Downloading…</string>
     <string name="dialog_message_describe_your_issue_in_the_email">Can you please describe the issue you are having in the email, otherwise I can\'t help you. Thanks!</string>
     <string name="dialog_message_long_press_warning">Long pressing only works for physical volume and navigation buttons. If you enable it for other keys, the keys won\'t work when they aren\'t long pressed.</string>
@@ -466,7 +465,7 @@
     <string name="title_pref_auto_show_ime_picker">Automatically show keyboard picker</string>
     <string name="summary_pref_auto_show_ime_picker">When a device that you have chosen connects or disconnects the keyboard picker will show automatically. Choose the devices below.</string>
 
-    <string name="title_pref_auto_change_ime_on_connection">Automatically change the on-screen keyboard when a device (e.g a keyboard) connects/disconnects</string>
+    <string name="title_pref_auto_change_ime_on_connection">Automatically change the on-screen keyboard when a device connects/disconnects</string>
     <string name="summary_pref_auto_change_ime_on_connection">The last used Key Mapper keyboard will be automatically selected when a chosen device is connected. Your normal keyboard will be automatically selected when the device disconnects.</string>
 
     <string name="title_pref_root_permission">Key Mapper has root permission</string>
@@ -484,7 +483,7 @@
     <string name="summary_pref_toggle_keyboard_on_toggle_keymaps">Automatically select the Key Mapper keyboard when you resume your key maps and select your default keyboard when pausing them.</string>
 
     <string name="title_pref_hide_home_screen_alerts">Hide home screen alerts</string>
-    <string name="summary_pref_hide_home_screen_alerts">Hide the alerts at the top of the home screen.</string>
+    <string name="summary_pref_hide_home_screen_alerts">Hide the alerts at the top of the Key Mapper home screen.</string>
 
     <string name="title_pref_show_device_descriptors">Show the first 5 characters of the device id for device specific triggers</string>
     <string name="summary_pref_show_device_descriptors">This is useful to differentiate between devices that have the same name.</string>
@@ -495,7 +494,7 @@
     <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Install the Key Mapper GUI Keyboard (optional)</string>
     <string name="title_pref_devices_to_reroute_keyevents_enable_ime">2. Enable the Key Mapper GUI Keyboard or the Key Mapper Basic Input Method</string>
     <string name="title_pref_devices_to_reroute_keyevents_choose_ime">3. Use the keyboard that you just enabled</string>
-    <string name="title_pref_devices_to_reroute_keyevents_guide">(Recommended) Read user guide for this setting.</string>
+    <string name="title_pref_devices_to_reroute_keyevents_guide">Help</string>
     <!--Preference titles and summaries-->
 
     <!--Preference categories-->
@@ -762,13 +761,9 @@
     <!-- Error messages -->
 
     <!-- System action labels -->
-    <string name="action_toggle_wifi">Toggle WiFi (non-root)</string>
-    <string name="action_enable_wifi">Enable WiFi (non-root)</string>
-    <string name="action_disable_wifi">Disable WiFi (non-root)</string>
-
-    <string name="action_toggle_wifi_root">Toggle WiFi (root)</string>
-    <string name="action_enable_wifi_root">Enable WiFi (root)</string>
-    <string name="action_disable_wifi_root">Disable WiFi (root)</string>
+    <string name="action_toggle_wifi">Toggle WiFi</string>
+    <string name="action_enable_wifi">Enable WiFi</string>
+    <string name="action_disable_wifi">Disable WiFi</string>
 
     <string name="action_toggle_bluetooth">Toggle Bluetooth</string>
     <string name="action_enable_bluetooth">Enable Bluetooth</string>
