@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.github.salomonbrys.kotson.get
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import io.github.sds100.keymapper.data.repository.DefaultFingerprintMapRepository
@@ -20,6 +21,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.io.InputStream
 
 /**
  * Created by sds100 on 22/01/21.
@@ -46,12 +48,16 @@ class FingerprintMapMigrationTest {
     private val coroutineScope = TestCoroutineScope(testDispatcher)
     private lateinit var repository: FingerprintMapRepository
     private lateinit var dataStore: DataStore<Preferences>
+    private lateinit var parser: JsonParser
+    private lateinit var gson: Gson
 
     @Before
     fun init() {
         Dispatchers.setMain(testDispatcher)
         dataStore = FakeDataStore()
         repository = DefaultFingerprintMapRepository(dataStore, coroutineScope)
+        parser = JsonParser()
+        gson = Gson()
     }
 
     @After
@@ -60,13 +66,35 @@ class FingerprintMapMigrationTest {
     }
 
     @Test
-    fun `migrate 0 to 1 after update`() {
-        testUpdate(MIGRATION_0_1_TEST_DATA, MIGRATION_0_1_EXPECTED_DATA)
+    fun `migrate 10 to 11`() {
+        testUpdate(
+            arrayOf(getSwipeDownJsonFromFile("migration-10-11-test-data.json")),
+            arrayOf(getSwipeDownJsonFromFile("migration-10-11-expected-data.json")),
+        )
+
+        testRestore(
+            arrayOf(getSwipeDownJsonFromFile("migration-10-11-test-data.json")),
+            arrayOf(getSwipeDownJsonFromFile("migration-10-11-expected-data.json")),
+        )
     }
 
     @Test
-    fun `migrate 0 to 1 after restore`() {
+    fun `migrate 0 to 1`() {
+        testUpdate(MIGRATION_0_1_TEST_DATA, MIGRATION_0_1_EXPECTED_DATA)
         testRestore(MIGRATION_0_1_TEST_DATA, MIGRATION_0_1_EXPECTED_DATA)
+    }
+
+    private fun getSwipeDownJsonFromFile(fileName: String): String {
+        val jsonInputStream = getJson(fileName)
+        val json = jsonInputStream.bufferedReader().use { it.readText() }
+
+        val rootElement = parser.parse(json)
+
+        return rootElement["fingerprint_swipe_down"].asJsonObject.let { gson.toJson(it) }
+    }
+
+    private fun getJson(fileName: String): InputStream {
+        return this.javaClass.classLoader!!.getResourceAsStream("json-migration-test/$fileName")
     }
 
     private fun testUpdate(testData: Array<String>, expectedData: Array<String>) {

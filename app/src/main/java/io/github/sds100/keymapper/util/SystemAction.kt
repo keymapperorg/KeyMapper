@@ -9,10 +9,6 @@ object SystemAction {
     const val ENABLE_WIFI = "enable_wifi"
     const val DISABLE_WIFI = "disable_wifi"
 
-    const val TOGGLE_WIFI_ROOT = "toggle_wifi_root"
-    const val ENABLE_WIFI_ROOT = "enable_wifi_root"
-    const val DISABLE_WIFI_ROOT = "disable_wifi_root"
-
     //bluetooth
     const val TOGGLE_BLUETOOTH = "toggle_bluetooth"
     const val ENABLE_BLUETOOTH = "enable_bluetooth"
@@ -119,7 +115,6 @@ object SystemAction {
     const val SHOW_KEYBOARD = "show_keyboard"
     const val HIDE_KEYBOARD = "hide_keyboard"
     const val SHOW_KEYBOARD_PICKER = "show_keyboard_picker"
-    const val SHOW_KEYBOARD_PICKER_ROOT = "show_keyboard_picker_root"
     const val TEXT_CUT = "text_cut"
     const val TEXT_COPY = "text_copy"
     const val TEXT_PASTE = "text_paste"
@@ -137,13 +132,11 @@ object SystemAction {
 
     //other
     const val SCREENSHOT = "screenshot"
-    const val SCREENSHOT_ROOT = "screenshot_root"
 
     const val OPEN_VOICE_ASSISTANT = "open_assistant"
     const val OPEN_DEVICE_ASSISTANT = "open_device_assistant"
     const val OPEN_CAMERA = "open_camera"
-    const val LOCK_DEVICE = "lock_device_no_root"
-    const val LOCK_DEVICE_ROOT = "lock_device"
+    const val LOCK_DEVICE = "lock_device"
     const val POWER_ON_OFF_DEVICE = "power_on_off_device"
     const val SECURE_LOCK_DEVICE = "secure_lock_device"
     const val CONSUME_KEY_EVENT = "consume_key_event"

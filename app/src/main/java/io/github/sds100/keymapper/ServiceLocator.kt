@@ -138,7 +138,8 @@ object ServiceLocator {
         val database = database ?: createDatabase(context.applicationContext)
         keymapRepository = DefaultKeymapRepository(
             database.keymapDao(),
-            (context.applicationContext as MyApplication).appCoroutineScope)
+            (context.applicationContext as MyApplication).appCoroutineScope
+        )
         return keymapRepository!!
     }
 
@@ -146,7 +147,8 @@ object ServiceLocator {
         val database = database ?: createDatabase(context.applicationContext)
         deviceInfoRepository = DefaultDeviceInfoRepository(
             database.deviceInfoDao(),
-            (context.applicationContext as MyApplication).appCoroutineScope)
+            (context.applicationContext as MyApplication).appCoroutineScope
+        )
         return deviceInfoRepository!!
     }
 
@@ -232,7 +234,9 @@ object ServiceLocator {
             AppDatabase.MIGRATION_6_7,
             AppDatabase.MIGRATION_7_8,
             AppDatabase.MIGRATION_8_9,
-            AppDatabase.MIGRATION_9_10).build()
+            AppDatabase.MIGRATION_9_10,
+            AppDatabase.MIGRATION_10_11
+        ).build()
         /* REMINDER!!!! Need to migrate fingerprint maps and other stuff???
          * Keep this note at the bottom */
         database = result

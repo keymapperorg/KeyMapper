@@ -12,7 +12,8 @@ import com.github.salomonbrys.kotson.registerTypeAdapter
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import io.github.sds100.keymapper.data.db.migration.JsonMigration
-import io.github.sds100.keymapper.data.db.migration.fingerprintmaps.Migration_0_1
+import io.github.sds100.keymapper.data.db.migration.fingerprintmaps.FingerprintMapMigration_0_1
+import io.github.sds100.keymapper.data.db.migration.fingerprintmaps.FingerprintMapMigration_1_2
 import io.github.sds100.keymapper.data.model.Action
 import io.github.sds100.keymapper.data.model.Constraint
 import io.github.sds100.keymapper.data.model.Extra
@@ -40,7 +41,8 @@ class DefaultFingerprintMapRepository(private val dataStore: DataStore<Preferenc
         )
 
         private val MIGRATIONS = listOf(
-            JsonMigration(0, 1) { gson, json -> Migration_0_1.migrate(gson, json) }
+            JsonMigration(0, 1) { gson, json -> FingerprintMapMigration_0_1.migrate(gson, json) },
+            JsonMigration(1, 2) { gson, json -> FingerprintMapMigration_1_2.migrate(gson, json) },
         )
     }
 

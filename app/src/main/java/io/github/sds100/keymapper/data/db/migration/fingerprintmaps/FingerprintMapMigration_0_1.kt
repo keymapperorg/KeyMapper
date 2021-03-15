@@ -14,7 +14,7 @@ import splitties.bitflags.withFlag
 /**
  * Move the action option "show performing toast when performing" to a trigger option.
  */
-object Migration_0_1 {
+object FingerprintMapMigration_0_1 {
     private const val NAME_VERSION = "db_version"
     private const val NAME_ACTION_LIST = "action_list"
     private const val FLAG_ACTION_SHOW_PERFORMING_TOAST = 2

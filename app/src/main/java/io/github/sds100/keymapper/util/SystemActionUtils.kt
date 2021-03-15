@@ -36,7 +36,6 @@ import io.github.sds100.keymapper.util.SystemAction.DISABLE_BLUETOOTH
 import io.github.sds100.keymapper.util.SystemAction.DISABLE_MOBILE_DATA
 import io.github.sds100.keymapper.util.SystemAction.DISABLE_NFC
 import io.github.sds100.keymapper.util.SystemAction.DISABLE_WIFI
-import io.github.sds100.keymapper.util.SystemAction.DISABLE_WIFI_ROOT
 import io.github.sds100.keymapper.util.SystemAction.ENABLE_AIRPLANE_MODE
 import io.github.sds100.keymapper.util.SystemAction.ENABLE_AUTO_BRIGHTNESS
 import io.github.sds100.keymapper.util.SystemAction.ENABLE_AUTO_ROTATE
@@ -44,7 +43,6 @@ import io.github.sds100.keymapper.util.SystemAction.ENABLE_BLUETOOTH
 import io.github.sds100.keymapper.util.SystemAction.ENABLE_MOBILE_DATA
 import io.github.sds100.keymapper.util.SystemAction.ENABLE_NFC
 import io.github.sds100.keymapper.util.SystemAction.ENABLE_WIFI
-import io.github.sds100.keymapper.util.SystemAction.ENABLE_WIFI_ROOT
 import io.github.sds100.keymapper.util.SystemAction.EXPAND_NOTIFICATION_DRAWER
 import io.github.sds100.keymapper.util.SystemAction.EXPAND_QUICK_SETTINGS
 import io.github.sds100.keymapper.util.SystemAction.FAST_FORWARD
@@ -56,7 +54,6 @@ import io.github.sds100.keymapper.util.SystemAction.HIDE_KEYBOARD
 import io.github.sds100.keymapper.util.SystemAction.INCREASE_BRIGHTNESS
 import io.github.sds100.keymapper.util.SystemAction.LANDSCAPE_MODE
 import io.github.sds100.keymapper.util.SystemAction.LOCK_DEVICE
-import io.github.sds100.keymapper.util.SystemAction.LOCK_DEVICE_ROOT
 import io.github.sds100.keymapper.util.SystemAction.MOVE_CURSOR_TO_END
 import io.github.sds100.keymapper.util.SystemAction.NEXT_TRACK
 import io.github.sds100.keymapper.util.SystemAction.NEXT_TRACK_PACKAGE
@@ -79,12 +76,10 @@ import io.github.sds100.keymapper.util.SystemAction.PREVIOUS_TRACK_PACKAGE
 import io.github.sds100.keymapper.util.SystemAction.REWIND
 import io.github.sds100.keymapper.util.SystemAction.REWIND_PACKAGE
 import io.github.sds100.keymapper.util.SystemAction.SCREENSHOT
-import io.github.sds100.keymapper.util.SystemAction.SCREENSHOT_ROOT
 import io.github.sds100.keymapper.util.SystemAction.SECURE_LOCK_DEVICE
 import io.github.sds100.keymapper.util.SystemAction.SELECT_WORD_AT_CURSOR
 import io.github.sds100.keymapper.util.SystemAction.SHOW_KEYBOARD
 import io.github.sds100.keymapper.util.SystemAction.SHOW_KEYBOARD_PICKER
-import io.github.sds100.keymapper.util.SystemAction.SHOW_KEYBOARD_PICKER_ROOT
 import io.github.sds100.keymapper.util.SystemAction.SHOW_POWER_MENU
 import io.github.sds100.keymapper.util.SystemAction.SWITCH_KEYBOARD
 import io.github.sds100.keymapper.util.SystemAction.SWITCH_ORIENTATION
@@ -102,7 +97,6 @@ import io.github.sds100.keymapper.util.SystemAction.TOGGLE_NOTIFICATION_DRAWER
 import io.github.sds100.keymapper.util.SystemAction.TOGGLE_QUICK_SETTINGS_DRAWER
 import io.github.sds100.keymapper.util.SystemAction.TOGGLE_SPLIT_SCREEN
 import io.github.sds100.keymapper.util.SystemAction.TOGGLE_WIFI
-import io.github.sds100.keymapper.util.SystemAction.TOGGLE_WIFI_ROOT
 import io.github.sds100.keymapper.util.SystemAction.VOLUME_MUTE
 import io.github.sds100.keymapper.util.SystemAction.VOLUME_TOGGLE_MUTE
 import io.github.sds100.keymapper.util.SystemAction.VOLUME_UNMUTE
@@ -212,49 +206,34 @@ object SystemActionUtils {
             id = TOGGLE_WIFI,
             category = CATEGORY_WIFI,
             iconRes = R.drawable.ic_outline_wifi_24,
-            maxApi = Build.VERSION_CODES.P,
-            descriptionRes = R.string.action_toggle_wifi
+            descriptionRes = R.string.action_toggle_wifi,
+            permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                arrayOf(Constants.PERMISSION_ROOT)
+            } else {
+                emptyArray()
+            }
         ),
         SystemActionDef(
             id = ENABLE_WIFI,
             category = CATEGORY_WIFI,
-            maxApi = Build.VERSION_CODES.P,
             iconRes = R.drawable.ic_outline_wifi_24,
-            descriptionRes = R.string.action_enable_wifi
+            descriptionRes = R.string.action_enable_wifi,
+            permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                arrayOf(Constants.PERMISSION_ROOT)
+            } else {
+                emptyArray()
+            }
         ),
         SystemActionDef(
             id = DISABLE_WIFI,
             category = CATEGORY_WIFI,
-            maxApi = Build.VERSION_CODES.P,
             iconRes = R.drawable.ic_outline_wifi_off_24,
-            descriptionRes = R.string.action_disable_wifi
-        ),
-
-        SystemActionDef(
-            id = TOGGLE_WIFI_ROOT,
-            category = CATEGORY_WIFI,
-            minApi = Build.VERSION_CODES.Q,
-            iconRes = R.drawable.ic_outline_wifi_24,
-            descriptionRes = R.string.action_toggle_wifi_root,
-            permissions = arrayOf(Constants.PERMISSION_ROOT)
-        ),
-
-        SystemActionDef(
-            id = ENABLE_WIFI_ROOT,
-            category = CATEGORY_WIFI,
-            minApi = Build.VERSION_CODES.Q,
-            iconRes = R.drawable.ic_outline_wifi_24,
-            descriptionRes = R.string.action_enable_wifi_root,
-            permissions = arrayOf(Constants.PERMISSION_ROOT)
-        ),
-
-        SystemActionDef(
-            id = DISABLE_WIFI_ROOT,
-            category = CATEGORY_WIFI,
-            minApi = Build.VERSION_CODES.Q,
-            iconRes = R.drawable.ic_outline_wifi_off_24,
-            descriptionRes = R.string.action_toggle_wifi_root,
-            permissions = arrayOf(Constants.PERMISSION_ROOT)
+            descriptionRes = R.string.action_disable_wifi,
+            permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                arrayOf(Constants.PERMISSION_ROOT)
+            } else {
+                emptyArray()
+            }
         ),
         //WIFI
 
@@ -746,18 +725,18 @@ object SystemActionUtils {
             id = SHOW_KEYBOARD_PICKER,
             category = CATEGORY_KEYBOARD,
             iconRes = R.drawable.ic_notification_keyboard,
-            maxApi = Build.VERSION_CODES.O,
-            descriptionRes = R.string.action_show_keyboard_picker
-        ),
-
-        SystemActionDef(
-            id = SHOW_KEYBOARD_PICKER_ROOT,
-            category = CATEGORY_KEYBOARD,
-            iconRes = R.drawable.ic_notification_keyboard,
-            permissions = arrayOf(Constants.PERMISSION_ROOT),
-            minApi = Build.VERSION_CODES.O_MR1,
             maxApi = Build.VERSION_CODES.P,
-            descriptionRes = R.string.action_show_keyboard_picker_root
+            descriptionRes = R.string.action_show_keyboard_picker,
+            permissions =
+            if (Build.VERSION.SDK_INT in arrayOf(
+                    Build.VERSION_CODES.O_MR1,
+                    Build.VERSION_CODES.P
+                )
+            ) {
+                arrayOf(Constants.PERMISSION_ROOT)
+            } else {
+                emptyArray()
+            }
         ),
 
         SystemActionDef(id = SWITCH_KEYBOARD,
@@ -833,18 +812,13 @@ object SystemActionUtils {
         SystemActionDef(
             id = SCREENSHOT,
             category = CATEGORY_OTHER,
-            minApi = Build.VERSION_CODES.P,
             iconRes = R.drawable.ic_outline_fullscreen_24,
-            descriptionRes = R.string.action_screenshot
-        ),
-
-        SystemActionDef(
-            id = SCREENSHOT_ROOT,
-            category = CATEGORY_OTHER,
-            maxApi = Build.VERSION_CODES.O_MR1,
-            iconRes = R.drawable.ic_outline_fullscreen_24,
-            descriptionRes = R.string.action_screenshot_root,
-            permissions = arrayOf(Constants.PERMISSION_ROOT)
+            descriptionRes = R.string.action_screenshot,
+            permissions = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+                arrayOf(Constants.PERMISSION_ROOT)
+            } else {
+                emptyArray()
+            }
         ),
 
         SystemActionDef(
@@ -870,15 +844,11 @@ object SystemActionUtils {
             category = CATEGORY_OTHER,
             iconRes = R.drawable.ic_outline_lock_24,
             descriptionRes = R.string.action_lock_device,
-            minApi = Build.VERSION_CODES.P
-        ),
-        SystemActionDef(
-            id = LOCK_DEVICE_ROOT,
-            category = CATEGORY_OTHER,
-            iconRes = R.drawable.ic_outline_lock_24,
-            descriptionRes = R.string.action_lock_device_root,
-            maxApi = Build.VERSION_CODES.O_MR1,
-            permissions = arrayOf(Constants.PERMISSION_ROOT)
+            permissions = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+                arrayOf(Constants.PERMISSION_ROOT)
+            } else {
+                emptyArray()
+            }
         ),
         SystemActionDef(
             id = SECURE_LOCK_DEVICE,

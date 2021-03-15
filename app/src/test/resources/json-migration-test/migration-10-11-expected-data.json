@@ -1,0 +1,129 @@
+{
+  "device_info": [],
+  "fingerprint_swipe_down": {
+    "action_list": [
+      {
+        "data": "toggle_wifi",
+        "extras": [],
+        "flags": 0,
+        "type": "SYSTEM_ACTION",
+        "uid": "3e53b5f4-fe72-40ea-84fe-564eb8aab6ab"
+      },
+      {
+        "data": "enable_wifi",
+        "extras": [],
+        "flags": 0,
+        "type": "SYSTEM_ACTION",
+        "uid": "2400ec1a-39d0-463b-992b-fa3ede262092"
+      },
+      {
+        "data": "disable_wifi",
+        "extras": [],
+        "flags": 0,
+        "type": "SYSTEM_ACTION",
+        "uid": "5e75882a-e449-43a0-8b1b-0224dd4dc225"
+      },
+      {
+        "data": "lock_device",
+        "extras": [],
+        "flags": 0,
+        "type": "SYSTEM_ACTION",
+        "uid": "cc10620f-99ab-459d-89eb-49e5d967e46e"
+      },
+      {
+        "data": "screenshot",
+        "extras": [],
+        "flags": 0,
+        "type": "SYSTEM_ACTION",
+        "uid": "cc10620f-99ab-459d-89eb-49e5d967e46e"
+      },
+      {
+        "data": "show_keyboard_picker",
+        "extras": [],
+        "flags": 0,
+        "type": "SYSTEM_ACTION",
+        "uid": "cc10620f-99ab-459d-89eb-49e5d967e46e"
+      }
+    ],
+    "constraints": [
+      {
+        "extras": [
+          {
+            "data": "com.google.android.contacts",
+            "id": "extra_package_name"
+          }
+        ],
+        "type": "constraint_app_foreground"
+      },
+      {
+        "extras": [],
+        "type": "constraint_orientation_portrait"
+      }
+    ],
+    "constraint_mode": 1,
+    "extras": [],
+    "flags": 3,
+    "enabled": true,
+    "db_version": 2
+  },
+  "keymap_list": [
+    {
+      "actionList": [
+        {
+          "data": "toggle_wifi",
+          "extras": [],
+          "flags": 0,
+          "type": "SYSTEM_ACTION",
+          "uid": "3e53b5f4-fe72-40ea-84fe-564eb8aab6ab"
+        },
+        {
+          "data": "enable_wifi",
+          "extras": [],
+          "flags": 0,
+          "type": "SYSTEM_ACTION",
+          "uid": "2400ec1a-39d0-463b-992b-fa3ede262092"
+        },
+        {
+          "data": "disable_wifi",
+          "extras": [],
+          "flags": 0,
+          "type": "SYSTEM_ACTION",
+          "uid": "5e75882a-e449-43a0-8b1b-0224dd4dc225"
+        },
+        {
+          "data": "lock_device",
+          "extras": [],
+          "flags": 0,
+          "type": "SYSTEM_ACTION",
+          "uid": "cc10620f-99ab-459d-89eb-49e5d967e46e"
+        },
+        {
+          "data": "screenshot",
+          "extras": [],
+          "flags": 0,
+          "type": "SYSTEM_ACTION",
+          "uid": "cc10620f-99ab-459d-89eb-49e5d967e46e"
+        },
+        {
+          "data": "show_keyboard_picker",
+          "extras": [],
+          "flags": 0,
+          "type": "SYSTEM_ACTION",
+          "uid": "cc10620f-99ab-459d-89eb-49e5d967e46e"
+        }
+      ],
+      "constraintList": [],
+      "constraintMode": 1,
+      "flags": 0,
+      "id": 1,
+      "isEnabled": true,
+      "trigger": {
+        "extras": [],
+        "flags": 0,
+        "keys": [],
+        "mode": 2
+      },
+      "uid": "cc10620f-99ab-459d-89eb-49e5d967e46f"
+    }
+  ]
+}

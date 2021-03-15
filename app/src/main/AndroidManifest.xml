@@ -53,7 +53,6 @@
 
         <activity android:name=".ui.activity.AppIntroActivity" />
         <activity android:name=".ui.activity.HomeActivity" />
-        <activity android:name=".ui.activity.FingerprintGestureIntroActivity" />
 
         <!-- Use a different task affinity so this activity doesn't close other activities -->
         <activity

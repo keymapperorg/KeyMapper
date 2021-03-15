@@ -73,7 +73,7 @@ data class FingerprintMap(
             )
         }
 
-        const val CURRENT_VERSION = 1
+        const val CURRENT_VERSION = 2
 
         const val FLAG_VIBRATE = 1
         const val FLAG_SHOW_TOAST = 2

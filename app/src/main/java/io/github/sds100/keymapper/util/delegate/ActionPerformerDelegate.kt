@@ -40,9 +40,10 @@ import splitties.toast.toast
  * Created by sds100 on 25/11/2018.
  */
 
-class ActionPerformerDelegate(context: Context,
-                              iAccessibilityService: IAccessibilityService,
-                              lifecycle: Lifecycle
+class ActionPerformerDelegate(
+    context: Context,
+    iAccessibilityService: IAccessibilityService,
+    lifecycle: Lifecycle
 ) : IAccessibilityService by iAccessibilityService {
 
     companion object {
@@ -52,6 +53,9 @@ class ActionPerformerDelegate(context: Context,
     private val ctx = context.applicationContext
     private lateinit var flashlightController: FlashlightController
     private val suProcessDelegate = SuProcessDelegate()
+
+    private val hasRootPermission: Boolean =
+        ctx.globalPreferences.hasRootPermission.firstBlocking()
 
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -164,18 +168,30 @@ class ActionPerformerDelegate(context: Context,
                             moveTo(x.toFloat(), y.toFloat())
                         }
 
-                        val strokeDescription = if (action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)
-                            && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        val strokeDescription =
+                            if (action.flags.hasFlag(Action.ACTION_FLAG_HOLD_DOWN)
+                                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                            ) {
 
-                            when (keyEventAction) {
-                                KeyEventAction.DOWN -> GestureDescription.StrokeDescription(path, 0, duration, true)
-                                KeyEventAction.UP -> GestureDescription.StrokeDescription(path, 59999, duration, false)
-                                else -> null
+                                when (keyEventAction) {
+                                    KeyEventAction.DOWN -> GestureDescription.StrokeDescription(
+                                        path,
+                                        0,
+                                        duration,
+                                        true
+                                    )
+                                    KeyEventAction.UP -> GestureDescription.StrokeDescription(
+                                        path,
+                                        59999,
+                                        duration,
+                                        false
+                                    )
+                                    else -> null
+                                }
+
+                            } else {
+                                GestureDescription.StrokeDescription(path, 0, duration)
                             }
-
-                        } else {
-                            GestureDescription.StrokeDescription(path, 0, duration)
-                        }
 
                         strokeDescription?.let {
                             val gestureDescription = GestureDescription.Builder().apply {
@@ -216,7 +232,8 @@ class ActionPerformerDelegate(context: Context,
                                     ?: 0
                             ),
                             keyEventAction = keyEventAction,
-                            deviceId = deviceId ?: 0)
+                            deviceId = deviceId ?: 0
+                        )
                     }
                 }
 
@@ -260,9 +277,11 @@ class ActionPerformerDelegate(context: Context,
         currentPackageName
     )
 
-    private fun performSystemAction(action: Action,
-                                    chosenImePackageName: String?,
-                                    currentPackageName: String?) {
+    private fun performSystemAction(
+        action: Action,
+        chosenImePackageName: String?,
+        currentPackageName: String?
+    ) {
 
         val id = action.data
 
@@ -296,13 +315,32 @@ class ActionPerformerDelegate(context: Context,
 
         ctx.apply {
             when (id) {
-                SystemAction.ENABLE_WIFI -> NetworkUtils.changeWifiStatePreQ(this, StateChange.ENABLE)
-                SystemAction.DISABLE_WIFI -> NetworkUtils.changeWifiStatePreQ(this, StateChange.DISABLE)
-                SystemAction.TOGGLE_WIFI -> NetworkUtils.changeWifiStatePreQ(this, StateChange.TOGGLE)
+                SystemAction.ENABLE_WIFI -> if (hasRootPermission) {
+                    NetworkUtils.enableWifiRoot()
+                } else {
+                    NetworkUtils.changeWifiStatePreQ(
+                        this,
+                        StateChange.ENABLE
+                    )
+                }
 
-                SystemAction.TOGGLE_WIFI_ROOT -> NetworkUtils.toggleWifiRoot()
-                SystemAction.ENABLE_WIFI_ROOT -> NetworkUtils.enableWifiRoot()
-                SystemAction.DISABLE_WIFI_ROOT -> NetworkUtils.disableWifiRoot()
+                SystemAction.DISABLE_WIFI -> if (hasRootPermission) {
+                    NetworkUtils.disableWifiRoot()
+                } else {
+                    NetworkUtils.changeWifiStatePreQ(
+                        this,
+                        StateChange.DISABLE
+                    )
+                }
+
+                SystemAction.TOGGLE_WIFI -> if (hasRootPermission) {
+                    NetworkUtils.toggleWifiRoot()
+                } else {
+                    NetworkUtils.changeWifiStatePreQ(
+                        this,
+                        StateChange.TOGGLE
+                    )
+                }
 
                 SystemAction.TOGGLE_BLUETOOTH -> BluetoothUtils.changeBluetoothState(StateChange.TOGGLE)
                 SystemAction.ENABLE_BLUETOOTH -> BluetoothUtils.changeBluetoothState(StateChange.ENABLE)
@@ -314,10 +352,16 @@ class ActionPerformerDelegate(context: Context,
 
                 SystemAction.TOGGLE_AUTO_BRIGHTNESS -> BrightnessUtils.toggleAutoBrightness(this)
                 SystemAction.ENABLE_AUTO_BRIGHTNESS ->
-                    BrightnessUtils.setBrightnessMode(this, Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC)
+                    BrightnessUtils.setBrightnessMode(
+                        this,
+                        Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC
+                    )
 
                 SystemAction.DISABLE_AUTO_BRIGHTNESS ->
-                    BrightnessUtils.setBrightnessMode(this, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL)
+                    BrightnessUtils.setBrightnessMode(
+                        this,
+                        Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL
+                    )
 
                 SystemAction.INCREASE_BRIGHTNESS -> BrightnessUtils.increaseBrightness(this)
                 SystemAction.DECREASE_BRIGHTNESS -> BrightnessUtils.decreaseBrightness(this)
@@ -333,11 +377,23 @@ class ActionPerformerDelegate(context: Context,
                     ScreenRotationUtils.cycleRotations(this, it)
                 }
 
-                SystemAction.VOLUME_UP -> AudioUtils.adjustVolume(this, AudioManager.ADJUST_RAISE, showVolumeUi)
-                SystemAction.VOLUME_DOWN -> AudioUtils.adjustVolume(this, AudioManager.ADJUST_LOWER, showVolumeUi)
+                SystemAction.VOLUME_UP -> AudioUtils.adjustVolume(
+                    this,
+                    AudioManager.ADJUST_RAISE,
+                    showVolumeUi
+                )
+                SystemAction.VOLUME_DOWN -> AudioUtils.adjustVolume(
+                    this,
+                    AudioManager.ADJUST_LOWER,
+                    showVolumeUi
+                )
 
                 //the volume UI should always be shown for this action
-                SystemAction.VOLUME_SHOW_DIALOG -> AudioUtils.adjustVolume(this, AudioManager.ADJUST_SAME, true)
+                SystemAction.VOLUME_SHOW_DIALOG -> AudioUtils.adjustVolume(
+                    this,
+                    AudioManager.ADJUST_SAME,
+                    true
+                )
 
                 SystemAction.VOLUME_DECREASE_STREAM -> getSdkValueForOption { stream ->
                     AudioUtils.adjustSpecificStream(
@@ -403,7 +459,8 @@ class ActionPerformerDelegate(context: Context,
                 }
 
                 SystemAction.OPEN_VOICE_ASSISTANT -> {
-                    val intent = Intent(Intent.ACTION_VOICE_COMMAND).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    val intent =
+                        Intent(Intent.ACTION_VOICE_COMMAND).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(intent)
                 }
 
@@ -415,14 +472,12 @@ class ActionPerformerDelegate(context: Context,
                 }
 
                 SystemAction.OPEN_CAMERA -> {
-                    val intent = Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    val intent =
+                        Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(intent)
                 }
 
-                SystemAction.LOCK_DEVICE_ROOT ->
-                    suProcessDelegate.runCommand("input keyevent ${KeyEvent.KEYCODE_POWER}")
-
-                SystemAction.SHOW_KEYBOARD_PICKER, SystemAction.SHOW_KEYBOARD_PICKER_ROOT ->
+                SystemAction.SHOW_KEYBOARD_PICKER ->
                     KeyboardUtils.showInputMethodPickerDialogOutsideApp(ctx)
 
                 SystemAction.SECURE_LOCK_DEVICE -> {
@@ -461,7 +516,17 @@ class ActionPerformerDelegate(context: Context,
                 SystemAction.ENABLE_AIRPLANE_MODE -> AirplaneModeUtils.enableAirplaneMode(this)
                 SystemAction.DISABLE_AIRPLANE_MODE -> AirplaneModeUtils.disableAirplaneMode(this)
 
-                SystemAction.SCREENSHOT_ROOT -> ScreenshotUtils.takeScreenshotRoot()
+                SystemAction.SCREENSHOT -> if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+                    ScreenshotUtils.takeScreenshotRoot()
+                } else {
+                    performGlobalAction(AccessibilityService.GLOBAL_ACTION_TAKE_SCREENSHOT)
+                }
+
+                SystemAction.LOCK_DEVICE -> if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+                    suProcessDelegate.runCommand("input keyevent ${KeyEvent.KEYCODE_POWER}")
+                } else {
+                    performGlobalAction(AccessibilityService.GLOBAL_ACTION_LOCK_SCREEN)
+                }
 
                 else -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
@@ -496,7 +561,10 @@ class ActionPerformerDelegate(context: Context,
                                                 to wordBoundary.second + 1
                                         )
 
-                                        it.performAction(AccessibilityNodeInfo.ACTION_SET_SELECTION, bundle)
+                                        it.performAction(
+                                            AccessibilityNodeInfo.ACTION_SET_SELECTION,
+                                            bundle
+                                        )
                                     }
                                 }
                             }
@@ -581,11 +649,23 @@ class ActionPerformerDelegate(context: Context,
                             )
 
                             SystemAction.VOLUME_TOGGLE_MUTE ->
-                                AudioUtils.adjustVolume(this, AudioManager.ADJUST_TOGGLE_MUTE, showVolumeUi)
+                                AudioUtils.adjustVolume(
+                                    this,
+                                    AudioManager.ADJUST_TOGGLE_MUTE,
+                                    showVolumeUi
+                                )
 
-                            SystemAction.TOGGLE_FLASHLIGHT -> flashlightController.toggleFlashlight(lensFacing)
-                            SystemAction.ENABLE_FLASHLIGHT -> flashlightController.setFlashlightMode(true, lensFacing)
-                            SystemAction.DISABLE_FLASHLIGHT -> flashlightController.setFlashlightMode(false, lensFacing)
+                            SystemAction.TOGGLE_FLASHLIGHT -> flashlightController.toggleFlashlight(
+                                lensFacing
+                            )
+                            SystemAction.ENABLE_FLASHLIGHT -> flashlightController.setFlashlightMode(
+                                true,
+                                lensFacing
+                            )
+                            SystemAction.DISABLE_FLASHLIGHT -> flashlightController.setFlashlightMode(
+                                false,
+                                lensFacing
+                            )
 
                             SystemAction.TOGGLE_DND_MODE,
                             SystemAction.ENABLE_DND_MODE -> {
@@ -593,8 +673,12 @@ class ActionPerformerDelegate(context: Context,
                                     val mode = Option.OPTION_ID_SDK_ID_MAP[it] ?: return@onSuccess
 
                                     when (id) {
-                                        SystemAction.TOGGLE_DND_MODE -> AudioUtils.toggleDndMode(mode)
-                                        SystemAction.ENABLE_DND_MODE -> AudioUtils.enableDndMode(mode)
+                                        SystemAction.TOGGLE_DND_MODE -> AudioUtils.toggleDndMode(
+                                            mode
+                                        )
+                                        SystemAction.ENABLE_DND_MODE -> AudioUtils.enableDndMode(
+                                            mode
+                                        )
                                     }
                                 }
                             }
@@ -611,16 +695,6 @@ class ActionPerformerDelegate(context: Context,
 
                             SystemAction.TOGGLE_SPLIT_SCREEN ->
                                 performGlobalAction(AccessibilityService.GLOBAL_ACTION_TOGGLE_SPLIT_SCREEN)
-                        }
-                    }
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                        when (id) {
-                            SystemAction.SCREENSHOT ->
-                                performGlobalAction(AccessibilityService.GLOBAL_ACTION_TAKE_SCREENSHOT)
-
-                            SystemAction.LOCK_DEVICE ->
-                                performGlobalAction(AccessibilityService.GLOBAL_ACTION_LOCK_SCREEN)
                         }
                     }
                 }

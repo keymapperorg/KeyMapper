@@ -344,8 +344,8 @@
 
     <!-- Dialog messages -->
     <string name="dialog_message_are_you_sure_want_to_leave_without_saving">Are you sure you want to leave without saving?</string>
-    <string name="dialog_message_root_prompt">When you tap \"OK\", you will be taken to the settings.
-            In the settings, scroll to the bottom and tap "Enable root features" so you can use root features/actions. If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use features which only work on rooted devices.</string>
+    <string name="dialog_message_root_prompt">If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use features which only work on rooted devices. When you tap \'OK\', you will be taken to the settings.
+            In the settings, scroll to the bottom and tap \'Key Mapper has root permission\' so you can use root features/actions.</string>
     <string name="dialog_message_downloading">Downloading…</string>
     <string name="dialog_message_describe_your_issue_in_the_email">Can you please describe the issue you are having in the email, otherwise I can\'t help you. Thanks!</string>
     <string name="dialog_message_long_press_warning">Long pressing only works for physical volume and navigation buttons. If you enable it for other keys, the keys won\'t work when they aren\'t long pressed.</string>
@@ -763,13 +763,9 @@
     <!-- Error messages -->
 
     <!-- System action labels -->
-    <string name="action_toggle_wifi">Toggle WiFi (non-root)</string>
-    <string name="action_enable_wifi">Enable WiFi (non-root)</string>
-    <string name="action_disable_wifi">Disable WiFi (non-root)</string>
-
-    <string name="action_toggle_wifi_root">Toggle WiFi (root)</string>
-    <string name="action_enable_wifi_root">Enable WiFi (root)</string>
-    <string name="action_disable_wifi_root">Disable WiFi (root)</string>
+    <string name="action_toggle_wifi">Toggle WiFi</string>
+    <string name="action_enable_wifi">Enable WiFi</string>
+    <string name="action_disable_wifi">Disable WiFi</string>
 
     <string name="action_toggle_bluetooth">Toggle Bluetooth</string>
     <string name="action_enable_bluetooth">Enable Bluetooth</string>
@@ -870,13 +866,11 @@
     <string name="action_nfc_toggle">Toggle NFC</string>
 
     <string name="action_screenshot">Screenshot</string>
-    <string name="action_screenshot_root">Screenshot (root)</string>
     <string name="action_open_assistant">Launch voice assistant</string>
     <string name="action_open_device_assistant">Launch device assistant</string>
     <string name="action_open_camera">Open camera</string>
 
-    <string name="action_lock_device">Lock device (non-root)</string>
-    <string name="action_lock_device_root">Lock device (root)</string>
+    <string name="action_lock_device">Lock device</string>
 
     <string name="action_secure_lock_device">Secure lock device</string>
     <string name="action_secure_lock_device_message">You will only be able to log back in with your PIN. The fingerprint scanner and face unlock will be disabled. This is the only reliable way I have found to lock non-rooted devices before Android Pie 9.0.</string>
@@ -892,8 +886,7 @@
     <string name="action_toggle_keyboard_message">This action will only work if you have tapped on an input field where the keyboard is supposed to be shown.</string>
     <string name="action_show_keyboard">Show keyboard</string>
     <string name="action_hide_keyboard">Hide keyboard</string>
-    <string name="action_show_keyboard_picker">Show keyboard picker (non-root)</string>
-    <string name="action_show_keyboard_picker_root">Show keyboard picker (root)</string>
+    <string name="action_show_keyboard_picker">Show keyboard picker</string>
 
     <string name="action_switch_keyboard">Switch keyboard</string>
     <string name="action_switch_keyboard_formatted">Switch to %s</string>

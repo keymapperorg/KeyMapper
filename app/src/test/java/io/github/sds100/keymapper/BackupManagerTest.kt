@@ -26,7 +26,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.*
 import org.hamcrest.MatcherAssert
-import org.hamcrest.core.Is
+import org.hamcrest.core.Is.`is`
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -115,96 +115,131 @@ class BackupManagerTest {
     }
 
     @Test
-    fun `restore keymaps with no db version, assume version is 9 and don't show error message`() = coroutineScope.runBlockingTest {
-        val fileName = "restore-keymaps-no-db-version.json"
-        backupManager.restore(getJson(fileName))
-        advanceUntilIdle()
+    fun `restore keymaps with no db version, assume version is 9 and don't show error message`() =
+        coroutineScope.runBlockingTest {
+            val fileName = "restore-keymaps-no-db-version.json"
+            backupManager.restore(getJson(fileName))
+            advanceUntilIdle()
 
-        MatcherAssert.assertThat(eventStream.history, Is.`is`(listOf(RestoreResult(Success(Unit)))))
+            MatcherAssert.assertThat(
+                eventStream.history,
+                `is`(listOf(RestoreResult(Success(Unit))))
+            )
 
-        Mockito.verify(mockKeymapRepository).restore(9, getKeymapJsonListFromFile(fileName))
-    }
-
-    @Test
-    fun `backup all fingerprint maps, don't save keymap db version and show success message`() = coroutineScope.runBlockingTest {
-        Mockito.`when`(mockFingerprintMapRepository.swipeDown).then { flow { emit(FingerprintMap()) } }
-        Mockito.`when`(mockFingerprintMapRepository.swipeUp).then { flow { emit(FingerprintMap()) } }
-        Mockito.`when`(mockFingerprintMapRepository.swipeLeft).then { flow { emit(FingerprintMap()) } }
-        Mockito.`when`(mockFingerprintMapRepository.swipeRight).then { flow { emit(FingerprintMap()) } }
-
-        val outputStream = PipedOutputStream()
-        val inputStream = PipedInputStream(outputStream) // must become before async call in BackupManager.backup
-
-        backupManager.backupFingerprintMaps(outputStream)
-
-        val json = inputStream.bufferedReader().use { it.readText() }
-        val jsonObject = parser.parse(json).asJsonObject
-
-        MatcherAssert.assertThat("keymap db version is in json", !jsonObject.contains(BackupManager.NAME_KEYMAP_DB_VERSION))
-
-        MatcherAssert.assertThat(eventStream.history, Is.`is`(listOf(BackupResult(Success(Unit)))))
-    }
-
-    @Test
-    fun `restore a single fingerprint map, only restore a single fingerprint map and a success message`() = coroutineScope.runBlockingTest {
-        backupManager.restore(getJson("restore-single-fingerprint-map.json"))
-        advanceUntilIdle()
-
-        MatcherAssert.assertThat(eventStream.history, Is.`is`(listOf(RestoreResult(Success(Unit)))))
-
-        Mockito.verify(mockFingerprintMapRepository, Mockito.times(1)).restore(anyString(), anyString())
-    }
-
-    @Test
-    fun `restore all fingerprint maps, all fingerprint maps should be restored and a success message`() = coroutineScope.runBlockingTest {
-
-        val fileName = "restore-all-fingerprint-maps.json"
-        backupManager.restore(getJson(fileName))
-
-        advanceUntilIdle()
-
-        MatcherAssert.assertThat(eventStream.history, Is.`is`(listOf(RestoreResult(Success(Unit)))))
-
-        getFingerprintMapsToGestureIdFromFile(fileName).forEach { (gestureId, json) ->
-            Mockito.verify(mockFingerprintMapRepository).restore(gestureId, json)
+            Mockito.verify(mockKeymapRepository).restore(9, getKeymapJsonListFromFile(fileName))
         }
-    }
 
     @Test
-    fun `restore many key maps and device info, all key maps and device info should be restored and a success message`() = coroutineScope.runBlockingTest {
-        val fileName = "restore-many-keymaps.json"
+    fun `backup all fingerprint maps, don't save keymap db version and show success message`() =
+        coroutineScope.runBlockingTest {
+            Mockito.`when`(mockFingerprintMapRepository.swipeDown)
+                .then { flow { emit(FingerprintMap()) } }
+            Mockito.`when`(mockFingerprintMapRepository.swipeUp)
+                .then { flow { emit(FingerprintMap()) } }
+            Mockito.`when`(mockFingerprintMapRepository.swipeLeft)
+                .then { flow { emit(FingerprintMap()) } }
+            Mockito.`when`(mockFingerprintMapRepository.swipeRight)
+                .then { flow { emit(FingerprintMap()) } }
 
-        backupManager.restore(getJson(fileName))
-        advanceUntilIdle()
+            val outputStream = PipedOutputStream()
+            val inputStream =
+                PipedInputStream(outputStream) // must become before async call in BackupManager.backup
 
-        MatcherAssert.assertThat(eventStream.history, Is.`is`(listOf(RestoreResult(Success(Unit)))))
+            backupManager.backupFingerprintMaps(outputStream)
 
-        Mockito.verify(mockKeymapRepository).restore(10, getKeymapJsonListFromFile(fileName))
-    }
+            val json = inputStream.bufferedReader().use { it.readText() }
+            val jsonObject = parser.parse(json).asJsonObject
+
+            MatcherAssert.assertThat(
+                "keymap db version is in json",
+                !jsonObject.contains(BackupManager.NAME_KEYMAP_DB_VERSION)
+            )
+
+            MatcherAssert.assertThat(eventStream.history, `is`(listOf(BackupResult(Success(Unit)))))
+        }
 
     @Test
-    fun `restore with key map db version greater than allowed version, send incompatible backup event`() = coroutineScope.runBlockingTest {
+    fun `restore a single fingerprint map, only restore a single fingerprint map and a success message`() =
+        coroutineScope.runBlockingTest {
+            backupManager.restore(getJson("restore-single-fingerprint-map.json"))
+            advanceUntilIdle()
 
-        backupManager.restore(getJson("restore-keymap-db-version-too-big.json"))
+            MatcherAssert.assertThat(
+                eventStream.history,
+                `is`(listOf(RestoreResult(Success(Unit))))
+            )
 
-        advanceUntilIdle()
-
-        MatcherAssert.assertThat(eventStream.history, Is.`is`(listOf(RestoreResult(BackupVersionTooNew))))
-
-        Mockito.verify(mockKeymapRepository, Mockito.times(0)).restore(anyInt(), anyList())
-    }
+            Mockito.verify(mockFingerprintMapRepository, Mockito.times(1))
+                .restore(anyString(), anyString())
+        }
 
     @Test
-    fun `restore with fingerprint gesture map db version greater than allowed version, send incompatible backup event`() = coroutineScope.runBlockingTest {
+    fun `restore all fingerprint maps, all fingerprint maps should be restored and a success message`() =
+        coroutineScope.runBlockingTest {
 
-        backupManager.restore(getJson("restore-fingerprint-map-version-too-big.json"))
+            val fileName = "restore-all-fingerprint-maps.json"
+            backupManager.restore(getJson(fileName))
 
-        advanceUntilIdle()
+            advanceUntilIdle()
 
-        MatcherAssert.assertThat(eventStream.history, Is.`is`(listOf(RestoreResult(BackupVersionTooNew))))
+            MatcherAssert.assertThat(
+                eventStream.history,
+                `is`(listOf(RestoreResult(Success(Unit))))
+            )
 
-        Mockito.verify(mockFingerprintMapRepository, Mockito.times(0)).restore(anyString(), anyString())
-    }
+            getFingerprintMapsToGestureIdFromFile(fileName).forEach { (gestureId, json) ->
+                Mockito.verify(mockFingerprintMapRepository).restore(gestureId, json)
+            }
+        }
+
+    @Test
+    fun `restore many key maps and device info, all key maps and device info should be restored and a success message`() =
+        coroutineScope.runBlockingTest {
+            val fileName = "restore-many-keymaps.json"
+
+            backupManager.restore(getJson(fileName))
+            advanceUntilIdle()
+
+            MatcherAssert.assertThat(
+                eventStream.history,
+                `is`(listOf(RestoreResult(Success(Unit))))
+            )
+
+            Mockito.verify(mockKeymapRepository).restore(10, getKeymapJsonListFromFile(fileName))
+        }
+
+    @Test
+    fun `restore with key map db version greater than allowed version, send incompatible backup event`() =
+        coroutineScope.runBlockingTest {
+
+            backupManager.restore(getJson("restore-keymap-db-version-too-big.json"))
+
+            advanceUntilIdle()
+
+            MatcherAssert.assertThat(
+                eventStream.history,
+                `is`(listOf(RestoreResult(BackupVersionTooNew)))
+            )
+
+            Mockito.verify(mockKeymapRepository, Mockito.times(0)).restore(anyInt(), anyList())
+        }
+
+    @Test
+    fun `restore with fingerprint gesture map db version greater than allowed version, send incompatible backup event`() =
+        coroutineScope.runBlockingTest {
+
+            backupManager.restore(getJson("restore-fingerprint-map-version-too-big.json"))
+
+            advanceUntilIdle()
+
+            MatcherAssert.assertThat(
+                eventStream.history,
+                `is`(listOf(RestoreResult(BackupVersionTooNew)))
+            )
+
+            Mockito.verify(mockFingerprintMapRepository, Mockito.times(0))
+                .restore(anyString(), anyString())
+        }
 
     @Test
     fun `restore empty file, show empty json error message`() = coroutineScope.runBlockingTest {
@@ -213,7 +248,7 @@ class BackupManagerTest {
         backupManager.restore(emptyFileInputStream)
         advanceUntilIdle()
 
-        MatcherAssert.assertThat(eventStream.history, Is.`is`(listOf(RestoreResult(EmptyJson))))
+        MatcherAssert.assertThat(eventStream.history, `is`(listOf(RestoreResult(EmptyJson))))
     }
 
     @Test
@@ -223,94 +258,122 @@ class BackupManagerTest {
         backupManager.restore(emptyFileInputStream)
         advanceUntilIdle()
 
-        MatcherAssert.assertThat(eventStream.history, Is.`is`(listOf(RestoreResult(CorruptJsonFile))))
+        MatcherAssert.assertThat(eventStream.history, `is`(listOf(RestoreResult(CorruptJsonFile))))
     }
 
     @Test
-    fun `backup all fingerprint maps, return list of default fingerprint maps`() = coroutineScope.runBlockingTest {
-        Mockito.`when`(mockFingerprintMapRepository.swipeDown).then { flow { emit(FingerprintMap()) } }
-        Mockito.`when`(mockFingerprintMapRepository.swipeUp).then { flow { emit(FingerprintMap()) } }
-        Mockito.`when`(mockFingerprintMapRepository.swipeLeft).then { flow { emit(FingerprintMap()) } }
-        Mockito.`when`(mockFingerprintMapRepository.swipeRight).then { flow { emit(FingerprintMap()) } }
+    fun `backup all fingerprint maps, return list of default fingerprint maps`() =
+        coroutineScope.runBlockingTest {
+            Mockito.`when`(mockFingerprintMapRepository.swipeDown)
+                .then { flow { emit(FingerprintMap()) } }
+            Mockito.`when`(mockFingerprintMapRepository.swipeUp)
+                .then { flow { emit(FingerprintMap()) } }
+            Mockito.`when`(mockFingerprintMapRepository.swipeLeft)
+                .then { flow { emit(FingerprintMap()) } }
+            Mockito.`when`(mockFingerprintMapRepository.swipeRight)
+                .then { flow { emit(FingerprintMap()) } }
 
-        val outputStream = PipedOutputStream()
-        val inputStream = PipedInputStream(outputStream) // must become before async call in BackupManager.backup
+            val outputStream = PipedOutputStream()
+            val inputStream =
+                PipedInputStream(outputStream) // must become before async call in BackupManager.backup
 
-        backupManager.backupFingerprintMaps(outputStream)
+            backupManager.backupFingerprintMaps(outputStream)
 
-        val json = inputStream.bufferedReader().use { it.readText() }
-        val rootElement = parser.parse(json)
+            val json = inputStream.bufferedReader().use { it.readText() }
+            val rootElement = parser.parse(json)
 
-        GESTURE_ID_TO_JSON_KEY_MAP.values.forEach { jsonKey ->
-            MatcherAssert.assertThat("doesn't contain $jsonKey fingerprint map", gson.toJson(rootElement[jsonKey]), Is.`is`(gson.toJson(FingerprintMap())))
+            GESTURE_ID_TO_JSON_KEY_MAP.values.forEach { jsonKey ->
+                MatcherAssert.assertThat(
+                    "doesn't contain $jsonKey fingerprint map",
+                    gson.toJson(rootElement[jsonKey]),
+                    `is`(gson.toJson(FingerprintMap()))
+                )
+            }
+
+            MatcherAssert.assertThat(eventStream.history, `is`(listOf(BackupResult(Success(Unit)))))
         }
-
-        MatcherAssert.assertThat(eventStream.history, Is.`is`(listOf(BackupResult(Success(Unit)))))
-    }
 
     @Test
-    fun `backup key maps, return list of default key maps, keymap db version should be current database version`() = coroutineScope.runBlockingTest {
-        val keymapList = listOf(KeyMap(0), KeyMap(1))
-        Mockito.`when`(mockKeymapRepository.getKeymaps()).then { keymapList }
+    fun `backup key maps, return list of default key maps, keymap db version should be current database version`() =
+        coroutineScope.runBlockingTest {
+            val keymapList = listOf(KeyMap(0), KeyMap(1))
+            Mockito.`when`(mockKeymapRepository.getKeymaps()).then { keymapList }
 
-        val outputStream = PipedOutputStream()
-        val inputStream = PipedInputStream(outputStream) // must become before async call in BackupManager.backup
+            val outputStream = PipedOutputStream()
+            val inputStream =
+                PipedInputStream(outputStream) // must become before async call in BackupManager.backup
 
-        backupManager.backupKeymaps(outputStream, listOf(0L, 1L))
+            backupManager.backupKeymaps(outputStream, listOf(0L, 1L))
 
-        advanceUntilIdle()
+            advanceUntilIdle()
 
-        val rootJsonElement = inputStream.bufferedReader().use { it.readText() }
-        val rootElement = parser.parse(rootJsonElement)
-        val keymapListJsonArray = rootElement["keymap_list"].asJsonArray
+            val rootJsonElement = inputStream.bufferedReader().use { it.readText() }
+            val rootElement = parser.parse(rootJsonElement)
+            val keymapListJsonArray = rootElement["keymap_list"].asJsonArray
 
-        keymapList.forEachIndexed { index, keymap ->
-            val expectedKeymapJson = gson.toJson(keymap)
-            val actualKeymapJson = gson.toJson(keymapListJsonArray[index])
+            keymapList.forEachIndexed { index, keymap ->
+                val expectedKeymapJson = gson.toJson(keymap)
+                val actualKeymapJson = gson.toJson(keymapListJsonArray[index])
 
-            MatcherAssert.assertThat(actualKeymapJson, Is.`is`(expectedKeymapJson))
+                MatcherAssert.assertThat(actualKeymapJson, `is`(expectedKeymapJson))
+            }
+
+            MatcherAssert.assertThat(
+                rootElement["keymap_db_version"].asInt,
+                `is`(AppDatabase.DATABASE_VERSION)
+            )
+
+            MatcherAssert.assertThat(eventStream.history, `is`(listOf(BackupResult(Success(Unit)))))
         }
-
-        MatcherAssert.assertThat(rootElement["keymap_db_version"].asInt, Is.`is`(AppDatabase.DATABASE_VERSION))
-
-        MatcherAssert.assertThat(eventStream.history, Is.`is`(listOf(BackupResult(Success(Unit)))))
-    }
 
     @Test
-    fun `backup everything, return list of default keymaps and default fingerprint maps, keymap db version should be current database version`() = coroutineScope.runBlockingTest {
-        val keymapList = listOf(KeyMap(0), KeyMap(1))
-        Mockito.`when`(mockKeymapRepository.getKeymaps()).then { keymapList }
-        Mockito.`when`(mockFingerprintMapRepository.swipeDown).then { flow { emit(FingerprintMap()) } }
-        Mockito.`when`(mockFingerprintMapRepository.swipeUp).then { flow { emit(FingerprintMap()) } }
-        Mockito.`when`(mockFingerprintMapRepository.swipeLeft).then { flow { emit(FingerprintMap()) } }
-        Mockito.`when`(mockFingerprintMapRepository.swipeRight).then { flow { emit(FingerprintMap()) } }
+    fun `backup everything, return list of default keymaps and default fingerprint maps, keymap db version should be current database version`() =
+        coroutineScope.runBlockingTest {
+            val keymapList = listOf(KeyMap(0), KeyMap(1))
+            Mockito.`when`(mockKeymapRepository.getKeymaps()).then { keymapList }
+            Mockito.`when`(mockFingerprintMapRepository.swipeDown)
+                .then { flow { emit(FingerprintMap()) } }
+            Mockito.`when`(mockFingerprintMapRepository.swipeUp)
+                .then { flow { emit(FingerprintMap()) } }
+            Mockito.`when`(mockFingerprintMapRepository.swipeLeft)
+                .then { flow { emit(FingerprintMap()) } }
+            Mockito.`when`(mockFingerprintMapRepository.swipeRight)
+                .then { flow { emit(FingerprintMap()) } }
 
-        val outputStream = PipedOutputStream()
-        val inputStream = PipedInputStream(outputStream) // must become before async call in BackupManager.backup
+            val outputStream = PipedOutputStream()
+            val inputStream =
+                PipedInputStream(outputStream) // must become before async call in BackupManager.backup
 
-        backupManager.backupEverything(outputStream)
+            backupManager.backupEverything(outputStream)
 
-        advanceUntilIdle()
+            advanceUntilIdle()
 
-        val rootJsonElement = inputStream.bufferedReader().use { it.readText() }
-        val rootElement = parser.parse(rootJsonElement)
-        val keymapListJsonArray = rootElement["keymap_list"].asJsonArray
+            val rootJsonElement = inputStream.bufferedReader().use { it.readText() }
+            val rootElement = parser.parse(rootJsonElement)
+            val keymapListJsonArray = rootElement["keymap_list"].asJsonArray
 
-        keymapList.forEachIndexed { index, keymap ->
-            val expectedKeymapJson = gson.toJson(keymap)
-            val actualKeymapJson = gson.toJson(keymapListJsonArray[index])
+            keymapList.forEachIndexed { index, keymap ->
+                val expectedKeymapJson = gson.toJson(keymap)
+                val actualKeymapJson = gson.toJson(keymapListJsonArray[index])
 
-            MatcherAssert.assertThat(actualKeymapJson, Is.`is`(expectedKeymapJson))
+                MatcherAssert.assertThat(actualKeymapJson, `is`(expectedKeymapJson))
+            }
+
+            GESTURE_ID_TO_JSON_KEY_MAP.values.forEach { jsonKey ->
+                MatcherAssert.assertThat(
+                    "doesn't contain $jsonKey fingerprint map",
+                    gson.toJson(rootElement[jsonKey]),
+                    `is`(gson.toJson(FingerprintMap()))
+                )
+            }
+
+            MatcherAssert.assertThat(
+                rootElement["keymap_db_version"].asInt,
+                `is`(AppDatabase.DATABASE_VERSION)
+            )
+
+            MatcherAssert.assertThat(eventStream.history, `is`(listOf(BackupResult(Success(Unit)))))
         }
-
-        GESTURE_ID_TO_JSON_KEY_MAP.values.forEach { jsonKey ->
-            MatcherAssert.assertThat("doesn't contain $jsonKey fingerprint map", gson.toJson(rootElement[jsonKey]), Is.`is`(gson.toJson(FingerprintMap())))
-        }
-
-        MatcherAssert.assertThat(rootElement["keymap_db_version"].asInt, Is.`is`(AppDatabase.DATABASE_VERSION))
-
-        MatcherAssert.assertThat(eventStream.history, Is.`is`(listOf(BackupResult(Success(Unit)))))
-    }
 
     private fun getFingerprintMapsToGestureIdFromFile(fileName: String): Map<String, String> {
         val jsonInputStream = getJson(fileName)

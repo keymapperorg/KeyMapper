@@ -1,0 +1,103 @@
+{
+  "device_info": [],
+  "keymap_list": [
+    {
+      "actionList": [
+        {
+          "data": "toggle_wifi",
+          "extras": [],
+          "flags": 0,
+          "type": "SYSTEM_ACTION",
+          "uid": "3e53b5f4-fe72-40ea-84fe-564eb8aab6ab"
+        },
+        {
+          "data": "enable_wifi",
+          "extras": [],
+          "flags": 0,
+          "type": "SYSTEM_ACTION",
+          "uid": "2400ec1a-39d0-463b-992b-fa3ede262092"
+        },
+        {
+          "data": "disable_wifi",
+          "extras": [],
+          "flags": 0,
+          "type": "SYSTEM_ACTION",
+          "uid": "5e75882a-e449-43a0-8b1b-0224dd4dc225"
+        },
+        {
+          "data": "lock_device",
+          "extras": [],
+          "flags": 0,
+          "type": "SYSTEM_ACTION",
+          "uid": "cc10620f-99ab-459d-89eb-49e5d967e46e"
+        },
+        {
+          "data": "screenshot",
+          "extras": [],
+          "flags": 0,
+          "type": "SYSTEM_ACTION",
+          "uid": "cc10620f-99ab-459d-89eb-49e5d967e46e"
+        },
+        {
+          "data": "show_keyboard_picker",
+          "extras": [],
+          "flags": 0,
+          "type": "SYSTEM_ACTION",
+          "uid": "cc10620f-99ab-459d-89eb-49e5d967e46e"
+        },
+        {
+          "data": "com.google.android.contacts",
+          "extras": [],
+          "flags": 0,
+          "type": "APP"
+        }
+      ],
+      "constraintList": [],
+      "constraintMode": 1,
+      "flags": 0,
+      "id": 0,
+      "isEnabled": true,
+      "trigger": {
+        "extras": [],
+        "flags": 17,
+        "keys": [
+          {
+            "clickType": 0,
+            "deviceId": "io.github.sds100.keymapper.THIS_DEVICE",
+            "flags": 0,
+            "keyCode": 25
+          }
+        ],
+        "mode": 2
+      }
+    },
+    {
+      "actionList": [
+        {
+          "data": "com.google.android.contacts",
+          "extras": [],
+          "flags": 4,
+          "type": "APP"
+        }
+      ],
+      "constraintList": [],
+      "constraintMode": 1,
+      "flags": 0,
+      "id": 0,
+      "isEnabled": true,
+      "trigger": {
+        "extras": [],
+        "flags": 16,
+        "keys": [
+          {
+            "clickType": 0,
+            "deviceId": "io.github.sds100.keymapper.THIS_DEVICE",
+            "flags": 0,
+            "keyCode": 25
+          }
+        ],
+        "mode": 2
+      }
+    }
+  ]
+}
