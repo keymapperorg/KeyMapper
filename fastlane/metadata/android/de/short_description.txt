@@ -1,1 +1,1 @@
-Remaps the buttons on your device and other devices and fingerprint gestures.
+Ordne die Tasten und Fingerabdruck-Gesten von deinem Gerät um.
