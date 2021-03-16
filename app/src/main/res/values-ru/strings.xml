@@ -6,7 +6,7 @@
     <string name="selection_count">%d выбрано</string>
     <string name="enable">Включить</string>
     <string name="open">Открыть</string>
-    <string name="recyclerview_placeholder">¯ \ _ (ツ) _ / ¯\n\n Здесь ничего!</string>
+    <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\n Здесь ничего!</string>
     <string name="triggers_recyclerview_placeholder">Запишите событие!</string>
     <string name="actions_recyclerview_placeholder">Добавьте действие!</string>
     <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nСоздайте мэппинг!</string>
@@ -107,6 +107,7 @@
     <string name="hint_intent_extra_name">Имя</string>
     <string name="hint_intent_extra_value_with_type">Значение (%s)</string>
     <string name="hint_intent_description">Описание для Key Mapper (обязательно)</string>
+ <string name="hint_intent_flags">Флаги</string>
     <!--  Hints  -->
     <!--  Radio buttons  -->
     <string name="radio_button_parallel">В то же время</string>
@@ -138,7 +139,7 @@
     <!--  Navigation argument ids  -->
     <!--  Navigation argument ids  -->
     <!--  Toasts  -->
-    <string name="toast_chose_keyboard">Выберите %s</string>
+ <string name="toast_chose_keyboard">Выбрано: %s</string>
     <string name="toast_backup_successful">Резервная копия сделана!</string>
     <string name="toast_restore_successful">Восстановление успешно завершено!</string>
     <string name="toast_automatic_backup_successful">Автоматическое резервное копирование прошло успешно!</string>
@@ -231,42 +232,44 @@
     <string name="button_record_trigger">Запишите событие</string>
     <string name="button_done">Готово</string>
     <string name="button_save">Сохранить</string>
-    <string name="button_fix">Исправить</string>
-    <string name="button_recording_trigger_countdown">%d…</string>
-    <string name="button_add_constraint">Добавить ограничение</string>
-    <string name="button_choose_keycode">Выберите код клавиши</string>
-    <string name="button_yes">Да!</string>
-    <string name="button_choose_action">Выберите действие</string>
-    <string name="button_add_intent_extra">Добавить дополнение</string>
-    <string name="button_create_keymap_shortcut_in_launcher">Создать ярлык</string>
-    <string name="button_open_trigger_keymap_from_intent_guide">Руководство по Intent</string>
-    <string name="button_help">Справка</string>
-    <!-- Button titles -->
-    <!-- Dialog titles -->
-    <string name="dialog_title_are_you_sure">Вы уверены?</string>
-    <string name="dialog_title_create_shortcut_title">Название ярлыка</string>
-    <string name="dialog_title_cant_find_paired_devices">Не найдено сопряженных устройств</string>
-    <string name="dialog_title_root_prompt">Требуются Root права!</string>
-    <string name="dialog_title_flags">Ещё</string>
-    <string name="dialog_title_pick_stream">Выбрать поток</string>
-    <string name="dialog_title_choose_flash">Выберите мигание</string>
-    <string name="dialog_title_cant_find_accessibility_settings_page">Страница настроек специальных возможностей не найдена</string>
-    <string name="dialog_title_cant_record_trigger">Не удается записать событие?</string>
-    <!-- Dialog titles -->
-    <!-- Dialog messages -->
-    <string name="dialog_message_are_you_sure_want_to_leave_without_saving">Вы уверены, что хотите уйти без сохранения?</string>
-    <string name="dialog_message_root_prompt">Когда вы нажмете \"OK\", откроются настройки
-            В настройках, прокрутите вниз и нажмите «Включить Root права», чтобы вы могли использовать функции/действия root. Если вы знаете, что ваш телефон не имеет прав Суперпользователя или вы не знаете, что это такое, то вы не сможете использовать функции, которые работают только на устройствах с правами суперпользователя.</string>
-    <string name="dialog_message_downloading">Загрузка…</string>
-    <string name="dialog_message_describe_your_issue_in_the_email">Просьба описать в письме проблему, с которой вы столкнулись. В противном случае я не могу вам помочь. Спасибо!</string>
-    <string name="dialog_message_long_press_warning">Длительное нажатие работает только для кнопок громкости и навигации. Если вы включите его для других клавиш, клавиши не будут работать, если они не будут длительно нажаты.</string>
-    <string name="dialog_message_write_secure_settings">Чтобы предоставить Key Mapper разрешение WRITE_SECURE_SETTINGS - включите \"функционал требующий Root прав\" в настройках приложения (Если у вашего устройства конечно есть Root права). Если таких прав на устройстве нет - следуйте указаниям как дать это разрешение с помощью PC/Mac.</string>
-    <string name="dialog_message_cant_find_accessibility_settings_page">Кажется на вашем устройстве нет страницы настроек спец.возможностей. Вы можете включить службу спец.возможностей, предоставив приложению разрешение WRITE_SECURE_SETTINGS. После нажатия \'ОК\' следуйте руководству.</string>
-    <string name="dialog_message_double_press_restricted_to_single_key">"Нельзя обработать одновременное двойное нажатие нескольких клавиш."</string>
-    <string name="dialog_message_parallel_trigger_order">Клавиши должны быть перечислены сверху вниз в том порядке в котором они должны быть нажаты.</string>
-    <string name="dialog_message_sequence_trigger_explanation">Событие со свойством \"последовательность\" имеет таймаут в отличие от параллельных событий. Это означает, что после нажатия первой клавиши у вас будет заданное время для нажатия остальных клавиш в событии. Все клавиши, которые вы добавили в событие, не будут выполнять свои обычные действия до тех пор, пока не будет достигнут таймаут. Этот таймаут можно изменить на вкладке \"Параметры\".</string>
-    <string name="dialog_message_view_faq_and_use_discord_over_email">Пожалуйста, ознакомьтесь с часто задаваемыми вопросами, чтобы узнать, был ли ответ на ваш вопрос. Если нет, то разработчик предпочел бы, если бы вы запросили помощь и/или предложили доработки на сервере Discord. Если у вас нет Discord, вы можете отправить сообщение по электронной почте разработчику напрямую.</string>
-    <string name="dialog_message_bt_constraint_limitation">Android не разрешает приложениям получать список подключенных (не сопряженных) Bluetooth-устройств. Приложения могут определять только когда подключены и отключены сопряженные устройства. Таким образом, если ваше Bluetooth устройство уже подключено к вашему основному устройству при запуске службы спец.возможностей, вам придется перепривязать его, чтобы приложение поняло, что оно подключено.</string>
+ <string name="button_fix">Исправить</string>
+ <string name="button_recording_trigger_countdown">%d…</string>
+ <string name="button_add_constraint">Добавить ограничение</string>
+ <string name="button_choose_keycode">Выберите код клавиши</string>
+ <string name="button_yes">Да!</string>
+ <string name="button_choose_action">Выберите действие</string>
+ <string name="button_add_intent_extra">Добавить дополнение</string>
+ <string name="button_create_keymap_shortcut_in_launcher">Создать ярлык</string>
+ <string name="button_open_trigger_keymap_from_intent_guide">Руководство по Intent</string>
+ <string name="button_help">Справка</string>
+ <string name="button_config_intent_choose_activity">Выберите Activity</string>
+ <string name="button_config_intent_set_flags">Установить флаги</string>
+ <!-- Button titles -->
+ <!-- Dialog titles -->
+ <string name="dialog_title_are_you_sure">Вы уверены?</string>
+ <string name="dialog_title_create_shortcut_title">Название ярлыка</string>
+ <string name="dialog_title_cant_find_paired_devices">Не найдено сопряженных устройств</string>
+ <string name="dialog_title_root_prompt">Требуются Root права!</string>
+ <string name="dialog_title_flags">Ещё</string>
+ <string name="dialog_title_pick_stream">Выбрать поток</string>
+ <string name="dialog_title_choose_flash">Выберите мигание</string>
+ <string name="dialog_title_cant_find_accessibility_settings_page">Страница настроек специальных возможностей не найдена</string>
+ <string name="dialog_title_cant_record_trigger">Не удается записать событие?</string>
+ <!-- Dialog titles -->
+ <!-- Dialog messages -->
+ <string name="dialog_message_are_you_sure_want_to_leave_without_saving">Вы уверены, что хотите уйти без сохранения?</string>
+ <string name="dialog_message_root_prompt">Если вы знаете, что у вашего устройства нет Root прав или вы не знаете, что это такое вообще - вы не сможете использовать функции требующие Root прав. Когда вы нажмете на \'OK\' откроются соответствующие настройки.
+            В настройках спуститесь вниз и нажмите на \'Key Mapper имеет Root права\' после этого вы сможете использовать эти функции.</string>
+ <string name="dialog_message_downloading">Загрузка…</string>
+ <string name="dialog_message_describe_your_issue_in_the_email">Просьба описать в письме проблему, с которой вы столкнулись. В противном случае я не могу вам помочь. Спасибо!</string>
+ <string name="dialog_message_long_press_warning">Длительное нажатие работает только для кнопок громкости и навигации. Если вы включите его для других клавиш, клавиши не будут работать, если они не будут длительно нажаты.</string>
+ <string name="dialog_message_write_secure_settings">Чтобы предоставить Key Mapper разрешение WRITE_SECURE_SETTINGS - включите \"функционал требующий Root прав\" в настройках приложения (Если у вашего устройства конечно есть Root права). Если таких прав на устройстве нет - следуйте указаниям как дать это разрешение с помощью PC/Mac.</string>
+ <string name="dialog_message_cant_find_accessibility_settings_page">Кажется на вашем устройстве нет страницы настроек спец.возможностей. Вы можете включить службу спец.возможностей, предоставив приложению разрешение WRITE_SECURE_SETTINGS. После нажатия \'ОК\' следуйте руководству.</string>
+ <string name="dialog_message_double_press_restricted_to_single_key">"Нельзя обработать одновременное двойное нажатие нескольких клавиш."</string>
+ <string name="dialog_message_parallel_trigger_order">Клавиши должны быть перечислены сверху вниз в том порядке в котором они должны быть нажаты.</string>
+ <string name="dialog_message_sequence_trigger_explanation">Событие со свойством \"последовательность\" имеет таймаут в отличие от параллельных событий. Это означает, что после нажатия первой клавиши у вас будет заданное время для нажатия остальных клавиш в событии. Все клавиши, которые вы добавили в событие, не будут выполнять свои обычные действия до тех пор, пока не будет достигнут таймаут. Этот таймаут можно изменить на вкладке \"Параметры\".</string>
+ <string name="dialog_message_view_faq_and_use_discord_over_email">Пожалуйста, ознакомьтесь с часто задаваемыми вопросами, чтобы узнать, был ли ответ на ваш вопрос. Если нет, то разработчик предпочел бы, если бы вы запросили помощь и/или предложили доработки на сервере Discord. Если у вас нет Discord, вы можете отправить сообщение по электронной почте разработчику напрямую.</string>
+ <string name="dialog_message_bt_constraint_limitation">Android не разрешает приложениям получать список подключенных (не сопряженных) Bluetooth-устройств. Приложения могут определять только когда подключены и отключены сопряженные устройства. Таким образом, если ваше Bluetooth устройство уже подключено к вашему основному устройству при запуске службы спец.возможностей, вам придется перепривязать его, чтобы приложение поняло, что оно подключено.</string>
     <string name="dialog_message_change_location_or_disable">Изменить место для автоматического резервного копирования или отключить его?</string>
     <string name="dialog_message_screen_constraints_limitation">Ограничение на включенный или выключенный экран будет работать только в том случае, если вы включили \"Определять события когда экран выключен\" в настройках этого переназначения. Эта настройка имеется только для некоторых клавиш (например для громкости) и только если у вас есть Root права. Полный список поддерживаемых клавиш смотрите на странице справки.</string>
     <string name="dialog_message_password_screen_lock_warning">Если у вас выбрана другая блокировка экрана, например PIN-код или узор, вам не стоит беспокоиться. Но если у вас блокировка по паролю, вы *НЕ* сможете разблокировать ваш телефон при использовании клавиатуры Key Mapper как основного метода ввода. Это связано с тем, что у этой клавиатуры нет графического интерфейса. Вы можете предоставить разрешение WRITE_SECURE_SETTINGS для Key Mapper и приложение будет отображать уведомление для переключения клавиатуры. Нажмите на вопросительный знак в нижней части этого экрана - там есть инструкция.</string>
@@ -274,6 +277,7 @@
     <string name="dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout">Вам необходимо переключить раскладку клавиатуры на \"Caps Lock для камеры\" в противном случае клавиша Caps Lock будет менять регистр букв, не более. Эту настройку можно найти в общих настройках вашего устройства -&gt; Языки и методы ввода -&gt; Физическая клавиатура -&gt; Нажать на соответствующую клавиатуру -&gt; Выбрать раскладку. Это переназначит клавишу Caps Lock на отправку KEYCODE_CAMERA, таким образом Key Mapper сможет правильно ее обработать.\n\nПОсле того как вы это сделаете нужно удалить событие \"Caps Lock\" и записать событие для клавиши Caps Lock снова. Если при записи будет отображено \"Камера\" вместо \"Caps Lock\" значит вы все проделали верно.</string>
     <string name="dialog_message_select_app_store_gui_keyboard">Где вы хотите скачать новую клавиатуру с GUI?</string>
     <string name="dialog_message_cant_record_trigger"><b>Перезагрузите</b> свое устройство если кнопка \"Запишите событие\" ведет отсчет, но не регистрирует нажатий. Или даже НЕ ведет отсчет. Если после перезагрузки устройства нажатия клавиши все равно не регистрируются значит Key Mapper не поддерживает этот тип клавиш. К сожалению эту ситуацию не исправить. Дополнительно можно обратиться к разделу 7 часто задаваемых вопросов.</string>
+ <string name="dialog_message_no_external_devices_connected">Внешние устройства не подключены.</string>
     <!-- Dialog messages -->
     <!-- Dialog buttons -->
     <string name="pos_yes">Да</string>
@@ -292,6 +296,7 @@
     <string name="neg_dont_show_again">Больше не показывать</string>
     <string name="neg_email">Эл. почта</string>
     <string name="neutral_discord">Дискорд</string>
+ <string name="neutral_intent_docs">Документация</string>
     <string name="snackbar_cancel">Отменить</string>
     <string name="snackbar_fix">Исправить</string>
     <!-- Dialog buttons -->
@@ -311,62 +316,77 @@
     <string name="notification_accessibility_service_disabled_title">Служба специальных возможностей отключена</string>
     <string name="notification_accessibility_service_disabled_text">Нажмите, чтобы запустить службу специальных возможностей.</string>
     <string name="notification_action_open_app">Открыть приложение</string>
-    <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
-    <string name="notification_action_stop_acc_service">Остановить службу</string>
-    <string name="notification_keyboard_hidden_title">Клавиатура скрыта!</string>
-    <string name="notification_keyboard_hidden_text">Нажмите, чтобы снова начать отображать клавиатуру.</string>
-    <string name="notification_toggle_keyboard_title">Сменить клавиатуру Key Mapper</string>
-    <string name="notification_toggle_keyboard_text">Нажмите, чтобы переключиться на и с клавиатуры Key Mapper.</string>
-    <string name="notification_ime_service_disabled_title">Клавиатура Mapper выключена!</string>
-    <string name="notification_ime_service_disabled_text">Нажмите, чтобы включить клавиатуру Mapper.</string>
-    <string name="notification_feature_fingerprint_title">Переопределить жесты отпечатков пальцев с помощью Key Mapper!</string>
-    <string name="notification_feature_fingerprint_text">Ваше устройство поддерживает переопределение жестов по датчику отпечатков пальцев. Нажмите, чтобы начать переопределение!</string>
-    <!-- Notification strings -->
-    <!--Preference titles and summaries-->
-    <string name="title_pref_long_press_delay">Задержка долгого нажатия по умолчанию (мс)</string>
-    <string name="summary_pref_long_press_delay">Как долго клавиша должна быть нажата чтобы сработало определение \"Длительное нажатие\". По умолчанию - 500 мс. Может быть переопределено в настройках конкретного события.</string>
-    <string name="title_pref_double_press_delay">Длительность двойного нажатия по умолчанию (мс)</string>
-    <string name="summary_pref_double_press_delay">Как быстро клавишу надо нажать второй раз чтобы сработало определение \"Двойное нажатие\". По умолчанию - 300 мс. Может быть переопределено в настройках конкретного события.</string>
-    <string name="summary_pref_vibration_duration">Как долго вибрировать если включена функция вибрации. По умолчанию - 200 мс. Может быть переопределено в настройках конкретного события.</string>
-    <string name="title_pref_vibration_duration">Длительность вибрации по умолчанию (мс)</string>
-    <string name="summary_pref_repeat_delay">Как долго клавиша должна быть нажата до того как событие начнет повторяться. По умолчанию 400 мс. Может быть переопределено в свойствах мэппинга.</string>
-    <string name="title_pref_repeat_delay">По умолчанию задержка до повтора (мс)</string>
+ <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
+ <string name="notification_action_stop_acc_service">Остановить службу</string>
+ <string name="notification_keyboard_hidden_title">Клавиатура скрыта!</string>
+ <string name="notification_keyboard_hidden_text">Нажмите, чтобы снова начать отображать клавиатуру.</string>
+ <string name="notification_toggle_keyboard_title">Сменить клавиатуру Key Mapper</string>
+ <string name="notification_toggle_keyboard_text">Нажмите, чтобы переключиться на и с клавиатуры Key Mapper.</string>
+ <string name="notification_ime_service_disabled_title">Клавиатура Mapper выключена!</string>
+ <string name="notification_ime_service_disabled_text">Нажмите, чтобы включить клавиатуру Mapper.</string>
+ <string name="notification_feature_fingerprint_title">Переопределить жесты отпечатков пальцев с помощью Key Mapper!</string>
+ <string name="notification_feature_fingerprint_text">Ваше устройство поддерживает переопределение жестов по датчику отпечатков пальцев. Нажмите, чтобы начать переопределение!</string>
+ <string name="notification_setup_chosen_devices_again_title">Вам нужно снова произвести некоторые настройки!</string>
+ <string name="notification_setup_chosen_devices_again_text">Похоже, вы использовали настройки, чтобы автоматически изменять клавиатуру или показать выбор метода ввода при подключении и отключении устройства Bluetooth. Key Mapper теперь позволяет использовать для этого любое устройство ввода, а не только устройства Bluetooth. К сожалению не существует способа переноса старых настроек. Таким образом чтобы этот функционал заработал вам придется выбрать устройство снова в настройках программы. Нажмите, чтобы открыть Key Mapper.</string>
+ <!-- Notification strings -->
+ <!--Preference titles and summaries-->
+ <string name="title_pref_long_press_delay">Задержка долгого нажатия по умолчанию (мс)</string>
+ <string name="summary_pref_long_press_delay">Как долго клавиша должна быть нажата чтобы сработало определение \"Длительное нажатие\". По умолчанию - 500 мс. Может быть переопределено в настройках конкретного события.</string>
+ <string name="title_pref_double_press_delay">Длительность двойного нажатия по умолчанию (мс)</string>
+ <string name="summary_pref_double_press_delay">Как быстро клавишу надо нажать второй раз чтобы сработало определение \"Двойное нажатие\". По умолчанию - 300 мс. Может быть переопределено в настройках конкретного события.</string>
+ <string name="summary_pref_vibration_duration">Как долго вибрировать если включена функция вибрации. По умолчанию - 200 мс. Может быть переопределено в настройках конкретного события.</string>
+ <string name="title_pref_vibration_duration">Длительность вибрации по умолчанию (мс)</string>
+ <string name="summary_pref_repeat_delay">Как долго клавиша должна быть нажата до того как событие начнет повторяться. По умолчанию 400 мс. Может быть переопределено в свойствах мэппинга.</string>
+ <string name="title_pref_repeat_delay">По умолчанию задержка до повтора (мс)</string>
     <string name="summary_pref_repeat_rate">Задержка между каждым выполнением действий. По умолчанию 50 мс. Может быть переопределно в свойствах мэппинга.</string>
     <string name="title_pref_repeat_rate">Задержка между повторами (мс)</string>
     <string name="summary_pref_sequence_trigger_timeout">Время на проятжении которого должно завершиться событие с типом \"последовательность\". По умолчанию 1000 мс (1 с). Может быть переопределено в свойствах мэппинга.</string>
     <string name="title_pref_sequence_trigger_timeout">Таймаут по умолчанию для события \"последовательность\" (мс)</string>
-    <string name="summary_pref_force_vibrate">Принудительно включать вибрацию для всех событий.</string>
-    <string name="title_pref_force_vibrate">Принудительно вибрировать</string>
-    <string name="title_pref_show_ime_picker_notification">Уведомление выбора клавиатуры</string>
-    <string name="summary_pref_show_ime_picker_notification">Показывать постоянное уведомление, позволяющее выбрать клавиатуру.</string>
-    <string name="title_pref_show_toggle_keymaps_notification">Уведомление позволяющее ставить на паузу / снимать с паузы приложение</string>
-    <string name="summary_pref_show_toggle_keymaps_notification">Показывает постоянное уведомление позволяющее запускать / приостанавливать ваши мэппинги. А также есть ссылка для запуска или остановки службы спец.возможностей.</string>
-    <string name="title_pref_automatic_backup_location">Автоматическая резервная копия всех мэппингов в указанном месте</string>
-    <string name="summary_pref_automatic_backup_location_disabled">Местоположение не выбрано.</string>
-    <string name="title_pref_auto_show_ime_picker">Автоматически показывать выбор клавиатуры</string>
-    <string name="title_pref_root_permission">Key Mapper имеет Root права</string>
-    <string name="summary_pref_root_permission">Включайте это в том случае если вам нужны функции/возможности, которые работают только на устройствах с Root правами. Key Mapper должен получить соответствующие разрешения через приложение по управлению Root доступом (например Magisk, SuperSU).
+ <string name="summary_pref_force_vibrate">Принудительно включать вибрацию для всех событий.</string>
+ <string name="title_pref_force_vibrate">Принудительно вибрировать</string>
+ <string name="title_pref_show_ime_picker_notification">Уведомление выбора клавиатуры</string>
+ <string name="summary_pref_show_ime_picker_notification">Показывать постоянное уведомление, позволяющее выбрать клавиатуру.</string>
+ <string name="title_pref_show_toggle_keymaps_notification">Уведомление позволяющее ставить на паузу / снимать с паузы приложение</string>
+ <string name="summary_pref_show_toggle_keymaps_notification">Показывает постоянное уведомление позволяющее запускать / приостанавливать ваши мэппинги. А также есть ссылка для запуска или остановки службы спец.возможностей.</string>
+ <string name="title_pref_automatic_backup_location">Автоматическая резервная копия всех мэппингов в указанном месте</string>
+ <string name="summary_pref_automatic_backup_location_disabled">Местоположение не выбрано.</string>
+ <string name="title_pref_choose_devices">Выберите устройства</string>
+ <string name="title_pref_auto_show_ime_picker">Автоматически показывать выбор клавиатуры</string>
+ <string name="summary_pref_auto_show_ime_picker">Когда подключится или отключится устройство по вашему выбору будет показан инструмент выбора клавиатуры. Укажите это устройство ниже.</string>
+ <string name="title_pref_auto_change_ime_on_connection">Автоматически переключать экранную клавиатуру при подключении/отключении устройства (например клавиатуры)</string>
+ <string name="summary_pref_auto_change_ime_on_connection">Последняя использованная клавиатура Key Mapper будет автоматически выбрана при подключении указанного устройства. Ваша обычная клавиатура будет автоматически выбрана при отключении устройства.</string>
+ <string name="title_pref_root_permission">Key Mapper имеет Root права</string>
+ <string name="summary_pref_root_permission">Включайте это в том случае если вам нужны функции/возможности, которые работают только на устройствах с Root правами. Key Mapper должен получить соответствующие разрешения через приложение по управлению Root доступом (например Magisk, SuperSU).
             Включать только в том случае если устройство обладает Root доступом и для Key Mapper выданы соответсвующие разрешения.</string>
-    <string name="title_pref_dark_theme">Тёмная тема</string>
-    <string name="title_pref_notification_settings">Настройка уведомлений</string>
-    <string name="summary_pref_show_toggle_keyboard_notification">Переключение между клавиатурой Key Mapper и вашей клавиатурой по умолчанию при нажатии на уведомление.</string>
-    <string name="title_pref_show_toggle_keyboard_notification">Уведомление для смены клавиатуры используемой Key Mapper</string>
-    <string name="title_pref_toggle_keyboard_on_toggle_keymaps">Смена клавиатуры при включении мэппинга</string>
-    <string name="summary_pref_toggle_keyboard_on_toggle_keymaps">Автоматически выбирать клавиатуру Key Mapper когда снимаете приложение с паузы и выбирать вашу клавиатуру по умолчанию при установки приложения на паузу.</string>
-    <string name="title_pref_hide_home_screen_alerts">Скрыть оповещения на главном экране</string>
-    <string name="summary_pref_hide_home_screen_alerts">Скрыть оповещения в верхней части главного экрана.</string>
-    <string name="title_pref_show_device_descriptors">Показать первые 5 символов id устройства для событий связанных с конкретными устройствами</string>
-    <string name="summary_pref_show_device_descriptors">Это используется чтобы отличить друг от друга устройства с одним и тем же именем.</string>
-    <!--Preference titles and summaries-->
-    <!--Preference categories-->
-    <string name="title_pref_category_ime_picker">Выбор клавиатуры</string>
-    <string name="title_pref_category_notifications">Уведомления</string>
-    <string name="title_pref_category_defaults">Настройки по умолчанию</string>
-    <string name="title_pref_category_root">ROOT</string>
-    <string name="summary_pref_category_root">Эти настройки будут работать только на устройствах с Root правами! Если вы не знаете, что такое Root или есть ли на вашем устройстве Root права, пожалуйста, не оставляйте плохих отзывов что они не работают. :)</string>
-    <string name="title_pref_category_write_secure_settings">Требуется разрешение WRIT_SECURE_SETTINGS</string>
-    <string name="summary_pref_category_write_secure_settings">Эти параметры включены, только если Key Mapper имеет разрешение WRITE_SECURE_SETTINGS. Нажмите соответствующую кнопку в верхней части главного экрана для получения инструкций.</string>
-    <!--Preference categories-->
+ <string name="title_pref_dark_theme">Тёмная тема</string>
+ <string name="title_pref_notification_settings">Настройка уведомлений</string>
+ <string name="summary_pref_show_toggle_keyboard_notification">Переключение между клавиатурой Key Mapper и вашей клавиатурой по умолчанию при нажатии на уведомление.</string>
+ <string name="title_pref_show_toggle_keyboard_notification">Уведомление для смены клавиатуры используемой Key Mapper</string>
+ <string name="title_pref_toggle_keyboard_on_toggle_keymaps">Смена клавиатуры при включении мэппинга</string>
+ <string name="summary_pref_toggle_keyboard_on_toggle_keymaps">Автоматически выбирать клавиатуру Key Mapper когда снимаете приложение с паузы и выбирать вашу клавиатуру по умолчанию при установки приложения на паузу.</string>
+ <string name="title_pref_hide_home_screen_alerts">Скрыть оповещения на главном экране</string>
+ <string name="summary_pref_hide_home_screen_alerts">Скрыть оповещения в верхней части главного экрана Key Mapper.</string>
+ <string name="title_pref_show_device_descriptors">Показать первые 5 символов id устройства для событий связанных с конкретными устройствами</string>
+ <string name="summary_pref_show_device_descriptors">Это используется чтобы отличить друг от друга устройства с одним и тем же именем.</string>
+ <string name="title_pref_devices_to_reroute_keyevents">Обработка ошибки Android 11, которая задает идентификатор устройства для событий ввода равным -1</string>
+ <string name="summary_pref_devices_to_reroute_keyevents">Выберите устройство события нажатий которого необходимо перехватывать и перенаправлять через выбранную клавиатуру Key Mapper. Для этого надо выбрать либо \'Key Mapper GUI Keyboard\', либо \'Key Mapper Basic Input Method\'. Это частичное решение проблемы описанной тут:
+https://issuetracker.google.com/issues/163120692
+К сожалению этот метод НЕ РАБОТАЕТ с игровыми контроллерами.</string>
+ <string name="title_pref_devices_to_reroute_keyevents_choose_devices">4. Выберите устройства</string>
+ <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Установите клавиатуру Key Mapper GUI Keyboard (опционально)</string>
+ <string name="title_pref_devices_to_reroute_keyevents_enable_ime">2. Выберите \'Key Mapper GUI\' клавиатуру или \'Key Mapper Basic Input Method\'</string>
+ <string name="title_pref_devices_to_reroute_keyevents_choose_ime">3. Используйте только что включенную клавиатуру</string>
+ <string name="title_pref_devices_to_reroute_keyevents_guide">(Рекомендуется) Прочитать руководство пользователя для этого параметра.</string>
+ <!--Preference titles and summaries-->
+ <!--Preference categories-->
+ <string name="title_pref_category_ime_picker">Выбор клавиатуры</string>
+ <string name="title_pref_category_notifications">Уведомления</string>
+ <string name="title_pref_category_defaults">Настройки по умолчанию</string>
+ <string name="title_pref_category_root">ROOT</string>
+ <string name="summary_pref_category_root">Эти настройки будут работать только на устройствах с Root правами! Если вы не знаете, что такое Root или есть ли на вашем устройстве Root права, пожалуйста, не оставляйте плохих отзывов что они не работают. :)</string>
+ <string name="title_pref_category_write_secure_settings">Требуется разрешение WRIT_SECURE_SETTINGS</string>
+ <string name="summary_pref_category_write_secure_settings">Эти параметры включены, только если Key Mapper имеет разрешение WRITE_SECURE_SETTINGS. Нажмите соответствующую кнопку в верхней части главного экрана для получения инструкций.</string>
+ <!--Preference categories-->
     <!-- About activity-->
     <string name="pref_title_changelog">Список изменений</string>
     <string name="pref_title_license">Лицензия</string>
@@ -430,26 +450,28 @@
     <string name="showcase_dnd_access_description_disabled">Приложению Key Mapper требуется доступ к управлению режимом \"Не беспокосить\" если вы хотите переназначить действия связанные с событием нажатия на клавишу громкости.</string>
     <string name="showcase_dnd_access_description_enabled">Всё ок! :)</string>
     <string name="showcase_contributing_title">Помощь проекту</string>
-    <string name="showcase_contributing_description">"Это приложение с открытым исходным кодом! Вы можете начать вносить свой вклад в репозиторий sds100/KeyMapper на GitHub и присоединившись к серверу Discord. Даже если вы не можете программировать, вы можете помочь, помогая другим и тестируя последние возможности."</string>
-    <string name="showcase_action_list">Нажмите на три точки чтобы изменить режим повтора и другие особенности. Вы можете протестировать результат и исправить ошибки действия нажав на него.</string>
-    <string name="showcase_screen_off_triggers">Эта опция будет работать только в том случае, если ваше устройство имеет Root доступ и вы указали это в настройках Key Mapper. Если вы не знаете, что такое root, то эта опция не будет работать. Она также будет работать только для некоторых клавиш (например - Кнопки громкости) поэтому смотрите на странице Справки список поддерживаемых клавиш.</string>
-    <string name="showcase_fingerprint_gesture_support_title_supported_unknown">Переназначение жестов датчика отпечатка пальцев</string>
-    <string name="showcase_fingerprint_gesture_support_title_supported">Вы можете переназначить жесты датчика отпечатка пальцев! :)</string>
-    <string name="showcase_fingerprint_gesture_support_title_not_supported">Вы НЕ можете переназначить жесты датчика отпечатка пальцев!</string>
-    <string name="showcase_fingerprint_gesture_support_message_supported_unknown">Вам нужно включить службу спец.возможностей, чтобы Key Mapper мог проверить, может ли ваше устройство обнаружить жесты сканера отпечатков пальцев.</string>
-    <string name="showcase_fingerprint_gesture_support_message_supported">Ваше устройство может определить жесты сканера отпечатков пальцев! В верхней части главного экрана есть вкладка для переназначения этих жестов.</string>
-    <string name="showcase_fingerprint_gesture_support_message_not_supported">Возможно ваш датчик не поддерживает жесты или ваше устройство не позволяет сторонним приложениям определять жесты. К сожалению разработчик ничем не может помочь в этом случае. Некоторые устройства, например, открывают по свайпу вниз панель уведомлений и не отдают этот жест сторонним программам.</string>
-    <string name="showcase_fingerprint_gesture_support_button">Включить</string>
-    <!-- Showcase -->
-    <!-- system action options -->
-    <string name="stream_accessibility">Спец. возможности</string>
-    <string name="stream_alarm">Будильник</string>
-    <string name="stream_dtmf">Тональный набор (DTMF)</string>
-    <string name="stream_music">Музыка</string>
-    <string name="stream_notification">Уведомления</string>
-    <string name="stream_ring">Звонок</string>
-    <string name="stream_system">Система</string>
-    <string name="stream_voice_call">Голосовой вызов</string>
+ <string name="showcase_contributing_description">"Это приложение с открытым исходным кодом! Вы можете начать вносить свой вклад в репозиторий sds100/KeyMapper на GitHub и присоединившись к серверу Discord. Даже если вы не можете программировать, вы можете помочь, помогая другим и тестируя последние возможности."</string>
+ <string name="showcase_action_list">Нажмите на три точки чтобы изменить режим повтора и другие особенности. Вы можете протестировать результат и исправить ошибки действия нажав на него.</string>
+ <string name="showcase_screen_off_triggers">Эта опция будет работать только в том случае, если ваше устройство имеет Root доступ и вы указали это в настройках Key Mapper. Если вы не знаете, что такое root, то эта опция не будет работать. Она также будет работать только для некоторых клавиш (например - Кнопки громкости) поэтому смотрите на странице Справки список поддерживаемых клавиш.</string>
+ <string name="showcase_fingerprint_gesture_support_title_supported_unknown">Переназначение жестов датчика отпечатка пальцев</string>
+ <string name="showcase_fingerprint_gesture_support_title_supported">Вы можете переназначить жесты датчика отпечатка пальцев! :)</string>
+ <string name="showcase_fingerprint_gesture_support_title_not_supported">Вы НЕ можете переназначить жесты датчика отпечатка пальцев!</string>
+ <string name="showcase_fingerprint_gesture_support_message_supported_unknown">Вам нужно включить службу спец.возможностей, чтобы Key Mapper мог проверить, может ли ваше устройство обнаружить жесты сканера отпечатков пальцев.</string>
+ <string name="showcase_fingerprint_gesture_support_message_supported">Ваше устройство может определить жесты сканера отпечатков пальцев! В верхней части главного экрана есть вкладка для переназначения этих жестов.</string>
+ <string name="showcase_fingerprint_gesture_support_message_not_supported">Возможно ваш датчик не поддерживает жесты или ваше устройство не позволяет сторонним приложениям определять жесты. К сожалению разработчик ничем не может помочь в этом случае. Некоторые устройства, например, открывают по свайпу вниз панель уведомлений и не отдают этот жест сторонним программам.</string>
+ <string name="showcase_fingerprint_gesture_support_button">Включить</string>
+ <string name="showcase_setup_chosen_devices_again_title">Вам нужно снова произвести некоторые настройки</string>
+ <string name="showcase_setup_chosen_devices_again_message">Похоже, вы использовали настройки, чтобы автоматически изменять клавиатуру или показать выбор метода ввода при подключении и отключении устройства Bluetooth. Key Mapper теперь позволяет использовать для этого любое устройство ввода, а не только устройства Bluetooth. К сожалению не существует способа переноса старых настроек. Таким образом чтобы этот функционал заработал вам придется выбрать устройство снова.</string>
+ <!-- Showcase -->
+ <!-- system action options -->
+ <string name="stream_accessibility">Спец. возможности</string>
+ <string name="stream_alarm">Будильник</string>
+ <string name="stream_dtmf">Тональный набор (DTMF)</string>
+ <string name="stream_music">Музыка</string>
+ <string name="stream_notification">Уведомления</string>
+ <string name="stream_ring">Звонок</string>
+ <string name="stream_system">Система</string>
+ <string name="stream_voice_call">Голосовой вызов</string>
     <string name="ringer_mode_normal">Нормальный звонок</string>
     <string name="ringer_mode_vibrate">Звонок с вибрацией</string>
     <string name="ringer_mode_silent">Бесшумный звонок</string>
@@ -568,32 +590,29 @@
     <string name="error_invalid_number">Неверное число!</string>
     <string name="error_number_too_small">Должно быть по крайней мере %s!</string>
     <string name="error_number_too_big">Должно быть не более %s!</string>
-    <string name="error_battery_optimisation_enabled">Оптимизация батареи включена! Это может привести к отключению работы Key Mapper случайным образом.</string>
-    <string name="error_battery_optimisation_disabled">Оптимизация батареи выключена!</string>
-    <string name="error_cant_find_notification_listener_settings">Не удается найти настройки доступа к уведомлениям!</string>
-    <string name="error_denied_notification_listener_service_permission">Отказано в доступе к уведомлениям!</string>
-    <string name="error_invalid_intent_extra_value">Недопустимо!</string>
-    <string name="error_denied_call_phone_permission">Отказано в доступе к использованию телефонных звонков!</string>
-    <string name="error_backup_version_too_new">Вам нужно обновить Key Mapper до последней версии, чтобы использовать эту резервную копию.</string>
-    <string name="error_corrupt_json_file">Поврежден файл JSON!</string>
-    <!-- Error messages -->
-    <!-- System action labels -->
-    <string name="action_toggle_wifi">Переключить WiFi (не root)</string>
-    <string name="action_enable_wifi">Включить WiFi (не root)</string>
-    <string name="action_disable_wifi">Отключить WiFi (не root)</string>
-    <string name="action_toggle_wifi_root">Переключить WiFi (root)</string>
-    <string name="action_enable_wifi_root">Включить WiFi (root)</string>
-    <string name="action_disable_wifi_root">Отключить WiFi (root)</string>
-    <string name="action_toggle_bluetooth">Переключить Bluetooth</string>
-    <string name="action_enable_bluetooth">Включить Bluetooth</string>
-    <string name="action_disable_bluetooth">Отключить Bluetooth</string>
-    <string name="action_volume_up">Увеличить громкость</string>
-    <string name="action_volume_down">Уменьшение громкости</string>
-    <string name="action_volume_mute">Отключить звук</string>
-    <string name="action_toggle_mute">Включить/выключить звук</string>
-    <string name="action_volume_unmute">Включить звук</string>
-    <string name="action_volume_show_dialog">Показать диалог громкости</string>
-    <string name="action_increase_stream">Поток громче</string>
+ <string name="error_battery_optimisation_enabled">Оптимизация батареи включена! Это может привести к отключению работы Key Mapper случайным образом.</string>
+ <string name="error_battery_optimisation_disabled">Оптимизация батареи выключена!</string>
+ <string name="error_cant_find_notification_listener_settings">Не удается найти настройки доступа к уведомлениям!</string>
+ <string name="error_denied_notification_listener_service_permission">Отказано в доступе к уведомлениям!</string>
+ <string name="error_invalid_intent_extra_value">Недопустимо!</string>
+ <string name="error_denied_call_phone_permission">Отказано в доступе к использованию телефонных звонков!</string>
+ <string name="error_backup_version_too_new">Вам нужно обновить Key Mapper до последней версии, чтобы использовать эту резервную копию.</string>
+ <string name="error_corrupt_json_file">Поврежден файл JSON!</string>
+ <!-- Error messages -->
+ <!-- System action labels -->
+ <string name="action_toggle_wifi">Переключить состояние Wi-Fi</string>
+ <string name="action_enable_wifi">Включить Wifi</string>
+ <string name="action_disable_wifi">Выключить WiFi</string>
+ <string name="action_toggle_bluetooth">Переключить Bluetooth</string>
+ <string name="action_enable_bluetooth">Включить Bluetooth</string>
+ <string name="action_disable_bluetooth">Отключить Bluetooth</string>
+ <string name="action_volume_up">Увеличить громкость</string>
+ <string name="action_volume_down">Уменьшение громкости</string>
+ <string name="action_volume_mute">Отключить звук</string>
+ <string name="action_toggle_mute">Включить/выключить звук</string>
+ <string name="action_volume_unmute">Включить звук</string>
+ <string name="action_volume_show_dialog">Показать диалог громкости</string>
+ <string name="action_increase_stream">Поток громче</string>
     <string name="action_increase_stream_formatted">Громче поток %s</string>
     <string name="action_decrease_stream">Тише поток</string>
     <string name="action_decrease_stream_formatted">Тише поток %s</string>
@@ -666,12 +685,10 @@
     <string name="action_nfc_disable">Отключить NFC</string>
     <string name="action_nfc_toggle">Переключить NFC</string>
     <string name="action_screenshot">Скриншот</string>
-    <string name="action_screenshot_root">Скриншот (root)</string>
     <string name="action_open_assistant">Запустить голосового ассистента</string>
     <string name="action_open_device_assistant">Запустить помощника устройства</string>
     <string name="action_open_camera">Открыть камеру</string>
-    <string name="action_lock_device">Блокировка устройства (не root)</string>
-    <string name="action_lock_device_root">Блокировка устройства (root)</string>
+ <string name="action_lock_device">Заблокировать устройство</string>
     <string name="action_secure_lock_device">Безопасная блокировка устройства</string>
     <string name="action_secure_lock_device_message">Вы сможете войти только с PIN-кодом / паролем. Сканер отпечатков пальцев и разблокировка лица будет отключена. Это единственный надежный способ, который я нашел для блокировки устройств, не являющихся root, до Android Pie 9.0.</string>
     <string name="action_power_on_off_device">Усыпить / Разбудить устройство</string>
@@ -683,8 +700,7 @@
     <string name="action_toggle_keyboard_message">Это действие будет работать только если вы коснулись пальцем поля ввода, и при этом должна отобразиться клавиатура.</string>
     <string name="action_show_keyboard">Показать клавиатуру</string>
     <string name="action_hide_keyboard">Скрыть клавиатуру</string>
-    <string name="action_show_keyboard_picker">Показать выбор клавиатуры (не root)</string>
-    <string name="action_show_keyboard_picker_root">Показать выбор клавиатуры (root)</string>
+ <string name="action_show_keyboard_picker">Показать выбор клавиатуры</string>
     <string name="action_switch_keyboard">Переключить клавиатуру</string>
     <string name="action_switch_keyboard_formatted">Переключиться на %s</string>
     <string name="action_text_cut">Вырезать</string>
@@ -751,6 +767,7 @@
     <string name="intent_type_float_array_example">Разделенный запятыми список допустимых Float на языке программирования Java. Например: 1241.123</string>
     <string name="intent_type_short_example">Допустимое число Short на языке программирования Java. Например: 2342</string>
     <string name="intent_type_short_array_example">Разделенный запятыми список допустимых Short на языке программирования Java. Например: 3242,12354</string>
+ <string name="intent_flags_example">Флаги для Intent\'ов хранятся в виде битовых значений. Эти флаги влияют на обработку Intent\'ов. Если это поле оставить пустым, то Key Mapper будет использовать FLAG_ACTIVITY_NEW_TASK как флаги по умолчанию. Нажмите на кнопку \"Документация\" чтобы перейти к документации для разработчиков Android.</string>
     <!--  Intent action type strings  -->
     <!--  Tap targets  -->
     <string name="tap_target_quick_start_guide_primary">Краткое руководство</string>
