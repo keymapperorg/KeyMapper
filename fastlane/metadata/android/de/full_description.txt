@@ -1,17 +1,17 @@
-What can be remapped?
+Welche Tasten können neu zugeordnet werden ?
 
- * Fingerprint gestures on supported devices.
- * Volume buttons.
- * Navigation buttons.
- * Bluetooth/wired keyboards.
- * Buttons on other connected devices should also work.
+ * Fingerabdruck-Gesten auf unterstützten Geräten.
+ * Lautstärke-Tasten.
+ * Navigations-Tasten.
+ * Bluetooth und USB Tastaturen.
+ * Die Tasten von anderen verbundenen Geräten sollten auch funktionieren.
  * Nintendo Switch JoyCons.
  * Chubby Buttons 2.
 
-ONLY HARDWARE buttons can be remapped.
-There is NO GUARANTEE any of these buttons will work and this app is NOT designed to control games. Your device's OEM/vendor can prevent them from being remapped.
+Es können nur Hardwaretasten neu zugeordnet werden.
+Es wird NICHT garantiert dass alle diese Tasten funktionieren werden. Diese App ist NICHT designed um Spiele steuern zu können. Dein Gerätehersteller kann verhindern dass diese Tasten neu zugeordnet werden.
 
-You can combine multiple keys from a specific device or any device to form a "trigger". Each trigger can have multiple actions. The keys can be set to be pressed at the same time or one after another in a sequence. Keys can be remapped when they are short pressed, long pressed or double pressed. A keymap can have a set of "constraints" so it only has an effect in certain situations.
+Du kannst mehrere Tasten eines Gerätes kombinieren um somit einen "Trigger" zu formen. Jeder Trigger kann mehrere Aktionen zugeteilt bekommen. Es kann eingestellt werden ob bestimmte Tasten gleichzeitig gedrückt gehalten werden oder nacheinander gedrückt werden müssen. Keys can be remapped when they are short pressed, long pressed or double pressed. A keymap can have a set of "constraints" so it only has an effect in certain situations.
 
 What can’t be remapped?
  * Pixel Active Edge
