@@ -258,6 +258,8 @@
     <!-- Dialog titles -->
     <!-- Dialog messages -->
     <string name="dialog_message_are_you_sure_want_to_leave_without_saving">Вы уверены, что хотите уйти без сохранения?</string>
+    <string name="dialog_message_root_prompt">Если вы знаете, что у вашего устройства нет Root прав или вы не знаете, что это такое вообще - вы не сможете использовать функции требующие Root прав. Когда вы нажмете на \'OK\' откроются соответствующие настройки.
+            В настройках спуститесь вниз и нажмите на \'Key Mapper имеет Root права\' после этого вы сможете использовать эти функции.</string>
     <string name="dialog_message_downloading">Загрузка…</string>
     <string name="dialog_message_describe_your_issue_in_the_email">Просьба описать в письме проблему, с которой вы столкнулись. В противном случае я не могу вам помочь. Спасибо!</string>
     <string name="dialog_message_long_press_warning">Длительное нажатие работает только для кнопок громкости и навигации. Если вы включите его для других клавиш, клавиши не будут работать, если они не будут длительно нажаты.</string>
@@ -294,6 +296,7 @@
     <string name="neg_dont_show_again">Больше не показывать</string>
     <string name="neg_email">Эл. почта</string>
     <string name="neutral_discord">Дискорд</string>
+    <string name="neutral_intent_docs">Документация</string>
     <string name="snackbar_cancel">Отменить</string>
     <string name="snackbar_fix">Исправить</string>
     <!-- Dialog buttons -->
@@ -764,6 +767,7 @@ https://issuetracker.google.com/issues/163120692
     <string name="intent_type_float_array_example">Разделенный запятыми список допустимых Float на языке программирования Java. Например: 1241.123</string>
     <string name="intent_type_short_example">Допустимое число Short на языке программирования Java. Например: 2342</string>
     <string name="intent_type_short_array_example">Разделенный запятыми список допустимых Short на языке программирования Java. Например: 3242,12354</string>
+    <string name="intent_flags_example">Флаги для Intent\'ов хранятся в виде битовых значений. Эти флаги влияют на обработку Intent\'ов. Если это поле оставить пустым, то Key Mapper будет использовать FLAG_ACTIVITY_NEW_TASK как флаги по умолчанию. Нажмите на кнопку \"Документация\" чтобы перейти к документации для разработчиков Android.</string>
     <!--  Intent action type strings  -->
     <!--  Tap targets  -->
     <string name="tap_target_quick_start_guide_primary">Краткое руководство</string>
