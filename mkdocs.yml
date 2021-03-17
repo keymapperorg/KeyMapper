@@ -50,6 +50,7 @@ markdown_extensions:
   - attr_list
   - admonition
   - pymdownx.superfences
+  - pymdownx.details
   - pymdownx.snippets:
       base_path: docs/includes
   - pymdownx.emoji:

@@ -7,11 +7,34 @@ If your device is **not rooted** you must do the following.
 !!! tip
     You might need to attempt this process multiple times because it can be flaky.
 
-1. Enable developer options on your device by going to device Settings -> About Phone and tapping Build Number many times until it says you've enabled developer options. The location of the Build Number may vary between devices.
+1. Enable developer options on your device by going to device Settings -> 'About Phone' and tapping 'Build Number' many times until it says you've enabled developer options. The location of the Build Number may vary between devices.
+
+    ??? info "Screenshot"
+        ![](../images/android-about-phone.png)
+
 2. Enable USB Debugging in developer options and plug your device into your PC.
+
+    ??? info "Screenshot"
+        ![](../images/android-developer-options-usb-debugging.png)
+
 3. Download the [Android SDK platform tools](https://developer.android.com/studio/releases/platform-tools.html) from here and unzip it.
+
 4. Open a terminal/command prompt in the unzipped folder.
-5. Type  or paste in a terminal: `adb devices` and your device should show up in the list after you click the prompt on your phone to allow USB debugging from your PC.
+
+5. Type or paste in a terminal: `adb devices` and your device then click the prompt on your phone to allow USB debugging from your PC.
+
+    ??? info "Prompt on phone"
+        ![](../images/android-allow-usb-debugging-dialog.png)
+
+6. Type `adb devices` again and make sure you see the correct output as shown below.
+
+    ??? success "Correct command prompt output"
+        ![](../images/command-prompt-adb-devices-success.png)
+
+    ??? failure "Incorrect command prompt outputs"
+        ![](../images/command-prompt-adb-devices-no-devices.png)
+        ![](../images/command-prompt-adb-devices-offline.png)
+        ![](../images/command-prompt-adb-devices-unauthorized.png)
 
 ## WRITE_SECURE_SETTINGS
 
