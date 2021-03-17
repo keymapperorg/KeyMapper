@@ -29,12 +29,14 @@ If you think you are using Key Mapper in a reasonable way and still experience r
 
 ## "How do I change the keyboard?"
 
-If you want to switch between one of the Key Mapper keyboards and a normal keyboard when a device connects/disconnects then Key Mapper can do this for you automatically. Set it up [here](user-guide/settings.md#automatically-change-the-on-screen-keyboard-when-a-device-connectsdisconnects).
 There are multiple ways to do this.
 
 - Tap the keyboard button at the bottom of your display when you are typing something. Not all devices have this and some devices have this feature hidden behind a setting somewhere.
 - Tap the notification that allows you to change the keyboard when you are typing something. Not all devices have this.
 - Open Key Mapper and tap "show input method picker" in the menu :material-menu:.
+
+!!! tip
+    If you want to switch between one of the Key Mapper keyboards and a normal keyboard when a device connects/disconnects then Key Mapper can do this for you automatically. Set it up [here](user-guide/settings.md#automatically-change-the-on-screen-keyboard-when-a-device-connectsdisconnects).
 
 ## "My keyboard doesn't appear when using the app."
 
