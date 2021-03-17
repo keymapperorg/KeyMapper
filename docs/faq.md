@@ -36,7 +36,7 @@ There are multiple ways to do this.
 - Open Key Mapper and tap "show input method picker" in the menu :material-menu:.
 
 !!! tip
-    If you want to switch between one of the Key Mapper keyboards and a normal keyboard when a device connects/disconnects then Key Mapper can do this for you automatically. Set it up [here](user-guide/settings.md#automatically-change-the-on-screen-keyboard-when-a-device-connectsdisconnects).
+    If you want to switch between one of the Key Mapper keyboards and a normal keyboard when a device, such as a keyboard or game controller, connects/disconnects then Key Mapper can do this for you automatically. Set it up [here](user-guide/settings.md#automatically-change-the-on-screen-keyboard-when-a-device-connectsdisconnects).
 
 ## "My keyboard doesn't appear when using the app."
 
