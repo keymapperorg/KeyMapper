@@ -107,6 +107,7 @@
     <string name="hint_intent_extra_name">Ad</string>
     <string name="hint_intent_extra_value_with_type">Değeri (%s)</string>
     <string name="hint_intent_description">Keymapper için açıklama (gerekli)</string>
+    <string name="hint_intent_flags">Bayraklar</string>
     <!--  Hints  -->
     <!--  Radio buttons  -->
     <string name="radio_button_parallel">Aynı Zamanda</string>
