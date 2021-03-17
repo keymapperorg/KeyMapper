@@ -179,11 +179,7 @@ You can see explanations of more options [here](../user-guide/keymaps/#special-o
 
 ## Adding constraints
 
-You can add special constraints to your key maps in order to customise when they are allowed to run.
-
-To add a constraint fron the 'Constraints and more' tab, tap 'Add constraint'.
-
-You can view the list of constraints to choose from [here](constraints.md).
+--8<-- "configuring-constraints.md"
 
 ## Managing key maps
 
