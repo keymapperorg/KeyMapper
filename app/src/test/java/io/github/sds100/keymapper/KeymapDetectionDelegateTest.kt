@@ -357,7 +357,7 @@ class KeymapDetectionDelegateTest {
             //then
             mockParallelTriggerKeys(*trigger1.keys.toTypedArray()) //press the key again to stop it repeatin
 
-            assertThat(performActionTest.history.size, greaterThan(1))
+            assertThat(performActionTest.history.size, greaterThan(2))
             assert(performActionTest.history.all { it.action == action1 })
 
             //when long press
@@ -413,7 +413,7 @@ class KeymapDetectionDelegateTest {
             mockParallelTriggerKeys(*trigger1.keys.toTypedArray()) //press the key again to stop it repeatin
             advanceUntilIdle()
 
-            assertThat(performActionTest.history.size, greaterThan(1))
+            assertThat(performActionTest.history.size, greaterThan(2))
             assert(performActionTest.history.all { it.action == action1 })
 
             //when double press
@@ -476,7 +476,7 @@ class KeymapDetectionDelegateTest {
             mockParallelTriggerKeys(*trigger1.keys.toTypedArray()) //press the key again to stop it repeatin
             advanceUntilIdle()
 
-            assertThat(performActionTest.history.size, greaterThan(1))
+            assertThat(performActionTest.history.size, greaterThan(2))
             assert(performActionTest.history.all { it.action == action1 })
 
             //when long press
