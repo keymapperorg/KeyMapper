@@ -29,6 +29,7 @@ import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.withTimeout
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
+import org.hamcrest.Matchers.greaterThan
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -157,6 +158,346 @@ class KeymapDetectionDelegateTest {
 
         performActionTest.reset()
     }
+
+    /**
+     * See #626 in issue tracker
+     *
+     * Key maps:
+     * 1. Short press, single key, action that repeats until released
+     * 2. Long press, same single key, action that repeats
+     *
+     * Expected:
+     * On short press: trigger but don't start repeating #1 and don't trigger #2
+     * On long press: don't trigger #1 and start repeating #2
+     */
+    @Test
+    fun `don't initialise repeating if repeat when trigger is released after failed long press`() =
+        coroutineScope.runBlockingTest {
+            //given
+            val trigger1 = parallelTrigger(Trigger.Key(keyCode = 1))
+            val action1 = Action.keyEventAction(keyCode = 2).copy(
+                flags = Action.ACTION_FLAG_REPEAT
+            )
+
+            val trigger2 = parallelTrigger(Trigger.Key(clickType = LONG_PRESS, keyCode = 1))
+            val action2 = Action.keyEventAction(keyCode = 3).copy(
+                flags = Action.ACTION_FLAG_REPEAT,
+            )
+
+            delegate.keymapListCache = listOf(
+                KeyMap(0, trigger = trigger1, actionList = listOf(action1)),
+                KeyMap(1, trigger = trigger2, actionList = listOf(action2))
+            )
+
+            //when short press
+            mockParallelTriggerKeys(*trigger1.keys.toTypedArray())
+            delay(2000)// let it try to repeat
+
+            //then
+            assertThat(performActionTest.history.size, `is`(1))
+            assert(performActionTest.history.all { it.action == action1 })
+
+            //when long press
+            performActionTest.reset()
+            mockParallelTriggerKeys(*trigger2.keys.toTypedArray(), delay = 2000)//let it repeat
+
+            //then
+            assertThat(performActionTest.history.size, greaterThan(1))
+            assert(performActionTest.history.all { it.action == action2 }) {
+                "not all actions are the action for the long press trigger"
+            }
+        }
+
+    /**
+     * See #626 in issue tracker
+     *
+     * Key maps:
+     * 1. Short press, single key, action that repeats until released
+     * 2. Double press, same single key, action that doesn't repeat
+     *
+     * Expected:
+     * On short press: trigger but don't start repeating #1 and don't trigger #2
+     * On double press: don't trigger #1 and trigger #2
+     */
+    @Test
+    fun `don't initialise repeating if repeat when trigger is released after failed failed double press`() =
+        coroutineScope.runBlockingTest {
+            //given
+            val trigger1 = parallelTrigger(Trigger.Key(keyCode = 1))
+            val action1 = Action.keyEventAction(keyCode = 2).copy(
+                flags = Action.ACTION_FLAG_REPEAT
+            )
+
+            val trigger2 = sequenceTrigger(Trigger.Key(clickType = DOUBLE_PRESS, keyCode = 1))
+            val action2 = Action.keyEventAction(keyCode = 3)
+
+            delegate.keymapListCache = listOf(
+                KeyMap(0, trigger = trigger1, actionList = listOf(action1)),
+                KeyMap(1, trigger = trigger2, actionList = listOf(action2))
+            )
+
+            //when short press
+            mockParallelTriggerKeys(*trigger1.keys.toTypedArray())
+            delay(2000)// let it repeat
+
+            //then
+            assertThat(performActionTest.history.size, `is`(1))
+            assert(performActionTest.history.all { it.action == action1 })
+
+            //when double press
+            performActionTest.reset()
+            mockTriggerKeyInput(trigger2.keys[0])
+
+            //then
+            assertThat(performActionTest.history.map { it.action }, `is`(listOf(action2)))
+        }
+
+    /**
+     * See #626 in issue tracker
+     *
+     * Key maps:
+     * 1. Short press, single key, action that repeats until released
+     * 2. Long press, same single key, action that repeats
+     * 3. Double press, same single key, action that doesn't repeat
+     *
+     * Expected:
+     * On short press: trigger but don't repeat #1, don't trigger #2 don't trigger #3
+     * On long press: don't trigger #1, start repeating #2, don't trigger #3
+     * On double press: don't trigger #1, don't trigger #2, trigger #3
+     */
+    @Test
+    fun `don't initialise repeating if repeat when trigger is released after failed double press and failed long press`() =
+        coroutineScope.runBlockingTest {
+            //given
+            val trigger1 = parallelTrigger(Trigger.Key(keyCode = 1))
+            val action1 = Action.keyEventAction(keyCode = 2).copy(
+                flags = Action.ACTION_FLAG_REPEAT
+            )
+
+            val trigger2 = parallelTrigger(Trigger.Key(clickType = LONG_PRESS, keyCode = 1))
+            val action2 = Action.keyEventAction(keyCode = 3).copy(
+                flags = Action.ACTION_FLAG_REPEAT,
+            )
+
+            val trigger3 = sequenceTrigger(Trigger.Key(clickType = DOUBLE_PRESS, keyCode = 1))
+            val action3 = Action.keyEventAction(keyCode = 4)
+
+            delegate.keymapListCache = listOf(
+                KeyMap(0, trigger = trigger1, actionList = listOf(action1)),
+                KeyMap(1, trigger = trigger2, actionList = listOf(action2)),
+                KeyMap(2, trigger = trigger3, actionList = listOf(action3))
+            )
+
+            //when short press
+            mockParallelTriggerKeys(*trigger1.keys.toTypedArray())
+            advanceUntilIdle()
+
+            //then
+            assertThat(performActionTest.history.size, `is`(1))
+            assert(performActionTest.history.all { it.action == action1 })
+
+            //when long press
+            performActionTest.reset()
+            mockParallelTriggerKeys(*trigger2.keys.toTypedArray(), delay = 2000)//let it repeat
+
+            //then
+            assertThat(performActionTest.history.size, greaterThan(1))
+            assert(performActionTest.history.all { it.action == action2 }) {
+                "not all actions are the action for the long press trigger"
+            }
+
+            //when double press
+            performActionTest.reset()
+            mockTriggerKeyInput(trigger3.keys[0])
+
+            //then
+            assertThat(performActionTest.history.map { it.action }, `is`(listOf(action3)))
+        }
+
+    /**
+     * See #626 in issue tracker
+     *
+     * Key maps:
+     * 1. Short press, single key, action that repeats until pressed again
+     * 2. Long press, same single key, action that repeats
+     *
+     * Expected:
+     * On short press: start repeating #1 and don't trigger #2
+     * On long press: don't trigger #1 and start repeating #2
+     */
+    @Test
+    fun `initialise repeating if repeat until pressed again on failed long press`() =
+        coroutineScope.runBlockingTest {
+            //given
+            val trigger1 = parallelTrigger(Trigger.Key(keyCode = 1))
+            val action1 = Action.keyEventAction(keyCode = 2).copy(
+                flags = Action.ACTION_FLAG_REPEAT,
+                extras = listOf(
+                    Extra(
+                        Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR,
+                        Action.STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN.toString()
+                    )
+                )
+            )
+
+            val trigger2 = parallelTrigger(Trigger.Key(clickType = LONG_PRESS, keyCode = 1))
+            val action2 = Action.keyEventAction(keyCode = 3).copy(
+                flags = Action.ACTION_FLAG_REPEAT,
+            )
+
+            delegate.keymapListCache = listOf(
+                KeyMap(0, trigger = trigger1, actionList = listOf(action1)),
+                KeyMap(1, trigger = trigger2, actionList = listOf(action2))
+            )
+
+            //when short press
+            mockParallelTriggerKeys(*trigger1.keys.toTypedArray())
+            delay(2000)// let it repeat
+
+            //then
+            mockParallelTriggerKeys(*trigger1.keys.toTypedArray()) //press the key again to stop it repeatin
+
+            assertThat(performActionTest.history.size, greaterThan(1))
+            assert(performActionTest.history.all { it.action == action1 })
+
+            //when long press
+            performActionTest.reset()
+            mockParallelTriggerKeys(*trigger2.keys.toTypedArray(), delay = 2000)//let it repeat
+
+            //then
+            assertThat(performActionTest.history.size, greaterThan(1))
+            assert(performActionTest.history.all { it.action == action2 }) {
+                "not all actions are the action for the long press trigger"
+            }
+        }
+
+    /**
+     * See #626 in issue tracker
+     *
+     * Key maps:
+     * 1. Short press, single key, action that repeats until pressed again
+     * 2. Double press, same single key, action that doesn't repeat
+     *
+     * Expected:
+     * On short press: start repeating #1 and don't trigger #2
+     * On double press: don't trigger #1 and trigger #2
+     */
+    @Test
+    fun `initialise repeating if repeat until pressed again on failed double press`() =
+        coroutineScope.runBlockingTest {
+            //given
+            val trigger1 = parallelTrigger(Trigger.Key(keyCode = 1))
+            val action1 = Action.keyEventAction(keyCode = 2).copy(
+                flags = Action.ACTION_FLAG_REPEAT,
+                extras = listOf(
+                    Extra(
+                        Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR,
+                        Action.STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN.toString()
+                    )
+                )
+            )
+
+            val trigger2 = sequenceTrigger(Trigger.Key(clickType = DOUBLE_PRESS, keyCode = 1))
+            val action2 = Action.keyEventAction(keyCode = 3)
+
+            delegate.keymapListCache = listOf(
+                KeyMap(0, trigger = trigger1, actionList = listOf(action1)),
+                KeyMap(1, trigger = trigger2, actionList = listOf(action2))
+            )
+
+            //when short press
+            mockParallelTriggerKeys(*trigger1.keys.toTypedArray())
+            delay(2000)// let it repeat
+
+            //then
+            mockParallelTriggerKeys(*trigger1.keys.toTypedArray()) //press the key again to stop it repeatin
+            advanceUntilIdle()
+
+            assertThat(performActionTest.history.size, greaterThan(1))
+            assert(performActionTest.history.all { it.action == action1 })
+
+            //when double press
+            performActionTest.reset()
+            mockTriggerKeyInput(trigger2.keys[0])
+            advanceUntilIdle()
+
+            //then
+            assertThat(performActionTest.history.map { it.action }, `is`(listOf(action2)))
+        }
+
+    /**
+     * See #626 in issue tracker
+     *
+     * Key maps:
+     * 1. Short press, single key, action that repeats until pressed again
+     * 2. Long press, same single key, action that repeats
+     * 3. Double press, same single key, action that doesn't repeat
+     *
+     * Expected:
+     * On short press: start repeating #1, don't trigger #2 don't trigger #3
+     * On long press: don't trigger #1, start repeating #2, don't trigger #3
+     * On double press: don't trigger #1, don't trigger #2, trigger #3
+     */
+    @Test
+    fun `initialise repeating if repeat until pressed again on failed double press and failed long press`() =
+        coroutineScope.runBlockingTest {
+            //given
+            val trigger1 = parallelTrigger(Trigger.Key(keyCode = 1))
+            val action1 = Action.keyEventAction(keyCode = 2).copy(
+                flags = Action.ACTION_FLAG_REPEAT,
+                extras = listOf(
+                    Extra(
+                        Action.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR,
+                        Action.STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN.toString()
+                    )
+                )
+            )
+
+            val trigger2 = parallelTrigger(Trigger.Key(clickType = LONG_PRESS, keyCode = 1))
+            val action2 = Action.keyEventAction(keyCode = 3).copy(
+                flags = Action.ACTION_FLAG_REPEAT,
+            )
+
+            val trigger3 = sequenceTrigger(Trigger.Key(clickType = DOUBLE_PRESS, keyCode = 1))
+            val action3 = Action.keyEventAction(keyCode = 4)
+
+            delegate.keymapListCache = listOf(
+                KeyMap(0, trigger = trigger1, actionList = listOf(action1)),
+                KeyMap(1, trigger = trigger2, actionList = listOf(action2)),
+                KeyMap(2, trigger = trigger3, actionList = listOf(action3))
+            )
+
+            //when short press
+            mockParallelTriggerKeys(*trigger1.keys.toTypedArray())
+
+            delay(2000)// let it repeat
+
+            //then
+            mockParallelTriggerKeys(*trigger1.keys.toTypedArray()) //press the key again to stop it repeatin
+            advanceUntilIdle()
+
+            assertThat(performActionTest.history.size, greaterThan(1))
+            assert(performActionTest.history.all { it.action == action1 })
+
+            //when long press
+            performActionTest.reset()
+            mockParallelTriggerKeys(*trigger2.keys.toTypedArray(), delay = 2000) //let it repeat
+
+            //then
+            assertThat(performActionTest.history.size, greaterThan(1))
+            assert(performActionTest.history.all { it.action == action2 }) {
+                "not all actions are the action for the long press trigger. actual actions: ${performActionTest.history}"
+            }
+
+            delay(1000) // have a delay after a long press of the key is released so a double press isn't detected
+
+            //when double press
+            performActionTest.reset()
+            mockTriggerKeyInput(trigger3.keys[0])
+
+            //then
+            assertThat(performActionTest.history.map { it.action }, `is`(listOf(action3)))
+        }
 
     /**
      * this helped fix issue #608
