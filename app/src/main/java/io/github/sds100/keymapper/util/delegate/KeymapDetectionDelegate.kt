@@ -551,15 +551,15 @@ class KeymapDetectionDelegate(
     /**
      * Maps repeat jobs to their corresponding parallel trigger index.
      */
-    private val repeatJobs = SparseArrayCompat<List<RepeatJob>>()
+    val repeatJobs = SparseArrayCompat<List<RepeatJob>>()
 
     /**
      * Maps jobs to perform an action after a long press to their corresponding parallel trigger index
      */
     private val parallelTriggerLongPressJobs = SparseArrayCompat<Job>()
 
-    private val parallelTriggerActionJobs = SparseArrayCompat<Job>()
-    private val sequenceTriggerActionJobs = SparseArrayCompat<Job>()
+    val parallelTriggerActionJobs = SparseArrayCompat<Job>()
+    val sequenceTriggerActionJobs = SparseArrayCompat<Job>()
 
     /**
      * A list of all the action keys that are being held down.
@@ -927,7 +927,7 @@ class KeymapDetectionDelegate(
                             delay(delayBeforeNextAction(actionKey))
                         }
 
-                        initialiseRepeating(triggerIndex)
+                        initialiseRepeating(triggerIndex, calledOnTriggerRelease = false)
                     }
                 }
             }
@@ -1022,6 +1022,12 @@ class KeymapDetectionDelegate(
                         /*if the key is in the single pressed state, set the timeout time and start the timer
                         * to imitate the key if it isn't double pressed in the end */
                         SINGLE_PRESSED -> {
+
+                            /*
+                            I just realised that calculating the double press timeout is *SUPPOSED* to be in the onKeyDown
+                            method but it has been this way for so long and no one has complained so leave it.
+                             Changing this might affect people's key maps in ways that I can't fathom.
+                             */
                             val doublePressTimeout =
                                 doublePressTimeout(sequenceTriggerOptions[triggerIndex])
                             doublePressTimeoutTimes[index] = currentTime + doublePressTimeout
@@ -1041,7 +1047,6 @@ class KeymapDetectionDelegate(
 
                         /* When the key is double pressed */
                         DOUBLE_PRESSED -> {
-
                             successfulDoublePress = true
                             doublePressEventStates[index] = NOT_PRESSED
                             doublePressTimeoutTimes[index] = -1
@@ -1335,6 +1340,8 @@ class KeymapDetectionDelegate(
                     delay(delayBeforeNextAction(actionKey))
                 }
             }
+
+            initialiseRepeating(triggerIndex, calledOnTriggerRelease = true)
         }
 
         if (showToast) {
@@ -1361,6 +1368,7 @@ class KeymapDetectionDelegate(
                     if (performActionsOnFailedDoublePress(event)) {
                         return@launch
                     }
+
 
                     this@KeymapDetectionDelegate.imitateButtonPress.value =
                         ImitateButtonPress(
@@ -1467,7 +1475,6 @@ class KeymapDetectionDelegate(
 
         performActionsOnFailedDoublePress.forEach { triggerIndex ->
             if (event.withShortPress.matchesEvent(parallelTriggerEvents[triggerIndex].last())) {
-
                 detectedTriggerIndexes.add(triggerIndex)
 
                 if (parallelTriggerFlags[triggerIndex].hasFlag(TRIGGER_FLAG_SHOW_TOAST)) {
@@ -1510,6 +1517,8 @@ class KeymapDetectionDelegate(
 
                     delay(delayBeforeNextAction(actionKey))
                 }
+
+                initialiseRepeating(triggerIndex, calledOnTriggerRelease = true)
             }
         }
 
@@ -1645,7 +1654,7 @@ class KeymapDetectionDelegate(
                 delay(delayBeforeNextAction(actionKey))
             }
 
-            initialiseRepeating(triggerIndex)
+            initialiseRepeating(triggerIndex, calledOnTriggerRelease = false)
         }
 
         if (showToast) {
@@ -1655,8 +1664,10 @@ class KeymapDetectionDelegate(
 
     /**
      * For parallel triggers only.
+     *
+     * @param [calledOnTriggerRelease] whether this is called when the trigger was released
      */
-    private fun initialiseRepeating(triggerIndex: Int) {
+    private fun initialiseRepeating(triggerIndex: Int, calledOnTriggerRelease: Boolean) {
         val actionKeys = parallelTriggerActions[triggerIndex]
         val actionKeysToStartRepeating = actionKeys.toMutableSet()
 
@@ -1664,11 +1675,17 @@ class KeymapDetectionDelegate(
             if (stopRepeatingWhenPressedAgain(it.actionKey)) {
                 actionKeysToStartRepeating.remove(it.actionKey)
             }
-
             it.cancel()
         }
 
         val repeatJobs = mutableListOf<RepeatJob>()
+
+        actionKeys.forEach { key ->
+            //only start repeating when a trigger is released if it is to repeat until pressed again
+            if (!stopRepeatingWhenPressedAgain(key) && calledOnTriggerRelease) {
+                actionKeysToStartRepeating.remove(key)
+            }
+        }
 
         actionKeysToStartRepeating.forEach {
             repeatJobs.add(repeatAction(it))
@@ -1892,6 +1909,6 @@ class KeymapDetectionDelegate(
         get() = copy(clickType = DOUBLE_PRESS)
 
     private data class Event(val keyCode: Int, val clickType: Int, val deviceId: String)
-    private class RepeatJob(val actionKey: Int, launch: () -> Job) : Job by launch.invoke()
+    class RepeatJob(val actionKey: Int, launch: () -> Job) : Job by launch.invoke()
     private data class TriggerKeyLocation(val triggerIndex: Int, val keyIndex: Int)
 }

@@ -137,7 +137,7 @@ data class Action(
 
         fun keyEventAction(
             keyCode: Int,
-            metaState: Int,
+            metaState: Int = 0,
             deviceDescriptor: String? = null,
             useShell: Boolean = false
         ): Action {
@@ -245,11 +245,14 @@ data class Action(
 
             val uid by it.json.byNullableString(NAME_UID)
 
-            Action(type, data, extraList.toMutableList(), flags, uid
-                ?: UUID.randomUUID().toString())
+            Action(
+                type, data, extraList.toMutableList(), flags, uid
+                    ?: UUID.randomUUID().toString()
+            )
         }
     }
 
-    constructor(type: ActionType, data: String, extra: Extra
+    constructor(
+        type: ActionType, data: String, extra: Extra
     ) : this(type, data, mutableListOf(extra))
 }
