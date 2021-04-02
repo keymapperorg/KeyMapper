@@ -59,5 +59,5 @@ You may wish to enable Key Mapper's accessibility service using ADB if you canno
 To add Key Mapper to the List of the enabled accessibility providers, type or paste in a terminal:
 
 ```
-adb shell settings put secure ENABLED_ACCESSIBILITY_SERVICES io.github.sds100.keymapper/io.github.sds100.keymapper.service.MyAccessibilityService
+adb shell settings put secure android.permission.ENABLED_ACCESSIBILITY_SERVICES io.github.sds100.keymapper/io.github.sds100.keymapper.service.MyAccessibilityService
 ```
