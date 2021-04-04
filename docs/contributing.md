@@ -50,7 +50,7 @@ Here are words and phrases that have been spelt inconsistently by the developer 
 | Terminology           | Correct 😍                                                    | Incorrect 👿                        |
 | --------------- | ------------------------------------------------------------ | ---------------------------------- |
 | The app's name. | **Key Mapper**<br />Use **Keyboard/Button Mapper** when advertising the app as this is how it appears in the app stores. You can use "Key Mapper" in the rest of the advert since this is much shorter. | key mapper, keymapper              |
-| A key map       | **key map**. In variable and class names it should be keymap, fooKeymap instead of fooKeyMap. The class KeyMap is an exception. | keymap, Key Map. key-map. Key-Map. |
+| A key map       | **key map**. KeyMap, keyMap in variable and class names. | keymap, Key Map. key-map. Key-Map. |
 | A trigger       | **trigger**                                                  | Trigger                            |
 | An action       | **action**                                                   | Action                             |
 | A constraint    | **constraint**                                               | Constraint                         |
