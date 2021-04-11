@@ -34,6 +34,33 @@
     <string name="trigger_pressed_again">Znovu stisknuto</string>
     <string name="show_hidden_apps">Zobrazit skryté aplikace</string>
     <string name="modifiers">Modifikátory</string>
+    <string name="toggle">Přepnout</string>
+    <string name="tap_coordinate_screenshot_message">DŮLEŽITÉ!!! Tyto souřadnice jsou správné pouze tehdy, když je obrazovka ve stejné orientaci jako snímek obrazovky! Tato akce zruší všechna gesta, která na obrazovce děláte.\n\nPokud potřebujete pomoci najít souřadnice bodu na obrazovce, pořídí snímek obrazovky a klepněte na snímek obrazovky, kde chcete tuto akci stisknout.</string>
+    <string name="dont_know_device_name">Neznám jméno zařízení!</string>
+    <string name="tap_actions_to_fix">Klepnutím na akce opravíte!</string>
+    <string name="new_gui_keyboard_ad_message">Získejte novou klávesovou klávesnici Mapper, která má klávesnici na obrazovce!</string>
+    <string name="shortcut_label_action">Provést akce</string>
+    <string name="hold_down_until_trigger_is_dot_dot_dot">Podržte dokud není spouštěč…</string>
+    <string name="from_no_device">Žádné zařízení</string>
+    <string name="intent_extras_recycler_view_placeholder">&lt;unk&gt; \\_(&lt;unk&gt;)_/ &lt;unk&gt;\n\nŽádné extrakce!</string>
+    <string name="content_description_fab_new_keymap">Vytvořit novou mapu klíče</string>
+    <string name="whats_new">Co je nového</string>
+    <string name="caption_action_type_key">Klikněte na klávesu na zařízení, kterou chcete vložit.
+            \n\nDŮLEŽITÉ!
+            Přidání tohoto klíče jako akce bude fungovat pouze v případě, že používáte klávesovou mapu kompatibilní s klávesou.</string>
+    <string name="caption_action_type_keycode">DŮLEŽITÉ!
+            Vložením tohoto klíče jako akce bude fungovat pouze v případě, že používáte kompatibilní klávesnici klávesové mapy.</string>
+    <string name="caption_action_type_text">Zadejte text, který chcete vložit, když provedete tuto akci.</string>
+    <string name="caption_action_type_phone_call">Zadejte telefonní číslo.</string>
+    <string name="caption_action_type_url">Zadejte URL, kterou chcete otevřít. Není vyžadováno http://, https://, https://// nebo www.</string>
+    <string name="caption_no_paired_bt_devices">Nelze najít žádná spárovaná zařízení. Je Bluetooth zapnuto?</string>
+    <string name="caption_create_keymap_shortcut">Volba \"spouštěč z jiných aplikací\" bude zapnuta pro klíčovou mapu, kterou vyberete, pokud již není aktivní. Pokud tuto možnost později vypnete, žádné zkratky nebo záměry spustit tuto klávesovou mapu nebudou fungovat.</string>
+    <string name="switch_enabled">Povoleno</string>
+    <string name="disabled">Zakázáno</string>
+    <string name="reset">Reset</string>
+    <string name="enable_device_admin_message">Jakmile povolíte administrátora zařízení, musíte jej DEAKTIVOVAT pokud chcete aplikaci odinstalovat.</string>
+    <string name="constraints_recyclerview_placeholder">Žádné omezení!</string>
+    <string name="action_title_wait">Počkejte %sms</string>
     <!--  Action descriptions  -->
     <!--  Action descriptions  -->
     <!--  Headers  -->
@@ -41,14 +68,44 @@
     <!--  Hints  -->
     <!--  Hints  -->
     <!--  Radio buttons  -->
+    <string name="radio_button_intent_target_activity">Aktivita</string>
+    <string name="radio_button_intent_target_service">Servis</string>
+    <string name="radio_button_intent_target_broadcast_receiver">Vysílací přijímač</string>
     <!--  Radio buttons  -->
     <!--  Tabs  -->
+    <string name="tab_trigger_and_actions">Spouštěč a akce</string>
+    <string name="tab_constraints_and_more">Omezení a více</string>
+    <string name="tab_options">Možnosti</string>
+    <string name="tab_constraints">Omezení</string>
+    <string name="tab_actions">Akce</string>
+    <string name="tab_trigger">Spouštěč</string>
+    <string name="tab_fingerprint">Otisk prstu</string>
+    <string-array name="home_tab_titles">
+        <item>@string/tab_keyevents</item>
+        <item>\@řetězec/tab_otisk</item>
+    </string-array>
     <!--  Tabs  -->
     <!--  Navigation argument ids  -->
     <!--  Navigation argument ids  -->
     <!--  Toasts  -->
+    <string name="toast_chose_keyboard">Vybrat %s</string>
+    <string name="toast_backup_successful">Záloha byla úspěšná!</string>
+    <string name="toast_restore_successful">Obnovení bylo úspěšné!</string>
+    <string name="toast_automatic_backup_successful">Automatická záloha úspěšná!</string>
+    <string name="toast_screenshot_taken">Snímek obrazovky pořízen</string>
+    <string name="toast_io_exception_shrug">IO výjimka &lt;unk&gt; \\_(&lt;unk&gt;)_/ &lt;unk&gt;</string>
+    <string name="toast_incorrect_screenshot_resolution">Rozlišení snímku neodpovídá rozlišení tohoto zařízení!</string>
+    <string name="toast_copied_keymap_uid_to_clipboard">UUID klíče zkopírováno do schránky</string>
+    <string name="toast_triggered_keymap">Aktivovali jste klávesovou mapu</string>
     <!--  Toasts  -->
     <!-- Extra labels -->
+    <string name="extra_label_sequence_trigger_timeout">Časový limit spouštění sekvence (ms)</string>
+    <string name="extra_label_long_press_delay_timeout">Prodleva dlouhého stisku (ms)</string>
+    <string name="extra_label_double_press_delay_timeout">Časový limit dvojitého stisku (ms)</string>
+    <string name="extra_label_repeat_delay">Zpoždění do opakování (ms)</string>
+    <string name="extra_label_repeat_rate">Opakovat každých… (ms)</string>
+    <string name="extra_label_vibration_duration">Trvání vibrací (ms)</string>
+    <string name="extra_label_action_multiplier">Počet akcí</string>
     <!-- Extra labels -->
     <!-- Constraints -->
     <!-- Constraints -->
