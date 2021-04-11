@@ -1,5 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="no_action_chosen">Žádná akce nebyla vybrána</string>
+    <string name="accessibility_service_description">Key Mapper musí používat službu usnadnění přístupu, aby mohl poslouchat stisknutí tlačítek / kláves a provádět akce, které jste vybrali. Služba přístupnosti poslouchá pouze klíčové události a zjišťuje, ve které aplikaci se nacházíte. Můžete se podívat na zdrojový kód, který je propojen na obrazovce O aplikaci, abyste to ověřili.</string>
+    <string name="selection_count">%d vybráno</string>
+    <string name="enable">Umožnit</string>
+    <string name="open">Otevřít</string>
+    <string name="recyclerview_placeholder">\n\nTady nic není!</string>
+    <string name="triggers_recyclerview_placeholder">Nahrajte spoušť!</string>
+    <string name="actions_recyclerview_placeholder">Přidej akci!</string>
+    <string name="keymap_recyclerview_placeholder">\n\n Vytvořte novou klíčovou mapu!</string>
+    <string name="action_shortcut_list_recyclerview_placeholder">\n\n Nevybrali jste žádnou akci pro tuhle zkratku!</string>
+    <string name="no_key_maps">Nevytvořili jste žádnou klíčovou mapu!</string>
+    <string name="everything_looks_good">Všechno vypadá dobře!</string>
+    <string name="warning_the_app_will_work">Aplikace bude fungovat, ale některé věci budou muset být opraveny v závislosti na tom, co děláte.</string>
+    <string name="your_device_doesnt_support_some_actions">Vaše zařízení nepodporuje tyto akce.</string>
+    <string name="tab_unsupported_actions">Nepodporované akce</string>
+    <string name="requires_root">Vyžaduje root</string>
+    <string name="press_dot_dot_dot">Stiskněte…</string>
+    <string name="no_actions">Žádné akce</string>
+    <string name="no_trigger">Žádný spouštěč</string>
+    <string name="unknown_keycode">Neznámý kód klíče: %s</string>
+    <string name="chip_while">zatímco</string>
+    <string name="on">Zapnuto</string>
+    <string name="off">Vypnuto</string>
+    <string name="follow_system">Sledovat systém</string>
+    <string name="this_device">Toto zařízení</string>
+    <string name="any_device">Jakékoliv zařízení</string>
+    <string name="trigger_device_name_not_found">Název tohoto zařízení není znám</string>
+    <string name="slider_default">Výchozí</string>
+    <string name="button_enable_accessibility_service">Povolit službu usnadnění přístupu</string>
+    <string name="stop_repeating_dot_dot_dot">Přestat se opakovat, když je spouštěč…</string>
+    <string name="trigger_released">Zveřejněno</string>
+    <string name="trigger_pressed_again">Znovu stisknuto</string>
+    <string name="show_hidden_apps">Zobrazit skryté aplikace</string>
+    <string name="modifiers">Modifikátory</string>
     <!--  Action descriptions  -->
     <!--  Action descriptions  -->
     <!--  Headers  -->
