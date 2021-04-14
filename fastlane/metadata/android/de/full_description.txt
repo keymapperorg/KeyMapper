@@ -18,8 +18,8 @@ Was kan nicht neu zugeordnet werden ?
  * OnePlus Alert Slider
  * Power-Knopf
  * Bixby-Knopf
- * Mausknöpfe
- * Dpads, daumen-sticks oder Tasten von Controllern
+ * Maustasten
+ * Dpads, Daumen-sticks oder Tasten von Controllern
 
 Die Tastenzuordnungen funktionieren nicht wenn der Display ausgeschaltet ist. Dies ist eine Limitierung von Android. Der Entwickler kann da nichts dran ändern.
 
@@ -56,10 +56,10 @@ Was kann ich meine Tastenzuordnungen machen lassen ?
  * Die Taschenlampe nutzen (Android6.0+)
  * Den Flugmodus schalten (Benötigt ROOT)
  * Den Nicht-Stören-Modus schalten (Android6.0+)
- * Switch between vibrate and ring
+ * Zwischen Vibration und Klingeln wechseln
  * Einen Screenshot nehmen (Android9.0+)
  * Die Sprachassistent:innen öffnen
- * Open the Device Assistant
+ * Den Geräteassistenten öffnen
  * Die Kamera öffnen
  * Ein Tastenereignis konsumieren (Nichts tun)
  * Das Gerät sperren
@@ -68,17 +68,17 @@ Was kann ich meine Tastenzuordnungen machen lassen ?
 
 Und viel mehr...
 
-A Key Mapper keyboard needs to be selected for these to work:
+Für diese Funktionen, muss eine Key Mapper Tastatur angeschaltet sein:
 
-** It is recommended to install the Key Mapper GUI Keyboard app because this is a proper keyboard unlike the one built-in to Key Mapper **
+** Es wird empfohlen, die Key Mapper GUI Tastatur app zu installieren, weil diese eine eine richtige Tastatur ist, anders als jene, die in Key Mapper eingebaut sind **
 
- * Input a specific keycode
- * Input a key
- * Input a Key Event
- * Insert a block of text
+ * Das nutzen von Tastaturkombinationen
+ * Eine Zeichen einzugeben
+ * Ein Tastenevent auszulösen
+ * Einen Textblock einzufügen
 
-What other things can the app do?
- * Option to show a persistent notification which can pause/resume your keymaps.
+Welche anderen Funktionen hat die app ?
+ * Auswählen ob eine permanente Benachrichtigung angezeigt werden soll welche die Keymaps pausieren kann.
  * Automatically change the keyboard to the Key Mapper one and/or show the keyboard picker when a chosen Bluetooth device is connected and switch back to the old one when it is disconnected.
  * Quick settings to pause/resume keymaps and toggle the Key Mapper keyboard.
  * Create home screen widget to perform the actions mentioned above.
