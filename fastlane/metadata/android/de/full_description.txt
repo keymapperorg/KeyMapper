@@ -79,12 +79,12 @@ Für diese Funktionen, muss eine Key Mapper Tastatur angeschaltet sein:
 
 Welche anderen Funktionen hat die app ?
  * Auswählen ob eine permanente Benachrichtigung angezeigt werden soll welche die Keymaps pausieren kann.
- * Automatically change the keyboard to the Key Mapper one and/or show the keyboard picker when a chosen Bluetooth device is connected and switch back to the old one when it is disconnected.
- * Quick settings to pause/resume keymaps and toggle the Key Mapper keyboard.
- * Create home screen widget to perform the actions mentioned above.
+ * Automatisch die Tastatur zubder Key Mapper Tastatur wechseln oder den Tastature-Auswähl-Dialog anzeigen wenn ein vorbestimmtes Bluetooth Gerät verbunden wird, und zurückwechseln wenn es entbunden wird.
+ * Schnelleinstellungen zum pausieren der Tastatur und zum umschalten der Tastatur.
+ * Ein Widget erstellen um die genannten Funktionen auszuführen.
 
-Permissions
-You don't have to grant all the permissions for the app to work. The app will tell you if a permission needs to be granted for a feature to work.
+Berechtigungen
+Es müssen nicht alle Berechtigungen gewährt werden, damit die app funktioniert. The app will tell you if a permission needs to be granted for a feature to work.
 
  * Accessibility Service: Basic requirement for remapping to work. It is needed so the app can listen to and block keyevents.
  * Device Admin: To turn the screen off when using the action to turn off the screen.
