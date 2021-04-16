@@ -61,10 +61,36 @@
     <string name="enable_device_admin_message">Jakmile povolíte administrátora zařízení, musíte jej DEAKTIVOVAT pokud chcete aplikaci odinstalovat.</string>
     <string name="constraints_recyclerview_placeholder">Žádné omezení!</string>
     <string name="action_title_wait">Počkejte %sms</string>
+    <string name="email_subject">Dotaz mapování klíčů</string>
+    <string name="email_default_message">Vyřešila stránka nápovědy váš problém? Co je vaše zařízení?\n\n Který vzhled výrobce OEM nebo rom používáte?\n\n Popište problém, který máte:</string>
+    <string name="action_title_intent_start_activity">Počáteční aktivita: %s</string>
+    <string name="action_title_intent_start_service">Spustit službu: %s</string>
+    <string name="action_title_intent_send_broadcast">Odeslat všesměrové vysílání: %s</string>
+    <string name="clipboard_label_keymap_uid">Klíčová mapa UUID</string>
+    <string name="check_box_key_event_option_use_shell">Použít shell (pouze ROOT)</string>
     <!--  Action descriptions  -->
+    <string name="description_open_app">Otevřít %s</string>
+    <string name="description_key">Stiskněte klávesu %s</string>
+    <string name="description_text_block">Zadejte %s</string>
+    <string name="description_keyevent">Vstup %s%s</string>
+    <string name="description_keyevent_through_shell">Vstup %s%s prostřednictvím prostředí</string>
+    <string name="description_keyevent_from_device">Vstup %s%s z %s</string>
+    <string name="description_keyevent_from_device_through_shell">Vstup %s%s od %s do prostředí</string>
+    <string name="description_url">Otevřít %s</string>
+    <string name="description_tap_coordinate_default">Klepněte na souřadnice %s, %s </string>
+    <string name="description_tap_coordinate_with_description">Klepněte na souřadnice %s, %s (%s)</string>
+    <string name="description_phone_call">Volání %s</string>
     <!--  Action descriptions  -->
     <!--  Headers  -->
+    <string name="option_list_header">Možnosti</string>
+    <string name="action_list_header">Akce</string>
+    <string name="trigger_header">Aktivační událost</string>
+    <string name="constraint_list_header">Omezení</string>
     <string name="header_fingerprint_gesture_up">Přejeďte prstem nahoru</string>
+    <string name="header_fingerprint_gesture_down">Přejeďte prstem dolů</string>
+    <string name="header_fingerprint_gesture_left">Přejeďte doleva</string>
+    <string name="header_fingerprint_gesture_right">Přejeďte doprava</string>
+    <string name="header_click_type">Klikněte na typ</string>
     <!--  Headers  -->
     <!--  Hints  -->
     <!--  Hints  -->
