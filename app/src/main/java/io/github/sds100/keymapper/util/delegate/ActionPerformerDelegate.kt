@@ -14,6 +14,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.provider.Settings
+import android.view.InputDevice
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.webkit.URLUtil
@@ -204,6 +205,8 @@ class ActionPerformerDelegate(
                 }
 
                 ActionType.KEY_EVENT -> {
+                    val keyCode = action.data.toInt()
+
                     val useShell = action.extras.getData(Action.EXTRA_KEY_EVENT_USE_SHELL)
                         .valueOrNull()
                         .toBoolean()
@@ -216,7 +219,34 @@ class ActionPerformerDelegate(
                     val deviceId = action.extras
                         .getData(Action.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR)
                         .handle(
-                            onSuccess = { InputDeviceUtils.getDeviceIdFromDescriptor(it) },
+                            onSuccess = { descriptor ->
+                                val devicesWithDescriptor = InputDevice.getDeviceIds()
+                                    .map { InputDevice.getDevice(it) }
+                                    .filter { it.descriptor == descriptor }
+
+                                if (devicesWithDescriptor.isEmpty()) {
+                                    return@handle null
+                                }
+
+                                if (devicesWithDescriptor.size == 1) {
+                                    return@handle devicesWithDescriptor[0].id
+                                }
+
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+
+                                    /*
+                                    if there are multiple devices use the device that supports the key
+                                    code. if none do then use the first one
+                                     */
+                                    val device = devicesWithDescriptor.singleOrNull {
+                                        it.hasKeys(keyCode)[0]
+                                    } ?: devicesWithDescriptor[0]
+
+                                    return@handle device.id
+                                } else {
+                                    return@handle devicesWithDescriptor[0].id
+                                }
+                            },
                             onFailure = { 0 }
                         )
 
@@ -224,7 +254,7 @@ class ActionPerformerDelegate(
                         KeyboardUtils.inputKeyEventFromImeService(
                             ctx,
                             it,
-                            keyCode = action.data.toInt(),
+                            keyCode = keyCode,
                             metaState = additionalMetaState.withFlag(
                                 action.extras.getData(Action.EXTRA_KEY_EVENT_META_STATE)
                                     .valueOrNull()
