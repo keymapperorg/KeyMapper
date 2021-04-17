@@ -271,6 +271,8 @@
     <string name="dialog_message_view_faq_and_use_discord_over_email">Sorunununuz için eğer cevaplanışsa FAQ\'yu inceleyin. Değilse, geliştirici yardım istemenizi ve Discord sunucusunda özellikler önermenizi tercih eder.  Discord\'a sahip değilseniz, doğrudan geliştiriciye e-posta gönderebilirsiniz.</string>
     <string name="dialog_message_bt_constraint_limitation">Android, uygulamaların bağlı (eşlenmemiş) Bluetooth cihazlarının bir listesini almasına izin vermez. Uygulamalar yalnızca bağlı ve bağlantısı kesildiğinde algılayabilir. Dolayısıyla, erişilebilirlik hizmeti başladığında Bluetooth cihazınız cihazınıza zaten bağlıysa, uygulamanın bağlı olduğunu bilmesi için yeniden bağlamanız gerekir.</string>
     <string name="dialog_message_change_location_or_disable">Konum mu değiştirildi yoksa otomatik yedekleme mi kapandı?</string>
+    <string name="dialog_message_screen_constraints_limitation">Ekran açma / kapama kısıtlamaları yalnızca \"ekran kapalıyken tetiği algıla\" tuş haritası seçeneğini etkinleştirdiyseniz çalışacaktır. Bu seçenek yalnızca bazı tuşlar için (örneğin ses düğmeleri) ve kök erişiminiz iseniz gösterilecektir. Yardım sayfasında desteklenen tuşların listesine bakın.</string>
+    <string name="dialog_message_password_screen_lock_warning">PIN veya Desen gibi seçili başka bir ekran kilidiniz varsa endişelenmenize gerek yok. Ancak bir Parola ekran kilidiniz varsa, Anahtar Eşleyici Temel Giriş Yöntemi\'ni kullanırsanız, bir GUI\'ye sahip olmadığı için telefonunuzun kilidini * AÇAMAZsınız *. Anahtar Eşleştiriciye WRITE_SECURE_SETTINGS izni verebilirsiniz, böylece klavyeye ve klavyeden geçiş yapmak için bir bildirim gösterebilir. Ekranın altındaki soru işaretine dokunursanız, bunun nasıl yapılacağına dair bir kılavuz var.</string>
     <string name="dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout">Klavyeniz için \"Caps Lock to camera\" klavye düzenini seçmeniz gerekir, aksi takdirde Caps Lock tuşu yine de büyük harfleri kilitler. Bu ayarı cihaz ayarlarınızda bulabilirsiniz -> Diller ve Giriş -> Fiziksel Klavye -> Klavyenize dokunun -> Klavye Düzenlerini Ayarlayın. Bu, Caps Lock tuşunu KEYCODE_CAMERA olarak yeniden eşler, böylece Anahtar Eşleştirici onu düzgün bir şekilde yeniden eşleyebilir. \n \n Bunu yaptıktan sonra Caps Lock tetik tuşunu kaldırmanız ve Caps Lock tuşunu yeniden kaydetmeniz gerekir. Adımları doğru yaptıysanız \"Caps Lock\" yerine \"Kamera\" demelidir.</string>
     <string name="dialog_message_select_app_store_gui_keyboard">Yeni bir klavye ister misin?</string>
     <string name="dialog_message_cant_record_trigger">\"Tetiği kaydet\" düğmesi geri sayıyorsa ve bastığınız düğmeler görünmüyorsa cihazınızı <b> yeniden başlatın </b>. Yeniden başlattıktan sonra düğmeleriniz hala görünmüyorsa, Key Mapper düğmelerinizi desteklemiyor demektir. Bunun için bir düzeltme yok.</string>
@@ -372,6 +374,14 @@
     <!-- Showcase -->
     <!-- Showcase -->
     <!-- system action options -->
+    <string name="stream_accessibility">Erişilebilirlik</string>
+    <string name="stream_alarm">Alarm</string>
+    <string name="stream_dtmf">DTMF</string>
+    <string name="stream_music">Müzik</string>
+    <string name="stream_notification">Bildirimler</string>
+    <string name="stream_ring">Zil Sesi</string>
+    <string name="stream_system">Sistem</string>
+    <string name="stream_voice_call">Sesli çağrı</string>
     <!-- system action options -->
     <!-- Tiles -->
     <!-- Tiles -->
