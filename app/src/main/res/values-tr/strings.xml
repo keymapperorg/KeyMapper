@@ -157,8 +157,26 @@
     <string name="extra_label_repeat_rate">Her… (ms) tekrarla</string>
     <string name="extra_label_vibration_duration">Titreşim süresi (ms)</string>
     <string name="extra_label_action_multiplier">Eylem sayısı</string>
+    <string name="extra_label_delay_before_next_action">Bi sonraki eylemden önce bekleme (ms)</string>
+    <string name="extra_label_hold_down_duration">Basılı tutma süresi (ms)</string>
     <!-- Extra labels -->
     <!-- Constraints -->
+    <string name="constraint_app_foreground_description">%s önplanda</string>
+    <string name="constraint_app_not_foreground_description">%s önplanda değil</string>
+    <string name="constraint_app_playing_media_description">%s medya oynatıyor</string>
+    <string name="constraint_bt_device_connected_description">%s bağlandı</string>
+    <string name="constraint_bt_device_disconnected_description">%s bağlantısı kesildi</string>
+    <string name="constraint_screen_on_description">Ekran açık</string>
+    <string name="constraint_screen_off_description">Ekran kapalı</string>
+    <string name="constraint_mode_and">ve</string>
+    <string name="constraint_mode_or">ya da/veya</string>
+    <string name="constraint_category_app">Uygulama</string>
+    <string name="constraint_category_bluetooth">Bluetooth</string>
+    <string name="constraint_category_screen">Ekran</string>
+    <string name="constraint_category_orientation">Oryantasyon</string>
+    <string name="constraint_choose_app_foreground">Uygulama önplanda</string>
+    <string name="constraint_choose_app_not_foreground">Uygulama önplanda değil</string>
+    <string name="constraint_choose_bluetooth_device_connected">Bluetooth cihazı bağlandı</string>
     <!-- Constraints -->
     <!-- Click types -->
     <!-- Click types -->
