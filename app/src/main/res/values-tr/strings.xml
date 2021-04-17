@@ -217,12 +217,51 @@
     <string name="action_send_feedback">Geribildirim Gönder</string>
     <string name="action_change_keyboard">Giriş yöntemi seçicisini göster</string>
     <string name="action_seed_database">Veri tabanını sınıflandır</string>
+    <string name="action_save">Kaydet</string>
+    <string name="action_duplicate_keymap">Kopyala</string>
+    <string name="action_backup">Yedekle</string>
+    <string name="action_restore">Geri Yükle</string>
+    <string name="action_backup_everything">Her şeyi yedekle</string>
+    <string name="action_backup_all">Tümünü yedekle</string>
+    <string name="action_tap_to_pause_keymaps">Duraklatmak için dokunun</string>
+    <string name="action_tap_to_resume_keymaps">Devam etmek için dokunun</string>
+    <string name="action_reset">Sıfırla</string>
     <!-- Menu action titles-->
     <!-- Button titles -->
+    <string name="button_add_action">Eylem ekle</string>
+    <string name="button_record_trigger">Tetikleyici kaydet</string>
+    <string name="button_done">Başarılı</string>
+    <string name="button_save">Kaydet</string>
+    <string name="button_fix">Düzelt</string>
+    <string name="button_recording_trigger_countdown">%d…</string>
+    <string name="button_add_constraint">Kısıtlama ekle</string>
+    <string name="button_choose_keycode">Tuş kodu seç</string>
+    <string name="button_yes">Evet!</string>
+    <string name="button_choose_action">Eylem seç</string>
+    <string name="button_add_intent_extra">Ekstra ekle</string>
+    <string name="button_create_keymap_shortcut_in_launcher">Başlatıcı kısayolu oluştur</string>
+    <string name="button_open_trigger_keymap_from_intent_guide">Amaç kılavuzu</string>
+    <string name="button_help">Yardım</string>
+    <string name="button_config_intent_choose_activity">Etkinlik seçin</string>
+    <string name="button_config_intent_set_flags">Bayrakları seç</string>
     <!-- Button titles -->
     <!-- Dialog titles -->
+    <string name="dialog_title_are_you_sure">Emin misiniz?</string>
+    <string name="dialog_title_create_shortcut_title">Kısayol başlığı oluştur</string>
+    <string name="dialog_title_cant_find_paired_devices">Eşleştirilmiş cihaz bulunamadı</string>
+    <string name="dialog_title_root_prompt">KÖK ERİŞİMİ gerekiyor!</string>
+    <string name="dialog_title_flags">Daha fazla</string>
+    <string name="dialog_title_pick_stream">Yayını seç</string>
+    <string name="dialog_title_choose_flash">Flaşı seç</string>
+    <string name="dialog_title_cant_find_accessibility_settings_page">Erişilebilirlik hizmeti sayfası bulunamadı agb</string>
+    <string name="dialog_title_cant_record_trigger">Tetikleyici kaydedilemedi?</string>
     <!-- Dialog titles -->
     <!-- Dialog messages -->
+    <string name="dialog_message_are_you_sure_want_to_leave_without_saving">Kaydetmeden çıkmak istediğinizden emin misiniz?</string>
+    <string name="dialog_message_root_prompt">Telefonunuzun köklü olmadığını biliyorsanız veya kökün ne olduğunu bilmiyorsanız, yalnızca köklü cihazlarda çalışan özellikleri kullanamazsınız.  \'Tamam\'a dokunduğunuzda, ayarlara yönlendirileceksiniz.
+             Ayarlarda, aşağıya kaydırın ve \'Anahtar Eşleştiricinin kök izni var\' seçeneğine dokunun, böylece kök özelliklerini / eylemlerini kullanabilirsiniz.</string>
+    <string name="dialog_message_downloading">Yükleniyor…</string>
+    <string name="dialog_message_describe_your_issue_in_the_email">Lütfen probleminizi e-posta ile açıklayın yoksa size yardım edemeyiz!</string>
     <string name="dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout">Klavyeniz için \"Caps Lock to camera\" klavye düzenini seçmeniz gerekir, aksi takdirde Caps Lock tuşu yine de büyük harfleri kilitler. Bu ayarı cihaz ayarlarınızda bulabilirsiniz -> Diller ve Giriş -> Fiziksel Klavye -> Klavyenize dokunun -> Klavye Düzenlerini Ayarlayın. Bu, Caps Lock tuşunu KEYCODE_CAMERA olarak yeniden eşler, böylece Anahtar Eşleştirici onu düzgün bir şekilde yeniden eşleyebilir. \n \n Bunu yaptıktan sonra Caps Lock tetik tuşunu kaldırmanız ve Caps Lock tuşunu yeniden kaydetmeniz gerekir. Adımları doğru yaptıysanız \"Caps Lock\" yerine \"Kamera\" demelidir.</string>
     <string name="dialog_message_select_app_store_gui_keyboard">Yeni bir klavye ister misin?</string>
     <string name="dialog_message_cant_record_trigger">\"Tetiği kaydet\" düğmesi geri sayıyorsa ve bastığınız düğmeler görünmüyorsa cihazınızı <b> yeniden başlatın </b>. Yeniden başlattıktan sonra düğmeleriniz hala görünmüyorsa, Key Mapper düğmelerinizi desteklemiyor demektir. Bunun için bir düzeltme yok.</string>
