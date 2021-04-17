@@ -262,6 +262,15 @@
              Ayarlarda, aşağıya kaydırın ve \'Anahtar Eşleştiricinin kök izni var\' seçeneğine dokunun, böylece kök özelliklerini / eylemlerini kullanabilirsiniz.</string>
     <string name="dialog_message_downloading">Yükleniyor…</string>
     <string name="dialog_message_describe_your_issue_in_the_email">Lütfen probleminizi e-posta ile açıklayın yoksa size yardım edemeyiz!</string>
+    <string name="dialog_message_long_press_warning">Uzun basma sadece fiziksel ses açma ve navigasyon tuşlarında çalışır. Diğer tuşlarda vunu etkinleştirdiğinizde çalışmayacak.</string>
+    <string name="dialog_message_write_secure_settings">Anahtar Eşleştiriciye WRITE_SECURE_SETTINGS izni vermek için, cihazınız köklü ise ayarlarda \"kök özellikleri\" etkinleştirin. Cihazınız köklü değilse, izin vermek için PC / Mac\'in nasıl kullanılacağına ilişkin kılavuzu izleyin.</string>
+    <string name="dialog_message_cant_find_accessibility_settings_page">Cihazınızda bir erişilebilirlik hizmetleri ayarları sayfası yok gibi görünüyor. Erişilebilirlik hizmetini, uygulamaya WRITE_SECURE_SETTINGS izni vererek etkinleştirebilirsiniz. \'Tamam\'a dokunduktan sonra, bir açılır pencere bunu nasıl yapacağınız konusunda size rehberlik edecektir.</string>
+    <string name="dialog_message_double_press_restricted_to_single_key">"Bir den çok tetikleyicide çift tıklaysmazsınız."</string>
+    <string name="dialog_message_parallel_trigger_order">Tuşların basılı tutulacakları sırayla yukarıdan aşağı sıralanması gerekir.</string>
+    <string name="dialog_message_sequence_trigger_explanation">Bir \"sekans\" tetikleyicisinin, paralel tetikleyicilerin aksine bir zaman aşımı vardır. Bu, ilk tuşa bastıktan sonra, tetikteki tuşların geri kalanını girmek için belirli bir süreye sahip olacağınız anlamına gelir. Tetikleyiciye eklediğiniz tüm tuşlar, zaman aşımına ulaşılana kadar olağan eylemlerini gerçekleştirmez. Bu zaman aşımını \"Seçenekler\" sekmesinden değiştirebilirsiniz.</string>
+    <string name="dialog_message_view_faq_and_use_discord_over_email">Sorunununuz için eğer cevaplanışsa FAQ\'yu inceleyin. Değilse, geliştirici yardım istemenizi ve Discord sunucusunda özellikler önermenizi tercih eder.  Discord\'a sahip değilseniz, doğrudan geliştiriciye e-posta gönderebilirsiniz.</string>
+    <string name="dialog_message_bt_constraint_limitation">Android, uygulamaların bağlı (eşlenmemiş) Bluetooth cihazlarının bir listesini almasına izin vermez. Uygulamalar yalnızca bağlı ve bağlantısı kesildiğinde algılayabilir. Dolayısıyla, erişilebilirlik hizmeti başladığında Bluetooth cihazınız cihazınıza zaten bağlıysa, uygulamanın bağlı olduğunu bilmesi için yeniden bağlamanız gerekir.</string>
+    <string name="dialog_message_change_location_or_disable">Konum mu değiştirildi yoksa otomatik yedekleme mi kapandı?</string>
     <string name="dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout">Klavyeniz için \"Caps Lock to camera\" klavye düzenini seçmeniz gerekir, aksi takdirde Caps Lock tuşu yine de büyük harfleri kilitler. Bu ayarı cihaz ayarlarınızda bulabilirsiniz -> Diller ve Giriş -> Fiziksel Klavye -> Klavyenize dokunun -> Klavye Düzenlerini Ayarlayın. Bu, Caps Lock tuşunu KEYCODE_CAMERA olarak yeniden eşler, böylece Anahtar Eşleştirici onu düzgün bir şekilde yeniden eşleyebilir. \n \n Bunu yaptıktan sonra Caps Lock tetik tuşunu kaldırmanız ve Caps Lock tuşunu yeniden kaydetmeniz gerekir. Adımları doğru yaptıysanız \"Caps Lock\" yerine \"Kamera\" demelidir.</string>
     <string name="dialog_message_select_app_store_gui_keyboard">Yeni bir klavye ister misin?</string>
     <string name="dialog_message_cant_record_trigger">\"Tetiği kaydet\" düğmesi geri sayıyorsa ve bastığınız düğmeler görünmüyorsa cihazınızı <b> yeniden başlatın </b>. Yeniden başlattıktan sonra düğmeleriniz hala görünmüyorsa, Key Mapper düğmelerinizi desteklemiyor demektir. Bunun için bir düzeltme yok.</string>
@@ -317,12 +326,48 @@
     <!--Preference titles and summaries-->
     <!--Preference titles and summaries-->
     <!--Preference categories-->
+    <string name="title_pref_category_ime_picker">Klavye seçici</string>
+    <string name="title_pref_category_notifications">Bildirimler</string>
+    <string name="title_pref_category_defaults">Varsayılanlar</string>
+    <string name="title_pref_category_root">KÖK ERİŞİMİ</string>
+    <string name="summary_pref_category_root">Bu ayarlar sadece kök erişimi ile çalışır. Eğer kök erişimi hakkında bilginiz yoksa, cihazınızda kök erişimi var mı bilmiyorsanız lütfen düşük puan vermeyin. :)</string>
+    <string name="title_pref_category_write_secure_settings">WRITE_SECURE_SETTINGS iznine ihtiyaç var</string>
     <!--Preference categories-->
     <!-- About activity-->
+    <string name="pref_title_changelog">Değişiklik listesi</string>
+    <string name="pref_title_license">Lisans</string>
+    <string name="pref_title_privacy_policy">Gizlilik politikası</string>
+    <string name="pref_title_credits">Kredi</string>
+    <string name="pref_title_source_code">Kaynak kodu</string>
+    <string name="pref_title_developer_github">Geliştiricinin GitHub profili</string>
+    <string name="pref_title_rate_review">Oyla ve değerlendir</string>
+    <string name="pref_title_xda_thread">XDA başlığı</string>
+    <string name="pref_title_version">Versiyon</string>
+    <string name="pref_title_developer_email">Geliştirici e-postası</string>
+    <string name="pref_title_translate">Çevir</string>
+    <string name="pref_title_discord">Discord sunucusu</string>
+    <string name="pref_title_youtube_channel">YouTube kanalı (Öğreticiler)</string>
     <!-- About activity-->
     <!--Action Types Titles-->
+    <string name="action_type_title_application">Uygulama</string>
+    <string name="action_type_title_application_shortcut">Uygulama kısayolu</string>
+    <string name="action_type_title_key">Tuş</string>
+    <string name="action_type_title_key_code">Tuş kodu</string>
+    <string name="action_type_title_keyevent">Tuş eylemi</string>
+    <string name="action_type_title_system_action">Sistem</string>
+    <string name="action_type_title_text_block">Metin</string>
+    <string name="action_type_url">Bağlantı</string>
+    <string name="action_type_tap_coordinate">Ekrana dokun</string>
+    <string name="action_type_intent">Maksat</string>
+    <string name="action_type_phone_call">Telefon görüşmesi</string>
     <!--Action Types Titles-->
     <!--flags-->
+    <string name="flag_show_volume_dialog">Ses diyaloğunu göster</string>
+    <string name="flag_long_press">Uzun basma</string>
+    <string name="flag_vibrate">Titreşim</string>
+    <string name="flag_show_toast">Ekran üstündeki mesajı göster</string>
+    <string name="flag_long_press_double_vibration">Tuşlara ilk basılışı ve uzun basılışında titret.</string>
+    <string name="flag_detect_triggers_screen_off">Tetikleyiciyi ekran kapalıyken bul. Sadece KÖK ERİŞİMİ ile.</string>
     <!--flags-->
     <!-- Showcase -->
     <!-- Showcase -->
