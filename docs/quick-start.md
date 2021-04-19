@@ -27,9 +27,10 @@ You can then tap Key Mapper in your list of available services. There may be man
 !!! attention "MUST READ to avoid confusion and headaches"
     **'A Key Mapper keyboard'** through out this documentation refers to any input method that works with Key Mapper. There are **only 2** right now.
 
-    1. The one built-in to Key Mapper is called the "Key Mapper Basic Input Method". This one has **NO** on-screen keyboard. You won't see a keyboard when you want to type something.
+    1. The one built-in to Key Mapper is called the "Key Mapper Basic Input Method". This one has **NO** on-screen keyboard. You won't see a keyboard when you want to type something. This keyboard doesn't support
+    non-English languages!
 
-    2. If you want an on-screen keyboard to be available while using Key Mapper, you need to install "Key Mapper GUI Keyboard". It is available on the [Google Play Store](http://gui.keymapper.club), [F-Droid](https://www.f-droid.org/en/packages/io.github.sds100.keymapper.inputmethod.latin/) and [GitHub.](https://github.com/sds100/KeyMapperKeyboard/releases)
+    2. If you want an on-screen keyboard to be available while using Key Mapper or if you need support for non-English languages, you need to install "Key Mapper GUI Keyboard". It is available on the [Google Play Store](http://gui.keymapper.club), [F-Droid](https://www.f-droid.org/en/packages/io.github.sds100.keymapper.inputmethod.latin/) and [GitHub.](https://github.com/sds100/KeyMapperKeyboard/releases)
     
     **'Enable a Key Mapper keyboard'** means turning on the input method in your device's 'Language & Input' settings. The location of these settings is often called something else.
         
