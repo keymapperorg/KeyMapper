@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="no_action_chosen">Ninguna acción seleccionada</string>
     <string name="selection_count">%d seleccionado</string>
     <string name="enable">Activar</string>
     <string name="open">Abrir</string>
