@@ -65,6 +65,7 @@ import io.github.sds100.keymapper.util.SystemAction.OPEN_SETTINGS
 import io.github.sds100.keymapper.util.SystemAction.OPEN_VOICE_ASSISTANT
 import io.github.sds100.keymapper.util.SystemAction.PAUSE_MEDIA
 import io.github.sds100.keymapper.util.SystemAction.PLAY_MEDIA
+import io.github.sds100.keymapper.util.SystemAction.PLAY_NOTIFICATION
 import io.github.sds100.keymapper.util.SystemAction.PLAY_PAUSE_MEDIA
 import io.github.sds100.keymapper.util.SystemAction.PORTRAIT_MODE
 import io.github.sds100.keymapper.util.SystemAction.POWER_ON_OFF_DEVICE
@@ -285,6 +286,13 @@ object SystemActionUtils {
         //MOBILE DATA
 
         //MEDIA
+        SystemActionDef(
+            id = PLAY_NOTIFICATION,
+            category = CATEGORY_MEDIA,
+            iconRes = R.drawable.ic_outline_play_arrow_24,
+            descriptionRes = R.string.action_play_notification,
+            minApi = Build.VERSION_CODES.KITKAT
+        ),
         SystemActionDef(
             id = PLAY_PAUSE_MEDIA,
             category = CATEGORY_MEDIA,

@@ -911,6 +911,7 @@
     <string name="system_action_cat_other">Other</string>
     <string name="system_action_cat_keyboard">Keyboard</string>
     <string name="system_action_cat_airplane_mode">Airplane Mode</string>
+    <string name="action_play_notification">Play Notification</string>
     <!-- System action category labels -->
 
 </resources>

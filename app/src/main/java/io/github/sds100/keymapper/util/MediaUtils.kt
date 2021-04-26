@@ -2,9 +2,12 @@ package io.github.sds100.keymapper.util
 
 import android.content.Context
 import android.media.AudioManager
+import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Build
 import android.view.KeyEvent
 import androidx.annotation.RequiresApi
+
 
 /**
  * Created by sds100 on 05/11/2018.
@@ -37,5 +40,11 @@ object MediaUtils {
         val audioManager = ctx.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyEvent))
         audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_UP, keyEvent))
+    }
+
+    fun playNotification(context: Context?) {
+        val notification: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        val r = RingtoneManager.getRingtone(context, notification)
+        r.play()
     }
 }

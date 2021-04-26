@@ -73,6 +73,7 @@ object SystemAction {
     const val COLLAPSE_STATUS_BAR = "collapse_status_bar"
 
     //media
+    const val PLAY_NOTIFICATION = "pause_soundfile"
     const val PAUSE_MEDIA = "pause_media"
     const val PLAY_MEDIA = "play_media"
     const val PLAY_PAUSE_MEDIA = "play_pause_media"

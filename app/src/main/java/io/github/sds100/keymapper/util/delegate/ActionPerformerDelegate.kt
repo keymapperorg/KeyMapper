@@ -447,6 +447,7 @@ class ActionPerformerDelegate(context: Context,
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                         when (id) {
+                            SystemAction.PLAY_NOTIFICATION -> MediaUtils.playSoundFile(this)
                             SystemAction.PAUSE_MEDIA -> MediaUtils.pauseMediaPlayback(this)
                             SystemAction.PLAY_MEDIA -> MediaUtils.playMedia(this)
                             SystemAction.PLAY_PAUSE_MEDIA -> MediaUtils.playPauseMediaPlayback(this)
