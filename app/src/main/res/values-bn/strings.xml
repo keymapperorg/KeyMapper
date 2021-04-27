@@ -10,7 +10,6 @@
     <string name="switch_enabled">সক্রিয়</string>
     <string name="disabled">নিষ্ক্রিয়</string>
     <string name="reset">রিসেট</string>
-    <string name="enable_device_admin_message">যদি আপনি device admin সক্রিয় করে থাকেন তাহলে অ্যাপটি আনইন্সটল করার পুর্বে অবশ্যই তা নিষ্ক্রিয় করতে হবে।</string>
     <string name="email_default_message">এই পেজটি কি আপনার সমস্যা সমাধান করতে পেরেছে? আপনার ডিভাইস মডেল কি?\n\n আপনি কোন OEM skin অথবা ROM ব্যবহার করছেন?\n\n অনুগ্রহ করে আপনার সমস্যাটির বিস্তারিত বর্ণনা করুন:</string>
     <!--  Action descriptions  -->
     <string name="description_key">\'%s\' চাপুন</string>
@@ -80,20 +79,15 @@
     <string name="button_fix">ঠিক করুন</string>
     <string name="button_recording_trigger_countdown">%d…</string>
     <!-- Button titles -->
-    <!-- Dialog titles -->
+    <!-- Dialog stuff -->
     <string name="dialog_title_are_you_sure">আপনি কি নিশ্চিত?</string>
-    <string name="dialog_title_cant_find_paired_devices">কোন Paired device পাওয়া যায়নি</string>
     <string name="dialog_title_root_prompt">রুট পারমিশন ছাড়া অপারেশনটি করা সম্ভব নয়।</string>
-    <!-- Dialog titles -->
-    <!-- Dialog messages -->
     <string name="dialog_message_downloading">ডাউনলোডিং…</string>
     <string name="dialog_message_describe_your_issue_in_the_email">অনুগ্রহ করে আপনার সমস্যাটি ই-মেইলের মাধ্যমে বর্ণনা করুন। ধন্যবাদ!</string>
     <string name="dialog_message_long_press_warning">লং প্রেসিং শুধুমাত্র ফিজিক্যাল ভলিউম ও নেভিগেশন বাটনের জন্য প্রযোজ্য। অন্য কোন বাটনের জন্য এটি সক্রিয় করলে বাটনটি লং প্রেস ছাড়া অন্য কোন ক্ষেত্রে কাজ করবে না।</string>
     <string name="dialog_message_double_press_restricted_to_single_key">"একাধিক কি একই সময়ে ডাবল প্রেস করা যাবে না।"</string>
     <string name="dialog_message_bt_constraint_limitation">অ্যান্ড্রয়েড কোন অ্যাপকে এই মুহুর্তে কোন কোন ব্লুটুথ ডিভাইস কানেক্টেড আছে তা দেখার অনুমতি দেয় না। অ্যাপ গুলো শুধুমাত্র কোন ডিভাইস কানেক্টেড অথবা ডিসকানেক্টেড হলে তা ডিটেক্ট করতে পারে। accessibility service স্টার্ট করার পূর্বে যদি কোন ব্লুটথ ডিভাইস কানেক্টে করে থাকেন, তাহলে ব্লুটুথ ডিভাইসটি পুনরায় কানেক্ট না করলে এই অ্যাপটি সেটি ডিটেক্ট করতে পারবে না।</string>
-    <!-- Dialog messages -->
-    <!-- Dialog buttons -->
-    <!-- Dialog buttons -->
+    <!-- Dialog stuff -->
     <!-- Notification strings -->
     <string name="notification_accessibility_service_disabled_text">accessibility service স্টার্ট করতে ট্যাপ করুন।</string>
     <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
@@ -117,7 +111,6 @@
     <string name="showcase_record_trigger_title">Accessibility service চালু করা হয়নি।</string>
     <string name="showcase_record_trigger_description">ট্রিগার তৈরি করতে Accessibility service হলে চালু করতে হবে।</string>
     <string name="showcase_note_from_the_developer_title">ডেভেলপারের খোলা চিঠি</string>
-    <string name="showcase_dex_mode_supported_title">আপনার ডিভাইস Samsung Dex সাপোর্ট করে।</string>
     <!-- Showcase -->
     <!-- system action options -->
     <!-- system action options -->
@@ -126,13 +119,9 @@
     <!-- Meta States -->
     <!-- Meta States -->
     <!-- Error messages -->
-    <string name="error_action_requires_write_settings_permission">এই একশনটি একটিভ করতে চাইলে কি-ম্যাপারকে সিস্টেম সেটিংস মডিফাই করার পারমিশন দিতে হবে।</string>
     <string name="error_cant_find_ime_settings">Keyboard settings পেজটি পাওয়া যায়নি!</string>
-    <string name="error_need_to_enable_device_admin">কি-ম্যাপার device administrator হলে এই একশনটি ব্যবহার করা যাবে!</string>
-    <string name="error_keymapper_doesnt_have_permission_app_shortcut">কি-ম্যাপারের এই শর্টকাট ব্যবহার করার পারমিশন নেই।</string>
     <string name="error_cant_find_write_settings_page">WRITE_SETTINGS permission page পাওয়া যায়নি।</string>
     <string name="error_no_app_found_to_send_feedback">ফিডব্যাক পাঠানোর জন্য অ্যাপ পাওয়া যায়নি।</string>
-    <string name="error_dnd_access_not_granted">আপনি যদি ভলিউম বাটন রি-ম্যাপ করতে চান, তাহলে অ্যাপকে Do Not Disturb মোডে কাজ করার Access দিতে হবে। তা না হলে Do Not Disturb মোডে অ্যাপটি কাজ করবে না!</string>
     <!-- Error messages -->
     <!-- System action labels -->
     <string name="action_switch_keyboard_formatted">%s তে স্যুইচ করুন</string>
