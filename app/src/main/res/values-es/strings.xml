@@ -21,7 +21,6 @@ Los servicios de accesibilidad solo detectan las teclas y eventos de las aplicac
     <string name="no_actions">Sin acciones</string>
     <string name="no_trigger">Sin disparadores</string>
     <string name="unknown_keycode">Código de tecla desconocido: %s</string>
-    <string name="chip_while">mientras</string>
     <string name="on">Encendido</string>
     <string name="off">Apagado</string>
     <string name="follow_system">Igual que el sistema</string>
@@ -59,7 +58,6 @@ Los servicios de accesibilidad solo detectan las teclas y eventos de las aplicac
     <string name="switch_enabled">Activado</string>
     <string name="disabled">Desactivado</string>
     <string name="reset">Restablecer</string>
-    <string name="enable_device_admin_message">Una vez que hayas habilitado el administrador de dispositivo, deberás DESACTIVARLO si quieres desinstalar la aplicación.</string>
     <string name="constraints_recyclerview_placeholder">¡Sin restricciones!</string>
     <string name="action_title_wait">Espera %sms</string>
     <string name="email_subject">Consulta de Key Mapper</string>
@@ -74,11 +72,8 @@ Los servicios de accesibilidad solo detectan las teclas y eventos de las aplicac
     <string name="description_key">Presiona la tecla \"%s\"</string>
     <string name="description_text_block">Teclear \'%s\'</string>
     <string name="description_keyevent">Introducir: %s%s</string>
-    <string name="description_keyevent_through_shell">Introducir %s%s a través del shell</string>
     <string name="description_keyevent_from_device">Entrada %s%s desde %s</string>
-    <string name="description_keyevent_from_device_through_shell">Introducir %s%s de %s a través del shell</string>
     <string name="description_url">Abrir %s</string>
-    <string name="description_tap_coordinate_default">Coordenadas del toque %s, %s</string>
     <!--  Action descriptions  -->
     <!--  Headers  -->
     <!--  Headers  -->
@@ -95,7 +90,6 @@ Los servicios de accesibilidad solo detectan las teclas y eventos de las aplicac
     <string name="toast_io_exception_shrug">Excepción IO ¯\\_(ツ)_/¯</string>
     <string name="toast_incorrect_screenshot_resolution">¡La resolución de la captura de pantalla no coincide con la resolución de este dispositivo!</string>
     <string name="toast_copied_keymap_uid_to_clipboard">UUID del mapeado de teclas copiado al portapapeles</string>
-    <string name="toast_triggered_keymap">Has activado un mapeado de teclas</string>
     <!--  Toasts  -->
     <!-- Extra labels -->
     <string name="extra_label_sequence_trigger_timeout">Tiempo de espera del disparador de secuencia (ms)</string>
@@ -104,7 +98,6 @@ Los servicios de accesibilidad solo detectan las teclas y eventos de las aplicac
     <string name="extra_label_repeat_delay">Retraso hasta repetir (ms)</string>
     <string name="extra_label_repeat_rate">Repetir cada… (ms)</string>
     <string name="extra_label_vibration_duration">Duración de la vibración (ms)</string>
-    <string name="extra_label_action_multiplier">Número de acciones</string>
     <string name="extra_label_delay_before_next_action">Retraso antes de la siguiente acción (ms)</string>
     <string name="extra_label_hold_down_duration">Mantener la duración (ms)</string>
     <!-- Extra labels -->
@@ -156,14 +149,10 @@ Los servicios de accesibilidad solo detectan las teclas y eventos de las aplicac
     <!-- Menu action titles-->
     <!-- Button titles -->
     <!-- Button titles -->
-    <!-- Dialog titles -->
-    <!-- Dialog titles -->
-    <!-- Dialog messages -->
+    <!-- Dialog stuff -->
     <string name="dialog_message_long_press_warning">La pulsación larga sólo funciona para los botones físicos de volumen y navegación. Si lo activa para otras teclas, las teclas no funcionarán cuando no estén pulsadas durante mucho tiempo.</string>
     <string name="dialog_message_write_secure_settings">Para conceder el permiso WRITE_SECURE_SETTINGS a Key Mapper, habilite \"características root\" en los ajustes si su dispositivo está rooteado. Si su dispositivo no está rooteado, siga la guía sobre cómo usar un PC/Mac para conceder permisos.</string>
-    <!-- Dialog messages -->
-    <!-- Dialog buttons -->
-    <!-- Dialog buttons -->
+    <!-- Dialog stuff -->
     <!-- Notification strings -->
     <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
     <!-- Notification strings -->
