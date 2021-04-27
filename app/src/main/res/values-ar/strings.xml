@@ -14,7 +14,6 @@
     <string name="your_device_doesnt_support_some_actions">جهازك لايدعم بعض الوظائف.</string>
     <string name="requires_root">يحتاج إلى الروت</string>
     <string name="press_dot_dot_dot">إضغط…</string>
-    <string name="chip_while">طالما</string>
     <string name="on">مفعل</string>
     <string name="off">معطل</string>
     <string name="follow_system">اتبع النظام</string>
@@ -76,19 +75,15 @@
     <!-- Menu action titles-->
     <!-- Button titles -->
     <!-- Button titles -->
-    <!-- Dialog titles -->
+    <!-- Dialog stuff -->
     <string name="dialog_title_flags">المزيد</string>
-    <!-- Dialog titles -->
-    <!-- Dialog messages -->
-    <!-- Dialog messages -->
-    <!-- Dialog buttons -->
     <string name="pos_yes">نعم</string>
     <string name="pos_done">تم</string>
     <string name="pos_opt_in">الإشتراك</string>
     <string name="neg_no">لا</string>
     <string name="neg_cancel">إلغاء</string>
     <string name="neg_dont_show_again">لا تُظهر مجدّدًا</string>
-    <!-- Dialog buttons -->
+    <!-- Dialog stuff -->
     <!-- Notification strings -->
     <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
     <!-- Notification strings -->
@@ -110,8 +105,6 @@
     <string name="flag_vibrate">إهتزاز</string>
     <!--flags-->
     <!-- Showcase -->
-    <string name="showcase_dex_mode_supported_title">يبدو أن جهازك يدعم Samsung Dex</string>
-    <string name="showcase_dex_mode_supported_message">لا تسمح Samsung للتطبيقات التي تحتوي على لوحة مفاتيح تابعة للجهات الخارجية بفتحها أثناء وضع Dex. لذلك ، لن يتم فتح هذا التطبيق ولن تعمل لوحة المفاتيح Key Mapper أثناء وجودك في وضع Dex. ستظل خرائطك الرئيسية التي لا تتطلب لوحة المفاتيح Key Mapper تعمل أثناء وجودك في وضع Dex.</string>
     <!-- Showcase -->
     <!-- system action options -->
     <string name="stream_accessibility">إمكانية الوصول</string>
