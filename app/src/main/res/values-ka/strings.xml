@@ -19,7 +19,6 @@
     <string name="no_actions">მოქმედების გარეშე</string>
     <string name="no_trigger">არ არის ტრიგერი</string>
     <string name="unknown_keycode">უცნობი ღილაკის კოდი: %s</string>
-    <string name="chip_while">სანამ</string>
     <string name="on">ჩართული</string>
     <string name="off">გამორთული</string>
     <string name="follow_system">მისდიე სისტემას</string>
@@ -92,7 +91,6 @@
     <string name="toast_io_exception_shrug">IO გამონაკლისი ¯\\_(ツ)_/¯</string>
     <string name="toast_incorrect_screenshot_resolution">სქრინშოტის რეზოლუცია არ ემთხვევა მოწყობილობის რეზოლუციას!</string>
     <string name="toast_copied_keymap_uid_to_clipboard">ღილაკების რუკის UUID დაკოპირდა ბუფერში</string>
-    <string name="toast_triggered_keymap">თქვენ დაატრიგერეთ ღილაკების რუკა</string>
     <!--  Toasts  -->
     <!-- Extra labels -->
     <string name="extra_label_sequence_trigger_timeout">თანმიმდევრული ტრიგერების დროის ამოწურვა (მილიწამი)</string>
@@ -115,12 +113,8 @@
     <!-- Menu action titles-->
     <!-- Button titles -->
     <!-- Button titles -->
-    <!-- Dialog titles -->
-    <!-- Dialog titles -->
-    <!-- Dialog messages -->
-    <!-- Dialog messages -->
-    <!-- Dialog buttons -->
-    <!-- Dialog buttons -->
+    <!-- Dialog stuff -->
+    <!-- Dialog stuff -->
     <!-- Notification strings -->
     <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
     <!-- Notification strings -->
