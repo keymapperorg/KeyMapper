@@ -21,7 +21,6 @@
     <string name="no_actions">Нет действий</string>
     <string name="no_trigger">Нет события</string>
     <string name="unknown_keycode">Неизвестный код кнопки: %s</string>
-    <string name="chip_while">пока</string>
     <string name="on">Вкл</string>
     <string name="off">Выкл</string>
     <string name="follow_system">Использовать системные настройки</string>
@@ -59,7 +58,6 @@
     <string name="switch_enabled">Включено</string>
     <string name="disabled">Отключено</string>
     <string name="reset">Сброс</string>
-    <string name="enable_device_admin_message">После того, как вы добавили администратора устройства, вы должны удалить его, если вы хотите удалить приложение.</string>
     <string name="constraints_recyclerview_placeholder">Без ограничений!</string>
     <string name="action_title_wait">Подождите %sмс</string>
     <string name="email_subject">Запрос Key Mapper</string>
@@ -74,12 +72,8 @@
     <string name="description_key">Нажмите \'%s\' кнопку</string>
     <string name="description_text_block">Напечатайте \'%s\'</string>
     <string name="description_keyevent">Ввод %s%s</string>
-    <string name="description_keyevent_through_shell">Ввод %s%s в оболочке</string>
     <string name="description_keyevent_from_device">Ввод %s%s из %s</string>
-    <string name="description_keyevent_from_device_through_shell">Ввод %s%s из %s в оболочке</string>
     <string name="description_url">Открыть %s</string>
-    <string name="description_tap_coordinate_default">Нажмите на координаты %s, %s</string>
-    <string name="description_tap_coordinate_with_description">Коснитесь координат %s, %s (%s)</string>
     <string name="description_phone_call">Позвонить %s</string>
     <!--  Action descriptions  -->
     <!--  Headers  -->
@@ -147,7 +141,6 @@
     <string name="toast_io_exception_shrug">Исключение ввода-вывода ¯\\_(ツ)_/¯</string>
     <string name="toast_incorrect_screenshot_resolution">Разрешение скриншота не соответствует разрешению этого устройства!</string>
     <string name="toast_copied_keymap_uid_to_clipboard">UUID мэппинга скопирован в буфер обмена</string>
-    <string name="toast_triggered_keymap">Сработал мэппинг</string>
     <!--  Toasts  -->
     <!-- Extra labels -->
     <string name="extra_label_sequence_trigger_timeout">Таймаут последовательности события (мс)</string>
@@ -156,7 +149,6 @@
     <string name="extra_label_repeat_delay">Задержка до повтора (мс)</string>
     <string name="extra_label_repeat_rate">Повторять каждые… (мс)</string>
     <string name="extra_label_vibration_duration">Длительность вибрации (мс)</string>
-    <string name="extra_label_action_multiplier">Сколько раз</string>
     <string name="extra_label_delay_before_next_action">Задержка до следующего действия (мс)</string>
     <string name="extra_label_hold_down_duration">Длительность удержания (мс)</string>
     <!-- Extra labels -->
@@ -245,18 +237,15 @@
     <string name="button_config_intent_choose_activity">Выберите Activity</string>
     <string name="button_config_intent_set_flags">Установить флаги</string>
     <!-- Button titles -->
-    <!-- Dialog titles -->
+    <!-- Dialog stuff -->
     <string name="dialog_title_are_you_sure">Вы уверены?</string>
     <string name="dialog_title_create_shortcut_title">Название ярлыка</string>
-    <string name="dialog_title_cant_find_paired_devices">Не найдено сопряженных устройств</string>
     <string name="dialog_title_root_prompt">Требуются Root права!</string>
     <string name="dialog_title_flags">Ещё</string>
     <string name="dialog_title_pick_stream">Выбрать поток</string>
     <string name="dialog_title_choose_flash">Выберите мигание</string>
     <string name="dialog_title_cant_find_accessibility_settings_page">Страница настроек специальных возможностей не найдена</string>
     <string name="dialog_title_cant_record_trigger">Не удается записать событие?</string>
-    <!-- Dialog titles -->
-    <!-- Dialog messages -->
     <string name="dialog_message_are_you_sure_want_to_leave_without_saving">Вы уверены, что хотите уйти без сохранения?</string>
     <string name="dialog_message_root_prompt">Если вы знаете, что у вашего устройства нет Root прав или вы не знаете, что это такое вообще - вы не сможете использовать функции требующие Root прав. Когда вы нажмете на \'OK\' откроются соответствующие настройки.
             В настройках спуститесь вниз и нажмите на \'Key Mapper имеет Root права\' после этого вы сможете использовать эти функции.</string>
@@ -268,7 +257,6 @@
     <string name="dialog_message_double_press_restricted_to_single_key">"Нельзя обработать одновременное двойное нажатие нескольких клавиш."</string>
     <string name="dialog_message_parallel_trigger_order">Клавиши должны быть перечислены сверху вниз в том порядке в котором они должны быть нажаты.</string>
     <string name="dialog_message_sequence_trigger_explanation">Событие со свойством \"последовательность\" имеет таймаут в отличие от параллельных событий. Это означает, что после нажатия первой клавиши у вас будет заданное время для нажатия остальных клавиш в событии. Все клавиши, которые вы добавили в событие, не будут выполнять свои обычные действия до тех пор, пока не будет достигнут таймаут. Этот таймаут можно изменить на вкладке \"Параметры\".</string>
-    <string name="dialog_message_view_faq_and_use_discord_over_email">Пожалуйста, ознакомьтесь с часто задаваемыми вопросами, чтобы узнать, был ли ответ на ваш вопрос. Если нет, то разработчик предпочел бы, если бы вы запросили помощь и/или предложили доработки на сервере Discord. Если у вас нет Discord, вы можете отправить сообщение по электронной почте разработчику напрямую.</string>
     <string name="dialog_message_bt_constraint_limitation">Android не разрешает приложениям получать список подключенных (не сопряженных) Bluetooth-устройств. Приложения могут определять только когда подключены и отключены сопряженные устройства. Таким образом, если ваше Bluetooth устройство уже подключено к вашему основному устройству при запуске службы спец.возможностей, вам придется перепривязать его, чтобы приложение поняло, что оно подключено.</string>
     <string name="dialog_message_change_location_or_disable">Изменить место для автоматического резервного копирования или отключить его?</string>
     <string name="dialog_message_screen_constraints_limitation">Ограничение на включенный или выключенный экран будет работать только в том случае, если вы включили \"Определять события когда экран выключен\" в настройках этого переназначения. Эта настройка имеется только для некоторых клавиш (например для громкости) и только если у вас есть Root права. Полный список поддерживаемых клавиш смотрите на странице справки.</string>
@@ -277,9 +265,7 @@
     <string name="dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout">Вам необходимо переключить раскладку клавиатуры на \"Caps Lock для камеры\" в противном случае клавиша Caps Lock будет менять регистр букв, не более. Эту настройку можно найти в общих настройках вашего устройства -&gt; Языки и методы ввода -&gt; Физическая клавиатура -&gt; Нажать на соответствующую клавиатуру -&gt; Выбрать раскладку. Это переназначит клавишу Caps Lock на отправку KEYCODE_CAMERA, таким образом Key Mapper сможет правильно ее обработать.\n\nПОсле того как вы это сделаете нужно удалить событие \"Caps Lock\" и записать событие для клавиши Caps Lock снова. Если при записи будет отображено \"Камера\" вместо \"Caps Lock\" значит вы все проделали верно.</string>
     <string name="dialog_message_select_app_store_gui_keyboard">Где вы хотите скачать новую клавиатуру с GUI?</string>
     <string name="dialog_message_cant_record_trigger"><b>Перезагрузите</b> свое устройство если кнопка \"Запишите событие\" ведет отсчет, но не регистрирует нажатий. Или даже НЕ ведет отсчет. Если после перезагрузки устройства нажатия клавиши все равно не регистрируются значит Key Mapper не поддерживает этот тип клавиш. К сожалению эту ситуацию не исправить. Дополнительно можно обратиться к разделу 7 часто задаваемых вопросов.</string>
-    <string name="dialog_message_no_external_devices_connected">Внешние устройства не подключены.</string>
-    <!-- Dialog messages -->
-    <!-- Dialog buttons -->
+    <string name="dialog_message_view_faq_and_use_discord_over_email">Пожалуйста, ознакомьтесь с часто задаваемыми вопросами, чтобы узнать, был ли ответ на ваш вопрос. Если нет, то разработчик предпочел бы, если бы вы запросили помощь и/или предложили доработки на сервере Discord. Если у вас нет Discord, вы можете отправить сообщение по электронной почте разработчику напрямую.</string>
     <string name="pos_yes">Да</string>
     <string name="pos_done">Готово</string>
     <string name="pos_opt_in">Принять участие</string>
@@ -299,19 +285,16 @@
     <string name="neutral_intent_docs">Документация</string>
     <string name="snackbar_cancel">Отменить</string>
     <string name="snackbar_fix">Исправить</string>
-    <!-- Dialog buttons -->
+    <!-- Dialog stuff -->
     <!-- Notification strings -->
     <string name="notification_channel_ime_picker">Выбор клавиатуры</string>
-    <string name="notification_channel_toggle_remaps">Карты кнопок Пауза/Продолжить</string>
     <string name="notification_channel_keyboard_hidden">Предупреждение о скрытой клавиатуре</string>
     <string name="notification_channel_toggle_keyboard">Сменить клавиатуру Key Mapper</string>
     <string name="notification_channel_new_features">Новые возможности</string>
     <string name="notification_ime_persistent_text">Нажмите, чтобы изменить клавиатуру.</string>
     <string name="notification_ime_persistent_title">Выбор клавиатуры</string>
     <string name="notification_keymaps_resumed_title">Выполняется</string>
-    <string name="notification_keymaps_resumed_text">Нажмите чтобы приостановить работу приложения.</string>
     <string name="notification_keymaps_paused_title">Приостановлено</string>
-    <string name="notification_keymaps_paused_text">Нажмите, чтобы возобновить работу.</string>
     <string name="notification_action_dismiss">Отклонить</string>
     <string name="notification_accessibility_service_disabled_title">Служба специальных возможностей отключена</string>
     <string name="notification_accessibility_service_disabled_text">Нажмите, чтобы запустить службу специальных возможностей.</string>
@@ -365,7 +348,6 @@
     <string name="title_pref_toggle_keyboard_on_toggle_keymaps">Смена клавиатуры при включении мэппинга</string>
     <string name="summary_pref_toggle_keyboard_on_toggle_keymaps">Автоматически выбирать клавиатуру Key Mapper когда снимаете приложение с паузы и выбирать вашу клавиатуру по умолчанию при установки приложения на паузу.</string>
     <string name="title_pref_hide_home_screen_alerts">Скрыть оповещения на главном экране</string>
-    <string name="summary_pref_hide_home_screen_alerts">Скрыть оповещения в верхней части главного экрана Key Mapper.</string>
     <string name="title_pref_show_device_descriptors">Показать первые 5 символов id устройства для событий связанных с конкретными устройствами</string>
     <string name="summary_pref_show_device_descriptors">Это используется чтобы отличить друг от друга устройства с одним и тем же именем.</string>
     <string name="title_pref_devices_to_reroute_keyevents">Обработка ошибки Android 11, которая задает идентификатор устройства для событий ввода равным -1</string>
@@ -421,7 +403,6 @@ https://issuetracker.google.com/issues/163120692
     <string name="flag_vibrate">Вибрация</string>
     <string name="flag_show_toast">Вывод сообщения на экран</string>
     <string name="flag_long_press_double_vibration">Вибрировать при первом нажатии клавиши и при срабатывании \"длительного нажатия\".</string>
-    <string name="flag_detect_triggers_screen_off">Определять события когда экран выключен. Только при наличии Root прав.</string>
     <string name="flag_repeat_actions">Повторять</string>
     <string name="flag_hold_down">Удерживать</string>
     <string name="flag_dont_override_default_action">Не переопределять действие по умолчанию</string>
@@ -439,12 +420,9 @@ https://issuetracker.google.com/issues/163120692
     <string name="showcase_note_from_the_developer_title">Примечание от разработчика</string>
     <string name="showcase_note_from_the_developer_description">Нет никаких гарантий того, что все действия смогут отработать на вашем устройстве или что каждая кнопка/стик/колесико может быть обнаружена и переназначена. Это потому, что существует много вкусов Android, да и разные бренды могут случайно или намеренно нарушить работу функций. Если что-то не работает, пожалуйста, сообщите разработчику и воздержитесь от плохой оценки приложения, так как проблема часто находится вне контроля разработчика =)</string>
     <string name="showcase_disable_battery_optimisation_title">Key Mapper может перестать работать случайным образом!</string>
-    <string name="showcase_disable_battery_optimisation_message_bad">КРИТИЧЕСКИ ВАЖНО!!! Нажмите \"Выключить\" чтобы не дать Android остановить приложение пока оно находится на фоне. Оболочка вашего бренда (MIUI или Samsung Experience) могут иметь свои настройки \"экономии батареи\", так что НАСТОЯТЕЛЬНО рекомендуется выключить всю экономию для приложения Key Mapper там или с помощью dontkillmyapp.com</string>
     <string name="showcase_disable_battery_optimisation_message_good">Стандартная оптимизация батареи Android выключена. Однако этого бывает недостаточно для большинства устройств, так что перейдите на dontkillmyapp.com, чтобы посмотреть, как выключить ещё больше функций энергосбережения на вашем устройстве.</string>
     <string name="showcase_disable_battery_optimisation_button_turn_off">Выключить</string>
     <string name="showcase_disable_battery_optimisation_button_dont_kill_my_app">Перейти на dontkillmyapp.com</string>
-    <string name="showcase_dex_mode_supported_title">Похоже, что ваше устройство поддерживает Samsung Dex</string>
-    <string name="showcase_dex_mode_supported_message">Samsung запрещает приложениям с сторонней клавиатурой открываться в режиме Dex. Поэтому это приложение не будет открываться и клавиатура Key Mapper не будет работать, пока вы находитесь в режиме Dex. Ваши мэппинги, которые не требуют клавиатуры Key Mapper по-прежнему будут работать, пока вы находитесь в режиме Dex.</string>
     <string name="showcase_dnd_access_title_disabled">Переназначить клавиши громкости?</string>
     <string name="showcase_dnd_access_title_enabled">Вы можете переназначить клавиши управления громкостью.</string>
     <string name="showcase_dnd_access_description_disabled">Приложению Key Mapper требуется доступ к управлению режимом \"Не беспокосить\" если вы хотите переназначить действия связанные с событием нажатия на клавишу громкости.</string>
@@ -452,7 +430,6 @@ https://issuetracker.google.com/issues/163120692
     <string name="showcase_contributing_title">Помощь проекту</string>
     <string name="showcase_contributing_description">"Это приложение с открытым исходным кодом! Вы можете начать вносить свой вклад в репозиторий sds100/KeyMapper на GitHub и присоединившись к серверу Discord. Даже если вы не можете программировать, вы можете помочь, помогая другим и тестируя последние возможности."</string>
     <string name="showcase_action_list">Нажмите на три точки чтобы изменить режим повтора и другие особенности. Вы можете протестировать результат и исправить ошибки действия нажав на него.</string>
-    <string name="showcase_screen_off_triggers">Эта опция будет работать только в том случае, если ваше устройство имеет Root доступ и вы указали это в настройках Key Mapper. Если вы не знаете, что такое root, то эта опция не будет работать. Она также будет работать только для некоторых клавиш (например - Кнопки громкости) поэтому смотрите на странице Справки список поддерживаемых клавиш.</string>
     <string name="showcase_fingerprint_gesture_support_title_supported_unknown">Переназначение жестов датчика отпечатка пальцев</string>
     <string name="showcase_fingerprint_gesture_support_title_supported">Вы можете переназначить жесты датчика отпечатка пальцев! :)</string>
     <string name="showcase_fingerprint_gesture_support_title_not_supported">Вы НЕ можете переназначить жесты датчика отпечатка пальцев!</string>
@@ -482,8 +459,6 @@ https://issuetracker.google.com/issues/163120692
     <string name="dnd_mode_none">Ничего</string>
     <!-- system action options -->
     <!-- Tiles -->
-    <string name="tile_pause">Приостановить работу</string>
-    <string name="tile_resume">Продолжить работу</string>
     <string name="tile_service_disabled">Служба отключена</string>
     <string name="tile_accessibility_service_disabled_content_description">Служба специальных возможностей Key Mapper отключена</string>
     <string name="tile_keymapper_keyboard_service_disabled_content_description">Клавиатура Key Mapper выключена</string>
@@ -518,24 +493,19 @@ https://issuetracker.google.com/issues/163120692
     <string name="error_app_isnt_installed">Приложение с именем пакета %s не установлено!</string>
     <string name="error_app_isnt_installed_brief">Приложение не установлено!</string>
     <string name="error_app_is_disabled">Приложение отключено!</string>
-    <string name="error_action_requires_write_settings_permission">Вам нужно предоставить разрешение Key Mapper для изменения системных настроек, чтобы использовать это действие.</string>
     <string name="error_requires_root">Для этого требуются Root права!</string>
     <string name="error_action_requires_camera_permission">Это действие требует разрешение для работы с камерой!</string>
     <string name="error_sdk_version_too_low">Это требует Android %s</string>
     <string name="error_sdk_version_too_high">Это поддерживается только до Android %s</string>
     <string name="error_feature_not_available">Ваше устройство не поддерживает %s.</string>
     <string name="error_flag_not_found">Флаг \"%s\" не найден!</string>
-    <string name="error_google_app_not_installed">Приложение Google не установлено!</string>
     <string name="error_cant_find_ime_settings">Не удается найти страницу настроек клавиатуры!</string>
-    <string name="error_need_to_enable_device_admin">Key Mapper должен быть администратором устройства для использования этого действия!</string>
     <string name="error_in_do_not_disturb_mode">В режиме «Не беспокоить»!</string>
-    <string name="error_keymapper_doesnt_have_permission_app_shortcut">Key Mapper не имеет разрешения для использования этого ярлыка.</string>
     <string name="error_action_notification_policy_permission">Приложению необходимо разрешение на изменение состояния «Не беспокоить»!</string>
     <string name="error_action_requires_read_phone_state_permission">Это действие требует разрешения на чтение состояния телефона!</string>
     <string name="error_cant_find_write_settings_page">Не удается найти страницу прав доступа WRITE_SETTINGS!</string>
     <string name="error_opening_app_shortcut">Ошибка при открытии ярлыка этого приложения</string>
     <string name="error_no_app_found_to_send_feedback">Не найдено совместимых приложений для отправки отзыва.</string>
-    <string name="error_dnd_access_not_granted">Если вы переназначаете кнопки громкости, вам нужно дать приложению доступ к режиму \"Не беспокоить\" если вы хотите, чтобы кнопки работали в режиме «Не беспокоить»!</string>
     <string name="dnd_access_granted">Получено разрешение на изменение режима «Не беспокоить»!</string>
     <string name="error_cant_find_dnd_access_settings">Не удается найти настройки прав доступа для режима \"Не беспокоить\"!</string>
     <string name="error_need_write_secure_settings_permission">Key Mapper требуется разрешение WRITE_SECURE_SETTINGS.</string>
@@ -555,25 +525,15 @@ https://issuetracker.google.com/issues/163120692
     <string name="error_accessibility_service_disabled">Служба спец.возможностей должна быть включена!</string>
     <string name="warning_need_write_secure_settings_permission">Для некоторых функций требуется разрешение WRITE_SECURE_SETTINGS.</string>
     <string name="fixed_need_write_secure_settings_permission">Предоставлено разрешение WRITE_SECURE_SETTINGS.</string>
-    <string name="error_ime_service_disabled_status_layout">Должна быть включена клавиатура совместимая с Key Mapper чтобы \"Событие нажатия\", \"Клавиша\", \"Текст\" и некоторые другие действия работали.</string>
-    <string name="error_ime_service_disabled">Не включена ни одна из клавиатур совместимых с Key Mapper!</string>
-    <string name="error_ime_service_enabled">Включена клавиатура совместимая с Key Mapper!</string>
-    <string name="error_critical_ime_service_disabled">Должна быть включена клавиатура совместимая с Key Mapper для того чтобы ваши действия отработали!</string>
     <string name="error_ime_not_found">Can\'t find the %s input method</string>
     <string name="error_no_enabled_imes">На этом устройстве нет включенных методов ввода!</string>
     <string name="error_the_app_wont_work">Мэппинги не будут работать! Что-то надо исправить!</string>
     <string name="error_cant_move_to_end_of_text_in_this_field">Вы не можете перемещаться в конец текста в этом поле!</string>
     <string name="error_battery_optimisation_activity_not_found">Настройки оптимизации батареи не найдены! Если они существуют, откройте их вручную.</string>
-    <string name="error_cant_find_option_label">error: Can\'t find a label for this option \"%s\"</string>
-    <string name="error_system_action_not_found">System action not found %s!</string>
-    <string name="error_no_action_data">Нет данных о действии!</string>
     <string name="error_extra_not_found">Extra (%s) not found!</string>
-    <string name="error_constraint_not_found">Ограничение не найдено</string>
     <string name="error_duplicate_constraint">Вы не можете иметь двойные ограничения!</string>
     <string name="error_fingerprint_gesture_map_constraint_exists">У этого жеста уже есть это ограничение!</string>
     <string name="error_cant_be_empty">Не может быть пустым!</string>
-    <string name="error_invalid_action_type">Недопустимый тип действия: %s</string>
-    <string name="error_options_not_required">Настройки не требуются</string>
     <string name="error_key_mapper_ime_not_found">Невозможно найти метод ввода Key Mapper!</string>
     <string name="error_download_failed">Загрузка не удалась!</string>
     <string name="error_file_not_exists">Файл не существует!</string>
@@ -581,7 +541,6 @@ https://issuetracker.google.com/issues/163120692
     <string name="error_file_not_cached">Файл не кэширован! Подключитесь к интернету, чтобы загрузить его.</string>
     <string name="error_this_is_unsupported">Это не поддерживается. :(</string>
     <string name="error_device_not_found">Устройство не найдено!</string>
-    <string name="error_no_keymaps">Нет мэппингов!</string>
     <string name="error_failed_to_pick_file">Не удалось найти файл</string>
     <string name="error_empty_json">Пустой файл JSON!</string>
     <string name="error_file_access_denied">Доступ к файлу запрещен! Удален?</string>
@@ -590,8 +549,6 @@ https://issuetracker.google.com/issues/163120692
     <string name="error_invalid_number">Неверное число!</string>
     <string name="error_number_too_small">Должно быть по крайней мере %s!</string>
     <string name="error_number_too_big">Должно быть не более %s!</string>
-    <string name="error_battery_optimisation_enabled">Оптимизация батареи включена! Это может привести к отключению работы Key Mapper случайным образом.</string>
-    <string name="error_battery_optimisation_disabled">Оптимизация батареи выключена!</string>
     <string name="error_cant_find_notification_listener_settings">Не удается найти настройки доступа к уведомлениям!</string>
     <string name="error_denied_notification_listener_service_permission">Отказано в доступе к уведомлениям!</string>
     <string name="error_invalid_intent_extra_value">Недопустимо!</string>
