@@ -340,7 +340,7 @@
     <string name="button_create_keymap_shortcut_in_launcher">Create launcher shortcut</string>
     <string name="button_open_trigger_keymap_from_intent_guide">Intent guide</string>
     <string name="button_help">Help</string>
-    <string name="button_pick_coordinate_select_screenshot">Select Screenshot</string>
+    <string name="button_pick_coordinate_select_screenshot">Select Screenshot (optional)</string>
     <string name="button_config_intent_choose_activity">Choose activity</string>
     <string name="button_config_intent_set_flags">Set flags</string>
     <!-- Button titles -->
