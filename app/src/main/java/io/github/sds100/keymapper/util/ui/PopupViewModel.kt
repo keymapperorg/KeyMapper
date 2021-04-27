@@ -7,7 +7,6 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.addRepeatingJob
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
 
