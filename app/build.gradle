@@ -43,6 +43,11 @@ android {
         ci {
             debuggable = true
 
+            /*
+            This is required because the splitties library doesn't have a ci build type.
+             */
+            matchingFallbacks = ['debug']
+
             applicationIdSuffix ".ci"
             versionNameSuffix "-ci." + props.getProperty("VERSION_NUM")
             signingConfig signingConfigs.debug
@@ -121,7 +126,6 @@ dependencies {
     // splitties
     implementation "com.louiscad.splitties:splitties-bitflags:$splitties_version"
     implementation "com.louiscad.splitties:splitties-alertdialog-appcompat-coroutines:$splitties_version"
-    implementation "com.louiscad.splitties:splitties-alertdialog-appcompat:$splitties_version"
     implementation("com.louiscad.splitties:splitties-alertdialog-material:$splitties_version")
     implementation "com.louiscad.splitties:splitties-snackbar:$splitties_version"
     implementation "com.louiscad.splitties:splitties-toast:$splitties_version"
