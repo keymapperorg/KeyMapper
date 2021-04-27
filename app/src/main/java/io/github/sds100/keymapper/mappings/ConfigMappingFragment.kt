@@ -15,19 +15,15 @@ import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.databinding.FragmentConfigMappingBinding
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.ChooseActionFragment
 import io.github.sds100.keymapper.actions.ConfigActionsFragment
+import io.github.sds100.keymapper.databinding.FragmentConfigMappingBinding
 import io.github.sds100.keymapper.system.url.UrlUtils
-import io.github.sds100.keymapper.util.GenericFragmentPagerAdapter
 import io.github.sds100.keymapper.ui.utils.getJsonSerializable
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.showPopups
-import splitties.alertdialog.appcompat.alertDialog
-import splitties.alertdialog.appcompat.cancelButton
-import splitties.alertdialog.appcompat.messageResource
-import splitties.alertdialog.appcompat.positiveButton
+import splitties.alertdialog.appcompat.*
 
 /**
  * Created by sds100 on 17/01/21.
@@ -180,7 +176,7 @@ abstract class ConfigMappingFragment : Fragment() {
                 findNavController().navigateUp()
             }
 
-            cancelButton()
+            negativeButton(R.string.neg_cancel) { it.cancel() }
         }
 
         onBackPressedDialog?.show()

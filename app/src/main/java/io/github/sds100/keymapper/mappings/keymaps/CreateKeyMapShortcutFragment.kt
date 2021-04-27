@@ -17,10 +17,7 @@ import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.str
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
-import splitties.alertdialog.appcompat.alertDialog
-import splitties.alertdialog.appcompat.cancelButton
-import splitties.alertdialog.appcompat.messageResource
-import splitties.alertdialog.appcompat.positiveButton
+import splitties.alertdialog.appcompat.*
 
 /**
  * Created by sds100 on 08/09/20.
@@ -100,7 +97,7 @@ class CreateKeyMapShortcutFragment : SimpleRecyclerViewFragment<KeyMapListItem>(
                 requireActivity().finish()
             }
 
-            cancelButton()
+            negativeButton(R.string.neg_cancel) { it.cancel() }
             show()
         }
     }

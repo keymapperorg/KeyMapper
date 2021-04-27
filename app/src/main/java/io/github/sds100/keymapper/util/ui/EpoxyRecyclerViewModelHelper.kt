@@ -10,7 +10,7 @@ import io.github.sds100.keymapper.util.ui.CheckBoxListItem
 import io.github.sds100.keymapper.util.ui.RadioButtonPairListItem
 import io.github.sds100.keymapper.util.ui.RadioButtonTripleListItem
 import io.github.sds100.keymapper.util.ui.SliderListItem
-import io.github.sds100.keymapper.util.editTextNumberAlertDialog
+import io.github.sds100.keymapper.util.ui.editTextNumberAlertDialog
 import io.github.sds100.keymapper.util.viewLifecycleScope
 
 /**

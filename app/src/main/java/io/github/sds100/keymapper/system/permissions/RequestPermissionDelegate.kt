@@ -87,7 +87,7 @@ class RequestPermissionDelegate(
                         startActivityForResultLauncher.launch(intent)
                     }
 
-                    cancelButton()
+                    negativeButton(R.string.neg_cancel) { it.cancel() }
 
                     show()
                 }
@@ -155,7 +155,7 @@ class RequestPermissionDelegate(
                             Shell.run("su")
                         }
 
-                        cancelButton()
+                        negativeButton(R.string.neg_cancel) { it.cancel() }
 
                         show()
                     }
@@ -183,7 +183,7 @@ class RequestPermissionDelegate(
                                 }
                             }
 
-                            cancelButton()
+                            negativeButton(R.string.neg_cancel) { it.cancel() }
 
                             neutralButton(R.string.neutral_go_to_dont_kill_my_app) {
                                 UrlUtils.openUrl(

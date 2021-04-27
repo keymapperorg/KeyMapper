@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.util
+package io.github.sds100.keymapper.util.ui
 
 import android.app.Dialog
 import android.content.Context
@@ -11,8 +11,7 @@ import io.github.sds100.keymapper.databinding.DialogChooseAppStoreBinding
 import io.github.sds100.keymapper.databinding.DialogEdittextNumberBinding
 import io.github.sds100.keymapper.databinding.DialogEdittextStringBinding
 import io.github.sds100.keymapper.home.ChooseAppStoreModel
-import io.github.sds100.keymapper.util.ui.DialogResponse
-import io.github.sds100.keymapper.util.ui.PopupUi
+import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -70,7 +69,7 @@ suspend fun <ID> Context.multiChoiceDialog(
             checkedItems[which] = checked
         }
 
-        cancelButton()
+        negativeButton(R.string.neg_cancel) { it.cancel() }
 
         okButton {
             val checkedItemIds = sequence {
@@ -132,7 +131,7 @@ suspend fun Context.editTextStringAlertDialog(
             continuation.resume(PopupUi.TextResponse(text.value))
         }
 
-        cancelButton()
+        negativeButton(R.string.neg_cancel) { it.cancel() }
     }
 
     alertDialog.show()
@@ -204,7 +203,7 @@ suspend fun Context.editTextNumberAlertDialog(
                 }
             }
 
-            cancelButton()
+            negativeButton(R.string.neg_cancel) { it.cancel() }
 
             val alertDialog = show()
 
@@ -279,7 +278,7 @@ object DialogUtils {
                 setView(this.root)
             }
 
-            cancelButton()
+            negativeButton(R.string.neg_cancel) { it.cancel() }
 
             show()
         }
