@@ -21,7 +21,6 @@
     <string name="no_actions">Eylem yok</string>
     <string name="no_trigger">Etkileyici yok</string>
     <string name="unknown_keycode">Bilinmeyen anahtar kodu: %s</string>
-    <string name="chip_while">zaman</string>
     <string name="on">Açık</string>
     <string name="off">Kapatıldı</string>
     <string name="follow_system">Sistem yönlendiriyo</string>
@@ -59,7 +58,6 @@
     <string name="switch_enabled">Etkin </string>
     <string name="disabled">Pasif </string>
     <string name="reset">Sıfırla </string>
-    <string name="enable_device_admin_message">Cihaz yöneticisini etkinleştirdikten sonra, uygulamayı kaldırmak istiyorsanız onu DEVRE DIŞI BIRAKMALISINIZ.</string>
     <string name="constraints_recyclerview_placeholder">Kısıtlamalar yok!</string>
     <string name="action_title_wait">Bekle %sms</string>
     <string name="email_subject">Key Mapper sorgu</string>
@@ -74,12 +72,8 @@
     <string name="description_key">%s tuşuna bas</string>
     <string name="description_text_block">%s yazın</string>
     <string name="description_keyevent">%s%s\'i girin</string>
-    <string name="description_keyevent_through_shell">Kabuk üzerinden %s%s girişi</string>
     <string name="description_keyevent_from_device">%s \'den %s%s girişi</string>
-    <string name="description_keyevent_from_device_through_shell">Kabuk üzerinden %s üzerinden%s%s girin</string>
     <string name="description_url">%s\'i Aç</string>
-    <string name="description_tap_coordinate_default">Koordinatlara dokunun%s, %s</string>
-    <string name="description_tap_coordinate_with_description">Koordinatlara dokunun%s, %s(%s)</string>
     <string name="description_phone_call">Ara %s</string>
     <!--  Action descriptions  -->
     <!--  Headers  -->
@@ -147,7 +141,6 @@
     <string name="toast_io_exception_shrug">GÇ istisnası ¯ \\ _ (ツ) _ / ¯</string>
     <string name="toast_incorrect_screenshot_resolution">Ekran görüntüsü kalitesi cihazınki ile eşleşmiyor!</string>
     <string name="toast_copied_keymap_uid_to_clipboard">Anahtar eşlemesi UUID\'si panoya kopyalandı</string>
-    <string name="toast_triggered_keymap">Bir tetikleyiciyi eşledin</string>
     <!--  Toasts  -->
     <!-- Extra labels -->
     <string name="extra_label_sequence_trigger_timeout">Sıra tetikleme zaman aşımı (ms)</string>
@@ -156,7 +149,6 @@
     <string name="extra_label_repeat_delay">Tekrarlamadan önceki bekleme süresi (ms)</string>
     <string name="extra_label_repeat_rate">Her… (ms) tekrarla</string>
     <string name="extra_label_vibration_duration">Titreşim süresi (ms)</string>
-    <string name="extra_label_action_multiplier">Eylem sayısı</string>
     <string name="extra_label_delay_before_next_action">Bi sonraki eylemden önce bekleme (ms)</string>
     <string name="extra_label_hold_down_duration">Basılı tutma süresi (ms)</string>
     <!-- Extra labels -->
@@ -245,18 +237,15 @@
     <string name="button_config_intent_choose_activity">Etkinlik seçin</string>
     <string name="button_config_intent_set_flags">Bayrakları seç</string>
     <!-- Button titles -->
-    <!-- Dialog titles -->
+    <!-- Dialog stuff -->
     <string name="dialog_title_are_you_sure">Emin misiniz?</string>
     <string name="dialog_title_create_shortcut_title">Kısayol başlığı oluştur</string>
-    <string name="dialog_title_cant_find_paired_devices">Eşleştirilmiş cihaz bulunamadı</string>
     <string name="dialog_title_root_prompt">KÖK ERİŞİMİ gerekiyor!</string>
     <string name="dialog_title_flags">Daha fazla</string>
     <string name="dialog_title_pick_stream">Yayını seç</string>
     <string name="dialog_title_choose_flash">Flaşı seç</string>
     <string name="dialog_title_cant_find_accessibility_settings_page">Erişilebilirlik hizmeti sayfası bulunamadı agb</string>
     <string name="dialog_title_cant_record_trigger">Tetikleyici kaydedilemedi?</string>
-    <!-- Dialog titles -->
-    <!-- Dialog messages -->
     <string name="dialog_message_are_you_sure_want_to_leave_without_saving">Kaydetmeden çıkmak istediğinizden emin misiniz?</string>
     <string name="dialog_message_root_prompt">Telefonunuzun köklü olmadığını biliyorsanız veya kökün ne olduğunu bilmiyorsanız, yalnızca köklü cihazlarda çalışan özellikleri kullanamazsınız.  \'Tamam\'a dokunduğunuzda, ayarlara yönlendirileceksiniz.
              Ayarlarda, aşağıya kaydırın ve \'Anahtar Eşleştiricinin kök izni var\' seçeneğine dokunun, böylece kök özelliklerini / eylemlerini kullanabilirsiniz.</string>
@@ -268,7 +257,6 @@
     <string name="dialog_message_double_press_restricted_to_single_key">"Bir den çok tetikleyicide çift tıklaysmazsınız."</string>
     <string name="dialog_message_parallel_trigger_order">Tuşların basılı tutulacakları sırayla yukarıdan aşağı sıralanması gerekir.</string>
     <string name="dialog_message_sequence_trigger_explanation">Bir \"sekans\" tetikleyicisinin, paralel tetikleyicilerin aksine bir zaman aşımı vardır. Bu, ilk tuşa bastıktan sonra, tetikteki tuşların geri kalanını girmek için belirli bir süreye sahip olacağınız anlamına gelir. Tetikleyiciye eklediğiniz tüm tuşlar, zaman aşımına ulaşılana kadar olağan eylemlerini gerçekleştirmez. Bu zaman aşımını \"Seçenekler\" sekmesinden değiştirebilirsiniz.</string>
-    <string name="dialog_message_view_faq_and_use_discord_over_email">Sorunununuz için eğer cevaplanışsa FAQ\'yu inceleyin. Değilse, geliştirici yardım istemenizi ve Discord sunucusunda özellikler önermenizi tercih eder.  Discord\'a sahip değilseniz, doğrudan geliştiriciye e-posta gönderebilirsiniz.</string>
     <string name="dialog_message_bt_constraint_limitation">Android, uygulamaların bağlı (eşlenmemiş) Bluetooth cihazlarının bir listesini almasına izin vermez. Uygulamalar yalnızca bağlı ve bağlantısı kesildiğinde algılayabilir. Dolayısıyla, erişilebilirlik hizmeti başladığında Bluetooth cihazınız cihazınıza zaten bağlıysa, uygulamanın bağlı olduğunu bilmesi için yeniden bağlamanız gerekir.</string>
     <string name="dialog_message_change_location_or_disable">Konum mu değiştirildi yoksa otomatik yedekleme mi kapandı?</string>
     <string name="dialog_message_screen_constraints_limitation">Ekran açma / kapama kısıtlamaları yalnızca \"ekran kapalıyken tetiği algıla\" tuş haritası seçeneğini etkinleştirdiyseniz çalışacaktır. Bu seçenek yalnızca bazı tuşlar için (örneğin ses düğmeleri) ve kök erişiminiz iseniz gösterilecektir. Yardım sayfasında desteklenen tuşların listesine bakın.</string>
@@ -276,9 +264,7 @@
     <string name="dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout">Klavyeniz için \"Caps Lock to camera\" klavye düzenini seçmeniz gerekir, aksi takdirde Caps Lock tuşu yine de büyük harfleri kilitler. Bu ayarı cihaz ayarlarınızda bulabilirsiniz -> Diller ve Giriş -> Fiziksel Klavye -> Klavyenize dokunun -> Klavye Düzenlerini Ayarlayın. Bu, Caps Lock tuşunu KEYCODE_CAMERA olarak yeniden eşler, böylece Anahtar Eşleştirici onu düzgün bir şekilde yeniden eşleyebilir. \n \n Bunu yaptıktan sonra Caps Lock tetik tuşunu kaldırmanız ve Caps Lock tuşunu yeniden kaydetmeniz gerekir. Adımları doğru yaptıysanız \"Caps Lock\" yerine \"Kamera\" demelidir.</string>
     <string name="dialog_message_select_app_store_gui_keyboard">Yeni bir klavye ister misin?</string>
     <string name="dialog_message_cant_record_trigger">\"Tetiği kaydet\" düğmesi geri sayıyorsa ve bastığınız düğmeler görünmüyorsa cihazınızı <b> yeniden başlatın </b>. Yeniden başlattıktan sonra düğmeleriniz hala görünmüyorsa, Key Mapper düğmelerinizi desteklemiyor demektir. Bunun için bir düzeltme yok.</string>
-    <string name="dialog_message_no_external_devices_connected">Dış cihazlar bağlanmadı.</string>
-    <!-- Dialog messages -->
-    <!-- Dialog buttons -->
+    <string name="dialog_message_view_faq_and_use_discord_over_email">Sorunununuz için eğer cevaplanışsa FAQ\'yu inceleyin. Değilse, geliştirici yardım istemenizi ve Discord sunucusunda özellikler önermenizi tercih eder.  Discord\'a sahip değilseniz, doğrudan geliştiriciye e-posta gönderebilirsiniz.</string>
     <string name="pos_yes">Evet</string>
     <string name="pos_done">Başarılı</string>
     <string name="pos_opt_in">Kaydol</string>
@@ -298,19 +284,16 @@
     <string name="neutral_intent_docs">Dokümanlar</string>
     <string name="snackbar_cancel">İptal</string>
     <string name="snackbar_fix">Düzelt</string>
-    <!-- Dialog buttons -->
+    <!-- Dialog stuff -->
     <!-- Notification strings -->
     <string name="notification_channel_ime_picker">Klavye seçici</string>
-    <string name="notification_channel_toggle_remaps">Tuş eşlemelerini durdur/devam ettir</string>
     <string name="notification_channel_keyboard_hidden">Gizli klavye uyarısı</string>
     <string name="notification_channel_toggle_keyboard">Keymapper klavyesini değiştir</string>
     <string name="notification_channel_new_features">Yeni özellikler</string>
     <string name="notification_ime_persistent_text">Klavyeni seçmek için dokun.</string>
     <string name="notification_ime_persistent_title">Klavye seçici</string>
     <string name="notification_keymaps_resumed_title">Çalışıyor</string>
-    <string name="notification_keymaps_resumed_text">Tuş eşlemelerini durdurmak için dokun.</string>
     <string name="notification_keymaps_paused_title">Duraklatıldı</string>
-    <string name="notification_keymaps_paused_text">Tuş eşlemelerini devam ettirmek için dokun.</string>
     <string name="notification_action_dismiss">Yoksay</string>
     <string name="notification_accessibility_service_disabled_title">Erileşebirlik hizmeti kapalı</string>
     <string name="notification_accessibility_service_disabled_text">Erişilebilirlik hizmetini başlatmak için dokun.</string>
@@ -369,7 +352,6 @@
     <string name="flag_vibrate">Titreşim</string>
     <string name="flag_show_toast">Ekran üstündeki mesajı göster</string>
     <string name="flag_long_press_double_vibration">Tuşlara ilk basılışı ve uzun basılışında titret.</string>
-    <string name="flag_detect_triggers_screen_off">Tetikleyiciyi ekran kapalıyken bul. Sadece KÖK ERİŞİMİ ile.</string>
     <!--flags-->
     <!-- Showcase -->
     <!-- Showcase -->
