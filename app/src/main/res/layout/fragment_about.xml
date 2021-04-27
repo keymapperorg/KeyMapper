@@ -9,7 +9,7 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/container"
-            android:name="io.github.sds100.keymapper.ui.fragment.AboutPreferenceFragment"
+            android:name="io.github.sds100.keymapper.about.AboutPreferenceFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginBottom="?attr/actionBarSize" />

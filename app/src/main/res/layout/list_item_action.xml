@@ -7,17 +7,11 @@
 
         <import type="android.view.View" />
 
-        <import type="io.github.sds100.keymapper.util.ActionType" />
-
-        <import type="io.github.sds100.keymapper.util.TintType" />
+        <import type="io.github.sds100.keymapper.util.ui.TintType" />
 
         <variable
-            name="model"
-            type="io.github.sds100.keymapper.data.model.ActionModel" />
-
-        <variable
-            name="actionCount"
-            type="Integer" />
+            name="state"
+            type="io.github.sds100.keymapper.actions.ActionListItem" />
 
         <variable
             name="onRemoveClick"
@@ -73,7 +67,7 @@
                     android:id="@+id/textViewTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@{model.title == null ? model.briefErrorMessage : model.title}"
+                    android:text="@{state.title == null ? state.errorMessage : state.title}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:textColor="?attr/colorOnSurface"
                     tools:text="Increase Volume" />
@@ -82,9 +76,9 @@
                     android:id="@+id/textViewSecondary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@{model.extraInfo}"
+                    android:text="@{state.extraInfo}"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-                    android:visibility='@{model.hasFlags ? View.VISIBLE : View.GONE}'
+                    android:visibility='@{state.extraInfo == null ? View.GONE : View.VISIBLE}'
                     tools:text="Show Volume Dialog"
                     tools:visibility="visible" />
 
@@ -92,21 +86,21 @@
                     android:id="@+id/textViewError"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@{model.briefErrorMessage}"
+                    android:text="@{state.errorMessage}"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                     android:textColor="?attr/colorError"
-                    android:visibility='@{model.hasError ? View.VISIBLE : View.GONE}'
+                    android:visibility='@{state.errorMessage != null ? View.VISIBLE : View.GONE}'
                     tools:text="Needs Do Not Disturb permission!"
                     tools:visibility="visible" />
             </LinearLayout>
 
-            <io.github.sds100.keymapper.ui.view.SquareImageButton
+            <io.github.sds100.keymapper.util.ui.SquareImageButton
                 android:id="@+id/buttonDrag"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:tint="?attr/colorOnSurface"
-                android:visibility="@{actionCount > 1 ? View.VISIBLE : View.GONE}"
+                android:visibility="@{state.dragAndDrop ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toBottomOf="@id/layoutDescription"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/layoutDescription"
@@ -119,13 +113,13 @@
                 android:layout_height="40dp"
                 android:padding="4dp"
                 android:layout_marginStart="8dp"
-                android:src="@{model.hasError ? @drawable/ic_baseline_error_outline_24 : model.icon}"
+                android:src="@{state.icon}"
                 app:layout_constraintBottom_toBottomOf="@id/layoutDescription"
                 app:layout_constraintEnd_toStartOf="@+id/layoutDescription"
                 app:layout_constraintStart_toEndOf="@id/buttonDrag"
                 app:layout_constraintTop_toTopOf="@id/layoutDescription"
                 app:layout_constraintVertical_bias="0.0"
-                app:tintType="@{model.hasError ? TintType.ERROR : model.type == ActionType.SYSTEM_ACTION ? TintType.ON_SURFACE : TintType.NONE}"
+                app:tintType="@{state.tintType}"
                 tools:srcCompat="@mipmap/ic_launcher"
                 tools:visibility="visible" />
 

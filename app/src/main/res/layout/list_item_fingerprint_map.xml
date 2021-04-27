@@ -8,28 +8,24 @@
         <import type="android.view.View" />
 
         <variable
-            name="onChooseActionClick"
+            name="onActionChipClick"
+            type="io.github.sds100.keymapper.util.ui.OnChipClickCallback" />
+
+        <variable
+            name="onConstraintChipClick"
+            type="io.github.sds100.keymapper.util.ui.OnChipClickCallback" />
+
+        <variable
+            name="onEnabledSwitchClickListener"
             type="View.OnClickListener" />
 
         <variable
-            name="onAddConstraintClick"
-            type="View.OnClickListener" />
-
-        <variable
-            name="onErrorClick"
-            type="io.github.sds100.keymapper.ui.callback.ErrorClickCallback" />
-
-        <variable
-            name="onEnabledSwitchClick"
-            type="View.OnClickListener" />
-
-        <variable
-            name="onClick"
+            name="onCardClick"
             type="View.OnClickListener" />
 
         <variable
             name="model"
-            type="io.github.sds100.keymapper.data.model.FingerprintMapListItemModel" />
+            type="io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapListItem" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -40,7 +36,7 @@
         android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="4dp"
-        android:onClick="@{onClick}">
+        android:onClick="@{onCardClick}">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -68,8 +64,8 @@
                 android:id="@+id/switchEnabled"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
+                android:onClick="@{onEnabledSwitchClickListener}"
                 android:checked="@{model.isEnabled}"
-                android:onClick="@{onEnabledSwitchClick}"
                 app:layout_constraintBottom_toBottomOf="@id/textViewHeader"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
@@ -80,33 +76,66 @@
                 android:id="@+id/textViewExtraInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@{model.extraInfo}"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
                 android:textColor="?attr/colorError"
                 android:textSize="14sp"
-                android:visibility="@{model.isEnabled &amp;&amp; model.hasActions &amp;&amp; !model.actionsHaveErrors ? View.GONE : View.VISIBLE}"
-                app:actionsHaveErrors="@{model.actionsHaveErrors}"
-                app:isKeymapEnabled="@{model.isEnabled}"
+                android:visibility="@{model.extraInfo.empty ? View.GONE : View.VISIBLE}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/textViewHeader"
-                app:noActions="@{!model.hasActions}"
                 tools:text="Disabled • No Actions • No Triggers"
                 tools:visibility="visible" />
 
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chipGroupActionsAndConstraints"
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/textViewActionsHeader"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:theme="@style/ActionChipGroup"
-                android:visibility="@{model.hasActions || model.hasConstraints ? View.VISIBLE : View.GONE}"
-                app:actions="@{model.actionModels}"
-                app:constraintMode="@{model.constraintMode}"
-                app:constraints="@{model.constraintModels}"
-                app:errorClickCallback="@{onErrorClick}"
+                android:layout_marginTop="4dp"
+                android:text="@string/action_list_header"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                android:textStyle="bold"
+                android:visibility="@{model.actionChipList.isEmpty ? View.GONE : View.VISIBLE}"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textViewExtraInfo" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupActions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:theme="@style/ConstraintChipGroup"
+                android:visibility="@{model.actionChipList.isEmpty ? View.GONE : View.VISIBLE}"
+                app:chipUiModels="@{model.actionChipList}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textViewExtraInfo"
-                app:layout_goneMarginStart="16dp"
+                app:layout_constraintTop_toBottomOf="@+id/textViewActionsHeader"
+                app:onChipClickCallback="@{onActionChipClick}"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/textViewConstraintsHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/constraint_list_header"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                android:textStyle="bold"
+                android:visibility="@{model.constraintChipList.isEmpty ? View.GONE : View.VISIBLE}"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/chipGroupActions" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupConstraints"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:visibility="@{model.constraintChipList.isEmpty ? View.GONE : View.VISIBLE}"
+                app:chipUiModels="@{model.constraintChipList}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textViewConstraintsHeader"
+                app:onChipClickCallback="@{onConstraintChipClick}"
                 tools:visibility="visible" />
 
             <TextView
@@ -120,10 +149,10 @@
                 android:visibility="@{model.hasOptions ? View.VISIBLE : View.GONE}"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/chipGroupActionsAndConstraints" />
+                app:layout_constraintTop_toBottomOf="@id/chipGroupConstraints" />
 
             <TextView
-                android:id="@+id/textViewSecondary"
+                android:id="@+id/textViewOptions"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"

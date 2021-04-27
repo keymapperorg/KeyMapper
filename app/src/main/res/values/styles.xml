@@ -10,6 +10,9 @@
         <item name="colorOnSecondary">@color/colorOnSecondary</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="actionButtonStyle">@style/ActionButton</item>
+        <item name="normalChipButtonStyle">@style/NormalChipButton</item>
+        <item name="errorChipButtonStyle">@style/ErrorChipButton</item>
+        <item name="transparentChipButtonStyle">@style/TransparentChipButton</item>
     </style>
 
     <style name="Base.Splash" parent="Theme.MaterialComponents.DayNight" />
@@ -31,10 +34,6 @@
 
     <style name="SecondaryCardView" parent="Widget.MaterialComponents.CardView">
         <item name="cardElevation">1dp</item>
-    </style>
-
-    <style name="ActionChipGroup" parent="Widget.MaterialComponents.ChipGroup">
-        <item name="chipStyle">@style/KeymapListChip.Action</item>
     </style>
 
     <style name="TriggerChipGroup" parent="Widget.MaterialComponents.ChipGroup">
@@ -91,13 +90,6 @@
         <item name="closeIconTint">?attr/colorError</item>
     </style>
 
-    <style name="KeymapListChip.Action">
-        <item name="closeIcon">@drawable/ic_baseline_error_outline_24</item>
-        <item name="closeIconTint">?attr/colorError</item>
-        <item name="closeIconVisible">false</item>
-        <item name="android:clickable">false</item>
-    </style>
-
     <style name="KeymapListHeader" parent="TextAppearance.MaterialComponents.Subtitle2">
         <item name="android:textSize">14sp</item>
         <item name="android:textColor" tools:ignore="PrivateResource">@color/mtrl_chip_text_color
@@ -150,4 +142,49 @@
     <style name="ActionButton" parent="Widget.AppCompat.ActionButton">
         <item name="android:drawablePadding">8dp</item>
     </style>
+
+    <declare-styleable name="ChipButton">
+        <attr name="normalChipButtonStyle" format="reference" />
+        <attr name="errorChipButtonStyle" format="reference" />
+        <attr name="fixableErrorChipButtonStyle" format="reference" />
+        <attr name="transparentChipButtonStyle" format="reference" />
+    </declare-styleable>
+
+    <style name="NormalChipButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.MaterialComponents.Chip
+        </item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Body2</item>
+        <item name="android:checkable">false</item>
+        <item name="android:clickable">false</item>
+        <item name="android:focusable">false</item>
+        <item name="android:enabled">false</item>
+        <item name="iconSize">@dimen/button_chip_icon_size</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="TransparentChipButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="textAllCaps">false</item>
+        <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Body2</item>
+        <item name="android:checkable">false</item>
+        <item name="android:clickable">false</item>
+        <item name="android:focusable">false</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:enabled">false</item>
+        <item name="iconSize">@dimen/button_chip_icon_size</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="ErrorChipButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.MaterialComponents.Chip
+        </item>
+        <item name="textAllCaps">false</item>
+        <item name="iconTint">?attr/colorError</item>
+        <item name="icon">@drawable/ic_baseline_error_outline_24</item>
+        <item name="backgroundTint">@color/cardTintRed</item>
+        <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Body2</item>
+        <item name="iconSize">@dimen/button_chip_icon_size</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
 </resources>

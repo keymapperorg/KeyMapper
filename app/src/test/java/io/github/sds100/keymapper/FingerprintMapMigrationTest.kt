@@ -5,9 +5,9 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.github.salomonbrys.kotson.get
 import com.google.gson.Gson
 import com.google.gson.JsonParser
-import io.github.sds100.keymapper.data.repository.DefaultFingerprintMapRepository
+import io.github.sds100.keymapper.data.migration.MigrationUtils
+import io.github.sds100.keymapper.data.repositories.DataStoreFingerprintMapRepository
 import io.github.sds100.keymapper.util.JsonTestUtils
-import io.github.sds100.keymapper.util.MigrationUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.TestCoroutineScope
@@ -89,7 +89,7 @@ class FingerprintMapMigrationTest {
         testData.forEachIndexed { index, json ->
             val migratedJson = MigrationUtils.migrate(
                 gson,
-                DefaultFingerprintMapRepository.MIGRATIONS,
+                DataStoreFingerprintMapRepository.MIGRATIONS,
                 inputVersion,
                 json,
                 outputVersion

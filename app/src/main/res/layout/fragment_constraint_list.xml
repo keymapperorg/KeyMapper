@@ -1,31 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <import type="android.view.View" />
 
-        <import type="io.github.sds100.keymapper.util.ViewState" />
-
-        <import type="io.github.sds100.keymapper.util.ViewPopulated" />
-
-        <import type="io.github.sds100.keymapper.util.ViewLoading" />
-
-        <import type="io.github.sds100.keymapper.util.ViewEmpty" />
+        <import type="io.github.sds100.keymapper.util.ui.ListUiState" />
 
         <variable
             name="viewModel"
-            type="io.github.sds100.keymapper.data.viewmodel.ConstraintListViewModel" />
+            type="io.github.sds100.keymapper.constraints.ConfigConstraintsViewModel" />
 
         <variable
             name="onAddConstraintClick"
             type="View.OnClickListener" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
+        android:id="@+id/coordinatorLayout"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
@@ -35,27 +30,47 @@
             android:layout_marginTop="8dp"
             android:orientation="vertical">
 
-            <com.airbnb.epoxy.EpoxyRecyclerView
-                android:id="@+id/epoxyRecyclerViewConstraints"
+            <FrameLayout
+                android:id="@+id/listLayout"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:visibility="@{viewModel.viewState instanceof ViewEmpty ? View.GONE : View.VISIBLE}"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintBottom_toTopOf="@+id/radioGroup"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                app:layout_constraintBottom_toTopOf="@id/radioGroup"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                style="@style/RecyclerViewPlaceholderTextView"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:text="@string/constraints_recyclerview_placeholder"
-                android:visibility="@{viewModel.viewState instanceof ViewEmpty ? View.VISIBLE : View.GONE}"
-                app:layout_constraintBottom_toTopOf="@+id/radioGroup"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                <com.airbnb.epoxy.EpoxyRecyclerView
+                    android:id="@+id/epoxyRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/list_item_simple" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    tools:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/emptyListPlaceHolder"
+                    style="@style/RecyclerViewPlaceholderTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/constraints_recyclerview_placeholder" />
+            </FrameLayout>
 
             <RadioGroup
                 android:id="@+id/radioGroup"
@@ -65,7 +80,7 @@
                 android:layout_marginEnd="@dimen/cardview_padding_right"
                 android:layout_marginBottom="@dimen/cardview_padding_bottom"
                 android:orientation="horizontal"
-                android:visibility="@{viewModel.constraintList.size() &lt; 2 ? View.GONE : View.VISIBLE}"
+                android:visibility="@{viewModel.state.showModeRadioButtons ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toTopOf="@+id/buttonAddConstraint"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
@@ -75,7 +90,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:checked="@={viewModel.constraintAndMode}"
+                    android:checked="@{viewModel.state.andModeChecked}"
+                    android:onCheckedChanged="@{(view, checked) -> viewModel.onAndRadioButtonCheckedChange(checked)}"
                     android:text="@string/radio_button_and" />
 
                 <com.google.android.material.radiobutton.MaterialRadioButton
@@ -83,7 +99,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:checked="@={viewModel.constraintOrMode}"
+                    android:checked="@{viewModel.state.orModeChecked}"
+                    android:onCheckedChanged="@{(view, checked) -> viewModel.onOrRadioButtonCheckedChange(checked)}"
                     android:text="@string/radio_button_or" />
             </RadioGroup>
 
@@ -100,5 +117,5 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

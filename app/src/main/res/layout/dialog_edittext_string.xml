@@ -10,7 +10,7 @@
 
         <variable
             name="text"
-            type="androidx.lifecycle.MutableLiveData&lt;String>" />
+            type="kotlinx.coroutines.flow.MutableStateFlow&lt;String>" />
 
         <variable
             name="allowEmpty"

@@ -1,0 +1,43 @@
+package io.github.sds100.keymapper.system.keyevents
+
+import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
+import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
+import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeMessenger
+import io.github.sds100.keymapper.util.firstBlocking
+import kotlinx.coroutines.flow.map
+
+/**
+ * Created by sds100 on 27/04/2021.
+ */
+
+class RerouteKeyEventsUseCaseImpl(
+    private val inputMethodAdapter: InputMethodAdapter,
+    private val keyMapperImeMessenger: KeyMapperImeMessenger,
+    private val preferenceRepository: PreferenceRepository
+) : RerouteKeyEventsUseCase {
+
+    private val rerouteKeyEvents =
+        preferenceRepository.get(Keys.rerouteKeyEvents).map { it ?: false }
+
+    private val devicesToRerouteKeyEvents =
+        preferenceRepository.get(Keys.devicesToRerouteKeyEvents).map { it ?: emptyList() }
+
+    private val imeHelper by lazy { KeyMapperImeHelper(inputMethodAdapter) }
+
+    override fun shouldRerouteKeyEvent(descriptor: String): Boolean {
+        return imeHelper.isCompatibleImeChosen()
+            && devicesToRerouteKeyEvents.firstBlocking().contains(descriptor)
+            && rerouteKeyEvents.firstBlocking()
+    }
+
+    override fun inputKeyEvent(keyModel: InputKeyModel) {
+        keyMapperImeMessenger.inputKeyEvent(keyModel)
+    }
+}
+
+interface RerouteKeyEventsUseCase {
+    fun shouldRerouteKeyEvent(descriptor: String): Boolean
+    fun inputKeyEvent(keyModel: InputKeyModel)
+}

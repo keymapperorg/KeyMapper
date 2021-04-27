@@ -22,7 +22,7 @@
 
     <fragment
         android:id="@+id/home_fragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.HomeFragment"
+        android:name="io.github.sds100.keymapper.home.HomeFragment"
         tools:layout="@layout/fragment_home">
 
         <action
@@ -38,8 +38,10 @@
         app:popEnterAnim="@anim/slide_in_left"
         app:popExitAnim="@anim/slide_out_right">
         <argument
-            android:name="keymapId"
-            app:argType="long" />
+            android:name="keymapUid"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
     </action>
 
     <action
@@ -62,7 +64,7 @@
         app:popEnterAnim="@anim/slide_in_left"
         app:popExitAnim="@anim/slide_out_right">
         <argument
-            android:name="@string/nav_arg_choose_action_request_key"
+            android:name="choose_action_request_key"
             app:argType="string" />
     </action>
 
@@ -75,12 +77,12 @@
         app:popExitAnim="@anim/slide_out_right">
 
         <argument
-            android:name="@string/nav_arg_choose_constraint_request_key"
+            android:name="choose_constraint_request_key"
             app:argType="string" />
 
         <argument
-            android:name="@string/nav_arg_supported_constraint_list"
-            app:argType="string[]" />
+            android:name="supported_constraint_list"
+            app:argType="string" />
     </action>
 
     <include app:graph="@navigation/nav_choose_action" />
@@ -90,7 +92,7 @@
 
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.SettingsFragment"
+        android:name="io.github.sds100.keymapper.settings.SettingsFragment"
         android:label="fragment_settings"
         tools:layout="@layout/fragment_about" />
     <action
@@ -103,7 +105,7 @@
 
     <dialog
         android:id="@+id/onlineFragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.OnlineFileFragment"
+        android:name="io.github.sds100.keymapper.system.files.OnlineFileFragment"
         android:label="help_fragment"
         tools:layout="@layout/fragment_online_file">
         <argument
@@ -132,7 +134,7 @@
 
     <fragment
         android:id="@+id/aboutFragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.AboutFragment"
+        android:name="io.github.sds100.keymapper.about.AboutFragment"
         android:label="fragment_about"
         tools:layout="@layout/fragment_about" />
 
@@ -146,7 +148,7 @@
 
     <dialog
         android:id="@+id/menuFragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.MenuFragment"
+        android:name="io.github.sds100.keymapper.home.MenuFragment"
         android:label="fragment_menu"
         tools:layout="@layout/fragment_menu" />
 
@@ -154,4 +156,32 @@
         android:id="@+id/action_global_menuFragment"
         app:destination="@id/menuFragment"
         app:enterAnim="@anim/slide_in_bottom" />
+
+    <fragment
+        android:id="@+id/appListFragment"
+        android:name="io.github.sds100.keymapper.system.apps.ChooseAppFragment"
+        android:label="AppListFragment"
+        tools:layout="@layout/fragment_recyclerview" />
+
+    <action
+        android:id="@+id/chooseApp"
+        app:destination="@id/appListFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right" />
+
+    <fragment
+        android:id="@+id/bluetoothDevicesFragment"
+        android:name="io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceFragment"
+        android:label="BlutoothDeviceFragment"
+        tools:layout="@layout/fragment_recyclerview" />
+
+    <action
+        android:id="@+id/chooseBluetoothDevice"
+        app:destination="@+id/bluetoothDevicesFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right"/>
 </navigation>

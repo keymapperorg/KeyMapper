@@ -7,36 +7,16 @@
 
     <fragment
         android:id="@+id/chooseConstraintFragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.ChooseConstraintFragment"
+        android:name="io.github.sds100.keymapper.constraints.ChooseConstraintFragment"
         android:label="ChooseConstraintFragment"
         tools:layout="@layout/fragment_recyclerview">
 
-        <action
-            android:id="@+id/action_chooseConstraintListFragment_to_appListFragment"
-            app:destination="@id/appListFragment" />
-
-        <action
-            android:id="@+id/action_chooseConstraintListFragment_to_bluetoothDevicesFragment"
-            app:destination="@+id/bluetoothDevicesFragment" />
-
         <argument
-            android:name="@string/nav_arg_choose_constraint_request_key"
+            android:name="choose_constraint_request_key"
             app:argType="string" />
 
         <argument
-            android:name="@string/nav_arg_supported_constraint_list"
-            app:argType="string[]" />
+            android:name="supported_constraint_list"
+            app:argType="string" />
     </fragment>
-
-    <fragment
-        android:id="@+id/appListFragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.AppListFragment"
-        android:label="AppListFragment"
-        tools:layout="@layout/fragment_recyclerview" />
-
-    <fragment
-        android:id="@+id/bluetoothDevicesFragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.BluetoothDeviceListFragment"
-        android:label="BlutoothDeviceFragment"
-        tools:layout="@layout/fragment_recyclerview" />
 </navigation>

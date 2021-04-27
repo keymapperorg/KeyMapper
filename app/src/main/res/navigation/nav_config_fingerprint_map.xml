@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/config_fingerprint_map_fragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.fingerprint.ConfigFingerprintMapFragment"
+        android:name="io.github.sds100.keymapper.mappings.fingerprintmaps.ConfigFingerprintMapFragment"
         android:label="Edit Fingerprint Map"
         tools:layout="@layout/fragment_config_mapping">
 
@@ -16,18 +16,13 @@
             app:argType="string" />
 
         <action
-            android:id="@+id/action_config_fingerprint_map_fragment_to_actionOptionsFragment"
+            android:id="@+id/configActionFragment"
             app:destination="@id/fingerprintActionOptionsFragment"
             app:enterAnim="@anim/slide_in_bottom" />
     </fragment>
 
     <dialog
         android:id="@+id/fingerprintActionOptionsFragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.fingerprint.FingerprintActionOptionsFragment"
-        android:label="FingerprintActionOptionsFragment">
-
-        <argument
-            android:name="@string/nav_arg_fingerprint_action_options"
-            app:argType="io.github.sds100.keymapper.data.model.options.FingerprintActionOptions" />
-    </dialog>
+        android:name="io.github.sds100.keymapper.mappings.fingerprintmaps.ConfigFingerprintMapActionFragment"
+        android:label="FingerprintActionOptionsFragment"/>
 </navigation>

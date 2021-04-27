@@ -7,7 +7,7 @@
 
         <import type="android.view.View" />
 
-        <import type="io.github.sds100.keymapper.util.TintType" />
+        <import type="io.github.sds100.keymapper.util.ui.TintType" />
 
         <variable
             name="primaryText"
@@ -27,7 +27,7 @@
 
         <variable
             name="tintType"
-            type="TintType" />
+            type="io.github.sds100.keymapper.util.ui.TintType" />
 
         <variable
             name="onClick"

@@ -12,12 +12,12 @@
             type="String" />
 
         <variable
-            name="isSelected"
+            name="isChecked"
             type="Boolean" />
 
         <variable
-            name="onClick"
-            type="View.OnClickListener" />
+            name="onCheckedChange"
+            type="android.widget.CompoundButton.OnCheckedChangeListener" />
     </data>
 
     <CheckBox
@@ -28,8 +28,8 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="@dimen/cardview_padding_right"
         android:layout_marginBottom="8dp"
-        android:checked="@{isSelected}"
-        android:onClick="@{onClick}"
+        android:checked="@{isChecked}"
+        android:onCheckedChanged="@{onCheckedChange}"
         android:paddingHorizontal="8dp"
         android:text="@{primaryText}"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"

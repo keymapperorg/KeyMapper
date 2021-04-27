@@ -16,8 +16,10 @@ import kotlinx.coroutines.runBlocking
 val Fragment.viewLifecycleScope: LifecycleCoroutineScope
     get() = viewLifecycleOwner.lifecycle.coroutineScope
 
-fun <T> Flow<T>.collectWhenResumed(lifecycleOwner: LifecycleOwner,
-                                   block: suspend (value: T) -> Unit) {
+fun <T> Flow<T>.collectWhenResumed(
+    lifecycleOwner: LifecycleOwner,
+    block: suspend (value: T) -> Unit
+) {
     lifecycleOwner.lifecycle.coroutineScope.launchWhenResumed {
         collect {
             block.invoke(it)
@@ -25,8 +27,10 @@ fun <T> Flow<T>.collectWhenResumed(lifecycleOwner: LifecycleOwner,
     }
 }
 
-fun <T> Flow<T>.collectWhenStarted(lifecycleOwner: LifecycleOwner,
-                                   block: suspend (value: T) -> Unit) {
+fun <T> Flow<T>.collectWhenStarted(
+    lifecycleOwner: LifecycleOwner,
+    block: suspend (value: T) -> Unit
+) {
     lifecycleOwner.lifecycle.coroutineScope.launchWhenStarted {
         collect {
             block.invoke(it)

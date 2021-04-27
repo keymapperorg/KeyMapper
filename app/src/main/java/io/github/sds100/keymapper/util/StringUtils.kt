@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.util
 import androidx.annotation.IntRange
 
 /**
- * Created by sds100 on 09/07/2020.
+ * Created by sds100 on 24/04/2021.
  */
 
 fun String.getWordBoundaries(@IntRange(from = 0L) cursorPosition: Int): Pair<Int, Int>? {

@@ -32,7 +32,7 @@
         android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout"
+            android:id="@+id/listLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -72,7 +72,7 @@
                         app:layout_constraintTop_toTopOf="parent"
                         tools:text="Top Left Header" />
 
-                    <io.github.sds100.keymapper.ui.view.SquareImageButton
+                    <io.github.sds100.keymapper.util.ui.SquareImageButton
                         android:id="@+id/buttonHelpTopLeft"
                         style="@style/Widget.AppCompat.Button.Borderless.Colored"
                         android:layout_width="wrap_content"
@@ -134,7 +134,7 @@
                         app:layout_constraintTop_toTopOf="parent"
                         tools:text="Bottom Left Header" />
 
-                    <io.github.sds100.keymapper.ui.view.SquareImageButton
+                    <io.github.sds100.keymapper.util.ui.SquareImageButton
                         android:id="@+id/buttonHelpBottomLeft"
                         style="@style/Widget.AppCompat.Button.Borderless.Colored"
                         android:layout_width="wrap_content"
@@ -195,7 +195,7 @@
                         app:layout_constraintTop_toTopOf="parent"
                         tools:text="Top Right Header" />
 
-                    <io.github.sds100.keymapper.ui.view.SquareImageButton
+                    <io.github.sds100.keymapper.util.ui.SquareImageButton
                         android:id="@+id/buttonHelpTopRight"
                         style="@style/Widget.AppCompat.Button.Borderless.Colored"
                         android:layout_width="wrap_content"
@@ -257,7 +257,7 @@
                         app:layout_constraintTop_toTopOf="parent"
                         tools:text="Bottom Right Header" />
 
-                    <io.github.sds100.keymapper.ui.view.SquareImageButton
+                    <io.github.sds100.keymapper.util.ui.SquareImageButton
                         android:id="@+id/buttonHelpBottomRight"
                         style="@style/Widget.AppCompat.Button.Borderless.Colored"
                         android:layout_width="wrap_content"

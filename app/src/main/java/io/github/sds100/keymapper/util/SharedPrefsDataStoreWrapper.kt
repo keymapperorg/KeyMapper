@@ -2,27 +2,28 @@ package io.github.sds100.keymapper.util
 
 import androidx.datastore.preferences.core.*
 import androidx.preference.PreferenceDataStore
-import io.github.sds100.keymapper.data.IGlobalPreferences
+import io.github.sds100.keymapper.settings.ConfigSettingsUseCase
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
 /**
  * Created by sds100 on 19/01/21.
  */
 class SharedPrefsDataStoreWrapper(
-    private val globalPreferences: IGlobalPreferences
+    private val configSettingsUseCase: ConfigSettingsUseCase
 ) : PreferenceDataStore() {
 
     override fun getBoolean(key: String, defValue: Boolean) = getFromSharedPrefs(key, defValue)
     override fun putBoolean(key: String, value: Boolean) = setFromSharedPrefs(key, value)
 
-    override fun getString(key: String, defValue: String?) = getFromSharedPrefs(key, defValue)
+    override fun getString(key: String, defValue: String?) = getFromSharedPrefs(key, defValue ?: "")
     override fun putString(key: String, value: String?) = setFromSharedPrefs(key, value)
 
     override fun getInt(key: String, defValue: Int) = getFromSharedPrefs(key, defValue)
     override fun putInt(key: String, value: Int) = setFromSharedPrefs(key, value)
 
     override fun getStringSet(key: String, defValues: MutableSet<String>?) =
-        getStringSetFromSharedPrefs(key, defValues)
+        getStringSetFromSharedPrefs(key, defValues ?: emptySet())
 
     override fun putStringSet(key: String, defValues: MutableSet<String>?) =
         setStringSetFromSharedPrefs(key, defValues)
@@ -30,12 +31,18 @@ class SharedPrefsDataStoreWrapper(
     private inline fun <reified T> getFromSharedPrefs(key: String, default: T): T {
         return runBlocking {
             when (default) {
-                is String? -> globalPreferences.get(stringPreferencesKey(key)) ?: default
-                is Boolean? -> globalPreferences.get(booleanPreferencesKey(key)) ?: default
-                is Int? -> globalPreferences.get(intPreferencesKey(key)) ?: default
-                is Long? -> globalPreferences.get(longPreferencesKey(key)) ?: default
-                is Float? -> globalPreferences.get(floatPreferencesKey(key)) ?: default
-                is Double? -> globalPreferences.get(doublePreferencesKey(key)) ?: default
+                is String? -> configSettingsUseCase.getPreference(stringPreferencesKey(key)).first()
+                    ?: default
+                is Boolean? -> configSettingsUseCase.getPreference(booleanPreferencesKey(key))
+                    .first() ?: default
+                is Int? -> configSettingsUseCase.getPreference(intPreferencesKey(key)).first()
+                    ?: default
+                is Long? -> configSettingsUseCase.getPreference(longPreferencesKey(key)).first()
+                    ?: default
+                is Float? -> configSettingsUseCase.getPreference(floatPreferencesKey(key)).first()
+                    ?: default
+                is Double? -> configSettingsUseCase.getPreference(doublePreferencesKey(key)).first()
+                    ?: default
                 else -> {
                     val type = T::class.java.name
                     throw IllegalArgumentException("Don't know how to set a value in shared preferences for this type $type")
@@ -48,12 +55,12 @@ class SharedPrefsDataStoreWrapper(
         key ?: return
 
         when (value) {
-            is String -> globalPreferences.set(stringPreferencesKey(key), value)
-            is Boolean -> globalPreferences.set(booleanPreferencesKey(key), value)
-            is Int -> globalPreferences.set(intPreferencesKey(key), value)
-            is Long -> globalPreferences.set(longPreferencesKey(key), value)
-            is Float -> globalPreferences.set(floatPreferencesKey(key), value)
-            is Double -> globalPreferences.set(doublePreferencesKey(key), value)
+            is String -> configSettingsUseCase.setPreference(stringPreferencesKey(key), value)
+            is Boolean -> configSettingsUseCase.setPreference(booleanPreferencesKey(key), value)
+            is Int -> configSettingsUseCase.setPreference(intPreferencesKey(key), value)
+            is Long -> configSettingsUseCase.setPreference(longPreferencesKey(key), value)
+            is Float -> configSettingsUseCase.setPreference(floatPreferencesKey(key), value)
+            is Double -> configSettingsUseCase.setPreference(doublePreferencesKey(key), value)
             else -> {
                 val type = value?.let { it::class.java.name }
                 throw IllegalArgumentException("Don't know how to set a value in shared preferences for this type $type")
@@ -63,13 +70,13 @@ class SharedPrefsDataStoreWrapper(
 
     private fun getStringSetFromSharedPrefs(key: String, default: Set<String>?): Set<String> {
         return runBlocking {
-            globalPreferences.get(stringSetPreferencesKey(key)) ?: emptySet()
+            configSettingsUseCase.getPreference(stringSetPreferencesKey(key)).first() ?: emptySet()
         }
     }
 
     private fun setStringSetFromSharedPrefs(key: String?, value: Set<String>?) {
         key ?: return
 
-        globalPreferences.set(stringSetPreferencesKey(key), value)
+        configSettingsUseCase.setPreference(stringSetPreferencesKey(key), value)
     }
 }

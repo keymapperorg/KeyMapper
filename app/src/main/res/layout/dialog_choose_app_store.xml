@@ -8,7 +8,7 @@
 
         <variable
             name="model"
-            type="io.github.sds100.keymapper.data.model.ChooseAppStoreModel" />
+            type="io.github.sds100.keymapper.home.ChooseAppStoreModel" />
     </data>
 
     <com.google.android.material.chip.ChipGroup

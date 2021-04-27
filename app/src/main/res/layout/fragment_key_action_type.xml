@@ -11,7 +11,7 @@
 
         <variable
             name="viewModel"
-            type="io.github.sds100.keymapper.data.viewmodel.KeyActionTypeViewModel" />
+            type="io.github.sds100.keymapper.system.keyevents.ChooseKeyViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"

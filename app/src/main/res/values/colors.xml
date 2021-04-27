@@ -37,4 +37,6 @@
     <color name="ic_launcher_background">#ffffff</color>
     <color name="cardview_stroke">@color/mtrl_btn_stroke_color_selector</color>
     <color name="coordinate_line">#FF00FB</color>
+
+    <color name="colorError">?attr/colorError</color>
 </resources>

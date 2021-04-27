@@ -11,11 +11,15 @@
 
         <variable
             name="model"
-            type="io.github.sds100.keymapper.data.model.SliderModel" />
+            type="io.github.sds100.keymapper.util.ui.SliderModel" />
 
         <variable
             name="onSliderChangeListener"
             type="com.google.android.material.slider.Slider.OnChangeListener" />
+
+        <variable
+            name="onSliderTouchListener"
+            type="com.google.android.material.slider.Slider.OnSliderTouchListener" />
 
         <variable
             name="onSliderValueClickListener"
@@ -41,7 +45,7 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Long Press Delay (ms)" />
 
-        <io.github.sds100.keymapper.ui.view.SliderWithLabel
+        <io.github.sds100.keymapper.util.ui.SliderWithLabel
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -49,6 +53,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textViewLabel"
             app:sliderModel="@{model}"
+            app:onSliderTouchListener="@{onSliderTouchListener}"
             app:onSliderValueClickListener="@{onSliderValueClickListener}"
             app:onChangeListener="@{onSliderChangeListener}" />
     </androidx.constraintlayout.widget.ConstraintLayout>

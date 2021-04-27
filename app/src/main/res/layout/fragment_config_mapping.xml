@@ -10,7 +10,7 @@
 
         <variable
             name="viewModel"
-            type="io.github.sds100.keymapper.data.viewmodel.IConfigMappingViewModel" />
+            type="io.github.sds100.keymapper.mappings.ConfigMappingViewModel" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -47,15 +47,14 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:gravity="center"
-            app:fabAlignmentMode="end"
-            app:fabAnimationMode="slide"
             app:menu="@menu/menu_config_mapping"
             app:navigationIcon="@drawable/ic_baseline_arrow_back_24">
 
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="@={viewModel.isEnabled}"
+                android:checked="@{viewModel.state.isEnabled}"
+                android:onCheckedChanged="@{(view, checked) -> viewModel.setEnabled(checked)}"
                 android:text="@string/switch_enabled"
                 android:textAppearance="@style/TextAppearance.AppCompat.Button"
                 android:textColor="?attr/colorOnPrimarySurface"

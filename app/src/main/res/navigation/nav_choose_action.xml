@@ -7,12 +7,12 @@
 
     <fragment
         android:id="@+id/choose_action_fragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.ChooseActionFragment"
+        android:name="io.github.sds100.keymapper.actions.ChooseActionFragment"
         android:label="@string/title_choose_action"
         tools:layout="@layout/fragment_choose_action">
 
         <argument
-            android:name="@string/nav_arg_choose_action_request_key"
+            android:name="choose_action_request_key"
             app:argType="string" />
 
         <action
@@ -26,11 +26,11 @@
 
     <fragment
         android:id="@+id/keycodeListFragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.KeycodeListFragment"
+        android:name="io.github.sds100.keymapper.system.keyevents.KeyCodeListFragment"
         android:label="KeycodeListFragment" />
 
     <fragment
         android:id="@+id/activityListFragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.ActivityListFragment"
+        android:name="io.github.sds100.keymapper.system.apps.ChooseActivityFragment"
         android:label="Activity List Fragment" />
 </navigation>

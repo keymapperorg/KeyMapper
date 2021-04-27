@@ -8,37 +8,9 @@
 
         <import type="android.view.View" />
 
-        <import type="io.github.sds100.keymapper.util.ViewState" />
-
-        <import type="io.github.sds100.keymapper.util.ViewPopulated" />
-
-        <import type="io.github.sds100.keymapper.util.ViewEmpty" />
-
-        <import type="io.github.sds100.keymapper.util.ViewLoading" />
-
         <variable
-            name="title"
-            type="String" />
-
-        <variable
-            name="description"
-            type="String" />
-
-        <variable
-            name="buttonText1"
-            type="String" />
-
-        <variable
-            name="buttonText2"
-            type="String" />
-
-        <variable
-            name="imageDrawable"
-            type="android.graphics.drawable.Drawable" />
-
-        <variable
-            name="backgroundColor"
-            type="Integer" />
+            name="model"
+            type="io.github.sds100.keymapper.onboarding.AppIntroSlideUi" />
 
         <variable
             name="onButton1ClickListener"
@@ -47,17 +19,13 @@
         <variable
             name="onButton2ClickListener"
             type="View.OnClickListener" />
-
-        <variable
-            name="viewState"
-            type="ViewState" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@{backgroundColor}"
+        android:background="@{model.backgroundColor}"
         android:paddingTop="@dimen/appintro_statusbar_height"
         android:paddingBottom="@dimen/appintro2_bottombar_height"
         tools:background="@color/appintro_background_color">
@@ -68,7 +36,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:contentDescription="@string/app_intro_image_content_description"
-            android:src="@{imageDrawable}"
+            android:src="@{model.image}"
             app:layout_constraintBottom_toTopOf="@id/textViewTitle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -83,7 +51,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="@{title}"
+            android:text="@{model.title}"
             app:layout_constraintBottom_toTopOf="@id/scrollViewDescription"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -95,7 +63,6 @@
             android:id="@+id/scrollViewDescription"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:visibility="@{viewState instanceof ViewPopulated ? View.VISIBLE : View.INVISIBLE}"
             app:layout_constraintBottom_toTopOf="@id/button1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -107,22 +74,9 @@
                 style="@style/AppIntroDefaultText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{description}"
+                android:text="@{model.description}"
                 tools:text="This is a demo of the AppIntro Library" />
         </androidx.core.widget.NestedScrollView>
-
-        <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:indeterminate="true"
-            android:visibility="@{viewState instanceof ViewLoading ? View.VISIBLE : View.GONE}"
-            app:indicatorColor="#FFFFFF"
-            app:layout_constraintBottom_toTopOf="@id/button1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
-            app:layout_constraintVertical_weight="3" />
 
         <!--    Set INVISIBLE rather than GONE so that the text doesn't move up and down between slides.    -->
         <com.google.android.material.button.MaterialButton
@@ -131,8 +85,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="@{onButton1ClickListener}"
-            android:text="@{buttonText1}"
-            android:visibility="@{buttonText1 == null ? View.INVISIBLE : View.VISIBLE}"
+            android:text="@{model.buttonText1}"
+            android:visibility="@{model.buttonText1 == null ? View.INVISIBLE : View.VISIBLE}"
             app:backgroundTint="@color/appintro_default_fab_background_color"
             app:elevation="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -146,8 +100,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="@{onButton2ClickListener}"
-            android:text="@{buttonText2}"
-            android:visibility="@{buttonText2 == null ? View.GONE : View.VISIBLE}"
+            android:text="@{model.buttonText2}"
+            android:visibility="@{model.buttonText2 == null ? View.GONE : View.VISIBLE}"
             app:backgroundTint="@color/appintro_default_fab_background_color"
             app:elevation="0dp"
             app:layout_constraintBottom_toBottomOf="parent"

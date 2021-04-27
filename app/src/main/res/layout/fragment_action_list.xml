@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -8,22 +9,11 @@
 
         <import type="androidx.lifecycle.LiveData" />
 
-        <import type="io.github.sds100.keymapper.util.ViewState" />
-
-        <import type="io.github.sds100.keymapper.util.ViewPopulated" />
-
-        <import type="io.github.sds100.keymapper.util.ViewLoading" />
-
-        <import type="io.github.sds100.keymapper.util.ViewEmpty" />
-
-        <variable
-            name="viewModel"
-            type="io.github.sds100.keymapper.data.viewmodel.ActionListViewModel" />
+        <import type="io.github.sds100.keymapper.util.ui.ListUiState" />
 
         <variable
             name="onAddActionClick"
             type="View.OnClickListener" />
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -33,27 +23,49 @@
         android:layout_marginTop="8dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <com.airbnb.epoxy.EpoxyRecyclerView
-            android:id="@+id/epoxyRecyclerViewActions"
+        <FrameLayout
+            android:id="@+id/listLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:visibility="@{viewModel.viewState instanceof ViewPopulated ? View.VISIBLE : View.GONE}"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toTopOf="@+id/buttonAddAction"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:layout_constraintBottom_toTopOf="@id/buttonAddAction"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            style="@style/RecyclerViewPlaceholderTextView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:text="@string/actions_recyclerview_placeholder"
-            android:visibility="@{viewModel.viewState instanceof ViewEmpty ? View.VISIBLE : View.GONE}"
-            app:layout_constraintBottom_toTopOf="@+id/buttonAddAction"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <com.airbnb.epoxy.EpoxyRecyclerView
+                android:id="@+id/epoxyRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/list_item_action"
+                tools:visibility="visible" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                tools:visibility="gone" />
+
+            <TextView
+                android:id="@+id/emptyListPlaceHolder"
+                style="@style/RecyclerViewPlaceholderTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/actions_recyclerview_placeholder"
+                tools:visibility="gone" />
+        </FrameLayout>
 
         <Button
             android:id="@+id/buttonAddAction"

@@ -2,7 +2,8 @@ package io.github.sds100.keymapper.data.db.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import io.github.sds100.keymapper.data.model.KeyMap
+import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntity
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Created by sds100 on 18/02/20.
@@ -24,13 +25,19 @@ interface KeyMapDao {
     }
 
     @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_ID = (:id)")
-    suspend fun getById(id: Long): KeyMap
+    suspend fun getById(id: Long): KeyMapEntity
+
+    @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_UID = (:uid)")
+    suspend fun getByUid(uid: String): KeyMapEntity?
 
     @Query("SELECT * FROM $TABLE_NAME")
-    fun observeAll(): LiveData<List<KeyMap>>
+    fun observeAll(): LiveData<List<KeyMapEntity>>
 
     @Query("SELECT * FROM $TABLE_NAME")
-    fun getAll(): List<KeyMap>
+    fun getAll(): List<KeyMapEntity>
+
+    @Query("SELECT * FROM $TABLE_NAME")
+    fun getAllFlow(): Flow<List<KeyMapEntity>>
 
     @Query("UPDATE $TABLE_NAME SET $KEY_ENABLED=0")
     suspend fun disableAll()
@@ -38,24 +45,24 @@ interface KeyMapDao {
     @Query("UPDATE $TABLE_NAME SET $KEY_ENABLED=1")
     suspend fun enableAll()
 
-    @Query("UPDATE $TABLE_NAME SET $KEY_ENABLED=1 WHERE $KEY_ID in (:id)")
-    suspend fun enableKeymapById(vararg id: Long)
+    @Query("UPDATE $TABLE_NAME SET $KEY_ENABLED=1 WHERE $KEY_UID in (:uid)")
+    suspend fun enableKeymapByUid(vararg uid: String)
 
-    @Query("UPDATE $TABLE_NAME SET $KEY_ENABLED=0 WHERE $KEY_ID in (:id)")
-    suspend fun disableKeymapById(vararg id: Long)
+    @Query("UPDATE $TABLE_NAME SET $KEY_ENABLED=0 WHERE $KEY_UID in (:uid)")
+    suspend fun disableKeymapByUid(vararg uid: String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(vararg keyMap: KeyMap)
+    suspend fun insert(vararg keyMap: KeyMapEntity)
 
     @Delete
-    suspend fun delete(vararg keyMap: KeyMap)
+    suspend fun delete(vararg keyMap: KeyMapEntity)
 
     @Query("DELETE FROM $TABLE_NAME")
     suspend fun deleteAll()
 
-    @Query("DELETE FROM $TABLE_NAME WHERE $KEY_ID in (:id)")
-    suspend fun deleteById(vararg id: Long)
+    @Query("DELETE FROM $TABLE_NAME WHERE $KEY_UID in (:uid)")
+    suspend fun deleteById(vararg uid: String)
 
     @Update
-    suspend fun update(vararg keyMap: KeyMap)
+    suspend fun update(vararg keyMap: KeyMapEntity)
 }

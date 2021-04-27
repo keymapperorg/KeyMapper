@@ -7,19 +7,9 @@
 
         <import type="android.view.View" />
 
-        <import type="androidx.lifecycle.LiveData" />
-
-        <import type="io.github.sds100.keymapper.util.ViewState" />
-
-        <import type="io.github.sds100.keymapper.util.ViewPopulated" />
-
-        <import type="io.github.sds100.keymapper.util.ViewLoading" />
-
-        <import type="io.github.sds100.keymapper.util.ViewEmpty" />
-
         <variable
             name="viewModel"
-            type="io.github.sds100.keymapper.data.viewmodel.FingerprintMapListViewModel" />
+            type="io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapListViewModel" />
 
     </data>
 
@@ -28,7 +18,7 @@
         android:layout_height="match_parent">
 
         <FrameLayout
-            android:id="@+id/constraintLayout"
+            android:id="@+id/listLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
@@ -42,7 +32,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
-                android:visibility="@{viewModel.viewState instanceof ViewPopulated ? View.VISIBLE : View.GONE}"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/list_item_simple"
                 tools:visibility="gone" />
@@ -56,10 +45,10 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
-                android:visibility="@{viewModel.viewState instanceof ViewLoading ? View.VISIBLE : View.GONE}"
                 tools:visibility="gone" />
 
             <TextView
+                android:id="@+id/emptyListPlaceHolder"
                 style="@style/RecyclerViewPlaceholderTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -68,8 +57,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
-                android:text="@string/recyclerview_placeholder"
-                android:visibility="@{viewModel.viewState instanceof ViewEmpty ? View.VISIBLE : View.GONE}" />
+                android:text="@string/recyclerview_placeholder" />
         </FrameLayout>
 
         <com.google.android.material.button.MaterialButton
@@ -79,7 +67,7 @@
             android:layout_height="0dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:onClick="@{()-> viewModel.requestReset()}"
+            android:onClick="@{() -> viewModel.onResetClick()}"
             android:text="@string/action_reset"
             app:layout_constraintBottom_toBottomOf="@id/buttonBackupAll"
             app:layout_constraintEnd_toEndOf="parent"
@@ -94,7 +82,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            android:onClick="@{() -> viewModel.backupAll()}"
+            android:onClick="@{() -> viewModel.onBackupAllClick()}"
             android:text="@string/action_backup_all"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/buttonReset"

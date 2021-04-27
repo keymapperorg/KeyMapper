@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import io.github.sds100.keymapper.data.model.DeviceInfo
+import io.github.sds100.keymapper.system.devices.DeviceInfoEntity
 
 /**
  * Created by sds100 on 18/02/20.
@@ -19,13 +19,13 @@ interface DeviceInfoDao {
     }
 
     @Query("SELECT * FROM $TABLE_NAME")
-    suspend fun getAll(): List<DeviceInfo>
+    suspend fun getAll(): List<DeviceInfoEntity>
 
     @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_DESCRIPTOR = (:descriptor)")
-    suspend fun getByDescriptor(descriptor: String): DeviceInfo
+    suspend fun getByDescriptor(descriptor: String): DeviceInfoEntity?
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(vararg deviceInfo: DeviceInfo)
+    suspend fun insert(vararg deviceInfo: DeviceInfoEntity)
 
     @Query("DELETE FROM ${KeyMapDao.TABLE_NAME}")
     suspend fun deleteAll()

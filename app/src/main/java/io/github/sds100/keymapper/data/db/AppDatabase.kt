@@ -8,18 +8,18 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import io.github.sds100.keymapper.data.db.AppDatabase.Companion.DATABASE_VERSION
 import io.github.sds100.keymapper.data.db.dao.DeviceInfoDao
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
-import io.github.sds100.keymapper.data.db.migration.keymaps.*
 import io.github.sds100.keymapper.data.db.typeconverter.ActionListTypeConverter
 import io.github.sds100.keymapper.data.db.typeconverter.ConstraintListTypeConverter
 import io.github.sds100.keymapper.data.db.typeconverter.ExtraListTypeConverter
 import io.github.sds100.keymapper.data.db.typeconverter.TriggerTypeConverter
-import io.github.sds100.keymapper.data.model.DeviceInfo
-import io.github.sds100.keymapper.data.model.KeyMap
+import io.github.sds100.keymapper.system.devices.DeviceInfoEntity
+import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntity
+import io.github.sds100.keymapper.data.migration.keymaps.*
 
 /**
  * Created by sds100 on 24/01/2020.
  */
-@Database(entities = [KeyMap::class, DeviceInfo::class], version = DATABASE_VERSION, exportSchema = true)
+@Database(entities = [KeyMapEntity::class, DeviceInfoEntity::class], version = DATABASE_VERSION, exportSchema = true)
 @TypeConverters(
     ActionListTypeConverter::class,
     ExtraListTypeConverter::class,

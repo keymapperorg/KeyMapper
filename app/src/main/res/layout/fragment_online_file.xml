@@ -7,19 +7,13 @@
 
         <import type="android.view.View" />
 
-        <import type="io.github.sds100.keymapper.util.Data" />
-
-        <import type="io.github.sds100.keymapper.util.Loading" />
-
-        <import type="io.github.sds100.keymapper.util.Empty" />
-
         <variable
             name="viewModel"
-            type="io.github.sds100.keymapper.data.viewmodel.OnlineFileViewModel" />
+            type="io.github.sds100.keymapper.system.files.OnlineFileViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout"
+        android:id="@+id/listLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -43,7 +37,6 @@
             android:layout_height="wrap_content"
             android:indeterminate="true"
             android:paddingBottom="16dp"
-            android:visibility="@{viewModel.markdownText instanceof Loading ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewHeader" />
@@ -51,7 +44,6 @@
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="@{viewModel.markdownText instanceof Data ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewHeader"
@@ -65,7 +57,6 @@
                 android:paddingBottom="100dp"
                 android:textColor="?attr/colorOnSurface"
                 android:textSize="16sp"
-                app:markdown="@{viewModel.markdownText}"
                 tools:text="Markdown will go here" />
         </androidx.core.widget.NestedScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>

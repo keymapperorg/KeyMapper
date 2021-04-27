@@ -24,11 +24,10 @@
     <string name="press_dot_dot_dot">Press…</string>
     <string name="no_actions">No actions</string>
     <string name="no_trigger">No trigger</string>
-    <string name="interpunct" translatable="false">•</string>
+    <string name="middot" translatable="false">•</string>
     <string name="arrow" translatable="false">→</string>
     <string name="plus" translatable="false">+</string>
     <string name="unknown_keycode">Unknown key code: %s</string>
-    <string name="chip_while">while</string>
     <string name="google_app_package_name" translatable="false">com.google.android.googlequicksearchbox</string>
     <string name="on">On</string>
     <string name="off">Off</string>
@@ -50,6 +49,7 @@
     <string name="tap_coordinate_screenshot_message">IMPORTANT!!! These coordinates are only correct when your display is in the same orientation as the screenshot! This action will cancel any touches or gestures you are doing on the screen.\n\nIf you need help finding the coordinates of a point on your screen take a screenshot and then tap on the screenshot where you want this action to press.</string>
     <string name="dont_know_device_name">Don\'t know device name!</string>
     <string name="tap_actions_to_fix">Tap actions to fix!</string>
+    <string name="tap_constraints_to_fix">Tap constraints to fix!</string>
     <string name="new_gui_keyboard_ad_message">Get the new Key Mapper keyboard that has an on-screen keyboard!</string>
     <string name="shortcut_label_action">Perform actions</string>
     <string name="hold_down_until_trigger_is_dot_dot_dot">Hold down until trigger is…</string>
@@ -75,7 +75,7 @@
 
     <string name="reset">Reset</string>
     <string name="exception_accessibility_service" translatable="false">Exception in onKeyEvent. Look in logcat.</string>
-    <string name="enable_device_admin_message">Once you have enabled the device admin, you must DEACTIVATE it if you want to uninstall the app.</string>
+    <string name="enable_device_admin_message">Once you have enabled the device admin, you must DEACTIVATE it if you want to uninstall Key Mapper.</string>
 
     <string name="constraints_recyclerview_placeholder">No constraints!</string>
 
@@ -91,17 +91,25 @@
     <string name="clipboard_label_keymap_uid">Key map UUID</string>
     <string name="check_box_key_event_option_use_shell">Use shell (ROOT only)</string>
 
+    <string name="trigger_error_dnd_access_denied">If you are remapping a volume button you need to grant Key Mapper permission to modify the Do Not Disturb mode if you want the buttons to work as expected in Do Not Disturb mode!</string>
+    <string name="trigger_error_dnd_access_denied_short">This trigger will not work as expected in Do Not Disturb mode!</string>
+    <string name="trigger_error_screen_off_root_permission_denied">The option to trigger when the screen is off needs root permission to work!</string>
+    <string name="trigger_error_screen_off_root_permission_denied_short">The option to trigger when the screen is off will not work!</string>
+
+    <string name="home_error_is_battery_optimised">Your mappings will stop working randomly! Tap \'Fix\' to fix this.</string>
+    <string name="home_error_accessibility_service_is_disabled">The accessibility service needs to be turned on for your mappings to work!</string>
+    <string name="home_success_accessibility_service_is_enabled">The accessibility service is enabled! Your mappings should work.</string>
+
     <!--  Action descriptions  -->
     <string name="description_open_app">Open %s</string>
     <string name="description_key">Press \'%s\' key</string>
     <string name="description_text_block">Type \'%s\'</string>
     <string name="description_keyevent">Input %s%s</string>
-    <string name="description_keyevent_through_shell">Input %s%s through shell</string>
+    <string name="description_keyevent_through_shell">Input %s through shell</string>
     <string name="description_keyevent_from_device">Input %s%s from %s</string>
-    <string name="description_keyevent_from_device_through_shell">Input %s%s from %s through shell</string>
     <string name="description_url">Open %s</string>
-    <string name="description_tap_coordinate_default">Tap coordinates %s, %s</string>
-    <string name="description_tap_coordinate_with_description">Tap coordinates %s, %s (%s)</string>
+    <string name="description_tap_coordinate_default">Tap coordinates %d, %d</string>
+    <string name="description_tap_coordinate_with_description">Tap coordinates %d, %d (%s)</string>
     <string name="description_phone_call">Call %s</string>
     <!--  Action descriptions  -->
 
@@ -184,13 +192,16 @@
     <!--  Toasts  -->
     <string name="toast_chose_keyboard">Chose %s</string>
     <string name="toast_backup_successful">Back up successful!</string>
+    <string name="toast_backup_failed">Back up failed!</string>
     <string name="toast_restore_successful">Restore successful!</string>
+    <string name="toast_restore_failed">Restore failed!</string>
     <string name="toast_automatic_backup_successful">Automatic back up successful!</string>
+    <string name="toast_automatic_backup_failed">Automatic back up failed!</string>
     <string name="toast_screenshot_taken">Screenshot taken</string>
     <string name="toast_io_exception_shrug">IO exception ¯\\_(ツ)_/¯</string>
     <string name="toast_incorrect_screenshot_resolution">Screenshot resolution doesn\'t match this device\'s resolution!</string>
     <string name="toast_copied_keymap_uid_to_clipboard">Copied key map UUID to clipboard</string>
-    <string name="toast_triggered_keymap">You\'ve triggered a key map</string>
+    <string name="toast_triggered_keymap">You\'ve triggered a mapping</string>
     <!--  Toasts  -->
 
     <!-- Extra labels -->
@@ -329,23 +340,20 @@
     <string name="button_create_keymap_shortcut_in_launcher">Create launcher shortcut</string>
     <string name="button_open_trigger_keymap_from_intent_guide">Intent guide</string>
     <string name="button_help">Help</string>
+    <string name="button_pick_coordinate_select_screenshot">Select Screenshot</string>
     <string name="button_config_intent_choose_activity">Choose activity</string>
     <string name="button_config_intent_set_flags">Set flags</string>
     <!-- Button titles -->
 
-    <!-- Dialog titles -->
+    <!-- Dialog stuff -->
     <string name="dialog_title_are_you_sure">Are you sure?</string>
     <string name="dialog_title_create_shortcut_title">Create shortcut title</string>
-    <string name="dialog_title_cant_find_paired_devices">Can\'t find any paired devices</string>
     <string name="dialog_title_root_prompt">Root permission needed!</string>
     <string name="dialog_title_flags">More</string>
     <string name="dialog_title_pick_stream">Pick stream</string>
     <string name="dialog_title_choose_flash">Choose flash</string>
     <string name="dialog_title_cant_find_accessibility_settings_page">Can\'t find the accessibility settings page</string>
     <string name="dialog_title_cant_record_trigger">Can\'t record trigger?</string>
-    <!-- Dialog titles -->
-
-    <!-- Dialog messages -->
     <string name="dialog_message_are_you_sure_want_to_leave_without_saving">Are you sure you want to leave without saving?</string>
     <string name="dialog_message_root_prompt">If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use features which only work on rooted devices. When you tap \'OK\', you will be taken to the settings.
             In the settings, scroll to the bottom and tap \'Key Mapper has root permission\' so you can use root features/actions.</string>
@@ -357,7 +365,6 @@
     <string name="dialog_message_double_press_restricted_to_single_key">"Multiple keys can't be double pressed at the same time."</string>
     <string name="dialog_message_parallel_trigger_order">The keys need to be listed from top to bottom in the order that they will be held down.</string>
     <string name="dialog_message_sequence_trigger_explanation">A \"sequence\" trigger has a timeout unlike parallel triggers. This means after you press the first key, you will have a set amount of time to input the rest of the keys in the trigger. All the keys that you have added to the trigger won\'t do their usual action until the timeout has been reached. You can change this timeout in the "Options" tab.</string>
-    <string name="dialog_message_view_faq_and_use_discord_over_email">Please check out the FAQ to see if your question has already been answered. If not, then the developer would prefer it if you ask for help and suggest features in the Discord server. If you don\'t have Discord, you can email the developer directly.</string>
     <string name="dialog_message_bt_constraint_limitation">Android doesn\'t allow apps to get a list of connected (not paired) Bluetooth devices. Apps can only detect when they are connected and disconnected. So if your Bluetooth device is already connected to your device when the accessibility service starts, you will have to reconnect it for the app to know it is connected.</string>
     <string name="dialog_message_change_location_or_disable">Change location or turn off automatic back up?</string>
     <string name="dialog_message_screen_constraints_limitation">Screen on/off constraints will only work if you have turned on the \"detect trigger when screen is off\" key map option. This option will only show for some keys (e.g volume buttons) and if you are rooted. See a list of supported keys on the Help page.</string>
@@ -366,11 +373,20 @@
     <string name="dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout">You need to choose the \"Caps Lock to camera\" keyboard layout for your keyboard otherwise the Caps Lock key will still lock caps. You can find this setting in your device settings -> Languages and Input -> Physical Keyboard -> Tap on your keyboard -> Set Up Keyboard Layouts. This will remap the Caps Lock key to KEYCODE_CAMERA so Key Mapper can remap it properly.\n\nAfter you\'ve done this you must remove the Caps Lock trigger key and record the Caps Lock key again. It should say \"Camera\" instead of \"Caps Lock\" if you did the steps correctly.</string>
     <string name="dialog_message_select_app_store_gui_keyboard">Where do you want to get the new keyboard?</string>
     <string name="dialog_message_cant_record_trigger"><b>Reboot</b> your device if the "Record trigger" button is counting down and the buttons that you are pressing aren\'t showing up. If your buttons are still not showing up after rebooting then Key Mapper doesn\'t support your buttons. There isn\'t a fix for this.</string>
-    <string name="dialog_message_no_external_devices_connected">No external devices connected.</string>
+    <string name="dialog_message_settings_no_external_devices_connected">No external devices connected.</string>
 
-    <!-- Dialog messages -->
+    <string name="dialog_title_disable_battery_optimisation">Disable battery optimisation</string>
+    <string name="dialog_message_disable_battery_optimisation">You <b>MUST</b> read this all otherwise you will get frustrated in the future!\n\nTapping \"turn off\" will prevent Android from stopping the app while it is in the background.\n\n<b>This is NOT ENOUGH</b>. Your OEM\'s skin such as MIUI or Samsung Experience may have other \"battery saving\" features so you MUST turn them off for Key Mapper as well by following the guide at dontkillmyapp.com.</string>
 
-    <!-- Dialog buttons -->
+    <string name="dialog_title_send_feedback">Send feedback</string>
+    <string name="dialog_message_view_faq_and_use_discord_over_email">Please check out the FAQ to see if your question has already been answered. If not, then the developer would prefer it if you ask for help and suggest features in the Discord server. If you don\'t have Discord, you can email the developer directly.</string>
+
+    <string name="dialog_message_enable_accessibility_service_to_record_trigger">Turn on the accessibility service so that you can record a trigger.</string>
+    <string name="dialog_message_restart_accessibility_service_to_record_trigger">Restart the accessibility service by turning it <i>off</i> and <i>on</i> so that you can record a trigger.</string>
+
+    <string name="dialog_message_enable_accessibility_service_to_test_action">Turn on the accessibility service so that you can test the action.</string>
+    <string name="dialog_message_restart_accessibility_service_to_test_action">Restart the accessibility service by turning it <i>off</i> and <i>on</i> so that you can test the action.</string>
+
     <string name="pos_yes">Yes</string>
     <string name="pos_done">Done</string>
     <string name="pos_opt_in">Opt in</string>
@@ -380,6 +396,10 @@
     <string name="pos_grant">Grant</string>
     <string name="pos_join">Join</string>
     <string name="pos_change_location">Change</string>
+    <string name="pos_turn_off">Turn off</string>
+    <string name="pos_ok">Ok</string>
+    <string name="pos_turn_on">Turn on</string>
+    <string name="pos_restart">Restart</string>
 
     <string name="neg_turn_off">Turn off</string>
     <string name="neg_stay_out">Stay out</string>
@@ -389,15 +409,17 @@
 
     <string name="neg_email">Email</string>
     <string name="neutral_discord">Discord</string>
+    <string name="neutral_go_to_dont_kill_my_app">Don\'t Kill My App</string>
+    <string name="neutral_go_to_settings">Settings</string>
     <string name="neutral_intent_docs">Docs</string>
 
     <string name="snackbar_cancel">Cancel</string>
     <string name="snackbar_fix">Fix</string>
-    <!-- Dialog buttons -->
+    <!-- Dialog stuff -->
 
     <!-- Notification strings -->
     <string name="notification_channel_ime_picker">Keyboard picker</string>
-    <string name="notification_channel_toggle_remaps">Pause/Resume key maps</string>
+    <string name="notification_channel_toggle_mappings">Pause/Resume mappings</string>
     <string name="notification_channel_keyboard_hidden">Keyboard is hidden warning</string>
     <string name="notification_channel_toggle_keyboard">Toggle Key Mapper keyboard</string>
     <string name="notification_channel_new_features">New features</string>
@@ -406,10 +428,10 @@
     <string name="notification_ime_persistent_title">Keyboard picker</string>
 
     <string name="notification_keymaps_resumed_title">Running</string>
-    <string name="notification_keymaps_resumed_text">Tap to pause your key maps.</string>
+    <string name="notification_keymaps_resumed_text">Tap to pause your mappings.</string>
 
     <string name="notification_keymaps_paused_title">Paused</string>
-    <string name="notification_keymaps_paused_text">Tap to resume your key maps.</string>
+    <string name="notification_keymaps_paused_text">Tap to resume your mappings.</string>
 
     <string name="notification_action_dismiss">Dismiss</string>
 
@@ -425,6 +447,7 @@
 
     <string name="notification_toggle_keyboard_title">Toggle Key Mapper keyboard</string>
     <string name="notification_toggle_keyboard_text">Tap to switch to and from the Key Mapper keyboard.</string>
+    <string name="notification_toggle_keyboard_action">Toggle</string>
     <string name="notification_ime_service_disabled_title">Key Mapper keyboard disabled!</string>
     <string name="notification_ime_service_disabled_text">Tap to enable the Key Mapper keyboard.</string>
 
@@ -433,6 +456,7 @@
 
     <string name="notification_setup_chosen_devices_again_title">You need to setup some settings again!</string>
     <string name="notification_setup_chosen_devices_again_text">It looks like you were using the setting to automatically change the keyboard or show the input method picker when a Bluetooth device connects and disconnects. Key Mapper now allows you to use any input device and not just Bluetooth devices. There isn\'t a way to migrate the old settings in a way that the new functionality will work so you\'ll have to choose the devices again in the Key Mapper settings. Tap to open Key Mapper.</string>
+
     <!-- Notification strings -->
 
     <!--Preference titles and summaries-->
@@ -489,7 +513,7 @@
     <string name="summary_pref_toggle_keyboard_on_toggle_keymaps">Automatically select the Key Mapper keyboard when you resume your key maps and select your default keyboard when pausing them.</string>
 
     <string name="title_pref_hide_home_screen_alerts">Hide home screen alerts</string>
-    <string name="summary_pref_hide_home_screen_alerts">Hide the alerts at the top of the Key Mapper home screen.</string>
+    <string name="summary_pref_hide_home_screen_alerts">Hide the alerts at the top of the home screen.</string>
 
     <string name="title_pref_show_device_descriptors">Show the first 5 characters of the device id for device specific triggers</string>
     <string name="summary_pref_show_device_descriptors">This is useful to differentiate between devices that have the same name.</string>
@@ -557,9 +581,11 @@
     <string name="flag_vibrate">Vibrate</string>
     <string name="flag_show_toast">Show an on-screen message</string>
     <string name="flag_long_press_double_vibration">Vibrate when keys are initially pressed and again when long pressed.</string>
-    <string name="flag_detect_triggers_screen_off">Detect trigger when screen is off. ROOT only.</string>
+    <string name="flag_detect_triggers_screen_off">Detect trigger when the screen is off</string>
     <string name="flag_repeat_actions">Repeat</string>
+    <string name="flag_repeat_until_pressed_again">Repeat until pressed again</string>
     <string name="flag_hold_down">Hold down</string>
+    <string name="flag_hold_down_until_pressed_again">Hold down until pressed again</string>
     <string name="flag_dont_override_default_action">Do not override default action</string>
     <string name="flag_repeat_until_swiped_again">Repeat until swiped again</string>
     <string name="flag_hold_down_until_swiped_again">Hold down until swiped again</string>
@@ -580,7 +606,7 @@
     <string name="showcase_note_from_the_developer_description">There is no guarantee that every action will work on your device and that every button can be detected. This is because there are many flavours of Android, and OEMs can break features by accident or intentionally. If something doesn\'t work, please notify the developer and refrain from giving the app a poor rating since the issue is often out of the developer\'s control. =)</string>
 
     <string name="showcase_disable_battery_optimisation_title">Key Mapper may stop working randomly!</string>
-    <string name="showcase_disable_battery_optimisation_message_bad">CRITICAL!!! Tap \"turn off\" to prevent Android from stopping the app while it is in the background. Your OEM\'s skin such as MIUI or Samsung Experience may have other \"battery saving\" features so it is STRONGLY recommended to turn them off for Key Mapper as well by going to dontkillmyapp.com</string>
+    <string name="showcase_disable_battery_optimisation_message_bad">CRITICAL!!! Tap \"turn off\" to hopefully prevent Android from stopping the app while it is in the background. Your OEM\'s skin such as MIUI or Samsung Experience may have other \"battery saving\" features so you MUST turn them off for Key Mapper as well by following the guide at dontkillmyapp.com</string>
     <string name="showcase_disable_battery_optimisation_message_good">Stock Android battery optimisation is off. This is not good enough for most devices so go to dontkillmyapp.com for tutorials which show how to turn off even more app-killing features on your device.</string>
     <string name="showcase_disable_battery_optimisation_button_turn_off">Turn off</string>
     <string name="showcase_disable_battery_optimisation_button_dont_kill_my_app">Go to dontkillmyapp.com</string>
@@ -596,7 +622,6 @@
     <string name="showcase_contributing_title">Contributing</string>
     <string name="showcase_contributing_description">"This app is open source! You can start contributing by heading over to the sds100/KeyMapper repo on GitHub and by joining the Discord server. Even if you can\'t code, you can contribute by helping others and testing the latest features."</string>
     <string name="showcase_action_list">Tap the 3 dots to change the repeat behaviour and more. You can test an action and fix action errors by tapping it.</string>
-    <string name="showcase_screen_off_triggers">This option will only work if your device is rooted and you have told Key Mapper that it has root permission in the Key Mapper settings. If you don\'t know what root is then this option will not work. It will also only work for some keys (e.g volume buttons) so see the Help page for a list of supported keys.</string>
 
     <string name="showcase_fingerprint_gesture_support_title_supported_unknown">Remapping fingerprint reader gestures</string>
     <string name="showcase_fingerprint_gesture_support_title_supported">You can remap fingerprint reader gestures! :)</string>
@@ -634,8 +659,8 @@
     <!-- system action options -->
 
     <!-- Tiles -->
-    <string name="tile_pause">Pause key maps</string>
-    <string name="tile_resume">Resume key maps</string>
+    <string name="tile_pause">Pause mappings</string>
+    <string name="tile_resume">Resume mappings</string>
     <string name="tile_service_disabled">Service Disabled</string>
     <string name="tile_accessibility_service_disabled_content_description">Key Mapper accessibility service is disabled</string>
     <string name="tile_keymapper_keyboard_service_disabled_content_description">Key Mapper keyboard service is disabled</string>
@@ -678,29 +703,28 @@
     <string name="error_app_isnt_installed_brief">App isn\'t installed!</string>
 
     <string name="error_app_is_disabled">App is disabled!</string>
-    <string name="error_action_requires_write_settings_permission">You need to grant Key Mapper permission to modify system settings to use this action.</string>
+    <string name="error_action_requires_write_settings_permission">You need to grant Key Mapper permission to modify system settings.</string>
     <string name="error_requires_root">This requires root permission!</string>
     <string name="error_action_requires_camera_permission">This action requires camera permission!</string>
     <string name="error_sdk_version_too_low">This requires Android %s</string>
     <string name="error_sdk_version_too_high">This is only supported up to Android %s</string>
     <string name="error_feature_not_available">Your device doesn\'t support %s.</string>
     <string name="error_flag_not_found">Flag "%s" not found!</string>
-    <string name="error_google_app_not_installed">Google app not installed!</string>
     <string name="error_cant_find_ime_settings">Can\'t find the keyboard settings page!</string>
-    <string name="error_need_to_enable_device_admin">Key Mapper needs to be a device administrator to use this action!</string>
+    <string name="error_need_to_enable_device_admin">Key Mapper needs to be a device administrator!</string>
     <string name="error_in_do_not_disturb_mode">In Do Not Disturb mode!</string>
-    <string name="error_keymapper_doesnt_have_permission_app_shortcut">Key Mapper doesn\'t have permission to use that shortcut.</string>
+    <string name="error_keymapper_doesnt_have_permission_app_shortcut">Key Mapper doesn\'t have permission to use that shortcut</string>
     <string name="error_action_notification_policy_permission">The app needs permission to change the Do Not Disturb state!</string>
     <string name="error_action_requires_read_phone_state_permission">This action needs permission to read the phone state!</string>
     <string name="error_cant_find_write_settings_page">Can\'t find the WRITE_SETTINGS permission page!</string>
     <string name="error_opening_app_shortcut">Error opening this app shortcut</string>
     <string name="error_no_app_found_to_send_feedback">No compatible app is found to send feedback.</string>
-    <string name="error_dnd_access_not_granted">If you are remapping a volume button you need to give the app Do Not Disturb access if you want the buttons to work while in Do Not Disturb mode!</string>
     <string name="dnd_access_granted">Permission to change Do Not Disturb mode granted!</string>
     <string name="error_cant_find_dnd_access_settings">Can\'t find the Do Not Disturb access permission settings!</string>
     <string name="error_need_write_secure_settings_permission">Key Mapper needs WRITE_SECURE_SETTINGS permission.</string>
     <string name="error_no_app_found_to_open_url">No app can be found to open that URL</string>
     <string name="error_failed_execute_getevent">Failed to execute "getevent" command. Are you sure you\'re rooted?</string>
+    <string name="error_no_app_to_phone_call">There is no app that can start this phone call</string>
 
     <string name="error_camera_in_use">Camera is in use!</string>
     <string name="error_camera_disconnected">Camera disconnected!</string>
@@ -715,31 +739,30 @@
     <string name="error_accessibility_service_disabled_record_trigger">The accessibility service needs to be enabled!</string>
     <string name="error_accessibility_service_enabled">Accessibility service is enabled!</string>
     <string name="error_accessibility_service_disabled">Accessibility service needs to be enabled!</string>
+    <string name="error_accessibility_service_crashed">The accessibility service needs to be restarted!</string>
+    <string name="error_launcher_shortcuts_not_supported">Your launcher doesn\'t support shortcuts.</string>
 
     <string name="warning_need_write_secure_settings_permission">Some features need WRITE_SECURE_SETTINGS permission.</string>
     <string name="fixed_need_write_secure_settings_permission">WRITE_SECURE_SETTINGS permission granted.</string>
 
-    <string name="error_ime_service_disabled_status_layout">A Key Mapper compatible keyboard needs to be enabled for “Key event”, “Key”, “Text” and some other actions to work.</string>
-    <string name="error_ime_service_disabled">None of the Key Mapper compatible keyboards are enabled!</string>
-    <string name="error_ime_service_enabled">A Key Mapper compatible keyboard is enabled!</string>
-    <string name="error_critical_ime_service_disabled">A Key Mapper compatible keyboard must be enabled and be used for some of your actions to work!</string>
+    <string name="error_ime_service_disabled_status_layout">Your selected input method needs to be enabled for “Key event”, “Key”, “Text” and some other actions to work.</string>
+    <string name="error_key_mapper_ime_service_disabled">None of the Key Mapper keyboards are enabled!</string>
+    <string name="error_ime_service_enabled">A Key Mapper keyboard is enabled!</string>
+    <string name="error_critical_ime_service_disabled">A Key Mapper keyboard must be enabled and selected for some of your actions to work!</string>
     <string name="error_ime_not_found">Can\'t find the %s input method</string>
     <string name="error_no_enabled_imes">This device has no enabled input methods!</string>
+    <string name="error_cant_show_ime_picker_in_background">The input method picker can\'t be shown!</string>
+    <string name="error_failed_to_find_accessibility_node">Failed to find accessibility node!</string>
+    <string name="error_failed_to_perform_accessibility_global_action">Failed perform global action %s!</string>
 
     <string name="error_the_app_wont_work">Your key maps won\'t work! Some things need fixing!</string>
     <string name="error_cant_move_to_end_of_text_in_this_field">You can\'t move to the end of the text in this field!</string>
     <string name="error_battery_optimisation_activity_not_found">Battery optimisation settings not found! If it exists, open it manually.</string>
 
-    <string name="error_cant_find_option_label">error: Can\'t find a label for this option \"%s\"</string>
-    <string name="error_system_action_not_found">System action not found %s!</string>
-    <string name="error_no_action_data">No action data!</string>
     <string name="error_extra_not_found">Extra (%s) not found!</string>
-    <string name="error_constraint_not_found">Constraint not found</string>
     <string name="error_duplicate_constraint">You can\'t have duplicate constraints!</string>
     <string name="error_fingerprint_gesture_map_constraint_exists">This gesture already has this constraint!</string>
     <string name="error_cant_be_empty">Can\'t be empty!</string>
-    <string name="error_invalid_action_type">Invalid action Type: %s</string>
-    <string name="error_options_not_required">Options not required</string>
     <string name="error_key_mapper_ime_not_found">Can\'t find the Key Mapper input method!</string>
     <string name="error_download_failed">Download failed!</string>
     <string name="error_file_not_exists">File doesn\'t exist!</string>
@@ -747,7 +770,6 @@
     <string name="error_file_not_cached">File isn\'t cached! Connect to internet to download it.</string>
     <string name="error_this_is_unsupported">This is unsupported. :(</string>
     <string name="error_device_not_found">Device not found!</string>
-    <string name="error_no_keymaps">No key maps!</string>
     <string name="error_failed_to_pick_file">Failed to pick file</string>
     <string name="error_empty_json">Empty JSON file!</string>
     <string name="error_file_access_denied">File access denied! Is it deleted?</string>
@@ -756,14 +778,29 @@
     <string name="error_invalid_number">Invalid number!</string>
     <string name="error_number_too_small">Must be at least %s!</string>
     <string name="error_number_too_big">Must be at most %s!</string>
-    <string name="error_battery_optimisation_enabled">Battery optimisation is turned on! This can randomly stop Key Mapper from working.</string>
-    <string name="error_battery_optimisation_disabled">Battery optimisation is turned off!</string>
+    <string name="error_battery_optimisation_enabled">Battery optimisation is turned on! Turn this off because this can randomly stop Key Mapper from working.</string>
+    <string name="success_battery_optimisation_disabled">Battery optimisation is turned off!</string>
     <string name="error_cant_find_notification_listener_settings">Can\'t find the notification access settings!</string>
     <string name="error_denied_notification_listener_service_permission">Denied notification access permission!</string>
     <string name="error_invalid_intent_extra_value">Invalid!</string>
     <string name="error_denied_call_phone_permission">Denied permission to start phone calls!</string>
     <string name="error_backup_version_too_new">You will need to update Key Mapper to the latest version to use this backup.</string>
     <string name="error_corrupt_json_file">Corrupt JSON file!</string>
+    <string name="error_voice_assistant_not_found">There is no voice assistant installed!</string>
+    <string name="error_insufficient_permissions">Insufficient permissions</string>
+    <string name="error_corrupt_action">Corrupt action</string>
+    <string name="error_no_incompatible_input_methods_installed">You only have Key Mapper keyboards installed!</string>
+    <string name="error_no_media_sessions">There are no apps playing media!</string>
+    <string name="error_unknown_file_location">Unknown file location!</string>
+    <string name="error_failed_to_dispatch_gesture">Failed to input gesture!</string>
+    <string name="error_failed_to_modify_system_setting">Failed to modify system setting %s!</string>
+    <string name="error_ime_disabled">You need to enable %s!</string>
+    <string name="error_failed_to_change_ime">Failed to change ime!</string>
+    <string name="error_no_camera_app">Your device has no camera app!</string>
+    <string name="error_no_device_assistant">Your device has no assistant!</string>
+    <string name="error_no_settings_app">Your device has no settings app!</string>
+    <string name="error_no_app_to_open_url">No app can open this url!</string>
+
     <!-- Error messages -->
 
     <!-- System action labels -->

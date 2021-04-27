@@ -7,13 +7,15 @@
 
     <fragment
         android:id="@+id/config_fingerprint_map_fragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.keymap.ConfigKeymapFragment"
+        android:name="io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapFragment"
         android:label="Edit Keymap"
         tools:layout="@layout/fragment_config_mapping">
 
         <argument
-            android:name="keymapId"
-            app:argType="long" />
+            android:name="keymapUid"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
 
         <action
             android:id="@+id/action_config_keymap_fragment_to_actionOptionsFragment"
@@ -28,21 +30,12 @@
 
     <dialog
         android:id="@+id/triggerKeyOptionsFragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.keymap.TriggerKeyOptionsFragment"
-        android:label="TriggerKeyOptionsFragment">
-
-        <argument
-            android:name="@string/nav_arg_trigger_key_options"
-            app:argType="io.github.sds100.keymapper.data.model.options.TriggerKeyOptions" />
-    </dialog>
+        android:name="io.github.sds100.keymapper.mappings.keymaps.trigger.ConfigTriggerKeyFragment"
+        android:label="TriggerKeyOptionsFragment"/>
 
     <dialog
         android:id="@+id/keymapActionOptionsFragment"
-        android:name="io.github.sds100.keymapper.ui.fragment.keymap.KeymapActionOptionsFragment"
+        android:name="io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapActionOptionsFragment"
         android:label="KeymapActionOptionsFragment">
-
-        <argument
-            android:name="@string/nav_arg_keymap_action_options"
-            app:argType="io.github.sds100.keymapper.data.model.options.KeymapActionOptions" />
-    </dialog>
+   </dialog>
 </navigation>

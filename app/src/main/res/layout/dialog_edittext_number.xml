@@ -9,7 +9,7 @@
 
         <variable
             name="text"
-            type="androidx.lifecycle.MutableLiveData&lt;String>" />
+            type="kotlinx.coroutines.flow.MutableStateFlow&lt;String>" />
     </data>
 
     <com.google.android.material.textfield.TextInputLayout xmlns:android="http://schemas.android.com/apk/res/android"
