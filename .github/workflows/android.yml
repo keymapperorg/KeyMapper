@@ -71,6 +71,10 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email noreply@github.com
 
+      - name: update fastlane
+        run: |
+          bundle update fastlane
+
       - name: Build apk with fastlane
         run: bundle exec fastlane ci_alpha_apk
 
