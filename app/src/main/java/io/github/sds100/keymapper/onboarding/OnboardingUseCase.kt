@@ -7,10 +7,7 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.util.FlowPrefDelegate
 import io.github.sds100.keymapper.util.PrefDelegate
 import io.github.sds100.keymapper.util.VersionUtils
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 
 /**
  * Created by sds100 on 14/02/21.
