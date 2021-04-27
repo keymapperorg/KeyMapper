@@ -112,26 +112,21 @@
     <string name="button_recording_trigger_countdown">%d…</string>
     <string name="button_yes">Ja!</string>
     <!-- Button titles -->
-    <!-- Dialog titles -->
+    <!-- Dialog stuff -->
     <string name="dialog_title_are_you_sure">Bist du sicher?</string>
-    <string name="dialog_title_cant_find_paired_devices">Keine gekoppelten Geräte gefunden</string>
     <string name="dialog_title_root_prompt">Root-Berechtigung benötigt!</string>
     <string name="dialog_title_flags">Mehr</string>
     <string name="dialog_title_pick_stream">Stream auswählen</string>
     <string name="dialog_title_cant_record_trigger">Kann Trigger nicht aufnehmen?</string>
-    <!-- Dialog titles -->
-    <!-- Dialog messages -->
     <string name="dialog_message_are_you_sure_want_to_leave_without_saving">Willst du wirklich ohne zu speichern abbrechen?</string>
     <string name="dialog_message_downloading">Download läuft…</string>
     <string name="dialog_message_describe_your_issue_in_the_email">Können Sie bitte das Problem in der E-Mail beschreiben, sonst kann ich Ihnen nicht helfen. Danke!</string>
-    <!-- Dialog messages -->
-    <!-- Dialog buttons -->
     <string name="pos_yes">Ja</string>
     <string name="pos_done">Fertig</string>
     <string name="neg_no">Nein</string>
     <string name="neg_cancel">Abbrechen</string>
     <string name="neg_dont_show_again">Nicht mehr anzeigen</string>
-    <!-- Dialog buttons -->
+    <!-- Dialog stuff -->
     <!-- Notification strings -->
     <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
     <!-- Notification strings -->
@@ -164,8 +159,6 @@
     <!-- Meta States -->
     <!-- Error messages -->
     <string name="error_app_is_disabled">App ist deaktiviert!</string>
-    <string name="error_google_app_not_installed">Google-App nicht installiert!</string>
-    <string name="error_constraint_not_found">Bedingung nicht gefunden</string>
     <string name="error_duplicate_constraint">Du kannst keine doppelten Bedingungen haben!</string>
     <string name="error_fingerprint_gesture_map_constraint_exists">Diese Geste hat bereits diese Bedingung!</string>
     <!-- Error messages -->
