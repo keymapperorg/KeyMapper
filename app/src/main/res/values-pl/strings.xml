@@ -14,7 +14,6 @@
     <string name="your_device_doesnt_support_some_actions">Twoje urządzenie nie obsługuje niektórych działań.</string>
     <string name="requires_root">WYMAGA ROOT</string>
     <string name="press_dot_dot_dot">Naciśnij…</string>
-    <string name="chip_while">gdy</string>
     <string name="on">Włącz</string>
     <string name="off">Wyłącz</string>
     <string name="follow_system">Z motywu systemu</string>
@@ -38,7 +37,6 @@
     <string name="switch_enabled">Włączone</string>
     <string name="disabled">Wyłączone</string>
     <string name="reset">Zresetuj</string>
-    <string name="enable_device_admin_message">Po włączeniu administratora urządzenia, musisz później go WYŁĄCZYĆ jeśli chcesz odinstalować aplikację.</string>
     <string name="constraints_recyclerview_placeholder">Brak ograniczeń!</string>
     <string name="email_subject">Zapytanie dotyczące Key Mapper</string>
     <string name="email_default_message">Czy strona pomocy rozwiązuje Twój problem? Jakie jest Twoje urządzenie?\n\n Której skórki OEM lub ROM używasz?\n\n Opisz swój problem:</string>
@@ -80,7 +78,6 @@
     <string name="extra_label_repeat_delay">Opóźnienie powtarzania (ms)</string>
     <string name="extra_label_repeat_rate">Powtarzaj co… (ms)</string>
     <string name="extra_label_vibration_duration">Czas trwania wibracji (ms)</string>
-    <string name="extra_label_action_multiplier">Liczba działań</string>
     <!-- Extra labels -->
     <!-- Constraints -->
     <string name="constraint_app_foreground_description">%s jest na pierwszym planie</string>
@@ -132,15 +129,12 @@
     <string name="button_recording_trigger_countdown">%d…</string>
     <string name="button_yes">Tak!</string>
     <!-- Button titles -->
-    <!-- Dialog titles -->
+    <!-- Dialog stuff -->
     <string name="dialog_title_are_you_sure">Czy jesteś pewien?</string>
-    <string name="dialog_title_cant_find_paired_devices">Nie można znaleźć sparowanych urządzeń</string>
     <string name="dialog_title_root_prompt">Wymagane uprawnienie roota!</string>
     <string name="dialog_title_flags">Więcej</string>
     <string name="dialog_title_pick_stream">Wybierz strumień</string>
     <string name="dialog_title_choose_flash">Wybierz lampę błyskową</string>
-    <!-- Dialog titles -->
-    <!-- Dialog messages -->
     <string name="dialog_message_are_you_sure_want_to_leave_without_saving">Czy na pewno chcesz wrócić bez zapisywania?</string>
     <string name="dialog_message_downloading">Pobieranie…</string>
     <string name="dialog_message_describe_your_issue_in_the_email">Czy możesz opisać swój problem przez email? Bo inaczej nie mogę ci pomóc. Dzięki!</string>
@@ -151,8 +145,6 @@
     <string name="dialog_message_sequence_trigger_explanation">Trigger \"kolejkowy\" ma limit czasu w przeciwieństwie do triggerów równoległych. Oznacza to, że po naciśnięciu pierwszego klawisza jest określony czas na wprowadzenie pozostałych. Wszystkie klawisze, które dodałeś do triggera, nie wykonają swojego zwykłego działania, dopóki nie zostanie osiągnięty limit czasu. Ten limit można zmienić na karcie \"Opcje\".</string>
     <string name="dialog_message_bt_constraint_limitation">Android nie pozwala aplikacjom na odczytywanie listy aktualnie połączonych (niesparowanych) urządzeń Bluetooth. Aplikacje mogą je wykrywać tylko w momencie, gdy się łączą i rozłączają. Dlatego jeśli urządzenie Bluetooth było już połączone z urządzeniem w momencie uruchomienia usługi ułatwień dostępu, konieczne będzie ponowne połączenie, aby aplikacja mogła je wykryć.</string>
     <string name="dialog_message_select_app_store_gui_keyboard">Skąd chcesz pobrać nową klawiaturę?</string>
-    <!-- Dialog messages -->
-    <!-- Dialog buttons -->
     <string name="pos_yes">Tak</string>
     <string name="pos_done">Gotowe</string>
     <string name="pos_opt_in">Akceptuj</string>
@@ -168,7 +160,7 @@
     <string name="neutral_discord">Discord</string>
     <string name="snackbar_cancel">Anuluj</string>
     <string name="snackbar_fix">Napraw</string>
-    <!-- Dialog buttons -->
+    <!-- Dialog stuff -->
     <!-- Notification strings -->
     <string name="notification_channel_ime_picker">Wybór klawiatury</string>
     <string name="notification_channel_keyboard_hidden">Ostrzeżenie dotyczące ukrytej klawiatury</string>
@@ -198,7 +190,6 @@
     <string name="action_type_title_application_shortcut">Skrót aplikacji</string>
     <!--Action Types Titles-->
     <!--flags-->
-    <string name="flag_detect_triggers_screen_off">Wykryj trigger gdy ekran jest wyłączony. Wymaga ROOT.</string>
     <!--flags-->
     <!-- Showcase -->
     <string name="showcase_record_trigger_title">Usługa ułatwień dostępu jest wyłączona</string>
@@ -222,7 +213,6 @@
     <!-- Error messages -->
     <string name="error_must_have_a_title">Skrót musi mieć nazwę!</string>
     <string name="error_shortcut_not_found">Nie można znaleźć skrótu. Czy ta aplikacja jest zainstalowana i włączona?</string>
-    <string name="error_keymapper_doesnt_have_permission_app_shortcut">Key Mapper nie ma uprawnień do używania tego skrótu.</string>
     <string name="error_opening_app_shortcut">Błąd podczas otwierania tego skrótu aplikacji</string>
     <string name="dnd_access_granted">Uprawienie na zmianę trybu Nie przeszkadzać zostało udzielone!</string>
     <string name="error_accessibility_service_disabled_record_trigger">Usługa ułatwień dostępu musi być włączona!</string>
