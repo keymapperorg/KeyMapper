@@ -211,7 +211,7 @@
     <string name="extra_label_repeat_delay">Delay until repeat (ms)</string>
     <string name="extra_label_repeat_rate">Repeat every… (ms)</string>
     <string name="extra_label_vibration_duration">Vibration duration (ms)</string>
-    <string name="extra_label_action_multiplier">Action count</string>
+    <string name="extra_label_action_multiplier">How many times</string>
     <string name="extra_label_delay_before_next_action">Delay before next action (ms)</string>
     <string name="extra_label_hold_down_duration">Hold down duration (ms)</string>
     <!-- Extra labels -->
