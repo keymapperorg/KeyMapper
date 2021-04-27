@@ -443,8 +443,6 @@ https://issuetracker.google.com/issues/163120692
     <string name="showcase_disable_battery_optimisation_message_good">Стандартная оптимизация батареи Android выключена. Однако этого бывает недостаточно для большинства устройств, так что перейдите на dontkillmyapp.com, чтобы посмотреть, как выключить ещё больше функций энергосбережения на вашем устройстве.</string>
     <string name="showcase_disable_battery_optimisation_button_turn_off">Выключить</string>
     <string name="showcase_disable_battery_optimisation_button_dont_kill_my_app">Перейти на dontkillmyapp.com</string>
-    <string name="showcase_dex_mode_supported_title">Похоже, что ваше устройство поддерживает Samsung Dex</string>
-    <string name="showcase_dex_mode_supported_message">Samsung запрещает приложениям с сторонней клавиатурой открываться в режиме Dex. Поэтому это приложение не будет открываться и клавиатура Key Mapper не будет работать, пока вы находитесь в режиме Dex. Ваши мэппинги, которые не требуют клавиатуры Key Mapper по-прежнему будут работать, пока вы находитесь в режиме Dex.</string>
     <string name="showcase_dnd_access_title_disabled">Переназначить клавиши громкости?</string>
     <string name="showcase_dnd_access_title_enabled">Вы можете переназначить клавиши управления громкостью.</string>
     <string name="showcase_dnd_access_description_disabled">Приложению Key Mapper требуется доступ к управлению режимом \"Не беспокосить\" если вы хотите переназначить действия связанные с событием нажатия на клавишу громкости.</string>
