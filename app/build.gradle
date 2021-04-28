@@ -43,6 +43,13 @@ android {
         ci {
             debuggable = true
 
+            postprocessing {
+                removeUnusedCode true
+                removeUnusedResources true
+                obfuscate false
+                optimizeCode true
+            }
+
             /*
             This is required because the splitties library doesn't have a ci build type.
              */
