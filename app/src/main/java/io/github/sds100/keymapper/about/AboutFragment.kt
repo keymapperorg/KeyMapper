@@ -13,8 +13,8 @@ import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentAboutBinding
-import io.github.sds100.keymapper.util.FeedbackUtils
 import io.github.sds100.keymapper.system.url.UrlUtils
+import io.github.sds100.keymapper.util.FeedbackUtils
 import io.github.sds100.keymapper.util.str
 
 /**
@@ -31,7 +31,11 @@ class AboutFragment : BottomSheetDialogFragment() {
         get() = _binding!!
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         FragmentAboutBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
 
@@ -65,51 +69,26 @@ class AboutPreferenceFragment : PreferenceFragmentCompat() {
         findPreference<Preference>(str(R.string.key_pref_version))?.summary = Constants.VERSION
 
         findPreference<Preference>(str(R.string.key_pref_changelog))?.setOnPreferenceClickListener {
-            val direction = NavAppDirections.actionGlobalOnlineFileFragment(
-                R.string.pref_title_changelog,
-                R.string.url_changelog
-            )
-            findNavController().navigate(direction)
+
+            UrlUtils.launchCustomTab(requireContext(), str(R.string.url_changelog))
 
             true
         }
 
         findPreference<Preference>(str(R.string.key_pref_license))?.setOnPreferenceClickListener {
-            val direction = NavAppDirections.actionGlobalOnlineFileFragment(
-                R.string.pref_title_license,
-                R.string.url_license
-            )
-            findNavController().navigate(direction)
+            UrlUtils.launchCustomTab(requireContext(), str(R.string.url_license))
 
             true
         }
 
         findPreference<Preference>(str(R.string.key_pref_privacy_policy))?.setOnPreferenceClickListener {
-            val direction = NavAppDirections.actionGlobalOnlineFileFragment(
-                R.string.pref_title_privacy_policy,
-                R.string.url_privacy_policy
-            )
-            findNavController().navigate(direction)
+            UrlUtils.launchCustomTab(requireContext(), str(R.string.url_privacy_policy))
 
             true
         }
 
         findPreference<Preference>(str(R.string.key_pref_credits))?.setOnPreferenceClickListener {
-            val direction = NavAppDirections.actionGlobalOnlineFileFragment(
-                R.string.pref_title_credits,
-                R.string.url_credits
-            )
-            findNavController().navigate(direction)
-
-            true
-        }
-
-        findPreference<Preference>(str(R.string.key_pref_credits))?.setOnPreferenceClickListener {
-            val direction = NavAppDirections.actionGlobalOnlineFileFragment(
-                R.string.pref_title_credits,
-                R.string.url_credits
-            )
-            findNavController().navigate(direction)
+            UrlUtils.launchCustomTab(requireContext(), str(R.string.url_credits))
 
             true
         }

@@ -18,7 +18,6 @@ import io.github.sds100.keymapper.system.devices.DeviceInfoCache
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.files.FileAdapter
-import io.github.sds100.keymapper.system.files.FileRepository
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.intents.IntentAdapter
 import io.github.sds100.keymapper.system.lock.LockScreenAdapter
@@ -95,22 +94,6 @@ object ServiceLocator {
         return fingerprintMapRepository
             ?: DataStoreFingerprintMapRepository(context.fingerprintMapDataStore, scope).also {
                 this.fingerprintMapRepository = it
-            }
-    }
-
-    @Volatile
-    private var fileRepository: FileRepository? = null
-
-    fun fileRepository(context: Context): FileRepository {
-        synchronized(this) {
-            return fileRepository ?: createFileRepository(context)
-        }
-    }
-
-    private fun createFileRepository(context: Context): FileRepository {
-        return fileRepository
-            ?: FileRepository(context.applicationContext).also {
-                this.fileRepository = it
             }
     }
 

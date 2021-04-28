@@ -103,35 +103,6 @@
         app:popEnterAnim="@anim/slide_in_left"
         app:popExitAnim="@anim/slide_out_right" />
 
-    <dialog
-        android:id="@+id/onlineFragment"
-        android:name="io.github.sds100.keymapper.system.files.OnlineFileFragment"
-        android:label="help_fragment"
-        tools:layout="@layout/fragment_online_file">
-        <argument
-            android:name="@string/nav_arg_header"
-            app:argType="reference" />
-        <argument
-            android:name="@string/nav_arg_file_url"
-            app:argType="reference" />
-        <argument
-            android:name="@string/nav_arg_file_url_alt"
-            android:defaultValue="0"
-            app:argType="reference" />
-    </dialog>
-
-    <action
-        android:id="@+id/action_global_onlineFileFragment"
-        app:destination="@id/onlineFragment"
-        app:enterAnim="@anim/slide_in_bottom">
-        <argument
-            android:name="@string/nav_arg_header"
-            app:argType="reference" />
-        <argument
-            android:name="@string/nav_arg_file_url"
-            app:argType="reference" />
-    </action>
-
     <fragment
         android:id="@+id/aboutFragment"
         android:name="io.github.sds100.keymapper.about.AboutFragment"
@@ -161,7 +132,7 @@
         android:id="@+id/appListFragment"
         android:name="io.github.sds100.keymapper.system.apps.ChooseAppFragment"
         android:label="AppListFragment"
-        tools:layout="@layout/fragment_recyclerview" />
+        tools:layout="@layout/fragment_simple_recyclerview" />
 
     <action
         android:id="@+id/chooseApp"
@@ -175,7 +146,7 @@
         android:id="@+id/bluetoothDevicesFragment"
         android:name="io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceFragment"
         android:label="BlutoothDeviceFragment"
-        tools:layout="@layout/fragment_recyclerview" />
+        tools:layout="@layout/fragment_simple_recyclerview" />
 
     <action
         android:id="@+id/chooseBluetoothDevice"

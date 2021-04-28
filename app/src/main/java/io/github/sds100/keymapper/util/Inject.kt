@@ -25,7 +25,6 @@ import io.github.sds100.keymapper.system.apps.ChooseAppViewModel
 import io.github.sds100.keymapper.system.apps.DisplayAppShortcutsUseCaseImpl
 import io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceUseCaseImpl
 import io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceViewModel
-import io.github.sds100.keymapper.system.files.OnlineFileViewModel
 import io.github.sds100.keymapper.system.intents.ConfigIntentViewModel
 import io.github.sds100.keymapper.system.keyevents.ChooseKeyCodeViewModel
 import io.github.sds100.keymapper.system.keyevents.ChooseKeyViewModel
@@ -117,20 +116,6 @@ object Inject {
         return UnsupportedActionListViewModel.Factory(
             UseCases.isSystemActionSupported(context),
             ServiceLocator.resourceProvider(context)
-        )
-    }
-
-    fun onlineFileViewModel(
-        context: Context,
-        fileUrl: String,
-        alternateUrl: String? = null,
-        header: String
-    ): OnlineFileViewModel.Factory {
-        return OnlineFileViewModel.Factory(
-            ServiceLocator.fileRepository(context),
-            fileUrl,
-            alternateUrl,
-            header
         )
     }
 

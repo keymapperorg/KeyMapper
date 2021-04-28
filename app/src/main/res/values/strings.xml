@@ -177,9 +177,6 @@
     <!--  Tabs  -->
 
     <!--  Navigation argument ids  -->
-    <string name="nav_arg_header" translatable="false">io.github.sds100.keymapper.ui.fragment.OnlineFileFragment.header</string>
-    <string name="nav_arg_file_url" translatable="false">io.github.sds100.keymapper.ui.fragment.OnlineFileFragment.header.file_url</string>
-    <string name="nav_arg_file_url_alt" translatable="false">file_url_alt</string>
     <string name="nav_arg_keymap_action_options" translatable="false">keymap_action_options</string>
     <string name="nav_arg_action_shortcut_options" translatable="false">action_shortcut_options</string>
     <string name="nav_arg_trigger_key_options" translatable="false">trigger_key_options</string>
@@ -263,11 +260,11 @@
     <string name="url_source_code" translatable="false">https://github.com/sds100/KeyMapper</string>
     <string name="url_developer_github" translatable="false">https://github.com/sds100</string>
     <string name="url_play_store_listing" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper</string>
-    <string name="url_license" translatable="false">https://raw.githubusercontent.com/sds100/KeyMapper/master/LICENSE.md</string>
-    <string name="url_changelog" translatable="false">https://raw.githubusercontent.com/sds100/KeyMapper/master/CHANGELOG.md</string>
-    <string name="url_credits" translatable="false">https://raw.githubusercontent.com/sds100/KeyMapper/master/CREDITS.md</string>
+    <string name="url_license" translatable="false">https://github.com/sds100/KeyMapper/blob/master/LICENSE.md</string>
+    <string name="url_changelog" translatable="false">https://github.com/sds100/KeyMapper/blob/master/CHANGELOG.md</string>
+    <string name="url_credits" translatable="false">https://github.com/sds100/KeyMapper/blob/master/CREDITS.md</string>
     <string name="url_translate" translatable="false">https://github.com/sds100/KeyMapper/wiki/Translate</string>
-    <string name="url_privacy_policy" translatable="false">https://raw.githubusercontent.com/sds100/KeyMapper/master/PRIVACY_POLICY.md</string>
+    <string name="url_privacy_policy" translatable="false">https://github.com/sds100/KeyMapper/blob/master/PRIVACY_POLICY.md</string>
     <string name="url_xda_thread" translatable="false">https://forum.xda-developers.com/android/apps-games/app-keyboard-button-mapper-t3914005</string>
     <string name="url_discord_server_invite" translatable="false">https://discord.gg/Suj6nyw</string>
     <string name="url_fdroid_key_mapper" translatable="false">https://f-droid.org/en/packages/io.github.sds100.keymapper/</string>
