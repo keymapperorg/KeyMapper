@@ -5,22 +5,18 @@ import com.github.salomonbrys.kotson.contains
 import com.github.salomonbrys.kotson.get
 import com.google.gson.Gson
 import com.google.gson.JsonParser
-import io.github.sds100.keymapper.data.db.AppDatabase
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapEntity
-import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntity
-import io.github.sds100.keymapper.system.devices.DeviceInfoCache
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapRepository
 import io.github.sds100.keymapper.backup.BackupManagerImpl
-import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
+import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.system.files.FileAdapter
+import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapEntity
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapEntityGroup
-import io.github.sds100.keymapper.util.DispatcherProvider
+import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapRepository
+import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntity
+import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
+import io.github.sds100.keymapper.system.devices.DeviceInfoCache
+import io.github.sds100.keymapper.system.files.FileAdapter
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.FlowUtils.toListWithTimeout
-import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.Result
-import io.github.sds100.keymapper.util.Success
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -105,6 +101,10 @@ class BackupManagerTest {
 
             override fun openInputStream(uriString: String): Result<InputStream> {
                 return Success(getJson(uriString))
+            }
+
+            override fun openAsset(fileName: String): InputStream {
+                throw Exception()
             }
 
             override fun getPicturesFolder(): File {
