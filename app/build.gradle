@@ -48,6 +48,7 @@ android {
                 removeUnusedResources true
                 obfuscate false
                 optimizeCode true
+                proguardFiles 'proguard-rules.pro'
             }
 
             /*
