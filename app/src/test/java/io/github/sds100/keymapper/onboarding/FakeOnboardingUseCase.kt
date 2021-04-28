@@ -35,6 +35,10 @@ class FakeOnboardingUseCase : OnboardingUseCase {
 
     override fun showedWhatsNew() {}
 
+    override fun getWhatsNewText(): String {
+        throw Exception()
+    }
+
     override val showQuickStartGuideHint = MutableStateFlow(false)
 
     override fun shownQuickStartGuideHint() {}
