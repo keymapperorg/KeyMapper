@@ -5,19 +5,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCase
-import io.github.sds100.keymapper.mappings.keymaps.KeyMapListViewModel
-import io.github.sds100.keymapper.onboarding.OnboardingUseCase
-import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapListViewModel
 import io.github.sds100.keymapper.mappings.fingerprintmaps.ListFingerprintMapsUseCase
+import io.github.sds100.keymapper.mappings.keymaps.KeyMapListViewModel
 import io.github.sds100.keymapper.mappings.keymaps.ListKeyMapsUseCase
+import io.github.sds100.keymapper.onboarding.OnboardingUseCase
+import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.ui.*
-import io.github.sds100.keymapper.util.ui.DialogResponse
-import io.github.sds100.keymapper.util.ui.PopupUi
-import io.github.sds100.keymapper.util.ui.MultiSelectProvider
-import io.github.sds100.keymapper.util.ui.MultiSelectProviderImpl
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.getFullMessage
@@ -275,12 +270,16 @@ class HomeViewModel(
             if (showWhatsNew) {
                 val dialog = PopupUi.Dialog(
                     title = getString(R.string.whats_new),
-                    message = "whats new stub. TODO in #649",
-                    positiveButtonText = getString(R.string.pos_ok)
+                    message = onboarding.getWhatsNewText(),
+                    positiveButtonText = getString(R.string.pos_ok),
+                    neutralButtonText = getString(R.string.neutral_changelog)
                 )
 
-                showPopup("whats-new", dialog) //TODO #649
-                //suspends
+                val response = showPopup("whats-new", dialog) ?: return@combine
+
+                if (response == DialogResponse.NEUTRAL) {
+                    _openUrl.emit(getString(R.string.url_changelog))
+                }
 
                 onboarding.showedWhatsNew()
             }

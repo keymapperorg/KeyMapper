@@ -45,7 +45,7 @@ object UseCases {
         )
     }
 
-    fun configKeyMap(ctx: Context): ConfigKeyMapUseCase{
+    fun configKeyMap(ctx: Context): ConfigKeyMapUseCase {
         return ConfigKeyMapUseCaseImpl(
             ServiceLocator.roomKeymapRepository(ctx),
             ServiceLocator.devicesAdapter(ctx)
@@ -78,7 +78,10 @@ object UseCases {
         ServiceLocator.systemFeatureAdapter(ctx),
     )
 
-    fun onboarding(ctx: Context) = OnboardingUseCaseImpl(ServiceLocator.preferenceRepository(ctx))
+    fun onboarding(ctx: Context) = OnboardingUseCaseImpl(
+        ServiceLocator.preferenceRepository(ctx),
+        ServiceLocator.fileAdapter(ctx)
+    )
 
     fun getInputDevices(ctx: Context) = GetInputDevicesUseCaseImpl(
         ServiceLocator.deviceInfoRepository(ctx),

@@ -4,6 +4,7 @@ import androidx.datastore.preferences.core.stringSetPreferencesKey
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.util.FlowPrefDelegate
 import io.github.sds100.keymapper.util.PrefDelegate
 import io.github.sds100.keymapper.util.VersionUtils
@@ -13,7 +14,8 @@ import kotlinx.coroutines.flow.*
  * Created by sds100 on 14/02/21.
  */
 class OnboardingUseCaseImpl(
-    private val preferenceRepository: PreferenceRepository
+    private val preferenceRepository: PreferenceRepository,
+    private val fileAdapter: FileAdapter
 ) : PreferenceRepository by preferenceRepository, OnboardingUseCase {
 
     override var shownAppIntro by PrefDelegate(Keys.shownAppIntro, false)
@@ -42,6 +44,12 @@ class OnboardingUseCaseImpl(
 
     override fun showedWhatsNew() {
         set(Keys.lastInstalledVersionCodeHomeScreen, Constants.VERSION_CODE)
+    }
+
+    override fun getWhatsNewText(): String {
+        return with(fileAdapter.openAsset("whats-new.txt").bufferedReader()) {
+            readText()
+        }
     }
 
     override val showFingerprintFeatureNotificationIfAvailable: Flow<Boolean> by lazy {
@@ -134,6 +142,7 @@ interface OnboardingUseCase {
 
     val showWhatsNew: Flow<Boolean>
     fun showedWhatsNew()
+    fun getWhatsNewText(): String
 
     val showQuickStartGuideHint: Flow<Boolean>
     fun shownQuickStartGuideHint()

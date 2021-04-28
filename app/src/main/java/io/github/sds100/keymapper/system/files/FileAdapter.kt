@@ -11,6 +11,7 @@ import java.io.OutputStream
 interface FileAdapter {
     fun openOutputStream(uriString: String): Result<OutputStream>
     fun openInputStream(uriString: String): Result<InputStream>
+    fun openAsset(fileName: String):InputStream
 
     fun getPicturesFolder(): File
 }

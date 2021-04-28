@@ -46,6 +46,10 @@ class AndroidFileAdapter(context: Context) : FileAdapter {
         }
     }
 
+    override fun openAsset(fileName: String): InputStream {
+        return ctx.assets.open(fileName)
+    }
+
     override fun getPicturesFolder(): File {
         return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
     }
