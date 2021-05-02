@@ -31,7 +31,7 @@ class GetActionErrorUseCaseImpl(
     private val isSystemActionSupported = IsSystemActionSupportedUseCaseImpl(systemFeatureAdapter)
     private val keyMapperImeHelper = KeyMapperImeHelper(inputMethodAdapter)
 
-    override val invalidateErrors = merge(
+    override val invalidateActionErrors = merge(
         inputMethodAdapter.chosenIme.drop(1).map { },
         permissionAdapter.onPermissionsUpdate
     )
@@ -128,6 +128,6 @@ class GetActionErrorUseCaseImpl(
 }
 
 interface GetActionErrorUseCase {
-    val invalidateErrors: Flow<Unit>
+    val invalidateActionErrors: Flow<Unit>
     fun getError(action: ActionData): Error?
 }

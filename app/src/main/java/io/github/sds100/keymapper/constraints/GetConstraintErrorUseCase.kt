@@ -18,7 +18,7 @@ class GetConstraintErrorUseCaseImpl(
     private val systemFeatureAdapter: SystemFeatureAdapter,
 ) : GetConstraintErrorUseCase {
 
-    override val invalidateErrors: Flow<Unit> = permissionAdapter.onPermissionsUpdate
+    override val invalidateConstraintErrors: Flow<Unit> = permissionAdapter.onPermissionsUpdate
 
     override fun getConstraintError(constraint: Constraint): Error? {
 
@@ -74,7 +74,7 @@ class GetConstraintErrorUseCaseImpl(
 }
 
 interface GetConstraintErrorUseCase {
-    val invalidateErrors: Flow<Unit>
+    val invalidateConstraintErrors: Flow<Unit>
 
     fun getConstraintError(constraint: Constraint): Error?
 }

@@ -40,7 +40,7 @@ class OnboardingUseCaseTest {
     @Before
     fun init() {
        fakePreferences = FakePreferenceRepository()
-        useCase = OnboardingUseCaseImpl(fakePreferences)
+        useCase = OnboardingUseCaseImpl(fakePreferences,mock())
     }
 
     @Test

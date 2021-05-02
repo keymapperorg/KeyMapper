@@ -39,7 +39,6 @@ class ConfigFingerprintMapViewModel(
 
     companion object {
         private const val STATE_FINGERPRINT_MAP = "config_fingerprint_map"
-        private const val STATE_KEY_ID = "config_fingerprint_map_id"
     }
 
     val configActionOptionsViewModel =
@@ -86,10 +85,8 @@ class ConfigFingerprintMapViewModel(
     override fun save() = config.save()
 
     override fun saveState(outState: Bundle) {
-        config.getState().ifIsData { pair ->
-            val (id, fingerprintMap) = pair
+        config.getState().ifIsData { fingerprintMap ->
             outState.putString(STATE_FINGERPRINT_MAP, Json.encodeToString(fingerprintMap))
-            outState.putString(STATE_KEY_ID, Json.encodeToString(id))
         }
     }
 
@@ -97,9 +94,8 @@ class ConfigFingerprintMapViewModel(
     override fun restoreState(state: Bundle) {
         val fingerprintMap =
             state.getJsonSerializable<FingerprintMap>(STATE_FINGERPRINT_MAP) ?: return
-        val id = state.getJsonSerializable<FingerprintMapId>(STATE_KEY_ID) ?: return
 
-        config.restoreState(id, fingerprintMap)
+        config.restoreState(fingerprintMap)
     }
 
     fun loadFingerprintMap(id: FingerprintMapId) {

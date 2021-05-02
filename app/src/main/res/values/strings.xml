@@ -28,6 +28,7 @@
     <string name="arrow" translatable="false">→</string>
     <string name="plus" translatable="false">+</string>
     <string name="unknown_keycode">Unknown key code: %s</string>
+    <string name="unknown_device_name">Unknown device name</string>
     <string name="google_app_package_name" translatable="false">com.google.android.googlequicksearchbox</string>
     <string name="on">On</string>
     <string name="off">Off</string>

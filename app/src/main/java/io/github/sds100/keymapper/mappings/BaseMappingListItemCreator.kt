@@ -21,14 +21,14 @@ abstract class BaseMappingListItemCreator<M : Mapping<A>, A : Action>(
 
     private val constraintUiHelper = ConstraintUiHelper(displayMapping, resourceProvider)
 
-    fun getActionChipList(mapping: M): List<ChipUi> = sequence {
+    fun getActionChipList(mapping: M, showDeviceDescriptors: Boolean): List<ChipUi> = sequence {
         val midDot = getString(R.string.middot)
 
         mapping.actionList.forEach { action ->
             val actionTitle: String = if (action.multiplier != null) {
-                "${action.multiplier}x ${actionUiHelper.getTitle(action.data)}"
+                "${action.multiplier}x ${actionUiHelper.getTitle(action.data, showDeviceDescriptors)}"
             } else {
-                actionUiHelper.getTitle(action.data)
+                actionUiHelper.getTitle(action.data, showDeviceDescriptors)
             }
 
             val chipText = buildString {

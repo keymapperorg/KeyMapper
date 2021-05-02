@@ -18,10 +18,10 @@ data class TriggerKey(
     val clickType: ClickType,
 
     val consumeKeyEvent: Boolean = true,
-){
+) {
 
     override fun toString(): String {
-        val deviceString= when(device){
+        val deviceString = when (device) {
             TriggerKeyDevice.Any -> "any"
             is TriggerKeyDevice.External -> "external"
             TriggerKeyDevice.Internal -> "internal"
@@ -42,8 +42,8 @@ object KeymapTriggerKeyEntityMapper {
                 TriggerEntity.KeyEntity.DEVICE_ID_ANY_DEVICE -> TriggerKeyDevice.Any
                 else -> TriggerKeyDevice.External(
                     entity.deviceId,
-                    "TODO"
-                )//TODO #612 save device name in action and trigger key
+                    entity.deviceName ?: ""
+                )
             },
             clickType = when (entity.clickType) {
                 TriggerEntity.SHORT_PRESS -> ClickType.SHORT_PRESS
@@ -62,6 +62,12 @@ object KeymapTriggerKeyEntityMapper {
             TriggerKeyDevice.Internal -> TriggerEntity.KeyEntity.DEVICE_ID_THIS_DEVICE
         }
 
+        val deviceName = if (key.device is TriggerKeyDevice.External) {
+            key.device.name
+        } else {
+            null
+        }
+
         val clickType = when (key.clickType) {
             ClickType.SHORT_PRESS -> TriggerEntity.SHORT_PRESS
             ClickType.LONG_PRESS -> TriggerEntity.LONG_PRESS
@@ -77,6 +83,7 @@ object KeymapTriggerKeyEntityMapper {
         return TriggerEntity.KeyEntity(
             keyCode = key.keyCode,
             deviceId = deviceId,
+            deviceName = deviceName,
             clickType = clickType,
             flags = flags,
             uid = key.uid

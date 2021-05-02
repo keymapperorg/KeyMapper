@@ -7,6 +7,7 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.DetectMappingUseCase
+import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapEntityMapper
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
@@ -36,10 +37,15 @@ class DetectKeyMapsUseCaseImpl(
 
     override val allKeyMapList: Flow<List<KeyMap>> =
         keyMapRepository.keyMapList
-            .dropWhile { it !is State.Data }
-            .map { state ->
-                (state as State.Data).data.map { KeyMapEntityMapper.fromEntity(it) }
-            }.flowOn(Dispatchers.Default)
+            .mapNotNull { state ->
+                if (state is State.Data) {
+                    state.data
+                } else {
+                    null
+                }
+            }
+            .map { entityList -> entityList.map { KeyMapEntityMapper.fromEntity(it) } }
+            .flowOn(Dispatchers.Default)
 
     override val keyMapsToTriggerFromOtherApps: Flow<List<KeyMap>> =
         allKeyMapList.map { keyMapList ->

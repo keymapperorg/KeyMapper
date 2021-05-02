@@ -78,7 +78,7 @@ class ConfigKeyEventFragment : Fragment() {
         }
 
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-            viewModel.state.collectLatest { state ->
+            viewModel.uiState.collectLatest { state ->
                 binding.epoxyRecyclerViewModifiers.withModels {
                     state.modifierListItems.forEach {
                         checkbox {

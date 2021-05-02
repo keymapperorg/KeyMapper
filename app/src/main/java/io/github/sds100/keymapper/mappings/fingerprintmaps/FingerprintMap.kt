@@ -18,6 +18,7 @@ import splitties.bitflags.withFlag
 
 @Serializable
 data class FingerprintMap(
+    val id: FingerprintMapId,
     override val actionList: List<FingerprintMapAction> = emptyList(),
     override val constraintState: ConstraintState = ConstraintState(),
     override val isEnabled: Boolean = true,
@@ -52,7 +53,7 @@ data class FingerprintMap(
 }
 
 object FingerprintMapIdEntityMapper {
-    fun toEntity(id: FingerprintMapId): String {
+    fun toEntity(id: FingerprintMapId): Int {
         return when (id) {
             FingerprintMapId.SWIPE_DOWN -> FingerprintMapEntity.ID_SWIPE_DOWN
             FingerprintMapId.SWIPE_UP -> FingerprintMapEntity.ID_SWIPE_UP
@@ -61,7 +62,7 @@ object FingerprintMapIdEntityMapper {
         }
     }
 
-    fun fromEntity(id: String): FingerprintMapId {
+    fun fromEntity(id: Int): FingerprintMapId {
         return when (id) {
             FingerprintMapEntity.ID_SWIPE_DOWN -> FingerprintMapId.SWIPE_DOWN
             FingerprintMapEntity.ID_SWIPE_UP -> FingerprintMapId.SWIPE_UP
@@ -77,11 +78,8 @@ object FingerprintMapEntityMapper {
     fun fromEntity(
         entity: FingerprintMapEntity,
     ): FingerprintMap {
-        val actionList = entity.actionList.mapNotNull {
-            FingerprintMapActionEntityMapper.fromEntity(
-                it
-            )
-        }
+        val actionList =
+            entity.actionList.mapNotNull { FingerprintMapActionEntityMapper.fromEntity(it) }
 
         val constraintList =
             entity.constraintList.map { ConstraintEntityMapper.fromEntity(it) }.toSet()
@@ -89,6 +87,7 @@ object FingerprintMapEntityMapper {
         val constraintMode = ConstraintModeEntityMapper.fromEntity(entity.constraintMode)
 
         return FingerprintMap(
+            id = FingerprintMapIdEntityMapper.fromEntity(entity.id),
             actionList = actionList,
             constraintState = ConstraintState(constraintList, constraintMode),
             isEnabled = entity.isEnabled,
@@ -122,7 +121,7 @@ object FingerprintMapEntityMapper {
         }
 
         return FingerprintMapEntity(
-            version = FingerprintMapEntity.CURRENT_VERSION,
+            id = FingerprintMapIdEntityMapper.toEntity(model.id),
             actionList = FingerprintMapActionEntityMapper.toEntity(model),
             constraintList = model.constraintState.constraints.map {
                 ConstraintEntityMapper.toEntity(

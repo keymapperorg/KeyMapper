@@ -47,18 +47,21 @@ class SeedDatabaseWorker(
                 TriggerEntity.KeyEntity(
                 KeyEvent.KEYCODE_CTRL_LEFT,
                 TriggerEntity.KeyEntity.DEVICE_ID_THIS_DEVICE,
+                    null,
                 TriggerEntity.SHORT_PRESS
             ))
             yield(
                 TriggerEntity.KeyEntity(
                 KeyEvent.KEYCODE_ALT_LEFT,
                 TriggerEntity.KeyEntity.DEVICE_ID_ANY_DEVICE,
+                    null,
                 TriggerEntity.LONG_PRESS
             ))
             yield(
                 TriggerEntity.KeyEntity(
                 KeyEvent.KEYCODE_DEL,
                 TriggerEntity.KeyEntity.DEVICE_ID_THIS_DEVICE,
+                    null,
                 TriggerEntity.SHORT_PRESS
             ))
         }.toList()

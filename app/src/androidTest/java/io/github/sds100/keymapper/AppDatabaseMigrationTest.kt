@@ -1,5 +1,8 @@
 package io.github.sds100.keymapper
 
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.room.migration.Migration
 import androidx.room.testing.MigrationTestHelper
 import androidx.sqlite.db.SupportSQLiteDatabase
@@ -8,25 +11,26 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.salomonbrys.kotson.get
-import com.google.gson.Gson
-import com.google.gson.JsonElement
-import com.google.gson.JsonParseException
-import com.google.gson.JsonParser
+import com.google.gson.*
 import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.util.JsonTestUtils
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.runBlocking
 import org.hamcrest.Matchers
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.File
 import java.io.IOException
-import java.io.InputStream
 
 /**
  * Created by sds100 on 05/06/20.
  */
+@ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
-class KeymapSqliteMigrationTest {
+class AppDatabaseMigrationTest {
     companion object {
         private const val TEST_DB_NAME = "migration_test"
 
@@ -399,6 +403,8 @@ class KeymapSqliteMigrationTest {
         FrameworkSQLiteOpenHelperFactory()
     )
 
+    private val coroutineScope = MainScope()
+
     private lateinit var jsonParser: JsonParser
     private lateinit var gson: Gson
 
@@ -406,6 +412,117 @@ class KeymapSqliteMigrationTest {
     fun init() {
         jsonParser = JsonParser()
         gson = Gson()
+    }
+
+    /**
+     * issue #612
+     */
+    @Test
+    @Throws(IOException::class)
+    fun migrate11to12() {
+        val legacyFingerprintMapsDataStore = PreferenceDataStoreFactory.create(
+            corruptionHandler = null,
+            migrations = emptyList(),
+            scope = coroutineScope,
+            produceFile = { File.createTempFile("test", ".preferences_pb") }
+        )
+
+        val testDataFileName = "migration-11-12-test-data.json"
+        val expectedDataFileName = "migration-11-12-expected-data.json"
+        val testDataJson = getJsonFileText(testDataFileName)
+
+        runBlocking {
+            val rootElement = jsonParser.parse(testDataJson)
+
+            legacyFingerprintMapsDataStore.edit { preferences ->
+                preferences.putAll(
+                    stringPreferencesKey("swipe_down") to gson.toJson(rootElement["fingerprint_swipe_down"]),
+                    stringPreferencesKey("swipe_up") to gson.toJson(rootElement["fingerprint_swipe_up"]),
+                    stringPreferencesKey("swipe_left") to gson.toJson(rootElement["fingerprint_swipe_left"]),
+                    stringPreferencesKey("swipe_right") to gson.toJson(rootElement["fingerprint_swipe_right"]),
+                )
+            }
+        }
+
+        val fromVersion = 11
+        val toVersion = 12
+        val migration = AppDatabase.RoomMigration_11_12(legacyFingerprintMapsDataStore)
+        val keyMapColumnNameToJsonNameMap = mapOf(
+            "id" to "id",
+            "trigger" to "trigger",
+            "action_list" to "actionList",
+            "constraint_list" to "constraintList",
+            "constraint_mode" to "constraintMode",
+            "flags" to "flags",
+            "folder_name" to "folderName",
+            "is_enabled" to "isEnabled",
+            "uid" to "uid"
+        )
+        val fingerprintMapColumnNameToJsonNameMap = mapOf(
+            "id" to "id",
+            "action_list" to "action_list",
+            "constraint_list" to "constraints",
+            "constraint_mode" to "constraint_mode",
+            "extras" to "extras",
+            "flags" to "flags",
+            "is_enabled" to "enabled",
+        )
+
+        //do this without using the test() method because fingerprint maps are stored differently in test file
+
+        helper.createDatabase(TEST_DB_NAME, fromVersion).apply {
+            val keyMapJsonArray = getKeyMapListJsonFromFile(testDataFileName)
+            insertMappingListJsonIntoDatabase(
+                this,
+                keyMapJsonArray,
+                keyMapColumnNameToJsonNameMap,
+                "keymaps"
+            )
+
+            val deviceInfoJsonArray = jsonParser.parse(testDataJson)["device_info"].asJsonArray
+
+            deviceInfoJsonArray.forEach { element ->
+
+                val descriptor = element["descriptor"].asString
+                val name = element["name"].asString
+
+                this.execSQL(
+                    """
+                    INSERT INTO deviceinfo (descriptor, name) VALUES ('$descriptor', '$name')
+                    """
+                )
+            }
+            //dont insert test data fingerprintmaps into database because they weren't in version 11
+        }
+
+        val db = helper.runMigrationsAndValidate(TEST_DB_NAME, toVersion, true, migration)
+
+        val expectedKeyMapJsonList =
+            getKeyMapListJsonFromFile(expectedDataFileName).map { element ->
+
+                val values = keyMapColumnNameToJsonNameMap.values.map { key ->
+                    element.convertValueToJson(key).convertJsonValueToSqlValue()
+                }
+
+                values.toTypedArray()
+            }
+
+        testColumnsMatch(db, tableName = "keymaps", expectedKeyMapJsonList.toTypedArray())
+
+        val expectedFingerprintMapJsonList =
+            getFingerprintMapListJsonFromFile(expectedDataFileName).map { element ->
+                val values = fingerprintMapColumnNameToJsonNameMap.values.map { key ->
+                    element.convertValueToJson(key).convertJsonValueToSqlValue()
+                }
+
+                values.toTypedArray()
+            }
+
+        testColumnsMatch(
+            db,
+            tableName = "fingerprintmaps",
+            expectedFingerprintMapJsonList.toTypedArray()
+        )
     }
 
     /**
@@ -421,7 +538,7 @@ class KeymapSqliteMigrationTest {
             migration = AppDatabase.MIGRATION_10_11,
             testDataFileName = "migration-10-11-test-data.json",
             expectedDataFileName = "migration-10-11-expected-data.json",
-            columnNameToJsonKeyMap = mapOf(
+            keyMapColumnNameToJsonNameMap = mapOf(
                 "id" to "id",
                 "trigger" to "trigger",
                 "action_list" to "actionList",
@@ -455,7 +572,7 @@ class KeymapSqliteMigrationTest {
 
         db = helper.runMigrationsAndValidate(TEST_DB_NAME, 10, true, AppDatabase.MIGRATION_9_10)
 
-        testColumnsMatch(db, MIGRATION_9_10_EXPECTED_DATA)
+        testColumnsMatch(db, tableName = "keymaps", MIGRATION_9_10_EXPECTED_DATA)
     }
 
     @Suppress("VARIABLE_WITH_REDUNDANT_INITIALIZER")
@@ -478,7 +595,7 @@ class KeymapSqliteMigrationTest {
 
         db = helper.runMigrationsAndValidate(TEST_DB_NAME, 6, true, AppDatabase.MIGRATION_5_6)
 
-        testColumnsMatch(db, MIGRATION_5_6_EXPECTED_DATA)
+        testColumnsMatch(db, tableName = "keymaps", MIGRATION_5_6_EXPECTED_DATA)
     }
 
     @Suppress("VARIABLE_WITH_REDUNDANT_INITIALIZER")
@@ -501,7 +618,7 @@ class KeymapSqliteMigrationTest {
 
         db = helper.runMigrationsAndValidate(TEST_DB_NAME, 5, true, AppDatabase.MIGRATION_4_5)
 
-        testColumnsMatch(db, MIGRATION_4_5_EXPECTED_DATA)
+        testColumnsMatch(db, tableName = "keymaps", MIGRATION_4_5_EXPECTED_DATA)
     }
 
     @Suppress("VARIABLE_WITH_REDUNDANT_INITIALIZER")
@@ -524,7 +641,7 @@ class KeymapSqliteMigrationTest {
 
         db = helper.runMigrationsAndValidate(TEST_DB_NAME, 4, true, AppDatabase.MIGRATION_3_4)
 
-        testColumnsMatch(db, MIGRATION_3_4_EXPECTED_DATA)
+        testColumnsMatch(db, tableName = "keymaps", MIGRATION_3_4_EXPECTED_DATA)
     }
 
     @Suppress("VARIABLE_WITH_REDUNDANT_INITIALIZER")
@@ -547,7 +664,7 @@ class KeymapSqliteMigrationTest {
 
         db = helper.runMigrationsAndValidate(TEST_DB_NAME, 3, true, AppDatabase.MIGRATION_2_3)
 
-        testColumnsMatch(db, MIGRATION_2_3_EXPECTED_DATA)
+        testColumnsMatch(db, tableName = "keymaps", MIGRATION_2_3_EXPECTED_DATA)
     }
 
     @Suppress("VARIABLE_WITH_REDUNDANT_INITIALIZER")
@@ -571,7 +688,7 @@ class KeymapSqliteMigrationTest {
         }
 
         db = helper.runMigrationsAndValidate(TEST_DB_NAME, 2, true, AppDatabase.MIGRATION_1_2)
-        testColumnsMatch(db, MIGRATION_1_2_EXPECTED_DATA)
+        testColumnsMatch(db, tableName = "keymaps", MIGRATION_1_2_EXPECTED_DATA)
     }
 
     private fun test(
@@ -580,48 +697,90 @@ class KeymapSqliteMigrationTest {
         migration: Migration,
         testDataFileName: String,
         expectedDataFileName: String,
-        columnNameToJsonKeyMap: Map<String, String>
+        keyMapColumnNameToJsonNameMap: Map<String, String>,
+        fingerprintMapColumnNameToJsonNameMap: Map<String, String>? = null,
     ) {
-        val testJsonList = getKeymapListJsonFromFile(testDataFileName)
         helper.createDatabase(TEST_DB_NAME, fromVersion).apply {
-            testJsonList.forEach { json ->
-                val root = jsonParser.parse(json)
+            val keyMapJsonArray = getKeyMapListJsonFromFile(testDataFileName)
+            insertMappingListJsonIntoDatabase(
+                this,
+                keyMapJsonArray,
+                keyMapColumnNameToJsonNameMap,
+                "keymaps"
+            )
 
-                val values = columnNameToJsonKeyMap.values.map { key ->
-                    convertJsonValueToSqlValue(root.convertValueToJson(key))
-                }
-
-                execSQL(
-                    """
-                    INSERT INTO keymaps (${columnNameToJsonKeyMap.keys.joinToString()})
-                    VALUES (${values.joinToString { "'$it'" }})
-                    """
+            if (fingerprintMapColumnNameToJsonNameMap != null) {
+                val fingerprintMapJsonArray = getFingerprintMapListJsonFromFile(testDataFileName)
+                insertMappingListJsonIntoDatabase(
+                    this,
+                    fingerprintMapJsonArray,
+                    fingerprintMapColumnNameToJsonNameMap,
+                    "fingerprintmaps"
                 )
             }
         }
 
-        val expectedJsonList = getKeymapListJsonFromFile(expectedDataFileName).map { json ->
-            val root = jsonParser.parse(json)
-
-            val values = columnNameToJsonKeyMap.values.map { key ->
-                convertJsonValueToSqlValue(root.convertValueToJson(key))
-            }
-
-            values.toTypedArray()
-        }
-
         val db = helper.runMigrationsAndValidate(TEST_DB_NAME, toVersion, true, migration)
 
-        testColumnsMatch(db, expectedJsonList.toTypedArray())
+        val expectedKeyMapJsonList =
+            getKeyMapListJsonFromFile(expectedDataFileName).map { element ->
+
+                val values = keyMapColumnNameToJsonNameMap.values.map { key ->
+                    element.convertValueToJson(key).convertJsonValueToSqlValue()
+                }
+
+                values.toTypedArray()
+            }
+
+        testColumnsMatch(db, tableName = "keymaps", expectedKeyMapJsonList.toTypedArray())
+
+        if (fingerprintMapColumnNameToJsonNameMap != null) {
+            val expectedFingerprintMapJsonList =
+                getFingerprintMapListJsonFromFile(expectedDataFileName).map { element ->
+                    val values = fingerprintMapColumnNameToJsonNameMap.values.map { key ->
+                        element.convertValueToJson(key).convertJsonValueToSqlValue()
+                    }
+
+                    values.toTypedArray()
+                }
+
+            testColumnsMatch(
+                db,
+                tableName = "fingerprintmaps",
+                expectedFingerprintMapJsonList.toTypedArray()
+            )
+        }
     }
 
-    private fun convertJsonValueToSqlValue(value: String?) =
+    private fun insertMappingListJsonIntoDatabase(
+        database: SupportSQLiteDatabase,
+        mappingListJson: JsonArray,
+        columnNameToJsonMap: Map<String, String>,
+        tableName: String
+    ) {
+        mappingListJson.forEach { element ->
+            val jsonElementNames = columnNameToJsonMap.values
+
+            val values = jsonElementNames.map { key ->
+                element.convertValueToJson(key).convertJsonValueToSqlValue()
+            }
+
+            database.execSQL(
+                """
+                    INSERT INTO $tableName (${columnNameToJsonMap.keys.joinToString()})
+                    VALUES (${values.joinToString { "'$it'" }})
+                    """
+            )
+        }
+    }
+
+    private fun String?.convertJsonValueToSqlValue() =
         when {
-            value == null -> "NULL"
-            value == "true" -> 1
-            value == "false" -> 0
-            value.toIntOrNull() != null -> value.toInt()
-            else -> value
+            this == null -> "NULL"
+            this == "true" -> 1
+            this == "false" -> 0
+            this.toIntOrNull() != null -> this.toInt()
+            else -> this
         }
 
     private fun JsonElement.convertValueToJson(key: String) = try {
@@ -630,32 +789,41 @@ class KeymapSqliteMigrationTest {
         null
     }
 
-    private fun getKeymapListJsonFromFile(fileName: String): List<String> {
-        val jsonInputStream = getJsonFile(fileName)
-        val json = jsonInputStream.bufferedReader().use { it.readText() }
+    private fun getKeyMapListJsonFromFile(fileName: String): JsonArray {
+        val json = getJsonFileText(fileName)
 
         val rootElement = jsonParser.parse(json)
 
-        return rootElement["keymap_list"].asJsonArray.map { gson.toJson(it) }
+        return rootElement["keymap_list"].asJsonArray
     }
 
-    private fun getJsonFile(fileName: String): InputStream {
-        return this.javaClass.classLoader!!.getResourceAsStream("json-migration-test/$fileName")
+    private fun getFingerprintMapListJsonFromFile(fileName: String): JsonArray {
+        val json = getJsonFileText(fileName)
+
+        val rootElement = jsonParser.parse(json)
+
+        return rootElement["fingerprint_map_list"].asJsonArray
+    }
+
+    private fun getJsonFileText(fileName: String): String {
+        val inputStream =
+            this.javaClass.classLoader!!.getResourceAsStream("json-migration-test/$fileName")
+        return inputStream.bufferedReader().use { it.readText() }
     }
 
     private fun testColumnsMatch(
         db: SupportSQLiteDatabase,
+        tableName: String,
         expectedData: Array<out Array<out Any>>
     ) {
-
-        val cursor = db.query("SELECT * FROM keymaps")
+        val cursor = db.query("SELECT * FROM $tableName")
 
         ViewMatchers.assertThat("Check the logcat", cursor.count, Matchers.`is`(expectedData.size))
 
-        while (cursor.moveToNext()) {
+        while (cursor.moveToNext()) { val row = cursor.position
+            val expectedColumnValues: Array<out Any> = expectedData[row]
+
             cursor.columnNames.forEachIndexed { columnIndex, columnName ->
-                val row = cursor.position
-                val expectedColumnValues: Array<out Any> = expectedData[row]
 
                 val expectedColumnValue = expectedColumnValues[columnIndex]
 

@@ -10,8 +10,12 @@ import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCaseImpl
 import io.github.sds100.keymapper.constraints.ChooseConstraintViewModel
 import io.github.sds100.keymapper.home.HomeViewModel
 import io.github.sds100.keymapper.home.ShowHomeScreenAlertsUseCaseImpl
-import io.github.sds100.keymapper.mappings.fingerprintmaps.*
-import io.github.sds100.keymapper.mappings.keymaps.*
+import io.github.sds100.keymapper.mappings.fingerprintmaps.ConfigFingerprintMapUseCaseImpl
+import io.github.sds100.keymapper.mappings.fingerprintmaps.ConfigFingerprintMapViewModel
+import io.github.sds100.keymapper.mappings.fingerprintmaps.ListFingerprintMapsUseCaseImpl
+import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapViewModel
+import io.github.sds100.keymapper.mappings.keymaps.CreateKeyMapShortcutViewModel
+import io.github.sds100.keymapper.mappings.keymaps.ListKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.onboarding.AppIntroSlide
 import io.github.sds100.keymapper.onboarding.AppIntroUseCaseImpl
 import io.github.sds100.keymapper.onboarding.AppIntroViewModel
@@ -28,6 +32,7 @@ import io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceViewMode
 import io.github.sds100.keymapper.system.intents.ConfigIntentViewModel
 import io.github.sds100.keymapper.system.keyevents.ChooseKeyCodeViewModel
 import io.github.sds100.keymapper.system.keyevents.ChooseKeyViewModel
+import io.github.sds100.keymapper.system.keyevents.ConfigKeyEventUseCaseImpl
 import io.github.sds100.keymapper.system.keyevents.ConfigKeyEventViewModel
 import io.github.sds100.keymapper.system.url.ChooseUrlViewModel
 import io.github.sds100.keymapper.util.ui.TextBlockActionTypeViewModel
@@ -70,8 +75,12 @@ object Inject {
     fun configKeyEventViewModel(
         context: Context
     ): ConfigKeyEventViewModel.Factory {
+        val useCase = ConfigKeyEventUseCaseImpl(
+            preferenceRepository = ServiceLocator.preferenceRepository(context),
+            devicesAdapter = ServiceLocator.devicesAdapter(context)
+        )
         return ConfigKeyEventViewModel.Factory(
-            UseCases.getInputDevices(context),
+            useCase,
             ServiceLocator.resourceProvider(context)
         )
     }

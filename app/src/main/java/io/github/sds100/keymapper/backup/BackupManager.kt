@@ -1,42 +1,33 @@
 package io.github.sds100.keymapper.backup
 
 import androidx.annotation.VisibleForTesting
-import com.github.salomonbrys.kotson.byNullableArray
-import com.github.salomonbrys.kotson.byNullableObject
-import com.github.salomonbrys.kotson.fromJson
-import com.github.salomonbrys.kotson.nullInt
-import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.google.gson.JsonParser
-import com.google.gson.JsonSyntaxException
+import com.github.salomonbrys.kotson.*
+import com.google.gson.*
 import com.google.gson.annotations.SerializedName
 import com.google.gson.stream.MalformedJsonException
-import io.github.sds100.keymapper.data.db.AppDatabase
-import io.github.sds100.keymapper.system.devices.DeviceInfoEntity
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapEntity
-import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntity
-import io.github.sds100.keymapper.data.entities.TriggerEntity
-import io.github.sds100.keymapper.system.devices.DeviceInfoCache
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapRepository
-import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
 import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.db.AppDatabase
+import io.github.sds100.keymapper.data.entities.ActionEntity
+import io.github.sds100.keymapper.data.entities.ConstraintEntity
+import io.github.sds100.keymapper.data.entities.Extra
+import io.github.sds100.keymapper.data.entities.TriggerEntity
+import io.github.sds100.keymapper.data.migration.*
+import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintMapMigration_0_1
+import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintMapMigration_1_2
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapEntity
+import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapRepository
+import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntity
+import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
 import io.github.sds100.keymapper.system.files.FileAdapter
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapEntityGroup
-import io.github.sds100.keymapper.util.DefaultDispatcherProvider
-import io.github.sds100.keymapper.util.DispatcherProvider
-import io.github.sds100.keymapper.util.dataOrNull
-import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.Result
-import io.github.sds100.keymapper.util.Success
-import io.github.sds100.keymapper.util.suspendThen
+import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.io.FileOutputStream
 import java.io.OutputStream
+import java.util.*
 
 /**
  * Created by sds100 on 16/03/2021.
@@ -46,7 +37,6 @@ class BackupManagerImpl(
     private val coroutineScope: CoroutineScope,
     private val fileAdapter: FileAdapter,
     private val keyMapRepository: KeyMapRepository,
-    private val deviceInfoRepository: DeviceInfoCache,
     private val preferenceRepository: PreferenceRepository,
     private val fingerprintMapRepository: FingerprintMapRepository,
     private val throwExceptions: Boolean = false,
@@ -56,31 +46,23 @@ class BackupManagerImpl(
     companion object {
         //DON'T CHANGE THESE. Used for serialization and parsing.
         @VisibleForTesting
-        const val NAME_KEYMAP_DB_VERSION = "keymap_db_version"
-
+        private const val NAME_DB_VERSION = "keymap_db_version"
         private const val NAME_KEYMAP_LIST = "keymap_list"
-
-        //TODO deprecate
-        private const val NAME_DEVICE_INFO = "device_info"
-
-        private const val NAME_FINGERPRINT_SWIPE_DOWN = "fingerprint_swipe_down"
-        private const val NAME_FINGERPRINT_SWIPE_UP = "fingerprint_swipe_up"
-        private const val NAME_FINGERPRINT_SWIPE_LEFT = "fingerprint_swipe_left"
-        private const val NAME_FINGERPRINT_SWIPE_RIGHT = "fingerprint_swipe_right"
-
-        private val GESTURE_ID_TO_JSON_KEY_MAP = mapOf(
-            FingerprintMapEntity.ID_SWIPE_DOWN to NAME_FINGERPRINT_SWIPE_DOWN,
-            FingerprintMapEntity.ID_SWIPE_UP to NAME_FINGERPRINT_SWIPE_UP,
-            FingerprintMapEntity.ID_SWIPE_LEFT to NAME_FINGERPRINT_SWIPE_LEFT,
-            FingerprintMapEntity.ID_SWIPE_RIGHT to NAME_FINGERPRINT_SWIPE_RIGHT,
-        )
+        private const val NAME_FINGERPRINT_MAP_LIST = "fingerprint_map_list"
     }
 
     override val onBackupResult = MutableSharedFlow<Result<*>>()
     override val onRestoreResult = MutableSharedFlow<Result<*>>()
     override val onAutomaticBackupResult = MutableSharedFlow<Result<*>>()
 
-    private val gson = Gson()
+    private val gson: Gson by lazy {
+        GsonBuilder()
+            .registerTypeAdapter(FingerprintMapEntity.DESERIALIZER)
+            .registerTypeAdapter(KeyMapEntity.DESERIALIZER)
+            .registerTypeAdapter(ActionEntity.DESERIALIZER)
+            .registerTypeAdapter(Extra.DESERIALIZER)
+            .registerTypeAdapter(ConstraintEntity.DESERIALIZER).create()
+    }
 
     private val backupAutomatically: Flow<Boolean> = preferenceRepository
         .get(Keys.automaticBackupLocation).map { it != null }
@@ -107,32 +89,38 @@ class BackupManagerImpl(
 
         coroutineScope.launch {
             keyMapRepository.requestBackup.collectLatest { keyMapList ->
-
-                doAutomaticBackup.emit(
-                    BackupData(
-                        keyMapList = keyMapList,
-                        fingerprintMaps = fingerprintMapRepository.fingerprintMaps.firstOrNull()
-                    )
+                val backupData = BackupData(
+                    keyMapList = keyMapList,
+                    fingerprintMaps = fingerprintMapRepository.fingerprintMapList.firstOrNull()
+                        ?.dataOrNull()
                 )
+
+                doAutomaticBackup.emit(backupData)
             }
         }
 
         coroutineScope.launch {
             fingerprintMapRepository.requestBackup.collectLatest { fingerprintMaps ->
-                doAutomaticBackup.emit(
-                    BackupData(
-                        keyMapList = keyMapRepository.keyMapList.firstOrNull()?.dataOrNull(),
-                        fingerprintMaps = fingerprintMaps
-                    )
+                val backupData = BackupData(
+                    keyMapList = keyMapRepository.keyMapList.firstOrNull()?.dataOrNull(),
+                    fingerprintMaps = fingerprintMaps
                 )
+
+                doAutomaticBackup.emit(backupData)
             }
         }
 
         //automatically back up when the location changes
         preferenceRepository.get(Keys.automaticBackupLocation).drop(1).onEach {
+            val keyMaps =
+                keyMapRepository.keyMapList.first { it is State.Data } as State.Data
+
+            val fingerprintMaps =
+                fingerprintMapRepository.fingerprintMapList.first { it is State.Data } as State.Data
+
             val data = BackupData(
-                keyMapList = keyMapRepository.keyMapList.firstOrNull()?.dataOrNull(),
-                fingerprintMaps = fingerprintMapRepository.fingerprintMaps.firstOrNull()
+                keyMapList = keyMaps.data,
+                fingerprintMaps = fingerprintMaps.data
             )
 
             doAutomaticBackup.emit(data)
@@ -165,9 +153,10 @@ class BackupManagerImpl(
             val result = fileAdapter
                 .openOutputStream(uri)
                 .suspendThen { outputStream ->
-                    val data = BackupData(
-                        fingerprintMaps = fingerprintMapRepository.fingerprintMaps.firstOrNull()
-                    )
+                    val fingerprintMaps =
+                        fingerprintMapRepository.fingerprintMapList.first { it is State.Data } as State.Data
+
+                    val data = BackupData(fingerprintMaps = fingerprintMaps.data)
 
                     backupAsync(outputStream, data).await()
                 }
@@ -182,9 +171,15 @@ class BackupManagerImpl(
             val result = fileAdapter
                 .openOutputStream(uri)
                 .suspendThen { outputStream ->
+                    val keyMaps =
+                        keyMapRepository.keyMapList.first { it is State.Data } as State.Data
+
+                    val fingerprintMaps =
+                        fingerprintMapRepository.fingerprintMapList.first { it is State.Data } as State.Data
+
                     val data = BackupData(
-                        keyMapList = keyMapRepository.keyMapList.first().dataOrNull(),
-                        fingerprintMaps = fingerprintMapRepository.fingerprintMaps.firstOrNull()
+                        keyMapList = keyMaps.data,
+                        fingerprintMaps = fingerprintMaps.data
                     )
 
                     backupAsync(outputStream, data).await()
@@ -208,51 +203,121 @@ class BackupManagerImpl(
         }
     }
 
-    private suspend fun restore(json: String): Result<*> {
+    @Suppress("DEPRECATION")
+    private fun restore(backupJson: String): Result<*> {
         try {
             val parser = JsonParser()
             val gson = Gson()
 
-            if (json.isBlank()) return Error.EmptyJson
+            if (backupJson.isBlank()) return Error.EmptyJson
 
-            val rootElement = parser.parse(json).asJsonObject
-
-            val keymapDbVersion = rootElement.get(NAME_KEYMAP_DB_VERSION).nullInt ?: 9
-
-            val keymapListJsonArray by rootElement.byNullableArray(NAME_KEYMAP_LIST)
-            val deviceInfoJsonArray by rootElement.byNullableArray(NAME_DEVICE_INFO)
-
-            val deviceInfoList =
-                gson.fromJson<List<DeviceInfoEntity>>(deviceInfoJsonArray ?: JsonArray())
+            val rootElement = parser.parse(backupJson).asJsonObject
 
             //started storing database version at db version 10
-            if (keymapDbVersion > AppDatabase.DATABASE_VERSION) {
+            val backupDbVersion = rootElement.get(NAME_DB_VERSION).nullInt ?: 9
+
+            val keymapListJsonArray by rootElement.byNullableArray(NAME_KEYMAP_LIST)
+
+            if (backupDbVersion > AppDatabase.DATABASE_VERSION) {
                 return Error.BackupVersionTooNew
             }
 
-            keymapListJsonArray
-                ?.toList()
-                ?.map { gson.toJson(it) }
-                ?.let {
-                    keyMapRepository.restore(keymapDbVersion, it)
+            val deviceInfoList by rootElement.byNullableArray("device_info")
+
+            val migratedKeyMapList = mutableListOf<KeyMapEntity>()
+
+            val keyMapMigrations = listOf(
+                JsonMigration(9, 10) { json -> Migration_9_10.migrateJson(json) },
+                JsonMigration(10, 11) { json -> Migration_10_11.migrateJson(json) },
+                JsonMigration(11, 12) { json ->
+                    Migration_11_12.migrateKeyMap(json, deviceInfoList ?: JsonArray())
+                },
+            )
+
+            keymapListJsonArray?.forEach { keyMap ->
+                val migratedKeyMap = MigrationUtils.migrate(
+                    keyMapMigrations,
+                    inputVersion = backupDbVersion,
+                    inputJson = keyMap.asJsonObject,
+                    outputVersion = AppDatabase.DATABASE_VERSION
+                )
+                val keyMapEntity: KeyMapEntity = gson.fromJson(migratedKeyMap)
+                val keyMapWithNewId = keyMapEntity.copy(id = 0, uid = UUID.randomUUID().toString())
+
+                migratedKeyMapList.add(keyMapWithNewId)
+            }
+
+            keyMapRepository.insert(*migratedKeyMapList.toTypedArray())
+
+            val migratedFingerprintMaps = mutableListOf<FingerprintMapEntity>()
+
+            val newFingerprintMapMigrations = listOf<JsonMigration>(
+                //no migrations yet
+            )
+
+            if (rootElement.contains(NAME_FINGERPRINT_MAP_LIST) && backupDbVersion >= 12) {
+
+                rootElement.get(NAME_FINGERPRINT_MAP_LIST).asJsonArray.forEach { fingerprintMap ->
+                    val migratedFingerprintMapJson = MigrationUtils.migrate(
+                        newFingerprintMapMigrations,
+                        inputVersion = backupDbVersion,
+                        inputJson = fingerprintMap.asJsonObject,
+                        outputVersion = AppDatabase.DATABASE_VERSION
+                    )
+
+                    migratedFingerprintMaps.add(gson.fromJson(migratedFingerprintMapJson))
+                }
+            } else {
+
+                val elementNameToGestureIdMap = mapOf(
+                    "fingerprint_swipe_down" to "swipe_down",
+                    "fingerprint_swipe_up" to "swipe_up",
+                    "fingerprint_swipe_left" to "swipe_left",
+                    "fingerprint_swipe_right" to "swipe_right",
+                )
+
+                var backupVersionTooNew = false
+
+                elementNameToGestureIdMap.forEach { (elementName, gestureId) ->
+                    val fingerprintMap by rootElement.byNullableObject(elementName)
+
+                    fingerprintMap ?: return@forEach
+
+                    val version by fingerprintMap!!.byInt("db_version") { 0 }
+                    val isIncompatible = version > 2
+
+                    if (isIncompatible) {
+                        backupVersionTooNew = true
+                    }
+
+                    val legacyMigrations = listOf(
+                        JsonMigration(0, 1) { json -> FingerprintMapMigration_0_1.migrate(json) },
+                        JsonMigration(1, 2) { json -> FingerprintMapMigration_1_2.migrate(json) },
+                        JsonMigration(2, 12) { json ->
+                            Migration_11_12.migrateFingerprintMap(
+                                gestureId,
+                                json,
+                                deviceInfoList ?: JsonArray()
+                            )
+                        }
+                    )
+
+                    val migratedFingerprintMapJson = MigrationUtils.migrate(
+                        legacyMigrations.plus(newFingerprintMapMigrations),
+                        inputVersion = version,
+                        inputJson = fingerprintMap!!.asJsonObject,
+                        outputVersion = AppDatabase.DATABASE_VERSION
+                    )
+
+                    migratedFingerprintMaps.add(gson.fromJson(migratedFingerprintMapJson))
                 }
 
-            deviceInfoRepository.insertDeviceInfo(*deviceInfoList.toTypedArray())
-
-            FingerprintMapEntity.GESTURES.forEach { gestureId ->
-                val element by rootElement.byNullableObject(GESTURE_ID_TO_JSON_KEY_MAP[gestureId])
-
-                element ?: return@forEach
-
-                val version = element!!.get(FingerprintMapEntity.NAME_VERSION).nullInt ?: 0
-                val incompatible = version > FingerprintMapEntity.CURRENT_VERSION
-
-                if (incompatible) {
+                if (backupVersionTooNew) {
                     return Error.BackupVersionTooNew
                 }
-
-                fingerprintMapRepository.restore(gestureId, gson.toJson(element))
             }
+
+            fingerprintMapRepository.update(*migratedFingerprintMaps.toTypedArray())
 
             return Success(Unit)
 
@@ -282,8 +347,6 @@ class BackupManagerImpl(
         data: BackupData
     ) = coroutineScope.async(dispatchers.io()) {
         try {
-            val allDeviceInfoList = deviceInfoRepository.getAll()
-
             //delete the contents of the file
             if (outputStream is FileOutputStream) {
                 outputStream.channel.truncate(0)
@@ -301,23 +364,13 @@ class BackupManagerImpl(
                 }
             }
 
-            val deviceInfoList = deviceInfoIdsToBackup
-                .map { id -> allDeviceInfoList.single { it.descriptor == id } }
-                .takeIf { it.isNotEmpty() }
-
-            val keyMapDbVersion = data.keyMapList?.let { AppDatabase.DATABASE_VERSION }
-
             outputStream.bufferedWriter().use { writer ->
 
                 val json = gson.toJson(
                     BackupModel(
-                        keyMapDbVersion,
+                        AppDatabase.DATABASE_VERSION,
                         data.keyMapList,
-                        deviceInfoList,
-                        data.fingerprintMaps?.swipeDown,
-                        data.fingerprintMaps?.swipeUp,
-                        data.fingerprintMaps?.swipeLeft,
-                        data.fingerprintMaps?.swipeRight,
+                        data.fingerprintMaps,
                     )
                 )
 
@@ -334,31 +387,18 @@ class BackupManagerImpl(
 
     private data class BackupData(
         val keyMapList: List<KeyMapEntity>? = null,
-        val fingerprintMaps: FingerprintMapEntityGroup? = null
+        val fingerprintMaps: List<FingerprintMapEntity>? = null
     )
 
-    //TODO eventually delete and have a custom serializer for backup data
     private data class BackupModel(
-        @SerializedName(NAME_KEYMAP_DB_VERSION)
-        val keymapDbVersion: Int? = null,
+        @SerializedName(NAME_DB_VERSION)
+        val dbVersion: Int,
 
         @SerializedName(NAME_KEYMAP_LIST)
         val keymapList: List<KeyMapEntity>? = null,
 
-        @SerializedName(NAME_DEVICE_INFO)
-        val deviceInfo: List<DeviceInfoEntity>? = null,
-
-        @SerializedName(NAME_FINGERPRINT_SWIPE_DOWN)
-        val fingerprintSwipeDown: FingerprintMapEntity?,
-
-        @SerializedName(NAME_FINGERPRINT_SWIPE_UP)
-        val fingerprintSwipeUp: FingerprintMapEntity?,
-
-        @SerializedName(NAME_FINGERPRINT_SWIPE_LEFT)
-        val fingerprintSwipeLeft: FingerprintMapEntity?,
-
-        @SerializedName(NAME_FINGERPRINT_SWIPE_RIGHT)
-        val fingerprintSwipeRight: FingerprintMapEntity?
+        @SerializedName(NAME_FINGERPRINT_MAP_LIST)
+        val fingerprintMapList: List<FingerprintMapEntity>?,
     )
 }
 

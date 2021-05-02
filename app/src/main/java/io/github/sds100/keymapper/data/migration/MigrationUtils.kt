@@ -1,18 +1,18 @@
 package io.github.sds100.keymapper.data.migration
 
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 
 /**
  * Created by sds100 on 24/01/21.
  */
 object MigrationUtils {
     fun migrate(
-        gson: Gson,
         migrations: List<JsonMigration>,
         inputVersion: Int,
-        inputJson: String,
+        inputJson: JsonObject,
         outputVersion: Int
-    ): String {
+    ): JsonObject {
         var version = inputVersion
         var outputJson = inputJson
 
@@ -20,7 +20,7 @@ object MigrationUtils {
             migrations
                 .find { it.versionBefore == version }
                 ?.let {
-                    outputJson = it.migrate(gson, outputJson)
+                    outputJson = it.migrate( outputJson)
                     version = it.versionAfter
                 }
                 ?: throw Exception("No migration for version $version to $outputVersion")

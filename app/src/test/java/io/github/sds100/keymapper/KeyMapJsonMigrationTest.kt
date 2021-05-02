@@ -2,11 +2,12 @@ package io.github.sds100.keymapper
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.toJsonArray
 import com.google.gson.Gson
+import com.google.gson.JsonArray
 import com.google.gson.JsonParser
-import io.github.sds100.keymapper.data.repositories.RoomKeyMapRepository
+import io.github.sds100.keymapper.data.migration.*
 import io.github.sds100.keymapper.util.JsonTestUtils
-import io.github.sds100.keymapper.data.migration.MigrationUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.TestCoroutineScope
@@ -49,6 +50,24 @@ class KeymapJsonMigrationTest {
     }
 
     @Test
+    fun `migrate 11 to 12`() {
+        val testData = getKeymapListJsonFromFile("migration-11-12-test-data.json")
+        val expectedData = getKeymapListJsonFromFile("migration-11-12-expected-data.json")
+
+        val deviceInfoList = getDeviceInfoListJsonFromFile("migration-11-12-test-data.json")
+
+        testData.forEachIndexed { index, keyMap ->
+            val migratedKeyMap = Migration_11_12.migrateKeyMap(keyMap.asJsonObject, deviceInfoList)
+            JsonTestUtils.compareBothWays(
+                expectedData[index],
+                "expected",
+                migratedKeyMap,
+                "migrated"
+            )
+        }
+    }
+
+    @Test
     fun `migrate 10 to 11`() {
         test(
             getKeymapListJsonFromFile("migration-10-11-test-data.json"),
@@ -69,38 +88,59 @@ class KeymapJsonMigrationTest {
 
     @Test
     fun `migrate 9 to 10`() {
-        test(MIGRATION_9_10_TEST_DATA, MIGRATION_9_10_EXPECTED_DATA, 9, 10)
+        val testData = MIGRATION_9_10_TEST_DATA.map {
+            parser.parse(it)
+        }.toJsonArray()
+
+        val expectedData = MIGRATION_9_10_EXPECTED_DATA.map {
+            parser.parse(it)
+        }.toJsonArray()
+
+        test(testData, expectedData, 9, 10)
     }
 
     private fun test(
-        testData: List<String>,
-        expectedData: List<String>,
+        testData: JsonArray,
+        expectedData: JsonArray,
         inputVersion: Int,
         outputVersion: Int
     ) = coroutineScope.runBlockingTest {
-        testData.forEachIndexed { index, json ->
-            val migratedJson = MigrationUtils.migrate(
-                gson,
-                RoomKeyMapRepository.MIGRATIONS,
+        val migrations = listOf(
+            JsonMigration(9, 10) { json -> Migration_9_10.migrateJson(json) },
+            JsonMigration(10, 11) { json -> Migration_10_11.migrateJson(json) },
+        )
+
+        testData.forEachIndexed { index, testKeyMap ->
+
+            val migratedKeyMap = MigrationUtils.migrate(
+                migrations,
                 inputVersion,
-                json,
+                testKeyMap.asJsonObject,
                 outputVersion
             )
 
-            val expectedElement = parser.parse(expectedData[index])
-            val migratedElement = parser.parse(migratedJson)
+            val expectedKeyMap = expectedData[index]
 
-            JsonTestUtils.compareBothWays(expectedElement, "expected", migratedElement, "migrated")
+            JsonTestUtils.compareBothWays(expectedKeyMap, "expected", migratedKeyMap, "migrated")
         }
     }
 
-    private fun getKeymapListJsonFromFile(fileName: String): List<String> {
+    private fun getKeymapListJsonFromFile(fileName: String): JsonArray {
         val jsonInputStream = getJson(fileName)
         val json = jsonInputStream.bufferedReader().use { it.readText() }
 
         val rootElement = parser.parse(json)
 
-        return rootElement["keymap_list"].asJsonArray.map { gson.toJson(it) }
+        return rootElement["keymap_list"].asJsonArray
+    }
+
+    private fun getDeviceInfoListJsonFromFile(fileName: String): JsonArray {
+        val jsonInputStream = getJson(fileName)
+        val json = jsonInputStream.bufferedReader().use { it.readText() }
+
+        val rootElement = parser.parse(json)
+
+        return rootElement["device_info"].asJsonArray
     }
 
     private fun getJson(fileName: String): InputStream {

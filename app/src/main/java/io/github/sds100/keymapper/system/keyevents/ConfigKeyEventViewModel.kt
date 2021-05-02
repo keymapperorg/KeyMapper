@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.system.devices.GetInputDevicesUseCase
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
+import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.CheckBoxListItem
 import io.github.sds100.keymapper.util.ui.ResourceProvider
@@ -23,25 +23,20 @@ import splitties.bitflags.withFlag
  */
 
 class ConfigKeyEventViewModel(
-    private val getInputDevices: GetInputDevicesUseCase,
+    private val useCase: ConfigKeyEventUseCase,
     resourceProvider: ResourceProvider
 ) : ViewModel(), ResourceProvider by resourceProvider {
 
-    private val keyCode = MutableStateFlow<Result<Int>>(Error.CantBeEmpty)
-    private val chosenDevice = MutableStateFlow<InputDeviceInfo?>(null)
-    private val useShell = MutableStateFlow(false)
-    private val metaState = MutableStateFlow(0)
+    private val state = MutableStateFlow(KeyEventState())
 
-    private val _state = MutableStateFlow(
+    private val _uiState = MutableStateFlow(
         buildUiState(
-            keyCode = Error.CantBeEmpty,
-            useShell = false,
-            metaState = 0,
-            chosenDevice = null,
-            inputDeviceList = emptyList()
+            state.value,
+            inputDeviceList = emptyList(),
+            showDeviceDescriptors = false
         )
     )
-    val state = _state.asStateFlow()
+    val uiState = _uiState.asStateFlow()
 
     private val _returnResult = MutableSharedFlow<ConfigKeyEventResult>()
     val returnResult = _returnResult.asSharedFlow()
@@ -52,68 +47,81 @@ class ConfigKeyEventViewModel(
         viewModelScope.launch {
 
             combine(
-                rebuildUiState,
-                keyCode.combine(metaState) { keyCode, metaState -> Pair(keyCode, metaState) },
-                useShell,
-                chosenDevice,
-                getInputDevices.devices
-            ) { _, (keyCode, metaState), useShell, chosenDevice, devices ->
-                buildUiState(
-                    keyCode,
-                    useShell,
-                    metaState,
-                    chosenDevice,
-                    devices.dataOrNull() ?: emptyList()
-                )
+                state,
+                useCase.inputDevices,
+                useCase.showDeviceDescriptors
+            ) { state, inputDevices, showDeviceDescriptors ->
+                buildUiState(state, inputDevices, showDeviceDescriptors)
             }.collectLatest {
-                _state.value = it
+                _uiState.value = it
             }
         }
     }
 
     fun setModifierKeyChecked(modifier: Int, isChecked: Boolean) {
+        val oldMetaState = state.value.metaState
+
         if (isChecked) {
-            metaState.value = metaState.value.withFlag(modifier)
+            state.value = state.value.copy(
+                metaState = oldMetaState.withFlag(modifier)
+            )
         } else {
-            metaState.value = metaState.value.minusFlag(modifier)
+            state.value = state.value.copy(
+                metaState = oldMetaState.minusFlag(modifier)
+            )
         }
     }
 
     fun setKeyCode(keyCode: Int) {
-        this.keyCode.value = keyCode.success()
+        state.value = state.value.copy(keyCode = Success(keyCode))
     }
 
     fun onKeyCodeTextChanged(text: String) {
-        keyCode.value = when {
+        val keyCodeState = when {
             text.isBlank() -> Error.CantBeEmpty
             text.toIntOrNull() == null -> Error.InvalidNumber
             else -> text.toInt().success()
         }
+
+        state.value = state.value.copy(keyCode = keyCodeState)
     }
 
     fun setUseShell(checked: Boolean) {
-        useShell.value = checked
+        state.value = state.value.copy(useShell = checked)
     }
 
     @SuppressLint("NullSafeMutableLiveData")
     fun chooseNoDevice() {
-        chosenDevice.value = null
+        state.value = state.value.copy(chosenDevice = null)
     }
 
     fun chooseDevice(index: Int) {
-        chosenDevice.value = state.value.deviceListItems.getOrNull(index)
+        viewModelScope.launch {
+            val chosenDescriptor = uiState.value.deviceListItems.getOrNull(index)?.descriptor
+
+            if (chosenDescriptor == null) {
+                return@launch
+            }
+
+            val chosenDevice =
+                useCase.inputDevices.first().find { it.descriptor == chosenDescriptor }
+
+            state.value = state.value.copy(
+                chosenDevice = chosenDevice
+            )
+        }
     }
 
     fun onDoneClick() {
         viewModelScope.launch {
-            val keyCode = keyCode.value.valueOrNull() ?: return@launch
+            val keyCode = state.value.keyCode.valueOrNull() ?: return@launch
 
             _returnResult.emit(
                 ConfigKeyEventResult(
                     keyCode = keyCode,
-                    metaState = metaState.value,
-                    useShell = useShell.value,
-                    device = chosenDevice.value
+                    metaState = state.value.metaState,
+                    useShell = state.value.useShell,
+                    device = state.value.chosenDevice
                 )
             )
         }
@@ -128,12 +136,15 @@ class ConfigKeyEventViewModel(
     }
 
     private fun buildUiState(
-        keyCode: Result<Int>,
-        useShell: Boolean,
-        metaState: Int,
-        chosenDevice: InputDeviceInfo?,
-        inputDeviceList: List<InputDeviceInfo>
+        state: KeyEventState,
+        inputDeviceList: List<InputDeviceInfo>,
+        showDeviceDescriptors: Boolean
     ): ConfigKeyEventUiState {
+        val keyCode = state.keyCode
+        val metaState = state.metaState
+        val useShell = state.useShell
+        val chosenDevice = state.chosenDevice
+
         val keyCodeString = when (keyCode) {
             is Success -> keyCode.value.toString()
             else -> ""
@@ -158,6 +169,29 @@ class ConfigKeyEventViewModel(
             )
         }
 
+        val deviceListItems = inputDeviceList.map { device ->
+            if (showDeviceDescriptors) {
+                device.copy(
+                    name = InputDeviceUtils.appendDeviceDescriptorToName(
+                        device.descriptor,
+                        device.name
+                    )
+                )
+            } else {
+                device
+            }
+        }
+
+        val chosenDeviceName: String = when {
+            chosenDevice == null -> getString(R.string.from_no_device)
+            showDeviceDescriptors -> InputDeviceUtils.appendDeviceDescriptorToName(
+                chosenDevice.descriptor,
+                chosenDevice.name
+            )
+
+            else -> chosenDevice.name
+        }
+
         return ConfigKeyEventUiState(
             keyCodeString = keyCodeString,
             keyCodeErrorMessage = keyCode.errorOrNull()?.getFullMessage(this),
@@ -168,21 +202,28 @@ class ConfigKeyEventViewModel(
             isModifierListShown = !useShell,
             modifierListItems = modifierListItems,
             isDoneButtonEnabled = keyCode.isSuccess,
-            deviceListItems = inputDeviceList,
-            chosenDeviceName = chosenDevice?.name ?: getString(R.string.from_no_device)
+            deviceListItems = deviceListItems,
+            chosenDeviceName = chosenDeviceName
         )
     }
 
     @Suppress("UNCHECKED_CAST")
     class Factory(
-        private val getInputDevices: GetInputDevicesUseCase,
+        private val useCase: ConfigKeyEventUseCase,
         private val resourceProvider: ResourceProvider
     ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return ConfigKeyEventViewModel(getInputDevices, resourceProvider) as T
+            return ConfigKeyEventViewModel(useCase, resourceProvider) as T
         }
     }
+
+    private data class KeyEventState(
+        val keyCode: Result<Int> = Error.CantBeEmpty,
+        val chosenDevice: InputDeviceInfo? = null,
+        val useShell: Boolean = false,
+        val metaState: Int = 0
+    )
 }
 
 data class ConfigKeyEventUiState(

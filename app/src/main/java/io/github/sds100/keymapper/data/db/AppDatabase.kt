@@ -1,25 +1,31 @@
 package io.github.sds100.keymapper.data.db
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import io.github.sds100.keymapper.data.db.AppDatabase.Companion.DATABASE_VERSION
-import io.github.sds100.keymapper.data.db.dao.DeviceInfoDao
+import io.github.sds100.keymapper.data.db.dao.FingerprintMapDao
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 import io.github.sds100.keymapper.data.db.typeconverter.ActionListTypeConverter
 import io.github.sds100.keymapper.data.db.typeconverter.ConstraintListTypeConverter
 import io.github.sds100.keymapper.data.db.typeconverter.ExtraListTypeConverter
 import io.github.sds100.keymapper.data.db.typeconverter.TriggerTypeConverter
-import io.github.sds100.keymapper.system.devices.DeviceInfoEntity
+import io.github.sds100.keymapper.data.migration.*
+import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapEntity
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntity
-import io.github.sds100.keymapper.data.migration.keymaps.*
 
 /**
  * Created by sds100 on 24/01/2020.
  */
-@Database(entities = [KeyMapEntity::class, DeviceInfoEntity::class], version = DATABASE_VERSION, exportSchema = true)
+@Database(
+    entities = [KeyMapEntity::class, FingerprintMapEntity::class],
+    version = DATABASE_VERSION,
+    exportSchema = true
+)
 @TypeConverters(
     ActionListTypeConverter::class,
     ExtraListTypeConverter::class,
@@ -29,9 +35,10 @@ import io.github.sds100.keymapper.data.migration.keymaps.*
 abstract class AppDatabase : RoomDatabase() {
     companion object {
         const val DATABASE_NAME = "key_map_database"
-        const val DATABASE_VERSION = 11
+        const val DATABASE_VERSION = 12
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
+
             override fun migrate(database: SupportSQLiteDatabase) {
                 Migration_1_2.migrate(database)
             }
@@ -93,6 +100,14 @@ abstract class AppDatabase : RoomDatabase() {
         }
     }
 
+    class RoomMigration_11_12(
+        private val fingerprintMapDataStore: DataStore<Preferences>
+    ) : Migration(11, 12) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            Migration_11_12.migrateDatabase(database, fingerprintMapDataStore)
+        }
+    }
+
     abstract fun keymapDao(): KeyMapDao
-    abstract fun deviceInfoDao(): DeviceInfoDao
+    abstract fun fingerprintMapDao(): FingerprintMapDao
 }

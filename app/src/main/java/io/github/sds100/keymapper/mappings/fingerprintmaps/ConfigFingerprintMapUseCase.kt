@@ -18,8 +18,6 @@ class ConfigFingerprintMapUseCaseImpl(
 ) : BaseConfigMappingUseCase<FingerprintMapAction, FingerprintMap>(),
     ConfigFingerprintMapUseCase {
 
-    private var fingerprintMapId: FingerprintMapId? = null
-
     override fun setEnabled(enabled: Boolean) = editFingerprintMap { it.copy(isEnabled = enabled) }
 
     override fun createAction(data: ActionData): FingerprintMapAction {
@@ -65,37 +63,27 @@ class ConfigFingerprintMapUseCaseImpl(
         setActionOption(uid) { it.copy(holdDownDuration = holdDownDuration) }
 
     override suspend fun loadFingerprintMap(id: FingerprintMapId) {
-        val entity = when (id) {
-            FingerprintMapId.SWIPE_DOWN -> repository.fingerprintMaps.first().swipeDown
-            FingerprintMapId.SWIPE_UP -> repository.fingerprintMaps.first().swipeUp
-            FingerprintMapId.SWIPE_LEFT -> repository.fingerprintMaps.first().swipeLeft
-            FingerprintMapId.SWIPE_RIGHT -> repository.fingerprintMaps.first().swipeRight
-        }
-
+        val entity = repository.get(FingerprintMapIdEntityMapper.toEntity(id))
         val fingerprintMap = FingerprintMapEntityMapper.fromEntity(entity)
 
-        fingerprintMapId = id
         mapping.value = State.Data(fingerprintMap)
     }
 
-    override fun restoreState(id: FingerprintMapId, fingerprintMap: FingerprintMap) {
-        this.fingerprintMapId = id
+    override fun restoreState(fingerprintMap: FingerprintMap) {
         mapping.value = State.Data(fingerprintMap)
     }
 
     override fun save() {
         mapping.value.ifIsData { fingerprintMap ->
-            val id = FingerprintMapIdEntityMapper.toEntity(fingerprintMapId ?: return)
-            val entity = FingerprintMapEntityMapper.toEntity(fingerprintMap)
+            val entity =
+                FingerprintMapEntityMapper.toEntity(fingerprintMap)
 
-            repository.update(id, entity)
+            repository.update(entity)
         }
     }
 
-    override fun getState(): State<Pair<FingerprintMapId, FingerprintMap>> {
-        return mapping.value.mapData { fingerprintMap ->
-            Pair(fingerprintMapId!!, fingerprintMap)
-        }
+    override fun getState(): State<FingerprintMap> {
+        return mapping.value
     }
 
     private fun editFingerprintMap(block: (fingerprintMap: FingerprintMap) -> FingerprintMap) {
@@ -127,8 +115,8 @@ interface ConfigFingerprintMapUseCase : ConfigMappingUseCase<FingerprintMapActio
     fun setVibrationDuration(duration: Defaultable<Int>)
     fun setShowToastEnabled(enabled: Boolean)
 
-    fun getState(): State<Pair<FingerprintMapId, FingerprintMap>>
-    fun restoreState(id: FingerprintMapId, fingerprintMap: FingerprintMap)
+    fun getState(): State<FingerprintMap>
+    fun restoreState(fingerprintMap: FingerprintMap)
     suspend fun loadFingerprintMap(id: FingerprintMapId)
 
     fun setActionRepeatEnabled(uid: String, repeat: Boolean)

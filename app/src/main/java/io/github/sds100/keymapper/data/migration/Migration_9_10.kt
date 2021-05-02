@@ -1,14 +1,11 @@
 @file:Suppress("ClassName")
 
-package io.github.sds100.keymapper.data.migration.keymaps
+package io.github.sds100.keymapper.data.migration
 
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.SupportSQLiteQueryBuilder
 import com.github.salomonbrys.kotson.*
-import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.google.gson.JsonElement
-import com.google.gson.JsonParser
+import com.google.gson.*
 import splitties.bitflags.hasFlag
 import splitties.bitflags.minusFlag
 import splitties.bitflags.withFlag
@@ -58,20 +55,16 @@ object Migration_9_10 {
         }
     }
 
-    fun migrateJson(gson: Gson, json: String): String {
-        val parser = JsonParser()
-
-        val root = parser.parse(json)
-
-        val oldTrigger by root.byObject(NAME_TRIGGER)
-        val oldActionList by root.byArray(NAME_ACTION_LIST)
+    fun migrateJson(keyMap: JsonObject): JsonObject {
+        val oldTrigger by keyMap.byObject(NAME_TRIGGER)
+        val oldActionList by keyMap.byArray(NAME_ACTION_LIST)
 
         val (newTrigger, newActionList) = migrate(oldTrigger, oldActionList)
 
-        root[NAME_TRIGGER] = newTrigger
-        root[NAME_ACTION_LIST] = newActionList
+        keyMap[NAME_TRIGGER] = newTrigger
+        keyMap[NAME_ACTION_LIST] = newActionList
 
-        return gson.toJson(root)
+        return keyMap
     }
 
     private fun migrate(trigger: JsonElement,

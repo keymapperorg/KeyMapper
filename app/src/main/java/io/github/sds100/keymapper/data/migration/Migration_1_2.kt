@@ -1,6 +1,6 @@
 @file:Suppress("ClassName")
 
-package io.github.sds100.keymapper.data.migration.keymaps
+package io.github.sds100.keymapper.data.migration
 
 import androidx.core.database.getStringOrNull
 import androidx.sqlite.db.SupportSQLiteDatabase

@@ -17,8 +17,8 @@ class FingerprintMapListItemCreator(
     resourceProvider
 ) {
 
-    fun create(id: FingerprintMapId, fingerprintMap: FingerprintMap): FingerprintMapListItem {
-        val header = when (id) {
+    fun create(fingerprintMap: FingerprintMap, showDeviceDescriptors: Boolean): FingerprintMapListItem {
+        val header = when (fingerprintMap.id) {
             FingerprintMapId.SWIPE_DOWN -> getString(R.string.header_fingerprint_gesture_down)
             FingerprintMapId.SWIPE_UP -> getString(R.string.header_fingerprint_gesture_up)
             FingerprintMapId.SWIPE_LEFT -> getString(R.string.header_fingerprint_gesture_left)
@@ -38,13 +38,13 @@ class FingerprintMapListItemCreator(
         }
 
 
-        val actionChipList = getActionChipList(fingerprintMap)
+        val actionChipList = getActionChipList(fingerprintMap, showDeviceDescriptors)
         val constraintChipList = getConstraintChipList(fingerprintMap)
 
         val extraInfo = createExtraInfoString(fingerprintMap, actionChipList, constraintChipList)
 
         return FingerprintMapListItem(
-            id = id,
+            id = fingerprintMap.id,
             header = header,
             actionChipList = actionChipList,
             constraintChipList = constraintChipList,

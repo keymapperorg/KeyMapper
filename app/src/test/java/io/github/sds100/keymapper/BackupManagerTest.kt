@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper
 
 import com.github.salomonbrys.kotson.byObject
-import com.github.salomonbrys.kotson.contains
 import com.github.salomonbrys.kotson.get
 import com.google.gson.Gson
 import com.google.gson.JsonParser
@@ -9,14 +8,15 @@ import io.github.sds100.keymapper.backup.BackupManagerImpl
 import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapEntity
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapEntityGroup
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapRepository
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntity
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
-import io.github.sds100.keymapper.system.devices.DeviceInfoCache
 import io.github.sds100.keymapper.system.files.FileAdapter
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.FlowUtils.toListWithTimeout
+import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.Success
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -29,11 +29,11 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.*
+import org.mockito.Mockito.never
+import org.mockito.Mockito.times
+import org.mockito.Mockito.verify
 import org.mockito.junit.MockitoJUnitRunner
-import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
+import org.mockito.kotlin.*
 import java.io.*
 
 /**
@@ -48,51 +48,33 @@ class BackupManagerTest {
     private val testDispatcher = TestCoroutineDispatcher()
     private val coroutineScope = TestCoroutineScope(testDispatcher)
 
-    private val dispatcherProvider = object : DispatcherProvider {
-        override fun main() = testDispatcher
-        override fun default() = testDispatcher
-        override fun io() = testDispatcher
-        override fun unconfined() = testDispatcher
-    }
+    private val dispatcherProvider = TestDispatcherProvider(testDispatcher)
 
     private lateinit var backupManager: BackupManagerImpl
-    private lateinit var preferenceRepository: PreferenceRepository
-    private lateinit var keyMapRepository: KeyMapRepository
-    private lateinit var fingerprintMapRepository: FingerprintMapRepository
+    private lateinit var mockPreferenceRepository: PreferenceRepository
+    private lateinit var mockKeyMapRepository: KeyMapRepository
+    private lateinit var mockFingerprintMapRepository: FingerprintMapRepository
     private lateinit var outputStream: PipedOutputStream
 
     private lateinit var parser: JsonParser
     private lateinit var gson: Gson
 
-    private val GESTURE_ID_TO_JSON_KEY_MAP = mapOf(
-        "swipe_down" to "fingerprint_swipe_down",
-        "swipe_up" to "fingerprint_swipe_up",
-        "swipe_left" to "fingerprint_swipe_left",
-        "swipe_right" to "fingerprint_swipe_right",
-    )
-
-    private val GESTURE_IDS = arrayOf("swipe_down", "swipe_up", "swipe_left", "swipe_right")
-
     @Before
     fun init() {
 
-        keyMapRepository = mock {
+        mockKeyMapRepository = mock {
             on { requestBackup } doReturn MutableSharedFlow()
         }
 
-        fingerprintMapRepository = mock {
+        mockFingerprintMapRepository = mock {
             on { requestBackup } doReturn MutableSharedFlow()
         }
 
-        preferenceRepository = mock {
+        mockPreferenceRepository = mock {
             on { get<Any>(anyOrNull()) } doReturn flow { }
         }
 
         outputStream = PipedOutputStream()
-
-        val deviceInfoCache: DeviceInfoCache = mock {
-            onBlocking { getAll() } doReturn emptyList()
-        }
 
         val fileAdapter = object : FileAdapter {
             override fun openOutputStream(uriString: String): Result<OutputStream> {
@@ -115,10 +97,9 @@ class BackupManagerTest {
         backupManager = BackupManagerImpl(
             coroutineScope,
             fileAdapter = fileAdapter,
-            keyMapRepository = keyMapRepository,
-            deviceInfoRepository = deviceInfoCache,
-            preferenceRepository = preferenceRepository,
-            fingerprintMapRepository = fingerprintMapRepository,
+            keyMapRepository = mockKeyMapRepository,
+            preferenceRepository = mockPreferenceRepository,
+            fingerprintMapRepository = mockFingerprintMapRepository,
             throwExceptions = true,
             dispatchers = dispatcherProvider
         )
@@ -136,6 +117,20 @@ class BackupManagerTest {
     }
 
     @Test
+    fun `restore legacy backup with device info, success`() = coroutineScope.runBlockingTest {
+        coroutineScope.pauseDispatcher()
+
+        backupManager.restoreMappings("legacy-backup-test-data.json")
+
+        assertThat(backupManager.onRestoreResult.toListWithTimeout(), `is`(listOf(Success(Unit))))
+
+        coroutineScope.resumeDispatcher()
+
+        verify(mockKeyMapRepository, times(1)).insert(any(), any())
+        verify(mockFingerprintMapRepository, times(1)).update(any(), any(), any(), any())
+    }
+
+    @Test
     fun `restore keymaps with no db version, assume version is 9 and don't show error message`() =
         coroutineScope.runBlockingTest {
             val fileName = "restore-keymaps-no-db-version.json"
@@ -148,50 +143,16 @@ class BackupManagerTest {
 
             coroutineScope.resumeDispatcher()
 
-            verify(keyMapRepository, times(1)).restore(9, getKeyMapJsonListFromFile(fileName))
+            verify(mockKeyMapRepository, times(1)).insert(any(), any())
         }
 
     @Test
-    fun `backup all fingerprint maps, don't save keymap db version and show success message`() =
-        coroutineScope.runBlockingTest {
-            `when`(fingerprintMapRepository.fingerprintMaps).then {
-                flow {
-                    emit(
-                        FingerprintMapEntityGroup()
-                    )
-                }
-            }
-
-            val inputStream =
-                PipedInputStream(outputStream) // must become before async call in BackupManager.backup
-
-            coroutineScope.pauseDispatcher()
-
-            backupManager.backupFingerprintMaps("")
-
-            assertThat(
-                backupManager.onBackupResult.toListWithTimeout(),
-                `is`(listOf(Success(Unit)))
-            )
-
-            coroutineScope.resumeDispatcher()
-
-            val json = inputStream.bufferedReader().use { it.readText() }
-            val jsonObject = parser.parse(json).asJsonObject
-
-            assertThat(
-                "keymap db version is in json but it wasn't supposed to be there",
-                !jsonObject.contains(BackupManagerImpl.NAME_KEYMAP_DB_VERSION)
-            )
-        }
-
-    @Test
-    fun `restore a single fingerprint map, only restore a single fingerprint map and a success message`() =
+    fun `restore a single legacy fingerprint map, only restore a single fingerprint map and a success message`() =
         coroutineScope.runBlockingTest {
 
             coroutineScope.pauseDispatcher()
 
-            backupManager.restoreMappings("restore-single-fingerprint-map.json")
+            backupManager.restoreMappings("restore-legacy-single-fingerprint-map.json")
 
             assertThat(
                 backupManager.onRestoreResult.toListWithTimeout(),
@@ -200,14 +161,14 @@ class BackupManagerTest {
 
             coroutineScope.resumeDispatcher()
 
-            verify(fingerprintMapRepository, times(1)).restore(anyString(), anyString())
+            verify(mockFingerprintMapRepository, times(1)).update(any())
         }
 
     @Test
-    fun `restore all fingerprint maps, all fingerprint maps should be restored and a success message`() =
+    fun `restore all legacy fingerprint maps, all fingerprint maps should be restored and a success message`() =
         coroutineScope.runBlockingTest {
 
-            val fileName = "restore-all-fingerprint-maps.json"
+            val fileName = "restore-all-legacy-fingerprint-maps.json"
 
             coroutineScope.pauseDispatcher()
 
@@ -220,9 +181,7 @@ class BackupManagerTest {
 
             coroutineScope.resumeDispatcher()
 
-            getFingerprintMapsToGestureIdFromFile(fileName).forEach { (gestureId, json) ->
-                verify(fingerprintMapRepository, times(1)).restore(gestureId, json)
-            }
+            verify(mockFingerprintMapRepository, times(1)).update(any(), any(), any(), any())
         }
 
     @Test
@@ -238,9 +197,10 @@ class BackupManagerTest {
                 backupManager.onRestoreResult.toListWithTimeout(),
                 `is`(listOf(Success(Unit)))
             )
+
             coroutineScope.resumeDispatcher()
 
-            verify(keyMapRepository, times(1)).restore(10, getKeyMapJsonListFromFile(fileName))
+            verify(mockKeyMapRepository, times(1)).insert(any(), any(), any(), any())
         }
 
     @Test
@@ -257,15 +217,15 @@ class BackupManagerTest {
 
             coroutineScope.resumeDispatcher()
 
-            verify(keyMapRepository, never()).restore(anyInt(), anyList())
+            verify(mockKeyMapRepository, never()).insert(anyVararg())
         }
 
     @Test
-    fun `restore with fingerprint gesture map db version greater than allowed version, send incompatible backup event`() =
+    fun `restore with legacy fingerprint gesture map db version greater than allowed version, send incompatible backup event`() =
         coroutineScope.runBlockingTest {
 
             coroutineScope.pauseDispatcher()
-            backupManager.restoreMappings("restore-fingerprint-map-version-too-big.json")
+            backupManager.restoreMappings("restore-legacy-fingerprint-map-version-too-big.json")
 
             assertThat(
                 backupManager.onRestoreResult.toListWithTimeout(),
@@ -274,7 +234,7 @@ class BackupManagerTest {
 
             coroutineScope.resumeDispatcher()
 
-            verify(fingerprintMapRepository, never()).restore(anyString(), anyString())
+            verify(mockFingerprintMapRepository, never()).update(anyVararg())
         }
 
     @Test
@@ -305,14 +265,17 @@ class BackupManagerTest {
     }
 
     @Test
-    fun `backup all fingerprint maps, return list of default fingerprint maps`() =
+    fun `backup all fingerprint maps, return list of fingerprint maps and app database version`() =
         coroutineScope.runBlockingTest {
-            `when`(fingerprintMapRepository.fingerprintMaps).then {
-                flow {
-                    emit(
-                        FingerprintMapEntityGroup()
-                    )
-                }
+            val fingerprintMapsToBackup = listOf(
+                FingerprintMapEntity(id = FingerprintMapEntity.ID_SWIPE_DOWN),
+                FingerprintMapEntity(id = FingerprintMapEntity.ID_SWIPE_UP),
+                FingerprintMapEntity(id = FingerprintMapEntity.ID_SWIPE_LEFT),
+                FingerprintMapEntity(id = FingerprintMapEntity.ID_SWIPE_RIGHT)
+            )
+
+            whenever(mockFingerprintMapRepository.fingerprintMapList).then {
+                flow { emit(State.Data(fingerprintMapsToBackup)) }
             }
 
             val inputStream =
@@ -332,20 +295,22 @@ class BackupManagerTest {
             val json = inputStream.bufferedReader().use { it.readText() }
             val rootElement = parser.parse(json)
 
-            GESTURE_ID_TO_JSON_KEY_MAP.values.forEach { jsonKey ->
-                assertThat(
-                    "doesn't contain $jsonKey fingerprint map",
-                    gson.toJson(rootElement[jsonKey]),
-                    `is`(gson.toJson(FingerprintMapEntity()))
-                )
-            }
+            assertThat(
+                gson.toJson(rootElement["fingerprint_map_list"]),
+                `is`(gson.toJson(fingerprintMapsToBackup))
+            )
+
+            assertThat(
+                rootElement["keymap_db_version"].asInt,
+                `is`(AppDatabase.DATABASE_VERSION)
+            )
         }
 
     @Test
     fun `backup key maps, return list of default key maps, keymap db version should be current database version`() =
         coroutineScope.runBlockingTest {
             val keyMapList = listOf(KeyMapEntity(0), KeyMapEntity(1))
-            `when`(keyMapRepository.keyMapList).then { flow { emit(State.Data(keyMapList)) } }
+            whenever(mockKeyMapRepository.keyMapList).then { flow { emit(State.Data(keyMapList)) } }
 
             val inputStream =
                 PipedInputStream(outputStream) // must become before async call in BackupManager.backup
@@ -378,13 +343,20 @@ class BackupManagerTest {
             )
         }
 
-    private fun getFingerprintMapsToGestureIdFromFile(fileName: String): Map<String, String> {
+    private fun getLegacyFingerprintMapsFromFile(fileName: String): Map<String, String> {
         val jsonInputStream = getJson(fileName)
         val json = jsonInputStream.bufferedReader().use { it.readText() }
 
         val rootElement = parser.parse(json)
 
-        return GESTURE_ID_TO_JSON_KEY_MAP.map { (gestureId, jsonKey) ->
+        val legacyGestureIdsToJsonMap = mapOf(
+            "swipe_down" to "fingerprint_swipe_down",
+            "swipe_up" to "fingerprint_swipe_up",
+            "swipe_left" to "fingerprint_swipe_left",
+            "swipe_up" to "fingerprint_swipe_up",
+        )
+
+        return legacyGestureIdsToJsonMap.map { (gestureId, jsonKey) ->
             val map by rootElement.byObject(jsonKey)
             gestureId to gson.toJson(map)
         }.toMap()
@@ -397,6 +369,15 @@ class BackupManagerTest {
         val rootElement = parser.parse(json)
 
         return rootElement["keymap_list"].asJsonArray.map { gson.toJson(it) }
+    }
+
+    private fun getFingerprintMapJsonListFromFile(fileName: String): List<String> {
+        val jsonInputStream = getJson(fileName)
+        val json = jsonInputStream.bufferedReader().use { it.readText() }
+
+        val rootElement = parser.parse(json)
+
+        return rootElement["fingerprint_map_list"].asJsonArray.map { gson.toJson(it) }
     }
 
     private fun getJson(fileName: String): InputStream {

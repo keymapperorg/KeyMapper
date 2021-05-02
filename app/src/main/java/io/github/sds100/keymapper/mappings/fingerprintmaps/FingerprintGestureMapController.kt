@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.mappings.fingerprintmaps
 
-import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
+import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.mappings.SimpleMappingController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
@@ -21,7 +21,7 @@ class FingerprintGestureMapController(
     performActionsUseCase,
     detectConstraintsUseCase
 ) {
-    private var fingerprintMaps: FingerprintMapGroup? = null
+    private var fingerprintMaps: List<FingerprintMap>? = null
 
     init {
         coroutineScope.launch {
@@ -34,7 +34,7 @@ class FingerprintGestureMapController(
     }
 
     fun onGesture(id: FingerprintMapId) {
-        val fingerprintMap = fingerprintMaps?.get(id) ?: return
+        val fingerprintMap = fingerprintMaps?.find { it.id == id } ?: return
 
         onDetected(id.toString(), fingerprintMap)
     }

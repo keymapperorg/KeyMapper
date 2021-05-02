@@ -21,7 +21,6 @@ import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.accessibility.MyAccessibilityService
 import io.github.sds100.keymapper.system.apps.DisplayAppsUseCase
 import io.github.sds100.keymapper.system.apps.DisplayAppsUseCaseImpl
-import io.github.sds100.keymapper.system.devices.GetInputDevicesUseCaseImpl
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeMessengerImpl
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCaseImpl
@@ -48,7 +47,8 @@ object UseCases {
     fun configKeyMap(ctx: Context): ConfigKeyMapUseCase {
         return ConfigKeyMapUseCaseImpl(
             ServiceLocator.roomKeymapRepository(ctx),
-            ServiceLocator.devicesAdapter(ctx)
+            ServiceLocator.devicesAdapter(ctx),
+            ServiceLocator.preferenceRepository(ctx)
         )
     }
 
@@ -58,6 +58,7 @@ object UseCases {
             ServiceLocator.permissionAdapter(ctx),
             ServiceLocator.inputMethodAdapter(ctx),
             ServiceLocator.serviceAdapter(ctx),
+            ServiceLocator.preferenceRepository(ctx),
             getActionError(ctx),
             getConstraintError(ctx)
         )
@@ -81,12 +82,6 @@ object UseCases {
     fun onboarding(ctx: Context) = OnboardingUseCaseImpl(
         ServiceLocator.preferenceRepository(ctx),
         ServiceLocator.fileAdapter(ctx)
-    )
-
-    fun getInputDevices(ctx: Context) = GetInputDevicesUseCaseImpl(
-        ServiceLocator.deviceInfoRepository(ctx),
-        ServiceLocator.preferenceRepository(ctx),
-        ServiceLocator.devicesAdapter(ctx)
     )
 
     fun createKeymapShortcut(ctx: Context) = CreateKeyMapShortcutUseCaseImpl(

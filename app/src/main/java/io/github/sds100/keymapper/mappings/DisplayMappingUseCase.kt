@@ -3,6 +3,8 @@ package io.github.sds100.keymapper.mappings
 import android.graphics.drawable.Drawable
 import io.github.sds100.keymapper.actions.GetActionErrorUseCase
 import io.github.sds100.keymapper.constraints.GetConstraintErrorUseCase
+import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
@@ -26,18 +28,16 @@ class DisplaySimpleMappingUseCaseImpl(
     private val permissionAdapter: PermissionAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
     private val serviceAdapter: ServiceAdapter,
+    private val preferenceRepository: PreferenceRepository,
     getActionError: GetActionErrorUseCase,
     getConstraintError: GetConstraintErrorUseCase
 ) : DisplaySimpleMappingUseCase, GetActionErrorUseCase by getActionError,
     GetConstraintErrorUseCase by getConstraintError {
 
-    private val keyMapperImeHelper = KeyMapperImeHelper(inputMethodAdapter)
+    override val showDeviceDescriptors: Flow<Boolean> =
+        preferenceRepository.get(Keys.showDeviceDescriptors).map { it ?: false }
 
-    override val invalidateErrors: Flow<Unit> =
-        merge(
-            inputMethodAdapter.chosenIme.drop(1).map { }, //dont collect the initial value
-            permissionAdapter.onPermissionsUpdate
-        )
+    private val keyMapperImeHelper = KeyMapperImeHelper(inputMethodAdapter)
 
     override fun getAppName(packageName: String): Result<String> =
         packageManager.getAppName(packageName)
@@ -64,9 +64,12 @@ class DisplaySimpleMappingUseCaseImpl(
     }
 }
 
-interface DisplaySimpleMappingUseCase : DisplayActionUseCase, DisplayConstraintUseCase
+interface DisplaySimpleMappingUseCase : DisplayActionUseCase, DisplayConstraintUseCase {
+    override val showDeviceDescriptors: Flow<Boolean>
+}
 
 interface DisplayActionUseCase : GetActionErrorUseCase {
+    val showDeviceDescriptors: Flow<Boolean>
     fun getAppName(packageName: String): Result<String>
     fun getAppIcon(packageName: String): Result<Drawable>
     fun getInputMethodLabel(imeId: String): Result<String>

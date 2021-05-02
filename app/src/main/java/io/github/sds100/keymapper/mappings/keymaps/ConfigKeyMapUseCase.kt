@@ -3,6 +3,8 @@ package io.github.sds100.keymapper.mappings.keymaps
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.KeyEventAction
 import io.github.sds100.keymapper.constraints.ConstraintState
+import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.domain.utils.*
 import io.github.sds100.keymapper.mappings.BaseConfigMappingUseCase
 import io.github.sds100.keymapper.mappings.ClickType
@@ -12,19 +14,23 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
+import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
-import io.github.sds100.keymapper.util.Defaultable
-import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.dataOrNull
-import io.github.sds100.keymapper.util.ifIsData
+import io.github.sds100.keymapper.util.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 /**
  * Created by sds100 on 16/02/2021.
  */
 class ConfigKeyMapUseCaseImpl(
     private val keyMapRepository: KeyMapRepository,
-    private val devicesAdapter: DevicesAdapter
+    private val devicesAdapter: DevicesAdapter,
+    private val preferenceRepository: PreferenceRepository
 ) : BaseConfigMappingUseCase<KeyMapAction, KeyMap>(), ConfigKeyMapUseCase {
+
+    private val showDeviceDescriptors: Flow<Boolean> =
+        preferenceRepository.get(Keys.showDeviceDescriptors).map { it ?: false }
 
     override fun addTriggerKey(
         keyCode: Int,
@@ -251,13 +257,25 @@ class ConfigKeyMapUseCaseImpl(
     }
 
     override fun getAvailableTriggerKeyDevices(): List<TriggerKeyDevice> {
-        val externalDevices = sequence {
+        val externalTriggerKeyDevices = sequence {
             val inputDevices =
                 devicesAdapter.connectedInputDevices.value.dataOrNull() ?: emptyList()
 
-            inputDevices.forEach {
-                if (it.isExternal) {
-                    yield(TriggerKeyDevice.External(it.descriptor, it.name))
+            val showDeviceDescriptors = showDeviceDescriptors.firstBlocking()
+
+            inputDevices.forEach { device ->
+
+                if (device.isExternal) {
+                    val name = if (showDeviceDescriptors) {
+                        InputDeviceUtils.appendDeviceDescriptorToName(
+                            device.descriptor,
+                            device.name
+                        )
+                    } else {
+                        device.name
+                    }
+
+                    yield(TriggerKeyDevice.External(device.descriptor, name))
                 }
             }
         }
@@ -265,7 +283,7 @@ class ConfigKeyMapUseCaseImpl(
         return sequence {
             yield(TriggerKeyDevice.Internal)
             yield(TriggerKeyDevice.Any)
-            yieldAll(externalDevices)
+            yieldAll(externalTriggerKeyDevices)
         }.toList()
     }
 

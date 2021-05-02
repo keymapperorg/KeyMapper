@@ -31,13 +31,7 @@ interface KeyMapDao {
     suspend fun getByUid(uid: String): KeyMapEntity?
 
     @Query("SELECT * FROM $TABLE_NAME")
-    fun observeAll(): LiveData<List<KeyMapEntity>>
-
-    @Query("SELECT * FROM $TABLE_NAME")
-    fun getAll(): List<KeyMapEntity>
-
-    @Query("SELECT * FROM $TABLE_NAME")
-    fun getAllFlow(): Flow<List<KeyMapEntity>>
+    fun getAll(): Flow<List<KeyMapEntity>>
 
     @Query("UPDATE $TABLE_NAME SET $KEY_ENABLED=0")
     suspend fun disableAll()

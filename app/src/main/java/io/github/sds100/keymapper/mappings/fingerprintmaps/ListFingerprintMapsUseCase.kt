@@ -5,10 +5,12 @@ import io.github.sds100.keymapper.backup.BackupManager
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCase
+import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 
 /**
  * Created by sds100 on 16/04/2021.
@@ -21,16 +23,17 @@ class ListFingerprintMapsUseCaseImpl(
     displaySimpleMappingUseCase: DisplaySimpleMappingUseCase
 ) : ListFingerprintMapsUseCase, DisplaySimpleMappingUseCase by displaySimpleMappingUseCase {
 
-    override val fingerprintMaps: Flow<FingerprintMapGroup> =
-        fingerprintMapRepository.fingerprintMaps
-            .map { entityGroup ->
-                FingerprintMapGroup(
-                    swipeDown = FingerprintMapEntityMapper.fromEntity(entityGroup.swipeDown),
-                    swipeUp = FingerprintMapEntityMapper.fromEntity(entityGroup.swipeUp),
-                    swipeLeft = FingerprintMapEntityMapper.fromEntity(entityGroup.swipeLeft),
-                    swipeRight = FingerprintMapEntityMapper.fromEntity(entityGroup.swipeRight),
-                )
-            }.flowOn(Dispatchers.Default)
+    override val fingerprintMaps: Flow<List<FingerprintMap>> =
+        fingerprintMapRepository.fingerprintMapList
+            .mapNotNull { state ->
+                if (state is State.Data) {
+                    state.data
+                } else {
+                    null
+                }
+            }
+            .map { entityList -> entityList.map { FingerprintMapEntityMapper.fromEntity(it) } }
+            .flowOn(Dispatchers.Default)
 
     override val showFingerprintMaps: Flow<Boolean> =
         preferenceRepository.get(Keys.fingerprintGesturesAvailable).map {
@@ -59,7 +62,7 @@ class ListFingerprintMapsUseCaseImpl(
 }
 
 interface ListFingerprintMapsUseCase : DisplaySimpleMappingUseCase {
-    val fingerprintMaps: Flow<FingerprintMapGroup>
+    val fingerprintMaps: Flow<List<FingerprintMap>>
     val showFingerprintMaps: Flow<Boolean>
 
     fun enableFingerprintMap(id: FingerprintMapId)

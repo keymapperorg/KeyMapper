@@ -1,0 +1,191 @@
+{
+  "device_info": [
+    {
+      "descriptor": "a183206cfdbb578b89aee0b514cb98f50fc64d52",
+      "name": "Logitech USB Keyboard"
+    }
+  ],
+  "fingerprint_swipe_down": {
+    "action_list": [
+      {
+        "data": "com.google.android.contacts",
+        "extras": [],
+        "flags": 0,
+        "type": "APP",
+        "uid": "a1088e2d-7de2-4095-8792-cddf20c79bab"
+      },
+      {
+        "data": "69",
+        "extras": [
+          {
+            "data": "4098",
+            "id": "extra_meta_state"
+          },
+          {
+            "data": "a718a782d34bc767f4689c232d64d527998ea7fd",
+            "id": "extra_device_descriptor"
+          }
+        ],
+        "flags": 0,
+        "type": "KEY_EVENT",
+        "uid": "ea8ccac4-ec86-4227-a5e7-744c9ddc30cc"
+      },
+      {
+        "data": "5",
+        "extras": [
+          {
+            "data": "0",
+            "id": "extra_meta_state"
+          },
+          {
+            "data": "a183206cfdbb578b89aee0b514cb98f50fc64d52",
+            "id": "extra_device_descriptor"
+          }
+        ],
+        "flags": 0,
+        "type": "KEY_EVENT",
+        "uid": "5a9eb0c7-1452-43ca-9752-1b382ebe8d8c"
+      }
+    ],
+    "constraints": [
+      {
+        "extras": [],
+        "type": "constraint_orientation_portrait"
+      }
+    ],
+    "constraint_mode": 1,
+    "extras": [
+      {
+        "data": "735",
+        "id": "extra_vibration_duration"
+      }
+    ],
+    "flags": 1,
+    "enabled": true
+  },
+  "fingerprint_swipe_left": {
+    "action_list": [],
+    "constraints": [],
+    "constraint_mode": 1,
+    "extras": [],
+    "flags": 1,
+    "enabled": true
+  },
+  "fingerprint_swipe_right": {
+    "db_version": 2,
+    "action_list": [],
+    "constraints": [
+      {
+        "extras": [],
+        "type": "constraint_orientation_0"
+      }
+    ],
+    "constraint_mode": 1,
+    "extras": [],
+    "flags": 0,
+    "enabled": true
+  },
+  "fingerprint_swipe_up": {
+    "action_list": [
+      {
+        "data": "com.google.android.apps.messaging",
+        "extras": [],
+        "flags": 0,
+        "type": "APP",
+        "uid": "d1585af0-d2fa-49c3-92f0-b640e10e5712"
+      }
+    ],
+    "constraints": [],
+    "constraint_mode": 1,
+    "extras": [],
+    "flags": 1,
+    "enabled": false
+  },
+  "keymap_list": [
+    {
+      "actionList": [
+        {
+          "data": "2",
+          "extras": [
+            {
+              "data": "24576",
+              "id": "extra_meta_state"
+            },
+            {
+              "data": "a183206cfdbb578b89aee0b514cb98f50fc64d52",
+              "id": "extra_device_descriptor"
+            }
+          ],
+          "flags": 4,
+          "type": "KEY_EVENT",
+          "uid": "080c272f-71aa-4446-8383-0b9b92c30b89"
+        }
+      ],
+      "constraintList": [],
+      "constraintMode": 1,
+      "flags": 0,
+      "id": 1,
+      "isEnabled": true,
+      "trigger": {
+        "extras": [],
+        "flags": 0,
+        "keys": [
+          {
+            "clickType": 0,
+            "deviceId": "a183206cfdbb578b89aee0b514cb98f50fc64d52",
+            "flags": 0,
+            "keyCode": 29,
+            "uid": "cedcd27f-dfc7-4308-b45a-d83dce5766d2"
+          }
+        ],
+        "mode": 2
+      },
+      "uid": "5767146b-43a2-49b9-88fa-32b191046cfc"
+    },
+    {
+      "actionList": [
+        {
+          "data": "2",
+          "extras": [
+            {
+              "data": "24576",
+              "id": "extra_meta_state"
+            },
+            {
+              "data": "a718a782d34bc767f4689c232d64d527998ea7fd",
+              "id": "extra_device_descriptor"
+            }
+          ],
+          "flags": 4,
+          "type": "KEY_EVENT",
+          "uid": "5941fdd9-92b5-43f4-8672-5291062c725e"
+        }
+      ],
+      "constraintList": [
+        {
+          "extras": [],
+          "type": "constraint_orientation_portrait"
+        }
+      ],
+      "constraintMode": 1,
+      "flags": 0,
+      "id": 2,
+      "isEnabled": true,
+      "trigger": {
+        "extras": [],
+        "flags": 8,
+        "keys": [
+          {
+            "clickType": 0,
+            "deviceId": "io.github.sds100.keymapper.THIS_DEVICE",
+            "flags": 0,
+            "keyCode": 25,
+            "uid": "c9cdb390-e7b1-4522-85fb-ec339f179318"
+          }
+        ],
+        "mode": 2
+      },
+      "uid": "272bbe1a-4e41-488f-93a3-b8f35726be2d"
+    }
+  ]
+}

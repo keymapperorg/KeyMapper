@@ -6,11 +6,12 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.keymaps.trigger.*
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
+import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.ui.*
-import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.mapData
 import io.github.sds100.keymapper.util.ui.*
@@ -76,19 +77,26 @@ class ConfigKeyMapTriggerViewModel(
         }
     }.stateIn(coroutineScope, SharingStarted.Eagerly, R.id.radioButtonUndefined)
 
-    val triggerKeyListItems: StateFlow<ListUiState<TriggerKeyListItem>> = config.mapping.map{state ->
-        when(state){
-            is State.Data ->createListItems(state.data.trigger).createListState()
-            is State.Loading -> ListUiState.Loading
-        }
-    }.stateIn(coroutineScope, SharingStarted.Eagerly, ListUiState.Loading)
+    val triggerKeyListItems: StateFlow<ListUiState<TriggerKeyListItem>> =
+        combine(
+            config.mapping,
+            displayKeyMap.showDeviceDescriptors
+        ) { mappingState, showDeviceDescriptors ->
+            when (mappingState) {
+                is State.Data -> {
+                    val trigger = mappingState.data.trigger
+                    createListItems(trigger, showDeviceDescriptors).createListState()
+                }
+                is State.Loading -> ListUiState.Loading
+            }
+        }.stateIn(coroutineScope, SharingStarted.Eagerly, ListUiState.Loading)
 
     val clickTypeRadioButtonsVisible: StateFlow<Boolean> = config.mapping.map { state ->
         when (state) {
             is State.Data -> {
                 val trigger = state.data.trigger
 
-               trigger.mode is TriggerMode.Parallel || trigger.keys.size == 1
+                trigger.mode is TriggerMode.Parallel || trigger.keys.size == 1
             }
             State.Loading -> false
         }
@@ -107,7 +115,7 @@ class ConfigKeyMapTriggerViewModel(
                 val trigger = state.data.trigger
 
                 val clickType: ClickType? = when {
-                   trigger.mode is TriggerMode.Parallel -> trigger.mode.clickType
+                    trigger.mode is TriggerMode.Parallel -> trigger.mode.clickType
                     trigger.keys.size == 1 -> trigger.keys[0].clickType
                     else -> null
                 }
@@ -131,7 +139,7 @@ class ConfigKeyMapTriggerViewModel(
 
         coroutineScope.launch {
             rebuildErrorList.collectLatest { triggerState ->
-                if (triggerState !is State.Data){
+                if (triggerState !is State.Data) {
                     _errorListItems.value = emptyList()
                     return@collectLatest
                 }
@@ -159,7 +167,7 @@ class ConfigKeyMapTriggerViewModel(
         }
 
         coroutineScope.launch {
-            displayKeyMap.invalidateErrors.collectLatest {
+            displayKeyMap.invalidateActionErrors.collectLatest {
                 rebuildErrorList.emit(rebuildErrorList.first())
             }
         }
@@ -209,14 +217,14 @@ class ConfigKeyMapTriggerViewModel(
         }
     }
 
-    fun onParallelRadioButtonCheckedChange(isChecked: Boolean){
-        if (isChecked){
+    fun onParallelRadioButtonCheckedChange(isChecked: Boolean) {
+        if (isChecked) {
             config.setParallelTriggerMode()
         }
     }
 
-    fun onSequenceRadioButtonCheckedChange(isChecked: Boolean){
-        if (isChecked){
+    fun onSequenceRadioButtonCheckedChange(isChecked: Boolean) {
+        if (isChecked) {
             config.setSequenceTriggerMode()
         }
     }
@@ -241,12 +249,23 @@ class ConfigKeyMapTriggerViewModel(
             val idAny = "any"
             val idInternal = "this_device"
             val devices = config.getAvailableTriggerKeyDevices()
+            val showDeviceDescriptors = displayKeyMap.showDeviceDescriptors.first()
 
-            val listItems = devices.map {
-                when (it) {
+            val listItems = devices.map { device: TriggerKeyDevice ->
+                when (device) {
                     TriggerKeyDevice.Any -> idAny to getString(R.string.any_device)
-                    is TriggerKeyDevice.External -> it.descriptor to it.name
                     TriggerKeyDevice.Internal -> idInternal to getString(R.string.this_device)
+                    is TriggerKeyDevice.External -> {
+                        if (showDeviceDescriptors) {
+                            val name = InputDeviceUtils.appendDeviceDescriptorToName(
+                                device.descriptor,
+                                device.name
+                            )
+                            device.descriptor to name
+                        } else {
+                            device.descriptor to device.name
+                        }
+                    }
                 }
             }
 
@@ -325,10 +344,13 @@ class ConfigKeyMapTriggerViewModel(
         }
     }
 
-    private fun createListItems(trigger: KeyMapTrigger): List<TriggerKeyListItem> =
+    private fun createListItems(
+        trigger: KeyMapTrigger,
+        showDeviceDescriptors: Boolean
+    ): List<TriggerKeyListItem> =
         trigger.keys.mapIndexed { index, key ->
             val extraInfo = buildString {
-                append(getDeviceName(key.device))
+                append(getTriggerKeyDeviceName(key.device, showDeviceDescriptors))
 
                 if (!key.consumeKeyEvent) {
                     val midDot = getString(R.string.middot)
@@ -359,10 +381,22 @@ class ConfigKeyMapTriggerViewModel(
             )
         }
 
-    private fun getDeviceName(device: TriggerKeyDevice): String =
+    private fun getTriggerKeyDeviceName(
+        device: TriggerKeyDevice,
+        showDeviceDescriptors: Boolean
+    ): String =
         when (device) {
             is TriggerKeyDevice.Internal -> getString(R.string.this_device)
             is TriggerKeyDevice.Any -> getString(R.string.any_device)
-            is TriggerKeyDevice.External -> device.name
+            is TriggerKeyDevice.External -> {
+                if (showDeviceDescriptors) {
+                    InputDeviceUtils.appendDeviceDescriptorToName(
+                        device.descriptor,
+                        device.name
+                    )
+                } else {
+                    device.name
+                }
+            }
         }
 }

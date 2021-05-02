@@ -3,12 +3,12 @@ package io.github.sds100.keymapper.actions
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.Extra
 import io.github.sds100.keymapper.data.entities.getData
-import io.github.sds100.keymapper.system.volume.DndMode
-import io.github.sds100.keymapper.system.volume.RingerMode
-import io.github.sds100.keymapper.system.volume.VolumeStream
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.intents.IntentTarget
+import io.github.sds100.keymapper.system.volume.DndMode
+import io.github.sds100.keymapper.system.volume.RingerMode
+import io.github.sds100.keymapper.system.volume.VolumeStream
 import io.github.sds100.keymapper.util.getKey
 import io.github.sds100.keymapper.util.success
 import io.github.sds100.keymapper.util.then
@@ -50,14 +50,17 @@ object ActionDataEntityMapper {
                     entity.extras.getData(ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR)
                         .valueOrNull()
 
+                val deviceName =
+                    entity.extras.getData(ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME)
+                        .valueOrNull() ?: ""
+
                 val useShell =
                     entity.extras.getData(ActionEntity.EXTRA_KEY_EVENT_USE_SHELL).then {
                         (it == "true").success()
                     }.valueOrNull() ?: false
 
-                //TODO issue #612 get device name name
                 val device = if (deviceDescriptor != null) {
-                    KeyEventAction.Device(deviceDescriptor, "stub name")
+                    KeyEventAction.Device(deviceDescriptor, deviceName)
                 } else {
                     null
                 }
@@ -182,7 +185,7 @@ object ActionDataEntityMapper {
                         }
                     }
 
-                    SystemActionId.DISABLE_DND_MODE ->{
+                    SystemActionId.DISABLE_DND_MODE -> {
                         return SimpleSystemAction(SystemActionId.DISABLE_DND_MODE)
                     }
 
@@ -327,8 +330,11 @@ object ActionDataEntityMapper {
                 yield(
                     Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR, data.device.descriptor)
                 )
+
+                yield(
+                    Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME, data.device.name)
+                )
             }
-            //TODO save device name
         }.toList()
 
         is OpenAppAction -> emptyList()

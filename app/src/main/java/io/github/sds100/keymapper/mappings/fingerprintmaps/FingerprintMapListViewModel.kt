@@ -2,12 +2,8 @@ package io.github.sds100.keymapper.mappings.fingerprintmaps
 
 import androidx.lifecycle.*
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.ui.*
-import io.github.sds100.keymapper.util.ui.PopupUi
 import io.github.sds100.keymapper.util.*
-import io.github.sds100.keymapper.util.getFullMessage
-import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -33,32 +29,17 @@ class FingerprintMapListViewModel(
     val requestFingerprintMapsBackup = _requestFingerprintMapsBackup.asSharedFlow()
 
     init {
-        val rebuildUiState = MutableSharedFlow<FingerprintMapGroup>()
+        val rebuildUiState = MutableSharedFlow<List<FingerprintMap>>()
 
-        coroutineScope.launch {
-            rebuildUiState.collectLatest { fingerprintMaps ->
-                _state.value = withContext(Dispatchers.Default) {
-                    mutableListOf(
-                        listItemCreator.create(
-                            FingerprintMapId.SWIPE_DOWN,
-                            fingerprintMaps.swipeDown
-                        ),
-                        listItemCreator.create(
-                            FingerprintMapId.SWIPE_UP,
-                            fingerprintMaps.swipeUp
-                        ),
-                        listItemCreator.create(
-                            FingerprintMapId.SWIPE_LEFT,
-                            fingerprintMaps.swipeLeft
-                        ),
-                        listItemCreator.create(
-                            FingerprintMapId.SWIPE_RIGHT,
-                            fingerprintMaps.swipeRight
-                        )
-                    ).createListState()
-                }
+        combine(
+            rebuildUiState,
+            useCase.showDeviceDescriptors
+        ) { fingerprintMaps, showDeviceDescriptors ->
+            _state.value = withContext(Dispatchers.Default) {
+                fingerprintMaps.map { listItemCreator.create(it, showDeviceDescriptors) }
+                    .createListState()
             }
-        }
+        }.launchIn(coroutineScope)
 
         coroutineScope.launch {
             useCase.fingerprintMaps.collectLatest {
@@ -67,7 +48,7 @@ class FingerprintMapListViewModel(
         }
 
         coroutineScope.launch {
-            useCase.invalidateErrors.collectLatest {
+            useCase.invalidateActionErrors.collectLatest {
                 rebuildUiState.emit(useCase.fingerprintMaps.firstOrNull() ?: return@collectLatest)
             }
         }
@@ -107,9 +88,9 @@ class FingerprintMapListViewModel(
 
     private fun showSnackBarAndFixError(error: Error) {
         coroutineScope.launch {
-            val actionText = if (error.isFixable){
+            val actionText = if (error.isFixable) {
                 getString(R.string.snackbar_fix)
-            }else{
+            } else {
                 null
             }
 

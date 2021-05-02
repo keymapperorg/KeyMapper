@@ -43,7 +43,7 @@ class ConfigConstraintsViewModel(
         }
 
         coroutineScope.launch {
-            display.invalidateErrors.collectLatest {
+            display.invalidateConstraintErrors.collectLatest {
                 rebuildUiState.emit(config.mapping.firstOrNull() ?: return@collectLatest)
             }
         }

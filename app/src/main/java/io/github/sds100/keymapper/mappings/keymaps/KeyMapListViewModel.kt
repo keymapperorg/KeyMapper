@@ -2,13 +2,10 @@ package io.github.sds100.keymapper.mappings.keymaps
 
 import androidx.lifecycle.ViewModel
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.ui.*
-import io.github.sds100.keymapper.util.ui.PopupUi
-import io.github.sds100.keymapper.util.ui.MultiSelectProvider
-import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.isFixable
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.CoroutineScope
@@ -22,7 +19,7 @@ open class KeyMapListViewModel constructor(
     private val useCase: ListKeyMapsUseCase,
     resourceProvider: ResourceProvider,
     private val multiSelectProvider: MultiSelectProvider
-) : ViewModel(), PopupViewModel by PopupViewModelImpl(), ResourceProvider by resourceProvider{
+) : ViewModel(), PopupViewModel by PopupViewModelImpl(), ResourceProvider by resourceProvider {
 
     private val listItemCreator = KeyMapListItemCreator(useCase, resourceProvider)
 
@@ -38,24 +35,24 @@ open class KeyMapListViewModel constructor(
 
         val rebuildUiState = MutableSharedFlow<State<List<KeyMap>>>(replay = 1)
 
-        coroutineScope.launch {
-            rebuildUiState.collectLatest { keyMapListState ->
+        combine(
+            rebuildUiState,
+            useCase.showDeviceDescriptors
+        ) { keyMapListState, showDeviceDescriptors ->
+            keyMapStateListFlow.value = ListUiState.Loading
 
-                keyMapStateListFlow.value = ListUiState.Loading
-
-                keyMapStateListFlow.value = withContext(Dispatchers.Default) {
-                    when (keyMapListState) {
-                        is State.Data -> {
-                            keyMapListState.data
-                                .map { listItemCreator.map(it) }
-                                .createListState()
-                        }
-
-                        State.Loading -> ListUiState.Loading
+            keyMapStateListFlow.value = withContext(Dispatchers.Default) {
+                when (keyMapListState) {
+                    is State.Data -> {
+                        keyMapListState.data
+                            .map { listItemCreator.create(it, showDeviceDescriptors) }
+                            .createListState()
                     }
+
+                    State.Loading -> ListUiState.Loading
                 }
             }
-        }
+        }.launchIn(coroutineScope)
 
         coroutineScope.launch {
             useCase.keyMapList.collectLatest {
@@ -64,7 +61,7 @@ open class KeyMapListViewModel constructor(
         }
 
         coroutineScope.launch {
-            useCase.invalidateErrors.drop(1).collectLatest {
+            useCase.invalidateActionErrors.drop(1).collectLatest {
                 /*
                 Don't get the key maps from the repository because there can be a race condition
                 when restoring key maps. This happens because when the activity is resumed the
@@ -162,9 +159,9 @@ open class KeyMapListViewModel constructor(
 
     private fun showSnackBarAndFixError(error: Error) {
         coroutineScope.launch {
-            val actionText = if (error.isFixable){
+            val actionText = if (error.isFixable) {
                 getString(R.string.snackbar_fix)
-            }else{
+            } else {
                 null
             }
 

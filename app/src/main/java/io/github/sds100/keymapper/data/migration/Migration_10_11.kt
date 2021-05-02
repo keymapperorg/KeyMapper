@@ -1,12 +1,13 @@
 @file:Suppress("ClassName")
 
-package io.github.sds100.keymapper.data.migration.keymaps
+package io.github.sds100.keymapper.data.migration
 
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.SupportSQLiteQueryBuilder
 import com.github.salomonbrys.kotson.*
 import com.google.gson.Gson
 import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 
 /**
@@ -44,15 +45,12 @@ object Migration_10_11 {
         }
     }
 
-    fun migrateJson(gson: Gson, json: String): String {
-        val parser = JsonParser()
-        val root = parser.parse(json)
+    fun migrateJson(keyMap: JsonObject): JsonObject {
+        val oldActionList by keyMap.byArray(NAME_ACTION_LIST)
 
-        val oldActionList by root.byArray(NAME_ACTION_LIST)
+        keyMap[NAME_ACTION_LIST] = migrate(oldActionList).actionList
 
-        root[NAME_ACTION_LIST] = migrate(oldActionList).actionList
-
-        return gson.toJson(root)
+        return keyMap
     }
 
     private fun migrate(actionList: JsonArray): MigrateModel {

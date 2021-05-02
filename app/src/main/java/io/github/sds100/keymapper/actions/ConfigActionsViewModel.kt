@@ -37,17 +37,19 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
     init {
         val rebuildUiState = MutableSharedFlow<State<M>>()
 
-        coroutineScope.launch {
-            rebuildUiState.collectLatest { mapping ->
-                when (mapping) {
-                    is State.Data -> withContext(Dispatchers.Default) {
-                        _state.value = createListItems(mapping.data).createListState()
-                    }
-
-                    is State.Loading -> _state.value = ListUiState.Loading
+        combine(
+            rebuildUiState,
+            displayActionUseCase.showDeviceDescriptors
+        ) { mapping, showDeviceDescriptors ->
+            when (mapping) {
+                is State.Data -> withContext(Dispatchers.Default) {
+                    _state.value =
+                        createListItems(mapping.data, showDeviceDescriptors).createListState()
                 }
+
+                is State.Loading -> _state.value = ListUiState.Loading
             }
-        }
+        }.launchIn(coroutineScope)
 
         coroutineScope.launch {
             config.mapping.collectLatest {
@@ -56,7 +58,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
         }
 
         coroutineScope.launch {
-            displayActionUseCase.invalidateErrors.collectLatest {
+            displayActionUseCase.invalidateActionErrors.collectLatest {
                 rebuildUiState.emit(config.mapping.firstOrNull() ?: return@collectLatest)
             }
         }
@@ -124,16 +126,16 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
         runBlocking { _openEditOptions.emit(actionUid) }
     }
 
-    private fun createListItems(mapping: M): List<ActionListItem> {
+    private fun createListItems(mapping: M, showDeviceDescriptors: Boolean): List<ActionListItem> {
         val actionCount = mapping.actionList.size
 
         return mapping.actionList.map { action ->
 
             val title: String = if (action.multiplier != null && action.multiplier!! > 1) {
                 val multiplier = action.multiplier
-                "${multiplier}x ${uiHelper.getTitle(action.data)}"
+                "${multiplier}x ${uiHelper.getTitle(action.data, showDeviceDescriptors)}"
             } else {
-                uiHelper.getTitle(action.data)
+                uiHelper.getTitle(action.data, showDeviceDescriptors)
             }
 
             val icon: IconInfo? = uiHelper.getIcon(action.data)

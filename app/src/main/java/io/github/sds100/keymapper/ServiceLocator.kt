@@ -14,7 +14,6 @@ import io.github.sds100.keymapper.system.apps.AppShortcutAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.bluetooth.BluetoothAdapter
 import io.github.sds100.keymapper.system.camera.CameraAdapter
-import io.github.sds100.keymapper.system.devices.DeviceInfoCache
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.files.FileAdapter
@@ -41,15 +40,13 @@ import io.github.sds100.keymapper.util.ui.ResourceProvider
  */
 object ServiceLocator {
 
-    private val lock = Any()
     private var database: AppDatabase? = null
 
-    @Volatile
-    private var deviceInfoRepository: DeviceInfoCache? = null
-
-    fun deviceInfoRepository(context: Context): DeviceInfoCache {
+    private fun database(context: Context): AppDatabase {
         synchronized(this) {
-            return deviceInfoRepository ?: createDeviceInfoRepository(context)
+            return database ?: createDatabase(context.applicationContext).also {
+                this.database = it
+            }
         }
     }
 
@@ -58,10 +55,10 @@ object ServiceLocator {
 
     fun roomKeymapRepository(context: Context): RoomKeyMapRepository {
         synchronized(this) {
-            val dataBase = database ?: createDatabase(context.applicationContext)
 
             return roomKeymapRepository ?: RoomKeyMapRepository(
-                dataBase.keymapDao(),
+                database(context).keymapDao(),
+                devicesAdapter(context),
                 (context.applicationContext as KeyMapperApp).appCoroutineScope
             ).also {
                 this.roomKeymapRepository = it
@@ -69,32 +66,20 @@ object ServiceLocator {
         }
     }
 
-    private fun createDeviceInfoRepository(context: Context): DeviceInfoCache {
-        val database = database ?: createDatabase(context.applicationContext)
-        deviceInfoRepository = RoomDeviceInfoCache(
-            database.deviceInfoDao(),
-            (context.applicationContext as KeyMapperApp).appCoroutineScope
-        )
-        return deviceInfoRepository!!
-    }
-
     @Volatile
     private var fingerprintMapRepository: FingerprintMapRepository? = null
 
+    private val Context.legacyFingerprintMapDataStore by preferencesDataStore("fingerprint_gestures")
     fun fingerprintMapRepository(context: Context): FingerprintMapRepository {
         synchronized(this) {
-            return fingerprintMapRepository ?: createFingerprintMapRepository(context)
-        }
-    }
-
-    private val Context.fingerprintMapDataStore by preferencesDataStore("fingerprint_gestures")
-    private fun createFingerprintMapRepository(context: Context): FingerprintMapRepository {
-        val scope = (context.applicationContext as KeyMapperApp).appCoroutineScope
-
-        return fingerprintMapRepository
-            ?: DataStoreFingerprintMapRepository(context.fingerprintMapDataStore, scope).also {
+            return fingerprintMapRepository ?: RoomFingerprintMapRepository(
+                database(context).fingerprintMapDao(),
+                (context.applicationContext as KeyMapperApp).appCoroutineScope,
+                devicesAdapter(context)
+            ).also {
                 this.fingerprintMapRepository = it
             }
+        }
     }
 
     @Volatile
@@ -131,7 +116,6 @@ object ServiceLocator {
             (context.applicationContext as KeyMapperApp).appCoroutineScope,
             fileAdapter(context),
             roomKeymapRepository(context),
-            deviceInfoRepository(context),
             preferenceRepository(context),
             fingerprintMapRepository(context)
         ).also {
@@ -244,7 +228,7 @@ object ServiceLocator {
     }
 
     private fun createDatabase(context: Context): AppDatabase {
-        val result = Room.databaseBuilder(
+        return Room.databaseBuilder(
             context.applicationContext,
             AppDatabase::class.java,
             AppDatabase.DATABASE_NAME
@@ -258,11 +242,8 @@ object ServiceLocator {
             AppDatabase.MIGRATION_7_8,
             AppDatabase.MIGRATION_8_9,
             AppDatabase.MIGRATION_9_10,
-            AppDatabase.MIGRATION_10_11
+            AppDatabase.MIGRATION_10_11,
+            AppDatabase.RoomMigration_11_12(context.applicationContext.legacyFingerprintMapDataStore)
         ).build()
-        /* REMINDER!!!! Need to migrate fingerprint maps and other stuff???
-         * Keep this note at the bottom */
-        database = result
-        return result
     }
 }

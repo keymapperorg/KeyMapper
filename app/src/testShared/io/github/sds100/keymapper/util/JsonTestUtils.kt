@@ -3,10 +3,7 @@ package io.github.sds100.keymapper.util
 import com.github.salomonbrys.kotson.contains
 import com.github.salomonbrys.kotson.forEach
 import com.github.salomonbrys.kotson.get
-import com.google.gson.JsonArray
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
-import com.google.gson.JsonPrimitive
+import com.google.gson.*
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
 import org.junit.Assert
@@ -68,7 +65,7 @@ object JsonTestUtils {
                 var parentElement: JsonElement = rootToCompare
 
                 if (names == listOf("")) {
-                    assertThat("$elementName/:$element doesn't match $rootName/:$parentElement", (parentElement as JsonPrimitive), `is`(element))
+                    assertThat("$elementName/:$element doesn't match $rootName/:$parentElement", (parentElement), `is`(element))
                 } else {
                     names.forEachIndexed { index, name ->
                         if (parentElement is JsonObject) {

@@ -1,21 +1,20 @@
 package io.github.sds100.keymapper.mappings.fingerprintmaps
 
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapEntity
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapEntityGroup
+import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.flow.Flow
 
 /**
  * Created by sds100 on 24/01/21.
  */
 interface FingerprintMapRepository {
-    val fingerprintMaps: Flow<FingerprintMapEntityGroup>
-    val requestBackup: Flow<FingerprintMapEntityGroup>
+    val fingerprintMapList: Flow<State<List<FingerprintMapEntity>>>
+    val requestBackup: Flow<List<FingerprintMapEntity>>
 
-    fun enableFingerprintMap(id: String)
-    fun disableFingerprintMap(id: String)
-    fun update(id: String, fingerprintMap: FingerprintMapEntity)
-
-    suspend fun restore(id: String, fingerprintMapJson: String)
+    suspend fun get(id: Int): FingerprintMapEntity
+    fun enableFingerprintMap(id: Int)
+    fun disableFingerprintMap(id: Int)
+    fun update(vararg fingerprintMap: FingerprintMapEntity)
 
     fun reset()
 }

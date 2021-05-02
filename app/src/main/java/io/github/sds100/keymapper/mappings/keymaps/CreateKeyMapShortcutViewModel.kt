@@ -31,25 +31,24 @@ class CreateKeyMapShortcutViewModel(
     init {
         val rebuildUiState = MutableSharedFlow<State<List<KeyMap>>>(replay = 1)
 
-        viewModelScope.launch {
-            rebuildUiState.collectLatest { state ->
-
-                if (state !is State.Data) {
-                    _state.value = ListUiState.Loading
-                    return@collectLatest
-                }
-
-                val selectionUiState =
-                    KeyMapListItem.SelectionUiState(isSelected = false, isSelectable = false)
-
-                _state.value = state.data.map {
-                    val keyMapListUiState = listItemCreator.map(it)
-
-                    KeyMapListItem(keyMapListUiState, selectionUiState)
-                }.createListState()
-
+        combine(
+            rebuildUiState,
+            listUseCase.showDeviceDescriptors
+        ) { mapping, showDeviceDescriptors ->
+            if (mapping !is State.Data) {
+                _state.value = ListUiState.Loading
+                return@combine
             }
-        }
+
+            val selectionUiState =
+                KeyMapListItem.SelectionUiState(isSelected = false, isSelectable = false)
+
+            _state.value = mapping.data.map {
+                val keyMapListUiState = listItemCreator.create(it, showDeviceDescriptors)
+
+                KeyMapListItem(keyMapListUiState, selectionUiState)
+            }.createListState()
+        }.launchIn(viewModelScope)
 
         viewModelScope.launch {
             listUseCase.keyMapList.collectLatest {
@@ -58,7 +57,7 @@ class CreateKeyMapShortcutViewModel(
         }
 
         viewModelScope.launch {
-            listUseCase.invalidateErrors.drop(1).collectLatest {
+            listUseCase.invalidateActionErrors.drop(1).collectLatest {
                 /*
                 Don't get the key maps from the repository because there can be a race condition
                 when restoring key maps. This happens because when the activity is resumed the

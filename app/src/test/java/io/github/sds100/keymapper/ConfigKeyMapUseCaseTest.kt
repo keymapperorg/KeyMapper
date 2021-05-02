@@ -38,7 +38,8 @@ class ConfigKeyMapUseCaseTest {
     fun init() {
         useCase = ConfigKeyMapUseCaseImpl(
             devicesAdapter = mock(),
-            keyMapRepository = mock()
+            keyMapRepository = mock(),
+            preferenceRepository = mock()
         )
     }
 

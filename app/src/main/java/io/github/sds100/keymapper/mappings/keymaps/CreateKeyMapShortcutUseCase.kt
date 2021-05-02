@@ -54,7 +54,7 @@ class CreateKeyMapShortcutUseCaseImpl(
 
         return adapter.createLauncherShortcut(
             icon = icon,
-            label = actionUiHelper.getTitle(action.data),
+            label = actionUiHelper.getTitle(action.data, showDeviceDescriptors = false),
             intentAction = MyAccessibilityService.ACTION_TRIGGER_KEYMAP_BY_UID,
             bundleOf(MyAccessibilityService.EXTRA_KEYMAP_UID to keyMapUid)
         )

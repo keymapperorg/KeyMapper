@@ -82,6 +82,9 @@ data class TriggerEntity(
         @SerializedName(NAME_DEVICE_ID)
         val deviceId: String = DEVICE_ID_THIS_DEVICE,
 
+        @SerializedName(NAME_DEVICE_NAME)
+        val deviceName: String? = null,
+
         @ClickType
         @SerializedName(NAME_CLICK_TYPE)
         val clickType: Int = SHORT_PRESS,
@@ -97,6 +100,7 @@ data class TriggerEntity(
             //DON'T CHANGE THESE. Used for JSON serialization and parsing.
             const val NAME_KEYCODE = "keyCode"
             const val NAME_DEVICE_ID = "deviceId"
+            const val NAME_DEVICE_NAME = "deviceName"
             const val NAME_CLICK_TYPE = "clickType"
             const val NAME_FLAGS = "flags"
             const val NAME_UID = "uid"
@@ -110,13 +114,14 @@ data class TriggerEntity(
             val DESERIALIZER = jsonDeserializer {
                 val keycode by it.json.byInt(NAME_KEYCODE)
                 val deviceId by it.json.byString(NAME_DEVICE_ID)
+                val deviceName by it.json.byNullableString(NAME_DEVICE_NAME)
                 val clickType by it.json.byInt(NAME_CLICK_TYPE)
 
                 //nullable because this property was added after backup and restore was released.
                 val flags by it.json.byNullableInt(NAME_FLAGS)
                 val uid by it.json.byNullableString(NAME_UID)
 
-                KeyEntity(keycode, deviceId, clickType, flags ?: 0, uid ?: UUID.randomUUID().toString())
+                KeyEntity(keycode, deviceId, deviceName, clickType,flags ?: 0, uid ?: UUID.randomUUID().toString())
             }
         }
     }

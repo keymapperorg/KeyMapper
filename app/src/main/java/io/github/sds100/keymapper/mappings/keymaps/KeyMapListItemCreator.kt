@@ -7,10 +7,11 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTriggerError
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
+import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
 import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.util.ui.ChipUi
 import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.ui.ChipUi
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 
 /**
@@ -25,7 +26,7 @@ class KeyMapListItemCreator(
     resourceProvider
 ) {
 
-    fun map(keyMap: KeyMap): KeyMapListItem.KeyMapUiState {
+    fun create(keyMap: KeyMap, showDeviceDescriptors: Boolean): KeyMapListItem.KeyMapUiState {
         val midDot = getString(R.string.middot)
 
         val triggerDescription = buildString {
@@ -53,7 +54,16 @@ class KeyMapListItemCreator(
                 val deviceName = when (key.device) {
                     is TriggerKeyDevice.Internal -> getString(R.string.this_device)
                     is TriggerKeyDevice.Any -> getString(R.string.any_device)
-                    is TriggerKeyDevice.External -> key.device.name
+                    is TriggerKeyDevice.External -> {
+                        if (showDeviceDescriptors) {
+                            InputDeviceUtils.appendDeviceDescriptorToName(
+                                key.device.descriptor,
+                                key.device.name
+                            )
+                        } else {
+                            key.device.name
+                        }
+                    }
                 }
 
                 append(" (")
@@ -78,7 +88,7 @@ class KeyMapListItemCreator(
             }
         }
 
-        val actionChipList = getActionChipList(keyMap)
+        val actionChipList = getActionChipList(keyMap, showDeviceDescriptors)
         val constraintChipList = getConstraintChipList(keyMap)
 
         val extraInfo = buildString {

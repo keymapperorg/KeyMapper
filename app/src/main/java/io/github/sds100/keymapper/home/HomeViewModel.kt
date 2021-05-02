@@ -20,6 +20,7 @@ import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 /**
  * Created by sds100 on 18/01/21.
@@ -275,7 +276,8 @@ class HomeViewModel(
                     neutralButtonText = getString(R.string.neutral_changelog)
                 )
 
-                val response = showPopup("whats-new", dialog) ?: return@combine
+                //don't return if they dismiss the dialog because this is common behaviour.
+                val response = showPopup("whats-new", dialog)
 
                 if (response == DialogResponse.NEUTRAL) {
                     _openUrl.emit(getString(R.string.url_changelog))

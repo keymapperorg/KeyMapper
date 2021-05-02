@@ -61,6 +61,7 @@ data class ActionEntity(
          */
         const val EXTRA_KEY_EVENT_META_STATE = "extra_meta_state"
         const val EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR = "extra_device_descriptor"
+        const val EXTRA_KEY_EVENT_DEVICE_NAME = "extra_device_name"
         const val EXTRA_KEY_EVENT_USE_SHELL = "extra_key_event_use_shell"
 
         const val EXTRA_IME_ID = "extra_ime_id"
@@ -90,12 +91,6 @@ data class ActionEntity(
         const val ACTION_FLAG_SHOW_VOLUME_UI = 1
         const val ACTION_FLAG_REPEAT = 4
         const val ACTION_FLAG_HOLD_DOWN = 8
-
-        val ACTION_FLAG_LABEL_MAP = mapOf(
-            ACTION_FLAG_SHOW_VOLUME_UI to R.string.flag_show_volume_dialog,
-            ACTION_FLAG_REPEAT to R.string.flag_repeat_actions,
-            ACTION_FLAG_HOLD_DOWN to R.string.flag_hold_down
-        )
 
         const val EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR = "extra_custom_stop_repeat_behaviour"
         const val EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR = "extra_custom_hold_down_behaviour"

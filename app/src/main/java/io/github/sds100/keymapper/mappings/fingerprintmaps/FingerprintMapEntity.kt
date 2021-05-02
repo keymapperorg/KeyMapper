@@ -1,7 +1,11 @@
 package io.github.sds100.keymapper.mappings.fingerprintmaps
 
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.github.salomonbrys.kotson.*
 import com.google.gson.annotations.SerializedName
+import io.github.sds100.keymapper.data.db.dao.FingerprintMapDao
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.ConstraintEntity
 import io.github.sds100.keymapper.data.entities.Extra
@@ -10,37 +14,44 @@ import io.github.sds100.keymapper.data.entities.Extra
  * Created by sds100 on 08/11/20.
  */
 
+@Entity(tableName = FingerprintMapDao.TABLE_NAME)
 data class FingerprintMapEntity(
-    @SerializedName(NAME_VERSION)
-    val version: Int = CURRENT_VERSION,
+    @SerializedName(NAME_ID)
+    @PrimaryKey
+    val id: Int = ID_UNKNOWN,
 
     @SerializedName(NAME_ACTION_LIST)
+    @ColumnInfo(name = FingerprintMapDao.KEY_ACTION_LIST)
     val actionList: List<ActionEntity> = listOf(),
 
     @SerializedName(NAME_CONSTRAINTS)
+    @ColumnInfo(name = FingerprintMapDao.KEY_CONSTRAINT_LIST)
     val constraintList: List<ConstraintEntity> = listOf(),
 
     @SerializedName(NAME_CONSTRAINT_MODE)
+    @ColumnInfo(name = FingerprintMapDao.KEY_CONSTRAINT_MODE)
     val constraintMode: Int = ConstraintEntity.DEFAULT_MODE,
 
     @SerializedName(NAME_EXTRAS)
+    @ColumnInfo(name = FingerprintMapDao.KEY_EXTRAS)
     val extras: List<Extra> = listOf(),
 
     @SerializedName(NAME_FLAGS)
+    @ColumnInfo(name = FingerprintMapDao.KEY_FLAGS)
     val flags: Int = 0,
 
     @SerializedName(NAME_ENABLED)
+    @ColumnInfo(name = FingerprintMapDao.KEY_ENABLED)
     val isEnabled: Boolean = true
-)  {
+) {
     companion object {
-        const val ID_SWIPE_DOWN = "swipe_down"
-        const val ID_SWIPE_UP = "swipe_up"
-        const val ID_SWIPE_LEFT = "swipe_left"
-        const val ID_SWIPE_RIGHT = "swipe_right"
+        private const val ID_UNKNOWN = -1
+        const val ID_SWIPE_DOWN = 0
+        const val ID_SWIPE_UP = 1
+        const val ID_SWIPE_LEFT = 2
+        const val ID_SWIPE_RIGHT = 3
 
-        val GESTURES = arrayOf(ID_SWIPE_DOWN, ID_SWIPE_UP, ID_SWIPE_LEFT, ID_SWIPE_RIGHT)
-
-        const val NAME_VERSION = "db_version" // NEVER EVER CHANGE THIS BECAUSE USED TO DETERMINE HOW TO MIGRATE
+        const val NAME_ID = "id"
 
         //DON'T CHANGE THESE. Used for JSON serialization and parsing.
         private const val NAME_ACTION_LIST = "action_list"
@@ -52,7 +63,7 @@ data class FingerprintMapEntity(
 
         val DESERIALIZER = jsonDeserializer {
 
-            val version by it.json.byNullableInt(NAME_VERSION)
+            val id by it.json.byNullableInt(NAME_ID)
 
             val actionListJson by it.json.byArray(NAME_ACTION_LIST)
             val actionList = it.context.deserialize<List<ActionEntity>>(actionListJson)
@@ -70,7 +81,7 @@ data class FingerprintMapEntity(
             val isEnabled by it.json.byBool(NAME_ENABLED)
 
             FingerprintMapEntity(
-                version ?: 0, //versioning was added at version 1.
+                id = id ?: ID_UNKNOWN,
                 actionList,
                 constraints,
                 constraintMode,
@@ -79,8 +90,6 @@ data class FingerprintMapEntity(
                 isEnabled
             )
         }
-
-        const val CURRENT_VERSION = 2
 
         const val FLAG_VIBRATE = 1
         const val FLAG_SHOW_TOAST = 2
