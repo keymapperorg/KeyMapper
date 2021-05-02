@@ -36,7 +36,6 @@
     <string name="tap_coordinate_screenshot_message">მნიშვნელოვანია!!! კოორდინატები მხოლოდ მაშინაა სწორი, როცა თქვენი ეკრანი იმავე ორიენტაციაშია როგორშიც სქრინშოტი! ეს მოქმედება გათიშავს იმ შეხებებს, ან ჟესტებს რასაც ეკრანზე აკეთებთ. \n\nთუ ეკრანზე წერტილის კოორდინატების საპოვნელად დახმარება გჭირდებათ, გადაიღეთ სქრინშოტი და შემდეგ დააჭირეთ სქრინშოტზე იქ, სადაც ამ მოქმედებამ გინდათ რომ დააჭიროს.</string>
     <string name="dont_know_device_name">მოწყობილობის სახელი უცნობია!</string>
     <string name="tap_actions_to_fix">დააჭირეთ მოქმედებებს რათა მოაგვაროთ!</string>
-    <string name="new_gui_keyboard_ad_message">დააინსტალირეთ ახალი Key Mapper კლავიატურა, რომელსაც აქვს on-screen კლავიატურა!</string>
     <string name="shortcut_label_action">შეასრულე მოქმედებები</string>
     <string name="hold_down_until_trigger_is_dot_dot_dot">დააჭირეთ სანამ ტრიგერი არის…</string>
     <string name="from_no_device">მოწყობილობები არ არის</string>
