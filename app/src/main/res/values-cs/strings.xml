@@ -37,7 +37,6 @@
     <string name="tap_coordinate_screenshot_message">DŮLEŽITÉ!!! Tyto souřadnice jsou správné pouze tehdy, když je obrazovka ve stejné orientaci jako snímek obrazovky! Tato akce zruší všechna gesta, která na obrazovce děláte.\n\nPokud potřebujete pomoci najít souřadnice bodu na obrazovce, pořídí snímek obrazovky a klepněte na snímek obrazovky, kde chcete tuto akci stisknout.</string>
     <string name="dont_know_device_name">Neznám jméno zařízení!</string>
     <string name="tap_actions_to_fix">Klepnutím na akce opravíte!</string>
-    <string name="new_gui_keyboard_ad_message">Získejte novou klávesovou klávesnici Mapper, která má klávesnici na obrazovce!</string>
     <string name="shortcut_label_action">Provést akce</string>
     <string name="hold_down_until_trigger_is_dot_dot_dot">Podržte dokud není spouštěč…</string>
     <string name="from_no_device">Žádné zařízení</string>
