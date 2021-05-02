@@ -686,9 +686,13 @@ class PerformActionsUseCaseImpl(
         if there are multiple devices use the device that supports the key
         code. if none do then use the first one
          */
-        val device = devicesWithSameDescriptor.singleOrNull {
+        val deviceThatHasKey = devicesWithSameDescriptor.singleOrNull {
             deviceAdapter.deviceHasKey(it.id, action.keyCode)
-        } ?: devicesWithSameDescriptor[0]
+        }
+
+        val device = deviceThatHasKey
+            ?: devicesWithSameDescriptor.singleOrNull { it.name == action.device.name }
+            ?: devicesWithSameDescriptor[0]
 
         return device.id
     }
