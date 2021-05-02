@@ -36,7 +36,7 @@ object Keys {
     val automaticBackupLocation = stringPreferencesKey("pref_automatic_backup_location")
     val mappingsPaused = booleanPreferencesKey("pref_keymaps_paused")
     val hideHomeScreenAlerts = booleanPreferencesKey("pref_hide_home_screen_alerts")
-    val showGuiKeyboardAd = booleanPreferencesKey("pref_show_gui_keyboard_ad")
+    val acknowledgedGuiKeyboard = booleanPreferencesKey("pref_acknowledged_gui_keyboard")
     val showDeviceDescriptors = booleanPreferencesKey("pref_show_device_descriptors")
     val approvedFingerprintFeaturePrompt =
         booleanPreferencesKey("pref_approved_fingerprint_feature_prompt")

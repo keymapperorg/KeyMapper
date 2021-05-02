@@ -81,6 +81,7 @@ object UseCases {
 
     fun onboarding(ctx: Context) = OnboardingUseCaseImpl(
         ServiceLocator.preferenceRepository(ctx),
+        ServiceLocator.packageManagerAdapter(ctx),
         ServiceLocator.fileAdapter(ctx)
     )
 

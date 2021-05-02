@@ -12,7 +12,7 @@ sealed class PopupUi<RESPONSE : PopupResponse> {
 
     object SnackBarActionResponse : PopupResponse
 
-    data class Ok(val message: String,val title: String? = null) : PopupUi<OkResponse>()
+    data class Ok(val message: String, val title: String? = null) : PopupUi<OkResponse>()
     object OkResponse : PopupResponse
 
     data class Dialog(
@@ -35,6 +35,8 @@ sealed class PopupUi<RESPONSE : PopupResponse> {
         PopupUi<MultiChoiceResponse<ID>>()
 
     data class MultiChoiceResponse<ID>(val items: List<ID>) : PopupResponse
+
+    object InstallGuiKeyboard : PopupUi<DialogResponse>()
 }
 
 interface PopupResponse

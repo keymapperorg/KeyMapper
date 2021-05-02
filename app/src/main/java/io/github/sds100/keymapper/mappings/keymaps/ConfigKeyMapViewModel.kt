@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
 class ConfigKeyMapViewModel(
     private val config: ConfigKeyMapUseCase,
     private val testAction: TestActionUseCase,
-    private val onboard: OnboardingUseCase,
+    private val onboarding: OnboardingUseCase,
     private val recordTrigger: RecordTriggerUseCase,
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     private val displayMapping: DisplayKeyMapUseCase,
@@ -53,12 +53,13 @@ class ConfigKeyMapViewModel(
         testAction,
         config,
         KeyMapActionUiHelper(displayMapping, resourceProvider),
+        onboarding,
         resourceProvider
     )
 
     val configTriggerViewModel = ConfigKeyMapTriggerViewModel(
         viewModelScope,
-        onboard,
+        onboarding,
         config,
         recordTrigger,
         createKeyMapShortcut,

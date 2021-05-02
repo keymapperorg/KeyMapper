@@ -149,6 +149,7 @@ object Inject {
             ConfigFingerprintMapUseCaseImpl(ServiceLocator.fingerprintMapRepository(ctx)),
             TestActionUseCaseImpl(ServiceLocator.serviceAdapter(ctx)),
             UseCases.displaySimpleMapping(ctx),
+            UseCases.onboarding(ctx),
             ServiceLocator.resourceProvider(ctx)
         )
     }

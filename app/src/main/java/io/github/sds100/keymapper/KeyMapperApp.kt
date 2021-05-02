@@ -175,10 +175,6 @@ class KeyMapperApp : MultiDexApplication() {
                 if (BuildConfig.DEBUG && permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
                     serviceAdapter.enableService()
                 }
-
-                if (packageManagerAdapter.isAppInstalled(KeyMapperImeHelper.KEY_MAPPER_GUI_IME_PACKAGE)) {
-                    UseCases.onboarding(this@KeyMapperApp).shownGuiKeyboardAd()
-                }
             }
         })
 

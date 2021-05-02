@@ -4,25 +4,44 @@ import androidx.datastore.preferences.core.stringSetPreferencesKey
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.files.FileAdapter
-import io.github.sds100.keymapper.util.FlowPrefDelegate
+import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.util.PrefDelegate
 import io.github.sds100.keymapper.util.VersionUtils
+import io.github.sds100.keymapper.util.ifIsData
 import kotlinx.coroutines.flow.*
+import timber.log.Timber
 
 /**
  * Created by sds100 on 14/02/21.
  */
 class OnboardingUseCaseImpl(
     private val preferenceRepository: PreferenceRepository,
+    private val packageManagerAdapter: PackageManagerAdapter,
     private val fileAdapter: FileAdapter
 ) : PreferenceRepository by preferenceRepository, OnboardingUseCase {
 
     override var shownAppIntro by PrefDelegate(Keys.shownAppIntro, false)
 
-    override val showGuiKeyboardAdFlow by FlowPrefDelegate(Keys.showGuiKeyboardAd, true)
-    override fun shownGuiKeyboardAd() {
-        preferenceRepository.set(Keys.showGuiKeyboardAd, false)
+    override val showGuiKeyboardPrompt: Flow<Boolean> =
+        preferenceRepository.get(Keys.acknowledgedGuiKeyboard)
+            .map { acknowledged -> acknowledged == null || !acknowledged }
+            .map { show ->
+                if (show) {
+                    packageManagerAdapter.installedPackages.value.ifIsData { installedPackages ->
+                        if (installedPackages.any { it.packageName == KeyMapperImeHelper.KEY_MAPPER_GUI_IME_PACKAGE }) {
+                            neverShowGuiKeyboardPromptsAgain()
+                            return@map false
+                        }
+                    }
+                }
+
+                return@map show
+            }
+
+    override fun neverShowGuiKeyboardPromptsAgain() {
+        preferenceRepository.set(Keys.acknowledgedGuiKeyboard, true)
     }
 
     override var approvedFingerprintFeaturePrompt by PrefDelegate(
@@ -124,8 +143,8 @@ class OnboardingUseCaseImpl(
 interface OnboardingUseCase {
     var shownAppIntro: Boolean
 
-    val showGuiKeyboardAdFlow: Flow<Boolean>
-    fun shownGuiKeyboardAd()
+    val showGuiKeyboardPrompt: Flow<Boolean>
+    fun neverShowGuiKeyboardPromptsAgain()
 
     var approvedFingerprintFeaturePrompt: Boolean
     var shownParallelTriggerOrderExplanation: Boolean

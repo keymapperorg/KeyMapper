@@ -1,6 +1,9 @@
 package io.github.sds100.keymapper.onboarding
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 
 /**
  * Created by sds100 on 26/04/2021.
@@ -9,10 +12,9 @@ class FakeOnboardingUseCase : OnboardingUseCase {
     var approvedSetupChosenDevicesAgainNotification = false
 
     override var shownAppIntro: Boolean = false
+    override val showGuiKeyboardPrompt = MutableStateFlow(true)
 
-    override val showGuiKeyboardAdFlow = MutableStateFlow(false)
-
-    override fun shownGuiKeyboardAd() {}
+    override fun neverShowGuiKeyboardPromptsAgain() {}
 
     override var approvedFingerprintFeaturePrompt: Boolean = false
     override var shownParallelTriggerOrderExplanation: Boolean = false

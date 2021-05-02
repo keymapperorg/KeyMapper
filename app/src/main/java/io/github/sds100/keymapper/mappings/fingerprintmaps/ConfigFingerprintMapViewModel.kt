@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.constraints.ConstraintUtils
 import io.github.sds100.keymapper.mappings.ConfigMappingUiState
 import io.github.sds100.keymapper.mappings.ConfigMappingViewModel
 import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCase
+import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.ui.utils.getJsonSerializable
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ifIsData
@@ -34,6 +35,7 @@ class ConfigFingerprintMapViewModel(
     private val config: ConfigFingerprintMapUseCase,
     private val testAction: TestActionUseCase,
     private val display: DisplaySimpleMappingUseCase,
+    private val onboarding: OnboardingUseCase,
     resourceProvider: ResourceProvider
 ) : ViewModel(), ConfigMappingViewModel, PopupViewModel by PopupViewModelImpl() {
 
@@ -53,6 +55,7 @@ class ConfigFingerprintMapViewModel(
         testAction,
         config,
         FingerprintMapActionUiHelper(display, resourceProvider),
+        onboarding,
         resourceProvider
     )
 
@@ -115,6 +118,7 @@ class ConfigFingerprintMapViewModel(
         private val config: ConfigFingerprintMapUseCase,
         private val testAction: TestActionUseCase,
         private val display: DisplaySimpleMappingUseCase,
+        private val onboarding: OnboardingUseCase,
         private val resourceProvider: ResourceProvider
     ) : ViewModelProvider.Factory {
 
@@ -124,6 +128,7 @@ class ConfigFingerprintMapViewModel(
                 config,
                 testAction,
                 display,
+                onboarding,
                 resourceProvider
             ) as T
     }

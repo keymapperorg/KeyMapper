@@ -271,7 +271,7 @@
     <string name="dialog_message_screen_constraints_limitation">屏幕开启/关闭约束，将只在你打开了“屏幕关闭时检测触发器”这个按键映射选项时工作。此选项仅支持部分按键(例如音量键)。如果你root了，就在帮助页面查看支持的按键列表。</string>
     <string name="dialog_message_password_screen_lock_warning">如果你选择了任何其他的屏幕锁定，例如PIN或图案，那么你不必担心。但是如果你有密码屏幕锁定，并且在使用Key Mapper基本输入法时，你将*不能*解锁你的手机，因为它没有GUI。你可以授予Key Mapper WRITE_SECURE_SETTINGS权限，以便它显示一个切换键盘和从键盘切换的通知。如果你点击屏幕下方的问号，将有一个执行此操作的指南。</string>
     <string name="dialog_message_select_compatible_ime">选择一个动作需要的输入法。你可以稍候在主屏幕的底部菜单，点击“选择动作键盘”来更改此项。</string>
-    <string name="dialog_message_select_app_store_gui_keyboard">你想从哪里获取新的键盘？</string>
+    <string name="dialog_message_install_gui_keyboard">你想从哪里获取新的键盘？</string>
     <string name="dialog_message_cant_record_trigger">如果“记录触发器”按钮正在递减计数，并且你所按的按钮未显示，<b>重新启动</b>你的设备。如果在重新启动后你的按钮仍然不显示，则Key Mapper不支持你的按钮。尝试这样修复它并没有用。</string>
     <!-- Dialog messages -->
     <!-- Dialog buttons -->
