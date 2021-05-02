@@ -38,7 +38,6 @@ Los servicios de accesibilidad solo detectan las teclas y eventos de las aplicac
     <string name="tap_coordinate_screenshot_message">¡¡¡¡IMPORTANTE!!! Estas coordenadas solo son correctas cuando su pantalla está en la misma orientación que la captura de pantalla! Esta acción cancelará cualquier toque o gesto que estés haciendo en la pantalla.\n\nSi necesitas ayuda para encontrar las coordenadas de un punto en tu pantalla toma una captura de pantalla y pulsa en la captura de pantalla donde quieres que ocurra el toque.</string>
     <string name="dont_know_device_name">¡No se conoce el nombre del dispositivo!</string>
     <string name="tap_actions_to_fix">¡Toca las acciones para arreglar!</string>
-    <string name="new_gui_keyboard_ad_message">¡Obtén el nuevo Key Mapper keyboard con teclado en pantalla!</string>
     <string name="shortcut_label_action">Realizar acciones</string>
     <string name="hold_down_until_trigger_is_dot_dot_dot">Mantén presionado hasta que el disparador…</string>
     <string name="from_no_device">Sin dispositivos</string>
