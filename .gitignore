@@ -81,3 +81,4 @@ fastlane/.env
 .idea/
 app/src/main/res/values/private_strings.xml
 .vscode/
+Gemfile.lock
