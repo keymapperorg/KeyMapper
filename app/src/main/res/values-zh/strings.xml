@@ -38,7 +38,6 @@
     <string name="tap_coordinate_screenshot_message">重要！！！这些坐标只有当你的显示方向与屏幕截图相同时才是正确的！ 此操作将取消您在屏幕上所做的任何触摸或手势。\n\n如果你寻找您屏幕上某点的坐标需要帮助，就采取屏幕截图的方法，然后在屏幕截图上点击您想让此动作按下的地方。</string>
     <string name="dont_know_device_name">不知道设备名称！</string>
     <string name="tap_actions_to_fix">点击动作以修复！</string>
-    <string name="new_gui_keyboard_ad_message">获取带有屏幕键盘的新Key Mapper键盘！</string>
     <string name="shortcut_label_action">执行动作</string>
     <string name="hold_down_until_trigger_is_dot_dot_dot">按住直到触发器…</string>
     <string name="from_no_device">没有设备</string>
@@ -257,7 +256,6 @@
     <string name="dialog_message_screen_constraints_limitation">屏幕开启/关闭约束，将只在你打开了“屏幕关闭时检测触发器”这个按键映射选项时工作。此选项仅支持部分按键(例如音量键)。如果你root了，就在帮助页面查看支持的按键列表。</string>
     <string name="dialog_message_password_screen_lock_warning">如果你选择了任何其他的屏幕锁定，例如PIN或图案，那么你不必担心。但是如果你有密码屏幕锁定，并且在使用Key Mapper基本输入法时，你将*不能*解锁你的手机，因为它没有GUI。你可以授予Key Mapper WRITE_SECURE_SETTINGS权限，以便它显示一个切换键盘和从键盘切换的通知。如果你点击屏幕下方的问号，将有一个执行此操作的指南。</string>
     <string name="dialog_message_select_compatible_ime">选择一个动作需要的输入法。你可以稍候在主屏幕的底部菜单，点击“选择动作键盘”来更改此项。</string>
-    <string name="dialog_message_select_app_store_gui_keyboard">你想从哪里获取新的键盘？</string>
     <string name="dialog_message_cant_record_trigger">如果“记录触发器”按钮正在递减计数，并且你所按的按钮未显示，<b>重新启动</b>你的设备。如果在重新启动后你的按钮仍然不显示，则Key Mapper不支持你的按钮。尝试这样修复它并没有用。</string>
     <string name="dialog_message_view_faq_and_use_discord_over_email">请查看常见问题解答是否已经回答了你的问题。如果没有，那么开发者会喜欢它，如果你在Discord服务器上寻求帮助和推荐功能。如果你没有Discord，你可以直接发送电子邮件给开发人员。</string>
     <string name="pos_yes">是</string>
