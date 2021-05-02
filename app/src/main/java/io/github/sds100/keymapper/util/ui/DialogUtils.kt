@@ -215,7 +215,8 @@ suspend fun Context.editTextNumberAlertDialog(
                     .collectLatest { isValid ->
                         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
                             isValid.isSuccess
-                        textInputLayout.error = isValid.errorOrNull()?.getFullMessage(resourceProvider)
+                        textInputLayout.error =
+                            isValid.errorOrNull()?.getFullMessage(resourceProvider)
                     }
             }
         }
@@ -225,8 +226,8 @@ suspend fun Context.editTextNumberAlertDialog(
 suspend fun Context.okDialog(
     lifecycleOwner: LifecycleOwner,
     message: String,
-    title: String? =null,
-    ) = suspendCancellableCoroutine<PopupUi.OkResponse?> { continuation ->
+    title: String? = null,
+) = suspendCancellableCoroutine<PopupUi.OkResponse?> { continuation ->
 
     val alertDialog = materialAlertDialog {
 
@@ -264,9 +265,10 @@ fun Dialog.dismissOnDestroy(lifecycleOwner: LifecycleOwner) {
 
 object DialogUtils {
 
-    fun showDialogToGetGuiKeyboard(ctx: Context) {
-        ctx.alertDialog {
-            messageResource = R.string.dialog_message_select_app_store_gui_keyboard
+    fun showDialogToGetGuiKeyboard(ctx: Context): AlertDialog {
+        return ctx.materialAlertDialog {
+            titleResource = R.string.dialog_title_install_gui_keyboard
+            messageResource = R.string.dialog_message_install_gui_keyboard
 
             DialogChooseAppStoreBinding.inflate(LayoutInflater.from(ctx)).apply {
                 model = ChooseAppStoreModel(

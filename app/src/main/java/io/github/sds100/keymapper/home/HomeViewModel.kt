@@ -73,9 +73,6 @@ class HomeViewModel(
     private val _openSettings = MutableSharedFlow<Unit>()
     val openSettings = _openSettings.asSharedFlow()
 
-    val showGuiKeyboardAd: StateFlow<Boolean> =
-        onboarding.showGuiKeyboardAdFlow.stateIn(viewModelScope, SharingStarted.Eagerly, false)
-
     private val _showQuickStartGuideHint = MutableStateFlow(false)
     val showQuickStartGuideHint = _showQuickStartGuideHint.asStateFlow()
 
@@ -289,10 +286,6 @@ class HomeViewModel(
             _showQuickStartGuideHint.value = showQuickStartGuideHint
 
         }.launchIn(viewModelScope)
-    }
-
-    fun approvedGuiKeyboardAd() {
-        onboarding.shownGuiKeyboardAd()
     }
 
     fun approvedQuickStartGuideTapTarget() {

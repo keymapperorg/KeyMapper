@@ -5,11 +5,13 @@ import io.github.sds100.keymapper.mappings.ConfigMappingUseCase
 import io.github.sds100.keymapper.mappings.DisplayActionUseCase
 import io.github.sds100.keymapper.mappings.Mapping
 import io.github.sds100.keymapper.mappings.isDelayBeforeNextActionAllowed
+import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.ui.*
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import timber.log.Timber
 
 /**
  * Created by sds100 on 22/11/20.
@@ -21,6 +23,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
     private val testAction: TestActionUseCase,
     private val config: ConfigMappingUseCase<A, M>,
     private val uiHelper: ActionUiHelper<M, A>,
+    private val onboardingUseCase: OnboardingUseCase,
     resourceProvider: ResourceProvider
 ) : ResourceProvider by resourceProvider, PopupViewModel by PopupViewModelImpl() {
 
@@ -111,6 +114,20 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
     }
 
     fun addAction(data: ActionData) {
+        coroutineScope.launch {
+            if (!onboardingUseCase.showGuiKeyboardPrompt.first()) {
+                return@launch
+            }
+
+            if (data is KeyEventAction || data is TextAction) {
+                val response = showPopup("install_gui_keyboard", PopupUi.InstallGuiKeyboard)
+
+                if (response == DialogResponse.POSITIVE) {
+                    onboardingUseCase.neverShowGuiKeyboardPromptsAgain()
+                }
+            }
+        }
+
         config.addAction(data)
     }
 

@@ -14,10 +14,6 @@
         <import type="androidx.lifecycle.LiveData" />
 
         <variable
-            name="getNewGuiKeyboard"
-            type="View.OnClickListener" />
-
-        <variable
             name="viewModel"
             type="io.github.sds100.keymapper.home.HomeViewModel" />
     </data>
@@ -64,78 +60,6 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/layoutNewGuiKeyboardAd"
-                style="@style/MyCardView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:onClick="@{getNewGuiKeyboard}"
-                android:visibility="@{viewModel.showGuiKeyboardAd ? View.VISIBLE : View.GONE}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardViewRecyclerViewErrors"
-                tools:visibility="visible">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <androidx.appcompat.widget.AppCompatImageButton
-                        android:id="@+id/buttonRemove"
-                        style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                        android:layout_width="48dp"
-                        android:layout_height="0dp"
-                        android:onClick="@{() -> viewModel.approvedGuiKeyboardAd()}"
-                        android:tint="?attr/colorOnSurface"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/buttonGetNewGuiKeyboard"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.0"
-                        app:srcCompat="@drawable/ic_outline_clear_24" />
-
-                    <Button
-                        android:id="@+id/buttonGetNewGuiKeyboard"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginBottom="8dp"
-                        android:onClick="@{getNewGuiKeyboard}"
-                        android:text="@string/button_yes"
-                        android:textColor="@color/warn"
-                        android:visibility="visible"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/textView"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/textView"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginBottom="8dp"
-                        android:drawablePadding="16dp"
-                        android:gravity="center_vertical"
-                        android:text="@string/new_gui_keyboard_ad_message"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-                        app:drawableStartCompat="@drawable/ic_outline_star_border_24"
-                        app:drawableTint="@color/warn"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/buttonGetNewGuiKeyboard"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </com.google.android.material.card.MaterialCardView>
-
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabLayout"
                 android:layout_width="match_parent"
@@ -144,8 +68,8 @@
                 android:visibility="@{viewModel.tabsState.showTabs ? View.VISIBLE : View.GONE}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/layoutNewGuiKeyboardAd"
-                app:tabMode="fixed"/>
+                app:layout_constraintTop_toBottomOf="@+id/cardViewRecyclerViewErrors"
+                app:tabMode="fixed" />
 
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/viewPager"

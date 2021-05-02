@@ -181,10 +181,6 @@ class HomeFragment : Fragment() {
             homeViewModel.onAppBarNavigationButtonClick()
         }
 
-        binding.setGetNewGuiKeyboard {
-            DialogUtils.showDialogToGetGuiKeyboard(requireContext())
-        }
-
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
             homeViewModel.appBarState.collectLatest {
                 /*
