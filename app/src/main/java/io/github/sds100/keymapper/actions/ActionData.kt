@@ -60,7 +60,7 @@ sealed class VolumeSystemAction : SystemAction() {
 
         @Serializable
         data class Increase(
-            override val showVolumeUi: Boolean, //TODO #639 show volume ui option
+            override val showVolumeUi: Boolean,
             override val volumeStream: VolumeStream
         ) : Stream() {
             override val id = SystemActionId.VOLUME_INCREASE_STREAM

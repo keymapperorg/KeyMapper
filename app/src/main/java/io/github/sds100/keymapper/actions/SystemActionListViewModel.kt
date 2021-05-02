@@ -6,17 +6,17 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.domain.utils.*
-import io.github.sds100.keymapper.system.volume.*
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.camera.CameraLensUtils
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.display.OrientationUtils
 import io.github.sds100.keymapper.system.permissions.Permission
+import io.github.sds100.keymapper.system.volume.*
 import io.github.sds100.keymapper.ui.*
 import io.github.sds100.keymapper.ui.utils.*
 import io.github.sds100.keymapper.util.containsQuery
-import io.github.sds100.keymapper.util.valueOrNull
 import io.github.sds100.keymapper.util.ui.*
+import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
@@ -89,7 +89,8 @@ class SystemActionListViewModel(
                             .sortedBy { it.second }
                     }
 
-                    val packageName = showPopup("choose_package", PopupUi.SingleChoice(items))?.item ?: return@launch
+                    val packageName = showPopup("choose_package", PopupUi.SingleChoice(items))?.item
+                        ?: return@launch
 
                     val action = when (id) {
                         SystemActionId.PAUSE_MEDIA_PACKAGE ->
@@ -112,8 +113,47 @@ class SystemActionListViewModel(
                     _returnResult.emit(action)
                 }
 
+                SystemActionId.VOLUME_UP,
+                SystemActionId.VOLUME_DOWN,
+                SystemActionId.VOLUME_MUTE,
+                SystemActionId.VOLUME_UNMUTE,
+                SystemActionId.VOLUME_TOGGLE_MUTE -> {
+
+                    val showVolumeUiId = 0
+                    val dialog = PopupUi.MultiChoice(
+                        items = listOf(showVolumeUiId to getString(R.string.flag_show_volume_dialog))
+                    )
+
+                    val response = showPopup("show_volume_ui", dialog) ?: return@launch
+
+                    val showVolumeUi = response.items.contains(showVolumeUiId)
+
+                    val action = when (id) {
+                        SystemActionId.VOLUME_UP -> VolumeSystemAction.Up(showVolumeUi)
+                        SystemActionId.VOLUME_DOWN -> VolumeSystemAction.Down(showVolumeUi)
+                        SystemActionId.VOLUME_MUTE -> VolumeSystemAction.Mute(showVolumeUi)
+                        SystemActionId.VOLUME_UNMUTE -> VolumeSystemAction.UnMute(showVolumeUi)
+                        SystemActionId.VOLUME_TOGGLE_MUTE -> VolumeSystemAction.ToggleMute(
+                            showVolumeUi
+                        )
+                        else -> throw Exception("don't know how to create system action for $id")
+                    }
+
+                    _returnResult.emit(action)
+                }
+
                 SystemActionId.VOLUME_INCREASE_STREAM,
                 SystemActionId.VOLUME_DECREASE_STREAM -> {
+
+                    val showVolumeUiId = 0
+                    val showVolumeUiDialog = PopupUi.MultiChoice(
+                        items = listOf(showVolumeUiId to getString(R.string.flag_show_volume_dialog))
+                    )
+
+                    val response = showPopup("show_volume_ui", showVolumeUiDialog) ?: return@launch
+
+                    val showVolumeUi = response.items.contains(showVolumeUiId)
+
                     val items = VolumeStream.values()
                         .map { it to getString(VolumeStreamUtils.getLabel(it)) }
 
@@ -122,10 +162,10 @@ class SystemActionListViewModel(
 
                     val action = when (id) {
                         SystemActionId.VOLUME_INCREASE_STREAM ->
-                            VolumeSystemAction.Stream.Increase(showVolumeUi = false, stream)
+                            VolumeSystemAction.Stream.Increase(showVolumeUi = showVolumeUi, stream)
 
                         SystemActionId.VOLUME_DECREASE_STREAM ->
-                            VolumeSystemAction.Stream.Decrease(showVolumeUi = false, stream)
+                            VolumeSystemAction.Stream.Decrease(showVolumeUi = showVolumeUi, stream)
 
                         else -> throw Exception("don't know how to create system action for $id")
                     }
@@ -155,9 +195,9 @@ class SystemActionListViewModel(
                             ?: return@launch
 
                     val action = when (id) {
-                        SystemActionId.TOGGLE_DND_MODE ->ToggleDndMode(dndMode)
+                        SystemActionId.TOGGLE_DND_MODE -> ToggleDndMode(dndMode)
 
-                        SystemActionId.ENABLE_DND_MODE ->EnableDndMode(dndMode)
+                        SystemActionId.ENABLE_DND_MODE -> EnableDndMode(dndMode)
 
                         else -> throw Exception("don't know how to create system action for $id")
                     }
