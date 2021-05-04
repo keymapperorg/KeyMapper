@@ -6,6 +6,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonParser
 import io.github.sds100.keymapper.backup.BackupManagerImpl
 import io.github.sds100.keymapper.data.db.AppDatabase
+import io.github.sds100.keymapper.data.repositories.FakePreferenceRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapEntity
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapRepository
@@ -51,7 +52,7 @@ class BackupManagerTest {
     private val dispatcherProvider = TestDispatcherProvider(testDispatcher)
 
     private lateinit var backupManager: BackupManagerImpl
-    private lateinit var mockPreferenceRepository: PreferenceRepository
+    private lateinit var fakePreferenceRepository: PreferenceRepository
     private lateinit var mockKeyMapRepository: KeyMapRepository
     private lateinit var mockFingerprintMapRepository: FingerprintMapRepository
     private lateinit var outputStream: PipedOutputStream
@@ -70,9 +71,7 @@ class BackupManagerTest {
             on { requestBackup } doReturn MutableSharedFlow()
         }
 
-        mockPreferenceRepository = mock {
-            on { get<Any>(anyOrNull()) } doReturn flow { }
-        }
+        fakePreferenceRepository = FakePreferenceRepository()
 
         outputStream = PipedOutputStream()
 
@@ -98,7 +97,7 @@ class BackupManagerTest {
             coroutineScope,
             fileAdapter = fileAdapter,
             keyMapRepository = mockKeyMapRepository,
-            preferenceRepository = mockPreferenceRepository,
+            preferenceRepository = fakePreferenceRepository,
             fingerprintMapRepository = mockFingerprintMapRepository,
             throwExceptions = true,
             dispatchers = dispatcherProvider
