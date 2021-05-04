@@ -63,8 +63,10 @@ class ConfigFingerprintMapFragment : ConfigMappingFragment() {
 
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
             viewModel.configActionsViewModel.openEditOptions.collectLatest { actionUid ->
-                viewModel.configActionOptionsViewModel.setActionToConfigure(actionUid)
-                findNavController().navigate(ConfigFingerprintMapFragmentDirections.configActionFragment())
+                if (findNavController().currentDestination?.id == R.id.config_fingerprint_map_fragment) {
+                    viewModel.configActionOptionsViewModel.setActionToConfigure(actionUid)
+                    findNavController().navigate(ConfigFingerprintMapFragmentDirections.configActionFragment())
+                }
             }
         }
     }

@@ -15,7 +15,6 @@ import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.mappings.ConfigMappingFragment
 import io.github.sds100.keymapper.mappings.keymaps.trigger.ConfigTriggerOptionsFragment
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerFragment
-import io.github.sds100.keymapper.util.ui.showPopups
 import io.github.sds100.keymapper.ui.utils.getJsonSerializable
 import io.github.sds100.keymapper.util.FragmentInfo
 import io.github.sds100.keymapper.util.Inject
@@ -23,6 +22,7 @@ import io.github.sds100.keymapper.util.int
 import io.github.sds100.keymapper.util.intArray
 import io.github.sds100.keymapper.util.ui.FourFragments
 import io.github.sds100.keymapper.util.ui.TwoFragments
+import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.collectLatest
 
 /**
@@ -62,15 +62,19 @@ class ConfigKeyMapFragment : ConfigMappingFragment() {
 
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
             viewModel.configActionsViewModel.openEditOptions.collectLatest { actionUid ->
-                viewModel.configActionOptionsViewModel.setActionToConfigure(actionUid)
-                findNavController().navigate(ConfigKeyMapFragmentDirections.actionConfigKeymapFragmentToActionOptionsFragment())
+                if (findNavController().currentDestination?.id == R.id.config_key_map_fragment) {
+                    viewModel.configActionOptionsViewModel.setActionToConfigure(actionUid)
+                    findNavController().navigate(ConfigKeyMapFragmentDirections.actionConfigKeymapFragmentToActionOptionsFragment())
+                }
             }
         }
 
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
             viewModel.configTriggerViewModel.openEditOptions.collectLatest { triggerKeyUid ->
-                viewModel.configTriggerKeyViewModel.setTriggerKeyToConfigure(triggerKeyUid)
-                findNavController().navigate(ConfigKeyMapFragmentDirections.actionTriggerKeyOptionsFragment())
+                if (findNavController().currentDestination?.id == R.id.config_key_map_fragment) {
+                    viewModel.configTriggerKeyViewModel.setTriggerKeyToConfigure(triggerKeyUid)
+                    findNavController().navigate(ConfigKeyMapFragmentDirections.actionTriggerKeyOptionsFragment())
+                }
             }
         }
 
