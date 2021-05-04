@@ -97,6 +97,7 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
     Error.NoDeviceAssistant -> resourceProvider.getString(R.string.error_no_device_assistant)
     Error.NoSettingsApp -> resourceProvider.getString(R.string.error_no_settings_app)
     Error.NoAppToOpenUrl -> resourceProvider.getString(R.string.error_no_app_to_open_url)
+    Error.NothingToBackup -> resourceProvider.getString(R.string.error_nothing_to_backup)
 }
 
 val Error.isFixable: Boolean
