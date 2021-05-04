@@ -24,10 +24,10 @@ inline fun <reified T> Array<out T>.splitIntoBatches(batchSize: Int): Array<Arra
     var batches: Array<Array<out T>> = arrayOf()
 
     while (arrayToSplit.isNotEmpty()) {
-        val batch = if (this.size < batchSize) {
-            this
+        val batch = if (arrayToSplit.size < batchSize) {
+            arrayToSplit
         } else {
-            this.sliceArray(0 until batchSize)
+            arrayToSplit.sliceArray(0 until batchSize)
         }
 
         batches = batches.plus(batch)
