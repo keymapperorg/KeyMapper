@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.domain.utils
+package io.github.sds100.keymapper.util
 
 import java.util.*
 
@@ -16,4 +16,24 @@ fun MutableList<*>.moveElement(fromIndex: Int, toIndex: Int) {
             Collections.swap(this, i, i - 1)
         }
     }
+}
+
+inline fun <reified T> Array<out T>.splitIntoBatches(batchSize: Int): Array<Array<out T>> {
+    var arrayToSplit = this
+
+    var batches: Array<Array<out T>> = arrayOf()
+
+    while (arrayToSplit.isNotEmpty()) {
+        val batch = if (this.size < batchSize) {
+            this
+        } else {
+            this.sliceArray(0 until batchSize)
+        }
+
+        batches = batches.plus(batch)
+
+        arrayToSplit = arrayToSplit.sliceArray(batch.size until arrayToSplit.size)
+    }
+
+    return batches
 }

@@ -48,7 +48,7 @@ class KeyMapRepositoryTest {
 
     @Before
     fun init() {
-        keyMaps = MutableSharedFlow()
+        keyMaps = MutableSharedFlow(replay = 1)
         devicesAdapter = FakeDevicesAdapter()
 
         mockDao = mock {
@@ -62,6 +62,44 @@ class KeyMapRepositoryTest {
             dispatchers = TestDispatcherProvider(testDispatcher)
         )
     }
+
+    /**
+     * issue #641
+     */
+    @Test
+    fun `if modifying a huge number of key maps then split job into batches`() =
+        coroutineScope.runBlockingTest {
+            //GIVEN
+            val keyMapList = sequence {
+                repeat(991) {
+                    yield(KeyMapEntity(id = it.toLong()))
+                }
+            }.toList()
+
+            keyMaps.emit(keyMapList)
+
+            inOrder(mockDao) {
+                //WHEN, THEN
+                //split job up into batches of 200 key maps
+                repository.enableById(*keyMapList.map { it.uid }.toTypedArray())
+                verify(mockDao, times(5)).enableKeymapByUid(anyVararg())
+
+                repository.disableById(*keyMapList.map { it.uid }.toTypedArray())
+                verify(mockDao, times(5)).disableKeymapByUid(anyVararg())
+
+                repository.delete(*keyMapList.map { it.uid }.toTypedArray())
+                verify(mockDao, times(5)).deleteById(anyVararg())
+
+                repository.duplicate(*keyMapList.map { it.uid }.toTypedArray())
+                verify(mockDao, times(5)).insert(anyVararg())
+
+                repository.insert(*keyMapList.toTypedArray())
+                verify(mockDao, times(5)).insert(anyVararg())
+
+                repository.update(*keyMapList.toTypedArray())
+                verify(mockDao, times(5)).update(anyVararg())
+            }
+        }
 
     @Test
     fun `key map with key event action from device and proper device name extra, do not update action device name`() =

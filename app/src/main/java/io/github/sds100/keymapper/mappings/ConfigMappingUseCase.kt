@@ -5,7 +5,7 @@ import io.github.sds100.keymapper.actions.Action
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.constraints.ConstraintMode
-import io.github.sds100.keymapper.domain.utils.moveElement
+import io.github.sds100.keymapper.util.moveElement
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ifIsData
 import kotlinx.coroutines.flow.Flow
