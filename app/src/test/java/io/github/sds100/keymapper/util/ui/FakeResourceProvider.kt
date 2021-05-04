@@ -18,7 +18,7 @@ class FakeResourceProvider : ResourceProvider {
     }
 
     override fun getString(resId: Int): String {
-        throw Exception()
+        return stringResourceMap[resId]!!
     }
 
     override fun getDrawable(resId: Int): Drawable {

@@ -97,14 +97,11 @@ class ConfigKeyEventViewModel(
 
     fun chooseDevice(index: Int) {
         viewModelScope.launch {
-            val chosenDescriptor = uiState.value.deviceListItems.getOrNull(index)?.descriptor
+            val chosenDevice = uiState.value.deviceListItems.getOrNull(index)
 
-            if (chosenDescriptor == null) {
+            if (chosenDevice == null) {
                 return@launch
             }
-
-            val chosenDevice =
-                useCase.inputDevices.first().find { it.descriptor == chosenDescriptor }
 
             state.value = state.value.copy(
                 chosenDevice = chosenDevice
