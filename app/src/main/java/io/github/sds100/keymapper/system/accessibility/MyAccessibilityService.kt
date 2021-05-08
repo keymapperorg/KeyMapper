@@ -73,7 +73,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
     private val _isKeyboardHidden by lazy {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            MutableStateFlow(softKeyboardController.showMode == AccessibilityService.SHOW_MODE_HIDDEN)
+            MutableStateFlow(softKeyboardController.showMode == SHOW_MODE_HIDDEN)
         } else {
             MutableStateFlow(false)
         }
