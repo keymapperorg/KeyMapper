@@ -77,7 +77,7 @@ object ActionDataEntityMapper {
             ActionEntity.Type.URL -> UrlAction(url = entity.data)
             ActionEntity.Type.TAP_COORDINATE -> {
                 val x = entity.data.split(',')[0].toInt()
-                val y = entity.data.split(',')[0].toInt()
+                val y = entity.data.split(',')[1].toInt()
                 val description = entity.extras.getData(ActionEntity.EXTRA_COORDINATE_DESCRIPTION)
                     .valueOrNull()
 
