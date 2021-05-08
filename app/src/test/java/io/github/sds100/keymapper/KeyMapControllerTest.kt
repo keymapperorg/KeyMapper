@@ -18,6 +18,7 @@ import junitparams.JUnitParamsRunner
 import junitparams.Parameters
 import junitparams.naming.TestCaseName
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestCoroutineDispatcher
@@ -146,6 +147,35 @@ class KeyMapControllerTest {
     @After
     fun tearDown() {
         coroutineScope.cleanupTestCoroutines()
+    }
+
+    /**
+     * issue #662
+     */
+    @Test
+    fun `don't repeat when trigger is released for an action that has these options when the trigger is held down`()=coroutineScope.runBlockingTest{
+        //GIVEN
+        val action = KeyMapAction(
+            data = KeyEventAction(keyCode = 1),
+            repeat = true,
+            delayBeforeNextAction = 10,
+            repeatDelay = 10,
+            repeatRate = 190
+        )
+
+        val keyMap= KeyMap(trigger = singleKeyTrigger(triggerKey(keyCode = 2)), actionList = listOf(action))
+
+        keyMapListFlow.value = listOf(keyMap)
+        //WHEN
+
+        mockTriggerKeyInput(triggerKey(keyCode = 2), delay = 1)
+
+        //see if the action repeats
+        coroutineScope.advanceTimeBy(500)
+        controller.reset()
+
+        //THEN
+        verify(performActionsUseCase, times(1)).perform(action.data)
     }
 
     /**

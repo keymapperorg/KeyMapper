@@ -1178,6 +1178,7 @@ class KeyMapController(
 
                 //cancel repeating action jobs for this trigger
                 if (lastHeldDownEventIndex != parallelTriggers[triggerIndex].keys.lastIndex) {
+                    parallelTriggerActionJobs[triggerIndex]?.cancel()
                     repeatJobs[triggerIndex]?.forEach {
                         if (!stopRepeatingWhenPressedAgain(it.actionKey)) {
                             it.cancel()
