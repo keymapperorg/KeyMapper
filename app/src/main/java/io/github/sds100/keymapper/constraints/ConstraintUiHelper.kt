@@ -63,7 +63,7 @@ class ConstraintUiHelper(
             getString(R.string.constraint_choose_orientation_landscape)
 
         Constraint.OrientationPortrait ->
-            getString(R.string.constraint_choose_orientation_landscape)
+            getString(R.string.constraint_choose_orientation_portrait)
 
         Constraint.ScreenOff ->
             getString(R.string.constraint_screen_off_description)
