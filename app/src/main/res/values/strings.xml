@@ -701,6 +701,7 @@
     <string name="error_app_isnt_installed_brief">App isn\'t installed!</string>
 
     <string name="error_app_is_disabled">App is disabled!</string>
+    <string name="error_app_is_disabled_package_name">App %s is disabled!</string>
     <string name="error_action_requires_write_settings_permission">You need to grant Key Mapper permission to modify system settings.</string>
     <string name="error_requires_root">This requires root permission!</string>
     <string name="error_action_requires_camera_permission">This action requires camera permission!</string>
