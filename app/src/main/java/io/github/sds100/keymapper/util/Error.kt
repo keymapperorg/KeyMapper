@@ -18,7 +18,7 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
         R.string.error_app_isnt_installed,
         packageName
     )
-    is Error.AppDisabled -> resourceProvider.getString(R.string.error_app_is_disabled)
+    is Error.AppDisabled -> resourceProvider.getString(R.string.error_app_is_disabled_package_name, this.packageName)
     is Error.NoCompatibleImeEnabled -> resourceProvider.getString(R.string.error_key_mapper_ime_service_disabled)
     is Error.NoCompatibleImeChosen -> resourceProvider.getString(R.string.error_ime_must_be_chosen)
     is Error.SystemFeatureNotSupported -> resourceProvider.getString(
