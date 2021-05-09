@@ -11,6 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import splitties.bitflags.withFlag
 
 /**
  * Created by sds100 on 16/03/2021.
@@ -101,7 +102,7 @@ class AndroidPackageManagerAdapter(
     override fun enableApp(packageName: String) {
         Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
             data = Uri.parse("package:${packageName}")
-            flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+            flags = Intent.FLAG_ACTIVITY_NO_HISTORY.withFlag(Intent.FLAG_ACTIVITY_NEW_TASK)
 
             ctx.startActivity(this)
         }
