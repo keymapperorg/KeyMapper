@@ -108,11 +108,11 @@ class AndroidPackageManagerAdapter(
         }
     }
 
-    override fun isAppEnabled(packageName: String): Boolean {
+    override fun isAppEnabled(packageName: String): Result<Boolean> {
         return try {
-            packageManager.getApplicationInfo(packageName, 0).enabled
+            Success(packageManager.getApplicationInfo(packageName, 0).enabled)
         } catch (e: PackageManager.NameNotFoundException) {
-            false
+            Error.AppNotFound(packageName)
         }
     }
 

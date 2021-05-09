@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.onFailure
+import io.github.sds100.keymapper.util.onSuccess
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
@@ -82,8 +83,10 @@ class GetActionErrorUseCaseImpl(
     }
 
     private fun getAppError(packageName: String): Error? {
-        if (!packageManager.isAppEnabled(packageName)) {
-            return Error.AppDisabled(packageName)
+        packageManager.isAppEnabled(packageName).onSuccess { isEnabled ->
+            if (!isEnabled){
+                return Error.AppDisabled(packageName)
+            }
         }
 
         if (!packageManager.isAppInstalled(packageName)) {

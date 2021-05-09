@@ -13,7 +13,7 @@ interface PackageManagerAdapter {
 
     fun getAppName(packageName: String): Result<String>
     fun getAppIcon(packageName: String): Result<Drawable>
-    fun isAppEnabled(packageName: String): Boolean
+    fun isAppEnabled(packageName: String): Result<Boolean>
     fun isAppInstalled(packageName: String): Boolean
 
     fun openApp(packageName: String): Result<*>
