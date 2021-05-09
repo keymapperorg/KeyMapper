@@ -375,7 +375,7 @@
     <string name="dialog_message_install_gui_keyboard">This is highly recommended! This is a proper keyboard that you can use with Key Mapper. The one built-in to Key Mapper (the Basic Input Method) has no on-screen keyboard. Choose where you want to install it from.</string>
 
     <string name="dialog_title_disable_battery_optimisation">Disable battery optimisation</string>
-    <string name="dialog_message_disable_battery_optimisation">You <b>MUST</b> read this all otherwise you will get frustrated in the future!\n\nTapping \"turn off\" will prevent Android from stopping the app while it is in the background.\n\n<b>This is NOT ENOUGH</b>. Your OEM\'s skin such as MIUI or Samsung Experience may have other \"battery saving\" features so you MUST turn them off for Key Mapper as well by following the guide at dontkillmyapp.com.</string>
+    <string name="dialog_message_disable_battery_optimisation">You <b>MUST</b> read this <b>all</b> otherwise you will get <b>frustrated</b> in the future!\n\nTapping \"fix partially\" <b>might</b> prevent Android from stopping the app while it is in the background.\n\n<b>This is NOT ENOUGH</b>. Your OEM\'s skin such as MIUI or Samsung Experience may have other \"battery saving\" features so you MUST turn them off for Key Mapper as well by following the online guide at dontkillmyapp.com.</string>
 
     <string name="dialog_title_send_feedback">Send feedback</string>
     <string name="dialog_message_view_faq_and_use_discord_over_email">Please check out the FAQ to see if your question has already been answered. If not, then the developer would prefer it if you ask for help and suggest features in the Discord server. If you don\'t have Discord, you can email the developer directly.</string>
@@ -395,7 +395,7 @@
     <string name="pos_grant">Grant</string>
     <string name="pos_join">Join</string>
     <string name="pos_change_location">Change</string>
-    <string name="pos_turn_off">Turn off</string>
+    <string name="pos_turn_off_stock_battery_optimisation">Fix partially</string>
     <string name="pos_ok">Ok</string>
     <string name="pos_turn_on">Turn on</string>
     <string name="pos_restart">Restart</string>
@@ -409,7 +409,7 @@
 
     <string name="neg_email">Email</string>
     <string name="neutral_discord">Discord</string>
-    <string name="neutral_go_to_dont_kill_my_app">Don\'t Kill My App</string>
+    <string name="neutral_go_to_dont_kill_my_app">Online guide</string>
     <string name="neutral_go_to_settings">Settings</string>
     <string name="neutral_intent_docs">Docs</string>
     <string name="neutral_changelog">Changelog</string>
