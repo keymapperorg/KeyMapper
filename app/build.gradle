@@ -80,7 +80,8 @@ android {
         correctErrorTypes = true
     }
 
-    kotlinOptions.useIR = true
+    //disable for now because having this bug https://github.com/Kotlin/kotlinx.serialization/issues/1059
+//    kotlinOptions.useIR = true
 }
 
 android.sourceSets {
