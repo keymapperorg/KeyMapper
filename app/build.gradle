@@ -80,7 +80,7 @@ android {
         correctErrorTypes = true
     }
 
-    kotlinOptions.useIR = true
+    kotlinOptions.useIR = false
 }
 
 android.sourceSets {
