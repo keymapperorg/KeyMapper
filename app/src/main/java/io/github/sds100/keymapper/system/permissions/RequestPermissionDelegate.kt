@@ -172,7 +172,7 @@ class RequestPermissionDelegate(
                             titleResource = R.string.dialog_title_disable_battery_optimisation
                             messageResource = R.string.dialog_message_disable_battery_optimisation
 
-                            positiveButton(R.string.pos_turn_off) {
+                            positiveButton(R.string.pos_turn_off_stock_battery_optimisation) {
                                 try {
                                     val intent =
                                         Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
