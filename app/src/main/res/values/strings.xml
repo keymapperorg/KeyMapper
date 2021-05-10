@@ -38,6 +38,7 @@
     <string name="trigger_device_name_not_found">The name for this device isn\'t known</string>
     <string name="slider_default">Default</string>
     <string name="button_enable_accessibility_service">Enable accessibility service</string>
+    <string name="button_restart_accessibility_service">Restart accessibility service</string>
     <string name="stop_repeating_dot_dot_dot">Stop repeating when trigger is…</string>
     <string name="trigger_released">Released</string>
     <string name="trigger_pressed_again">Pressed again</string>
@@ -83,7 +84,7 @@
 
     <string name="email_subject">Key Mapper query</string>
     <string name="email_default_message">Does the help page solve your problem? What is your device?\n\n Which OEM skin or ROM are you using?\n\n Please describe the issue you\'re having:</string>
-
+s
     <string name="action_title_intent_start_activity">Start activity: %s</string>
     <string name="action_title_intent_start_service">Start service: %s</string>
     <string name="action_title_intent_send_broadcast">Send broadcast: %s</string>
@@ -98,6 +99,7 @@
 
     <string name="home_error_is_battery_optimised">Your mappings will stop working randomly! Tap \'Fix\' to fix this.</string>
     <string name="home_error_accessibility_service_is_disabled">The accessibility service needs to be turned on for your mappings to work!</string>
+    <string name="home_error_accessibility_service_is_crashed">The accessibility service is enabled but it has been killed or it crashed! Restart the service to fix this problem.</string>
     <string name="home_success_accessibility_service_is_enabled">The accessibility service is enabled! Your mappings should work.</string>
 
     <!--  Action descriptions  -->
@@ -436,8 +438,13 @@
 
     <string name="notification_action_dismiss">Dismiss</string>
 
+    <string name="notification_action_restart_accessibility_service">Restart</string>
+
     <string name="notification_accessibility_service_disabled_title">Accessibility service disabled</string>
     <string name="notification_accessibility_service_disabled_text">Tap to start the accessibility service.</string>
+
+    <string name="notification_accessibility_service_crashed_title">Accessibility service needs restarting!</string>
+    <string name="notification_accessibility_service_crashed_text">The accessibility service has crashed! Your phone might be aggressively killing it! Tap to restart the accessibility service.</string>
 
     <string name="notification_action_open_app">Open app</string>
     <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
@@ -596,6 +603,10 @@
     <!-- Showcase -->
     <string name="showcase_accessibility_service_title_enabled">Accessibility service is enabled :)</string>
     <string name="showcase_accessibility_service_description_enabled">All good.</string>
+
+    <string name="showcase_accessibility_service_title_crashed">Restart the accessibility service</string>
+    <string name="showcase_accessibility_service_description_crashed">The accessibility services is enabled but it has been killed by your phone or it has crashed. Restart it.</string>
+    <string name="showcase_accessibility_service_button_restart">Restart</string>
 
     <string name="showcase_accessibility_service_title_disabled">Enable the accessibility service</string>
     <string name="showcase_accessibility_service_description_disabled">Your key maps will only work once you have enabled the accessibility service. It also needs to be turned on to create a trigger.</string>

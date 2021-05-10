@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.mappings.fingerprintmaps.ListFingerprintMapsUs
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapListViewModel
 import io.github.sds100.keymapper.mappings.keymaps.ListKeyMapsUseCase
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.ui.*
 import io.github.sds100.keymapper.util.Error
@@ -20,7 +21,6 @@ import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 /**
  * Created by sds100 on 18/01/21.
@@ -39,7 +39,9 @@ class HomeViewModel(
     PopupViewModel by PopupViewModelImpl() {
 
     private companion object {
-        const val ID_ACCESSIBILITY_SERVICE_LIST_ITEM = "accessibility_service"
+        const val ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM = "accessibility_service_disabled"
+        const val ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM = "accessibility_service_crashed"
+        const val ID_ACCESSIBILITY_SERVICE_ENABLED_LIST_ITEM = "accessibility_service_enabled"
         const val ID_BATTERY_OPTIMISATION_LIST_ITEM = "battery_optimised"
     }
 
@@ -135,7 +137,6 @@ class HomeViewModel(
     val appBarState = multiSelectProvider.state.map {
         when (it) {
             SelectionState.NotSelecting -> HomeAppBarState.NORMAL
-
             is SelectionState.Selecting -> HomeAppBarState.MULTI_SELECTING
         }
     }.stateIn(
@@ -146,24 +147,33 @@ class HomeViewModel(
 
     val errorListState = combine(
         showAlertsUseCase.isBatteryOptimised,
-        showAlertsUseCase.isAccessibilityServiceEnabled,
+        showAlertsUseCase.accessibilityServiceState,
         showAlertsUseCase.hideAlerts
-    ) { isBatteryOptimised, isServiceEnabled, isHidden ->
+    ) { isBatteryOptimised, serviceState, isHidden ->
         val listItems = sequence {
-            if (isServiceEnabled) {
-                yield(
-                    TextListItem.Success(
-                        ID_ACCESSIBILITY_SERVICE_LIST_ITEM,
-                        getString(R.string.home_success_accessibility_service_is_enabled)
+
+            when (serviceState) {
+                AccessibilityServiceState.CRASHED ->
+                    yield(
+                        TextListItem.Error(
+                            ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM,
+                            getString(R.string.home_error_accessibility_service_is_crashed)
+                        )
                     )
-                )
-            } else {
-                yield(
-                    TextListItem.Error(
-                        ID_ACCESSIBILITY_SERVICE_LIST_ITEM,
-                        getString(R.string.home_error_accessibility_service_is_disabled)
+                AccessibilityServiceState.DISABLED ->
+                    yield(
+                        TextListItem.Error(
+                            ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM,
+                            getString(R.string.home_error_accessibility_service_is_disabled)
+                        )
                     )
-                )
+                AccessibilityServiceState.ENABLED ->
+                    yield(
+                        TextListItem.Success(
+                            ID_ACCESSIBILITY_SERVICE_ENABLED_LIST_ITEM,
+                            getString(R.string.home_success_accessibility_service_is_enabled)
+                        )
+                    )
             }
 
             if (isBatteryOptimised) {
@@ -373,7 +383,8 @@ class HomeViewModel(
     fun onFixErrorListItemClick(id: String) {
         viewModelScope.launch {
             when (id) {
-                ID_ACCESSIBILITY_SERVICE_LIST_ITEM -> showAlertsUseCase.enableAccessibilityService()
+                ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM -> showAlertsUseCase.enableAccessibilityService()
+                ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM -> showAlertsUseCase.restartAccessibilityService()
                 ID_BATTERY_OPTIMISATION_LIST_ITEM -> showAlertsUseCase.disableBatteryOptimisation()
             }
         }

@@ -9,6 +9,7 @@ import androidx.lifecycle.*
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.UseCases
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
 import io.github.sds100.keymapper.util.firstBlocking
 import io.github.sds100.keymapper.util.str
 import kotlinx.coroutines.flow.collect
@@ -34,13 +35,13 @@ class ToggleMappingsTile : TileService(), LifecycleOwner {
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
 
         addRepeatingJob(Lifecycle.State.STARTED) {
-            combine(serviceAdapter.isEnabled, useCase.isPaused) { isServiceEnabled, isPaused ->
+            combine(serviceAdapter.state, useCase.isPaused) { serviceState, isPaused ->
                 qsTile ?: return@combine
 
                 val ctx = this@ToggleMappingsTile
 
                 when {
-                    !isServiceEnabled -> {
+                    serviceState == AccessibilityServiceState.DISABLED -> {
                         qsTile.label = str(R.string.tile_service_disabled)
                         qsTile.contentDescription =
                             str(R.string.tile_accessibility_service_disabled_content_description)
@@ -92,7 +93,7 @@ class ToggleMappingsTile : TileService(), LifecycleOwner {
     override fun onClick() {
         super.onClick()
 
-        if (!serviceAdapter.isEnabled.value) return
+        if (serviceAdapter.state.value == AccessibilityServiceState.DISABLED) return
 
         if (useCase.isPaused.firstBlocking()) {
             useCase.resume()

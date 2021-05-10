@@ -16,7 +16,7 @@ import java.util.*
  * Created by sds100 on 27/01/2020.
  */
 
-class ChooseAppViewModel internal constructor(
+class ChooseAppViewModel constructor(
     private val useCase: DisplayAppsUseCase,
 ) : ViewModel() {
 

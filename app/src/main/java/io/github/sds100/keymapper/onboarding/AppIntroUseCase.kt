@@ -5,6 +5,7 @@ import android.os.Build
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.fingerprintmaps.AreFingerprintGesturesSupportedUseCase
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
@@ -23,7 +24,7 @@ class AppIntroUseCaseImpl(
     private val preferenceRepository: PreferenceRepository,
     private val fingerprintGesturesSupportedUseCase: AreFingerprintGesturesSupportedUseCase
 ) : AppIntroUseCase {
-    override val isAccessibilityServiceEnabled: Flow<Boolean> = serviceAdapter.isEnabled
+    override val accessibilityServiceState: Flow<AccessibilityServiceState> = serviceAdapter.state
 
     override val hasDndAccessPermission: Flow<Boolean> = channelFlow {
         send(permissionAdapter.isGranted(Permission.ACCESS_NOTIFICATION_POLICY))
@@ -60,6 +61,10 @@ class AppIntroUseCaseImpl(
         serviceAdapter.enableService()
     }
 
+    override fun restartAccessibilityService() {
+        serviceAdapter.restartService()
+    }
+
     override fun requestDndAccess() {
         permissionAdapter.request(Permission.ACCESS_NOTIFICATION_POLICY)
     }
@@ -72,7 +77,7 @@ class AppIntroUseCaseImpl(
 }
 
 interface AppIntroUseCase {
-    val isAccessibilityServiceEnabled: Flow<Boolean>
+    val accessibilityServiceState: Flow<AccessibilityServiceState>
     val hasDndAccessPermission: Flow<Boolean>
     val isBatteryOptimised: Flow<Boolean>
     val fingerprintGesturesSupported: Flow<Boolean?>
@@ -80,6 +85,7 @@ interface AppIntroUseCase {
     fun deviceHasFingerprintReader(): Boolean
     fun ignoreBatteryOptimisation()
     fun enableAccessibilityService()
+    fun restartAccessibilityService()
     fun requestDndAccess()
 
     fun shownAppIntro()

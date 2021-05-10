@@ -14,6 +14,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.system.JobSchedulerHelper
 import io.github.sds100.keymapper.system.SettingsUtils
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
@@ -52,7 +53,7 @@ class AndroidInputMethodAdapter(
         suspend fun invalidate() {
             when {
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-                    && serviceAdapter.isEnabled.first() -> send(true)
+                    && serviceAdapter.state.first() == AccessibilityServiceState.ENABLED -> send(true)
 
                 permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS) -> send(true)
 
@@ -69,7 +70,7 @@ class AndroidInputMethodAdapter(
         }
 
         launch {
-            serviceAdapter.isEnabled.collectLatest {
+            serviceAdapter.state.collectLatest {
                 invalidate()
             }
         }
@@ -173,7 +174,7 @@ class AndroidInputMethodAdapter(
 
         var failed = true
 
-        if (failed && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && serviceAdapter.isEnabled.value) {
+        if (failed && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && serviceAdapter.state.value == AccessibilityServiceState.ENABLED) {
             serviceAdapter.send(ChangeIme(imeId)).onSuccess {
                 failed = false
             }

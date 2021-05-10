@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
 import io.github.sds100.keymapper.system.accessibility.MyAccessibilityService
 import splitties.toast.toast
 
@@ -17,19 +18,23 @@ class LaunchKeyMapShortcutActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (ServiceLocator.serviceAdapter(this).isEnabled.value) {
-            if (intent.action == MyAccessibilityService.ACTION_TRIGGER_KEYMAP_BY_UID) {
-                Intent(MyAccessibilityService.ACTION_TRIGGER_KEYMAP_BY_UID).apply {
-                    setPackage(Constants.PACKAGE_NAME)
+        val accessibilityServiceState = ServiceLocator.serviceAdapter(this).state.value
 
-                    val uuid = intent.getStringExtra(MyAccessibilityService.EXTRA_KEYMAP_UID)
-                    putExtra(MyAccessibilityService.EXTRA_KEYMAP_UID, uuid)
+        when (accessibilityServiceState) {
+            AccessibilityServiceState.ENABLED ->
+                if (intent.action == MyAccessibilityService.ACTION_TRIGGER_KEYMAP_BY_UID) {
+                    Intent(MyAccessibilityService.ACTION_TRIGGER_KEYMAP_BY_UID).apply {
+                        setPackage(Constants.PACKAGE_NAME)
 
-                    sendBroadcast(this)
+                        val uuid = intent.getStringExtra(MyAccessibilityService.EXTRA_KEYMAP_UID)
+                        putExtra(MyAccessibilityService.EXTRA_KEYMAP_UID, uuid)
+
+                        sendBroadcast(this)
+                    }
                 }
-            }
-        } else {
-            toast(R.string.error_accessibility_service_disabled)
+
+            AccessibilityServiceState.CRASHED -> toast(R.string.error_accessibility_service_crashed)
+            AccessibilityServiceState.DISABLED -> toast(R.string.error_accessibility_service_disabled)
         }
 
         finish()

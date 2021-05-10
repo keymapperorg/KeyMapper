@@ -38,7 +38,7 @@ class AccessibilityServiceAdapter(
 
     val serviceOutputEvents = MutableSharedFlow<Event>()
 
-    override val isEnabled = MutableStateFlow(getIsEnabled())
+    override val state = MutableStateFlow(AccessibilityServiceState.DISABLED)
 
     private val permissionAdapter: PermissionAdapter by lazy { ServiceLocator.permissionAdapter(ctx) }
 
@@ -52,33 +52,27 @@ class AccessibilityServiceAdapter(
                 override fun onChange(selfChange: Boolean, uri: Uri?) {
                     super.onChange(selfChange, uri)
 
-                    isEnabled.value = getIsEnabled()
+                    coroutineScope.launch {
+                        state.value = getState()
+                    }
                 }
             }
 
             ctx.contentResolver.registerContentObserver(uri, false, observer)
         }
+
+        coroutineScope.launch {
+            state.value = getState()
+        }
     }
 
     override suspend fun send(event: Event): Result<*> {
 
-        if (!isEnabled.value) {
+        if (state.value == AccessibilityServiceState.DISABLED) {
             return Error.AccessibilityServiceDisabled
         }
 
-        val key = "ping_service"
-
-        //wait to start collecting
-        coroutineScope.launch {
-            delay(100)
-            serviceOutputEvents.emit(Ping(key))
-        }
-
-        val pong: Pong? = withTimeoutOrNull(2000L) {
-            eventReceiver.first { it == Pong(key) } as Pong?
-        }
-
-        if (pong == null) {
+        if (state.value == AccessibilityServiceState.CRASHED) {
             return Error.AccessibilityServiceCrashed
         }
 
@@ -169,8 +163,25 @@ class AccessibilityServiceAdapter(
         }
     }
 
+    override suspend fun isCrashed(): Boolean {
+        val key = "ping_service"
+
+        coroutineScope.launch {
+            delay(100)
+            serviceOutputEvents.emit(Ping(key))
+        }
+
+        val pong: Pong? = withTimeoutOrNull(2000L) {
+            eventReceiver.first { it == Pong(key) } as Pong?
+        }
+
+        return pong == null
+    }
+
     fun updateWhetherServiceIsEnabled() {
-        isEnabled.value = getIsEnabled()
+        coroutineScope.launch {
+            state.value = getState()
+        }
     }
 
     private fun enableWithWriteSecureSettings() {
@@ -220,7 +231,7 @@ class AccessibilityServiceAdapter(
         }
     }
 
-    private fun getIsEnabled(): Boolean {
+    private suspend fun getState(): AccessibilityServiceState {
         /* get a list of all the enabled accessibility services.
          * The AccessibilityManager.getEnabledAccessibilityServices() method just returns an empty
          * list. :(*/
@@ -229,19 +240,25 @@ class AccessibilityServiceAdapter(
             Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
         )
 
-        //it can be null if the user has never interacted with accessibility settings before
-        if (settingValue != null) {
-            /* cant just use .contains because the debug and release accessibility service both contain
-               io.github.sds100.keymapper. the enabled_accessibility_services are stored as
-
-                 io.github.sds100.keymapper.debug/io.github.sds100.keymapper.service.MyAccessibilityService
-                 :io.github.sds100.keymapper/io.github.sds100.keymapper.service.MyAccessibilityService
-
-                 without the new line before the :
-            */
-            return settingValue.split(':').any { it.split('/')[0] == ctx.packageName }
+        if (settingValue == null) {
+            return AccessibilityServiceState.DISABLED
         }
 
-        return false
+        //it can be null if the user has never interacted with accessibility settings before
+        /* cant just use .contains because the debug and release accessibility service both contain
+           io.github.sds100.keymapper. the enabled_accessibility_services are stored as
+
+             io.github.sds100.keymapper.debug/io.github.sds100.keymapper.service.MyAccessibilityService
+             :io.github.sds100.keymapper/io.github.sds100.keymapper.service.MyAccessibilityService
+
+             without the new line before the :
+        */
+        val isEnabled = settingValue.split(':').any { it.split('/')[0] == ctx.packageName }
+
+        return when{
+            isCrashed() && isEnabled -> AccessibilityServiceState.CRASHED
+            isEnabled -> AccessibilityServiceState.ENABLED
+            else-> AccessibilityServiceState.DISABLED
+        }
     }
 }

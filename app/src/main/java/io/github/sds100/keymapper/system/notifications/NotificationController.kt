@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
 import io.github.sds100.keymapper.mappings.fingerprintmaps.AreFingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
 import io.github.sds100.keymapper.system.accessibility.ControlAccessibilityServiceUseCase
 import io.github.sds100.keymapper.system.inputmethod.ShowHideInputMethodUseCase
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
@@ -65,6 +66,9 @@ class NotificationController(
         private const val ACTION_START_SERVICE =
             "${Constants.PACKAGE_NAME}.ACTION_START_ACCESSIBILITY_SERVICE"
 
+        private const val ACTION_RESTART_SERVICE =
+            "${Constants.PACKAGE_NAME}.ACTION_RESTART_ACCESSIBILITY_SERVICE"
+
         private const val ACTION_STOP_SERVICE =
             "${Constants.PACKAGE_NAME}.ACTION_STOP_ACCESSIBILITY_SERVICE"
 
@@ -101,10 +105,10 @@ class NotificationController(
 
         combine(
             manageNotifications.showToggleMappingsNotification,
-            controlAccessibilityService.isEnabled,
+            controlAccessibilityService.state,
             pauseMappings.isPaused
-        ) { show, isServiceEnabled, areMappingsPaused ->
-            invalidateToggleMappingsNotification(show, isServiceEnabled, areMappingsPaused)
+        ) { show, serviceState, areMappingsPaused ->
+            invalidateToggleMappingsNotification(show, serviceState, areMappingsPaused)
         }.launchIn(coroutineScope)
 
         manageNotifications.showImePickerNotification.onEach { show ->
@@ -191,6 +195,7 @@ class NotificationController(
                 ACTION_PAUSE_MAPPINGS -> pauseMappings.pause()
                 ACTION_START_SERVICE -> controlAccessibilityService.enable()
                 ACTION_STOP_SERVICE -> controlAccessibilityService.disable()
+                ACTION_RESTART_SERVICE -> controlAccessibilityService.restart()
                 ACTION_DISMISS_TOGGLE_MAPPINGS -> manageNotifications.dismiss(ID_TOGGLE_MAPPINGS)
                 ACTION_OPEN_KEY_MAPPER -> _openApp.emit(Unit)
                 ACTION_SHOW_IME_PICKER -> showImePicker.show(fromForeground = false)
@@ -218,7 +223,7 @@ class NotificationController(
         coroutineScope.launch {
             invalidateToggleMappingsNotification(
                 show = manageNotifications.showToggleMappingsNotification.first(),
-                isServiceEnabled = controlAccessibilityService.isEnabled.first(),
+                serviceState = controlAccessibilityService.state.first(),
                 areMappingsPaused = pauseMappings.isPaused.first()
             )
         }
@@ -226,7 +231,7 @@ class NotificationController(
 
     private fun invalidateToggleMappingsNotification(
         show: Boolean,
-        isServiceEnabled: Boolean,
+        serviceState: AccessibilityServiceState,
         areMappingsPaused: Boolean
     ) {
         manageNotifications.createChannel(
@@ -242,14 +247,20 @@ class NotificationController(
             return
         }
 
-        if (isServiceEnabled) {
-            if (areMappingsPaused) {
-                manageNotifications.show(mappingsPausedNotification())
-            } else {
-                manageNotifications.show(mappingsResumedNotification())
+        when(serviceState){
+            AccessibilityServiceState.ENABLED -> {
+                if (areMappingsPaused) {
+                    manageNotifications.show(mappingsPausedNotification())
+                } else {
+                    manageNotifications.show(mappingsResumedNotification())
+                }
             }
-        } else {
-            manageNotifications.show(accessibilityServiceDisabledNotification())
+
+            AccessibilityServiceState.CRASHED ->
+                manageNotifications.show(accessibilityServiceCrashedNotification())
+
+            AccessibilityServiceState.DISABLED ->
+                manageNotifications.show(accessibilityServiceDisabledNotification())
         }
     }
 
@@ -328,6 +339,27 @@ class NotificationController(
                 NotificationModel.Action(
                     ACTION_OPEN_KEY_MAPPER,
                     getString(R.string.notification_action_open_app)
+                )
+            )
+        )
+    }
+
+    private fun accessibilityServiceCrashedNotification(): NotificationModel {
+        return NotificationModel(
+            id = ID_TOGGLE_MAPPINGS,
+            channel = CHANNEL_TOGGLE_KEYMAPS,
+            title = getString(R.string.notification_accessibility_service_crashed_title),
+            text = getString(R.string.notification_accessibility_service_crashed_text),
+            icon = R.drawable.ic_notification_pause,
+            onClickActionId = ACTION_RESTART_SERVICE,
+            showOnLockscreen = true,
+            onGoing = true,
+            priority = NotificationCompat.PRIORITY_MIN,
+            bigTextStyle = true,
+            actions = listOf(
+                NotificationModel.Action(
+                    ACTION_RESTART_SERVICE,
+                    getString(R.string.notification_action_restart_accessibility_service)
                 )
             )
         )

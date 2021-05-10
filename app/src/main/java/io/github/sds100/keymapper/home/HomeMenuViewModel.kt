@@ -6,6 +6,7 @@ import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCase
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
 import io.github.sds100.keymapper.util.ui.PopupViewModel
 import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.DialogResponse
@@ -22,7 +23,7 @@ import kotlinx.coroutines.runBlocking
  */
 class HomeMenuViewModel(
     private val coroutineScope: CoroutineScope,
-    private val showAlerts: ShowHomeScreenAlertsUseCase,
+    private val alertsUseCase: ShowHomeScreenAlertsUseCase,
     private val pauseMappings: PauseMappingsUseCase,
     private val backupRestore: BackupRestoreMappingsUseCase,
     private val showImePicker: ShowInputMethodPickerUseCase,
@@ -32,17 +33,21 @@ class HomeMenuViewModel(
     val toggleMappingsButtonState: StateFlow<ToggleMappingsButtonState?> =
         combine(
             pauseMappings.isPaused,
-            showAlerts.isAccessibilityServiceEnabled
-        ) { isPaused, isServiceEnabled ->
-            val text = when {
-                //must be first
-                !isServiceEnabled -> getString(R.string.button_enable_accessibility_service)
-                isPaused -> getString(R.string.action_tap_to_resume_keymaps)
-                else -> getString(R.string.action_tap_to_pause_keymaps)
+            alertsUseCase.accessibilityServiceState
+        ) { isPaused, serviceState ->
+            val text = when(serviceState){
+                AccessibilityServiceState.ENABLED ->
+                    if (isPaused){
+                        getString(R.string.action_tap_to_resume_keymaps)
+                    }else{
+                        getString(R.string.action_tap_to_pause_keymaps)
+                    }
+                AccessibilityServiceState.CRASHED ->  getString(R.string.button_restart_accessibility_service)
+                AccessibilityServiceState.DISABLED ->  getString(R.string.button_enable_accessibility_service)
             }
 
             val tint = when {
-                !isServiceEnabled || !isPaused -> getColor(R.color.red)
+                serviceState != AccessibilityServiceState.ENABLED || !isPaused -> getColor(R.color.red)
                 else -> getColor(R.color.green)
             }
 
@@ -76,7 +81,8 @@ class HomeMenuViewModel(
             val areMappingsPaused = pauseMappings.isPaused.first()
 
             when {
-                !showAlerts.isAccessibilityServiceEnabled.first() -> showAlerts.enableAccessibilityService()
+                alertsUseCase.accessibilityServiceState.first() == AccessibilityServiceState.CRASHED -> alertsUseCase.restartAccessibilityService()
+                alertsUseCase.accessibilityServiceState.first() == AccessibilityServiceState.DISABLED -> alertsUseCase.enableAccessibilityService()
                 areMappingsPaused -> pauseMappings.resume()
                 !areMappingsPaused -> pauseMappings.pause()
             }
