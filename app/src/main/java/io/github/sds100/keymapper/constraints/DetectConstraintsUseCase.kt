@@ -17,19 +17,7 @@ class DetectConstraintsUseCaseImpl(
     private val displayAdapter: DisplayAdapter
 ) : DetectConstraintsUseCase {
 
-    override fun isSatisfied(constraintState: ConstraintState): Boolean {
-        val snapshot = getSnapshot()
-        when (constraintState.mode) {
-            ConstraintMode.AND -> {
-                return constraintState.constraints.all { snapshot.isSatisfied(it) }
-            }
-            ConstraintMode.OR -> {
-                return constraintState.constraints.any { snapshot.isSatisfied(it) }
-            }
-        }
-    }
-
-    private fun getSnapshot(): ConstraintSnapshot {
+    override fun getSnapshot(): ConstraintSnapshot {
         return ConstraintSnapshot(
             appInForeground = accessibilityService.rootNode?.packageName,
             connectedBluetoothDevices = devicesAdapter.connectedBluetoothDevices.value,
@@ -41,5 +29,5 @@ class DetectConstraintsUseCaseImpl(
 }
 
 interface DetectConstraintsUseCase {
-    fun isSatisfied(constraintState: ConstraintState): Boolean
+    fun getSnapshot(): ConstraintSnapshot
 }

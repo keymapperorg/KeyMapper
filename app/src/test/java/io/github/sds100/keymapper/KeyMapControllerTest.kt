@@ -3,6 +3,7 @@ package io.github.sds100.keymapper
 import android.view.KeyEvent
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.github.sds100.keymapper.actions.*
+import io.github.sds100.keymapper.constraints.ConstraintSnapshot
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.keymaps.DetectKeyMapsUseCase
@@ -13,6 +14,7 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
+import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.util.*
 import junitparams.JUnitParamsRunner
 import junitparams.Parameters
@@ -133,7 +135,13 @@ class KeyMapControllerTest {
         performActionsUseCase = mock()
 
         detectConstraintsUseCase = mock {
-            on { isSatisfied(any()) } doReturn true
+            on { getSnapshot() } doReturn ConstraintSnapshot(
+                appInForeground = null,
+                appsPlayingMedia = emptyList(),
+                orientation = Orientation.ORIENTATION_0,
+                connectedBluetoothDevices = emptySet(),
+                isScreenOn = true
+            )
         }
 
         controller = KeyMapController(

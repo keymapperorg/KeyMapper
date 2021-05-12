@@ -578,10 +578,17 @@ class KeyMapController(
         var consumeEvent = false
         val isModifierKeyCode = isModifierKey(event.keyCode)
         var mappedToParallelTriggerAction = false
+        
+        //only load if necessarily because there is a 20-30ms delay
+        val constraintSnapshot by lazy{ detectConstraints.getSnapshot()}
 
         //consume sequence trigger keys until their timeout has been reached
         sequenceTriggersTimeoutTimes.forEachIndexed { triggerIndex, timeoutTime ->
-            if (!areSequenceTriggerConstraintsSatisfied(triggerIndex)) return@forEachIndexed
+            val constraintState = sequenceTriggerConstraints[triggerIndex]
+
+            if (constraintState.constraints.isNotEmpty()) {
+                if (!constraintSnapshot.isSatisfied(constraintState)) return@forEachIndexed
+            }
 
             if (timeoutTime != -1L && currentTime >= timeoutTime) {
                 lastMatchedSequenceEventIndices[triggerIndex] = -1
@@ -643,9 +650,11 @@ class KeyMapController(
                     }
                 }
 
-                val constraints = parallelTriggerConstraints[triggerIndex]
+                val constraintState = parallelTriggerConstraints[triggerIndex]
 
-                if (!detectConstraints.isSatisfied(constraints)) continue
+                if (constraintState.constraints.isNotEmpty()) {
+                    if (!constraintSnapshot.isSatisfied(constraintState)) continue
+                }
 
                 for (actionKey in parallelTriggerActions[triggerIndex]) {
                     if (canActionBePerformed[actionKey] == null) {
@@ -889,7 +898,9 @@ class KeyMapController(
 
         if (detectSequenceTriggers) {
             sequenceTriggers.forEachIndexed { triggerIndex, trigger ->
-                if (!areSequenceTriggerConstraintsSatisfied(triggerIndex)) return@forEachIndexed
+                val constraints = sequenceTriggerConstraints[triggerIndex]
+
+                if (!constraintSnapshot.isSatisfied(constraints)) return@forEachIndexed
 
                 trigger.keys.forEachIndexed { keyIndex, key ->
                     val matchingEvent = when {
@@ -946,6 +957,8 @@ class KeyMapController(
             imitateUpKeyEvent = true
             keyCodesToImitateUpAction.remove(keyCode)
         }
+        
+        val constraintSnapshot by lazy { detectConstraints.getSnapshot() }
 
         if (detectSequenceDoublePresses) {
             //iterate over each possible double press event to detect
@@ -955,7 +968,11 @@ class KeyMapController(
                     sequenceTriggers[eventLocation.triggerIndex].keys[eventLocation.keyIndex]
                 val triggerIndex = eventLocation.triggerIndex
 
-                if (!areSequenceTriggerConstraintsSatisfied(triggerIndex)) continue
+                val constraintState = sequenceTriggerConstraints[triggerIndex]
+
+                if (constraintState.constraints.isNotEmpty()) {
+                    if (!constraintSnapshot.isSatisfied(constraintState)) continue
+                }
 
                 if (lastMatchedSequenceEventIndices[triggerIndex] != eventLocation.keyIndex - 1) continue
 
@@ -1006,7 +1023,11 @@ class KeyMapController(
 
         if (detectSequenceTriggers) {
             triggerLoop@ for ((triggerIndex, lastMatchedEventIndex) in lastMatchedSequenceEventIndices.withIndex()) {
-                if (!areSequenceTriggerConstraintsSatisfied(triggerIndex)) continue
+                val constraintState = sequenceTriggerConstraints[triggerIndex]
+
+                if (constraintState.constraints.isNotEmpty()) {
+                    if (!constraintSnapshot.isSatisfied(constraintState)) continue
+                }
 
                 //the index of the next event to match in the trigger
                 val nextIndex = lastMatchedEventIndex + 1
@@ -1756,12 +1777,6 @@ class KeyMapController(
 
             else -> false
         }
-    }
-
-    private fun areSequenceTriggerConstraintsSatisfied(triggerIndex: Int): Boolean {
-        val constraints = sequenceTriggerConstraints[triggerIndex]
-
-        return detectConstraints.isSatisfied(constraints)
     }
 
     private val Event.withShortPress: Event
