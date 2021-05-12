@@ -3,6 +3,7 @@ package io.github.sds100.keymapper
 import androidx.core.app.NotificationCompat
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import io.github.sds100.keymapper.onboarding.FakeOnboardingUseCase
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
 import io.github.sds100.keymapper.system.notifications.ManageNotificationsUseCase
 import io.github.sds100.keymapper.system.notifications.NotificationController
 import io.github.sds100.keymapper.system.notifications.NotificationModel
@@ -62,7 +63,7 @@ class NotificationControllerTest {
             },
             showImePicker = mock(),
             controlAccessibilityService = mock {
-                on { isEnabled }.then { flow<Boolean> {} }
+                on { state }.then { flow<AccessibilityServiceState> {} }
             },
             toggleCompatibleIme = mock {
                 on { sufficientPermissions }.then { flow<Boolean> {} }
