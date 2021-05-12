@@ -56,7 +56,11 @@ abstract class SimpleMappingController(
     ) {
         if (!mapping.isEnabled) return
         if (mapping.actionList.isEmpty()) return
-        if (!detectConstraintsUseCase.isSatisfied(mapping.constraintState)) return
+
+        if (mapping.constraintState.constraints.isNotEmpty()) {
+            val constraintSnapshot = detectConstraintsUseCase.getSnapshot()
+            if (!constraintSnapshot.isSatisfied(mapping.constraintState)) return
+        }
 
         repeatJobs[mappingId]?.forEach { it.cancel() }
 

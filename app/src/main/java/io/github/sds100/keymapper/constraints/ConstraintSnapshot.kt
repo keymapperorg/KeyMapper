@@ -34,4 +34,15 @@ data class ConstraintSnapshot(
             Constraint.ScreenOn -> isScreenOn
         }
     }
+
+    fun isSatisfied(constraintState: ConstraintState): Boolean {
+        return when (constraintState.mode) {
+            ConstraintMode.AND -> {
+                constraintState.constraints.all { isSatisfied(it) }
+            }
+            ConstraintMode.OR -> {
+                constraintState.constraints.any { isSatisfied(it) }
+            }
+        }
+    }
 }
