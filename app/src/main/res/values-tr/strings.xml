@@ -295,15 +295,10 @@
     <string name="notification_action_dismiss">Yoksay</string>
     <string name="notification_accessibility_service_disabled_title">Erileşebirlik hizmeti kapalı</string>
     <string name="notification_accessibility_service_disabled_text">Erişilebilirlik hizmetini başlatmak için dokun.</string>
-    <string name="notification_action_open_app">Uygulamayı aç</string>
     <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
     <string name="notification_action_stop_acc_service">Servisi Durdur</string>
     <string name="notification_keyboard_hidden_title">Klavye gizli!</string>
-    <string name="notification_keyboard_hidden_text">Klavyeyi yeniden göstermek için tıkla.</string>
     <string name="notification_toggle_keyboard_title">Keymapper klavyesini değiştir</string>
-    <string name="notification_toggle_keyboard_text">Keymapper klavyesine geçmek için dokun.</string>
-    <string name="notification_ime_service_disabled_title">Keymapper klavyesi kapalı!</string>
-    <string name="notification_ime_service_disabled_text">Keymapper klavyesini etkinleştirmek için dokun.</string>
     <string name="notification_feature_fingerprint_title">Keymapper\'la parmak izi hareketlerini yeniden eşleyin!</string>
     <!-- Notification strings -->
     <!--Preference titles and summaries-->
