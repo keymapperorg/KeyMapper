@@ -32,8 +32,10 @@ class AndroidNotificationAdapter(
             setContentTitle(notification.title)
             setContentText(notification.text)
 
-            val pendingIntent = createActionPendingIntent(notification.onClickActionId)
-            setContentIntent(pendingIntent)
+            if (notification.onClickActionId != null) {
+                val pendingIntent = createActionPendingIntent(notification.onClickActionId)
+                setContentIntent(pendingIntent)
+            }
 
             setAutoCancel(notification.autoCancel)
             priority = notification.priority

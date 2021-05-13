@@ -431,10 +431,12 @@
     <string name="notification_ime_persistent_title">Keyboard picker</string>
 
     <string name="notification_keymaps_resumed_title">Running</string>
-    <string name="notification_keymaps_resumed_text">Tap to pause your mappings.</string>
+    <string name="notification_keymaps_resumed_text">Tap to open Key Mapper.</string>
+    <string name="notification_action_pause">Pause</string>
 
     <string name="notification_keymaps_paused_title">Paused</string>
-    <string name="notification_keymaps_paused_text">Tap to resume your mappings.</string>
+    <string name="notification_keymaps_paused_text">Tap to open Key Mapper.</string>
+    <string name="notification_action_resume">Resume</string>
 
     <string name="notification_action_dismiss">Dismiss</string>
 
@@ -446,18 +448,15 @@
     <string name="notification_accessibility_service_crashed_title">Accessibility service needs restarting!</string>
     <string name="notification_accessibility_service_crashed_text">The accessibility service has crashed! Your phone might be aggressively killing it! Tap to restart the accessibility service.</string>
 
-    <string name="notification_action_open_app">Open app</string>
     <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
     <string name="notification_action_stop_acc_service">Stop service</string>
 
     <string name="notification_keyboard_hidden_title">Keyboard is hidden!</string>
-    <string name="notification_keyboard_hidden_text">Tap to start showing the keyboard again.</string>
+    <string name="notification_keyboard_hidden_text">Tap \'show keyboard\' to start showing the keyboard again.</string>
 
     <string name="notification_toggle_keyboard_title">Toggle Key Mapper keyboard</string>
-    <string name="notification_toggle_keyboard_text">Tap to switch to and from the Key Mapper keyboard.</string>
+    <string name="notification_toggle_keyboard_text">Tap \'toggle\' to switch to and from the Key Mapper keyboard.</string>
     <string name="notification_toggle_keyboard_action">Toggle</string>
-    <string name="notification_ime_service_disabled_title">Key Mapper keyboard disabled!</string>
-    <string name="notification_ime_service_disabled_text">Tap to enable the Key Mapper keyboard.</string>
 
     <string name="notification_feature_fingerprint_title">Remap fingerprint gestures with Key Mapper!</string>
     <string name="notification_feature_fingerprint_text">Your device supports remapping swipes on the fingerprint sensor. Tap to start remapping!</string>

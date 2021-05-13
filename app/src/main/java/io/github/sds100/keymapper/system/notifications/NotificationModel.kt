@@ -12,9 +12,10 @@ data class NotificationModel(
     val text: String,
     @DrawableRes val icon: Int,
     /**
-     * The id to send back to the notification id when the notification is clicked
+     * The id to send back to the notification id when the notification is tapped or null if nothing
+     * should happen when the notification is tapped.
      */
-    val onClickActionId: String,
+    val onClickActionId: String?,
     val showOnLockscreen: Boolean,
     val onGoing: Boolean,
     val priority: Int,

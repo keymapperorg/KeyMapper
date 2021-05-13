@@ -271,23 +271,23 @@ class NotificationController(
             title = getString(R.string.notification_keymaps_paused_title),
             text = getString(R.string.notification_keymaps_paused_text),
             icon = R.drawable.ic_notification_play,
-            onClickActionId = ACTION_RESUME_MAPPINGS,
+            onClickActionId = ACTION_OPEN_KEY_MAPPER,
             showOnLockscreen = true,
             onGoing = true,
             priority = NotificationCompat.PRIORITY_MIN,
             actions = listOf(
                 NotificationModel.Action(
-                    ACTION_STOP_SERVICE,
-                    getString(R.string.notification_action_stop_acc_service)
+                    ACTION_RESUME_MAPPINGS,
+                    getString(R.string.notification_action_resume)
                 ),
                 NotificationModel.Action(
                     ACTION_DISMISS_TOGGLE_MAPPINGS,
                     getString(R.string.notification_action_dismiss)
                 ),
                 NotificationModel.Action(
-                    ACTION_OPEN_KEY_MAPPER,
-                    getString(R.string.notification_action_open_app)
-                )
+                    ACTION_STOP_SERVICE,
+                    getString(R.string.notification_action_stop_acc_service)
+                ),
             )
         )
     }
@@ -299,23 +299,23 @@ class NotificationController(
             title = getString(R.string.notification_keymaps_resumed_title),
             text = getString(R.string.notification_keymaps_resumed_text),
             icon = R.drawable.ic_notification_pause,
-            onClickActionId = ACTION_PAUSE_MAPPINGS,
+            onClickActionId = ACTION_OPEN_KEY_MAPPER,
             showOnLockscreen = true,
             onGoing = true,
             priority = NotificationCompat.PRIORITY_MIN,
             actions = listOf(
                 NotificationModel.Action(
-                    ACTION_STOP_SERVICE,
-                    getString(R.string.notification_action_stop_acc_service)
+                    ACTION_PAUSE_MAPPINGS,
+                    getString(R.string.notification_action_pause)
                 ),
                 NotificationModel.Action(
                     ACTION_DISMISS_TOGGLE_MAPPINGS,
                     getString(R.string.notification_action_dismiss)
                 ),
                 NotificationModel.Action(
-                    ACTION_OPEN_KEY_MAPPER,
-                    getString(R.string.notification_action_open_app)
-                )
+                    ACTION_STOP_SERVICE,
+                    getString(R.string.notification_action_stop_acc_service)
+                ),
             )
         )
     }
@@ -335,10 +335,6 @@ class NotificationController(
                 NotificationModel.Action(
                     ACTION_DISMISS_TOGGLE_MAPPINGS,
                     getString(R.string.notification_action_dismiss)
-                ),
-                NotificationModel.Action(
-                    ACTION_OPEN_KEY_MAPPER,
-                    getString(R.string.notification_action_open_app)
                 )
             )
         )
@@ -386,7 +382,7 @@ class NotificationController(
             title = getString(R.string.notification_toggle_keyboard_title),
             text = getString(R.string.notification_toggle_keyboard_text),
             icon = R.drawable.ic_notification_keyboard,
-            onClickActionId = ACTION_TOGGLE_KEYBOARD,
+            onClickActionId = null,
             showOnLockscreen = true,
             onGoing = true,
             priority = NotificationCompat.PRIORITY_MIN,
