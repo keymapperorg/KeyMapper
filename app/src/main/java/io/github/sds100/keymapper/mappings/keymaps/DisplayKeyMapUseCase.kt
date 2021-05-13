@@ -7,6 +7,10 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger
 import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTriggerError
 import io.github.sds100.keymapper.system.permissions.Permission
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 
 /**
  * Created by sds100 on 04/04/2021.
@@ -22,6 +26,10 @@ class DisplayKeyMapUseCaseImpl(
             KeyEvent.KEYCODE_VOLUME_UP
         )
     }
+
+    override val invalidateTriggerErrors = merge(
+        permissionAdapter.onPermissionsUpdate
+    )
 
     override fun getTriggerErrors(trigger: KeyMapTrigger): List<KeyMapTriggerError> {
         val errors = mutableListOf<KeyMapTriggerError>()
@@ -43,5 +51,6 @@ class DisplayKeyMapUseCaseImpl(
 }
 
 interface DisplayKeyMapUseCase : DisplaySimpleMappingUseCase {
+    val invalidateTriggerErrors: Flow<Unit>
     fun getTriggerErrors(trigger: KeyMapTrigger): List<KeyMapTriggerError>
 }

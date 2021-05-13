@@ -144,19 +144,22 @@ class ConfigKeyMapTriggerViewModel(
                     return@collectLatest
                 }
 
-                displayKeyMap.getTriggerErrors(triggerState.data).map { error ->
-                    when (error) {
-                        KeyMapTriggerError.DND_ACCESS_DENIED -> TextListItem.Error(
-                            id = error.toString(),
-                            text = getString(R.string.trigger_error_dnd_access_denied),
-                        )
+                val errorListItems =
+                    displayKeyMap.getTriggerErrors(triggerState.data).map { error ->
+                        when (error) {
+                            KeyMapTriggerError.DND_ACCESS_DENIED -> TextListItem.Error(
+                                id = error.toString(),
+                                text = getString(R.string.trigger_error_dnd_access_denied),
+                            )
 
-                        KeyMapTriggerError.SCREEN_OFF_ROOT_DENIED -> TextListItem.Error(
-                            id = error.toString(),
-                            text = getString(R.string.trigger_error_screen_off_root_permission_denied)
-                        )
+                            KeyMapTriggerError.SCREEN_OFF_ROOT_DENIED -> TextListItem.Error(
+                                id = error.toString(),
+                                text = getString(R.string.trigger_error_screen_off_root_permission_denied)
+                            )
+                        }
                     }
-                }
+                
+                _errorListItems.value = errorListItems
             }
         }
 
@@ -167,7 +170,7 @@ class ConfigKeyMapTriggerViewModel(
         }
 
         coroutineScope.launch {
-            displayKeyMap.invalidateActionErrors.collectLatest {
+            displayKeyMap.invalidateTriggerErrors.collectLatest {
                 rebuildErrorList.emit(rebuildErrorList.first())
             }
         }
