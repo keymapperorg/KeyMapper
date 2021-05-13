@@ -20,7 +20,6 @@ import junitparams.JUnitParamsRunner
 import junitparams.Parameters
 import junitparams.naming.TestCaseName
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestCoroutineDispatcher
@@ -158,33 +157,129 @@ class KeyMapControllerTest {
     }
 
     /**
+     * issue #664
+     */
+    @Test
+    fun `imitate button presses when a short press trigger with multiple keys fails`() =
+        coroutineScope.runBlockingTest {
+            //GIVEN
+            val trigger = parallelTrigger(
+                triggerKey(keyCode = 1),
+                triggerKey(keyCode = 2),
+            )
+
+            keyMapListFlow.value = listOf(
+                KeyMap(
+                    trigger = trigger,
+                    actionList = listOf(TEST_ACTION)
+                )
+            )
+
+            inOrder(detectKeyMapsUseCase, performActionsUseCase) {
+                //WHEN
+                inputKeyEvent(keyCode = 1, action = KeyEvent.ACTION_DOWN)
+                inputKeyEvent(keyCode = 1, action = KeyEvent.ACTION_UP)
+
+                //THEN
+                verify(detectKeyMapsUseCase, times(1)).imitateButtonPress(keyCode = 1)
+                verifyNoMoreInteractions()
+
+                //verify nothing happens and no key events are consumed when the 2nd key in the trigger is pressed
+                //WHEN
+                assertThat(inputKeyEvent(keyCode = 2, action = KeyEvent.ACTION_DOWN), `is`(false))
+                assertThat(inputKeyEvent(keyCode = 2, action = KeyEvent.ACTION_UP), `is`(false))
+
+                //THEN
+                verify(detectKeyMapsUseCase, never()).imitateButtonPress(keyCode = 1)
+                verify(detectKeyMapsUseCase, never()).imitateButtonPress(keyCode = 2)
+                verify(performActionsUseCase, never()).perform(action = TEST_ACTION.data)
+
+                //verify the action is performed and no keys are imitated when triggering the key map
+                //WHEN
+                assertThat(inputKeyEvent(keyCode = 1, action = KeyEvent.ACTION_DOWN), `is`(true))
+                assertThat(inputKeyEvent(keyCode = 2, action = KeyEvent.ACTION_DOWN), `is`(true))
+                assertThat(inputKeyEvent(keyCode = 1, action = KeyEvent.ACTION_UP), `is`(true))
+                assertThat(inputKeyEvent(keyCode = 2, action = KeyEvent.ACTION_UP), `is`(true))
+
+                //THEN
+                verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+                verifyNoMoreInteractions()
+
+                //change the order of the keys being released
+                //WHEN
+                assertThat(inputKeyEvent(keyCode = 1, action = KeyEvent.ACTION_DOWN), `is`(true))
+                assertThat(inputKeyEvent(keyCode = 2, action = KeyEvent.ACTION_DOWN), `is`(true))
+                assertThat(inputKeyEvent(keyCode = 2, action = KeyEvent.ACTION_UP), `is`(true))
+                assertThat(inputKeyEvent(keyCode = 1, action = KeyEvent.ACTION_UP), `is`(true))
+
+                //THEN
+                verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+                verifyNoMoreInteractions()
+            }
+        }
+
+    /**
+     * issue #664
+     */
+    @Test
+    fun `don't imitate button press when a short press trigger is triggered`() =
+        coroutineScope.runBlockingTest {
+            //GIVEN
+            val trigger = parallelTrigger(
+                triggerKey(keyCode = 1),
+                triggerKey(keyCode = 2),
+            )
+
+            keyMapListFlow.value = listOf(
+                KeyMap(
+                    trigger = trigger,
+                    actionList = listOf(TEST_ACTION)
+                )
+            )
+
+            //WHEN
+            inputKeyEvent(keyCode = 1, action = KeyEvent.ACTION_DOWN)
+            inputKeyEvent(keyCode = 2, action = KeyEvent.ACTION_DOWN)
+            inputKeyEvent(keyCode = 1, action = KeyEvent.ACTION_UP)
+            inputKeyEvent(keyCode = 2, action = KeyEvent.ACTION_UP)
+
+            //THEN
+            verify(detectKeyMapsUseCase, never()).imitateButtonPress(keyCode = 1)
+            verify(detectKeyMapsUseCase, never()).imitateButtonPress(keyCode = 2)
+        }
+
+    /**
      * issue #662
      */
     @Test
-    fun `don't repeat when trigger is released for an action that has these options when the trigger is held down`()=coroutineScope.runBlockingTest{
-        //GIVEN
-        val action = KeyMapAction(
-            data = KeyEventAction(keyCode = 1),
-            repeat = true,
-            delayBeforeNextAction = 10,
-            repeatDelay = 10,
-            repeatRate = 190
-        )
+    fun `don't repeat when trigger is released for an action that has these options when the trigger is held down`() =
+        coroutineScope.runBlockingTest {
+            //GIVEN
+            val action = KeyMapAction(
+                data = KeyEventAction(keyCode = 1),
+                repeat = true,
+                delayBeforeNextAction = 10,
+                repeatDelay = 10,
+                repeatRate = 190
+            )
 
-        val keyMap= KeyMap(trigger = singleKeyTrigger(triggerKey(keyCode = 2)), actionList = listOf(action))
+            val keyMap = KeyMap(
+                trigger = singleKeyTrigger(triggerKey(keyCode = 2)),
+                actionList = listOf(action)
+            )
 
-        keyMapListFlow.value = listOf(keyMap)
-        //WHEN
+            keyMapListFlow.value = listOf(keyMap)
+            //WHEN
 
-        mockTriggerKeyInput(triggerKey(keyCode = 2), delay = 1)
+            mockTriggerKeyInput(triggerKey(keyCode = 2), delay = 1)
 
-        //see if the action repeats
-        coroutineScope.advanceTimeBy(500)
-        controller.reset()
+            //see if the action repeats
+            coroutineScope.advanceTimeBy(500)
+            controller.reset()
 
-        //THEN
-        verify(performActionsUseCase, times(1)).perform(action.data)
-    }
+            //THEN
+            verify(performActionsUseCase, times(1)).perform(action.data)
+        }
 
     /**
      * See #626 in issue tracker
@@ -309,17 +404,19 @@ class KeyMapControllerTest {
             )
 
 
-            val trigger2 = parallelTrigger(triggerKey(clickType = ClickType.LONG_PRESS, keyCode = 1))
+            val trigger2 =
+                parallelTrigger(triggerKey(clickType = ClickType.LONG_PRESS, keyCode = 1))
             val action2 = KeyMapAction(
                 data = KeyEventAction(keyCode = 3),
                 repeat = true
             )
 
 
-            val trigger3 = sequenceTrigger(triggerKey(clickType = ClickType.DOUBLE_PRESS, keyCode = 1))
+            val trigger3 =
+                sequenceTrigger(triggerKey(clickType = ClickType.DOUBLE_PRESS, keyCode = 1))
             val action3 = KeyMapAction(data = KeyEventAction(keyCode = 4))
 
-            keyMapListFlow.value= listOf(
+            keyMapListFlow.value = listOf(
                 KeyMap(0, trigger = trigger1, actionList = listOf(action1)),
                 KeyMap(1, trigger = trigger2, actionList = listOf(action2)),
                 KeyMap(2, trigger = trigger3, actionList = listOf(action3))
@@ -371,10 +468,11 @@ class KeyMapControllerTest {
                 stopRepeatingWhenTriggerPressedAgain = true
             )
 
-            val trigger2 = parallelTrigger(triggerKey(clickType = ClickType.LONG_PRESS, keyCode = 1))
-            val action2 =  KeyMapAction(data = KeyEventAction(keyCode = 3), repeat = true)
+            val trigger2 =
+                parallelTrigger(triggerKey(clickType = ClickType.LONG_PRESS, keyCode = 1))
+            val action2 = KeyMapAction(data = KeyEventAction(keyCode = 3), repeat = true)
 
-       keyMapListFlow.value = listOf(
+            keyMapListFlow.value = listOf(
                 KeyMap(0, trigger = trigger1, actionList = listOf(action1)),
                 KeyMap(1, trigger = trigger2, actionList = listOf(action2))
             )
@@ -421,10 +519,11 @@ class KeyMapControllerTest {
                 stopRepeatingWhenTriggerPressedAgain = true
             )
 
-            val trigger2 = sequenceTrigger(triggerKey(clickType = ClickType.DOUBLE_PRESS, keyCode = 1))
-             val action2 = KeyMapAction(data = KeyEventAction(keyCode = 3),)
+            val trigger2 =
+                sequenceTrigger(triggerKey(clickType = ClickType.DOUBLE_PRESS, keyCode = 1))
+            val action2 = KeyMapAction(data = KeyEventAction(keyCode = 3))
 
-           keyMapListFlow.value = listOf(
+            keyMapListFlow.value = listOf(
                 KeyMap(0, trigger = trigger1, actionList = listOf(action1)),
                 KeyMap(1, trigger = trigger2, actionList = listOf(action2))
             )
