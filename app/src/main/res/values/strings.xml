@@ -390,6 +390,8 @@
     <string name="dialog_message_enable_accessibility_service_to_test_action">Turn on the accessibility service so that you can test the action.</string>
     <string name="dialog_message_restart_accessibility_service_to_test_action">Restart the accessibility service by turning it <i>off</i> and <i>on</i> so that you can test the action.</string>
 
+    <string name="dialog_message_screen_pinning_warning">Using this trigger may cause a black screen when you unlock your device after using the screen pinning setting in your device\'s settings. This can be fixed with a reboot. This doesn\'t happen on all devices so beware and turn off the setting if it does!</string>
+
     <string name="pos_yes">Yes</string>
     <string name="pos_done">Done</string>
     <string name="pos_opt_in">Opt in</string>

@@ -184,6 +184,14 @@ class ConfigKeyMapTriggerViewModel(
                 showPopup("caps_lock_message", dialog)
             }
 
+            if (it.keyCode == KeyEvent.KEYCODE_BACK){
+                val dialog = PopupUi.Ok(
+                    message = getString(R.string.dialog_message_screen_pinning_warning)
+                )
+
+                showPopup("screen_pinning_message", dialog)
+            }
+
             config.addTriggerKey(it.keyCode, it.device)
         }.launchIn(coroutineScope)
 
