@@ -84,7 +84,7 @@
 
     <string name="email_subject">Key Mapper query</string>
     <string name="email_default_message">Does the help page solve your problem? What is your device?\n\n Which OEM skin or ROM are you using?\n\n Please describe the issue you\'re having:</string>
-s
+
     <string name="action_title_intent_start_activity">Start activity: %s</string>
     <string name="action_title_intent_start_service">Start service: %s</string>
     <string name="action_title_intent_send_broadcast">Send broadcast: %s</string>
@@ -756,7 +756,7 @@ s
     <string name="fixed_need_write_secure_settings_permission">WRITE_SECURE_SETTINGS permission granted.</string>
 
     <string name="error_ime_service_disabled_status_layout">Your selected input method needs to be enabled for “Key event”, “Key”, “Text” and some other actions to work.</string>
-    <string name="error_key_mapper_ime_service_disabled">None of the Key Mapper keyboards are enabled!</string>
+    <string name="error_key_mapper_ime_service_disabled">A Key Mapper keyboard needs to be enabled!</string>
     <string name="error_ime_service_enabled">A Key Mapper keyboard is enabled!</string>
     <string name="error_critical_ime_service_disabled">A Key Mapper keyboard must be enabled and selected for some of your actions to work!</string>
     <string name="error_ime_not_found">Can\'t find the %s input method</string>
