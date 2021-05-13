@@ -92,7 +92,7 @@ s
     <string name="clipboard_label_keymap_uid">Key map UUID</string>
     <string name="check_box_key_event_option_use_shell">Use shell (ROOT only)</string>
 
-    <string name="trigger_error_dnd_access_denied">If you are remapping a volume button you need to grant Key Mapper permission to modify the Do Not Disturb mode if you want the buttons to work as expected in Do Not Disturb mode!</string>
+    <string name="trigger_error_dnd_access_denied">Key Mapper requires permission to modify the Do Not Disturb mode if you want the buttons to work as expected in Do Not Disturb mode!</string>
     <string name="trigger_error_dnd_access_denied_short">This trigger will not work as expected in Do Not Disturb mode!</string>
     <string name="trigger_error_screen_off_root_permission_denied">The option to trigger when the screen is off needs root permission to work!</string>
     <string name="trigger_error_screen_off_root_permission_denied_short">The option to trigger when the screen is off will not work!</string>
