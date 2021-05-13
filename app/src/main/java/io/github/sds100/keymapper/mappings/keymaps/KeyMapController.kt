@@ -49,10 +49,10 @@ class KeyMapController(
          */
         fun performActionOnDown(trigger: KeyMapTrigger): Boolean {
             return (trigger.keys.size <= 1
-                && trigger.keys.getOrNull(0)?.clickType != ClickType.DOUBLE_PRESS
-                && trigger.mode == TriggerMode.Undefined)
+                    && trigger.keys.getOrNull(0)?.clickType != ClickType.DOUBLE_PRESS
+                    && trigger.mode == TriggerMode.Undefined)
 
-                || trigger.mode is TriggerMode.Parallel
+                    || trigger.mode is TriggerMode.Parallel
         }
     }
 
@@ -121,7 +121,7 @@ class KeyMapController(
                         }
 
                         if ((keyMap.trigger.mode == TriggerMode.Sequence
-                                || keyMap.trigger.mode == TriggerMode.Undefined)
+                                    || keyMap.trigger.mode == TriggerMode.Undefined)
                             && key.clickType == ClickType.DOUBLE_PRESS
                         ) {
                             doublePressKeys.add(TriggerKeyLocation(sequenceTriggerIndex, keyIndex))
@@ -299,6 +299,8 @@ class KeyMapController(
                     parallelTriggersOverlappingParallelTriggers
                         .map { it.toIntArray() }
                         .toTypedArray()
+                parallelTriggersAwaitingReleaseAfterBeingTriggered =
+                    BooleanArray(parallelTriggers.size)
 
                 detectSequenceLongPresses = longPressSequenceTriggerKeys.isNotEmpty()
                 this.longPressSequenceTriggerKeys = longPressSequenceTriggerKeys.toTypedArray()
@@ -392,10 +394,17 @@ class KeyMapController(
     private var parallelTriggerConstraints = arrayOf<ConstraintState>()
 
     /**
-     * Stores whether each event in each parallel trigger need to be "released" after being held down.
+     * Stores whether each event in each parallel trigger need to be released after being held down.
      * The order matches with [parallelTriggers].
      */
     private var parallelTriggerEventsAwaitingRelease = arrayOf<BooleanArray>()
+
+    /**
+     * Whether each parallel trigger is awaiting to be released after performing an action.
+     * This is only set to true if the trigger has been successfully triggered and *all* the keys
+     * have not been released.
+     */
+    private var parallelTriggersAwaitingReleaseAfterBeingTriggered = booleanArrayOf()
 
     /**
      * An array of the index of the last matched event in each parallel trigger.
@@ -578,9 +587,9 @@ class KeyMapController(
         var consumeEvent = false
         val isModifierKeyCode = isModifierKey(event.keyCode)
         var mappedToParallelTriggerAction = false
-        
+
         //only load if necessarily because there is a 20-30ms delay
-        val constraintSnapshot by lazy{ detectConstraints.getSnapshot()}
+        val constraintSnapshot by lazy { detectConstraints.getSnapshot() }
 
         //consume sequence trigger keys until their timeout has been reached
         sequenceTriggersTimeoutTimes.forEachIndexed { triggerIndex, timeoutTime ->
@@ -690,6 +699,7 @@ class KeyMapController(
 
                     if (nextIndex == parallelTriggers[triggerIndex].keys.lastIndex) {
                         mappedToParallelTriggerAction = true
+                        parallelTriggersAwaitingReleaseAfterBeingTriggered[triggerIndex] = true
 
                         val actionKeys = parallelTriggerActions[triggerIndex]
 
@@ -957,7 +967,7 @@ class KeyMapController(
             imitateUpKeyEvent = true
             keyCodesToImitateUpAction.remove(keyCode)
         }
-        
+
         val constraintSnapshot by lazy { detectConstraints.getSnapshot() }
 
         if (detectSequenceDoublePresses) {
@@ -1112,18 +1122,25 @@ class KeyMapController(
 
                 var lastHeldDownEventIndex = -1
 
+                val triggeredSuccessfully =
+                    parallelTriggersAwaitingReleaseAfterBeingTriggered[triggerIndex]
+
                 for (keyIndex in trigger.keys.indices) {
-                    val awaitingRelease =
+                    val keyAwaitingRelease =
                         parallelTriggerEventsAwaitingRelease[triggerIndex][keyIndex]
 
                     //short press
-                    if (awaitingRelease && trigger.matchingEventAtIndex(
+                    if (keyAwaitingRelease && trigger.matchingEventAtIndex(
                             event.withShortPress,
                             keyIndex
                         )
                     ) {
                         if (isSingleKeyTrigger) {
                             shortPressSingleKeyTriggerJustReleased = true
+                        }
+
+                        if (!triggeredSuccessfully) {
+                            imitateDownUpKeyEvent = true
                         }
 
                         if (modifierKeyEventActions) {
@@ -1134,10 +1151,9 @@ class KeyMapController(
                                     if (action.data is KeyEventAction && isModifierKey(action.data.keyCode)) {
                                         val actionMetaState =
                                             KeyEventUtils.modifierKeycodeToMetaState(action.data.keyCode)
+
                                         metaStateFromActionsToRemove =
-                                            metaStateFromActionsToRemove.withFlag(
-                                                actionMetaState
-                                            )
+                                            metaStateFromActionsToRemove.withFlag(actionMetaState)
                                     }
                                 }
                             }
@@ -1151,7 +1167,7 @@ class KeyMapController(
                     }
 
                     //long press
-                    if (awaitingRelease && trigger.matchingEventAtIndex(
+                    if (keyAwaitingRelease && trigger.matchingEventAtIndex(
                             event.withLongPress,
                             keyIndex
                         )
@@ -1192,6 +1208,10 @@ class KeyMapController(
 
                         lastHeldDownEventIndex = keyIndex
                     }
+                }
+
+                if (parallelTriggerEventsAwaitingRelease[triggerIndex].all { !it }){
+                    parallelTriggersAwaitingReleaseAfterBeingTriggered[triggerIndex] = false
                 }
 
                 lastMatchedParallelEventIndices[triggerIndex] = lastHeldDownEventIndex
@@ -1377,6 +1397,8 @@ class KeyMapController(
             BooleanArray(parallelTriggers[it].keys.size) { false }
         }
 
+        parallelTriggersAwaitingReleaseAfterBeingTriggered = BooleanArray(parallelTriggers.size)
+
         performActionsOnFailedDoublePress.clear()
         performActionsOnFailedLongPress.clear()
 
@@ -1559,6 +1581,8 @@ class KeyMapController(
 
         parallelTriggerActionJobs[triggerIndex] = coroutineScope.launch {
 
+            parallelTriggersAwaitingReleaseAfterBeingTriggered[triggerIndex] = true
+
             if (parallelTriggers[triggerIndex].showToast) {
                 showToast = true
             }
@@ -1663,31 +1687,31 @@ class KeyMapController(
             TriggerKeyDevice.Any -> this.keyCode == event.keyCode && this.clickType == event.clickType
             is TriggerKeyDevice.External ->
                 this.keyCode == event.keyCode
-                    && event.descriptor != null
-                    && event.descriptor == this.device.descriptor
-                    && this.clickType == event.clickType
+                        && event.descriptor != null
+                        && event.descriptor == this.device.descriptor
+                        && this.clickType == event.clickType
 
             TriggerKeyDevice.Internal ->
                 this.keyCode == event.keyCode
-                    && event.descriptor == null
-                    && this.clickType == event.clickType
+                        && event.descriptor == null
+                        && this.clickType == event.clickType
         }
     }
 
     private fun TriggerKey.matchesWithOtherKey(otherKey: TriggerKey): Boolean {
         return when (this.device) {
             TriggerKeyDevice.Any -> this.keyCode == otherKey.keyCode
-                && this.clickType == otherKey.clickType
+                    && this.clickType == otherKey.clickType
 
             is TriggerKeyDevice.External ->
                 this.keyCode == otherKey.keyCode
-                    && this.device == otherKey.device
-                    && this.clickType == otherKey.clickType
+                        && this.device == otherKey.device
+                        && this.clickType == otherKey.clickType
 
             TriggerKeyDevice.Internal ->
                 this.keyCode == otherKey.keyCode
-                    && otherKey.device == TriggerKeyDevice.Internal
-                    && this.clickType == otherKey.clickType
+                        && otherKey.device == TriggerKeyDevice.Internal
+                        && this.clickType == otherKey.clickType
         }
     }
 
