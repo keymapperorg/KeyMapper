@@ -34,6 +34,7 @@ class GetActionErrorUseCaseImpl(
 
     override val invalidateActionErrors = merge(
         inputMethodAdapter.chosenIme.drop(1).map { },
+        inputMethodAdapter.inputMethods.drop(1).map { }, //invalidate when the input methods change
         permissionAdapter.onPermissionsUpdate
     )
 
