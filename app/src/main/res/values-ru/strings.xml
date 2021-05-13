@@ -296,15 +296,10 @@
     <string name="notification_action_dismiss">Отклонить</string>
     <string name="notification_accessibility_service_disabled_title">Служба специальных возможностей отключена</string>
     <string name="notification_accessibility_service_disabled_text">Нажмите, чтобы запустить службу специальных возможностей.</string>
-    <string name="notification_action_open_app">Открыть приложение</string>
     <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
     <string name="notification_action_stop_acc_service">Остановить службу</string>
     <string name="notification_keyboard_hidden_title">Клавиатура скрыта!</string>
-    <string name="notification_keyboard_hidden_text">Нажмите, чтобы снова начать отображать клавиатуру.</string>
     <string name="notification_toggle_keyboard_title">Сменить клавиатуру Key Mapper</string>
-    <string name="notification_toggle_keyboard_text">Нажмите, чтобы переключиться на и с клавиатуры Key Mapper.</string>
-    <string name="notification_ime_service_disabled_title">Клавиатура Mapper выключена!</string>
-    <string name="notification_ime_service_disabled_text">Нажмите, чтобы включить клавиатуру Mapper.</string>
     <string name="notification_feature_fingerprint_title">Переопределить жесты отпечатков пальцев с помощью Key Mapper!</string>
     <string name="notification_feature_fingerprint_text">Ваше устройство поддерживает переопределение жестов по датчику отпечатков пальцев. Нажмите, чтобы начать переопределение!</string>
     <string name="notification_setup_chosen_devices_again_title">Вам нужно снова произвести некоторые настройки!</string>
