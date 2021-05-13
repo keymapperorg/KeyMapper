@@ -289,15 +289,10 @@
     <string name="notification_action_dismiss">忽略</string>
     <string name="notification_accessibility_service_disabled_title">无障碍服务已禁用</string>
     <string name="notification_accessibility_service_disabled_text">点击以启动无障碍服务。</string>
-    <string name="notification_action_open_app">打开应用</string>
     <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
     <string name="notification_action_stop_acc_service">停止服务</string>
     <string name="notification_keyboard_hidden_title">键盘已隐藏！</string>
-    <string name="notification_keyboard_hidden_text">点击重新显示键盘。</string>
     <string name="notification_toggle_keyboard_title">切换Key Mapper键盘</string>
-    <string name="notification_toggle_keyboard_text">点击以切换到Key Mapper键盘，或从Key Mapper键盘切换。</string>
-    <string name="notification_ime_service_disabled_title">Key Mapper键盘已禁用！</string>
-    <string name="notification_ime_service_disabled_text">点击以启用Key Mapper键盘。</string>
     <string name="notification_feature_fingerprint_title">使用Key Mapper重新映射指纹手势！</string>
     <string name="notification_feature_fingerprint_text">你的设备支持重新映射指纹传感器上的滑动。点击开始重新映射！</string>
     <!-- Notification strings -->
