@@ -187,7 +187,8 @@ object Inject {
             ShowHomeScreenAlertsUseCaseImpl(
                 ServiceLocator.preferenceRepository(ctx),
                 ServiceLocator.permissionAdapter(ctx),
-                UseCases.controlAccessibilityService(ctx)
+                UseCases.controlAccessibilityService(ctx),
+                UseCases.pauseMappings(ctx)
             ),
             UseCases.showImePicker(ctx),
             UseCases.onboarding(ctx),

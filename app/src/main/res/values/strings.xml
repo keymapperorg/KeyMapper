@@ -98,6 +98,8 @@
     <string name="trigger_error_screen_off_root_permission_denied_short">The option to trigger when the screen is off will not work!</string>
 
     <string name="home_error_is_battery_optimised">Your mappings will stop working randomly! Tap \'Fix\' to fix this.</string>
+    <string name="home_error_key_maps_paused">Your mappings are paused!</string>
+    <string name="home_error_key_maps_paused_button">Unpause</string>
     <string name="home_error_accessibility_service_is_disabled">The accessibility service needs to be turned on for your mappings to work!</string>
     <string name="home_error_accessibility_service_is_crashed">The accessibility service is enabled but it has been killed or it crashed! Restart the service to fix this problem.</string>
     <string name="home_success_accessibility_service_is_enabled">The accessibility service is enabled! Your mappings should work.</string>

@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.home
 
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
 import io.github.sds100.keymapper.system.accessibility.ControlAccessibilityServiceUseCase
 import io.github.sds100.keymapper.system.permissions.Permission
@@ -18,7 +19,8 @@ import kotlinx.coroutines.flow.map
 class ShowHomeScreenAlertsUseCaseImpl(
     private val preferences: PreferenceRepository,
     private val permissions: PermissionAdapter,
-    private val controlService: ControlAccessibilityServiceUseCase
+    private val controlService: ControlAccessibilityServiceUseCase,
+    private val pauseMappingsUseCase: PauseMappingsUseCase
 ) : ShowHomeScreenAlertsUseCase {
     override val hideAlerts: Flow<Boolean> =
         preferences.get(Keys.hideHomeScreenAlerts).map { it ?: false }
@@ -43,6 +45,12 @@ class ShowHomeScreenAlertsUseCaseImpl(
     override fun enableAccessibilityService() {
         controlService.enable()
     }
+
+    override val areMappingsPaused: Flow<Boolean> =pauseMappingsUseCase.isPaused
+
+    override fun resumeMappings() {
+        pauseMappingsUseCase.resume()
+    }
 }
 
 interface ShowHomeScreenAlertsUseCase {
@@ -53,4 +61,6 @@ interface ShowHomeScreenAlertsUseCase {
     val hideAlerts: Flow<Boolean>
     fun disableBatteryOptimisation()
     val isBatteryOptimised: Flow<Boolean>
+    val areMappingsPaused: Flow<Boolean>
+    fun resumeMappings()
 }

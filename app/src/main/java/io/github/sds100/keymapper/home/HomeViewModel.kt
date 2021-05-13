@@ -43,6 +43,7 @@ class HomeViewModel(
         const val ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM = "accessibility_service_crashed"
         const val ID_ACCESSIBILITY_SERVICE_ENABLED_LIST_ITEM = "accessibility_service_enabled"
         const val ID_BATTERY_OPTIMISATION_LIST_ITEM = "battery_optimised"
+        const val ID_MAPPINGS_PAUSED_LIST_ITEM = "mappings_paused"
     }
 
     private val multiSelectProvider: MultiSelectProvider = MultiSelectProviderImpl()
@@ -148,8 +149,9 @@ class HomeViewModel(
     val errorListState = combine(
         showAlertsUseCase.isBatteryOptimised,
         showAlertsUseCase.accessibilityServiceState,
-        showAlertsUseCase.hideAlerts
-    ) { isBatteryOptimised, serviceState, isHidden ->
+        showAlertsUseCase.hideAlerts,
+        showAlertsUseCase.areMappingsPaused
+    ) { isBatteryOptimised, serviceState, isHidden, areMappingsPaused ->
         val listItems = sequence {
 
             when (serviceState) {
@@ -184,6 +186,16 @@ class HomeViewModel(
                     )
                 )
             } // don't show a success message for this
+
+            if (areMappingsPaused){
+                yield(
+                    TextListItem.Error(
+                        ID_MAPPINGS_PAUSED_LIST_ITEM,
+                        getString(R.string.home_error_key_maps_paused),
+                        customButtonText = getString(R.string.home_error_key_maps_paused_button)
+                    )
+                )
+            }
         }.toList()
         HomeErrorListState(listItems, !isHidden)
     }.flowOn(Dispatchers.Default)
@@ -386,6 +398,7 @@ class HomeViewModel(
                 ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM -> showAlertsUseCase.enableAccessibilityService()
                 ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM -> showAlertsUseCase.restartAccessibilityService()
                 ID_BATTERY_OPTIMISATION_LIST_ITEM -> showAlertsUseCase.disableBatteryOptimisation()
+                ID_MAPPINGS_PAUSED_LIST_ITEM-> showAlertsUseCase.resumeMappings()
             }
         }
     }
