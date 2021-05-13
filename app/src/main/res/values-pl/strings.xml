@@ -169,9 +169,6 @@
     <string name="notification_accessibility_service_disabled_text">Kliknij aby uruchomić usługę ułatwień dostępu.</string>
     <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
     <string name="notification_keyboard_hidden_title">Klawiatura jest ukryta!</string>
-    <string name="notification_keyboard_hidden_text">Kliknij aby znowu wyświetlić klawiaturę.</string>
-    <string name="notification_toggle_keyboard_text">Kliknij aby przełączyć się na lub z klawiatury Key Mapper.</string>
-    <string name="notification_ime_service_disabled_text">Kliknij aby włączyć klawiaturę Key Mapper.</string>
     <!-- Notification strings -->
     <!--Preference titles and summaries-->
     <string name="title_pref_long_press_delay">Domyślny czas przytrzymania (ms)</string>
