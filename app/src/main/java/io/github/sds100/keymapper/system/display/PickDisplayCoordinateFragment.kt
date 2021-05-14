@@ -73,7 +73,6 @@ class PickDisplayCoordinateFragment : Fragment() {
     val binding: FragmentPickCoordinateBinding
         get() = _binding!!
 
-
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater,

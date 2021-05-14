@@ -22,7 +22,7 @@ class CreateKeyMapShortcutViewModel(
 
     private val listItemCreator = KeyMapListItemCreator(listUseCase, resourceProvider)
 
-    private val _state = MutableStateFlow<ListUiState<KeyMapListItem>>(ListUiState.Loading)
+    private val _state = MutableStateFlow<State<List<KeyMapListItem>>>(State.Loading)
     val state = _state.asStateFlow()
 
     private val _returnIntentResult = MutableSharedFlow<Intent>()
@@ -34,20 +34,17 @@ class CreateKeyMapShortcutViewModel(
         combine(
             rebuildUiState,
             listUseCase.showDeviceDescriptors
-        ) { mapping, showDeviceDescriptors ->
-            if (mapping !is State.Data) {
-                _state.value = ListUiState.Loading
-                return@combine
-            }
-
+        ) { keyMapListState, showDeviceDescriptors ->
             val selectionUiState =
                 KeyMapListItem.SelectionUiState(isSelected = false, isSelectable = false)
 
-            _state.value = mapping.data.map {
-                val keyMapListUiState = listItemCreator.create(it, showDeviceDescriptors)
+            _state.value = keyMapListState.mapData { keyMapList ->
+                keyMapList.map { keyMap ->
+                    val keyMapListUiState = listItemCreator.create(keyMap, showDeviceDescriptors)
 
-                KeyMapListItem(keyMapListUiState, selectionUiState)
-            }.createListState()
+                    KeyMapListItem(keyMapListUiState, selectionUiState)
+                }
+            }
         }.launchIn(viewModelScope)
 
         viewModelScope.launch {

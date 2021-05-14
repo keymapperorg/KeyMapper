@@ -34,7 +34,7 @@ class SystemActionListFragment : SimpleRecyclerViewFragment<ListItem>() {
     override var searchStateKey: String? = SEARCH_STATE_KEY
     override var requestKey: String? = REQUEST_KEY
 
-    override val listItems: Flow<ListUiState<ListItem>>
+    override val listItems: Flow<State<List<ListItem>>>
         get() = viewModel.state.map { it.listItems }
 
     override fun subscribeUi(binding: FragmentSimpleRecyclerviewBinding) {

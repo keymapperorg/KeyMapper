@@ -77,19 +77,17 @@ class ConfigKeyMapTriggerViewModel(
         }
     }.stateIn(coroutineScope, SharingStarted.Eagerly, R.id.radioButtonUndefined)
 
-    val triggerKeyListItems: StateFlow<ListUiState<TriggerKeyListItem>> =
+    val triggerKeyListItems: StateFlow<State<List<TriggerKeyListItem>>> =
         combine(
             config.mapping,
             displayKeyMap.showDeviceDescriptors
         ) { mappingState, showDeviceDescriptors ->
-            when (mappingState) {
-                is State.Data -> {
-                    val trigger = mappingState.data.trigger
-                    createListItems(trigger, showDeviceDescriptors).createListState()
-                }
-                is State.Loading -> ListUiState.Loading
+
+            mappingState.mapData { keyMap ->
+                createListItems(keyMap.trigger, showDeviceDescriptors)
             }
-        }.stateIn(coroutineScope, SharingStarted.Eagerly, ListUiState.Loading)
+
+        }.stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
 
     val clickTypeRadioButtonsVisible: StateFlow<Boolean> = config.mapping.map { state ->
         when (state) {
@@ -158,7 +156,7 @@ class ConfigKeyMapTriggerViewModel(
                             )
                         }
                     }
-                
+
                 _errorListItems.value = errorListItems
             }
         }
@@ -184,7 +182,7 @@ class ConfigKeyMapTriggerViewModel(
                 showPopup("caps_lock_message", dialog)
             }
 
-            if (it.keyCode == KeyEvent.KEYCODE_BACK){
+            if (it.keyCode == KeyEvent.KEYCODE_BACK) {
                 val dialog = PopupUi.Ok(
                     message = getString(R.string.dialog_message_screen_pinning_warning)
                 )
@@ -384,7 +382,7 @@ class ConfigKeyMapTriggerViewModel(
             TriggerKeyListItem(
                 id = key.uid,
                 keyCode = key.keyCode,
-                name = KeyEventUtils.keycodeToString(key.keyCode),
+                name = KeyEventUtils.keyCodeToString(key.keyCode),
                 clickTypeString = clickTypeString,
                 extraInfo = extraInfo,
                 linkType = linkDrawable,

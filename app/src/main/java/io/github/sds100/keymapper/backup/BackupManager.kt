@@ -238,6 +238,7 @@ class BackupManagerImpl(
                 JsonMigration(11, 12) { json ->
                     Migration_11_12.migrateKeyMap(json, deviceInfoList ?: JsonArray())
                 },
+                JsonMigration(12, 13) { json -> json } //do nothing because this added the log table
             )
 
             keymapListJsonArray?.forEach { keyMap ->
@@ -257,8 +258,8 @@ class BackupManagerImpl(
 
             val migratedFingerprintMaps = mutableListOf<FingerprintMapEntity>()
 
-            val newFingerprintMapMigrations = listOf<JsonMigration>(
-                //no migrations yet
+            val newFingerprintMapMigrations = listOf(
+                JsonMigration(12, 13) { json -> json } //do nothing because this added the log table
             )
 
             if (rootElement.contains(NAME_FINGERPRINT_MAP_LIST) && backupDbVersion >= 12) {

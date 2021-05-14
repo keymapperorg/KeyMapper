@@ -49,7 +49,7 @@ class KeyMapListItemCreator(
                     ClickType.DOUBLE_PRESS -> append(doublePressString)
                 }
 
-                append(" ${KeyEventUtils.keycodeToString(key.keyCode)}")
+                append(" ${KeyEventUtils.keyCodeToString(key.keyCode)}")
 
                 val deviceName = when (key.device) {
                     is TriggerKeyDevice.Internal -> getString(R.string.this_device)

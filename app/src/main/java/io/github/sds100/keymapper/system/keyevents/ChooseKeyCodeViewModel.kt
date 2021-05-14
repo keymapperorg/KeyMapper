@@ -4,7 +4,7 @@ import android.view.KeyEvent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import io.github.sds100.keymapper.util.ui.ListUiState
+import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.filterByQuery
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -19,7 +19,7 @@ class ChooseKeyCodeViewModel : ViewModel() {
 
     val searchQuery = MutableStateFlow<String?>(null)
 
-    private val _state = MutableStateFlow<ListUiState<KeyCodeListItem>>(ListUiState.Loading)
+    private val _state = MutableStateFlow<State<List<KeyCodeListItem>>>(State.Loading)
     val state = _state.asStateFlow()
 
     private val allListItems = flow {

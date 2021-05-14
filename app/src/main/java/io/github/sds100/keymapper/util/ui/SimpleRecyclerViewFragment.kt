@@ -12,6 +12,8 @@ import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 abstract class SimpleRecyclerViewFragment<T>
     : RecyclerViewFragment<T, FragmentSimpleRecyclerviewBinding>() {
 
+    open val appBarMenu = R.menu.menu_recyclerview_fragment
+
     override fun bind(inflater: LayoutInflater, container: ViewGroup?) =
         FragmentSimpleRecyclerviewBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
@@ -29,7 +31,7 @@ abstract class SimpleRecyclerViewFragment<T>
     override fun getBottomAppBar(binding: FragmentSimpleRecyclerviewBinding): BottomAppBar? {
         if (isAppBarVisible) {
             //only inflate a menu if the app bar is visible because this takes a significant amount of time
-            binding.appBar.replaceMenu(R.menu.menu_recyclerview_fragment)
+            binding.appBar.replaceMenu(appBarMenu)
             binding.appBar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
         }
 

@@ -163,8 +163,12 @@ class AccessibilityServiceController(
         deviceId: Int,
         scanCode: Int = 0
     ): Boolean {
+        val detailedLogInfo =
+            "key code: $keyCode, device name: $deviceName, descriptor: $descriptor, device id: $deviceId, is external: $isExternal, meta state: $metaState, scan code: $scanCode"
+
         if (recordingTrigger) {
             if (action == KeyEvent.ACTION_DOWN) {
+                Timber.d("Recorded key ${KeyEvent.keyCodeToString(keyCode)}, $detailedLogInfo")
                 coroutineScope.launch {
                     outputEvents.emit(
                         RecordedTriggerKeyEvent(
@@ -206,10 +210,20 @@ class AccessibilityServiceController(
                     )
                 }
 
+                when (action) {
+                    KeyEvent.ACTION_DOWN -> Timber.d("Down ${KeyEvent.keyCodeToString(keyCode)} - consumed: $consume, $detailedLogInfo")
+                    KeyEvent.ACTION_UP -> Timber.d("Up ${KeyEvent.keyCodeToString(keyCode)} - consumed: $consume, $detailedLogInfo")
+                }
+
                 return consume
 
             } catch (e: Exception) {
                 Timber.e(e)
+            }
+        } else {
+            when (action) {
+                KeyEvent.ACTION_DOWN -> Timber.d("Down ${KeyEvent.keyCodeToString(keyCode)} - not filtering because paused, $detailedLogInfo")
+                KeyEvent.ACTION_UP -> Timber.d("Up ${KeyEvent.keyCodeToString(keyCode)} - not filtering because paused, $detailedLogInfo")
             }
         }
 

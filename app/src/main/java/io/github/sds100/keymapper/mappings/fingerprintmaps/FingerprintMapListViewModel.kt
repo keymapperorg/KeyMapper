@@ -19,7 +19,7 @@ class FingerprintMapListViewModel(
         resourceProvider
     )
 
-    private val _state = MutableStateFlow<ListUiState<FingerprintMapListItem>>(ListUiState.Loading)
+    private val _state = MutableStateFlow<State<List<FingerprintMapListItem>>>(State.Loading)
     val state = _state.asStateFlow()
 
     private val _launchConfigFingerprintMap = MutableSharedFlow<FingerprintMapId>()
@@ -35,11 +35,11 @@ class FingerprintMapListViewModel(
             rebuildUiState,
             useCase.showDeviceDescriptors
         ) { fingerprintMaps, showDeviceDescriptors ->
-            _state.value = withContext(Dispatchers.Default) {
+            val listItems =
                 fingerprintMaps.map { listItemCreator.create(it, showDeviceDescriptors) }
-                    .createListState()
-            }
-        }.launchIn(coroutineScope)
+
+            _state.value = State.Data(listItems)
+        }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
 
         coroutineScope.launch {
             useCase.fingerprintMaps.collectLatest {

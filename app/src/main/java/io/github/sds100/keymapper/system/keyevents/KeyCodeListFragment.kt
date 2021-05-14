@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.system.keyevents
 import androidx.fragment.app.activityViewModels
 import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.simple
-import io.github.sds100.keymapper.util.ui.ListUiState
+import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
 import io.github.sds100.keymapper.util.Inject
 import kotlinx.coroutines.flow.Flow
@@ -26,7 +26,7 @@ class KeyCodeListFragment : SimpleRecyclerViewFragment<KeyCodeListItem>() {
         Inject.chooseKeyCodeViewModel()
     }
 
-    override val listItems: Flow<ListUiState<KeyCodeListItem>>
+    override val listItems: Flow<State<List<KeyCodeListItem>>>
         get() = viewModel.state
 
     override fun populateList(recyclerView: EpoxyRecyclerView, listItems: List<KeyCodeListItem>) {

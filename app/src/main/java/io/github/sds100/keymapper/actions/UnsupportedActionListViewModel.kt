@@ -5,11 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.util.ui.ListUiState
-import io.github.sds100.keymapper.util.ui.createListState
 import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.getFullMessage
+import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -26,39 +25,41 @@ class UnsupportedActionListViewModel(
     }
 
     private val _state =
-        MutableStateFlow<ListUiState<UnsupportedActionListItem>>(ListUiState.Loading)
+        MutableStateFlow<State<List<UnsupportedActionListItem>>>(State.Loading)
     val state = _state.asStateFlow()
 
     init {
         viewModelScope.launch {
-                val unsupportedSystemActionsWithReasons = SystemActionId.values()
-                    .map { it to isSystemActionSupported.invoke(it) }
-                    .filter { it.second != null }
+            val unsupportedSystemActionsWithReasons = SystemActionId.values()
+                .map { it to isSystemActionSupported.invoke(it) }
+                .filter { it.second != null }
 
-                _state.value = sequence {
-                    if (!isTapCoordinateActionSupported) {
-                        yield(
-                            UnsupportedActionListItem(
-                                id = "tap_coordinate_action",
-                                description = getString(R.string.action_type_tap_coordinate),
-                                icon = getDrawable(R.drawable.ic_outline_touch_app_24),
-                                reason = Error.SdkVersionTooLow(Build.VERSION_CODES.N)
-                                    .getFullMessage(this@UnsupportedActionListViewModel)
-                            )
+            val listItems = sequence {
+                if (!isTapCoordinateActionSupported) {
+                    yield(
+                        UnsupportedActionListItem(
+                            id = "tap_coordinate_action",
+                            description = getString(R.string.action_type_tap_coordinate),
+                            icon = getDrawable(R.drawable.ic_outline_touch_app_24),
+                            reason = Error.SdkVersionTooLow(Build.VERSION_CODES.N)
+                                .getFullMessage(this@UnsupportedActionListViewModel)
                         )
-                    }
+                    )
+                }
 
-                    unsupportedSystemActionsWithReasons.forEach { (id, reason) ->
-                        yield(
-                            UnsupportedActionListItem(
-                                id.toString(),
-                                description = getString(SystemActionUtils.getTitle(id)),
-                                icon = SystemActionUtils.getIcon(id)?.let { getDrawable(it) },
-                                reason = reason!!.getFullMessage(this@UnsupportedActionListViewModel)
-                            )
+                unsupportedSystemActionsWithReasons.forEach { (id, reason) ->
+                    yield(
+                        UnsupportedActionListItem(
+                            id.toString(),
+                            description = getString(SystemActionUtils.getTitle(id)),
+                            icon = SystemActionUtils.getIcon(id)?.let { getDrawable(it) },
+                            reason = reason!!.getFullMessage(this@UnsupportedActionListViewModel)
                         )
-                    }
-                }.toList().createListState()
+                    )
+                }
+            }.toList()
+
+            _state.value = State.Data(listItems)
         }
     }
 

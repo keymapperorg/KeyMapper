@@ -110,8 +110,7 @@ class ConfigConstraintsViewModel(
         return when (state) {
             is State.Data ->
                 ConstraintListViewState(
-                    constraintList = state.data.constraints.map { createListItem(it) }
-                        .createListState(),
+                    constraintList = State.Data(state.data.constraints.map { createListItem(it) }),
                     showModeRadioButtons = state.data.constraints.size > 1,
                     isAndModeChecked = state.data.mode == ConstraintMode.AND,
                     isOrModeChecked = state.data.mode == ConstraintMode.OR
@@ -119,7 +118,7 @@ class ConfigConstraintsViewModel(
 
             is State.Loading ->
                 ConstraintListViewState(
-                    constraintList = ListUiState.Loading,
+                    constraintList = State.Loading,
                     showModeRadioButtons = false,
                     isAndModeChecked = false,
                     isOrModeChecked = false
@@ -129,7 +128,7 @@ class ConfigConstraintsViewModel(
 }
 
 data class ConstraintListViewState(
-    val constraintList: ListUiState<ConstraintListItem>,
+    val constraintList: State<List<ConstraintListItem>>,
     val showModeRadioButtons: Boolean,
     val isAndModeChecked: Boolean,
     val isOrModeChecked: Boolean

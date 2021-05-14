@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.actions
 import androidx.fragment.app.activityViewModels
 import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.simple
-import io.github.sds100.keymapper.util.ui.ListUiState
+import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.ui.TintType
 import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
@@ -19,7 +19,7 @@ class UnsupportedActionListFragment
         Inject.unsupportedActionListViewModel(requireContext())
     }
 
-    override val listItems: Flow<ListUiState<UnsupportedActionListItem>>
+    override val listItems: Flow<State<List<UnsupportedActionListItem>>>
         get() = viewModel.state
 
     override fun populateList(

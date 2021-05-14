@@ -265,7 +265,7 @@
     <string name="dialog_message_double_press_restricted_to_single_key">"不能同时双击多个键。"</string>
     <string name="dialog_message_parallel_trigger_order">这些按键需要按照从上到下的顺序按下。</string>
     <string name="dialog_message_sequence_trigger_explanation">“序列”触发器与并行触发器有超时。 这意味着在你按下第一个键后， 你将有一定的时间输入你设定触发器中的其余按键。 你添加到触发器的所有按键都不会执行他们通常的操作，直到超时为止。 你可以在“选项”选项卡中更改此超时。</string>
-    <string name="dialog_message_view_faq_and_use_discord_over_email">请查看常见问题解答是否已经回答了你的问题。如果没有，那么开发者会喜欢它，如果你在Discord服务器上寻求帮助和推荐功能。如果你没有Discord，你可以直接发送电子邮件给开发人员。</string>
+    <string name="dialog_message_send_feedback">请查看常见问题解答是否已经回答了你的问题。如果没有，那么开发者会喜欢它，如果你在Discord服务器上寻求帮助和推荐功能。如果你没有Discord，你可以直接发送电子邮件给开发人员。</string>
     <string name="dialog_message_bt_constraint_limitation">Android不允许应用获取已连接(未配对)的蓝牙设备列表。它们只有在连接和和断开连接时才能被应用检测到。因此，如果在无障碍服务启动前，蓝牙设备已经连接到了你的设备，你将必须重新连接它，为了让这个应用知道它已经连接了。</string>
     <string name="dialog_message_change_location_or_disable">要更改位置或关闭自动备份吗？</string>
     <string name="dialog_message_screen_constraints_limitation">屏幕开启/关闭约束，将只在你打开了“屏幕关闭时检测触发器”这个按键映射选项时工作。此选项仅支持部分按键(例如音量键)。如果你root了，就在帮助页面查看支持的按键列表。</string>

@@ -9,7 +9,6 @@ import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.filterByQuery
 import io.github.sds100.keymapper.util.mapData
 import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.util.ui.ListUiState
 import io.github.sds100.keymapper.util.ui.PopupViewModel
 import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.PopupUi
@@ -31,7 +30,7 @@ class ChooseAppShortcutViewModel internal constructor(
 
     val searchQuery = MutableStateFlow<String?>(null)
 
-    private val _state = MutableStateFlow<ListUiState<AppShortcutListItem>>(ListUiState.Loading)
+    private val _state = MutableStateFlow<State<List<AppShortcutListItem>>>(State.Loading)
     val state = _state.asStateFlow()
 
     private val _returnResult = MutableSharedFlow<ChooseAppShortcutResult>()
@@ -64,7 +63,7 @@ class ChooseAppShortcutViewModel internal constructor(
                         _state.value = it
                     }
                 }
-                State.Loading -> _state.value = ListUiState.Loading
+                State.Loading -> _state.value = State.Loading
             }
         }.launchIn(viewModelScope)
     }

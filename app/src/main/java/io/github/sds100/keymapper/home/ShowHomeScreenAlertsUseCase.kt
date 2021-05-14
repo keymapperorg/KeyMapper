@@ -46,10 +46,15 @@ class ShowHomeScreenAlertsUseCaseImpl(
         controlService.enable()
     }
 
-    override val areMappingsPaused: Flow<Boolean> =pauseMappingsUseCase.isPaused
+    override val areMappingsPaused: Flow<Boolean> = pauseMappingsUseCase.isPaused
 
     override fun resumeMappings() {
         pauseMappingsUseCase.resume()
+    }
+
+    override val isLoggingEnabled: Flow<Boolean> = preferences.get(Keys.log).map { it ?: false }
+    override fun disableLogging() {
+        preferences.set(Keys.log, false)
     }
 }
 
@@ -63,4 +68,7 @@ interface ShowHomeScreenAlertsUseCase {
     val isBatteryOptimised: Flow<Boolean>
     val areMappingsPaused: Flow<Boolean>
     fun resumeMappings()
+
+    val isLoggingEnabled: Flow<Boolean>
+    fun disableLogging()
 }

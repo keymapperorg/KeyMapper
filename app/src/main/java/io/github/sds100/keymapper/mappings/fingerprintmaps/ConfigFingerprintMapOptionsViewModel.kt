@@ -1,12 +1,10 @@
 package io.github.sds100.keymapper.mappings.fingerprintmaps
 
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.util.ui.SliderModel
+import io.github.sds100.keymapper.mappings.OptionMinimums
 import io.github.sds100.keymapper.util.Defaultable
 import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.mappings.OptionMinimums
-import io.github.sds100.keymapper.ui.*
+import io.github.sds100.keymapper.util.mapData
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -57,11 +55,9 @@ class ConfigFingerprintMapOptionsViewModel(
         }
     }
 
-    private fun buildUiState(configState: State<FingerprintMap>): ListUiState<ListItem> {
-        return when (configState) {
-            is State.Data -> sequence {
-                val fingerprintMap = configState.data
-
+    private fun buildUiState(configState: State<FingerprintMap>): State<List<ListItem>> {
+        return configState.mapData { fingerprintMap ->
+            sequence {
                 yield(
                     CheckBoxListItem(
                         id = ID_SHOW_TOAST,
@@ -95,9 +91,7 @@ class ConfigFingerprintMapOptionsViewModel(
                         )
                     )
                 }
-            }.toList().createListState()
-
-            is State.Loading -> ListUiState.Loading
+            }.toList()
         }
     }
 }

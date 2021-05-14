@@ -13,7 +13,7 @@ import io.github.sds100.keymapper.home.HomeViewModel
 import io.github.sds100.keymapper.databinding.FragmentFingerprintMapListBinding
 import io.github.sds100.keymapper.home.HomeFragmentDirections
 import io.github.sds100.keymapper.util.ui.ChipUi
-import io.github.sds100.keymapper.util.ui.ListUiState
+import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.OnChipClickCallback
 import io.github.sds100.keymapper.util.ui.RecyclerViewFragment
 import io.github.sds100.keymapper.util.*
@@ -34,7 +34,7 @@ class FingerprintMapListFragment :
 
     private val viewModel by lazy { homeViewModel.fingerprintMapListViewModel }
 
-    override val listItems: Flow<ListUiState<FingerprintMapListItem>>
+    override val listItems: Flow<State<List<FingerprintMapListItem>>>
         get() = viewModel.state
 
     override fun bind(inflater: LayoutInflater, container: ViewGroup?) =

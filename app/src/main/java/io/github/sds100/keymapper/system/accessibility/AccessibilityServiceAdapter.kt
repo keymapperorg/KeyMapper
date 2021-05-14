@@ -19,11 +19,10 @@ import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
+import timber.log.Timber
 
 /**
  * Created by sds100 on 17/03/2021.
@@ -64,26 +63,34 @@ class AccessibilityServiceAdapter(
         coroutineScope.launch {
             state.value = getState()
         }
+
+        eventReceiver.onEach {
+            Timber.d("Received event from accessibility service: $it")
+        }.launchIn(coroutineScope)
     }
 
     override suspend fun send(event: Event): Result<*> {
 
         if (state.value == AccessibilityServiceState.DISABLED) {
+            Timber.e("Failed to send event to accessibility service because disabled: $event")
             return Error.AccessibilityServiceDisabled
         }
 
         if (state.value == AccessibilityServiceState.CRASHED) {
+            Timber.e("Failed to send event to accessibility service because crashed: $event")
             return Error.AccessibilityServiceCrashed
         }
 
         coroutineScope.launch {
             serviceOutputEvents.emit(event)
+            Timber.d("Successfully sent event to accessibility service: $event")
         }
 
         return Success(Unit)
     }
 
     override fun enableService() {
+        Timber.i("Enable service")
         if (permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
 
             enableWithWriteSecureSettings()
@@ -120,6 +127,7 @@ class AccessibilityServiceAdapter(
     }
 
     override fun restartService() {
+        Timber.i("Restart service")
         if (permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
             coroutineScope.launch {
                 disableService()
@@ -132,6 +140,7 @@ class AccessibilityServiceAdapter(
     }
 
     override fun disableService() {
+        Timber.i("Disable service")
         if (permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
             val enabledServices = SettingsUtils.getSecureSetting<String>(
                 ctx,

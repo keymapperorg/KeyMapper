@@ -18,6 +18,7 @@ import androidx.savedstate.SavedStateRegistry
 import com.airbnb.epoxy.EpoxyRecyclerView
 import com.google.android.material.bottomappbar.BottomAppBar
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 
@@ -34,7 +35,7 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
         private const val KEY_SEARCH_STATE_KEY = "key_search_state_key"
     }
 
-    abstract val listItems: Flow<ListUiState<T>>
+    abstract val listItems: Flow<State<List<T>>>
 
     open var isAppBarVisible = true
     open var requestKey: String? = null
@@ -120,37 +121,37 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
             listItems.collectLatest { state ->
                 when (state) {
-                    ListUiState.Empty -> {
-                        getProgressBar(binding).isVisible = false
-                        getRecyclerView(binding).isVisible = false
-                        getEmptyListPlaceHolder(binding).isVisible = true
+                    is State.Data -> {
+                        if (state.data.isEmpty()) {
+                            getProgressBar(binding).isVisible = false
+                            getRecyclerView(binding).isVisible = false
+                            getEmptyListPlaceHolder(binding).isVisible = true
 
-                        /*
-                        Don't clear the recyclerview here because if a custom epoxy controller is set then
-                        it will be cleared which means no items are shown when a request to populate it
-                        is made again.
-                         */
-                        populateList(getRecyclerView(binding), emptyList())
+                            /*
+                             Don't clear the recyclerview here because if a custom epoxy controller is set then
+                             it will be cleared which means no items are shown when a request to populate it
+                             is made again.
+                              */
+                            populateList(getRecyclerView(binding), emptyList())
+                        } else {
+                            getProgressBar(binding).isVisible = true
+                            getEmptyListPlaceHolder(binding).isVisible = false
+
+                            /*
+                            Don't hide the recyclerview here because if the state changes in response to
+                            an onclick event in the recyclerview then there isn't a smooth transition
+                            between the states. E.g the ripple effect on a button or card doesn't complete
+                             */
+                            populateList(getRecyclerView(binding), state.data)
+
+                            getProgressBar(binding).isVisible = false
+
+                            //show the recyclerview once it has been populated
+                            getRecyclerView(binding).isVisible = true
+                        }
                     }
 
-                    is ListUiState.Loaded -> {
-                        getProgressBar(binding).isVisible = true
-                        getEmptyListPlaceHolder(binding).isVisible = false
-
-                        /*
-                        Don't hide the recyclerview here because if the state changes in response to
-                        an onclick event in the recyclerview then there isn't a smooth transition
-                        between the states. E.g the ripple effect on a button or card doesn't complete
-                         */
-                        populateList(getRecyclerView(binding), state.data)
-
-                        getProgressBar(binding).isVisible = false
-
-                        //show the recyclerview once it has been populated
-                        getRecyclerView(binding).isVisible = true
-                    }
-
-                    ListUiState.Loading -> {
+                    is State.Loading -> {
                         getProgressBar(binding).isVisible = true
                         getRecyclerView(binding).isVisible = false
                         getEmptyListPlaceHolder(binding).isVisible = false

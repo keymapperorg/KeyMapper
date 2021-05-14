@@ -668,7 +668,7 @@ object KeyEventUtils {
      * Create a text representation of a key event. E.g if the control key was pressed,
      * "Ctrl" will be returned
      */
-    fun keycodeToString(keyCode: Int): String {
+    fun keyCodeToString(keyCode: Int): String {
         return NON_CHARACTER_KEY_LABELS[keyCode].let {
             it ?: "unknown keycode $keyCode"
         }

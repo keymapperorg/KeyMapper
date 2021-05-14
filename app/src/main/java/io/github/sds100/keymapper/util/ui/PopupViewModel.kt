@@ -18,6 +18,7 @@ import splitties.alertdialog.appcompat.messageResource
 import splitties.alertdialog.appcompat.positiveButton
 import splitties.alertdialog.appcompat.titleResource
 import splitties.alertdialog.material.materialAlertDialog
+import splitties.toast.toast
 import kotlin.coroutines.resume
 
 /**
@@ -151,6 +152,11 @@ fun PopupViewModel.showPopups(
                             }
                         }
                     }
+                }
+
+                is PopupUi.Toast -> {
+                    ctx.toast(event.ui.text)
+                    object : PopupResponse {}
                 }
             }
 

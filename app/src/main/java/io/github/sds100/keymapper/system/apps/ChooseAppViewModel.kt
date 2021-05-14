@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.filterByQuery
 import io.github.sds100.keymapper.util.mapData
-import io.github.sds100.keymapper.util.ui.ListUiState
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -26,7 +25,7 @@ class ChooseAppViewModel constructor(
 
     private val _state = MutableStateFlow(
         AppListState(
-            ListUiState.Loading,
+            State.Loading,
             showHiddenAppsButton = false,
             isHiddenAppsChecked = false
         )
@@ -71,7 +70,7 @@ class ChooseAppViewModel constructor(
 
                 is State.Loading -> _state.value =
                     AppListState(
-                        ListUiState.Loading,
+                        State.Loading,
                         showHiddenAppsButton = true,
                         isHiddenAppsChecked = showHiddenApps
                     )
@@ -111,7 +110,7 @@ class ChooseAppViewModel constructor(
 }
 
 data class AppListState(
-    val listItems: ListUiState<AppListItem>,
+    val listItems: State<List<AppListItem>>,
     val showHiddenAppsButton: Boolean,
     val isHiddenAppsChecked: Boolean
 )

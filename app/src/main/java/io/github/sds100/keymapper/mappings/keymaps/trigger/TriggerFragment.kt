@@ -17,7 +17,7 @@ import io.github.sds100.keymapper.TriggerKeyBindingModel_
 import io.github.sds100.keymapper.databinding.FragmentTriggerBinding
 import io.github.sds100.keymapper.fixError
 import io.github.sds100.keymapper.triggerKey
-import io.github.sds100.keymapper.util.ui.ListUiState
+import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.RecyclerViewFragment
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapViewModel
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapTriggerViewModel
@@ -56,7 +56,7 @@ class TriggerFragment : RecyclerViewFragment<TriggerKeyListItem, FragmentTrigger
 
     private val triggerKeyController = TriggerKeyController()
 
-    override val listItems: Flow<ListUiState<TriggerKeyListItem>>
+    override val listItems: Flow<State<List<TriggerKeyListItem>>>
         get() = configKeyMapTriggerViewModel.triggerKeyListItems
 
     override fun bind(inflater: LayoutInflater, container: ViewGroup?) =

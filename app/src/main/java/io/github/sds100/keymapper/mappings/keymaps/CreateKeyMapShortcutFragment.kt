@@ -9,7 +9,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.keymap
 import io.github.sds100.keymapper.util.ui.ChipUi
-import io.github.sds100.keymapper.util.ui.ListUiState
+import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
 import io.github.sds100.keymapper.util.ui.OnChipClickCallback
 import io.github.sds100.keymapper.util.ui.showPopups
@@ -29,7 +29,7 @@ class CreateKeyMapShortcutFragment : SimpleRecyclerViewFragment<KeyMapListItem>(
         Inject.createActionShortcutViewModel(requireContext())
     }
 
-    override val listItems: Flow<ListUiState<KeyMapListItem>>
+    override val listItems: Flow<State<List<KeyMapListItem>>>
         get() = viewModel.state
 
     override fun subscribeUi(binding: FragmentSimpleRecyclerviewBinding) {

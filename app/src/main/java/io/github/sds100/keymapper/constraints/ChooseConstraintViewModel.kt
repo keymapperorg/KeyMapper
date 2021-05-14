@@ -44,7 +44,7 @@ class ChooseConstraintViewModel(
     }
 
     private val _state =
-        MutableStateFlow<ListUiState<ChooseConstraintListItem>>(ListUiState.Loading)
+        MutableStateFlow<State<List<ChooseConstraintListItem>>>(State.Loading)
     val state = _state.asStateFlow()
 
     private val _returnResult = MutableSharedFlow<Constraint>()
@@ -63,7 +63,7 @@ class ChooseConstraintViewModel(
         viewModelScope.launch {
             supportedConstraints.collectLatest {
                 _state.value = withContext(Dispatchers.Default) {
-                    buildListItems().createListState()
+                    State.Data(buildListItems())
                 }
             }
         }

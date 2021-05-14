@@ -33,7 +33,7 @@ class DataStorePreferenceRepository(
         produceMigrations = { listOf(sharedPreferencesMigration)}
     )
 
-    val dataStore = ctx.dataStore
+  private  val dataStore = ctx.dataStore
 
     override fun <T> get(key: Preferences.Key<T>): Flow<T?> {
         return dataStore.data.map { it[key] }.distinctUntilChanged()

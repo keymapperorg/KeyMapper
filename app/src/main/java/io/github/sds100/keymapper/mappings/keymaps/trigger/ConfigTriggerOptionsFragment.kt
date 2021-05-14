@@ -15,6 +15,7 @@ import io.github.sds100.keymapper.ui.utils.configuredCheckBox
 import io.github.sds100.keymapper.ui.utils.configuredSlider
 import io.github.sds100.keymapper.util.FragmentInfo
 import io.github.sds100.keymapper.util.Inject
+import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.str
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.flow.Flow
@@ -40,7 +41,7 @@ class ConfigTriggerOptionsFragment : SimpleRecyclerViewFragment<ListItem>() {
 
     override var isAppBarVisible = false
 
-    override val listItems: Flow<ListUiState<ListItem>>
+    override val listItems: Flow<State<List<ListItem>>>
         get() = viewModel.state
 
     override fun populateList(recyclerView: EpoxyRecyclerView, listItems: List<ListItem>) {

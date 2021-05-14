@@ -12,9 +12,9 @@ import androidx.core.widget.addTextChangedListener
 import androidx.databinding.BindingAdapter
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.ChipGroup
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.slider.Slider
 import com.google.android.material.textfield.TextInputLayout
+import com.google.android.material.textview.MaterialTextView
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.util.str
@@ -33,6 +33,11 @@ fun EditText.onTextChangedListener(textWatcher: TextWatcher) {
 @BindingAdapter("app:tintType")
 fun AppCompatImageView.tintType(tintType: TintType?) {
     tintType?.toColor(context)?.let { setColorFilter(it) } ?: clearColorFilter()
+}
+
+@BindingAdapter("app:tintType")
+fun MaterialTextView.tintType(tintType: TintType?) {
+    tintType?.toColor(context)?.let { setTextColor(it) }
 }
 
 @BindingAdapter("app:errorWhenEmpty")

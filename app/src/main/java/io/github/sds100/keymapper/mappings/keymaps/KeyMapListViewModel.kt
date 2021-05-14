@@ -3,10 +3,7 @@ package io.github.sds100.keymapper.mappings.keymaps
 import androidx.lifecycle.ViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ui.*
-import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.getFullMessage
-import io.github.sds100.keymapper.util.isFixable
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +20,7 @@ open class KeyMapListViewModel constructor(
 
     private val listItemCreator = KeyMapListItemCreator(useCase, resourceProvider)
 
-    private val _state = MutableStateFlow<ListUiState<KeyMapListItem>>(ListUiState.Loading)
+    private val _state = MutableStateFlow<State<List<KeyMapListItem>>>(State.Loading)
     val state = _state.asStateFlow()
 
     private val _launchConfigKeyMap = MutableSharedFlow<String>()
@@ -31,7 +28,7 @@ open class KeyMapListViewModel constructor(
 
     init {
         val keyMapStateListFlow =
-            MutableStateFlow<ListUiState<KeyMapListItem.KeyMapUiState>>(ListUiState.Loading)
+            MutableStateFlow<State<List<KeyMapListItem.KeyMapUiState>>>(State.Loading)
 
         val rebuildUiState = MutableSharedFlow<State<List<KeyMap>>>(replay = 1)
 
@@ -39,20 +36,15 @@ open class KeyMapListViewModel constructor(
             rebuildUiState,
             useCase.showDeviceDescriptors
         ) { keyMapListState, showDeviceDescriptors ->
-            keyMapStateListFlow.value = ListUiState.Loading
+            keyMapStateListFlow.value = State.Loading
 
-            keyMapStateListFlow.value = withContext(Dispatchers.Default) {
-                when (keyMapListState) {
-                    is State.Data -> {
-                        keyMapListState.data
-                            .map { listItemCreator.create(it, showDeviceDescriptors) }
-                            .createListState()
-                    }
 
-                    State.Loading -> ListUiState.Loading
+            keyMapStateListFlow.value = keyMapListState.mapData { keyMapList ->
+                keyMapList.map { keyMap ->
+                    listItemCreator.create(keyMap, showDeviceDescriptors)
                 }
             }
-        }.launchIn(coroutineScope)
+        }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
 
         coroutineScope.launch {
             useCase.keyMapList.collectLatest {
@@ -79,32 +71,24 @@ open class KeyMapListViewModel constructor(
             ) { keymapListState, selectionState ->
                 Pair(keymapListState, selectionState)
             }.collectLatest { pair ->
-                val (keymapUiListState, selectionState) = pair
+                val (keyMapUiListState, selectionState) = pair
 
-                when (keymapUiListState) {
-                    ListUiState.Empty -> _state.value = ListUiState.Empty
-                    ListUiState.Loading -> _state.value = ListUiState.Loading
+                _state.value = keyMapUiListState.mapData { keyMapUiList ->
+                    val isSelectable = selectionState is SelectionState.Selecting
 
-                    is ListUiState.Loaded -> {
-
-                        val isSelectable = selectionState is SelectionState.Selecting
-
-                        val listItems = withContext(Dispatchers.Default) {
-                            keymapUiListState.data.map { keymapUiState ->
-                                val isSelected = if (selectionState is SelectionState.Selecting) {
-                                    selectionState.selectedIds.contains(keymapUiState.uid)
-                                } else {
-                                    false
-                                }
-
-                                KeyMapListItem(
-                                    keymapUiState,
-                                    KeyMapListItem.SelectionUiState(isSelected, isSelectable)
-                                )
+                    withContext(Dispatchers.Default) {
+                        keyMapUiList.map { keymapUiState ->
+                            val isSelected = if (selectionState is SelectionState.Selecting) {
+                                selectionState.selectedIds.contains(keymapUiState.uid)
+                            } else {
+                                false
                             }
-                        }
 
-                        _state.value = listItems.createListState()
+                            KeyMapListItem(
+                                keymapUiState,
+                                KeyMapListItem.SelectionUiState(isSelected, isSelectable)
+                            )
+                        }
                     }
                 }
             }
@@ -131,7 +115,7 @@ open class KeyMapListViewModel constructor(
     fun selectAll() {
         coroutineScope.launch {
             state.value.apply {
-                if (this is ListUiState.Loaded) {
+                if (this is State.Data) {
                     multiSelectProvider.select(*this.data.map { it.keyMapUiState.uid }
                         .toTypedArray())
                 }

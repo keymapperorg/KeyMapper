@@ -57,6 +57,7 @@
     <string name="from_no_device">No device</string>
     <string name="intent_extras_recycler_view_placeholder">¯\\_(ツ)_/¯\n\nNo extras!</string>
     <string name="content_description_fab_new_keymap">Create a new key map</string>
+    <string name="clip_key_mapper_log">Key Mapper log</string>
 
     <string name="whats_new">What\'s New</string>
     <string name="caption_action_type_key">Click the key on the device which you want to be entered.
@@ -103,6 +104,8 @@
     <string name="home_error_accessibility_service_is_disabled">The accessibility service needs to be turned on for your mappings to work!</string>
     <string name="home_error_accessibility_service_is_crashed">The accessibility service is enabled but it has been killed or it crashed! Restart the service to fix this problem.</string>
     <string name="home_success_accessibility_service_is_enabled">The accessibility service is enabled! Your mappings should work.</string>
+    <string name="home_error_logging_enabled">Logging is turned on! Turn this off if you aren\'t trying to fix an issue.</string>
+    <string name="home_error_logging_enabled_button">Turn off</string>
 
     <!--  Action descriptions  -->
     <string name="description_open_app">Open %s</string>
@@ -203,6 +206,7 @@
     <string name="toast_incorrect_screenshot_resolution">Screenshot resolution doesn\'t match this device\'s resolution!</string>
     <string name="toast_copied_keymap_uid_to_clipboard">Copied key map UUID to clipboard</string>
     <string name="toast_triggered_keymap">You\'ve triggered a mapping</string>
+    <string name="toast_copied_log">Copied log</string>
     <!--  Toasts  -->
 
     <!-- Extra labels -->
@@ -289,6 +293,7 @@
     <string name="url_trigger_key_options_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/trigger-key-options</string>
     <string name="url_android_11_bug_reset_id_work_around_setting_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/android-11-device-id-bug-work-around</string>
     <string name="url_settings_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/settings</string>
+    <string name="url_report_issues_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/report-issues</string>
     <string name="url_intent_set_flags_help" translatable="false">https://developer.android.com/reference/android/content/Intent#setFlags(int)</string>
 
     <string name="url_play_store_keymapper_gui_keyboard" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin</string>
@@ -324,6 +329,10 @@
     <string name="action_tap_to_pause_keymaps">Tap to pause</string>
     <string name="action_tap_to_resume_keymaps">Tap to resume</string>
     <string name="action_reset">Reset</string>
+    <string name="action_save_log">Save</string>
+    <string name="action_short_log_message">Toggle short messages</string>
+    <string name="action_copy_log">Copy</string>
+    <string name="action_clear_log">Clear</string>
     <!-- Menu action titles-->
 
     <!-- Button titles -->
@@ -344,6 +353,7 @@
     <string name="button_pick_coordinate_select_screenshot">Select Screenshot (optional)</string>
     <string name="button_config_intent_choose_activity">Choose activity</string>
     <string name="button_config_intent_set_flags">Set flags</string>
+    <string name="button_copy_log">Copy</string>
     <!-- Button titles -->
 
     <!-- Dialog stuff -->
@@ -382,7 +392,7 @@
     <string name="dialog_message_disable_battery_optimisation">You <b>MUST</b> read this <b>all</b> otherwise you will get <b>frustrated</b> in the future!\n\nTapping \"fix partially\" <b>might</b> prevent Android from stopping the app while it is in the background.\n\n<b>This is NOT ENOUGH</b>. Your OEM\'s skin such as MIUI or Samsung Experience may have other \"battery saving\" features so you MUST turn them off for Key Mapper as well by following the online guide at dontkillmyapp.com.</string>
 
     <string name="dialog_title_send_feedback">Send feedback</string>
-    <string name="dialog_message_view_faq_and_use_discord_over_email">Please check out the FAQ to see if your question has already been answered. If not, then the developer would prefer it if you ask for help and suggest features in the Discord server. If you don\'t have Discord, you can email the developer directly.</string>
+    <string name="dialog_message_send_feedback">Please read the guide on how to report issues on the website.</string>
 
     <string name="dialog_message_enable_accessibility_service_to_record_trigger">Turn on the accessibility service so that you can record a trigger.</string>
     <string name="dialog_message_restart_accessibility_service_to_record_trigger">Restart the accessibility service by turning it <i>off</i> and <i>on</i> so that you can record a trigger.</string>
@@ -395,8 +405,8 @@
     <string name="pos_yes">Yes</string>
     <string name="pos_done">Done</string>
     <string name="pos_opt_in">Opt in</string>
-    <string name="pos_faq_page">FAQ</string>
     <string name="pos_grant_write_secure_settings_guide">Guide</string>
+    <string name="pos_grant_report_issues_guide">Guide</string>
     <string name="pos_enable_root_features">Enable root features</string>
     <string name="pos_grant">Grant</string>
     <string name="pos_join">Join</string>
@@ -413,8 +423,6 @@
     <string name="neg_cancel">Cancel</string>
     <string name="neg_dont_show_again">Don\'t show again</string>
 
-    <string name="neg_email">Email</string>
-    <string name="neutral_discord">Discord</string>
     <string name="neutral_go_to_dont_kill_my_app">Online guide</string>
     <string name="neutral_go_to_settings">Settings</string>
     <string name="neutral_intent_docs">Docs</string>
@@ -536,6 +544,10 @@
     <string name="title_pref_devices_to_reroute_keyevents_enable_ime">2. Enable the Key Mapper GUI Keyboard or the Key Mapper Basic Input Method</string>
     <string name="title_pref_devices_to_reroute_keyevents_choose_ime">3. Use the keyboard that you just enabled</string>
     <string name="title_pref_devices_to_reroute_keyevents_guide">(Recommended) Read user guide for this setting.</string>
+
+    <string name="title_pref_toggle_logging">Enable logging</string>
+    <string name="title_pref_view_and_share_log">View and share log</string>
+    <string name="title_pref_report_issue">Report issue</string>
     <!--Preference titles and summaries-->
 
     <!--Preference categories-->
@@ -548,6 +560,9 @@
 
     <string name="title_pref_category_write_secure_settings">Require WRITE_SECURE_SETTINGS permission</string>
     <string name="summary_pref_category_write_secure_settings">These options are only enabled if Key Mapper has WRITE_SECURE_SETTINGS permission. Click the relevant Fix button at the top of the home screen for instructions.</string>
+
+    <string name="title_pref_category_log">Logging</string>
+    <string name="summary_pref_category_log">This may add latency to your key maps so only turn this on if you are trying to debug the app or have been asked to by the developer.</string>
     <!--Preference categories-->
 
     <!-- About activity-->

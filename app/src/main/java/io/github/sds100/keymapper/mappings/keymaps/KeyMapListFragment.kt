@@ -10,7 +10,7 @@ import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.home.HomeFragmentDirections
 import io.github.sds100.keymapper.keymap
 import io.github.sds100.keymapper.util.ui.ChipUi
-import io.github.sds100.keymapper.util.ui.ListUiState
+import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.OnChipClickCallback
 import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
 import io.github.sds100.keymapper.util.*
@@ -29,7 +29,7 @@ class KeyMapListFragment : SimpleRecyclerViewFragment<KeyMapListItem>() {
     private val viewModel: KeyMapListViewModel
         get() = homeViewModel.keymapListViewModel
 
-    override val listItems: Flow<ListUiState<KeyMapListItem>>
+    override val listItems: Flow<State<List<KeyMapListItem>>>
         get() = viewModel.state
 
     override fun subscribeUi(binding: FragmentSimpleRecyclerviewBinding) {

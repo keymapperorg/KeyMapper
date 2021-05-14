@@ -6,7 +6,7 @@ import androidx.lifecycle.addRepeatingJob
 import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.simple
-import io.github.sds100.keymapper.util.ui.ListUiState
+import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.flow.Flow
@@ -29,7 +29,7 @@ class ChooseBluetoothDeviceFragment : SimpleRecyclerViewFragment<BluetoothDevice
 
     override var requestKey: String? = REQUEST_KEY
 
-    override val listItems: Flow<ListUiState<BluetoothDeviceInfo>>
+    override val listItems: Flow<State<List<BluetoothDeviceInfo>>>
         get() = viewModel.listItems
 
     override fun populateList(

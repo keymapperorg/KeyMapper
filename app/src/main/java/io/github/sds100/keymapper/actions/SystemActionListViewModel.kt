@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.volume.*
 import io.github.sds100.keymapper.ui.*
 import io.github.sds100.keymapper.ui.utils.*
+import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.containsQuery
 import io.github.sds100.keymapper.util.ui.*
 import io.github.sds100.keymapper.util.valueOrNull
@@ -30,7 +31,7 @@ class SystemActionListViewModel(
 
     val searchQuery = MutableStateFlow<String?>(null)
 
-    private val _state = MutableStateFlow(SystemActionListState(ListUiState.Loading, false))
+    private val _state = MutableStateFlow(SystemActionListState(State.Loading, false))
     val state = _state.asStateFlow()
 
     private val _returnResult = MutableSharedFlow<SystemAction>()
@@ -325,7 +326,7 @@ class SystemActionListViewModel(
             }
         }.toList()
 
-        return SystemActionListState(listItems.createListState(), unsupportedActions)
+        return SystemActionListState(State.Data(listItems), unsupportedActions)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -342,6 +343,6 @@ class SystemActionListViewModel(
 }
 
 data class SystemActionListState(
-    val listItems: ListUiState<ListItem>,
+    val listItems: State<List<ListItem>>,
     val showUnsupportedActionsMessage: Boolean
 )

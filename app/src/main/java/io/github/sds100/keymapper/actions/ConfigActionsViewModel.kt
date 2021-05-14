@@ -27,7 +27,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
     resourceProvider: ResourceProvider
 ) : ResourceProvider by resourceProvider, PopupViewModel by PopupViewModelImpl() {
 
-    private val _state = MutableStateFlow<ListUiState<ActionListItem>>(ListUiState.Loading)
+    private val _state = MutableStateFlow<State<List<ActionListItem>>>(State.Loading)
     val state = _state.asStateFlow()
 
     private val _openEditOptions = MutableSharedFlow<String>()
@@ -43,14 +43,9 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
         combine(
             rebuildUiState,
             displayActionUseCase.showDeviceDescriptors
-        ) { mapping, showDeviceDescriptors ->
-            when (mapping) {
-                is State.Data -> withContext(Dispatchers.Default) {
-                    _state.value =
-                        createListItems(mapping.data, showDeviceDescriptors).createListState()
-                }
-
-                is State.Loading -> _state.value = ListUiState.Loading
+        ) { mappingState, showDeviceDescriptors ->
+            _state.value = mappingState.mapData { mapping ->
+                createListItems(mapping, showDeviceDescriptors)
             }
         }.launchIn(coroutineScope)
 

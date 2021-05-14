@@ -133,18 +133,15 @@ class HomeMenuViewModel(
         coroutineScope.launch {
             val dialog = PopupUi.Dialog(
                 title = getString(R.string.dialog_title_send_feedback),
-                message = getString(R.string.dialog_message_view_faq_and_use_discord_over_email),
-                positiveButtonText = getString(R.string.pos_faq_page),
-                negativeButtonText = getString(R.string.neutral_discord),
-                neutralButtonText = getString(R.string.neg_email)
+                message = getString(R.string.dialog_message_send_feedback),
+                positiveButtonText = getString(R.string.pos_grant_report_issues_guide),
+                negativeButtonText = getString(R.string.neg_cancel),
             )
 
             val response = showPopup("send_feedback", dialog) ?: return@launch
 
             when (response) {
-                DialogResponse.POSITIVE -> _openUrl.emit(getString(R.string.url_faq))
-                DialogResponse.NEUTRAL -> _emailDeveloper.emit(Unit)
-                DialogResponse.NEGATIVE -> _openUrl.emit(getString(R.string.url_discord_server_invite))
+                DialogResponse.POSITIVE -> _openUrl.emit(getString(R.string.url_report_issues_guide))
             }
         }
     }

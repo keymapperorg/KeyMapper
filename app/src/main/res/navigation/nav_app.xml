@@ -94,7 +94,15 @@
         android:id="@+id/settingsFragment"
         android:name="io.github.sds100.keymapper.settings.SettingsFragment"
         android:label="fragment_settings"
-        tools:layout="@layout/fragment_about" />
+        tools:layout="@layout/fragment_about">
+        <action
+            android:id="@+id/action_to_log_fragment"
+            app:destination="@id/logFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
     <action
         android:id="@+id/action_global_settingsFragment"
         app:destination="@id/settingsFragment"
@@ -154,5 +162,9 @@
         app:enterAnim="@anim/slide_in_right"
         app:exitAnim="@anim/slide_out_left"
         app:popEnterAnim="@anim/slide_in_left"
-        app:popExitAnim="@anim/slide_out_right"/>
+        app:popExitAnim="@anim/slide_out_right" />
+    <fragment
+        android:id="@+id/logFragment"
+        android:name="io.github.sds100.keymapper.logging.LogFragment"
+        android:label="LogFragment" />
 </navigation>

@@ -14,7 +14,7 @@ import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.action
 import io.github.sds100.keymapper.databinding.FragmentActionListBinding
-import io.github.sds100.keymapper.util.ui.ListUiState
+import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.RecyclerViewFragment
 import kotlinx.coroutines.flow.Flow
 
@@ -30,7 +30,7 @@ abstract class ConfigActionsFragment< A : Action>
 
     abstract val configActionsViewModel: ConfigActionsViewModel<A, *>
 
-    override val listItems: Flow<ListUiState<ActionListItem>>
+    override val listItems: Flow<State<List<ActionListItem>>>
         get() = configActionsViewModel.state
 
     private val actionListController = ActionListController()

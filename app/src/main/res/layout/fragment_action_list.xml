@@ -9,8 +9,6 @@
 
         <import type="androidx.lifecycle.LiveData" />
 
-        <import type="io.github.sds100.keymapper.util.ui.ListUiState" />
-
         <variable
             name="onAddActionClick"
             type="View.OnClickListener" />

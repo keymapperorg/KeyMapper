@@ -36,6 +36,8 @@ sealed class PopupUi<RESPONSE : PopupResponse> {
 
     data class MultiChoiceResponse<ID>(val items: List<ID>) : PopupResponse
 
+    data class Toast(val text: String) : PopupUi<PopupResponse>()
+
     object InstallGuiKeyboard : PopupUi<DialogResponse>()
 }
 

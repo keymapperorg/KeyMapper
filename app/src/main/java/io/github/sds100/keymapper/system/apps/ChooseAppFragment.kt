@@ -6,7 +6,7 @@ import androidx.fragment.app.activityViewModels
 import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.databinding.FragmentChooseAppBinding
 import io.github.sds100.keymapper.simple
-import io.github.sds100.keymapper.util.ui.ListUiState
+import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.RecyclerViewFragment
 import io.github.sds100.keymapper.util.Inject
 import kotlinx.coroutines.flow.Flow
@@ -30,7 +30,7 @@ class ChooseAppFragment : RecyclerViewFragment<AppListItem, FragmentChooseAppBin
         Inject.chooseAppViewModel(requireContext())
     }
 
-    override val listItems: Flow<ListUiState<AppListItem>>
+    override val listItems: Flow<State<List<AppListItem>>>
         get() = viewModel.state.map { it.listItems }
 
     override fun subscribeUi(binding: FragmentChooseAppBinding) {

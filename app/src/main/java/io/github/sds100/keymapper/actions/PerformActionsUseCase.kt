@@ -39,6 +39,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import splitties.bitflags.withFlag
+import timber.log.Timber
 
 /**
  * Created by sds100 on 14/02/21.
@@ -653,6 +654,11 @@ class PerformActionsUseCaseImpl(
             CorruptAction -> {
                 result = Error.CorruptActionError
             }
+        }
+
+        when (result) {
+            null, is Success -> Timber.d("Performed action $action, input event type: $inputEventType, key meta state: $keyMetaState")
+            is Error -> Timber.d("Failed to perform action $action, reason: ${result.getFullMessage(resourceProvider)}, action: $action, input event type: $inputEventType, key meta state: $keyMetaState")
         }
 
         result?.showErrorMessageOnFail()

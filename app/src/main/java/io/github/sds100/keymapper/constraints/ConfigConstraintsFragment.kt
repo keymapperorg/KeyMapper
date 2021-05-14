@@ -9,7 +9,7 @@ import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.constraint
 import io.github.sds100.keymapper.databinding.FragmentConstraintListBinding
-import io.github.sds100.keymapper.util.ui.ListUiState
+import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.RecyclerViewFragment
 import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.Flow
@@ -31,7 +31,7 @@ abstract class ConfigConstraintsFragment
 
     abstract val configConstraintsViewModel: ConfigConstraintsViewModel
 
-    override val listItems: Flow<ListUiState<ConstraintListItem>>
+    override val listItems: Flow<State<List<ConstraintListItem>>>
         get() = configConstraintsViewModel.state.map { it.constraintList }
 
     override fun bind(

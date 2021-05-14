@@ -8,6 +8,8 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.multidex.MultiDexApplication
 import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.entities.LogEntryEntity
+import io.github.sds100.keymapper.logging.KeyMapperLoggingTree
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerController
 import io.github.sds100.keymapper.settings.ThemeUtils
 import io.github.sds100.keymapper.system.AndroidSystemFeatureAdapter
@@ -17,12 +19,12 @@ import io.github.sds100.keymapper.system.apps.AndroidAppShortcutAdapter
 import io.github.sds100.keymapper.system.apps.AndroidPackageManagerAdapter
 import io.github.sds100.keymapper.system.bluetooth.AndroidBluetoothAdapter
 import io.github.sds100.keymapper.system.camera.AndroidCameraAdapter
+import io.github.sds100.keymapper.system.clipboard.AndroidClipboardAdapter
 import io.github.sds100.keymapper.system.devices.AndroidDevicesAdapter
 import io.github.sds100.keymapper.system.display.AndroidDisplayAdapter
 import io.github.sds100.keymapper.system.files.AndroidFileAdapter
 import io.github.sds100.keymapper.system.inputmethod.AndroidInputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.AutoSwitchImeController
-import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.system.inputmethod.ShowHideInputMethodUseCaseImpl
 import io.github.sds100.keymapper.system.intents.IntentAdapterImpl
 import io.github.sds100.keymapper.system.lock.AndroidLockScreenAdapter
@@ -45,8 +47,10 @@ import io.github.sds100.keymapper.util.ui.ResourceProviderImpl
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import splitties.toast.toast
 import timber.log.Timber
+import java.util.*
 
 /**
  * Created by sds100 on 19/05/2020.
@@ -110,14 +114,41 @@ class KeyMapperApp : MultiDexApplication() {
     val networkAdapter by lazy { AndroidNetworkAdapter(this, suAdapter) }
     val nfcAdapter by lazy { AndroidNfcAdapter(this, suAdapter) }
     val openUrlAdapter by lazy { AndroidOpenUrlAdapter(this) }
+    val clipboardAdapter by lazy { AndroidClipboardAdapter(this) }
 
     val recordTriggerController by lazy {
         RecordTriggerController(appCoroutineScope, serviceAdapter)
     }
 
+    private val loggingTree by lazy {
+        KeyMapperLoggingTree(
+            appCoroutineScope,
+            ServiceLocator.preferenceRepository(this),
+            ServiceLocator.logRepository(this)
+        )
+    }
+
     private val processLifecycleOwner by lazy { ProcessLifecycleOwner.get() }
 
     override fun onCreate() {
+
+        val priorExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
+
+        Thread.setDefaultUncaughtExceptionHandler { thread, exception ->
+            //log in a blocking manner and always log regardless of whether the setting is turned on
+            val entry = LogEntryEntity(
+                id = 0,
+                time = Calendar.getInstance().timeInMillis,
+                severity = LogEntryEntity.SEVERITY_ERROR,
+                message = exception.stackTraceToString()
+            )
+
+            runBlocking {
+                ServiceLocator.logRepository(this@KeyMapperApp).insertSuspend(entry)
+            }
+
+            priorExceptionHandler?.uncaughtException(thread, exception)
+        }
 
         ServiceLocator.preferenceRepository(this).get(Keys.darkTheme)
             .map { it?.toIntOrNull() }
@@ -133,9 +164,11 @@ class KeyMapperApp : MultiDexApplication() {
 
         super.onCreate()
 
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.BUILD_TYPE == "debug") {
             Timber.plant(Timber.DebugTree())
         }
+
+        Timber.plant(loggingTree)
 
         notificationController = NotificationController(
             appCoroutineScope,

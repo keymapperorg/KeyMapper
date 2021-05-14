@@ -60,4 +60,6 @@ object Keys {
     val rerouteKeyEvents = booleanPreferencesKey("key_reroute_key_events_from_specified_devices")
     val devicesToRerouteKeyEvents =
         stringSetPreferencesKey("key_devices_to_reroute_key_events")
+
+    val log = booleanPreferencesKey("key_log")
 }

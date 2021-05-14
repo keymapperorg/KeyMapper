@@ -15,7 +15,7 @@ class ChooseKeyViewModel : ViewModel() {
 
     val keyLabel = _keyCode.map {
         it ?: return@map null
-        KeyEventUtils.keycodeToString(it)
+        KeyEventUtils.keyCodeToString(it)
     }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     fun clearKey() {

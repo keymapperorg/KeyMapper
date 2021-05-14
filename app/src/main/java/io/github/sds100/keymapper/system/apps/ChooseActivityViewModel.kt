@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.filterByQuery
-import io.github.sds100.keymapper.util.ui.ListUiState
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -17,11 +16,11 @@ class ChooseActivityViewModel(private val useCase: DisplayAppsUseCase) : ViewMod
 
     val searchQuery = MutableStateFlow<String?>(null)
 
-    private val unfilteredListItems: Flow<ListUiState<ActivityListItem>> =
+    private val unfilteredListItems: Flow<State<List<ActivityListItem>>> =
         useCase.installedPackages.map { packagesState ->
 
             if (packagesState !is State.Data) {
-                return@map ListUiState.Loading
+                return@map State.Loading
             }
 
             val listItems = sequence {
@@ -45,10 +44,12 @@ class ChooseActivityViewModel(private val useCase: DisplayAppsUseCase) : ViewMod
                 }
             }
 
-            ListUiState.Loaded(listItems.toList().sortedBy { it.appName })
+            val sortedListItems = listItems.toList().sortedBy { it.appName }
+
+            return@map State.Data(sortedListItems)
         }.flowOn(Dispatchers.Default)
 
-    private val _listItems = MutableStateFlow<ListUiState<ActivityListItem>>(ListUiState.Loading)
+    private val _listItems = MutableStateFlow<State<List<ActivityListItem>>>(State.Loading)
     val listItems = _listItems.asStateFlow()
 
 
@@ -56,14 +57,14 @@ class ChooseActivityViewModel(private val useCase: DisplayAppsUseCase) : ViewMod
         combine(
             searchQuery,
             unfilteredListItems
-        ) { searchQuery, listItems ->
+        ) { searchQuery, unfilteredListItemsState ->
 
-            if (listItems is ListUiState.Loaded) {
-                listItems.data.filterByQuery(searchQuery).collectLatest {
+            if (unfilteredListItemsState is State.Data) {
+                unfilteredListItemsState.data.filterByQuery(searchQuery).collectLatest {
                     _listItems.value = it
                 }
             } else {
-                _listItems.value = listItems
+                _listItems.value = unfilteredListItemsState
             }
 
         }.launchIn(viewModelScope)

@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import splitties.bitflags.minusFlag
 import splitties.bitflags.withFlag
+import timber.log.Timber
 
 /**
  * Created by sds100 on 05/04/2020.
@@ -56,7 +57,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     private lateinit var lifecycleRegistry: LifecycleRegistry
 
     private var fingerprintGestureCallback:
-        FingerprintGestureController.FingerprintGestureCallback? = null
+            FingerprintGestureController.FingerprintGestureCallback? = null
 
     override val rootNode: AccessibilityNodeModel?
         get() {
@@ -86,6 +87,8 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
     override fun onServiceConnected() {
         super.onServiceConnected()
+
+        Timber.d("Accessibility service started")
 
         lifecycleRegistry = LifecycleRegistry(this)
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
@@ -158,7 +161,15 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                 .unregisterFingerprintGestureCallback(fingerprintGestureCallback)
         }
 
+        Timber.d("Accessibility service destroyed")
+
         super.onDestroy()
+    }
+
+    override fun onLowMemory() {
+        Timber.d("Accessibility service on low memory")
+
+        super.onLowMemory()
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {}
@@ -182,6 +193,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
     override fun requestFingerprintGestureDetection() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Timber.i("Accessibility service: request fingerprint gesture detection")
             serviceInfo = serviceInfo.apply {
                 flags = flags.withFlag(AccessibilityServiceInfo.FLAG_REQUEST_FINGERPRINT_GESTURES)
             }
@@ -190,6 +202,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
     override fun denyFingerprintGestureDetection() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Timber.i("Accessibility service: deny fingerprint gesture detection")
             serviceInfo = serviceInfo?.apply {
                 flags = flags.minusFlag(AccessibilityServiceInfo.FLAG_REQUEST_FINGERPRINT_GESTURES)
             }

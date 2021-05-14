@@ -10,6 +10,8 @@ import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCaseImpl
 import io.github.sds100.keymapper.constraints.ChooseConstraintViewModel
 import io.github.sds100.keymapper.home.HomeViewModel
 import io.github.sds100.keymapper.home.ShowHomeScreenAlertsUseCaseImpl
+import io.github.sds100.keymapper.logging.DisplayLogUseCaseImpl
+import io.github.sds100.keymapper.logging.LogViewModel
 import io.github.sds100.keymapper.mappings.fingerprintmaps.ConfigFingerprintMapUseCaseImpl
 import io.github.sds100.keymapper.mappings.fingerprintmaps.ConfigFingerprintMapViewModel
 import io.github.sds100.keymapper.mappings.fingerprintmaps.ListFingerprintMapsUseCaseImpl
@@ -246,6 +248,18 @@ object Inject {
         return ChooseBluetoothDeviceViewModel.Factory(
             ChooseBluetoothDeviceUseCaseImpl(ServiceLocator.devicesAdapter(ctx)),
             ServiceLocator.resourceProvider(ctx)
+        )
+    }
+
+    fun logViewModel(ctx: Context): LogViewModel.Factory {
+        return LogViewModel.Factory(
+            DisplayLogUseCaseImpl(
+                ServiceLocator.logRepository(ctx),
+                ServiceLocator.resourceProvider(ctx),
+                ServiceLocator.clipboardAdapter(ctx),
+                ServiceLocator.fileAdapter(ctx)
+            ),
+            ServiceLocator.resourceProvider(ctx),
         )
     }
 }

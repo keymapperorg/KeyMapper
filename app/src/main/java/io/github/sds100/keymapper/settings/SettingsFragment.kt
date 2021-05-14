@@ -395,6 +395,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
         createWriteSecureSettingsCategory()
         createRootCategory()
+        createLogCategory()
     }
 
     @SuppressLint("NewApi")
@@ -682,6 +683,57 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             min = OptionMinimums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT
             max = 5000
             showSeekBarValue = true
+
+            addPreference(this)
+        }
+    }
+
+    private fun createLogCategory() = PreferenceCategory(requireContext()).apply {
+        setTitle(R.string.title_pref_category_log)
+        preferenceScreen.addPreference(this)
+
+        Preference(requireContext()).apply {
+            isSelectable = false
+            setSummary(R.string.summary_pref_category_log)
+
+            addPreference(this)
+        }
+
+        //enable logging
+        SwitchPreferenceCompat(requireContext()).apply {
+            key = Keys.log.name
+            setDefaultValue(false)
+
+            isSingleLineTitle = false
+            setTitle(R.string.title_pref_toggle_logging)
+
+            addPreference(this)
+        }
+
+        //open log fragment
+        Preference(requireContext()).apply {
+            isSingleLineTitle = false
+            setTitle(R.string.title_pref_view_and_share_log)
+
+            setOnPreferenceClickListener {
+                findNavController().navigate(SettingsFragmentDirections.actionToLogFragment())
+
+                true
+            }
+
+            addPreference(this)
+        }
+
+        //report issue to developer
+        Preference(requireContext()).apply {
+            isSingleLineTitle = false
+            setTitle(R.string.title_pref_report_issue)
+
+            setOnPreferenceClickListener {
+                UrlUtils.openUrl(requireContext(), str(R.string.url_report_issues_guide))
+
+                true
+            }
 
             addPreference(this)
         }

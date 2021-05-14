@@ -97,11 +97,11 @@ class ConfigKeyMapTriggerOptionsViewModel(
         }
     }
 
-    private fun buildUiState(configState: State<KeyMap>): ListUiState<ListItem> {
-        return when (configState) {
-            is State.Data -> sequence {
-                val trigger = configState.data.trigger
-                val keyMapUid = configState.data.uid
+    private fun buildUiState(configState: State<KeyMap>): State<List<ListItem>> {
+        return configState.mapData { keyMap ->
+            sequence {
+                val trigger = keyMap.trigger
+                val keyMapUid = keyMap.uid
 
                 yield(
                     TriggerFromOtherAppsListItem(
@@ -214,9 +214,7 @@ class ConfigKeyMapTriggerOptionsViewModel(
                         )
                     )
                 }
-            }.toList().createListState()
-
-            is State.Loading -> ListUiState.Loading
+            }.toList()
         }
     }
 }

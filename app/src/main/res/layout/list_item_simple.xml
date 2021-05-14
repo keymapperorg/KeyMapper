@@ -62,7 +62,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
             android:text="@{primaryText}"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
             android:textColor="?attr/colorOnSurface"
             app:layout_constraintBottom_toTopOf="@+id/textViewSecondary"
             app:layout_constraintEnd_toEndOf="parent"

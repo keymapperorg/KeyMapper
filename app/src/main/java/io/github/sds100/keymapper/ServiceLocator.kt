@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper
 
+import android.content.ClipboardManager
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
@@ -7,6 +8,7 @@ import io.github.sds100.keymapper.backup.BackupManager
 import io.github.sds100.keymapper.backup.BackupManagerImpl
 import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.repositories.*
+import io.github.sds100.keymapper.logging.LogRepository
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapRepository
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.airplanemode.AirplaneModeAdapter
@@ -14,6 +16,7 @@ import io.github.sds100.keymapper.system.apps.AppShortcutAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.bluetooth.BluetoothAdapter
 import io.github.sds100.keymapper.system.camera.CameraAdapter
+import io.github.sds100.keymapper.system.clipboard.ClipboardAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.files.FileAdapter
@@ -88,6 +91,20 @@ object ServiceLocator {
     fun preferenceRepository(context: Context): PreferenceRepository {
         synchronized(this) {
             return preferenceRepository ?: createPreferenceRepository(context)
+        }
+    }
+
+    @Volatile
+    private var logRepository: LogRepository? = null
+
+    fun logRepository(context: Context): LogRepository {
+        synchronized(this) {
+            return logRepository ?: RoomLogRepository(
+                (context.applicationContext as KeyMapperApp).appCoroutineScope,
+                database(context).logEntryDao(),
+            ).also {
+                this.logRepository = it
+            }
         }
     }
 
@@ -227,6 +244,10 @@ object ServiceLocator {
         return (context.applicationContext as KeyMapperApp).openUrlAdapter
     }
 
+    fun clipboardAdapter(context: Context): ClipboardAdapter {
+        return (context.applicationContext as KeyMapperApp).clipboardAdapter
+    }
+
     private fun createDatabase(context: Context): AppDatabase {
         return Room.databaseBuilder(
             context.applicationContext,
@@ -243,7 +264,8 @@ object ServiceLocator {
             AppDatabase.MIGRATION_8_9,
             AppDatabase.MIGRATION_9_10,
             AppDatabase.MIGRATION_10_11,
-            AppDatabase.RoomMigration_11_12(context.applicationContext.legacyFingerprintMapDataStore)
+            AppDatabase.RoomMigration_11_12(context.applicationContext.legacyFingerprintMapDataStore),
+            AppDatabase.MIGRATION_12_13
         ).build()
     }
 }

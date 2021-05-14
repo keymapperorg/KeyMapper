@@ -4,9 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.util.ui.ListUiState
+import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.util.ui.createListState
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -21,9 +20,9 @@ class ChooseBluetoothDeviceViewModel(
     private val _caption = MutableStateFlow<String?>(null)
     val caption: StateFlow<String?> = _caption
 
-    val listItems: StateFlow<ListUiState<BluetoothDeviceInfo>> = useCase.devices.map {
-        it.createListState()
-    }.stateIn(viewModelScope, SharingStarted.Lazily, ListUiState.Loading)
+    val listItems: StateFlow<State<List<BluetoothDeviceInfo>>> = useCase.devices.map {
+        State.Data(it)
+    }.stateIn(viewModelScope, SharingStarted.Lazily, State.Loading)
 
     init {
         viewModelScope.launch {
