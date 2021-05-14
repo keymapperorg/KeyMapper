@@ -94,3 +94,4 @@ And more...
  在某些设备上，启用无障碍服务将会禁用“增强数据加密”。
 
 Discord: https://discord.gg/Suj6nyw
+Website: https://docs.keymapper.club
