@@ -206,15 +206,17 @@ class KeyMapController(
 
                     otherTriggerLoop@ for ((otherTriggerIndex, otherTrigger) in sequenceTriggers.withIndex()) {
 
+                        //Don't compare a trigger to itself
+                        if (triggerIndex == otherTriggerIndex) {
+                            continue@otherTriggerLoop
+                        }
+
                         for ((keyIndex, key) in trigger.keys.withIndex()) {
                             var lastMatchedIndex: Int? = null
 
                             for ((otherKeyIndex, otherKey) in otherTrigger.keys.withIndex()) {
 
                                 if (key.matchesWithOtherKey(otherKey)) {
-
-                                    //the other trigger doesn't overlap after the first element
-                                    if (otherKeyIndex == 0) continue@otherTriggerLoop
 
                                     //make sure the overlap retains the order of the trigger
                                     if (lastMatchedIndex != null && lastMatchedIndex != otherKeyIndex - 1) {
@@ -229,6 +231,11 @@ class KeyMapController(
 
                                     lastMatchedIndex = otherKeyIndex
                                 }
+
+                                //if there were no matching keys in the other trigger then skip this trigger
+                                if (lastMatchedIndex == null && otherKeyIndex == otherTrigger.keys.lastIndex) {
+                                    continue@otherTriggerLoop
+                                }
                             }
                         }
                     }
@@ -241,14 +248,21 @@ class KeyMapController(
 
                     otherTriggerLoop@ for ((otherTriggerIndex, otherTrigger) in parallelTriggers.withIndex()) {
 
+                        //Don't compare a trigger to itself
+                        if (triggerIndex == otherTriggerIndex) {
+                            continue@otherTriggerLoop
+                        }
+
+                        //only check for overlapping if the other trigger has more keys
+                        if (otherTrigger.keys.size < trigger.keys.size) {
+                            continue@otherTriggerLoop
+                        }
+
                         for ((keyIndex, key) in trigger.keys.withIndex()) {
                             var lastMatchedIndex: Int? = null
 
                             for ((otherKeyIndex, otherKey) in otherTrigger.keys.withIndex()) {
                                 if (otherKey.matchesWithOtherKey(key)) {
-
-                                    //the other trigger doesn't overlap after the first element
-                                    if (otherKeyIndex == 0) continue@otherTriggerLoop
 
                                     //make sure the overlap retains the order of the trigger
                                     if (lastMatchedIndex != null && lastMatchedIndex != otherKeyIndex - 1) {
@@ -262,6 +276,11 @@ class KeyMapController(
                                     }
 
                                     lastMatchedIndex = otherKeyIndex
+                                }
+
+                                //if there were no matching keys in the other trigger then skip this trigger
+                                if (lastMatchedIndex == null && otherKeyIndex == otherTrigger.keys.lastIndex) {
+                                    continue@otherTriggerLoop
                                 }
                             }
                         }
@@ -643,20 +662,48 @@ class KeyMapController(
         val canActionBePerformed = SparseArrayCompat<Result<ActionEntity>>()
 
         if (detectParallelTriggers) {
+            /*
+            loop through triggers in a different loop first to increment the last matched index.
+            Otherwise the order of the key maps affects the logic.
+             */
+            triggerLoop@ for ((triggerIndex, lastMatchedIndex) in lastMatchedParallelEventIndices.withIndex()) {
+                val nextIndex = lastMatchedIndex + 1
 
-            //only process keymaps if an action can be performed
+                if (parallelTriggers[triggerIndex].matchingEventAtIndex(
+                        event.withShortPress,
+                        nextIndex
+                    )
+                ) {
+                    lastMatchedParallelEventIndices[triggerIndex] = nextIndex
+                    parallelTriggerEventsAwaitingRelease[triggerIndex][nextIndex] = true
+                }
+
+                if (parallelTriggers[triggerIndex].matchingEventAtIndex(
+                        event.withLongPress,
+                        nextIndex
+                    )
+                ) {
+                    lastMatchedParallelEventIndices[triggerIndex] = nextIndex
+                    parallelTriggerEventsAwaitingRelease[triggerIndex][nextIndex] = true
+                }
+            }
+
             triggerLoop@ for ((triggerIndex, lastMatchedIndex) in lastMatchedParallelEventIndices.withIndex()) {
 
                 for (overlappingTriggerIndex in sequenceTriggersOverlappingParallelTriggers[triggerIndex]) {
-                    if (lastMatchedSequenceEventIndices[overlappingTriggerIndex] != -1) {
+                    if (lastMatchedSequenceEventIndices[overlappingTriggerIndex] == sequenceTriggers[overlappingTriggerIndex].keys.lastIndex) {
                         continue@triggerLoop
                     }
                 }
 
                 for (overlappingTriggerIndex in parallelTriggersOverlappingParallelTriggers[triggerIndex]) {
-                    if (lastMatchedParallelEventIndices[overlappingTriggerIndex] != -1) {
+                    if (lastMatchedParallelEventIndices[overlappingTriggerIndex] == parallelTriggers[overlappingTriggerIndex].keys.lastIndex) {
                         continue@triggerLoop
                     }
+                }
+
+                if (lastMatchedIndex == -1){
+                    continue@triggerLoop
                 }
 
                 val constraintState = parallelTriggerConstraints[triggerIndex]
@@ -680,24 +727,18 @@ class KeyMapController(
                     }
                 }
 
-                val nextIndex = lastMatchedIndex + 1
-
                 //Perform short press action
-
                 if (parallelTriggers[triggerIndex].matchingEventAtIndex(
                         event.withShortPress,
-                        nextIndex
+                        lastMatchedIndex
                     )
                 ) {
 
-                    if (parallelTriggers[triggerIndex].keys[nextIndex].consumeKeyEvent) {
+                    if (parallelTriggers[triggerIndex].keys[lastMatchedIndex].consumeKeyEvent) {
                         consumeEvent = true
                     }
 
-                    lastMatchedParallelEventIndices[triggerIndex] = nextIndex
-                    parallelTriggerEventsAwaitingRelease[triggerIndex][nextIndex] = true
-
-                    if (nextIndex == parallelTriggers[triggerIndex].keys.lastIndex) {
+                    if (lastMatchedIndex == parallelTriggers[triggerIndex].keys.lastIndex) {
                         mappedToParallelTriggerAction = true
                         parallelTriggersAwaitingReleaseAfterBeingTriggered[triggerIndex] = true
 
@@ -736,18 +777,14 @@ class KeyMapController(
                 //Perform long press action
                 if (parallelTriggers[triggerIndex].matchingEventAtIndex(
                         event.withLongPress,
-                        nextIndex
+                        lastMatchedIndex
                     )
                 ) {
-
-                    if (parallelTriggers[triggerIndex].keys[nextIndex].consumeKeyEvent) {
+                    if (parallelTriggers[triggerIndex].keys[lastMatchedIndex].consumeKeyEvent) {
                         consumeEvent = true
                     }
 
-                    lastMatchedParallelEventIndices[triggerIndex] = nextIndex
-                    parallelTriggerEventsAwaitingRelease[triggerIndex][nextIndex] = true
-
-                    if (nextIndex == parallelTriggers[triggerIndex].keys.lastIndex) {
+                    if (lastMatchedIndex == parallelTriggers[triggerIndex].keys.lastIndex) {
                         awaitingLongPress = true
 
                         if (parallelTriggers[triggerIndex].longPressDoubleVibration

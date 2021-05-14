@@ -157,6 +157,234 @@ class KeyMapControllerTest {
     }
 
     /**
+     * issue #653
+     */
+    @Test
+    fun `overlapping triggers 3`() = coroutineScope.runBlockingTest {
+        //GIVEN
+        val keyMaps = listOf(
+            KeyMap(
+                trigger = parallelTrigger(
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
+                ),
+                actionList = listOf(KeyMapAction(data = KeyEventAction(keyCode = 45)))
+            ),
+            KeyMap(
+                trigger = parallelTrigger(
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
+                ),
+                actionList = listOf(KeyMapAction(data = KeyEventAction(keyCode = 81)))
+            ),
+        )
+
+        keyMapListFlow.value = keyMaps
+
+        inOrder(performActionsUseCase) {
+
+            //WHEN
+            inputKeyEvent(
+                keyCode = KeyEvent.KEYCODE_VOLUME_UP,
+                action = KeyEvent.ACTION_DOWN,
+            )
+
+            inputKeyEvent(
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                action = KeyEvent.ACTION_DOWN,
+            )
+
+            inputKeyEvent(
+                keyCode = KeyEvent.KEYCODE_VOLUME_UP,
+                action = KeyEvent.ACTION_UP,
+            )
+
+            inputKeyEvent(
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                action = KeyEvent.ACTION_UP,
+            )
+
+            //THEN
+            verify(performActionsUseCase, times(1)).perform(keyMaps[1].actionList[0].data)
+            verify(performActionsUseCase, never()).perform(keyMaps[0].actionList[0].data)
+
+            //WHEN
+
+            inputKeyEvent(
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                action = KeyEvent.ACTION_DOWN,
+            )
+
+            inputKeyEvent(
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                action = KeyEvent.ACTION_UP,
+            )
+
+            //THEN
+            verify(performActionsUseCase, times(1)).perform(keyMaps[0].actionList[0].data)
+            verify(performActionsUseCase, never()).perform(keyMaps[1].actionList[0].data)
+        }
+    }
+
+    /**
+     * issue #653
+     */
+    @Test
+    fun `overlapping triggers 2`() = coroutineScope.runBlockingTest {
+        //GIVEN
+        val keyMaps = listOf(
+            KeyMap(
+                trigger = parallelTrigger(
+                    triggerKey(KeyEvent.KEYCODE_P),
+                ),
+                actionList = listOf(KeyMapAction(data = KeyEventAction(keyCode = 45)))
+            ),
+            KeyMap(
+                trigger = parallelTrigger(
+                    triggerKey(KeyEvent.KEYCODE_META_LEFT),
+                    triggerKey(KeyEvent.KEYCODE_P),
+                ),
+                actionList = listOf(KeyMapAction(data = KeyEventAction(keyCode = 81)))
+            ),
+        )
+
+        keyMapListFlow.value = keyMaps
+
+        inOrder(performActionsUseCase) {
+
+            //WHEN
+            inputKeyEvent(
+                keyCode = KeyEvent.KEYCODE_META_LEFT,
+                action = KeyEvent.ACTION_DOWN,
+                metaState = KeyEvent.META_META_LEFT_ON or KeyEvent.META_META_ON
+            )
+
+            inputKeyEvent(
+                keyCode = KeyEvent.KEYCODE_P,
+                action = KeyEvent.ACTION_DOWN,
+                metaState = KeyEvent.META_META_LEFT_ON or KeyEvent.META_META_ON
+            )
+
+            inputKeyEvent(
+                keyCode = KeyEvent.KEYCODE_META_LEFT,
+                action = KeyEvent.ACTION_UP,
+            )
+
+            inputKeyEvent(
+                keyCode = KeyEvent.KEYCODE_P,
+                action = KeyEvent.ACTION_UP,
+            )
+
+            //THEN
+            verify(performActionsUseCase, times(1)).perform(keyMaps[1].actionList[0].data)
+            verify(performActionsUseCase, never()).perform(keyMaps[0].actionList[0].data)
+
+            //WHEN
+            mockParallelTrigger(keyMaps[0].trigger)
+
+            //THEN
+            verify(performActionsUseCase, times(1)).perform(keyMaps[0].actionList[0].data)
+            verify(performActionsUseCase, never()).perform(keyMaps[1].actionList[0].data)
+        }
+    }
+
+    /**
+     * issue #653
+     */
+    @Test
+    fun `overlapping triggers 1`() = coroutineScope.runBlockingTest {
+        //GIVEN
+        val keyMaps = listOf(
+            KeyMap(
+                trigger = parallelTrigger(
+                    triggerKey(KeyEvent.KEYCODE_CTRL_LEFT),
+                    triggerKey(KeyEvent.KEYCODE_SHIFT_LEFT),
+                    triggerKey(KeyEvent.KEYCODE_1),
+                ),
+                actionList = listOf(KeyMapAction(data = KeyEventAction(keyCode = 1)))
+            ),
+            KeyMap(
+                trigger = parallelTrigger(
+                    triggerKey(KeyEvent.KEYCODE_CTRL_LEFT),
+                    triggerKey(KeyEvent.KEYCODE_1),
+                ),
+                actionList = listOf(KeyMapAction(data = KeyEventAction(keyCode = 2)))
+            ),
+        )
+
+        keyMapListFlow.value = keyMaps
+
+        inOrder(performActionsUseCase) {
+            //WHEN
+            inputKeyEvent(
+                keyCode = KeyEvent.KEYCODE_CTRL_LEFT,
+                action = KeyEvent.ACTION_DOWN,
+                metaState = KeyEvent.META_CTRL_LEFT_ON or KeyEvent.META_CTRL_ON
+            )
+
+            inputKeyEvent(
+                keyCode = KeyEvent.KEYCODE_SHIFT_LEFT,
+                action = KeyEvent.ACTION_DOWN,
+                metaState = KeyEvent.META_CTRL_LEFT_ON or KeyEvent.META_CTRL_ON or KeyEvent.META_SHIFT_LEFT_ON or KeyEvent.META_SHIFT_ON
+            )
+
+            inputKeyEvent(
+                keyCode = KeyEvent.KEYCODE_1,
+                action = KeyEvent.ACTION_DOWN,
+                metaState = KeyEvent.META_CTRL_LEFT_ON or KeyEvent.META_CTRL_ON or KeyEvent.META_SHIFT_LEFT_ON or KeyEvent.META_SHIFT_ON
+            )
+
+            inputKeyEvent(
+                keyCode = KeyEvent.KEYCODE_CTRL_LEFT,
+                action = KeyEvent.ACTION_UP,
+                metaState = KeyEvent.META_SHIFT_LEFT_ON or KeyEvent.META_SHIFT_ON
+            )
+
+            inputKeyEvent(
+                keyCode = KeyEvent.KEYCODE_SHIFT_LEFT,
+                action = KeyEvent.ACTION_UP,
+            )
+
+            inputKeyEvent(
+                keyCode = KeyEvent.KEYCODE_1,
+                action = KeyEvent.ACTION_UP,
+            )
+
+            //THEN
+            verify(performActionsUseCase, times(1)).perform(keyMaps[0].actionList[0].data)
+            verify(performActionsUseCase, never()).perform(keyMaps[1].actionList[0].data)
+
+            //WHEN
+            inputKeyEvent(
+                keyCode = KeyEvent.KEYCODE_CTRL_LEFT,
+                action = KeyEvent.ACTION_DOWN,
+                metaState = KeyEvent.META_CTRL_LEFT_ON or KeyEvent.META_CTRL_ON
+            )
+
+            inputKeyEvent(
+                keyCode = KeyEvent.KEYCODE_1,
+                action = KeyEvent.ACTION_DOWN,
+                metaState = KeyEvent.META_CTRL_LEFT_ON or KeyEvent.META_CTRL_ON
+            )
+
+            inputKeyEvent(
+                keyCode = KeyEvent.KEYCODE_CTRL_LEFT,
+                action = KeyEvent.ACTION_UP,
+                metaState = KeyEvent.META_SHIFT_LEFT_ON or KeyEvent.META_SHIFT_ON
+            )
+
+            inputKeyEvent(
+                keyCode = KeyEvent.KEYCODE_1,
+                action = KeyEvent.ACTION_UP,
+            )
+
+
+            //THEN
+            verify(performActionsUseCase, times(1)).perform(keyMaps[1].actionList[0].data)
+            verify(performActionsUseCase, never()).perform(keyMaps[0].actionList[0].data)
+        }
+    }
+
+    /**
      * issue #664
      */
     @Test
@@ -818,26 +1046,29 @@ class KeyMapControllerTest {
                 KeyMap(1, trigger = twoKeyTrigger, actionList = listOf(TEST_ACTION))
             )
 
-            //test 1. test triggering 2 key trigger
-            //WHEN
-            inputKeyEvent(KeyEvent.KEYCODE_SHIFT_LEFT, KeyEvent.ACTION_DOWN)
-            inputKeyEvent(KeyEvent.KEYCODE_A, KeyEvent.ACTION_DOWN)
+            inOrder(performActionsUseCase) {
+                //test 1. test triggering 2 key trigger
+                //WHEN
+                inputKeyEvent(KeyEvent.KEYCODE_SHIFT_LEFT, KeyEvent.ACTION_DOWN)
+                inputKeyEvent(KeyEvent.KEYCODE_A, KeyEvent.ACTION_DOWN)
 
-            inputKeyEvent(KeyEvent.KEYCODE_SHIFT_LEFT, KeyEvent.ACTION_UP)
-            inputKeyEvent(KeyEvent.KEYCODE_A, KeyEvent.ACTION_UP)
-            //THEN
-            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+                inputKeyEvent(KeyEvent.KEYCODE_SHIFT_LEFT, KeyEvent.ACTION_UP)
+                inputKeyEvent(KeyEvent.KEYCODE_A, KeyEvent.ACTION_UP)
+                //THEN
+                verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+                verify(performActionsUseCase, never()).perform(TEST_ACTION_2.data)
 
-            //test 2. test triggering 1 key trigger
-            //WHEN
-            inputKeyEvent(KeyEvent.KEYCODE_A, KeyEvent.ACTION_DOWN)
+                //test 2. test triggering 1 key trigger
+                //WHEN
+                inputKeyEvent(KeyEvent.KEYCODE_A, KeyEvent.ACTION_DOWN)
 
-            inputKeyEvent(KeyEvent.KEYCODE_A, KeyEvent.ACTION_UP)
-            advanceUntilIdle()
+                inputKeyEvent(KeyEvent.KEYCODE_A, KeyEvent.ACTION_UP)
+                advanceUntilIdle()
 
-            //THEN
-
-            verify(performActionsUseCase, times(1)).perform(TEST_ACTION_2.data)
+                //THEN
+                verify(performActionsUseCase, times(1)).perform(TEST_ACTION_2.data)
+                verify(performActionsUseCase, never()).perform(TEST_ACTION.data)
+            }
         }
 
     @Test
