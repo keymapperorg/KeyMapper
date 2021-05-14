@@ -166,7 +166,6 @@ class BackupManagerImpl(
                     backupAsync(outputStream, fingerprintMaps = fingerprintMaps.data).await()
                 }
 
-
             onBackupResult.emit(result)
         }
     }

@@ -122,7 +122,6 @@ class AndroidDisplayAdapter(context: Context) : DisplayAdapter {
             SettingsUtils.getSystemSetting<Int>(ctx, Settings.System.SCREEN_BRIGHTNESS)
 
         var newBrightness = if (currentBrightness != null) {
-            Timber.e(currentBrightness.toString())
             currentBrightness + BRIGHTNESS_CHANGE_STEP
         } else {
             255

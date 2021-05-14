@@ -545,7 +545,7 @@
     <string name="title_pref_devices_to_reroute_keyevents_choose_ime">3. Use the keyboard that you just enabled</string>
     <string name="title_pref_devices_to_reroute_keyevents_guide">(Recommended) Read user guide for this setting.</string>
 
-    <string name="title_pref_toggle_logging">Enable logging</string>
+    <string name="title_pref_toggle_logging">Enable extra logging</string>
     <string name="title_pref_view_and_share_log">View and share log</string>
     <string name="title_pref_report_issue">Report issue</string>
     <!--Preference titles and summaries-->

@@ -23,5 +23,6 @@ data class LogEntryEntity(
     companion object{
         const val SEVERITY_ERROR = 0
         const val SEVERITY_DEBUG = 1
+        const val SEVERITY_INFO = 2
     }
 }

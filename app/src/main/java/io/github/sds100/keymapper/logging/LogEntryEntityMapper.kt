@@ -10,6 +10,7 @@ object LogEntryEntityMapper {
         val severity = when (model.severity) {
             LogSeverity.ERROR -> LogEntryEntity.SEVERITY_ERROR
             LogSeverity.DEBUG -> LogEntryEntity.SEVERITY_DEBUG
+            LogSeverity.INFO -> LogEntryEntity.SEVERITY_INFO
         }
 
         return LogEntryEntity(
@@ -24,6 +25,7 @@ object LogEntryEntityMapper {
         val severity = when (model.severity) {
             LogEntryEntity.SEVERITY_ERROR -> LogSeverity.ERROR
             LogEntryEntity.SEVERITY_DEBUG -> LogSeverity.DEBUG
+            LogEntryEntity.SEVERITY_INFO -> LogSeverity.INFO
 
             else -> LogSeverity.DEBUG
         }

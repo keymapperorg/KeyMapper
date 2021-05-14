@@ -88,7 +88,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     override fun onServiceConnected() {
         super.onServiceConnected()
 
-        Timber.d("Accessibility service started")
+        Timber.i("Accessibility service started")
 
         lifecycleRegistry = LifecycleRegistry(this)
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
@@ -161,13 +161,13 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                 .unregisterFingerprintGestureCallback(fingerprintGestureCallback)
         }
 
-        Timber.d("Accessibility service destroyed")
+        Timber.i("Accessibility service destroyed")
 
         super.onDestroy()
     }
 
     override fun onLowMemory() {
-        Timber.d("Accessibility service on low memory")
+        Timber.e("Accessibility service on low memory")
 
         super.onLowMemory()
     }

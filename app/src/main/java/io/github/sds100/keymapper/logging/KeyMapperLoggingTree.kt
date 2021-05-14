@@ -39,13 +39,15 @@ class KeyMapperLoggingTree(
     }
 
     override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
-        if (!log.value) {
+        //error and info logs should always log even if the user setting is turned off
+        if (!log.value && priority != Log.ERROR && priority != Log.INFO) {
             return
         }
 
         val severity = when (priority) {
             Log.ERROR -> LogEntryEntity.SEVERITY_ERROR
             Log.DEBUG -> LogEntryEntity.SEVERITY_DEBUG
+            Log.INFO -> LogEntryEntity.SEVERITY_INFO
             else -> LogEntryEntity.SEVERITY_DEBUG
         }
 
