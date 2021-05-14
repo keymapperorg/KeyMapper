@@ -268,9 +268,9 @@ class AccessibilityServiceAdapter(
         val isEnabled = settingValue.split(':').any { it.split('/')[0] == ctx.packageName }
 
         return when {
+            !isEnabled -> AccessibilityServiceState.DISABLED
             isCrashed() && isEnabled -> AccessibilityServiceState.CRASHED
-            isEnabled -> AccessibilityServiceState.ENABLED
-            else -> AccessibilityServiceState.DISABLED
+            else -> AccessibilityServiceState.ENABLED
         }
     }
 }
