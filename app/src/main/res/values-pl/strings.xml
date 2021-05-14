@@ -155,8 +155,6 @@
     <string name="neg_no">Nie</string>
     <string name="neg_cancel">Anuluj</string>
     <string name="neg_dont_show_again">Nie wyświetlaj ponownie</string>
-    <string name="neg_email">Email</string>
-    <string name="neutral_discord">Discord</string>
     <string name="snackbar_cancel">Anuluj</string>
     <string name="snackbar_fix">Napraw</string>
     <!-- Dialog stuff -->
