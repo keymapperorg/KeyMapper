@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.onFailure
 import io.github.sds100.keymapper.util.onSuccess
 import io.github.sds100.keymapper.util.ui.*
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -37,6 +38,13 @@ class SettingsViewModel(
     val isCompatibleImeEnabled: StateFlow<Boolean> = useCase.isCompatibleImeEnabled
         .stateIn(viewModelScope, SharingStarted.Lazily, false)
 
+    val defaultLongPressDelay: Flow<Int> = useCase.defaultLongPressDelay
+    val defaultDoublePressDelay: Flow<Int> = useCase.defaultDoublePressDelay
+    val defaultRepeatDelay: Flow<Int> = useCase.defaultRepeatDelay
+    val defaultSequenceTriggerTimeout: Flow<Int> = useCase.defaultSequenceTriggerTimeout
+    val defaultVibrateDuration: Flow<Int> = useCase.defaultVibrateDuration
+    val defaultRepeatRate: Flow<Int> = useCase.defaultRepeatRate
+
     fun setAutomaticBackupLocation(uri: String) = useCase.setAutomaticBackupLocation(uri)
     fun disableAutomaticBackup() = useCase.disableAutomaticBackup()
 
@@ -56,6 +64,10 @@ class SettingsViewModel(
 
     fun onEnableCompatibleImeClick() {
         useCase.enableCompatibleIme()
+    }
+
+    fun resetDefaultMappingOptions() {
+        useCase.resetDefaultMappingOptions()
     }
 
     @Suppress("UNCHECKED_CAST")

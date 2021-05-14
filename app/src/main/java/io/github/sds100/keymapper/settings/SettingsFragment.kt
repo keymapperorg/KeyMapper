@@ -609,6 +609,14 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             max = 5000
             showSeekBarValue = true
 
+            viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+                viewModel.defaultLongPressDelay.collectLatest { value ->
+                    if (this@apply.value != value) {
+                        this@apply.value = value
+                    }
+                }
+            }
+
             addPreference(this)
         }
 
@@ -623,6 +631,14 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             min = OptionMinimums.TRIGGER_DOUBLE_PRESS_DELAY
             max = 5000
             showSeekBarValue = true
+
+            viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+                viewModel.defaultDoublePressDelay.collectLatest { value ->
+                    if (this@apply.value != value) {
+                        this@apply.value = value
+                    }
+                }
+            }
 
             addPreference(this)
         }
@@ -639,6 +655,14 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             max = 1000
             showSeekBarValue = true
 
+            viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+                viewModel.defaultVibrateDuration.collectLatest { value ->
+                    if (this@apply.value != value) {
+                        this@apply.value = value
+                    }
+                }
+            }
+
             addPreference(this)
         }
 
@@ -653,6 +677,14 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             min = OptionMinimums.ACTION_REPEAT_DELAY
             max = SliderMaximums.ACTION_REPEAT_DELAY
             showSeekBarValue = true
+
+            viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+                viewModel.defaultRepeatDelay.collectLatest { value ->
+                    if (this@apply.value != value) {
+                        this@apply.value = value
+                    }
+                }
+            }
 
             addPreference(this)
         }
@@ -669,6 +701,14 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             max = SliderMaximums.ACTION_REPEAT_RATE
             showSeekBarValue = true
 
+            viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+                viewModel.defaultRepeatRate.collectLatest { value ->
+                    if (this@apply.value != value) {
+                        this@apply.value = value
+                    }
+                }
+            }
+
             addPreference(this)
         }
 
@@ -683,6 +723,25 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             min = OptionMinimums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT
             max = 5000
             showSeekBarValue = true
+
+            viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+                viewModel.defaultSequenceTriggerTimeout.collectLatest { value ->
+                    if (this@apply.value != value) {
+                        this@apply.value = value
+                    }
+                }
+            }
+
+            addPreference(this)
+        }
+
+        Preference(requireContext()).apply {
+            setTitle(R.string.title_pref_reset_defaults)
+
+            setOnPreferenceClickListener {
+                viewModel.resetDefaultMappingOptions()
+                true
+            }
 
             addPreference(this)
         }
