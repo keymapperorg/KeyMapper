@@ -308,9 +308,6 @@
     <string name="title_pref_force_vibrate">强制振动</string>
     <string name="title_pref_show_ime_picker_notification">键盘选择器通知</string>
     <string name="summary_pref_show_ime_picker_notification">显示常驻通知以允许你选择键盘。</string>
-    <string name="title_pref_show_toggle_keymaps_notification">暂停/继续按键映射通知</string>
-    <string name="summary_pref_show_toggle_keymaps_notification">显示启动/暂停你的按键映射及开始/停止无障碍服务链接的常驻通知。</string>
-    <string name="title_pref_automatic_backup_location">自动备份按键映射到指定位置</string>
     <string name="summary_pref_automatic_backup_location_disabled">未选择位置。</string>
     <string name="title_pref_auto_show_ime_picker">自动显示键盘选择器</string>
     <string name="title_pref_root_permission">Key Mapper 拥有 root 权限</string>
