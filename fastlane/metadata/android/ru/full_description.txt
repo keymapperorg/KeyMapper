@@ -94,3 +94,4 @@
  На некоторых устройствах, включение службы специальных возможностей отключит "расширенное шифрование данных".
 
 Discord: https://discord.gg/Suj6nyw
+Website: https://docs.keymapper.club
