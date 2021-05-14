@@ -194,6 +194,7 @@ class AccessibilityServiceAdapter(
     }
 
     private fun enableWithWriteSecureSettings() {
+        Timber.i("Enable service with WRITE_SECURE_SETTINGS")
         if (permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
             val enabledServices = SettingsUtils.getSecureSetting<String>(
                 ctx,
