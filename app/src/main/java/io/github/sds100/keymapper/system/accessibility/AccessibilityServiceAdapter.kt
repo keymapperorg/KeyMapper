@@ -71,6 +71,8 @@ class AccessibilityServiceAdapter(
 
     override suspend fun send(event: Event): Result<*> {
 
+        state.value = getState()
+
         if (state.value == AccessibilityServiceState.DISABLED) {
             Timber.e("Failed to send event to accessibility service because disabled: $event")
             return Error.AccessibilityServiceDisabled
@@ -265,10 +267,10 @@ class AccessibilityServiceAdapter(
         */
         val isEnabled = settingValue.split(':').any { it.split('/')[0] == ctx.packageName }
 
-        return when{
+        return when {
             isCrashed() && isEnabled -> AccessibilityServiceState.CRASHED
             isEnabled -> AccessibilityServiceState.ENABLED
-            else-> AccessibilityServiceState.DISABLED
+            else -> AccessibilityServiceState.DISABLED
         }
     }
 }
