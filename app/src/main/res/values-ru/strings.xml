@@ -318,9 +318,6 @@
     <string name="title_pref_force_vibrate">Принудительно вибрировать</string>
     <string name="title_pref_show_ime_picker_notification">Уведомление выбора клавиатуры</string>
     <string name="summary_pref_show_ime_picker_notification">Показывать постоянное уведомление, позволяющее выбрать клавиатуру.</string>
-    <string name="title_pref_show_toggle_keymaps_notification">Уведомление позволяющее ставить на паузу / снимать с паузы приложение</string>
-    <string name="summary_pref_show_toggle_keymaps_notification">Показывает постоянное уведомление позволяющее запускать / приостанавливать ваши мэппинги. А также есть ссылка для запуска или остановки службы спец.возможностей.</string>
-    <string name="title_pref_automatic_backup_location">Автоматическая резервная копия всех мэппингов в указанном месте</string>
     <string name="summary_pref_automatic_backup_location_disabled">Местоположение не выбрано.</string>
     <string name="title_pref_choose_devices">Выберите устройства</string>
     <string name="title_pref_auto_show_ime_picker">Автоматически показывать выбор клавиатуры</string>
