@@ -263,11 +263,9 @@
     <string name="dialog_message_select_compatible_ime">Выберите метод ввода для действий, которые требуют его. Вы можете изменить это позже, нажав на кнопку \"Выбрать клавиатуру для действий\" в нижнем меню главного экрана.</string>
     <string name="dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout">Вам необходимо переключить раскладку клавиатуры на \"Caps Lock для камеры\" в противном случае клавиша Caps Lock будет менять регистр букв, не более. Эту настройку можно найти в общих настройках вашего устройства -&gt; Языки и методы ввода -&gt; Физическая клавиатура -&gt; Нажать на соответствующую клавиатуру -&gt; Выбрать раскладку. Это переназначит клавишу Caps Lock на отправку KEYCODE_CAMERA, таким образом Key Mapper сможет правильно ее обработать.\n\nПОсле того как вы это сделаете нужно удалить событие \"Caps Lock\" и записать событие для клавиши Caps Lock снова. Если при записи будет отображено \"Камера\" вместо \"Caps Lock\" значит вы все проделали верно.</string>
     <string name="dialog_message_cant_record_trigger"><b>Перезагрузите</b> свое устройство если кнопка \"Запишите событие\" ведет отсчет, но не регистрирует нажатий. Или даже НЕ ведет отсчет. Если после перезагрузки устройства нажатия клавиши все равно не регистрируются значит Key Mapper не поддерживает этот тип клавиш. К сожалению эту ситуацию не исправить. Дополнительно можно обратиться к разделу 7 часто задаваемых вопросов.</string>
-    <string name="dialog_message_view_faq_and_use_discord_over_email">Пожалуйста, ознакомьтесь с часто задаваемыми вопросами, чтобы узнать, был ли ответ на ваш вопрос. Если нет, то разработчик предпочел бы, если бы вы запросили помощь и/или предложили доработки на сервере Discord. Если у вас нет Discord, вы можете отправить сообщение по электронной почте разработчику напрямую.</string>
     <string name="pos_yes">Да</string>
     <string name="pos_done">Готово</string>
     <string name="pos_opt_in">Принять участие</string>
-    <string name="pos_faq_page">ЧАВО</string>
     <string name="pos_grant_write_secure_settings_guide">Инструкция</string>
     <string name="pos_enable_root_features">Включить Root-функции</string>
     <string name="pos_grant">Предоставить</string>
@@ -278,8 +276,6 @@
     <string name="neg_no">Нет</string>
     <string name="neg_cancel">Отменить</string>
     <string name="neg_dont_show_again">Больше не показывать</string>
-    <string name="neg_email">Эл. почта</string>
-    <string name="neutral_discord">Дискорд</string>
     <string name="neutral_intent_docs">Документация</string>
     <string name="snackbar_cancel">Отменить</string>
     <string name="snackbar_fix">Исправить</string>
