@@ -65,7 +65,7 @@ class AccessibilityServiceAdapter(
         }
 
         eventReceiver.onEach {
-            Timber.d("Received event from accessibility service: $it")
+            Timber.i("Received event from accessibility service: $it")
         }.launchIn(coroutineScope)
     }
 
@@ -83,7 +83,7 @@ class AccessibilityServiceAdapter(
 
         coroutineScope.launch {
             serviceOutputEvents.emit(event)
-            Timber.d("Successfully sent event to accessibility service: $event")
+            Timber.i("Successfully sent event to accessibility service: $event")
         }
 
         return Success(Unit)
