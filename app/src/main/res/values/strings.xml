@@ -497,6 +497,8 @@
     <string name="summary_pref_sequence_trigger_timeout">The time allowed to complete a sequence trigger. Default is 1000ms. Can be overridden in a key map\'s options.</string>
     <string name="title_pref_sequence_trigger_timeout">Default sequence trigger timeout (ms)</string>
 
+    <string name="title_pref_reset_defaults">Reset</string>
+
     <string name="summary_pref_force_vibrate">Force all key maps to vibrate.</string>
     <string name="title_pref_force_vibrate">Force vibrate</string>
 

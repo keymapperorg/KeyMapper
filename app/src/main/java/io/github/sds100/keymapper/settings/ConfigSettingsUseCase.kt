@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.settings
 
 import androidx.datastore.preferences.core.Preferences
 import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
@@ -72,6 +73,39 @@ class ConfigSettingsUseCaseImpl(
     override fun disableAutomaticBackup() {
         preferenceRepository.set(Keys.automaticBackupLocation, null)
     }
+
+    override val defaultLongPressDelay: Flow<Int> =
+        preferenceRepository.get(Keys.defaultLongPressDelay)
+            .map { it ?: PreferenceDefaults.LONG_PRESS_DELAY }
+
+    override val defaultDoublePressDelay: Flow<Int> =
+        preferenceRepository.get(Keys.defaultDoublePressDelay)
+            .map { it ?: PreferenceDefaults.DOUBLE_PRESS_DELAY }
+
+    override val defaultRepeatDelay: Flow<Int> =
+        preferenceRepository.get(Keys.defaultRepeatDelay)
+            .map { it ?: PreferenceDefaults.REPEAT_DELAY }
+
+    override val defaultSequenceTriggerTimeout: Flow<Int> =
+        preferenceRepository.get(Keys.defaultSequenceTriggerTimeout)
+            .map { it ?: PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT }
+
+    override val defaultVibrateDuration: Flow<Int> =
+        preferenceRepository.get(Keys.defaultVibrateDuration)
+            .map { it ?: PreferenceDefaults.VIBRATION_DURATION }
+
+    override val defaultRepeatRate: Flow<Int> =
+        preferenceRepository.get(Keys.defaultRepeatRate)
+            .map { it ?: PreferenceDefaults.REPEAT_RATE }
+
+    override fun resetDefaultMappingOptions() {
+        preferenceRepository.set(Keys.defaultLongPressDelay, null)
+        preferenceRepository.set(Keys.defaultDoublePressDelay, null)
+        preferenceRepository.set(Keys.defaultRepeatDelay, null)
+        preferenceRepository.set(Keys.defaultSequenceTriggerTimeout, null)
+        preferenceRepository.set(Keys.defaultVibrateDuration, null)
+        preferenceRepository.set(Keys.defaultRepeatRate, null)
+    }
 }
 
 interface ConfigSettingsUseCase {
@@ -88,4 +122,13 @@ interface ConfigSettingsUseCase {
 
     fun enableCompatibleIme()
     suspend fun chooseCompatibleIme(): Result<ImeInfo>
+
+    val defaultLongPressDelay: Flow<Int>
+    val defaultDoublePressDelay: Flow<Int>
+    val defaultRepeatDelay: Flow<Int>
+    val defaultSequenceTriggerTimeout: Flow<Int>
+    val defaultVibrateDuration: Flow<Int>
+    val defaultRepeatRate: Flow<Int>
+
+    fun resetDefaultMappingOptions()
 }
