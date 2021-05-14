@@ -94,3 +94,4 @@ Es müssen nicht alle Berechtigungen gewährt werden, damit die app funktioniert
  On some devices, enabling the accessibility service will disable "enhanced data encryption".
 
 Discord: https://discord.gg/Suj6nyw
+Website: https://docs.keymapper.club
