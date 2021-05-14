@@ -503,10 +503,10 @@
     <string name="title_pref_show_ime_picker_notification">Keyboard picker notification</string>
     <string name="summary_pref_show_ime_picker_notification">Show a persistent notification to allow you to pick a keyboard.</string>
 
-    <string name="title_pref_show_toggle_keymaps_notification">Pause/resume key maps notification</string>
-    <string name="summary_pref_show_toggle_keymaps_notification">Show a persistent notification which starts/pauses your key maps and has a link to start/stop the accessibility service.</string>
+    <string name="title_pref_show_toggle_keymaps_notification">Pause/resume mappings notification</string>
+    <string name="summary_pref_show_toggle_keymaps_notification">Show a persistent notification which starts/pauses your mappings.</string>
 
-    <string name="title_pref_automatic_backup_location">Automatically back up key maps to a specified location</string>
+    <string name="title_pref_automatic_backup_location">Automatically back up mappings to a specified location</string>
     <string name="summary_pref_automatic_backup_location_disabled">No location chosen.</string>
 
     <string name="title_pref_choose_devices">Choose devices</string>
