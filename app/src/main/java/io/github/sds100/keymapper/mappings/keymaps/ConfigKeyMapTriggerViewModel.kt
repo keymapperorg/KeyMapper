@@ -295,46 +295,48 @@ class ConfigKeyMapTriggerViewModel(
 
     fun onRecordTriggerButtonClick() {
         coroutineScope.launch {
-            val recordTriggerState = recordTrigger.state.firstOrNull()
+            val recordTriggerState = recordTrigger.state.firstOrNull() ?: return@launch
 
-            when (recordTriggerState) {
+            val result = when (recordTriggerState) {
                 is RecordTriggerState.CountingDown -> recordTrigger.stopRecording()
-                RecordTriggerState.Stopped -> {
-                    val recordResult = recordTrigger.startRecording()
+                RecordTriggerState.Stopped -> recordTrigger.startRecording()
+            }
 
-                    if (recordResult is Error.AccessibilityServiceDisabled) {
+            if (result is Error.AccessibilityServiceDisabled) {
 
-                        val snackBar = PopupUi.SnackBar(
-                            message = getString(R.string.dialog_message_enable_accessibility_service_to_record_trigger),
-                            actionText = getString(R.string.pos_turn_on)
-                        )
+                val snackBar = PopupUi.SnackBar(
+                    message = getString(R.string.dialog_message_enable_accessibility_service_to_record_trigger),
+                    actionText = getString(R.string.pos_turn_on)
+                )
 
-                        val response = showPopup("enable_service", snackBar)
+                val response = showPopup("enable_service", snackBar)
 
-                        if (response != null) {
-                            displayKeyMap.fixError(Error.AccessibilityServiceDisabled)
-                        }
-                    }
+                if (response != null) {
+                    displayKeyMap.fixError(Error.AccessibilityServiceDisabled)
+                }
+            }
 
-                    if (recordResult is Error.AccessibilityServiceCrashed) {
+            if (result is Error.AccessibilityServiceCrashed) {
 
-                        val snackBar = PopupUi.SnackBar(
-                            message = getString(R.string.dialog_message_restart_accessibility_service_to_record_trigger),
-                            actionText = getString(R.string.pos_restart)
-                        )
+                val snackBar = PopupUi.SnackBar(
+                    message = getString(R.string.dialog_message_restart_accessibility_service_to_record_trigger),
+                    actionText = getString(R.string.pos_restart)
+                )
 
-                        val response = showPopup("restart_service", snackBar)
+                val response = showPopup("restart_service", snackBar)
 
-                        if (response != null) {
-                            displayKeyMap.fixError(Error.AccessibilityServiceCrashed)
-                        }
-                    }
+                if (response != null) {
+                    displayKeyMap.fixError(Error.AccessibilityServiceCrashed)
                 }
             }
         }
     }
 
-    fun stopRecordingTrigger() = recordTrigger.stopRecording()
+    fun stopRecordingTrigger() {
+        coroutineScope.launch {
+            recordTrigger.stopRecording()
+        }
+    }
 
     fun fixError(listItemId: String) {
         coroutineScope.launch {
