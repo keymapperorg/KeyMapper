@@ -1,0 +1,60 @@
+- A huge rewrite of the code which should make the app more stable and easier to add features in the future.
+
+Added
+- 🎉 A new website with a tutorial! 🎉 [docs.keymapper.club](https://docs.keymapper.club)
+
+- Action to broadcast intent, start activity and start service. #112
+- Action to show the input method picker by using the Key Mapper keyboard. #531
+- Action to toggle the notification drawer and the quick settings drawer. #242
+- Action to call a phone number. #516
+- Prompt the user to read the quick start guide on the website the first time the app is opened. #544
+- Links to a relevant online guide in each screen in the app. #539
+- Option in key event action to input the key event through the shell. #559
+- Splash screen #561
+- Data migrations when restoring from backups. #574
+- Enable hold down and disable repeat by default for modifier key actions. #579
+- Ability to change the input method with the accessibility service on Android 11+. #619
+- A workaround for the Android 11 bug that sets the language of external keyboards to English-US when an accessibility service is enabled. #618
+- Make it clearer that selecting a screenshot to set up a tap coordinate action is optional. #632
+- Show a prompt to install the Key Mapper GUI Keyboard when a key event action is created. #645
+- Back up default key map settings in back ups. #659
+- Warnings when the accessibility service is turned on but isn't actually running. #643
+- Show a message at the top of the home screen when mappings are paused. #642
+- A caution message to avoid locking the user when using screen pinning mode. #602
+- A logging page in the app which can be used instead of bug reports. #651
+- A button in the settings to reset sliders to their default. #589
+- A repeat limit action option. #663
+
+Changed
+- Move action option to show a toast message to the same place as the vibrate option. #565
+- Replace setting to choose Bluetooth device in settings with setting to choose any input device. #620
+- Rename 'action count' option to 'how many times'. #611
+- Move option to show the volume ui for an action to when the action is created. #639
+- Tapping the pause/resume key maps notification now opens Key Mapper. #665
+- Make action descriptions more descriptive when repeat is turned on. #666
+
+Removed
+- Dex slide in the app intro because it didn't work. #646
+- Buttons to enable all and disable all key maps in the home screen menu. #647
+- Support for Android KitKat 4.4 and older. #627
+- Ability to view changelog, license and privacy policy in an in-app dialog. They now open a link in the browser. #648
+- Alerts at the top of the home screen to enable a Key Mapper keyboard, grant WRITE_SECURE_SETTINGS and grant Do not Disturb mode.
+
+Bug fixes
+- Fix jank #549
+- Fix text consistency #543
+- A parallel trigger which contains another parallel trigger after the first key should cancel the other. #571
+- Actions go off screen for key maps on the home screen. #613
+- Remove uses of Android framework strings for dialog buttons. #650
+- Trigger key click type sometimes resets to short press. #615
+- Wrong device id is used when performing key event actions and there are multiple devices with the same descriptor. #637
+- Trigger key isn't imitated after a failed double press. #606
+- Actions don't start repeating on a failed long press or failed double press. #626
+- Crash when modifying a huge number of key maps. #641
+- Home menu is chopped off on screens with small height. #582
+- Crash when double pressing button to open action or trigger key options. #600
+- Some action options disappear when adding a new trigger key. #594
+- An action can continue to repeat even when the trigger is released if delay until next action is not 0. #662
+- A lot of input latency when using a lot of constraints. #599
+- Trigger button isn't imitated when a short press trigger with multiple keys fails to be triggered. #664
+- Overlapping triggers. #653
