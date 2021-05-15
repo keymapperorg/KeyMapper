@@ -37,7 +37,7 @@ class AccessibilityServiceAdapter(
 
     val serviceOutputEvents = MutableSharedFlow<Event>()
 
-    override val state = MutableStateFlow(AccessibilityServiceState.DISABLED)
+    override val state = MutableStateFlow(ServiceState.DISABLED)
 
     private val permissionAdapter: PermissionAdapter by lazy { ServiceLocator.permissionAdapter(ctx) }
 
@@ -73,12 +73,12 @@ class AccessibilityServiceAdapter(
 
         state.value = getState()
 
-        if (state.value == AccessibilityServiceState.DISABLED) {
+        if (state.value == ServiceState.DISABLED) {
             Timber.e("Failed to send event to accessibility service because disabled: $event")
             return Error.AccessibilityServiceDisabled
         }
 
-        if (state.value == AccessibilityServiceState.CRASHED) {
+        if (state.value == ServiceState.CRASHED) {
             Timber.e("Failed to send event to accessibility service because crashed: $event")
             return Error.AccessibilityServiceCrashed
         }
@@ -243,7 +243,7 @@ class AccessibilityServiceAdapter(
         }
     }
 
-    private suspend fun getState(): AccessibilityServiceState {
+    private suspend fun getState(): ServiceState {
         /* get a list of all the enabled accessibility services.
          * The AccessibilityManager.getEnabledAccessibilityServices() method just returns an empty
          * list. :(*/
@@ -253,7 +253,7 @@ class AccessibilityServiceAdapter(
         )
 
         if (settingValue == null) {
-            return AccessibilityServiceState.DISABLED
+            return ServiceState.DISABLED
         }
 
         //it can be null if the user has never interacted with accessibility settings before
@@ -268,9 +268,9 @@ class AccessibilityServiceAdapter(
         val isEnabled = settingValue.split(':').any { it.split('/')[0] == ctx.packageName }
 
         return when {
-            !isEnabled -> AccessibilityServiceState.DISABLED
-            isCrashed() && isEnabled -> AccessibilityServiceState.CRASHED
-            else -> AccessibilityServiceState.ENABLED
+            !isEnabled -> ServiceState.DISABLED
+            isCrashed() && isEnabled -> ServiceState.CRASHED
+            else -> ServiceState.ENABLED
         }
     }
 }

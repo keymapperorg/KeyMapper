@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
  * Created by sds100 on 17/03/2021.
  */
 interface ServiceAdapter {
-    val state: StateFlow<AccessibilityServiceState>
+    val state: StateFlow<ServiceState>
 
     fun enableService()
     fun restartService()

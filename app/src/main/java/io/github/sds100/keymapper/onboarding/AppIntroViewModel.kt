@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.onboarding
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
+import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
@@ -27,7 +27,7 @@ class AppIntroViewModel(
     }
 
     private val slideModels: Flow<List<AppIntroSlideUi>> = combine(
-        useCase.accessibilityServiceState,
+        useCase.serviceState,
         useCase.isBatteryOptimised,
         useCase.hasDndAccessPermission,
         useCase.fingerprintGesturesSupported
@@ -87,9 +87,9 @@ class AppIntroViewModel(
         backgroundColor = getColor(R.color.red)
     )
 
-    private fun accessibilityServiceSlide(serviceState: AccessibilityServiceState): AppIntroSlideUi {
+    private fun accessibilityServiceSlide(serviceState: ServiceState): AppIntroSlideUi {
       return  when(serviceState){
-            AccessibilityServiceState.ENABLED ->
+            ServiceState.ENABLED ->
                 AppIntroSlideUi(
                 id = AppIntroSlide.ACCESSIBILITY_SERVICE,
                 image = getDrawable(R.drawable.ic_baseline_check_64),
@@ -98,7 +98,7 @@ class AppIntroViewModel(
                 backgroundColor = getColor(R.color.purple),
             )
 
-            AccessibilityServiceState.CRASHED ->
+            ServiceState.CRASHED ->
                 AppIntroSlideUi(
                     id = AppIntroSlide.ACCESSIBILITY_SERVICE,
                     image = getDrawable(R.drawable.ic_outline_error_outline_64),
@@ -110,7 +110,7 @@ class AppIntroViewModel(
                     buttonText1 = getString(R.string.showcase_accessibility_service_button_restart)
                 )
 
-            AccessibilityServiceState.DISABLED ->
+            ServiceState.DISABLED ->
                 AppIntroSlideUi(
                     id = AppIntroSlide.ACCESSIBILITY_SERVICE,
                     image = getDrawable(R.drawable.ic_outline_error_outline_64),

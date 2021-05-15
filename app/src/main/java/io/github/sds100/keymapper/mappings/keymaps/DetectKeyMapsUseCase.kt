@@ -7,12 +7,11 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.DetectMappingUseCase
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapEntityMapper
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeMessenger
-import io.github.sds100.keymapper.system.keyevents.InputKeyModel
+import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.navigation.OpenMenuHelper
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.InputEventType

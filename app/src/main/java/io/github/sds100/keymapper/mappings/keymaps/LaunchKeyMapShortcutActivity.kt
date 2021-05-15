@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
-import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
+import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.accessibility.MyAccessibilityService
 import splitties.toast.toast
 
@@ -21,7 +21,7 @@ class LaunchKeyMapShortcutActivity : AppCompatActivity() {
         val accessibilityServiceState = ServiceLocator.serviceAdapter(this).state.value
 
         when (accessibilityServiceState) {
-            AccessibilityServiceState.ENABLED ->
+            ServiceState.ENABLED ->
                 if (intent.action == MyAccessibilityService.ACTION_TRIGGER_KEYMAP_BY_UID) {
                     Intent(MyAccessibilityService.ACTION_TRIGGER_KEYMAP_BY_UID).apply {
                         setPackage(Constants.PACKAGE_NAME)
@@ -33,8 +33,8 @@ class LaunchKeyMapShortcutActivity : AppCompatActivity() {
                     }
                 }
 
-            AccessibilityServiceState.CRASHED -> toast(R.string.error_accessibility_service_crashed)
-            AccessibilityServiceState.DISABLED -> toast(R.string.error_accessibility_service_disabled)
+            ServiceState.CRASHED -> toast(R.string.error_accessibility_service_crashed)
+            ServiceState.DISABLED -> toast(R.string.error_accessibility_service_disabled)
         }
 
         finish()

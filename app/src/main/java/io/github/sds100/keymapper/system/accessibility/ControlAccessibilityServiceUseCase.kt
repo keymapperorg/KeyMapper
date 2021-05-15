@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 class ControlAccessibilityServiceUseCaseImpl(
     private val adapter: ServiceAdapter
 ) : ControlAccessibilityServiceUseCase {
-    override val state: Flow<AccessibilityServiceState> = adapter.state
+    override val state: Flow<ServiceState> = adapter.state
 
     override fun enable() {
         adapter.enableService()
@@ -25,7 +25,7 @@ class ControlAccessibilityServiceUseCaseImpl(
 }
 
 interface ControlAccessibilityServiceUseCase {
-    val state: Flow<AccessibilityServiceState>
+    val state: Flow<ServiceState>
     fun enable()
     fun restart()
     fun disable()
