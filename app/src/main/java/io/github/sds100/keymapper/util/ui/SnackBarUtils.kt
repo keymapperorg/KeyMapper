@@ -1,6 +1,9 @@
 package io.github.sds100.keymapper.util.ui
 
 import android.view.View
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import io.github.sds100.keymapper.R
+import kotlinx.android.synthetic.main.fragment_home.view.*
 import kotlinx.coroutines.suspendCancellableCoroutine
 import splitties.snackbar.action
 import splitties.snackbar.longSnack
@@ -13,7 +16,7 @@ import kotlin.coroutines.resume
  */
 object SnackBarUtils {
 
-    suspend fun show(view: View, text: String, actionText: String? = null, long: Boolean = false) =
+    suspend fun show(view: CoordinatorLayout, text: String, actionText: String? = null, long: Boolean = false) =
         suspendCancellableCoroutine<PopupUi.SnackBarActionResponse?> { continuation ->
 
             val snackBar = if (long) {
@@ -23,6 +26,8 @@ object SnackBarUtils {
                             continuation.resume(PopupUi.SnackBarActionResponse)
                         }
                     }
+
+                    anchorView = view.findViewById(R.id.fab)
                 }
             } else {
                 view.snack(text) {
@@ -31,6 +36,8 @@ object SnackBarUtils {
                             continuation.resume(PopupUi.SnackBarActionResponse)
                         }
                     }
+
+                    anchorView = view.findViewById(R.id.fab)
                 }
             }
 
