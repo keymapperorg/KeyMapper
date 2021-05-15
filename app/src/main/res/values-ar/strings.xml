@@ -19,9 +19,6 @@
     <string name="follow_system">اتبع النظام</string>
     <string name="trigger_device_name_not_found">إسم هذا الجهاز غير معروف</string>
     <string name="slider_default">العادي</string>
-    <string name="stop_repeating_dot_dot_dot">إيقاف التكرار عندما يكون المحفز…</string>
-    <string name="trigger_released">تم إيقافه</string>
-    <string name="trigger_pressed_again">ضُغِط مجددا</string>
     <string name="show_hidden_apps">أظهر التطبيقات المخفية</string>
     <string name="modifiers">المعدلات</string>
     <string name="toggle">تبديل</string>
