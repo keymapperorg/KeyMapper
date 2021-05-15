@@ -14,7 +14,6 @@
     <string name="on">An</string>
     <string name="off">Aus</string>
     <string name="trigger_device_name_not_found">Der Name für dieses Gerät ist nicht bekannt</string>
-    <string name="trigger_pressed_again">Erneut gedrückt</string>
     <string name="dont_know_device_name">Kenne den Gerätenamen nicht!</string>
     <string name="switch_enabled">Aktiviert</string>
     <string name="disabled">Deaktiviert</string>
