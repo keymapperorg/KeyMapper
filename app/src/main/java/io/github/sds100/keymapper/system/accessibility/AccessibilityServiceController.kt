@@ -46,7 +46,6 @@ class AccessibilityServiceController(
         private const val RECORD_TRIGGER_TIMER_LENGTH = 5
     }
 
-
     private val triggerKeyMapFromOtherAppsController = TriggerKeyMapFromOtherAppsController(
         coroutineScope,
         detectKeyMapsUseCase,

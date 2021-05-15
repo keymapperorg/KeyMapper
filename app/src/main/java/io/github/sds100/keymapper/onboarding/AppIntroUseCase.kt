@@ -24,7 +24,7 @@ class AppIntroUseCaseImpl(
     private val preferenceRepository: PreferenceRepository,
     private val fingerprintGesturesSupportedUseCase: AreFingerprintGesturesSupportedUseCase
 ) : AppIntroUseCase {
-    val serviceState: Flow<ServiceState> = serviceAdapter.state
+   override val serviceState: Flow<ServiceState> = serviceAdapter.state
 
     override val hasDndAccessPermission: Flow<Boolean> = channelFlow {
         send(permissionAdapter.isGranted(Permission.ACCESS_NOTIFICATION_POLICY))
