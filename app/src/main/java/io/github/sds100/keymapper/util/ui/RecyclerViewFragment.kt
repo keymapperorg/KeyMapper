@@ -21,7 +21,6 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
-import timber.log.Timber
 
 /**
  * Created by sds100 on 22/02/2020.
@@ -38,7 +37,7 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
 
     abstract val listItems: Flow<State<List<T>>>
 
-    open var isAppBarVisible = false
+    open var isAppBarVisible = true
     open var requestKey: String? = null
     open var searchStateKey: String? = null
 
@@ -111,10 +110,12 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
 
             setupSearchView(binding)
 
-            if (isAppBarVisible) {
+            if (!requireActivity().onBackPressedDispatcher.hasEnabledCallbacks()) {
                 //don't override back button if another fragment is controlling the app bar
                 requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-                    onBackPressed()
+                    if (isAppBarVisible) {
+                        onBackPressed()
+                    }
                 }
             }
         }
