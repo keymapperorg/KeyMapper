@@ -7,6 +7,6 @@ Check it out at docs.keymapper.club.
 • A repeat limit action option.
 • A logging page.
 
-A lot of bug fixes and performances improvements.
+A lot of bug fixes and performance improvements.
 
 See the changelog for more details.
