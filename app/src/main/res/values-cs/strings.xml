@@ -28,9 +28,6 @@
     <string name="trigger_device_name_not_found">Název tohoto zařízení není znám</string>
     <string name="slider_default">Výchozí</string>
     <string name="button_enable_accessibility_service">Povolit službu usnadnění přístupu</string>
-    <string name="stop_repeating_dot_dot_dot">Přestat se opakovat, když je spouštěč…</string>
-    <string name="trigger_released">Zveřejněno</string>
-    <string name="trigger_pressed_again">Znovu stisknuto</string>
     <string name="show_hidden_apps">Zobrazit skryté aplikace</string>
     <string name="modifiers">Modifikátory</string>
     <string name="toggle">Přepnout</string>
