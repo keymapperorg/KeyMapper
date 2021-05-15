@@ -29,9 +29,6 @@ Los servicios de accesibilidad solo detectan las teclas y eventos de las aplicac
     <string name="trigger_device_name_not_found">El nombre de este dispositivo es desconocido</string>
     <string name="slider_default">Predeterminado</string>
     <string name="button_enable_accessibility_service">Activa el servicio de accesibilidad</string>
-    <string name="stop_repeating_dot_dot_dot">Detener la repetición cuando el disparador es…</string>
-    <string name="trigger_released">Liberado</string>
-    <string name="trigger_pressed_again">Presionado de nuevo</string>
     <string name="show_hidden_apps">Mostrar aplicaciones ocultas</string>
     <string name="modifiers">Modificadores</string>
     <string name="toggle">Cambiar</string>
