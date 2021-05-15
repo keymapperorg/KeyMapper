@@ -27,9 +27,6 @@
     <string name="trigger_device_name_not_found">ამ მოწყობილობის სახელი უცნობია</string>
     <string name="slider_default">ნაგულისხმევი</string>
     <string name="button_enable_accessibility_service">ჩართე წვდომის სერვისი</string>
-    <string name="stop_repeating_dot_dot_dot">შეწყვიტე გამეორება, როცა ტრიგერი არის…</string>
-    <string name="trigger_released">გამოშვებულია</string>
-    <string name="trigger_pressed_again">ხელახლა დაჭერილი</string>
     <string name="show_hidden_apps">აჩვენე დამალული აპლიკაციები</string>
     <string name="modifiers">შემცვლელები</string>
     <string name="toggle">გადართე</string>
