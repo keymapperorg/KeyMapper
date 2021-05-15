@@ -19,9 +19,6 @@
     <string name="follow_system">Z motywu systemu</string>
     <string name="trigger_device_name_not_found">Nazwa tego urządzenia nie jest znana</string>
     <string name="slider_default">Domyślny</string>
-    <string name="stop_repeating_dot_dot_dot">Przestań powtarzać, gdy trigger to…</string>
-    <string name="trigger_released">Zwolnione</string>
-    <string name="trigger_pressed_again">Naciśnięte ponownie</string>
     <string name="show_hidden_apps">Pokaż ukryte aplikacje</string>
     <string name="modifiers">Modyfikatory</string>
     <string name="toggle">Włącz/wyłącz</string>
