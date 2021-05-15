@@ -29,9 +29,6 @@
     <string name="trigger_device_name_not_found">Bu cihazın adı bilinmiyor</string>
     <string name="slider_default">Varsayılan</string>
     <string name="button_enable_accessibility_service">Erişilebilirlik servisi aç</string>
-    <string name="stop_repeating_dot_dot_dot">Tetikleyici mevcut olduğundan tekrarlamayı durdur…</string>
-    <string name="trigger_released">Yollamdı</string>
-    <string name="trigger_pressed_again">Tekrar basın</string>
     <string name="show_hidden_apps">Olmayan uygulamaları göster</string>
     <string name="modifiers">Değiştiriciler</string>
     <string name="toggle">Değiştir</string>
