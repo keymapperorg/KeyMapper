@@ -29,9 +29,6 @@
     <string name="trigger_device_name_not_found">Неизвестное имя для этого устройства</string>
     <string name="slider_default">По умолчанию</string>
     <string name="button_enable_accessibility_service">Включение службы спец. возможностей</string>
-    <string name="stop_repeating_dot_dot_dot">Прекратить повтор по событию…</string>
-    <string name="trigger_released">Отпущено</string>
-    <string name="trigger_pressed_again">Снова нажато</string>
     <string name="show_hidden_apps">Показать скрытые приложения</string>
     <string name="modifiers">Модификаторы</string>
     <string name="toggle">Переключить</string>
@@ -389,10 +386,8 @@ https://issuetracker.google.com/issues/163120692
     <string name="flag_vibrate">Вибрация</string>
     <string name="flag_show_toast">Вывод сообщения на экран</string>
     <string name="flag_long_press_double_vibration">Вибрировать при первом нажатии клавиши и при срабатывании \"длительного нажатия\".</string>
-    <string name="flag_repeat_actions">Повторять</string>
     <string name="flag_hold_down">Удерживать</string>
     <string name="flag_dont_override_default_action">Не переопределять действие по умолчанию</string>
-    <string name="flag_repeat_until_swiped_again">Повторять до свайпа снова</string>
     <string name="flag_hold_down_until_swiped_again">Удерживать до свайпа снова</string>
     <string name="flag_trigger_from_other_apps">Событие из другого приложения</string>
     <!--flags-->
