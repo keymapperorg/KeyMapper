@@ -1,1 +1,1 @@
-重新映射你的设备和其他设备的按钮以及指纹手势。
+Unleash your keys! Open source!
