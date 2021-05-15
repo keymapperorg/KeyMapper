@@ -29,9 +29,6 @@
     <string name="trigger_device_name_not_found">此设备的名称未知</string>
     <string name="slider_default">默认</string>
     <string name="button_enable_accessibility_service">启用无障碍服务</string>
-    <string name="stop_repeating_dot_dot_dot">当触发器为…时停止重复</string>
-    <string name="trigger_released">已发布</string>
-    <string name="trigger_pressed_again">再次按下</string>
     <string name="show_hidden_apps">显示隐藏的应用</string>
     <string name="modifiers">修改器</string>
     <string name="toggle">切换</string>
@@ -366,10 +363,8 @@
     <string name="flag_vibrate">振动</string>
     <string name="flag_show_toast">显示屏幕消息</string>
     <string name="flag_long_press_double_vibration">最初按下按键时和再次长按按键时震动。</string>
-    <string name="flag_repeat_actions">重复</string>
     <string name="flag_hold_down">按住</string>
     <string name="flag_dont_override_default_action">不要覆盖默认动作</string>
-    <string name="flag_repeat_until_swiped_again">重复直到再刷</string>
     <string name="flag_hold_down_until_swiped_again">按住直到再刷</string>
     <string name="flag_trigger_from_other_apps">从其他应用触发</string>
     <!--flags-->
