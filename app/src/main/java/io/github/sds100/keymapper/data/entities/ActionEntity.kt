@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.data.entities
 import android.os.Parcelable
 import com.github.salomonbrys.kotson.*
 import com.google.gson.annotations.SerializedName
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.data.entities.ActionEntity.Type
 import kotlinx.android.parcel.Parcelize
 import java.util.*
 
@@ -86,6 +86,8 @@ data class ActionEntity(
         const val NAME_UID = "uid"
 
         const val STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN = 0
+        const val STOP_REPEAT_BEHAVIOUR_LIMIT_REACHED = 1
+
         const val STOP_HOLD_DOWN_BEHAVIOR_TRIGGER_PRESSED_AGAIN = 0
 
         const val ACTION_FLAG_SHOW_VOLUME_UI = 1
@@ -99,6 +101,7 @@ data class ActionEntity(
         const val EXTRA_MULTIPLIER = "extra_multiplier"
         const val EXTRA_DELAY_BEFORE_NEXT_ACTION = "extra_delay_before_next_action"
         const val EXTRA_HOLD_DOWN_DURATION = "extra_hold_down_duration"
+        const val EXTRA_REPEAT_LIMIT = "extra_repeat_limit"
 
         val DESERIALIZER = jsonDeserializer {
             val typeString by it.json.byString(NAME_ACTION_TYPE)
@@ -115,7 +118,7 @@ data class ActionEntity(
 
             ActionEntity(
                 type, data, extraList.toMutableList(), flags, uid
-                    ?: UUID.randomUUID().toString()
+                ?: UUID.randomUUID().toString()
             )
         }
     }

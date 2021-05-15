@@ -13,5 +13,6 @@ data class SliderModel(
     val isDefaultStepEnabled: Boolean,
     val min: Int,
     val max: Int,
-    val stepSize: Int
+    val stepSize: Int,
+    val customButtonDefaultText: String? = null
 )

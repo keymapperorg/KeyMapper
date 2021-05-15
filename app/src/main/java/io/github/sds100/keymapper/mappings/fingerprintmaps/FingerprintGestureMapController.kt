@@ -13,9 +13,9 @@ import timber.log.Timber
  */
 class FingerprintGestureMapController(
     coroutineScope: CoroutineScope,
-    private val detectMappingUseCase: DetectFingerprintMapsUseCase,
-    private val performActionsUseCase: PerformActionsUseCase,
-    private val detectConstraintsUseCase: DetectConstraintsUseCase
+    detectMappingUseCase: DetectFingerprintMapsUseCase,
+    performActionsUseCase: PerformActionsUseCase,
+    detectConstraintsUseCase: DetectConstraintsUseCase
 ) : SimpleMappingController(
     coroutineScope,
     detectMappingUseCase,

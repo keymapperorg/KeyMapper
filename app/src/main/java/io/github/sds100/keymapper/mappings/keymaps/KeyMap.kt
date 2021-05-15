@@ -1,12 +1,13 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
-import io.github.sds100.keymapper.constraints.ConstraintState
+import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.actions.canBeHeldDown
 import io.github.sds100.keymapper.constraints.ConstraintEntityMapper
 import io.github.sds100.keymapper.constraints.ConstraintModeEntityMapper
+import io.github.sds100.keymapper.constraints.ConstraintState
+import io.github.sds100.keymapper.mappings.Mapping
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeymapTriggerEntityMapper
-import io.github.sds100.keymapper.mappings.Mapping
 import kotlinx.serialization.Serializable
 import java.util.*
 
@@ -37,12 +38,12 @@ data class KeyMap(
         return KeyMapController.performActionOnDown(trigger)
     }
 
-    fun isChangingActionRepeatRateAllowed(action: KeyMapAction): Boolean{
-        return action.repeat
+    fun isChangingActionRepeatRateAllowed(action: KeyMapAction): Boolean {
+        return action.repeat && isRepeatingActionsAllowed()
     }
 
-    fun isChangingActionRepeatDelayAllowed(action: KeyMapAction): Boolean{
-        return action.repeat
+    fun isChangingActionRepeatDelayAllowed(action: KeyMapAction): Boolean {
+        return action.repeat&& isRepeatingActionsAllowed()
     }
 
     fun isHoldingDownActionAllowed(action: KeyMapAction): Boolean {
@@ -53,8 +54,12 @@ data class KeyMap(
         return action.repeat && action.holdDown
     }
 
-    fun isStopRepeatingActionWhenTriggerPressedAgainAllowed(action: KeyMapAction): Boolean {
-        return action.repeat
+    fun isChangingRepeatModeAllowed(action: KeyMapAction): Boolean {
+        return action.repeat&& isRepeatingActionsAllowed()
+    }
+
+    fun isChangingRepeatLimitAllowed(action: KeyMapAction): Boolean {
+        return action.repeat&& isRepeatingActionsAllowed()
     }
 
     fun isStopHoldingDownActionWhenTriggerPressedAgainAllowed(action: KeyMapAction): Boolean {

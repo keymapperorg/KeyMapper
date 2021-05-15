@@ -4,6 +4,7 @@ import android.view.KeyEvent
 import androidx.collection.*
 import io.github.sds100.keymapper.actions.KeyEventAction
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
+import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.data.PreferenceDefaults
@@ -49,10 +50,10 @@ class KeyMapController(
          */
         fun performActionOnDown(trigger: KeyMapTrigger): Boolean {
             return (trigger.keys.size <= 1
-                    && trigger.keys.getOrNull(0)?.clickType != ClickType.DOUBLE_PRESS
-                    && trigger.mode == TriggerMode.Undefined)
+                && trigger.keys.getOrNull(0)?.clickType != ClickType.DOUBLE_PRESS
+                && trigger.mode == TriggerMode.Undefined)
 
-                    || trigger.mode is TriggerMode.Parallel
+                || trigger.mode is TriggerMode.Parallel
         }
     }
 
@@ -121,7 +122,7 @@ class KeyMapController(
                         }
 
                         if ((keyMap.trigger.mode == TriggerMode.Sequence
-                                    || keyMap.trigger.mode == TriggerMode.Undefined)
+                                || keyMap.trigger.mode == TriggerMode.Undefined)
                             && key.clickType == ClickType.DOUBLE_PRESS
                         ) {
                             doublePressKeys.add(TriggerKeyLocation(sequenceTriggerIndex, keyIndex))
@@ -702,7 +703,7 @@ class KeyMapController(
                     }
                 }
 
-                if (lastMatchedIndex == -1){
+                if (lastMatchedIndex == -1) {
                     continue@triggerLoop
                 }
 
@@ -1247,7 +1248,7 @@ class KeyMapController(
                     }
                 }
 
-                if (parallelTriggerEventsAwaitingRelease[triggerIndex].all { !it }){
+                if (parallelTriggerEventsAwaitingRelease[triggerIndex].all { !it }) {
                     parallelTriggersAwaitingReleaseAfterBeingTriggered[triggerIndex] = false
                 }
 
@@ -1257,8 +1258,9 @@ class KeyMapController(
                 //cancel repeating action jobs for this trigger
                 if (lastHeldDownEventIndex != parallelTriggers[triggerIndex].keys.lastIndex) {
                     parallelTriggerActionJobs[triggerIndex]?.cancel()
+
                     repeatJobs[triggerIndex]?.forEach {
-                        if (!stopRepeatingWhenPressedAgain(it.actionKey)) {
+                        if (!stopRepeatingWhenPressedAgain(it.actionKey) && !stopRepeatingWhenLimitReached(it.actionKey)) {
                             it.cancel()
                         }
                     }
@@ -1272,7 +1274,6 @@ class KeyMapController(
 
                         if (action.holdDown && !holdDownUntilPressedAgain(actionKey)
                         ) {
-
                             actionsBeingHeldDown.remove(actionKey)
 
                             performAction(
@@ -1582,8 +1583,15 @@ class KeyMapController(
 
             delay(repeatDelay(actionKey))
 
-            while (true) {
+            var continueRepeating = true
+            var repeatCount = 0
+
+            while (continueRepeating) {
+                var repeatLimit: Int? = null
+
                 actionMap[actionKey]?.let { action ->
+
+                    repeatLimit = action.repeatLimit
 
                     if (action.data is KeyEventAction) {
                         if (isModifierKey(action.data.keyCode)) return@let
@@ -1598,6 +1606,12 @@ class KeyMapController(
                     } else {
                         performAction(action, actionMultiplier(actionKey))
                     }
+                }
+
+                repeatCount++
+
+                if (repeatLimit != null) {
+                    continueRepeating = repeatCount < repeatLimit!!
                 }
 
                 delay(repeatRate(actionKey))
@@ -1689,6 +1703,7 @@ class KeyMapController(
 
         repeatJobs[triggerIndex]?.forEach {
             if (stopRepeatingWhenPressedAgain(it.actionKey)) {
+                //don't repeat this action because it should stop repeating now
                 actionKeysToStartRepeating.remove(it.actionKey)
             }
 
@@ -1699,7 +1714,9 @@ class KeyMapController(
 
         actionKeys.forEach { key ->
             //only start repeating when a trigger is released if it is to repeat until pressed again
-            if (!stopRepeatingWhenPressedAgain(key) && calledOnTriggerRelease) {
+            if (!stopRepeatingWhenPressedAgain(key)
+                && !stopRepeatingWhenLimitReached(key)
+                && calledOnTriggerRelease) {
                 actionKeysToStartRepeating.remove(key)
             }
         }
@@ -1724,31 +1741,31 @@ class KeyMapController(
             TriggerKeyDevice.Any -> this.keyCode == event.keyCode && this.clickType == event.clickType
             is TriggerKeyDevice.External ->
                 this.keyCode == event.keyCode
-                        && event.descriptor != null
-                        && event.descriptor == this.device.descriptor
-                        && this.clickType == event.clickType
+                    && event.descriptor != null
+                    && event.descriptor == this.device.descriptor
+                    && this.clickType == event.clickType
 
             TriggerKeyDevice.Internal ->
                 this.keyCode == event.keyCode
-                        && event.descriptor == null
-                        && this.clickType == event.clickType
+                    && event.descriptor == null
+                    && this.clickType == event.clickType
         }
     }
 
     private fun TriggerKey.matchesWithOtherKey(otherKey: TriggerKey): Boolean {
         return when (this.device) {
             TriggerKeyDevice.Any -> this.keyCode == otherKey.keyCode
-                    && this.clickType == otherKey.clickType
+                && this.clickType == otherKey.clickType
 
             is TriggerKeyDevice.External ->
                 this.keyCode == otherKey.keyCode
-                        && this.device == otherKey.device
-                        && this.clickType == otherKey.clickType
+                    && this.device == otherKey.device
+                    && this.clickType == otherKey.clickType
 
             TriggerKeyDevice.Internal ->
                 this.keyCode == otherKey.keyCode
-                        && otherKey.device == TriggerKeyDevice.Internal
-                        && this.clickType == otherKey.clickType
+                    && otherKey.device == TriggerKeyDevice.Internal
+                    && this.clickType == otherKey.clickType
         }
     }
 
@@ -1764,9 +1781,11 @@ class KeyMapController(
         }
     }
 
-
     private fun stopRepeatingWhenPressedAgain(actionKey: Int) =
-        actionMap.get(actionKey)?.stopRepeatingWhenTriggerPressedAgain ?: false
+        actionMap.get(actionKey)?.repeatMode == RepeatMode.TRIGGER_PRESSED_AGAIN
+
+    private fun stopRepeatingWhenLimitReached(actionKey: Int) =
+        actionMap.get(actionKey)?.repeatMode == RepeatMode.LIMIT_REACHED
 
     private fun holdDownUntilPressedAgain(actionKey: Int) =
         actionMap.get(actionKey)?.stopHoldDownWhenTriggerPressedAgain ?: false

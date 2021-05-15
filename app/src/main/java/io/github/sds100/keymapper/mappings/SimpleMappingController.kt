@@ -1,9 +1,10 @@
 package io.github.sds100.keymapper.mappings
 
-import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.actions.Action
-import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
+import io.github.sds100.keymapper.actions.RepeatMode
+import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
+import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.SharingStarted
@@ -140,7 +141,10 @@ abstract class SimpleMappingController(
 
         val holdDown = action.holdDown
 
-        while (true) {
+        var continueRepeating = true
+        var repeatCount = 0
+
+        while (continueRepeating) {
             val keyEventAction = when {
                 holdDown -> InputEventType.DOWN
                 else -> InputEventType.DOWN_UP
@@ -151,6 +155,12 @@ abstract class SimpleMappingController(
             if (holdDown) {
                 delay(holdDownDuration)
                 performAction(action, InputEventType.UP)
+            }
+
+            repeatCount++
+
+            if (action.repeatLimit != null) {
+                continueRepeating = repeatCount < action.repeatLimit!! + 1 //this value is how many times it should REPEAT. The first repeat happens after the first time it is performed
             }
 
             delay(repeatRate)

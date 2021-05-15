@@ -1,14 +1,13 @@
 package io.github.sds100.keymapper.mappings.fingerprintmaps
 
 import io.github.sds100.keymapper.actions.ActionData
+import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.mappings.BaseConfigMappingUseCase
 import io.github.sds100.keymapper.mappings.ConfigMappingUseCase
 import io.github.sds100.keymapper.util.Defaultable
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ifIsData
-import io.github.sds100.keymapper.util.mapData
-import kotlinx.coroutines.flow.first
 
 /**
  * Created by sds100 on 16/02/2021.
@@ -51,10 +50,13 @@ class ConfigFingerprintMapUseCaseImpl(
     }
 
     override fun setActionRepeatEnabled(uid: String, repeat: Boolean) =
-        setActionOption(uid) { it.copy(repeatUntilSwipedAgain = repeat) }
+        setActionOption(uid) { it.copy(repeat = repeat) }
 
     override fun setActionRepeatRate(uid: String, repeatRate: Int?) =
         setActionOption(uid) { it.copy(repeatRate = repeatRate) }
+
+    override fun setActionRepeatLimit(uid: String, repeatLimit: Int?) =
+        setActionOption(uid) { it.copy(repeatLimit = repeatLimit) }
 
     override fun setActionHoldDownEnabled(uid: String, holdDown: Boolean) =
         setActionOption(uid) { it.copy(holdDownUntilSwipedAgain = holdDown) }
@@ -120,7 +122,6 @@ interface ConfigFingerprintMapUseCase : ConfigMappingUseCase<FingerprintMapActio
     suspend fun loadFingerprintMap(id: FingerprintMapId)
 
     fun setActionRepeatEnabled(uid: String, repeat: Boolean)
-    fun setActionRepeatRate(uid: String, repeatRate: Int?)
     fun setActionHoldDownEnabled(uid: String, holdDown: Boolean)
     fun setActionHoldDownDuration(uid: String, holdDownDuration: Int?)
 }

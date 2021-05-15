@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper
+package io.github.sds100.keymapper.mappings.keymaps
 
 import android.view.KeyEvent
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
@@ -6,10 +6,6 @@ import io.github.sds100.keymapper.actions.*
 import io.github.sds100.keymapper.constraints.ConstraintSnapshot
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.mappings.ClickType
-import io.github.sds100.keymapper.mappings.keymaps.DetectKeyMapsUseCase
-import io.github.sds100.keymapper.mappings.keymaps.KeyMap
-import io.github.sds100.keymapper.mappings.keymaps.KeyMapAction
-import io.github.sds100.keymapper.mappings.keymaps.KeyMapController
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
@@ -154,6 +150,153 @@ class KeyMapControllerTest {
     @After
     fun tearDown() {
         coroutineScope.cleanupTestCoroutines()
+    }
+
+    /**
+     * issue #663
+     */
+    @Test
+    fun `when triggering action that repeats until limit reached, then stop repeating when the limit has been reached and not when the trigger is released`() = coroutineScope.runBlockingTest {
+        //GIVEN
+        val action = KeyMapAction(
+            data = KeyEventAction(keyCode = 1),
+            repeat = true,
+            repeatMode = RepeatMode.LIMIT_REACHED,
+            repeatLimit = 10
+        )
+
+        val keyMap = KeyMap(
+            trigger = singleKeyTrigger(triggerKey(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)),
+            actionList = listOf(action)
+        )
+
+        keyMapListFlow.value = listOf(keyMap)
+
+        //WHEN
+        mockTriggerKeyInput(keyMap.trigger.keys[0])
+        advanceUntilIdle()
+
+        //THEN
+        verify(performActionsUseCase, times(action.repeatLimit!! + 1)).perform(action.data)
+    }
+
+    /**
+     * issue #663
+     */
+    @Test
+    fun `when triggering action that repeats until pressed again with repeat limit, then stop repeating when the trigger has been pressed again`() = coroutineScope.runBlockingTest {
+        //GIVEN
+        val action = KeyMapAction(
+            data = KeyEventAction(keyCode = 1),
+            repeat = true,
+            repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN,
+            repeatLimit = 10,
+            repeatRate = 100,
+            repeatDelay = 100
+        )
+
+        val keyMap = KeyMap(
+            trigger = singleKeyTrigger(triggerKey(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)),
+            actionList = listOf(action)
+        )
+
+        keyMapListFlow.value = listOf(keyMap)
+
+        //WHEN
+        mockTriggerKeyInput(keyMap.trigger.keys[0])
+        advanceTimeBy(200)
+        mockTriggerKeyInput(keyMap.trigger.keys[0])
+
+        //THEN
+        verify(performActionsUseCase, times(4)).perform(action.data)
+    }
+
+    /**
+     * issue #663
+     */
+    @Test
+    fun `when triggering action that repeats until pressed again with repeat limit, then stop repeating when limit reached and trigger hasn't been pressed again`() = coroutineScope.runBlockingTest {
+        //GIVEN
+        val action = KeyMapAction(
+            data = KeyEventAction(keyCode = 1),
+            repeat = true,
+            repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN,
+            repeatLimit = 10
+        )
+
+        val keyMap = KeyMap(
+            trigger = singleKeyTrigger(triggerKey(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)),
+            actionList = listOf(action)
+        )
+
+        keyMapListFlow.value = listOf(keyMap)
+
+        //WHEN
+        mockTriggerKeyInput(keyMap.trigger.keys[0])
+        advanceTimeBy(5000)
+        mockTriggerKeyInput(keyMap.trigger.keys[0])
+
+        //THEN
+        //performed an extra 2 times each time the trigger is pressed. This is the expected behaviour even for the option to repeat until pressed again.
+        verify(performActionsUseCase, times(action.repeatLimit!! + 2)).perform(action.data)
+    }
+
+    /**
+     * issue #663
+     */
+    @Test
+    fun `when triggering action that repeats until released with repeat limit, then stop repeating when the trigger has been released`() = coroutineScope.runBlockingTest {
+        //GIVEN
+        val action = KeyMapAction(
+            data = KeyEventAction(keyCode = 1),
+            repeat = true,
+            repeatMode = RepeatMode.TRIGGER_RELEASED,
+            repeatLimit = 10,
+            repeatRate = 100,
+            repeatDelay = 100
+        )
+
+        val keyMap = KeyMap(
+            trigger = singleKeyTrigger(triggerKey(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)),
+            actionList = listOf(action)
+        )
+
+        keyMapListFlow.value = listOf(keyMap)
+
+        //WHEN
+        mockTriggerKeyInput(keyMap.trigger.keys[0], delay = 300)
+
+        //THEN
+        verify(performActionsUseCase, times(3)).perform(action.data)
+    }
+
+    /**
+     * issue #663
+     */
+    @Test
+    fun `when triggering action that repeats until released with repeat limit, then stop repeating when the limit has been reached and the action is still being held down`() = coroutineScope.runBlockingTest {
+        //GIVEN
+        val action = KeyMapAction(
+            data = KeyEventAction(keyCode = 1),
+            repeat = true,
+            repeatMode = RepeatMode.TRIGGER_RELEASED,
+            repeatLimit = 10
+        )
+
+        val keyMap = KeyMap(
+            trigger = singleKeyTrigger(triggerKey(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)),
+            actionList = listOf(action)
+        )
+
+        keyMapListFlow.value = listOf(keyMap)
+
+        //WHEN
+
+        mockTriggerKeyInput(keyMap.trigger.keys[0], delay = 5000)
+
+        //THEN
+
+        verify(performActionsUseCase, times(action.repeatLimit!! + 1)).perform(action.data)
     }
 
     /**
@@ -693,7 +836,7 @@ class KeyMapControllerTest {
             val action1 = KeyMapAction(
                 data = KeyEventAction(keyCode = 2),
                 repeat = true,
-                stopRepeatingWhenTriggerPressedAgain = true
+                repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN
             )
 
             val trigger2 =
@@ -744,7 +887,7 @@ class KeyMapControllerTest {
             val action1 = KeyMapAction(
                 data = KeyEventAction(keyCode = 2),
                 repeat = true,
-                stopRepeatingWhenTriggerPressedAgain = true
+                repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN
             )
 
             val trigger2 =
@@ -799,7 +942,7 @@ class KeyMapControllerTest {
             val action1 = KeyMapAction(
                 data = KeyEventAction(keyCode = 2),
                 repeat = true,
-                stopRepeatingWhenTriggerPressedAgain = true
+                repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN
             )
 
             val trigger2 =
@@ -1408,25 +1551,25 @@ class KeyMapControllerTest {
     fun params_repeatAction() = listOf(
         arrayOf(
             "long press multiple keys", parallelTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
-                triggerKey(KeyEvent.KEYCODE_VOLUME_UP, clickType = ClickType.LONG_PRESS)
-            )
+            triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
+            triggerKey(KeyEvent.KEYCODE_VOLUME_UP, clickType = ClickType.LONG_PRESS)
+        )
         ),
         arrayOf(
             "long press single key", singleKeyTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS)
-            )
+            triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS)
+        )
         ),
         arrayOf(
             "short press multiple keys", parallelTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
-                triggerKey(KeyEvent.KEYCODE_VOLUME_UP)
-            )
+            triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
+            triggerKey(KeyEvent.KEYCODE_VOLUME_UP)
+        )
         ),
         arrayOf(
             "short press single key", singleKeyTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_UP)
-            )
+            triggerKey(KeyEvent.KEYCODE_VOLUME_UP)
+        )
         )
     )
 
@@ -1462,16 +1605,16 @@ class KeyMapControllerTest {
     fun params_dualParallelTrigger_input2ndKey_dontConsumeUp() = listOf(
         arrayOf(
             "long press", parallelTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
-                triggerKey(KeyEvent.KEYCODE_VOLUME_UP, clickType = ClickType.LONG_PRESS)
-            )
+            triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
+            triggerKey(KeyEvent.KEYCODE_VOLUME_UP, clickType = ClickType.LONG_PRESS)
+        )
         ),
 
         arrayOf(
             "short press", parallelTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
-                triggerKey(KeyEvent.KEYCODE_VOLUME_UP)
-            )
+            triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
+            triggerKey(KeyEvent.KEYCODE_VOLUME_UP)
+        )
         )
     )
 
@@ -1738,9 +1881,9 @@ class KeyMapControllerTest {
         ),
         arrayOf(
             "parallel", parallelTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
-                triggerKey(KeyEvent.KEYCODE_VOLUME_UP)
-            )
+            triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
+            triggerKey(KeyEvent.KEYCODE_VOLUME_UP)
+        )
         )
     )
 

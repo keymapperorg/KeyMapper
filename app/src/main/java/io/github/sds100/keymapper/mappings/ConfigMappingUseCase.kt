@@ -100,6 +100,8 @@ interface ConfigMappingUseCase<ACTION : Action, T : Mapping<ACTION>> {
 
     fun setActionMultiplier(uid: String, multiplier: Int?)
     fun setDelayBeforeNextAction(uid: String, delay: Int?)
+    fun setActionRepeatRate(uid: String, repeatRate: Int?)
+    fun setActionRepeatLimit(uid: String, repeatLimit: Int?)
 
     fun addConstraint(constraint: Constraint): Boolean
     fun removeConstraint(id: String)

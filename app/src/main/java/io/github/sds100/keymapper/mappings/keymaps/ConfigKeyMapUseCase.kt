@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.mappings.keymaps
 
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.KeyEventAction
+import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -299,14 +300,23 @@ class ConfigKeyMapUseCaseImpl(
     override fun setActionRepeatDelay(uid: String, repeatDelay: Int?) =
         setActionOption(uid) { it.copy(repeatDelay = repeatDelay) }
 
+    override fun setActionRepeatLimit(uid: String, repeatLimit: Int?) =
+        setActionOption(uid) { it.copy(repeatLimit = repeatLimit) }
+
     override fun setActionHoldDownEnabled(uid: String, holdDown: Boolean) =
         setActionOption(uid) { it.copy(holdDown = holdDown) }
 
     override fun setActionHoldDownDuration(uid: String, holdDownDuration: Int?) =
         setActionOption(uid) { it.copy(holdDownDuration = holdDownDuration) }
 
-    override fun setActionStopRepeatingWhenTriggerPressedAgain(uid: String, enabled: Boolean) =
-        setActionOption(uid) { it.copy(stopRepeatingWhenTriggerPressedAgain = enabled) }
+    override fun setActionStopRepeatingWhenTriggerPressedAgain(uid: String) =
+        setActionOption(uid) { it.copy(repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN) }
+
+    override fun setActionStopRepeatingWhenLimitReached(uid: String) =
+        setActionOption(uid) { it.copy(repeatMode = RepeatMode.LIMIT_REACHED) }
+
+    override fun setActionStopRepeatingWhenTriggerReleased(uid: String) =
+        setActionOption(uid) { it.copy(repeatMode = RepeatMode.TRIGGER_RELEASED) }
 
     override fun setActionStopHoldingDownWhenTriggerPressedAgain(uid: String, enabled: Boolean) =
         setActionOption(uid) { it.copy(stopHoldDownWhenTriggerPressedAgain = enabled) }
@@ -452,10 +462,12 @@ interface ConfigKeyMapUseCase : ConfigMappingUseCase<KeyMapAction, KeyMap> {
 
     //actions
     fun setActionRepeatEnabled(uid: String, repeat: Boolean)
-    fun setActionRepeatRate(uid: String, repeatRate: Int?)
     fun setActionRepeatDelay(uid: String, repeatDelay: Int?)
     fun setActionHoldDownEnabled(uid: String, holdDown: Boolean)
     fun setActionHoldDownDuration(uid: String, holdDownDuration: Int?)
-    fun setActionStopRepeatingWhenTriggerPressedAgain(uid: String, enabled: Boolean)
+    fun setActionStopRepeatingWhenTriggerReleased(uid: String)
+    fun setActionStopRepeatingWhenTriggerPressedAgain(uid: String)
+    fun setActionStopRepeatingWhenLimitReached(uid: String)
+
     fun setActionStopHoldingDownWhenTriggerPressedAgain(uid: String, enabled: Boolean)
 }

@@ -9,8 +9,11 @@ interface Action {
     val data: ActionData
     val multiplier: Int?
     val delayBeforeNextAction: Int?
+
     val repeat: Boolean
     val repeatRate: Int?
+    val repeatLimit: Int?
+
     val holdDown: Boolean
     val holdDownDuration: Int?
 }

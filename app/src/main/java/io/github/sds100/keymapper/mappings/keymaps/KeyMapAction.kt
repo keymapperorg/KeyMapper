@@ -1,11 +1,12 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
-import io.github.sds100.keymapper.data.entities.ActionEntity
-import io.github.sds100.keymapper.data.entities.Extra
-import io.github.sds100.keymapper.data.entities.getData
 import io.github.sds100.keymapper.actions.Action
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.ActionDataEntityMapper
+import io.github.sds100.keymapper.actions.RepeatMode
+import io.github.sds100.keymapper.data.entities.ActionEntity
+import io.github.sds100.keymapper.data.entities.Extra
+import io.github.sds100.keymapper.data.entities.getData
 import io.github.sds100.keymapper.mappings.isDelayBeforeNextActionAllowed
 import io.github.sds100.keymapper.util.success
 import io.github.sds100.keymapper.util.then
@@ -23,13 +24,17 @@ import java.util.*
 data class KeyMapAction(
     override val uid: String = UUID.randomUUID().toString(),
     override val data: ActionData,
+
     override val repeat: Boolean = false,
-    override val holdDown: Boolean = false,
-    val stopRepeatingWhenTriggerPressedAgain: Boolean = false,
-    val stopHoldDownWhenTriggerPressedAgain: Boolean = false,
+    val repeatMode: RepeatMode = RepeatMode.TRIGGER_RELEASED,
     override val repeatRate: Int? = null,
     val repeatDelay: Int? = null,
+    override val repeatLimit: Int? = null,
+
+    override val holdDown: Boolean = false,
+    val stopHoldDownWhenTriggerPressedAgain: Boolean = false,
     override val holdDownDuration: Int? = null,
+
     override val multiplier: Int? = null,
     override val delayBeforeNextAction: Int? = null
 ) : Action {
@@ -41,11 +46,6 @@ data class KeyMapAction(
 object KeymapActionEntityMapper {
     fun fromEntity(entity: ActionEntity): KeyMapAction? {
         val data = ActionDataEntityMapper.fromEntity(entity) ?: return null
-
-        val stopRepeatingWhenTriggerPressedAgain: Boolean =
-            entity.extras.getData(ActionEntity.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR).then {
-                (it == ActionEntity.STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN.toString()).success()
-            }.valueOrNull() ?: false
 
         val stopHoldDownWhenTriggerPressedAgain: Boolean =
             entity.extras.getData(ActionEntity.EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR).then {
@@ -76,15 +76,36 @@ object KeymapActionEntityMapper {
                 .valueOrNull()
                 ?.toIntOrNull()
 
+        val repeatMode: RepeatMode = if (entity.flags.hasFlag(ActionEntity.ACTION_FLAG_REPEAT)) {
+            val repeatBehaviourExtra =
+                entity.extras.getData(ActionEntity.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR)
+                    .valueOrNull()
+                    ?.toIntOrNull()
+
+            when (repeatBehaviourExtra) {
+                ActionEntity.STOP_REPEAT_BEHAVIOUR_LIMIT_REACHED -> RepeatMode.LIMIT_REACHED
+                ActionEntity.STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN -> RepeatMode.TRIGGER_PRESSED_AGAIN
+                else -> RepeatMode.TRIGGER_RELEASED
+            }
+        } else {
+            RepeatMode.TRIGGER_RELEASED
+        }
+
+        val repeatLimit = entity.extras
+            .getData(ActionEntity.EXTRA_REPEAT_LIMIT)
+            .valueOrNull()
+            ?.toIntOrNull()
+
         return KeyMapAction(
             uid = entity.uid,
             data = data,
             repeat = entity.flags.hasFlag(ActionEntity.ACTION_FLAG_REPEAT),
+            repeatMode = repeatMode,
             holdDown = entity.flags.hasFlag(ActionEntity.ACTION_FLAG_HOLD_DOWN),
-            stopRepeatingWhenTriggerPressedAgain = stopRepeatingWhenTriggerPressedAgain,
             stopHoldDownWhenTriggerPressedAgain = stopHoldDownWhenTriggerPressedAgain,
             repeatRate = repeatRate,
             repeatDelay = repeatDelay,
+            repeatLimit = repeatLimit,
             holdDownDuration = holdDownDuration,
             delayBeforeNextAction = delayBeforeNextAction,
             multiplier = multiplier
@@ -125,8 +146,11 @@ object KeymapActionEntityMapper {
                 add(Extra(ActionEntity.EXTRA_REPEAT_DELAY, action.repeatDelay.toString()))
             }
 
-            if (keyMap.isStopRepeatingActionWhenTriggerPressedAgainAllowed(action)
-                && action.stopRepeatingWhenTriggerPressedAgain
+            if (keyMap.isChangingRepeatLimitAllowed(action) && action.repeatLimit != null) {
+                add(Extra(ActionEntity.EXTRA_REPEAT_LIMIT, action.repeatLimit.toString()))
+            }
+
+            if (keyMap.isChangingRepeatModeAllowed(action) && action.repeatMode == RepeatMode.TRIGGER_PRESSED_AGAIN
             ) {
                 add(
                     Extra(
@@ -136,6 +160,14 @@ object KeymapActionEntityMapper {
                 )
             }
 
+            if (keyMap.isChangingRepeatModeAllowed(action) && action.repeatMode == RepeatMode.LIMIT_REACHED) {
+                add(
+                    Extra(
+                        ActionEntity.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR,
+                        ActionEntity.STOP_REPEAT_BEHAVIOUR_LIMIT_REACHED.toString()
+                    )
+                )
+            }
 
             if (keyMap.isStopHoldingDownActionWhenTriggerPressedAgainAllowed(action)
                 && action.stopHoldDownWhenTriggerPressedAgain

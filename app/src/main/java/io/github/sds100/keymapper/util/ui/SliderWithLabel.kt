@@ -27,6 +27,8 @@ class SliderWithLabel(context: Context,
 
     private var isDefaultStepEnabled = false
 
+    private var buttonDefaultText = str(R.string.slider_default)
+
     init {
         inflate(context, R.layout.slider_with_label, this)
 
@@ -37,7 +39,7 @@ class SliderWithLabel(context: Context,
         slider.setLabelFormatter {
             //Set text to "default" if the slider is in the "default" step position.
             if (isDefaultStepEnabled && it == slider.valueFrom) {
-                str(R.string.slider_default)
+                buttonDefaultText
             } else {
                 try {
                     it.toInt().toString()
@@ -52,6 +54,12 @@ class SliderWithLabel(context: Context,
         val min = model.min
         val max = model.max
         var stepSize = model.stepSize
+
+        if (model.customButtonDefaultText != null) {
+            buttonDefaultText = model.customButtonDefaultText
+        } else {
+            buttonDefaultText = str(R.string.slider_default)
+        }
 
         if (model.value is Defaultable.Custom) {
             if (model.value.data % stepSize != 0 || model.value.data > max) {
@@ -118,7 +126,7 @@ class SliderWithLabel(context: Context,
     private fun setSliderValueTextViewText(value: Float) {
         //Set text to "default" if the slider is in the "default" step position.
         if (isDefaultStepEnabled && value == slider.valueFrom) {
-            sliderValue.setText(R.string.slider_default)
+            sliderValue.setText(buttonDefaultText)
         } else {
             val text = try {
                 value.toInt().toString()

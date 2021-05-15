@@ -12,6 +12,7 @@ data class FakeAction(
     override val delayBeforeNextAction: Int? = null,
     override val repeat: Boolean = false,
     override val repeatRate: Int? = null,
+    override val repeatLimit: Int? = null,
     override val holdDown: Boolean =false,
     override val holdDownDuration: Int? = null
 ) : Action

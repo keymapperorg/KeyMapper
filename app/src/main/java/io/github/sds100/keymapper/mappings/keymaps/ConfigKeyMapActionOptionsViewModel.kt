@@ -1,12 +1,11 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.util.ui.SliderModel
-import io.github.sds100.keymapper.util.Defaultable
-import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.mappings.ConfigActionOptionsViewModel
 import io.github.sds100.keymapper.mappings.OptionMinimums
 import io.github.sds100.keymapper.mappings.isDelayBeforeNextActionAllowed
+import io.github.sds100.keymapper.util.Defaultable
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.CoroutineScope
 
@@ -26,9 +25,11 @@ class ConfigKeyMapActionOptionsViewModel(
         private const val ID_STOP_REPEATING_TRIGGER_RELEASED = "stop_repeating_trigger_released"
         private const val ID_STOP_REPEATING_TRIGGER_PRESSED_AGAIN =
             "stop_repeating_trigger_pressed_again"
+        private const val ID_STOP_REPEATING_LIMIT_REACHED = "stop_repeating_limit_reached"
 
         private const val ID_MULTIPLIER = "multiplier"
         private const val ID_REPEAT_DELAY = "repeat_delay"
+        private const val ID_REPEAT_LIMIT = "repeat_limit"
         private const val ID_HOLD_DOWN = "hold_down"
         private const val ID_DELAY_BEFORE_NEXT_ACTION = "delay_before_next_action"
         private const val ID_HOLD_DOWN_DURATION = "hold_down_duration"
@@ -36,22 +37,23 @@ class ConfigKeyMapActionOptionsViewModel(
             "stop_hold_down_when_trigger_released"
         private const val ID_STOP_HOLD_DOWN_WHEN_TRIGGER_PRESSED_AGAIN =
             "stop_hold_down_when_trigger_pressed_again"
-
     }
 
     override fun setRadioButtonValue(id: String, value: Boolean) {
         val actionUid = actionUid.value ?: return
 
         when (id) {
-            ID_STOP_REPEATING_TRIGGER_RELEASED -> config.setActionStopRepeatingWhenTriggerPressedAgain(
-                actionUid,
-                !value
-            )
+            ID_STOP_REPEATING_TRIGGER_RELEASED -> if (value) {
+                config.setActionStopRepeatingWhenTriggerReleased(actionUid)
+            }
 
-            ID_STOP_REPEATING_TRIGGER_PRESSED_AGAIN -> config.setActionStopRepeatingWhenTriggerPressedAgain(
-                actionUid,
-                value
-            )
+            ID_STOP_REPEATING_TRIGGER_PRESSED_AGAIN -> if (value) {
+                config.setActionStopRepeatingWhenTriggerPressedAgain(actionUid)
+            }
+
+            ID_STOP_REPEATING_LIMIT_REACHED -> if (value) {
+                config.setActionStopRepeatingWhenLimitReached(actionUid)
+            }
 
             ID_STOP_HOLD_DOWN_WHEN_TRIGGER_RELEASED -> config.setActionStopHoldingDownWhenTriggerPressedAgain(
                 actionUid,
@@ -80,6 +82,8 @@ class ConfigKeyMapActionOptionsViewModel(
                 actionUid,
                 value.nullIfDefault()
             )
+
+            ID_REPEAT_LIMIT -> config.setActionRepeatLimit(actionUid, value.nullIfDefault())
         }
     }
 
@@ -100,7 +104,7 @@ class ConfigKeyMapActionOptionsViewModel(
                 yield(
                     CheckBoxListItem(
                         id = ID_REPEAT,
-                        label = getString(R.string.flag_repeat_actions),
+                        label = getString(R.string.flag_repeat_actions_trigger_released),
                         isChecked = action.repeat
                     )
                 )
@@ -138,19 +142,54 @@ class ConfigKeyMapActionOptionsViewModel(
                 )
             }
 
-            if (keyMap.isStopRepeatingActionWhenTriggerPressedAgainAllowed(action)) {
+            if (keyMap.isChangingRepeatLimitAllowed(action)) {
+                //only allow setting it to no limit if the action doesn't repeat until the limit is reached
+                val isNoLimitAllowed = action.repeatMode != RepeatMode.LIMIT_REACHED
+
+                val sliderValue = if (action.repeatMode == RepeatMode.LIMIT_REACHED){
+                    if (action.repeatLimit == null){
+                        Defaultable.Custom(1)
+                    }else{
+                        Defaultable.Custom(action.repeatLimit)
+                    }
+
+                }else{
+                    Defaultable.create(action.repeatLimit)
+                }
+
                 yield(
-                    RadioButtonPairListItem(
+                    SliderListItem(
+                        id = ID_REPEAT_LIMIT,
+                        label = getString(R.string.extra_label_repeat_limit),
+                        sliderModel = SliderModel(
+                            value = sliderValue,
+                            isDefaultStepEnabled = isNoLimitAllowed,
+                            min = 1,
+                            max = 20,
+                            stepSize = 1,
+                            customButtonDefaultText = getString(R.string.button_slider_repeat_no_limit)
+                        ),
+                    )
+                )
+            }
+
+            if (keyMap.isChangingRepeatModeAllowed(action)) {
+                yield(
+                    RadioButtonTripleListItem(
                         id = "repeat_mode",
                         header = getString(R.string.stop_repeating_dot_dot_dot),
 
                         leftButtonId = ID_STOP_REPEATING_TRIGGER_RELEASED,
-                        leftButtonText = getString(R.string.trigger_released),
-                        leftButtonChecked = !action.stopRepeatingWhenTriggerPressedAgain,
+                        leftButtonText = getString(R.string.stop_repeating_when_trigger_released),
+                        leftButtonChecked = action.repeatMode == RepeatMode.TRIGGER_RELEASED,
 
-                        rightButtonId = ID_STOP_REPEATING_TRIGGER_PRESSED_AGAIN,
-                        rightButtonText = getString(R.string.trigger_pressed_again),
-                        rightButtonChecked = action.stopRepeatingWhenTriggerPressedAgain
+                        centerButtonId = ID_STOP_REPEATING_TRIGGER_PRESSED_AGAIN,
+                        centerButtonText = getString(R.string.stop_repeating_trigger_pressed_again),
+                        centerButtonChecked = action.repeatMode == RepeatMode.TRIGGER_PRESSED_AGAIN,
+
+                        rightButtonId = ID_STOP_REPEATING_LIMIT_REACHED,
+                        rightButtonText = getString(R.string.stop_repeating_limit_reached),
+                        rightButtonChecked = action.repeatMode == RepeatMode.LIMIT_REACHED
                     )
                 )
             }
@@ -190,11 +229,11 @@ class ConfigKeyMapActionOptionsViewModel(
                         header = getString(R.string.hold_down_until_trigger_is_dot_dot_dot),
 
                         leftButtonId = ID_STOP_HOLD_DOWN_WHEN_TRIGGER_RELEASED,
-                        leftButtonText = getString(R.string.trigger_released),
+                        leftButtonText = getString(R.string.stop_holding_down_when_trigger_released),
                         leftButtonChecked = !action.stopHoldDownWhenTriggerPressedAgain,
 
                         rightButtonId = ID_STOP_HOLD_DOWN_WHEN_TRIGGER_PRESSED_AGAIN,
-                        rightButtonText = getString(R.string.trigger_pressed_again),
+                        rightButtonText = getString(R.string.stop_holding_down_trigger_pressed_again),
                         rightButtonChecked = action.stopHoldDownWhenTriggerPressedAgain
                     )
                 )

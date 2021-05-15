@@ -1,12 +1,10 @@
 package io.github.sds100.keymapper.mappings.fingerprintmaps
 
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.util.ui.SliderModel
-import io.github.sds100.keymapper.util.Defaultable
-import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.mappings.ConfigActionOptionsViewModel
 import io.github.sds100.keymapper.mappings.OptionMinimums
 import io.github.sds100.keymapper.mappings.isDelayBeforeNextActionAllowed
+import io.github.sds100.keymapper.util.Defaultable
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.CoroutineScope
 
@@ -27,10 +25,10 @@ class ConfigFingerprintMapActionOptionsViewModel(
         private const val ID_HOLD_DOWN_UNTIL_SWIPED_AGAIN = "hold_down"
         private const val ID_DELAY_BEFORE_NEXT_ACTION = "delay_before_next_action"
         private const val ID_HOLD_DOWN_DURATION = "hold_down_duration"
+        private const val ID_REPEAT_LIMIT = "repeat_limit"
     }
 
-    override fun setRadioButtonValue(id: String, value: Boolean) {
-    }
+    override fun setRadioButtonValue(id: String, value: Boolean) {}
 
     override fun setSliderValue(id: String, value: Defaultable<Int>) {
         val actionUid = actionUid.value ?: return
@@ -46,6 +44,7 @@ class ConfigFingerprintMapActionOptionsViewModel(
                 actionUid,
                 value.nullIfDefault()
             )
+            ID_REPEAT_LIMIT -> config.setActionRepeatLimit(actionUid, value.nullIfDefault())
         }
     }
 
@@ -58,16 +57,15 @@ class ConfigFingerprintMapActionOptionsViewModel(
         }
     }
 
-
     override fun createListItems(mapping: FingerprintMap, action: FingerprintMapAction): List<ListItem> {
         return sequence {
 
-            if (mapping.isRepeatingActionUntilSwipedAgainAllowed()) {
+            if (mapping.isRepeatingActionsAllowed()) {
                 yield(
                     CheckBoxListItem(
                         id = ID_REPEAT_UNTIL_SWIPED_AGAIN,
-                        label = getString(R.string.flag_repeat_until_swiped_again),
-                        isChecked = action.repeatUntilSwipedAgain
+                        label = getString(R.string.flag_repeat_actions_swiped_again),
+                        isChecked = action.repeat
                     )
                 )
             }
@@ -84,6 +82,23 @@ class ConfigFingerprintMapActionOptionsViewModel(
                             max = SliderMaximums.ACTION_REPEAT_RATE,
                             stepSize = SliderStepSizes.ACTION_REPEAT_RATE
                         )
+                    )
+                )
+            }
+
+            if (mapping.isChangingRepeatLimitAllowed(action)) {
+                yield(
+                    SliderListItem(
+                        id = ID_REPEAT_LIMIT,
+                        label = getString(R.string.extra_label_repeat_limit),
+                        sliderModel = SliderModel(
+                            value = Defaultable.create(action.repeatLimit),
+                            isDefaultStepEnabled = true,
+                            min = 1,
+                            max = 20,
+                            stepSize = 1,
+                            customButtonDefaultText = getString(R.string.button_slider_repeat_no_limit)
+                        ),
                     )
                 )
             }
