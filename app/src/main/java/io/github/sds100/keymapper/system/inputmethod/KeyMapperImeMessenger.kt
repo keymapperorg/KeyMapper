@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.SystemClock
 import android.view.KeyEvent
-import io.github.sds100.keymapper.system.keyevents.InputKeyModel
 import io.github.sds100.keymapper.util.InputEventType
 
 /**

@@ -11,7 +11,7 @@ import io.github.sds100.keymapper.mappings.fingerprintmaps.ListFingerprintMapsUs
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapListViewModel
 import io.github.sds100.keymapper.mappings.keymaps.ListKeyMapsUseCase
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
-import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
+import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.ui.*
 import io.github.sds100.keymapper.util.Error
@@ -149,7 +149,7 @@ class HomeViewModel(
 
     val errorListState = combine(
         showAlertsUseCase.isBatteryOptimised,
-        showAlertsUseCase.accessibilityServiceState,
+        showAlertsUseCase.serviceState,
         showAlertsUseCase.hideAlerts,
         showAlertsUseCase.areMappingsPaused,
         showAlertsUseCase.isLoggingEnabled
@@ -157,21 +157,21 @@ class HomeViewModel(
         val listItems = sequence {
 
             when (serviceState) {
-                AccessibilityServiceState.CRASHED ->
+                ServiceState.CRASHED ->
                     yield(
                         TextListItem.Error(
                             ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM,
                             getString(R.string.home_error_accessibility_service_is_crashed)
                         )
                     )
-                AccessibilityServiceState.DISABLED ->
+                ServiceState.DISABLED ->
                     yield(
                         TextListItem.Error(
                             ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM,
                             getString(R.string.home_error_accessibility_service_is_disabled)
                         )
                     )
-                AccessibilityServiceState.ENABLED ->
+                ServiceState.ENABLED ->
                     yield(
                         TextListItem.Success(
                             ID_ACCESSIBILITY_SERVICE_ENABLED_LIST_ITEM,

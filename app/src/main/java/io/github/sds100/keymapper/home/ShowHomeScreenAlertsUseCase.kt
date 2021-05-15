@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.home
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
-import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
+import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.accessibility.ControlAccessibilityServiceUseCase
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
@@ -41,7 +41,7 @@ class ShowHomeScreenAlertsUseCaseImpl(
         permissions.request(Permission.IGNORE_BATTERY_OPTIMISATION)
     }
 
-    override val accessibilityServiceState = controlService.state
+    override val serviceState = controlService.state
     override fun enableAccessibilityService() {
         controlService.enable()
     }
@@ -59,7 +59,7 @@ class ShowHomeScreenAlertsUseCaseImpl(
 }
 
 interface ShowHomeScreenAlertsUseCase {
-    val accessibilityServiceState: Flow<AccessibilityServiceState>
+    val serviceState: Flow<ServiceState>
     fun enableAccessibilityService()
     fun restartAccessibilityService()
 

@@ -9,12 +9,11 @@ import androidx.lifecycle.*
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.UseCases
-import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
+import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.util.firstBlocking
 import io.github.sds100.keymapper.util.str
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.launchIn
 
 /**
  * Created by sds100 on 12/06/2020.
@@ -41,7 +40,7 @@ class ToggleMappingsTile : TileService(), LifecycleOwner {
                 val ctx = this@ToggleMappingsTile
 
                 when {
-                    serviceState == AccessibilityServiceState.DISABLED -> {
+                    serviceState == ServiceState.DISABLED -> {
                         qsTile.label = str(R.string.tile_service_disabled)
                         qsTile.contentDescription =
                             str(R.string.tile_accessibility_service_disabled_content_description)
@@ -93,7 +92,7 @@ class ToggleMappingsTile : TileService(), LifecycleOwner {
     override fun onClick() {
         super.onClick()
 
-        if (serviceAdapter.state.value == AccessibilityServiceState.DISABLED) return
+        if (serviceAdapter.state.value == ServiceState.DISABLED) return
 
         if (useCase.isPaused.firstBlocking()) {
             useCase.resume()

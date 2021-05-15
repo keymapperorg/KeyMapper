@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.system.keyevents
+package io.github.sds100.keymapper.system.inputmethod
 
 import io.github.sds100.keymapper.util.InputEventType
 

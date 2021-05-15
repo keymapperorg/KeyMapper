@@ -8,7 +8,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
 import io.github.sds100.keymapper.mappings.fingerprintmaps.AreFingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
-import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
+import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.accessibility.ControlAccessibilityServiceUseCase
 import io.github.sds100.keymapper.system.inputmethod.ShowHideInputMethodUseCase
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
@@ -231,7 +231,7 @@ class NotificationController(
 
     private fun invalidateToggleMappingsNotification(
         show: Boolean,
-        serviceState: AccessibilityServiceState,
+        serviceState: ServiceState,
         areMappingsPaused: Boolean
     ) {
         manageNotifications.createChannel(
@@ -248,7 +248,7 @@ class NotificationController(
         }
 
         when(serviceState){
-            AccessibilityServiceState.ENABLED -> {
+            ServiceState.ENABLED -> {
                 if (areMappingsPaused) {
                     manageNotifications.show(mappingsPausedNotification())
                 } else {
@@ -256,10 +256,10 @@ class NotificationController(
                 }
             }
 
-            AccessibilityServiceState.CRASHED ->
+            ServiceState.CRASHED ->
                 manageNotifications.show(accessibilityServiceCrashedNotification())
 
-            AccessibilityServiceState.DISABLED ->
+            ServiceState.DISABLED ->
                 manageNotifications.show(accessibilityServiceDisabledNotification())
         }
     }
