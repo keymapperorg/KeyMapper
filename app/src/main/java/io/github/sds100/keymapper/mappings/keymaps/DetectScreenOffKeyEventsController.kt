@@ -1,8 +1,9 @@
-package io.github.sds100.keymapper.system.keyevents
+package io.github.sds100.keymapper.mappings.keymaps
 
 import android.view.KeyEvent
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
+import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.valueOrNull
@@ -13,7 +14,7 @@ import timber.log.Timber
 /**
  * Created by sds100 on 21/06/2020.
  */
-class GetEventDelegate(
+class DetectScreenOffKeyEventsController(
     private val suAdapter: SuAdapter,
     private val devicesAdapter: DevicesAdapter,
     private val onKeyEvent: suspend (

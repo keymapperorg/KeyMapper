@@ -1,6 +1,7 @@
-package io.github.sds100.keymapper.system.keyevents
+package io.github.sds100.keymapper.reroutekeyevents
 
 import android.view.KeyEvent
+import io.github.sds100.keymapper.system.keyevents.InputKeyModel
 import io.github.sds100.keymapper.util.InputEventType
 import kotlinx.coroutines.*
 

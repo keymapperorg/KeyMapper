@@ -1,10 +1,11 @@
-package io.github.sds100.keymapper.system.keyevents
+package io.github.sds100.keymapper.reroutekeyevents
 
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeMessenger
+import io.github.sds100.keymapper.system.keyevents.InputKeyModel
 import io.github.sds100.keymapper.util.firstBlocking
 import kotlinx.coroutines.flow.map
 

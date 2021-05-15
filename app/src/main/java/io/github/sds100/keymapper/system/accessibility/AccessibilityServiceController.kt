@@ -12,9 +12,9 @@ import io.github.sds100.keymapper.mappings.keymaps.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapController
 import io.github.sds100.keymapper.mappings.keymaps.TriggerKeyMapFromOtherAppsController
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
-import io.github.sds100.keymapper.system.keyevents.GetEventDelegate
-import io.github.sds100.keymapper.system.keyevents.RerouteKeyEventsController
-import io.github.sds100.keymapper.system.keyevents.RerouteKeyEventsUseCase
+import io.github.sds100.keymapper.mappings.keymaps.DetectScreenOffKeyEventsController
+import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsController
+import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsUseCase
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.*
@@ -84,8 +84,8 @@ class AccessibilityServiceController(
         detectKeyMapsUseCase.detectScreenOffTriggers
             .stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
-    private val getEventDelegate =
-        GetEventDelegate(
+    private val detectScreenOffKeyEventsController =
+        DetectScreenOffKeyEventsController(
             suAdapter,
             devicesAdapter
         ) { keyCode, action, deviceDescriptor, isExternal, deviceId ->
@@ -133,10 +133,10 @@ class AccessibilityServiceController(
         detectKeyMapsUseCase.isScreenOn.onEach { isScreenOn ->
             if (!isScreenOn) {
                 if (screenOffTriggersEnabled.value) {
-                    getEventDelegate.startListening(coroutineScope)
+                    detectScreenOffKeyEventsController.startListening(coroutineScope)
                 }
             } else {
-                getEventDelegate.stopListening()
+                detectScreenOffKeyEventsController.stopListening()
             }
         }.launchIn(coroutineScope)
 

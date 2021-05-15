@@ -25,7 +25,7 @@ import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeMessengerImpl
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCaseImpl
 import io.github.sds100.keymapper.system.inputmethod.ToggleCompatibleImeUseCaseImpl
-import io.github.sds100.keymapper.system.keyevents.RerouteKeyEventsUseCaseImpl
+import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsUseCaseImpl
 
 /**
  * Created by sds100 on 03/03/2021.

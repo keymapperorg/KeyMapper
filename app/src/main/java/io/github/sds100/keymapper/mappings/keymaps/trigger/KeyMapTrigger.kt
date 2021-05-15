@@ -4,7 +4,7 @@ import io.github.sds100.keymapper.data.entities.Extra
 import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.data.entities.getData
 import io.github.sds100.keymapper.mappings.ClickType
-import io.github.sds100.keymapper.system.keyevents.GetEventDelegate
+import io.github.sds100.keymapper.mappings.keymaps.DetectScreenOffKeyEventsController
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.serialization.Serializable
 import splitties.bitflags.hasFlag
@@ -50,7 +50,7 @@ data class KeyMapTrigger(
     }
 
     fun isDetectingWhenScreenOffAllowed(): Boolean {
-        return keys.isNotEmpty() && keys.all { GetEventDelegate.canDetectKeyWhenScreenOff(it.keyCode) }
+        return keys.isNotEmpty() && keys.all { DetectScreenOffKeyEventsController.canDetectKeyWhenScreenOff(it.keyCode) }
     }
 
     fun isChangingSequenceTriggerTimeoutAllowed(): Boolean {
