@@ -226,6 +226,7 @@
     <string name="extra_label_repeat_rate">Repeat every… (ms)</string>
     <string name="extra_label_vibration_duration">Vibration duration (ms)</string>
     <string name="extra_label_action_multiplier">How many times</string>
+    <string name="extra_label_action_multiplier_with_repeat">How many times every repeat</string>
     <string name="extra_label_delay_before_next_action">Delay before next action (ms)</string>
     <string name="extra_label_hold_down_duration">Hold down duration (ms)</string>
     <!-- Extra labels -->
@@ -620,10 +621,20 @@
     <string name="flag_show_toast">Show an on-screen message</string>
     <string name="flag_long_press_double_vibration">Vibrate when keys are initially pressed and again when long pressed.</string>
     <string name="flag_detect_triggers_screen_off">Detect trigger when the screen is off</string>
-    <string name="flag_repeat_actions_trigger_released">Repeat</string>
-    <string name="flag_repeat_actions_limit_reached">Repeat %d times</string>
+
+    <string name="flag_repeat_build_description_start">Repeat</string>
+    <string name="flag_repeat_build_description_limit">%dx</string>
+    <string name="flag_repeat_build_description_repeat_delay">after %dms</string>
+    <string name="flag_repeat_build_description_repeat_rate">every %dms</string>
+    <string name="flag_repeat_build_description_until_swiped_again">until swiped again</string>
+    <string name="flag_repeat_build_description_until_pressed_again">until pressed again</string>
+    <string name="flag_repeat_build_description_until_released">until released</string>
+
+    <string name="flag_repeat_actions_trigger_released">Repeat until released</string>
     <string name="flag_repeat_actions_pressed_again">Repeat until pressed again</string>
     <string name="flag_repeat_actions_swiped_again">Repeat until swiped again</string>
+
+
     <string name="flag_hold_down">Hold down</string>
     <string name="flag_hold_down_until_pressed_again">Hold down until pressed again</string>
     <string name="flag_dont_override_default_action">Do not override default action</string>

@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.mappings.fingerprintmaps
 
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.BaseActionUiHelper
+import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.mappings.DisplayActionUseCase
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 
@@ -21,15 +22,20 @@ class FingerprintMapActionUiHelper(
 
         if (mapping.isRepeatingActionsAllowed() && action.repeat) {
             val repeatDescription = buildString {
-                when {
-                    action.repeatLimit != null -> {
-                        append(getString(R.string.flag_repeat_actions_limit_reached, action.repeatLimit))
-                    }
+                append(getString(R.string.flag_repeat_build_description_start))
 
-                    else -> {
-                        append(getString(R.string.flag_repeat_actions_swiped_again))
-                    }
+                if (action.repeatLimit != null) {
+                    append(" ")
+                    append(getString(R.string.flag_repeat_build_description_limit, action.repeatLimit))
                 }
+
+                if (action.repeatRate != null) {
+                    append(" ")
+                    append(getString(R.string.flag_repeat_build_description_repeat_rate, action.repeatRate))
+                }
+
+                append(" ")
+                append(getString(R.string.flag_repeat_build_description_until_swiped_again))
             }
 
             yield(repeatDescription)

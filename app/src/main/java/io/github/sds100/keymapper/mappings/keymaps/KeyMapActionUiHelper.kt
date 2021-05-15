@@ -18,17 +18,32 @@ class KeyMapActionUiHelper(
     override fun getOptionLabels(mapping: KeyMap, action: KeyMapAction) = sequence {
         if (mapping.isRepeatingActionsAllowed() && action.repeat) {
             val repeatDescription = buildString {
+                append(getString(R.string.flag_repeat_build_description_start))
+
+                if (action.repeatLimit != null) {
+                    append(" ")
+                    append(getString(R.string.flag_repeat_build_description_limit, action.repeatLimit))
+                }
+
+                if (action.repeatRate != null) {
+                    append(" ")
+                    append(getString(R.string.flag_repeat_build_description_repeat_rate, action.repeatRate))
+                }
+
+                if (action.repeatDelay != null) {
+                    append(" ")
+                    append(getString(R.string.flag_repeat_build_description_repeat_delay, action.repeatDelay))
+                }
+
+                append(" ")
+
                 when (action.repeatMode) {
                     RepeatMode.TRIGGER_RELEASED -> {
-                        append(getString(R.string.flag_repeat_actions_trigger_released))
-                    }
-
-                    RepeatMode.LIMIT_REACHED -> {
-                        append(getString(R.string.flag_repeat_actions_limit_reached, action.repeatLimit ?: 1))
+                        append(getString(R.string.flag_repeat_build_description_until_released))
                     }
 
                     RepeatMode.TRIGGER_PRESSED_AGAIN -> {
-                        append(getString(R.string.flag_repeat_actions_pressed_again))
+                        append(getString(R.string.flag_repeat_build_description_until_pressed_again))
                     }
                 }
             }

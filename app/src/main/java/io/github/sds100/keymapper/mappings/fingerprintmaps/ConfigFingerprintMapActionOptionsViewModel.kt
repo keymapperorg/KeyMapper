@@ -149,10 +149,16 @@ class ConfigFingerprintMapActionOptionsViewModel(
                 )
             }
 
+            val multiplierLabel = if (action.repeat && mapping.isRepeatingActionsAllowed()) {
+                getString(R.string.extra_label_action_multiplier_with_repeat)
+            } else {
+                getString(R.string.extra_label_action_multiplier)
+            }
+
             yield(
                 SliderListItem(
                     id = ID_MULTIPLIER,
-                    label = getString(R.string.extra_label_action_multiplier),
+                    label = multiplierLabel,
                     sliderModel = SliderModel(
                         value = Defaultable.create(action.multiplier),
                         isDefaultStepEnabled = true,

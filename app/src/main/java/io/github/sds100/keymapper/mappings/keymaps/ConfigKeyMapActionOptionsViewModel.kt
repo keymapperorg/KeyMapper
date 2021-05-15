@@ -146,14 +146,14 @@ class ConfigKeyMapActionOptionsViewModel(
                 //only allow setting it to no limit if the action doesn't repeat until the limit is reached
                 val isNoLimitAllowed = action.repeatMode != RepeatMode.LIMIT_REACHED
 
-                val sliderValue = if (action.repeatMode == RepeatMode.LIMIT_REACHED){
-                    if (action.repeatLimit == null){
+                val sliderValue = if (action.repeatMode == RepeatMode.LIMIT_REACHED) {
+                    if (action.repeatLimit == null) {
                         Defaultable.Custom(1)
-                    }else{
+                    } else {
                         Defaultable.Custom(action.repeatLimit)
                     }
 
-                }else{
+                } else {
                     Defaultable.create(action.repeatLimit)
                 }
 
@@ -257,10 +257,16 @@ class ConfigKeyMapActionOptionsViewModel(
                 )
             }
 
+            val multiplierLabel = if (action.repeat && keyMap.isRepeatingActionsAllowed()) {
+                getString(R.string.extra_label_action_multiplier_with_repeat)
+            } else {
+                getString(R.string.extra_label_action_multiplier)
+            }
+
             yield(
                 SliderListItem(
                     id = ID_MULTIPLIER,
-                    label = getString(R.string.extra_label_action_multiplier),
+                    label = multiplierLabel,
                     sliderModel = SliderModel(
                         value = Defaultable.create(action.multiplier),
                         isDefaultStepEnabled = true,
