@@ -59,27 +59,27 @@ jobs:
 
       - name: Unit tests
         run: bash ./gradlew testDebugUnitTest
-
-      - name: Build apk with fastlane
-        run: bundle exec fastlane beta
-
-      - name: set debug apk name env
-        run: echo "APK_NAME_DEBUG=$(basename app/build/outputs/apk/debug/*.apk .apk)" >> $GITHUB_ENV
-
-      - name: Upload to Discord
-        uses: sinshutu/upload-to-discord@v2.0.0
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_BUILD_STATUS_WEBHOOK }}
-        with:
-          args: app/build/outputs/apk/debug/${{ env.APK_NAME_DEBUG }}.apk
-
-      - name: set release apk name env
-        run: echo "APK_NAME_RELEASE=$(basename app/build/outputs/apk/release/*.apk .apk)" >> $GITHUB_ENV
-
-      - name: Upload to Discord
-        uses: sinshutu/upload-to-discord@v2.0.0
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_BUILD_STATUS_WEBHOOK }}
-        with:
-          args: app/build/outputs/apk/release/${{ env.APK_NAME_RELEASE }}.apk
+#
+#      - name: Build apk with fastlane
+#        run: bundle exec fastlane beta
+#
+#      - name: set debug apk name env
+#        run: echo "APK_NAME_DEBUG=$(basename app/build/outputs/apk/debug/*.apk .apk)" >> $GITHUB_ENV
+#
+#      - name: Upload to Discord
+#        uses: sinshutu/upload-to-discord@v2.0.0
+#        env:
+#          DISCORD_WEBHOOK: ${{ secrets.DISCORD_BUILD_STATUS_WEBHOOK }}
+#        with:
+#          args: app/build/outputs/apk/debug/${{ env.APK_NAME_DEBUG }}.apk
+#
+#      - name: set release apk name env
+#        run: echo "APK_NAME_RELEASE=$(basename app/build/outputs/apk/release/*.apk .apk)" >> $GITHUB_ENV
+#
+#      - name: Upload to Discord
+#        uses: sinshutu/upload-to-discord@v2.0.0
+#        env:
+#          DISCORD_WEBHOOK: ${{ secrets.DISCORD_BUILD_STATUS_WEBHOOK }}
+#        with:
+#          args: app/build/outputs/apk/release/${{ env.APK_NAME_RELEASE }}.apk
 
