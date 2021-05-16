@@ -165,6 +165,11 @@ class AccessibilityServiceController(
         val detailedLogInfo =
             "key code: $keyCode, device name: $deviceName, descriptor: $descriptor, device id: $deviceId, is external: $isExternal, meta state: $metaState, scan code: $scanCode"
 
+        when (action) {
+            KeyEvent.ACTION_DOWN -> Timber.d("Down ${KeyEvent.keyCodeToString(keyCode)}, $detailedLogInfo")
+            KeyEvent.ACTION_UP -> Timber.d("Up ${KeyEvent.keyCodeToString(keyCode)}, $detailedLogInfo")
+        }
+
         if (recordingTrigger) {
             if (action == KeyEvent.ACTION_DOWN) {
                 Timber.d("Recorded key ${KeyEvent.keyCodeToString(keyCode)}, $detailedLogInfo")
