@@ -89,32 +89,3 @@ jobs:
         with:
           title: "Build apk"
           webhook: ${{ secrets.DISCORD_BUILD_STATUS_WEBHOOK }}
-
-  release-instrumentation-tests:
-    name: Run instrumentation tests
-    runs-on: macOS-latest
-    steps:
-      - name: checkout
-        uses: actions/checkout@v2
-
-      - uses: actions/cache@v2
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
-      - name: run tests
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 29
-          script: ./gradlew connectedCheck
-
-      - name: Report build status to Discord
-        uses: sarisia/actions-status-discord@v1
-        if: failure()
-        with:
-          title: "Instrumentation tests"
-          webhook: ${{ secrets.DISCORD_BUILD_STATUS_WEBHOOK }}
