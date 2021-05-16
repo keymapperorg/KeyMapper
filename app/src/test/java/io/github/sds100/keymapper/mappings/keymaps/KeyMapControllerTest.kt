@@ -152,6 +152,37 @@ class KeyMapControllerTest {
         coroutineScope.cleanupTestCoroutines()
     }
 
+    @Test
+    fun `multiple key maps with same trigger, perform both key maps`() = coroutineScope.runBlockingTest {
+        //GIVEN
+        val trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
+
+        val keyMaps = listOf(
+            KeyMap(
+                trigger = trigger,
+                actionList = listOf(TEST_ACTION)
+            ),
+            KeyMap(
+                trigger = trigger,
+                actionList = listOf(TEST_ACTION_2)
+            ),
+        )
+
+        keyMapListFlow.value = keyMaps
+
+        //WHEN
+
+        //ensure consumed
+        assertThat(inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN), `is`(true))
+        delay(50)
+        assertThat(inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP), `is`(true))
+
+        //THEN
+
+        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+        verify(performActionsUseCase, times(1)).perform(TEST_ACTION_2.data)
+    }
+
     /**
      * issue #663
      */

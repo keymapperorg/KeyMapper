@@ -255,7 +255,7 @@ class KeyMapController(
                         }
 
                         //only check for overlapping if the other trigger has more keys
-                        if (otherTrigger.keys.size < trigger.keys.size) {
+                        if (otherTrigger.keys.size <= trigger.keys.size) {
                             continue@otherTriggerLoop
                         }
 
