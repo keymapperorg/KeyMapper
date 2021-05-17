@@ -643,6 +643,10 @@ class PerformActionsUseCaseImpl(
                             accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_POWER_DIALOG)
                     }
 
+                    SystemActionId.VOLUME_SHOW_DIALOG ->{
+                        result = volumeAdapter.showVolumeUi()
+                    }
+
                     else -> throw Exception("Don't know how to perform this action ${action.id}")
                 }
             }
