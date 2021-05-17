@@ -214,25 +214,29 @@ class AndroidPackageManagerAdapter(
         installedPackages.value = State.Loading
 
         val packages = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
-            .map { applicationInfo ->
+            .mapNotNull { applicationInfo ->
                 val packageName = applicationInfo.packageName
                 val canBeLaunched =
                     (packageManager.getLaunchIntentForPackage(packageName) != null
                         || packageManager.getLeanbackLaunchIntentForPackage(packageName) != null)
 
-                val activities =
-                    packageManager.getPackageInfo(
-                        packageName,
-                        PackageManager.GET_ACTIVITIES
-                    )?.activities?.map {
-                        ActivityInfo(it.name, it.packageName)
-                    }
+                try {
+                    val activities =
+                        packageManager.getPackageInfo(
+                            packageName,
+                            PackageManager.GET_ACTIVITIES
+                        )?.activities?.map {
+                            ActivityInfo(it.name, it.packageName)
+                        }
 
-                PackageInfo(
-                    packageName,
-                    canBeLaunched,
-                    activities = activities ?: emptyList()
-                )
+                    return@mapNotNull PackageInfo(
+                        packageName,
+                        canBeLaunched,
+                        activities = activities ?: emptyList()
+                    )
+                } catch (e: PackageManager.NameNotFoundException) {
+                    return@mapNotNull null
+                }
             }
 
         installedPackages.value = State.Data(packages)
