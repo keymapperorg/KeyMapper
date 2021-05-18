@@ -132,7 +132,75 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
         super.onViewCreated(view, savedInstanceState)
 
         viewLifecycleScope.launchWhenResumed {
-            populatePreferenceScreen()
+            if (preferenceScreen.isEmpty()) {
+                populatePreferenceScreen()
+            }
+        }
+
+        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+            viewModel.defaultLongPressDelay.collectLatest { value ->
+                val preference = findPreference<SeekBarPreference>(Keys.defaultLongPressDelay.name)
+                    ?: return@collectLatest
+
+                if (preference.value != value) {
+                    preference.value = value
+                }
+            }
+        }
+
+        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+            viewModel.defaultDoublePressDelay.collectLatest { value ->
+                val preference = findPreference<SeekBarPreference>(Keys.defaultDoublePressDelay.name)
+                    ?: return@collectLatest
+
+                if (preference.value != value) {
+                    preference.value = value
+                }
+            }
+        }
+
+        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+            viewModel.defaultSequenceTriggerTimeout.collectLatest { value ->
+                val preference = findPreference<SeekBarPreference>(Keys.defaultSequenceTriggerTimeout.name)
+                    ?: return@collectLatest
+
+                if (preference.value != value) {
+                    preference.value = value
+                }
+            }
+        }
+
+        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+            viewModel.defaultRepeatRate.collectLatest { value ->
+                val preference = findPreference<SeekBarPreference>(Keys.defaultRepeatRate.name)
+                    ?: return@collectLatest
+
+                if (preference.value != value) {
+                    preference.value = value
+                }
+            }
+        }
+
+        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+            viewModel.defaultRepeatDelay.collectLatest { value ->
+                val preference = findPreference<SeekBarPreference>(Keys.defaultRepeatDelay.name)
+                    ?: return@collectLatest
+
+                if (preference.value != value) {
+                    preference.value = value
+                }
+            }
+        }
+
+        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+            viewModel.defaultVibrateDuration.collectLatest { value ->
+                val preference = findPreference<SeekBarPreference>(Keys.defaultVibrateDuration.name)
+                    ?: return@collectLatest
+
+                if (preference.value != value) {
+                    preference.value = value
+                }
+            }
         }
 
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
@@ -609,14 +677,6 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             max = 5000
             showSeekBarValue = true
 
-            viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-                viewModel.defaultLongPressDelay.collectLatest { value ->
-                    if (this@apply.value != value) {
-                        this@apply.value = value
-                    }
-                }
-            }
-
             addPreference(this)
         }
 
@@ -631,14 +691,6 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             min = OptionMinimums.TRIGGER_DOUBLE_PRESS_DELAY
             max = 5000
             showSeekBarValue = true
-
-            viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-                viewModel.defaultDoublePressDelay.collectLatest { value ->
-                    if (this@apply.value != value) {
-                        this@apply.value = value
-                    }
-                }
-            }
 
             addPreference(this)
         }
@@ -655,14 +707,6 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             max = 1000
             showSeekBarValue = true
 
-            viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-                viewModel.defaultVibrateDuration.collectLatest { value ->
-                    if (this@apply.value != value) {
-                        this@apply.value = value
-                    }
-                }
-            }
-
             addPreference(this)
         }
 
@@ -677,14 +721,6 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             min = OptionMinimums.ACTION_REPEAT_DELAY
             max = SliderMaximums.ACTION_REPEAT_DELAY
             showSeekBarValue = true
-
-            viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-                viewModel.defaultRepeatDelay.collectLatest { value ->
-                    if (this@apply.value != value) {
-                        this@apply.value = value
-                    }
-                }
-            }
 
             addPreference(this)
         }
@@ -701,14 +737,6 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             max = SliderMaximums.ACTION_REPEAT_RATE
             showSeekBarValue = true
 
-            viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-                viewModel.defaultRepeatRate.collectLatest { value ->
-                    if (this@apply.value != value) {
-                        this@apply.value = value
-                    }
-                }
-            }
-
             addPreference(this)
         }
 
@@ -723,14 +751,6 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             min = OptionMinimums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT
             max = 5000
             showSeekBarValue = true
-
-            viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-                viewModel.defaultSequenceTriggerTimeout.collectLatest { value ->
-                    if (this@apply.value != value) {
-                        this@apply.value = value
-                    }
-                }
-            }
 
             addPreference(this)
         }
