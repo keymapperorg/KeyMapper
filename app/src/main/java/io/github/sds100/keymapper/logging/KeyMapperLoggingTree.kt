@@ -8,7 +8,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
 
@@ -32,7 +31,7 @@ class KeyMapperLoggingTree(
     init {
         messagesToLog
             .onEach {
-                logRepository.insert(it)
+                logRepository.insertSuspend(it)
             }
             .flowOn(Dispatchers.Default)
             .launchIn(coroutineScope)
@@ -51,15 +50,13 @@ class KeyMapperLoggingTree(
             else -> LogEntryEntity.SEVERITY_DEBUG
         }
 
-        coroutineScope.launch {
-            messagesToLog.emit(
-                LogEntryEntity(
-                    id = 0,
-                    time = Calendar.getInstance().timeInMillis,
-                    severity = severity,
-                    message = message
-                )
+        messagesToLog.tryEmit(
+            LogEntryEntity(
+                id = 0,
+                time = Calendar.getInstance().timeInMillis,
+                severity = severity,
+                message = message
             )
-        }
+        )
     }
 }
