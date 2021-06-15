@@ -630,10 +630,10 @@
     <string name="flag_repeat_build_description_until_pressed_again">until pressed again</string>
     <string name="flag_repeat_build_description_until_released">until released</string>
 
+    <string name="flag_repeat_actions">Repeat</string>
     <string name="flag_repeat_actions_trigger_released">Repeat until released</string>
     <string name="flag_repeat_actions_pressed_again">Repeat until pressed again</string>
     <string name="flag_repeat_actions_swiped_again">Repeat until swiped again</string>
-
 
     <string name="flag_hold_down">Hold down</string>
     <string name="flag_hold_down_until_pressed_again">Hold down until pressed again</string>

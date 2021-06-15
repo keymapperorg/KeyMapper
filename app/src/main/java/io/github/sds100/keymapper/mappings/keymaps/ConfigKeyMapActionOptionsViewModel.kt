@@ -104,7 +104,7 @@ class ConfigKeyMapActionOptionsViewModel(
                 yield(
                     CheckBoxListItem(
                         id = ID_REPEAT,
-                        label = getString(R.string.flag_repeat_actions_trigger_released),
+                        label = getString(R.string.flag_repeat_actions),
                         isChecked = action.repeat
                     )
                 )
