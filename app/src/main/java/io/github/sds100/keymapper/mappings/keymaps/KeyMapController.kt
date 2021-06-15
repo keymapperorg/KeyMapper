@@ -1156,6 +1156,12 @@ class KeyMapController(
 
         if (detectParallelTriggers) {
             triggerLoop@ for ((triggerIndex, trigger) in parallelTriggers.withIndex()) {
+                val constraintState = parallelTriggerConstraints[triggerIndex]
+
+                if (constraintState.constraints.isNotEmpty()) {
+                    if (!constraintSnapshot.isSatisfied(constraintState)) continue
+                }
+
                 val isSingleKeyTrigger = parallelTriggers[triggerIndex].keys.size == 1
 
                 var lastHeldDownEventIndex = -1
