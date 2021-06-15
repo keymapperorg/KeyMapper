@@ -31,10 +31,8 @@ class LogViewModel(
     private val showShortMessages = MutableStateFlow(true)
 
     init {
-        combine(
-            useCase.log,
-            showShortMessages
-        ) { log, showShortMessages ->
+        combine(useCase.log,
+            showShortMessages) { log, showShortMessages ->
             _listItems.value = log.mapData { logEntries ->
                 logEntries.map { createListItem(it, showShortMessages) }
             }

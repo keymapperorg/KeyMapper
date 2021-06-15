@@ -13,7 +13,7 @@ import io.github.sds100.keymapper.util.str
  * Created by sds100 on 21/02/2021.
  */
 
-class ResourceProviderImpl(context: Context) : ResourceProvider {
+class ResourceProviderImpl(context: Context): ResourceProvider {
     private val ctx = context.applicationContext
 
     override fun getString(resId: Int, args: Array<Any>): String {
