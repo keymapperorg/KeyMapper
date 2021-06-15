@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.mappings.PauseMappingsUseCaseImpl
 import io.github.sds100.keymapper.mappings.fingerprintmaps.AreFingerprintGesturesSupportedUseCaseImpl
 import io.github.sds100.keymapper.mappings.fingerprintmaps.DetectFingerprintMapsUseCaseImpl
 import io.github.sds100.keymapper.mappings.keymaps.*
+import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.onboarding.OnboardingUseCaseImpl
 import io.github.sds100.keymapper.system.Shell
 import io.github.sds100.keymapper.system.accessibility.ControlAccessibilityServiceUseCase
