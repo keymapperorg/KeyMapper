@@ -21,6 +21,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import timber.log.Timber
 
 /**
  * Created by sds100 on 22/02/2020.
@@ -126,7 +127,12 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
                     is State.Data -> {
                         if (state.data.isEmpty()) {
                             getProgressBar(binding).isVisible = false
-                            getRecyclerView(binding).isVisible = false
+
+                            /*
+                            Use INVISIBLE rather than GONE so that the previous list items don't flash briefly before
+                            the new items are populated
+                             */
+                            getRecyclerView(binding).visibility = View.INVISIBLE
                             getEmptyListPlaceHolder(binding).isVisible = true
 
                             /*
