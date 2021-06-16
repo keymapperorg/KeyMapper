@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.mappings.keymaps
+package io.github.sds100.keymapper.mappings.keymaps.detection
 
 import android.accessibilityservice.AccessibilityService
 import android.os.SystemClock
@@ -7,6 +7,9 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.DetectMappingUseCase
+import io.github.sds100.keymapper.mappings.keymaps.KeyMap
+import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntityMapper
+import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
