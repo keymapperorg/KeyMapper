@@ -3,14 +3,14 @@ package io.github.sds100.keymapper.mappings.keymaps.detection
 import io.github.sds100.keymapper.actions.KeyEventAction
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
+import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapAction
 import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
 import io.github.sds100.keymapper.util.InputEventType
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 
 /**
  * Created by sds100 on 16/06/2021.
@@ -21,16 +21,39 @@ class ParallelTriggerActionPerformer(
     private val actionList: List<KeyMapAction>,
 ) {
     private var actionIsHeldDown = BooleanArray(actionList.size) { false }
-    private var actionIsRepeating = BooleanArray(actionList.size) { false }
 
-    private val onReleased = MutableSharedFlow<OnReleasedEvent>()
+    private var repeatJobs = Array<Job?>(actionList.size) { null }
+    private var performActionsJob: Job? = null
+
+    private val defaultHoldDownDuration: StateFlow<Long> =
+        useCase.defaultHoldDownDuration.stateIn(
+            coroutineScope,
+            SharingStarted.Eagerly,
+            PreferenceDefaults.HOLD_DOWN_DURATION.toLong()
+        )
+
+    private val defaultRepeatDelay: StateFlow<Long> =
+        useCase.defaultRepeatDelay.stateIn(
+            coroutineScope,
+            SharingStarted.Eagerly,
+            PreferenceDefaults.REPEAT_DELAY.toLong()
+        )
+
+    private val defaultRepeatRate: StateFlow<Long> =
+        useCase.defaultRepeatRate.stateIn(
+            coroutineScope,
+            SharingStarted.Eagerly,
+            PreferenceDefaults.REPEAT_RATE.toLong()
+        )
 
     fun onTriggered(calledOnTriggerRelease: Boolean, metaState: Int) {
+        performActionsJob?.cancel()
         /*
         this job shouldn't be cancelled when the trigger is released. all actions should be performed
         once before repeating (if configured).
          */
-        coroutineScope.launch {
+        performActionsJob = coroutineScope.launch {
+
             actionList.forEachIndexed { actionIndex, action ->
                 var performUpAction = false
 
@@ -61,69 +84,49 @@ class ParallelTriggerActionPerformer(
                 performAction(action, actionInputEventType, metaState)
 
                 if (action.repeat && action.holdDown) {
-                    delay(action.holdDownDuration?.toLong() ?: useCase.defaultHoldDownDuration.first())
+                    delay(action.holdDownDuration?.toLong() ?: defaultHoldDownDuration.value)
                 }
 
                 delay(action.delayBeforeNextAction?.toLong() ?: 0L)
+            }
+        }
 
-                if (action.holdDown && !action.stopHoldDownWhenTriggerPressedAgain) {
-                    launch {
-                        val onReleasedEvent = onReleased.first() //wait for trigger to be released
-                        if (!actionIsHeldDown[actionIndex]) {
-                            return@launch
-                        }
+        repeatJobs.forEach { it?.cancel() }
 
-                        actionIsHeldDown[actionIndex] = false
-
-                        performAction(action, InputEventType.UP, onReleasedEvent.metaState)
-                    }
-                }
+        actionList.forEachIndexed { actionIndex, action ->
+            if (!action.repeat) {
+                return@forEachIndexed
             }
 
-            actionList.forEachIndexed { actionIndex, action ->
-                if (!action.repeat) {
-                    return@forEachIndexed
-                }
+            if (calledOnTriggerRelease && action.repeatMode == RepeatMode.TRIGGER_RELEASED) {
+                return@forEachIndexed
+            }
 
-                if (calledOnTriggerRelease && action.repeatMode == RepeatMode.TRIGGER_RELEASED) {
-                    return@forEachIndexed
-                }
+            //don't start repeating if it is already repeating
+            if (action.repeatMode == RepeatMode.TRIGGER_PRESSED_AGAIN && repeatJobs[actionIndex] != null) {
+                repeatJobs[actionIndex]?.cancel()
+                repeatJobs[actionIndex] = null
 
-                //don't start repeating if it is already repeating
-                if (action.repeatMode == RepeatMode.TRIGGER_PRESSED_AGAIN && actionIsRepeating[actionIndex]) {
-                    actionIsRepeating[actionIndex] = false
-                    return@forEachIndexed
-                }
+                return@forEachIndexed
+            }
 
-                if (action.data is KeyEventAction && KeyEventUtils.isModifierKey(action.data.keyCode)) {
-                    return@forEachIndexed
-                }
+            if (action.data is KeyEventAction && KeyEventUtils.isModifierKey(action.data.keyCode)) {
+                return@forEachIndexed
+            }
 
-                actionIsRepeating[actionIndex] = true
+            repeatJobs[actionIndex] = coroutineScope.launch {
+                var continueRepeating = true
+                var repeatCount = 0
 
-                delay(action.repeatDelay?.toLong() ?: useCase.defaultRepeatDelay.first())
+                delay(action.repeatDelay?.toLong() ?: defaultRepeatDelay.value)
 
-                launch {
-                    var continueRepeating = true
-                    var repeatCount = 0
-
-                    launch {
-                        onReleased.first() //wait for trigger to be released
-
-                        //stop repeating when the trigger is released only if it is configured to
-                        if (action.repeatMode == RepeatMode.TRIGGER_RELEASED) {
-                            continueRepeating = false
-                        }
-                    }
-
-                    while (continueRepeating) {
-                        if (action.holdDown && action.repeat) {
-                            performAction(action, InputEventType.DOWN, metaState)
-                            delay(action.holdDownDuration?.toLong() ?: useCase.defaultHoldDownDuration.first())
-                            performAction(action, InputEventType.UP, metaState)
-                        } else {
-                            performAction(action, InputEventType.DOWN_UP, metaState)
-                        }
+                while (isActive && continueRepeating) {
+                    if (action.holdDown && action.repeat) {
+                        performAction(action, InputEventType.DOWN, metaState)
+                        delay(action.holdDownDuration?.toLong() ?: defaultHoldDownDuration.value)
+                        performAction(action, InputEventType.UP, metaState)
+                    } else {
+                        performAction(action, InputEventType.DOWN_UP, metaState)
                     }
 
                     repeatCount++
@@ -132,17 +135,36 @@ class ParallelTriggerActionPerformer(
                         continueRepeating = repeatCount < action.repeatLimit
                     }
 
-                    delay(action.repeatRate?.toLong() ?: useCase.defaultRepeatRate.first())
+                    delay(action.repeatRate?.toLong() ?: defaultRepeatRate.value)
                 }
             }
         }
     }
 
     fun onReleased(metaState: Int) {
-        onReleased.tryEmit(OnReleasedEvent(metaState))
+        repeatJobs.forEachIndexed { actionIndex, job ->
+            if (actionList[actionIndex].repeatMode == RepeatMode.TRIGGER_RELEASED) {
+                job?.cancel()
+                repeatJobs[actionIndex] = null
+            }
+        }
+
+        actionList.forEachIndexed { actionIndex, action ->
+            if (action.holdDown && !action.stopHoldDownWhenTriggerPressedAgain) {
+
+                if (actionIsHeldDown[actionIndex]) {
+                    actionIsHeldDown[actionIndex] = false
+
+                    performAction(action, InputEventType.UP, metaState)
+                }
+            }
+        }
     }
 
     fun reset() {
+        performActionsJob?.cancel()
+        performActionsJob = null
+
         actionIsHeldDown.forEachIndexed { index, isHeldDown ->
             if (isHeldDown) {
                 performAction(actionList[index], inputEventType = InputEventType.UP, 0)
@@ -153,8 +175,9 @@ class ParallelTriggerActionPerformer(
             actionIsHeldDown[it] = false
         }
 
-        actionIsRepeating.indices.forEach {
-            actionIsRepeating[it] = false
+        repeatJobs.indices.forEach {
+            repeatJobs[it]?.cancel()
+            repeatJobs[it] = null
         }
     }
 
@@ -163,6 +186,4 @@ class ParallelTriggerActionPerformer(
             useCase.perform(action.data, inputEventType, metaState)
         }
     }
-
-    private data class OnReleasedEvent(val metaState: Int)
 }

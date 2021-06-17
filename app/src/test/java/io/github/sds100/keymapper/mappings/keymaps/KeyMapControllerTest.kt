@@ -156,6 +156,33 @@ class KeyMapControllerTest {
     }
 
     /**
+     * #689
+     */
+    @Test
+    fun `perform all actions once when key map is triggered`() = coroutineScope.runBlockingTest{
+        //GIVEN
+        val trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
+
+        val actionList = listOf(
+            KeyMapAction(data = KeyEventAction(1), delayBeforeNextAction = 1000),
+            KeyMapAction(data = KeyEventAction(2)),
+        )
+
+        keyMapListFlow.value = listOf(
+            KeyMap(trigger = trigger, actionList = actionList)
+        )
+
+        //WHEN
+        assertThat(inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN), `is`(true))
+        assertThat(inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP), `is`(true))
+        advanceUntilIdle()
+
+        //THEN
+        verify(performActionsUseCase, times(1)).perform(actionList[0].data)
+        verify(performActionsUseCase, times(1)).perform(actionList[1].data)
+    }
+
+    /**
      * #663
      */
     @Test
@@ -178,9 +205,11 @@ class KeyMapControllerTest {
             //WHEN
             assertThat(inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN), `is`(true))
             assertThat(inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP), `is`(true))
+            advanceUntilIdle()
 
             //THEN
-            verify(performActionsUseCase, times(action.repeatLimit!!)).perform(action.data)
+            //3 times because it performs once and then repeats twice
+            verify(performActionsUseCase, times(3)).perform(action.data)
         }
 
     @Test
@@ -683,7 +712,6 @@ class KeyMapControllerTest {
 
                 //THEN
                 verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
-                verifyNoMoreInteractions()
 
                 //change the order of the keys being released
                 //WHEN
@@ -694,7 +722,6 @@ class KeyMapControllerTest {
 
                 //THEN
                 verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
-                verifyNoMoreInteractions()
             }
         }
 
@@ -808,7 +835,6 @@ class KeyMapControllerTest {
 
                 //then
                 verify(performActionsUseCase, atLeast(2)).perform(action2.data)
-                verifyNoMoreInteractions()
             }
         }
 
@@ -832,7 +858,6 @@ class KeyMapControllerTest {
                 data = KeyEventAction(keyCode = 2),
                 repeat = true
             )
-
 
             val trigger2 =
                 sequenceTrigger(triggerKey(clickType = ClickType.DOUBLE_PRESS, keyCode = 1))
@@ -916,7 +941,6 @@ class KeyMapControllerTest {
 
                 //then
                 verify(performActionsUseCase, atLeast(2)).perform(action2.data)
-                verifyNoMoreInteractions()
 
                 //when double press
                 mockTriggerKeyInput(trigger3.keys[0])
@@ -973,7 +997,6 @@ class KeyMapControllerTest {
 
                 //then
                 verify(performActionsUseCase, atLeast(2)).perform(action2.data)
-                verifyNoMoreInteractions()
             }
         }
 
@@ -1090,7 +1113,6 @@ class KeyMapControllerTest {
 
                 //then
                 verify(performActionsUseCase, atLeast(2)).perform(action2.data)
-                verifyNoMoreInteractions()
 
                 delay(1000) // have a delay after a long press of the key is released so a double press isn't detected
 

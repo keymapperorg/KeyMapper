@@ -741,10 +741,8 @@ class KeyMapController(
                                 val actionKeyCode = action.data.keyCode
 
                                 if (isModifierKey(actionKeyCode)) {
-                                    val actionMetaState =
-                                        KeyEventUtils.modifierKeycodeToMetaState(actionKeyCode)
-                                    metaStateFromActions =
-                                        metaStateFromActions.withFlag(actionMetaState)
+                                    val actionMetaState = KeyEventUtils.modifierKeycodeToMetaState(actionKeyCode)
+                                    metaStateFromActions = metaStateFromActions.withFlag(actionMetaState)
                                 }
                             }
 
@@ -840,7 +838,7 @@ class KeyMapController(
 
                     parallelTriggerActionPerformers[triggerIndex].onTriggered(
                         calledOnTriggerRelease = false,
-                        metaState = metaStateFromKeyEvent + metaStateFromActions
+                        metaState = metaStateFromKeyEvent.withFlag( metaStateFromActions)
                     )
                 }
             }
@@ -1173,7 +1171,7 @@ class KeyMapController(
                 lastMatchedParallelEventIndices[triggerIndex] = lastHeldDownEventIndex
                 metaStateFromActions = metaStateFromActions.minusFlag(metaStateFromActionsToRemove)
 
-                //cancel repeating action jobs for this trigger
+                //let actions know that the trigger has been released
                 if (lastHeldDownEventIndex != parallelTriggers[triggerIndex].keys.lastIndex) {
                     parallelTriggerActionPerformers[triggerIndex].onReleased(metaStateFromKeyEvent + metaStateFromActions)
                 }
@@ -1211,13 +1209,13 @@ class KeyMapController(
         }
 
         detectedSequenceTriggerIndexes.forEach { triggerIndex ->
-            sequenceTriggerActionPerformers[triggerIndex].onTriggered(metaState = metaStateFromActions + metaStateFromKeyEvent)
+            sequenceTriggerActionPerformers[triggerIndex].onTriggered(metaState = metaStateFromActions.withFlag(metaStateFromKeyEvent))
         }
 
         detectedParallelTriggerIndexes.forEach { triggerIndex ->
             parallelTriggerActionPerformers[triggerIndex].onTriggered(
                 calledOnTriggerRelease = true,
-                metaState = metaStateFromActions + metaStateFromKeyEvent
+                metaState = metaStateFromActions.withFlag(metaStateFromKeyEvent)
             )
         }
 
@@ -1291,8 +1289,6 @@ class KeyMapController(
     }
 
     fun reset() {
-        coroutineScope.cancel()
-
         doublePressEventStates = IntArray(doublePressTriggerKeys.size) { NOT_PRESSED }
         doublePressTimeoutTimes = LongArray(doublePressTriggerKeys.size) { -1L }
 
@@ -1320,6 +1316,7 @@ class KeyMapController(
         parallelTriggerLongPressJobs.clear()
 
         parallelTriggerActionPerformers.forEach { it.reset() }
+        sequenceTriggerActionPerformers.forEach { it.reset() }
     }
 
     /**
@@ -1361,7 +1358,7 @@ class KeyMapController(
         detectedTriggerIndexes.forEach { triggerIndex ->
             parallelTriggerActionPerformers[triggerIndex].onTriggered(
                 calledOnTriggerRelease = true,
-                metaState = metaStateFromActions + metaStateFromKeyEvent
+                metaState = metaStateFromActions.withFlag(metaStateFromKeyEvent)
             )
         }
 
@@ -1409,7 +1406,7 @@ class KeyMapController(
 
         parallelTriggerActionPerformers[triggerIndex].onTriggered(
             calledOnTriggerRelease = false,
-            metaState = metaStateFromActions + metaStateFromKeyEvent
+            metaState = metaStateFromActions.withFlag(metaStateFromKeyEvent)
         )
 
         if (parallelTriggers[triggerIndex].vibrate || forceVibrate.value

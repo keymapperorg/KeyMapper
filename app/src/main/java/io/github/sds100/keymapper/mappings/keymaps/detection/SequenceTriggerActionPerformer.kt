@@ -4,6 +4,7 @@ import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapAction
 import io.github.sds100.keymapper.util.InputEventType
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -15,24 +16,31 @@ class SequenceTriggerActionPerformer(
     private val useCase: PerformActionsUseCase,
     private val actionList: List<KeyMapAction>,
 ) {
+    private var job: Job? = null
+
     fun onTriggered(metaState: Int) {
         /*
         this job shouldn't be cancelled when the trigger is released. all actions should be performed
         once before repeating (if configured).
          */
-        coroutineScope.launch {
-            actionList.forEachIndexed { actionIndex, action ->
-
-                performAction(action, InputEventType.DOWN_UP, metaState)
+        job?.cancel()
+        job = coroutineScope.launch {
+            actionList.forEach { action ->
+                performAction(action, metaState)
 
                 delay(action.delayBeforeNextAction?.toLong() ?: 0L)
             }
         }
     }
 
-    private fun performAction(action: KeyMapAction, inputEventType: InputEventType, metaState: Int) {
+    fun reset() {
+        job?.cancel()
+        job = null
+    }
+
+    private fun performAction(action: KeyMapAction, metaState: Int) {
         repeat(action.multiplier ?: 1) {
-            useCase.perform(action.data, inputEventType, metaState)
+            useCase.perform(action.data, InputEventType.DOWN_UP, metaState)
         }
     }
 }
