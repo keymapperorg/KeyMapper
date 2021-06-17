@@ -19,22 +19,6 @@ platform :android do
 
   lane :ci_alpha_apk do
     gradle(task: "clean assembleCi")
-
-    # increment version code for next build
-    increment_version_code_in_properties_file(
-        key: "VERSION_NUM",
-        path: "./app/version.properties"
-      )
-
-    version_num = get_properties_value(
-        key: "VERSION_NUM",
-        path: "./app/version.properties"
-    )
-
-    git_commit(path: "app/version.properties", message: "ci: version num bump to " + version_num)
-    git_pull()
-    push_to_git_remote()
-
   end
 
   desc "Create and deploy beta release"
