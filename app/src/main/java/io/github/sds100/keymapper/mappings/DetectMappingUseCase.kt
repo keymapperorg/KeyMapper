@@ -1,11 +1,11 @@
 package io.github.sds100.keymapper.mappings
 
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
-import io.github.sds100.keymapper.system.vibrator.VibratorAdapter
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
+import io.github.sds100.keymapper.system.vibrator.VibratorAdapter
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -29,16 +29,6 @@ class DetectMappingUseCaseImpl(
             .map { it ?: PreferenceDefaults.VIBRATION_DURATION }
             .map { it.toLong() }
 
-    override val defaultRepeatRate: Flow<Long> =
-        preferenceRepository.get(Keys.defaultRepeatRate)
-            .map { it ?: PreferenceDefaults.REPEAT_RATE }
-            .map { it.toLong() }
-
-    override val defaultHoldDownDuration: Flow<Long> =
-        preferenceRepository.get(Keys.defaultHoldDownDuration)
-            .map { it ?: PreferenceDefaults.HOLD_DOWN_DURATION }
-            .map { it.toLong() }
-
     override fun showTriggeredToast() {
         popupMessageAdapter.showPopupMessage(resourceProvider.getString(R.string.toast_triggered_keymap))
     }
@@ -51,8 +41,6 @@ class DetectMappingUseCaseImpl(
 interface DetectMappingUseCase {
     val forceVibrate: Flow<Boolean>
     val defaultVibrateDuration: Flow<Long>
-    val defaultRepeatRate: Flow<Long>
-    val defaultHoldDownDuration: Flow<Long>
 
     fun showTriggeredToast()
     fun vibrate(duration: Long)

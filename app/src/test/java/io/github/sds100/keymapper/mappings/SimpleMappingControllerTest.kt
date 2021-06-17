@@ -1,17 +1,11 @@
 package io.github.sds100.keymapper.mappings
 
-import android.view.KeyEvent
 import io.github.sds100.keymapper.actions.FakeAction
 import io.github.sds100.keymapper.actions.KeyEventAction
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
-import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.ConstraintSnapshot
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
-import io.github.sds100.keymapper.mappings.keymaps.KeyMap
-import io.github.sds100.keymapper.mappings.keymaps.KeyMapAction
 import io.github.sds100.keymapper.system.display.Orientation
-import io.github.sds100.keymapper.util.singleKeyTrigger
-import io.github.sds100.keymapper.util.triggerKey
 import junitparams.JUnitParamsRunner
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -58,14 +52,6 @@ class SimpleMappingControllerTest {
     fun init() {
         detectMappingUseCase = mock {
 
-            MutableStateFlow(REPEAT_RATE).apply {
-                on { defaultRepeatRate } doReturn this
-            }
-
-            MutableStateFlow(HOLD_DOWN_DURATION).apply {
-                on { defaultHoldDownDuration } doReturn this
-            }
-
             MutableStateFlow(VIBRATION_DURATION).apply {
                 on { defaultVibrateDuration } doReturn this
             }
@@ -75,7 +61,15 @@ class SimpleMappingControllerTest {
             }
         }
 
-        performActionsUseCase = mock()
+        performActionsUseCase = mock {
+            MutableStateFlow(REPEAT_RATE).apply {
+                on { defaultRepeatRate } doReturn this
+            }
+
+            MutableStateFlow(HOLD_DOWN_DURATION).apply {
+                on { defaultHoldDownDuration } doReturn this
+            }
+        }
 
         detectConstraintsUseCase = mock {
             on { getSnapshot() } doReturn ConstraintSnapshot(
