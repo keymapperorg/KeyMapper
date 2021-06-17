@@ -6,7 +6,7 @@ import android.content.Intent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
@@ -57,7 +57,7 @@ class ChooseAppShortcutFragment : SimpleRecyclerViewFragment<AppShortcutListItem
     override fun subscribeUi(binding: FragmentSimpleRecyclerviewBinding) {
         super.subscribeUi(binding)
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.CREATED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.CREATED) {
             viewModel.returnResult.collectLatest {
                 returnResult(EXTRA_RESULT to Json.encodeToString(it))
             }

@@ -31,7 +31,7 @@ class ToggleKeyMapperKeyboardTile : TileService(), LifecycleOwner {
 
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
 
-        addRepeatingJob(Lifecycle.State.STARTED) {
+        launchRepeatOnLifecycle(Lifecycle.State.STARTED) {
             qsTile.icon = Icon.createWithResource(
                 this@ToggleKeyMapperKeyboardTile,
                 R.drawable.ic_tile_keyboard

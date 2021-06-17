@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import androidx.navigation.findNavController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
@@ -29,7 +29,7 @@ class CreateKeyMapShortcutActivity : AppCompatActivity() {
 
         requestPermissionDelegate = RequestPermissionDelegate(this, showDialogs = true)
 
-        addRepeatingJob(Lifecycle.State.RESUMED) {
+        launchRepeatOnLifecycle(Lifecycle.State.STARTED) {
             ServiceLocator.permissionAdapter(this@CreateKeyMapShortcutActivity).request
                 .collectLatest { permission ->
                     requestPermissionDelegate.requestPermission(

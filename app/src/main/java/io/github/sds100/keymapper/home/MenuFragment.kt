@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -58,31 +58,31 @@ class MenuFragment : BottomSheetDialogFragment() {
 
         viewModel.showPopups(this, binding)
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED){
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED){
             viewModel.openSettings.collectLatest {
                 findNavController().navigate(NavAppDirections.actionGlobalSettingsFragment())
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED){
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED){
             viewModel.openAbout.collectLatest {
                 findNavController().navigate(NavAppDirections.actionGlobalAboutFragment())
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED){
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED){
             viewModel.emailDeveloper.collectLatest {
                 FeedbackUtils.emailDeveloper(requireContext())
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED){
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED){
             viewModel.openUrl.collectLatest {
                 UrlUtils.openUrl(requireContext(), it)
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED){
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED){
             viewModel.dismiss.collectLatest {
                 dismiss()
             }

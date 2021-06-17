@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import androidx.lifecycle.addRepeatingJob
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.DialogChooseAppStoreBinding
 import io.github.sds100.keymapper.home.ChooseAppStoreModel
@@ -80,7 +80,7 @@ fun PopupViewModel.showPopups(
     val lifecycleOwner = fragment.viewLifecycleOwner
     val ctx = fragment.requireContext()
 
-    lifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+    lifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
         showPopup.collectLatest { event ->
             var responded = false
 

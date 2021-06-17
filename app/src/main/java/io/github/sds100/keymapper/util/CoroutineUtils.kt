@@ -1,12 +1,12 @@
 package io.github.sds100.keymapper.util
 
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LifecycleCoroutineScope
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.coroutineScope
+import androidx.lifecycle.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -15,6 +15,15 @@ import kotlinx.coroutines.runBlocking
 
 val Fragment.viewLifecycleScope: LifecycleCoroutineScope
     get() = viewLifecycleOwner.lifecycle.coroutineScope
+
+fun LifecycleOwner.launchRepeatOnLifecycle(
+    state: Lifecycle.State,
+    block: suspend CoroutineScope.() -> Unit
+) {
+    lifecycleScope.launch {
+        repeatOnLifecycle(state, block)
+    }
+}
 
 fun <T> Flow<T>.collectWhenResumed(
     lifecycleOwner: LifecycleOwner,

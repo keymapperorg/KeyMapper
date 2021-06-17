@@ -10,7 +10,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
@@ -84,7 +84,7 @@ abstract class ConfigMappingFragment : Fragment() {
 
         viewModel.configActionsViewModel.showPopups(this, binding)
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             binding.invalidateHelpMenuItemVisibility(
                 fragmentInfoList,
                 binding.viewPager.currentItem

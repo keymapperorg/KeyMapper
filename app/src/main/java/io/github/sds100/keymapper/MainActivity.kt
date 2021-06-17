@@ -6,17 +6,19 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
-import io.github.sds100.keymapper.system.keyevents.ChooseKeyViewModel
 import io.github.sds100.keymapper.databinding.ActivityMainBinding
+import io.github.sds100.keymapper.system.keyevents.ChooseKeyViewModel
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.RequestPermissionDelegate
 import io.github.sds100.keymapper.util.*
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import splitties.alertdialog.appcompat.*
 
 /**
@@ -57,14 +59,15 @@ class MainActivity : AppCompatActivity() {
 
         requestPermissionDelegate = RequestPermissionDelegate(this, showDialogs = true)
 
-        addRepeatingJob(Lifecycle.State.RESUMED) {
-            ServiceLocator.permissionAdapter(this@MainActivity).request.collectLatest { permission ->
+        ServiceLocator.permissionAdapter(this@MainActivity).request
+            .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+            .onEach { permission ->
                 requestPermissionDelegate.requestPermission(
                     permission,
                     findNavController(R.id.container)
                 )
             }
-        }
+            .launchIn(lifecycleScope)
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {

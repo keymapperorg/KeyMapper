@@ -136,7 +136,7 @@ suspend fun Context.editTextStringAlertDialog(
 
     alertDialog.show()
 
-    lifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+    lifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
         text.collectLatest {
             alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
                 if (allowEmpty) {
@@ -210,7 +210,7 @@ suspend fun Context.editTextNumberAlertDialog(
             alertDialog.resumeNullOnDismiss(continuation)
             alertDialog.dismissOnDestroy(lifecycleOwner)
 
-            lifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+            lifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
                 text.map { isValid(it) }
                     .collectLatest { isValid ->
                         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =

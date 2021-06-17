@@ -16,24 +16,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/textViewCaption"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-            android:layout_marginBottom="16dp"
-            android:text="@{caption}"
-            android:visibility='@{caption == null || caption == "" ? View.GONE : View.VISIBLE}'
-            app:layout_constraintBottom_toTopOf="@+id/listLayout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintEnd_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Here is a caption."
-            tools:visibility="visible" />
-
         <FrameLayout
             android:id="@+id/listLayout"
             android:layout_width="match_parent"
@@ -42,15 +24,22 @@
             app:layout_constraintBottom_toTopOf="@id/coordinatorLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewCaption">
+            app:layout_constraintTop_toTopOf="parent">
 
-            <com.airbnb.epoxy.EpoxyRecyclerView
-                android:id="@+id/epoxyRecyclerView"
+            <ScrollView
+                android:id="@+id/scrollView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:clipToPadding="false"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/list_item_simple" />
+                android:fillViewport="true">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textViewLog"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingExtra="4dp"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                    android:textIsSelectable="true" />
+            </ScrollView>
 
             <ProgressBar
                 android:id="@+id/progressBar"
@@ -69,12 +58,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
-                android:text="@string/recyclerview_placeholder" />
+                android:text="@string/recyclerview_placeholder"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
         </FrameLayout>
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -91,7 +80,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:gravity="center" />
+                android:gravity="center"
+                app:menu="@menu/menu_log"
+                app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

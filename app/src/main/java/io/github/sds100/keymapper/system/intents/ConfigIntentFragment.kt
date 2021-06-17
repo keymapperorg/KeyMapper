@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.airbnb.epoxy.EpoxyController
 import io.github.sds100.keymapper.actions.ChooseActionFragmentDirections
@@ -67,7 +67,7 @@ class ConfigIntentFragment : Fragment() {
 
         viewModel.showPopups(this, binding)
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.returnResult.collectLatest { result ->
                 setFragmentResult(
                     REQUEST_KEY,
@@ -78,7 +78,7 @@ class ConfigIntentFragment : Fragment() {
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.extraListItems.collectLatest { listItems ->
                 binding.epoxyRecyclerViewExtras.withModels {
                     listItems.forEach {
@@ -88,13 +88,13 @@ class ConfigIntentFragment : Fragment() {
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.chooseActivity.collectLatest {
                 findNavController().navigate(ChooseActionFragmentDirections.toActivityListFragment())
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.openUrl.collectLatest {
                 UrlUtils.openUrl(requireContext(), it)
             }

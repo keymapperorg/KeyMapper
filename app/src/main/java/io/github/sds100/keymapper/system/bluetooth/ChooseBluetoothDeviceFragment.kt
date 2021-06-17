@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.system.bluetooth
 
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.simple
@@ -54,7 +54,7 @@ class ChooseBluetoothDeviceFragment : SimpleRecyclerViewFragment<BluetoothDevice
     override fun subscribeUi(binding: FragmentSimpleRecyclerviewBinding) {
         super.subscribeUi(binding)
 
-       viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED){
+       viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED){
            viewModel.caption.collectLatest {
                binding.caption = it
            }

@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.airbnb.epoxy.EpoxyController
@@ -69,7 +69,7 @@ class TriggerFragment : RecyclerViewFragment<TriggerKeyListItem, FragmentTrigger
 
         binding.recyclerViewTriggerKeys.adapter = triggerKeyController.adapter
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             configKeyMapTriggerViewModel.errorListItems.collectLatest {listItems ->
 
                 binding.enableTriggerKeyDragging(triggerKeyController)

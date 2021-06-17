@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
@@ -61,7 +61,7 @@ class ConfigFingerprintMapFragment : ConfigMappingFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.configActionsViewModel.openEditOptions.collectLatest { actionUid ->
                 if (findNavController().currentDestination?.id == R.id.config_fingerprint_map_fragment) {
                     viewModel.configActionOptionsViewModel.setActionToConfigure(actionUid)

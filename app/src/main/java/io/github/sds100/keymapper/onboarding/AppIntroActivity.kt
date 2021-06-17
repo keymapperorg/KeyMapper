@@ -6,7 +6,7 @@ import androidx.activity.viewModels
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import com.github.appintro.AppIntro2
 import io.github.sds100.keymapper.MainActivity
 import io.github.sds100.keymapper.ServiceLocator
@@ -40,7 +40,7 @@ class AppIntroActivity : AppIntro2() {
 
         requestPermissionDelegate = RequestPermissionDelegate(this, showDialogs = false)
 
-        addRepeatingJob(Lifecycle.State.RESUMED) {
+        launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             ServiceLocator.permissionAdapter(this@AppIntroActivity).request.collectLatest { permission ->
                 requestPermissionDelegate.requestPermission(
                     permission,
@@ -49,7 +49,7 @@ class AppIntroActivity : AppIntro2() {
             }
         }
 
-        addRepeatingJob(Lifecycle.State.RESUMED){
+        launchRepeatOnLifecycle(Lifecycle.State.RESUMED){
             viewModel.openUrl.collectLatest {
                 UrlUtils.openUrl(this@AppIntroActivity, it)
             }

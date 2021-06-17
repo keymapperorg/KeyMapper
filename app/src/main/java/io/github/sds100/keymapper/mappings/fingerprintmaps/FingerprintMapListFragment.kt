@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.airbnb.epoxy.EpoxyRecyclerView
 import com.google.android.material.switchmaterial.SwitchMaterial
@@ -45,7 +45,7 @@ class FingerprintMapListFragment :
     override fun subscribeUi(binding: FragmentFingerprintMapListBinding) {
         binding.viewModel = viewModel
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.launchConfigFingerprintMap.collectLatest { id ->
                 findNavController().navigate(
                     HomeFragmentDirections.actionToConfigFingerprintMap(

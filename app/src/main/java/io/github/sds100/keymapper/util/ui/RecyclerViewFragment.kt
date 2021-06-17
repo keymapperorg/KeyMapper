@@ -12,7 +12,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.savedstate.SavedStateRegistry
 import com.airbnb.epoxy.EpoxyRecyclerView
@@ -121,7 +121,7 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             listItems.collectLatest { state ->
                 when (state) {
                     is State.Data -> {

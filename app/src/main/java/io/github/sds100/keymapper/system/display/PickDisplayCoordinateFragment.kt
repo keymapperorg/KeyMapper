@@ -94,7 +94,7 @@ class PickDisplayCoordinateFragment : Fragment() {
 
         binding.viewModel = viewModel
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.bitmap.collectLatest {
                 binding.imageViewScreenshot.setImageBitmap(it)
             }
@@ -109,7 +109,7 @@ class PickDisplayCoordinateFragment : Fragment() {
 
         viewModel.showPopups(this, binding)
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.returnResult.collectLatest {
                 setFragmentResult(
                     REQUEST_KEY,

@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyRecyclerView
@@ -17,6 +17,7 @@ import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
 import io.github.sds100.keymapper.util.ui.showPopups
 import io.github.sds100.keymapper.util.Inject
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.decodeFromString
@@ -68,19 +69,19 @@ class ChooseConstraintFragment
     override fun subscribeUi(binding: FragmentSimpleRecyclerviewBinding) {
         super.subscribeUi(binding)
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.CREATED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.CREATED) {
             viewModel.returnResult.collectLatest {
                 returnResult(EXTRA_CONSTRAINT to Json.encodeToString(it))
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.chooseApp.collectLatest {
                 findNavController().navigate(NavAppDirections.chooseApp())
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.chooseBluetoothDevice.collectLatest {
                 findNavController().navigate(NavAppDirections.chooseBluetoothDevice())
             }

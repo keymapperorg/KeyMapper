@@ -13,7 +13,7 @@ import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.preference.*
 import io.github.sds100.keymapper.R
@@ -137,7 +137,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.defaultLongPressDelay.collectLatest { value ->
                 val preference = findPreference<SeekBarPreference>(Keys.defaultLongPressDelay.name)
                     ?: return@collectLatest
@@ -148,7 +148,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.defaultDoublePressDelay.collectLatest { value ->
                 val preference = findPreference<SeekBarPreference>(Keys.defaultDoublePressDelay.name)
                     ?: return@collectLatest
@@ -159,7 +159,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.defaultSequenceTriggerTimeout.collectLatest { value ->
                 val preference = findPreference<SeekBarPreference>(Keys.defaultSequenceTriggerTimeout.name)
                     ?: return@collectLatest
@@ -170,7 +170,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.defaultRepeatRate.collectLatest { value ->
                 val preference = findPreference<SeekBarPreference>(Keys.defaultRepeatRate.name)
                     ?: return@collectLatest
@@ -181,7 +181,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.defaultRepeatDelay.collectLatest { value ->
                 val preference = findPreference<SeekBarPreference>(Keys.defaultRepeatDelay.name)
                     ?: return@collectLatest
@@ -192,7 +192,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.defaultVibrateDuration.collectLatest { value ->
                 val preference = findPreference<SeekBarPreference>(Keys.defaultVibrateDuration.name)
                     ?: return@collectLatest
@@ -203,7 +203,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.showWriteSecureSettingsSection.collectLatest { show ->
                 KEYS_REQUIRING_WRITE_SECURE_SETTINGS.forEach {
                     findPreference<Preference>(it.name)?.isEnabled = show
@@ -399,7 +399,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
                 category.addPreference(this)
 
-                viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+                viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
                     viewModel.isCompatibleImeEnabled.collectLatest { isCompatibleImeEnabled ->
                         icon = if (isCompatibleImeEnabled) {
                             drawable(R.drawable.ic_outline_check_circle_outline_24)
@@ -422,7 +422,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
                 category.addPreference(this)
 
-                viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+                viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
                     viewModel.isCompatibleImeChosen.collectLatest { isCompatibleImeChosen ->
                         icon = if (isCompatibleImeChosen) {
                             drawable(R.drawable.ic_outline_check_circle_outline_24)
@@ -440,7 +440,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                 )
             )
 
-            viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+            viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
                 viewModel.rerouteKeyEvents.collectLatest { enabled ->
                     for (i in 0 until category.preferenceCount) {
                         category.getPreference(i).apply {

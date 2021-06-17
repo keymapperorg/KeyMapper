@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.mappings.keymaps
 import android.app.Activity
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
@@ -37,7 +37,7 @@ class CreateKeyMapShortcutFragment : SimpleRecyclerViewFragment<KeyMapListItem>(
 
         viewModel.showPopups(this, binding)
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.returnUidResult.collectLatest { intent ->
                 requireActivity().setResult(Activity.RESULT_OK, intent)
                 requireActivity().finish()

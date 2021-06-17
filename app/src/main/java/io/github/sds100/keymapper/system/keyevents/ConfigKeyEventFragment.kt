@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.ChooseActionFragmentDirections
@@ -64,7 +64,7 @@ class ConfigKeyEventFragment : Fragment() {
             findNavController().navigate(ChooseActionFragmentDirections.actionChooseActionFragmentToKeycodeListFragment())
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.returnResult.collectLatest {
                 setFragmentResult(
                     REQUEST_KEY,
@@ -77,7 +77,7 @@ class ConfigKeyEventFragment : Fragment() {
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.uiState.collectLatest { state ->
                 binding.epoxyRecyclerViewModifiers.withModels {
                     state.modifierListItems.forEach {

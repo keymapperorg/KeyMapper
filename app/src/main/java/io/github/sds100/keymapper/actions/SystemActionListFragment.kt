@@ -2,13 +2,15 @@ package io.github.sds100.keymapper.actions
 
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
 import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.sectionHeader
 import io.github.sds100.keymapper.simple
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.Inject
+import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.util.str
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
@@ -40,7 +42,7 @@ class SystemActionListFragment : SimpleRecyclerViewFragment<ListItem>() {
     override fun subscribeUi(binding: FragmentSimpleRecyclerviewBinding) {
         super.subscribeUi(binding)
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.state.collectLatest { state ->
                 binding.caption = if (state.showUnsupportedActionsMessage) {
                     str(R.string.your_device_doesnt_support_some_actions)
@@ -52,7 +54,7 @@ class SystemActionListFragment : SimpleRecyclerViewFragment<ListItem>() {
 
         viewModel.showPopups(this, binding)
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.returnResult.collectLatest {
                 returnResult(EXTRA_SYSTEM_ACTION to Json.encodeToString(it))
             }

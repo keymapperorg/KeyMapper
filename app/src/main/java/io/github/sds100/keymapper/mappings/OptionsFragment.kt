@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -54,7 +54,7 @@ abstract class OptionsBottomSheetFragment : BottomSheetDialogFragment() {
         val dialog = requireDialog() as BottomSheetDialog
         dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.state.collectLatest { state ->
                 binding.showProgressBar = state.showProgressBar
                 populateList(state.listItems)

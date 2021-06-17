@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.UseCases
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.util.firstBlocking
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.str
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
@@ -33,7 +34,7 @@ class ToggleMappingsTile : TileService(), LifecycleOwner {
 
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
 
-        addRepeatingJob(Lifecycle.State.STARTED) {
+        launchRepeatOnLifecycle(Lifecycle.State.STARTED) {
             combine(serviceAdapter.state, useCase.isPaused) { serviceState, isPaused ->
                 qsTile ?: return@combine
 
