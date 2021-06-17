@@ -18,14 +18,11 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
 import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
 import io.github.sds100.keymapper.util.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import splitties.bitflags.minusFlag
 import splitties.bitflags.withFlag
 
@@ -36,7 +33,7 @@ import splitties.bitflags.withFlag
 class KeyMapController(
     private val coroutineScope: CoroutineScope,
     private val useCase: DetectKeyMapsUseCase,
-    private val performActions: PerformActionsUseCase,
+    private val performActionsUseCase: PerformActionsUseCase,
     private val detectConstraints: DetectConstraintsUseCase
 ) {
     companion object {
@@ -93,11 +90,13 @@ class KeyMapController(
                 val sequenceTriggers = mutableListOf<KeyMapTrigger>()
                 val sequenceTriggerActions = mutableListOf<IntArray>()
                 val sequenceTriggerConstraints = mutableListOf<ConstraintState>()
+                val sequenceTriggerActionPerformers = mutableListOf<SequenceTriggerActionPerformer>()
 
                 val parallelTriggers = mutableListOf<KeyMapTrigger>()
                 val parallelTriggerActions = mutableListOf<IntArray>()
                 val parallelTriggerConstraints = mutableListOf<ConstraintState>()
                 val parallelTriggerModifierKeyIndices = mutableListOf<Pair<Int, Int>>()
+                val parallelTriggerActionPerformers = mutableListOf<ParallelTriggerActionPerformer>()
 
                 for (keyMap in value) {
                     // ignore the keymap if it has no action.
@@ -160,11 +159,25 @@ class KeyMapController(
                         parallelTriggers.add(keyMap.trigger)
                         parallelTriggerActions.add(encodedActionList)
                         parallelTriggerConstraints.add(keyMap.constraintState)
+                        parallelTriggerActionPerformers.add(
+                            ParallelTriggerActionPerformer(
+                                coroutineScope,
+                                performActionsUseCase,
+                                keyMap.actionList
+                            )
+                        )
 
                     } else {
                         sequenceTriggers.add(keyMap.trigger)
                         sequenceTriggerActions.add(encodedActionList)
                         sequenceTriggerConstraints.add(keyMap.constraintState)
+                        sequenceTriggerActionPerformers.add(
+                            SequenceTriggerActionPerformer(
+                                coroutineScope,
+                                performActionsUseCase,
+                                keyMap.actionList
+                            )
+                        )
                     }
                 }
 
@@ -298,6 +311,8 @@ class KeyMapController(
                     }
                 }
 
+                reset()
+
                 detectSequenceTriggers = sequenceTriggers.isNotEmpty()
                 this.sequenceTriggers = sequenceTriggers.toTypedArray()
                 this.sequenceTriggerActions = sequenceTriggerActions.toTypedArray()
@@ -329,6 +344,9 @@ class KeyMapController(
 
                 detectSequenceDoublePresses = doublePressKeys.isNotEmpty()
                 this.doublePressTriggerKeys = doublePressKeys.toTypedArray()
+
+                this.parallelTriggerActionPerformers = parallelTriggerActionPerformers.toTypedArray()
+                this.sequenceTriggerActionPerformers = sequenceTriggerActionPerformers.toTypedArray()
 
                 reset()
             }
@@ -463,46 +481,15 @@ class KeyMapController(
     private val performActionsOnFailedDoublePress = mutableSetOf<Int>()
 
     /**
-     * Maps repeat jobs to their corresponding parallel trigger index.
-     */
-    private val repeatJobs = SparseArrayCompat<List<RepeatJob>>()
-
-    /**
      * Maps jobs to perform an action after a long press to their corresponding parallel trigger index
      */
     private val parallelTriggerLongPressJobs = SparseArrayCompat<Job>()
 
-    private val parallelTriggerActionJobs = SparseArrayCompat<Job>()
-    private val sequenceTriggerActionJobs = SparseArrayCompat<Job>()
-
-    /**
-     * A list of all the action keys that are being held down.
-     */
-    private var actionsBeingHeldDown = mutableSetOf<Int>()
+    private var parallelTriggerActionPerformers: Array<ParallelTriggerActionPerformer> = emptyArray()
+    private var sequenceTriggerActionPerformers: Array<SequenceTriggerActionPerformer> = emptyArray()
 
     private val currentTime: Long
         get() = useCase.currentTime
-
-    private val defaultRepeatDelay: StateFlow<Long> =
-        useCase.defaultRepeatDelay.stateIn(
-            coroutineScope,
-            SharingStarted.Eagerly,
-            PreferenceDefaults.REPEAT_DELAY.toLong()
-        )
-
-    private val defaultRepeatRate: StateFlow<Long> =
-        useCase.defaultRepeatRate.stateIn(
-            coroutineScope,
-            SharingStarted.Eagerly,
-            PreferenceDefaults.REPEAT_RATE.toLong()
-        )
-
-    private val defaultHoldDownDuration: StateFlow<Long> =
-        useCase.defaultHoldDownDuration.stateIn(
-            coroutineScope,
-            SharingStarted.Eagerly,
-            PreferenceDefaults.HOLD_DOWN_DURATION.toLong()
-        )
 
     private val defaultVibrateDuration: StateFlow<Long> =
         useCase.defaultVibrateDuration.stateIn(
@@ -719,7 +706,7 @@ class KeyMapController(
                     if (canActionBePerformed[actionKey] == null) {
                         val action = actionMap[actionKey] ?: continue
 
-                        val result = performActions.getError(action.data)
+                        val result = performActionsUseCase.getError(action.data)
                         canActionBePerformed.put(actionKey, result)
 
                         if (result != null) {
@@ -754,10 +741,8 @@ class KeyMapController(
                                 val actionKeyCode = action.data.keyCode
 
                                 if (isModifierKey(actionKeyCode)) {
-                                    val actionMetaState =
-                                        KeyEventUtils.modifierKeycodeToMetaState(actionKeyCode)
-                                    metaStateFromActions =
-                                        metaStateFromActions.withFlag(actionMetaState)
+                                    val actionMetaState = KeyEventUtils.modifierKeycodeToMetaState(actionKeyCode)
+                                    metaStateFromActions = metaStateFromActions.withFlag(actionMetaState)
                                 }
                             }
 
@@ -851,95 +836,24 @@ class KeyMapController(
                         showToast = true
                     }
 
-                    parallelTriggerActionJobs[triggerIndex]?.cancel()
-
-                    parallelTriggerActionJobs[triggerIndex] = coroutineScope.launch {
-
-                        parallelTriggerActions[triggerIndex].forEachIndexed { index, actionKey ->
-                            val action = actionMap[actionKey] ?: return@forEachIndexed
-
-                            var shouldPerformActionNormally = true
-
-                            if (action.holdDown && action.repeat
-                                && stopRepeatingWhenPressedAgain(actionKey)
-                            ) {
-
-                                shouldPerformActionNormally = false
-
-                                if (actionsBeingHeldDown.contains(actionKey)) {
-                                    actionsBeingHeldDown.remove(actionKey)
-
-                                    performAction(
-                                        action,
-                                        inputEventType = InputEventType.UP,
-                                        multiplier = actionMultiplier(actionKey)
-                                    )
-
-                                } else {
-                                    actionsBeingHeldDown.add(actionKey)
-                                }
-                            }
-
-                            if (holdDownUntilPressedAgain(actionKey)) {
-                                if (actionsBeingHeldDown.contains(actionKey)) {
-                                    actionsBeingHeldDown.remove(actionKey)
-
-                                    performAction(
-                                        action,
-                                        inputEventType = InputEventType.UP,
-                                        multiplier = actionMultiplier(actionKey)
-                                    )
-
-                                    shouldPerformActionNormally = false
-                                }
-                            }
-
-                            if (shouldPerformActionNormally) {
-                                if (action.holdDown) {
-                                    actionsBeingHeldDown.add(actionKey)
-                                }
-
-                                val keyEventAction =
-                                    if (action.holdDown) {
-                                        InputEventType.DOWN
-                                    } else {
-                                        InputEventType.DOWN_UP
-                                    }
-
-                                performAction(
-                                    action,
-                                    actionMultiplier(actionKey),
-                                    keyEventAction
-                                )
-
-                                val vibrateDuration = vibrateDurations[index]
-
-                                if (vibrateDuration != -1L) {
-                                    useCase.vibrate(vibrateDuration)
-                                }
-
-                                if (action.repeat && action.holdDown) {
-                                    delay(holdDownDuration(actionKey))
-
-                                    performAction(
-                                        action,
-                                        1,
-                                        InputEventType.UP
-                                    )
-                                }
-                            }
-
-                            delay(delayBeforeNextAction(actionKey))
-                        }
-
-                        initialiseRepeating(triggerIndex, calledOnTriggerRelease = false)
-                    }
+                    parallelTriggerActionPerformers[triggerIndex].onTriggered(
+                        calledOnTriggerRelease = false,
+                        metaState = metaStateFromKeyEvent.withFlag( metaStateFromActions)
+                    )
                 }
             }
         }
 
         if (showToast) {
             useCase.showTriggeredToast()
+        }
+
+        if (forceVibrate.value) {
+            useCase.vibrate(defaultVibrateDuration.value)
+        } else {
+            vibrateDurations.maxOrNull()?.let {
+                useCase.vibrate(it)
+            }
         }
 
         if (consumeEvent) {
@@ -1138,15 +1052,9 @@ class KeyMapController(
                         }
 
                         sequenceTriggerActions[triggerIndex].forEachIndexed { index, _ ->
-
-                            val vibrateDuration =
-                                if (sequenceTriggers[triggerIndex].vibrate) {
-                                    vibrateDuration(sequenceTriggers[triggerIndex])
-                                } else {
-                                    -1
-                                }
-
-                            vibrateDurations.add(index, vibrateDuration)
+                            if (sequenceTriggers[triggerIndex].vibrate) {
+                                vibrateDurations.add(vibrateDuration(sequenceTriggers[triggerIndex]))
+                            }
                         }
 
                         lastMatchedSequenceEventIndices[triggerIndex] = -1
@@ -1263,34 +1171,9 @@ class KeyMapController(
                 lastMatchedParallelEventIndices[triggerIndex] = lastHeldDownEventIndex
                 metaStateFromActions = metaStateFromActions.minusFlag(metaStateFromActionsToRemove)
 
-                //cancel repeating action jobs for this trigger
+                //let actions know that the trigger has been released
                 if (lastHeldDownEventIndex != parallelTriggers[triggerIndex].keys.lastIndex) {
-                    parallelTriggerActionJobs[triggerIndex]?.cancel()
-
-                    repeatJobs[triggerIndex]?.forEach {
-                        if (!stopRepeatingWhenPressedAgain(it.actionKey) && !stopRepeatingWhenLimitReached(it.actionKey)) {
-                            it.cancel()
-                        }
-                    }
-
-                    val actionKeys = parallelTriggerActions[triggerIndex]
-
-                    actionKeys.forEach { actionKey ->
-                        val action = actionMap[actionKey] ?: return@forEach
-
-                        if (!actionsBeingHeldDown.contains(actionKey)) return@forEach
-
-                        if (action.holdDown && !holdDownUntilPressedAgain(actionKey)
-                        ) {
-                            actionsBeingHeldDown.remove(actionKey)
-
-                            performAction(
-                                action,
-                                actionMultiplier(actionKey),
-                                InputEventType.UP
-                            )
-                        }
-                    }
+                    parallelTriggerActionPerformers[triggerIndex].onReleased(metaStateFromKeyEvent + metaStateFromActions)
                 }
             }
         }
@@ -1315,14 +1198,9 @@ class KeyMapController(
                     }
 
                     parallelTriggerActions[triggerIndex].forEachIndexed { actionIndex, _ ->
-
-                        val vibrateDuration =
-                            if (parallelTriggers[triggerIndex].vibrate) {
-                                vibrateDuration(parallelTriggers[triggerIndex])
-                            } else {
-                                -1
-                            }
-                        vibrateDurations.add(actionIndex, vibrateDuration)
+                        if (parallelTriggers[triggerIndex].vibrate) {
+                            vibrateDurations.add(vibrateDuration(parallelTriggers[triggerIndex]))
+                        }
                     }
                 }
 
@@ -1331,43 +1209,22 @@ class KeyMapController(
         }
 
         detectedSequenceTriggerIndexes.forEach { triggerIndex ->
-            sequenceTriggerActionJobs[triggerIndex]?.cancel()
-
-            sequenceTriggerActionJobs[triggerIndex] = coroutineScope.launch {
-                sequenceTriggerActions[triggerIndex].forEachIndexed { index, actionKey ->
-
-                    val action = actionMap[actionKey] ?: return@forEachIndexed
-
-                    performAction(action, actionMultiplier(actionKey))
-
-                    if (vibrateDurations[index] != -1L || forceVibrate.value) {
-                        useCase.vibrate(vibrateDurations[index])
-                    }
-
-                    delay(delayBeforeNextAction(actionKey))
-                }
-            }
+            sequenceTriggerActionPerformers[triggerIndex].onTriggered(metaState = metaStateFromActions.withFlag(metaStateFromKeyEvent))
         }
 
         detectedParallelTriggerIndexes.forEach { triggerIndex ->
-            parallelTriggerActionJobs[triggerIndex]?.cancel()
+            parallelTriggerActionPerformers[triggerIndex].onTriggered(
+                calledOnTriggerRelease = true,
+                metaState = metaStateFromActions.withFlag(metaStateFromKeyEvent)
+            )
+        }
 
-            parallelTriggerActionJobs[triggerIndex] = coroutineScope.launch {
-                parallelTriggerActions[triggerIndex].forEachIndexed { index, actionKey ->
-
-                    val action = actionMap[actionKey] ?: return@forEachIndexed
-
-                    performAction(action, actionMultiplier(actionKey))
-
-                    if (vibrateDurations[index] != -1L || forceVibrate.value) {
-                        useCase.vibrate(vibrateDurations[index])
-                    }
-
-                    delay(delayBeforeNextAction(actionKey))
-                }
+        if (forceVibrate.value) {
+            useCase.vibrate(defaultVibrateDuration.value)
+        } else {
+            vibrateDurations.maxOrNull()?.let {
+                useCase.vibrate(it)
             }
-
-            initialiseRepeating(triggerIndex, calledOnTriggerRelease = true)
         }
 
         if (showToast) {
@@ -1448,29 +1305,9 @@ class KeyMapController(
         performActionsOnFailedDoublePress.clear()
         performActionsOnFailedLongPress.clear()
 
-        actionsBeingHeldDown.forEach {
-            val action = actionMap[it] ?: return@forEach
-
-            performAction(
-                action,
-                multiplier = 1,
-                inputEventType = InputEventType.UP
-            )
-        }
-
-        actionsBeingHeldDown = mutableSetOf()
-
         metaStateFromActions = 0
         metaStateFromKeyEvent = 0
         keyCodesToImitateUpAction = mutableSetOf()
-
-        repeatJobs.valueIterator().forEach {
-            it.forEach { job ->
-                job.cancel()
-            }
-        }
-
-        repeatJobs.clear()
 
         parallelTriggerLongPressJobs.valueIterator().forEach {
             it.cancel()
@@ -1478,17 +1315,8 @@ class KeyMapController(
 
         parallelTriggerLongPressJobs.clear()
 
-        parallelTriggerActionJobs.valueIterator().forEach {
-            it.cancel()
-        }
-
-        parallelTriggerActionJobs.clear()
-
-        sequenceTriggerActionJobs.valueIterator().forEach {
-            it.cancel()
-        }
-
-        sequenceTriggerActionJobs.clear()
+        parallelTriggerActionPerformers.forEach { it.reset() }
+        sequenceTriggerActionPerformers.forEach { it.reset() }
     }
 
     /**
@@ -1507,16 +1335,8 @@ class KeyMapController(
                     showToast = true
                 }
 
-                parallelTriggerActions[triggerIndex].forEach { _ ->
-
-                    val vibrateDuration =
-                        if (parallelTriggers[triggerIndex].vibrate) {
-                            vibrateDuration(parallelTriggers[triggerIndex])
-                        } else {
-                            -1
-                        }
-
-                    vibrateDurations.add(vibrateDuration)
+                if (parallelTriggers[triggerIndex].vibrate) {
+                    vibrateDurations.add(vibrateDuration(parallelTriggers[triggerIndex]))
                 }
             }
         }
@@ -1527,25 +1347,19 @@ class KeyMapController(
             useCase.showTriggeredToast()
         }
 
-        detectedTriggerIndexes.forEach { triggerIndex ->
-            parallelTriggerActionJobs[triggerIndex]?.cancel()
-
-            parallelTriggerActionJobs[triggerIndex] = coroutineScope.launch {
-                parallelTriggerActions[triggerIndex].forEachIndexed { index, actionKey ->
-
-                    val action = actionMap[actionKey] ?: return@forEachIndexed
-
-                    performAction(action, actionMultiplier(actionKey))
-
-                    if (vibrateDurations[index] != -1L || forceVibrate.value) {
-                        useCase.vibrate(vibrateDurations[index])
-                    }
-
-                    delay(delayBeforeNextAction(actionKey))
-                }
+        if (forceVibrate.value) {
+            useCase.vibrate(defaultVibrateDuration.value)
+        } else {
+            vibrateDurations.maxOrNull()?.let {
+                useCase.vibrate(it)
             }
+        }
 
-            initialiseRepeating(triggerIndex, calledOnTriggerRelease = true)
+        detectedTriggerIndexes.forEach { triggerIndex ->
+            parallelTriggerActionPerformers[triggerIndex].onTriggered(
+                calledOnTriggerRelease = true,
+                metaState = metaStateFromActions.withFlag(metaStateFromKeyEvent)
+            )
         }
 
         return detectedTriggerIndexes.isNotEmpty()
@@ -1584,156 +1398,26 @@ class KeyMapController(
         }
     }
 
-    private fun repeatAction(actionKey: Int) = RepeatJob(actionKey) {
-        coroutineScope.launch {
-            val repeat = actionMap[actionKey]?.repeat ?: return@launch
-            if (!repeat) return@launch
-
-            delay(repeatDelay(actionKey))
-
-            var continueRepeating = true
-            var repeatCount = 0
-
-            while (continueRepeating) {
-                var repeatLimit: Int? = null
-
-                actionMap[actionKey]?.let { action ->
-
-                    repeatLimit = action.repeatLimit
-
-                    if (action.data is KeyEventAction) {
-                        if (isModifierKey(action.data.keyCode)) return@let
-                    }
-
-                    if (action.holdDown && action.repeat) {
-                        val holdDownDuration = holdDownDuration(actionKey)
-
-                        performAction(action, actionMultiplier(actionKey), InputEventType.DOWN)
-                        delay(holdDownDuration)
-                        performAction(action, actionMultiplier(actionKey), InputEventType.UP)
-                    } else {
-                        performAction(action, actionMultiplier(actionKey))
-                    }
-                }
-
-                repeatCount++
-
-                if (repeatLimit != null) {
-                    continueRepeating = repeatCount < repeatLimit!!
-                }
-
-                delay(repeatRate(actionKey))
-            }
-        }
-    }
-
     /**
      * For parallel triggers only.
      */
     private fun performActionsAfterLongPressDelay(triggerIndex: Int) = coroutineScope.launch {
         delay(longPressDelay(parallelTriggers[triggerIndex]))
 
-        val actionKeys = parallelTriggerActions[triggerIndex]
-        var showToast = false
+        parallelTriggerActionPerformers[triggerIndex].onTriggered(
+            calledOnTriggerRelease = false,
+            metaState = metaStateFromActions.withFlag(metaStateFromKeyEvent)
+        )
 
-        parallelTriggerActionJobs[triggerIndex]?.cancel()
-
-        parallelTriggerActionJobs[triggerIndex] = coroutineScope.launch {
-
-            parallelTriggersAwaitingReleaseAfterBeingTriggered[triggerIndex] = true
-
-            if (parallelTriggers[triggerIndex].showToast) {
-                showToast = true
-            }
-
-            actionKeys.forEach { actionKey ->
-                val action = actionMap[actionKey] ?: return@forEach
-
-                var performActionNormally = true
-
-                if (holdDownUntilPressedAgain(actionKey)) {
-                    if (actionsBeingHeldDown.contains(actionKey)) {
-                        actionsBeingHeldDown.remove(actionKey)
-
-                        performAction(
-                            action,
-                            inputEventType = InputEventType.UP,
-                            multiplier = actionMultiplier(actionKey)
-                        )
-
-                        performActionNormally = false
-                    } else {
-                        actionsBeingHeldDown.add(actionKey)
-                    }
-                }
-
-                if (performActionNormally) {
-
-                    if (action.holdDown) {
-                        actionsBeingHeldDown.add(actionKey)
-                    }
-
-                    val keyEventAction =
-                        if (action.holdDown) {
-                            InputEventType.DOWN
-                        } else {
-                            InputEventType.DOWN_UP
-                        }
-
-                    performAction(action, actionMultiplier(actionKey), keyEventAction)
-
-                    if (parallelTriggers[triggerIndex].vibrate || forceVibrate.value
-                        || parallelTriggers[triggerIndex].longPressDoubleVibration
-                    ) {
-                        useCase.vibrate(vibrateDuration(parallelTriggers[triggerIndex]))
-                    }
-                }
-
-                delay(delayBeforeNextAction(actionKey))
-            }
-
-            initialiseRepeating(triggerIndex, calledOnTriggerRelease = false)
+        if (parallelTriggers[triggerIndex].vibrate || forceVibrate.value
+            || parallelTriggers[triggerIndex].longPressDoubleVibration
+        ) {
+            useCase.vibrate(vibrateDuration(parallelTriggers[triggerIndex]))
         }
 
-        if (showToast) {
+        if (parallelTriggers[triggerIndex].showToast) {
             useCase.showTriggeredToast()
         }
-    }
-
-    /**
-     * For parallel triggers only.
-     *
-     * @param [calledOnTriggerRelease] whether this is called when the trigger was released
-     */
-    private fun initialiseRepeating(triggerIndex: Int, calledOnTriggerRelease: Boolean) {
-        val actionKeys = parallelTriggerActions[triggerIndex]
-        val actionKeysToStartRepeating = actionKeys.toMutableSet()
-
-        repeatJobs[triggerIndex]?.forEach {
-            if (stopRepeatingWhenPressedAgain(it.actionKey)) {
-                //don't repeat this action because it should stop repeating now
-                actionKeysToStartRepeating.remove(it.actionKey)
-            }
-
-            it.cancel()
-        }
-
-        val repeatJobs = mutableListOf<RepeatJob>()
-
-        actionKeys.forEach { key ->
-            //only start repeating when a trigger is released if it is to repeat until pressed again
-            if (!stopRepeatingWhenPressedAgain(key)
-                && !stopRepeatingWhenLimitReached(key)
-                && calledOnTriggerRelease) {
-                actionKeysToStartRepeating.remove(key)
-            }
-        }
-
-        actionKeysToStartRepeating.forEach {
-            repeatJobs.add(repeatAction(it))
-        }
-
-        this.repeatJobs.put(triggerIndex, repeatJobs)
     }
 
     private fun KeyMapTrigger.matchingEventAtIndex(event: Event, index: Int): Boolean {
@@ -1777,18 +1461,6 @@ class KeyMapController(
         }
     }
 
-    private fun performAction(
-        action: KeyMapAction,
-        multiplier: Int,
-        inputEventType: InputEventType = InputEventType.DOWN_UP
-    ) {
-        val additionalMetaState = metaStateFromKeyEvent.withFlag(metaStateFromActions)
-
-        repeat(multiplier) {
-            performActions.perform(action.data, inputEventType, additionalMetaState)
-        }
-    }
-
     private fun stopRepeatingWhenPressedAgain(actionKey: Int) =
         actionMap.get(actionKey)?.repeatMode == RepeatMode.TRIGGER_PRESSED_AGAIN
 
@@ -1797,27 +1469,6 @@ class KeyMapController(
 
     private fun holdDownUntilPressedAgain(actionKey: Int) =
         actionMap.get(actionKey)?.stopHoldDownWhenTriggerPressedAgain ?: false
-
-    private fun actionMultiplier(actionKey: Int): Int {
-        return actionMap.get(actionKey)?.multiplier ?: 1
-    }
-
-    private fun repeatDelay(actionKey: Int): Long {
-        return actionMap.get(actionKey)?.repeatDelay?.toLong() ?: defaultRepeatDelay.value
-    }
-
-    private fun repeatRate(actionKey: Int): Long {
-        return actionMap.get(actionKey)?.repeatRate?.toLong() ?: defaultRepeatRate.value
-    }
-
-    private fun delayBeforeNextAction(actionKey: Int): Long {
-        return actionMap.get(actionKey)?.delayBeforeNextAction?.toLong() ?: 0L
-
-    }
-
-    private fun holdDownDuration(actionKey: Int): Long {
-        return actionMap.get(actionKey)?.holdDownDuration?.toLong() ?: defaultHoldDownDuration.value
-    }
 
     private fun longPressDelay(trigger: KeyMapTrigger): Long {
         return trigger.longPressDelay?.toLong() ?: defaultLongPressDelay.value

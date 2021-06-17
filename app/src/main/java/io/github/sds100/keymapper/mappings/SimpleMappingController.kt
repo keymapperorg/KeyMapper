@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.mappings
 
 import io.github.sds100.keymapper.actions.Action
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
-import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.util.*
@@ -25,7 +24,7 @@ abstract class SimpleMappingController(
     private val actionsBeingHeldDown = mutableListOf<Action>()
 
     private val defaultRepeatRate: StateFlow<Long> =
-        detectMappingUseCase.defaultRepeatRate.stateIn(
+        performActionsUseCase.defaultRepeatRate.stateIn(
             coroutineScope,
             SharingStarted.Eagerly,
             PreferenceDefaults.REPEAT_RATE.toLong()
@@ -38,7 +37,7 @@ abstract class SimpleMappingController(
             PreferenceDefaults.FORCE_VIBRATE
         )
     private val defaultHoldDownDuration: StateFlow<Long> =
-        detectMappingUseCase.defaultHoldDownDuration.stateIn(
+        performActionsUseCase.defaultHoldDownDuration.stateIn(
             coroutineScope,
             SharingStarted.Eagerly,
             PreferenceDefaults.HOLD_DOWN_DURATION.toLong()

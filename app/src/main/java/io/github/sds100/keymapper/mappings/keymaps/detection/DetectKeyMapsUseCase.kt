@@ -11,12 +11,12 @@ import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntityMapper
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
-import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
-import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeMessenger
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
+import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeMessenger
 import io.github.sds100.keymapper.system.navigation.OpenMenuHelper
 import io.github.sds100.keymapper.system.root.SuAdapter
+import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.util.InputEventType
 import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.Dispatchers
@@ -72,11 +72,6 @@ class DetectKeyMapsUseCaseImpl(
             .map { it ?: PreferenceDefaults.DOUBLE_PRESS_DELAY }
             .map { it.toLong() }
 
-    override val defaultRepeatDelay: Flow<Long> =
-        preferenceRepository.get(Keys.defaultRepeatDelay)
-            .map { it ?: PreferenceDefaults.REPEAT_DELAY }
-            .map { it.toLong() }
-
     override val defaultSequenceTriggerTimeout: Flow<Long> =
         preferenceRepository.get(Keys.defaultSequenceTriggerTimeout)
             .map { it ?: PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT }
@@ -127,7 +122,6 @@ interface DetectKeyMapsUseCase : DetectMappingUseCase {
 
     val defaultLongPressDelay: Flow<Long>
     val defaultDoublePressDelay: Flow<Long>
-    val defaultRepeatDelay: Flow<Long>
     val defaultSequenceTriggerTimeout: Flow<Long>
 
     val currentTime: Long

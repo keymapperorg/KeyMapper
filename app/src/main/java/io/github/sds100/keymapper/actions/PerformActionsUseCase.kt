@@ -5,6 +5,9 @@ import android.os.Build
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.PreferenceDefaults
+import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.accessibility.AccessibilityNodeAction
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.airplanemode.AirplaneModeAdapter
@@ -17,10 +20,10 @@ import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.FileUtils
+import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeMessenger
 import io.github.sds100.keymapper.system.intents.IntentAdapter
-import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.lock.LockScreenAdapter
 import io.github.sds100.keymapper.system.media.MediaAdapter
 import io.github.sds100.keymapper.system.navigation.OpenMenuHelper
@@ -37,6 +40,8 @@ import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import splitties.bitflags.withFlag
 import timber.log.Timber
@@ -70,7 +75,8 @@ class PerformActionsUseCaseImpl(
     private val bluetoothAdapter: BluetoothAdapter,
     private val nfcAdapter: NfcAdapter,
     private val openUrlAdapter: OpenUrlAdapter,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val preferenceRepository: PreferenceRepository
 ) : PerformActionsUseCase {
 
     private val openMenuHelper by lazy { OpenMenuHelper(suAdapter, accessibilityService) }
@@ -672,6 +678,21 @@ class PerformActionsUseCaseImpl(
         return getActionError.getError(action)
     }
 
+    override val defaultRepeatDelay: Flow<Long> =
+        preferenceRepository.get(Keys.defaultRepeatDelay)
+            .map { it ?: PreferenceDefaults.REPEAT_DELAY }
+            .map { it.toLong() }
+
+    override val defaultRepeatRate: Flow<Long> =
+        preferenceRepository.get(Keys.defaultRepeatRate)
+            .map { it ?: PreferenceDefaults.REPEAT_RATE }
+            .map { it.toLong() }
+
+    override val defaultHoldDownDuration: Flow<Long> =
+        preferenceRepository.get(Keys.defaultHoldDownDuration)
+            .map { it ?: PreferenceDefaults.HOLD_DOWN_DURATION }
+            .map { it.toLong() }
+
     private fun getDeviceIdForKeyEventAction(action: KeyEventAction): Int {
         if (action.device?.descriptor == null) {
             return -1
@@ -715,6 +736,10 @@ class PerformActionsUseCaseImpl(
 }
 
 interface PerformActionsUseCase {
+    val defaultHoldDownDuration: Flow<Long>
+    val defaultRepeatDelay: Flow<Long>
+    val defaultRepeatRate: Flow<Long>
+
     fun perform(
         action: ActionData,
         inputEventType: InputEventType = InputEventType.DOWN_UP,

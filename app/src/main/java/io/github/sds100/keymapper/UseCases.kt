@@ -15,6 +15,7 @@ import io.github.sds100.keymapper.mappings.fingerprintmaps.DetectFingerprintMaps
 import io.github.sds100.keymapper.mappings.keymaps.*
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.onboarding.OnboardingUseCaseImpl
+import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsUseCaseImpl
 import io.github.sds100.keymapper.system.Shell
 import io.github.sds100.keymapper.system.accessibility.ControlAccessibilityServiceUseCase
 import io.github.sds100.keymapper.system.accessibility.ControlAccessibilityServiceUseCaseImpl
@@ -26,7 +27,6 @@ import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeMessengerImpl
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCaseImpl
 import io.github.sds100.keymapper.system.inputmethod.ToggleCompatibleImeUseCaseImpl
-import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsUseCaseImpl
 
 /**
  * Created by sds100 on 03/03/2021.
@@ -151,7 +151,8 @@ object UseCases {
             ServiceLocator.bluetoothAdapter(ctx),
             ServiceLocator.nfcAdapter(ctx),
             ServiceLocator.openUrlAdapter(ctx),
-            ServiceLocator.resourceProvider(ctx)
+            ServiceLocator.resourceProvider(ctx),
+            ServiceLocator.preferenceRepository(ctx)
         )
 
     fun detectMappings(ctx: Context) = DetectMappingUseCaseImpl(
