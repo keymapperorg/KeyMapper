@@ -58,7 +58,7 @@
 
         <!-- Use a different task affinity so this activity doesn't close other activities -->
         <activity
-            android:name=".mappings.keymaps.LaunchKeyMapShortcutActivity"
+            android:name=".api.LaunchKeyMapShortcutActivity"
             android:excludeFromRecents="true"
             android:finishOnTaskLaunch="true"
             android:launchMode="singleInstance"
@@ -95,7 +95,7 @@
         </receiver>
 
         <receiver
-            android:name=".mappings.PauseMappingsBroadcastReceiver"
+            android:name=".api.PauseMappingsBroadcastReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="io.github.sds100.keymapper.ACTION_PAUSE_MAPPINGS" />
