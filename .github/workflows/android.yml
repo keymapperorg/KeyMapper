@@ -47,7 +47,7 @@ jobs:
 
       - uses: christian-draeger/write-properties@1.0.1
         with:
-          path: gradle.properties
+          path: app/version.properties
           property: VERSION_NUM
           value: ${{ github.run_number }}
 
