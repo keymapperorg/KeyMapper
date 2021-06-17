@@ -45,6 +45,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - uses: christian-draeger/write-properties@1.0.1
+        with:
+          path: app/version.properties
+          property: VERSION_NUM
+          value: ${{ github.run_number }}
+
       - name: set up JDK 1.11
         uses: actions/setup-java@v1
         with:
