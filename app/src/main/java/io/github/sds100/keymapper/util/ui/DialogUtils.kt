@@ -1,16 +1,21 @@
 package io.github.sds100.keymapper.util.ui
 
 import android.app.Dialog
+import android.app.UiModeManager
 import android.content.Context
+import android.content.res.Configuration
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.getSystemService
 import androidx.lifecycle.*
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.databinding.DialogChooseAppStoreBinding
 import io.github.sds100.keymapper.databinding.DialogEdittextNumberBinding
 import io.github.sds100.keymapper.databinding.DialogEdittextStringBinding
 import io.github.sds100.keymapper.home.ChooseAppStoreModel
+import io.github.sds100.keymapper.system.leanback.LeanbackUtils
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.flow.*
@@ -265,24 +270,35 @@ fun Dialog.dismissOnDestroy(lifecycleOwner: LifecycleOwner) {
 
 object DialogUtils {
 
-    fun showDialogToGetGuiKeyboard(ctx: Context): AlertDialog {
-        return ctx.materialAlertDialog {
-            titleResource = R.string.dialog_title_install_gui_keyboard
-            messageResource = R.string.dialog_message_install_gui_keyboard
+    fun getCompatibleOnScreenKeyboardDialog(ctx: Context): MaterialAlertDialogBuilder {
+        return MaterialAlertDialogBuilder(ctx).apply {
 
-            DialogChooseAppStoreBinding.inflate(LayoutInflater.from(ctx)).apply {
-                model = ChooseAppStoreModel(
+            val appStoreModel: ChooseAppStoreModel
+
+            if (LeanbackUtils.isTvDevice(ctx)) {
+                titleResource = R.string.dialog_title_install_leanback_keyboard
+                messageResource = R.string.dialog_message_install_leanback_keyboard
+
+                appStoreModel = ChooseAppStoreModel(
+                    githubLink = ctx.str(R.string.url_github_keymapper_leanback_keyboard),
+                )
+            } else {
+                titleResource = R.string.dialog_title_install_gui_keyboard
+                messageResource = R.string.dialog_message_install_gui_keyboard
+
+                appStoreModel = ChooseAppStoreModel(
                     playStoreLink = ctx.str(R.string.url_play_store_keymapper_gui_keyboard),
                     githubLink = ctx.str(R.string.url_github_keymapper_gui_keyboard),
                     fdroidLink = ctx.str(R.string.url_fdroid_keymapper_gui_keyboard)
                 )
+            }
 
+            DialogChooseAppStoreBinding.inflate(LayoutInflater.from(ctx)).apply {
+                model = appStoreModel
                 setView(this.root)
             }
 
             negativeButton(R.string.neg_cancel) { it.cancel() }
-
-            show()
         }
     }
 }

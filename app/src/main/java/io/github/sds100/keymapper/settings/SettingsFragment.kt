@@ -23,6 +23,7 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.databinding.FragmentSettingsBinding
 import io.github.sds100.keymapper.mappings.OptionMinimums
+import io.github.sds100.keymapper.system.leanback.LeanbackUtils
 import io.github.sds100.keymapper.system.notifications.NotificationController
 import io.github.sds100.keymapper.system.notifications.NotificationUtils
 import io.github.sds100.keymapper.system.url.UrlUtils
@@ -346,6 +347,8 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val category = PreferenceCategory(requireContext())
 
+            val isTvDevice = LeanbackUtils.isTvDevice(requireContext())
+
             addPreference(category)
 
             SwitchPreference(requireContext()).apply {
@@ -374,11 +377,16 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             }
 
             Preference(requireContext()).apply {
-                setTitle(R.string.title_pref_devices_to_reroute_keyevents_install_gui_keyboard)
+                if(isTvDevice){
+                    setTitle(R.string.title_pref_devices_to_reroute_keyevents_install_leanback_keyboard)
+                }else {
+                    setTitle(R.string.title_pref_devices_to_reroute_keyevents_install_gui_keyboard)
+                }
+
                 isSingleLineTitle = false
 
                 setOnPreferenceClickListener {
-                    DialogUtils.showDialogToGetGuiKeyboard(requireContext())
+                    DialogUtils.getCompatibleOnScreenKeyboardDialog(requireContext()).show()
 
                     true
                 }
@@ -388,7 +396,13 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
             Preference(requireContext()).apply {
                 key = KEY_ENABLE_COMPATIBLE_IME
-                setTitle(R.string.title_pref_devices_to_reroute_keyevents_enable_ime)
+
+                if(isTvDevice){
+                    setTitle(R.string.title_pref_devices_to_reroute_keyevents_enable_ime_leanback)
+                }else {
+                    setTitle(R.string.title_pref_devices_to_reroute_keyevents_enable_ime_gui)
+                }
+
                 isSingleLineTitle = false
 
                 setOnPreferenceClickListener {

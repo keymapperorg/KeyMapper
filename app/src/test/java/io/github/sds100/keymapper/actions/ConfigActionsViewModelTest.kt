@@ -2,30 +2,24 @@ package io.github.sds100.keymapper.actions
 
 import io.github.sds100.keymapper.mappings.FakeMapping
 import io.github.sds100.keymapper.onboarding.FakeOnboardingUseCase
-import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.util.FlowUtils.toListWithTimeout
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.DialogResponse
 import io.github.sds100.keymapper.util.ui.PopupUi
 import io.github.sds100.keymapper.util.ui.onUserResponse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers
 import org.hamcrest.Matchers.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
-import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 
 /**
  * Created by sds100 on 28/04/2021.
@@ -67,7 +61,7 @@ class ConfigActionsViewModelTest {
         coroutineScope.runBlockingTest {
             viewModel.addAction(TextAction("bla"))
 
-            assertThat(viewModel.showPopup.first().ui, `is`(PopupUi.InstallGuiKeyboard))
+            assertThat(viewModel.showPopup.first().ui, `is`(PopupUi.InstallCompatibleOnScreenKeyboard))
         }
 
     /**
@@ -78,7 +72,7 @@ class ConfigActionsViewModelTest {
         coroutineScope.runBlockingTest {
             viewModel.addAction(KeyEventAction(3))
 
-            assertThat(viewModel.showPopup.first().ui, `is`(PopupUi.InstallGuiKeyboard))
+            assertThat(viewModel.showPopup.first().ui, `is`(PopupUi.InstallCompatibleOnScreenKeyboard))
         }
 
     /**
