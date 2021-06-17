@@ -94,6 +94,16 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".mappings.PauseMappingsBroadcastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="io.github.sds100.keymapper.ACTION_PAUSE_MAPPINGS" />
+                <action android:name="io.github.sds100.keymapper.ACTION_RESUME_MAPPINGS" />
+                <action android:name="io.github.sds100.keymapper.ACTION_TOGGLE_MAPPINGS" />
+            </intent-filter>
+        </receiver>
+
         <receiver android:name=".system.bluetooth.BluetoothBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
