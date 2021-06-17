@@ -11,7 +11,6 @@ import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import timber.log.Timber
 
 /**
  * Created by sds100 on 22/11/20.
@@ -115,7 +114,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
             }
 
             if (data is KeyEventAction || data is TextAction) {
-                val response = showPopup("install_gui_keyboard", PopupUi.InstallGuiKeyboard)
+                val response = showPopup("install_gui_keyboard", PopupUi.InstallCompatibleOnScreenKeyboard)
 
                 if (response == DialogResponse.POSITIVE) {
                     onboardingUseCase.neverShowGuiKeyboardPromptsAgain()

@@ -38,7 +38,7 @@ sealed class PopupUi<RESPONSE : PopupResponse> {
 
     data class Toast(val text: String) : PopupUi<PopupResponse>()
 
-    object InstallGuiKeyboard : PopupUi<DialogResponse>()
+    object InstallCompatibleOnScreenKeyboard : PopupUi<DialogResponse>()
 }
 
 interface PopupResponse

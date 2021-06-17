@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.system.inputmethod
 
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.util.*
-import timber.log.Timber
 
 /**
  * Created by sds100 on 16/03/2021.
@@ -13,9 +12,13 @@ class KeyMapperImeHelper(private val imeAdapter: InputMethodAdapter) {
         const val KEY_MAPPER_GUI_IME_PACKAGE =
             "io.github.sds100.keymapper.inputmethod.latin"
 
+        const val KEY_MAPPER_LEANBACK_IME_PACKAGE =
+            "io.github.sds100.keymapper.inputmethod.leanback"
+
         val KEY_MAPPER_IME_PACKAGE_LIST = arrayOf(
             Constants.PACKAGE_NAME,
-            KEY_MAPPER_GUI_IME_PACKAGE
+            KEY_MAPPER_GUI_IME_PACKAGE,
+            KEY_MAPPER_LEANBACK_IME_PACKAGE
         )
     }
 

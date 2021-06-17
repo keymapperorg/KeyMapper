@@ -1,23 +1,16 @@
 package io.github.sds100.keymapper.util.ui
 
-import android.view.LayoutInflater
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.databinding.DialogChooseAppStoreBinding
-import io.github.sds100.keymapper.home.ChooseAppStoreModel
-import io.github.sds100.keymapper.util.str
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
-import splitties.alertdialog.appcompat.messageResource
 import splitties.alertdialog.appcompat.positiveButton
-import splitties.alertdialog.appcompat.titleResource
-import splitties.alertdialog.material.materialAlertDialog
 import splitties.toast.toast
 import kotlin.coroutines.resume
 
@@ -120,30 +113,15 @@ fun PopupViewModel.showPopups(
 
                 is PopupUi.Dialog -> ctx.materialAlertDialog(lifecycleOwner, event.ui)
 
-                is PopupUi.InstallGuiKeyboard -> {
+                is PopupUi.InstallCompatibleOnScreenKeyboard -> {
                     suspendCancellableCoroutine { continuation ->
-                        val dialog = ctx.materialAlertDialog {
-                            titleResource = R.string.dialog_title_install_gui_keyboard
-                            messageResource = R.string.dialog_message_install_gui_keyboard
+                        val dialogBuilder = DialogUtils.getCompatibleOnScreenKeyboardDialog(ctx)
 
-                            DialogChooseAppStoreBinding.inflate(LayoutInflater.from(ctx)).apply {
-                                model = ChooseAppStoreModel(
-                                    playStoreLink = ctx.str(R.string.url_play_store_keymapper_gui_keyboard),
-                                    githubLink = ctx.str(R.string.url_github_keymapper_gui_keyboard),
-                                    fdroidLink = ctx.str(R.string.url_fdroid_keymapper_gui_keyboard)
-                                )
-
-                                setView(this.root)
-                            }
-
-                            positiveButton(R.string.pos_never_show_again) {
-                                continuation.resume(DialogResponse.POSITIVE)
-                            }
-
-                            show()
+                        dialogBuilder.positiveButton(R.string.pos_never_show_again) {
+                            continuation.resume(DialogResponse.POSITIVE)
                         }
 
-                        dialog.apply {
+                        dialogBuilder.show().apply {
                             resumeNullOnDismiss(continuation)
                             dismissOnDestroy(lifecycleOwner)
 
