@@ -17,7 +17,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.lifecycleScope
-import io.github.sds100.keymapper.Constants.PACKAGE_NAME
+import io.github.sds100.keymapper.api.Api
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
 import io.github.sds100.keymapper.system.devices.isExternalCompat
 import io.github.sds100.keymapper.util.*
@@ -33,20 +33,14 @@ import timber.log.Timber
 
 class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessibilityService {
 
-    companion object {
-        //DONT CHANGE!!!
-        const val ACTION_TRIGGER_KEYMAP_BY_UID = "$PACKAGE_NAME.TRIGGER_KEYMAP_BY_UID"
-        const val EXTRA_KEYMAP_UID = "$PACKAGE_NAME.KEYMAP_UID"
-    }
-
     /**
      * Broadcast receiver for all intents sent from within the app.
      */
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
-                ACTION_TRIGGER_KEYMAP_BY_UID -> {
-                    intent.getStringExtra(EXTRA_KEYMAP_UID)?.let {
+                Api.ACTION_TRIGGER_KEYMAP_BY_UID -> {
+                    intent.getStringExtra(Api.EXTRA_KEYMAP_UID)?.let {
                         controller.triggerKeyMapFromIntent(it)
                     }
                 }
@@ -94,7 +88,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
 
         IntentFilter().apply {
-            addAction(ACTION_TRIGGER_KEYMAP_BY_UID)
+            addAction(Api.ACTION_TRIGGER_KEYMAP_BY_UID)
             addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
 
             registerReceiver(broadcastReceiver, this)

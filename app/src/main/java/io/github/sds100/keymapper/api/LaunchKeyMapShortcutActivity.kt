@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.mappings.keymaps
+package io.github.sds100.keymapper.api
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,12 +7,13 @@ import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.system.accessibility.ServiceState
-import io.github.sds100.keymapper.system.accessibility.MyAccessibilityService
 import splitties.toast.toast
 
 /**
  * Created by sds100 on 08/09/20.
  */
+
+//DON'T MOVE THIS CLASS TO A DIFFERENT PACKAGE BECAUSE IT BREAKS THE API
 class LaunchKeyMapShortcutActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,12 +23,12 @@ class LaunchKeyMapShortcutActivity : AppCompatActivity() {
 
         when (accessibilityServiceState) {
             ServiceState.ENABLED ->
-                if (intent.action == MyAccessibilityService.ACTION_TRIGGER_KEYMAP_BY_UID) {
-                    Intent(MyAccessibilityService.ACTION_TRIGGER_KEYMAP_BY_UID).apply {
+                if (intent.action == Api.ACTION_TRIGGER_KEYMAP_BY_UID) {
+                    Intent(Api.ACTION_TRIGGER_KEYMAP_BY_UID).apply {
                         setPackage(Constants.PACKAGE_NAME)
 
-                        val uuid = intent.getStringExtra(MyAccessibilityService.EXTRA_KEYMAP_UID)
-                        putExtra(MyAccessibilityService.EXTRA_KEYMAP_UID, uuid)
+                        val uuid = intent.getStringExtra(Api.EXTRA_KEYMAP_UID)
+                        putExtra(Api.EXTRA_KEYMAP_UID, uuid)
 
                         sendBroadcast(this)
                     }

@@ -10,7 +10,7 @@ import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.core.graphics.drawable.toBitmap
-import io.github.sds100.keymapper.mappings.keymaps.LaunchKeyMapShortcutActivity
+import io.github.sds100.keymapper.api.LaunchKeyMapShortcutActivity
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

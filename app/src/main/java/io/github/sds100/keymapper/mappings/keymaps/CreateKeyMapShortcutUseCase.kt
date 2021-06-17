@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.os.bundleOf
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.api.Api
 import io.github.sds100.keymapper.system.apps.AppShortcutAdapter
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.system.accessibility.MyAccessibilityService
@@ -55,8 +56,8 @@ class CreateKeyMapShortcutUseCaseImpl(
         return adapter.createLauncherShortcut(
             icon = icon,
             label = actionUiHelper.getTitle(action.data, showDeviceDescriptors = false),
-            intentAction = MyAccessibilityService.ACTION_TRIGGER_KEYMAP_BY_UID,
-            bundleOf(MyAccessibilityService.EXTRA_KEYMAP_UID to keyMapUid)
+            intentAction = Api.ACTION_TRIGGER_KEYMAP_BY_UID,
+            bundleOf(Api.EXTRA_KEYMAP_UID to keyMapUid)
         )
     }
 
@@ -67,8 +68,8 @@ class CreateKeyMapShortcutUseCaseImpl(
         return adapter.createLauncherShortcut(
             icon = getDrawable(R.mipmap.ic_launcher_round),
             label = shortcutLabel,
-            intentAction = MyAccessibilityService.ACTION_TRIGGER_KEYMAP_BY_UID,
-            bundleOf(MyAccessibilityService.EXTRA_KEYMAP_UID to keyMapUid)
+            intentAction = Api.ACTION_TRIGGER_KEYMAP_BY_UID,
+            bundleOf(Api.EXTRA_KEYMAP_UID to keyMapUid)
         )
     }
 }
