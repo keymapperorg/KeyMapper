@@ -309,6 +309,8 @@
     <string name="url_play_store_keymapper_gui_keyboard" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin</string>
     <string name="url_fdroid_keymapper_gui_keyboard" translatable="false">https://f-droid.org/en/packages/io.github.sds100.keymapper.inputmethod.latin</string>
     <string name="url_github_keymapper_gui_keyboard" translatable="false">https://github.com/sds100/KeyMapperKeyboard/releases</string>
+
+    <string name="url_github_keymapper_leanback_keyboard" translatable="false">https://github.com/sds100/KeyMapperLeanbackKeyboard/releases</string>
     <!-- URLs -->
 
     <!-- Activity titles -->
@@ -398,6 +400,9 @@
 
     <string name="dialog_title_install_gui_keyboard">Install the Key Mapper GUI Keyboard</string>
     <string name="dialog_message_install_gui_keyboard">This is highly recommended! This is a proper keyboard that you can use with Key Mapper. The one built-in to Key Mapper (the Basic Input Method) has no on-screen keyboard. Choose where you want to install it from.</string>
+
+    <string name="dialog_title_install_leanback_keyboard">Install the Key Mapper Leanback Keyboard</string>
+    <string name="dialog_message_install_leanback_keyboard">This is highly recommended! This is a proper keyboard for Android TV that you can use with Key Mapper. The one built-in to Key Mapper (the Basic Input Method) has no on-screen keyboard. Choose where you want to install it from.</string>
 
     <string name="dialog_title_disable_battery_optimisation">Disable battery optimisation</string>
     <string name="dialog_message_disable_battery_optimisation">You <b>MUST</b> read this <b>all</b> otherwise you will get <b>frustrated</b> in the future!\n\nTapping \"fix partially\" <b>might</b> prevent Android from stopping the app while it is in the background.\n\n<b>This is NOT ENOUGH</b>. Your OEM\'s skin such as MIUI or Samsung Experience may have other \"battery saving\" features so you MUST turn them off for Key Mapper as well by following the online guide at dontkillmyapp.com.</string>
@@ -553,8 +558,13 @@
     <string name="title_pref_devices_to_reroute_keyevents">Workaround for Android 11 bug that sets the device id for input events to -1</string>
     <string name="summary_pref_devices_to_reroute_keyevents">Select the devices that Key Mapper should intercept all key events and then reroute through the chosen Key Mapper keyboard. You MUST be using the Key Mapper GUI Keyboard or the Key Mapper Basic Input Method for this to work. This is a partial workaround for https://issuetracker.google.com/issues/163120692. This will NOT work with game controllers.</string>
     <string name="title_pref_devices_to_reroute_keyevents_choose_devices">4. Choose devices</string>
+
     <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Install the Key Mapper GUI Keyboard (optional)</string>
-    <string name="title_pref_devices_to_reroute_keyevents_enable_ime">2. Enable the Key Mapper GUI Keyboard or the Key Mapper Basic Input Method</string>
+    <string name="title_pref_devices_to_reroute_keyevents_install_leanback_keyboard">1. Install the Key Mapper Leanback Keyboard (optional)</string>
+
+    <string name="title_pref_devices_to_reroute_keyevents_enable_ime_gui">2. Enable the Key Mapper GUI Keyboard or the Key Mapper Basic Input Method</string>
+    <string name="title_pref_devices_to_reroute_keyevents_enable_ime_leanback">2. Enable the Key Mapper Leanback Keyboard or the Key Mapper Basic Input Method</string>
+
     <string name="title_pref_devices_to_reroute_keyevents_choose_ime">3. Use the keyboard that you just enabled</string>
     <string name="title_pref_devices_to_reroute_keyevents_guide">(Recommended) Read user guide for this setting.</string>
 
