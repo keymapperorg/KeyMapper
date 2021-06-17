@@ -4,6 +4,7 @@ import android.os.Build
 import android.view.KeyEvent
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.ClickType
+import io.github.sds100.keymapper.mappings.keymaps.detection.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.*
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils

@@ -10,6 +10,7 @@ import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.mappings.ClickType
+import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.detection.ParallelTriggerActionPerformer
 import io.github.sds100.keymapper.mappings.keymaps.detection.SequenceTriggerActionPerformer
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger

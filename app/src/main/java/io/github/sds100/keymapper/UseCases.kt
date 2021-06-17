@@ -13,6 +13,9 @@ import io.github.sds100.keymapper.mappings.PauseMappingsUseCaseImpl
 import io.github.sds100.keymapper.mappings.fingerprintmaps.AreFingerprintGesturesSupportedUseCaseImpl
 import io.github.sds100.keymapper.mappings.fingerprintmaps.DetectFingerprintMapsUseCaseImpl
 import io.github.sds100.keymapper.mappings.keymaps.*
+import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCaseImpl
+import io.github.sds100.keymapper.mappings.keymaps.detection.DisplayKeyMapUseCase
+import io.github.sds100.keymapper.mappings.keymaps.detection.DisplayKeyMapUseCaseImpl
 import io.github.sds100.keymapper.onboarding.OnboardingUseCaseImpl
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsUseCaseImpl
 import io.github.sds100.keymapper.system.Shell
@@ -38,7 +41,7 @@ object UseCases {
         )
 
     fun displayKeyMap(ctx: Context): DisplayKeyMapUseCase {
-        return DisplayKeyMapUseCaseImpl(
+        return io.github.sds100.keymapper.mappings.keymaps.detection.DisplayKeyMapUseCaseImpl(
             ServiceLocator.permissionAdapter(ctx),
             displaySimpleMapping(ctx)
         )
@@ -161,16 +164,17 @@ object UseCases {
         ServiceLocator.resourceProvider(ctx)
     )
 
-    fun detectKeyMaps(service: MyAccessibilityService) = DetectKeyMapsUseCaseImpl(
-        detectMappings(service),
-        ServiceLocator.roomKeymapRepository(service),
-        ServiceLocator.preferenceRepository(service),
-        ServiceLocator.suAdapter(service),
-        ServiceLocator.displayAdapter(service),
-        ServiceLocator.audioAdapter(service),
-        keyMapperImeMessenger(service),
-        service
-    )
+    fun detectKeyMaps(service: MyAccessibilityService) =
+        io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCaseImpl(
+            detectMappings(service),
+            ServiceLocator.roomKeymapRepository(service),
+            ServiceLocator.preferenceRepository(service),
+            ServiceLocator.suAdapter(service),
+            ServiceLocator.displayAdapter(service),
+            ServiceLocator.audioAdapter(service),
+            keyMapperImeMessenger(service),
+            service
+        )
 
     fun detectFingerprintMaps(ctx: Context) = DetectFingerprintMapsUseCaseImpl(
         ServiceLocator.fingerprintMapRepository(ctx),
