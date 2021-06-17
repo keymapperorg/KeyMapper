@@ -339,7 +339,6 @@ https://issuetracker.google.com/issues/163120692
 К сожалению этот метод НЕ РАБОТАЕТ с игровыми контроллерами.</string>
     <string name="title_pref_devices_to_reroute_keyevents_choose_devices">4. Выберите устройства</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Установите клавиатуру Key Mapper GUI Keyboard (опционально)</string>
-    <string name="title_pref_devices_to_reroute_keyevents_enable_ime">2. Выберите \'Key Mapper GUI\' клавиатуру или \'Key Mapper Basic Input Method\'</string>
     <string name="title_pref_devices_to_reroute_keyevents_choose_ime">3. Используйте только что включенную клавиатуру</string>
     <string name="title_pref_devices_to_reroute_keyevents_guide">(Рекомендуется) Прочитать руководство пользователя для этого параметра.</string>
     <!--Preference titles and summaries-->
