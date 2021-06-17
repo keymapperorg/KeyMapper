@@ -9,10 +9,7 @@ import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.onFailure
 import io.github.sds100.keymapper.util.onSuccess
 import io.github.sds100.keymapper.util.ui.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 /**
@@ -28,6 +25,11 @@ class SettingsViewModel(
     val hasRootPermission = useCase.isRootGranted
     val showWriteSecureSettingsSection: StateFlow<Boolean> =
         useCase.isWriteSecureSettingsGranted.stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    val showButtonToGrantWriteSecureSettings: StateFlow<Boolean> =
+        useCase.isWriteSecureSettingsGranted
+            .map { !it }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
     val rerouteKeyEvents: StateFlow<Boolean> = useCase.rerouteKeyEvents
         .stateIn(viewModelScope, SharingStarted.Lazily, false)
@@ -60,6 +62,10 @@ class SettingsViewModel(
                 showPopup("chose_ime_error", snackBar)
             }
         }
+    }
+
+    fun requestWriteSecureSettingsPermission(){
+        useCase.requestWriteSecureSettingsPermission()
     }
 
     fun onEnableCompatibleImeClick() {

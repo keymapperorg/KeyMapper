@@ -25,26 +25,4 @@ fun LifecycleOwner.launchRepeatOnLifecycle(
     }
 }
 
-fun <T> Flow<T>.collectWhenResumed(
-    lifecycleOwner: LifecycleOwner,
-    block: suspend (value: T) -> Unit
-) {
-    lifecycleOwner.lifecycle.coroutineScope.launchWhenResumed {
-        collect {
-            block.invoke(it)
-        }
-    }
-}
-
-fun <T> Flow<T>.collectWhenStarted(
-    lifecycleOwner: LifecycleOwner,
-    block: suspend (value: T) -> Unit
-) {
-    lifecycleOwner.lifecycle.coroutineScope.launchWhenStarted {
-        collect {
-            block.invoke(it)
-        }
-    }
-}
-
 fun <T> Flow<T>.firstBlocking(): T = runBlocking { first() }

@@ -14,6 +14,7 @@ import androidx.navigation.NavController
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
+import io.github.sds100.keymapper.UseCases
 import io.github.sds100.keymapper.system.DeviceAdmin
 import io.github.sds100.keymapper.system.Shell
 import io.github.sds100.keymapper.system.url.UrlUtils
@@ -120,7 +121,11 @@ class RequestPermissionDelegate(
                     }
 
                     negativeButton(R.string.pos_enable_root_features) {
-                        navController.navigate(R.id.action_global_settingsFragment)
+                        val successful = ServiceLocator.suAdapter(context).requestPermission()
+
+                        if (successful){
+                            context.toast(R.string.toast_root_features_turned_on)
+                        }
                     }
 
                     show()

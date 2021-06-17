@@ -7,13 +7,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Switch
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.preference.*
 import io.github.sds100.keymapper.R
@@ -104,6 +104,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
         private const val KEY_ENABLE_COMPATIBLE_IME = "pref_key_enable_compatible_ime"
         private const val KEY_CHOSE_COMPATIBLE_IME = "pref_key_chose_compatible_ime"
+        private const val KEY_GRANT_WRITE_SECURE_SETTINGS = "pref_key_grant_write_secure_settings"
     }
 
     private var showingNoPairedDevicesDialog = false
@@ -211,6 +212,38 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                 }
             }
         }
+
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+            viewModel.showButtonToGrantWriteSecureSettings.collectLatest { isEnabled ->
+                    findPreference<Preference>(KEY_GRANT_WRITE_SECURE_SETTINGS)?.isEnabled = isEnabled
+            }
+        }
+
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+            viewModel.hasRootPermission.collectLatest { isGranted ->
+                findPreference<Preference>(Keys.showImePickerNotification.name)?.isEnabled = isGranted
+                findPreference<Preference>(Keys.showImePickerOnDeviceConnect.name)?.isEnabled = isGranted
+                findPreference<Preference>(Keys.devicesThatShowImePicker.name)?.isEnabled =
+                    isGranted
+
+                findPreference<SwitchPreferenceCompat>(Keys.hasRootPermission.name)?.apply {
+                    if (isChecked != isGranted){
+                        isChecked = isGranted
+                    }
+                }
+            }
+        }
+
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+            viewModel.automaticBackupLocation.collectLatest { backupLocation ->
+                val preference = findPreference<Preference>(Keys.automaticBackupLocation.name) ?: return@collectLatest
+                preference.summary = if (backupLocation.isBlank()) {
+                    str(R.string.summary_pref_automatic_backup_location_disabled)
+                } else {
+                    backupLocation
+                }
+            }
+        }
     }
 
     private fun populatePreferenceScreen() = preferenceScreen.apply {
@@ -235,14 +268,6 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
             setTitle(R.string.title_pref_automatic_backup_location)
             isSingleLineTitle = false
-
-            viewModel.automaticBackupLocation.collectWhenResumed(viewLifecycleOwner, {
-                summary = if (it.isBlank()) {
-                    str(R.string.summary_pref_automatic_backup_location_disabled)
-                } else {
-                    it
-                }
-            })
 
             setOnPreferenceClickListener {
                 val backupLocation = viewModel.automaticBackupLocation.firstBlocking()
@@ -342,7 +367,6 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             }
         }
 
-
         //android 11 device id reset bug work around
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val category = PreferenceCategory(requireContext())
@@ -377,9 +401,9 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             }
 
             Preference(requireContext()).apply {
-                if(isTvDevice){
+                if (isTvDevice) {
                     setTitle(R.string.title_pref_devices_to_reroute_keyevents_install_leanback_keyboard)
-                }else {
+                } else {
                     setTitle(R.string.title_pref_devices_to_reroute_keyevents_install_gui_keyboard)
                 }
 
@@ -397,9 +421,9 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             Preference(requireContext()).apply {
                 key = KEY_ENABLE_COMPATIBLE_IME
 
-                if(isTvDevice){
+                if (isTvDevice) {
                     setTitle(R.string.title_pref_devices_to_reroute_keyevents_enable_ime_leanback)
-                }else {
+                } else {
                     setTitle(R.string.title_pref_devices_to_reroute_keyevents_enable_ime_gui)
                 }
 
@@ -506,12 +530,6 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
         //only show the options to show the keyboard picker when rooted in these versions
         if (Build.VERSION.SDK_INT in Build.VERSION_CODES.O_MR1..Build.VERSION_CODES.P) {
-            viewModel.hasRootPermission.collectWhenResumed(viewLifecycleOwner) {
-                findPreference<Preference>(Keys.showImePickerNotification.name)?.isEnabled = it
-                findPreference<Preference>(Keys.showImePickerOnDeviceConnect.name)?.isEnabled = it
-                findPreference<Preference>(Keys.devicesThatShowImePicker.name)?.isEnabled =
-                    it
-            }
 
             //show a preference linking to the notification management screen
             Preference(requireContext()).apply {
@@ -555,6 +573,18 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
         Preference(requireContext()).apply {
             isSelectable = false
             setSummary(R.string.summary_pref_category_write_secure_settings)
+
+            addPreference(this)
+        }
+
+        Preference(requireContext()).apply {
+            key = KEY_GRANT_WRITE_SECURE_SETTINGS
+            setTitle(R.string.title_pref_grant_write_secure_settings)
+
+            setOnPreferenceClickListener {
+                viewModel.requestWriteSecureSettingsPermission()
+                true
+            }
 
             addPreference(this)
         }

@@ -23,7 +23,6 @@ import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapViewModel
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapTriggerViewModel
 import io.github.sds100.keymapper.util.FragmentInfo
 import io.github.sds100.keymapper.util.Inject
-import io.github.sds100.keymapper.util.collectWhenStarted
 import io.github.sds100.keymapper.util.str
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
