@@ -1,12 +1,9 @@
 package io.github.sds100.keymapper.util.ui
 
 import android.app.Dialog
-import android.app.UiModeManager
 import android.content.Context
-import android.content.res.Configuration
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.getSystemService
 import androidx.lifecycle.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.sds100.keymapper.R
@@ -193,38 +190,37 @@ suspend fun Context.editTextNumberAlertDialog(
     val resourceProvider = ServiceLocator.resourceProvider(this)
     val text = MutableStateFlow("")
 
-    materialAlertDialog {
-        val inflater = LayoutInflater.from(this@editTextNumberAlertDialog)
-        DialogEdittextNumberBinding.inflate(inflater).apply {
+    val inflater = LayoutInflater.from(this@editTextNumberAlertDialog)
+    val binding = DialogEdittextNumberBinding.inflate(inflater).apply {
+        setHint(hint)
+        setText(text)
+    }
 
-            setHint(hint)
-            setText(text)
-
-            setView(this.root)
-
-            okButton {
-                isValid(text.value).onSuccess { num ->
-                    continuation.resume(num)
-                }
-            }
-
-            negativeButton(R.string.neg_cancel) { it.cancel() }
-
-            val alertDialog = show()
-
-            alertDialog.resumeNullOnDismiss(continuation)
-            alertDialog.dismissOnDestroy(lifecycleOwner)
-
-            lifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-                text.map { isValid(it) }
-                    .collectLatest { isValid ->
-                        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
-                            isValid.isSuccess
-                        textInputLayout.error =
-                            isValid.errorOrNull()?.getFullMessage(resourceProvider)
-                    }
+    val alertDialog = materialAlertDialog {
+        okButton {
+            isValid(text.value).onSuccess { num ->
+                continuation.resume(num)
             }
         }
+
+        negativeButton(R.string.neg_cancel) { it.cancel() }
+
+        setView(binding.root)
+    }
+
+    alertDialog.show()
+    alertDialog.resumeNullOnDismiss(continuation)
+    alertDialog.dismissOnDestroy(lifecycleOwner)
+
+    lifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+        text.map { isValid(it) }
+            .collectLatest { isValid ->
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
+                    isValid.isSuccess
+
+                binding.textInputLayout.error =
+                    isValid.errorOrNull()?.getFullMessage(resourceProvider)
+            }
     }
 }
 
