@@ -155,6 +155,28 @@ class KeyMapControllerTest {
     }
 
     /**
+     * #694
+     */
+    @Test
+    fun `don't consume down and up event if no valid actions to perform`() = coroutineScope.runBlockingTest {
+        //GIVEN
+        val trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
+        val actionList = listOf(KeyMapAction(data = KeyEventAction(2)))
+
+        keyMapListFlow.value = listOf(KeyMap(trigger = trigger, actionList = actionList))
+
+        //WHEN
+        whenever(performActionsUseCase.getError(actionList[0].data)).thenReturn(Error.NoCompatibleImeChosen)
+
+        assertThat(inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN), `is`(false))
+        assertThat(inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP), `is`(false))
+        advanceUntilIdle()
+
+        //THEN
+        verify(performActionsUseCase, never()).perform(actionList[0].data)
+    }
+
+    /**
      * #689
      */
     @Test

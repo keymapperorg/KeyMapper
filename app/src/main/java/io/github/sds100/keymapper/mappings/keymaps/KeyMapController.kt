@@ -653,11 +653,34 @@ class KeyMapController(
         val canActionBePerformed = SparseArrayCompat<Result<ActionEntity>>()
 
         if (detectParallelTriggers) {
+
             /*
             loop through triggers in a different loop first to increment the last matched index.
             Otherwise the order of the key maps affects the logic.
              */
             triggerLoop@ for ((triggerIndex, lastMatchedIndex) in lastMatchedParallelEventIndices.withIndex()) {
+
+                val constraintState = parallelTriggerConstraints[triggerIndex]
+
+                if (constraintState.constraints.isNotEmpty()) {
+                    if (!constraintSnapshot.isSatisfied(constraintState)) continue
+                }
+
+                for (actionKey in parallelTriggerActions[triggerIndex]) {
+                    if (canActionBePerformed[actionKey] == null) {
+                        val action = actionMap[actionKey] ?: continue
+
+                        val result = performActionsUseCase.getError(action.data)
+                        canActionBePerformed.put(actionKey, result)
+
+                        if (result != null) {
+                            continue@triggerLoop
+                        }
+                    } else if (canActionBePerformed.get(actionKey, null) is Error) {
+                        continue@triggerLoop
+                    }
+                }
+
                 val nextIndex = lastMatchedIndex + 1
 
                 if (parallelTriggers[triggerIndex].matchingEventAtIndex(
@@ -695,27 +718,6 @@ class KeyMapController(
 
                 if (lastMatchedIndex == -1) {
                     continue@triggerLoop
-                }
-
-                val constraintState = parallelTriggerConstraints[triggerIndex]
-
-                if (constraintState.constraints.isNotEmpty()) {
-                    if (!constraintSnapshot.isSatisfied(constraintState)) continue
-                }
-
-                for (actionKey in parallelTriggerActions[triggerIndex]) {
-                    if (canActionBePerformed[actionKey] == null) {
-                        val action = actionMap[actionKey] ?: continue
-
-                        val result = performActionsUseCase.getError(action.data)
-                        canActionBePerformed.put(actionKey, result)
-
-                        if (result != null) {
-                            continue@triggerLoop
-                        }
-                    } else if (canActionBePerformed.get(actionKey, null) is Error) {
-                        continue@triggerLoop
-                    }
                 }
 
                 //Perform short press action
