@@ -106,6 +106,10 @@ class ConfigSettingsUseCaseImpl(
         preferenceRepository.set(Keys.defaultVibrateDuration, null)
         preferenceRepository.set(Keys.defaultRepeatRate, null)
     }
+
+    override fun requestWriteSecureSettingsPermission() {
+        permissionAdapter.request(Permission.WRITE_SECURE_SETTINGS)
+    }
 }
 
 interface ConfigSettingsUseCase {
@@ -131,4 +135,5 @@ interface ConfigSettingsUseCase {
     val defaultRepeatRate: Flow<Int>
 
     fun resetDefaultMappingOptions()
+    fun requestWriteSecureSettingsPermission()
 }

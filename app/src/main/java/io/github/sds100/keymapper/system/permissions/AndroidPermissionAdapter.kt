@@ -17,6 +17,7 @@ import io.github.sds100.keymapper.system.DeviceAdmin
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.firstBlocking
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -41,6 +42,8 @@ class AndroidPermissionAdapter(
                 .onEach { hasRootPermission ->
                     if (hasRootPermission && !isGranted(Permission.WRITE_SECURE_SETTINGS)) {
                         suAdapter.execute("pm grant ${Constants.PACKAGE_NAME} ${Manifest.permission.WRITE_SECURE_SETTINGS}")
+                        delay(1000)
+                        onPermissionsChanged()
                     }
                 }
                 .drop(1) //drop the first value when collecting initially

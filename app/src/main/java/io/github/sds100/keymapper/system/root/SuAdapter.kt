@@ -21,13 +21,18 @@ import java.io.InputStream
 
 class SuAdapterImpl(
     coroutineScope: CoroutineScope,
-    preferenceRepository: PreferenceRepository
+    private val preferenceRepository: PreferenceRepository
 ) : SuAdapter {
     private var process: Process? = null
 
     override val isGranted: Flow<Boolean> = preferenceRepository.get(Keys.hasRootPermission).map {
         it ?: false
     }.stateIn(coroutineScope, SharingStarted.Eagerly, false)
+
+    override fun requestPermission(): Boolean {
+        preferenceRepository.set(Keys.hasRootPermission, true)
+        return true
+    }
 
     override fun execute(command: String, block: Boolean): Result<*> {
         if (!isGranted.firstBlocking()) {
@@ -68,6 +73,11 @@ class SuAdapterImpl(
 
 interface SuAdapter {
     val isGranted: Flow<Boolean>
+
+    /**
+     * @return whether root permission was granted successfully
+     */
+    fun requestPermission(): Boolean
     fun execute(command: String, block: Boolean = false): Result<*>
     fun getCommandOutput(command: String): Result<InputStream>
 }
