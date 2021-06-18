@@ -12,6 +12,7 @@ import android.graphics.Path
 import android.os.Build
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.os.bundleOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -78,6 +79,8 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         get() = _isKeyboardHidden
 
     private lateinit var controller: AccessibilityServiceController
+
+    private var isFocussed = false
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -166,10 +169,25 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         super.onLowMemory()
     }
 
-    override fun onAccessibilityEvent(event: AccessibilityEvent?) {}
+    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+
+        val focussedNode = findFocus(AccessibilityNodeInfo.FOCUS_INPUT)
+
+        if (focussedNode?.isEditable == true && focussedNode.isFocused) {
+            Timber.d("focus")
+            isFocussed = true
+        } else {
+            Timber.d("no focus")
+            isFocussed = false
+        }
+    }
 
     override fun onKeyEvent(event: KeyEvent?): Boolean {
         event ?: return super.onKeyEvent(event)
+
+        if (isFocussed){
+            return false
+        }
 
         return controller.onKeyEvent(
             event.keyCode,
