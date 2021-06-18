@@ -248,7 +248,6 @@
     <string name="dialog_message_downloading">Yükleniyor…</string>
     <string name="dialog_message_describe_your_issue_in_the_email">Lütfen probleminizi e-posta ile açıklayın yoksa size yardım edemeyiz!</string>
     <string name="dialog_message_long_press_warning">Uzun basma sadece fiziksel ses açma ve navigasyon tuşlarında çalışır. Diğer tuşlarda vunu etkinleştirdiğinizde çalışmayacak.</string>
-    <string name="dialog_message_write_secure_settings">Anahtar Eşleştiriciye WRITE_SECURE_SETTINGS izni vermek için, cihazınız köklü ise ayarlarda \"kök özellikleri\" etkinleştirin. Cihazınız köklü değilse, izin vermek için PC / Mac\'in nasıl kullanılacağına ilişkin kılavuzu izleyin.</string>
     <string name="dialog_message_cant_find_accessibility_settings_page">Cihazınızda bir erişilebilirlik hizmetleri ayarları sayfası yok gibi görünüyor. Erişilebilirlik hizmetini, uygulamaya WRITE_SECURE_SETTINGS izni vererek etkinleştirebilirsiniz. \'Tamam\'a dokunduktan sonra, bir açılır pencere bunu nasıl yapacağınız konusunda size rehberlik edecektir.</string>
     <string name="dialog_message_double_press_restricted_to_single_key">"Bir den çok tetikleyicide çift tıklaysmazsınız."</string>
     <string name="dialog_message_parallel_trigger_order">Tuşların basılı tutulacakları sırayla yukarıdan aşağı sıralanması gerekir.</string>
