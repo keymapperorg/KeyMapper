@@ -147,7 +147,6 @@ Los servicios de accesibilidad solo detectan las teclas y eventos de las aplicac
     <!-- Button titles -->
     <!-- Dialog stuff -->
     <string name="dialog_message_long_press_warning">La pulsación larga sólo funciona para los botones físicos de volumen y navegación. Si lo activa para otras teclas, las teclas no funcionarán cuando no estén pulsadas durante mucho tiempo.</string>
-    <string name="dialog_message_write_secure_settings">Para conceder el permiso WRITE_SECURE_SETTINGS a Key Mapper, habilite \"características root\" en los ajustes si su dispositivo está rooteado. Si su dispositivo no está rooteado, siga la guía sobre cómo usar un PC/Mac para conceder permisos.</string>
     <!-- Dialog stuff -->
     <!-- Notification strings -->
     <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
