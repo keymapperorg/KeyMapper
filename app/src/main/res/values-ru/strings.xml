@@ -248,7 +248,6 @@
     <string name="dialog_message_downloading">Загрузка…</string>
     <string name="dialog_message_describe_your_issue_in_the_email">Просьба описать в письме проблему, с которой вы столкнулись. В противном случае я не могу вам помочь. Спасибо!</string>
     <string name="dialog_message_long_press_warning">Длительное нажатие работает только для кнопок громкости и навигации. Если вы включите его для других клавиш, клавиши не будут работать, если они не будут длительно нажаты.</string>
-    <string name="dialog_message_write_secure_settings">Чтобы предоставить Key Mapper разрешение WRITE_SECURE_SETTINGS - включите \"функционал требующий Root прав\" в настройках приложения (Если у вашего устройства конечно есть Root права). Если таких прав на устройстве нет - следуйте указаниям как дать это разрешение с помощью PC/Mac.</string>
     <string name="dialog_message_cant_find_accessibility_settings_page">Кажется на вашем устройстве нет страницы настроек спец.возможностей. Вы можете включить службу спец.возможностей, предоставив приложению разрешение WRITE_SECURE_SETTINGS. После нажатия \'ОК\' следуйте руководству.</string>
     <string name="dialog_message_double_press_restricted_to_single_key">"Нельзя обработать одновременное двойное нажатие нескольких клавиш."</string>
     <string name="dialog_message_parallel_trigger_order">Клавиши должны быть перечислены сверху вниз в том порядке в котором они должны быть нажаты.</string>
@@ -349,7 +348,6 @@ https://issuetracker.google.com/issues/163120692
     <string name="title_pref_category_root">ROOT</string>
     <string name="summary_pref_category_root">Эти настройки будут работать только на устройствах с Root правами! Если вы не знаете, что такое Root или есть ли на вашем устройстве Root права, пожалуйста, не оставляйте плохих отзывов что они не работают. :)</string>
     <string name="title_pref_category_write_secure_settings">Требуется разрешение WRIT_SECURE_SETTINGS</string>
-    <string name="summary_pref_category_write_secure_settings">Эти параметры включены, только если Key Mapper имеет разрешение WRITE_SECURE_SETTINGS. Нажмите соответствующую кнопку в верхней части главного экрана для получения инструкций.</string>
     <!--Preference categories-->
     <!-- About activity-->
     <string name="pref_title_changelog">Список изменений</string>
