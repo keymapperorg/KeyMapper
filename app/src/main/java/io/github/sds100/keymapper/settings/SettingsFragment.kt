@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Switch
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
@@ -214,8 +213,18 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
         }
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            viewModel.showButtonToGrantWriteSecureSettings.collectLatest { isEnabled ->
-                    findPreference<Preference>(KEY_GRANT_WRITE_SECURE_SETTINGS)?.isEnabled = isEnabled
+            viewModel.isWriteSecureSettingsPermissionGranted.collectLatest { isGranted ->
+                findPreference<Preference>(KEY_GRANT_WRITE_SECURE_SETTINGS)?.apply {
+                    isEnabled = !isGranted
+
+                    if (isGranted) {
+                        setTitle(R.string.title_pref_grant_write_secure_settings_granted)
+                        setIcon(R.drawable.ic_outline_check_circle_outline_24)
+                    } else {
+                        setTitle(R.string.title_pref_grant_write_secure_settings_not_granted)
+                        setIcon(R.drawable.ic_baseline_error_outline_24)
+                    }
+                }
             }
         }
 
@@ -227,7 +236,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                     isGranted
 
                 findPreference<SwitchPreferenceCompat>(Keys.hasRootPermission.name)?.apply {
-                    if (isChecked != isGranted){
+                    if (isChecked != isGranted) {
                         isChecked = isGranted
                     }
                 }
@@ -579,7 +588,14 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
         Preference(requireContext()).apply {
             key = KEY_GRANT_WRITE_SECURE_SETTINGS
-            setTitle(R.string.title_pref_grant_write_secure_settings)
+
+            if (viewModel.isWriteSecureSettingsPermissionGranted.firstBlocking()) {
+                setTitle(R.string.title_pref_grant_write_secure_settings_granted)
+                setIcon(R.drawable.ic_outline_check_circle_outline_24)
+            } else {
+                setTitle(R.string.title_pref_grant_write_secure_settings_not_granted)
+                setIcon(R.drawable.ic_baseline_error_outline_24)
+            }
 
             setOnPreferenceClickListener {
                 viewModel.requestWriteSecureSettingsPermission()

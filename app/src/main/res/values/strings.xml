@@ -573,7 +573,8 @@
     <string name="title_pref_view_and_share_log">View and share log</string>
     <string name="title_pref_report_issue">Report issue</string>
 
-    <string name="title_pref_grant_write_secure_settings">Grant permission</string>
+    <string name="title_pref_grant_write_secure_settings_not_granted">Grant permission</string>
+    <string name="title_pref_grant_write_secure_settings_granted">Permission granted</string>
     <!--Preference titles and summaries-->
 
     <!--Preference categories-->
