@@ -23,12 +23,9 @@ class SettingsViewModel(
 
     val automaticBackupLocation = useCase.automaticBackupLocation
     val hasRootPermission = useCase.isRootGranted
-    val showWriteSecureSettingsSection: StateFlow<Boolean> =
-        useCase.isWriteSecureSettingsGranted.stateIn(viewModelScope, SharingStarted.Eagerly, false)
-
-    val showButtonToGrantWriteSecureSettings: StateFlow<Boolean> =
+    
+    val isWriteSecureSettingsPermissionGranted: StateFlow<Boolean> =
         useCase.isWriteSecureSettingsGranted
-            .map { !it }
             .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
     val rerouteKeyEvents: StateFlow<Boolean> = useCase.rerouteKeyEvents
