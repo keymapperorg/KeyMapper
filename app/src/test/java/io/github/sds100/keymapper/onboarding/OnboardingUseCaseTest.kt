@@ -55,7 +55,8 @@ class OnboardingUseCaseTest {
             val guiKeyboardPackageInfo = PackageInfo(
                 packageName = KeyMapperImeHelper.KEY_MAPPER_GUI_IME_PACKAGE,
                 canBeLaunched = false,
-                activities = emptyList()
+                activities = emptyList(),
+                isEnabled = true
             )
 
             whenever(mockPackageManager.installedPackages).then {

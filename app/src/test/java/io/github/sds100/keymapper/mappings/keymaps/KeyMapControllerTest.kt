@@ -133,11 +133,10 @@ class KeyMapControllerTest {
 
         detectConstraintsUseCase = mock {
             on { getSnapshot() } doReturn ConstraintSnapshot(
-                appInForeground = null,
-                appsPlayingMedia = emptyList(),
-                orientation = Orientation.ORIENTATION_0,
-                connectedBluetoothDevices = emptySet(),
-                isScreenOn = true
+                accessibilityService = mock(),
+                mediaAdapter = mock(),
+                devicesAdapter = mock(),
+                displayAdapter = mock()
             )
         }
 
