@@ -250,7 +250,7 @@ class HomeFragment : Fragment() {
 
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
             homeViewModel.errorListState.collectLatest { state ->
-                binding.recyclerViewError.isVisible = state.isVisible
+                binding.cardViewRecyclerViewErrors.isVisible = state.isVisible
 
                 binding.recyclerViewError.withModels {
                     state.listItems.forEach { listItem ->
