@@ -178,7 +178,8 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             event.device.isExternalCompat,
             event.metaState,
             event.deviceId,
-            event.scanCode
+            event.scanCode,
+            event.eventTime
         )
     }
 
