@@ -598,7 +598,6 @@ class KeyMapController(
         val isModifierKeyCode = isModifierKey(event.keyCode)
         var mappedToParallelTriggerAction = false
 
-        //only load if necessarily because there is a 20-30ms delay
         val constraintSnapshot by lazy { detectConstraints.getSnapshot() }
 
         //consume sequence trigger keys until their timeout has been reached

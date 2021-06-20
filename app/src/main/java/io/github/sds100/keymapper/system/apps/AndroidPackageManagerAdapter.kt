@@ -9,7 +9,7 @@ import android.provider.Settings
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import splitties.bitflags.withFlag
 
@@ -109,20 +109,47 @@ class AndroidPackageManagerAdapter(
     }
 
     override fun isAppEnabled(packageName: String): Result<Boolean> {
-        return try {
-            Success(packageManager.getApplicationInfo(packageName, 0).enabled)
-        } catch (e: PackageManager.NameNotFoundException) {
-            Error.AppNotFound(packageName)
+        val packagesState = installedPackages.value
+
+        when (packagesState) {
+            is State.Data -> {
+                val packages = packagesState.data
+
+                val appPackage = packages.find { it.packageName == packageName }
+
+                if (appPackage == null) {
+                    return Error.AppNotFound(packageName)
+                } else {
+                    return Success(appPackage.isEnabled)
+                }
+            }
+            State.Loading -> return try {
+                Success(packageManager.getApplicationInfo(packageName, 0).enabled)
+            } catch (e: PackageManager.NameNotFoundException) {
+                Error.AppNotFound(packageName)
+            }
         }
     }
 
     override fun isAppInstalled(packageName: String): Boolean {
-        return try {
-            packageManager.getApplicationInfo(packageName, 0)
-            true
-        } catch (e: PackageManager.NameNotFoundException) {
-            false
+        val packagesState = installedPackages.value
+
+        when (packagesState) {
+            is State.Data -> {
+                val packages = packagesState.data
+
+                val appPackage = packages.find { it.packageName == packageName }
+
+                return appPackage != null
+            }
+            State.Loading -> return try {
+                packageManager.getApplicationInfo(packageName, 0)
+                true
+            } catch (e: PackageManager.NameNotFoundException) {
+                false
+            }
         }
+
     }
 
     override fun openApp(packageName: String): Result<*> {
@@ -232,7 +259,8 @@ class AndroidPackageManagerAdapter(
                     return@mapNotNull PackageInfo(
                         packageName,
                         canBeLaunched,
-                        activities = activities ?: emptyList()
+                        activities = activities ?: emptyList(),
+                        isEnabled = applicationInfo.enabled
                     )
                 } catch (e: PackageManager.NameNotFoundException) {
                     return@mapNotNull null

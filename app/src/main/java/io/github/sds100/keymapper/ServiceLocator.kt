@@ -23,6 +23,7 @@ import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.intents.IntentAdapter
 import io.github.sds100.keymapper.system.lock.LockScreenAdapter
+import io.github.sds100.keymapper.system.media.AndroidMediaAdapter
 import io.github.sds100.keymapper.system.media.MediaAdapter
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.nfc.NfcAdapter
@@ -220,7 +221,7 @@ object ServiceLocator {
         return (context.applicationContext as KeyMapperApp).phoneAdapter
     }
 
-    fun mediaAdapter(context: Context): MediaAdapter {
+    fun mediaAdapter(context: Context): AndroidMediaAdapter {
         return (context.applicationContext as KeyMapperApp).mediaAdapter
     }
 

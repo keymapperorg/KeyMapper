@@ -55,8 +55,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
     override val rootNode: AccessibilityNodeModel?
         get() {
-            val root = rootInActiveWindow ?: return null
-            return root.toModel()
+            return rootInActiveWindow?.toModel()
         }
 
     override val isGestureDetectionAvailable: Boolean
