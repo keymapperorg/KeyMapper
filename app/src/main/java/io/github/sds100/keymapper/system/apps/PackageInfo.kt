@@ -11,5 +11,6 @@ data class PackageInfo(
      * Whether the user can open this package like an "app".
      */
     val canBeLaunched: Boolean,
-    val activities: List<ActivityInfo>
+    val activities: List<ActivityInfo>,
+    val isEnabled: Boolean
 )

@@ -4,15 +4,15 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.hardware.display.DisplayManager
 import android.provider.Settings
 import android.view.Surface
-import androidx.core.hardware.display.DisplayManagerCompat
+import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.system.SettingsUtils
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
 import kotlinx.coroutines.flow.MutableStateFlow
-import timber.log.Timber
 
 /**
  * Created by sds100 on 17/04/2021.
@@ -42,19 +42,25 @@ class AndroidDisplayAdapter(context: Context) : DisplayAdapter {
 
     override val isScreenOn = MutableStateFlow(true)
 
-    override val orientation: Orientation
-        get() {
-            val sdkRotation = DisplayManagerCompat.getInstance(ctx).displays[0].rotation
+    private val displayManager: DisplayManager = ctx.getSystemService()!!
 
-            return when (sdkRotation) {
-                Surface.ROTATION_0 -> Orientation.ORIENTATION_0
-                Surface.ROTATION_90 -> Orientation.ORIENTATION_90
-                Surface.ROTATION_180 -> Orientation.ORIENTATION_180
-                Surface.ROTATION_270 -> Orientation.ORIENTATION_270
-
-                else -> throw Exception("Don't know how to convert $sdkRotation to Orientation")
+    init {
+        displayManager.registerDisplayListener(object : DisplayManager.DisplayListener {
+            override fun onDisplayAdded(displayId: Int) {
+                orientation = getDisplayOrientation()
             }
-        }
+
+            override fun onDisplayRemoved(displayId: Int) {
+                orientation = getDisplayOrientation()
+            }
+
+            override fun onDisplayChanged(displayId: Int) {
+                orientation = getDisplayOrientation()
+            }
+        }, null)
+    }
+
+    override var orientation: Orientation = getDisplayOrientation()
 
     init {
         IntentFilter().apply {
@@ -186,6 +192,19 @@ class AndroidDisplayAdapter(context: Context) : DisplayAdapter {
             Success(Unit)
         } else {
             Error.FailedToModifySystemSetting(Settings.System.SCREEN_BRIGHTNESS_MODE)
+        }
+    }
+
+    private fun getDisplayOrientation(): Orientation {
+        val sdkRotation = displayManager.displays[0].rotation
+
+        return when (sdkRotation) {
+            Surface.ROTATION_0 -> Orientation.ORIENTATION_0
+            Surface.ROTATION_90 -> Orientation.ORIENTATION_90
+            Surface.ROTATION_180 -> Orientation.ORIENTATION_180
+            Surface.ROTATION_270 -> Orientation.ORIENTATION_270
+
+            else -> throw Exception("Don't know how to convert $sdkRotation to Orientation")
         }
     }
 }

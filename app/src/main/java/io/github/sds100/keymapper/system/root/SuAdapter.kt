@@ -25,9 +25,9 @@ class SuAdapterImpl(
 ) : SuAdapter {
     private var process: Process? = null
 
-    override val isGranted: Flow<Boolean> = preferenceRepository.get(Keys.hasRootPermission).map {
-        it ?: false
-    }.stateIn(coroutineScope, SharingStarted.Eagerly, false)
+    override val isGranted: Flow<Boolean> = preferenceRepository.get(Keys.hasRootPermission)
+        .map { it ?: false }
+        .stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
     override fun requestPermission(): Boolean {
         preferenceRepository.set(Keys.hasRootPermission, true)

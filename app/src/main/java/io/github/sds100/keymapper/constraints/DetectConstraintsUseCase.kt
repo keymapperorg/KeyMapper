@@ -4,7 +4,6 @@ import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.media.MediaAdapter
-import io.github.sds100.keymapper.util.firstBlocking
 
 /**
  * Created by sds100 on 17/04/2021.
@@ -18,13 +17,7 @@ class DetectConstraintsUseCaseImpl(
 ) : DetectConstraintsUseCase {
 
     override fun getSnapshot(): ConstraintSnapshot {
-        return ConstraintSnapshot(
-            appInForeground = accessibilityService.rootNode?.packageName,
-            connectedBluetoothDevices = devicesAdapter.connectedBluetoothDevices.value,
-            orientation = displayAdapter.orientation,
-            isScreenOn = displayAdapter.isScreenOn.firstBlocking(),
-            appsPlayingMedia = mediaAdapter.getPackagesPlayingMedia()
-        )
+        return ConstraintSnapshot(accessibilityService, mediaAdapter, devicesAdapter, displayAdapter)
     }
 }
 
