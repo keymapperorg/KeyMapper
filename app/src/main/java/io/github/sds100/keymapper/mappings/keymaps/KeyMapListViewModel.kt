@@ -15,7 +15,7 @@ open class KeyMapListViewModel constructor(
     private val coroutineScope: CoroutineScope,
     private val useCase: ListKeyMapsUseCase,
     resourceProvider: ResourceProvider,
-    private val multiSelectProvider: MultiSelectProvider
+    private val multiSelectProvider: MultiSelectProvider<String>
 ) : ViewModel(), PopupViewModel by PopupViewModelImpl(), ResourceProvider by resourceProvider {
 
     private val listItemCreator = KeyMapListItemCreator(useCase, resourceProvider)
@@ -74,11 +74,11 @@ open class KeyMapListViewModel constructor(
                 val (keyMapUiListState, selectionState) = pair
 
                 _state.value = keyMapUiListState.mapData { keyMapUiList ->
-                    val isSelectable = selectionState is SelectionState.Selecting
+                    val isSelectable = selectionState is SelectionState.Selecting<*>
 
                     withContext(Dispatchers.Default) {
                         keyMapUiList.map { keymapUiState ->
-                            val isSelected = if (selectionState is SelectionState.Selecting) {
+                            val isSelected = if (selectionState is SelectionState.Selecting<*>) {
                                 selectionState.selectedIds.contains(keymapUiState.uid)
                             } else {
                                 false
@@ -96,7 +96,7 @@ open class KeyMapListViewModel constructor(
     }
 
     fun onKeymapCardClick(uid: String) {
-        if (multiSelectProvider.state.value is SelectionState.Selecting) {
+        if (multiSelectProvider.state.value is SelectionState.Selecting<*>) {
             multiSelectProvider.toggleSelection(uid)
         } else {
             coroutineScope.launch {

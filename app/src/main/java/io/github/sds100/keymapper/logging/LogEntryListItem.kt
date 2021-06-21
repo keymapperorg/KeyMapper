@@ -9,5 +9,6 @@ data class LogEntryListItem(
     val id: Int,
     val time: String,
     val textTint: TintType,
-    val message: String
+    val message: String,
+    val isSelected: Boolean
 )

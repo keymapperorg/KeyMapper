@@ -47,7 +47,7 @@ class HomeViewModel(
         const val ID_LOGGING_ENABLED_LIST_ITEM = "logging_enabled"
     }
 
-    private val multiSelectProvider: MultiSelectProvider = MultiSelectProviderImpl()
+    private val multiSelectProvider: MultiSelectProvider<String> = MultiSelectProviderImpl()
 
     val menuViewModel = HomeMenuViewModel(
         viewModelScope,
@@ -86,7 +86,7 @@ class HomeViewModel(
                 isVisible = false,
                 text = ""
             )
-            is SelectionState.Selecting -> SelectionCountViewState(
+            is SelectionState.Selecting<*> -> SelectionCountViewState(
                 isVisible = true,
                 text = getString(R.string.selection_count, it.selectedIds.size)
             )
@@ -116,7 +116,7 @@ class HomeViewModel(
 
             val showTabs = when {
                 tabs.size == 1 -> false
-                selectionState is SelectionState.Selecting -> false
+                selectionState is SelectionState.Selecting<*> -> false
                 else -> true
             }
 
@@ -139,7 +139,7 @@ class HomeViewModel(
     val appBarState = multiSelectProvider.state.map {
         when (it) {
             SelectionState.NotSelecting -> HomeAppBarState.NORMAL
-            is SelectionState.Selecting -> HomeAppBarState.MULTI_SELECTING
+            is SelectionState.Selecting<*> -> HomeAppBarState.MULTI_SELECTING
         }
     }.stateIn(
         viewModelScope,
@@ -328,7 +328,7 @@ class HomeViewModel(
 
     fun onAppBarNavigationButtonClick() {
         viewModelScope.launch {
-            if (multiSelectProvider.state.value is SelectionState.Selecting) {
+            if (multiSelectProvider.state.value is SelectionState.Selecting<*>) {
                 multiSelectProvider.stopSelecting()
             } else {
                 _showMenu.emit(Unit)
@@ -338,7 +338,7 @@ class HomeViewModel(
 
     fun onBackPressed() {
         viewModelScope.launch {
-            if (multiSelectProvider.state.value is SelectionState.Selecting) {
+            if (multiSelectProvider.state.value is SelectionState.Selecting<*>) {
                 multiSelectProvider.stopSelecting()
             } else {
                 _closeKeyMapper.emit(Unit)
@@ -348,12 +348,12 @@ class HomeViewModel(
 
     fun onFabPressed() {
         viewModelScope.launch {
-            if (multiSelectProvider.state.value is SelectionState.Selecting) {
-                multiSelectProvider.state.value.apply {
-                    if (this is SelectionState.Selecting) {
-                        listKeyMaps.deleteKeyMap(*selectedIds.toTypedArray())
-                    }
-                }
+            val selectionState = multiSelectProvider.state.value
+            if (selectionState is SelectionState.Selecting<*>) {
+                val selectedIds = selectionState.selectedIds as Set<String>
+
+                listKeyMaps.deleteKeyMap(*selectedIds.toTypedArray())
+
                 multiSelectProvider.stopSelecting()
             } else {
                 _navigateToCreateKeymapScreen.emit(Unit)
@@ -366,24 +366,30 @@ class HomeViewModel(
     }
 
     fun onEnableSelectedKeymapsClick() {
-        multiSelectProvider.state.value.apply {
-            if (this !is SelectionState.Selecting) return
-            listKeyMaps.enableKeyMap(*selectedIds.toTypedArray())
-        }
+        val selectionState = multiSelectProvider.state.value
+
+        if (selectionState !is SelectionState.Selecting<*>) return
+        val selectedIds = selectionState.selectedIds as Set<String>
+
+        listKeyMaps.enableKeyMap(*selectedIds.toTypedArray())
     }
 
     fun onDisableSelectedKeymapsClick() {
-        multiSelectProvider.state.value.apply {
-            if (this !is SelectionState.Selecting) return
-            listKeyMaps.disableKeyMap(*selectedIds.toTypedArray())
-        }
+        val selectionState = multiSelectProvider.state.value
+
+        if (selectionState !is SelectionState.Selecting<*>) return
+        val selectedIds = selectionState.selectedIds as Set<String>
+
+        listKeyMaps.disableKeyMap(*selectedIds.toTypedArray())
     }
 
     fun onDuplicateSelectedKeymapsClick() {
-        multiSelectProvider.state.value.apply {
-            if (this !is SelectionState.Selecting) return
-            listKeyMaps.duplicateKeyMap(*selectedIds.toTypedArray())
-        }
+        val selectionState = multiSelectProvider.state.value
+
+        if (selectionState !is SelectionState.Selecting<*>) return
+        val selectedIds = selectionState.selectedIds as Set<String>
+
+        listKeyMaps.duplicateKeyMap(*selectedIds.toTypedArray())
     }
 
     fun backupFingerprintMaps(uri: String) {
@@ -394,9 +400,9 @@ class HomeViewModel(
         viewModelScope.launch {
             val selectionState = multiSelectProvider.state.first()
 
-            if (selectionState !is SelectionState.Selecting) return@launch
+            if (selectionState !is SelectionState.Selecting<*>) return@launch
 
-            val selectedIds = selectionState.selectedIds
+            val selectedIds = selectionState.selectedIds as Set<String>
 
             listKeyMaps.backupKeyMaps(*selectedIds.toTypedArray(), uri = uri)
 
