@@ -7,4 +7,5 @@
     <color name="colorSecondary">@color/colorAccent</color>
     <color name="iconTintTriggerKeySeparator">#cccccc</color>
     <color name="divider">#1FFFFFFF</color>
+    <color name="backgroundSelected">#3D00E676</color>
 </resources>

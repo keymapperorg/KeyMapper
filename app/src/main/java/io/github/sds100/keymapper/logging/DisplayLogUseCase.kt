@@ -33,10 +33,10 @@ class DisplayLogUseCaseImpl(
         repository.deleteAll()
     }
 
-    override suspend fun copyToClipboard() {
+    override suspend fun copyToClipboard( entryId: Set<Int>) {
 
         repository.log.first().ifIsData { logEntries ->
-            val logText = getLogText(logEntries)
+            val logText = getLogText(logEntries.filter { it.id in entryId })
 
             clipboardAdapter.copy(
                 label = resourceProvider.getString(R.string.clip_key_mapper_log),
@@ -45,11 +45,11 @@ class DisplayLogUseCaseImpl(
         }
     }
 
-    override suspend fun saveToFile(uri: String) {
+    override suspend fun saveToFile(uri: String,  entryId: Set<Int>) {
         fileAdapter.openOutputStream(uri).onSuccess { outputStream ->
 
             repository.log.first().ifIsData { logEntries ->
-                val logText = getLogText(logEntries)
+                val logText = getLogText(logEntries.filter { it.id in entryId })
 
                 outputStream.bufferedWriter().use { it.write(logText) }
             }
@@ -70,6 +70,6 @@ class DisplayLogUseCaseImpl(
 interface DisplayLogUseCase {
     val log: Flow<State<List<LogEntry>>>
     fun clearLog()
-    suspend fun copyToClipboard()
-    suspend fun saveToFile(uri: String)
+    suspend fun copyToClipboard( entryId:Set<Int>)
+    suspend fun saveToFile(uri: String,  entryId: Set<Int>)
 }

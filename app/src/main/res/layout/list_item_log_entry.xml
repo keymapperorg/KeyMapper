@@ -12,10 +12,21 @@
         <variable
             name="model"
             type="io.github.sds100.keymapper.logging.LogEntryListItem" />
+
+        <variable
+            name="onLongClick"
+            type="View.OnLongClickListener" />
+
+        <variable
+            name="onClick"
+            type="View.OnClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
+        android:onLongClick="@{onLongClick}"
+        android:onClick="@{onClick}"
+        android:background="@{model.isSelected ? @color/backgroundSelected : 0}"
         android:layout_height="wrap_content">
 
         <com.google.android.material.textview.MaterialTextView

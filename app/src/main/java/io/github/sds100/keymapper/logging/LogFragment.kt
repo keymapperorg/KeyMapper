@@ -2,17 +2,18 @@ package io.github.sds100.keymapper.logging
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.doOnNextLayout
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyRecyclerView
 import com.airbnb.epoxy.TypedEpoxyController
+import com.michaelflisar.dragselectrecyclerview.DragSelectTouchListener
+import com.michaelflisar.dragselectrecyclerview.DragSelectionProcessor
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.logEntry
@@ -53,6 +54,8 @@ class LogFragment : SimpleRecyclerViewFragment<LogEntryListItem>() {
             requireContext().contentResolver.takePersistableUriPermission(it, takeFlags)
         }
 
+    private lateinit var dragSelectTouchListener: DragSelectTouchListener
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -73,9 +76,40 @@ class LogFragment : SimpleRecyclerViewFragment<LogEntryListItem>() {
     override fun subscribeUi(binding: FragmentSimpleRecyclerviewBinding) {
         super.subscribeUi(binding)
 
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+            viewModel.appBarState.collectLatest { appBarState ->
+                when (appBarState) {
+                    LogAppBarState.MULTI_SELECTING -> {
+                        binding.appBar.setNavigationIcon(R.drawable.ic_outline_clear_24)
+                    }
+
+                    LogAppBarState.NORMAL -> {
+                        binding.appBar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
+                    }
+                }
+            }
+        }
+
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+            viewModel.goBack.collectLatest {
+                findNavController().navigateUp()
+            }
+        }
+
+        val dragSelectionProcessor = DragSelectionProcessor(viewModel.dragSelectionHandler)
+            .withMode(DragSelectionProcessor.Mode.Simple)
+
+        dragSelectTouchListener = DragSelectTouchListener()
+            .withSelectListener(dragSelectionProcessor)
+
+        binding.epoxyRecyclerView.addOnItemTouchListener(dragSelectTouchListener)
+
         binding.epoxyRecyclerView.setController(recyclerViewController)
     }
 
+    override fun onBackPressed() {
+        viewModel.onBackPressed()
+    }
 
     override fun populateList(recyclerView: EpoxyRecyclerView, listItems: List<LogEntryListItem>) {
         recyclerViewController.setData(listItems)
@@ -93,7 +127,7 @@ class LogFragment : SimpleRecyclerViewFragment<LogEntryListItem>() {
                             binding.epoxyRecyclerView.doOnNextLayout {
                                 binding.epoxyRecyclerView.smoothScrollToPosition(currentData.size)
                             }
-                        }else{
+                        } else {
                             binding.epoxyRecyclerView.smoothScrollToPosition(currentData.size)
                         }
 
@@ -123,10 +157,19 @@ class LogFragment : SimpleRecyclerViewFragment<LogEntryListItem>() {
                 }
             }
 
-            data.forEach { model ->
+            data.forEachIndexed { index, model ->
                 logEntry {
                     id(model.id)
                     model(model)
+
+                    onClick { _ ->
+                        viewModel.onListItemClick(model.id)
+                    }
+
+                    onLongClick { _ ->
+                        dragSelectTouchListener.startDragSelection(index)
+                        true
+                    }
                 }
             }
         }
