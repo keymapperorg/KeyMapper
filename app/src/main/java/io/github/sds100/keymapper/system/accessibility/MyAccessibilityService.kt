@@ -18,9 +18,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.lifecycleScope
+import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.api.Api
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
 import io.github.sds100.keymapper.system.devices.isExternalCompat
+import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -173,19 +175,30 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
         val focussedNode = findFocus(AccessibilityNodeInfo.FOCUS_INPUT)
 
+        val keyboardHelper = KeyMapperImeHelper(ServiceLocator.inputMethodAdapter(this))
+
         if (focussedNode?.isEditable == true && focussedNode.isFocused) {
             Timber.d("focus")
             isFocussed = true
+            lifecycleScope.launchWhenStarted {
+                Timber.d("choose incompatible")
+                keyboardHelper.chooseLastUsedIncompatibleInputMethod(fromForeground = false)
+            }
         } else {
             Timber.d("no focus")
             isFocussed = false
+            lifecycleScope.launchWhenStarted {
+                Timber.d("choose compatible")
+
+                keyboardHelper.chooseCompatibleInputMethod(fromForeground = false)
+            }
         }
     }
 
     override fun onKeyEvent(event: KeyEvent?): Boolean {
         event ?: return super.onKeyEvent(event)
 
-        if (isFocussed){
+        if (isFocussed) {
             return false
         }
 
