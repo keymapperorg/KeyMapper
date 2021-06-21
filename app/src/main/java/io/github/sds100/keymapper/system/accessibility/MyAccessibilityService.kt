@@ -51,7 +51,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     private lateinit var lifecycleRegistry: LifecycleRegistry
 
     private var fingerprintGestureCallback:
-        FingerprintGestureController.FingerprintGestureCallback? = null
+            FingerprintGestureController.FingerprintGestureCallback? = null
 
     override val rootNode: AccessibilityNodeModel?
         get() {
