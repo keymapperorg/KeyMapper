@@ -3,8 +3,8 @@ package io.github.sds100.keymapper.logging
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.ViewTreeObserver
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
@@ -122,16 +122,20 @@ class LogFragment : SimpleRecyclerViewFragment<LogEntryListItem>() {
         init {
             addModelBuildListener {
                 currentData?.also { currentData ->
-                    if (scrollToBottom || !scrolledToBottomInitially) {
-                        if (!scrolledToBottomInitially) {
-                            binding.epoxyRecyclerView.doOnNextLayout {
-                                binding.epoxyRecyclerView.smoothScrollToPosition(currentData.size)
+                    val recyclerView = binding.epoxyRecyclerView
+
+                    if (!scrolledToBottomInitially) {
+                        recyclerView.viewTreeObserver.addOnGlobalLayoutListener(object :
+                            ViewTreeObserver.OnGlobalLayoutListener {
+                            override fun onGlobalLayout() {
+                                recyclerView.scrollToPosition(currentData.size - 1)
+                                recyclerView.viewTreeObserver.removeOnGlobalLayoutListener(this)
                             }
-                        } else {
-                            binding.epoxyRecyclerView.smoothScrollToPosition(currentData.size)
-                        }
+                        })
 
                         scrolledToBottomInitially = true
+                    } else if (scrollToBottom) {
+                        recyclerView.smoothScrollToPosition(currentData.size)
                     }
                 }
             }
