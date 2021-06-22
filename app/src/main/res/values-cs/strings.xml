@@ -53,7 +53,6 @@
     <string name="switch_enabled">Povoleno</string>
     <string name="disabled">Zakázáno</string>
     <string name="reset">Reset</string>
-    <string name="constraints_recyclerview_placeholder">Žádné omezení!</string>
     <string name="action_title_wait">Počkejte %sms</string>
     <string name="email_subject">Dotaz mapování klíčů</string>
     <string name="email_default_message">Vyřešila stránka nápovědy váš problém? Co je vaše zařízení?\n\n Který vzhled výrobce OEM nebo rom používáte?\n\n Popište problém, který máte:</string>
