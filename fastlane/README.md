@@ -21,6 +21,11 @@ or alternatively using `brew install fastlane`
 fastlane android ci_alpha_apk
 ```
 
+### android testing
+```
+fastlane android testing
+```
+
 ### android beta
 ```
 fastlane android beta
