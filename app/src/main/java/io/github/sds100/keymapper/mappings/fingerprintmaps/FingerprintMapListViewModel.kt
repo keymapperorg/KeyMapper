@@ -71,7 +71,20 @@ class FingerprintMapListViewModel(
     }
 
     fun onResetClick() {
-        useCase.resetFingerprintMaps()
+        coroutineScope.launch {
+            val dialog = PopupUi.Dialog(
+                title = getString(R.string.dialog_title_reset_fingerprint_maps),
+                message = getString(R.string.dialog_message_reset_fingerprint_maps),
+                positiveButtonText = getString(R.string.pos_yes),
+                negativeButtonText = getString(R.string.neg_cancel)
+            )
+
+            val response = showPopup("reset_fingerprintmaps", dialog)
+
+            if (response == DialogResponse.POSITIVE) {
+                useCase.resetFingerprintMaps()
+            }
+        }
     }
 
     fun onActionChipClick(chipModel: ChipUi) {

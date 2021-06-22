@@ -419,6 +419,9 @@
 
     <string name="dialog_message_screen_pinning_warning">Using this trigger may cause a black screen when you unlock your device after using the screen pinning setting in your device\'s settings. This can be fixed with a reboot. This doesn\'t happen on all devices so beware and turn off the setting if it does!</string>
 
+    <string name="dialog_title_reset_fingerprint_maps">Reset fingerprint gesture maps</string>
+    <string name="dialog_message_reset_fingerprint_maps">Are you sure that you want to reset your fingerprint gesture maps?</string>
+
     <string name="pos_yes">Yes</string>
     <string name="pos_done">Done</string>
     <string name="pos_opt_in">Opt in</string>
