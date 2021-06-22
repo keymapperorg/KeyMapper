@@ -134,5 +134,11 @@ platform :android do
           )
 
     git_commit(path: "./app/version.properties", message: "chore (release): version bump")
+
+    supply(
+        aab: ./app/build/outputs/bundle/release/app-release.aab,
+        track: beta,
+        release_status: draft
+    )
   end
 end
