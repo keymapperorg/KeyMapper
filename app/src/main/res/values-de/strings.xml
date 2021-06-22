@@ -17,7 +17,6 @@
     <string name="dont_know_device_name">Kenne den Gerätenamen nicht!</string>
     <string name="switch_enabled">Aktiviert</string>
     <string name="disabled">Deaktiviert</string>
-    <string name="constraints_recyclerview_placeholder">Keine Bedingungen!</string>
     <string name="action_title_wait">Warte %sms</string>
     <!--  Action descriptions  -->
     <string name="description_url">Öffne %s</string>
