@@ -54,7 +54,6 @@
     <string name="switch_enabled">Включено</string>
     <string name="disabled">Отключено</string>
     <string name="reset">Сброс</string>
-    <string name="constraints_recyclerview_placeholder">Без ограничений!</string>
     <string name="action_title_wait">Подождите %sмс</string>
     <string name="email_subject">Запрос Key Mapper</string>
     <string name="email_default_message">Помогла ли страница решить вашу проблему? Какое ваше устройство?\n\n Какой OEM оболочка или ROM вы используете?\n\n Пожалуйста, опишите проблему:</string>
