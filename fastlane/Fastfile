@@ -23,24 +23,94 @@ platform :android do
 
   desc "Create and deploy beta release"
   lane :beta do
+
+    whats_new = prompt(
+                  text: "Whats new: ",
+                  multi_line_end_keyword: "END"
+                )
+
+    File.write("../app/src/main/assets/whats-new.txt", whats_new)
+
+    version_code = get_properties_value(key: "VERSION_CODE", path: "./app/version.properties")
+    version_name = get_properties_value(key: "VERSION_NAME", path: "./app/version.properties")
+
+    File.write("metadata/android/en-US/changelogs/" + version_code + ".txt", whats_new)
+
+    gradle(task: "testDebugUnitTest")
+    gradle(task: "connectedDebugAndroidTest")
+
+    github_token = prompt(
+                    text: "Github token: ",
+                    secure_text: true
+                   )
+
+    pre_release = prompt(
+                    text: "Pre release?: ",
+                    boolean: true
+                   )
+
+    ENV["KEYSTORE_PASSWORD"] = prompt(
+                    text: "Key store password: ",
+                    secure_text: true
+                   )
+
+    ENV["KEY_PASSWORD"] = prompt(
+                    text: "Key password: ",
+                    secure_text: true
+                   )
+
+    release_name = prompt(
+                    text: "Release name: ",
+                   )
+
+    next_version_name = prompt(
+                    text: "Next version name: ",
+                   )
+
+    gradle(task: "assembleDebug")
+    gradle(task: "assembleRelease")
+    gradle(task: "bundleRelease")
+
+    apk_path_debug="app/build/outputs/apk/debug/keymapper-" + version_name + "-debug.apk"
+    apk_path_release="app/build/outputs/apk/release/keymapper-" + version_name + ".apk"
+
+    github_release = set_github_release(
+      repository_name: "sds100/KeyMapper",
+      api_token: github_token,
+      name: release_name,
+      tag_name: "v" + version_name,
+      description: whats_new,
+      commitish: git_branch,
+      upload_assets: [apk_path_debug, apk_path_release],
+      is_draft: true,
+      is_prerelease: pre_release
+    )
+
     set_properties_value(
         path: "./app/version.properties",
         key: "VERSION_NAME",
-        value: ENV['VERSION_NAME']
+        value: next_version_name
     )
 
-    gradle(task: "assembleDebug")
+    # increment version code for next build
+    increment_version_code_in_properties_file(
+        key: "VERSION_CODE",
+        path: "./app/version.properties"
+      )
 
-    gradle(
-        task: "assemble",
-        build_type: "Release",
-        print_command: false,
-        properties: {
-        "android.injected.signing.store.file" => "app/keystore.jks",
-        "android.injected.signing.store.password" => ENV['STORE_PASSWORD'],
-        "android.injected.signing.key.alias" => ENV['KEY_ALIAS'],
-        "android.injected.signing.key.password" => ENV['KEY_PASSWORD'],
-      }
-    )
+    git_commit(path: "./app/version.properties", message: "chore (release): version bump")
+
+    ensure_git_status_clean
+
+    sh "git checkout develop"
+    sh "git pull"
+
+    # increment version code in develop
+        increment_version_code_in_properties_file(
+            key: "VERSION_CODE",
+            path: "./app/version.properties"
+          )
+
+    git_commit(path: "./app/version.properties", message: "chore (release): version bump")
   end
 end
