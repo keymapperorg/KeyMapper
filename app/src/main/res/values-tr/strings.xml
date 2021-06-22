@@ -54,7 +54,6 @@
     <string name="switch_enabled">Etkin </string>
     <string name="disabled">Pasif </string>
     <string name="reset">Sıfırla </string>
-    <string name="constraints_recyclerview_placeholder">Kısıtlamalar yok!</string>
     <string name="action_title_wait">Bekle %sms</string>
     <string name="email_subject">Key Mapper sorgu</string>
     <string name="email_default_message">Yardım sayfası sorununuzu çözüyor mu? Cihazınız nedir? \n \n Hangi OEM kaplamasını veya ROM\'u kullanıyorsunuz? \n \n Lütfen yaşadığınız sorunu açıklayın:</string>
