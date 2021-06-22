@@ -54,7 +54,6 @@ Los servicios de accesibilidad solo detectan las teclas y eventos de las aplicac
     <string name="switch_enabled">Activado</string>
     <string name="disabled">Desactivado</string>
     <string name="reset">Restablecer</string>
-    <string name="constraints_recyclerview_placeholder">¡Sin restricciones!</string>
     <string name="action_title_wait">Espera %sms</string>
     <string name="email_subject">Consulta de Key Mapper</string>
     <string name="email_default_message">¿La página de ayuda ha resuelto tu problema? ¿Cuál es tu dispositivo?\n\n ¿Qué OEM o ROM estás usando?\n\n Por favor, describe el problema que tienes:</string>
