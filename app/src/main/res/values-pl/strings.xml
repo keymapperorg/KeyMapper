@@ -34,7 +34,6 @@
     <string name="switch_enabled">Włączone</string>
     <string name="disabled">Wyłączone</string>
     <string name="reset">Zresetuj</string>
-    <string name="constraints_recyclerview_placeholder">Brak ograniczeń!</string>
     <string name="email_subject">Zapytanie dotyczące Key Mapper</string>
     <string name="email_default_message">Czy strona pomocy rozwiązuje Twój problem? Jakie jest Twoje urządzenie?\n\n Której skórki OEM lub ROM używasz?\n\n Opisz swój problem:</string>
     <!--  Action descriptions  -->
