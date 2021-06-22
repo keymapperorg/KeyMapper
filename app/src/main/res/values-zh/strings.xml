@@ -54,7 +54,6 @@
     <string name="switch_enabled">已启用</string>
     <string name="disabled">已禁用</string>
     <string name="reset">重置</string>
-    <string name="constraints_recyclerview_placeholder">无约束！</string>
     <string name="action_title_wait">等待 %sms</string>
     <string name="email_subject"> Key Mapper 查询</string>
     <string name="email_default_message">帮助页面解决了你的问题吗？你的设备是什么？\n\n 你在使用哪个定制OEM或ROM？\n\n 请描述你正在遇到问题：</string>
