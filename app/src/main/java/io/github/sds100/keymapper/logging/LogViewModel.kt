@@ -124,7 +124,9 @@ class LogViewModel(
         if (multiSelectProvider.isSelecting()) {
             multiSelectProvider.stopSelecting()
         } else {
-            _goBack.tryEmit(Unit)
+            viewModelScope.launch {
+                _goBack.emit(Unit)
+            }
         }
     }
 
