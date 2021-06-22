@@ -10,6 +10,10 @@
         <variable
             name="caption"
             type="String" />
+
+        <variable
+            name="emptyListPlaceholder"
+            type="String" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -64,7 +68,7 @@
                 tools:visibility="gone" />
 
             <TextView
-                android:id="@+id/emptyListPlaceHolder"
+                android:id="@+id/textViewEmptyListPlaceholder"
                 style="@style/RecyclerViewPlaceholderTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -74,7 +78,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
-                android:text="@string/recyclerview_placeholder" />
+                android:text="@{emptyListPlaceholder}" />
         </FrameLayout>
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout

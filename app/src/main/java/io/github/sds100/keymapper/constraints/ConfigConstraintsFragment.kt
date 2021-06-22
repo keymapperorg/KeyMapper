@@ -78,6 +78,6 @@ abstract class ConfigConstraintsFragment
 
     override fun getRecyclerView(binding: FragmentConstraintListBinding) = binding.epoxyRecyclerView
     override fun getProgressBar(binding: FragmentConstraintListBinding) = binding.progressBar
-    override fun getEmptyListPlaceHolder(binding: FragmentConstraintListBinding) =
+    override fun getEmptyListPlaceHolderTextView(binding: FragmentConstraintListBinding) =
         binding.emptyListPlaceHolder
 }

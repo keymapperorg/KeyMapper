@@ -5,6 +5,7 @@ import androidx.lifecycle.Lifecycle
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.airbnb.epoxy.EpoxyRecyclerView
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.home.HomeViewModel
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.home.HomeFragmentDirections
@@ -32,7 +33,10 @@ class KeyMapListFragment : SimpleRecyclerViewFragment<KeyMapListItem>() {
     override val listItems: Flow<State<List<KeyMapListItem>>>
         get() = viewModel.state
 
+    override val emptyListPlaceholder: Int = R.string.keymap_recyclerview_placeholder
+
     override fun subscribeUi(binding: FragmentSimpleRecyclerviewBinding) {
+        super.subscribeUi(binding)
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.launchConfigKeymap.collectLatest {

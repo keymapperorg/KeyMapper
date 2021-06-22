@@ -58,7 +58,7 @@ abstract class ConfigActionsFragment< A : Action>
 
     override fun getRecyclerView(binding: FragmentActionListBinding) = binding.epoxyRecyclerView
     override fun getProgressBar(binding: FragmentActionListBinding) = binding.progressBar
-    override fun getEmptyListPlaceHolder(binding: FragmentActionListBinding) =
+    override fun getEmptyListPlaceHolderTextView(binding: FragmentActionListBinding) =
         binding.emptyListPlaceHolder
 
 
