@@ -95,6 +95,6 @@ class FingerprintMapListFragment :
         binding.epoxyRecyclerView
 
     override fun getProgressBar(binding: FragmentFingerprintMapListBinding) = binding.progressBar
-    override fun getEmptyListPlaceHolder(binding: FragmentFingerprintMapListBinding) =
+    override fun getEmptyListPlaceHolderTextView(binding: FragmentFingerprintMapListBinding) =
         binding.emptyListPlaceHolder
 }

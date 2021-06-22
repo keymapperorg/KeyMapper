@@ -66,6 +66,6 @@ class ChooseAppFragment : RecyclerViewFragment<AppListItem, FragmentChooseAppBin
 
     override fun getRecyclerView(binding: FragmentChooseAppBinding) = binding.epoxyRecyclerView
     override fun getProgressBar(binding: FragmentChooseAppBinding) = binding.progressBar
-    override fun getEmptyListPlaceHolder(binding: FragmentChooseAppBinding) =
+    override fun getEmptyListPlaceHolderTextView(binding: FragmentChooseAppBinding) =
         binding.emptyListPlaceHolder
 }

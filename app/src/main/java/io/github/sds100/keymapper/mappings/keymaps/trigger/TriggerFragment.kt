@@ -98,7 +98,7 @@ class TriggerFragment : RecyclerViewFragment<TriggerKeyListItem, FragmentTrigger
 
     override fun getRecyclerView(binding: FragmentTriggerBinding) = binding.recyclerViewTriggerKeys
     override fun getProgressBar(binding: FragmentTriggerBinding) = binding.progressBar
-    override fun getEmptyListPlaceHolder(binding: FragmentTriggerBinding) =
+    override fun getEmptyListPlaceHolderTextView(binding: FragmentTriggerBinding) =
         binding.emptyListPlaceHolder
 
     override fun onPause() {

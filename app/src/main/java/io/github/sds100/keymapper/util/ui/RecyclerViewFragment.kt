@@ -21,7 +21,6 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
-import timber.log.Timber
 
 /**
  * Created by sds100 on 22/02/2020.
@@ -88,7 +87,7 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
             //initially only show the progress bar
             getProgressBar(binding).isVisible = true
             getRecyclerView(binding).isVisible = true
-            getEmptyListPlaceHolder(binding).isVisible = false
+            getEmptyListPlaceHolderTextView(binding).isVisible = false
 
             if (searchStateKey != null) {
                 findNavController().observeCurrentDestinationLiveData<String>(
@@ -133,7 +132,7 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
                             the new items are populated
                              */
                             getRecyclerView(binding).visibility = View.INVISIBLE
-                            getEmptyListPlaceHolder(binding).isVisible = true
+                            getEmptyListPlaceHolderTextView(binding).isVisible = true
 
                             /*
                              Don't clear the recyclerview here because if a custom epoxy controller is set then
@@ -143,7 +142,7 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
                             populateList(getRecyclerView(binding), emptyList())
                         } else {
                             getProgressBar(binding).isVisible = true
-                            getEmptyListPlaceHolder(binding).isVisible = false
+                            getEmptyListPlaceHolderTextView(binding).isVisible = false
 
                             /*
                             Don't hide the recyclerview here because if the state changes in response to
@@ -162,7 +161,7 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
                     is State.Loading -> {
                         getProgressBar(binding).isVisible = true
                         getRecyclerView(binding).isVisible = false
-                        getEmptyListPlaceHolder(binding).isVisible = false
+                        getEmptyListPlaceHolderTextView(binding).isVisible = false
                     }
                 }
             }
@@ -227,7 +226,7 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
 
     abstract fun getRecyclerView(binding: BINDING): EpoxyRecyclerView
     abstract fun getProgressBar(binding: BINDING): View
-    abstract fun getEmptyListPlaceHolder(binding: BINDING): View
+    abstract fun getEmptyListPlaceHolderTextView(binding: BINDING): View
     abstract fun subscribeUi(binding: BINDING)
     abstract fun populateList(recyclerView: EpoxyRecyclerView, listItems: List<T>)
     abstract fun bind(inflater: LayoutInflater, container: ViewGroup?): BINDING
