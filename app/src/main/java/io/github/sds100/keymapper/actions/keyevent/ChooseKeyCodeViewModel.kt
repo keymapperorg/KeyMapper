@@ -1,9 +1,10 @@
-package io.github.sds100.keymapper.system.keyevents
+package io.github.sds100.keymapper.actions.keyevent
 
 import android.view.KeyEvent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.filterByQuery
 import kotlinx.coroutines.Dispatchers

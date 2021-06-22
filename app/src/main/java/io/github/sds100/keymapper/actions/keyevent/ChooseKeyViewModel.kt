@@ -1,8 +1,9 @@
-package io.github.sds100.keymapper.system.keyevents
+package io.github.sds100.keymapper.actions.keyevent
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
 import kotlinx.coroutines.flow.*
 
 /**

@@ -17,19 +17,23 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.*
+import io.github.sds100.keymapper.actions.keyevent.*
+import io.github.sds100.keymapper.actions.phone.ChoosePhoneNumberFragment
+import io.github.sds100.keymapper.actions.sound.ChooseSoundFileFragment
+import io.github.sds100.keymapper.actions.sound.ChooseSoundFileResult
+import io.github.sds100.keymapper.actions.system.SystemActionListFragment
+import io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateFragment
+import io.github.sds100.keymapper.actions.text.TextBlockActionTypeFragment
+import io.github.sds100.keymapper.actions.url.ChooseUrlFragment
 import io.github.sds100.keymapper.databinding.FragmentChooseActionBinding
 import io.github.sds100.keymapper.system.apps.*
-import io.github.sds100.keymapper.system.display.PickDisplayCoordinateFragment
 import io.github.sds100.keymapper.system.intents.ConfigIntentFragment
 import io.github.sds100.keymapper.system.intents.ConfigIntentResult
 import io.github.sds100.keymapper.system.intents.ConfigIntentViewModel
 import io.github.sds100.keymapper.system.keyevents.*
-import io.github.sds100.keymapper.system.phone.ChoosePhoneNumberFragment
-import io.github.sds100.keymapper.system.url.ChooseUrlFragment
 import io.github.sds100.keymapper.ui.utils.getJsonSerializable
 import io.github.sds100.keymapper.ui.utils.putJsonSerializable
 import io.github.sds100.keymapper.util.*
-import io.github.sds100.keymapper.util.ui.TextBlockActionTypeFragment
 import io.github.sds100.keymapper.util.ui.setCurrentDestinationLiveData
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -88,9 +92,9 @@ class ChooseActionFragment : Fragment() {
 
             result!!
 
-            val device = if (result.device!=null){
+            val device = if (result.device != null) {
                 KeyEventAction.Device(result.device.descriptor, result.device.name)
-            }else{
+            } else {
                 null
             }
 
@@ -143,6 +147,14 @@ class ChooseActionFragment : Fragment() {
             val number = it.getString(ChoosePhoneNumberFragment.EXTRA_PHONE_NUMBER)
 
             PhoneCallAction(number!!)
+        }
+
+        createActionOnResult(ChooseSoundFileFragment.REQUEST_KEY) {
+            val resultJson = it.getString(ChooseSoundFileFragment.EXTRA_RESULT)!!
+
+            val result: ChooseSoundFileResult = Json.decodeFromString(resultJson)
+
+            SoundAction(result.uri, result.description)
         }
 
         setFragmentResultListener(KeyCodeListFragment.REQUEST_KEY) { _, result ->

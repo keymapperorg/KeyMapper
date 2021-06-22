@@ -5,6 +5,7 @@ import android.os.Build
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.actions.system.SystemActionId
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -659,6 +660,10 @@ class PerformActionsUseCaseImpl(
 
             is UrlAction -> {
                 result = openUrlAdapter.openUrl(action.url)
+            }
+
+            is SoundAction -> {
+                result = mediaAdapter.playSoundFile(action.soundFileUri)
             }
 
             CorruptAction -> {

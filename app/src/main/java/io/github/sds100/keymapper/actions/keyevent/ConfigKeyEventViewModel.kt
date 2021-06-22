@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.system.keyevents
+package io.github.sds100.keymapper.actions.keyevent
 
 import android.annotation.SuppressLint
 import android.view.KeyEvent
@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
+import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.CheckBoxListItem
 import io.github.sds100.keymapper.util.ui.ResourceProvider

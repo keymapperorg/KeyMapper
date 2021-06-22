@@ -1,6 +1,7 @@
-package io.github.sds100.keymapper.system.keyevents
+package io.github.sds100.keymapper.actions.url
 
 import android.os.Bundle
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,37 +10,38 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
-import io.github.sds100.keymapper.databinding.FragmentKeyActionTypeBinding
+import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.databinding.FragmentEdittextBinding
 import io.github.sds100.keymapper.util.Inject
+import io.github.sds100.keymapper.util.str
 
 /**
  * Created by sds100 on 30/03/2020.
  */
 
-class ChooseKeyFragment : Fragment() {
+class ChooseUrlFragment : Fragment() {
     companion object {
-        const val REQUEST_KEY = "request_key"
-        const val EXTRA_KEYCODE = "extra_keycode"
+        const val REQUEST_KEY = "request_url"
+        const val EXTRA_URL = "extra_url"
     }
 
-    private val viewModel: ChooseKeyViewModel by activityViewModels {
-        Inject.keyActionTypeViewModel()
+    private val viewModelChoose: ChooseUrlViewModel by activityViewModels {
+        Inject.urlActionTypeViewModel()
     }
 
     /**
      * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
      */
-    private var _binding: FragmentKeyActionTypeBinding? = null
-    val binding: FragmentKeyActionTypeBinding
+    private var _binding: FragmentEdittextBinding? = null
+    val binding: FragmentEdittextBinding
         get() = _binding!!
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        FragmentKeyActionTypeBinding.inflate(inflater, container, false).apply {
+        FragmentEdittextBinding.inflate(inflater, container, false).apply {
 
             lifecycleOwner = viewLifecycleOwner
             _binding = this
@@ -51,13 +53,16 @@ class ChooseKeyFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.viewModel = viewModel
+        binding.apply {
+            text = viewModelChoose.url
+            caption = str(R.string.caption_action_type_url)
 
-        viewModel.clearKey()
+            editText.inputType = InputType.TYPE_TEXT_VARIATION_URI
 
-        binding.setOnDoneClick {
-            setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_KEYCODE to viewModel.keyCode.value))
-            findNavController().navigateUp()
+            setOnDoneClick {
+                setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_URL to viewModelChoose.url.value))
+                findNavController().navigateUp()
+            }
         }
     }
 

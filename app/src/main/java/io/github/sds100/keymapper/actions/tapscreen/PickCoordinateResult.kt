@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.system.display
+package io.github.sds100.keymapper.actions.tapscreen
 
 /**
  * Created by sds100 on 25/03/2021.

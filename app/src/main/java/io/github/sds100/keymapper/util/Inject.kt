@@ -6,6 +6,7 @@ import io.github.sds100.keymapper.KeyMapperApp
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.UseCases
 import io.github.sds100.keymapper.actions.*
+import io.github.sds100.keymapper.actions.system.SystemActionListViewModel
 import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCaseImpl
 import io.github.sds100.keymapper.constraints.ChooseConstraintViewModel
 import io.github.sds100.keymapper.home.HomeViewModel
@@ -32,12 +33,14 @@ import io.github.sds100.keymapper.system.apps.DisplayAppShortcutsUseCaseImpl
 import io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceUseCaseImpl
 import io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceViewModel
 import io.github.sds100.keymapper.system.intents.ConfigIntentViewModel
-import io.github.sds100.keymapper.system.keyevents.ChooseKeyCodeViewModel
-import io.github.sds100.keymapper.system.keyevents.ChooseKeyViewModel
-import io.github.sds100.keymapper.system.keyevents.ConfigKeyEventUseCaseImpl
-import io.github.sds100.keymapper.system.keyevents.ConfigKeyEventViewModel
-import io.github.sds100.keymapper.system.url.ChooseUrlViewModel
-import io.github.sds100.keymapper.util.ui.TextBlockActionTypeViewModel
+import io.github.sds100.keymapper.actions.keyevent.ChooseKeyCodeViewModel
+import io.github.sds100.keymapper.actions.keyevent.ChooseKeyViewModel
+import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventUseCaseImpl
+import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventViewModel
+import io.github.sds100.keymapper.actions.sound.ChooseSoundFileViewModel
+import io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateViewModel
+import io.github.sds100.keymapper.actions.url.ChooseUrlViewModel
+import io.github.sds100.keymapper.actions.text.TextBlockActionTypeViewModel
 
 /**
  * Created by sds100 on 26/01/2020.
@@ -101,6 +104,10 @@ object Inject {
 
     fun urlActionTypeViewModel(): ChooseUrlViewModel.Factory {
         return ChooseUrlViewModel.Factory()
+    }
+
+    fun soundFileActionTypeViewModel(ctx: Context): ChooseSoundFileViewModel.Factory {
+        return ChooseSoundFileViewModel.Factory(ServiceLocator.resourceProvider(ctx))
     }
 
     fun tapCoordinateActionTypeViewModel(context: Context): PickDisplayCoordinateViewModel.Factory {

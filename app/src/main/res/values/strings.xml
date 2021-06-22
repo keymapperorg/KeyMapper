@@ -126,6 +126,7 @@
     <string name="description_tap_coordinate_default">Tap coordinates %d, %d</string>
     <string name="description_tap_coordinate_with_description">Tap coordinates %d, %d (%s)</string>
     <string name="description_phone_call">Call %s</string>
+    <string name="description_sound">Play sound: %s</string>
     <!--  Action descriptions  -->
 
     <!--  Headers  -->
@@ -368,6 +369,7 @@
     <string name="button_config_intent_set_flags">Set flags</string>
     <string name="button_copy_log">Copy</string>
     <string name="button_slider_repeat_no_limit">No limit</string>
+    <string name="button_choose_sound_file">Choose sound file</string>
     <!-- Button titles -->
 
     <!-- Dialog stuff -->
@@ -625,6 +627,7 @@
     <string name="action_type_tap_coordinate">Tap screen</string>
     <string name="action_type_intent">Intent</string>
     <string name="action_type_phone_call">Phone call</string>
+    <string name="action_type_sound">Sound</string>
     <!--Action Types Titles-->
 
     <!--flags-->
@@ -1073,6 +1076,7 @@
     <!--  Tap targets  -->
     <string name="tap_target_quick_start_guide_primary">Quick Start Guide</string>
     <string name="tap_target_quick_start_guide_secondary">Check out the Quick Start Guide if you are stuck.</string>
+    <string name="hint_sound_file_description">Sound file description</string>
     <!--  Tap targets  -->
 
 </resources>

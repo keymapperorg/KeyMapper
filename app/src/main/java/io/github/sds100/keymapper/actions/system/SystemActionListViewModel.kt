@@ -1,10 +1,11 @@
-package io.github.sds100.keymapper.actions
+package io.github.sds100.keymapper.actions.system
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.actions.*
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.camera.CameraLensUtils
 import io.github.sds100.keymapper.system.display.Orientation

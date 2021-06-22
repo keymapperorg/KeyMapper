@@ -4,17 +4,19 @@ import android.os.Build
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.actions.system.SystemActionListFragment
 import io.github.sds100.keymapper.system.apps.ChooseAppFragment
-import io.github.sds100.keymapper.system.display.PickDisplayCoordinateFragment
+import io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateFragment
 import io.github.sds100.keymapper.system.intents.ConfigIntentFragment
-import io.github.sds100.keymapper.system.keyevents.ChooseKeyFragment
-import io.github.sds100.keymapper.system.keyevents.ConfigKeyEventFragment
-import io.github.sds100.keymapper.system.phone.ChoosePhoneNumberFragment
-import io.github.sds100.keymapper.system.url.ChooseUrlFragment
+import io.github.sds100.keymapper.actions.keyevent.ChooseKeyFragment
+import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventFragment
+import io.github.sds100.keymapper.actions.phone.ChoosePhoneNumberFragment
+import io.github.sds100.keymapper.actions.url.ChooseUrlFragment
 import io.github.sds100.keymapper.util.ui.TabFragmentModel
-import io.github.sds100.keymapper.system.keyevents.KeyCodeListFragment
+import io.github.sds100.keymapper.actions.keyevent.KeyCodeListFragment
+import io.github.sds100.keymapper.actions.sound.ChooseSoundFileFragment
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutFragment
-import io.github.sds100.keymapper.util.ui.TextBlockActionTypeFragment
+import io.github.sds100.keymapper.actions.text.TextBlockActionTypeFragment
 
 /**
  * Created by sds100 on 26/01/2020.
@@ -77,6 +79,10 @@ class ChooseActionPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragme
 
         TabFragmentModel(R.string.action_type_phone_call, null) {
             ChoosePhoneNumberFragment()
+        },
+
+        TabFragmentModel(R.string.action_type_sound, null) {
+            ChooseSoundFileFragment()
         },
 
         TabFragmentModel(R.string.tab_unsupported_actions, null) {

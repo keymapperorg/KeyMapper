@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.system.display
+package io.github.sds100.keymapper.actions.tapscreen
 
 import android.annotation.SuppressLint
 import android.graphics.ImageDecoder
@@ -19,7 +19,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.*
 import androidx.navigation.fragment.findNavController
-import io.github.sds100.keymapper.actions.PickDisplayCoordinateViewModel
 import io.github.sds100.keymapper.databinding.FragmentPickCoordinateBinding
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.util.*

@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.actions
+package io.github.sds100.keymapper.actions.system
 
 import android.graphics.drawable.Drawable
 import io.github.sds100.keymapper.util.ui.ListItem

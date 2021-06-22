@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.actions
 
+import io.github.sds100.keymapper.actions.system.SystemActionId
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.Extra
 import io.github.sds100.keymapper.data.entities.getData
@@ -255,6 +256,12 @@ object ActionDataEntityMapper {
                     else -> SimpleSystemAction(id)
                 }
             }
+            ActionEntity.Type.SOUND -> {
+                val soundFileDescription = entity.extras.getData(ActionEntity.EXTRA_SOUND_FILE_DESCRIPTION)
+                    .valueOrNull()?:return null
+
+                SoundAction(soundFileUri = entity.data, soundDescription = soundFileDescription)
+            }
         }
     }
 
@@ -270,6 +277,7 @@ object ActionDataEntityMapper {
             is TapCoordinateAction -> ActionEntity.Type.TAP_COORDINATE
             is TextAction -> ActionEntity.Type.TEXT_BLOCK
             is UrlAction -> ActionEntity.Type.URL
+            is SoundAction -> ActionEntity.Type.SOUND
         }
 
         return ActionEntity(
@@ -302,6 +310,7 @@ object ActionDataEntityMapper {
         is TapCoordinateAction -> "${data.x},${data.y}"
         is TextAction -> data.text
         is UrlAction -> data.url
+        is SoundAction -> data.soundFileUri
     }
 
     private fun getExtras(data: ActionData): List<Extra> = when (data) {
@@ -394,6 +403,10 @@ object ActionDataEntityMapper {
 
         is TextAction -> emptyList()
         is UrlAction -> emptyList()
+
+        is SoundAction -> listOf(
+            Extra(ActionEntity.EXTRA_SOUND_FILE_DESCRIPTION, data.soundDescription),
+        )
     }
 
     private val ORIENTATION_MAP = mapOf(

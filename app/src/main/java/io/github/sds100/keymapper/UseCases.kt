@@ -2,7 +2,7 @@ package io.github.sds100.keymapper
 
 import android.content.Context
 import io.github.sds100.keymapper.actions.GetActionErrorUseCaseImpl
-import io.github.sds100.keymapper.actions.IsSystemActionSupportedUseCaseImpl
+import io.github.sds100.keymapper.actions.system.IsSystemActionSupportedUseCaseImpl
 import io.github.sds100.keymapper.actions.PerformActionsUseCaseImpl
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCaseImpl
 import io.github.sds100.keymapper.constraints.GetConstraintErrorUseCaseImpl

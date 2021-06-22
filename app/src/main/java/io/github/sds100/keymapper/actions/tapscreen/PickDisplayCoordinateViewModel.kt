@@ -1,11 +1,10 @@
-package io.github.sds100.keymapper.actions
+package io.github.sds100.keymapper.actions.tapscreen
 
 import android.graphics.Bitmap
 import android.graphics.Point
 import androidx.lifecycle.*
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.system.display.PickCoordinateResult
 import io.github.sds100.keymapper.ui.*
 import io.github.sds100.keymapper.util.ui.PopupUi
 import io.github.sds100.keymapper.util.ui.PopupViewModel

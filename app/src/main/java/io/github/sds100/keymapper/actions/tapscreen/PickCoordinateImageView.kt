@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.system.display
+package io.github.sds100.keymapper.actions.tapscreen
 
 import android.content.Context
 import android.graphics.Canvas

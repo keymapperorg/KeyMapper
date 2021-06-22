@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.system.keyevents
+package io.github.sds100.keymapper.actions.keyevent
 
 import androidx.fragment.app.activityViewModels
 import com.airbnb.epoxy.EpoxyRecyclerView

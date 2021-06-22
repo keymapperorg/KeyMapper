@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.system.url
+package io.github.sds100.keymapper.actions.phone
 
 import android.os.Bundle
 import android.text.InputType
@@ -12,21 +12,20 @@ import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentEdittextBinding
-import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.str
 
 /**
  * Created by sds100 on 30/03/2020.
  */
 
-class ChooseUrlFragment : Fragment() {
+class ChoosePhoneNumberFragment : Fragment() {
     companion object {
-        const val REQUEST_KEY = "request_url"
-        const val EXTRA_URL = "extra_url"
+        const val REQUEST_KEY = "request_phone_call_number"
+        const val EXTRA_PHONE_NUMBER = "extra_phone_number"
     }
 
-    private val viewModelChoose: ChooseUrlViewModel by activityViewModels {
-        Inject.urlActionTypeViewModel()
+    private val viewModel: ChoosePhoneNumberViewModel by activityViewModels {
+        ChoosePhoneNumberViewModel.Factory()
     }
 
     /**
@@ -42,10 +41,8 @@ class ChooseUrlFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         FragmentEdittextBinding.inflate(inflater, container, false).apply {
-
             lifecycleOwner = viewLifecycleOwner
             _binding = this
-
             return this.root
         }
     }
@@ -54,13 +51,15 @@ class ChooseUrlFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.apply {
-            text = viewModelChoose.url
-            caption = str(R.string.caption_action_type_url)
-
-            editText.inputType = InputType.TYPE_TEXT_VARIATION_URI
+            text = viewModel.number
+            caption = str(R.string.caption_action_type_phone_call)
+            editText.inputType = InputType.TYPE_CLASS_PHONE
 
             setOnDoneClick {
-                setFragmentResult(REQUEST_KEY, bundleOf(EXTRA_URL to viewModelChoose.url.value))
+                setFragmentResult(
+                    REQUEST_KEY,
+                    bundleOf(EXTRA_PHONE_NUMBER to viewModel.number.value))
+
                 findNavController().navigateUp()
             }
         }

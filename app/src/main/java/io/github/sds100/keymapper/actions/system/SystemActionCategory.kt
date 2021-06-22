@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.actions
+package io.github.sds100.keymapper.actions.system
 
 /**
  * Created by sds100 on 23/03/2021.

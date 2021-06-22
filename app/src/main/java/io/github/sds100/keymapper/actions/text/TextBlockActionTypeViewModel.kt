@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.util.ui
+package io.github.sds100.keymapper.actions.text
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

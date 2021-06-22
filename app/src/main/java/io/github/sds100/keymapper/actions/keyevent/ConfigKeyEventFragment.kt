@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.system.keyevents
+package io.github.sds100.keymapper.actions.keyevent
 
 import android.os.Bundle
 import android.view.LayoutInflater

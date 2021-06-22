@@ -9,7 +9,7 @@
 
         <variable
             name="viewModel"
-            type="io.github.sds100.keymapper.actions.PickDisplayCoordinateViewModel" />
+            type="io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateViewModel" />
 
         <variable
             name="onSelectScreenshotClick"
@@ -105,7 +105,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView" />
 
-                <io.github.sds100.keymapper.system.display.PickCoordinateImageView
+                <io.github.sds100.keymapper.actions.tapscreen.PickCoordinateImageView
                     android:id="@+id/imageViewScreenshot"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

@@ -61,6 +61,10 @@ class AndroidMediaAdapter(
             .map { it.packageName }
     }
 
+    override fun playSoundFile(uri: String): Result<*> {
+        TODO("Not yet implemented")
+    }
+
     private fun sendMediaKeyEvent(keyCode: Int, packageName: String?): Result<*> {
         if (packageName == null) {
             audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
