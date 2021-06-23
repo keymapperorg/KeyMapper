@@ -58,6 +58,12 @@ class ConfigFingerprintMapUseCaseImpl(
     override fun setActionRepeatLimit(uid: String, repeatLimit: Int?) =
         setActionOption(uid) { it.copy(repeatLimit = repeatLimit) }
 
+    override fun setActionStopRepeatingWhenTriggerPressedAgain(uid: String) =
+        setActionOption(uid) { it.copy(repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN) }
+
+    override fun setActionStopRepeatingWhenLimitReached(uid: String) =
+        setActionOption(uid) { it.copy(repeatMode = RepeatMode.LIMIT_REACHED) }
+
     override fun setActionHoldDownEnabled(uid: String, holdDown: Boolean) =
         setActionOption(uid) { it.copy(holdDownUntilSwipedAgain = holdDown) }
 

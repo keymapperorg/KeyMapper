@@ -26,7 +26,7 @@ data class KeyMapAction(
     override val data: ActionData,
 
     override val repeat: Boolean = false,
-   override val repeatMode: RepeatMode = RepeatMode.TRIGGER_RELEASED,
+    override val repeatMode: RepeatMode = RepeatMode.TRIGGER_RELEASED,
     override val repeatRate: Int? = null,
     val repeatDelay: Int? = null,
     override val repeatLimit: Int? = null,
