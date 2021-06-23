@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.actions.sound
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -36,10 +37,15 @@ class ChooseSoundFileFragment : Fragment() {
     }
 
     private val chooseSoundFileLauncher =
-        registerForActivityResult(ActivityResultContracts.GetContent()) {
+        registerForActivityResult(ActivityResultContracts.OpenDocument()) {
             it ?: return@registerForActivityResult
 
             viewModel.onChooseSoundFile(it.toString())
+
+            val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+
+            requireContext().contentResolver.takePersistableUriPermission(it, takeFlags)
         }
 
     /**
@@ -64,7 +70,7 @@ class ChooseSoundFileFragment : Fragment() {
 
         launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.chooseSoundFile.collectLatest {
-                chooseSoundFileLauncher.launch(FileUtils.MIME_TYPE_AUDIO)
+                chooseSoundFileLauncher.launch(arrayOf(FileUtils.MIME_TYPE_AUDIO))
             }
         }
 

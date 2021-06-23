@@ -2,16 +2,21 @@ package io.github.sds100.keymapper.system.media
 
 import android.content.ComponentName
 import android.content.Context
+import android.media.AudioAttributes
 import android.media.AudioManager
+import android.media.MediaPlayer
 import android.media.session.MediaController
 import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
+import android.net.Uri
 import android.view.KeyEvent
 import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.system.notifications.NotificationReceiver
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
+import io.github.sds100.keymapper.system.volume.VolumeStream
 import io.github.sds100.keymapper.util.*
+import splitties.bitflags.withFlag
 
 /**
  * Created by sds100 on 21/04/2021.
@@ -24,6 +29,9 @@ class AndroidMediaAdapter(
 
     private val mediaSessionManager: MediaSessionManager by lazy { ctx.getSystemService()!! }
     private val audioManager: AudioManager by lazy { ctx.getSystemService()!! }
+
+    private var mediaPlayerLock = Any()
+    private var mediaPlayer: MediaPlayer? = null
 
     override fun fastForward(packageName: String?): Result<*> {
         return sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_FAST_FORWARD, packageName)
@@ -61,8 +69,44 @@ class AndroidMediaAdapter(
             .map { it.packageName }
     }
 
-    override fun playSoundFile(uri: String): Result<*> {
-        TODO("Not yet implemented")
+    override fun playSoundFile(uri: String, stream: VolumeStream): Result<*> {
+        try {
+            synchronized(mediaPlayerLock) {
+                mediaPlayer?.stop()
+                mediaPlayer?.release()
+                mediaPlayer = null
+            }
+
+            mediaPlayer = MediaPlayer().apply {
+                val usage = when (stream) {
+                    VolumeStream.ACCESSIBILITY -> AudioAttributes.USAGE_ASSISTANCE_ACCESSIBILITY
+                    else -> throw Exception("Don't know how to convert volume stream to audio usage attribute")
+                }
+
+                setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .setUsage(usage)
+                        .build()
+                )
+
+                setDataSource(ctx, Uri.parse(uri))
+
+                setOnCompletionListener {
+                    synchronized(mediaPlayerLock) {
+                        mediaPlayer?.release()
+                        mediaPlayer = null
+                    }
+                }
+
+                prepare()
+                start()
+            }
+
+            return Success(Unit)
+        } catch (e: Exception) {
+            return Error.Exception(e)
+        }
     }
 
     private fun sendMediaKeyEvent(keyCode: Int, packageName: String?): Result<*> {

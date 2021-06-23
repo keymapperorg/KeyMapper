@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.system.media
 
+import io.github.sds100.keymapper.system.volume.VolumeStream
 import io.github.sds100.keymapper.util.Result
 
 /**
@@ -16,5 +17,5 @@ interface MediaAdapter {
     fun previousTrack(packageName: String? = null): Result<*>
     fun nextTrack(packageName: String? = null): Result<*>
 
-    fun playSoundFile(uri: String):Result<*>
+    fun playSoundFile(uri: String, stream: VolumeStream):Result<*>
 }

@@ -37,6 +37,7 @@ import io.github.sds100.keymapper.system.shell.ShellAdapter
 import io.github.sds100.keymapper.system.url.OpenUrlAdapter
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
+import io.github.sds100.keymapper.system.volume.VolumeStream
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
@@ -663,7 +664,7 @@ class PerformActionsUseCaseImpl(
             }
 
             is SoundAction -> {
-                result = mediaAdapter.playSoundFile(action.soundFileUri)
+                result = mediaAdapter.playSoundFile(action.soundFileUri, VolumeStream.ACCESSIBILITY)
             }
 
             CorruptAction -> {
