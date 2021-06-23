@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapReposit
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntity
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
 import io.github.sds100.keymapper.system.files.FileAdapter
+import io.github.sds100.keymapper.system.files.FileInfo
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.FlowUtils.toListWithTimeout
 import io.github.sds100.keymapper.util.Result
@@ -89,6 +90,14 @@ class BackupManagerTest {
             }
 
             override fun getPicturesFolder(): File {
+                throw Exception()
+            }
+
+            override fun getFileInfo(uri: String): Result<FileInfo> {
+                throw Exception()
+            }
+
+            override fun getPrivateFile(name: String): Result<File> {
                 throw Exception()
             }
         }

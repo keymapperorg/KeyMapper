@@ -260,7 +260,7 @@ object ActionDataEntityMapper {
                 val soundFileDescription = entity.extras.getData(ActionEntity.EXTRA_SOUND_FILE_DESCRIPTION)
                     .valueOrNull()?:return null
 
-                SoundAction(soundFileUid = entity.data, soundDescription = soundFileDescription)
+                SoundAction(soundFileName = entity.data, soundDescription = soundFileDescription)
             }
         }
     }
@@ -310,7 +310,7 @@ object ActionDataEntityMapper {
         is TapCoordinateAction -> "${data.x},${data.y}"
         is TextAction -> data.text
         is UrlAction -> data.url
-        is SoundAction -> data.soundFileUid
+        is SoundAction -> data.soundFileName
     }
 
     private fun getExtras(data: ActionData): List<Extra> = when (data) {

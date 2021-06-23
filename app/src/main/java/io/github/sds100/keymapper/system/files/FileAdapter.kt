@@ -16,5 +16,5 @@ interface FileAdapter {
     fun getPicturesFolder(): File
     fun getFileInfo(uri: String): Result<FileInfo>
 
-    fun createPrivateFile(name: String): Result<OutputStream>
+    fun getPrivateFile(name: String): Result<File>
 }

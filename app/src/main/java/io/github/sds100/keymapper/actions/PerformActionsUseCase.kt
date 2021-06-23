@@ -4,6 +4,7 @@ import android.accessibilityservice.AccessibilityService
 import android.os.Build
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import androidx.core.net.toUri
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.system.SystemActionId
 import io.github.sds100.keymapper.data.Keys
@@ -664,7 +665,9 @@ class PerformActionsUseCaseImpl(
             }
 
             is SoundAction -> {
-                result = mediaAdapter.playSoundFile(action.soundFileUid, VolumeStream.ACCESSIBILITY)
+               result = fileAdapter.getPrivateFile("sounds/${action.soundFileName}").then {file ->
+                   mediaAdapter.playSoundFile(file.toUri().toString(), VolumeStream.ACCESSIBILITY)
+               }
             }
 
             CorruptAction -> {

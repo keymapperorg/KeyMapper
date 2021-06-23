@@ -65,7 +65,7 @@ class AndroidFileAdapter(context: Context) : FileAdapter {
         return Error.FileNotFound(uri)
     }
 
-    override fun createPrivateFile(name: String): Result<OutputStream> {
+    override fun getPrivateFile(name: String): Result<File> {
         try {
             val filesDir = ctx.filesDir
 
@@ -76,7 +76,7 @@ class AndroidFileAdapter(context: Context) : FileAdapter {
             directoryFile.mkdirs()
 
             val file = File(directoryFile, fileName)
-            return Success(file.outputStream())
+            return Success(file)
 
         } catch (e: Exception) {
             return Error.Exception(e)

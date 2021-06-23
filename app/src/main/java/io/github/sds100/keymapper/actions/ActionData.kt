@@ -54,7 +54,7 @@ data class SimpleSystemAction(
 
 @Serializable
 data class SoundAction(
-    val soundFileUid: String,
+    val soundFileName: String,
     val soundDescription: String
 ): ActionData()
 

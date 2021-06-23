@@ -15,17 +15,22 @@ class CreateSoundActionUseCaseImpl(
     private val fileAdapter: FileAdapter
 ) : CreateSoundActionUseCase {
 
+    /**
+     * @return the name of the file
+     */
     override suspend fun storeSoundFile(uri: String): Result<String> {
         val uid = UUID.randomUUID().toString()
 
         return fileAdapter.openInputStream(uri).then { inputStream ->
             fileAdapter
                 .getFileInfo(uri)
-                .then { fileAdapter.createPrivateFile("sounds/$uid.${it.extension}") }
-                .then { outputStream ->
+                .then { fileAdapter.getPrivateFile("sounds/$uid.${it.extension}") }
+                .then { outputFile ->
+                    val outputStream = outputFile.outputStream()
+
                     try {
                         inputStream.copyTo(outputStream)
-                        Success(uid)
+                        Success(outputFile.name)
 
                     } catch (e: Exception) {
                         Error.Exception(e)
