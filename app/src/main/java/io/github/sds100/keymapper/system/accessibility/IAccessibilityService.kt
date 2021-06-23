@@ -15,6 +15,9 @@ interface IAccessibilityService {
     fun requestFingerprintGestureDetection()
     fun denyFingerprintGestureDetection()
 
+    fun enableAccessibilityVolumeStream()
+    fun disableAccessibilityVolumeStream()
+
     fun performActionOnNode(findNode: (node: AccessibilityNodeModel) -> Boolean, performAction: (node: AccessibilityNodeModel) -> AccessibilityNodeAction?): Result<*>
     val rootNode: AccessibilityNodeModel?
 
