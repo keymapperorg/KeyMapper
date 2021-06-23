@@ -6,8 +6,8 @@
         <import type="android.view.View" />
 
         <variable
-            name="onChooseFileClick"
-            type="View.OnClickListener" />
+            name="viewModel"
+            type="io.github.sds100.keymapper.actions.sound.ChooseSoundFileViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -23,7 +23,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:onClick="@{onChooseFileClick}"
+            android:onClick="@{() -> viewModel.onChooseSoundFileButtonClick()}"
             android:text="@string/button_choose_sound_file"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

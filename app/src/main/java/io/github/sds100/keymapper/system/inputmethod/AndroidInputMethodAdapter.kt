@@ -163,7 +163,7 @@ class AndroidInputMethodAdapter(
 
     override suspend fun chooseIme(imeId: String, fromForeground: Boolean): Result<ImeInfo> {
 
-        getInfoById(imeId).onSuccess {
+        getInfoById(imeId).onSuccess {0
             if (!it.isEnabled) {
                 return Error.ImeDisabled(it)
             }

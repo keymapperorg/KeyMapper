@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.widget.ViewPager2
@@ -35,6 +36,7 @@ import io.github.sds100.keymapper.ui.utils.getJsonSerializable
 import io.github.sds100.keymapper.ui.utils.putJsonSerializable
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.setCurrentDestinationLiveData
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
@@ -47,7 +49,9 @@ class ChooseActionFragment : Fragment() {
         const val EXTRA_ACTION = "extra_action"
     }
 
-    private val viewModel by activityViewModels<ChooseActionViewModel> { ChooseActionViewModel.Factory() }
+    private val viewModel by activityViewModels<ChooseActionViewModel> {
+        Inject.chooseActionViewModel(requireContext())
+    }
 
     private val mArgs by navArgs<ChooseActionFragmentArgs>()
 
@@ -149,12 +153,14 @@ class ChooseActionFragment : Fragment() {
             PhoneCallAction(number!!)
         }
 
-        createActionOnResult(ChooseSoundFileFragment.REQUEST_KEY) {
-            val resultJson = it.getString(ChooseSoundFileFragment.EXTRA_RESULT)!!
-
+        childFragmentManager.setFragmentResultListener(
+            ChooseSoundFileFragment.REQUEST_KEY,
+            viewLifecycleOwner
+        ) { _, bundle ->
+            val resultJson = bundle.getString(ChooseSoundFileFragment.EXTRA_RESULT)!!
             val result: ChooseSoundFileResult = Json.decodeFromString(resultJson)
 
-            SoundAction(result.uri, result.description)
+            viewModel.onChooseSoundFile(result)
         }
 
         setFragmentResultListener(KeyCodeListFragment.REQUEST_KEY) { _, result ->
@@ -215,6 +221,15 @@ class ChooseActionFragment : Fragment() {
             })
 
             subscribeSearchView(pagerAdapter)
+        }
+
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+            viewModel.returnAction.collectLatest { action ->
+                setFragmentResult(
+                    mArgs.chooseActionRequestKey,
+                    Bundle().apply { putJsonSerializable(EXTRA_ACTION, action) }
+                )
+            }
         }
     }
 

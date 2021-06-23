@@ -19,6 +19,7 @@ data class Success<T>(val value: T) : Result<T>()
 
 sealed class Error : Result<Nothing>() {
     object FileAccessDenied : Error()
+    object FileCreationFailed : Error()
     data class Exception(val exception: java.lang.Exception) : Error()
     object EmptyJson : Error()
     data class SystemFeatureNotSupported(val feature: String) : Error()
@@ -47,7 +48,7 @@ sealed class Error : Result<Nothing>() {
     object CantBeEmpty : Error()
     object NoIncompatibleKeyboardsInstalled : Error()
     object NoMediaSessions : Error()
-    data class UnknownFileLocation(val path: String) : Error()
+    data class FileNotFound(val uri: String) : Error()
     object BackupVersionTooNew : Error()
     data class CorruptJsonFile(val reason: String) : Error()
     object CorruptActionError : Error()

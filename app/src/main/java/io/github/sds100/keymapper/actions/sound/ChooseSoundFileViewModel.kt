@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
  * Created by sds100 on 31/03/2020.
  */
 class ChooseSoundFileViewModel(
-    resourceProvider: ResourceProvider,
+    resourceProvider: ResourceProvider
 ) : ViewModel(), PopupViewModel by PopupViewModelImpl(), ResourceProvider by resourceProvider {
 
     private val _chooseSoundFile = MutableSharedFlow<Unit>()
@@ -50,7 +50,7 @@ class ChooseSoundFileViewModel(
 
     @Suppress("UNCHECKED_CAST")
     class Factory(
-        private val resourceProvider: ResourceProvider
+        private val resourceProvider: ResourceProvider,
     ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {

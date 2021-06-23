@@ -664,7 +664,7 @@ class PerformActionsUseCaseImpl(
             }
 
             is SoundAction -> {
-                result = mediaAdapter.playSoundFile(action.soundFileUri, VolumeStream.ACCESSIBILITY)
+                result = mediaAdapter.playSoundFile(action.soundFileUid, VolumeStream.ACCESSIBILITY)
             }
 
             CorruptAction -> {

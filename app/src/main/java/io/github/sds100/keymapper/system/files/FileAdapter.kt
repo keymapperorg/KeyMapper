@@ -14,4 +14,7 @@ interface FileAdapter {
     fun openAsset(fileName: String): InputStream
 
     fun getPicturesFolder(): File
+    fun getFileInfo(uri: String): Result<FileInfo>
+
+    fun createPrivateFile(name: String): Result<OutputStream>
 }

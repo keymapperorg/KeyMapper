@@ -833,7 +833,6 @@
     <string name="error_cant_be_empty">Can\'t be empty!</string>
     <string name="error_key_mapper_ime_not_found">Can\'t find the Key Mapper input method!</string>
     <string name="error_download_failed">Download failed!</string>
-    <string name="error_file_not_exists">File doesn\'t exist!</string>
     <string name="error_ssl_handshake_exception">SSL handshake error</string>
     <string name="error_file_not_cached">File isn\'t cached! Connect to internet to download it.</string>
     <string name="error_this_is_unsupported">This is unsupported. :(</string>
@@ -859,7 +858,7 @@
     <string name="error_corrupt_action">Corrupt action</string>
     <string name="error_no_incompatible_input_methods_installed">You only have Key Mapper keyboards installed!</string>
     <string name="error_no_media_sessions">There are no apps playing media!</string>
-    <string name="error_unknown_file_location">Unknown file location!</string>
+    <string name="error_file_not_found">File not found!</string>
     <string name="error_failed_to_dispatch_gesture">Failed to input gesture!</string>
     <string name="error_failed_to_modify_system_setting">Failed to modify system setting %s!</string>
     <string name="error_ime_disabled">You need to enable %s!</string>
@@ -868,6 +867,7 @@
     <string name="error_no_device_assistant">Your device has no assistant!</string>
     <string name="error_no_settings_app">Your device has no settings app!</string>
     <string name="error_no_app_to_open_url">No app can open this url!</string>
+    <string name="error_file_creation_failed">Failed to create the file!</string>
 
     <!-- Error messages -->
 

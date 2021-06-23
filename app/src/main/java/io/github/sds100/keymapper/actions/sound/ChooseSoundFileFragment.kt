@@ -1,11 +1,15 @@
 package io.github.sds100.keymapper.actions.sound
 
+import android.app.admin.DevicePolicyManager
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.getSystemService
+import androidx.core.net.toFile
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
@@ -21,6 +25,7 @@ import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import timber.log.Timber
 
 /**
  * Created by sds100 on 22/06/2021.
@@ -37,15 +42,10 @@ class ChooseSoundFileFragment : Fragment() {
     }
 
     private val chooseSoundFileLauncher =
-        registerForActivityResult(ActivityResultContracts.OpenDocument()) {
+        registerForActivityResult(ActivityResultContracts.GetContent()) {
             it ?: return@registerForActivityResult
 
             viewModel.onChooseSoundFile(it.toString())
-
-            val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-
-            requireContext().contentResolver.takePersistableUriPermission(it, takeFlags)
         }
 
     /**
@@ -66,15 +66,16 @@ class ChooseSoundFileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.viewModel = viewModel
         viewModel.showPopups(this, binding)
 
-        launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.chooseSoundFile.collectLatest {
-                chooseSoundFileLauncher.launch(arrayOf(FileUtils.MIME_TYPE_AUDIO))
+                chooseSoundFileLauncher.launch(FileUtils.MIME_TYPE_AUDIO)
             }
         }
 
-        launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.returnResult.collectLatest { result ->
                 setFragmentResult(
                     REQUEST_KEY,
@@ -82,10 +83,6 @@ class ChooseSoundFileFragment : Fragment() {
                 )
                 findNavController().navigateUp()
             }
-        }
-
-        binding.setOnChooseFileClick {
-            viewModel.onChooseSoundFileButtonClick()
         }
     }
 

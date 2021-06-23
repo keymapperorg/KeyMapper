@@ -5,8 +5,20 @@ import androidx.lifecycle.lifecycleScope
 import io.github.sds100.keymapper.KeyMapperApp
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.UseCases
-import io.github.sds100.keymapper.actions.*
+import io.github.sds100.keymapper.actions.ChooseActionViewModel
+import io.github.sds100.keymapper.actions.CreateSystemActionUseCaseImpl
+import io.github.sds100.keymapper.actions.TestActionUseCaseImpl
+import io.github.sds100.keymapper.actions.UnsupportedActionListViewModel
+import io.github.sds100.keymapper.actions.keyevent.ChooseKeyCodeViewModel
+import io.github.sds100.keymapper.actions.keyevent.ChooseKeyViewModel
+import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventUseCaseImpl
+import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventViewModel
+import io.github.sds100.keymapper.actions.sound.ChooseSoundFileViewModel
+import io.github.sds100.keymapper.actions.sound.CreateSoundActionUseCaseImpl
 import io.github.sds100.keymapper.actions.system.SystemActionListViewModel
+import io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateViewModel
+import io.github.sds100.keymapper.actions.text.TextBlockActionTypeViewModel
+import io.github.sds100.keymapper.actions.url.ChooseUrlViewModel
 import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCaseImpl
 import io.github.sds100.keymapper.constraints.ChooseConstraintViewModel
 import io.github.sds100.keymapper.home.HomeViewModel
@@ -33,20 +45,20 @@ import io.github.sds100.keymapper.system.apps.DisplayAppShortcutsUseCaseImpl
 import io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceUseCaseImpl
 import io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceViewModel
 import io.github.sds100.keymapper.system.intents.ConfigIntentViewModel
-import io.github.sds100.keymapper.actions.keyevent.ChooseKeyCodeViewModel
-import io.github.sds100.keymapper.actions.keyevent.ChooseKeyViewModel
-import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventUseCaseImpl
-import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventViewModel
-import io.github.sds100.keymapper.actions.sound.ChooseSoundFileViewModel
-import io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateViewModel
-import io.github.sds100.keymapper.actions.url.ChooseUrlViewModel
-import io.github.sds100.keymapper.actions.text.TextBlockActionTypeViewModel
 
 /**
  * Created by sds100 on 26/01/2020.
  */
 
 object Inject {
+
+    fun chooseActionViewModel(ctx: Context): ChooseActionViewModel.Factory {
+        return ChooseActionViewModel.Factory(
+            CreateSoundActionUseCaseImpl(
+                ServiceLocator.fileAdapter(ctx)
+            )
+        )
+    }
 
     fun chooseAppViewModel(context: Context): ChooseAppViewModel.Factory {
         return ChooseAppViewModel.Factory(
@@ -107,7 +119,9 @@ object Inject {
     }
 
     fun soundFileActionTypeViewModel(ctx: Context): ChooseSoundFileViewModel.Factory {
-        return ChooseSoundFileViewModel.Factory(ServiceLocator.resourceProvider(ctx))
+        return ChooseSoundFileViewModel.Factory(
+            ServiceLocator.resourceProvider(ctx)
+        )
     }
 
     fun tapCoordinateActionTypeViewModel(context: Context): PickDisplayCoordinateViewModel.Factory {
