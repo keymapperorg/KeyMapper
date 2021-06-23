@@ -178,17 +178,17 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         val keyboardHelper = KeyMapperImeHelper(ServiceLocator.inputMethodAdapter(this))
 
         if (focussedNode?.isEditable == true && focussedNode.isFocused) {
-            Timber.d("focus")
+            Timber.d("Got input focus")
             isFocussed = true
             lifecycleScope.launchWhenStarted {
-                Timber.d("choose incompatible")
+                Timber.d("Choose incompatible ime because got input focus.")
                 keyboardHelper.chooseLastUsedIncompatibleInputMethod(fromForeground = false)
             }
         } else {
-            Timber.d("no focus")
+            Timber.d("Lost input focus")
             isFocussed = false
             lifecycleScope.launchWhenStarted {
-                Timber.d("choose compatible")
+                Timber.d("Choose compatible ime because lost input focus.")
 
                 keyboardHelper.chooseCompatibleInputMethod(fromForeground = false)
             }
