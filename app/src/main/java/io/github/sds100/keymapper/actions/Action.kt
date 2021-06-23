@@ -11,6 +11,7 @@ interface Action {
     val delayBeforeNextAction: Int?
 
     val repeat: Boolean
+    val repeatMode: RepeatMode
     val repeatRate: Int?
     val repeatLimit: Int?
 
