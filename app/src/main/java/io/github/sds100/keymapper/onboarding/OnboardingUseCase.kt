@@ -8,10 +8,9 @@ import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.util.PrefDelegate
-import io.github.sds100.keymapper.util.VersionUtils
+import io.github.sds100.keymapper.util.VersionHelper
 import io.github.sds100.keymapper.util.ifIsData
 import kotlinx.coroutines.flow.*
-import timber.log.Timber
 
 /**
  * Created by sds100 on 14/02/21.
@@ -74,12 +73,17 @@ class OnboardingUseCaseImpl(
     override val showFingerprintFeatureNotificationIfAvailable: Flow<Boolean> by lazy {
         combine(
             get(Keys.lastInstalledVersionCodeBackground).map { it ?: -1 },
-            showWhatsNew
-        ) { oldVersionCode, showWhatsNew ->
+            showWhatsNew,
+            get(Keys.approvedFingerprintFeaturePrompt).map { it ?: false },
+            get(Keys.shownAppIntro).map { it ?: false }
+        ) { oldVersionCode, showWhatsNew, approvedPrompt, shownAppIntro ->
             //has the user opened the app and will have already seen that they can remap fingerprint gestures
             val handledUpdateInHomeScreen = !showWhatsNew
 
-            oldVersionCode < VersionUtils.FINGERPRINT_GESTURES_MIN_VERSION && !handledUpdateInHomeScreen
+            oldVersionCode < VersionHelper.FINGERPRINT_GESTURES_MIN_VERSION
+                && !handledUpdateInHomeScreen
+                && !approvedPrompt
+                && shownAppIntro
         }
     }
 
