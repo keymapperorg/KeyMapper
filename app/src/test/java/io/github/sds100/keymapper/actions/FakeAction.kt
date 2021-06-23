@@ -13,6 +13,7 @@ data class FakeAction(
     override val repeat: Boolean = false,
     override val repeatRate: Int? = null,
     override val repeatLimit: Int? = null,
+    override val repeatMode: RepeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN,
     override val holdDown: Boolean =false,
-    override val holdDownDuration: Int? = null
+    override val holdDownDuration: Int? = null,
 ) : Action

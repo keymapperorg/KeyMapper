@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 /**
  * Created by sds100 on 11/12/20.
@@ -36,8 +37,13 @@ class TriggerKeyMapFromOtherAppsController(
     }
 
     fun onDetected(uid: String) {
-        val keyMap = keyMapList.find { it.uid == uid } ?: return
+        val keyMap = keyMapList.find { it.uid == uid }
+        if (keyMap != null) {
+            onDetected(keyMap.uid, keyMap)
 
-        onDetected(keyMap.uid, keyMap)
+            Timber.d("Triggered key map successfully from Intent, $keyMap")
+        }else{
+            Timber.d("Failed to trigger key map from intent because key map doesn't exist, uid = $uid")
+        }
     }
 }
