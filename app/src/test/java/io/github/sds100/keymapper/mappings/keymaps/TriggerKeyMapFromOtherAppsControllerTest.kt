@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.mappings.keymaps
 
 import io.github.sds100.keymapper.actions.KeyEventAction
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
+import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.ConstraintSnapshot
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
@@ -102,9 +103,14 @@ class TriggerKeyMapFromOtherAppsControllerTest {
      * #707
      */
     @Test
-    fun `Key map with repeat option, don't repeat when triggered`() = coroutineScope.runBlockingTest {
+    fun `Key map with repeat option, don't repeat when triggered if repeat until released`() = coroutineScope.runBlockingTest {
         //GIVEN
-        val action = KeyMapAction(data = KeyEventAction(keyCode = 1), repeat = true)
+        val action =
+            KeyMapAction(
+                data = KeyEventAction(keyCode = 1),
+                repeat = true,
+                repeatMode = RepeatMode.TRIGGER_RELEASED
+            )
         val keyMap = KeyMap(actionList = listOf(action), trigger = KeyMapTrigger(triggerFromOtherApps = true))
         keyMapListFlow.value = listOf(keyMap)
 

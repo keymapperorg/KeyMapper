@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.mappings
 
 import io.github.sds100.keymapper.actions.Action
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
+import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.util.*
@@ -72,7 +73,7 @@ abstract class SimpleMappingController(
             mapping.actionList.forEach { action ->
                 if (performActionsUseCase.getError(action.data) != null) return@forEach
 
-                if (action.repeat) {
+                if (action.repeat && action.repeatMode != RepeatMode.TRIGGER_RELEASED) {
                     var alreadyRepeating = false
 
                     for (job in this@SimpleMappingController.repeatJobs[mappingId] ?: emptyList()) {
