@@ -73,6 +73,7 @@
             Inputting this key as an action will only work if you are using a Key Mapper compatible keyboard.</string>
     <string name="caption_action_type_keycode">IMPORTANT!
             Inputting this key code as an action will only work if you are using a Key Mapper compatible keyboard.</string>
+    <string name="caption_action_type_sound">The sound file will be copied to Key Mapper\'s private data folder, which means your actions will still work even if the file is moved or deleted. It will also be backed up with your key maps in the zip folder.</string>
 
     <string name="caption_action_type_text">Type some text you want to be inserted when you perform this action.</string>
     <string name="caption_action_type_phone_call">Enter the phone number.</string>
