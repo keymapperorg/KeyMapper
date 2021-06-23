@@ -77,7 +77,7 @@ abstract class SimpleMappingController(
                     var alreadyRepeating = false
 
                     for (job in this@SimpleMappingController.repeatJobs[mappingId] ?: emptyList()) {
-                        if (job.actionUid == action.uid) {
+                        if (job.actionUid == action.uid && action.repeatMode == RepeatMode.TRIGGER_PRESSED_AGAIN) {
                             alreadyRepeating = true
                             job.cancel()
                             break

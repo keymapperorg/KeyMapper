@@ -1,9 +1,11 @@
 package io.github.sds100.keymapper.mappings.fingerprintmaps
 
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.mappings.ConfigActionOptionsViewModel
 import io.github.sds100.keymapper.mappings.OptionMinimums
 import io.github.sds100.keymapper.mappings.isDelayBeforeNextActionAllowed
+import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapActionOptionsViewModel
 import io.github.sds100.keymapper.util.Defaultable
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.CoroutineScope
@@ -20,7 +22,12 @@ class ConfigFingerprintMapActionOptionsViewModel(
 
     companion object {
         private const val ID_REPEAT_RATE = "repeat_rate"
-        private const val ID_REPEAT_UNTIL_SWIPED_AGAIN = "repeat_until_swiped_again"
+        private const val ID_REPEAT = "repeat_until_swiped_again"
+
+        private const val ID_STOP_REPEATING_TRIGGER_PRESSED_AGAIN =
+            "stop_repeating_trigger_pressed_again"
+        private const val ID_STOP_REPEATING_LIMIT_REACHED = "stop_repeating_limit_reached"
+
         private const val ID_MULTIPLIER = "multiplier"
         private const val ID_HOLD_DOWN_UNTIL_SWIPED_AGAIN = "hold_down"
         private const val ID_DELAY_BEFORE_NEXT_ACTION = "delay_before_next_action"
@@ -28,7 +35,19 @@ class ConfigFingerprintMapActionOptionsViewModel(
         private const val ID_REPEAT_LIMIT = "repeat_limit"
     }
 
-    override fun setRadioButtonValue(id: String, value: Boolean) {}
+    override fun setRadioButtonValue(id: String, value: Boolean) {
+        val actionUid = actionUid.value?:return
+
+        when(id){
+            ID_STOP_REPEATING_TRIGGER_PRESSED_AGAIN -> if (value) {
+                config.setActionStopRepeatingWhenTriggerPressedAgain(actionUid)
+            }
+
+            ID_STOP_REPEATING_LIMIT_REACHED -> if (value) {
+                config.setActionStopRepeatingWhenLimitReached(actionUid)
+            }
+        }
+    }
 
     override fun setSliderValue(id: String, value: Defaultable<Int>) {
         val actionUid = actionUid.value ?: return
@@ -52,7 +71,7 @@ class ConfigFingerprintMapActionOptionsViewModel(
         val actionUid = actionUid.value ?: return
 
         when (id) {
-            ID_REPEAT_UNTIL_SWIPED_AGAIN -> config.setActionRepeatEnabled(actionUid, value)
+            ID_REPEAT -> config.setActionRepeatEnabled(actionUid, value)
             ID_HOLD_DOWN_UNTIL_SWIPED_AGAIN -> config.setActionHoldDownEnabled(actionUid, value)
         }
     }
@@ -63,8 +82,8 @@ class ConfigFingerprintMapActionOptionsViewModel(
             if (mapping.isRepeatingActionsAllowed()) {
                 yield(
                     CheckBoxListItem(
-                        id = ID_REPEAT_UNTIL_SWIPED_AGAIN,
-                        label = getString(R.string.flag_repeat_actions_swiped_again),
+                        id = ID_REPEAT,
+                        label = getString(R.string.flag_repeat_actions),
                         isChecked = action.repeat
                     )
                 )
@@ -87,18 +106,49 @@ class ConfigFingerprintMapActionOptionsViewModel(
             }
 
             if (mapping.isChangingRepeatLimitAllowed(action)) {
+                //only allow setting it to no limit if the action doesn't repeat until the limit is reached
+                val isNoLimitAllowed = action.repeatMode != RepeatMode.LIMIT_REACHED
+
+                val sliderValue = if (action.repeatMode == RepeatMode.LIMIT_REACHED) {
+                    if (action.repeatLimit == null) {
+                        Defaultable.Custom(1)
+                    } else {
+                        Defaultable.Custom(action.repeatLimit)
+                    }
+
+                } else {
+                    Defaultable.create(action.repeatLimit)
+                }
+
                 yield(
                     SliderListItem(
                         id = ID_REPEAT_LIMIT,
                         label = getString(R.string.extra_label_repeat_limit),
                         sliderModel = SliderModel(
-                            value = Defaultable.create(action.repeatLimit),
-                            isDefaultStepEnabled = true,
+                            value = sliderValue,
+                            isDefaultStepEnabled = isNoLimitAllowed,
                             min = 1,
                             max = 20,
                             stepSize = 1,
                             customButtonDefaultText = getString(R.string.button_slider_repeat_no_limit)
                         ),
+                    )
+                )
+            }
+
+            if (mapping.isChangingRepeatModeAllowed(action)) {
+                yield(
+                    RadioButtonPairListItem(
+                        id = "repeat_mode",
+                        header = getString(R.string.stop_repeating_dot_dot_dot),
+
+                        leftButtonId = ID_STOP_REPEATING_TRIGGER_PRESSED_AGAIN,
+                        leftButtonText = getString(R.string.stop_repeating_when_swiped_again),
+                        leftButtonChecked = action.repeatMode == RepeatMode.TRIGGER_PRESSED_AGAIN,
+
+                        rightButtonId = ID_STOP_REPEATING_LIMIT_REACHED,
+                        rightButtonText = getString(R.string.stop_repeating_limit_reached),
+                        rightButtonChecked = action.repeatMode == RepeatMode.LIMIT_REACHED
                     )
                 )
             }

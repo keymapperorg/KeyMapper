@@ -66,10 +66,26 @@ object FingerprintMapActionEntityMapper {
             .valueOrNull()
             ?.toIntOrNull()
 
+        val repeatMode: RepeatMode = if (entity.flags.hasFlag(ActionEntity.ACTION_FLAG_REPEAT)) {
+            val repeatBehaviourExtra =
+                entity.extras.getData(ActionEntity.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR)
+                    .valueOrNull()
+                    ?.toIntOrNull()
+
+            when (repeatBehaviourExtra) {
+                ActionEntity.STOP_REPEAT_BEHAVIOUR_LIMIT_REACHED -> RepeatMode.LIMIT_REACHED
+                ActionEntity.STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN -> RepeatMode.TRIGGER_PRESSED_AGAIN
+                else -> RepeatMode.TRIGGER_PRESSED_AGAIN //Don't allow until released
+            }
+        } else {
+            RepeatMode.TRIGGER_PRESSED_AGAIN
+        }
+
         return FingerprintMapAction(
             uid = entity.uid,
             data = data,
             repeat = entity.flags.hasFlag(ActionEntity.ACTION_FLAG_REPEAT),
+            repeatMode = repeatMode,
             holdDownUntilSwipedAgain = entity.flags.hasFlag(ActionEntity.ACTION_FLAG_HOLD_DOWN),
             repeatRate = repeatRate,
             repeatLimit = repeatLimit,
@@ -102,6 +118,25 @@ object FingerprintMapActionEntityMapper {
                         Extra(
                             ActionEntity.EXTRA_HOLD_DOWN_DURATION,
                             action.holdDownDuration.toString()
+                        )
+                    )
+                }
+
+                if (fingerprintMap.isChangingRepeatModeAllowed(action) && action.repeatMode == RepeatMode.TRIGGER_PRESSED_AGAIN
+                ) {
+                    add(
+                        Extra(
+                            ActionEntity.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR,
+                            ActionEntity.STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN.toString()
+                        )
+                    )
+                }
+
+                if (fingerprintMap.isChangingRepeatModeAllowed(action) && action.repeatMode == RepeatMode.LIMIT_REACHED) {
+                    add(
+                        Extra(
+                            ActionEntity.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR,
+                            ActionEntity.STOP_REPEAT_BEHAVIOUR_LIMIT_REACHED.toString()
                         )
                     )
                 }

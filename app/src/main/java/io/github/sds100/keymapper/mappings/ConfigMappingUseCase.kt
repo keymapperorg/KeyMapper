@@ -102,6 +102,8 @@ interface ConfigMappingUseCase<ACTION : Action, T : Mapping<ACTION>> {
     fun setDelayBeforeNextAction(uid: String, delay: Int?)
     fun setActionRepeatRate(uid: String, repeatRate: Int?)
     fun setActionRepeatLimit(uid: String, repeatLimit: Int?)
+    fun setActionStopRepeatingWhenTriggerPressedAgain(uid: String)
+    fun setActionStopRepeatingWhenLimitReached(uid: String)
 
     fun addConstraint(constraint: Constraint): Boolean
     fun removeConstraint(id: String)

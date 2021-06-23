@@ -466,8 +466,6 @@ interface ConfigKeyMapUseCase : ConfigMappingUseCase<KeyMapAction, KeyMap> {
     fun setActionHoldDownEnabled(uid: String, holdDown: Boolean)
     fun setActionHoldDownDuration(uid: String, holdDownDuration: Int?)
     fun setActionStopRepeatingWhenTriggerReleased(uid: String)
-    fun setActionStopRepeatingWhenTriggerPressedAgain(uid: String)
-    fun setActionStopRepeatingWhenLimitReached(uid: String)
 
     fun setActionStopHoldingDownWhenTriggerPressedAgain(uid: String, enabled: Boolean)
 }
