@@ -218,7 +218,6 @@ object Inject {
             AppIntroUseCaseImpl(
                 ServiceLocator.permissionAdapter(context),
                 ServiceLocator.serviceAdapter(context),
-                ServiceLocator.systemFeatureAdapter(context),
                 ServiceLocator.preferenceRepository(context),
                 UseCases.fingerprintGesturesSupported(context)
             ),

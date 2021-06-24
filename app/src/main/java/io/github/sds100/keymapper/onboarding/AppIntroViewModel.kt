@@ -51,12 +51,6 @@ class AppIntroViewModel(
     val openUrl = _openUrl.asSharedFlow()
 
     val slidesToShow = slides.mapNotNull { slide ->
-        if (slide == AppIntroSlide.FINGERPRINT_GESTURE_SUPPORT
-            && !useCase.deviceHasFingerprintReader()
-        ) {
-            return@mapNotNull null
-        }
-
         slide
     }
 

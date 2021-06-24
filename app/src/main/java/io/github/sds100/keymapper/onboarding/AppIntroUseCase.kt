@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.collectLatest
 class AppIntroUseCaseImpl(
     private val permissionAdapter: PermissionAdapter,
     private val serviceAdapter: ServiceAdapter,
-    private val systemFeatureAdapter: SystemFeatureAdapter,
     private val preferenceRepository: PreferenceRepository,
     private val fingerprintGesturesSupportedUseCase: AreFingerprintGesturesSupportedUseCase
 ) : AppIntroUseCase {
@@ -44,14 +43,6 @@ class AppIntroUseCaseImpl(
 
     override val fingerprintGesturesSupported: Flow<Boolean?> =
         fingerprintGesturesSupportedUseCase.isSupported
-
-    override fun deviceHasFingerprintReader(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            systemFeatureAdapter.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)
-        } else {
-            false
-        }
-    }
 
     override fun ignoreBatteryOptimisation() {
         permissionAdapter.request(Permission.IGNORE_BATTERY_OPTIMISATION)
@@ -82,7 +73,6 @@ interface AppIntroUseCase {
     val isBatteryOptimised: Flow<Boolean>
     val fingerprintGesturesSupported: Flow<Boolean?>
 
-    fun deviceHasFingerprintReader(): Boolean
     fun ignoreBatteryOptimisation()
     fun enableAccessibilityService()
     fun restartAccessibilityService()
