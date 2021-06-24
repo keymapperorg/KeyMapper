@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
@@ -19,20 +20,27 @@ class SplashActivity : FragmentActivity() {
         val onboarding = UseCases.onboarding(this)
 
         val appIntroSlides: List<AppIntroSlide>
+        val systemFeatureAdapter = ServiceLocator.systemFeatureAdapter(this@SplashActivity)
 
         if (!onboarding.shownAppIntro) {
-            appIntroSlides = listOf(
-                AppIntroSlide.NOTE_FROM_DEV,
-                AppIntroSlide.ACCESSIBILITY_SERVICE,
-                AppIntroSlide.BATTERY_OPTIMISATION,
-                AppIntroSlide.FINGERPRINT_GESTURE_SUPPORT,
-                AppIntroSlide.DO_NOT_DISTURB,
-                AppIntroSlide.CONTRIBUTING,
-            )
+            appIntroSlides = sequence {
+                yield(AppIntroSlide.NOTE_FROM_DEV)
+
+                yield(AppIntroSlide.ACCESSIBILITY_SERVICE)
+                yield(AppIntroSlide.BATTERY_OPTIMISATION)
+
+                if (systemFeatureAdapter.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
+                    yield(AppIntroSlide.FINGERPRINT_GESTURE_SUPPORT)
+                }
+
+                yield(AppIntroSlide.DO_NOT_DISTURB)
+                yield(AppIntroSlide.CONTRIBUTING)
+            }.toList()
         } else {
             appIntroSlides = sequence {
                 if (!onboarding.approvedFingerprintFeaturePrompt
                     && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                    && systemFeatureAdapter.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)
                 ) {
                     yield(AppIntroSlide.FINGERPRINT_GESTURE_SUPPORT)
                 }
