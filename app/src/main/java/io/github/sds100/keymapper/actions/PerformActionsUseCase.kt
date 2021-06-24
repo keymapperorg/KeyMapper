@@ -652,7 +652,7 @@ class PerformActionsUseCaseImpl(
                             accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_POWER_DIALOG)
                     }
 
-                    SystemActionId.VOLUME_SHOW_DIALOG ->{
+                    SystemActionId.VOLUME_SHOW_DIALOG -> {
                         result = volumeAdapter.showVolumeUi()
                     }
 
@@ -665,9 +665,10 @@ class PerformActionsUseCaseImpl(
             }
 
             is SoundAction -> {
-               result = fileAdapter.getPrivateFile("sounds/${action.soundFileName}").then {file ->
-                   mediaAdapter.playSoundFile(file.toUri().toString(), VolumeStream.ACCESSIBILITY)
-               }
+                result = fileAdapter.getPrivateFile("${FileUtils.SOUNDS_DIR_NAME}/${action.soundFileName}")
+                    .then { file ->
+                        mediaAdapter.playSoundFile(file.toUri().toString(), VolumeStream.ACCESSIBILITY)
+                    }
             }
 
             CorruptAction -> {

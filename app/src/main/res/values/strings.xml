@@ -859,7 +859,7 @@
     <string name="error_corrupt_action">Corrupt action</string>
     <string name="error_no_incompatible_input_methods_installed">You only have Key Mapper keyboards installed!</string>
     <string name="error_no_media_sessions">There are no apps playing media!</string>
-    <string name="error_file_not_found">File not found!</string>
+    <string name="error_file_not_found">File not found! %s</string>
     <string name="error_failed_to_dispatch_gesture">Failed to input gesture!</string>
     <string name="error_failed_to_modify_system_setting">Failed to modify system setting %s!</string>
     <string name="error_ime_disabled">You need to enable %s!</string>
@@ -869,6 +869,7 @@
     <string name="error_no_settings_app">Your device has no settings app!</string>
     <string name="error_no_app_to_open_url">No app can open this url!</string>
     <string name="error_file_creation_failed">Failed to create the file!</string>
+    <string name="error_not_a_directory">Not a folder!</string>
 
     <!-- Error messages -->
 

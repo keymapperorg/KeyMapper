@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.media.AudioAttributes
 import android.media.AudioManager
+import android.media.MediaDataSource
 import android.media.MediaPlayer
 import android.media.session.MediaController
 import android.media.session.MediaSessionManager
@@ -16,7 +17,7 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.volume.VolumeStream
 import io.github.sds100.keymapper.util.*
-import splitties.bitflags.withFlag
+import java.io.FileNotFoundException
 
 /**
  * Created by sds100 on 21/04/2021.
@@ -104,6 +105,8 @@ class AndroidMediaAdapter(
             }
 
             return Success(Unit)
+        } catch (e: FileNotFoundException) {
+            return Error.FileNotFound(uri)
         } catch (e: Exception) {
             return Error.Exception(e)
         }

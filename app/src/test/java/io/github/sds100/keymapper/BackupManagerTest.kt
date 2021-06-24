@@ -13,10 +13,8 @@ import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapReposit
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntity
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
 import io.github.sds100.keymapper.system.files.FileAdapter
-import io.github.sds100.keymapper.system.files.FileInfo
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.FlowUtils.toListWithTimeout
-import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.Success
 import kotlinx.coroutines.Dispatchers
@@ -29,14 +27,17 @@ import org.hamcrest.Matchers.`is`
 import org.hamcrest.core.IsInstanceOf
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
-import org.mockito.Mockito.never
-import org.mockito.Mockito.times
-import org.mockito.Mockito.verify
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.*
-import java.io.*
+import java.io.File
+import java.io.InputStream
+import java.io.PipedInputStream
+import java.io.PipedOutputStream
+
 
 /**
  * Created by sds100 on 19/04/2021.
@@ -47,12 +48,20 @@ import java.io.*
 @RunWith(MockitoJUnitRunner::class)
 class BackupManagerTest {
 
+    companion object {
+        private const val BACKUP_ZIP_FOLDER = "backup"
+    }
+
+    @get:Rule
+    val tempFolder = TemporaryFolder()
+
     private val testDispatcher = TestCoroutineDispatcher()
     private val coroutineScope = TestCoroutineScope(testDispatcher)
 
     private val dispatcherProvider = TestDispatcherProvider(testDispatcher)
 
     private lateinit var backupManager: BackupManagerImpl
+    private lateinit var mockFileAdapter: FileAdapter
     private lateinit var fakePreferenceRepository: PreferenceRepository
     private lateinit var mockKeyMapRepository: KeyMapRepository
     private lateinit var mockFingerprintMapRepository: FingerprintMapRepository
@@ -63,7 +72,6 @@ class BackupManagerTest {
 
     @Before
     fun init() {
-
         mockKeyMapRepository = mock {
             on { requestBackup } doReturn MutableSharedFlow()
         }
@@ -76,35 +84,35 @@ class BackupManagerTest {
 
         outputStream = PipedOutputStream()
 
-        val fileAdapter = object : FileAdapter {
-            override fun openOutputStream(uriString: String): Result<OutputStream> {
-                return Success(outputStream)
+        mockFileAdapter = mock {
+            on { openOutputStream(any()) }.then {
+                Success(outputStream)
             }
 
-            override fun openInputStream(uriString: String): Result<InputStream> {
-                return Success(getJson(uriString))
+            on { openInputStream(any()) }.then {
+                Success(getJson(it.getArgument(0)))
             }
 
-            override fun openAsset(fileName: String): InputStream {
-                throw Exception()
+            on { getPrivateDirectory(any()) }.then {
+                Success(tempFolder.newFolder(it.getArgument(0)))
             }
 
-            override fun getPicturesFolder(): File {
-                throw Exception()
-            }
+            on { createZipFile(any(), any()) }.then {
+                val files: List<File> = it.getArgument(1)
+                val zipFolder = tempFolder.newFolder(BACKUP_ZIP_FOLDER)
 
-            override fun getFileInfo(uri: String): Result<FileInfo> {
-                throw Exception()
-            }
+                files.forEach { file ->
+                    val destinationFile = File(zipFolder, file.name)
+                    file.copyTo(destinationFile)
+                }
 
-            override fun getPrivateFile(name: String): Result<File> {
-                throw Exception()
+                Success(zipFolder)
             }
         }
 
         backupManager = BackupManagerImpl(
             coroutineScope,
-            fileAdapter = fileAdapter,
+            fileAdapter = mockFileAdapter,
             keyMapRepository = mockKeyMapRepository,
             preferenceRepository = fakePreferenceRepository,
             fingerprintMapRepository = mockFingerprintMapRepository,
@@ -275,6 +283,7 @@ class BackupManagerTest {
     @Test
     fun `backup all fingerprint maps, return list of fingerprint maps and app database version`() =
         coroutineScope.runBlockingTest {
+
             val fingerprintMapsToBackup = listOf(
                 FingerprintMapEntity(id = FingerprintMapEntity.ID_SWIPE_DOWN),
                 FingerprintMapEntity(id = FingerprintMapEntity.ID_SWIPE_UP),
@@ -300,7 +309,7 @@ class BackupManagerTest {
 
             coroutineScope.resumeDispatcher()
 
-            val json = inputStream.bufferedReader().use { it.readText() }
+            val json = File(tempFolder.root, "$BACKUP_ZIP_FOLDER/data.json").bufferedReader().use { it.readText() }
             val rootElement = parser.parse(json)
 
             assertThat(
@@ -334,7 +343,8 @@ class BackupManagerTest {
 
             coroutineScope.resumeDispatcher()
 
-            val rootJsonElement = inputStream.bufferedReader().use { it.readText() }
+            val rootJsonElement = File(tempFolder.root, "$BACKUP_ZIP_FOLDER/data.json")
+                .bufferedReader().use { it.readText() }
             val rootElement = parser.parse(rootJsonElement)
             val keymapListJsonArray = rootElement["keymap_list"].asJsonArray
 

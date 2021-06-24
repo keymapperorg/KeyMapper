@@ -18,6 +18,8 @@ object FileUtils {
     const val MIME_TYPE_ALL = "*/*"
     const val MIME_TYPE_AUDIO = "audio/*"
 
+    const val SOUNDS_DIR_NAME = "sounds"
+
     @SuppressLint("SimpleDateFormat")
     fun createFileDate(): String {
         val date = Calendar.getInstance().time

@@ -5,6 +5,7 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.*
 import com.google.gson.annotations.SerializedName
 import com.google.gson.stream.MalformedJsonException
+import io.github.sds100.keymapper.actions.SoundAction
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.db.AppDatabase
@@ -15,20 +16,31 @@ import io.github.sds100.keymapper.data.migration.*
 import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintMapMigration_0_1
 import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintMapMigration_1_2
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.mappings.Mapping
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapEntity
+import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapEntityMapper
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapRepository
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntity
+import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntityMapper
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
 import io.github.sds100.keymapper.system.files.FileAdapter
+import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
 import java.util.*
+import java.nio.charset.StandardCharsets
+
+import java.security.MessageDigest
+
+
+
 
 /**
  * Created by sds100 on 16/03/2021.
@@ -56,6 +68,12 @@ class BackupManagerImpl(
         private const val NAME_DEFAULT_REPEAT_DELAY = "default_repeat_delay"
         private const val NAME_DEFAULT_REPEAT_RATE = "default_repeat_rate"
         private const val NAME_DEFAULT_SEQUENCE_TRIGGER_TIMEOUT = "default_sequence_trigger_timeout"
+
+        //DON'T CHANGE THIS.
+        private const val JSON_FILE_NAME = "data.json"
+        private const val SOUNDS_DIR_NAME = "sounds"
+
+        private const val TEMP_BACKUP_ROOT_DIR = "backup_temp"
     }
 
     override val onBackupResult = MutableSharedFlow<Result<*>>()
@@ -376,52 +394,107 @@ class BackupManagerImpl(
                 outputStream.channel.truncate(0)
             }
 
-            outputStream.bufferedWriter().use { writer ->
-
-                val json = gson.toJson(
-                    BackupModel(
-                        AppDatabase.DATABASE_VERSION,
-                        keyMapList,
-                        fingerprintMaps,
-                        defaultLongPressDelay =
-                        preferenceRepository
-                            .get(Keys.defaultLongPressDelay)
-                            .first()
-                            .takeIf { it != PreferenceDefaults.LONG_PRESS_DELAY },
-                        defaultDoublePressDelay =
-                        preferenceRepository
-                            .get(Keys.defaultDoublePressDelay)
-                            .first()
-                            .takeIf { it != PreferenceDefaults.DOUBLE_PRESS_DELAY },
-                        defaultRepeatDelay =
-                        preferenceRepository
-                            .get(Keys.defaultRepeatDelay)
-                            .first()
-                            .takeIf { it != PreferenceDefaults.REPEAT_DELAY },
-                        defaultRepeatRate =
-                        preferenceRepository
-                            .get(Keys.defaultRepeatRate)
-                            .first()
-                            .takeIf { it != PreferenceDefaults.REPEAT_RATE },
-                        defaultSequenceTriggerTimeout =
-                        preferenceRepository
-                            .get(Keys.defaultSequenceTriggerTimeout)
-                            .first()
-                            .takeIf { it != PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT },
-                        defaultVibrationDuration =
-                        preferenceRepository
-                            .get(Keys.defaultVibrateDuration)
-                            .first()
-                            .takeIf { it != PreferenceDefaults.VIBRATION_DURATION },
-                    )
+            val json = gson.toJson(
+                BackupModel(
+                    AppDatabase.DATABASE_VERSION,
+                    keyMapList,
+                    fingerprintMaps,
+                    defaultLongPressDelay =
+                    preferenceRepository
+                        .get(Keys.defaultLongPressDelay)
+                        .first()
+                        .takeIf { it != PreferenceDefaults.LONG_PRESS_DELAY },
+                    defaultDoublePressDelay =
+                    preferenceRepository
+                        .get(Keys.defaultDoublePressDelay)
+                        .first()
+                        .takeIf { it != PreferenceDefaults.DOUBLE_PRESS_DELAY },
+                    defaultRepeatDelay =
+                    preferenceRepository
+                        .get(Keys.defaultRepeatDelay)
+                        .first()
+                        .takeIf { it != PreferenceDefaults.REPEAT_DELAY },
+                    defaultRepeatRate =
+                    preferenceRepository
+                        .get(Keys.defaultRepeatRate)
+                        .first()
+                        .takeIf { it != PreferenceDefaults.REPEAT_RATE },
+                    defaultSequenceTriggerTimeout =
+                    preferenceRepository
+                        .get(Keys.defaultSequenceTriggerTimeout)
+                        .first()
+                        .takeIf { it != PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT },
+                    defaultVibrationDuration =
+                    preferenceRepository
+                        .get(Keys.defaultVibrateDuration)
+                        .first()
+                        .takeIf { it != PreferenceDefaults.VIBRATION_DURATION },
                 )
+            )
 
-                writer.write(json)
+            val backupUid = UUID.randomUUID().toString()
+
+            val tempBackupDir = fileAdapter.getPrivateDirectory("$TEMP_BACKUP_ROOT_DIR/$backupUid")
+                .onFailure { return@async it }
+                .valueOrNull()
+
+            val jsonDataFile = File(tempBackupDir, JSON_FILE_NAME).apply {
+                bufferedWriter().use { writer ->
+                    writer.write(json)
+                }
             }
+
+            val mappings = mutableListOf<Mapping<*>>()
+
+            if (keyMapList != null) {
+                keyMapList
+                    .map { KeyMapEntityMapper.fromEntity(it) }
+                    .let { mappings.addAll(it) }
+            }
+
+            if (fingerprintMaps != null) {
+                fingerprintMaps
+                    .map { FingerprintMapEntityMapper.fromEntity(it) }
+                    .let { mappings.addAll(it) }
+            }
+
+            //file names of sounds to back up
+            val soundsToBackup = mappings
+                .flatMap { it.actionList }
+                .filter { it.data is SoundAction }
+                .map { (it.data as SoundAction).soundFileName }
+                .toSet()
+
+            val soundsBackupDirectory = File(tempBackupDir, SOUNDS_DIR_NAME).apply {
+                mkdir()
+            }
+
+            fileAdapter.getPrivateDirectory(FileUtils.SOUNDS_DIR_NAME).onSuccess { soundsDirectory ->
+                soundsDirectory.listFiles()?.forEach { soundFile ->
+                    if (soundsToBackup.contains(soundFile.name)) {
+                        val destFile = File(soundsBackupDirectory, soundFile.name)
+                        soundFile.copyTo(destFile)
+                        destFile.createNewFile()
+                    }
+                }
+            }
+
+            val zipFile = File(tempBackupDir, "backup.zip")
+            fileAdapter.createZipFile(zipFile, listOf(jsonDataFile, soundsBackupDirectory))
+
+            zipFile.createNewFile()
+
+            zipFile.inputStream().use { it.copyTo(outputStream) }
+
+            tempBackupDir?.deleteRecursively()
 
             return@async Success(Unit)
         } catch (e: Exception) {
-            if (throwExceptions) throw e
+            Timber.e(e)
+
+            if (throwExceptions) {
+                throw e
+            }
 
             return@async Error.Exception(e)
         }

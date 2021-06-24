@@ -108,6 +108,7 @@ sealed class Error : Result<Nothing>() {
     data class FailedToModifySystemSetting(val setting: String):Error()
     object FailedToChangeIme:Error()
     object NoAppToOpenUrl: Error()
+    object NotADirectory: Error()
 }
 
 inline fun <T> Result<T>.onSuccess(f: (T) -> Unit): Result<T> {

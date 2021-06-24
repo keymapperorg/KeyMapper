@@ -7,7 +7,7 @@ import android.provider.OpenableColumns
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
-import timber.log.Timber
+import net.lingala.zip4j.ZipFile
 import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
@@ -65,6 +65,9 @@ class AndroidFileAdapter(context: Context) : FileAdapter {
         return Error.FileNotFound(uri)
     }
 
+    /**
+     * @param [name] The path with file name and extension.
+     */
     override fun getPrivateFile(name: String): Result<File> {
         try {
             val filesDir = ctx.filesDir
@@ -83,11 +86,49 @@ class AndroidFileAdapter(context: Context) : FileAdapter {
         }
     }
 
+    /**
+     * @param [name] The path with file name and extension.
+     */
+    override fun getPrivateDirectory(name: String): Result<File> {
+        try {
+            val directory = File(ctx.filesDir, name)
+
+            if (directory.exists() && !directory.isDirectory) {
+                return Error.NotADirectory
+            }
+
+            directory.mkdirs()
+
+            return Success(directory)
+
+        } catch (e: Exception) {
+            return Error.Exception(e)
+        }
+    }
+
     override fun openAsset(fileName: String): InputStream {
         return ctx.assets.open(fileName)
     }
 
     override fun getPicturesFolder(): File {
         return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+    }
+
+    override fun createZipFile(destinationFile: File, files: List<File>): Result<*> {
+        try {
+            ZipFile(destinationFile).apply {
+                files.forEach { file ->
+                    if (file.isDirectory) {
+                        addFolder(file)
+                    } else {
+                        addFile(file)
+                    }
+                }
+            }
+
+            return Success(Unit)
+        } catch (e: Exception) {
+            return Error.Exception(e)
+        }
     }
 }

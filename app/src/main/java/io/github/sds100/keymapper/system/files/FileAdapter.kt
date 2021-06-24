@@ -17,4 +17,7 @@ interface FileAdapter {
     fun getFileInfo(uri: String): Result<FileInfo>
 
     fun getPrivateFile(name: String): Result<File>
+    fun getPrivateDirectory(name: String): Result<File>
+
+    fun createZipFile(destinationFile: File, files: List<File>): Result<*>
 }

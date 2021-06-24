@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.actions.sound
 
 import io.github.sds100.keymapper.system.files.FileAdapter
+import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
@@ -24,7 +25,7 @@ class CreateSoundActionUseCaseImpl(
         return fileAdapter.openInputStream(uri).then { inputStream ->
             fileAdapter
                 .getFileInfo(uri)
-                .then { fileAdapter.getPrivateFile("sounds/$uid.${it.extension}") }
+                .then { fileAdapter.getPrivateFile("${FileUtils.SOUNDS_DIR_NAME}/$uid.${it.extension}") }
                 .then { outputFile ->
                     val outputStream = outputFile.outputStream()
 

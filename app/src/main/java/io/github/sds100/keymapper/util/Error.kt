@@ -64,7 +64,7 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
     Error.NoIncompatibleKeyboardsInstalled -> resourceProvider.getString(R.string.error_no_incompatible_input_methods_installed)
     Error.NoMediaSessions -> resourceProvider.getString(R.string.error_no_media_sessions)
     Error.NoVoiceAssistant -> resourceProvider.getString(R.string.error_voice_assistant_not_found)
-    is Error.FileNotFound -> resourceProvider.getString(R.string.error_file_not_found)
+    is Error.FileNotFound -> resourceProvider.getString(R.string.error_file_not_found, uri)
     Error.AccessibilityServiceDisabled -> resourceProvider.getString(R.string.error_accessibility_service_disabled)
     Error.Duplicate -> resourceProvider.getString(R.string.error_duplicate_constraint)
     Error.LauncherShortcutsNotSupported -> resourceProvider.getString(R.string.error_launcher_shortcuts_not_supported)
@@ -98,6 +98,7 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
     Error.NoSettingsApp -> resourceProvider.getString(R.string.error_no_settings_app)
     Error.NoAppToOpenUrl -> resourceProvider.getString(R.string.error_no_app_to_open_url)
     Error.FileCreationFailed -> resourceProvider.getString(R.string.error_file_creation_failed)
+    Error.NotADirectory -> resourceProvider.getString(R.string.error_not_a_directory)
 }
 
 val Error.isFixable: Boolean
