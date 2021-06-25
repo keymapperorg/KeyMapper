@@ -106,6 +106,18 @@ platform :android do
       is_prerelease: pre_release
     )
 
+    supply(
+        aab: "./app/build/outputs/bundle/release/app-release.aab",
+        track: "beta",
+        release_status: "draft",
+        skip_upload_apk: true
+    )
+
+    publishBeforePush = prompt(
+            text: "Publish GitHub release before pushing changed versions to git.",
+            boolean: true
+           )
+
     set_properties_value(
         path: "./app/version.properties",
         key: "VERSION_NAME",
@@ -118,9 +130,7 @@ platform :android do
         path: "./app/version.properties"
       )
 
-    git_commit(path: "./app/src/main/assets/whats-new.txt", message: "chore (release): update whats-new.txt")
-    git_commit(path: "./fastlane/metadata/android/en-US/changelogs/" + version_code + ".txt", message: "chore (release): create changelog for release")
-    git_commit(path: "./app/version.properties", message: "chore (release): version bump")
+    git_commit(path: ["./app/src/main/assets/whats-new.txt", "./fastlane/metadata/android/en-US/changelogs/" + version_code + ".txt", "./app/version.properties"], message: "chore (release): update changelog, whats_new and version")
 
     ensure_git_status_clean
 
@@ -135,10 +145,5 @@ platform :android do
 
     git_commit(path: "./app/version.properties", message: "chore (release): version bump")
 
-    supply(
-        aab: "./app/build/outputs/bundle/release/app-release.aab",
-        track: beta,
-        release_status: draft
-    )
   end
 end
