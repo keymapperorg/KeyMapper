@@ -1,12 +1,9 @@
 package io.github.sds100.keymapper.util.ui
 
 import android.app.Dialog
-import android.app.UiModeManager
 import android.content.Context
-import android.content.res.Configuration
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.getSystemService
 import androidx.lifecycle.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.sds100.keymapper.R
@@ -116,10 +113,11 @@ suspend fun <ID> Context.singleChoiceDialog(
 suspend fun Context.editTextStringAlertDialog(
     lifecycleOwner: LifecycleOwner,
     hint: String,
-    allowEmpty: Boolean = false
+    allowEmpty: Boolean = false,
+    initialText: String = ""
 ) = suspendCancellableCoroutine<PopupUi.TextResponse?> { continuation ->
 
-    val text = MutableStateFlow("")
+    val text = MutableStateFlow(initialText)
 
     val alertDialog = materialAlertDialog {
         val inflater = LayoutInflater.from(this@editTextStringAlertDialog)
@@ -161,7 +159,7 @@ suspend fun Context.editTextNumberAlertDialog(
     lifecycleOwner: LifecycleOwner,
     hint: String,
     min: Int? = null,
-    max: Int? = null
+    max: Int? = null,
 ) = suspendCancellableCoroutine<Int?> { continuation ->
 
     fun isValid(text: String?): Result<Int> {

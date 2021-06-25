@@ -117,7 +117,8 @@ object Inject {
 
     fun soundFileActionTypeViewModel(ctx: Context): ChooseSoundFileViewModel.Factory {
         return ChooseSoundFileViewModel.Factory(
-            ServiceLocator.resourceProvider(ctx)
+            ServiceLocator.resourceProvider(ctx),
+            ServiceLocator.fileAdapter(ctx)
         )
     }
 

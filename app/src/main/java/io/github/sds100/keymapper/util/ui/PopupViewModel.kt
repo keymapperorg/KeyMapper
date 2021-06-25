@@ -108,7 +108,8 @@ fun PopupViewModel.showPopups(
                 is PopupUi.Text -> ctx.editTextStringAlertDialog(
                     lifecycleOwner,
                     event.ui.hint,
-                    event.ui.allowEmpty
+                    event.ui.allowEmpty,
+                    event.ui.text
                 )
 
                 is PopupUi.Dialog -> ctx.materialAlertDialog(lifecycleOwner, event.ui)

@@ -23,7 +23,7 @@ sealed class PopupUi<RESPONSE : PopupResponse> {
         val negativeButtonText: String? = null
     ) : PopupUi<DialogResponse>()
 
-    data class Text(val hint: String, val allowEmpty: Boolean) : PopupUi<TextResponse>()
+    data class Text(val hint: String, val allowEmpty: Boolean, val text: String = "") : PopupUi<TextResponse>()
     data class TextResponse(val text: String) : PopupResponse
 
     data class SingleChoice<ID>(val items: List<Pair<ID, String>>) :
