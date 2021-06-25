@@ -4,10 +4,13 @@ import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import android.provider.OpenableColumns
+import androidx.core.net.toUri
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
-import net.lingala.zip4j.ZipFile
+import net.lingala.zip4j.io.outputstream.ZipOutputStream
+import net.lingala.zip4j.model.ZipParameters
+import net.lingala.zip4j.model.enums.CompressionMethod
 import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
@@ -50,6 +53,7 @@ class AndroidFileAdapter(context: Context) : FileAdapter {
 
     override fun getFileInfo(uri: String): Result<FileInfo> {
         val projection = arrayOf(OpenableColumns.DISPLAY_NAME)
+
         ctx.contentResolver.query(Uri.parse(uri), projection, null, null, null)
             ?.use { cursor ->
                 val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
@@ -65,45 +69,94 @@ class AndroidFileAdapter(context: Context) : FileAdapter {
         return Error.FileNotFound(uri)
     }
 
-    /**
-     * @param [name] The path with file name and extension.
-     */
-    override fun getPrivateFile(name: String): Result<File> {
+    override fun createPrivateFile(path: String): Result<OutputStream> {
         try {
             val filesDir = ctx.filesDir
 
-            val directory = name.substringBeforeLast('/')
-            val fileName = name.substringAfterLast('/')
+            val directories = path.substringBeforeLast('/')
 
-            val directoryFile = File(filesDir, directory)
-            directoryFile.mkdirs()
+            if (directories.isNotBlank()) {
+                File(filesDir, directories).apply {
+                    mkdirs()
+                }
+            }
 
-            val file = File(directoryFile, fileName)
-            return Success(file)
+            val file = File(filesDir, path)
+            file.createNewFile()
+            return Success(file.outputStream())
 
         } catch (e: Exception) {
             return Error.Exception(e)
         }
     }
 
-    /**
-     * @param [name] The path with file name and extension.
-     */
-    override fun getPrivateDirectory(name: String): Result<File> {
+    override fun readPrivateFile(path: String): Result<InputStream> {
         try {
-            val directory = File(ctx.filesDir, name)
+            val file = File(ctx.filesDir, path)
 
-            if (directory.exists() && !directory.isDirectory) {
-                return Error.NotADirectory
+            if (!file.exists()) {
+                return Error.FileNotFound(path)
             }
 
-            directory.mkdirs()
+            return Success(file.inputStream())
 
+        } catch (e: Exception) {
+            return Error.Exception(e)
+        }
+    }
+
+    override fun deletePrivateFile(path: String): Result<*> {
+        try {
+            val filesDir = ctx.filesDir
+            val file = File(filesDir, path)
+            file.deleteRecursively()
+
+            return Success(Unit)
+
+        } catch (e: Exception) {
+            return Error.Exception(e)
+        }
+    }
+
+    override fun writePrivateFile(path: String): Result<OutputStream> {
+        try {
+            val file = File(ctx.filesDir, path)
+
+            if (!file.exists()) {
+                return Error.FileNotFound(path)
+            }
+
+            return Success(file.outputStream())
+
+        } catch (e: Exception) {
+            return Error.Exception(e)
+        }
+    }
+
+    override fun createPrivateDirectory(path: String): Result<*> {
+        try {
+            val directory = File(ctx.filesDir, path)
+            directory.mkdirs()
             return Success(directory)
 
         } catch (e: Exception) {
             return Error.Exception(e)
         }
+    }
+
+    override fun deletePrivateDirectory(path: String): Result<*> {
+        try {
+            val directory = File(ctx.filesDir, path)
+            directory.deleteRecursively()
+            return Success(directory)
+
+        } catch (e: Exception) {
+            return Error.Exception(e)
+        }
+    }
+
+    override fun getUriForPrivateFile(path: String): Result<String> {
+        return Success(File(ctx.filesDir, path).toUri().toString())
     }
 
     override fun openAsset(fileName: String): InputStream {
@@ -114,21 +167,41 @@ class AndroidFileAdapter(context: Context) : FileAdapter {
         return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
     }
 
-    override fun createZipFile(destinationFile: File, files: List<File>): Result<*> {
+    /**
+     * @param [files] A list of paths to the files/directories that should be zipped. They must be in private storage.
+     */
+    override fun createZipFile(destination: OutputStream, files: Set<String>): Result<*> {
         try {
-            ZipFile(destinationFile).apply {
-                files.forEach { file ->
-                    if (file.isDirectory) {
-                        addFolder(file)
-                    } else {
-                        addFile(file)
-                    }
-                }
+
+            val zipParameters = ZipParameters().apply {
+                compressionMethod = CompressionMethod.DEFLATE
+            }
+
+            ZipOutputStream(destination).use { zipOutput ->
+                files
+                    .map { File(ctx.filesDir, it) }
+                    .toTypedArray()
+                    .let { recursivelyAddFilesToZip(it, zipParameters, zipOutput) }
             }
 
             return Success(Unit)
+
         } catch (e: Exception) {
             return Error.Exception(e)
+        }
+    }
+
+    private fun recursivelyAddFilesToZip(files: Array<File>, zipParameters: ZipParameters, zipOutput: ZipOutputStream) {
+        files.forEach { file ->
+            if (file.isDirectory) {
+                recursivelyAddFilesToZip(file.listFiles() ?: emptyArray(), zipParameters, zipOutput)
+            } else {
+                zipParameters.fileNameInZip = file.path
+                zipOutput.putNextEntry(zipParameters)
+
+                file.inputStream().use { it.copyTo(zipOutput) }
+                zipOutput.closeEntry()
+            }
         }
     }
 }

@@ -6,6 +6,7 @@ import com.google.gson.*
 import com.google.gson.annotations.SerializedName
 import com.google.gson.stream.MalformedJsonException
 import io.github.sds100.keymapper.actions.SoundAction
+import io.github.sds100.keymapper.actions.sound.SoundsManager
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.db.AppDatabase
@@ -24,22 +25,15 @@ import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntity
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntityMapper
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
 import io.github.sds100.keymapper.system.files.FileAdapter
-import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
 import java.util.*
-import java.nio.charset.StandardCharsets
-
-import java.security.MessageDigest
-
-
 
 
 /**
@@ -52,8 +46,9 @@ class BackupManagerImpl(
     private val keyMapRepository: KeyMapRepository,
     private val preferenceRepository: PreferenceRepository,
     private val fingerprintMapRepository: FingerprintMapRepository,
+    private val soundsManager: SoundsManager,
     private val throwExceptions: Boolean = false,
-    private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()
+    private val dispatchers: DispatcherProvider = DefaultDispatcherProvider(),
 ) : BackupManager {
 
     companion object {
@@ -70,7 +65,7 @@ class BackupManagerImpl(
         private const val NAME_DEFAULT_SEQUENCE_TRIGGER_TIMEOUT = "default_sequence_trigger_timeout"
 
         //DON'T CHANGE THIS.
-        private const val JSON_FILE_NAME = "data.json"
+        private const val DATA_JSON_FILE_NAME = "data.json"
         private const val SOUNDS_DIR_NAME = "sounds"
 
         private const val TEMP_BACKUP_ROOT_DIR = "backup_temp"
@@ -372,7 +367,6 @@ class BackupManagerImpl(
             return Error.CorruptJsonFile(e.message ?: "")
 
         } catch (e: Exception) {
-
             if (throwExceptions) {
                 e.printStackTrace()
                 throw e
@@ -384,14 +378,16 @@ class BackupManagerImpl(
 
     @Suppress("BlockingMethodInNonBlockingContext")
     private fun backupAsync(
-        outputStream: OutputStream,
+        backupOutputStream: OutputStream,
         keyMapList: List<KeyMapEntity>? = null,
         fingerprintMaps: List<FingerprintMapEntity>? = null
     ) = coroutineScope.async(dispatchers.io()) {
+        var tempBackupDirectory: String? = null
+
         try {
             //delete the contents of the file
-            if (outputStream is FileOutputStream) {
-                outputStream.channel.truncate(0)
+            if (backupOutputStream is FileOutputStream) {
+                backupOutputStream.channel.truncate(0)
             }
 
             val json = gson.toJson(
@@ -434,15 +430,27 @@ class BackupManagerImpl(
 
             val backupUid = UUID.randomUUID().toString()
 
-            val tempBackupDir = fileAdapter.getPrivateDirectory("$TEMP_BACKUP_ROOT_DIR/$backupUid")
-                .onFailure { return@async it }
-                .valueOrNull()
-
-            val jsonDataFile = File(tempBackupDir, JSON_FILE_NAME).apply {
-                bufferedWriter().use { writer ->
-                    writer.write(json)
-                }
+            tempBackupDirectory = "$TEMP_BACKUP_ROOT_DIR/$backupUid"
+            fileAdapter.createPrivateDirectory(tempBackupDirectory).onFailure {
+                return@async it
             }
+
+            val filesToBackup = mutableSetOf<String>()
+
+            val dataJsonFile = "$tempBackupDirectory/$DATA_JSON_FILE_NAME"
+
+            fileAdapter.createPrivateFile(dataJsonFile)
+                .then { outputStream ->
+                    outputStream.bufferedWriter().use {
+                        it.write(json)
+                    }
+                    Success(Unit)
+                }
+                .onFailure {
+                    return@async it
+                }
+
+            filesToBackup.add(dataJsonFile)
 
             val mappings = mutableListOf<Mapping<*>>()
 
@@ -465,28 +473,30 @@ class BackupManagerImpl(
                 .map { (it.data as SoundAction).soundFileName }
                 .toSet()
 
-            val soundsBackupDirectory = File(tempBackupDir, SOUNDS_DIR_NAME).apply {
-                mkdir()
-            }
+            if (soundsToBackup.isNotEmpty()) {
+                val soundsBackupDirectory = "$tempBackupDirectory/$SOUNDS_DIR_NAME"
+                fileAdapter.createPrivateDirectory(soundsBackupDirectory).onFailure {
+                    return@async it
+                }
 
-            fileAdapter.getPrivateDirectory(FileUtils.SOUNDS_DIR_NAME).onSuccess { soundsDirectory ->
-                soundsDirectory.listFiles()?.forEach { soundFile ->
-                    if (soundsToBackup.contains(soundFile.name)) {
-                        val destFile = File(soundsBackupDirectory, soundFile.name)
-                        soundFile.copyTo(destFile)
-                        destFile.createNewFile()
+                soundsToBackup.forEach { soundFileName ->
+                    soundsManager.getSound(soundFileName).then { sound ->
+
+                        fileAdapter.createPrivateFile("$soundsBackupDirectory/$soundFileName")
+                            .onSuccess { soundBackup ->
+                                sound.copyTo(soundBackup)
+                                sound.close()
+                                soundBackup.close()
+                            }
+                    }.onFailure {
+                        return@async it
                     }
                 }
+
+                filesToBackup.add(soundsBackupDirectory)
             }
 
-            val zipFile = File(tempBackupDir, "backup.zip")
-            fileAdapter.createZipFile(zipFile, listOf(jsonDataFile, soundsBackupDirectory))
-
-            zipFile.createNewFile()
-
-            zipFile.inputStream().use { it.copyTo(outputStream) }
-
-            tempBackupDir?.deleteRecursively()
+            fileAdapter.createZipFile(backupOutputStream, filesToBackup)
 
             return@async Success(Unit)
         } catch (e: Exception) {
@@ -497,6 +507,10 @@ class BackupManagerImpl(
             }
 
             return@async Error.Exception(e)
+        } finally {
+            if (tempBackupDirectory != null) {
+                fileAdapter.deletePrivateDirectory(tempBackupDirectory)
+            }
         }
     }
 

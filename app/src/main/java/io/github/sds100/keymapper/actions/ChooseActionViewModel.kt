@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileResult
-import io.github.sds100.keymapper.actions.sound.CreateSoundActionUseCase
+import io.github.sds100.keymapper.actions.sound.SoundsManager
+import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.onFailure
 import io.github.sds100.keymapper.util.onSuccess
 import io.github.sds100.keymapper.util.ui.PopupViewModel
@@ -19,7 +21,7 @@ import timber.log.Timber
  */
 
 class ChooseActionViewModel(
-    private val createSoundActionUseCase: CreateSoundActionUseCase
+    private val soundsManager: SoundsManager
 ) : ViewModel(), PopupViewModel by PopupViewModelImpl() {
 
     var currentTabPosition: Int = 0
@@ -29,23 +31,26 @@ class ChooseActionViewModel(
 
     fun onChooseSoundFile(result: ChooseSoundFileResult) {
         viewModelScope.launch {
-            createSoundActionUseCase.storeSoundFile(result.uri).apply {
-            }.onSuccess { soundFileUid ->
-                _returnAction.emit(SoundAction(soundFileUid, result.description))
-            }.onFailure {
-                Timber.e(it.toString())
+            soundsManager.saveSound(result.uri)
+                .onSuccess { soundFileUid ->
+                    _returnAction.emit(SoundAction(soundFileUid, result.description))
+                }.onFailure {
+                    if (it is Error.Exception) {
+                        it.exception.printStackTrace()
+                    }
+                    Timber.e(it.toString())
 //todo
-            }
+                }
         }
     }
 
     @Suppress("UNCHECKED_CAST")
     class Factory(
-        private val createSoundActionUseCase: CreateSoundActionUseCase
+        private val soundsManager: SoundsManager
     ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return ChooseActionViewModel(createSoundActionUseCase) as T
+            return ChooseActionViewModel(soundsManager) as T
         }
     }
 }

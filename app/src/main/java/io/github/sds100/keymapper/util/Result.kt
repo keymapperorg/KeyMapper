@@ -49,6 +49,7 @@ sealed class Error : Result<Nothing>() {
     object NoIncompatibleKeyboardsInstalled : Error()
     object NoMediaSessions : Error()
     data class FileNotFound(val uri: String) : Error()
+    data class DirectoryNotFound(val uri: String) : Error()
     object BackupVersionTooNew : Error()
     data class CorruptJsonFile(val reason: String) : Error()
     object CorruptActionError : Error()

@@ -4,8 +4,8 @@ import android.accessibilityservice.AccessibilityService
 import android.os.Build
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityNodeInfo
-import androidx.core.net.toUri
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.actions.sound.SoundsManager
 import io.github.sds100.keymapper.actions.system.SystemActionId
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
@@ -79,7 +79,8 @@ class PerformActionsUseCaseImpl(
     private val nfcAdapter: NfcAdapter,
     private val openUrlAdapter: OpenUrlAdapter,
     private val resourceProvider: ResourceProvider,
-    private val preferenceRepository: PreferenceRepository
+    private val preferenceRepository: PreferenceRepository,
+    private val soundsManager: SoundsManager
 ) : PerformActionsUseCase {
 
     private val openMenuHelper by lazy { OpenMenuHelper(suAdapter, accessibilityService) }
@@ -665,10 +666,9 @@ class PerformActionsUseCaseImpl(
             }
 
             is SoundAction -> {
-                result = fileAdapter.getPrivateFile("${FileUtils.SOUNDS_DIR_NAME}/${action.soundFileName}")
-                    .then { file ->
-                        mediaAdapter.playSoundFile(file.toUri().toString(), VolumeStream.ACCESSIBILITY)
-                    }
+                result = soundsManager.getSoundUri(action.soundFileName).then { uri ->
+                    mediaAdapter.playSoundFile(uri, VolumeStream.ACCESSIBILITY)
+                }
             }
 
             CorruptAction -> {

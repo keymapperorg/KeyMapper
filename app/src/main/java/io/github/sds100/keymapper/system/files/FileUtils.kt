@@ -1,8 +1,6 @@
 package io.github.sds100.keymapper.system.files
 
 import android.annotation.SuppressLint
-import android.content.Context
-import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -17,8 +15,6 @@ object FileUtils {
     const val MIME_TYPE_PNG = "image/png"
     const val MIME_TYPE_ALL = "*/*"
     const val MIME_TYPE_AUDIO = "audio/*"
-
-    const val SOUNDS_DIR_NAME = "sounds"
 
     @SuppressLint("SimpleDateFormat")
     fun createFileDate(): String {

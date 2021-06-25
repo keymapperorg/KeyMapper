@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-class DataStorePreferenceRepository(
+class SettingsPreferenceRepository(
     context: Context,
     private val coroutineScope: CoroutineScope
 ) : PreferenceRepository {

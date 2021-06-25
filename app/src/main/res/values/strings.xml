@@ -870,6 +870,7 @@
     <string name="error_no_app_to_open_url">No app can open this url!</string>
     <string name="error_file_creation_failed">Failed to create the file!</string>
     <string name="error_not_a_directory">Not a folder!</string>
+    <string name="error_directory_not_found">Directory not found! %s</string>
 
     <!-- Error messages -->
 

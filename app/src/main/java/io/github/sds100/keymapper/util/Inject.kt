@@ -14,7 +14,6 @@ import io.github.sds100.keymapper.actions.keyevent.ChooseKeyViewModel
 import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventUseCaseImpl
 import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventViewModel
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileViewModel
-import io.github.sds100.keymapper.actions.sound.CreateSoundActionUseCaseImpl
 import io.github.sds100.keymapper.actions.system.SystemActionListViewModel
 import io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateViewModel
 import io.github.sds100.keymapper.actions.text.TextBlockActionTypeViewModel
@@ -54,9 +53,7 @@ object Inject {
 
     fun chooseActionViewModel(ctx: Context): ChooseActionViewModel.Factory {
         return ChooseActionViewModel.Factory(
-            CreateSoundActionUseCaseImpl(
-                ServiceLocator.fileAdapter(ctx)
-            )
+            ServiceLocator.soundsManager(ctx)
         )
     }
 
@@ -93,7 +90,7 @@ object Inject {
         context: Context
     ): ConfigKeyEventViewModel.Factory {
         val useCase = ConfigKeyEventUseCaseImpl(
-            preferenceRepository = ServiceLocator.preferenceRepository(context),
+            preferenceRepository = ServiceLocator.settingsRepository(context),
             devicesAdapter = ServiceLocator.devicesAdapter(context)
         )
         return ConfigKeyEventViewModel.Factory(
@@ -202,13 +199,13 @@ object Inject {
             ListFingerprintMapsUseCaseImpl(
                 ServiceLocator.fingerprintMapRepository(ctx),
                 ServiceLocator.backupManager(ctx),
-                ServiceLocator.preferenceRepository(ctx),
+                ServiceLocator.settingsRepository(ctx),
                 UseCases.displaySimpleMapping(ctx)
             ),
             UseCases.pauseMappings(ctx),
             BackupRestoreMappingsUseCaseImpl(ServiceLocator.backupManager(ctx)),
             ShowHomeScreenAlertsUseCaseImpl(
-                ServiceLocator.preferenceRepository(ctx),
+                ServiceLocator.settingsRepository(ctx),
                 ServiceLocator.permissionAdapter(ctx),
                 UseCases.controlAccessibilityService(ctx),
                 UseCases.pauseMappings(ctx)
@@ -222,7 +219,7 @@ object Inject {
     fun settingsViewModel(context: Context): SettingsViewModel.Factory {
         return SettingsViewModel.Factory(
             ConfigSettingsUseCaseImpl(
-                ServiceLocator.preferenceRepository(context),
+                ServiceLocator.settingsRepository(context),
                 ServiceLocator.permissionAdapter(context),
                 ServiceLocator.inputMethodAdapter(context),
                 ServiceLocator.suAdapter(context),
@@ -240,7 +237,7 @@ object Inject {
                 ServiceLocator.permissionAdapter(context),
                 ServiceLocator.serviceAdapter(context),
                 ServiceLocator.systemFeatureAdapter(context),
-                ServiceLocator.preferenceRepository(context),
+                ServiceLocator.settingsRepository(context),
                 UseCases.fingerprintGesturesSupported(context)
             ),
             slides,

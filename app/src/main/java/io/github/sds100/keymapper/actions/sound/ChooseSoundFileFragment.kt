@@ -81,7 +81,6 @@ class ChooseSoundFileFragment : Fragment() {
                     REQUEST_KEY,
                     bundleOf(EXTRA_RESULT to Json.encodeToString(result))
                 )
-                findNavController().navigateUp()
             }
         }
     }

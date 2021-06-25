@@ -39,6 +39,7 @@ import io.github.sds100.keymapper.util.ui.setCurrentDestinationLiveData
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import timber.log.Timber
 
 /**
  * A placeholder fragment containing a simple view.
@@ -229,6 +230,7 @@ class ChooseActionFragment : Fragment() {
                     mArgs.chooseActionRequestKey,
                     Bundle().apply { putJsonSerializable(EXTRA_ACTION, action) }
                 )
+                findNavController().navigateUp()
             }
         }
     }
