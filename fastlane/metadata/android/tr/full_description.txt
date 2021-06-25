@@ -5,8 +5,6 @@ Nelere yeni tuş atanabilir.
  *Gezinme tuşları. 
  *Bluetooth/kablolu klavyeler. 
  *Diğer eşleştirilen cihazlardaki tuşlar da çalışır.
- *Nintendo Switch Joycons.
- *Chubby Buttons 2.
 
 Sadece DONANIM tuşları yeniden atanabilir.
 Bu düğmelerden herhangi birinin çalışacağından HİÇBİR GARANTİ yoktur ve bu uygulama oyunları kontrol etmek için TASARLANMAMIŞTIR. Cihazınızın OEM/satıcısı tuş atamanızı engelleyebilir.
@@ -14,8 +12,6 @@ Bu düğmelerden herhangi birinin çalışacağından HİÇBİR GARANTİ yoktur 
 Bir "tetikleyici" oluşturmak için belirli bir cihazdan veya herhangi bir cihazdan birden fazla anahtarı birleştirebilirsiniz. 1 tetikleyici bir kaç hesapta kullanılabilir. Tuşlar aynı anda veya sırayla birbiri ardına basılacak şekilde ayarlanabilir. Tuşlar kısa tıklama, çift tıklama ya da uzun tıklama olarak atanabilir. Bir anahtar eşleme bir dizi "kısıtlamaya" sahip olabilir, bu nedenle yalnızca belirli durumlarda bir etkiye sahiptir.
 
 Neler atanamaz?
- *Pixel Active Edge
- *OnePlus Uyarı Kaydırıcısı
  *Güç Tuşu
  *Bixby Tuşu
  *Fare Tuşları
