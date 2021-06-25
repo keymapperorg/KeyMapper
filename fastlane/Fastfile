@@ -26,6 +26,19 @@ platform :android do
     git_add
     git_commit(path: "*", message: "chore (release): update changelog, whats_new and version")
 
+    ensure_git_status_clean
+
+    sh "git checkout develop"
+    sh "git pull"
+
+    # increment version code in develop
+        increment_version_code_in_properties_file(
+            key: "VERSION_CODE",
+            path: "./app/version.properties"
+          )
+
+    git_commit(path: "./app/version.properties", message: "chore (release): version bump")
+
   end
 
   desc "Create and deploy beta release"
