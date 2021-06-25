@@ -22,24 +22,11 @@ platform :android do
   end
 
   lane :testing do
-    version_code = get_properties_value(key: "VERSION_CODE", path: "./app/version.properties")
 
-    git_commit(path: "./app/src/main/assets/whats-new.txt", message: "chore (release): update whats-new.txt")
-    git_commit(path: "./fastlane/metadata/android/en-US/changelogs/" + version_code + ".txt", message: "chore (release): create changelog for release")
-    git_commit(path: "./app/version.properties", message: "chore (release): version bump")
+    git_add
+    git_commit(path: "*", message: "chore (release): update changelog, whats_new and version")
 
-    ensure_git_status_clean
-
-    sh "git checkout develop"
-    sh "git pull"
-
-    # increment version code in develop
-        increment_version_code_in_properties_file(
-            key: "VERSION_CODE",
-            path: "./app/version.properties"
-          )
-
-    git_commit(path: "./app/version.properties", message: "chore (release): version bump")  end
+  end
 
   desc "Create and deploy beta release"
   lane :beta do
@@ -130,7 +117,8 @@ platform :android do
         path: "./app/version.properties"
       )
 
-    git_commit(path: ["./app/src/main/assets/whats-new.txt", "./fastlane/metadata/android/en-US/changelogs/" + version_code + ".txt", "./app/version.properties"], message: "chore (release): update changelog, whats_new and version")
+    git_add
+    git_commit(path: "*", message: "chore (release): update changelog, whats_new and version")
 
     ensure_git_status_clean
 
