@@ -16,7 +16,7 @@ interface FileAdapter {
     fun getPicturesFolder(): File
     fun getFileInfo(uri: String): Result<FileInfo>
 
-    fun getUriForPrivateFile(path: String):Result<String>
+    fun getUriForPrivateFile(path: String): Result<String>
 
     fun createPrivateFile(path: String): Result<OutputStream>
     fun readPrivateFile(path: String): Result<InputStream>
@@ -24,6 +24,11 @@ interface FileAdapter {
     fun deletePrivateFile(path: String): Result<*>
     fun createPrivateDirectory(path: String): Result<*>
     fun deletePrivateDirectory(path: String): Result<*>
+
+    /**
+     * @return a list of paths to all the files and directories.
+     */
+    fun getFilesInPrivateDirectory(path: String): Result<Set<String>>
 
     fun createZipFile(destination: OutputStream, files: Set<String>): Result<*>
 }

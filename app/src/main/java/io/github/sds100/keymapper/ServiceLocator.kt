@@ -142,6 +142,7 @@ object ServiceLocator {
     fun soundsManager(context: Context): SoundsManager {
         synchronized(this) {
             return soundsManager ?: SoundsManagerImpl(
+                (context.applicationContext as KeyMapperApp).appCoroutineScope,
                 fileAdapter(context),
             ).also {
                 this.soundsManager = it

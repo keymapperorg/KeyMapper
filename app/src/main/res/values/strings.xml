@@ -73,7 +73,8 @@
             Inputting this key as an action will only work if you are using a Key Mapper compatible keyboard.</string>
     <string name="caption_action_type_keycode">IMPORTANT!
             Inputting this key code as an action will only work if you are using a Key Mapper compatible keyboard.</string>
-    <string name="caption_action_type_sound">The sound file will be copied to Key Mapper\'s private data folder, which means your actions will still work even if the file is moved or deleted. It will also be backed up with your key maps in the zip folder.</string>
+    <string name="caption_action_type_sound">The sound file will be copied to Key Mapper\'s private data folder, which means your actions will still work even if the file is moved or deleted. It will also be backed up with your key maps in the zip folder.
+    You can delete saved sound files in the settings.</string>
 
     <string name="caption_action_type_text">Type some text you want to be inserted when you perform this action.</string>
     <string name="caption_action_type_phone_call">Enter the phone number.</string>
@@ -218,6 +219,7 @@
     <string name="toast_triggered_keymap">You\'ve triggered a mapping</string>
     <string name="toast_copied_log">Copied log</string>
     <string name="toast_root_features_turned_on">Root features are now enabled</string>
+    <string name="toast_failed_to_choose_sound_file">Selecting the sound file failed! Check the log.</string>
     <!--  Toasts  -->
 
     <!-- Extra labels -->
@@ -870,7 +872,9 @@
     <string name="error_no_app_to_open_url">No app can open this url!</string>
     <string name="error_file_creation_failed">Failed to create the file!</string>
     <string name="error_not_a_directory">Not a folder!</string>
+    <string name="error_not_a_file">Not a file!</string>
     <string name="error_directory_not_found">Directory not found! %s</string>
+    <string name="error_cant_find_sound_file">Can\'t find sound file!</string>
 
     <!-- Error messages -->
 

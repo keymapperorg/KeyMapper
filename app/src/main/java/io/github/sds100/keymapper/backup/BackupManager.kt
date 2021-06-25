@@ -470,7 +470,7 @@ class BackupManagerImpl(
             val soundsToBackup = mappings
                 .flatMap { it.actionList }
                 .filter { it.data is SoundAction }
-                .map { (it.data as SoundAction).soundFileName }
+                .map { (it.data as SoundAction).soundUid }
                 .toSet()
 
             if (soundsToBackup.isNotEmpty()) {
@@ -479,10 +479,10 @@ class BackupManagerImpl(
                     return@async it
                 }
 
-                soundsToBackup.forEach { soundFileName ->
-                    soundsManager.getSound(soundFileName).then { sound ->
+                soundsToBackup.forEach { soundUid ->
+                    soundsManager.getSound(soundUid).then { sound ->
 
-                        fileAdapter.createPrivateFile("$soundsBackupDirectory/$soundFileName")
+                        fileAdapter.createPrivateFile("$soundsBackupDirectory/$soundUid")
                             .onSuccess { soundBackup ->
                                 sound.copyTo(soundBackup)
                                 sound.close()

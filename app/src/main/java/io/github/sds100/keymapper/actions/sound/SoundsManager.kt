@@ -2,10 +2,11 @@ package io.github.sds100.keymapper.actions.sound
 
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.FileInfo
-import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.Result
-import io.github.sds100.keymapper.util.Success
-import io.github.sds100.keymapper.util.then
+import io.github.sds100.keymapper.util.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import java.io.InputStream
 import java.util.*
 
@@ -14,10 +15,19 @@ import java.util.*
  */
 
 class SoundsManagerImpl(
+    private val coroutineScope: CoroutineScope,
     private val fileAdapter: FileAdapter,
 ) : SoundsManager {
     companion object {
         private const val SOUNDS_DIR_NAME = "sounds"
+    }
+
+    override val soundFiles = MutableStateFlow<List<SoundFileInfo>>(emptyList())
+
+    init {
+        coroutineScope.launch {
+            updateSoundFilesFlow()
+        }
     }
 
     override suspend fun saveSound(uri: String): Result<String> {
@@ -45,24 +55,59 @@ class SoundsManagerImpl(
                             }
                     }
             }
+            .onSuccess { updateSoundFilesFlow() }
     }
 
-    override fun getSoundUri(fileName: String): Result<String> {
-        return fileAdapter.getUriForPrivateFile("$SOUNDS_DIR_NAME/$fileName")
+    override fun getSoundUri(uid: String): Result<String> {
+        return getSoundFilePath(uid).then { path ->
+            fileAdapter.getUriForPrivateFile(path)
+        }
     }
 
     private fun deleteSound(fileName: String): Result<*> {
+        updateSoundFilesFlow()
         TODO("Not yet implemented")
     }
 
-    override fun getSoundName(fileName: String): String {
-        val nameWithUid = fileName.substringBeforeLast('.') // e.g "bla_32a3b1289"
-
-        return nameWithUid.substringBeforeLast('_')
+    override fun getSound(uid: String): Result<InputStream> {
+        return getSoundFilePath(uid).then { path ->
+            fileAdapter.readPrivateFile(path)
+        }
     }
 
-    override fun getSound(fileName: String): Result<InputStream> {
-        return fileAdapter.readPrivateFile("$SOUNDS_DIR_NAME/$fileName")
+    private fun getSoundFileInfo(fileName: String): SoundFileInfo {
+        val name = fileName.substringBeforeLast('_')
+        val extension = fileName.substringAfterLast('.')
+
+        val uid = fileName
+            .substringBeforeLast('.')// e.g "bla_32a3b1289"
+            .substringAfterLast('_')
+
+        return SoundFileInfo(uid, "$name.$extension")
+    }
+
+    private fun updateSoundFilesFlow() {
+        fileAdapter.createPrivateDirectory(SOUNDS_DIR_NAME)
+
+        soundFiles.value = fileAdapter
+            .getFilesInPrivateDirectory(SOUNDS_DIR_NAME)
+            .valueOrNull()!!
+            .map { it.substringAfterLast('/') } //file name
+            .map { getSoundFileInfo(it) }
+
+    }
+
+    private fun getSoundFilePath(uid: String): Result<String> {
+        return fileAdapter.getFilesInPrivateDirectory(SOUNDS_DIR_NAME)
+            .then { files ->
+                val matchingFile = files.find { it.contains(uid) }
+
+                if (matchingFile == null) {
+                    return Error.CantFindSoundFile
+                } else {
+                    return Success(matchingFile)
+                }
+            }
     }
 
     private fun createSoundCopyFileName(originalSoundFileInfo: FileInfo): String {
@@ -76,11 +121,12 @@ class SoundsManagerImpl(
 }
 
 interface SoundsManager {
+    val soundFiles: StateFlow<List<SoundFileInfo>>
+
     /**
-     * @return the file name of the file
+     * @return the sound file uid
      */
     suspend fun saveSound(uri: String): Result<String>
-    fun getSoundUri(fileName: String): Result<String>
-    fun getSound(fileName: String): Result<InputStream>
-    fun getSoundName(fileName: String): String
+    fun getSoundUri(uid: String): Result<String>
+    fun getSound(uid: String): Result<InputStream>
 }

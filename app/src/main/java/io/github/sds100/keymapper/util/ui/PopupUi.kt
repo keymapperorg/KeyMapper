@@ -26,8 +26,9 @@ sealed class PopupUi<RESPONSE : PopupResponse> {
     data class Text(val hint: String, val allowEmpty: Boolean, val text: String = "") : PopupUi<TextResponse>()
     data class TextResponse(val text: String) : PopupResponse
 
-    data class SingleChoice<ID>(val items: List<Pair<ID, String>>) :
-        PopupUi<SingleChoiceResponse<ID>>()
+    data class SingleChoice<ID>(
+        val items: List<Pair<ID, String>>
+    ) : PopupUi<SingleChoiceResponse<ID>>()
 
     data class SingleChoiceResponse<ID>(val item: ID) : PopupResponse
 

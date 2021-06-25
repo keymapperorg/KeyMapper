@@ -666,7 +666,7 @@ class PerformActionsUseCaseImpl(
             }
 
             is SoundAction -> {
-                result = soundsManager.getSoundUri(action.soundFileName).then { uri ->
+                result = soundsManager.getSoundUri(action.soundUid).then { uri ->
                     mediaAdapter.playSoundFile(uri, VolumeStream.ACCESSIBILITY)
                 }
             }

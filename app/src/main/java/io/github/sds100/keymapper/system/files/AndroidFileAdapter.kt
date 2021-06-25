@@ -98,6 +98,10 @@ class AndroidFileAdapter(context: Context) : FileAdapter {
                 return Error.FileNotFound(path)
             }
 
+            if (file.isDirectory) {
+                return Error.NotAFile
+            }
+
             return Success(file.inputStream())
 
         } catch (e: Exception) {
@@ -188,6 +192,20 @@ class AndroidFileAdapter(context: Context) : FileAdapter {
 
         } catch (e: Exception) {
             return Error.Exception(e)
+        }
+    }
+
+    /**
+     * @return the paths of the file relative to Key Mapper's private data folder.
+     */
+    override fun getFilesInPrivateDirectory(path: String): Result<Set<String>> {
+        val files = File(ctx.filesDir, path).listFiles()
+        val privateDirPath = ctx.filesDir.path
+
+        if (files == null) {
+            return Error.NotADirectory
+        } else {
+            return Success(files.map { it.path.substringAfter("$privateDirPath/") }.toSet())
         }
     }
 

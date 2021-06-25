@@ -36,7 +36,7 @@ sealed class Error : Result<Nothing>() {
     object NoSettingsApp : Error()
     object FrontFlashNotFound : Error()
     object BackFlashNotFound : Error()
-   data class ImeDisabled(val ime: ImeInfo) : Error()
+    data class ImeDisabled(val ime: ImeInfo) : Error()
     object DownloadFailed : Error()
     object FileNotCached : Error()
     object SSLHandshakeError : Error()
@@ -49,6 +49,7 @@ sealed class Error : Result<Nothing>() {
     object NoIncompatibleKeyboardsInstalled : Error()
     object NoMediaSessions : Error()
     data class FileNotFound(val uri: String) : Error()
+    object NotAFile : Error()
     data class DirectoryNotFound(val uri: String) : Error()
     object BackupVersionTooNew : Error()
     data class CorruptJsonFile(val reason: String) : Error()
@@ -59,7 +60,7 @@ sealed class Error : Result<Nothing>() {
     data class AppNotFound(val packageName: String) : Error()
     data class AppDisabled(val packageName: String) : Error()
     object AppShortcutCantBeOpened : Error()
-    object InsufficientPermissionsToOpenAppShortcut: Error()
+    object InsufficientPermissionsToOpenAppShortcut : Error()
     object NoCompatibleImeEnabled : Error()
     object NoCompatibleImeChosen : Error()
 
@@ -69,7 +70,7 @@ sealed class Error : Result<Nothing>() {
     object CantShowImePickerInBackground : Error()
     object CantFindImeSettings : Error()
 
-    object NoAppToPhoneCall: Error()
+    object NoAppToPhoneCall : Error()
 
     data class PermissionDenied(val permission: Permission) : Error() {
         companion object {
@@ -100,16 +101,17 @@ sealed class Error : Result<Nothing>() {
     data class FailedToPerformAccessibilityGlobalAction(val action: Int) : Error()
     object FailedToDispatchGesture : Error()
 
-    object CameraInUse: Error()
-    object CameraDisconnected: Error()
-    object CameraDisabled: Error()
-    object MaxCamerasInUse: Error()
-    object CameraError: Error()
+    object CameraInUse : Error()
+    object CameraDisconnected : Error()
+    object CameraDisabled : Error()
+    object MaxCamerasInUse : Error()
+    object CameraError : Error()
 
-    data class FailedToModifySystemSetting(val setting: String):Error()
-    object FailedToChangeIme:Error()
-    object NoAppToOpenUrl: Error()
-    object NotADirectory: Error()
+    data class FailedToModifySystemSetting(val setting: String) : Error()
+    object FailedToChangeIme : Error()
+    object NoAppToOpenUrl : Error()
+    object NotADirectory : Error()
+    object CantFindSoundFile : Error()
 }
 
 inline fun <T> Result<T>.onSuccess(f: (T) -> Unit): Result<T> {

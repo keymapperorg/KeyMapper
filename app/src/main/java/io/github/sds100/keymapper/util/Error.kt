@@ -99,7 +99,9 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
     Error.NoAppToOpenUrl -> resourceProvider.getString(R.string.error_no_app_to_open_url)
     Error.FileCreationFailed -> resourceProvider.getString(R.string.error_file_creation_failed)
     Error.NotADirectory -> resourceProvider.getString(R.string.error_not_a_directory)
+    Error.NotAFile -> resourceProvider.getString(R.string.error_not_a_file)
     is Error.DirectoryNotFound -> resourceProvider.getString(R.string.error_directory_not_found, uri)
+    Error.CantFindSoundFile -> resourceProvider.getString(R.string.error_cant_find_sound_file)
 }
 
 val Error.isFixable: Boolean

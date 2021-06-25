@@ -1,23 +1,17 @@
 package io.github.sds100.keymapper.actions.sound
 
-import android.app.admin.DevicePolicyManager
-import android.content.Intent
 import android.os.Bundle
-import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.getSystemService
-import androidx.core.net.toFile
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.navigation.fragment.findNavController
-import io.github.sds100.keymapper.actions.text.TextBlockActionTypeFragment
 import io.github.sds100.keymapper.databinding.FragmentChooseSoundFileBinding
+import io.github.sds100.keymapper.simple
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
@@ -25,7 +19,6 @@ import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import timber.log.Timber
 
 /**
  * Created by sds100 on 22/06/2021.
@@ -81,6 +74,23 @@ class ChooseSoundFileFragment : Fragment() {
                     REQUEST_KEY,
                     bundleOf(EXTRA_RESULT to Json.encodeToString(result))
                 )
+            }
+        }
+
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+            viewModel.soundFileListItems.collectLatest { listItems ->
+                binding.epoxyRecyclerView.withModels {
+                    listItems.forEach { soundFile ->
+                        simple {
+                            id(soundFile.uid)
+                            primaryText(soundFile.name)
+
+                            onClick { _ ->
+                                viewModel.onFileListItemClick(soundFile)
+                            }
+                        }
+                    }
+                }
             }
         }
     }

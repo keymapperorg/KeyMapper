@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.actions.keyevent.ChooseKeyCodeViewModel
 import io.github.sds100.keymapper.actions.keyevent.ChooseKeyViewModel
 import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventUseCaseImpl
 import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventViewModel
+import io.github.sds100.keymapper.actions.sound.ChooseSoundFileUseCaseImpl
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileViewModel
 import io.github.sds100.keymapper.actions.system.SystemActionListViewModel
 import io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateViewModel
@@ -52,9 +53,7 @@ import io.github.sds100.keymapper.system.intents.ConfigIntentViewModel
 object Inject {
 
     fun chooseActionViewModel(ctx: Context): ChooseActionViewModel.Factory {
-        return ChooseActionViewModel.Factory(
-            ServiceLocator.soundsManager(ctx)
-        )
+        return ChooseActionViewModel.Factory()
     }
 
     fun chooseAppViewModel(context: Context): ChooseAppViewModel.Factory {
@@ -118,7 +117,10 @@ object Inject {
     fun soundFileActionTypeViewModel(ctx: Context): ChooseSoundFileViewModel.Factory {
         return ChooseSoundFileViewModel.Factory(
             ServiceLocator.resourceProvider(ctx),
-            ServiceLocator.fileAdapter(ctx)
+            ChooseSoundFileUseCaseImpl(
+                ServiceLocator.fileAdapter(ctx),
+                ServiceLocator.soundsManager(ctx)
+            )
         )
     }
 
