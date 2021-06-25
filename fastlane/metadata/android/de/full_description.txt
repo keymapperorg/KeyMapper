@@ -5,8 +5,6 @@ Welche Tasten können neu zugeordnet werden ?
  * Navigations-Tasten.
  * Bluetooth und USB Tastaturen.
  * Die Tasten von anderen verbundenen Geräten sollten auch funktionieren.
- * Nintendo Switch JoyCons.
- * Chubby Buttons 2.
 
 Es können nur Hardwaretasten neu zugeordnet werden.
 Es wird NICHT garantiert dass alle diese Tasten funktionieren werden. Diese App ist NICHT designed um Spiele steuern zu können. Dein Gerätehersteller kann verhindern dass diese Tasten neu zugeordnet werden.
@@ -14,8 +12,6 @@ Es wird NICHT garantiert dass alle diese Tasten funktionieren werden. Diese App 
 Du kannst mehrere Tasten eines Gerätes kombinieren um somit einen "Trigger" zu formen. Jeder Trigger kann mehrere Aktionen zugeteilt bekommen. Es kann eingestellt werden ob bestimmte Tasten gleichzeitig gedrückt gehalten werden oder nacheinander gedrückt werden müssen. Trigger können bei kurzen Tastendrücken, langen Tastendrücken und Doppelklicks ausgelöst werden. Eine Tastenzuordnung kann bestimmte Vorraussetzungen zugeteilt bekommen, sodass sie nur bei bestimmten Situationen ausgelöst werden.
 
 Was kan nicht neu zugeordnet werden ?
- * Pixel Active Edge
- * OnePlus Alert Slider
  * Power-Knopf
  * Bixby-Knopf
  * Maustasten
