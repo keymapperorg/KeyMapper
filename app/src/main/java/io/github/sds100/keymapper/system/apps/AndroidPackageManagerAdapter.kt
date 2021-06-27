@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import splitties.bitflags.withFlag
+import timber.log.Timber
 
 /**
  * Created by sds100 on 16/03/2021.
@@ -47,6 +48,19 @@ class AndroidPackageManagerAdapter(
     init {
         coroutineScope.launch(Dispatchers.Default) {
             updatePackageList()
+
+            //save memory by only storing this stuff as it is needed
+            installedPackages.subscriptionCount
+                .onEach { count ->
+                    if (count == 0) {
+                        installedPackages.value = State.Loading
+                    }
+
+                    if (count > 0 && installedPackages.value == State.Loading) {
+                        updatePackageList()
+                    }
+                }
+                .launchIn(this)
         }
 
         IntentFilter().apply {

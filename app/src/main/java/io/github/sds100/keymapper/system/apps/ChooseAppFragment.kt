@@ -3,12 +3,13 @@ package io.github.sds100.keymapper.system.apps
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.databinding.FragmentChooseAppBinding
 import io.github.sds100.keymapper.simple
+import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.RecyclerViewFragment
-import io.github.sds100.keymapper.util.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -26,7 +27,7 @@ class ChooseAppFragment : RecyclerViewFragment<AppListItem, FragmentChooseAppBin
     override var searchStateKey: String? = SEARCH_STATE_KEY
     override var requestKey: String? = REQUEST_KEY
 
-    private val viewModel: ChooseAppViewModel by activityViewModels {
+    private val viewModel: ChooseAppViewModel by viewModels {
         Inject.chooseAppViewModel(requireContext())
     }
 
