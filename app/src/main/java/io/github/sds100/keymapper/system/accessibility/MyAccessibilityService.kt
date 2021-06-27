@@ -78,13 +78,8 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
     private lateinit var controller: AccessibilityServiceController
 
-    override fun onServiceConnected() {
-        super.onServiceConnected()
-
-        Timber.i("Accessibility service started")
-
-        lifecycleRegistry = LifecycleRegistry(this)
-        lifecycleRegistry.currentState = Lifecycle.State.STARTED
+    override fun onCreate() {
+        super.onCreate()
 
         IntentFilter().apply {
             addAction(Api.ACTION_TRIGGER_KEYMAP_BY_UID)
@@ -92,6 +87,15 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
             registerReceiver(broadcastReceiver, this)
         }
+    }
+
+    override fun onServiceConnected() {
+        super.onServiceConnected()
+
+        Timber.i("Accessibility service started")
+
+        lifecycleRegistry = LifecycleRegistry(this)
+        lifecycleRegistry.currentState = Lifecycle.State.STARTED
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
