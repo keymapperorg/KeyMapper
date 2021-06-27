@@ -4,6 +4,7 @@ import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.TransactionTooLargeException
 import android.provider.MediaStore
 import android.provider.Settings
 import io.github.sds100.keymapper.util.*
@@ -263,6 +264,8 @@ class AndroidPackageManagerAdapter(
                         isEnabled = applicationInfo.enabled
                     )
                 } catch (e: PackageManager.NameNotFoundException) {
+                    return@mapNotNull null
+                } catch (e: TransactionTooLargeException) {
                     return@mapNotNull null
                 }
             }
