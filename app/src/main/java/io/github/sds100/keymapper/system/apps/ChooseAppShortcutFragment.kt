@@ -5,16 +5,16 @@ import android.appwidget.AppWidgetManager
 import android.content.Intent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.addRepeatingJob
 import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.simple
-import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
 import io.github.sds100.keymapper.util.ui.showPopups
-import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.encodeToString
@@ -36,7 +36,7 @@ class ChooseAppShortcutFragment : SimpleRecyclerViewFragment<AppShortcutListItem
     override var requestKey: String? = REQUEST_KEY
     override var searchStateKey: String? = SEARCH_STATE_KEY
 
-    private val viewModel: ChooseAppShortcutViewModel by activityViewModels {
+    private val viewModel: ChooseAppShortcutViewModel by viewModels {
         Inject.chooseAppShortcutViewModel(requireContext())
     }
 
