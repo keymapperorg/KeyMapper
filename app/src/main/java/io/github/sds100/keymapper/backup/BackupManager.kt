@@ -201,8 +201,6 @@ class BackupManagerImpl(
                     ).await()
                 }
 
-            Timber.e(result.toString())
-
             onBackupResult.emit(result)
         }
     }
