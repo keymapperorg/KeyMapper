@@ -128,11 +128,11 @@ class AndroidDevicesAdapter(
             return
         }
 
-        val devices = adapter.bondedDevices.map {
+        val devices = adapter.bondedDevices?.map {
             BluetoothDeviceInfo(it.address, it.name)
         }
 
-        pairedBluetoothDevices.value = devices
+        pairedBluetoothDevices.value = devices ?: emptyList()
     }
 
     private fun InputDevice.createModel(): InputDeviceInfo {
