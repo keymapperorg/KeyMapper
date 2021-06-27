@@ -29,6 +29,7 @@ class ToggleMappingsTile : TileService(), LifecycleOwner {
     private lateinit var lifecycleRegistry: LifecycleRegistry
 
     override fun onCreate() {
+        super.onCreate()
 
         lifecycleRegistry = LifecycleRegistry(this)
 
@@ -67,8 +68,6 @@ class ToggleMappingsTile : TileService(), LifecycleOwner {
                 qsTile.updateTile()
             }.collect()
         }
-
-        super.onCreate()
     }
 
     override fun onStartListening() {
