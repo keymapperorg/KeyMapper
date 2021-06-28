@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.home
 
+import android.app.ActivityManager
 import android.content.*
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.getSystemService
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -131,10 +133,11 @@ class HomeFragment : Fragment() {
         appBar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.action_help -> {
-                    UrlUtils.launchCustomTab(
-                        requireContext(),
-                        str(R.string.url_quick_start_guide)
-                    )
+                    requireContext().getSystemService<ActivityManager>()?.killBackgroundProcesses("io.github.sds100.keymapper.ci")
+//                    UrlUtils.launchCustomTab(
+//                        requireContext(),
+//                        str(R.string.url_quick_start_guide)
+//                    )
                     true
                 }
 

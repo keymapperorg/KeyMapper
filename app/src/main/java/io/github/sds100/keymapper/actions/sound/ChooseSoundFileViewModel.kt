@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.onFailure
 import io.github.sds100.keymapper.util.onSuccess
 import io.github.sds100.keymapper.util.ui.*
@@ -12,7 +13,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 /**
  * Created by sds100 on 31/03/2020.
@@ -57,7 +57,7 @@ class ChooseSoundFileViewModel(
         }
     }
 
-    fun onChooseSoundFile(uri: String) {
+    fun onChooseNewSoundFile(uri: String) {
         viewModelScope.launch {
             val fileName = useCase.getSoundFileName(uri).valueOrNull() ?: return@launch
 
@@ -74,10 +74,8 @@ class ChooseSoundFileViewModel(
             useCase.saveSound(uri)
                 .onSuccess { soundFileUid ->
                     _returnResult.emit(ChooseSoundFileResult(soundFileUid, soundDescription))
-                }.onFailure {
-                    Timber.e(it.toString())
-
-                    val toast = PopupUi.Toast(getString(R.string.toast_failed_to_choose_sound_file))
+                }.onFailure { error ->
+                    val toast = PopupUi.Toast(error.getFullMessage(this@ChooseSoundFileViewModel))
                     showPopup("failed_toast", toast)
                 }
         }

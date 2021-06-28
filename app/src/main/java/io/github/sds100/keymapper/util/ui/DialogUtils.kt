@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.suspendCancellableCoroutine
 import splitties.alertdialog.appcompat.*
 import splitties.alertdialog.material.materialAlertDialog
+import timber.log.Timber
 import kotlin.coroutines.resume
 
 /**
@@ -134,12 +135,18 @@ suspend fun Context.editTextStringAlertDialog(
             continuation.resume(PopupUi.TextResponse(text.value))
         }
 
-        negativeButton(R.string.neg_cancel) { it.cancel() }
+        negativeButton(R.string.neg_cancel) {
+            it.cancel()
+        }
     }
+
+    //this prevents window leak
+    alertDialog.resumeNullOnDismiss(continuation)
+    alertDialog.dismissOnDestroy(lifecycleOwner)
 
     alertDialog.show()
 
-    lifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+    lifecycleOwner.lifecycleScope.launchWhenResumed {
         text.collectLatest {
             alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
                 if (allowEmpty) {
@@ -149,10 +156,6 @@ suspend fun Context.editTextStringAlertDialog(
                 }
         }
     }
-
-    //this prevents window leak
-    alertDialog.resumeNullOnDismiss(continuation)
-    alertDialog.dismissOnDestroy(lifecycleOwner)
 }
 
 suspend fun Context.editTextNumberAlertDialog(
@@ -261,7 +264,8 @@ fun Dialog.dismissOnDestroy(lifecycleOwner: LifecycleOwner) {
     lifecycleOwner.lifecycle.addObserver(object : LifecycleObserver {
         @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         fun onDestroy() {
-            dismiss()
+            this@dismissOnDestroy.dismiss()
+            lifecycleOwner.lifecycle.removeObserver(this)
         }
     })
 }

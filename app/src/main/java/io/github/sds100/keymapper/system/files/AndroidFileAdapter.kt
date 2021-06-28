@@ -11,7 +11,9 @@ import io.github.sds100.keymapper.util.Success
 import net.lingala.zip4j.io.outputstream.ZipOutputStream
 import net.lingala.zip4j.model.ZipParameters
 import net.lingala.zip4j.model.enums.CompressionMethod
+import timber.log.Timber
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -28,11 +30,10 @@ class AndroidFileAdapter(context: Context) : FileAdapter {
             val outputStream = ctx.contentResolver.openOutputStream(uri)!!
 
             Success(outputStream)
-        } catch (e: Exception) {
-            when (e) {
-                is SecurityException -> Error.FileAccessDenied
-                else -> Error.Exception(e)
-            }
+        } catch (e: FileNotFoundException) {
+            Error.FileNotFound(uriString)
+        } catch (e: SecurityException) {
+            Error.FileAccessDenied
         }
     }
 
@@ -43,11 +44,10 @@ class AndroidFileAdapter(context: Context) : FileAdapter {
             val inputStream = ctx.contentResolver.openInputStream(uri)!!
 
             Success(inputStream)
-        } catch (e: Exception) {
-            when (e) {
-                is SecurityException -> Error.FileAccessDenied
-                else -> Error.Exception(e)
-            }
+        } catch (e: FileNotFoundException) {
+            Error.FileNotFound(uriString)
+        } catch (e: SecurityException) {
+            Error.FileAccessDenied
         }
     }
 

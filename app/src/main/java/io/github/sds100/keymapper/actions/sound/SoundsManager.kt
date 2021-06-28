@@ -7,6 +7,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.io.InputStream
 import java.util.*
 
@@ -56,6 +57,9 @@ class SoundsManagerImpl(
                     }
             }
             .onSuccess { updateSoundFilesFlow() }
+            .onFailure {
+                Timber.e(it.toString())
+            }
     }
 
     override fun getSoundUri(uid: String): Result<String> {
@@ -64,7 +68,7 @@ class SoundsManagerImpl(
         }
     }
 
-    private fun deleteSound(fileName: String): Result<*> {
+    override fun deleteSound(vararg uid: String): Result<*> {
         updateSoundFilesFlow()
         TODO("Not yet implemented")
     }
@@ -129,4 +133,5 @@ interface SoundsManager {
     suspend fun saveSound(uri: String): Result<String>
     fun getSoundUri(uid: String): Result<String>
     fun getSound(uid: String): Result<InputStream>
+    fun deleteSound(vararg uid: String): Result<*>
 }

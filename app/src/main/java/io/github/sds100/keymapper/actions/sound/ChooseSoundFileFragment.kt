@@ -38,7 +38,7 @@ class ChooseSoundFileFragment : Fragment() {
         registerForActivityResult(ActivityResultContracts.GetContent()) {
             it ?: return@registerForActivityResult
 
-            viewModel.onChooseSoundFile(it.toString())
+            viewModel.onChooseNewSoundFile(it.toString())
         }
 
     /**

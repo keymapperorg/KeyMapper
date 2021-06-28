@@ -12,6 +12,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import splitties.alertdialog.appcompat.positiveButton
 import splitties.toast.toast
+import timber.log.Timber
 import kotlin.coroutines.resume
 
 /**
@@ -73,8 +74,9 @@ fun PopupViewModel.showPopups(
     val lifecycleOwner = fragment.viewLifecycleOwner
     val ctx = fragment.requireContext()
 
-    lifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-        showPopup.collectLatest { event ->
+    //must be onCreate because dismissing in onDestroy
+    lifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.CREATED) {
+        showPopup.onEach { event ->
             var responded = false
 
             lifecycleOwner.lifecycle.addObserver(object : LifecycleObserver {
@@ -83,6 +85,7 @@ fun PopupViewModel.showPopups(
                     if (!responded) {
                         onUserResponse(event.key, null)
                         responded = true
+                        lifecycleOwner.lifecycle.removeObserver(this)
                     }
                 }
             })
@@ -143,6 +146,6 @@ fun PopupViewModel.showPopups(
                 onUserResponse(event.key, response)
                 responded = true
             }
-        }
+        }.launchIn(this)
     }
 }
