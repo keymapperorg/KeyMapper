@@ -13,7 +13,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import splitties.bitflags.withFlag
-import timber.log.Timber
 
 /**
  * Created by sds100 on 16/03/2021.
@@ -280,6 +279,8 @@ class AndroidPackageManagerAdapter(
                 } catch (e: PackageManager.NameNotFoundException) {
                     return@mapNotNull null
                 } catch (e: TransactionTooLargeException) {
+                    return@mapNotNull null
+                } catch (e: Exception) {
                     return@mapNotNull null
                 }
             }
