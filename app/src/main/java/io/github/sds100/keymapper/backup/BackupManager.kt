@@ -450,26 +450,8 @@ class BackupManagerImpl(
 
             filesToBackup.add(dataJsonFile)
 
-            val mappings = mutableListOf<Mapping<*>>()
-
-            if (keyMapList != null) {
-                keyMapList
-                    .map { KeyMapEntityMapper.fromEntity(it) }
-                    .let { mappings.addAll(it) }
-            }
-
-            if (fingerprintMaps != null) {
-                fingerprintMaps
-                    .map { FingerprintMapEntityMapper.fromEntity(it) }
-                    .let { mappings.addAll(it) }
-            }
-
-            //file names of sounds to back up
-            val soundsToBackup = mappings
-                .flatMap { it.actionList }
-                .filter { it.data is SoundAction }
-                .map { (it.data as SoundAction).soundUid }
-                .toSet()
+            //backup all sounds
+            val soundsToBackup = soundsManager.soundFiles.value.map { it.uid }
 
             if (soundsToBackup.isNotEmpty()) {
                 val soundsBackupDirectory = "$tempBackupDirectory/$SOUNDS_DIR_NAME"

@@ -3,6 +3,7 @@ package io.github.sds100.keymapper
 import com.github.salomonbrys.kotson.get
 import com.google.gson.Gson
 import com.google.gson.JsonParser
+import io.github.sds100.keymapper.actions.sound.SoundFileInfo
 import io.github.sds100.keymapper.actions.sound.SoundsManager
 import io.github.sds100.keymapper.backup.BackupManagerImpl
 import io.github.sds100.keymapper.data.db.AppDatabase
@@ -22,6 +23,7 @@ import io.github.sds100.keymapper.util.Success
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.*
 import org.hamcrest.MatcherAssert.assertThat
@@ -129,15 +131,65 @@ class BackupManagerTest {
         testDispatcher.cleanupTestCoroutines()
     }
 
+    /**
+     * #652. always back up sound files.
+     */
+    @Test
+    fun `backup sound file even if there is not a key map with a sound action`() = coroutineScope.runBlockingTest {
+        //GIVEN
+        val soundFileUid = "uid"
+        val soundFileName = "sound.ogg"
+        val soundFileRegex = Regex("backup_temp/.*/sounds/$soundFileName")
+        val soundFolderRegex = Regex("backup_temp/.*/sounds")
+
+        whenever(mockKeyMapRepository.keyMapList).then { flow { emit(State.Data(emptyList<KeyMapEntity>())) } }
+        whenever(mockFingerprintMapRepository.fingerprintMapList).then { flow { emit(State.Data(emptyList<FingerprintMapEntity>())) } }
+
+        whenever(mockFileAdapter.createPrivateFile(argThat { soundFileRegex.matches(this) })).then {
+            Success(ByteArrayOutputStream())
+        }
+
+        whenever(mockSoundsManager.getSound(soundFileUid)).then {
+            Success(ByteArrayInputStream(byteArrayOf(0)))
+        }
+
+        whenever(mockSoundsManager.soundFiles).then {
+            MutableStateFlow(listOf(SoundFileInfo(uid = soundFileUid, name = soundFileName)))
+        }
+
+        val inputStream =
+            PipedInputStream(dataJsonOutputStream) // must become before async call in BackupManager.backup
+
+        //WHEN
+        coroutineScope.pauseDispatcher()
+
+        backupManager.backupMappings(uri = "")
+
+        assertThat(
+            backupManager.onBackupResult.toListWithTimeout(),
+            `is`(listOf(Success(Unit)))
+        )
+
+        coroutineScope.resumeDispatcher()
+
+        //THEN
+        verify(mockFileAdapter, times(1)).createZipFile(destination = any(), files = check { files ->
+            assertThat(files.size, `is`(2))
+            assertThat(files.any { REGEX_DATA_JSON_PATH.matches(it) }, `is`(true))
+            assertThat(files.any { soundFolderRegex.matches(it) }, `is`(true))
+        })
+    }
+
     @Test
     fun `backup sound file if there is a key map with a sound action`() = coroutineScope.runBlockingTest {
         //GIVEN
+        val soundFileUid = "uid"
         val soundFileName = "sound.ogg"
         val soundFileRegex = Regex("backup_temp/.*/sounds/$soundFileName")
         val soundFolderRegex = Regex("backup_temp/.*/sounds")
 
         val action = ActionEntity(
-            type = ActionEntity.Type.SOUND, data = soundFileName,
+            type = ActionEntity.Type.SOUND, data = soundFileUid,
             extra = Extra(ActionEntity.EXTRA_SOUND_FILE_DESCRIPTION, "sound_description")
         )
 
@@ -149,8 +201,12 @@ class BackupManagerTest {
             Success(ByteArrayOutputStream())
         }
 
-        whenever(mockSoundsManager.getSound(soundFileName)).then {
+        whenever(mockSoundsManager.getSound(soundFileUid)).then {
             Success(ByteArrayInputStream(byteArrayOf(0)))
+        }
+
+        whenever(mockSoundsManager.soundFiles).then {
+            MutableStateFlow(listOf(SoundFileInfo(uid = soundFileUid, name = soundFileName)))
         }
 
         val inputStream =
