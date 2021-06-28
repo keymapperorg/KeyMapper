@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentActivity
 import io.github.sds100.keymapper.onboarding.AppIntroActivity
 import io.github.sds100.keymapper.onboarding.AppIntroSlide
 import io.github.sds100.keymapper.util.firstBlocking
+import timber.log.Timber
 
 /**
  * Created by sds100 on 20/01/21.
@@ -16,6 +17,8 @@ class SplashActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Timber.i("App opened")
 
         val onboarding = UseCases.onboarding(this)
 
