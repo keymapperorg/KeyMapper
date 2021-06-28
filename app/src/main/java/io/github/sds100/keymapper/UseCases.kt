@@ -70,7 +70,8 @@ object UseCases {
         ServiceLocator.inputMethodAdapter(ctx),
         ServiceLocator.permissionAdapter(ctx),
         ServiceLocator.systemFeatureAdapter(ctx),
-        ServiceLocator.cameraAdapter(ctx)
+        ServiceLocator.cameraAdapter(ctx),
+        ServiceLocator.soundsManager(ctx)
     )
 
 
