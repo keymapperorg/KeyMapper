@@ -2,8 +2,8 @@ package io.github.sds100.keymapper
 
 import android.content.Context
 import io.github.sds100.keymapper.actions.GetActionErrorUseCaseImpl
-import io.github.sds100.keymapper.actions.system.IsSystemActionSupportedUseCaseImpl
 import io.github.sds100.keymapper.actions.PerformActionsUseCaseImpl
+import io.github.sds100.keymapper.actions.system.IsSystemActionSupportedUseCaseImpl
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCaseImpl
 import io.github.sds100.keymapper.constraints.GetConstraintErrorUseCaseImpl
 import io.github.sds100.keymapper.mappings.DetectMappingUseCaseImpl
@@ -100,7 +100,10 @@ object UseCases {
         AreFingerprintGesturesSupportedUseCaseImpl(ServiceLocator.settingsRepository(ctx))
 
     fun pauseMappings(ctx: Context) =
-        PauseMappingsUseCaseImpl(ServiceLocator.settingsRepository(ctx))
+        PauseMappingsUseCaseImpl(
+            ServiceLocator.settingsRepository(ctx),
+            ServiceLocator.mediaAdapter(ctx)
+        )
 
     fun showImePicker(ctx: Context): ShowInputMethodPickerUseCase {
         return ShowInputMethodPickerUseCaseImpl(

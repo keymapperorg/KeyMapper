@@ -112,6 +112,16 @@ class AndroidMediaAdapter(
         }
     }
 
+    override fun stopMedia(): Result<*> {
+        synchronized(mediaPlayerLock){
+            mediaPlayer?.stop()
+            mediaPlayer?.release()
+            mediaPlayer = null
+        }
+
+        return Success(Unit)
+    }
+
     private fun sendMediaKeyEvent(keyCode: Int, packageName: String?): Result<*> {
         if (packageName == null) {
             audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))

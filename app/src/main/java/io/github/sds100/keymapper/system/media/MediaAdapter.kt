@@ -17,5 +17,6 @@ interface MediaAdapter {
     fun previousTrack(packageName: String? = null): Result<*>
     fun nextTrack(packageName: String? = null): Result<*>
 
-    fun playSoundFile(uri: String, stream: VolumeStream):Result<*>
+    fun playSoundFile(uri: String, stream: VolumeStream): Result<*>
+    fun stopMedia(): Result<*>
 }
