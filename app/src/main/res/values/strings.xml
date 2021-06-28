@@ -220,6 +220,7 @@
     <string name="toast_copied_log">Copied log</string>
     <string name="toast_root_features_turned_on">Root features are now enabled</string>
     <string name="toast_failed_to_choose_sound_file">Selecting the sound file failed! Check the log.</string>
+    <string name="toast_no_sound_files">You have saved no sound files!</string>
     <!--  Toasts  -->
 
     <!-- Extra labels -->
@@ -579,6 +580,7 @@
     <string name="title_pref_report_issue">Report issue</string>
 
     <string name="title_pref_grant_write_secure_settings">Grant permission</string>
+    <string name="title_pref_delete_sound_files">Delete sound files</string>
     <!--Preference titles and summaries-->
 
     <!--Preference categories-->

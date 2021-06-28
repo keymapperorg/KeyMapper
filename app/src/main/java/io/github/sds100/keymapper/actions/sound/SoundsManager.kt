@@ -68,9 +68,10 @@ class SoundsManagerImpl(
         }
     }
 
-    override fun deleteSound(vararg uid: String): Result<*> {
-        updateSoundFilesFlow()
-        TODO("Not yet implemented")
+    override fun deleteSound( uid: String): Result<*> {
+          return  getSoundFilePath(uid)
+                .then { fileAdapter.deletePrivateFile(it) }
+                .onSuccess { updateSoundFilesFlow() }
     }
 
     override fun getSound(uid: String): Result<InputStream> {
@@ -133,5 +134,5 @@ interface SoundsManager {
     suspend fun saveSound(uri: String): Result<String>
     fun getSoundUri(uid: String): Result<String>
     fun getSound(uid: String): Result<InputStream>
-    fun deleteSound(vararg uid: String): Result<*>
+    fun deleteSound(uid: String): Result<*>
 }

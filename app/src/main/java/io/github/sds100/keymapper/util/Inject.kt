@@ -225,6 +225,7 @@ object Inject {
                 ServiceLocator.settingsRepository(context),
                 ServiceLocator.permissionAdapter(context),
                 ServiceLocator.inputMethodAdapter(context),
+                ServiceLocator.soundsManager(context),
                 ServiceLocator.suAdapter(context),
             ),
             ServiceLocator.resourceProvider(context)
