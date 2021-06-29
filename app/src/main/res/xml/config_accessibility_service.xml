@@ -6,7 +6,7 @@
     android:canRequestFingerprintGestures="true"
     android:canRetrieveWindowContent="true"
     android:accessibilityFeedbackType="feedbackGeneric"
-    android:accessibilityEventTypes="typeViewFocused|typeWindowContentChanged"
+    android:accessibilityEventTypes="typeViewFocused|typeViewClicked"
     android:description="@string/accessibility_service_description"
     android:notificationTimeout="0"
     android:settingsActivity="io.github.sds100.keymapper.activity.MainActivity" />
