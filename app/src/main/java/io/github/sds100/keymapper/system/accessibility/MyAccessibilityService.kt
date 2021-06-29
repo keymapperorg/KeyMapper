@@ -173,8 +173,6 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
 
-        Timber.d("accessibility event ${event.toString()}")
-
         val focussedNode = findFocus(AccessibilityNodeInfo.FOCUS_INPUT)
 
         val keyboardHelper = KeyMapperImeHelper(ServiceLocator.inputMethodAdapter(this))
