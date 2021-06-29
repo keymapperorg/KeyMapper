@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.system.permissions
 
 import android.Manifest
-import android.app.AppOpsManager
 import android.app.NotificationManager
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
@@ -118,8 +117,19 @@ class AndroidPermissionAdapter(
 
             Permission.IGNORE_BATTERY_OPTIMISATION ->
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    ctx.getSystemService<PowerManager>()
-                        ?.isIgnoringBatteryOptimizations(Constants.PACKAGE_NAME) ?: false
+                    Timber.i("Checking if ignoring battery optimisation")
+
+                    val powerManager = ctx.getSystemService<PowerManager>()
+
+                    val ignoringOptimisations = powerManager?.isIgnoringBatteryOptimizations(Constants.PACKAGE_NAME)
+
+                    when {
+                        powerManager == null -> Timber.i("Power manager is null")
+                        ignoringOptimisations == true -> Timber.i("Battery optimisation is disabled")
+                        ignoringOptimisations == false -> Timber.i("Battery optimisation is enabled")
+                    }
+
+                    ignoringOptimisations ?: false
                 } else {
                     true
                 }
