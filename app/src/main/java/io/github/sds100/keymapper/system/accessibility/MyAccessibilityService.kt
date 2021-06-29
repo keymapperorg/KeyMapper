@@ -181,16 +181,20 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             Timber.d("Got input focus")
             isFocussed = true
             lifecycleScope.launchWhenStarted {
-                Timber.d("Choose incompatible ime because got input focus.")
-                keyboardHelper.chooseLastUsedIncompatibleInputMethod(fromForeground = false)
+                if (keyboardHelper.isCompatibleImeChosen()) {
+                    Timber.d("Choose incompatible ime because got input focus.")
+                    keyboardHelper.chooseLastUsedIncompatibleInputMethod(fromForeground = false)
+                }
             }
         } else {
             Timber.d("Lost input focus")
             isFocussed = false
             lifecycleScope.launchWhenStarted {
-                Timber.d("Choose compatible ime because lost input focus.")
+                if (!keyboardHelper.isCompatibleImeChosen()) {
+                    Timber.d("Choose compatible ime because lost input focus.")
 
-                keyboardHelper.chooseCompatibleInputMethod(fromForeground = false)
+                    keyboardHelper.chooseCompatibleInputMethod(fromForeground = false)
+                }
             }
         }
     }
