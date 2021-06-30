@@ -63,6 +63,7 @@
     <string name="switch_enabled">已启用</string>
     <string name="disabled">已禁用</string>
     <string name="reset">重置</string>
+    <string name="enable_device_admin_message">一旦你启用了设备管理器，你必须停用它才能卸载Key Mapper。</string>
     <string name="action_title_wait">等待 %sms</string>
     <string name="email_subject"> Key Mapper 查询</string>
     <string name="email_default_message">帮助页面解决了你的问题吗？你的设备是什么？\n\n 你在使用哪个定制OEM或ROM？\n\n 请描述你正在遇到问题：</string>
@@ -261,6 +262,9 @@
     <string name="dialog_message_password_screen_lock_warning">如果你选择了任何其他的屏幕锁定，例如PIN或图案，那么你不必担心。但是如果你有密码屏幕锁定，并且在使用Key Mapper基本输入法时，你将*不能*解锁你的手机，因为它没有GUI。你可以授予Key Mapper WRITE_SECURE_SETTINGS权限，以便它显示一个切换键盘和从键盘切换的通知。如果你点击屏幕下方的问号，将有一个执行此操作的指南。</string>
     <string name="dialog_message_select_compatible_ime">选择一个动作需要的输入法。你可以稍候在主屏幕的底部菜单，点击“选择动作键盘”来更改此项。</string>
     <string name="dialog_message_cant_record_trigger">如果“记录触发器”按钮正在递减计数，并且你所按的按钮未显示，<b>重新启动</b>你的设备。如果在重新启动后你的按钮仍然不显示，则Key Mapper不支持你的按钮。尝试这样修复它并没有用。</string>
+    <string name="dialog_title_install_gui_keyboard">安装Key Mapper GUI Keyboard</string>
+    <string name="dialog_message_install_gui_keyboard">强烈推荐！这是一个合适的键盘，你可以与Key Mapper一起使用。Key Mapper内置的键盘 (基本输入法) 没有屏幕键盘。选择要从哪里安装它。</string>
+    <string name="dialog_message_install_leanback_keyboard">强烈推荐！这是一个合适的键盘，你可以在Android TV上与Key Mapper一起使用。Key Mapper内置的键盘 (基本输入法) 没有屏幕键盘。选择要从哪里安装它。</string>
     <string name="pos_yes">是</string>
     <string name="pos_done">完成</string>
     <string name="pos_opt_in">选择加入</string>
@@ -462,6 +466,7 @@
     <string name="error_flag_not_found">找不到标记 \"%s“！</string>
     <string name="error_cant_find_ime_settings">找不到键盘设置页面！</string>
     <string name="error_in_do_not_disturb_mode">在勿扰模式下！</string>
+    <string name="error_keymapper_doesnt_have_permission_app_shortcut">Key Mapper没有使用该shortcut的权限</string>
     <string name="error_action_notification_policy_permission">应用需要权限才能更改“勿扰”状态！</string>
     <string name="error_action_requires_read_phone_state_permission">此操作需要权限才能读取手机状态！</string>
     <string name="error_cant_find_write_settings_page">无法找到 WRITE_SETTINGS 权限页面！</string>
@@ -486,6 +491,7 @@
     <string name="error_accessibility_service_disabled">无障碍服务需要启用！</string>
     <string name="warning_need_write_secure_settings_permission">某些功能需要 WRITE_SECURE_SETTINGS 权限。</string>
     <string name="fixed_need_write_secure_settings_permission">已授予 WRITE_SECURE_SETTTINGS 权限。</string>
+    <string name="error_key_mapper_ime_service_disabled">需要启用一个Key Mapper键盘！</string>
     <string name="error_ime_not_found">找不到 %s 输入法</string>
     <string name="error_the_app_wont_work">你的Key Mapper无法正常工作！有些东西需要修复！</string>
     <string name="error_cant_move_to_end_of_text_in_this_field">您不能移动到这个字段的文本结尾！</string>
