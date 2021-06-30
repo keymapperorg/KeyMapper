@@ -28,6 +28,12 @@ abstract class SimpleRecyclerViewFragment<T>
 
     override fun subscribeUi(binding: FragmentSimpleRecyclerviewBinding) {
         binding.emptyListPlaceholder = str(emptyListPlaceholder)
+
+        if (isAppBarVisible) {
+            //only inflate a menu if the app bar is visible because this takes a significant amount of time
+            binding.appBar.replaceMenu(appBarMenu)
+            binding.appBar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
+        }
     }
 
     override fun getProgressBar(binding: FragmentSimpleRecyclerviewBinding) = binding.progressBar
@@ -38,12 +44,6 @@ abstract class SimpleRecyclerViewFragment<T>
         binding.textViewEmptyListPlaceholder
 
     override fun getBottomAppBar(binding: FragmentSimpleRecyclerviewBinding): BottomAppBar? {
-        if (isAppBarVisible) {
-            //only inflate a menu if the app bar is visible because this takes a significant amount of time
-            binding.appBar.replaceMenu(appBarMenu)
-            binding.appBar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
-        }
-
         return binding.appBar
     }
 }

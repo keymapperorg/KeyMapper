@@ -20,6 +20,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import splitties.alertdialog.appcompat.*
+import timber.log.Timber
 
 /**
  * Created by sds100 on 19/02/2020.
@@ -68,6 +69,12 @@ class MainActivity : AppCompatActivity() {
                 )
             }
             .launchIn(lifecycleScope)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        Timber.i("App opened")
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {

@@ -17,15 +17,23 @@ class RoomLogRepository(
     private val dao: LogEntryDao
 ) : LogRepository {
     override val log: Flow<State<List<LogEntryEntity>>> = dao.getAll()
-        .map { entityList ->
-            State.Data(entityList)
-        }
+        .map { entityList -> State.Data(entityList) }
         .flowOn(Dispatchers.Default)
         .stateIn(
             coroutineScope,
-            SharingStarted.Lazily,
-            State.Loading
+            SharingStarted.WhileSubscribed(replayExpirationMillis = 1000L), //save memory by only caching the log when necessary
+            State.Loading,
         )
+
+    init {
+        dao.getIds()
+            .filter { it.size > 1000 }
+            .onEach { log ->
+                val middleId = log.getOrNull(500) ?: return@onEach
+                dao.deleteRowsWithIdLessThan(middleId)
+            }.flowOn(Dispatchers.Default)
+            .launchIn(coroutineScope)
+    }
 
     override fun deleteAll() {
         coroutineScope.launch(Dispatchers.Default) {

@@ -117,8 +117,6 @@ class AndroidPermissionAdapter(
 
             Permission.IGNORE_BATTERY_OPTIMISATION ->
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    Timber.i("Checking if ignoring battery optimisation")
-
                     val powerManager = ctx.getSystemService<PowerManager>()
 
                     val ignoringOptimisations = powerManager?.isIgnoringBatteryOptimizations(Constants.PACKAGE_NAME)
@@ -126,7 +124,7 @@ class AndroidPermissionAdapter(
                     when {
                         powerManager == null -> Timber.i("Power manager is null")
                         ignoringOptimisations == true -> Timber.i("Battery optimisation is disabled")
-                        ignoringOptimisations == false -> Timber.i("Battery optimisation is enabled")
+                        ignoringOptimisations == false -> Timber.e("Battery optimisation is enabled")
                     }
 
                     ignoringOptimisations ?: false
