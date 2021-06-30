@@ -503,7 +503,6 @@ https://issuetracker.google.com/issues/163120692
     <string name="warning_need_write_secure_settings_permission">Для некоторых функций требуется разрешение WRITE_SECURE_SETTINGS.</string>
     <string name="fixed_need_write_secure_settings_permission">Предоставлено разрешение WRITE_SECURE_SETTINGS.</string>
     <string name="error_ime_not_found">Can\'t find the %s input method</string>
-    <string name="error_no_enabled_imes">На этом устройстве нет включенных методов ввода!</string>
     <string name="error_the_app_wont_work">Мэппинги не будут работать! Что-то надо исправить!</string>
     <string name="error_cant_move_to_end_of_text_in_this_field">Вы не можете перемещаться в конец текста в этом поле!</string>
     <string name="error_battery_optimisation_activity_not_found">Настройки оптимизации батареи не найдены! Если они существуют, откройте их вручную.</string>
@@ -511,18 +510,11 @@ https://issuetracker.google.com/issues/163120692
     <string name="error_duplicate_constraint">Вы не можете иметь двойные ограничения!</string>
     <string name="error_fingerprint_gesture_map_constraint_exists">У этого жеста уже есть это ограничение!</string>
     <string name="error_cant_be_empty">Не может быть пустым!</string>
-    <string name="error_key_mapper_ime_not_found">Невозможно найти метод ввода Key Mapper!</string>
-    <string name="error_download_failed">Загрузка не удалась!</string>
-    <string name="error_file_not_exists">Файл не существует!</string>
-    <string name="error_ssl_handshake_exception">Ошибка SSL соединения</string>
-    <string name="error_file_not_cached">Файл не кэширован! Подключитесь к интернету, чтобы загрузить его.</string>
     <string name="error_this_is_unsupported">Это не поддерживается. :(</string>
     <string name="error_device_not_found">Устройство не найдено!</string>
     <string name="error_failed_to_pick_file">Не удалось найти файл</string>
     <string name="error_empty_json">Пустой файл JSON!</string>
-    <string name="error_file_access_denied">Доступ к файлу запрещен! Удален?</string>
     <string name="error_file_access_denied_automatic_backup">Не удалось создать резервную копию в файл. Может он удалён?</string>
-    <string name="error_failed_to_split_string">Не удалось разделить строку %s</string>
     <string name="error_invalid_number">Неверное число!</string>
     <string name="error_number_too_small">Должно быть по крайней мере %s!</string>
     <string name="error_number_too_big">Должно быть не более %s!</string>
