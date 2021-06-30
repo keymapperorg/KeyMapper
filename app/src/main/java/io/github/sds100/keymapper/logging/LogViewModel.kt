@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ifIsData
 import io.github.sds100.keymapper.util.mapData
 import io.github.sds100.keymapper.util.ui.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
@@ -95,7 +96,7 @@ class LogViewModel(
                     createListItem(entry, showShortMessages, isSelected)
                 }
             }
-        }.launchIn(viewModelScope)
+        }.flowOn(Dispatchers.Default).launchIn(viewModelScope)
     }
 
     fun onMenuItemClick(itemId: Int) {

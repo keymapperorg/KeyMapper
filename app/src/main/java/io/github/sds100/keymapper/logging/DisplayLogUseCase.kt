@@ -9,8 +9,10 @@ import io.github.sds100.keymapper.util.ifIsData
 import io.github.sds100.keymapper.util.mapData
 import io.github.sds100.keymapper.util.onSuccess
 import io.github.sds100.keymapper.util.ui.ResourceProvider
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import java.util.*
 
@@ -28,6 +30,7 @@ class DisplayLogUseCaseImpl(
         .map { state ->
             state.mapData { entityList -> entityList.map { LogEntryEntityMapper.fromEntity(it) } }
         }
+        .flowOn(Dispatchers.Default)
 
     override fun clearLog() {
         repository.deleteAll()

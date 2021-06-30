@@ -144,13 +144,15 @@ class AccessibilityServiceController(
             onEventFromUi(it)
         }.launchIn(coroutineScope)
 
-        accessibilityService.isKeyboardHidden.onEach { isHidden ->
-            if (isHidden) {
-                outputEvents.emit(OnHideKeyboardEvent)
-            } else {
-                outputEvents.emit(OnShowKeyboardEvent)
-            }
-        }.launchIn(coroutineScope)
+        accessibilityService.isKeyboardHidden
+            .drop(1) //Don't send it when collecting initially
+            .onEach { isHidden ->
+                if (isHidden) {
+                    outputEvents.emit(OnHideKeyboardEvent)
+                } else {
+                    outputEvents.emit(OnShowKeyboardEvent)
+                }
+            }.launchIn(coroutineScope)
     }
 
     fun onKeyEvent(
@@ -245,6 +247,7 @@ class AccessibilityServiceController(
     }
 
     private fun onEventFromUi(event: Event) {
+        Timber.d("Service received event from UI: $event")
         when (event) {
             is StartRecordingTrigger ->
                 if (!recordingTrigger) {

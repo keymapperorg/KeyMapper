@@ -94,6 +94,12 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
         Timber.i("Accessibility service started")
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            serviceInfo = serviceInfo.apply {
+                flags = flags.withFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
+            }
+        }
+
         lifecycleRegistry = LifecycleRegistry(this)
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
 
@@ -191,7 +197,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
     override fun requestFingerprintGestureDetection() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Timber.i("Accessibility service: request fingerprint gesture detection")
+            Timber.d("Accessibility service: request fingerprint gesture detection")
             serviceInfo = serviceInfo.apply {
                 flags = flags.withFlag(AccessibilityServiceInfo.FLAG_REQUEST_FINGERPRINT_GESTURES)
             }
@@ -200,7 +206,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
     override fun denyFingerprintGestureDetection() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Timber.i("Accessibility service: deny fingerprint gesture detection")
+            Timber.d("Accessibility service: deny fingerprint gesture detection")
             serviceInfo = serviceInfo?.apply {
                 flags = flags.minusFlag(AccessibilityServiceInfo.FLAG_REQUEST_FINGERPRINT_GESTURES)
             }

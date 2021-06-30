@@ -10,14 +10,15 @@ import androidx.lifecycle.addRepeatingJob
 import androidx.navigation.findNavController
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
-import io.github.sds100.keymapper.system.keyevents.ChooseKeyViewModel
 import io.github.sds100.keymapper.databinding.ActivityMainBinding
+import io.github.sds100.keymapper.system.keyevents.ChooseKeyViewModel
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.RequestPermissionDelegate
 import io.github.sds100.keymapper.util.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.flow.collectLatest
 import splitties.alertdialog.appcompat.*
+import timber.log.Timber
 
 /**
  * Created by sds100 on 19/02/2020.
@@ -65,6 +66,12 @@ class MainActivity : AppCompatActivity() {
                 )
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        Timber.i("App opened")
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
