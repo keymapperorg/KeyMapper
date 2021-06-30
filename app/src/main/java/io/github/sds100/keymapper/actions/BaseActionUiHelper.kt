@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.actions
 
 import android.view.KeyEvent
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.actions.system.SystemActionUtils
 import io.github.sds100.keymapper.mappings.DisplayActionUseCase
 import io.github.sds100.keymapper.mappings.Mapping
 import io.github.sds100.keymapper.system.camera.CameraLensUtils
@@ -244,6 +245,7 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
 
             is TextAction -> getString(R.string.description_text_block, action.text)
             is UrlAction -> getString(R.string.description_url, action.url)
+            is SoundAction -> getString(R.string.description_sound, action.soundDescription)
         }
 
     override fun getIcon(action: ActionData): IconInfo? = when (action) {
@@ -288,6 +290,10 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
 
         is TextAction -> null
         is UrlAction -> null
+        is SoundAction -> IconInfo(
+            getDrawable(R.drawable.ic_outline_volume_up_24),
+            TintType.ON_SURFACE
+        )
     }
 }
 

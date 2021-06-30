@@ -376,6 +376,20 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             }
         }
 
+        //delete sound files
+        Preference(requireContext()).apply {
+            setTitle(R.string.title_pref_delete_sound_files)
+            isSingleLineTitle = false
+
+            setOnPreferenceClickListener {
+                viewModel.onDeleteSoundFilesClick()
+
+                true
+            }
+
+            addPreference(this)
+        }
+
         //android 11 device id reset bug work around
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val category = PreferenceCategory(requireContext())
@@ -498,7 +512,6 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                     }
                 }
             }
-
         }
 
         createCategoryDefaults()

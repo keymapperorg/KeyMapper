@@ -1,0 +1,89 @@
+{
+  "keymap_db_version": 13,
+  "fingerprint_map_list": [
+    {
+      "action_list": [],
+      "constraints": [],
+      "constraint_mode": 1,
+      "extras": [],
+      "flags": 0,
+      "id": 0,
+      "enabled": true
+    },
+    {
+      "action_list": [],
+      "constraints": [],
+      "constraint_mode": 1,
+      "extras": [],
+      "flags": 0,
+      "id": 1,
+      "enabled": true
+    },
+    {
+      "action_list": [],
+      "constraints": [],
+      "constraint_mode": 1,
+      "extras": [],
+      "flags": 0,
+      "id": 2,
+      "enabled": true
+    },
+    {
+      "action_list": [],
+      "constraints": [],
+      "constraint_mode": 1,
+      "extras": [],
+      "flags": 0,
+      "id": 3,
+      "enabled": true
+    }
+  ],
+  "keymap_list": [
+    {
+      "actionList": [],
+      "constraintList": [],
+      "constraintMode": 1,
+      "flags": 0,
+      "id": 10,
+      "isEnabled": true,
+      "trigger": {
+        "extras": [],
+        "flags": 0,
+        "keys": [
+          {
+            "clickType": 0,
+            "deviceId": "io.github.sds100.keymapper.THIS_DEVICE",
+            "flags": 0,
+            "keyCode": 25,
+            "uid": "40593537-553b-4f98-bba6-31c025129f81"
+          }
+        ],
+        "mode": 2
+      },
+      "uid": "4191eade-903d-4636-8a36-1f46f884a9dc"
+    },
+    {
+      "actionList": [],
+      "constraintList": [],
+      "constraintMode": 1,
+      "flags": 0,
+      "id": 11,
+      "isEnabled": true,
+      "trigger": {
+        "extras": [],
+        "flags": 0,
+        "keys": [
+          {
+            "clickType": 0,
+            "deviceId": "io.github.sds100.keymapper.THIS_DEVICE",
+            "flags": 0,
+            "keyCode": 25,
+            "uid": "40593537-553b-4f98-bba6-31c025129f81"
+          }
+        ],
+        "mode": 2
+      },
+      "uid": "32a09c8a-148f-4ade-9f50-56936481bab2"
+    }
+  ]
+} 

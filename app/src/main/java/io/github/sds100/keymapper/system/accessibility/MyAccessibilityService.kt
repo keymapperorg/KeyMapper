@@ -81,6 +81,12 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     override fun onCreate() {
         super.onCreate()
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            serviceInfo = serviceInfo.apply {
+                flags = flags.withFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
+            }
+        }
+
         IntentFilter().apply {
             addAction(Api.ACTION_TRIGGER_KEYMAP_BY_UID)
             addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
@@ -301,5 +307,23 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         }
 
         return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
+    }
+
+    override fun enableAccessibilityVolumeStream() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            serviceInfo = serviceInfo.apply {
+                feedbackType = feedbackType.withFlag(AccessibilityServiceInfo.FEEDBACK_AUDIBLE)
+                flags = flags.withFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
+            }
+        }
+    }
+
+    override fun disableAccessibilityVolumeStream() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            serviceInfo = serviceInfo.apply {
+                feedbackType = feedbackType.minusFlag(AccessibilityServiceInfo.FEEDBACK_AUDIBLE)
+                flags = flags.minusFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
+            }
+        }
     }
 }

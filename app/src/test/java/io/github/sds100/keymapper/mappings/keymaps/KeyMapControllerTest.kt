@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.mappings.keymaps
 import android.view.KeyEvent
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.github.sds100.keymapper.actions.*
+import io.github.sds100.keymapper.actions.system.SystemActionId
 import io.github.sds100.keymapper.constraints.ConstraintSnapshot
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.mappings.ClickType
@@ -12,7 +13,6 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
-import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.util.*
 import junitparams.JUnitParamsRunner
 import junitparams.Parameters
@@ -155,6 +155,53 @@ class KeyMapControllerTest {
     }
 
     /**
+     * #693
+     */
+    @Test
+    fun `multiple key maps with the same long press trigger but different long press delays should all work`() =
+        coroutineScope.runBlockingTest {
+            //GIVEN
+            val keyMap1 = KeyMap(
+                trigger = KeyMapTrigger(
+                    keys = listOf(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN)),
+                    longPressDelay = 500
+                ),
+                actionList = listOf(TEST_ACTION)
+            )
+
+            val keyMap2 = KeyMap(
+                trigger = KeyMapTrigger(
+                    keys = listOf(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN)),
+                    longPressDelay = 1000
+                ),
+                actionList = listOf(TEST_ACTION_2)
+            )
+
+            keyMapListFlow.value = listOf(keyMap1, keyMap2)
+
+            //WHEN
+            inOrder(performActionsUseCase) {
+                assertThat(inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN), `is`(true))
+                delay(600)
+                assertThat(inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP), `is`(true))
+                advanceUntilIdle()
+
+                //THEN
+                verify(performActionsUseCase, times(1)).perform(keyMap1.actionList[0].data)
+
+                //WHEN
+                assertThat(inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN), `is`(true))
+                delay(1100)
+                assertThat(inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP), `is`(true))
+                advanceUntilIdle()
+
+                //THEN
+                verify(performActionsUseCase, times(1)).perform(keyMap1.actionList[0].data)
+                verify(performActionsUseCase, times(1)).perform(keyMap2.actionList[0].data)
+            }
+        }
+
+    /**
      * #694
      */
     @Test
@@ -180,7 +227,7 @@ class KeyMapControllerTest {
      * #689
      */
     @Test
-    fun `perform all actions once when key map is triggered`() = coroutineScope.runBlockingTest{
+    fun `perform all actions once when key map is triggered`() = coroutineScope.runBlockingTest {
         //GIVEN
         val trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
 

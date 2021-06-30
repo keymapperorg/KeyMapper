@@ -5,6 +5,8 @@ import android.os.Build
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.actions.sound.SoundsManager
+import io.github.sds100.keymapper.actions.system.SystemActionId
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -36,6 +38,7 @@ import io.github.sds100.keymapper.system.shell.ShellAdapter
 import io.github.sds100.keymapper.system.url.OpenUrlAdapter
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
+import io.github.sds100.keymapper.system.volume.VolumeStream
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
@@ -76,7 +79,8 @@ class PerformActionsUseCaseImpl(
     private val nfcAdapter: NfcAdapter,
     private val openUrlAdapter: OpenUrlAdapter,
     private val resourceProvider: ResourceProvider,
-    private val preferenceRepository: PreferenceRepository
+    private val preferenceRepository: PreferenceRepository,
+    private val soundsManager: SoundsManager
 ) : PerformActionsUseCase {
 
     private val openMenuHelper by lazy { OpenMenuHelper(suAdapter, accessibilityService) }
@@ -649,7 +653,7 @@ class PerformActionsUseCaseImpl(
                             accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_POWER_DIALOG)
                     }
 
-                    SystemActionId.VOLUME_SHOW_DIALOG ->{
+                    SystemActionId.VOLUME_SHOW_DIALOG -> {
                         result = volumeAdapter.showVolumeUi()
                     }
 
@@ -659,6 +663,12 @@ class PerformActionsUseCaseImpl(
 
             is UrlAction -> {
                 result = openUrlAdapter.openUrl(action.url)
+            }
+
+            is SoundAction -> {
+                result = soundsManager.getSound(action.soundUid).then { file ->
+                    mediaAdapter.playSoundFile(file.uri, VolumeStream.ACCESSIBILITY)
+                }
             }
 
             CorruptAction -> {

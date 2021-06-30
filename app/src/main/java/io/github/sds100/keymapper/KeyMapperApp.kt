@@ -103,7 +103,7 @@ class KeyMapperApp : MultiDexApplication() {
     val suAdapter by lazy {
         SuAdapterImpl(
             appCoroutineScope,
-            ServiceLocator.preferenceRepository(this)
+            ServiceLocator.settingsRepository(this)
         )
     }
     val phoneAdapter by lazy { AndroidPhoneAdapter(this) }
@@ -123,7 +123,7 @@ class KeyMapperApp : MultiDexApplication() {
     private val loggingTree by lazy {
         KeyMapperLoggingTree(
             appCoroutineScope,
-            ServiceLocator.preferenceRepository(this),
+            ServiceLocator.settingsRepository(this),
             ServiceLocator.logRepository(this)
         )
     }
@@ -132,7 +132,7 @@ class KeyMapperApp : MultiDexApplication() {
 
     override fun onCreate() {
 
-        val priorExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
+        val priorExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
 
         Thread.setDefaultUncaughtExceptionHandler { thread, exception ->
             //log in a blocking manner and always log regardless of whether the setting is turned on
@@ -150,7 +150,7 @@ class KeyMapperApp : MultiDexApplication() {
             priorExceptionHandler?.uncaughtException(thread, exception)
         }
 
-        ServiceLocator.preferenceRepository(this).get(Keys.darkTheme)
+        ServiceLocator.settingsRepository(this).get(Keys.darkTheme)
             .map { it?.toIntOrNull() }
             .map {
                 when (it) {
@@ -173,7 +173,7 @@ class KeyMapperApp : MultiDexApplication() {
         notificationController = NotificationController(
             appCoroutineScope,
             ManageNotificationsUseCaseImpl(
-                ServiceLocator.preferenceRepository(this),
+                ServiceLocator.settingsRepository(this),
                 notificationAdapter,
                 suAdapter
             ),
@@ -189,7 +189,7 @@ class KeyMapperApp : MultiDexApplication() {
 
         autoSwitchImeController = AutoSwitchImeController(
             appCoroutineScope,
-            ServiceLocator.preferenceRepository(this),
+            ServiceLocator.settingsRepository(this),
             ServiceLocator.inputMethodAdapter(this),
             UseCases.pauseMappings(this),
             devicesAdapter,

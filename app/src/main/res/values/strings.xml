@@ -72,6 +72,8 @@
             Inputting this key as an action will only work if you are using a Key Mapper compatible keyboard.</string>
     <string name="caption_action_type_keycode">IMPORTANT!
             Inputting this key code as an action will only work if you are using a Key Mapper compatible keyboard.</string>
+    <string name="caption_action_type_sound">The sound file will be copied to Key Mapper\'s private data folder, which means your actions will still work even if the file is moved or deleted. It will also be backed up with your key maps in the zip folder.
+    You can delete saved sound files in the settings.</string>
 
     <string name="caption_action_type_text">Type some text you want to be inserted when you perform this action.</string>
     <string name="caption_action_type_phone_call">Enter the phone number.</string>
@@ -125,6 +127,7 @@
     <string name="description_tap_coordinate_default">Tap coordinates %d, %d</string>
     <string name="description_tap_coordinate_with_description">Tap coordinates %d, %d (%s)</string>
     <string name="description_phone_call">Call %s</string>
+    <string name="description_sound">Play sound: %s</string>
     <!--  Action descriptions  -->
 
     <!--  Headers  -->
@@ -215,6 +218,8 @@
     <string name="toast_triggered_keymap">You\'ve triggered a mapping</string>
     <string name="toast_copied_log">Copied log</string>
     <string name="toast_root_features_turned_on">Root features are now enabled</string>
+    <string name="toast_failed_to_choose_sound_file">Selecting the sound file failed! Check the log.</string>
+    <string name="toast_no_sound_files">You have saved no sound files!</string>
     <!--  Toasts  -->
 
     <!-- Extra labels -->
@@ -367,6 +372,7 @@
     <string name="button_config_intent_set_flags">Set flags</string>
     <string name="button_copy_log">Copy</string>
     <string name="button_slider_repeat_no_limit">No limit</string>
+    <string name="button_choose_sound_file">Choose sound file</string>
     <!-- Button titles -->
 
     <!-- Dialog stuff -->
@@ -575,6 +581,7 @@
     <string name="title_pref_view_and_share_log">View and share log</string>
     <string name="title_pref_report_issue">Report issue</string>
 
+    <string name="title_pref_delete_sound_files">Delete sound files</string>
     <string name="title_pref_grant_write_secure_settings_not_granted">Grant permission</string>
     <string name="title_pref_grant_write_secure_settings_granted">Permission granted</string>
     <!--Preference titles and summaries-->
@@ -628,6 +635,7 @@
     <string name="action_type_tap_coordinate">Tap screen</string>
     <string name="action_type_intent">Intent</string>
     <string name="action_type_phone_call">Phone call</string>
+    <string name="action_type_sound">Sound</string>
     <!--Action Types Titles-->
 
     <!--flags-->
@@ -817,7 +825,6 @@
     <string name="error_ime_service_enabled">A Key Mapper keyboard is enabled!</string>
     <string name="error_critical_ime_service_disabled">A Key Mapper keyboard must be enabled and selected for some of your actions to work!</string>
     <string name="error_ime_not_found">Can\'t find the %s input method</string>
-    <string name="error_no_enabled_imes">This device has no enabled input methods!</string>
     <string name="error_cant_show_ime_picker_in_background">The input method picker can\'t be shown!</string>
     <string name="error_failed_to_find_accessibility_node">Failed to find accessibility node!</string>
     <string name="error_failed_to_perform_accessibility_global_action">Failed perform global action %s!</string>
@@ -830,18 +837,14 @@
     <string name="error_duplicate_constraint">You can\'t have duplicate constraints!</string>
     <string name="error_fingerprint_gesture_map_constraint_exists">This gesture already has this constraint!</string>
     <string name="error_cant_be_empty">Can\'t be empty!</string>
-    <string name="error_key_mapper_ime_not_found">Can\'t find the Key Mapper input method!</string>
-    <string name="error_download_failed">Download failed!</string>
-    <string name="error_file_not_exists">File doesn\'t exist!</string>
-    <string name="error_ssl_handshake_exception">SSL handshake error</string>
-    <string name="error_file_not_cached">File isn\'t cached! Connect to internet to download it.</string>
     <string name="error_this_is_unsupported">This is unsupported. :(</string>
     <string name="error_device_not_found">Device not found!</string>
     <string name="error_failed_to_pick_file">Failed to pick file</string>
     <string name="error_empty_json">Empty JSON file!</string>
-    <string name="error_file_access_denied">File access denied! Is it deleted?</string>
+    <string name="error_file_access_denied">File access denied! %s</string>
+    <string name="error_io_error">Unknown IO error!</string>
+    <string name="error_file_operation_cancelled">Cancelled!</string>
     <string name="error_file_access_denied_automatic_backup">Failed to back up to file. Is it deleted?</string>
-    <string name="error_failed_to_split_string">Failed to split string %s</string>
     <string name="error_invalid_number">Invalid number!</string>
     <string name="error_number_too_small">Must be at least %s!</string>
     <string name="error_number_too_big">Must be at most %s!</string>
@@ -858,7 +861,8 @@
     <string name="error_corrupt_action">Corrupt action</string>
     <string name="error_no_incompatible_input_methods_installed">You only have Key Mapper keyboards installed!</string>
     <string name="error_no_media_sessions">There are no apps playing media!</string>
-    <string name="error_unknown_file_location">Unknown file location!</string>
+    <string name="error_source_file_not_found">Source file not found! %s</string>
+    <string name="error_target_file_not_found">Target file not found! %s</string>
     <string name="error_failed_to_dispatch_gesture">Failed to input gesture!</string>
     <string name="error_failed_to_modify_system_setting">Failed to modify system setting %s!</string>
     <string name="error_ime_disabled">You need to enable %s!</string>
@@ -867,6 +871,14 @@
     <string name="error_no_device_assistant">Your device has no assistant!</string>
     <string name="error_no_settings_app">Your device has no settings app!</string>
     <string name="error_no_app_to_open_url">No app can open this url!</string>
+    <string name="error_file_creation_failed">Failed to create the file!</string>
+    <string name="error_not_a_directory">Not a folder! %s</string>
+    <string name="error_not_a_file">Not a file! %s</string>
+    <string name="error_directory_not_found">Directory not found! %s</string>
+    <string name="error_cant_find_sound_file">Can\'t find sound file!</string>
+    <string name="error_storage_permission_denied">Storage permission denied!</string>
+    <string name="error_matching_source_and_target_paths">The source and target can\'t be the same!</string>
+    <string name="error_no_space_left_at_target">No space left at target! %s</string>
 
     <!-- Error messages -->
 
@@ -1075,6 +1087,7 @@
     <!--  Tap targets  -->
     <string name="tap_target_quick_start_guide_primary">Quick Start Guide</string>
     <string name="tap_target_quick_start_guide_secondary">Check out the Quick Start Guide if you are stuck.</string>
+    <string name="hint_sound_file_description">Sound file description</string>
     <!--  Tap targets  -->
 
 </resources>

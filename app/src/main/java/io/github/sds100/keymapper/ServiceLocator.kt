@@ -1,9 +1,10 @@
 package io.github.sds100.keymapper
 
-import android.content.ClipboardManager
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
+import io.github.sds100.keymapper.actions.sound.SoundsManager
+import io.github.sds100.keymapper.actions.sound.SoundsManagerImpl
 import io.github.sds100.keymapper.backup.BackupManager
 import io.github.sds100.keymapper.backup.BackupManagerImpl
 import io.github.sds100.keymapper.data.db.AppDatabase
@@ -24,7 +25,6 @@ import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.intents.IntentAdapter
 import io.github.sds100.keymapper.system.lock.LockScreenAdapter
 import io.github.sds100.keymapper.system.media.AndroidMediaAdapter
-import io.github.sds100.keymapper.system.media.MediaAdapter
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.nfc.NfcAdapter
 import io.github.sds100.keymapper.system.notifications.AndroidNotificationAdapter
@@ -87,11 +87,16 @@ object ServiceLocator {
     }
 
     @Volatile
-    private var preferenceRepository: PreferenceRepository? = null
+    private var settingsRepository: PreferenceRepository? = null
 
-    fun preferenceRepository(context: Context): PreferenceRepository {
+    fun settingsRepository(context: Context): PreferenceRepository {
         synchronized(this) {
-            return preferenceRepository ?: createPreferenceRepository(context)
+            return settingsRepository ?: SettingsPreferenceRepository(
+                context.applicationContext,
+                (context.applicationContext as KeyMapperApp).appCoroutineScope
+            ).also {
+                this.settingsRepository = it
+            }
         }
     }
 
@@ -109,17 +114,6 @@ object ServiceLocator {
         }
     }
 
-    private fun createPreferenceRepository(context: Context): PreferenceRepository {
-
-        return preferenceRepository
-            ?: DataStorePreferenceRepository(
-                context.applicationContext,
-                (context.applicationContext as KeyMapperApp).appCoroutineScope
-            ).also {
-                this.preferenceRepository = it
-            }
-    }
-
     @Volatile
     private var backupManager: BackupManager? = null
 
@@ -134,10 +128,25 @@ object ServiceLocator {
             (context.applicationContext as KeyMapperApp).appCoroutineScope,
             fileAdapter(context),
             roomKeymapRepository(context),
-            preferenceRepository(context),
-            fingerprintMapRepository(context)
+            settingsRepository(context),
+            fingerprintMapRepository(context),
+            soundsManager(context)
         ).also {
             this.backupManager = it
+        }
+    }
+
+    @Volatile
+    private var soundsManager: SoundsManager? = null
+
+    fun soundsManager(context: Context): SoundsManager {
+        synchronized(this) {
+            return soundsManager ?: SoundsManagerImpl(
+                (context.applicationContext as KeyMapperApp).appCoroutineScope,
+                fileAdapter(context),
+            ).also {
+                this.soundsManager = it
+            }
         }
     }
 
