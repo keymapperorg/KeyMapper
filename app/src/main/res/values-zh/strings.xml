@@ -21,6 +21,7 @@
     <string name="no_actions">没有动作</string>
     <string name="no_trigger">没有触发器</string>
     <string name="unknown_keycode">未知的键码: %s</string>
+    <string name="unknown_device_name">未知的设备名称</string>
     <string name="on">打开</string>
     <string name="off">关闭</string>
     <string name="follow_system">跟随系统</string>
@@ -29,6 +30,13 @@
     <string name="trigger_device_name_not_found">此设备的名称未知</string>
     <string name="slider_default">默认</string>
     <string name="button_enable_accessibility_service">启用无障碍服务</string>
+    <string name="button_restart_accessibility_service">重启无障碍服务</string>
+    <string name="stop_repeating_dot_dot_dot">当…时，停止重复</string>
+    <string name="stop_repeating_when_trigger_released">触发器被松开</string>
+    <string name="stop_repeating_trigger_pressed_again">触发器被再次按下</string>
+    <string name="stop_repeating_limit_reached">数量达到上限</string>
+    <string name="stop_holding_down_when_trigger_released">触发器被松开</string>
+    <string name="stop_holding_down_trigger_pressed_again">触发器被再次按下</string>
     <string name="show_hidden_apps">显示隐藏的应用</string>
     <string name="modifiers">修改器</string>
     <string name="toggle">切换</string>
@@ -40,6 +48,7 @@
     <string name="from_no_device">没有设备</string>
     <string name="intent_extras_recycler_view_placeholder">¯\\_(ツ)_/¯\n\n无扩展！</string>
     <string name="content_description_fab_new_keymap">创建一个新的按键映射</string>
+    <string name="clip_key_mapper_log">Key Mapper日志</string>
     <string name="whats_new">更新了什么</string>
     <string name="caption_action_type_key">点按你想要输入的设备上的按键。
             \n\n重要！
