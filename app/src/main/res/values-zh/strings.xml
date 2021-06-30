@@ -478,7 +478,6 @@
     <string name="warning_need_write_secure_settings_permission">某些功能需要 WRITE_SECURE_SETTINGS 权限。</string>
     <string name="fixed_need_write_secure_settings_permission">已授予 WRITE_SECURE_SETTTINGS 权限。</string>
     <string name="error_ime_not_found">找不到 %s 输入法</string>
-    <string name="error_no_enabled_imes">此设备没有启用输入法！</string>
     <string name="error_the_app_wont_work">你的Key Mapper无法正常工作！有些东西需要修复！</string>
     <string name="error_cant_move_to_end_of_text_in_this_field">您不能移动到这个字段的文本结尾！</string>
     <string name="error_battery_optimisation_activity_not_found">找不到电池优化设置！如果存在它，请手动打开它。</string>
@@ -486,18 +485,11 @@
     <string name="error_duplicate_constraint">你不能有重复的约束！</string>
     <string name="error_fingerprint_gesture_map_constraint_exists">这个手势已经有此约束了！</string>
     <string name="error_cant_be_empty">不能为空！</string>
-    <string name="error_key_mapper_ime_not_found">无法找到Key Mapper输入法！</string>
-    <string name="error_download_failed">下载失败！</string>
-    <string name="error_file_not_exists">文件不存在！</string>
-    <string name="error_ssl_handshake_exception">SSL 握手错误</string>
-    <string name="error_file_not_cached">文件未缓存！连接到互联网以下载它。</string>
     <string name="error_this_is_unsupported">这是不支持的。 :(</string>
     <string name="error_device_not_found">找不到设备！</string>
     <string name="error_failed_to_pick_file">选择文件失败</string>
     <string name="error_empty_json">空的JSON文件！</string>
-    <string name="error_file_access_denied">文件访问被拒绝！它被删除了吗？</string>
     <string name="error_file_access_denied_automatic_backup">文件备份失败。它被删除了吗？</string>
-    <string name="error_failed_to_split_string">拆分字符串 %s 失败</string>
     <string name="error_invalid_number">无效的数字！</string>
     <string name="error_number_too_small">必须至少为 %s！</string>
     <string name="error_number_too_big">最多只能是 %s！</string>
