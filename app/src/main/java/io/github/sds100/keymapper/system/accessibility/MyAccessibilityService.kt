@@ -4,6 +4,7 @@ import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.accessibilityservice.FingerprintGestureController
 import android.accessibilityservice.GestureDescription
+import android.app.ActivityManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -12,6 +13,7 @@ import android.graphics.Path
 import android.os.Build
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
+import androidx.core.content.getSystemService
 import androidx.core.os.bundleOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -51,7 +53,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     private lateinit var lifecycleRegistry: LifecycleRegistry
 
     private var fingerprintGestureCallback:
-            FingerprintGestureController.FingerprintGestureCallback? = null
+        FingerprintGestureController.FingerprintGestureCallback? = null
 
     override val rootNode: AccessibilityNodeModel?
         get() {
@@ -171,7 +173,11 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     }
 
     override fun onLowMemory() {
-        Timber.i("Accessibility service: onLowMemory")
+
+        val memoryInfo = ActivityManager.MemoryInfo()
+        getSystemService<ActivityManager>()?.getMemoryInfo(memoryInfo)
+
+        Timber.i("Accessibility service: onLowMemory, total: ${memoryInfo.totalMem}, available: ${memoryInfo.availMem}, is low memory: ${memoryInfo.lowMemory}, threshold: ${memoryInfo.threshold}")
 
         super.onLowMemory()
     }
