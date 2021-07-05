@@ -80,6 +80,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
     override fun onCreate() {
         super.onCreate()
+        Timber.i("Accessibility service: onCreate")
 
         IntentFilter().apply {
             addAction(Api.ACTION_TRIGGER_KEYMAP_BY_UID)
@@ -92,7 +93,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     override fun onServiceConnected() {
         super.onServiceConnected()
 
-        Timber.i("Accessibility service started")
+        Timber.i("Accessibility service: onServiceConnected")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             serviceInfo = serviceInfo.apply {
@@ -164,13 +165,13 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                 .unregisterFingerprintGestureCallback(fingerprintGestureCallback)
         }
 
-        Timber.i("Accessibility service destroyed")
+        Timber.i("Accessibility service: onDestroy")
 
         super.onDestroy()
     }
 
     override fun onLowMemory() {
-        Timber.e("Accessibility service on low memory")
+        Timber.i("Accessibility service: onLowMemory")
 
         super.onLowMemory()
     }
