@@ -184,6 +184,7 @@ class AccessibilityServiceAdapter(
     }
 
     override suspend fun isCrashed(): Boolean {
+        Timber.i("Accessibility service: checking if it is crashed")
         val key = "check_is_crashed"
 
         coroutineScope.launch {
@@ -193,6 +194,10 @@ class AccessibilityServiceAdapter(
 
         val pong: Pong? = withTimeoutOrNull(2000L) {
             eventReceiver.first { it == Pong(key) } as Pong?
+        }
+
+        if (pong == null) {
+            Timber.e("Accessibility service: is crashed")
         }
 
         return pong == null
