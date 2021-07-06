@@ -73,7 +73,8 @@ class SimpleMappingControllerTest {
                 accessibilityService = mock(),
                 mediaAdapter = mock(),
                 devicesAdapter = mock(),
-                displayAdapter = mock()
+                displayAdapter = mock(),
+                cameraAdapter = mock()
             )
         }
 
