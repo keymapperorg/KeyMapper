@@ -10,7 +10,6 @@
     <string name="switch_enabled">সক্রিয়</string>
     <string name="disabled">নিষ্ক্রিয়</string>
     <string name="reset">রিসেট</string>
-    <string name="email_default_message">এই পেজটি কি আপনার সমস্যা সমাধান করতে পেরেছে? আপনার ডিভাইস মডেল কি?\n\n আপনি কোন OEM skin অথবা ROM ব্যবহার করছেন?\n\n অনুগ্রহ করে আপনার সমস্যাটির বিস্তারিত বর্ণনা করুন:</string>
     <!--  Action descriptions  -->
     <string name="description_key">\'%s\' চাপুন</string>
     <string name="description_text_block">\'%s\' টাইপ করুন</string>
@@ -57,6 +56,8 @@
     <!-- URLs -->
     <!-- Activity titles -->
     <!-- Activity titles -->
+    <!--  Bug report slides-->
+    <!--  Bug report slides-->
     <!-- Menu action titles-->
     <string name="action_settings">সেটিংস</string>
     <string name="action_done">সম্পন্ন হয়েছে</string>
@@ -67,7 +68,6 @@
     <string name="action_disable">নিষ্ক্রিয় করুন</string>
     <string name="action_disable_all_keymaps">সব নিষ্ক্রিয় করুন</string>
     <string name="action_enable_all_keymaps">সব সক্রিয় করুন</string>
-    <string name="action_send_feedback">প্রতিক্রিয়া পাঠান</string>
     <string name="action_seed_database">ডাটাবেস সিড করুন</string>
     <string name="action_save">সংরক্ষণ করুন</string>
     <string name="action_duplicate_keymap">ডুপ্লিকেট</string>
@@ -121,7 +121,6 @@
     <!-- Error messages -->
     <string name="error_cant_find_ime_settings">Keyboard settings পেজটি পাওয়া যায়নি!</string>
     <string name="error_cant_find_write_settings_page">WRITE_SETTINGS permission page পাওয়া যায়নি।</string>
-    <string name="error_no_app_found_to_send_feedback">ফিডব্যাক পাঠানোর জন্য অ্যাপ পাওয়া যায়নি।</string>
     <!-- Error messages -->
     <!-- System action labels -->
     <string name="action_switch_keyboard_formatted">%s তে স্যুইচ করুন</string>
