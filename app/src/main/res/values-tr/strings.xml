@@ -55,8 +55,6 @@
     <string name="disabled">Pasif </string>
     <string name="reset">Sıfırla </string>
     <string name="action_title_wait">Bekle %sms</string>
-    <string name="email_subject">Key Mapper sorgu</string>
-    <string name="email_default_message">Yardım sayfası sorununuzu çözüyor mu? Cihazınız nedir? \n \n Hangi OEM kaplamasını veya ROM\'u kullanıyorsunuz? \n \n Lütfen yaşadığınız sorunu açıklayın:</string>
     <string name="action_title_intent_start_activity">%s etkinliği başlatılıyor</string>
     <string name="action_title_intent_start_service">Servisi Başlat %s</string>
     <string name="action_title_intent_send_broadcast">Yayın gönder:%s</string>
@@ -189,6 +187,8 @@
     <!-- Activity titles -->
     <string name="title_choose_action">Eylem seç</string>
     <!-- Activity titles -->
+    <!--  Bug report slides-->
+    <!--  Bug report slides-->
     <!-- Menu action titles-->
     <string name="action_settings">Ayarlar</string>
     <string name="action_done">Başarılı</string>
@@ -201,7 +201,6 @@
     <string name="action_disable">Devre Dışı Bırak</string>
     <string name="action_disable_all_keymaps">Tümünü devre dışı bırak</string>
     <string name="action_enable_all_keymaps">Tümünü etkinleştir</string>
-    <string name="action_send_feedback">Geribildirim Gönder</string>
     <string name="action_change_keyboard">Giriş yöntemi seçicisini göster</string>
     <string name="action_seed_database">Veri tabanını sınıflandır</string>
     <string name="action_save">Kaydet</string>
@@ -312,7 +311,6 @@
     <string name="pref_title_rate_review">Oyla ve değerlendir</string>
     <string name="pref_title_xda_thread">XDA başlığı</string>
     <string name="pref_title_version">Versiyon</string>
-    <string name="pref_title_developer_email">Geliştirici e-postası</string>
     <string name="pref_title_translate">Çevir</string>
     <string name="pref_title_discord">Discord sunucusu</string>
     <string name="pref_title_youtube_channel">YouTube kanalı (Öğreticiler)</string>
