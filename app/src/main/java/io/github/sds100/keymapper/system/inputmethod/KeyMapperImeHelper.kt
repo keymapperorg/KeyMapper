@@ -51,7 +51,7 @@ class KeyMapperImeHelper(private val imeAdapter: InputMethodAdapter) {
     }
 
     fun isCompatibleImeChosen(): Boolean {
-        return imeAdapter.chosenIme.value.packageName in KEY_MAPPER_IME_PACKAGE_LIST
+        return imeAdapter.chosenIme.value?.packageName in KEY_MAPPER_IME_PACKAGE_LIST
     }
 
     fun isCompatibleImeEnabled(): Boolean {

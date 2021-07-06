@@ -23,5 +23,5 @@ interface InputMethodAdapter {
      */
     val inputMethodHistory: StateFlow<List<ImeInfo>>
     val inputMethods: StateFlow<List<ImeInfo>>
-    val chosenIme: StateFlow<ImeInfo>
+    val chosenIme: StateFlow<ImeInfo?>
 }
