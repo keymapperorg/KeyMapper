@@ -137,89 +137,88 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             if (preferenceScreen.isEmpty()) {
                 populatePreferenceScreen()
             }
-        }
 
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
             viewModel.defaultLongPressDelay.collectLatest { value ->
                 val preference = findPreference<SeekBarPreference>(Keys.defaultLongPressDelay.name)
                     ?: return@collectLatest
 
-                if (preference.value != value) {
-                    preference.value = value
+                    if (preference.value != value) {
+                        preference.value = value
+                    }
                 }
             }
-        }
 
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
             viewModel.defaultDoublePressDelay.collectLatest { value ->
                 val preference = findPreference<SeekBarPreference>(Keys.defaultDoublePressDelay.name)
                     ?: return@collectLatest
 
-                if (preference.value != value) {
-                    preference.value = value
+                    if (preference.value != value) {
+                        preference.value = value
+                    }
                 }
             }
-        }
 
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
             viewModel.defaultSequenceTriggerTimeout.collectLatest { value ->
                 val preference = findPreference<SeekBarPreference>(Keys.defaultSequenceTriggerTimeout.name)
                     ?: return@collectLatest
 
-                if (preference.value != value) {
-                    preference.value = value
+                    if (preference.value != value) {
+                        preference.value = value
+                    }
                 }
             }
-        }
 
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
             viewModel.defaultRepeatRate.collectLatest { value ->
                 val preference = findPreference<SeekBarPreference>(Keys.defaultRepeatRate.name)
                     ?: return@collectLatest
 
-                if (preference.value != value) {
-                    preference.value = value
+                    if (preference.value != value) {
+                        preference.value = value
+                    }
                 }
             }
-        }
 
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
             viewModel.defaultRepeatDelay.collectLatest { value ->
                 val preference = findPreference<SeekBarPreference>(Keys.defaultRepeatDelay.name)
                     ?: return@collectLatest
 
-                if (preference.value != value) {
-                    preference.value = value
+                    if (preference.value != value) {
+                        preference.value = value
+                    }
                 }
             }
-        }
 
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
             viewModel.defaultVibrateDuration.collectLatest { value ->
                 val preference = findPreference<SeekBarPreference>(Keys.defaultVibrateDuration.name)
                     ?: return@collectLatest
 
-                if (preference.value != value) {
-                    preference.value = value
+                    if (preference.value != value) {
+                        preference.value = value
+                    }
                 }
             }
-        }
 
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
             viewModel.isWriteSecureSettingsPermissionGranted.collectLatest { isGranted ->
                 findPreference<Preference>(KEY_GRANT_WRITE_SECURE_SETTINGS)?.apply {
                     isEnabled = !isGranted
 
-                    if (isGranted) {
-                        setTitle(R.string.title_pref_grant_write_secure_settings_granted)
-                        setIcon(R.drawable.ic_outline_check_circle_outline_24)
-                    } else {
-                        setTitle(R.string.title_pref_grant_write_secure_settings_not_granted)
-                        setIcon(R.drawable.ic_baseline_error_outline_24)
+                        if (isGranted) {
+                            setTitle(R.string.title_pref_grant_write_secure_settings_granted)
+                            setIcon(R.drawable.ic_outline_check_circle_outline_24)
+                        } else {
+                            setTitle(R.string.title_pref_grant_write_secure_settings_not_granted)
+                            setIcon(R.drawable.ic_baseline_error_outline_24)
+                        }
                     }
                 }
             }
-        }
 
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
             viewModel.hasRootPermission.collectLatest { isGranted ->
@@ -228,13 +227,13 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                 findPreference<Preference>(Keys.devicesThatShowImePicker.name)?.isEnabled =
                     isGranted
 
-                findPreference<SwitchPreferenceCompat>(Keys.hasRootPermission.name)?.apply {
-                    if (isChecked != isGranted) {
-                        isChecked = isGranted
+                    findPreference<SwitchPreferenceCompat>(Keys.hasRootPermission.name)?.apply {
+                        if (isChecked != isGranted) {
+                            isChecked = isGranted
+                        }
                     }
                 }
             }
-        }
 
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
             viewModel.automaticBackupLocation.collectLatest { backupLocation ->
