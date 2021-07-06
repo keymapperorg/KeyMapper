@@ -49,7 +49,7 @@ class HomeFragment : Fragment() {
         registerForActivityResult(ActivityResultContracts.CreateDocument()) {
             it ?: return@registerForActivityResult
 
-            homeViewModel.menuViewModel.onChoseBackupFile(it.toString())
+            homeViewModel.onChoseBackupFile(it.toString())
         }
 
     private val backupFingerprintMapsLauncher =
@@ -70,7 +70,7 @@ class HomeFragment : Fragment() {
         registerForActivityResult(ActivityResultContracts.GetContent()) {
             it ?: return@registerForActivityResult
 
-            homeViewModel.menuViewModel.onChoseRestoreFile(it.toString())
+            homeViewModel.onChoseRestoreFile(it.toString())
         }
 
     private val onPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
@@ -205,6 +205,18 @@ class HomeFragment : Fragment() {
                             homeViewModel.approvedQuickStartGuideTapTarget()
                         }
                 }
+            }
+        }
+
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+            homeViewModel.reportBug.collectLatest {
+                findNavController().navigate(NavAppDirections.goToReportBugActivity())
+            }
+        }
+
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+            homeViewModel.fixAppKilling.collectLatest {
+                findNavController().navigate(NavAppDirections.goToFixAppKillingActivity())
             }
         }
 

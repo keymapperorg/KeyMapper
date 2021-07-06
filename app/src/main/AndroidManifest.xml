@@ -62,6 +62,8 @@
 
         <activity android:name=".onboarding.AppIntroActivity" />
         <activity android:name=".MainActivity" />
+        <activity android:name=".reportbug.ReportBugActivity" />
+        <activity android:name=".home.FixAppKillingActivity" />
 
         <!-- Use a different task affinity so this activity doesn't close other activities -->
         <activity

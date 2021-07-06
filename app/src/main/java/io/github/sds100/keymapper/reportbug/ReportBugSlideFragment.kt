@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.onboarding
+package io.github.sds100.keymapper.reportbug
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,12 +7,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
+import com.github.appintro.SlidePolicy
 import io.github.sds100.keymapper.databinding.FragmentAppIntroSlideBinding
 import io.github.sds100.keymapper.util.Inject
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.collectLatest
 
-class AppIntroScrollableFragment : Fragment() {
+class ReportBugSlideFragment : Fragment(), SlidePolicy {
 
     companion object {
         const val KEY_SLIDE = "key_slide"
@@ -25,17 +27,16 @@ class AppIntroScrollableFragment : Fragment() {
     val binding: FragmentAppIntroSlideBinding
         get() = _binding!!
 
-    private val appIntroViewModel by activityViewModels<AppIntroViewModel> {
-        val slides = requireActivity().intent.getStringArrayExtra(AppIntroActivity.EXTRA_SLIDES)
-            ?.map { AppIntroSlide.valueOf(it) }
-
-        Inject.appIntroViewModel(requireContext(), slides!!)
+    private val viewModel by activityViewModels<ReportBugViewModel> {
+        Inject.reportBugViewModel(requireContext())
     }
 
-    private val slide: AppIntroSlide by lazy {
-        val string = requireArguments().getString(KEY_SLIDE)!!
-        AppIntroSlide.valueOf(string)
+    private val slide: String by lazy {
+        requireArguments().getString(KEY_SLIDE)!!
     }
+
+    override val isPolicyRespected: Boolean
+        get() = viewModel.canGoToNextSlide(slide)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,20 +55,27 @@ class AppIntroScrollableFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.showPopups(this, binding)
+
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.CREATED) {
-            appIntroViewModel.getSlide(slide).collectLatest { model ->
+            viewModel.getSlide(slide).collectLatest { model ->
                 binding.model = model
 
                 binding.setOnButton1ClickListener {
-
                     if (model.buttonId1 != null) {
-                        appIntroViewModel.onButtonClick(model.buttonId1)
+                        viewModel.onButtonClick(model.buttonId1)
                     }
                 }
 
                 binding.setOnButton2ClickListener {
                     if (model.buttonId2 != null) {
-                        appIntroViewModel.onButtonClick(model.buttonId2)
+                        viewModel.onButtonClick(model.buttonId2)
+                    }
+                }
+
+                binding.setOnButton3ClickListener {
+                    if (model.buttonId3 != null) {
+                        viewModel.onButtonClick(model.buttonId3)
                     }
                 }
             }
@@ -78,4 +86,6 @@ class AppIntroScrollableFragment : Fragment() {
         _binding = null
         super.onDestroyView()
     }
+
+    override fun onUserIllegallyRequestedNextPage() {}
 }

@@ -6,7 +6,7 @@ import android.graphics.drawable.Drawable
  * Created by sds100 on 14/04/2021.
  */
 data class AppIntroSlideUi(
-    val id: AppIntroSlide,
+    val id: String,
     val image: Drawable,
     val backgroundColor: Int,
     val title: String,
@@ -15,4 +15,6 @@ data class AppIntroSlideUi(
     val buttonText1: String? = null,
     val buttonId2: String? = null,
     val buttonText2: String? = null,
+    val buttonId3: String? = null,
+    val buttonText3: String? = null,
 )

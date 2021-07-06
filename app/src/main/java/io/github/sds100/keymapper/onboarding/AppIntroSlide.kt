@@ -3,12 +3,12 @@ package io.github.sds100.keymapper.onboarding
 /**
  * Created by sds100 on 14/04/2021.
  */
-enum class AppIntroSlide {
-    NOTE_FROM_DEV,
-    ACCESSIBILITY_SERVICE,
-    BATTERY_OPTIMISATION,
-    FINGERPRINT_GESTURE_SUPPORT,
-    DO_NOT_DISTURB,
-    CONTRIBUTING,
-    SETUP_CHOSEN_DEVICES_AGAIN
+object AppIntroSlide {
+    const val NOTE_FROM_DEV = "slide_note_from_dev"
+    const val ACCESSIBILITY_SERVICE = "accessibility_service"
+    const val BATTERY_OPTIMISATION = "battery_optimisation"
+    const val FINGERPRINT_GESTURE_SUPPORT = "fingerprint_gesture_support"
+    const val DO_NOT_DISTURB = "do_not_disturb_access"
+    const val CONTRIBUTING = "contributing"
+    const val SETUP_CHOSEN_DEVICES_AGAIN = "set_up_chosen_devices_again"
 }

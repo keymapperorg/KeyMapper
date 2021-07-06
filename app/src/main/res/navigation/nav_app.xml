@@ -23,7 +23,7 @@
     <fragment
         android:id="@+id/home_fragment"
         android:name="io.github.sds100.keymapper.home.HomeFragment"
-        tools:layout="@layout/fragment_home"/>
+        tools:layout="@layout/fragment_home"></fragment>
 
     <action
         android:id="@+id/action_to_config_keymap"
@@ -164,4 +164,19 @@
         app:exitAnim="@anim/slide_out_left"
         app:popEnterAnim="@anim/slide_in_left"
         app:popExitAnim="@anim/slide_out_right" />
+
+    <action
+        android:id="@+id/goToReportBugActivity"
+        app:destination="@id/reportBugActivity" />
+    <action
+        android:id="@+id/goToFixAppKillingActivity"
+        app:destination="@id/fixAppKillingActivity" />
+    <activity
+        android:id="@+id/reportBugActivity"
+        android:name="io.github.sds100.keymapper.reportbug.ReportBugActivity"
+        android:label="ReportBugActivity" />
+    <activity
+        android:id="@+id/fixAppKillingActivity"
+        android:name="io.github.sds100.keymapper.home.FixAppKillingActivity"
+        android:label="FixCrashActivity" />
 </navigation>

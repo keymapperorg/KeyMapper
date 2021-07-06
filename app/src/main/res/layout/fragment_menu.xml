@@ -37,18 +37,18 @@
                     android:layout_marginStart="8dp"
                     android:onClick="@{() -> viewModel.onShowInputMethodPickerClick()}"
                     android:text="@string/action_change_keyboard"
-                    app:icon="@drawable/ic_notification_keyboard"
+                    app:icon="@drawable/ic_outline_keyboard_24"
                     app:iconTint="?attr/colorOnSurface" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/menuItemSendFeedback"
+                    android:id="@+id/menuItemReportBug"
                     style="@style/BottomSheetMenuItem"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:onClick="@{() -> viewModel.onSendFeedbackClick()}"
-                    android:text="@string/action_send_feedback"
-                    app:icon="@drawable/ic_outline_feedback_24"
+                    android:onClick="@{() -> viewModel.onReportBugClick()}"
+                    android:text="@string/action_report_bug"
+                    app:icon="@drawable/ic_outline_bug_report_24"
                     app:iconTint="?attr/colorOnSurface" />
 
                 <com.google.android.material.button.MaterialButton

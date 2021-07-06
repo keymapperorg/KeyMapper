@@ -132,6 +132,12 @@ class ConfigKeyMapTriggerViewModel(
     private val _errorListItems = MutableStateFlow<List<TextListItem.Error>>(emptyList())
     val errorListItems = _errorListItems.asStateFlow()
 
+    private val _reportBug = MutableSharedFlow<Unit>()
+    val reportBug = _reportBug.asSharedFlow()
+
+    private val _fixAppKilling = MutableSharedFlow<Unit>()
+    val fixAppKilling = _fixAppKilling.asSharedFlow()
+
     init {
         val rebuildErrorList = MutableSharedFlow<State<KeyMapTrigger>>(replay = 1)
 
@@ -318,15 +324,13 @@ class ConfigKeyMapTriggerViewModel(
 
             if (result is Error.AccessibilityServiceCrashed) {
 
-                val snackBar = PopupUi.SnackBar(
-                    message = getString(R.string.dialog_message_restart_accessibility_service_to_record_trigger),
-                    actionText = getString(R.string.pos_restart)
-                )
+                val dialog = DialogUtils.keyMapperCrashedDialog(this@ConfigKeyMapTriggerViewModel)
 
-                val response = showPopup("restart_service", snackBar)
+                val response = showPopup("restart_service", dialog)
 
-                if (response != null) {
-                    displayKeyMap.fixError(Error.AccessibilityServiceCrashed)
+                when (response) {
+                    DialogResponse.POSITIVE -> _fixAppKilling.emit(Unit)
+                    DialogResponse.NEUTRAL -> _reportBug.emit(Unit)
                 }
             }
         }

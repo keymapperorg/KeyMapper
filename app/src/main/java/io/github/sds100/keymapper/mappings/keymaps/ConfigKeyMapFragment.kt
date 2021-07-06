@@ -4,10 +4,10 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
-import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
+import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.constraints.ChooseConstraintFragment
 import io.github.sds100.keymapper.constraints.ConfigConstraintsFragment
@@ -16,10 +16,7 @@ import io.github.sds100.keymapper.mappings.ConfigMappingFragment
 import io.github.sds100.keymapper.mappings.keymaps.trigger.ConfigTriggerOptionsFragment
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerFragment
 import io.github.sds100.keymapper.ui.utils.getJsonSerializable
-import io.github.sds100.keymapper.util.FragmentInfo
-import io.github.sds100.keymapper.util.Inject
-import io.github.sds100.keymapper.util.int
-import io.github.sds100.keymapper.util.intArray
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.FourFragments
 import io.github.sds100.keymapper.util.ui.TwoFragments
 import io.github.sds100.keymapper.util.ui.showPopups
@@ -80,6 +77,18 @@ class ConfigKeyMapFragment : ConfigMappingFragment() {
 
         viewModel.configTriggerViewModel.showPopups(this, binding)
         viewModel.configTriggerViewModel.optionsViewModel.showPopups(this, binding)
+
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+            viewModel.configTriggerViewModel.reportBug.collectLatest {
+                findNavController().navigate(NavAppDirections.goToReportBugActivity())
+            }
+        }
+
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+            viewModel.configTriggerViewModel.fixAppKilling.collectLatest {
+                findNavController().navigate(NavAppDirections.goToFixAppKillingActivity())
+            }
+        }
     }
 
     override fun getFragmentInfoList() = intArray(R.array.config_keymap_fragments).map {

@@ -14,7 +14,7 @@ import kotlinx.coroutines.runBlocking
 
 class AppIntroViewModel(
     private val useCase: AppIntroUseCase,
-    slides: List<AppIntroSlide>,
+    slides: List<String>,
     resourceProvider: ResourceProvider
 ) : ViewModel(), ResourceProvider by resourceProvider {
 
@@ -43,6 +43,7 @@ class AppIntroViewModel(
                 AppIntroSlide.DO_NOT_DISTURB -> dndAccessSlide(hasDndAccess)
                 AppIntroSlide.CONTRIBUTING -> contributingSlide()
                 AppIntroSlide.SETUP_CHOSEN_DEVICES_AGAIN -> setupChosenDevicesAgainSlide()
+                else -> throw Exception("Unknown slide $slide")
             }
         }
     }
@@ -66,7 +67,7 @@ class AppIntroViewModel(
         }
     }
 
-    fun getSlide(slide: AppIntroSlide): Flow<AppIntroSlideUi> =
+    fun getSlide(slide: String): Flow<AppIntroSlideUi> =
         slideModels.mapNotNull { allSlides -> allSlides.find { it.id == slide } }
 
     fun onDoneClick() {
@@ -220,7 +221,7 @@ class AppIntroViewModel(
     @Suppress("UNCHECKED_CAST")
     class Factory(
         private val useCase: AppIntroUseCase,
-        private val slides: List<AppIntroSlide>,
+        private val slides: List<String>,
         private val resourceProvider: ResourceProvider
     ) : ViewModelProvider.NewInstanceFactory() {
 

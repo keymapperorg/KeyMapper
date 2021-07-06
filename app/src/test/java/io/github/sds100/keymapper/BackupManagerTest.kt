@@ -17,7 +17,6 @@ import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntity
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
 import io.github.sds100.keymapper.system.files.FakeFileAdapter
 import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.FlowUtils.toListWithTimeout
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.UuidGenerator
@@ -129,10 +128,10 @@ class BackupManagerTest {
         //WHEN
         coroutineScope.pauseDispatcher()
 
-        backupManager.restoreMappings(zipFile.uri)
+        val result = backupManager.restoreMappings(zipFile.uri)
 
         //THEN
-        assertThat(backupManager.onRestoreResult.toListWithTimeout(), `is`(listOf(Success(Unit))))
+        assertThat(result, `is`(Success(Unit)))
 
         coroutineScope.resumeDispatcher()
 
@@ -181,16 +180,13 @@ class BackupManagerTest {
         val backupZip = File(temporaryFolder.root, "backup.zip")
         backupZip.mkdirs()
 
-        backupManager.backupMappings(uri = backupZip.path)
-
-        assertThat(
-            backupManager.onBackupResult.toListWithTimeout(),
-            `is`(listOf(Success(Unit)))
-        )
-
-        coroutineScope.resumeDispatcher()
+        val result = backupManager.backupMappings(uri = backupZip.path)
 
         //THEN
+
+        assertThat(result, `is`(Success(Unit)))
+
+        coroutineScope.resumeDispatcher()
 
         //only 2 files have been backed up
         assertThat(backupZip.listFiles()?.size, `is`(2))
@@ -240,16 +236,13 @@ class BackupManagerTest {
         val backupZip = File(temporaryFolder.root, "backup.zip")
         backupZip.mkdirs()
 
-        backupManager.backupKeyMaps(backupZip.path, keyMapList.map { it.uid })
-
-        assertThat(
-            backupManager.onBackupResult.toListWithTimeout(),
-            `is`(listOf(Success(Unit)))
-        )
-
-        coroutineScope.resumeDispatcher()
+        val result = backupManager.backupKeyMaps(backupZip.path, keyMapList.map { it.uid })
 
         //THEN
+
+        assertThat(result, `is`(Success(Unit)))
+
+        coroutineScope.resumeDispatcher()
 
         //only 2 files have been backed up
         assertThat(backupZip.listFiles()?.size, `is`(2))
@@ -269,10 +262,10 @@ class BackupManagerTest {
         //WHEN
         coroutineScope.pauseDispatcher()
 
-        backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
+        val result = backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
 
         //THEN
-        assertThat(backupManager.onRestoreResult.toListWithTimeout(), `is`(listOf(Success(Unit))))
+        assertThat(result, `is`(Success(Unit)))
 
         coroutineScope.resumeDispatcher()
 
@@ -287,9 +280,9 @@ class BackupManagerTest {
 
             coroutineScope.pauseDispatcher()
 
-            backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
+            val result = backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
 
-            assertThat(backupManager.onRestoreResult.toListWithTimeout().size, `is`(1))
+            assertThat(result, `is`(Success(Unit)))
 
             coroutineScope.resumeDispatcher()
 
@@ -303,12 +296,9 @@ class BackupManagerTest {
 
             coroutineScope.pauseDispatcher()
 
-            backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
+            val result = backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
 
-            assertThat(
-                backupManager.onRestoreResult.toListWithTimeout(),
-                `is`(listOf(Success(Unit)))
-            )
+            assertThat(result, `is`(Success(Unit)))
 
             coroutineScope.resumeDispatcher()
 
@@ -323,12 +313,9 @@ class BackupManagerTest {
 
             coroutineScope.pauseDispatcher()
 
-            backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
+            val result = backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
 
-            assertThat(
-                backupManager.onRestoreResult.toListWithTimeout(),
-                `is`(listOf(Success(Unit)))
-            )
+            assertThat(result, `is`(Success(Unit)))
 
             coroutineScope.resumeDispatcher()
 
@@ -342,12 +329,9 @@ class BackupManagerTest {
 
             coroutineScope.pauseDispatcher()
 
-            backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
+            val result = backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
 
-            assertThat(
-                backupManager.onRestoreResult.toListWithTimeout(),
-                `is`(listOf(Success(Unit)))
-            )
+            assertThat(result, `is`(Success(Unit)))
 
             coroutineScope.resumeDispatcher()
 
@@ -360,12 +344,9 @@ class BackupManagerTest {
             val fileName = "restore-keymap-db-version-too-big.json"
 
             coroutineScope.pauseDispatcher()
-            backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
+            val result = backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
 
-            assertThat(
-                backupManager.onRestoreResult.toListWithTimeout(),
-                `is`(listOf(Error.BackupVersionTooNew))
-            )
+            assertThat(result, `is`(Error.BackupVersionTooNew))
 
             coroutineScope.resumeDispatcher()
 
@@ -378,12 +359,9 @@ class BackupManagerTest {
             val fileName = "restore-legacy-fingerprint-map-version-too-big.json"
 
             coroutineScope.pauseDispatcher()
-            backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
+            val result = backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
 
-            assertThat(
-                backupManager.onRestoreResult.toListWithTimeout(),
-                `is`(listOf(Error.BackupVersionTooNew))
-            )
+            assertThat(result, `is`(Error.BackupVersionTooNew))
 
             coroutineScope.resumeDispatcher()
 
@@ -396,12 +374,9 @@ class BackupManagerTest {
         val fileName = "empty.json"
 
         coroutineScope.pauseDispatcher()
-        backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
+        val result = backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
 
-        assertThat(
-            backupManager.onRestoreResult.toListWithTimeout(),
-            `is`(listOf(Error.EmptyJson))
-        )
+        assertThat(result, `is`(Error.EmptyJson))
 
         coroutineScope.resumeDispatcher()
     }
@@ -411,12 +386,9 @@ class BackupManagerTest {
         val fileName = "corrupt.json"
 
         coroutineScope.pauseDispatcher()
-        backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
+        val result = backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
 
-        assertThat(
-            backupManager.onRestoreResult.toListWithTimeout().single(),
-            IsInstanceOf(Error.CorruptJsonFile::class.java)
-        )
+        assertThat(result, IsInstanceOf(Error.CorruptJsonFile::class.java))
 
         coroutineScope.resumeDispatcher()
     }
@@ -448,13 +420,10 @@ class BackupManagerTest {
             //WHEN
             coroutineScope.pauseDispatcher()
 
-            backupManager.backupFingerprintMaps(backupZip.path)
+            val result = backupManager.backupFingerprintMaps(backupZip.path)
             //THEN
 
-            assertThat(
-                backupManager.onBackupResult.toListWithTimeout(),
-                `is`(listOf(Success(Unit)))
-            )
+            assertThat(result, `is`(Success(Unit)))
 
             coroutineScope.resumeDispatcher()
 
@@ -498,13 +467,10 @@ class BackupManagerTest {
             //WHEN
             coroutineScope.pauseDispatcher()
 
-            backupManager.backupKeyMaps(backupZip.path, keyMapList.map { it.uid })
+            val result = backupManager.backupKeyMaps(backupZip.path, keyMapList.map { it.uid })
 
             //THEN
-            assertThat(
-                backupManager.onBackupResult.toListWithTimeout(),
-                `is`(listOf(Success(Unit)))
-            )
+            assertThat(result, `is`(Success(Unit)))
 
             coroutineScope.resumeDispatcher()
 
