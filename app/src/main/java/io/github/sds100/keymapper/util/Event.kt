@@ -25,6 +25,7 @@ sealed class Event
 
 @Serializable
 data class Ping(val key: String) : Event()
+
 @Serializable
 data class Pong(val key: String) : Event()
 
@@ -56,13 +57,16 @@ object OnHideKeyboardEvent : Event()
 object OnShowKeyboardEvent : Event()
 
 @Serializable
-object HideKeyboardEvent: Event()
+object HideKeyboardEvent : Event()
 
 @Serializable
-object ShowKeyboardEvent: Event()
+object ShowKeyboardEvent : Event()
 
 @Serializable
-data class TestActionEvent(val action: ActionData): Event()
+data class TestActionEvent(val action: ActionData) : Event()
 
 @Serializable
-data class ChangeIme(val imeId: String): Event()
+data class ChangeIme(val imeId: String) : Event()
+
+@Serializable
+object DisableService : Event()

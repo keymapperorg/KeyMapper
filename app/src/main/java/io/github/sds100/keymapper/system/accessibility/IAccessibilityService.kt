@@ -30,4 +30,6 @@ interface IAccessibilityService {
     val isKeyboardHidden: Flow<Boolean>
 
     fun switchIme(imeId: String)
+
+    fun disableSelf()
 }

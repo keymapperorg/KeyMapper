@@ -119,7 +119,7 @@ class AccessibilityServiceAdapter(
 
                 if (pong == null) {
                     Timber.e("Service crashed so restarting")
-                    disableService()
+                    disableServiceSuspend()
                     delay(200)
                     enableWithWriteSecureSettings()
                 }
@@ -136,7 +136,7 @@ class AccessibilityServiceAdapter(
             Timber.i("Restarting service with WRITE_SECURE_SETTINGS")
 
             coroutineScope.launch {
-                disableService()
+                disableServiceSuspend()
                 delay(200)
                 enableWithWriteSecureSettings()
             }
@@ -148,6 +148,20 @@ class AccessibilityServiceAdapter(
     }
 
     override fun disableService() {
+        coroutineScope.launch {
+            disableServiceSuspend()
+        }
+    }
+
+    private suspend fun disableServiceSuspend() {
+        send(DisableService).onSuccess {
+            Timber.i("Disabling service by calling disableSelf()")
+
+            return
+        }.onFailure {
+            Timber.i("Failed to disable service by calling disableSelf()")
+        }
+
         if (permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
             Timber.i("Disabling service with WRITE_SECURE_SETTINGS")
 

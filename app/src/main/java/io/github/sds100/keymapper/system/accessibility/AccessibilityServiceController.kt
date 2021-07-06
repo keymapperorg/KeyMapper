@@ -295,6 +295,7 @@ class AccessibilityServiceController(
             is HideKeyboardEvent -> accessibilityService.hideKeyboard()
             is ShowKeyboardEvent -> accessibilityService.showKeyboard()
             is ChangeIme -> accessibilityService.switchIme(event.imeId)
+            is DisableService -> accessibilityService.disableSelf()
         }
     }
 
