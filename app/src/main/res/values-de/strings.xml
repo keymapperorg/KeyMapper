@@ -85,6 +85,8 @@
     <!-- URLs -->
     <!-- Activity titles -->
     <!-- Activity titles -->
+    <!--  Bug report slides-->
+    <!--  Bug report slides-->
     <!-- Menu action titles-->
     <string name="action_settings">Einstellungen</string>
     <string name="action_done">Fertig</string>
@@ -95,7 +97,6 @@
     <string name="action_disable">Deaktivieren</string>
     <string name="action_disable_all_keymaps">Alles deaktivieren</string>
     <string name="action_enable_all_keymaps">Alles aktivieren</string>
-    <string name="action_send_feedback">Feedback senden</string>
     <string name="action_seed_database">Initiale-Datenbank</string>
     <string name="action_save">Speichern</string>
     <string name="action_duplicate_keymap">Duplizieren</string>
