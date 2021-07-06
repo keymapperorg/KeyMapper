@@ -14,5 +14,9 @@ class NotificationClickReceiver : BroadcastReceiver() {
         intent ?: return
 
         ServiceLocator.notificationAdapter(context).onReceiveNotificationActionIntent(intent)
+
+        Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS).apply {
+            context.sendBroadcast(this)
+        }
     }
 }
