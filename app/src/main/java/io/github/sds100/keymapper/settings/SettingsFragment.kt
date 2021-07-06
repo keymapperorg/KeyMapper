@@ -138,10 +138,10 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                 populatePreferenceScreen()
             }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-            viewModel.defaultLongPressDelay.collectLatest { value ->
-                val preference = findPreference<SeekBarPreference>(Keys.defaultLongPressDelay.name)
-                    ?: return@collectLatest
+            viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+                viewModel.defaultLongPressDelay.collectLatest { value ->
+                    val preference = findPreference<SeekBarPreference>(Keys.defaultLongPressDelay.name)
+                        ?: return@collectLatest
 
                     if (preference.value != value) {
                         preference.value = value
@@ -149,10 +149,10 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                 }
             }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-            viewModel.defaultDoublePressDelay.collectLatest { value ->
-                val preference = findPreference<SeekBarPreference>(Keys.defaultDoublePressDelay.name)
-                    ?: return@collectLatest
+            viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+                viewModel.defaultDoublePressDelay.collectLatest { value ->
+                    val preference = findPreference<SeekBarPreference>(Keys.defaultDoublePressDelay.name)
+                        ?: return@collectLatest
 
                     if (preference.value != value) {
                         preference.value = value
@@ -160,10 +160,10 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                 }
             }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-            viewModel.defaultSequenceTriggerTimeout.collectLatest { value ->
-                val preference = findPreference<SeekBarPreference>(Keys.defaultSequenceTriggerTimeout.name)
-                    ?: return@collectLatest
+            viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+                viewModel.defaultSequenceTriggerTimeout.collectLatest { value ->
+                    val preference = findPreference<SeekBarPreference>(Keys.defaultSequenceTriggerTimeout.name)
+                        ?: return@collectLatest
 
                     if (preference.value != value) {
                         preference.value = value
@@ -171,10 +171,10 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                 }
             }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-            viewModel.defaultRepeatRate.collectLatest { value ->
-                val preference = findPreference<SeekBarPreference>(Keys.defaultRepeatRate.name)
-                    ?: return@collectLatest
+            viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+                viewModel.defaultRepeatRate.collectLatest { value ->
+                    val preference = findPreference<SeekBarPreference>(Keys.defaultRepeatRate.name)
+                        ?: return@collectLatest
 
                     if (preference.value != value) {
                         preference.value = value
@@ -182,10 +182,10 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                 }
             }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-            viewModel.defaultRepeatDelay.collectLatest { value ->
-                val preference = findPreference<SeekBarPreference>(Keys.defaultRepeatDelay.name)
-                    ?: return@collectLatest
+            viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+                viewModel.defaultRepeatDelay.collectLatest { value ->
+                    val preference = findPreference<SeekBarPreference>(Keys.defaultRepeatDelay.name)
+                        ?: return@collectLatest
 
                     if (preference.value != value) {
                         preference.value = value
@@ -193,10 +193,10 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                 }
             }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-            viewModel.defaultVibrateDuration.collectLatest { value ->
-                val preference = findPreference<SeekBarPreference>(Keys.defaultVibrateDuration.name)
-                    ?: return@collectLatest
+            viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+                viewModel.defaultVibrateDuration.collectLatest { value ->
+                    val preference = findPreference<SeekBarPreference>(Keys.defaultVibrateDuration.name)
+                        ?: return@collectLatest
 
                     if (preference.value != value) {
                         preference.value = value
@@ -204,10 +204,10 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                 }
             }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-            viewModel.isWriteSecureSettingsPermissionGranted.collectLatest { isGranted ->
-                findPreference<Preference>(KEY_GRANT_WRITE_SECURE_SETTINGS)?.apply {
-                    isEnabled = !isGranted
+            viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+                viewModel.isWriteSecureSettingsPermissionGranted.collectLatest { isGranted ->
+                    findPreference<Preference>(KEY_GRANT_WRITE_SECURE_SETTINGS)?.apply {
+                        isEnabled = !isGranted
 
                         if (isGranted) {
                             setTitle(R.string.title_pref_grant_write_secure_settings_granted)
@@ -220,12 +220,12 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                 }
             }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-            viewModel.hasRootPermission.collectLatest { isGranted ->
-                findPreference<Preference>(Keys.showImePickerNotification.name)?.isEnabled = isGranted
-                findPreference<Preference>(Keys.showImePickerOnDeviceConnect.name)?.isEnabled = isGranted
-                findPreference<Preference>(Keys.devicesThatShowImePicker.name)?.isEnabled =
-                    isGranted
+            viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+                viewModel.hasRootPermission.collectLatest { isGranted ->
+                    findPreference<Preference>(Keys.showImePickerNotification.name)?.isEnabled = isGranted
+                    findPreference<Preference>(Keys.showImePickerOnDeviceConnect.name)?.isEnabled = isGranted
+                    findPreference<Preference>(Keys.devicesThatShowImePicker.name)?.isEnabled =
+                        isGranted
 
                     findPreference<SwitchPreferenceCompat>(Keys.hasRootPermission.name)?.apply {
                         if (isChecked != isGranted) {
@@ -235,13 +235,15 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                 }
             }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-            viewModel.automaticBackupLocation.collectLatest { backupLocation ->
-                val preference = findPreference<Preference>(Keys.automaticBackupLocation.name) ?: return@collectLatest
-                preference.summary = if (backupLocation.isBlank()) {
-                    str(R.string.summary_pref_automatic_backup_location_disabled)
-                } else {
-                    backupLocation
+            viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+                viewModel.automaticBackupLocation.collectLatest { backupLocation ->
+                    val preference =
+                        findPreference<Preference>(Keys.automaticBackupLocation.name) ?: return@collectLatest
+                    preference.summary = if (backupLocation.isBlank()) {
+                        str(R.string.summary_pref_automatic_backup_location_disabled)
+                    } else {
+                        backupLocation
+                    }
                 }
             }
         }
