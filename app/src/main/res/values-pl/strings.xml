@@ -34,8 +34,6 @@
     <string name="switch_enabled">Włączone</string>
     <string name="disabled">Wyłączone</string>
     <string name="reset">Zresetuj</string>
-    <string name="email_subject">Zapytanie dotyczące Key Mapper</string>
-    <string name="email_default_message">Czy strona pomocy rozwiązuje Twój problem? Jakie jest Twoje urządzenie?\n\n Której skórki OEM lub ROM używasz?\n\n Opisz swój problem:</string>
     <!--  Action descriptions  -->
     <string name="description_open_app">Otwórz %s</string>
     <string name="description_key">Naciśnij klawisz \'%s\'</string>
@@ -100,6 +98,8 @@
     <!-- URLs -->
     <!-- Activity titles -->
     <!-- Activity titles -->
+    <!--  Bug report slides-->
+    <!--  Bug report slides-->
     <!-- Menu action titles-->
     <string name="action_settings">Ustawienia</string>
     <string name="action_done">Gotowe</string>
@@ -110,7 +110,6 @@
     <string name="action_disable">Wyłącz</string>
     <string name="action_disable_all_keymaps">Wyłącz wszystko</string>
     <string name="action_enable_all_keymaps">Włącz wszystko</string>
-    <string name="action_send_feedback">Prześlij opinię</string>
     <string name="action_seed_database">Baza seedów</string>
     <string name="action_save">Zapisz</string>
     <string name="action_duplicate_keymap">Duplikuj</string>
