@@ -20,9 +20,11 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
+import timber.log.Timber
 
 /**
  * Created by sds100 on 14/02/2021.
@@ -30,6 +32,7 @@ import kotlinx.coroutines.withTimeoutOrNull
 
 class AndroidInputMethodAdapter(
     context: Context,
+    private val coroutineScope: CoroutineScope,
     private val serviceAdapter: ServiceAdapter,
     private val permissionAdapter: PermissionAdapter,
     private val suAdapter: SuAdapter
@@ -39,14 +42,39 @@ class AndroidInputMethodAdapter(
         const val SETTINGS_SECURE_SUBTYPE_HISTORY_KEY = "input_methods_subtype_history"
     }
 
-    override val chosenIme by lazy { MutableStateFlow(getChosenIme()) }
-
     override val inputMethodHistory by lazy {
         val initialValues = getImeHistory().mapNotNull { getInfoById(it).valueOrNull() }
         MutableStateFlow(initialValues)
     }
 
+    val broadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            intent ?: return
+            context ?: return
+
+            when (intent.action) {
+                Intent.ACTION_INPUT_METHOD_CHANGED -> {
+                    onInputMethodsUpdate()
+                }
+            }
+        }
+    }
+
+    private val ctx = context.applicationContext
+
+    private val inputMethodManager: InputMethodManager = ctx.getSystemService()!!
+
     override val inputMethods by lazy { MutableStateFlow(getInputMethods()) }
+
+    override val chosenIme: StateFlow<ImeInfo?> =
+        inputMethods
+            .map { imeInfoList -> imeInfoList.find { it.isChosen } }
+            .onEach {
+                if (it == null) {
+                    Timber.e("No input method is chosen.")
+                }
+            }
+            .stateIn(coroutineScope, SharingStarted.Lazily, getChosenIme())
 
     override val isUserInputRequiredToChangeIme: Flow<Boolean> = channelFlow {
         suspend fun invalidate() {
@@ -74,24 +102,6 @@ class AndroidInputMethodAdapter(
             }
         }
     }
-
-    val broadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            intent ?: return
-            context ?: return
-
-            when (intent.action) {
-                Intent.ACTION_INPUT_METHOD_CHANGED -> {
-                    onInputMethodsUpdate()
-                }
-            }
-        }
-    }
-
-    private val ctx = context.applicationContext
-
-    private val inputMethodManager: InputMethodManager
-        get() = ctx.getSystemService()!!
 
     init {
         //use job scheduler because there is there is a much shorter delay when the app is in the background
@@ -197,7 +207,7 @@ class AndroidInputMethodAdapter(
 
         //wait for the ime to change and then return the info of the ime
         val didImeChange = withTimeoutOrNull(2000) {
-            chosenIme.first { it.id == imeId }
+            chosenIme.first { it?.id == imeId }
         }
 
         if (didImeChange != null) {
@@ -234,7 +244,6 @@ class AndroidInputMethodAdapter(
     fun onInputMethodsUpdate() {
         inputMethods.value = getInputMethods()
         inputMethodHistory.value = getImeHistory().mapNotNull { getInfoById(it).valueOrNull() }
-        chosenIme.value = getChosenIme()
     }
 
     private fun getInputMethods(): List<ImeInfo> {

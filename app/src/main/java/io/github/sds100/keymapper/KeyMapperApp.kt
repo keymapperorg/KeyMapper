@@ -78,6 +78,7 @@ class KeyMapperApp : MultiDexApplication() {
     val inputMethodAdapter by lazy {
         AndroidInputMethodAdapter(
             this,
+            appCoroutineScope,
             serviceAdapter,
             permissionAdapter,
             suAdapter

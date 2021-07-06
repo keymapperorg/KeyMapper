@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.SystemClock
 import android.view.KeyEvent
 import io.github.sds100.keymapper.util.InputEventType
+import timber.log.Timber
 
 /**
  * Created by sds100 on 21/04/2021.
@@ -36,7 +37,12 @@ class KeyMapperImeMessengerImpl(
 
     override fun inputKeyEvent(model: InputKeyModel) {
 
-        val imePackageName = inputMethodAdapter.chosenIme.value.packageName
+        val imePackageName = inputMethodAdapter.chosenIme.value?.packageName
+
+        if (imePackageName == null) {
+            Timber.e("Can't input key event action because no ime is chosen.")
+            return
+        }
 
         val intentAction = when (model.inputType) {
             InputEventType.DOWN -> KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN
@@ -72,7 +78,12 @@ class KeyMapperImeMessengerImpl(
     }
 
     override fun inputText(text: String) {
-        val imePackageName = inputMethodAdapter.chosenIme.value.packageName
+        val imePackageName = inputMethodAdapter.chosenIme.value?.packageName
+
+        if (imePackageName == null) {
+            Timber.e("Can't input text action because no ime is chosen.")
+            return
+        }
 
         Intent(KEY_MAPPER_INPUT_METHOD_ACTION_TEXT).apply {
             setPackage(imePackageName)
