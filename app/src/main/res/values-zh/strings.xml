@@ -65,8 +65,6 @@
     <string name="reset">重置</string>
     <string name="enable_device_admin_message">一旦你启用了设备管理器，你必须停用它才能卸载Key Mapper。</string>
     <string name="action_title_wait">等待 %sms</string>
-    <string name="email_subject"> Key Mapper 查询</string>
-    <string name="email_default_message">帮助页面解决了你的问题吗？你的设备是什么？\n\n 你在使用哪个定制OEM或ROM？\n\n 请描述你正在遇到问题：</string>
     <string name="action_title_intent_start_activity">启动活动: %s</string>
     <string name="action_title_intent_start_service">启动服务: %s</string>
     <string name="action_title_intent_send_broadcast">发送广播: %s</string>
@@ -198,6 +196,8 @@
     <!-- Activity titles -->
     <string name="title_choose_action">选择动作</string>
     <!-- Activity titles -->
+    <!--  Bug report slides-->
+    <!--  Bug report slides-->
     <!-- Menu action titles-->
     <string name="action_settings">设置</string>
     <string name="action_done">完成</string>
@@ -210,7 +210,6 @@
     <string name="action_disable">禁用</string>
     <string name="action_disable_all_keymaps">全部禁用</string>
     <string name="action_enable_all_keymaps">全部启用</string>
-    <string name="action_send_feedback">发送反馈</string>
     <string name="action_change_keyboard">显示输入法选择器</string>
     <string name="action_seed_database">初始数据库</string>
     <string name="action_save">保存</string>
@@ -349,7 +348,6 @@
     <string name="pref_title_rate_review">评分和评论</string>
     <string name="pref_title_xda_thread">XDA论坛</string>
     <string name="pref_title_version">版本</string>
-    <string name="pref_title_developer_email">给开发者发送电子邮件</string>
     <string name="pref_title_translate">翻译</string>
     <string name="pref_title_discord">Discord服务器</string>
     <string name="pref_title_youtube_channel">YouTube频道(教程)</string>
@@ -471,7 +469,6 @@
     <string name="error_action_requires_read_phone_state_permission">此操作需要权限才能读取手机状态！</string>
     <string name="error_cant_find_write_settings_page">无法找到 WRITE_SETTINGS 权限页面！</string>
     <string name="error_opening_app_shortcut">打开此应用快捷方式时出错</string>
-    <string name="error_no_app_found_to_send_feedback">没有找到兼容的应用来发送反馈。</string>
     <string name="dnd_access_granted">允许更改“勿扰模式”！</string>
     <string name="error_cant_find_dnd_access_settings">无法找到“勿扰”访问权限设置！</string>
     <string name="error_need_write_secure_settings_permission">Key Mapper 需要 WRITE_SECURE_SETTINGS 权限。</string>
