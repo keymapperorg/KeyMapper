@@ -55,8 +55,6 @@
     <string name="disabled">Отключено</string>
     <string name="reset">Сброс</string>
     <string name="action_title_wait">Подождите %sмс</string>
-    <string name="email_subject">Запрос Key Mapper</string>
-    <string name="email_default_message">Помогла ли страница решить вашу проблему? Какое ваше устройство?\n\n Какой OEM оболочка или ROM вы используете?\n\n Пожалуйста, опишите проблему:</string>
     <string name="action_title_intent_start_activity">Начать Activity: %s</string>
     <string name="action_title_intent_start_service">Запуск службы: %s</string>
     <string name="action_title_intent_send_broadcast">Отправить Broadcast: %s</string>
@@ -189,6 +187,8 @@
     <!-- Activity titles -->
     <string name="title_choose_action">Выбор действия</string>
     <!-- Activity titles -->
+    <!--  Bug report slides-->
+    <!--  Bug report slides-->
     <!-- Menu action titles-->
     <string name="action_settings">Настройки</string>
     <string name="action_done">Готово</string>
@@ -201,7 +201,6 @@
     <string name="action_disable">Отключить</string>
     <string name="action_disable_all_keymaps">Отключить все</string>
     <string name="action_enable_all_keymaps">Включить все</string>
-    <string name="action_send_feedback">Оставить отзыв</string>
     <string name="action_change_keyboard">Показать выбор метода ввода</string>
     <string name="action_seed_database">База данных Seed</string>
     <string name="action_save">Сохранить</string>
@@ -358,7 +357,6 @@ https://issuetracker.google.com/issues/163120692
     <string name="pref_title_rate_review">Оценить и дать отзыв</string>
     <string name="pref_title_xda_thread">Тема на форуме XDA</string>
     <string name="pref_title_version">Версия</string>
-    <string name="pref_title_developer_email">Отправить письмо разработчику</string>
     <string name="pref_title_translate">Помочь переводу</string>
     <string name="pref_title_discord">Discord сервер</string>
     <string name="pref_title_youtube_channel">Канал YouTube (Учебники)</string>
@@ -482,7 +480,6 @@ https://issuetracker.google.com/issues/163120692
     <string name="error_action_requires_read_phone_state_permission">Это действие требует разрешения на чтение состояния телефона!</string>
     <string name="error_cant_find_write_settings_page">Не удается найти страницу прав доступа WRITE_SETTINGS!</string>
     <string name="error_opening_app_shortcut">Ошибка при открытии ярлыка этого приложения</string>
-    <string name="error_no_app_found_to_send_feedback">Не найдено совместимых приложений для отправки отзыва.</string>
     <string name="dnd_access_granted">Получено разрешение на изменение режима «Не беспокоить»!</string>
     <string name="error_cant_find_dnd_access_settings">Не удается найти настройки прав доступа для режима \"Не беспокоить\"!</string>
     <string name="error_need_write_secure_settings_permission">Key Mapper требуется разрешение WRITE_SECURE_SETTINGS.</string>
