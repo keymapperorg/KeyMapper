@@ -14,8 +14,8 @@ import android.view.inputmethod.InputMethodManager
 import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.system.JobSchedulerHelper
 import io.github.sds100.keymapper.system.SettingsUtils
-import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
+import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
@@ -164,6 +164,7 @@ class AndroidInputMethodAdapter(
     override suspend fun chooseIme(imeId: String, fromForeground: Boolean): Result<ImeInfo> {
 
         getInfoById(imeId).onSuccess {
+            0
             if (!it.isEnabled) {
                 return Error.ImeDisabled(it)
             }

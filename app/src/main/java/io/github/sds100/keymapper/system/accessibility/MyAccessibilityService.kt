@@ -315,4 +315,22 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
         return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
     }
+
+    override fun enableAccessibilityVolumeStream() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            serviceInfo = serviceInfo.apply {
+                feedbackType = feedbackType.withFlag(AccessibilityServiceInfo.FEEDBACK_AUDIBLE)
+                flags = flags.withFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
+            }
+        }
+    }
+
+    override fun disableAccessibilityVolumeStream() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            serviceInfo = serviceInfo.apply {
+                feedbackType = feedbackType.minusFlag(AccessibilityServiceInfo.FEEDBACK_AUDIBLE)
+                flags = flags.minusFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
+            }
+        }
+    }
 }

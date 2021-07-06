@@ -11,26 +11,33 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.addRepeatingJob
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.*
+import io.github.sds100.keymapper.actions.keyevent.*
+import io.github.sds100.keymapper.actions.phone.ChoosePhoneNumberFragment
+import io.github.sds100.keymapper.actions.sound.ChooseSoundFileFragment
+import io.github.sds100.keymapper.actions.sound.ChooseSoundFileResult
+import io.github.sds100.keymapper.actions.system.SystemActionListFragment
+import io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateFragment
+import io.github.sds100.keymapper.actions.text.TextBlockActionTypeFragment
+import io.github.sds100.keymapper.actions.url.ChooseUrlFragment
 import io.github.sds100.keymapper.databinding.FragmentChooseActionBinding
 import io.github.sds100.keymapper.system.apps.*
-import io.github.sds100.keymapper.system.display.PickDisplayCoordinateFragment
 import io.github.sds100.keymapper.system.intents.ConfigIntentFragment
 import io.github.sds100.keymapper.system.intents.ConfigIntentResult
 import io.github.sds100.keymapper.system.intents.ConfigIntentViewModel
 import io.github.sds100.keymapper.system.keyevents.*
-import io.github.sds100.keymapper.system.phone.ChoosePhoneNumberFragment
-import io.github.sds100.keymapper.system.url.ChooseUrlFragment
 import io.github.sds100.keymapper.ui.utils.getJsonSerializable
 import io.github.sds100.keymapper.ui.utils.putJsonSerializable
 import io.github.sds100.keymapper.util.*
-import io.github.sds100.keymapper.util.ui.TextBlockActionTypeFragment
 import io.github.sds100.keymapper.util.ui.setCurrentDestinationLiveData
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
@@ -43,7 +50,9 @@ class ChooseActionFragment : Fragment() {
         const val EXTRA_ACTION = "extra_action"
     }
 
-    private val viewModel by activityViewModels<ChooseActionViewModel> { ChooseActionViewModel.Factory() }
+    private val viewModel by activityViewModels<ChooseActionViewModel> {
+        Inject.chooseActionViewModel(requireContext())
+    }
 
     private val mArgs by navArgs<ChooseActionFragmentArgs>()
 
@@ -88,9 +97,9 @@ class ChooseActionFragment : Fragment() {
 
             result!!
 
-            val device = if (result.device!=null){
+            val device = if (result.device != null) {
                 KeyEventAction.Device(result.device.descriptor, result.device.name)
-            }else{
+            } else {
                 null
             }
 
@@ -143,6 +152,16 @@ class ChooseActionFragment : Fragment() {
             val number = it.getString(ChoosePhoneNumberFragment.EXTRA_PHONE_NUMBER)
 
             PhoneCallAction(number!!)
+        }
+
+        childFragmentManager.setFragmentResultListener(
+            ChooseSoundFileFragment.REQUEST_KEY,
+            viewLifecycleOwner
+        ) { _, bundle ->
+            val resultJson = bundle.getString(ChooseSoundFileFragment.EXTRA_RESULT)!!
+            val result: ChooseSoundFileResult = Json.decodeFromString(resultJson)
+
+            viewModel.onChooseSoundFile(result)
         }
 
         setFragmentResultListener(KeyCodeListFragment.REQUEST_KEY) { _, result ->
@@ -203,6 +222,16 @@ class ChooseActionFragment : Fragment() {
             })
 
             subscribeSearchView(pagerAdapter)
+        }
+
+        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+            viewModel.returnAction.collectLatest { action ->
+                setFragmentResult(
+                    mArgs.chooseActionRequestKey,
+                    Bundle().apply { putJsonSerializable(EXTRA_ACTION, action) }
+                )
+                findNavController().navigateUp()
+            }
         }
     }
 

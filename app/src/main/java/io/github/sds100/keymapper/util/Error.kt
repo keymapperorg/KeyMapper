@@ -38,35 +38,22 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
         R.string.error_feature_not_available,
         feature
     )
-    is Error.KeyMapperImeNotFound -> resourceProvider.getString(R.string.error_key_mapper_ime_not_found)
     is Error.InputMethodNotFound -> resourceProvider.getString(R.string.error_ime_not_found, id)
-    is Error.NoEnabledInputMethods -> resourceProvider.getString(R.string.error_no_enabled_imes)
     is Error.FrontFlashNotFound -> resourceProvider.getString(R.string.error_front_flash_not_found)
     is Error.BackFlashNotFound -> resourceProvider.getString(R.string.error_back_flash_not_found)
-    is Error.DownloadFailed -> resourceProvider.getString(R.string.error_download_failed)
-    is Error.FileNotCached -> resourceProvider.getString(R.string.error_file_not_cached)
-    is Error.SSLHandshakeError -> resourceProvider.getString(R.string.error_ssl_handshake_exception)
     is Error.DeviceNotFound -> resourceProvider.getString(R.string.error_device_not_found)
     is Error.Exception -> exception.toString()
     is Error.EmptyJson -> resourceProvider.getString(R.string.error_empty_json)
-    is Error.FileAccessDenied -> resourceProvider.getString(R.string.error_file_access_denied)
-    is Error.FailedToSplitString -> resourceProvider.getString(
-        R.string.error_failed_to_split_string,
-        string
-    )
     is Error.InvalidNumber -> resourceProvider.getString(R.string.error_invalid_number)
     is Error.NumberTooSmall -> resourceProvider.getString(R.string.error_number_too_small, min)
     is Error.NumberTooBig -> resourceProvider.getString(R.string.error_number_too_big, max)
-    is Error.CantBeEmpty -> resourceProvider.getString(R.string.error_cant_be_empty)
+    is Error.EmptyText -> resourceProvider.getString(R.string.error_cant_be_empty)
     Error.BackupVersionTooNew -> resourceProvider.getString(R.string.error_backup_version_too_new)
     Error.CorruptActionError -> resourceProvider.getString(R.string.error_corrupt_action)
-    is Error.CorruptJsonFile -> reason
     Error.NoIncompatibleKeyboardsInstalled -> resourceProvider.getString(R.string.error_no_incompatible_input_methods_installed)
     Error.NoMediaSessions -> resourceProvider.getString(R.string.error_no_media_sessions)
     Error.NoVoiceAssistant -> resourceProvider.getString(R.string.error_voice_assistant_not_found)
-    is Error.UnknownFileLocation -> resourceProvider.getString(R.string.error_unknown_file_location)
     Error.AccessibilityServiceDisabled -> resourceProvider.getString(R.string.error_accessibility_service_disabled)
-    Error.Duplicate -> resourceProvider.getString(R.string.error_duplicate_constraint)
     Error.LauncherShortcutsNotSupported -> resourceProvider.getString(R.string.error_launcher_shortcuts_not_supported)
     Error.AccessibilityServiceCrashed -> resourceProvider.getString(R.string.error_accessibility_service_crashed)
     Error.CantFindImeSettings -> resourceProvider.getString(R.string.error_cant_find_ime_settings)
@@ -97,6 +84,21 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
     Error.NoDeviceAssistant -> resourceProvider.getString(R.string.error_no_device_assistant)
     Error.NoSettingsApp -> resourceProvider.getString(R.string.error_no_settings_app)
     Error.NoAppToOpenUrl -> resourceProvider.getString(R.string.error_no_app_to_open_url)
+
+    Error.CantFindSoundFile -> resourceProvider.getString(R.string.error_cant_find_sound_file)
+    is Error.CorruptJsonFile -> reason
+
+    is Error.CannotCreateFileInTarget -> resourceProvider.getString(R.string.error_file_access_denied, uri)
+    Error.FileOperationCancelled -> resourceProvider.getString(R.string.error_file_operation_cancelled)
+    is Error.NoSpaceLeftOnTarget -> resourceProvider.getString(R.string.error_no_space_left_at_target, uri)
+    is Error.NotADirectory -> resourceProvider.getString(R.string.error_not_a_directory, uri)
+    is Error.NotAFile -> resourceProvider.getString(R.string.error_not_a_file, uri)
+    is Error.SourceFileNotFound -> resourceProvider.getString(R.string.error_source_file_not_found, uri)
+    Error.StoragePermissionDenied -> resourceProvider.getString(R.string.error_storage_permission_denied)
+    Error.TargetDirectoryMatchesSourceDirectory -> resourceProvider.getString(R.string.error_matching_source_and_target_paths)
+    is Error.TargetDirectoryNotFound -> resourceProvider.getString(R.string.error_directory_not_found, uri)
+    is Error.TargetFileNotFound -> resourceProvider.getString(R.string.error_target_file_not_found, uri)
+    Error.UnknownIOError -> resourceProvider.getString(R.string.error_io_error)
 }
 
 val Error.isFixable: Boolean

@@ -64,7 +64,8 @@ class PerformActionsUseCaseTest {
             nfcAdapter = mock(),
             openUrlAdapter = mock(),
             resourceProvider = mock(),
-            preferenceRepository = mock()
+            preferenceRepository = mock(),
+            soundsManager = mock()
         )
     }
 

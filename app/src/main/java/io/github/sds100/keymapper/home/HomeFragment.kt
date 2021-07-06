@@ -26,7 +26,6 @@ import io.github.sds100.keymapper.databinding.FragmentHomeBinding
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.util.*
-import io.github.sds100.keymapper.util.ui.DialogUtils
 import io.github.sds100.keymapper.util.ui.TextListItem
 import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.android.synthetic.main.fragment_home.*

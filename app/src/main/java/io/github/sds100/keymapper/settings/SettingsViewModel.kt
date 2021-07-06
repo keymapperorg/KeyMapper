@@ -61,7 +61,26 @@ class SettingsViewModel(
         }
     }
 
-    fun requestWriteSecureSettingsPermission(){
+    fun onDeleteSoundFilesClick() {
+        viewModelScope.launch {
+            val soundFiles = useCase.getSoundFiles()
+
+            if (soundFiles.isEmpty()) {
+                showPopup("no sound files", PopupUi.Toast(getString(R.string.toast_no_sound_files)))
+                return@launch
+            }
+
+            val dialog = PopupUi.MultiChoice(
+                items = soundFiles.map { it.uid to it.name }
+            )
+
+            val response = showPopup("select_sound_files_to_delete", dialog) ?: return@launch
+
+            useCase.deleteSoundFiles(response.items)
+        }
+    }
+
+    fun requestWriteSecureSettingsPermission() {
         useCase.requestWriteSecureSettingsPermission()
     }
 

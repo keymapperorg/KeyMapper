@@ -1,6 +1,8 @@
 package io.github.sds100.keymapper.settings
 
 import androidx.datastore.preferences.core.Preferences
+import io.github.sds100.keymapper.actions.sound.SoundFileInfo
+import io.github.sds100.keymapper.actions.sound.SoundsManager
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -23,6 +25,7 @@ class ConfigSettingsUseCaseImpl(
     private val preferenceRepository: PreferenceRepository,
     private val permissionAdapter: PermissionAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
+    private val soundsManager: SoundsManager,
     suAdapter: SuAdapter
 ) : ConfigSettingsUseCase {
 
@@ -110,6 +113,16 @@ class ConfigSettingsUseCaseImpl(
     override fun requestWriteSecureSettingsPermission() {
         permissionAdapter.request(Permission.WRITE_SECURE_SETTINGS)
     }
+
+    override fun getSoundFiles(): List<SoundFileInfo> {
+        return soundsManager.soundFiles.value
+    }
+
+    override fun deleteSoundFiles(uids: List<String>) {
+        uids.forEach {
+            soundsManager.deleteSound(it)
+        }
+    }
 }
 
 interface ConfigSettingsUseCase {
@@ -134,6 +147,8 @@ interface ConfigSettingsUseCase {
     val defaultVibrateDuration: Flow<Int>
     val defaultRepeatRate: Flow<Int>
 
+    fun getSoundFiles(): List<SoundFileInfo>
+    fun deleteSoundFiles(uid: List<String>)
     fun resetDefaultMappingOptions()
     fun requestWriteSecureSettingsPermission()
 }

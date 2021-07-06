@@ -1,6 +1,10 @@
 package io.github.sds100.keymapper.actions
 
 import android.os.Build
+import io.github.sds100.keymapper.actions.sound.SoundsManager
+import io.github.sds100.keymapper.actions.system.IsSystemActionSupportedUseCaseImpl
+import io.github.sds100.keymapper.actions.system.SystemActionId
+import io.github.sds100.keymapper.actions.system.SystemActionUtils
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.camera.CameraLens
@@ -26,7 +30,8 @@ class GetActionErrorUseCaseImpl(
     private val inputMethodAdapter: InputMethodAdapter,
     private val permissionAdapter: PermissionAdapter,
     private val systemFeatureAdapter: SystemFeatureAdapter,
-    private val cameraAdapter: CameraAdapter
+    private val cameraAdapter: CameraAdapter,
+    private val soundsManager: SoundsManager
 ) : GetActionErrorUseCase {
 
     private val isSystemActionSupported = IsSystemActionSupportedUseCaseImpl(systemFeatureAdapter)
@@ -35,7 +40,8 @@ class GetActionErrorUseCaseImpl(
     override val invalidateActionErrors = merge(
         inputMethodAdapter.chosenIme.drop(1).map { },
         inputMethodAdapter.inputMethods.drop(1).map { }, //invalidate when the input methods change
-        permissionAdapter.onPermissionsUpdate
+        permissionAdapter.onPermissionsUpdate,
+        soundsManager.soundFiles.drop(1).map { }
     )
 
     override fun getError(action: ActionData): Error? {
@@ -64,7 +70,7 @@ class GetActionErrorUseCaseImpl(
                 if (
                     action.useShell && !permissionAdapter.isGranted(Permission.ROOT)
                 ) {
-                   return Error.PermissionDenied(Permission.ROOT)
+                    return Error.PermissionDenied(Permission.ROOT)
                 }
 
             is TapCoordinateAction ->
@@ -78,6 +84,12 @@ class GetActionErrorUseCaseImpl(
                 }
 
             is SystemAction -> return action.getError()
+
+            is SoundAction -> {
+                soundsManager.getSound(action.soundUid).onFailure { error ->
+                    return error
+                }
+            }
         }
 
         return null
@@ -85,7 +97,7 @@ class GetActionErrorUseCaseImpl(
 
     private fun getAppError(packageName: String): Error? {
         packageManager.isAppEnabled(packageName).onSuccess { isEnabled ->
-            if (!isEnabled){
+            if (!isEnabled) {
                 return Error.AppDisabled(packageName)
             }
         }

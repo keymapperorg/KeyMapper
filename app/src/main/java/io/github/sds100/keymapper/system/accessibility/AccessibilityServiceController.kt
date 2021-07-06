@@ -4,6 +4,7 @@ import android.os.Build
 import android.os.SystemClock
 import android.view.KeyEvent
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
+import io.github.sds100.keymapper.actions.SoundAction
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
 import io.github.sds100.keymapper.mappings.fingerprintmaps.DetectFingerprintMapsUseCase
@@ -145,7 +146,7 @@ class AccessibilityServiceController(
         }.launchIn(coroutineScope)
 
         accessibilityService.isKeyboardHidden
-            .drop(1) //Don't send it when collecting initially
+            .drop(1)
             .onEach { isHidden ->
                 if (isHidden) {
                     outputEvents.emit(OnHideKeyboardEvent)
@@ -153,6 +154,27 @@ class AccessibilityServiceController(
                     outputEvents.emit(OnShowKeyboardEvent)
                 }
             }.launchIn(coroutineScope)
+
+        combine(
+            pauseMappingsUseCase.isPaused,
+            merge(detectKeyMapsUseCase.allKeyMapList, detectFingerprintMapsUseCase.fingerprintMaps)
+        ) { isPaused, mappings ->
+            var enableAccessibilityVolumeStream: Boolean
+
+            if (isPaused) {
+                enableAccessibilityVolumeStream = false
+            } else {
+                enableAccessibilityVolumeStream = mappings.any { mapping ->
+                    mapping.isEnabled && mapping.actionList.any { it.data is SoundAction }
+                }
+            }
+
+            if (enableAccessibilityVolumeStream) {
+                accessibilityService.enableAccessibilityVolumeStream()
+            } else {
+                accessibilityService.disableAccessibilityVolumeStream()
+            }
+        }.launchIn(coroutineScope)
     }
 
     fun onKeyEvent(

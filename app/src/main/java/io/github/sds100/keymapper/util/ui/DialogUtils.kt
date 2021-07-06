@@ -116,10 +116,11 @@ suspend fun <ID> Context.singleChoiceDialog(
 suspend fun Context.editTextStringAlertDialog(
     lifecycleOwner: LifecycleOwner,
     hint: String,
-    allowEmpty: Boolean = false
+    allowEmpty: Boolean = false,
+    initialText: String = ""
 ) = suspendCancellableCoroutine<PopupUi.TextResponse?> { continuation ->
 
-    val text = MutableStateFlow("")
+    val text = MutableStateFlow(initialText)
 
     val alertDialog = materialAlertDialog {
         val inflater = LayoutInflater.from(this@editTextStringAlertDialog)
@@ -136,12 +137,18 @@ suspend fun Context.editTextStringAlertDialog(
             continuation.resume(PopupUi.TextResponse(text.value))
         }
 
-        negativeButton(R.string.neg_cancel) { it.cancel() }
+        negativeButton(R.string.neg_cancel) {
+            it.cancel()
+        }
     }
+
+    //this prevents window leak
+    alertDialog.resumeNullOnDismiss(continuation)
+    alertDialog.dismissOnDestroy(lifecycleOwner)
 
     alertDialog.show()
 
-    lifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+    lifecycleOwner.lifecycleScope.launchWhenResumed {
         text.collectLatest {
             alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
                 if (allowEmpty) {
@@ -151,17 +158,13 @@ suspend fun Context.editTextStringAlertDialog(
                 }
         }
     }
-
-    //this prevents window leak
-    alertDialog.resumeNullOnDismiss(continuation)
-    alertDialog.dismissOnDestroy(lifecycleOwner)
 }
 
 suspend fun Context.editTextNumberAlertDialog(
     lifecycleOwner: LifecycleOwner,
     hint: String,
     min: Int? = null,
-    max: Int? = null
+    max: Int? = null,
 ) = suspendCancellableCoroutine<Int?> { continuation ->
 
     fun isValid(text: String?): Result<Int> {
@@ -263,7 +266,8 @@ fun Dialog.dismissOnDestroy(lifecycleOwner: LifecycleOwner) {
     lifecycleOwner.lifecycle.addObserver(object : LifecycleObserver {
         @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         fun onDestroy() {
-            dismiss()
+            this@dismissOnDestroy.dismiss()
+            lifecycleOwner.lifecycle.removeObserver(this)
         }
     })
 }

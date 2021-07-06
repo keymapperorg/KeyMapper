@@ -13,7 +13,7 @@
 
         <variable
             name="viewModel"
-            type="io.github.sds100.keymapper.system.keyevents.ConfigKeyEventViewModel" />
+            type="io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

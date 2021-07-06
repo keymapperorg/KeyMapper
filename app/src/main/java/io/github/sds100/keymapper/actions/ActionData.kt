@@ -1,11 +1,12 @@
 package io.github.sds100.keymapper.actions
 
-import io.github.sds100.keymapper.system.volume.DndMode
-import io.github.sds100.keymapper.system.volume.RingerMode
-import io.github.sds100.keymapper.system.volume.VolumeStream
+import io.github.sds100.keymapper.actions.system.SystemActionId
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.intents.IntentTarget
+import io.github.sds100.keymapper.system.volume.DndMode
+import io.github.sds100.keymapper.system.volume.RingerMode
+import io.github.sds100.keymapper.system.volume.VolumeStream
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -50,6 +51,12 @@ sealed class SystemAction : ActionData() {
 data class SimpleSystemAction(
     override val id: SystemActionId,
 ) : SystemAction()
+
+@Serializable
+data class SoundAction(
+    val soundUid: String,
+    val soundDescription: String
+) : ActionData()
 
 @Serializable
 sealed class VolumeSystemAction : SystemAction() {

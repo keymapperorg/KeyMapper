@@ -73,8 +73,9 @@ fun PopupViewModel.showPopups(
     val lifecycleOwner = fragment.viewLifecycleOwner
     val ctx = fragment.requireContext()
 
-    lifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-        showPopup.collectLatest { event ->
+    //must be onCreate because dismissing in onDestroy
+    lifecycleOwner.addRepeatingJob(Lifecycle.State.CREATED) {
+        showPopup.onEach { event ->
             var responded = false
 
             lifecycleOwner.lifecycle.addObserver(object : LifecycleObserver {
@@ -83,6 +84,7 @@ fun PopupViewModel.showPopups(
                     if (!responded) {
                         onUserResponse(event.key, null)
                         responded = true
+                        lifecycleOwner.lifecycle.removeObserver(this)
                     }
                 }
             })
@@ -108,7 +110,8 @@ fun PopupViewModel.showPopups(
                 is PopupUi.Text -> ctx.editTextStringAlertDialog(
                     lifecycleOwner,
                     event.ui.hint,
-                    event.ui.allowEmpty
+                    event.ui.allowEmpty,
+                    event.ui.text
                 )
 
                 is PopupUi.Dialog -> ctx.materialAlertDialog(lifecycleOwner, event.ui)
@@ -142,6 +145,6 @@ fun PopupViewModel.showPopups(
                 onUserResponse(event.key, response)
                 responded = true
             }
-        }
+        }.launchIn(this)
     }
 }

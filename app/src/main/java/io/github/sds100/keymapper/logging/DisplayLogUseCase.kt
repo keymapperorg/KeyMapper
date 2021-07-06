@@ -7,7 +7,6 @@ import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ifIsData
 import io.github.sds100.keymapper.util.mapData
-import io.github.sds100.keymapper.util.onSuccess
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -36,7 +35,7 @@ class DisplayLogUseCaseImpl(
         repository.deleteAll()
     }
 
-    override suspend fun copyToClipboard( entryId: Set<Int>) {
+    override suspend fun copyToClipboard(entryId: Set<Int>) {
 
         repository.log.first().ifIsData { logEntries ->
             val logText = getLogText(logEntries.filter { it.id in entryId })
@@ -48,14 +47,13 @@ class DisplayLogUseCaseImpl(
         }
     }
 
-    override suspend fun saveToFile(uri: String,  entryId: Set<Int>) {
-        fileAdapter.openOutputStream(uri).onSuccess { outputStream ->
+    override suspend fun saveToFile(uri: String, entryId: Set<Int>) {
+        val file = fileAdapter.getFileFromUri(uri)
 
-            repository.log.first().ifIsData { logEntries ->
-                val logText = getLogText(logEntries.filter { it.id in entryId })
+        repository.log.first().ifIsData { logEntries ->
+            val logText = getLogText(logEntries.filter { it.id in entryId })
 
-                outputStream.bufferedWriter().use { it.write(logText) }
-            }
+            file.outputStream()!!.bufferedWriter().use { it.write(logText) }
         }
     }
 
@@ -73,6 +71,6 @@ class DisplayLogUseCaseImpl(
 interface DisplayLogUseCase {
     val log: Flow<State<List<LogEntry>>>
     fun clearLog()
-    suspend fun copyToClipboard( entryId:Set<Int>)
-    suspend fun saveToFile(uri: String,  entryId: Set<Int>)
+    suspend fun copyToClipboard(entryId: Set<Int>)
+    suspend fun saveToFile(uri: String, entryId: Set<Int>)
 }
