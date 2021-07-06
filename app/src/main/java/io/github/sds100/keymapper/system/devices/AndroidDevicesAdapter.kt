@@ -112,7 +112,7 @@ class AndroidDevicesAdapter(
         val devices = mutableListOf<InputDeviceInfo>()
 
         InputDevice.getDeviceIds().forEach {
-            val device = InputDevice.getDevice(it)
+            val device = InputDevice.getDevice(it) ?: return@forEach
 
             devices.add(device.createModel())
         }
