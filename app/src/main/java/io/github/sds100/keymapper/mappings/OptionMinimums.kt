@@ -12,5 +12,5 @@ object OptionMinimums {
     const val TRIGGER_LONG_PRESS_DELAY = 0
     const val TRIGGER_DOUBLE_PRESS_DELAY = 0
     const val TRIGGER_SEQUENCE_TRIGGER_TIMEOUT = 0
-    const val VIBRATION_DURATION = 5
+    const val VIBRATION_DURATION = 1
 }
