@@ -82,6 +82,10 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
         return setFlashlightMode(!isFlashEnabledMap[lens]!!, lens)
     }
 
+    override fun isFlashlightOn(lens: CameraLens): Boolean {
+        return isFlashEnabledMap[lens] ?: false
+    }
+
     private fun setFlashlightMode(
         enabled: Boolean,
         lens: CameraLens

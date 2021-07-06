@@ -46,19 +46,13 @@ data class ConstraintEntity(
         const val ORIENTATION_PORTRAIT = "constraint_orientation_portrait"
         const val ORIENTATION_LANDSCAPE = "constraint_orientation_landscape"
 
-        //types
-        val ORIENTATION_CONSTRAINTS = arrayOf(
-            ORIENTATION_PORTRAIT,
-            ORIENTATION_LANDSCAPE,
-            ORIENTATION_0,
-            ORIENTATION_90,
-            ORIENTATION_180,
-            ORIENTATION_270
-        )
+        const val FLASHLIGHT_ON = "flashlight_on"
+        const val FLASHLIGHT_OFF = "flashlight_off"
 
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
         const val EXTRA_BT_ADDRESS = "extra_bluetooth_device_address"
         const val EXTRA_BT_NAME = "extra_bluetooth_device_name"
+        const val EXTRA_FLASHLIGHT_CAMERA_LENS = "extra_flashlight_camera_lens"
 
         val DESERIALIZER = jsonDeserializer {
             val type by it.json.byString(NAME_TYPE)

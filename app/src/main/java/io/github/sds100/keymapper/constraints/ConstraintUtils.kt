@@ -16,6 +16,8 @@ object ConstraintUtils {
         ChooseConstraintType.ORIENTATION_90,
         ChooseConstraintType.ORIENTATION_180,
         ChooseConstraintType.ORIENTATION_270,
+        ChooseConstraintType.FLASHLIGHT_ON,
+        ChooseConstraintType.FLASHLIGHT_OFF,
     )
 
     val KEY_MAP_ALLOWED_CONSTRAINTS = arrayOf(

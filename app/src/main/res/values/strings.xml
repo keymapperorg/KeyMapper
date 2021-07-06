@@ -245,6 +245,8 @@
     <string name="constraint_bt_device_disconnected_description">%s is disconnected</string>
     <string name="constraint_screen_on_description">Screen is on</string>
     <string name="constraint_screen_off_description">Screen is off</string>
+    <string name="constraint_flashlight_off_description">%s flashlight is off</string>
+    <string name="constraint_flashlight_on_description">%s flashlight is on</string>
 
     <string name="constraint_mode_and">and</string>
     <string name="constraint_mode_or">or</string>
@@ -267,6 +269,8 @@
     <string name="constraint_choose_orientation_portrait">Portrait (any)</string>
     <string name="constraint_choose_orientation_landscape">Landscape (any)</string>
     <string name="constraint_choose_app_playing_media">Specific app playing media</string>
+    <string name="constraint_flashlight_on">Flashlight is on</string>
+    <string name="constraint_flashlight_off">Flashlight is off</string>
 
     <string name="orientation_0">Portrait (0°)</string>
     <string name="orientation_90">Landscape (90°)</string>

@@ -2,10 +2,9 @@ package io.github.sds100.keymapper.constraints
 
 import androidx.lifecycle.*
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
-import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.ui.*
-import io.github.sds100.keymapper.util.ui.PopupUi
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.Dispatchers
@@ -40,6 +39,9 @@ class ChooseConstraintViewModel(
             ChooseConstraintType.ORIENTATION_90,
             ChooseConstraintType.ORIENTATION_180,
             ChooseConstraintType.ORIENTATION_270,
+
+            ChooseConstraintType.FLASHLIGHT_ON,
+            ChooseConstraintType.FLASHLIGHT_OFF
         )
     }
 
@@ -173,8 +175,31 @@ class ChooseConstraintViewModel(
 
                 ChooseConstraintType.ORIENTATION_270 ->
                     _returnResult.emit(Constraint.OrientationCustom(Orientation.ORIENTATION_270))
+
+                ChooseConstraintType.FLASHLIGHT_ON -> {
+                    val lens = chooseFlashlightLens() ?: return@launch
+                    _returnResult.emit(Constraint.FlashlightOn(lens))
+                }
+
+                ChooseConstraintType.FLASHLIGHT_OFF -> {
+                    val lens = chooseFlashlightLens() ?: return@launch
+                    _returnResult.emit(Constraint.FlashlightOff(lens))
+                }
             }
         }
+    }
+
+    private suspend fun chooseFlashlightLens(): CameraLens? {
+        val items = listOf(
+            CameraLens.FRONT to getString(R.string.lens_front),
+            CameraLens.BACK to getString(R.string.lens_back)
+        )
+
+        val dialog = PopupUi.SingleChoice(items)
+
+        val response = showPopup("choose_flashlight_lens", dialog)
+
+        return response?.item
     }
 
     private fun buildListItems(): List<ChooseConstraintListItem> = sequence {
@@ -258,6 +283,18 @@ class ChooseConstraintViewModel(
                     ChooseConstraintListItem(
                         type,
                         getString(R.string.constraint_choose_orientation_270)
+                    )
+
+                ChooseConstraintType.FLASHLIGHT_ON ->
+                    ChooseConstraintListItem(
+                        type,
+                        getString(R.string.constraint_flashlight_on)
+                    )
+
+                ChooseConstraintType.FLASHLIGHT_OFF ->
+                    ChooseConstraintListItem(
+                        type,
+                        getString(R.string.constraint_flashlight_off)
                     )
             }
 

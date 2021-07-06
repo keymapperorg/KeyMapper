@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.constraints
 
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
+import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.display.Orientation
@@ -19,7 +20,8 @@ class ConstraintSnapshot(
     accessibilityService: IAccessibilityService,
     mediaAdapter: MediaAdapter,
     devicesAdapter: DevicesAdapter,
-    displayAdapter: DisplayAdapter
+    displayAdapter: DisplayAdapter,
+    private val cameraAdapter: CameraAdapter
 ) {
     private val appInForeground: String? by lazy { accessibilityService.rootNode?.packageName }
     private val connectedBluetoothDevices: Set<BluetoothDeviceInfo> by lazy { devicesAdapter.connectedBluetoothDevices.value }
@@ -46,6 +48,8 @@ class ConstraintSnapshot(
                 orientation == Orientation.ORIENTATION_0 || orientation == Orientation.ORIENTATION_180
             Constraint.ScreenOff -> !isScreenOn
             Constraint.ScreenOn -> isScreenOn
+            is Constraint.FlashlightOff -> !cameraAdapter.isFlashlightOn(constraint.lens)
+            is Constraint.FlashlightOn -> cameraAdapter.isFlashlightOn(constraint.lens)
         }
     }
 

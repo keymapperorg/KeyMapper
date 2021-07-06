@@ -1,12 +1,13 @@
 package io.github.sds100.keymapper.constraints
 
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.system.display.Orientation
-import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.mappings.DisplayConstraintUseCase
-import io.github.sds100.keymapper.util.ui.IconInfo
-import io.github.sds100.keymapper.util.ui.TintType
+import io.github.sds100.keymapper.system.camera.CameraLensUtils
+import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.util.handle
+import io.github.sds100.keymapper.util.ui.IconInfo
+import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.TintType
 
 /**
  * Created by sds100 on 18/03/2021.
@@ -24,11 +25,11 @@ class ConstraintUiHelper(
                 onError = { getString(R.string.constraint_choose_app_foreground) }
             )
 
-            is Constraint.AppNotInForeground ->
-                getAppName(constraint.packageName).handle(
-                    onSuccess = { getString(R.string.constraint_app_not_foreground_description, it) },
-                    onError = { getString(R.string.constraint_choose_app_not_foreground) }
-                )
+        is Constraint.AppNotInForeground ->
+            getAppName(constraint.packageName).handle(
+                onSuccess = { getString(R.string.constraint_app_not_foreground_description, it) },
+                onError = { getString(R.string.constraint_choose_app_not_foreground) }
+            )
 
         is Constraint.AppPlayingMedia ->
             getAppName(constraint.packageName).handle(
@@ -70,6 +71,16 @@ class ConstraintUiHelper(
 
         Constraint.ScreenOn ->
             getString(R.string.constraint_screen_on_description)
+
+        is Constraint.FlashlightOff -> getString(
+            R.string.constraint_flashlight_off_description,
+            getString(CameraLensUtils.getLabel(constraint.lens))
+        )
+
+        is Constraint.FlashlightOn -> getString(
+            R.string.constraint_flashlight_on_description,
+            getString(CameraLensUtils.getLabel(constraint.lens))
+        )
     }
 
     fun getIcon(constraint: Constraint): IconInfo? = when (constraint) {
@@ -117,6 +128,16 @@ class ConstraintUiHelper(
 
         Constraint.ScreenOn -> IconInfo(
             drawable = getDrawable(R.drawable.ic_baseline_mobile_off_24),
+            tintType = TintType.ON_SURFACE
+        )
+
+        is Constraint.FlashlightOff -> IconInfo(
+            drawable = getDrawable(R.drawable.ic_flashlight_off),
+            tintType = TintType.ON_SURFACE
+        )
+
+        is Constraint.FlashlightOn -> IconInfo(
+            drawable = getDrawable(R.drawable.ic_flashlight),
             tintType = TintType.ON_SURFACE
         )
     }

@@ -23,5 +23,8 @@ enum class ChooseConstraintType {
     ORIENTATION_0,
     ORIENTATION_90,
     ORIENTATION_180,
-    ORIENTATION_270
+    ORIENTATION_270,
+
+    FLASHLIGHT_ON,
+    FLASHLIGHT_OFF
 }

@@ -3,7 +3,9 @@ package io.github.sds100.keymapper.constraints
 import io.github.sds100.keymapper.data.entities.ConstraintEntity
 import io.github.sds100.keymapper.data.entities.Extra
 import io.github.sds100.keymapper.data.entities.getData
+import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
+import io.github.sds100.keymapper.util.getKey
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.serialization.Serializable
 import java.util.*
@@ -47,6 +49,12 @@ sealed class Constraint {
 
     @Serializable
     data class OrientationCustom(val orientation: Orientation) : Constraint()
+
+    @Serializable
+    data class FlashlightOn(val lens: CameraLens) : Constraint()
+
+    @Serializable
+    data class FlashlightOff(val lens: CameraLens) : Constraint()
 }
 
 object ConstraintModeEntityMapper {
@@ -63,6 +71,12 @@ object ConstraintModeEntityMapper {
 }
 
 object ConstraintEntityMapper {
+
+    private val LENS_MAP = mapOf(
+        CameraLens.BACK to "option_lens_back",
+        CameraLens.FRONT to "option_lens_front"
+    )
+
     fun fromEntity(entity: ConstraintEntity): Constraint {
         fun getPackageName(): String {
             return entity.extras.getData(ConstraintEntity.EXTRA_PACKAGE_NAME).valueOrNull()!!
@@ -74,6 +88,11 @@ object ConstraintEntityMapper {
 
         fun getBluetoothDeviceName(): String {
             return entity.extras.getData(ConstraintEntity.EXTRA_BT_NAME).valueOrNull()!!
+        }
+
+        fun getCameraLens(): CameraLens {
+            val extraValue = entity.extras.getData(ConstraintEntity.EXTRA_FLASHLIGHT_CAMERA_LENS).valueOrNull()!!
+            return LENS_MAP.getKey(extraValue)!!
         }
 
         return when (entity.type) {
@@ -97,6 +116,9 @@ object ConstraintEntityMapper {
 
             ConstraintEntity.SCREEN_OFF -> Constraint.ScreenOff
             ConstraintEntity.SCREEN_ON -> Constraint.ScreenOn
+
+            ConstraintEntity.FLASHLIGHT_ON -> Constraint.FlashlightOn(getCameraLens())
+            ConstraintEntity.FLASHLIGHT_OFF -> Constraint.FlashlightOff(getCameraLens())
 
             else -> throw Exception("don't know how to convert constraint entity with type ${entity.type}")
         }
@@ -145,5 +167,14 @@ object ConstraintEntityMapper {
         Constraint.OrientationPortrait -> ConstraintEntity(ConstraintEntity.ORIENTATION_PORTRAIT)
         Constraint.ScreenOff -> ConstraintEntity(ConstraintEntity.SCREEN_OFF)
         Constraint.ScreenOn -> ConstraintEntity(ConstraintEntity.SCREEN_ON)
+
+        is Constraint.FlashlightOff -> ConstraintEntity(
+            ConstraintEntity.FLASHLIGHT_OFF,
+            Extra(ConstraintEntity.EXTRA_FLASHLIGHT_CAMERA_LENS, LENS_MAP[constraint.lens]!!)
+        )
+        is Constraint.FlashlightOn -> ConstraintEntity(
+            ConstraintEntity.FLASHLIGHT_ON,
+            Extra(ConstraintEntity.EXTRA_FLASHLIGHT_CAMERA_LENS, LENS_MAP[constraint.lens]!!)
+        )
     }
 }
