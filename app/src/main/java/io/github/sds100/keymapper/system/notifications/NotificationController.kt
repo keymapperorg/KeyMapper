@@ -8,8 +8,8 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
 import io.github.sds100.keymapper.mappings.fingerprintmaps.AreFingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
-import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.accessibility.ControlAccessibilityServiceUseCase
+import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.inputmethod.ShowHideInputMethodUseCase
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.system.inputmethod.ToggleCompatibleImeUseCase
@@ -18,6 +18,7 @@ import io.github.sds100.keymapper.util.onFailure
 import io.github.sds100.keymapper.util.onSuccess
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -109,7 +110,7 @@ class NotificationController(
             pauseMappings.isPaused
         ) { show, serviceState, areMappingsPaused ->
             invalidateToggleMappingsNotification(show, serviceState, areMappingsPaused)
-        }.launchIn(coroutineScope)
+        }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
 
         manageNotifications.showImePickerNotification.onEach { show ->
             if (show) {
