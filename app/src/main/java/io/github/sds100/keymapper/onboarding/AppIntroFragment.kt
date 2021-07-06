@@ -12,7 +12,7 @@ import io.github.sds100.keymapper.databinding.FragmentAppIntroSlideBinding
 import io.github.sds100.keymapper.util.Inject
 import kotlinx.coroutines.flow.collectLatest
 
-class AppIntroScrollableFragment : Fragment() {
+class AppIntroFragment : Fragment() {
 
     companion object {
         const val KEY_SLIDE = "key_slide"
@@ -27,14 +27,12 @@ class AppIntroScrollableFragment : Fragment() {
 
     private val appIntroViewModel by activityViewModels<AppIntroViewModel> {
         val slides = requireActivity().intent.getStringArrayExtra(AppIntroActivity.EXTRA_SLIDES)
-            ?.map { AppIntroSlide.valueOf(it) }
 
-        Inject.appIntroViewModel(requireContext(), slides!!)
+        Inject.appIntroViewModel(requireContext(), slides!!.toList())
     }
 
-    private val slide: AppIntroSlide by lazy {
-        val string = requireArguments().getString(KEY_SLIDE)!!
-        AppIntroSlide.valueOf(string)
+    private val slide: String by lazy {
+        requireArguments().getString(KEY_SLIDE)!!
     }
 
     override fun onCreateView(

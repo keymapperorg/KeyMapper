@@ -20,6 +20,10 @@ class ResourceProviderImpl(context: Context): ResourceProvider {
         return ctx.str(resId, formatArgArray = args)
     }
 
+    override fun getText(resId: Int): CharSequence {
+        return ctx.getText(resId)
+    }
+
     override fun getString(resId: Int, arg: Any): String {
         return ctx.str(resId, arg)
     }
@@ -41,6 +45,7 @@ interface ResourceProvider {
     fun getString(@StringRes resId: Int, args: Array<Any>): String
     fun getString(@StringRes resId: Int, arg: Any): String
     fun getString(@StringRes resId: Int): String
+    fun getText(@StringRes resId: Int): CharSequence
     fun getDrawable(@DrawableRes resId: Int): Drawable
     fun getColor(@ColorRes color: Int): Int
 }

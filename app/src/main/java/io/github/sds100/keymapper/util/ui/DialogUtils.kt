@@ -1,12 +1,9 @@
 package io.github.sds100.keymapper.util.ui
 
 import android.app.Dialog
-import android.app.UiModeManager
 import android.content.Context
-import android.content.res.Configuration
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.getSystemService
 import androidx.lifecycle.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.sds100.keymapper.R
@@ -35,7 +32,7 @@ suspend fun Context.materialAlertDialog(
 
     materialAlertDialog {
         title = model.title
-        message = model.message
+        setMessage(model.message)
 
         setPositiveButton(model.positiveButtonText) { _, _ ->
             continuation.resume(DialogResponse.POSITIVE)
@@ -304,5 +301,15 @@ object DialogUtils {
 
             negativeButton(R.string.neg_cancel) { it.cancel() }
         }
+    }
+
+    fun keyMapperCrashedDialog(resourceProvider: ResourceProvider): PopupUi.Dialog {
+        return PopupUi.Dialog(
+            title = resourceProvider.getString(R.string.dialog_title_key_mapper_crashed),
+            message = resourceProvider.getText(R.string.dialog_message_key_mapper_crashed),
+            positiveButtonText = resourceProvider.getString(R.string.dialog_button_read_dont_kill_my_app_no),
+            negativeButtonText = resourceProvider.getString(R.string.neg_cancel),
+            neutralButtonText = resourceProvider.getString(R.string.dialog_button_read_dont_kill_my_app_yes)
+        )
     }
 }

@@ -8,6 +8,7 @@ import androidx.lifecycle.addRepeatingJob
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
+import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.constraints.ChooseConstraintFragment
 import io.github.sds100.keymapper.constraints.ConfigConstraintsFragment
@@ -80,6 +81,18 @@ class ConfigKeyMapFragment : ConfigMappingFragment() {
 
         viewModel.configTriggerViewModel.showPopups(this, binding)
         viewModel.configTriggerViewModel.optionsViewModel.showPopups(this, binding)
+
+        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+            viewModel.configTriggerViewModel.reportBug.collectLatest {
+                findNavController().navigate(NavAppDirections.goToReportBugActivity())
+            }
+        }
+
+        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+            viewModel.configTriggerViewModel.fixAppKilling.collectLatest {
+                findNavController().navigate(NavAppDirections.goToFixAppKillingActivity())
+            }
+        }
     }
 
     override fun getFragmentInfoList() = intArray(R.array.config_keymap_fragments).map {

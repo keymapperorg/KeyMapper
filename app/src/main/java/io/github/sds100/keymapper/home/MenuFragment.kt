@@ -14,8 +14,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.databinding.FragmentMenuBinding
 import io.github.sds100.keymapper.system.url.UrlUtils
+import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.ui.showPopups
-import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.flow.collectLatest
 
 class MenuFragment : BottomSheetDialogFragment() {
@@ -67,12 +67,6 @@ class MenuFragment : BottomSheetDialogFragment() {
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED){
             viewModel.openAbout.collectLatest {
                 findNavController().navigate(NavAppDirections.actionGlobalAboutFragment())
-            }
-        }
-
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED){
-            viewModel.emailDeveloper.collectLatest {
-                FeedbackUtils.emailDeveloper(requireContext())
             }
         }
 

@@ -92,8 +92,8 @@
 
     <string name="action_title_wait">Wait %sms</string>
 
-    <string name="email_subject">Key Mapper query</string>
-    <string name="email_default_message">Does the help page solve your problem? What is your device?\n\n Which OEM skin or ROM are you using?\n\n Please describe the issue you\'re having:</string>
+    <string name="email_subject">Key Mapper bug report</string>
+    <string name="email_default_message">Please describe the issue you\'re having...</string>
 
     <string name="action_title_intent_start_activity">Start activity: %s</string>
     <string name="action_title_intent_start_service">Start service: %s</string>
@@ -107,11 +107,11 @@
     <string name="trigger_error_screen_off_root_permission_denied">The option to trigger when the screen is off needs root permission to work!</string>
     <string name="trigger_error_screen_off_root_permission_denied_short">The option to trigger when the screen is off will not work!</string>
 
-    <string name="home_error_is_battery_optimised">Your mappings will stop working randomly! Tap \'Fix\' to fix this.</string>
+    <string name="home_error_is_battery_optimised">Your mappings will stop working randomly!</string>
     <string name="home_error_key_maps_paused">Your mappings are paused!</string>
     <string name="home_error_key_maps_paused_button">Unpause</string>
     <string name="home_error_accessibility_service_is_disabled">The accessibility service needs to be turned on for your mappings to work!</string>
-    <string name="home_error_accessibility_service_is_crashed">The accessibility service is enabled but it has been killed or it crashed! Restart the service to fix this problem.</string>
+    <string name="home_error_accessibility_service_is_crashed">Your phone killed Key Mapper when it was in the background or it crashed!</string>
     <string name="home_success_accessibility_service_is_enabled">The accessibility service is enabled! Your mappings should work.</string>
     <string name="home_error_logging_enabled">Extra logging is turned on! Turn this off if you aren\'t trying to fix an issue.</string>
     <string name="home_error_logging_enabled_button">Turn off</string>
@@ -160,6 +160,7 @@
     <string name="hint_intent_extra_value_with_type">Value (%s)</string>
     <string name="hint_intent_description">Description for Key Mapper (required)</string>
     <string name="hint_intent_flags">Flags</string>
+    <string name="hint_sound_file_description">Sound file description</string>
     <!--  Hints  -->
 
     <!--  Radio buttons  -->
@@ -316,11 +317,37 @@
     <string name="url_github_keymapper_gui_keyboard" translatable="false">https://github.com/sds100/KeyMapperKeyboard/releases</string>
 
     <string name="url_github_keymapper_leanback_keyboard" translatable="false">https://github.com/sds100/KeyMapperLeanbackKeyboard/releases</string>
+
+    <string name="url_github_create_issue_bug" translatable="false">https://github.com/sds100/KeyMapper/issues/new/choose</string>
     <!-- URLs -->
 
     <!-- Activity titles -->
     <string name="title_choose_action">Choose action</string>
     <!-- Activity titles -->
+
+    <!--  Bug report slides-->
+
+    <string name="slide_title_read_dont_kill_my_app">Turn off app killing</string>
+    <string name="slide_description_read_dont_kill_my_app">Follow the amazing guide at dontkillmyapp.com that shows you how to turn off all the app killing "features" on your phone.
+
+    \n\nOnce you have read the guide you will need to go to the next slide and restart the accessibility service.</string>
+    <string name="slide_button_read_dont_kill_my_app">Open guide</string>
+
+    <string name="slide_title_restart_accessibility_service">Restart the accessibility service</string>
+    <string name="slide_description_restart_accessibility_service">The accessibility service must be restarted. Turn it off and on.</string>
+    <string name="slide_button_restart_accessibility_service">Restart</string>
+
+    <string name="slide_title_create_bug_report">Report a bug</string>
+    <string name="slide_description_create_bug_report">Choose a location to save the bug report to by tapping "create report". The next slide will tell how you can you can send it to the developer.</string>
+    <string name="slide_button_create_bug_report">Create report</string>
+
+    <string name="slide_title_share_bug_report">Share the report</string>
+    <string name="slide_description_share_bug_report">There are 3 ways to share the bug report to the developer. Either join the Discord server, create a GitHub issue or (least preferably) send an email. Make sure that you attach the bug report to your message!</string>
+    <string name="slide_button_share_discord">Discord</string>
+    <string name="slide_button_share_github">GitHub</string>
+    <string name="slide_button_share_email">Email</string>
+
+    <!--  Bug report slides-->
 
     <!-- Menu action titles-->
     <string name="action_settings">Settings</string>
@@ -334,7 +361,7 @@
     <string name="action_disable">Disable</string>
     <string name="action_disable_all_keymaps">Disable all</string>
     <string name="action_enable_all_keymaps">Enable all</string>
-    <string name="action_send_feedback">Send feedback</string>
+    <string name="action_report_bug">Report bug</string>
     <string name="action_change_keyboard">Show input method picker</string>
     <string name="action_seed_database">Seed database</string>
     <string name="action_save">Save</string>
@@ -411,7 +438,7 @@
     <string name="dialog_message_install_leanback_keyboard">This is highly recommended! This is a proper keyboard for Android TV that you can use with Key Mapper. The one built-in to Key Mapper (the Basic Input Method) has no on-screen keyboard. Choose where you want to install it from.</string>
 
     <string name="dialog_title_disable_battery_optimisation">Disable battery optimisation</string>
-    <string name="dialog_message_disable_battery_optimisation">You <b>MUST</b> read this <b>all</b> otherwise you will get <b>frustrated</b> in the future!\n\nTapping \"fix partially\" <b>might</b> prevent Android from stopping the app while it is in the background.\n\n<b>This is NOT ENOUGH</b>. Your OEM\'s skin such as MIUI or Samsung Experience may have other \"battery saving\" features so you MUST turn them off for Key Mapper as well by following the online guide at dontkillmyapp.com.</string>
+    <string name="dialog_message_disable_battery_optimisation">You <b>MUST</b> read this <b>all</b> otherwise you will get <b>frustrated</b> in the future!\n\nTapping \"fix partially\" <b>might</b> prevent Android from stopping the app while it is in the background.\n\n<b>This is NOT ENOUGH</b>. Your OEM\'s skin such as MIUI or Samsung Experience may have other app killing features so you MUST turn them off for Key Mapper as well by following the online guide at dontkillmyapp.com.</string>
 
     <string name="dialog_title_send_feedback">Send feedback</string>
     <string name="dialog_message_send_feedback">Please read the guide on how to report issues on the website.</string>
@@ -427,6 +454,15 @@
     <string name="dialog_title_reset_fingerprint_maps">Reset fingerprint gesture maps</string>
     <string name="dialog_message_reset_fingerprint_maps">Are you sure that you want to reset your fingerprint gesture maps?</string>
 
+    <string name="dialog_title_key_mapper_crashed">Key Mapper has been killed or crashed</string>
+    <string name="dialog_message_key_mapper_crashed">It is very likely that your phone killed Key Mapper while it was trying to run in the background. This is <b>not</b> the developer\'s fault and there is nothing they can do to fix it so please don\'t leave a bad review 😃.
+
+    \n\nHave you followed the guide on dontkillmyapp.com before to stop your phone from killing Key Mapper?</string>
+    <string name="dialog_button_read_dont_kill_my_app_yes">Yes</string>
+    <string name="dialog_button_read_dont_kill_my_app_no">No</string>
+
+    <string name="dialog_title_failed_to_create_bug_report">Failed to create bug report</string>
+
     <string name="pos_yes">Yes</string>
     <string name="pos_done">Done</string>
     <string name="pos_opt_in">Opt in</string>
@@ -441,6 +477,7 @@
     <string name="pos_turn_on">Turn on</string>
     <string name="pos_restart">Restart</string>
     <string name="pos_never_show_again">Never show again</string>
+    <string name="pos_go_to_dont_kill_my_app">Open online guide</string>
 
     <string name="neg_turn_off">Turn off</string>
     <string name="neg_stay_out">Stay out</string>
@@ -452,6 +489,10 @@
     <string name="neutral_go_to_settings">Settings</string>
     <string name="neutral_intent_docs">Docs</string>
     <string name="neutral_changelog">Changelog</string>
+    <string name="neutral_report_bug">Report bug</string>
+
+    <string name="dialog_button_restart_accessibility_service">Restart</string>
+    <string name="dialog_button_open_guide_to_fix_optimisation">Go to guide</string>
 
     <string name="snackbar_cancel">Cancel</string>
     <string name="snackbar_fix">Fix</string>
@@ -611,7 +652,6 @@
     <string name="pref_title_rate_review">Rate and review</string>
     <string name="pref_title_xda_thread">XDA thread</string>
     <string name="pref_title_version">Version</string>
-    <string name="pref_title_developer_email">Email developer</string>
     <string name="pref_title_translate">Translate</string>
     <string name="pref_title_discord">Discord server</string>
     <string name="pref_title_youtube_channel">YouTube channel (Tutorials)</string>
@@ -793,7 +833,7 @@
     <string name="error_action_requires_read_phone_state_permission">This action needs permission to read the phone state!</string>
     <string name="error_cant_find_write_settings_page">Can\'t find the WRITE_SETTINGS permission page!</string>
     <string name="error_opening_app_shortcut">Error opening this app shortcut</string>
-    <string name="error_no_app_found_to_send_feedback">No compatible app is found to send feedback.</string>
+    <string name="error_no_app_found_to_send_email">There is no app installed that can send emails!</string>
     <string name="dnd_access_granted">Permission to change Do Not Disturb mode granted!</string>
     <string name="error_cant_find_dnd_access_settings">Can\'t find the Do Not Disturb access permission settings!</string>
     <string name="error_need_write_secure_settings_permission">Key Mapper needs WRITE_SECURE_SETTINGS permission.</string>
@@ -1087,7 +1127,6 @@
     <!--  Tap targets  -->
     <string name="tap_target_quick_start_guide_primary">Quick Start Guide</string>
     <string name="tap_target_quick_start_guide_secondary">Check out the Quick Start Guide if you are stuck.</string>
-    <string name="hint_sound_file_description">Sound file description</string>
     <!--  Tap targets  -->
 
 </resources>

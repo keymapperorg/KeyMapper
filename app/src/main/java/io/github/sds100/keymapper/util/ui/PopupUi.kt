@@ -16,11 +16,11 @@ sealed class PopupUi<RESPONSE : PopupResponse> {
     object OkResponse : PopupResponse
 
     data class Dialog(
-        val title: String? = null,
-        val message: String,
-        val positiveButtonText: String,
-        val neutralButtonText: String? = null,
-        val negativeButtonText: String? = null
+        val title: CharSequence? = null,
+        val message: CharSequence,
+        val positiveButtonText: CharSequence,
+        val neutralButtonText: CharSequence? = null,
+        val negativeButtonText: CharSequence? = null
     ) : PopupUi<DialogResponse>()
 
     data class Text(val hint: String, val allowEmpty: Boolean, val text: String = "") : PopupUi<TextResponse>()

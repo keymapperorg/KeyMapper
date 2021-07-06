@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import io.github.sds100.keymapper.BuildConfig
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCase
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
@@ -51,7 +52,6 @@ class HomeViewModel(
         viewModelScope,
         showAlertsUseCase,
         pauseMappings,
-        backupRestore,
         showImePicker,
         resourceProvider
     )
@@ -74,6 +74,12 @@ class HomeViewModel(
 
     private val _openSettings = MutableSharedFlow<Unit>()
     val openSettings = _openSettings.asSharedFlow()
+
+    private val _reportBug = MutableSharedFlow<Unit>()
+    val reportBug = merge(_reportBug.asSharedFlow(), menuViewModel.reportBug)
+
+    private val _fixAppKilling = MutableSharedFlow<Unit>()
+    val fixAppKilling = _fixAppKilling.asSharedFlow()
 
     private val _showQuickStartGuideHint = MutableStateFlow(false)
     val showQuickStartGuideHint = _showQuickStartGuideHint.asStateFlow()
@@ -222,48 +228,6 @@ class HomeViewModel(
 
     init {
         viewModelScope.launch {
-            backupRestore.onBackupResult.collectLatest { result ->
-                when (result) {
-                    is Success -> {
-                        showPopup(
-                            "successful_backup_result",
-                            PopupUi.SnackBar(getString(R.string.toast_backup_successful))
-                        )
-                    }
-
-                    is Error -> showPopup(
-                        "backup_error",
-                        PopupUi.Ok(
-                            title = getString(R.string.toast_backup_failed),
-                            message = result.getFullMessage(this@HomeViewModel)
-                        )
-                    )
-                }
-            }
-        }
-
-        viewModelScope.launch {
-            backupRestore.onRestoreResult.collectLatest { result ->
-                when (result) {
-                    is Success -> {
-                        showPopup(
-                            "successful_restore_result",
-                            PopupUi.SnackBar(getString(R.string.toast_restore_successful))
-                        )
-                    }
-
-                    is Error -> showPopup(
-                        "restore_error",
-                        PopupUi.Ok(
-                            title = getString(R.string.toast_restore_failed),
-                            message = result.getFullMessage(this@HomeViewModel)
-                        )
-                    )
-                }
-            }
-        }
-
-        viewModelScope.launch {
             backupRestore.onAutomaticBackupResult.collectLatest { result ->
                 when (result) {
                     is Success -> {
@@ -318,6 +282,15 @@ class HomeViewModel(
             _showQuickStartGuideHint.value = showQuickStartGuideHint
 
         }.launchIn(viewModelScope)
+
+        viewModelScope.launch {
+            showAlertsUseCase.serviceState.collectLatest { state ->
+                //don't show this dialog on debug builds because it will show up every time the app is run.
+                if (state == ServiceState.CRASHED && BuildConfig.BUILD_TYPE != "debug") {
+                    showKeyMapperCrashedDialog()
+                }
+            }
+        }
     }
 
     fun approvedQuickStartGuideTapTarget() {
@@ -391,7 +364,11 @@ class HomeViewModel(
     }
 
     fun backupFingerprintMaps(uri: String) {
-        listFingerprintMaps.backupFingerprintMaps(uri)
+        viewModelScope.launch {
+            val result = listFingerprintMaps.backupFingerprintMaps(uri)
+
+            onBackupResult(result)
+        }
     }
 
     fun backupSelectedKeyMaps(uri: String) {
@@ -402,7 +379,11 @@ class HomeViewModel(
 
             val selectedIds = selectionState.selectedIds as Set<String>
 
-            listKeyMaps.backupKeyMaps(*selectedIds.toTypedArray(), uri = uri)
+            launch {
+                val result = listKeyMaps.backupKeyMaps(*selectedIds.toTypedArray(), uri = uri)
+
+                onBackupResult(result)
+            }
 
             multiSelectProvider.stopSelecting()
         }
@@ -412,11 +393,73 @@ class HomeViewModel(
         viewModelScope.launch {
             when (id) {
                 ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM -> showAlertsUseCase.enableAccessibilityService()
-                ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM -> showAlertsUseCase.restartAccessibilityService()
+                ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM -> showKeyMapperCrashedDialog()
+
                 ID_BATTERY_OPTIMISATION_LIST_ITEM -> showAlertsUseCase.disableBatteryOptimisation()
                 ID_MAPPINGS_PAUSED_LIST_ITEM -> showAlertsUseCase.resumeMappings()
                 ID_LOGGING_ENABLED_LIST_ITEM -> showAlertsUseCase.disableLogging()
             }
+        }
+    }
+
+    fun onChoseRestoreFile(uri: String) {
+        viewModelScope.launch {
+            val result = backupRestore.restoreMappings(uri)
+
+            when (result) {
+                is Success -> {
+                    showPopup(
+                        "successful_restore_result",
+                        PopupUi.SnackBar(getString(R.string.toast_restore_successful))
+                    )
+                }
+
+                is Error -> showPopup(
+                    "restore_error",
+                    PopupUi.Ok(
+                        title = getString(R.string.toast_restore_failed),
+                        message = result.getFullMessage(this@HomeViewModel)
+                    )
+                )
+            }
+        }
+    }
+
+    fun onChoseBackupFile(uri: String) {
+        viewModelScope.launch {
+            val result = backupRestore.backupAllMappings(uri)
+
+            onBackupResult(result)
+        }
+    }
+
+    private suspend fun showKeyMapperCrashedDialog() {
+        val dialog = DialogUtils.keyMapperCrashedDialog(this@HomeViewModel)
+
+        val response = showPopup("app_crashed_prompt", dialog) ?: return
+
+        when (response) {
+            DialogResponse.POSITIVE -> _fixAppKilling.emit(Unit)
+            DialogResponse.NEUTRAL -> _reportBug.emit(Unit)
+        }
+    }
+
+    private suspend fun onBackupResult(result: Result<*>) {
+        when (result) {
+            is Success -> {
+                showPopup(
+                    "successful_backup_result",
+                    PopupUi.SnackBar(getString(R.string.toast_backup_successful))
+                )
+            }
+
+            is Error -> showPopup(
+                "backup_error",
+                PopupUi.Ok(
+                    title = getString(R.string.toast_backup_failed),
+                    message = result.getFullMessage(this@HomeViewModel)
+                )
+            )
         }
     }
 

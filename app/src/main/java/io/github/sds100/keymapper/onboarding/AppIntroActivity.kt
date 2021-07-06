@@ -11,8 +11,8 @@ import com.github.appintro.AppIntro2
 import io.github.sds100.keymapper.MainActivity
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.system.permissions.RequestPermissionDelegate
-import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.system.url.UrlUtils
+import io.github.sds100.keymapper.util.Inject
 import kotlinx.coroutines.flow.collectLatest
 
 /**
@@ -26,9 +26,9 @@ class AppIntroActivity : AppIntro2() {
     }
 
     private val viewModel by viewModels<AppIntroViewModel> {
-        val slides = intent.getStringArrayExtra(EXTRA_SLIDES)?.map { AppIntroSlide.valueOf(it) }
+        val slides = intent.getStringArrayExtra(EXTRA_SLIDES)
 
-        Inject.appIntroViewModel(this, slides!!)
+        Inject.appIntroViewModel(this, slides!!.toList())
     }
 
     private lateinit var requestPermissionDelegate: RequestPermissionDelegate
@@ -56,9 +56,9 @@ class AppIntroActivity : AppIntro2() {
         }
 
         viewModel.slidesToShow.forEach {
-            val args = bundleOf(AppIntroScrollableFragment.KEY_SLIDE to it.toString())
+            val args = bundleOf(AppIntroFragment.KEY_SLIDE to it)
 
-            AppIntroScrollableFragment().apply {
+            AppIntroFragment().apply {
                 arguments = args
                 addSlide(this)
             }

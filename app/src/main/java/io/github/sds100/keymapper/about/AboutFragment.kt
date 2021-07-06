@@ -10,11 +10,9 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.github.sds100.keymapper.Constants
-import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentAboutBinding
 import io.github.sds100.keymapper.system.url.UrlUtils
-import io.github.sds100.keymapper.util.FeedbackUtils
 import io.github.sds100.keymapper.util.str
 
 /**
@@ -125,11 +123,6 @@ class AboutPreferenceFragment : PreferenceFragmentCompat() {
 
         findPreference<Preference>(str(R.string.key_pref_youtube_channel))?.setOnPreferenceClickListener {
             UrlUtils.openUrl(requireContext(), str(R.string.url_youtube_channel))
-            true
-        }
-
-        findPreference<Preference>(str(R.string.key_pref_developer_email))?.setOnPreferenceClickListener {
-            FeedbackUtils.emailDeveloper(requireContext())
             true
         }
     }

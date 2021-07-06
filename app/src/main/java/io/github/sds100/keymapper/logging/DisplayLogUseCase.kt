@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.logging
 
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.system.clipboard.ClipboardAdapter
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.util.State
@@ -13,7 +12,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import java.util.*
 
 /**
  * Created by sds100 on 13/05/2021.
@@ -38,7 +36,7 @@ class DisplayLogUseCaseImpl(
     override suspend fun copyToClipboard(entryId: Set<Int>) {
 
         repository.log.first().ifIsData { logEntries ->
-            val logText = getLogText(logEntries.filter { it.id in entryId })
+            val logText = LogUtils.createLogText(logEntries.filter { it.id in entryId })
 
             clipboardAdapter.copy(
                 label = resourceProvider.getString(R.string.clip_key_mapper_log),
@@ -51,19 +49,9 @@ class DisplayLogUseCaseImpl(
         val file = fileAdapter.getFileFromUri(uri)
 
         repository.log.first().ifIsData { logEntries ->
-            val logText = getLogText(logEntries.filter { it.id in entryId })
+            val logText = LogUtils.createLogText(logEntries.filter { it.id in entryId })
 
             file.outputStream()!!.bufferedWriter().use { it.write(logText) }
-        }
-    }
-
-    private fun getLogText(logEntries: List<LogEntryEntity>): String {
-        val dateFormat = LogUtils.DATE_FORMAT
-
-        return logEntries.joinToString(separator = "\n") { entry ->
-            val date = dateFormat.format(Date(entry.time))
-
-            return@joinToString "$date  ${entry.message}"
         }
     }
 }

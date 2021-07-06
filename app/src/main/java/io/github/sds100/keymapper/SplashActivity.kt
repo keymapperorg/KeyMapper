@@ -19,7 +19,7 @@ class SplashActivity : FragmentActivity() {
 
         val onboarding = UseCases.onboarding(this)
 
-        val appIntroSlides: List<AppIntroSlide>
+        val appIntroSlides: List<String>
         val systemFeatureAdapter = ServiceLocator.systemFeatureAdapter(this@SplashActivity)
 
         if (!onboarding.shownAppIntro) {

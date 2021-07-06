@@ -27,6 +27,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.util.*
 
@@ -68,8 +69,6 @@ class BackupManagerImpl(
         private const val TEMP_RESTORE_ROOT_DIR = "restore_temp"
     }
 
-    override val onBackupResult = MutableSharedFlow<Result<*>>()
-    override val onRestoreResult = MutableSharedFlow<Result<*>>()
     override val onAutomaticBackupResult = MutableSharedFlow<Result<*>>()
 
     private val gson: Gson by lazy {
@@ -145,35 +144,30 @@ class BackupManagerImpl(
         }.launchIn(coroutineScope)
     }
 
-    override fun backupKeyMaps(uri: String, keyMapIds: List<String>) {
-        coroutineScope.launch(dispatchers.default()) {
+    override suspend fun backupKeyMaps(uri: String, keyMapIds: List<String>): Result<*> {
+        return withContext(dispatchers.default()) {
             val outputFile = fileAdapter.getFileFromUri(uri)
             val allKeyMaps = keyMapRepository.keyMapList
                 .first { it is State.Data } as State.Data
 
             val keyMapsToBackup = allKeyMaps.data.filter { keyMapIds.contains(it.uid) }
 
-            val result = backupAsync(outputFile, keyMapsToBackup).await()
-
-            onBackupResult.emit(result)
+            backupAsync(outputFile, keyMapsToBackup).await()
         }
     }
 
-    override fun backupFingerprintMaps(uri: String) {
-        coroutineScope.launch(dispatchers.default()) {
+    override suspend fun backupFingerprintMaps(uri: String): Result<*> {
+        return withContext(dispatchers.default()) {
             val outputFile = fileAdapter.getFileFromUri(uri)
             val fingerprintMaps =
                 fingerprintMapRepository.fingerprintMapList.first { it is State.Data } as State.Data
 
-            val result = backupAsync(outputFile, fingerprintMaps = fingerprintMaps.data).await()
-
-
-            onBackupResult.emit(result)
+            backupAsync(outputFile, fingerprintMaps = fingerprintMaps.data).await()
         }
     }
 
-    override fun backupMappings(uri: String) {
-        coroutineScope.launch(dispatchers.default()) {
+    override suspend fun backupMappings(uri: String): Result<*> {
+        return withContext(dispatchers.default()) {
             val outputFile = fileAdapter.getFileFromUri(uri)
 
             val keyMaps =
@@ -182,19 +176,13 @@ class BackupManagerImpl(
             val fingerprintMaps =
                 fingerprintMapRepository.fingerprintMapList.first { it is State.Data } as State.Data
 
-            val result = backupAsync(
-                outputFile,
-                keyMaps.data,
-                fingerprintMaps.data
-            ).await()
-
-            onBackupResult.emit(result)
+            backupAsync(outputFile, keyMaps.data, fingerprintMaps.data).await()
         }
     }
 
     @Suppress("BlockingMethodInNonBlockingContext")
-    override fun restoreMappings(uri: String) {
-        coroutineScope.launch(dispatchers.default()) {
+    override suspend fun restoreMappings(uri: String): Result<*> {
+        return withContext(dispatchers.default()) {
             val restoreUuid = uuidGenerator.random()
 
             val file = fileAdapter.getFileFromUri(uri)
@@ -220,7 +208,7 @@ class BackupManagerImpl(
                 restore(json, emptyList())
             }
 
-            onRestoreResult.emit(result)
+            return@withContext result
         }
     }
 
@@ -521,12 +509,10 @@ class BackupManagerImpl(
 }
 
 interface BackupManager {
-    val onBackupResult: Flow<Result<*>>
-    val onRestoreResult: Flow<Result<*>>
     val onAutomaticBackupResult: Flow<Result<*>>
 
-    fun backupKeyMaps(uri: String, keyMapIds: List<String>)
-    fun backupFingerprintMaps(uri: String)
-    fun backupMappings(uri: String)
-    fun restoreMappings(uri: String)
+    suspend fun backupKeyMaps(uri: String, keyMapIds: List<String>): Result<*>
+    suspend fun backupFingerprintMaps(uri: String): Result<*>
+    suspend fun backupMappings(uri: String): Result<*>
+    suspend fun restoreMappings(uri: String): Result<*>
 }
