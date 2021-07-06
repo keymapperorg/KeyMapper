@@ -17,6 +17,7 @@ import kotlinx.coroutines.withContext
  */
 
 class ChooseConstraintViewModel(
+    private val isSupported: IsConstraintSupportedUseCase,
     resourceProvider: ResourceProvider
 ) : ViewModel(), ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl() {
@@ -206,97 +207,32 @@ class ChooseConstraintViewModel(
         ALL_CONSTRAINTS_ORDERED.forEach { type ->
             if (!supportedConstraints.value.contains(type)) return@forEach
 
-            val listItem = when (type) {
-                ChooseConstraintType.APP_IN_FOREGROUND ->
-                    ChooseConstraintListItem(
-                        type,
-                        getString(R.string.constraint_choose_app_foreground)
-                    )
-
-                ChooseConstraintType.APP_NOT_IN_FOREGROUND ->
-                    ChooseConstraintListItem(
-                        type,
-                        getString(R.string.constraint_choose_app_not_foreground)
-                    )
-
-                ChooseConstraintType.APP_PLAYING_MEDIA ->
-                    ChooseConstraintListItem(
-                        type,
-                        getString(R.string.constraint_choose_app_playing_media)
-                    )
-
-                ChooseConstraintType.BT_DEVICE_CONNECTED ->
-                    ChooseConstraintListItem(
-                        type,
-                        getString(R.string.constraint_choose_bluetooth_device_connected)
-                    )
-
-                ChooseConstraintType.BT_DEVICE_DISCONNECTED ->
-                    ChooseConstraintListItem(
-                        type,
-                        getString(R.string.constraint_choose_bluetooth_device_disconnected)
-                    )
-
-                ChooseConstraintType.SCREEN_ON ->
-                    ChooseConstraintListItem(
-                        type,
-                        getString(R.string.constraint_choose_screen_on_description)
-                    )
-
-                ChooseConstraintType.SCREEN_OFF ->
-                    ChooseConstraintListItem(
-                        type,
-                        getString(R.string.constraint_choose_screen_off_description)
-                    )
-
-                ChooseConstraintType.ORIENTATION_PORTRAIT ->
-                    ChooseConstraintListItem(
-                        type,
-                        getString(R.string.constraint_choose_orientation_portrait)
-                    )
-
-                ChooseConstraintType.ORIENTATION_LANDSCAPE ->
-                    ChooseConstraintListItem(
-                        type,
-                        getString(R.string.constraint_choose_orientation_landscape)
-                    )
-
-                ChooseConstraintType.ORIENTATION_0 ->
-                    ChooseConstraintListItem(
-                        type,
-                        getString(R.string.constraint_choose_orientation_0)
-                    )
-
-                ChooseConstraintType.ORIENTATION_90 ->
-                    ChooseConstraintListItem(
-                        type,
-                        getString(R.string.constraint_choose_orientation_90)
-                    )
-
-                ChooseConstraintType.ORIENTATION_180 ->
-                    ChooseConstraintListItem(
-                        type,
-                        getString(R.string.constraint_choose_orientation_180)
-                    )
-
-                ChooseConstraintType.ORIENTATION_270 ->
-                    ChooseConstraintListItem(
-                        type,
-                        getString(R.string.constraint_choose_orientation_270)
-                    )
-
-                ChooseConstraintType.FLASHLIGHT_ON ->
-                    ChooseConstraintListItem(
-                        type,
-                        getString(R.string.constraint_flashlight_on)
-                    )
-
-                ChooseConstraintType.FLASHLIGHT_OFF ->
-                    ChooseConstraintListItem(
-                        type,
-                        getString(R.string.constraint_flashlight_off)
-                    )
+            val title: String = when (type) {
+                ChooseConstraintType.APP_IN_FOREGROUND -> getString(R.string.constraint_choose_app_foreground)
+                ChooseConstraintType.APP_NOT_IN_FOREGROUND -> getString(R.string.constraint_choose_app_not_foreground)
+                ChooseConstraintType.APP_PLAYING_MEDIA -> getString(R.string.constraint_choose_app_playing_media)
+                ChooseConstraintType.BT_DEVICE_CONNECTED -> getString(R.string.constraint_choose_bluetooth_device_connected)
+                ChooseConstraintType.BT_DEVICE_DISCONNECTED -> getString(R.string.constraint_choose_bluetooth_device_disconnected)
+                ChooseConstraintType.SCREEN_ON -> getString(R.string.constraint_choose_screen_on_description)
+                ChooseConstraintType.SCREEN_OFF -> getString(R.string.constraint_choose_screen_off_description)
+                ChooseConstraintType.ORIENTATION_PORTRAIT -> getString(R.string.constraint_choose_orientation_portrait)
+                ChooseConstraintType.ORIENTATION_LANDSCAPE -> getString(R.string.constraint_choose_orientation_landscape)
+                ChooseConstraintType.ORIENTATION_0 -> getString(R.string.constraint_choose_orientation_0)
+                ChooseConstraintType.ORIENTATION_90 -> getString(R.string.constraint_choose_orientation_90)
+                ChooseConstraintType.ORIENTATION_180 -> getString(R.string.constraint_choose_orientation_180)
+                ChooseConstraintType.ORIENTATION_270 -> getString(R.string.constraint_choose_orientation_270)
+                ChooseConstraintType.FLASHLIGHT_ON -> getString(R.string.constraint_flashlight_on)
+                ChooseConstraintType.FLASHLIGHT_OFF -> getString(R.string.constraint_flashlight_off)
             }
+
+            val error = isSupported.invoke(type)
+
+            val listItem = ChooseConstraintListItem(
+                id = type,
+                title = title,
+                isEnabled = error == null,
+                errorMessage = error?.getFullMessage(this@ChooseConstraintViewModel)
+            )
 
             yield(listItem)
         }
@@ -304,11 +240,12 @@ class ChooseConstraintViewModel(
 
     @Suppress("UNCHECKED_CAST")
     class Factory(
+        private val isSupported: IsConstraintSupportedUseCase,
         private val resourceProvider: ResourceProvider
     ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return ChooseConstraintViewModel(resourceProvider) as T
+            return ChooseConstraintViewModel(isSupported, resourceProvider) as T
         }
     }
 }

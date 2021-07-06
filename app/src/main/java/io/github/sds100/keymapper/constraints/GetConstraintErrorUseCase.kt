@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.constraints
 
 import android.content.pm.PackageManager
+import android.os.Build
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
@@ -48,11 +49,16 @@ class GetConstraintErrorUseCaseImpl(
                     return Error.PermissionDenied(Permission.WRITE_SETTINGS)
                 }
 
-
             Constraint.ScreenOff,
             Constraint.ScreenOn -> {
                 if (!permissionAdapter.isGranted(Permission.ROOT)) {
                     return Error.PermissionDenied(Permission.ROOT)
+                }
+            }
+
+            is Constraint.FlashlightOn, is Constraint.FlashlightOff -> {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                    return Error.SdkVersionTooLow(minSdk = Build.VERSION_CODES.M)
                 }
             }
         }
@@ -62,7 +68,7 @@ class GetConstraintErrorUseCaseImpl(
 
     private fun getAppError(packageName: String): Error? {
         packageManager.isAppEnabled(packageName).onSuccess { isEnabled ->
-            if (!isEnabled){
+            if (!isEnabled) {
                 return Error.AppDisabled(packageName)
             }
         }

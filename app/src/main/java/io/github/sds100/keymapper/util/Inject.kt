@@ -21,6 +21,7 @@ import io.github.sds100.keymapper.actions.text.TextBlockActionTypeViewModel
 import io.github.sds100.keymapper.actions.url.ChooseUrlViewModel
 import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCaseImpl
 import io.github.sds100.keymapper.constraints.ChooseConstraintViewModel
+import io.github.sds100.keymapper.constraints.IsConstraintSupportedUseCaseImpl
 import io.github.sds100.keymapper.home.FixAppKillingViewModel
 import io.github.sds100.keymapper.home.HomeViewModel
 import io.github.sds100.keymapper.home.ShowHomeScreenAlertsUseCaseImpl
@@ -80,7 +81,10 @@ object Inject {
     }
 
     fun chooseConstraintListViewModel(ctx: Context): ChooseConstraintViewModel.Factory {
-        return ChooseConstraintViewModel.Factory(ServiceLocator.resourceProvider(ctx))
+        return ChooseConstraintViewModel.Factory(
+            IsConstraintSupportedUseCaseImpl(),
+            ServiceLocator.resourceProvider(ctx)
+        )
     }
 
     fun keyActionTypeViewModel(): ChooseKeyViewModel.Factory {
