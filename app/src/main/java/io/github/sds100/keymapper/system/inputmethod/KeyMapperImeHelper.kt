@@ -12,13 +12,17 @@ class KeyMapperImeHelper(private val imeAdapter: InputMethodAdapter) {
         const val KEY_MAPPER_GUI_IME_PACKAGE =
             "io.github.sds100.keymapper.inputmethod.latin"
 
-        const val KEY_MAPPER_LEANBACK_IME_PACKAGE =
+        private const val KEY_MAPPER_LEANBACK_IME_PACKAGE =
             "io.github.sds100.keymapper.inputmethod.leanback"
+
+        private const val KEY_MAPPER_HACKERS_KEYBOARD_PACKAGE =
+            "io.github.sds100.keymapper.inputmethod.hackers"
 
         val KEY_MAPPER_IME_PACKAGE_LIST = arrayOf(
             Constants.PACKAGE_NAME,
             KEY_MAPPER_GUI_IME_PACKAGE,
-            KEY_MAPPER_LEANBACK_IME_PACKAGE
+            KEY_MAPPER_LEANBACK_IME_PACKAGE,
+            KEY_MAPPER_HACKERS_KEYBOARD_PACKAGE
         )
     }
 
