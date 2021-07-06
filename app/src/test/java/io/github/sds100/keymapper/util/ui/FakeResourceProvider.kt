@@ -20,6 +20,10 @@ class FakeResourceProvider : ResourceProvider {
         return stringResourceMap[resId] ?: ""
     }
 
+    override fun getText(resId: Int): CharSequence {
+        return stringResourceMap[resId] ?: ""
+    }
+
     override fun getDrawable(resId: Int): Drawable {
         throw Exception()
     }
