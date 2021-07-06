@@ -54,8 +54,6 @@
     <string name="disabled">Zakázáno</string>
     <string name="reset">Reset</string>
     <string name="action_title_wait">Počkejte %sms</string>
-    <string name="email_subject">Dotaz mapování klíčů</string>
-    <string name="email_default_message">Vyřešila stránka nápovědy váš problém? Co je vaše zařízení?\n\n Který vzhled výrobce OEM nebo rom používáte?\n\n Popište problém, který máte:</string>
     <string name="action_title_intent_start_activity">Počáteční aktivita: %s</string>
     <string name="action_title_intent_start_service">Spustit službu: %s</string>
     <string name="action_title_intent_send_broadcast">Odeslat všesměrové vysílání: %s</string>
@@ -129,6 +127,8 @@
     <!-- URLs -->
     <!-- Activity titles -->
     <!-- Activity titles -->
+    <!--  Bug report slides-->
+    <!--  Bug report slides-->
     <!-- Menu action titles-->
     <!-- Menu action titles-->
     <!-- Button titles -->
