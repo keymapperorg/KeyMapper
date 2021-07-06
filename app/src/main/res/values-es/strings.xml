@@ -55,8 +55,6 @@ Los servicios de accesibilidad solo detectan las teclas y eventos de las aplicac
     <string name="disabled">Desactivado</string>
     <string name="reset">Restablecer</string>
     <string name="action_title_wait">Espera %sms</string>
-    <string name="email_subject">Consulta de Key Mapper</string>
-    <string name="email_default_message">¿La página de ayuda ha resuelto tu problema? ¿Cuál es tu dispositivo?\n\n ¿Qué OEM o ROM estás usando?\n\n Por favor, describe el problema que tienes:</string>
     <string name="action_title_intent_start_activity">Iniciar actividad: %s</string>
     <string name="action_title_intent_start_service">Iniciar servicio: %s</string>
     <string name="action_title_intent_send_broadcast">Enviar transmisión: %s</string>
@@ -138,6 +136,8 @@ Los servicios de accesibilidad solo detectan las teclas y eventos de las aplicac
     <!-- Activity titles -->
     <string name="title_choose_action">Elegir acción</string>
     <!-- Activity titles -->
+    <!--  Bug report slides-->
+    <!--  Bug report slides-->
     <!-- Menu action titles-->
     <string name="action_settings">Ajustes</string>
     <string name="action_done">Hecho</string>
